@@ -1,0 +1,150 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Login Logout Menu\n"
+"POT-Creation-Date: 2024-09-06 20:15+0500\n"
+"PO-Revision-Date: 2019-12-16 12:14+0500\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"X-Generator: Poedit 3.5\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-Flags-xgettext: --add-comments=translators:\n"
+"X-Poedit-WPHeader: login-logout-menu.php\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.min.js\n"
+
+#: classes/shortcodes.php:57 classes/shortcodes.php:96
+msgid "Log in"
+msgstr ""
+
+#: classes/shortcodes.php:58 classes/shortcodes.php:132
+msgid "Log out"
+msgstr ""
+
+#: classes/shortcodes.php:166 login-logout-menu.php:167
+msgid "Register"
+msgstr ""
+
+#: classes/shortcodes.php:200
+msgid "Reset Password"
+msgstr ""
+
+#: classes/shortcodes.php:271
+msgid "Edit Profile"
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+#: login-logout-menu.php:130
+msgid "Login Logout Menu"
+msgstr ""
+
+#: login-logout-menu.php:148
+#, php-format
+msgid "%1$s Settings %2$s"
+msgstr ""
+
+#: login-logout-menu.php:164 login-logout-menu.php:166
+msgid "Log In"
+msgstr ""
+
+#: login-logout-menu.php:165 login-logout-menu.php:166
+msgid "Log Out"
+msgstr ""
+
+#: login-logout-menu.php:168
+msgid "Profile"
+msgstr ""
+
+#: login-logout-menu.php:169
+msgid "User"
+msgstr ""
+
+#: login-logout-menu.php:205
+msgid "Help"
+msgstr ""
+
+#: login-logout-menu.php:207
+msgid "Redirecting Users After Login/Logout/Register"
+msgstr ""
+
+#: login-logout-menu.php:211 login-logout-menu.php:231
+#: login-logout-menu.php:244
+#, php-format
+msgid "Syntax: %1$s"
+msgstr ""
+
+#: login-logout-menu.php:217
+#, php-format
+msgid ""
+"%1$s This relative link after the placeholder tells the plugin where to "
+"redirect the user after they log in, log out, or register, based on where "
+"the link is placed."
+msgstr ""
+
+#: login-logout-menu.php:223
+#, php-format
+msgid "For example, %1$s will redirect the user to the blog page after login."
+msgstr ""
+
+#: login-logout-menu.php:227
+msgid "Redirecting Users to the Current Page"
+msgstr ""
+
+#: login-logout-menu.php:237
+#, php-format
+msgid ""
+"%1$s This placeholder will automatically update with the URL of the page the "
+"user is currently on (Redirected to the current visited page). It’s useful "
+"when you want them to stay on the same page after logging in, logging out, "
+"or registering without redirecting them elsewhere."
+msgstr ""
+
+#: login-logout-menu.php:240
+msgid "Displaying User Avatars in Menu"
+msgstr ""
+
+#: login-logout-menu.php:250
+#, php-format
+msgid ""
+"%1$s This placeholder displays the logged-in user's avatar (profile picture) "
+"in the menu item. It only works with user or profile menu items."
+msgstr ""
+
+#: login-logout-menu.php:257
+#, php-format
+msgid ""
+"Do you have more questions? For further plugin support, feel free to visit "
+"our %1$s plugin support forum%3$s or %2$s contact us page%3$s."
+msgstr ""
+
+#: login-logout-menu.php:263
+msgid "Add to Menu"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid ""
+"https://loginpress.pro/?utm_source=login-logout-menu&utm_medium=plugin-"
+"inside&utm_campaign=pro-upgrade&utm_content=plugin_uri"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid ""
+"Login Logout Menu is a handy plugin which allows you to add login, logout, "
+"register and profile menu items in your selected menu."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "WPBrigade"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "https://WPBrigade.com/?utm_source=login-logout-menu"
+msgstr ""

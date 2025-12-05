@@ -1,0 +1,348 @@
+/**
+ * CSS++ Example: Enhanced Button Styles
+ *
+ * Demonstrates multisensory button design using CSS++
+ */
+
+@import "modules/geometry";
+@import "modules/lighting";
+@import "modules/texture";
+@import "modules/audio";
+
+/* ============================================
+   METALLIC BUTTON
+   ============================================ */
+
+.btn-metal {
+  /* Geometry */
+  shape: rounded-rect(0.5rem);
+  depth: 0.2rem;
+
+  /* Material */
+  material: brushed-metal(#888888, roughness: 0.3);
+  metallic: 0.8;
+
+  /* Lighting */
+  light-intensity: 0.7;
+  shadow-type: soft;
+  reflectivity: 0.6;
+
+  /* Audio */
+  hover-sfx: chime(440Hz, decay: 0.2s);
+  click-sfx: click(mechanical);
+
+  /* Standard CSS */
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-metal:hover {
+  depth: 0.3rem;
+  light-intensity: 0.9;
+  glow-color: #ffffff;
+  glow-intensity: 0.3;
+}
+
+
+/* ============================================
+   GLASS BUTTON
+   ============================================ */
+
+.btn-glass {
+  /* Geometry */
+  shape: rounded-rect(0.75rem);
+
+  /* Material */
+  material: glass(0.3);
+  transparency: frosted(8px);
+  roughness: 0.1;
+
+  /* Lighting */
+  shadow-type: soft;
+  reflectivity: glass(0.5);
+  light-response: reflective;
+
+  /* Audio */
+  hover-sfx: chime(880Hz, decay: 0.15s);
+  click-sfx: pop(0.4);
+
+  /* Standard CSS */
+  padding: 0.75rem 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+
+/* ============================================
+   FABRIC BUTTON (Safe Room Theme)
+   ============================================ */
+
+.btn-cloth {
+  /* Geometry */
+  shape: rounded-rect(0.25rem);
+
+  /* Material */
+  fabric: linen(natural, weave: visible);
+  texture: cloth(linen, color: #e8d5c4);
+  roughness: 0.7;
+
+  /* Lighting */
+  light-intensity: 0.5;
+  shadow-type: contact;
+  ambient-occlusion: 0.2;
+
+  /* Audio */
+  cursor-move-sfx: cloth-rub(quiet);
+  hover-sfx: none;
+  click-sfx: click(soft);
+
+  /* Standard CSS */
+  padding: 0.75rem 1.5rem;
+  color: #4a5568;
+  font-family: Georgia, serif;
+}
+
+
+/* ============================================
+   NEON BUTTON (Cyberpunk Theme)
+   ============================================ */
+
+.btn-neon {
+  /* Geometry */
+  shape: rounded-rect(0.25rem);
+  pixel-grid: 4x4; /* Subtle pixelation */
+
+  /* Lighting */
+  light-response: emissive;
+  glow-color: #00ffff;
+  glow-intensity: 0.8;
+  glow-radius: 1.5rem;
+  bloom-strength: 0.5;
+
+  /* Material */
+  material: plastic(glossy, #000000);
+  reflectivity: 0.3;
+
+  /* Audio */
+  hover-sfx: whoosh(up);
+  click-sfx: pop(0.6);
+
+  /* Volumetrics */
+  particle: sparks(2%) from center on click;
+
+  /* Standard CSS */
+  padding: 0.75rem 1.5rem;
+  border: 2px solid #00ffff;
+  color: #00ffff;
+  font-family: "Courier New", monospace;
+  text-transform: uppercase;
+}
+
+.btn-neon:hover {
+  glow-intensity: 1.0;
+  particle: sparks(5%);
+}
+
+
+/* ============================================
+   GOLD COIN BUTTON (Vintage Theme)
+   ============================================ */
+
+.btn-coin {
+  /* Geometry */
+  shape: circle;
+  depth: 0.4rem;
+
+  /* Material */
+  metal: gold(polished, purity: 18k);
+  metallic: 1.0;
+  roughness: 0.2;
+
+  /* Lighting */
+  light-intensity: 0.9;
+  reflectivity: 0.9;
+  light-response: reflective;
+
+  /* Texture */
+  texture: embossed-pattern(coin-relief);
+  bump-map: procedural(radial-lines);
+
+  /* Audio */
+  click-sfx: coin-drop;
+  hover-sfx: chime(523Hz, decay: 0.3s); /* C5 note */
+
+  /* Standard CSS */
+  width: 4rem;
+  height: 4rem;
+  border: 2px solid #b8860b;
+  cursor: pointer;
+}
+
+@sound coin-drop {
+  source: url("../assets/sounds/coin.mp3");
+  volume: 0.6;
+  pitch: 440Hz;
+  variation: 0.15;
+}
+
+
+/* ============================================
+   RETRO PIXEL BUTTON
+   ============================================ */
+
+.btn-pixel {
+  /* Geometry */
+  shape: square;
+  pixel-grid: 8x8;
+
+  /* Material */
+  texture: checkerboard(4px);
+  texture-colors: #ff0000 #cc0000;
+
+  /* Lighting */
+  shadow-type: hard;
+  light-response: static;
+
+  /* Audio */
+  click-sfx: synthesized;
+  sound-wave: square;
+  sound-frequency: 220Hz;
+  sound-decay: 0.1s;
+
+  /* Standard CSS */
+  padding: 0.5rem 1rem;
+  border: 4px solid #000000;
+  image-rendering: pixelated;
+  font-family: "Press Start 2P", monospace;
+  font-size: 0.75rem;
+}
+
+
+/* ============================================
+   WOOD BUTTON (Organic Theme)
+   ============================================ */
+
+.btn-wood {
+  /* Geometry */
+  shape: rounded-rect(0.5rem);
+  depth: 0.3rem;
+
+  /* Material */
+  wood: oak(stained, finish: matte);
+  roughness: 0.6;
+  texture: wood-grain(oak, scale: 1.5);
+
+  /* Lighting */
+  light-intensity: 0.6;
+  shadow-type: soft;
+  ambient-occlusion: 0.3;
+
+  /* Audio */
+  click-sfx: wood-knock;
+  hover-sfx: none;
+
+  /* Standard CSS */
+  padding: 0.75rem 1.5rem;
+  color: #f5f5f5;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+
+/* ============================================
+   INTERACTIVE SURFACE BUTTON
+   ============================================ */
+
+.btn-reactive {
+  /* Geometry */
+  shape: rounded-rect(0.5rem);
+  depth: 3d; /* Enable 3D mode */
+
+  /* Lighting */
+  light-response: reactive;
+  cursor-light: 5rem;
+  cursor-light-color: #4466ff;
+  cursor-light-intensity: 0.6;
+
+  /* Material */
+  material: brushed-aluminum(#c0c0c0);
+  metallic: 0.7;
+  roughness: 0.4;
+
+  /* Audio */
+  hover-sfx: chime(440Hz);
+  cursor-move-sfx: metal-scrape(0.1);
+
+  /* Standard CSS */
+  padding: 1rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+
+/* ============================================
+   BUTTON GROUP WITH THEME
+   ============================================ */
+
+@theme button-safe-room {
+  /* Visual */
+  primary-color: #4a5568;
+  accent-color: #d4af37;
+
+  /* Material */
+  material-style: vintage-industrial;
+  texture-preference: rough;
+
+  /* Audio */
+  interaction-sounds: mechanical;
+  ui-soundscape: ambient(quiet-room);
+
+  /* Atmospheric */
+  ambient-light: 0.4;
+  fog-density: 0.05;
+}
+
+.btn-group[data-theme="safe-room"] .btn {
+  material: var(--theme-material-style);
+  hover-sfx: gear(light);
+  click-sfx: switch(mechanical);
+  ambient-sound: quiet-room(0.05);
+}
+
+
+/* ============================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================ */
+
+@media (max-width: 768px) {
+  .btn-metal,
+  .btn-glass,
+  .btn-cloth {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  /* Reduce particle effects on mobile */
+  .btn-neon {
+    particle: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Disable animations and sounds */
+  * {
+    hover-sfx: none;
+    click-sfx: none;
+    transition-sfx: none;
+    particle: none;
+    texture-animation: none;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .btn-cloth {
+    texture: cloth(linen, color: #2d3748);
+    color: #e2e8f0;
+  }
+}

@@ -1,0 +1,1780 @@
+# Translation of Themes - Twenty Twenty-Four in Portuguese (Portugal)
+# This file is distributed under the same license as the Themes - Twenty Twenty-Four package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-03-06 00:30:43+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: pt\n"
+"Project-Id-Version: Themes - Twenty Twenty-Four\n"
+
+#. Description of the theme
+#: style.css
+#, gp-priority: high
+msgid "Twenty Twenty-Four is designed to be flexible, versatile and applicable to any website. Its collection of templates and patterns tailor to different needs, such as presenting a business, blogging and writing or showcasing work. A multitude of possibilities open up with just a few adjustments to color and typography. Twenty Twenty-Four comes with style variations and full page designs to help speed up the site building process, is fully compatible with the site editor, and takes advantage of new design tools introduced in WordPress 6.4."
+msgstr "O tema Twenty Twenty-Four foi desenhado para ser flexível, versátil, e aplicável a qualquer site. A sua colecção de modelos e padrões está à medida das diferentes necessidades, como apresentar um negócio, blogging e escrever, ou mostrar um portfólio de trabalho. Uma multitude de possibilidades abrem-se com apenas alguns ajustes à cor e tipografia. O Twenty Twenty-Four vem com variações de estilo e full page designs para ajudar a acelerar o processo de construção de um site, é inteiramente compatível com o editor do site, e toma partido das novas ferramentas de design introduzidas no WordPress 6.4."
+
+#. Theme Name of the theme
+#: style.css
+#, gp-priority: high
+msgid "Twenty Twenty-Four"
+msgstr "Twenty Twenty-Four"
+
+#: patterns/text-centered-statement.php
+msgctxt "Pattern description"
+msgid "A centered text statement with a large amount of padding on all sides."
+msgstr "Uma declaração de texto centrada com uma grande quantidade de espaçamento em todos os lados."
+
+#: patterns/hidden-posts-heading.php
+msgctxt "Pattern title"
+msgid "Posts heading"
+msgstr "Título dos conteúdos"
+
+#: patterns/text-title-left-image-right.php
+msgctxt "Pattern description"
+msgid "A title, a paragraph and a CTA button on the left with an image on the right."
+msgstr "Um título, um parágrafo e um botão CTA à esquerda com uma imagem à direita."
+
+#: patterns/text-project-details.php
+msgctxt "Pattern description"
+msgid "A text-only section for project details."
+msgstr "Uma secção apenas de texto para detalhes do projecto."
+
+#: patterns/text-feature-grid-3-col.php
+msgctxt "Pattern description"
+msgid "A feature grid of 2 rows and 3 columns with headings and text."
+msgstr "Uma grelha de funcionalidades com 2 linhas e 3 colunas, com cabeçalhos e texto."
+
+#: patterns/text-faq.php:35
+msgctxt "Question in the FAQ pattern"
+msgid "Who is behind Études?"
+msgstr "Quem está por detrás da Études?"
+
+#: patterns/text-faq.php
+msgctxt "Pattern description"
+msgid "A FAQ section with a large FAQ heading and a group of questions and answers."
+msgstr "Uma secção de perguntas frequentes com um título grande e um grupo de perguntas e respostas."
+
+#: patterns/text-centered-statement-small.php
+msgctxt "Pattern description"
+msgid "A centered italic text statement with compact padding."
+msgstr "Uma declaração de texto centrada, em itálico, com espaçamento compacto."
+
+#: patterns/text-alternating-images.php
+msgctxt "Pattern description"
+msgid "A text section, then a two-column section with text in one column and an image in the other."
+msgstr "Uma secção de texto, seguida de uma secção de duas colunas com texto numa e imagem na outra."
+
+#: patterns/testimonial-centered.php
+msgctxt "Pattern description"
+msgid "A centered testimonial section with an avatar, name, and job title."
+msgstr "Uma secção de testemunhos centrada, com um avatar, nome e cargo."
+
+#: patterns/team-4-col.php
+msgctxt "Pattern description"
+msgid "A team section, with a heading, a paragraph, and 4 columns for team members."
+msgstr "Uma secção de equipa, com um cabeçalho, um parágrafo e 4 colunas para os membros da equipa."
+
+#: patterns/posts-list.php
+msgctxt "Pattern description"
+msgid "A list of posts without images, 1 column."
+msgstr "Uma lista de artigos sem imagens, 1 coluna."
+
+#: patterns/posts-images-only-offset-4-col.php
+msgctxt "Pattern description"
+msgid "A list of posts with featured images only, 4 columns."
+msgstr "Uma lista de artigos apenas com imagens em destaque, 4 colunas."
+
+#: patterns/posts-images-only-3-col.php
+msgctxt "Pattern description"
+msgid "A list of posts with featured images only, 3 columns."
+msgstr "Uma lista de artigos apenas com imagens em destaque, 3 colunas."
+
+#: patterns/posts-grid-2-col.php
+msgctxt "Pattern description"
+msgid "A grid of posts featuring the first post, 2 columns."
+msgstr "Uma grelha de artigos com o primeiro em destaque, 2 colunas."
+
+#: patterns/posts-3-col.php
+msgctxt "Pattern description"
+msgid "A list of posts, 3 columns."
+msgstr "Uma lista de artigos, 3 colunas."
+
+#: patterns/posts-1-col.php
+msgctxt "Pattern description"
+msgid "A list of posts, 1 column."
+msgstr "Uma lista de artigos, 1 coluna."
+
+#: patterns/page-portfolio-overview.php
+msgctxt "Pattern description"
+msgid "A full portfolio page with a section for project description, project details, a full screen image, and a gallery section with two images."
+msgstr "Uma página de portefólio com uma secção para descrição do projeto, detalhes do projecto, uma imagem em ecrã inteiro e uma secção de galeria com duas imagens."
+
+#: patterns/page-newsletter-landing.php
+msgctxt "Pattern description"
+msgid "A block with a newsletter subscription CTA for a landing page."
+msgstr "Um bloco com uma CTA de subscrição de newsletter, para uma landing page.."
+
+#: patterns/page-home-portfolio.php
+msgctxt "Pattern description"
+msgid "A portfolio home page with a description and a 4-column post section with only feature images."
+msgstr "Uma página inicial de portefólio com uma descrição e uma secção de artigos em 4 colunas apenas com imagens destacadas."
+
+#: patterns/page-home-portfolio-gallery.php
+msgctxt "Pattern description"
+msgid "A portfolio home page that features a gallery."
+msgstr "Uma página inicial de portefólio que contém uma galeria."
+
+#: patterns/page-home-business.php
+msgctxt "Pattern description"
+msgid "A business home page with a hero section, a text section, a services section, a team section, a clients section, a FAQ section, and a CTA section."
+msgstr "Uma página inicial comercial com uma secção hero, uma secção de texto, uma secção de serviços, uma secção de equipa, uma secção de clientes, uma secção de FAQ e uma secção de CTA."
+
+#: patterns/page-home-blogging.php
+msgctxt "Pattern description"
+msgid "A blogging home page with a hero section, a text section, a blog section, and a CTA section."
+msgstr "Uma página inicial de blog com uma secção hero, uma secção de texto, uma secção de blog e uma secção de CTA."
+
+#: patterns/page-about-business.php
+msgctxt "Pattern description"
+msgid "A business about page with a hero section, a text section, a services section, a team section, a clients section, a FAQ section, and a CTA section."
+msgstr "Uma página sobre comercial com uma secção hero, uma secção de texto, uma secção de serviços, uma secção de equipa, uma secção de clientes, uma secção de perguntas frequentas e uma secção de CTA."
+
+#: patterns/gallery-project-layout.php
+msgctxt "Pattern description"
+msgid "A gallery section with a project layout with 2 images."
+msgstr "Uma secção de galeria com um layout de projecto com 2 imagens."
+
+#: patterns/gallery-offset-images-grid-4-col.php
+msgctxt "Pattern description"
+msgid "A gallery section with 4 columns and offset images."
+msgstr "Uma secção de galeria com 4 colunas e imagens desfasadas."
+
+#: patterns/gallery-offset-images-grid-3-col.php
+msgctxt "Pattern description"
+msgid "A gallery section with 3 columns and offset images."
+msgstr "Uma secção de galeria com 3 colunas e imagens desfasadas."
+
+#: patterns/gallery-offset-images-grid-2-col.php
+msgctxt "Pattern description"
+msgid "A gallery section with 2 columns and offset images."
+msgstr "Uma secção de galeria com 2 colunas e imagens desfasadas."
+
+#: patterns/gallery-full-screen-image.php
+msgctxt "Pattern description"
+msgid "A cover image section that covers the entire width."
+msgstr "Uma secção de imagem de capa que cobre toda a largura."
+
+#: patterns/footer.php
+msgctxt "Pattern description"
+msgid "A footer section with a colophon and 4 columns."
+msgstr "Uma secção de rodapé com um cólofon e 4 colunas."
+
+#: patterns/footer-colophon-3-col.php
+msgctxt "Pattern description"
+msgid "A footer section with a colophon and 3 columns."
+msgstr "Uma secção de rodapé com um cólofon e 3 colunas."
+
+#: patterns/footer-centered-logo-nav.php
+msgctxt "Pattern description"
+msgid "A footer section with a centered logo, navigation, and WordPress credits."
+msgstr "Uma secção de rodapé com um logótipo centrado, navegação e créditos do WordPress."
+
+#: patterns/cta-subscribe-centered.php
+msgctxt "Pattern description"
+msgid "Subscribers CTA section with a title, a paragraph and a CTA button."
+msgstr "Secção de chamada para acção para subscritores com um título, um parágrafo e um botão de chamada à acção."
+
+#: patterns/cta-services-image-left.php
+msgctxt "Pattern description"
+msgid "An image, title, paragraph and a CTA button to describe services."
+msgstr "Uma imagem, título, parágrafo e um botão de chamada para acção, para descrever serviços."
+
+#: patterns/cta-rsvp.php patterns/page-rsvp-landing.php
+msgctxt "Pattern description"
+msgid "A large RSVP heading sideways, a description, and a CTA button."
+msgstr "Um título RSVP rodado, uma descrição e um botão de chamada para acção."
+
+#: patterns/cta-pricing.php
+msgctxt "Pattern description"
+msgid "A pricing section with a title, a paragraph and three pricing levels."
+msgstr "Uma secção de preços com um título, um parágrafo e três níveis de preços."
+
+#: patterns/cta-content-image-on-right.php
+msgctxt "Pattern description"
+msgid "A title, paragraph, two CTA buttons, and an image for a general CTA section."
+msgstr "Um título, um parágrafo, dois botões de chamada para acção e uma imagem para uma secção geral de chamada para acção."
+
+#: patterns/banner-project-description.php
+msgctxt "Pattern description"
+msgid "Project description section with title, paragraph, and an image."
+msgstr "Secção de descrição do projecto com título, parágrafo e uma imagem."
+
+#: patterns/banner-hero.php
+msgctxt "Pattern description"
+msgid "A hero section with a title, a paragraph, a CTA button, and an image."
+msgstr "Uma secção hero com um título, um parágrafo, um botão de chamada para acção e uma imagem."
+
+#: patterns/footer.php:96
+msgid "Twitter/X"
+msgstr "Twitter/X"
+
+#: patterns/footer.php:74
+msgid "Contact Us"
+msgstr "Contacte-nos"
+
+#: patterns/footer.php:73
+msgid "Terms and Conditions"
+msgstr "Termos e condições"
+
+#: patterns/footer.php:72
+msgid "Privacy Policy"
+msgstr "Política de privacidade"
+
+#: patterns/footer.php:51
+msgid "Careers"
+msgstr "Carreiras"
+
+#: patterns/footer.php:50
+msgid "History"
+msgstr "História"
+
+#: patterns/footer.php:49
+msgid "Team"
+msgstr "Equipa"
+
+#: patterns/posts-list.php
+msgctxt "Pattern title"
+msgid "List of posts without images, 1 column"
+msgstr "Lista de artigos sem imagens, 1 coluna"
+
+#: patterns/hidden-portfolio-hero.php:16
+msgid "I’m <em>Leia Acosta</em>, a passionate photographer who finds inspiration in capturing the fleeting beauty of life."
+msgstr "Chamo-me <em>Leia Acosta</em>, sou uma fotógrafa apaixonada que encontra inspiração em captar a beleza fugaz da vida."
+
+#: functions.php:200
+msgid "A collection of full page layouts."
+msgstr "Uma colecção de layouts de página inteira."
+
+#: functions.php:199
+msgctxt "Block pattern category"
+msgid "Pages"
+msgstr "Páginas"
+
+#: theme.json
+msgctxt "Custom template name"
+msgid "Single with Sidebar"
+msgstr "Conteúdo com barra lateral"
+
+#: theme.json
+msgctxt "Custom template name"
+msgid "Page with Wide Image"
+msgstr "Página com imagem larga"
+
+#: theme.json
+msgctxt "Custom template name"
+msgid "Page with Sidebar"
+msgstr "Página com barra lateral"
+
+#: theme.json
+msgctxt "Custom template name"
+msgid "Page No Title"
+msgstr "Página sem título"
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Post Meta"
+msgstr "Metadados de artigo"
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Sidebar"
+msgstr "Barra lateral"
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Footer"
+msgstr "Rodapé"
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Header"
+msgstr "Cabeçalho"
+
+#: theme.json
+msgctxt "Space size name"
+msgid "6"
+msgstr "6"
+
+#: theme.json
+msgctxt "Space size name"
+msgid "5"
+msgstr "5"
+
+#: theme.json
+msgctxt "Space size name"
+msgid "4"
+msgstr "4"
+
+#: theme.json
+msgctxt "Space size name"
+msgid "3"
+msgstr "3"
+
+#: theme.json
+msgctxt "Space size name"
+msgid "2"
+msgstr "2"
+
+#: theme.json
+msgctxt "Space size name"
+msgid "1"
+msgstr "1"
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Vertical hard pewter to white"
+msgstr "Vertical brusco de estanho para branco"
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Vertical hard mint to white"
+msgstr "Vertical brusco de menta para branco"
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Vertical hard sage to white"
+msgstr "Vertical brusco de sálvia para branco"
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Vertical hard rust to white"
+msgstr "Vertical brusco de ferrugem para branco"
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Vertical hard sandstone to white"
+msgstr "Vertical brusco de grés para branco"
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Vertical hard beige to white"
+msgstr "Vertical brusco de bege para branco"
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Vertical soft pewter to white"
+msgstr "Vertical suave de estanho para branco"
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Vertical soft mint to white"
+msgstr "Vertical suave de menta para branco"
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Vertical soft sage to white"
+msgstr "Vertical suave de sálvia para branco"
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Vertical soft rust to white"
+msgstr "Vertical suave de ferrugem para branco"
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Vertical soft sandstone to white"
+msgstr "Vertical suave de grés para branco"
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Vertical soft beige to white"
+msgstr "Vertical suave de bege para branco"
+
+#: theme.json
+msgctxt "Duotone name"
+msgid "Black and pastel blue"
+msgstr "Preto e azul pastel"
+
+#: theme.json
+msgctxt "Duotone name"
+msgid "Black and sage"
+msgstr "Preto e sálvia"
+
+#: theme.json
+msgctxt "Duotone name"
+msgid "Black and rust"
+msgstr "Preto e ferrugem"
+
+#: theme.json
+msgctxt "Duotone name"
+msgid "Black and sandstone"
+msgstr "Preto e grés"
+
+#: theme.json
+msgctxt "Duotone name"
+msgid "Black and white"
+msgstr "Preto e branco"
+
+#: styles/rust.json
+msgctxt "Color name"
+msgid "Base / 2"
+msgstr "Base/2"
+
+#: styles/rust.json
+msgctxt "Gradient name"
+msgid "Vertical hard rust to beige"
+msgstr "Vertical brusco de ferrugem para bege"
+
+#: styles/rust.json
+msgctxt "Gradient name"
+msgid "Vertical rust to beige"
+msgstr "Vertical de ferrugem para bege"
+
+#: styles/rust.json
+msgctxt "Gradient name"
+msgid "Vertical hard transparent rust to beige"
+msgstr "Vertical brusco de ferrugem translúcida para bege"
+
+#: styles/rust.json
+msgctxt "Gradient name"
+msgid "Vertical transparent rust to beige"
+msgstr "Vertical de ferrugem translúcida para bege"
+
+#: styles/rust.json
+msgctxt "Duotone name"
+msgid "Dark rust to beige"
+msgstr "Ferrugem escuro a bege"
+
+#: styles/rust.json
+msgctxt "Style variation name"
+msgid "Rust"
+msgstr "Ferrugem"
+
+#: styles/onyx.json theme.json
+msgctxt "Color name"
+msgid "Accent / Five"
+msgstr "Realce/Cinco"
+
+#: styles/onyx.json theme.json
+msgctxt "Color name"
+msgid "Accent / Four"
+msgstr "Realce/Quatro"
+
+#: styles/onyx.json theme.json
+msgctxt "Color name"
+msgid "Accent / Three"
+msgstr "Realce/Três"
+
+#: styles/onyx.json theme.json
+msgctxt "Color name"
+msgid "Accent / Two"
+msgstr "Realce/Dois"
+
+#: styles/onyx.json theme.json
+msgctxt "Color name"
+msgid "Accent"
+msgstr "Realce"
+
+#: styles/onyx.json
+msgctxt "Gradient name"
+msgid "Vertical hard pewter to dark gray"
+msgstr "Vertical brusco de estanho para cinzento escuro"
+
+#: styles/onyx.json
+msgctxt "Gradient name"
+msgid "Vertical hard steel to dark gray"
+msgstr "Vertical brusco de aço para cinzento escuro"
+
+#: styles/onyx.json
+msgctxt "Gradient name"
+msgid "Vertical hard olive to dark gray"
+msgstr "Vertical brusco de oliva para cinzento escuro"
+
+#: styles/onyx.json
+msgctxt "Gradient name"
+msgid "Vertical hard cinnamon to dark gray"
+msgstr "Vertical brusco de canela para cinzento escuro"
+
+#: styles/onyx.json
+msgctxt "Gradient name"
+msgid "Vertical hard walnut to dark gray"
+msgstr "Vertical brusco de nogueira para cinzento escuro"
+
+#: styles/onyx.json
+msgctxt "Gradient name"
+msgid "Vertical hard beige to dark gray"
+msgstr "Vertical brusco de bege para cinzento escuro"
+
+#: styles/onyx.json
+msgctxt "Gradient name"
+msgid "Vertical soft pewter to dark gray"
+msgstr "Vertical suave de estanho para cinzento escuro"
+
+#: styles/onyx.json
+msgctxt "Gradient name"
+msgid "Vertical soft steel to dark gray"
+msgstr "Vertical suave de aço para cinzento escuro"
+
+#: styles/onyx.json
+msgctxt "Gradient name"
+msgid "Vertical soft olive to dark gray"
+msgstr "Vertical suave de oliva para cinzento escuro"
+
+#: styles/onyx.json
+msgctxt "Gradient name"
+msgid "Vertical soft cinnamon to dark gray"
+msgstr "Vertical suave de canela para cinzento escuro"
+
+#: styles/onyx.json
+msgctxt "Gradient name"
+msgid "Vertical soft walnut to dark gray"
+msgstr "Vertical suave de nogueira para cinzento escuro"
+
+#: styles/onyx.json
+msgctxt "Gradient name"
+msgid "Vertical soft driftwood to dark gray"
+msgstr "Vertical suave de madeira envelhecida para cinzento escuro"
+
+#: styles/onyx.json
+msgctxt "Duotone name"
+msgid "Dark gray and steel"
+msgstr "Cinzento escuro e aço"
+
+#: styles/onyx.json
+msgctxt "Duotone name"
+msgid "Dark gray and olive"
+msgstr "Cinzento escuro e oliva"
+
+#: styles/onyx.json
+msgctxt "Duotone name"
+msgid "Dark gray and cinnamon"
+msgstr "Cinzento escuro e canela"
+
+#: styles/onyx.json
+msgctxt "Duotone name"
+msgid "Dark gray and walnut"
+msgstr "Cinzento escuro e nogueira"
+
+#: styles/onyx.json
+msgctxt "Duotone name"
+msgid "Dark gray and white"
+msgstr "Cinzento escuro e branco"
+
+#: styles/onyx.json
+msgctxt "Style variation name"
+msgid "Onyx"
+msgstr "Ónix"
+
+#: styles/mint.json
+msgctxt "Style variation name"
+msgid "Mint"
+msgstr "Menta"
+
+#: styles/maelstrom.json
+msgctxt "Color name"
+msgid "Contrast / 3"
+msgstr "Contraste / 3"
+
+#: styles/maelstrom.json
+msgctxt "Style variation name"
+msgid "Maelstrom"
+msgstr "Maelstrom"
+
+#: styles/ice.json
+msgctxt "Gradient name"
+msgid "Vertical hard ink to ocean"
+msgstr "Vertical brusco de cinzento escuro azulado para oceano"
+
+#: styles/ice.json
+msgctxt "Gradient name"
+msgid "Vertical hard ocean to slate"
+msgstr "Vertical brusco de oceano para ardósia"
+
+#: styles/ice.json
+msgctxt "Gradient name"
+msgid "Vertical hard ink to ice"
+msgstr "Vertical brusco de cinzento escuro azulado escuro para gelo"
+
+#: styles/ice.json
+msgctxt "Gradient name"
+msgid "Vertical hard ocean to ice"
+msgstr "Vertical brusco de oceano para gelo"
+
+#: styles/ice.json
+msgctxt "Gradient name"
+msgid "Vertical hard slate to ice"
+msgstr "Vertical brusco de ardósia para gelo"
+
+#: styles/ice.json
+msgctxt "Gradient name"
+msgid "Vertical hard ice to azure"
+msgstr "Vertical brusco de gelo para azul claro acinzentado"
+
+#: styles/ice.json
+msgctxt "Gradient name"
+msgid "Vertical ink to ocean"
+msgstr "Vertical de cinzento escuro azulado para oceano"
+
+#: styles/ice.json
+msgctxt "Gradient name"
+msgid "Vertical ocean to slate"
+msgstr "Vertical de oceano para ardósia"
+
+#: styles/ice.json
+msgctxt "Gradient name"
+msgid "Vertical ink to ice"
+msgstr "Vertical de cinzento escuro azulado para gelo"
+
+#: styles/ice.json
+msgctxt "Gradient name"
+msgid "Vertical ocean to ice"
+msgstr "Vertical de oceano para gelo"
+
+#: styles/ice.json
+msgctxt "Gradient name"
+msgid "Vertical slate to ice"
+msgstr "Vertical de ardósia para gelo"
+
+#: styles/ice.json
+msgctxt "Gradient name"
+msgid "Vertical azure to ice"
+msgstr "Vertical de azul claro acinzentado para gelo"
+
+#: styles/ice.json
+msgctxt "Style variation name"
+msgid "Ice"
+msgstr "Gelo"
+
+#: styles/fossil.json styles/ice.json styles/maelstrom.json theme.json
+msgctxt "Font size name"
+msgid "Extra Extra Large"
+msgstr "Extra extra grande"
+
+#: styles/fossil.json styles/ice.json styles/maelstrom.json theme.json
+msgctxt "Font size name"
+msgid "Extra Large"
+msgstr "Extra grande"
+
+#: styles/fossil.json styles/ice.json styles/maelstrom.json theme.json
+msgctxt "Font size name"
+msgid "Large"
+msgstr "Grande"
+
+#: styles/fossil.json styles/ice.json styles/maelstrom.json theme.json
+msgctxt "Font size name"
+msgid "Medium"
+msgstr "Médio"
+
+#: styles/fossil.json styles/ice.json styles/maelstrom.json theme.json
+msgctxt "Font size name"
+msgid "Small"
+msgstr "Pequeno"
+
+#: styles/fossil.json styles/maelstrom.json theme.json
+msgctxt "Font family name"
+msgid "Cardo"
+msgstr "Cardo"
+
+#: styles/fossil.json styles/ice.json theme.json
+msgctxt "Font family name"
+msgid "Inter"
+msgstr "Inter"
+
+#: styles/fossil.json styles/ice.json styles/mint.json styles/onyx.json
+#: theme.json
+msgctxt "Color name"
+msgid "Contrast / Three"
+msgstr "Contraste/Três"
+
+#: styles/fossil.json styles/ice.json styles/mint.json styles/onyx.json
+#: theme.json
+msgctxt "Color name"
+msgid "Contrast / Two"
+msgstr "Contraste/Dois"
+
+#: styles/fossil.json
+msgctxt "Style variation name"
+msgid "Fossil"
+msgstr "Fóssil"
+
+#: styles/ember.json styles/fossil.json styles/ice.json styles/maelstrom.json
+#: styles/mint.json theme.json
+msgctxt "Font family name"
+msgid "System Serif"
+msgstr "System Serif"
+
+#: styles/ember.json styles/fossil.json styles/ice.json styles/maelstrom.json
+#: styles/mint.json theme.json
+msgctxt "Font family name"
+msgid "System Sans-serif"
+msgstr "System Sans-serif"
+
+#: styles/ember.json styles/ice.json styles/maelstrom.json styles/mint.json
+msgctxt "Font family name"
+msgid "Jost"
+msgstr "Jost"
+
+#: styles/ember.json styles/mint.json
+msgctxt "Font family name"
+msgid "Instrument Sans"
+msgstr "Instrument Sans"
+
+#: styles/ember.json styles/fossil.json styles/ice.json styles/maelstrom.json
+#: styles/mint.json styles/onyx.json theme.json
+msgctxt "Color name"
+msgid "Base / Two"
+msgstr "Base/Dois"
+
+#: styles/ember.json styles/fossil.json styles/ice.json styles/maelstrom.json
+#: styles/mint.json styles/onyx.json styles/rust.json theme.json
+msgctxt "Color name"
+msgid "Contrast"
+msgstr "Contraste"
+
+#: styles/ember.json styles/maelstrom.json
+msgctxt "Color name"
+msgid "Contrast / 2"
+msgstr "Contraste/2"
+
+#: styles/ember.json styles/fossil.json styles/ice.json styles/maelstrom.json
+#: styles/mint.json styles/onyx.json styles/rust.json theme.json
+msgctxt "Color name"
+msgid "Base"
+msgstr "Base"
+
+#: styles/ember.json styles/fossil.json
+msgctxt "Gradient name"
+msgid "Vertical hard ebony to sable"
+msgstr "Vertical brusco de ébano para cinzento escuro"
+
+#: styles/ember.json styles/fossil.json
+msgctxt "Gradient name"
+msgid "Vertical hard sable to taupe"
+msgstr "Vertical brusco de cinzento escuro para taupe"
+
+#: styles/ember.json styles/fossil.json
+msgctxt "Gradient name"
+msgid "Vertical hard ebony to beige"
+msgstr "Vertical brusco de ébano para bege"
+
+#: styles/ember.json styles/fossil.json
+msgctxt "Gradient name"
+msgid "Vertical hard sable to beige"
+msgstr "Vertical brusco de cinzento escuro para a bege"
+
+#: styles/ember.json styles/fossil.json
+msgctxt "Gradient name"
+msgid "Vertical hard taupe to beige"
+msgstr "Vertical brusco de taupe para bege"
+
+#: styles/ember.json styles/fossil.json
+msgctxt "Gradient name"
+msgid "Vertical hard beige to linen"
+msgstr "Vertical brusco de bege para linho"
+
+#: styles/ember.json styles/fossil.json
+msgctxt "Gradient name"
+msgid "Vertical ebony to sable"
+msgstr "Vertical de ébano para cinzento escuro"
+
+#: styles/ember.json styles/fossil.json
+msgctxt "Gradient name"
+msgid "Vertical ebony to beige"
+msgstr "Vertical de ébano para bege"
+
+#: styles/ember.json styles/fossil.json
+msgctxt "Gradient name"
+msgid "Vertical sable to beige"
+msgstr "Vertical de cinzento escuro para bege"
+
+#: styles/ember.json styles/fossil.json
+msgctxt "Gradient name"
+msgid "Vertical taupe to beige"
+msgstr "Vertical de taupe para bege"
+
+#: styles/ember.json styles/fossil.json
+msgctxt "Gradient name"
+msgid "Vertical linen to beige"
+msgstr "Vertical de linho para bege"
+
+#: styles/ember.json
+msgctxt "Duotone name"
+msgid "Orange and white"
+msgstr "Laranja e branco"
+
+#: styles/ember.json
+msgctxt "Style variation name"
+msgid "Ember"
+msgstr "Brasa"
+
+#: patterns/text-title-left-image-right.php:35
+msgctxt "Call to Action button text"
+msgid "About us"
+msgstr "Sobre nós"
+
+#: patterns/text-title-left-image-right.php:28
+msgctxt "Description for the About pattern"
+msgid "Leaving an indelible mark on the landscape of tomorrow."
+msgstr "Deixando uma marca indelével na paisagem de amanhã."
+
+#: patterns/text-title-left-image-right.php:21
+msgctxt "Headline for the About pattern"
+msgid "Études offers comprehensive consulting, management, design, and research solutions. Every architectural endeavor is an opportunity to shape the future."
+msgstr "Études oferece soluções completas de consultoria, design, projecto e investigação. Cada projecto de arquitectura é uma oportunidade para moldar o futuro."
+
+#: patterns/text-title-left-image-right.php
+msgctxt "Pattern title"
+msgid "Title text and button on left with image on right"
+msgstr "Texto do título e botão à esquerda com imagem à direita"
+
+#: patterns/text-project-details.php:35 patterns/text-project-details.php:43
+msgctxt "Descriptive text for the feature area"
+msgid "The revitalized Art Gallery is set to redefine the cultural landscape of Toronto, serving as a nexus of artistic expression, community engagement, and architectural marvel. The expansion and renovation project pay homage to the Art Gallery's rich history while embracing the future, ensuring that the gallery remains a beacon of inspiration."
+msgstr "A Galeria de Arte revitalizada está preparada para redefinir a paisagem cultural de Toronto, servindo como um nexo de expressão artística, envolvimento da comunidade e maravilha arquitectónica. O projecto de expansão e renovação presta homenagem à história rica da Galeria de Arte, ao mesmo tempo que abraça o futuro, assegurando que a galeria continua a ser um farol de inspiração."
+
+#: patterns/text-project-details.php:27
+msgctxt "Descriptive title for the feature area"
+msgid "With meticulous attention to detail and a commitment to excellence, we create spaces that inspire, elevate, and enrich the lives of those who inhabit them."
+msgstr "Com uma atenção meticulosa aos detalhes e um compromisso com a excelência, criamos espaços que inspiram, elevam e enriquecem as vidas daqueles que os habitam."
+
+#: patterns/text-project-details.php:18
+msgctxt "Title text for the feature area"
+msgid "The revitalized art gallery is set to redefine cultural landscape."
+msgstr "A galeria de arte revitalizada está pronta para redefinir a paisagem cultural."
+
+#: patterns/text-project-details.php
+msgctxt "Pattern title"
+msgid "Project details"
+msgstr "Detalhes do projecto"
+
+#: patterns/text-feature-grid-3-col.php:112
+msgctxt "Sample content"
+msgid "Experience the fusion of imagination and expertise with Études Architectural Solutions."
+msgstr "Experimente a fusão da imaginação e da experiência com a Études Architectural Solutions."
+
+#: patterns/text-feature-grid-3-col.php:108
+msgctxt "Sample heading"
+msgid "Architectural Solutions"
+msgstr "Soluções de arquitectura"
+
+#: patterns/text-feature-grid-3-col.php:96
+msgctxt "Sample feature heading"
+msgid "Project Management"
+msgstr "Gestão de projectos"
+
+#: patterns/text-feature-grid-3-col.php:84
+msgctxt "Sample feature heading"
+msgid "Consulting"
+msgstr "Consultoria"
+
+#: patterns/text-feature-grid-3-col.php:63
+msgctxt "Sample feature heading"
+msgid "App Access"
+msgstr "Acesso à aplicação"
+
+#: patterns/text-feature-grid-3-col.php:51
+msgctxt "Sample feature heading"
+msgid "Continuous Support"
+msgstr "Suporte permanente"
+
+#: patterns/text-feature-grid-3-col.php:43
+#: patterns/text-feature-grid-3-col.php:55
+#: patterns/text-feature-grid-3-col.php:67
+#: patterns/text-feature-grid-3-col.php:88
+#: patterns/text-feature-grid-3-col.php:100
+msgctxt "Sample feature content"
+msgid "Experience the fusion of imagination and expertise with Études Architectural Solutions."
+msgstr "Experimente a fusão da imaginação e da experiência com a Études Architectural Solutions."
+
+#: patterns/text-feature-grid-3-col.php:39
+msgctxt "Sample feature heading"
+msgid "Renovation and restoration"
+msgstr "Renovação e restauro"
+
+#: patterns/text-feature-grid-3-col.php:24
+msgctxt "Sub-heading of the features"
+msgid "Our comprehensive suite of professional services caters to a diverse clientele, ranging from homeowners to commercial developers."
+msgstr "O nosso vasto conjunto de serviços profissionais destina-se a uma clientela diversificada, desde proprietários de casas a promotores comerciais."
+
+#: patterns/text-feature-grid-3-col.php:16
+msgctxt "Heading of the features"
+msgid "A passion for creating spaces"
+msgstr "Uma paixão pela criação de espaços"
+
+#: patterns/text-feature-grid-3-col.php
+msgctxt "Pattern title"
+msgid "Feature grid, 3 columns"
+msgstr "Grelha de destaque, 3 colunas"
+
+#: patterns/text-faq.php:57
+msgctxt "Question in the FAQ pattern"
+msgid "Can I apply to be a part of the team or work as a contractor?"
+msgstr "Posso candidatar-me para fazer parte da equipa ou trabalhar como empreiteiro?"
+
+#: patterns/text-faq.php:46
+msgctxt "Question in the FAQ pattern"
+msgid "I'd like to get to meet fellow architects, how can I do that?"
+msgstr "Gostaria de conhecer outros arquitectos, como posso fazê-lo?"
+
+#: patterns/text-faq.php:27 patterns/text-faq.php:38 patterns/text-faq.php:49
+#: patterns/text-faq.php:60
+msgctxt "Answer in the FAQ pattern"
+msgid "Études offers comprehensive consulting, management, design, and research solutions. Our vision is to be at the forefront of architectural innovation, fostering a global community of architects and enthusiasts united by a passion for creating spaces. Every architectural endeavor is an opportunity to shape the future."
+msgstr "Études oferece soluções completas de consultoria, gestão, design e investigação. A nossa visão é estar na vanguarda da inovação arquitectónica, fomentando uma comunidade global de arquitectos e entusiastas unidos pela paixão pela criação de espaços. Cada projecto de arquitectura é uma oportunidade para moldar o futuro."
+
+#: patterns/text-faq.php:24
+msgctxt "Question in the FAQ pattern"
+msgid "What is your process working in smaller projects?"
+msgstr "Qual é o seu processo de trabalho em projectos mais pequenos?"
+
+#: patterns/text-faq.php:15
+msgctxt "Heading of the FAQs"
+msgid "FAQs"
+msgstr "Perguntas frequentes"
+
+#: patterns/text-faq.php:12
+msgctxt "Name of the FAQ pattern"
+msgid "FAQs"
+msgstr "Perguntas frequentes"
+
+#: patterns/text-faq.php
+msgctxt "Pattern title"
+msgid "FAQ"
+msgstr "Perguntas frequentes"
+
+#: patterns/text-centered-statement.php:21
+msgid "<em>Études</em> is not confined to the past—we are passionate about the cutting edge designs shaping our world today."
+msgstr "<em>Études</em> não se limita ao passado - somos apaixonados pelos designs de vanguarda que moldam o nosso mundo actual."
+
+#: patterns/text-centered-statement.php
+msgctxt "Pattern title"
+msgid "Centered statement"
+msgstr "Declaração centrada"
+
+#. Translators: About text placeholder
+#: patterns/text-centered-statement-small.php:23
+msgid "I write about finance, management and economy, my book “%1$s” is out now."
+msgstr "Escrevo sobre finanças, gestão e economia. O meu livro \"%1$s\" já está disponível."
+
+#. Translators: About link placeholder
+#: patterns/text-centered-statement-small.php:20
+msgid "Money Studies"
+msgstr "Estudos financeiros"
+
+#: patterns/text-centered-statement-small.php
+msgctxt "Pattern title"
+msgid "Centered statement, small"
+msgstr "Declaração centrada, pequena"
+
+#: patterns/text-alternating-images.php:105
+msgctxt "Sample list item"
+msgid "Exclusive access to design insights."
+msgstr "Acesso exclusivo a informações sobre design."
+
+#: patterns/text-alternating-images.php:101
+msgctxt "Sample list item"
+msgid "Case studies that celebrate architecture."
+msgstr "Estudos de casos que celebram a arquitectura."
+
+#: patterns/text-alternating-images.php:97
+msgctxt "Sample list item"
+msgid "A world of thought-provoking articles."
+msgstr "Um mundo de artigos de reflexão."
+
+#: patterns/text-alternating-images.php:91
+msgctxt "Sample heading"
+msgid "Études Newsletter"
+msgstr "Newsletter Études"
+
+#: patterns/text-alternating-images.php:82
+msgid "Windows of a building in Nuremberg, Germany"
+msgstr "Janelas de um edifício em Nuremberga, Alemanha"
+
+#: patterns/text-alternating-images.php:64
+msgid "Tourist taking photo of a building"
+msgstr "Turista a tirar uma fotografia de um edifício"
+
+#: patterns/text-alternating-images.php:37
+msgctxt "Sample list heading"
+msgid "Études Architect App"
+msgstr "Aplicação Études Architect"
+
+#: patterns/text-alternating-images.php:23
+msgctxt "Sample subheading content"
+msgid "Our comprehensive suite of professional services caters to a diverse clientele, ranging from homeowners to commercial developers."
+msgstr "O nosso vasto conjunto de serviços profissionais destina-se a uma clientela diversificada, desde proprietários de casas a promotores comerciais."
+
+#: patterns/text-alternating-images.php:19
+msgctxt "Sample heading content"
+msgid "An array of resources"
+msgstr "Um conjunto de recursos"
+
+#: patterns/text-alternating-images.php
+msgctxt "Pattern title"
+msgid "Text with alternating images"
+msgstr "Texto com imagens alternadas"
+
+#: patterns/testimonial-centered.php:39
+msgctxt "Designation of Person Provided Testimonial"
+msgid "CEO, Greenprint"
+msgstr "CEO, Greenprint"
+
+#: patterns/testimonial-centered.php:35
+msgctxt "Name of Person Provided the Testimonial"
+msgid "Annie Steiner"
+msgstr "Annie Steiner"
+
+#: patterns/testimonial-centered.php:26
+msgctxt "Name of testimonial citation group"
+msgid "Testimonial source"
+msgstr "Origem do testemunho"
+
+#: patterns/testimonial-centered.php:18
+msgctxt "Testimonial Text or Review Text Got From the Person"
+msgid "“Études has saved us thousands of hours of work and has unlocked insights we never thought possible.”"
+msgstr "\"A Études poupou-nos milhares de horas de trabalho e desbloqueou conhecimentos que nunca pensámos serem possíveis.\""
+
+#: patterns/testimonial-centered.php:12
+msgctxt "Name of testimonial pattern"
+msgid "Testimonial"
+msgstr "Testemunho"
+
+#: patterns/testimonial-centered.php
+msgctxt "Pattern title"
+msgid "Centered testimonial"
+msgstr "Testemunho centrado"
+
+#: patterns/template-single-portfolio.php
+msgctxt "Pattern title"
+msgid "Portfolio single post template"
+msgstr "Modelo de conteúdo de portefólio"
+
+#: patterns/template-search-blogging.php
+msgctxt "Pattern title"
+msgid "Blogging search template"
+msgstr "Modelo de pesquisa de blog"
+
+#: patterns/template-search-portfolio.php
+msgctxt "Pattern title"
+msgid "Portfolio search template"
+msgstr "Modelo de pesquisa de portefólio"
+
+#: patterns/template-index-portfolio.php
+msgctxt "Pattern title"
+msgid "Portfolio index template"
+msgstr "Modelo de índice de portefólio"
+
+#: patterns/template-index-blogging.php
+msgctxt "Pattern title"
+msgid "Blogging index template"
+msgstr "Modelo de índice de blog"
+
+#: patterns/template-home-portfolio.php
+msgctxt "Pattern title"
+msgid "Portfolio home template with post featured images"
+msgstr "Modelo de página inicial de portefólio com imagens de destaque dos conteúdos"
+
+#: patterns/template-home-business.php
+msgctxt "Pattern title"
+msgid "Business home template"
+msgstr "Modelo de página inicial de negócios"
+
+#: patterns/template-home-blogging.php
+msgctxt "Pattern title"
+msgid "Blogging home template"
+msgstr "Modelo de página inicial de blog"
+
+#: patterns/template-archive-portfolio.php
+msgctxt "Pattern title"
+msgid "Portfolio archive template"
+msgstr "Modelo de arquivo de portefólio"
+
+#: patterns/template-archive-blogging.php
+msgctxt "Pattern title"
+msgid "Blogging archive template"
+msgstr "Modelo de arquivo de blog"
+
+#: patterns/team-4-col.php:121
+msgctxt "Sample role of a team member"
+msgid "Project Manager"
+msgstr "Gestor de projectos"
+
+#: patterns/team-4-col.php:116
+msgctxt "Sample name of a team member"
+msgid "Ivan Lawrence"
+msgstr "Ivan Lawrence"
+
+#: patterns/team-4-col.php:97
+msgctxt "Sample role of a team member"
+msgid "Architect"
+msgstr "Arquitecto"
+
+#: patterns/team-4-col.php:92
+msgctxt "Sample name of a team member"
+msgid "Helga Steiner"
+msgstr "Helga Steiner"
+
+#: patterns/team-4-col.php:73
+msgctxt "Sample role of a team member"
+msgid "Engineering Manager"
+msgstr "Director de engenharia"
+
+#: patterns/team-4-col.php:68
+msgctxt "Sample name of a team member"
+msgid "Rhye Moore"
+msgstr "Rhye Moore"
+
+#: patterns/team-4-col.php:49
+msgctxt "Sample role of a team member"
+msgid "Founder, CEO & Architect"
+msgstr "Fundador, director executivo e arquitecto"
+
+#: patterns/team-4-col.php:44
+msgctxt "Sample name of a team member"
+msgid "Francesca Piovani"
+msgstr "Francesca Piovani"
+
+#: patterns/team-4-col.php:20
+msgctxt "Sample descriptive text of the team pattern"
+msgid "Our comprehensive suite of professionals caters to a diverse team, ranging from seasoned architects to renowned engineers."
+msgstr "O nosso vasto leque de profissionais permite-lhe ter uma equipa diversificada, desde arquitectos experientes a engenheiros de renome."
+
+#: patterns/team-4-col.php:16
+msgctxt "Sample heading for the team pattern"
+msgid "Meet our team"
+msgstr "A nossa equipa"
+
+#: patterns/team-4-col.php:11
+msgctxt "Name of team pattern"
+msgid "Team members"
+msgstr "Membros da equipa"
+
+#: patterns/team-4-col.php
+msgctxt "Pattern title"
+msgid "Team members, 4 columns"
+msgstr "Membros da equipa, 4 colunas"
+
+#: patterns/posts-images-only-offset-4-col.php
+msgctxt "Pattern title"
+msgid "Offset posts with featured images only, 4 columns"
+msgstr "Artigos desfasados apenas com imagens em destaque, 4 colunas"
+
+#: patterns/posts-images-only-3-col.php
+msgctxt "Pattern title"
+msgid "Posts with featured images only, 3 columns"
+msgstr "Conteúdos apenas com imagens de destaque, 3 colunas"
+
+#: patterns/posts-grid-2-col.php:14 patterns/posts-list.php:14
+#: patterns/template-index-blogging.php:16
+msgid "Watch, Read, Listen"
+msgstr "Veja, leia, ouça"
+
+#: patterns/posts-grid-2-col.php
+msgctxt "Pattern title"
+msgid "Grid of posts featuring the first post, 2 columns"
+msgstr "Grelha de conteúdos com o primeiro em destaque, 2 colunas"
+
+#: patterns/posts-3-col.php
+msgctxt "Pattern title"
+msgid "List of posts, 3 columns"
+msgstr "Lista de conteúdos, 3 colunas"
+
+#: patterns/posts-1-col.php
+msgctxt "Pattern title"
+msgid "List of posts, 1 column"
+msgstr "Lista de conteúdos, 1 coluna"
+
+#: patterns/page-rsvp-landing.php:49
+msgid "Green staircase at Western University, London, Canada"
+msgstr "Escadaria verde na Western University, Londres, Canadá"
+
+#: patterns/page-rsvp-landing.php:14
+msgctxt "Name of RSVP landing page pattern"
+msgid "RSVP Landing Page"
+msgstr "Página de destino de RSVP"
+
+#: patterns/page-rsvp-landing.php
+msgctxt "Pattern title"
+msgid "RSVP landing"
+msgstr "Destino de RSVP"
+
+#: patterns/page-portfolio-overview.php
+msgctxt "Pattern title"
+msgid "Portfolio project overview"
+msgstr "Vista geral de projecto do portefólio"
+
+#: patterns/page-newsletter-landing.php:40
+msgctxt "Sample content for newsletter subscribe button"
+msgid "Sign up"
+msgstr "Registar"
+
+#: patterns/page-newsletter-landing.php:29
+msgctxt "sample content for newsletter subscription"
+msgid "Subscribe to the newsletter and stay connected with our community"
+msgstr "Subscreva a newsletter e mantenha-se ligado à nossa comunidade"
+
+#: patterns/page-newsletter-landing.php
+msgctxt "Pattern title"
+msgid "Newsletter landing"
+msgstr "Destino da newsletter"
+
+#: patterns/page-home-portfolio.php
+msgctxt "Pattern title"
+msgid "Portfolio home with post featured images"
+msgstr "Página inicial do portefólio com imagens de destaque dos conteúdos"
+
+#: patterns/page-home-portfolio-gallery.php
+msgctxt "Pattern title"
+msgid "Portfolio home image gallery"
+msgstr "Galeria de imagens da página inicial do portefólio"
+
+#: patterns/page-home-business.php
+msgctxt "Pattern title"
+msgid "Business home"
+msgstr "Página inicial do negócio"
+
+#: patterns/page-home-blogging.php
+msgctxt "Pattern title"
+msgid "Blogging home"
+msgstr "Página inicial do blog"
+
+#: patterns/page-about-business.php
+msgctxt "Pattern title"
+msgid "About"
+msgstr "Sobre"
+
+#: patterns/hidden-sidebar.php:75
+msgctxt "search form placeholder"
+msgid "Search..."
+msgstr "Pesquisar..."
+
+#: patterns/hidden-sidebar.php:72
+msgid "Search the website"
+msgstr "Pesquisar no site"
+
+#: patterns/hidden-sidebar.php:60
+msgid "Financial apps for families"
+msgstr "Apps financeiras para famílias"
+
+#: patterns/hidden-sidebar.php:59
+msgid "Latest inflation report"
+msgstr "Relatório mais recente sobre a inflação"
+
+#: patterns/hidden-sidebar.php:53
+msgid "Links I found useful and wanted to share."
+msgstr "Ligações que considero úteis e que gostaria de partilhar."
+
+#: patterns/hidden-sidebar.php:49
+msgid "Useful Links"
+msgstr "Ligações úteis"
+
+#: patterns/hidden-sidebar.php:33
+msgid "Popular Categories"
+msgstr "Categorias populares"
+
+#: patterns/hidden-sidebar.php:17
+msgid "About the author"
+msgstr "Sobre o autor"
+
+#: patterns/hidden-sidebar.php
+msgctxt "Pattern title"
+msgid "Sidebar"
+msgstr "Barra lateral"
+
+#: patterns/hidden-search.php:9
+msgctxt "search button text"
+msgid "Search"
+msgstr "Pesquisar"
+
+#: patterns/hidden-search.php:9 patterns/hidden-sidebar.php:75
+msgctxt "search form label"
+msgid "Search"
+msgstr "Pesquisar"
+
+#: patterns/hidden-search.php
+msgctxt "Pattern title"
+msgid "Search"
+msgstr "Pesquisa"
+
+#: patterns/hidden-post-navigation.php:12
+msgctxt "Label before the title of the next post. There is a space after the colon."
+msgid "Next: "
+msgstr "Seguinte: "
+
+#: patterns/hidden-post-navigation.php:11
+msgctxt "Label before the title of the previous post. There is a space after the colon."
+msgid "Previous: "
+msgstr "Anterior: "
+
+#: patterns/hidden-post-navigation.php:9 patterns/hidden-post-navigation.php:10
+#: patterns/hidden-posts-heading.php:10
+#: patterns/template-index-portfolio.php:16
+msgid "Posts"
+msgstr "Conteúdos"
+
+#: patterns/hidden-post-navigation.php
+msgctxt "Pattern title"
+msgid "Post navigation"
+msgstr "Navegação de artigos"
+
+#: patterns/hidden-post-meta.php:25
+msgctxt "Prefix for the post category block: in category name"
+msgid "in "
+msgstr "em "
+
+#: patterns/hidden-post-meta.php:20
+msgctxt "Prefix for the post author block: By author name"
+msgid "by"
+msgstr "por"
+
+#: patterns/hidden-post-meta.php
+msgctxt "Pattern title"
+msgid "Post meta"
+msgstr "Metadados do artigo"
+
+#: patterns/hidden-portfolio-hero.php
+msgctxt "Pattern title"
+msgid "Portfolio hero"
+msgstr "Hero do portefólio"
+
+#: patterns/hidden-no-results.php:9
+msgctxt "Message explaining that there are no results returned from a search"
+msgid "No posts were found."
+msgstr "Nenhum conteúdo encontrado."
+
+#: patterns/hidden-no-results.php
+msgctxt "Pattern title"
+msgid "No results"
+msgstr "Sem resultados"
+
+#: patterns/hidden-comments.php:12
+msgid "Comments"
+msgstr "Comentários"
+
+#: patterns/hidden-comments.php
+msgctxt "Pattern title"
+msgid "Comments"
+msgstr "Comentários"
+
+#: patterns/hidden-404.php:13
+msgctxt "Message to convey that a webpage could not be found"
+msgid "The page you are looking for does not exist, or it has been moved. Please try searching using the form below."
+msgstr "A página que procura não existe ou foi transferida. Tente pesquisar utilizando o formulário abaixo."
+
+#: patterns/hidden-404.php:10
+msgctxt "Heading for a webpage that is not found"
+msgid "Page Not Found"
+msgstr "Página não encontrada"
+
+#: patterns/hidden-404.php
+msgctxt "Pattern title"
+msgid "404"
+msgstr "404"
+
+#: patterns/gallery-project-layout.php:54
+msgid "Art Gallery of Ontario, Toronto, Canada"
+msgstr "Galeria de arte de Ontário, Toronto, Canadá"
+
+#: patterns/gallery-project-layout.php:49
+msgctxt "Sample text for the feature area"
+msgid "2. Case studies that celebrate the artistry can fuel curiosity and ignite inspiration."
+msgstr "2. Os casos de estudo que celebram a arte podem alimentar a curiosidade e despertar a inspiração."
+
+#: patterns/gallery-project-layout.php:38
+msgctxt "Sample text for the feature area"
+msgid "Our comprehensive suite of professional services caters to a diverse clientele, ranging from homeowners to commercial developers. With a commitment to innovation and sustainability, Études is the bridge that transforms architectural dreams into remarkable built realities."
+msgstr "O nosso vasto leque de serviços profissionais destina-se a uma clientela diversificada, desde proprietários a programadores comerciais. Com um compromisso com a inovação e a sustentabilidade, a Études é a ponte que transforma sonhos arquitectónicos em realidades construídas notáveis."
+
+#: patterns/gallery-project-layout.php:26
+msgctxt "Sample text for the feature area"
+msgid "1. Through Études, we aspire to redefine architectural boundaries and usher in a new era of design excellence that leaves an indelible mark on the built environment."
+msgstr "1. Através da Études, aspiramos a redefinir os limites da arquitectura e a inaugurar uma nova era de excelência de design que deixe uma marca indelével no ambiente construído."
+
+#: patterns/gallery-project-layout.php:21
+msgid "An empty staircase under an angular roof in Darling Harbour, Sydney, Australia"
+msgstr "Uma escadaria vazia sob um telhado angular em Darling Harbour, Sydney, Austrália"
+
+#: patterns/gallery-project-layout.php
+msgctxt "Pattern title"
+msgid "Project layout"
+msgstr "Layout de projecto"
+
+#: patterns/gallery-offset-images-grid-4-col.php
+msgctxt "Pattern title"
+msgid "Offset gallery, 4 columns"
+msgstr "Galeria desfasada, 4 colunas"
+
+#: patterns/gallery-offset-images-grid-3-col.php
+msgctxt "Pattern title"
+msgid "Offset gallery, 3 columns"
+msgstr "Galeria desfasada, 3 colunas"
+
+#: patterns/gallery-offset-images-grid-2-col.php
+msgctxt "Pattern title"
+msgid "Offset gallery, 2 columns"
+msgstr "Galeria desfasada, 2 colunas"
+
+#: patterns/gallery-full-screen-image.php
+msgctxt "Pattern title"
+msgid "Full screen image"
+msgstr "Imagem de ecrã inteiro"
+
+#: patterns/footer.php:92
+msgid "Social Media"
+msgstr "Redes sociais"
+
+#: patterns/footer.php:86
+msgid "Social"
+msgstr "Redes sociais"
+
+#: patterns/footer.php:64 patterns/footer.php:70
+msgid "Privacy"
+msgstr "Privacidade"
+
+#: patterns/footer.php:41 patterns/footer.php:47
+msgid "About"
+msgstr "Sobre"
+
+#: patterns/footer.php
+msgctxt "Pattern title"
+msgid "Footer with colophon, 4 columns"
+msgstr "Rodapé com colofão, 4 colunas"
+
+#: patterns/footer-colophon-3-col.php:82
+msgid "&copy;"
+msgstr "&copy;"
+
+#: patterns/footer-colophon-3-col.php:60 patterns/footer.php:94
+msgid "Facebook"
+msgstr "Facebook"
+
+#: patterns/footer-colophon-3-col.php:60 patterns/footer.php:95
+msgid "Instagram"
+msgstr "Instagram"
+
+#: patterns/footer-colophon-3-col.php:57
+msgid "Follow"
+msgstr "Seguir"
+
+#: patterns/footer-colophon-3-col.php:42
+msgctxt "Example email in site footer"
+msgid "info@example.com"
+msgstr "info@exemplo.com"
+
+#: patterns/footer-colophon-3-col.php:39
+msgid "Contact"
+msgstr "Contacto"
+
+#: patterns/footer-colophon-3-col.php:30
+msgid "Keep up, get in touch."
+msgstr "Mantenha-se em contacto."
+
+#: patterns/footer-colophon-3-col.php
+msgctxt "Pattern title"
+msgid "Footer with colophon, 3 columns"
+msgstr "Rodapé com colofão, 3 colunas"
+
+#. Translators: Designed with WordPress
+#: patterns/footer-centered-logo-nav.php:25
+#: patterns/footer-colophon-3-col.php:94 patterns/footer.php:120
+msgid "Designed with %1$s"
+msgstr "Criado com %1$s"
+
+#: patterns/footer-centered-logo-nav.php
+msgctxt "Pattern title"
+msgid "Footer with centered logo and navigation"
+msgstr "Rodapé com logótipo centrado e navegação"
+
+#: patterns/cta-subscribe-centered.php:31
+msgctxt "Sample text for Sign Up Button"
+msgid "Sign up"
+msgstr "Registar"
+
+#: patterns/cta-subscribe-centered.php:24
+msgctxt "Sample text for Subscriber Description"
+msgid "Stay in the loop with everything you need to know."
+msgstr "Fique a par de tudo o que precisa de saber."
+
+#: patterns/cta-subscribe-centered.php:20
+msgctxt "Sample text for Subscriber Heading with numbers"
+msgid "Join 900+ subscribers"
+msgstr "Junte-se a mais de 900 subscritores"
+
+#: patterns/cta-subscribe-centered.php
+msgctxt "Pattern title"
+msgid "Centered call to action"
+msgstr "Chamada para acção centrada"
+
+#: patterns/cta-services-image-left.php:39
+msgctxt "Sample button text to view the services"
+msgid "Our services"
+msgstr "Os nossos serviços"
+
+#: patterns/cta-services-image-left.php:32
+msgctxt "Sample description of the services pattern"
+msgid "Experience the fusion of imagination and expertise with Études—the catalyst for architectural transformations that enrich the world around us."
+msgstr "Experimente a fusão da imaginação e da experiência com Études - o catalisador de transformações arquitectónicas que enriquecem o mundo à nossa volta."
+
+#: patterns/cta-services-image-left.php:28
+msgctxt "Sample heading of the services pattern"
+msgid "Guiding your business through the project"
+msgstr "Orientar a sua empresa durante o projecto"
+
+#: patterns/cta-services-image-left.php
+msgctxt "Pattern title"
+msgid "Services call to action with image on left"
+msgstr "Chamada para acção dos serviços com imagem à esquerda"
+
+#: patterns/cta-rsvp.php:50 patterns/text-title-left-image-right.php:51
+msgid "A ramp along a curved wall in the Kiasma Museu, Helsinki, Finland"
+msgstr "Uma rampa ao longo de uma parede curva no Museu Kiasma, Helsínquia, Finlândia"
+
+#: patterns/cta-rsvp.php:34 patterns/page-rsvp-landing.php:34
+msgctxt "Call to action button text for the reservation button"
+msgid "Reserve your spot"
+msgstr "Reserve o seu lugar"
+
+#: patterns/cta-rsvp.php:27 patterns/page-rsvp-landing.php:28
+msgctxt "RSVP call to action description"
+msgid "Experience the fusion of imagination and expertise with Études Arch Summit, February 2025."
+msgstr "Experimente a fusão da imaginação e da perícia com Études Arch Summit, Fevereiro de 2025."
+
+#: patterns/cta-rsvp.php:21 patterns/page-rsvp-landing.php:23
+msgctxt "Initials for ´please respond´"
+msgid "RSVP"
+msgstr "RSVP"
+
+#: patterns/cta-rsvp.php:11
+msgctxt "Name of RSVP pattern"
+msgid "RSVP"
+msgstr "RSVP"
+
+#: patterns/cta-rsvp.php
+msgctxt "Pattern title"
+msgid "RSVP"
+msgstr "RSVP"
+
+#: patterns/cta-pricing.php:203
+msgctxt "Button text for the third pricing level"
+msgid "Subscribe"
+msgstr "Subscrever"
+
+#: patterns/cta-pricing.php:189
+msgctxt "Feature for pricing level"
+msgid "Exclusive access to the <em>Études</em> app for iOS and Android"
+msgstr "Acesso exclusivo à aplicação <em>Études</em> para iOS e Android"
+
+#: patterns/cta-pricing.php:173
+msgctxt "Feature for pricing level"
+msgid "Exclusive, unlimited access to <em>Études Articles</em>."
+msgstr "Acesso exclusivo e ilimitado aos <em>artigos Études</em>."
+
+#: patterns/cta-pricing.php:162
+msgctxt "Sample price for the third pricing level"
+msgid "$28"
+msgstr "$28"
+
+#: patterns/cta-pricing.php:157
+msgctxt "Sample heading for the third pricing level"
+msgid "Expert"
+msgstr "Avançado"
+
+#: patterns/cta-pricing.php:145
+msgctxt "Button text for the second pricing level"
+msgid "Subscribe"
+msgstr "Subscrever"
+
+#: patterns/cta-pricing.php:115
+msgctxt "Feature for pricing level"
+msgid "Access to 20 exclusive <em>Études Articles</em> per month."
+msgstr "Acesso a 20 artigos exclusivos da <em>Études</em> por mês."
+
+#: patterns/cta-pricing.php:104
+msgctxt "Sample price for the second pricing level"
+msgid "$12"
+msgstr "12€"
+
+#: patterns/cta-pricing.php:99
+msgctxt "Sample heading for the second pricing level"
+msgid "Connoisseur"
+msgstr "Intermédio"
+
+#: patterns/cta-pricing.php:87
+msgctxt "Button text for the first pricing level"
+msgid "Subscribe"
+msgstr "Subscrever"
+
+#: patterns/cta-pricing.php:72 patterns/cta-pricing.php:131
+msgctxt "Feature for pricing level"
+msgid "Exclusive access to the <em>Études</em> app for iOS and Android."
+msgstr "Acesso exclusivo à aplicação <em>Études</em> para iOS e Android."
+
+#: patterns/cta-pricing.php:62 patterns/cta-pricing.php:123
+#: patterns/cta-pricing.php:181
+msgctxt "Feature for pricing level"
+msgid "Weekly print edition."
+msgstr "Edição impressa semanal."
+
+#: patterns/cta-pricing.php:53
+msgctxt "Feature for pricing level"
+msgid "Access to 5 exclusive <em>Études Articles</em> per month."
+msgstr "Acesso a 5 artigos exclusivos da <em>Études</em> por mês."
+
+#: patterns/cta-pricing.php:42
+msgctxt "Sample price for the first pricing level"
+msgid "$0"
+msgstr "0€"
+
+#: patterns/cta-pricing.php:37
+msgctxt "Sample heading for the first pricing level"
+msgid "Free"
+msgstr "Gratuito"
+
+#: patterns/cta-pricing.php:22
+msgctxt "Sample description for a pricing table"
+msgid "We offer flexible options, which you can adapt to the different needs of each project."
+msgstr "Oferecemos opções flexíveis, que podem ser adaptadas às diferentes necessidades de cada projecto."
+
+#: patterns/cta-pricing.php:18
+msgctxt "Sample heading for pricing pattern"
+msgid "Our Services"
+msgstr "Os nossos serviços"
+
+#: patterns/cta-pricing.php:11
+msgctxt "Name for the pricing pattern"
+msgid "Pricing Table"
+msgstr "Tabela de preços"
+
+#: patterns/cta-pricing.php
+msgctxt "Pattern title"
+msgid "Pricing"
+msgstr "Preços"
+
+#: patterns/cta-content-image-on-right.php:59
+#: patterns/cta-services-image-left.php:19
+msgid "White abstract geometric artwork from Dresden, Germany"
+msgstr "Arte geométrica abstracta branca de Dresden, Alemanha"
+
+#: patterns/cta-content-image-on-right.php:47
+msgctxt "Button text of this section"
+msgid "How it works"
+msgstr "Como funciona"
+
+#: patterns/cta-content-image-on-right.php:41
+msgctxt "Button text of this section"
+msgid "Download app"
+msgstr "Descarregar aplicação"
+
+#: patterns/cta-content-image-on-right.php:32
+#: patterns/text-alternating-images.php:52
+msgctxt "Sample list item"
+msgid "Experience the world of architecture."
+msgstr "Experimente o mundo da arquitectura."
+
+#: patterns/cta-content-image-on-right.php:28
+#: patterns/text-alternating-images.php:48
+msgctxt "Sample list item"
+msgid "Showcase your projects."
+msgstr "Mostre os seus projectos."
+
+#: patterns/cta-content-image-on-right.php:24
+#: patterns/text-alternating-images.php:44
+msgctxt "Sample list item"
+msgid "Collaborate with fellow architects."
+msgstr "Colabore com outros arquitectos."
+
+#: patterns/cta-content-image-on-right.php:18
+msgctxt "Sample heading"
+msgid "Enhance your architectural journey with the Études Architect app."
+msgstr "Melhore a sua jornada arquitectónica com a aplicação Études Architect."
+
+#: patterns/cta-content-image-on-right.php
+msgctxt "Pattern title"
+msgid "Call to action with image on right"
+msgstr "Chamada para acção com imagem à direita"
+
+#: patterns/banner-project-description.php:41
+msgid "Hyatt Regency San Francisco, San Francisco, United States"
+msgstr "Hyatt Regency San Francisco, San Francisco, Estados Unidos"
+
+#: patterns/banner-project-description.php:26
+msgctxt "Sample descriptive text for a project or post."
+msgid "This transformative project seeks to enhance the gallery's infrastructure, accessibility, and exhibition spaces while preserving its rich cultural heritage."
+msgstr "Este projecto transformador procura melhorar a infra-estrutura, acessibilidade e espaços de exposição da galeria, ao mesmo tempo que preserva a riqueza do seu património cultural."
+
+#: patterns/banner-project-description.php:17
+msgctxt "Sample title for a project or post"
+msgid "Art Gallery — Overview"
+msgstr "Galeria de arte — Visão geral"
+
+#: patterns/banner-project-description.php
+msgctxt "Pattern title"
+msgid "Project description"
+msgstr "Descrição do projecto"
+
+#: patterns/banner-hero.php:52
+msgid "Building exterior in Toronto, Canada"
+msgstr "Exterior do edifício em Toronto, Canadá"
+
+#: patterns/banner-hero.php:37
+msgctxt "Button text of the hero section"
+msgid "About us"
+msgstr "Sobre nós"
+
+#: patterns/banner-hero.php:26
+msgctxt "Content of the hero section"
+msgid "Études is a pioneering firm that seamlessly merges creativity and functionality to redefine architectural excellence."
+msgstr "Études é uma empresa pioneira que une perfeitamente criatividade e funcionalidade para redefinir a excelência arquitectónica."
+
+#: patterns/banner-hero.php:18
+msgctxt "Heading of the hero section"
+msgid "A commitment to innovation and sustainability"
+msgstr "Um compromisso com a inovação e a sustentabilidade"
+
+#: patterns/banner-hero.php
+msgctxt "Pattern title"
+msgid "Hero"
+msgstr "Hero"
+
+#: functions.php:111
+msgid "With asterisk"
+msgstr "Com asterisco"
+
+#: functions.php:93
+msgid "With arrow"
+msgstr "Com seta"
+
+#: functions.php:74
+msgid "Checkmark"
+msgstr "Verificação"
+
+#: functions.php:51
+msgid "Pill"
+msgstr "Comprimido"
+
+#: functions.php:28
+msgid "Arrow icon"
+msgstr "Ícone de seta"
+
+#. Author URI of the theme
+#. Translators: WordPress link.
+#: style.css patterns/footer-centered-logo-nav.php:22
+#: patterns/footer-colophon-3-col.php:91 patterns/footer.php:117
+msgid "https://wordpress.org"
+msgstr "https://pt.wordpress.org"
+
+#. Author of the theme
+#: style.css
+#, gp-priority: low
+msgid "the WordPress team"
+msgstr "a equipa do WordPress"
+
+#. Theme URI of the theme
+#: style.css
+#, gp-priority: low
+msgid "https://wordpress.org/themes/twentytwentyfour/"
+msgstr "https://pt.wordpress.org/themes/twentytwentyfour/"

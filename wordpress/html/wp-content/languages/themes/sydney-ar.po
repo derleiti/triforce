@@ -1,0 +1,4038 @@
+# Translation of Themes - Sydney in Arabic
+# This file is distributed under the same license as the Themes - Sydney package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2023-03-24 10:41:54+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=(n == 0) ? 0 : ((n == 1) ? 1 : ((n == 2) ? 2 : ((n % 100 >= 3 && n % 100 <= 10) ? 3 : ((n % 100 >= 11 && n % 100 <= 99) ? 4 : 5))));\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: ar\n"
+"Project-Id-Version: Themes - Sydney\n"
+
+#. Description of the theme
+#: style.css
+#, gp-priority: high
+msgid "Sydney is a powerful business theme that provides a fast way for companies or freelancers to create an awesome online presence. As well as being fully compatible with Elementor, Sydney brings plenty of customization possibilities like access to all Google Fonts, full color control, layout control, logo upload, full screen slider, header image, sticky navigation and much more. Also, Sydney provides all the construction blocks you need to rapidly create an engaging front page. Looking for a quick start with Sydney? With just a few clicks, you can import one of our existing demos (https://athemes.com/sydney-demos/)"
+msgstr "ٍٍSydney هو قالب عمل قوي يوفر طريقة سريعة للشركات أو العاملين لحسابهم الخاص لإنشاء حضور رائع عبر الإنترنت. توفر Sydney الكثير من إمكانيات التخصيص مثل الوصول إلى جميع خطوط جوجل والتحكم الكامل في الألوان والتحكم في التخطيط ورفع الشعار وعارض شرائح ملء الشاشة وصورة الترويسة والتنقل الثابت والكثير من ذلك بالإضافة إلى كونها متوافقة تمامًا مع Elementor. توفر Sydney أيضًا جميع المكونات التي تحتاجها لإنشاء  سريع لصفحة رئيسية جذابة. هل تبحث عن بداية سريعة مع Sydney؟ بنقرات قليلة فقط، يمكنك استيراد أحد عروضنا التوضيحية الحالية (https://athemes.com/sydney-demos/)"
+
+#. Theme Name of the theme
+#: style.css inc/dashboard/class-dashboard.php:124
+#: inc/dashboard/class-dashboard.php:125
+#: inc/dashboard/html-notifications-sidebar.php:46 inc/extras.php:383
+#: inc/modules/hf-builder/components/footer/copyright/copyright.php:17
+#: inc/onboarding/theme-info.php:137 inc/theme-dashboard-settings.php:21
+#, gp-priority: high
+msgid "Sydney"
+msgstr "سدني"
+
+#: inc/customizer/options/header-mobile.php:108
+msgid "The values for these elements are set from the main header."
+msgstr "يتم تعيين قيم هذه العناصر من الترويسة الرئيسية."
+
+#: inc/classes/class-sydney-modules.php:29
+msgid "Templates Builder"
+msgstr "منشئ القوالب"
+
+#: inc/classes/class-sydney-modules.php:91
+#: inc/dashboard/class-dashboard-settings.php:405
+msgid "Page Headers"
+msgstr "صفحة الترويسات"
+
+#: inc/classes/class-sydney-modules.php:96
+#: inc/dashboard/class-dashboard-settings.php:410
+msgid "Page Header options for posts, pages, archives etc."
+msgstr "خيارات صفحة الترويسة للمقالات والصفحات والأرشيف وما إلى ذلك."
+
+#: inc/classes/class-sydney-modules.php:121
+#: inc/dashboard/class-dashboard-settings.php:445
+msgid "Elementor Tools"
+msgstr "أدوات Elementor"
+
+#: inc/classes/class-sydney-modules.php:126
+#: inc/dashboard/class-dashboard-settings.php:450
+msgid "Custom CSS and other tools for Elementor"
+msgstr "CSS مخصص وأدوات أخرى لـلعنصر (Elementor)"
+
+#: inc/classes/class-sydney-modules.php:130
+#: inc/dashboard/class-dashboard-settings.php:455
+msgid "Live Chat (WhatsApp)"
+msgstr "محادثة مباشرة (WhatsApp)"
+
+#: inc/classes/class-sydney-modules.php:135
+#: inc/dashboard/class-dashboard-settings.php:460
+msgid "Live chat floating icon"
+msgstr "أيقونة محادثة مباشرة عائمة"
+
+#: inc/customizer/options/blog.php:387
+msgid "Show post content"
+msgstr "أضهر محتوى مقالة"
+
+#: inc/customizer/options/blog.php:405
+msgid "Content type"
+msgstr "نوع المحتوى"
+
+#: inc/customizer/options/blog.php:409
+msgid "Full-content"
+msgstr "المحتوى الكامل"
+
+#: inc/theme-dashboard-settings.php:180
+msgid "Typography Options"
+msgstr "خيارات الطباعة"
+
+#: inc/theme-dashboard-settings.php:229
+msgid "Blog & pages"
+msgstr "المدونة"
+
+#: inc/theme-dashboard-settings.php:259
+msgid "Integrations"
+msgstr "التكاملات"
+
+#: inc/classes/class-sydney-header.php:85
+msgid "Close menu"
+msgstr "إغلاق القائمة"
+
+#: inc/classes/class-sydney-header.php:595
+#: inc/classes/class-sydney-header.php:646
+msgid "Toggle menu"
+msgstr "تبديل القائمة"
+
+#: inc/classes/class-sydney-modules.php:47
+#: inc/dashboard/class-dashboard-settings.php:309
+msgid "Modal"
+msgstr "مربع التنبيه"
+
+#: inc/classes/class-sydney-modules.php:52
+#: inc/dashboard/class-dashboard-settings.php:314
+msgid "Modal with custom content"
+msgstr "مربع تنبيه مع محتوى مخصص"
+
+#: inc/integrations/elementor/library/library-manager.php:37
+msgid "No Templates Found"
+msgstr "لا توجد نماذج"
+
+#: inc/integrations/elementor/library/library-manager.php:38
+msgid "Try different category or sync for new templates."
+msgstr "قم بتجربة تصنيفات مختلفة أو قم بمزامنة النماذج الجديدة."
+
+#: inc/integrations/elementor/library/library-manager.php:39
+msgid "No Results Found"
+msgstr "لا توجد نتائج"
+
+#: inc/integrations/elementor/library/library-manager.php:40
+msgid "Please make sure your search is spelled correctly or try a different word."
+msgstr "الرجاء التأكد من أن كلمات البحث صحيحة أو استخدم كلمات اخرى."
+
+#: inc/integrations/elementor/library/library-manager.php:71
+msgid "Post not found."
+msgstr "المنشور غير موجود."
+
+#: inc/integrations/elementor/library/library-manager.php:91
+msgid "Post not found"
+msgstr "المنشور غير موجود"
+
+#: inc/integrations/elementor/library/library-manager.php:98
+msgid "Template id missing"
+msgstr "معرف القالب مفقود"
+
+#: inc/integrations/elementor/library/library-source.php:32
+msgid "Template Library"
+msgstr "مكتبة النماذج"
+
+#: inc/integrations/elementor/library/library-source.php:198
+msgid "Template does not have any content"
+msgstr "لا يوجد محتوى في هذا النموذج"
+
+#: inc/integrations/elementor/library/templates.php:18
+msgid "Back to Library"
+msgstr "الرجوع الى المكتبة"
+
+#: inc/integrations/elementor/library/templates.php:29
+#: inc/integrations/elementor/library/templates.php:30
+msgid "Sync Library"
+msgstr "مزامنة المكتبة"
+
+#: inc/integrations/elementor/library/templates.php:47
+msgid "Insert"
+msgstr "إدراج"
+
+#: inc/dashboard/class-dashboard-settings.php:582
+#: inc/integrations/elementor/library/templates.php:54
+msgid "Get Pro"
+msgstr "أحصل على Pro"
+
+#: inc/integrations/elementor/library/templates.php:68
+msgid "Loading"
+msgstr "جار التحميل"
+
+#: inc/integrations/elementor/library/templates.php:76
+msgid "Filter"
+msgstr "الفلتر"
+
+#: inc/integrations/elementor/library/templates.php:88
+msgid "Search Templates:"
+msgstr "البحث عن قوالب:"
+
+#: inc/integrations/elementor/library/templates.php:114
+msgid "Preview"
+msgstr "معاينة"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:100
+msgid "Product name"
+msgstr "اسم المنتج"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:114
+msgid "Post name"
+msgstr "عنوان المقالة"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:119
+msgid "Page name"
+msgstr "اسم الصفحة"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:124
+msgid "Category name"
+msgstr "اسم التصنيف"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:129
+msgid "Tag name"
+msgstr "اسم الوسم"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:134
+msgid "Author name"
+msgstr "اسم المؤلف"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:151
+msgid "CPT: Post name"
+msgstr "CPT: اسم المقالة"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:156
+msgid "CPT: Term name"
+msgstr "CPT: اسم العنصر"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:161
+msgid "CPT: Taxonomy name"
+msgstr "CPT: اسم الفئة"
+
+#: inc/customizer/options/hero-area.php:457
+msgid "Slider button"
+msgstr "زر عارض الشرائح"
+
+#: inc/customizer/options/hero-area.php:509
+msgid "Slider settings"
+msgstr "اعدادات عارض الشرائح"
+
+#: inc/customizer/options/hero-area.php:545
+msgid "Prevent the text from changing?"
+msgstr "منع النص من التغيير؟"
+
+#: inc/customizer/options/hero-area.php:546
+msgid "Use this if you want to show the same text on all slides."
+msgstr "استخدم هذا إذا كنت تريد إظهار نفس النص على كل الشرائح."
+
+#: inc/customizer/options/hero-area.php:564
+msgid "Mobile behavior for the slider images"
+msgstr "سلوك المحمول لصور عارض الشرائح"
+
+#: inc/customizer/options/hero-area.php:582
+msgid "Click here to select where you want to display the slider"
+msgstr "أنقر هنا لتحديد المكان الذي تريد أن تعرض فيه عارض الشرائح"
+
+#: inc/customizer/options/performance.php:30
+msgid "This option refers only to Google Fonts loaded by the theme, not by third-party plugins."
+msgstr "يشير هذا الخيار فقط إلى خطوط جوجل التي تم تحميلها بواسطة القالب، وليس بواسطة الإضافات لجهات خارجية."
+
+#: inc/customizer/options/performance.php:48
+msgid "Disable Google Fonts preconnect"
+msgstr "تعطيل الإتصال المسبق لخطوط جوجل"
+
+#: inc/customizer/controls/display-conditions/class_sydney_display_conditions_control.php:68
+msgid "Add/Edit Conditions"
+msgstr "إضافة/تحرير الشروط"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:14
+msgid "Include"
+msgstr "تضمين"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:19
+msgid "Exclude"
+msgstr "استبعاد"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:24
+msgid "Entire Site"
+msgstr "الموقع بأكمله"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:29
+msgid "Basic"
+msgstr "أساسي"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:33
+msgid "Singulars"
+msgstr "المفردون"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:44
+msgid "Posts"
+msgstr "مقالات"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:48
+msgid "Single Post"
+msgstr "مقالة منفردة"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:52
+msgid "Post Archives"
+msgstr "أرشيف المقالة"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:56
+msgid "Post Categories"
+msgstr "تصنيفات المقالة"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:60
+msgid "Post Tags"
+msgstr "وسوم المقال"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:67
+#: inc/customizer/customizer.php:526
+msgid "Pages"
+msgstr "صفحات"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:71
+msgid "Single Page"
+msgstr "صفحة واحدة"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:80
+msgid "WooCommerce"
+msgstr "WooCommerce"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:88
+msgid "Product Archives"
+msgstr "أرشيف المنتج"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:92
+msgid "Product Categories"
+msgstr "فئات المنتج"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:96
+msgid "Product Tags"
+msgstr "وسوم المنتج"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:110
+msgid "Specific"
+msgstr "محدد"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:147
+msgid "Custom Post Types"
+msgstr "نوع المقالات المخصّصة"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:171
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:235
+msgid "Other"
+msgstr "اخر"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:187
+msgid "404"
+msgstr "404"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:191
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:239
+msgid "Author"
+msgstr "كاتب"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:195
+msgid "Privacy Policy Page"
+msgstr "صفحة سياسة الخصوصية"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:214
+msgid "User Auth"
+msgstr "مصادقة المستخدم"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:218
+msgid "User Logged In"
+msgstr "قام المستخدم بتسجيل الدخول"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:222
+msgid "User Logged Out"
+msgstr "قام المستخدم بتسجيل الخروج"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:229
+msgid "User Roles"
+msgstr "رُتب الأعضاء"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:360
+msgid "Add Display Condition"
+msgstr "أضف شرط عرض"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:361
+msgid "Add User Condition"
+msgstr "أضف شرط المستخدم"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:365
+msgid "Save Conditions"
+msgstr "حفظ الشروط"
+
+#: inc/customizer/options/cpt-panels.php:45
+msgid "Singles"
+msgstr "أفراد"
+
+#: inc/customizer/options/general.php:25
+msgid "Layouts"
+msgstr "تخطيطات"
+
+#: inc/customizer/options/general.php:44
+msgid "Container width"
+msgstr "عرض الحاوية"
+
+#: inc/customizer/options/general.php:69
+msgid "Narrow container width"
+msgstr "عرض حاوية ضيق"
+
+#: inc/customizer/options/header.php:391
+msgid "Transparent header"
+msgstr "ترويسة شفافة"
+
+#: inc/customizer/options/header.php:810
+msgid "Text color (sticky)"
+msgstr "لون النص (مثبّت)"
+
+#: inc/customizer/options/layouts.php:62
+msgid "Select your layout"
+msgstr "حدد التخطيط الخاص بك"
+
+#: inc/customizer/options/layouts.php:72
+msgid "Narrow"
+msgstr "ضيق"
+
+#: inc/customizer/options/layouts.php:76
+msgid "Stretched"
+msgstr "متمدد"
+
+#: inc/customizer/options/layouts.php:95
+msgid "Boxed content area"
+msgstr "منطقة محتوى المربع"
+
+#: inc/customizer/options/layouts.php:98
+msgid "Unboxed"
+msgstr "غير المؤطرة"
+
+#: inc/customizer/options/layouts.php:99
+msgid "Boxed"
+msgstr "في مربع"
+
+#: inc/classes/class-sydney-modules.php:34
+#: inc/dashboard/class-dashboard-settings.php:294
+msgid "Build headers, footers etc. with Elementor."
+msgstr "إنشاء ترويسات، وتذييلات وما إلى ذلك. مع Elementor."
+
+#: inc/customizer/customizer.php:503
+msgid " 2. All of our starter sites, both free and pro, can be previewed "
+msgstr " 2. يمكن معاينة جميع مواقعنا المبدئية، المجانية والإحترافية "
+
+#: inc/customizer/customizer.php:504
+msgid " 3. You can receive free support on the community forums "
+msgstr " 3. يمكنك الحصول على دعم مجاني في المنتديات الاجتماعية "
+
+#: inc/customizer/customizer.php:505
+msgid " 4. Priority email support is available for our premium users. You can upgrade "
+msgstr " 4. دعم البريد الإلكتروني ذو الأولوية متاح لمستخدمينا المميزين. يمكنك التحديث "
+
+#: inc/customizer/options/footer.php:256
+msgid "Widget titles color (deprecated)"
+msgstr "لون عناوين الودجت (مهجور)"
+
+#: inc/customizer/options/header.php:746
+msgid "Background color (sticky)"
+msgstr "لون الخلفية (مثبّت)"
+
+#: inc/classes/class-sydney-modules.php:112
+#: inc/dashboard/class-dashboard-settings.php:435
+msgid "Extended WooCommerce"
+msgstr "WooCommerce ممتد"
+
+#: inc/classes/class-sydney-modules.php:117
+#: inc/dashboard/class-dashboard-settings.php:440
+msgid "Extra features for WooCommerce"
+msgstr "ميزات إضافية لـ WooCommerce"
+
+#: inc/theme-dashboard-settings.php:69
+msgid "Extended WooCommerce Module"
+msgstr "وحدة WooCommerce موسعة"
+
+#: inc/theme-dashboard-settings.php:74
+msgid "Built-in Wishlist, Product Swatch"
+msgstr "قائمة الرغبات المضمنة،منتج عينات الألوان"
+
+#: woocommerce/cart/proceed-to-checkout-button.php:26
+msgid "Proceed to checkout"
+msgstr "باشر إلى عملية إنهاء الطلب"
+
+#: inc/classes/class-sydney-modules.php:38
+#: inc/dashboard/class-dashboard-settings.php:299
+msgid "Quick Links Module"
+msgstr "وحدة الروابط السريعة"
+
+#: inc/classes/class-sydney-modules.php:43
+#: inc/dashboard/class-dashboard-settings.php:304
+msgid "Floating quick links bar (contact, social etc.)"
+msgstr "شريط الروابط السريعة العائم (جهة اتصال، اجتماعية، إلى ما ذلك)."
+
+#: inc/customizer/options/performance.php:29
+msgid "Load Google Fonts Locally?"
+msgstr "تحميل خطوط جوجل محليًا؟"
+
+#: inc/theme-dashboard-settings.php:59
+msgid "Templates Module"
+msgstr "وحدة القوالب"
+
+#: inc/classes/class-sydney-modules.php:59
+#: inc/dashboard/class-dashboard-settings.php:350
+#: inc/theme-dashboard-settings.php:64
+msgid "Extended Header Module"
+msgstr "وحدة الترويسة الممددة"
+
+#: inc/classes/class-sydney-modules.php:64
+#: inc/dashboard/class-dashboard-settings.php:355
+msgid "New features for your header area."
+msgstr "ميزات جديدة للترويسة الخاصة بك."
+
+#: inc/classes/class-sydney-modules.php:82
+#: inc/dashboard/class-dashboard-settings.php:395
+#: inc/theme-dashboard-settings.php:79
+msgid "Extended Blog Module"
+msgstr "وحدة المدونة الممتدة"
+
+#: inc/classes/class-sydney-modules.php:87
+#: inc/dashboard/class-dashboard-settings.php:400
+msgid "Extra features for your blog."
+msgstr "ميزات إضافية لمدونتك."
+
+#: inc/classes/class-sydney-modules.php:100
+#: inc/dashboard/class-dashboard-settings.php:415
+#: inc/theme-dashboard-settings.php:84
+msgid "Breadcrumbs Module"
+msgstr "وحدة مسارات التنقل"
+
+#: inc/classes/class-sydney-modules.php:105
+#: inc/dashboard/class-dashboard-settings.php:420
+msgid "Breadcrumbs functionality."
+msgstr "وظائف مسارات التنقل."
+
+#: inc/classes/class-sydney-modules.php:71
+#: inc/dashboard/class-dashboard-settings.php:372
+#: inc/theme-dashboard-settings.php:89
+msgid "Extended Footer Module"
+msgstr "وحدة تذييل ممتدة"
+
+#: inc/classes/class-sydney-modules.php:76
+#: inc/dashboard/class-dashboard-settings.php:377
+msgid "Extra features for your footer"
+msgstr "ميزات إضافية للتذييل الخاص بك"
+
+#: inc/dashboard/class-dashboard-settings.php:502
+#: inc/dashboard/html-home.php:130
+msgid "Learn More"
+msgstr "تعرف على المزيد"
+
+#: inc/customizer/upsell/class-customize.php:76
+msgid "Want more customization options?"
+msgstr "هل تريد المزيد من خيارات التخصيص؟"
+
+#: inc/theme-dashboard-settings.php:37
+msgid "Sticky and transparent menu"
+msgstr "قائمة مثبتة وشفافة"
+
+#: inc/classes/class-sydney-modules.php:32
+#: inc/modules/class-sydney-modules.php:34
+msgid "Build templates"
+msgstr "بناء القوالب"
+
+#: inc/classes/class-sydney-modules.php:34
+#: inc/classes/class-sydney-modules.php:43
+#: inc/classes/class-sydney-modules.php:52
+#: inc/classes/class-sydney-modules.php:64
+#: inc/classes/class-sydney-modules.php:76
+#: inc/classes/class-sydney-modules.php:87
+#: inc/classes/class-sydney-modules.php:96
+#: inc/classes/class-sydney-modules.php:105
+#: inc/classes/class-sydney-modules.php:117
+#: inc/classes/class-sydney-modules.php:126
+#: inc/classes/class-sydney-modules.php:135
+#: inc/modules/class-sydney-modules.php:36
+msgid "Documentation article"
+msgstr "مقالة الوثائق"
+
+#: inc/classes/class-sydney-page-metabox.php:32
+msgid "Sydney page options"
+msgstr "خيارات صفحة Sydney"
+
+#: inc/customizer/options/colors.php:143
+msgid "Links"
+msgstr "روابط"
+
+#: inc/customizer/options/colors.php:170
+msgid "Content links"
+msgstr "روابط المحتوى"
+
+#: inc/customizer/options/colors.php:201
+msgid "Content links hover"
+msgstr "تأشير روابط المحتوى"
+
+#: inc/customizer/options/colors.php:419
+msgid "Form fields"
+msgstr "حقول النموذج"
+
+#: inc/customizer/options/colors.php:540
+msgid "Placeholder color"
+msgstr "لون العنصر النائب"
+
+#: inc/customizer/options/header.php:1170
+msgid "Top-level menu items"
+msgstr "أعلى مستوى عناصر القائمة"
+
+#: inc/customizer/options/header.php:1190
+msgid "Enable top-level menu items typography options"
+msgstr "تفعيل خيارات الطباعة لأعلى مستوى عناصر القائمة"
+
+#: inc/customizer/options/header.php:1249
+msgid "Menu Items Font size"
+msgstr "حجم خط عناصر القائمة"
+
+#: inc/customizer/options/woocommerce-single.php:70
+msgid "Product Image"
+msgstr "صورة المنتج"
+
+#: inc/customizer/options/woocommerce-single.php:104
+msgid "Gallery thumbnail slider"
+msgstr "شريط تمرير الصور المصغرة للمعرض"
+
+#: inc/customizer/options/woocommerce-single.php:105
+msgid "Requires page refresh after saving"
+msgstr "يتطلب تحديث الصفحة بعد الحفظ"
+
+#: inc/customizer/options/woocommerce-single.php:123
+msgid "Gallery columns"
+msgstr "معرض الأعمدة"
+
+#: inc/customizer/options/woocommerce-single.php:143
+msgid "Breadcrumbs"
+msgstr "مسارات التنقل"
+
+#: inc/customizer/options/woocommerce-single.php:162
+msgid "SKU"
+msgstr "SKU"
+
+#: inc/customizer/options/woocommerce-single.php:182
+msgid "Ratings"
+msgstr "التقييمات"
+
+#: inc/customizer/options/woocommerce-single.php:201
+#: inc/customizer/options/woocommerce.php:459
+msgid "Categories"
+msgstr "تصنيفات"
+
+#: inc/customizer/options/woocommerce-single.php:220
+msgid "Tags"
+msgstr "وسوم"
+
+#: inc/customizer/options/woocommerce-single.php:239
+msgid "Product tabs"
+msgstr "علامات تبويب المنتج"
+
+#: inc/customizer/options/woocommerce-single.php:258
+msgid "Upsell products"
+msgstr "منتجات تزايد المبيعات"
+
+#: inc/customizer/options/woocommerce-single.php:277
+msgid "Related products"
+msgstr "منتجات ذات صله"
+
+#: inc/customizer/options/woocommerce-single.php:309
+msgid "Product title size"
+msgstr "حجم عنوان المنتج"
+
+#: inc/customizer/options/woocommerce-single.php:338
+msgid "Product title color"
+msgstr "لون عنوان المنتج"
+
+#: inc/customizer/options/woocommerce-single.php:365
+msgid "Product price size"
+msgstr "حجم سعر المنتج"
+
+#: inc/customizer/options/woocommerce-single.php:395
+msgid "Product price color"
+msgstr "لون سعر المنتج"
+
+#: inc/customizer/options/woocommerce.php:76
+msgid "Layout type"
+msgstr "نوع التخطيط"
+
+#: inc/customizer/options/woocommerce.php:103
+msgid "No Sidebar"
+msgstr "لا يوجد شريط جانبي"
+
+#: inc/customizer/options/woocommerce.php:131
+msgid "Page elements"
+msgstr "عناصر الصفحة"
+
+#: inc/customizer/options/woocommerce.php:151
+msgid "Page title"
+msgstr "عنوان الصفحة"
+
+#: inc/customizer/options/woocommerce.php:170
+msgid "Page Description"
+msgstr "وصف الصفحة"
+
+#: inc/customizer/options/woocommerce.php:189
+msgid "Product sorting"
+msgstr "فرز المنتج"
+
+#: inc/customizer/options/woocommerce.php:208
+msgid "Results count"
+msgstr "عدد النتائج"
+
+#: inc/customizer/options/woocommerce.php:227
+msgid "Display breadcrumbs"
+msgstr "عرض مسارات تنقل"
+
+#: inc/customizer/options/woocommerce.php:245
+#: inc/customizer/options/woocommerce.php:692
+msgid "Product card"
+msgstr "بطاقة المنتج"
+
+#: inc/customizer/options/woocommerce.php:266
+msgid "Add to cart button"
+msgstr "اضف إلى زر عربة التسوق"
+
+#: inc/customizer/options/woocommerce.php:290
+msgid "Card elements"
+msgstr "عناصر البطاقة"
+
+#: inc/customizer/options/woocommerce.php:294
+msgid "Reviews"
+msgstr "المراجعات"
+
+#: inc/customizer/options/woocommerce.php:295
+msgid "Price"
+msgstr "السعر"
+
+#: inc/customizer/options/woocommerce.php:296
+msgid "Category"
+msgstr "تصنيف"
+
+#: inc/customizer/options/woocommerce.php:297
+msgid "Short description"
+msgstr "وصف قصير"
+
+#: inc/customizer/options/woocommerce.php:329
+#: inc/modules/hf-builder/components/header/wc-icons/customize-options.php:233
+msgid "Elements spacing"
+msgstr "تباعد العناصر"
+
+#: inc/customizer/options/woocommerce.php:354
+#: inc/customizer/options/woocommerce.php:811
+msgid "Sale tag"
+msgstr "وسم البيع"
+
+#: inc/customizer/options/woocommerce.php:420
+#: inc/customizer/options/woocommerce.php:535
+msgid "Border radius"
+msgstr "زوايا الحدود (Border radius)"
+
+#: inc/customizer/options/woocommerce.php:438 inc/woocommerce.php:1245
+msgid "Sale!"
+msgstr "تخفيضات!"
+
+#: inc/customizer/options/woocommerce.php:442
+msgid "Badge text"
+msgstr "نص الشارة"
+
+#: inc/customizer/options/woocommerce.php:553
+msgid "Cart"
+msgstr "السلة"
+
+#: inc/customizer/options/woocommerce.php:601
+msgid "Cross Sell"
+msgstr "البيع المتلازم"
+
+#: inc/customizer/options/woocommerce.php:621
+#: inc/customizer/options/woocommerce.php:670
+msgid "Display Coupon Form"
+msgstr "عرض نموذج القسيمة"
+
+#: inc/customizer/options/woocommerce.php:708
+msgid "Image radius"
+msgstr "نصف قطر الصورة"
+
+#: inc/customizer/options/woocommerce.php:735
+msgid "Card background"
+msgstr "خلفية البطاقة"
+
+#: inc/customizer/options/woocommerce.php:755
+msgid "Product title"
+msgstr "عنوان المنتج"
+
+#: inc/customizer/options/woocommerce.php:774
+msgid "Product prices font size"
+msgstr "حجم خط أسعار المنتج"
+
+#: inc/customizer/options/woocommerce.php:793
+msgid "Product prices color"
+msgstr "لون أسعار المنتج"
+
+#: inc/customizer/options/woocommerce.php:888
+msgid "Hide button icon"
+msgstr "إخفاء زر الأيقونة"
+
+#: inc/customizer/options/woocommerce.php:905
+msgid "Button background color"
+msgstr "لون خلفية الزر"
+
+#: inc/customizer/options/woocommerce.php:923
+msgid "Button color"
+msgstr "لون الزر"
+
+#: inc/customizer/options/woocommerce.php:941
+msgid "Loop add to cart button size"
+msgstr "إضافة حلقة إلى حجم زر عربة التسوق"
+
+#: inc/customizer/options/woocommerce.php:945
+msgid "Small"
+msgstr "صغير"
+
+#: inc/customizer/options/woocommerce.php:946
+msgid "Medium"
+msgstr "متوسط"
+
+#: inc/customizer/options/woocommerce.php:947
+msgid "Large"
+msgstr "كبير"
+
+#: inc/woocommerce.php:696
+msgid "My Account"
+msgstr "حسابي"
+
+#: inc/modules/hf-builder/class-header-footer-builder.php:223
+#: inc/woocommerce.php:698
+msgid "Login/Register"
+msgstr "الدخول / التسجيل"
+
+#. translators: %s: quick view product title
+#: inc/woocommerce.php:876
+msgid "Quick view the %s product"
+msgstr "عرض سريع لمنتج %s"
+
+#. translators: %s: quick view product title
+#: inc/woocommerce.php:877
+msgid "Quick View"
+msgstr "نظرة سريعة"
+
+#: inc/woocommerce.php:1120
+msgid "This product is currently out of stock and unavailable."
+msgstr "هذا المنتج غير متوفر حاليا وغير متاح."
+
+#: inc/woocommerce.php:1136
+msgid "Clear"
+msgstr "إزالة"
+
+#: inc/customizer/options/general.php:175
+msgid "Enable preloader"
+msgstr "تفعيل التحميل المسبق"
+
+#: inc/customizer/options/header.php:132
+msgid "Site title font size"
+msgstr "حجم خط عنوان الموقع"
+
+#: inc/customizer/options/header.php:204
+msgid "Site description font size"
+msgstr "حجم خط وصف الموقع"
+
+#: inc/customizer/options/typography.php:11
+#: inc/customizer/style-book/class-sydney-style-book.php:130
+#: inc/customizer/style-book/class-sydney-style-book.php:354
+#: inc/dashboard/class-dashboard-settings.php:243
+msgid "Typography"
+msgstr "أنواع الخطوط"
+
+#: inc/customizer/options/colors.php:221
+#: inc/customizer/options/typography.php:22
+#: inc/customizer/style-book/class-sydney-style-book.php:358
+msgid "Headings"
+msgstr "الترويسات"
+
+#: inc/customizer/options/typography.php:58
+#: inc/customizer/options/typography.php:498
+msgid "Font style"
+msgstr "نمط الخط"
+
+#: inc/customizer/options/typography.php:61
+#: inc/customizer/options/typography.php:501
+msgid "Italic"
+msgstr "مائل"
+
+#: inc/customizer/options/typography.php:62
+#: inc/customizer/options/typography.php:502
+msgid "Oblique"
+msgstr "منحدر"
+
+#: inc/customizer/options/typography.php:74
+#: inc/customizer/options/typography.php:514
+msgid "Line height"
+msgstr "ارتفاع السطر"
+
+#: inc/customizer/options/typography.php:96
+#: inc/customizer/options/typography.php:536
+msgid "Letter spacing"
+msgstr "تباعد الحروف"
+
+#: inc/customizer/options/typography.php:139
+#: inc/customizer/options/typography.php:579
+msgid "Text decoration"
+msgstr "زخرفة النص"
+
+#: inc/customizer/options/colors.php:249
+#: inc/customizer/options/typography.php:158
+#: inc/customizer/style-book/class-sydney-style-book.php:361
+msgid "Heading 1"
+msgstr "ترويسة 1"
+
+#: inc/customizer/options/colors.php:279
+#: inc/customizer/options/typography.php:210
+#: inc/customizer/style-book/class-sydney-style-book.php:366
+msgid "Heading 2"
+msgstr "ترويسة 2"
+
+#: inc/customizer/options/colors.php:309
+#: inc/customizer/options/typography.php:261
+#: inc/customizer/style-book/class-sydney-style-book.php:371
+msgid "Heading 3"
+msgstr "ترويسة 3"
+
+#: inc/customizer/options/colors.php:339
+#: inc/customizer/options/typography.php:312
+#: inc/customizer/style-book/class-sydney-style-book.php:376
+msgid "Heading 4"
+msgstr "ترويسة 4"
+
+#: inc/customizer/options/colors.php:369
+#: inc/customizer/options/typography.php:363
+#: inc/customizer/style-book/class-sydney-style-book.php:381
+msgid "Heading 5"
+msgstr "ترويسة 5"
+
+#: inc/customizer/options/colors.php:399
+#: inc/customizer/options/typography.php:414
+#: inc/customizer/style-book/class-sydney-style-book.php:386
+msgid "Heading 6"
+msgstr "ترويسة 6"
+
+#: inc/customizer/options/typography.php:463
+#: inc/customizer/options/typography.php:598
+msgid "Body"
+msgstr "الجسم"
+
+#: functions.php:218
+msgid "Are you sure you want to dismiss this notice?"
+msgstr "هل أنت متأكد أنك تريد رفض هذا الإشعار؟"
+
+#: inc/theme-update.php:102
+msgid "Note 1: this upgrade is optional, there is no need to do it if you are happy with your current header."
+msgstr "ملاحظة 1: هذا التحديد اختياري، ليست هناك حاجة للقيام بذلك إذا كنت سعيدا الترويسة الحالية."
+
+#: inc/theme-update.php:111
+msgid "Note 4: Please take a full backup of your website before upgrading."
+msgstr "ملاحظة 4: يرجى أخذ نسخة احتياطية كاملة لموقع الويب الخاص بك قبل التحديث."
+
+#: inc/theme-update.php:119
+msgid "Continue to use the old header"
+msgstr "استمر في استخدام الترويسة القديمة."
+
+#: functions.php:214
+msgid "Are you sure you want to upgrade your header?"
+msgstr "هل أنت متأكد أنك تريد ترقية الترويسة؟"
+
+#: inc/classes/class-sydney-header.php:463
+#: inc/customizer/options/header.php:610
+#: inc/modules/hf-builder/components/footer/button/button.php:13
+#: inc/modules/hf-builder/components/footer/button/customize-options.php:63
+#: inc/modules/hf-builder/components/header/button/button.php:13
+msgid "Click me"
+msgstr "انقر هنا"
+
+#: inc/classes/class-sydney-header.php:480
+#: inc/customizer/options/header.php:661
+#: inc/modules/hf-builder/components/header/contact-info/contact-info.php:14
+msgid "office@example.org"
+msgstr "office@example.org"
+
+#: inc/classes/class-sydney-header.php:481
+#: inc/customizer/options/header.php:676
+#: inc/modules/hf-builder/components/header/contact-info/contact-info.php:15
+msgid "111222333"
+msgstr "111222333"
+
+#: inc/customizer/options/hero-area.php:13
+msgid "Hero area"
+msgstr "منطقة البطل (Hero)"
+
+#: inc/customizer/options/hero-area.php:19
+msgid "Hero type"
+msgstr "نوع البطل (Hero)"
+
+#: inc/customizer/options/hero-area.php:84
+msgid "Hero Slider"
+msgstr "عارض شرائح البطل (Hero)"
+
+#: inc/customizer/options/header-mobile.php:14
+msgid "Mobile header"
+msgstr "ترويسة الهاتف المحمول"
+
+#: inc/customizer/options/header-mobile.php:105
+msgid "Additional elements"
+msgstr "عناصر إضافية"
+
+#: inc/customizer/options/header-mobile.php:192
+msgid "Off-canvas mode"
+msgstr "وضع Offcanvas"
+
+#: inc/customizer/options/header-mobile.php:197
+#: inc/customizer/options/woocommerce-single.php:75
+#: inc/customizer/options/woocommerce.php:271
+#: inc/customizer/options/woocommerce.php:378
+#: inc/customizer/options/woocommerce.php:483
+#: inc/customizer/options/woocommerce.php:576
+#: inc/customizer/options/woocommerce.php:646 inc/extras.php:561
+#: inc/extras.php:591
+msgid "Layout 1"
+msgstr "التخطيط 1"
+
+#: inc/customizer/options/header-mobile.php:201
+#: inc/customizer/options/woocommerce-single.php:79
+#: inc/customizer/options/woocommerce.php:275
+#: inc/customizer/options/woocommerce.php:382
+#: inc/customizer/options/woocommerce.php:487
+#: inc/customizer/options/woocommerce.php:580
+#: inc/customizer/options/woocommerce.php:650 inc/extras.php:565
+#: inc/extras.php:595
+msgid "Layout 2"
+msgstr "التخطيط 2"
+
+#: inc/customizer/options/header-mobile.php:217
+msgid "Additional offcanvas elements"
+msgstr "عناصر إضافية offcanvas"
+
+#: inc/customizer/options/header-mobile.php:241
+msgid "Link alignment"
+msgstr "محاذاة الرابط"
+
+#: inc/customizer/options/header-mobile.php:264
+#: inc/customizer/options/header-mobile.php:579
+msgid "Link separator"
+msgstr "فاصل الارتباط"
+
+#: inc/customizer/options/header-mobile.php:278
+msgid "Link spacing"
+msgstr "تباعد الارتباط"
+
+#: inc/customizer/options/header-mobile.php:301
+msgid "Menu icon"
+msgstr "أيقونة القائمة"
+
+#: inc/customizer/options/header-mobile.php:324
+msgid "Menu bar"
+msgstr "شريط القائمة"
+
+#: inc/customizer/options/header-mobile.php:401
+msgid "Top &amp; bottom padding"
+msgstr "الهوامش الداخلية العلوي والسفلي"
+
+#: inc/customizer/options/header-mobile.php:424
+msgid "Offcanvas menu"
+msgstr "قائمة offcanvas"
+
+#: inc/customizer/options/header-mobile.php:595
+msgid "Separator size"
+msgstr "حجم الفاصل"
+
+#: inc/customizer/options/header-mobile.php:632
+msgid "Separator color"
+msgstr "لون الفاصل"
+
+#: inc/customizer/options/header.php:43
+msgid "Logo height"
+msgstr "ارتفاع الشعار"
+
+#: inc/customizer/options/header.php:101
+msgid "Site title color"
+msgstr "لون عنوان الموقع"
+
+#: inc/customizer/options/header.php:173
+msgid "Site description color"
+msgstr "لون وصف الموقع"
+
+#: inc/customizer/options/header.php:227
+msgid "Main header"
+msgstr "الترويسة الرئيسية"
+
+#: inc/customizer/options/header.php:296
+msgid "Settings"
+msgstr "الإعدادات"
+
+#: inc/customizer/options/header.php:312
+msgid "Menu position"
+msgstr "وضع القائمة"
+
+#: inc/customizer/options/header.php:354
+msgid "Enable sticky header"
+msgstr "تفعيل ترويسة مثبتة"
+
+#: inc/customizer/options/header.php:368
+msgid "Sticky header type"
+msgstr "نوع الترويسة المثبتة"
+
+#: inc/customizer/options/header.php:371
+msgid "Always sticky"
+msgstr "دائماً مثبّت"
+
+#: inc/customizer/options/header.php:372
+msgid "On scroll to top"
+msgstr "التمرير إلى الأعلى"
+
+#: inc/customizer/options/header.php:465
+msgid "Top row"
+msgstr "الصف العلوي"
+
+#: inc/customizer/options/header.php:478
+msgid "Bottom row"
+msgstr "الصف السفلي"
+
+#: inc/customizer/options/header.php:492
+msgid "Top left"
+msgstr "أعلى اليسار"
+
+#: inc/customizer/options/header.php:505
+msgid "Top right"
+msgstr "أعلى اليمين"
+
+#: inc/extras.php:614
+msgid "Cart &amp; account icons"
+msgstr "أيقونات سلة التسوق والحساب"
+
+#: inc/customizer/options/header.php:579
+msgid "Enable cart icon"
+msgstr "تفعيل أيقونة عربة التسوق"
+
+#: inc/customizer/options/header.php:598
+msgid "Enable account icon"
+msgstr "تفعيل أيقونة الحساب"
+
+#: inc/customizer/options/header.php:649
+#: inc/modules/hf-builder/components/footer/button/customize-options.php:116
+msgid "Open in a new tab?"
+msgstr "فتح في علامة تبويب جديدة؟"
+
+#: inc/extras.php:616
+msgid "Contact info"
+msgstr "معلومات الإتصال"
+
+#: inc/customizer/options/header.php:666
+msgid "Email address"
+msgstr "عنوان البريد الالكترونى"
+
+#: inc/customizer/options/header.php:681
+msgid "Phone number"
+msgstr "رقم الهاتف"
+
+#: inc/customizer/options/header.php:842
+msgid "Bottom row background color"
+msgstr "لون خلفية الصف السفلي"
+
+#: inc/customizer/options/header.php:875
+msgid "Bottom row text color"
+msgstr "لون نص الصف السفلي"
+
+#: inc/customizer/options/header.php:908
+msgid "Submenu background"
+msgstr "خلفية القائمة الفرعية"
+
+#: inc/customizer/options/header.php:940
+msgid "Submenu color"
+msgstr "لون القائمة الفرعية"
+
+#: inc/customizer/options/header.php:1096
+msgid "Bottom row padding"
+msgstr "الهامش الداخلي للصف السفلي"
+
+#: inc/customizer/options/header.php:1119
+msgid "Border size"
+msgstr "حجم الإطار"
+
+#: inc/customizer/options/colors.php:509 inc/customizer/options/header.php:1135
+#: inc/customizer/style-book/class-sydney-style-book.php:192
+msgid "Border color"
+msgstr "لون الحدود"
+
+#: inc/customizer/options/header.php:1149
+msgid "Border width"
+msgstr "عرض الإطار"
+
+#: inc/customizer/options/woocommerce-single.php:83
+#: inc/customizer/options/woocommerce.php:491 inc/extras.php:569
+#: inc/extras.php:599
+msgid "Layout 3"
+msgstr "التخطيط 3"
+
+#: inc/customizer/options/woocommerce.php:495 inc/extras.php:573
+msgid "Layout 4"
+msgstr "التخطيط 4"
+
+#: inc/customizer/options/woocommerce.php:499 inc/extras.php:577
+msgid "Layout 5"
+msgstr "التخطيط 5"
+
+#: inc/classes/class-sydney-header.php:513
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:183
+#: inc/extras.php:613 inc/integrations/elementor/library/templates.php:89
+#: inc/modules/hf-builder/class-header-footer-builder.php:102
+#: inc/modules/hf-builder/class-header-footer-builder.php:142
+#: inc/modules/hf-builder/components/header/search/customize-options.php:22
+msgid "Search"
+msgstr "بحث"
+
+#: inc/template-tags.php:185
+msgid "0 comments"
+msgstr "0 تعليقات"
+
+#: inc/customizer/options/upsell.php:29
+#: inc/dashboard/class-dashboard-settings.php:279
+#: inc/theme-dashboard-settings.php:210
+msgid "Top bar"
+msgstr "الشريط العلوي"
+
+#: inc/theme-update.php:96
+msgid "Sydney Header Update"
+msgstr "تحديث ترويسة Sydney"
+
+#: inc/theme-update.php:98
+msgid "This version of Sydney comes with a new and improved header. Activate it by clicking the button below and you can access new options."
+msgstr "تأتي نسخة Sydney بترويسة جديدة ومحسّنة. قم بتفعيل بالنقر على الزر أدناه ويمكنك الوصول إلى خيارات جديدة."
+
+#: inc/theme-update.php:105
+msgid "Note 2: your current header customizations will be lost and you will have to use the new options to customize your header."
+msgstr "ملاحظة 2: سيتم فقدان التخصيصات الحالية للترويسة وسيتعين عليك استخدام الخيارات الجديدة لتخصيص الترويسة الخاصة بك."
+
+#: inc/theme-update.php:108
+msgid "Note 3: this upgrade refers only to the header (site identity and menu bar). It does not change any settings regarding your hero area (slider, video etc)."
+msgstr "ملاحظة 3: يشير هذا التحديث إلى الترويسة فقط (هوية الموقع وشريط القائمة) كما أنه لا يغير أي إعدادات تتعلق بمنطقة البطل (Hero) (شريط التمرير والفيديو وما إلى ذلك)."
+
+#. translators: %s: Documentation link
+#: inc/theme-update.php:116
+msgid "Want to see the new header options before upgrading? Check out our %s."
+msgstr "هل تريد أن ترى خيارات الترويسة الجدد قبل التحديث؟ تحقق من %s."
+
+#: inc/theme-update.php:118
+msgid "Upgrade Theme Header"
+msgstr "تحديث قالب الترويسة"
+
+#: inc/woocommerce.php:475
+msgid "View your shopping cart"
+msgstr "عرض سلة التسوق الخاصة بك"
+
+#: inc/woocommerce.php:504
+msgid "Your account"
+msgstr "الحساب الخاص بك"
+
+#: inc/woocommerce.php:514
+msgid "Your cart"
+msgstr "سلة التسوق الخاصة بك"
+
+#: inc/customizer/options/blog-single.php:14
+msgid "Single posts"
+msgstr "المقالات الفردية"
+
+#: inc/customizer/options/blog.php:611 inc/customizer/options/layouts.php:118
+msgid "Enable sidebar"
+msgstr "تمكين الشريط الجانبي"
+
+#: inc/customizer/options/blog.php:626 inc/customizer/options/layouts.php:134
+msgid "Sidebar position"
+msgstr "موضع الشريط الجانبي"
+
+#: inc/customizer/options/blog-single.php:65
+msgid "Header alignment"
+msgstr "محاذاة الترويسة"
+
+#: inc/customizer/options/blog-single.php:82
+msgid "Header spacing"
+msgstr "تباعد الترويسة"
+
+#: inc/customizer/options/blog-single.php:126
+msgid "Show featured image"
+msgstr "عرض الصورة المميزة"
+
+#: inc/customizer/options/blog-single.php:141
+#: inc/customizer/options/blog.php:242
+msgid "Image placement"
+msgstr "موضع الصورة"
+
+#: inc/customizer/options/blog-single.php:144
+msgid "Below"
+msgstr "أدناه"
+
+#: inc/customizer/options/blog-single.php:145
+msgid "Above"
+msgstr "أعلاه"
+
+#: inc/customizer/options/blog-single.php:158
+msgid "Image spacing"
+msgstr "تباعد الصورة"
+
+#: inc/customizer/options/blog-single.php:201
+#: inc/customizer/options/blog.php:486
+msgid "Above title"
+msgstr "أعلى العنوان"
+
+#: inc/customizer/options/blog-single.php:202
+msgid "Below title"
+msgstr "أسفل العنوان"
+
+#: inc/customizer/options/blog-single.php:213
+#: inc/customizer/options/blog.php:499
+msgid "Meta elements"
+msgstr "عناصر البيانات الوصفية"
+
+#: inc/customizer/options/blog-single.php:216
+#: inc/customizer/options/blog.php:502
+msgid "Post date"
+msgstr "تاريخ المقال"
+
+#: inc/customizer/options/blog-single.php:217
+#: inc/customizer/options/blog.php:503
+msgid "Post author"
+msgstr "كاتب المقال"
+
+#: inc/customizer/options/blog-single.php:218
+#: inc/customizer/options/blog.php:504
+msgid "Post categories"
+msgstr "تصنيفات المقالة"
+
+#: inc/customizer/options/blog-single.php:219
+#: inc/customizer/options/blog.php:505
+msgid "Post comments"
+msgstr "تعليقات المقال"
+
+#: inc/customizer/options/blog-single.php:231
+#: inc/customizer/options/blog.php:283 inc/customizer/options/blog.php:539
+#: inc/customizer/options/woocommerce.php:398
+msgid "Spacing"
+msgstr "التباعد"
+
+#: inc/customizer/options/blog-single.php:255
+#: inc/customizer/options/header.php:406
+msgid "Elements"
+msgstr "العناصر"
+
+#: inc/customizer/options/blog-single.php:274
+#: inc/customizer/options/blog.php:506
+msgid "Post tags"
+msgstr "وسوم المقالة"
+
+#: inc/customizer/options/blog-single.php:292
+msgid "Author box"
+msgstr "مربع المؤلف"
+
+#: inc/customizer/options/blog-single.php:329
+msgid "Related posts"
+msgstr "مقالات ذات صلة"
+
+#: inc/customizer/options/blog-single.php:338 inc/extras.php:488
+msgid "You might also like:"
+msgstr "قد يعجبك أيضًا:"
+
+#: inc/customizer/options/blog-single.php:346
+msgid "Related posts title"
+msgstr "عنوان مقالات ذات صلة"
+
+#: inc/customizer/options/blog-single.php:388
+msgid "Post title size"
+msgstr "حجم عنوان المقالة"
+
+#: inc/customizer/options/blog-single.php:424
+#: inc/customizer/options/blog.php:696
+msgid "Title color"
+msgstr "لون العنوان"
+
+#: inc/customizer/options/blog-single.php:455
+msgid "Meta size"
+msgstr "الحجم الوصفي"
+
+#: inc/customizer/options/blog-single.php:492
+#: inc/customizer/options/blog.php:764
+msgid "Meta color"
+msgstr "اللون الوصفي (Meta)"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:179
+#: inc/customizer/options/blog.php:11
+msgid "Blog"
+msgstr "المدونة"
+
+#: inc/customizer/options/blog.php:20
+msgid "Blog archives"
+msgstr "أرشيف المدونة"
+
+#: inc/customizer/options/blog.php:83
+msgid "Classic 2"
+msgstr "تقليدي 2"
+
+#: inc/customizer/options/blog.php:87 inc/customizer/options/woocommerce.php:79
+msgid "Grid"
+msgstr "شبكة"
+
+#: inc/customizer/options/blog.php:91 inc/customizer/options/woocommerce.php:80
+msgid "List"
+msgstr "قائمة"
+
+#: inc/customizer/options/blog.php:95
+msgid "Masonry"
+msgstr "البناء"
+
+#: inc/customizer/options/blog.php:99
+msgid "List zig-zag"
+msgstr "قائمة خط متعرج"
+
+#: inc/customizer/options/blog.php:140
+#: inc/modules/hf-builder/components/footer/row/customize-options.php:139
+#: inc/modules/hf-builder/components/header/row/customize-options.php:151
+msgid "Columns"
+msgstr "أعمدة"
+
+#: inc/customizer/options/blog.php:143
+msgid "2"
+msgstr "2"
+
+#: inc/customizer/options/blog.php:144
+msgid "3"
+msgstr "3"
+
+#: inc/customizer/options/blog.php:145
+msgid "4"
+msgstr "4"
+
+#: inc/customizer/options/blog.php:221
+msgid "Enable featured image"
+msgstr "تفعيل الصورة البارزة"
+
+#: inc/customizer/options/blog.php:260
+msgid "Image size"
+msgstr "حجم الصورة"
+
+#: inc/customizer/options/blog.php:323
+#: inc/customizer/options/woocommerce.php:310
+#: inc/customizer/options/woocommerce.php:516
+msgid "Text alignment"
+msgstr "محاذاة النص"
+
+#: inc/customizer/options/blog.php:360
+msgid "Title spacing"
+msgstr "تباعد العنوان"
+
+#: inc/customizer/options/blog.php:450
+msgid "Read more link"
+msgstr "رابط قراءة المزيد"
+
+#: inc/customizer/options/blog.php:487
+msgid "Below excerpt"
+msgstr "أدناه مقتطف"
+
+#: inc/customizer/options/blog.php:523
+msgid "Show author avatar"
+msgstr "عرض الصورة الرمزية للمؤلف"
+
+#: inc/customizer/options/blog.php:562
+msgid "Delimiter style"
+msgstr "أسلوب محدد"
+
+#: inc/customizer/options/blog.php:565
+msgid "None"
+msgstr "لا شيء"
+
+#: inc/customizer/options/blog.php:660
+msgid "Post title font size"
+msgstr "حجم خط عنوان المقالة"
+
+#: inc/customizer/options/blog.php:727
+msgid "Meta font size"
+msgstr "حجم خط الحجم الرصفي"
+
+#: inc/customizer/options/blog.php:795
+msgid "Excerpt font size"
+msgstr "حجم خط المقتطف"
+
+#: inc/customizer/options/blog.php:832
+msgid "Excerpt color"
+msgstr "لون مقتطف"
+
+#: inc/customizer/options/general.php:607
+msgid "Top/Bottom padding"
+msgstr "الهامش الداخلي العلوي/السفلي"
+
+#: inc/customizer/options/general.php:643
+msgid "Left/Right padding"
+msgstr "الهامش الداخلي يمين / يسار"
+
+#: inc/customizer/options/footer.php:774 inc/customizer/options/general.php:701
+#: inc/customizer/options/header-mobile.php:534
+#: inc/customizer/options/typography.php:185
+#: inc/customizer/options/typography.php:236
+#: inc/customizer/options/typography.php:287
+#: inc/customizer/options/typography.php:338
+#: inc/customizer/options/typography.php:389
+#: inc/customizer/options/typography.php:440
+#: inc/customizer/options/typography.php:625
+msgid "Font size"
+msgstr "حجم الخط"
+
+#: inc/customizer/options/general.php:726
+#: inc/customizer/options/header.php:1229
+#: inc/customizer/options/typography.php:119
+#: inc/customizer/options/typography.php:559
+msgid "Text transform"
+msgstr "تحويل النص"
+
+#: inc/customizer/options/general.php:746
+#: inc/modules/hf-builder/components/header/button/customize-options.php:170
+msgid "Default state"
+msgstr "الحالة الافتراضية"
+
+#: inc/customizer/options/general.php:803
+#: inc/customizer/options/general.php:909
+#: inc/modules/hf-builder/components/footer/button/customize-options.php:241
+#: inc/modules/hf-builder/components/footer/copyright/customize-options.php:126
+#: inc/modules/hf-builder/components/footer/html/customize-options.php:192
+#: inc/modules/hf-builder/components/footer/widget-1/customize-options.php:151
+#: inc/modules/hf-builder/components/footer/widget-2/customize-options.php:151
+#: inc/modules/hf-builder/components/footer/widget-3/customize-options.php:152
+#: inc/modules/hf-builder/components/footer/widget-4/customize-options.php:151
+#: inc/modules/hf-builder/components/header/button/customize-options.php:355
+#: inc/modules/hf-builder/components/header/contact-info/customize-options.php:209
+#: inc/modules/hf-builder/components/header/contact-info/customize-options.php:298
+#: inc/modules/hf-builder/components/header/html/customize-options.php:202
+#: inc/modules/hf-builder/components/header/html/customize-options.php:277
+#: inc/modules/hf-builder/components/header/menu/customize-options.php:388
+#: inc/modules/hf-builder/components/header/mobile-offcanvas-menu/customize-options.php:144
+#: inc/modules/hf-builder/components/header/secondary-menu/customize-options.php:158
+#: inc/modules/hf-builder/components/header/secondary-menu/customize-options.php:266
+msgid "Text Color"
+msgstr "لون النص"
+
+#: inc/customizer/options/general.php:833
+#: inc/customizer/options/general.php:939
+#: inc/modules/hf-builder/components/footer/button/customize-options.php:274
+#: inc/modules/hf-builder/components/header/button/customize-options.php:267
+#: inc/modules/hf-builder/components/header/button/customize-options.php:390
+msgid "Border Color"
+msgstr "لون الإطار"
+
+#: inc/customizer/options/general.php:852
+msgid "Hover state"
+msgstr "حالة الحوم"
+
+#. translators: %s: Author name
+#: inc/extras.php:456
+msgid "By %s"
+msgstr "بواسطة %s"
+
+#. translators: %s: Author name
+#: inc/extras.php:466
+msgid "See all posts by %s"
+msgstr "عرض كل المقالات بواسطة %s"
+
+#. translators: %1$s: avatar, %2$s: author name.
+#: inc/template-tags.php:134
+msgctxt "post author"
+msgid "By %1$s %2$s"
+msgstr "بواسطة %1$s %2$s"
+
+#: functions.php:210
+msgid "Are you sure? Keep in mind this is a global change and you will need update your icons class names in all theme widgets and post types that use Font Awesome 4 icons."
+msgstr "هل أنت متأكد؟ تذكر أن هذا تغيير عالمي وستحتاج إلى تحديث أيقونات أسماء الفئات الخاصة بك في جميع قوالب الودجات وأنواع المقالات التي تستخدم أيقونات Font Awesome 4."
+
+#: functions.php:211 functions.php:215 functions.php:219
+msgid "It was not possible complete the request, please reload the page and try again."
+msgstr "لا يمكن إكمال الطلب ، يرجى إعادة تحميل الصفحة والمحاولة مرة أخرى."
+
+#: functions.php:764
+msgid "Sydney Font Awesome Update: "
+msgstr "تحديث Sydney Font Awesome: "
+
+#: functions.php:764
+msgid "Your website is currently running the version 4. Click in the below button to update to version 5."
+msgstr "يقوم موقع الويب الخاص بك حاليًا بتشغيل النسخة 4. انقر الزر أدناه لتحديث النسخة 5."
+
+#: functions.php:766 functions.php:782
+msgid "Important: "
+msgstr "مهم: "
+
+#: functions.php:766 functions.php:782
+msgid "This is a global change. That means this change will affect all website icons and you will need update the icons class names in all theme widgets and post types that use Font Awesome 4 icons. For example: \"fa-android\" to \"fab fa-android\"."
+msgstr "هذا تغيير عالمي. وهو يعني أنه سيؤثر على جميع أيقونات مواقع الويب وستحتاج إلى تحديث أسماء فئة الأيقونات في جميع قوالب الودجت وأنواع المقالات التي تستخدم خطوط أيقونات Awesome 4. على سبيل المثال: \"fa-android\" إلى \"fab fa-android\"."
+
+#: functions.php:768
+msgid "Update to v5"
+msgstr "تحديث ل v5"
+
+#. translators: %s: URL to plugins page
+#: functions.php:780
+msgid "<strong>Optional:</strong> Now <strong>Sydney</strong> is compatible with Font Awesome 5. For it is needed the latest version of <strong>Sydney Toolbox</strong> plugin. You can update the plugin <a href=\"%s\">here</a>."
+msgstr "<strong>اختياري:</strong> الآن <strong>Sydney</strong> يتوافق مع Font Awesome 5. ولهذا فإن أحدث نسخة إضافة مطلوبة من <strong>Sydney Toolbox</strong>. يمكنك تحديث الإضافة <a href=\"%s\">here</a>."
+
+#: inc/customizer/controls/class_sydney_tab_control.php:41
+msgid "Style"
+msgstr "النمط"
+
+#: inc/customizer/controls/repeater/class_sydney_repeater.php:32
+msgid "Add"
+msgstr "أضف"
+
+#: inc/customizer/options/footer.php:40
+msgid "Footer widgets"
+msgstr "تذييل الودجات"
+
+#: inc/customizer/options/footer.php:78
+msgid "Footer widgets layout"
+msgstr "تَخطِيط تذييل الودجات"
+
+#: inc/customizer/options/footer.php:83
+msgid "Disabled"
+msgstr "معطل"
+
+#: inc/customizer/options/footer.php:87
+msgid "1 column"
+msgstr "عمود 1"
+
+#: inc/customizer/options/footer.php:91 inc/customizer/options/footer.php:95
+#: inc/customizer/options/footer.php:99
+msgid "2 columns"
+msgstr "2 أعمدة"
+
+#: inc/customizer/options/footer.php:103 inc/customizer/options/footer.php:107
+#: inc/customizer/options/footer.php:111
+msgid "3 columns"
+msgstr "3 أعمدة"
+
+#: inc/customizer/options/footer.php:115 inc/customizer/options/footer.php:119
+#: inc/customizer/options/footer.php:123
+msgid "4 columns"
+msgstr "4 أعمدة"
+
+#: inc/customizer/options/footer.php:140 inc/customizer/options/footer.php:648
+#: inc/customizer/options/header.php:332
+msgid "Container type"
+msgstr "نوع الحاوية"
+
+#: inc/customizer/options/footer.php:144 inc/customizer/options/footer.php:471
+#: inc/customizer/options/footer.php:652 inc/customizer/options/footer.php:867
+#: inc/customizer/options/header.php:336 inc/customizer/options/header.php:1153
+msgid "Full-width"
+msgstr "عرض كامل"
+
+#: inc/customizer/options/blog.php:341 inc/customizer/options/footer.php:159
+msgid "Vertical alignment"
+msgstr "المحاذاة العمودية"
+
+#: inc/customizer/controls/dimensions/class_sydney_dimensions_control.php:97
+#: inc/customizer/controls/dimensions/class_sydney_dimensions_control.php:125
+#: inc/customizer/controls/dimensions/class_sydney_dimensions_control.php:152
+#: inc/customizer/options/blog.php:344 inc/customizer/options/footer.php:162
+#: inc/modules/hf-builder/components/footer/columns/customize-options.php:115
+#: inc/modules/hf-builder/components/footer/footer-builder/customize-options.php:156
+#: inc/modules/hf-builder/components/footer/row/customize-options.php:358
+#: inc/modules/hf-builder/components/header/columns/customize-options.php:117
+#: inc/modules/hf-builder/components/header/header-builder/customize-options.php:274
+#: inc/modules/hf-builder/components/header/row/customize-options.php:392
+msgid "Top"
+msgstr "أعلى"
+
+#: inc/customizer/options/blog-single.php:69
+#: inc/customizer/options/blog.php:345 inc/customizer/options/footer.php:163
+#: inc/modules/hf-builder/components/footer/columns/customize-options.php:116
+#: inc/modules/hf-builder/components/header/columns/customize-options.php:118
+msgid "Middle"
+msgstr "وسط"
+
+#: inc/customizer/controls/dimensions/class_sydney_dimensions_control.php:109
+#: inc/customizer/controls/dimensions/class_sydney_dimensions_control.php:137
+#: inc/customizer/controls/dimensions/class_sydney_dimensions_control.php:164
+#: inc/customizer/options/blog.php:346 inc/customizer/options/footer.php:164
+#: inc/customizer/options/header.php:518
+#: inc/modules/hf-builder/components/footer/columns/customize-options.php:117
+#: inc/modules/hf-builder/components/footer/footer-builder/customize-options.php:158
+#: inc/modules/hf-builder/components/footer/row/customize-options.php:360
+#: inc/modules/hf-builder/components/header/columns/customize-options.php:119
+#: inc/modules/hf-builder/components/header/header-builder/customize-options.php:276
+#: inc/modules/hf-builder/components/header/row/customize-options.php:394
+msgid "Bottom"
+msgstr "أسفل"
+
+#: inc/customizer/options/footer.php:179 inc/customizer/options/general.php:397
+msgid "Show on all devices"
+msgstr "عرض على كافة الأجهزة"
+
+#: inc/customizer/options/footer.php:180 inc/customizer/options/general.php:398
+msgid "Desktop only"
+msgstr "سطح المكتب فقط"
+
+#: inc/customizer/options/footer.php:181 inc/customizer/options/general.php:399
+msgid "Mobile/tablet only"
+msgstr "الهاتف المحمول / الكمبيوتر اللوحي فقط"
+
+#: inc/customizer/options/footer.php:194
+msgid "Widget area 1"
+msgstr "منطقة ودجت 1"
+
+#: inc/customizer/options/footer.php:194
+msgid "Widget area 2"
+msgstr "منطقة ودجت 2"
+
+#: inc/customizer/options/footer.php:194
+msgid "Widget area 3"
+msgstr "منطقة ودجت 3"
+
+#: inc/customizer/options/footer.php:194
+msgid "Widget area 4"
+msgstr "منطقة ودجت 4"
+
+#: inc/customizer/options/footer.php:320
+msgid "Widget text color"
+msgstr "لون نص الودجت"
+
+#: inc/customizer/options/footer.php:352
+msgid "Links color"
+msgstr "لون الروابط"
+
+#: inc/customizer/options/footer.php:384
+msgid "Links color (hover)"
+msgstr "لون الروابط (التمرير)"
+
+#: inc/customizer/options/footer.php:177 inc/customizer/options/general.php:395
+#: inc/modules/hf-builder/components/footer/button/customize-options.php:153
+#: inc/modules/hf-builder/components/footer/copyright/customize-options.php:95
+#: inc/modules/hf-builder/components/footer/html/customize-options.php:161
+#: inc/modules/hf-builder/components/footer/social/customize-options.php:99
+#: inc/modules/hf-builder/components/footer/widget-1/customize-options.php:99
+#: inc/modules/hf-builder/components/footer/widget-2/customize-options.php:99
+#: inc/modules/hf-builder/components/footer/widget-3/customize-options.php:100
+#: inc/modules/hf-builder/components/footer/widget-4/customize-options.php:99
+#: inc/modules/hf-builder/components/header/button/customize-options.php:115
+#: inc/modules/hf-builder/components/header/contact-info/customize-options.php:132
+#: inc/modules/hf-builder/components/header/html/customize-options.php:171
+#: inc/modules/hf-builder/components/header/logo/customize-options.php:183
+#: inc/modules/hf-builder/components/header/menu/customize-options.php:130
+#: inc/modules/hf-builder/components/header/mobile-hamburger/customize-options.php:99
+#: inc/modules/hf-builder/components/header/mobile-offcanvas-menu/customize-options.php:105
+#: inc/modules/hf-builder/components/header/search/customize-options.php:98
+#: inc/modules/hf-builder/components/header/secondary-menu/customize-options.php:119
+#: inc/modules/hf-builder/components/header/social/customize-options.php:101
+#: inc/modules/hf-builder/components/header/wc-icons/customize-options.php:106
+msgid "Visibility"
+msgstr "الظهور"
+
+#: inc/customizer/options/footer.php:406 inc/customizer/options/footer.php:802
+msgid "Enable top divider"
+msgstr "تفعيل المُقسّم العلوي"
+
+#: inc/customizer/options/footer.php:422 inc/customizer/options/footer.php:818
+msgid "Divider size"
+msgstr "حجم المُقسّم"
+
+#: inc/customizer/options/footer.php:448 inc/customizer/options/footer.php:844
+msgid "Divider color"
+msgstr "لون المقسم"
+
+#: inc/customizer/options/footer.php:467 inc/customizer/options/footer.php:863
+msgid "Divider width"
+msgstr "عرض المقسّم"
+
+#: inc/customizer/options/footer.php:498
+msgid "Vertical section padding"
+msgstr "الهوامش الداخلية للقسم العمودي"
+
+#: inc/customizer/options/footer.php:522
+msgid "Column spacing"
+msgstr "تباعد العمود"
+
+#: inc/customizer/options/footer.php:556
+msgid "Widget titles size"
+msgstr "حجم عناوين الودجت"
+
+#: inc/customizer/options/footer.php:615
+msgid "Copyright area"
+msgstr "منطقة حقوق النشر"
+
+#. translators: %1$1s, %2$2s theme copyright tags
+#: inc/customizer/options/footer.php:662 inc/extras.php:380
+#: inc/modules/hf-builder/components/footer/copyright/copyright.php:14
+msgid "%1$1s. Proudly powered by %2$2s"
+msgstr "%1$1s. بفخر مُشغّل بواسطة %2$2s"
+
+#: inc/customizer/options/footer.php:668
+msgid "You can use the following tags: {copyright}, {year}, {site_title}, {theme_author}"
+msgstr "يمكنك استخدام الوسوم التالية: {copyright} ، {year} ، {site_title} ، {theme_author}"
+
+#: inc/customizer/options/footer.php:682 inc/customizer/options/header.php:552
+msgid "Social profile"
+msgstr "الملف الشخصي الاجتماعي"
+
+#: inc/customizer/options/footer.php:685 inc/customizer/options/header.php:555
+msgid "Add new"
+msgstr "أضف جديد"
+
+#: inc/customizer/options/colors.php:447 inc/customizer/options/footer.php:744
+#: inc/customizer/options/header-mobile.php:383
+#: inc/customizer/options/header.php:778
+#: inc/modules/hf-builder/components/header/menu/customize-options.php:189
+msgid "Text color"
+msgstr "لون النص"
+
+#: inc/customizer/options/footer.php:881
+msgid "Vertical Padding"
+msgstr "الهوامش الداخلية العمودية"
+
+#: inc/customizer/options/general.php:140
+msgid "Misc"
+msgstr "متفرقات"
+
+#: inc/customizer/options/general.php:187
+msgid "Scroll to top"
+msgstr "مرر إلى الأعلى"
+
+#: inc/customizer/options/general.php:224
+msgid "Enable scroll to top"
+msgstr "فعّل التمرير لأعلى"
+
+#: inc/customizer/options/general.php:241
+#: inc/customizer/options/general.php:274
+msgid "Icon"
+msgstr "أيقونة"
+
+#: inc/customizer/options/general.php:242
+msgid "Text + Icon"
+msgstr "نص + أيقونة"
+
+#: inc/customizer/options/general.php:252 inc/extras.php:317
+msgid "Back to top"
+msgstr "العودة للأعلى"
+
+#: inc/customizer/options/general.php:256
+msgid "Text"
+msgstr "نصّ"
+
+#: inc/customizer/options/general.php:279
+msgid "Icon 1"
+msgstr "أيقونة 1"
+
+#: inc/customizer/options/general.php:283
+msgid "Icon 2"
+msgstr "أيقونة 2"
+
+#: inc/customizer/options/general.php:287
+msgid "Icon 3"
+msgstr "أيقونة 3"
+
+#: inc/customizer/options/general.php:291
+msgid "Icon 4"
+msgstr "أيقونة 4"
+
+#: inc/customizer/options/general.php:308
+#: inc/customizer/options/general.php:667
+msgid "Button radius"
+msgstr "نصف قطر الزر"
+
+#: inc/customizer/options/blog-single.php:198
+#: inc/customizer/options/blog.php:483 inc/customizer/options/general.php:331
+msgid "Position"
+msgstr "الموضع"
+
+#: inc/customizer/options/general.php:350
+msgid "Side offset"
+msgstr "إزاحة الجانب"
+
+#: inc/customizer/options/general.php:372
+msgid "Bottom offset"
+msgstr "أسفل الإزاحة"
+
+#: inc/customizer/options/general.php:428
+#: inc/modules/hf-builder/components/header/mobile-hamburger/customize-options.php:130
+msgid "Icon color"
+msgstr "لون الأيقونة"
+
+#: inc/customizer/options/general.php:490
+msgid "Icon hover color"
+msgstr "لون أيقونة التمرير"
+
+#: inc/customizer/options/general.php:521
+msgid "Background hover color"
+msgstr "لون خلفية التمرير"
+
+#: inc/customizer/options/general.php:539
+msgid "Icon size"
+msgstr "حجم الأيقونة"
+
+#: inc/customizer/options/general.php:561
+#: inc/customizer/options/header.php:1074
+#: inc/modules/hf-builder/components/footer/columns/customize-options.php:303
+#: inc/modules/hf-builder/components/footer/footer-builder/customize-options.php:220
+#: inc/modules/hf-builder/components/footer/row/customize-options.php:465
+#: inc/modules/hf-builder/components/header/columns/customize-options.php:309
+#: inc/modules/hf-builder/components/header/header-builder/customize-options.php:338
+#: inc/modules/hf-builder/components/header/row/customize-options.php:499
+msgid "Padding"
+msgstr "الهامش الداخلي"
+
+#: widgets/fp-facts.php:33
+msgid "Usage example: <strong>fas fa-cloud</strong> (solid). <strong>far fa-building</strong> (regular), <strong>fab fa-android</strong> (brands)"
+msgstr "مثال للإستخدام: <strong>fas fa-cloud</strong> (متين). <strong>far fa-building</strong> (عادي)، <strong>fab fa-android</strong> (العلامات التجارية)"
+
+#: theme-dashboard/class-theme-dashboard.php:681
+msgid "Join Our Community"
+msgstr "انضم إلى مجتمعنا"
+
+#: inc/dashboard/html-home.php:301
+#: theme-dashboard/class-theme-dashboard.php:750
+msgid "Have an idea or feedback?"
+msgstr "هل لديك فكرة أو ملاحظات؟"
+
+#: theme-dashboard/class-theme-dashboard.php:752
+msgid "Let us know. We'd love to hear from you."
+msgstr "أخبرنا. نود أن نسمع منك."
+
+#: inc/theme-dashboard-settings.php:42
+msgid "Multiple blog layouts"
+msgstr "تخطيطات مدونة متعددة"
+
+#: inc/theme-dashboard-settings.php:49
+msgid "Type of starter sites"
+msgstr "نوع المواقع البداية"
+
+#: inc/theme-dashboard-settings.php:54
+msgid "Starter sites"
+msgstr "مواقع البداية"
+
+#: inc/classes/class-sydney-page-metabox.php:78
+msgid "Transparent menu bar"
+msgstr "شريط قائمة شفاف"
+
+#: inc/customizer/options/footer.php:667 inc/theme-dashboard-settings.php:94
+msgid "Footer credits"
+msgstr "اعتمادات التذييل"
+
+#: inc/theme-dashboard-settings.php:100
+msgid "Hooks system"
+msgstr "نظام الخُطافات"
+
+#: inc/theme-dashboard-settings.php:105
+msgid "Custom Elementor widgets"
+msgstr "ودجات Elementor مخصصة"
+
+#: inc/theme-dashboard-settings.php:116
+msgid "Full list of differences between Sydney and Sydney Pro"
+msgstr "القائمة الكاملة للاختلافات بين Sydney وSydney Pro"
+
+#: inc/customizer/options/general.php:157
+msgid "Enable Schema markup"
+msgstr "تفعيل علامات المخطط"
+
+#: theme-dashboard/class-theme-dashboard.php:469
+msgid "A slow host can really put a drag on your site’s performance, even an optimized one. Make sure you get a host that won’t hold you back by reading our review, complete with real speed tests, of the fastest WordPress hosts. "
+msgstr "يمكن للمضيف البطيء أن يعرقل أداء موقعك حتى وإن كان محسنًا. تأكد من حصولك على مضيف لن يعيقك عند قراءة مراجعتنا، ترافقه اختبارات السرعة الحقيقية، لأسرع مضيفي ووردبريس. "
+
+#: inc/dashboard/html-hero.php:25 theme-dashboard/class-theme-dashboard.php:495
+msgid "Hello, "
+msgstr "مرحبا، "
+
+#: inc/dashboard/html-hero.php:27 theme-dashboard/class-theme-dashboard.php:503
+msgid "👋🏻"
+msgstr "👋🏻"
+
+#: inc/dashboard/class-dashboard-settings.php:119
+#: inc/dashboard/class-dashboard.php:159 inc/dashboard/class-dashboard.php:160
+#: inc/dashboard/html-hero.php:49 inc/dashboard/html-hero.php:53
+#: theme-dashboard/class-theme-dashboard.php:540
+msgid "Starter Sites"
+msgstr "مواقع البداية"
+
+#: theme-dashboard/class-theme-dashboard.php:552
+msgid "Clicking “Starter Sites” button will install and activate the demo importer plugin."
+msgstr "يؤدي النقر على زر \"المواقع البادئة\" إلى تنصيب وتفعيل المكون الإضافي لاستيراد النسخة التجريبية."
+
+#: theme-dashboard/class-theme-dashboard.php:655
+msgid "Priority Status"
+msgstr "الحالة الأولية"
+
+#: theme-dashboard/class-theme-dashboard.php:661
+msgid "Need help? We're here for you!"
+msgstr "تحتاج مساعدة؟ نحن هنا من أجلك!"
+
+#: theme-dashboard/class-theme-dashboard.php:664
+msgid "Have a question? Hit a bug? Get the help you need, when you need it from our friendly support staff."
+msgstr "لدي سؤال؟ هل أصابك خطأ؟ احصل على المساعدة التي تحتاجها ، عندما تحتاجها من فريق الدعم الودود لدينا."
+
+#: inc/dashboard/html-home.php:293
+#: theme-dashboard/class-theme-dashboard.php:668
+msgid "Get Support"
+msgstr "الحصول على الدعم"
+
+#: theme-dashboard/class-theme-dashboard.php:719
+msgid "pro"
+msgstr "pro"
+
+#: theme-dashboard/class-theme-dashboard.php:677
+msgid "Community"
+msgstr "مجتمع"
+
+#: theme-dashboard/class-theme-dashboard.php:684
+msgid "Discuss products and ask for community support or help the community."
+msgstr "ناقش المنتجات واطلب دعم المجتمع أو ساعد المجتمع."
+
+#: inc/dashboard/html-home.php:322
+#: theme-dashboard/class-theme-dashboard.php:688
+msgid "Join Now"
+msgstr "انضم الآن"
+
+#: theme-dashboard/class-theme-dashboard.php:735
+msgid "Review"
+msgstr "مراجعة"
+
+#: inc/dashboard/html-home.php:267
+#: theme-dashboard/class-theme-dashboard.php:744
+msgid "Submit a Review"
+msgstr "إرسال مراجعة"
+
+#: theme-dashboard/class-theme-dashboard.php:755
+msgid "Suggest an Idea"
+msgstr "اقترح فكرة"
+
+#: inc/dashboard/html-notifications-sidebar.php:33
+#: theme-dashboard/class-theme-dashboard.php:762
+msgid "Changelog"
+msgstr "سجّل التغيير"
+
+#: theme-dashboard/class-theme-dashboard.php:769
+msgid "Keep informed with the latest changes about each theme."
+msgstr "ابق على اطلاع بأحدث التغييرات حول كل قالب."
+
+#: theme-dashboard/class-theme-dashboard.php:772
+msgid "See the Changelog"
+msgstr "عرض سجل التغيير"
+
+#: inc/theme-dashboard-settings.php:14
+msgid "Differences between Sydney and Sydney Pro"
+msgstr "الفوارق بين Sydney وSydney Pro"
+
+#: inc/theme-dashboard-settings.php:15
+msgid "Here are some of the differences between Sydney and Sydney Pro:"
+msgstr "نجد هنا بعض الاختلافات بين Sydney وSydney Pro:"
+
+#: inc/theme-dashboard-settings.php:124
+msgid "Get Sydney Pro Today"
+msgstr "احصل على Sydney Pro اليوم"
+
+#: inc/theme-dashboard-settings.php:143
+msgid "Sydney is now installed and ready to use. Click on Starter Sites to get off to a flying start with one of our pre-made templates, or go to Theme Dashboard to get an overview of everything."
+msgstr "Sydney الآن منصب وجاهزة للإستخدام. انقر فوق مواقع Starter لبدء بداية سريعة باستخدام أحد قوالبنا المعدة مسبقًا، أو انتقل إلى قالب لوحة التحكم للحصول على نظرة عامة على كل شيء."
+
+#: inc/theme-dashboard-settings.php:150
+msgid "Theme Features"
+msgstr "ميزات القالب"
+
+#: inc/theme-dashboard-settings.php:200
+msgid "Change Site Title or Logo"
+msgstr "تغيير عنوان الموقع أو الشعار"
+
+#: inc/dashboard/class-dashboard-settings.php:226
+#: inc/theme-dashboard-settings.php:205
+msgid "Header Options"
+msgstr "خيارات الترويسة"
+
+#: inc/dashboard/class-dashboard-settings.php:251
+#: inc/theme-dashboard-settings.php:175
+msgid "Color Options"
+msgstr "خيارات الألوان"
+
+#: inc/dashboard/class-dashboard-settings.php:267
+#: inc/theme-dashboard-settings.php:233
+msgid "Blog Options"
+msgstr "خيارات المدونة"
+
+#: inc/dashboard/class-dashboard-settings.php:234
+#: inc/theme-dashboard-settings.php:248
+msgid "Footer Credits"
+msgstr "اعتمادات التذييل"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:84
+msgid "Single Product"
+msgstr "المنتج الفردي"
+
+#: inc/customizer/options/general.php:581
+#: inc/customizer/options/woocommerce.php:870
+#: inc/customizer/style-book/class-sydney-style-book.php:129
+#: inc/customizer/style-book/class-sydney-style-book.php:335
+#: inc/dashboard/class-dashboard-settings.php:259
+#: inc/theme-dashboard-settings.php:185
+msgid "Buttons"
+msgstr "أزرار"
+
+#: inc/dashboard/class-dashboard-settings.php:474
+#: inc/theme-dashboard-settings.php:220
+msgid "Extra Widget Area"
+msgstr "منطقة الودجت الإضافية"
+
+#: inc/dashboard/class-dashboard-settings.php:482
+#: inc/theme-dashboard-settings.php:267
+msgid "Google Maps"
+msgstr "خرائط جوجل"
+
+#: inc/theme-dashboard-settings.php:156
+msgid "Free vs PRO"
+msgstr "مجاني مقابل PRO"
+
+#: inc/customizer/options/performance.php:11
+#: inc/theme-dashboard-settings.php:162
+msgid "Performance"
+msgstr "الأداء"
+
+#: inc/dashboard/class-dashboard-settings.php:67
+#: inc/dashboard/class-dashboard.php:182 inc/dashboard/class-dashboard.php:183
+#: inc/theme-dashboard-settings.php:277
+msgid "Upgrade to Pro"
+msgstr "الترقية إلى احترافي"
+
+#: inc/dashboard/class-dashboard.php:136 inc/dashboard/class-dashboard.php:137
+#: inc/dashboard/html-hero.php:58 theme-dashboard/class-theme-dashboard.php:109
+#: theme-dashboard/class-theme-dashboard.php:545
+#: theme-dashboard/class-theme-dashboard.php:596
+msgid "Theme Dashboard"
+msgstr "رئيسية القالب"
+
+#: inc/dashboard/class-dashboard.php:262
+#: theme-dashboard/class-theme-dashboard.php:123
+msgid "Something went wrong, contact support."
+msgstr "حدث خطأ ما ، اتصل بالدعم."
+
+#: inc/dashboard/class-dashboard.php:489
+#: theme-dashboard/class-theme-dashboard.php:278
+msgid "Insufficient permissions to install the plugin."
+msgstr "أذونات غير كافية لتنصيب الإضافة."
+
+#: inc/dashboard/class-dashboard.php:519
+#: theme-dashboard/class-theme-dashboard.php:297
+msgid "Failed to initialize or activate importer plugin."
+msgstr "فشل في تهيئة أو تنشيط الإضافة للاستيراد."
+
+#: theme-dashboard/class-theme-dashboard.php:425
+msgid "Best WordPress Speed Optimization Plugins"
+msgstr "أفضل الإضافات لتحسين سرعة WordPress"
+
+#: theme-dashboard/class-theme-dashboard.php:429
+msgid "We run through the top 10 WordPress performance plugins to keep your site running fast. Goes beyond just caching plugins (though those are on there too!). A must-read for all WordPress site owners."
+msgstr "نقوم بتشغيل أفضل 10 إضافات لأداء ووردبريس للحفاظ على سرعة تشغيل موقعك. يتجاوز مجرد التخزين المؤقت للإضافات (على الرغم من وجودها هناك أيضًا!). يجب على جميع أصحاب مواقع ووردبريس قراءتها."
+
+#: inc/classes/class-sydney-modules.php:41
+#: inc/classes/class-sydney-modules.php:50
+#: inc/classes/class-sydney-modules.php:62
+#: inc/classes/class-sydney-modules.php:74
+#: inc/classes/class-sydney-modules.php:85
+#: inc/classes/class-sydney-modules.php:103
+#: inc/classes/class-sydney-modules.php:115
+#: inc/classes/class-sydney-modules.php:133
+#: inc/dashboard/class-dashboard-settings.php:200
+#: inc/dashboard/class-dashboard-settings.php:210
+#: inc/dashboard/class-dashboard-settings.php:218
+#: inc/dashboard/class-dashboard-settings.php:228
+#: inc/dashboard/class-dashboard-settings.php:236
+#: inc/dashboard/class-dashboard-settings.php:245
+#: inc/dashboard/class-dashboard-settings.php:253
+#: inc/dashboard/class-dashboard-settings.php:261
+#: inc/dashboard/class-dashboard-settings.php:269
+#: inc/dashboard/class-dashboard-settings.php:281
+#: inc/dashboard/class-dashboard-settings.php:302
+#: inc/dashboard/class-dashboard-settings.php:312
+#: inc/dashboard/class-dashboard-settings.php:322
+#: inc/dashboard/class-dashboard-settings.php:332
+#: inc/dashboard/class-dashboard-settings.php:342
+#: inc/dashboard/class-dashboard-settings.php:353
+#: inc/dashboard/class-dashboard-settings.php:375
+#: inc/dashboard/class-dashboard-settings.php:387
+#: inc/dashboard/class-dashboard-settings.php:398
+#: inc/dashboard/class-dashboard-settings.php:418
+#: inc/dashboard/class-dashboard-settings.php:428
+#: inc/dashboard/class-dashboard-settings.php:438
+#: inc/dashboard/class-dashboard-settings.php:458
+#: inc/dashboard/class-dashboard-settings.php:468
+#: inc/dashboard/class-dashboard-settings.php:476
+#: inc/dashboard/class-dashboard-settings.php:484
+#: inc/dashboard/class-dashboard-settings.php:493
+#: inc/dashboard/class-dashboard-settings.php:513
+#: inc/dashboard/class-dashboard.php:148 inc/dashboard/class-dashboard.php:149
+#: inc/dashboard/html-home.php:55 inc/dashboard/html-home.php:64
+#: inc/dashboard/html-home.php:73 inc/dashboard/html-home.php:152
+#: inc/dashboard/html-home.php:161 inc/dashboard/html-home.php:170
+#: theme-dashboard/class-theme-dashboard.php:400
+msgid "Customize"
+msgstr "تخصيص"
+
+#: theme-dashboard/class-theme-dashboard.php:445
+msgid "WP Rocket Review"
+msgstr "مراجعة WP Rocket"
+
+#: theme-dashboard/class-theme-dashboard.php:449
+msgid "Every site that is serious about speed (and should be pretty much all sites these days) needs a caching plugin and WP Rocket is our pick of the bunch. Get the lowdown on why we recommend it n our data-backed review: "
+msgstr "يحتاج كل موقع جاد بشأن السرعة (ويجب أن تكون تقريبًا جميع المواقع سريعة هذه الأيام) إلى إضافة التخزين المؤقت و WP Rocket وهو اختيارنا من بين هذه الإضافات. احصل على المعلومات الأكثر أهمية التى أوصيناكم بها في مراجعتنا المدعومة بالبيانات: "
+
+#: theme-dashboard/class-theme-dashboard.php:465
+msgid "Fastest WordPress Hosts"
+msgstr "أسرع مضيفي WordPress"
+
+#. Translators: %1$s current user display name.
+#: inc/notices/class-sydney-review.php:58
+msgid "Hey, %1$s! You've been using Sydney for more than two weeks now and we hope you're happy with it. If you have a few minutes, we would love to get a 5 star review from you."
+msgstr "مرحبا، %1$s! لقد اتستخدمت Sydney لأكثر من أسبوعين حتى الآن ونأمل أن تكون سعيدًا بها. إذا كان لديك بضع دقائق، فنحن نرغب في الحصول على تقييم 5 نجوم منك."
+
+#: inc/notices/class-sydney-review.php:67
+msgid "Sure"
+msgstr "متاكد"
+
+#: inc/notices/class-sydney-review.php:69
+msgid "Maybe later"
+msgstr "ربما في وقت لاحق"
+
+#: inc/notices/class-sydney-review.php:71
+msgid "I already did"
+msgstr "لقد فعلتها"
+
+#: inc/integrations/learnpress/customize.php:12
+msgid "Learnpress"
+msgstr "Learnpress"
+
+#: inc/integrations/learnpress/customize.php:28
+msgid "Sidebar layout (course archive)"
+msgstr "تخطيط الشريط الجانبي (أرشيف الدرس)"
+
+#: inc/integrations/learnpress/customize.php:50
+msgid "Sidebar layout (single course)"
+msgstr "تخطيط الشريط الجانبي (دورة فردية)"
+
+#: inc/integrations/learndash/customize.php:12
+msgid "Learndash"
+msgstr "LearnDash"
+
+#: inc/integrations/learndash/customize.php:31
+msgid "Single courses"
+msgstr "دورات فردية"
+
+#: inc/integrations/lifter/customize.php:12
+msgid "LifterLMS"
+msgstr "LifterLMS"
+
+#: inc/integrations/lifter/customize.php:31
+msgid "Courses archives"
+msgstr "دورات الأرشيف"
+
+#: inc/integrations/lifter/customize.php:46
+msgid "Course catalog columns"
+msgstr "دورة أعمدة الكتالوج"
+
+#: inc/integrations/learndash/customize.php:48
+#: inc/integrations/learndash/customize.php:81
+#: inc/integrations/lifter/customize.php:68
+#: inc/integrations/lifter/customize.php:122
+msgid "Sidebar layout"
+msgstr "تخطيط الشريط الجانبي"
+
+#: inc/integrations/learndash/customize.php:52
+#: inc/integrations/learndash/customize.php:85
+#: inc/integrations/learnpress/customize.php:32
+#: inc/integrations/learnpress/customize.php:54
+#: inc/integrations/lifter/customize.php:72
+#: inc/integrations/lifter/customize.php:126
+msgid "Sidebar left"
+msgstr "الشريط الجانبي الأيسر"
+
+#: inc/integrations/learndash/customize.php:53
+#: inc/integrations/learndash/customize.php:86
+#: inc/integrations/learnpress/customize.php:33
+#: inc/integrations/learnpress/customize.php:55
+#: inc/integrations/lifter/customize.php:73
+#: inc/integrations/lifter/customize.php:127
+msgid "Sidebar right"
+msgstr "الشريط الجانبي الأيمن"
+
+#: inc/integrations/lifter/customize.php:85
+msgid "Membership archives"
+msgstr "أرشيفات العضوية"
+
+#: inc/integrations/lifter/customize.php:100
+msgid "Memberships columns"
+msgstr "أعمدة العضويات"
+
+#: inc/integrations/lifter/customize.php:138
+msgid "Styling"
+msgstr "النمط"
+
+#: inc/integrations/lifter/customize.php:156
+msgid "Archives titles color"
+msgstr "لون عناوين الأرشيفات"
+
+#: inc/integrations/lifter/customize.php:175
+msgid "Archives titles color (hover)"
+msgstr "لون عناوين الأرشيفات (التمرير)"
+
+#: inc/integrations/lifter/customize.php:194
+msgid "Archives entry meta"
+msgstr "أرشيفات منوعات الدخول"
+
+#: inc/integrations/lifter/customize.php:211
+msgid "Archives titles font size"
+msgstr "حجم خط عناوين الأرشيفات"
+
+#: inc/integrations/lifter/customize.php:225
+msgid "Single course"
+msgstr "درس فردي"
+
+#: inc/integrations/lifter/customize.php:243
+msgid "Course title"
+msgstr "عنوان الدرس"
+
+#: inc/integrations/lifter/customize.php:260
+msgid "Course title font size"
+msgstr "حجم خط عنوان الدرس"
+
+#: inc/integrations/lifter/customize.php:280
+msgid "Course accent color"
+msgstr "لون المميز للدرس"
+
+#: inc/integrations/lifter/customize.php:290
+msgid "Single lesson"
+msgstr "درس فردي"
+
+#: inc/integrations/lifter/customize.php:308
+msgid "Lesson title"
+msgstr "عنوان الدرس"
+
+#: inc/integrations/lifter/customize.php:325
+msgid "Lesson title font size"
+msgstr "حجم خط عنوان الدرس"
+
+#: inc/customizer/customizer.php:141
+msgid "Menu layout"
+msgstr "تخطيط القائمة"
+
+#: inc/customizer/customizer.php:201
+msgid "Menu container"
+msgstr "حاوية القائمة"
+
+#: inc/customizer/customizer.php:204 inc/customizer/options/footer.php:143
+#: inc/customizer/options/footer.php:470 inc/customizer/options/footer.php:651
+#: inc/customizer/options/footer.php:866 inc/customizer/options/header.php:335
+#: inc/customizer/options/header.php:1152
+msgid "Contained"
+msgstr "مضمن"
+
+#: inc/customizer/customizer.php:222
+msgid "Header custom item"
+msgstr "عنصر الترويسة المخصص"
+
+#: inc/customizer/customizer.php:225
+#: inc/customizer/options/header-mobile.php:152
+msgid "Nothing"
+msgstr "لا شيء"
+
+#: inc/customizer/customizer.php:226
+#: inc/customizer/style-book/class-sydney-style-book.php:339 inc/extras.php:615
+#: inc/modules/hf-builder/class-header-footer-builder.php:110
+#: inc/modules/hf-builder/class-header-footer-builder.php:150
+#: inc/modules/hf-builder/components/header/button/customize-options.php:27
+msgid "Button"
+msgstr "الزر"
+
+#: inc/customizer/customizer.php:227
+#: inc/modules/hf-builder/class-header-footer-builder.php:118
+#: inc/modules/hf-builder/class-header-footer-builder.php:158
+#: inc/modules/hf-builder/class-header-footer-builder.php:191
+#: inc/modules/hf-builder/components/footer/html/customize-options.php:22
+#: inc/modules/hf-builder/components/header/html/customize-options.php:22
+msgid "HTML"
+msgstr "HTML"
+
+#: inc/customizer/customizer.php:256 inc/customizer/options/header.php:630
+#: inc/modules/hf-builder/components/footer/button/customize-options.php:82
+msgid "Button link"
+msgstr "زر الرابط"
+
+#: inc/customizer/customizer.php:266 inc/extras.php:227
+msgid "Get in touch"
+msgstr "لنبقى على اتصال"
+
+#: inc/customizer/customizer.php:273 inc/customizer/options/header.php:615
+#: inc/modules/hf-builder/components/footer/button/customize-options.php:67
+msgid "Button text"
+msgstr "نص الزر"
+
+#: inc/customizer/customizer.php:291
+msgid "Open link in a new tab?"
+msgstr "فتح الرابط في علامة تبويب جديدة؟"
+
+#: inc/customizer/customizer.php:309
+msgid "Top/bottom button padding"
+msgstr "الزر العلوي/السفلي للهامش الداخلي"
+
+#: inc/customizer/customizer.php:329
+msgid "Left/right button padding"
+msgstr "زر يمين/يسار للهامش الداخلي"
+
+#: inc/customizer/customizer.php:350 inc/customizer/options/woocommerce.php:963
+msgid "Button font size"
+msgstr "زر حجم الخط"
+
+#: inc/customizer/customizer.php:371
+msgid "Button border radius"
+msgstr "زر زوايا الحدود"
+
+#: inc/customizer/customizer.php:405
+msgid "Custom HTML"
+msgstr "HTML مخصص"
+
+#: inc/customizer/options/woocommerce-single.php:14
+msgid "Single products"
+msgstr "المنتجات الفردية"
+
+#: inc/customizer/options/woocommerce-single.php:52
+msgid "Remove sidebar from single products?"
+msgstr "إزالة الشريط الجانبي من المنتجات الفردية؟"
+
+#: inc/integrations/wpml/class-sydney-wpml-portfolio.php:31
+msgid "[aThemes Portfolio] Title"
+msgstr "عنوان [قائمة مشاريع aThemes]"
+
+#: inc/integrations/wpml/class-sydney-wpml-portfolio.php:34
+msgid "[aThemes Portfolio] Term"
+msgstr "عنصر [قائمة مشاريع aThemes]"
+
+#: inc/integrations/wpml/class-sydney-wpml-portfolio.php:37
+msgid "[aThemes Portfolio] Link"
+msgstr "رابط [قائمة مشاريع aThemes]"
+
+#: inc/integrations/wpml/class-sydney-wpml-employee-carousel.php:31
+msgid "[aThemes Employees] Name"
+msgstr "إسم [موظفي aThemes]"
+
+#: inc/integrations/wpml/class-sydney-wpml-employee-carousel.php:34
+msgid "[aThemes Employees] Position"
+msgstr "ترتيب [موظفي aThemes]"
+
+#: inc/integrations/wpml/class-sydney-wpml-employee-carousel.php:37
+msgid "[aThemes Employees] Link"
+msgstr "رابط [موظفي aThemes]"
+
+#: inc/integrations/wpml/class-sydney-wpml-testimonials.php:31
+msgid "[aThemes Testimonials] Name"
+msgstr "إسم [شهادات aThemes]"
+
+#: inc/integrations/wpml/class-sydney-wpml-testimonials.php:34
+msgid "[aThemes Testimonials] Position"
+msgstr "ترتيب [شهادات aThemes]"
+
+#: inc/integrations/wpml/class-sydney-wpml-testimonials.php:37
+msgid "[aThemes Testimonials] Testimonial"
+msgstr "شهادات [شهادات aThemes]"
+
+#: inc/integrations/wpml/class-sydney-wpml.php:38
+msgid "[aThemes Posts] See all button text"
+msgstr "عرض كل أزرار النص [مقالات aThemes]"
+
+#: inc/dashboard/class-dashboard.php:250 inc/dashboard/html-home.php:60
+#: inc/dashboard/html-home.php:157 inc/dashboard/html-home.php:208
+#: inc/dashboard/html-settings-performance.php:27
+#: inc/onboarding/plugins/class-sydney-recommended-plugins.php:106
+#: theme-dashboard/class-theme-dashboard.php:383
+msgid "Deactivate"
+msgstr "تعطيل"
+
+#: inc/onboarding/plugins/class-sydney-recommended-plugins.php:111
+msgid "Jetpack Portfolio"
+msgstr "قائمة مشاريع جاتباك (Jetpack)"
+
+#: inc/onboarding/plugins/class-sydney-recommended-plugins.php:154
+msgid "Activating "
+msgstr "يتم التنشيط "
+
+#: inc/onboarding/theme-info.php:49
+msgid "Install recommended plugins"
+msgstr "تنصيب الإضافات الموصى بها"
+
+#: inc/onboarding/theme-info.php:50
+msgid "Install one plugin at a time. Wait for each plugin to activate."
+msgstr "تنصيب إضافة واحدة في كل مرة. انتظر حتى يتم تفعيل كل إضافة."
+
+#: inc/onboarding/theme-info.php:56
+msgid "Sydney Toolbox is a free addon for the Sydney WordPress theme. It helps with things like demo import and additional Elementor widgets."
+msgstr "Sydney Toolbox هو وضيفة اضافية مجانية لقالب Sydney ووردبريس. إنه يساعد في أشياء مثل استيراد عرض توضيحي (Demo) وودجات Elementor إضافية."
+
+#: inc/onboarding/theme-info.php:63
+msgid "Elementor will enable you to create pages by adding widgets to them using drag and drop."
+msgstr "سيمكنك Elementor من إنشاء صفحات عن طريق إضافة ودجات إليها باستخدام السحب والرفع."
+
+#: inc/onboarding/theme-info.php:68
+msgid "First time Elementor user?"
+msgstr "مستخدم Elementor لأول مرة؟"
+
+#: inc/onboarding/theme-info.php:77
+msgid "This plugin is useful for importing our demos. You can uninstall it after you're done with it."
+msgstr "هذه الاضافة مفيدة لاستيراد العروض التوضيحية الخاصة بنا. يمكنك إلغاء التنصيب بعد الانتهاء منه."
+
+#: inc/onboarding/theme-info.php:85
+msgid "Import demo content (optional)"
+msgstr "استيراد محتوى العرض التوضيحي (اختياري)"
+
+#: inc/onboarding/theme-info.php:86
+msgid "Importing the demo will make your website look like our website."
+msgstr "سيؤدي استيراد العرض التوضيحي إلى جعل الموقع الإلكتروني الخاص بك يبدو مثل موقعنا."
+
+#: inc/onboarding/theme-info.php:98
+msgid "All recommended plugins need to be installed and activated for this step."
+msgstr "يجب تنصيب وتفعيل جميع المكونات الإضافية الموصى بها لهذه الخطوة."
+
+#: inc/onboarding/theme-info.php:104
+msgid "Styling with the Customizer"
+msgstr "التصميم باستخدام أداة التخصيص"
+
+#: inc/onboarding/theme-info.php:105
+msgid "Theme elements can be styled from the Customizer. Use the links below to go straight to the section you want."
+msgstr "يمكن تصميم عناصر القالب من قبل أداة التخصيص. استخدم الروابط أدناه للانتقال مباشرة إلى القسم الذي تريده."
+
+#: inc/onboarding/theme-info.php:106
+msgid "Change your site title or add a logo"
+msgstr "غير عنوان الموقع أو أضف شعارًا"
+
+#: inc/onboarding/theme-info.php:107
+msgid "Header options"
+msgstr "خيارات الترويسة"
+
+#: inc/onboarding/theme-info.php:109
+msgid "Font options"
+msgstr "خيارات الخط"
+
+#: inc/onboarding/theme-info.php:249
+msgid "View Sydney Pro"
+msgstr "عرض Sydney Pro"
+
+#: inc/dashboard/html-home.php:265 inc/onboarding/theme-info.php:257
+#: theme-dashboard/class-theme-dashboard.php:740
+msgid "It makes us happy to hear from our users. We would appreciate a review."
+msgstr "يسعدنا أن نسمع من مستخدمينا. نحن نقدر مراجعة."
+
+#: inc/onboarding/theme-info.php:258
+msgid "Submit a review here"
+msgstr "إرسال مراجعة هنا"
+
+#: inc/onboarding/theme-info.php:263
+msgid "Keep informed about each theme update."
+msgstr "ابق على اطلاع حول تحديث كل قالب."
+
+#: inc/onboarding/theme-info.php:264
+msgid "See the changelog"
+msgstr "عرض سجل التغيير"
+
+#: inc/dashboard/class-dashboard-settings.php:68
+#: inc/onboarding/theme-info.php:269 inc/theme-dashboard-settings.php:278
+msgid "Take Sydney to a whole other level by upgrading to the Pro version."
+msgstr "ارتق بSydney إلى مستوى آخر تمامًا عن طريق الترقية إلى نسخة Pro."
+
+#: inc/dashboard/class-dashboard-settings.php:69
+#: inc/onboarding/theme-info.php:270 inc/theme-dashboard-settings.php:279
+msgid "Discover Sydney Pro"
+msgstr "اكتشف Sydney Pro"
+
+#: inc/customizer/controls/typography/class_sydney_typography.php:110
+msgid "Font weight"
+msgstr "سُمك الخط"
+
+#: inc/classes/class-sydney-posts-archive.php:233
+#: theme-dashboard/class-theme-dashboard.php:433
+#: theme-dashboard/class-theme-dashboard.php:453
+#: theme-dashboard/class-theme-dashboard.php:473
+msgid "Read more"
+msgstr "اقرأ المزيد"
+
+#: inc/customizer/customizer.php:614
+msgid "Modern"
+msgstr "عصري"
+
+#: inc/customizer/customizer.php:777 inc/customizer/options/hero-area.php:131
+msgid "Click the pencil icon to change this text"
+msgstr "انقر على ايقونة القلم لتغيير هذا النص"
+
+#: inc/customizer/customizer.php:793 inc/customizer/options/hero-area.php:148
+msgid "or go to the Customizer"
+msgstr "أو اذهب إلى المخصص"
+
+#: inc/customizer/customizer.php:613
+msgid "Classic (alternative)"
+msgstr "تقليدي (البديل)"
+
+#. Template Name of the theme
+msgid "Page builder ready"
+msgstr "منشىء صفحات جاهز"
+
+#. Template Name of the theme
+#: inc/integrations/learndash/customize.php:51
+#: inc/integrations/learndash/customize.php:84
+#: inc/integrations/learnpress/customize.php:31
+#: inc/integrations/learnpress/customize.php:53
+#: inc/integrations/lifter/customize.php:71
+#: inc/integrations/lifter/customize.php:125
+msgid "No sidebar"
+msgstr "لا يوجد شريط جانبي"
+
+#. translators: %s is the user's display name
+#: inc/onboarding/theme-info.php:31
+msgid "Hello, %s,"
+msgstr "مرحبا، %s,"
+
+#: inc/theme-dashboard-settings.php:144
+msgid "Sydney is now installed and ready to go. To help you with the next step, we've gathered together on this page all the resources you might need. We hope you enjoy using Sydney."
+msgstr "تم الآن تنصيب Sydney وهو جاهزة للإستخدام. لمساعدتك في الخطوة التالية، جمعنا معًا في هذه الصفحة جميع الموارد التي قد تحتاجها. نأمل أن تستمتع باستخدام Sydney."
+
+#: inc/onboarding/theme-info.php:39
+msgid "Getting started"
+msgstr "بدء الاستخدام"
+
+#: inc/dashboard/class-dashboard-settings.php:121
+#: inc/onboarding/theme-info.php:41
+msgid "Free vs Pro"
+msgstr "مجانا مقابل احترافي"
+
+#: inc/onboarding/plugins/class-sydney-recommended-plugins.php:87
+msgid "Install and activate"
+msgstr "تنصيب وتفعيل"
+
+#: inc/onboarding/theme-info.php:96
+msgid "Go to the automatic importer"
+msgstr "انتقل إلى المستورد التلقائي"
+
+#: inc/onboarding/theme-info.php:120
+msgid "Visit our forums"
+msgstr "زيارة منتدياتنا"
+
+#: inc/onboarding/theme-info.php:121
+msgid "Need help? Go ahead and visit our support forums and we'll be happy to assist you with any theme related questions you might have"
+msgstr "تحتاج مساعدة؟ تفضل بزيارة منتديات الدعم الخاصة بنا وسنكون سعداء لمساعدتك في أي أسئلة متعلقة بالقالب"
+
+#: inc/onboarding/theme-info.php:122
+msgid "Visit the forums"
+msgstr "زيارة المنتديات"
+
+#: inc/onboarding/theme-info.php:127
+msgid "Our documentation can help you learn how to use the theme and also provides you with premade code snippets and answers to FAQs."
+msgstr "يمكن أن تساعدك وثائقنا على تعلم كيفية استخدام القالب كما أنها تزودك بمقتطفات برمجية معدة مسبقًا وإجابات على الأسئلة المتكررة."
+
+#: inc/onboarding/theme-info.php:128
+msgid "See the Documentation"
+msgstr "اطلع على الوثائق"
+
+#: inc/onboarding/theme-info.php:136 inc/theme-dashboard-settings.php:20
+msgid "Feature"
+msgstr "ميزة"
+
+#: inc/dashboard/html-notifications-sidebar.php:51
+#: inc/onboarding/theme-info.php:138 inc/theme-dashboard-settings.php:22
+msgid "Sydney Pro"
+msgstr "Sydney Pro"
+
+#: inc/onboarding/theme-info.php:143 inc/theme-dashboard-settings.php:27
+msgid "Access to all Google Fonts"
+msgstr "الوصول الى جميع خطوط جوجل"
+
+#: inc/onboarding/theme-info.php:153
+msgid "Parallax backgrounds"
+msgstr "خلفيات اختلاف المنظر"
+
+#: inc/modules/hf-builder/components/footer/social/customize-options.php:24
+#: inc/modules/hf-builder/components/header/social/customize-options.php:24
+#: inc/onboarding/theme-info.php:158
+msgid "Social Icons"
+msgstr "أيقونات اجتماعية"
+
+#: inc/onboarding/theme-info.php:163
+msgid "Slider, image or video header"
+msgstr "ترويسة عارض الشرائح أو الصورة أو الفيديو"
+
+#: inc/onboarding/theme-info.php:168
+msgid "Front Page Blocks"
+msgstr "مكوّنات الصفحة الأمامية"
+
+#: inc/onboarding/theme-info.php:173
+msgid "Translation ready"
+msgstr "ترجمة جاهزة"
+
+#: inc/onboarding/theme-info.php:178
+msgid "Polylang integration"
+msgstr "تكامل Polylang"
+
+#: inc/onboarding/theme-info.php:108 inc/onboarding/theme-info.php:183
+msgid "Color options"
+msgstr "خيارات الألوان"
+
+#: inc/onboarding/theme-info.php:193
+msgid "Widgetized footer"
+msgstr "إنشاء ودجت في التذييل"
+
+#: inc/onboarding/theme-info.php:198
+msgid "Background image support"
+msgstr "الدعم الفني للصورة الخلفية"
+
+#: inc/onboarding/theme-info.php:203
+msgid "Footer Credits option"
+msgstr "إعدادات اعتمادات التذييل"
+
+#: inc/onboarding/theme-info.php:208
+msgid "Extra widgets (timeline, latest news in carousel, pricing tables, a new employees widget and a new contact widget)"
+msgstr "ودجات إضافية (الجدول الزمني، وآخر الأخبار في معرض الصور (Carousel)، وجداول التسعير، وودجت جديدة للموظفين، وودجت اتصال جديدة)"
+
+#: inc/onboarding/theme-info.php:213
+msgid "Extra Customizer Options (Front Page Section Titles, Single Employees, Single Projects, Header Contact Info, Buttons)"
+msgstr "خيارات مخصصة إضافية (عناوين قسم الصفحة الرئيسية، الموظفين الفرديين، المشاريع الفردية، معلومات ترويسة الاتصال، الأزرار)"
+
+#: inc/onboarding/theme-info.php:218
+msgid "Header support for Crelly Slider"
+msgstr "الدعم الفني للترويسة لCrelly Slider"
+
+#: inc/onboarding/theme-info.php:223
+msgid "Header support for shortcodes"
+msgstr "ترويسة الدعم الفني للرموز القصيرة"
+
+#: inc/onboarding/theme-info.php:228
+msgid "Single Post/Page Options"
+msgstr "خيارات المقالة/الصفحة الفردية"
+
+#: inc/onboarding/theme-info.php:233
+msgid "WooCommerce compatible"
+msgstr "متوافق مع WooCommerce"
+
+#: inc/onboarding/theme-info.php:238
+msgid "5 Extra Page Templates (Contact, Featured Header - Default, Featured Header - Wide, No Header - Default, No Header - Wide)"
+msgstr "5 قوالب صفحات إضافية (اتصال، ترويسة مميزة - افتراضية، ترويسة مميزة - عريضة، لا توجد ترويسة - افتراضية، لا توجد ترويسة - عريضة)"
+
+#: inc/onboarding/theme-info.php:243
+msgid "Priority support"
+msgstr "دعم ذو أولوية"
+
+#: inc/customizer/upsell/class-customize.php:77
+msgid "Buy Sydney Pro"
+msgstr "اشترِ Sydney Pro"
+
+#: inc/customizer/customizer.php:628 inc/customizer/options/hero-area.php:567
+msgid "Full screen"
+msgstr "شاشة كاملة"
+
+#: inc/customizer/customizer.php:629 inc/customizer/options/hero-area.php:568
+#: inc/onboarding/theme-info.php:148 inc/theme-dashboard-settings.php:32
+msgid "Responsive"
+msgstr "متجاوب"
+
+#: inc/customizer/options/colors.php:659 inc/customizer/options/header.php:970
+msgid "Menu items hover"
+msgstr "المرور فوق عناصر القائمة"
+
+#: inc/customizer/options/colors.php:714
+msgid "Mobile menu button"
+msgstr "زر القائمة الجوالة"
+
+#: widgets/video-widget.php:26
+msgid "Video mode:"
+msgstr "نمط الفيديو:"
+
+#: inc/customizer/controls/color-group/class_sydney_color_group.php:30
+#: inc/customizer/options/layouts.php:68
+#: inc/customizer/options/typography.php:60
+#: inc/customizer/options/typography.php:500 widgets/video-widget.php:28
+msgid "Normal"
+msgstr "عادي"
+
+#: widgets/video-widget.php:29
+msgid "Lightbox"
+msgstr "صندوق الضوء"
+
+#: widgets/video-widget.php:32
+msgid "Text before the play button (only for lightbox mode):"
+msgstr "النّص قبل زر التشغيل (فقط لوضع صندوق الضوء):"
+
+#: inc/customizer/customizer.php:560 inc/customizer/options/hero-area.php:51
+#: inc/customizer/options/hero-area.php:74
+msgid "Video"
+msgstr "فيديو"
+
+#: inc/page-builder.php:65 inc/so-page-builder.php:65
+msgid "Add a value in the field to change the top/bottom row padding, otherwise 100px will be applied by default"
+msgstr "أضف قيمة في الحقل لتغيير صف الهوامش الداخلية العلوية/السفلية، وإلا سيتم تطبيق 100 بكسيل (px) بشكل افتراضي"
+
+#: inc/customizer/options/blog-single.php:51
+#: inc/customizer/options/colors.php:561 inc/customizer/options/header.php:14
+#: inc/dashboard/html-builder.php:16
+#: inc/modules/hf-builder/components/header/header-builder/customize-options.php:88
+#: inc/theme-dashboard-settings.php:196
+msgid "Header"
+msgstr "الترويسة"
+
+#: inc/page-builder.php:107 inc/so-page-builder.php:107
+msgid "Disable row overlay?"
+msgstr "تعطيل صف الغطاء؟"
+
+#: inc/page-builder.php:113 inc/so-page-builder.php:113
+msgid "Overlay color"
+msgstr "لون الغطاء"
+
+#: inc/page-builder.php:174 inc/so-page-builder.php:174
+msgid "Content alignment"
+msgstr "محاذاة المحتوى"
+
+#: inc/customizer/controls/dimensions/class_sydney_dimensions_control.php:115
+#: inc/customizer/controls/dimensions/class_sydney_dimensions_control.php:143
+#: inc/customizer/controls/dimensions/class_sydney_dimensions_control.php:170
+#: inc/customizer/options/blog-single.php:68
+#: inc/customizer/options/blog.php:245 inc/customizer/options/blog.php:629
+#: inc/customizer/options/general.php:334 inc/customizer/options/header.php:315
+#: inc/customizer/options/header.php:438 inc/customizer/options/layouts.php:137
+#: inc/customizer/options/woocommerce.php:107 inc/page-builder.php:178
+#: inc/so-page-builder.php:178
+msgid "Left"
+msgstr "يسار"
+
+#: inc/customizer/options/header.php:316
+#: inc/modules/hf-builder/components/footer/columns/customize-options.php:211
+#: inc/modules/hf-builder/components/footer/footer-builder/customize-options.php:157
+#: inc/modules/hf-builder/components/footer/row/customize-options.php:359
+#: inc/modules/hf-builder/components/header/columns/customize-options.php:217
+#: inc/modules/hf-builder/components/header/header-builder/customize-options.php:275
+#: inc/modules/hf-builder/components/header/row/customize-options.php:393
+#: inc/page-builder.php:179 inc/so-page-builder.php:179
+msgid "Center"
+msgstr "توسيط"
+
+#: inc/customizer/controls/dimensions/class_sydney_dimensions_control.php:103
+#: inc/customizer/controls/dimensions/class_sydney_dimensions_control.php:131
+#: inc/customizer/controls/dimensions/class_sydney_dimensions_control.php:158
+#: inc/customizer/options/blog.php:246 inc/customizer/options/blog.php:630
+#: inc/customizer/options/general.php:335 inc/customizer/options/header.php:317
+#: inc/customizer/options/header.php:451 inc/customizer/options/layouts.php:138
+#: inc/customizer/options/woocommerce.php:111 inc/page-builder.php:180
+#: inc/so-page-builder.php:180
+msgid "Right"
+msgstr "يمين"
+
+#: inc/page-builder.php:183 inc/so-page-builder.php:183
+msgid "This setting depends on the content, it may or may not work"
+msgstr "يعتمد هذا الإعداد على المحتوى، فقد يعمل أو لا يعمل"
+
+#: inc/page-builder.php:187 inc/so-page-builder.php:187
+msgid "Widget title color"
+msgstr "لون عنوان الودجت"
+
+#: inc/customizer/options/footer.php:288 inc/page-builder.php:194
+#: inc/so-page-builder.php:194
+msgid "Headings color"
+msgstr "لون العناوين"
+
+#: inc/page-builder.php:198 inc/so-page-builder.php:198
+msgid "This applies to all headings in the widget, except the widget title"
+msgstr "ينطبق هذا على جميع العناوين في الودجت، باستثناء عنوان الودجت"
+
+#: inc/dashboard/html-settings-general.php:56
+#: inc/theme-dashboard-settings.php:321
+msgid "Get Sydney Pro"
+msgstr "احصل على Sydney Pro"
+
+#: widgets/fp-services-type-a.php:42 widgets/fp-services-type-b.php:51
+msgid "Content to display:"
+msgstr "المحتوى المراد عرضه:"
+
+#: widgets/fp-services-type-a.php:44 widgets/fp-services-type-b.php:53
+msgid "Full content"
+msgstr "المحتوى الكامل"
+
+#: inc/customizer/options/blog.php:408 widgets/fp-services-type-a.php:45
+#: widgets/fp-services-type-b.php:54
+msgid "Excerpt"
+msgstr "المقتطف"
+
+#: widgets/fp-portfolio.php:12
+msgid "Display your projects in a grid."
+msgstr "عرض المشاريع الخاصة بك في شبكة."
+
+#: widgets/fp-portfolio.php:13
+msgid "Sydney FP: Portfolio"
+msgstr "Sydney FP: قائمة المشاريع"
+
+#: widgets/fp-portfolio.php:35 widgets/fp-portfolio.php:147
+msgid "Show all"
+msgstr "عرض الكل"
+
+#: widgets/fp-portfolio.php:153
+msgid "Number of projects to show (-1 shows all of them):"
+msgstr "عدد المشاريع المراد عرضها (-1يظهر كل منهم):"
+
+#: widgets/fp-portfolio.php:155
+msgid "Enter the slugs (comma separated) for your categories or leave empty to show all projects."
+msgstr "أدخل الإسم اللطيف (مفصول بفاصل) للتصنيفات الخاصة بك أو اتركها فارغة لعرض جميع المشاريع."
+
+#: widgets/fp-portfolio.php:158
+msgid "Show navigation filter? (Category slugs must be specified)."
+msgstr "عرض تنقل عامل التصفية؟ (يجب أن يكون تصنيف الأسماء اللطيفة مُحدد)."
+
+#: widgets/fp-portfolio.php:159
+msgid "\"Show all\" text:"
+msgstr "\"عرض كل\" النص:"
+
+#: widgets/fp-portfolio.php:162
+msgid "Show project title?"
+msgstr "عرض اسم المشروع؟"
+
+#: inc/customizer/options/general.php:117
+msgid "Page wrapper - bottom padding"
+msgstr "غلاف الصفحة - الهوامش الداخلية السفلية"
+
+#: widgets/fp-clients.php:35
+msgid "Open clients links in a new tab?"
+msgstr "فتح روابط العملاء في علامة تبويب جديدة؟"
+
+#: inc/customizer/options/general.php:93
+msgid "Page wrapper - top padding"
+msgstr "غلاف الصفحة - الهوامش الداخلية العلوية"
+
+#: inc/customizer/options/general.php:96
+msgid "Top padding for the page wrapper (the space between the header and the page title)"
+msgstr "الهوامش الداخلية العلوية لغلاف الصفحة (المسافة بين الترويسة وعنوان الصفحة)"
+
+#: inc/customizer/options/general.php:120
+msgid "Bottom padding for the page wrapper (the space between the page content and the footer)"
+msgstr "زر الهوامش الداخلية لغلاف الصفحة (المسافة بين محتوى الصفحة والتذييل)"
+
+#: inc/dashboard/html-home.php:288 inc/onboarding/theme-info.php:40
+#: theme-dashboard/class-theme-dashboard.php:652
+msgid "Support"
+msgstr "الدعم الفني"
+
+#: widgets/fp-testimonials.php:33
+msgid "Autoplay time [ms]"
+msgstr "وقت التشغيل التلقائي [ميلي ثانية(ms)]"
+
+#: inc/dashboard/html-home.php:45 inc/dashboard/html-home.php:142
+#: inc/dashboard/html-home.php:275 inc/onboarding/theme-info.php:126
+#: theme-dashboard/class-theme-dashboard.php:587
+msgid "Documentation"
+msgstr "وثائق المساعدة"
+
+#: inc/onboarding/theme-info.php:21
+msgid "Sydney Info"
+msgstr "معلومات Sydney"
+
+#. Template Name of the theme
+#: inc/customizer/customizer.php:205
+msgid "Full width"
+msgstr "كامل العرض"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:175
+msgid "Front Page"
+msgstr "الصفحة الرئيسية"
+
+#: widgets/fp-testimonials.php:6
+msgid "Display your testimonials in a slider."
+msgstr "اعرض شهاداتك في عارض شرائح."
+
+#: widgets/fp-testimonials.php:7
+msgid "Sydney FP: Testimonials"
+msgstr "Sydney FP: الشهادات"
+
+#: widgets/fp-testimonials.php:20
+msgid "In order to display this widget, you must first add some testimonials from your admin area."
+msgstr "لعرض هذه الودجت، يجب عليك أولاً إضافة بعض الشهادات من منطقة الإدارة الخاصة بك."
+
+#: widgets/fp-testimonials.php:25
+msgid "Number of testimonials to show (-1 shows all of them):"
+msgstr "عدد الشهادات المراد عرضها (-1 يعرض كل منهم)"
+
+#: widgets/fp-testimonials.php:27
+msgid "The URL for your button [In case you want a button below your testimonials block]"
+msgstr "زر ال URL الخاص بك [إن كنت تريد زرًا أسفل مكون الشهادات الخاصة بك]"
+
+#: widgets/fp-testimonials.php:29
+msgid "The text for the button [Defaults to <em>See all our testimonials</em> if left empty]"
+msgstr "زر النص [افتراضي ل <em>عرض كل شهاداتنا</em> إذا تركت فارغة]"
+
+#: widgets/fp-testimonials.php:31
+msgid "Enter the slug for your category or leave empty to show all testimonials."
+msgstr "أدخل الإسم اللطيف للفئة الخاصة بك أو اتركه فارغًا لعرض جميع الشهادات."
+
+#: widgets/fp-testimonials.php:108
+msgid "See all our testimonials"
+msgstr "عرض كل الشهادات الخاصة بنا"
+
+#: widgets/video-widget.php:6
+msgid "Display a video from Youtube, Vimeo etc."
+msgstr "عرض مقطع فيديو من Youtube وVimeo وما إلى ذلك."
+
+#: widgets/video-widget.php:7
+msgid "Sydney: Video"
+msgstr "Sydney: فيديو"
+
+#: widgets/video-widget.php:24
+msgid "Paste the URL of the video (only from a network that supports oEmbed, like Youtube, Vimeo etc.):"
+msgstr "ألصق URL الفيديو (فقط من الشبكة التي تدعم oEmbed مثل Youtube وVimeo وما إلى ذلك):"
+
+#: widgets/fp-social.php:65
+msgid "&mdash; Select &mdash;"
+msgstr "&mdash; اختيار &mdash;"
+
+#: widgets/fp-social.php:61
+msgid "In order to display your social icons in a widget, all you need to do is go to <strong>Appearance > Menus</strong> and create a menu containing links to your social profiles, then assign that menu here. Supported networks: Facebook, Twitter, Google Plus, Instagram, Dribble, Vimeo, Linkedin, Youtube, Flickr, Pinterest, Tumblr, Foursquare, Behance."
+msgstr "لعرض الأيقونات الإجتماعية الخاصة بك في الودجت، كل ما عليك فعله هو الانتقال إلى <strong>المظهر> القوائم</strong> وإنشاء قائمة تحتوي على روابط ملفات التعريف الإجتماعية الخاصة بك ثم قم بإسناد تلك القائمة هنا. الشبكات المدعومة: Facebook وTwitter وGoogle Plus وInstagram وDribble وVimeo وLinkedin وYoutube وFlickr وPinterest وTumblr وFoursquare وBehance."
+
+#: widgets/fp-social.php:63
+msgid "Select your social menu:"
+msgstr "حدد القائمة الاجتماعية الخاصة بك:"
+
+#: widgets/fp-social.php:53
+msgid "No menus have been created yet. <a href=\"%s\">Create some</a>."
+msgstr "حتى الآن لم تقم بانشاء قوائم. <a href=\"%s\">إنشاء</a>."
+
+#: widgets/fp-skills.php:6
+msgid "Show your visitors some of your skills."
+msgstr "عرض بعض المهارات الخاصة بك للزائرين."
+
+#: widgets/fp-skills.php:7
+msgid "Sydney FP: Skills"
+msgstr "Sydney FP: المهارات"
+
+#: widgets/fp-skills.php:30
+msgid "First skill name"
+msgstr "اسم المهارة الأول"
+
+#: widgets/fp-skills.php:35
+msgid "First skill value"
+msgstr "قيمة المهارة الأولى"
+
+#: widgets/fp-skills.php:41
+msgid "Second skill name"
+msgstr "اسم المهارة الثانية"
+
+#: widgets/fp-skills.php:46
+msgid "Second skill value"
+msgstr "قيمة المهارة الثانية"
+
+#: widgets/fp-skills.php:52
+msgid "Third skill name"
+msgstr "اسم المهارة الثالثة"
+
+#: widgets/fp-skills.php:57
+msgid "Third skill value"
+msgstr "قيمة المهارة الثالثة"
+
+#: widgets/fp-skills.php:63
+msgid "Fourth skill name"
+msgstr "اسم المهارة الرابعة"
+
+#: widgets/fp-skills.php:68
+msgid "Fourth skill value"
+msgstr "قيمة المهارة الرابعة"
+
+#: widgets/fp-social.php:5
+msgid "Display your social profile on your front page"
+msgstr "عرض ملف التعريف الاجتماعي الخاص بك على صفحتك الرئيسية"
+
+#: widgets/fp-social.php:6
+msgid "Sydney FP: Social Profile"
+msgstr "Sydney FP: ملف التعريف الاجتماعي"
+
+#: widgets/fp-services-type-b.php:41
+msgid "Number of columns:"
+msgstr "عدد الأعمدة:"
+
+#: widgets/fp-list.php:66
+msgid "Add a bit of text here. It will be displayed."
+msgstr "أضف القليل من النص هنا. سيتم عرضه."
+
+#: widgets/fp-list.php:69
+msgid "Add your list items here. One item per row, start each row with <strong>^</strong>. Example: <strong>^ list item </strong>"
+msgstr "أضف قائمة عناصرك هنا. عنصر واحد في كل صف، وابدأ كل صف بـ <strong>^</strong>. مثال: <strong>^ عنصر قائمة</strong>"
+
+#: widgets/fp-list.php:72
+msgid "Call to action button URL:"
+msgstr "URL زر الدعوة إلى اتخاذ إجراء:"
+
+#: widgets/fp-list.php:75
+msgid "Call to action button text:"
+msgstr "نص زر الدعوة إلى اتخاذ إجراء:"
+
+#: widgets/fp-services-type-a.php:11 widgets/fp-services-type-b.php:11
+msgid "Show what services you are able to provide."
+msgstr "عرض الخدمات التي يمكنك تقديمها."
+
+#: widgets/fp-services-type-a.php:12
+msgid "Sydney FP: Services Type A"
+msgstr "Sydney FP: خدمات نوع A"
+
+#: widgets/fp-services-type-a.php:27 widgets/fp-services-type-b.php:27
+msgid "In order to display this widget, you must first add some services from your admin area."
+msgstr "لعرض هذه الودجت، يجب عليك أولاً إضافة بعض الخدمات من منطقة الإدارة الخاصة بك."
+
+#: widgets/fp-services-type-a.php:32 widgets/fp-services-type-b.php:32
+msgid "Number of services to show (-1 shows all of them):"
+msgstr "عدد الخدمات المراد عرضها: (-1 يعرض كل منهم)"
+
+#: widgets/fp-services-type-a.php:34 widgets/fp-services-type-b.php:34
+msgid "The URL for your button [In case you want a button below your services block]"
+msgstr "URL للزر الخاص بك [إن كنت تريد زرًا أسفل مكون خدماتك]"
+
+#: widgets/fp-services-type-a.php:36 widgets/fp-services-type-b.php:36
+msgid "The text for the button [Defaults to <em>See all our services</em> if left empty]"
+msgstr "نص الزر [ افتراضي ل <em>عرض جميع خدماتنا</em> إذا تركت فارغة]"
+
+#: widgets/fp-services-type-a.php:38 widgets/fp-services-type-b.php:38
+msgid "Enter the slug for your category or leave empty to show all services."
+msgstr "أدخل الإسم اللطيف للتصنيف الخاص بك أو اتركه فارغًا لعرض جميع الخدمات."
+
+#: widgets/fp-services-type-a.php:41
+msgid "Display services in two columns instead of three?"
+msgstr "عرض الخدمات في عمودين بدلا من ثلاثة؟"
+
+#: widgets/fp-services-type-a.php:146 widgets/fp-services-type-b.php:162
+msgid "See all our services"
+msgstr "تعرف على جميع خدماتنا"
+
+#: widgets/fp-services-type-b.php:12
+msgid "Sydney FP: Services type B"
+msgstr "Sydney FP: خدمات نوع B"
+
+#: widgets/fp-list.php:63 widgets/fp-portfolio.php:151 widgets/fp-social.php:58
+msgid "Title:"
+msgstr "العنوان:"
+
+#: widgets/fp-call-to-action.php:27
+msgid "Display the button inline with the text?"
+msgstr "عرض الزر منسقا مع النص؟"
+
+#: widgets/fp-clients.php:6
+msgid "Display your clients list."
+msgstr "عرض قائمة عملائك."
+
+#: widgets/fp-clients.php:7
+msgid "Sydney FP: Clients"
+msgstr "Sydney FP: العملاء"
+
+#: widgets/fp-clients.php:21
+msgid "In order to display this widget, you must first add some clients from your admin area. Set your client logos as featured images."
+msgstr "لعرض هذه الودجت، يجب عليك أولاً أن تضيف بعض العملاء من منطقة الإدارة الخاصة بك. قم بتعيين شعارات العميل الخاصة بك كصور بارزة."
+
+#: widgets/fp-clients.php:26
+msgid "Number of clients to show (-1 shows all of them):"
+msgstr "عدد العملاء المراد عرضهم (-1 يعرض كل منهم)"
+
+#: widgets/fp-clients.php:28
+msgid "The URL for your button [In case you want a button below your clients block]"
+msgstr "URL للزر الخاص بك [إن كنت تريد زرًا أسفل مكون عملائك]"
+
+#: widgets/fp-clients.php:30
+msgid "The text for the button [Defaults to <em>See all our clients</em> if left empty]"
+msgstr "نص الزر [الإعدادات الافتراضية هي <em> رؤية جميع عملائنا </em> إذا تُركت فارغة]"
+
+#: widgets/fp-clients.php:32
+msgid "Enter the slug for your category or leave empty to show all clients."
+msgstr "ادخل الإسم اللطيف للتصنيف الخاص بك أو اتركه فارغًا لإظهار جميع العملاء."
+
+#: widgets/fp-clients.php:111
+msgid "See all our clients"
+msgstr "تعرف على جميع عملائنا"
+
+#: widgets/fp-employees.php:6
+msgid "Display your team members in a stylish way."
+msgstr "اعرض أعضاء فريقك بطريقة منسقة."
+
+#: widgets/fp-employees.php:7
+msgid "Sydney FP: Employees"
+msgstr "Sydney FP: الموظفين"
+
+#: widgets/fp-employees.php:20
+msgid "In order to display this widget, you must first add some employees from the dashboard. Add as many as you want and the theme will automatically display them all."
+msgstr "لعرض هذه الودجت، يجب عليك أولاً إضافة بعض الموظفين من لوحة التحكم. أضف عدد القوالب التي تريدها وستعرض جميعها تلقائيًا."
+
+#: widgets/fp-employees.php:25
+msgid "Number of employees to show (-1 shows all of them):"
+msgstr "عدد الموظفين المراد عرضهم (-1 يعرض كل منهم)"
+
+#: widgets/fp-employees.php:27
+msgid "Enter an URL here if you want to section to link somewhere."
+msgstr "أدخل URL هنا إذا كنت تريد قسمًا لربط مكان ما."
+
+#: widgets/fp-employees.php:29
+msgid "The text for the button [Defaults to <em>See all our employees</em> if left empty]"
+msgstr "نص الزر [افتراضي ل <em>اطلع على جميع عملائنا</em> إذا تُركت فارغة]"
+
+#: widgets/fp-employees.php:31
+msgid "Enter the slug for your category or leave empty to show all employees."
+msgstr "ادخل الإسم اللطيف للتصنيف الخاص بك أو اتركه فارغا لعرض جميع الموظفين."
+
+#: widgets/fp-employees.php:34
+msgid "Center the employees? (use only if you have 1 or 2 employees)"
+msgstr "توسيط الموظفين؟ (استخدم فقط إذا كان لديك موظف أو موظفان)"
+
+#: widgets/fp-employees.php:142
+msgid "See all our employees"
+msgstr "اطلع على جميع عملائنا."
+
+#: widgets/fp-facts.php:7
+msgid "Show your visitors some facts about your company."
+msgstr "أعرض للزوار بعض الحقائق عن الشركة الخاصة بك."
+
+#: widgets/fp-facts.php:8
+msgid "Sydney FP: Facts"
+msgstr "Sydney FP: حقائق"
+
+#: widgets/fp-facts.php:30
+msgid "You can find a list of the available icons "
+msgstr "يمكنك إيجاد قائمة الأيقونات المتوفرة "
+
+#: widgets/fp-facts.php:30
+msgid "here."
+msgstr "هنا."
+
+#: widgets/fp-facts.php:35
+msgid "Usage example: <strong>fa-android</strong>"
+msgstr "مثال للإستخدام: <strong>fa-android</strong>"
+
+#: widgets/fp-facts.php:45
+msgid "First fact name"
+msgstr "إسم الحقيقة الأولى"
+
+#: widgets/fp-facts.php:50
+msgid "First fact value"
+msgstr "قيمة الحقيقة الأولى"
+
+#: widgets/fp-facts.php:55
+msgid "First fact icon"
+msgstr "أيقونة الحقيقة الأولى"
+
+#: widgets/fp-facts.php:61
+msgid "Second fact name"
+msgstr "إسم الحقيقة الثانية"
+
+#: widgets/fp-facts.php:66
+msgid "Second fact value"
+msgstr "قيمة الحقيقة الثانية"
+
+#: widgets/fp-facts.php:71
+msgid "Second fact icon"
+msgstr "أيقونة الحقيقة الثانية"
+
+#: widgets/fp-facts.php:77
+msgid "Third fact name"
+msgstr "إسم الحقيقة الثالثة"
+
+#: widgets/fp-facts.php:82
+msgid "Third fact value"
+msgstr "قيمة الحقيقة الثالثة"
+
+#: widgets/fp-facts.php:87
+msgid "Third fact icon"
+msgstr "أيقونة الحقيقة الثالثة"
+
+#: widgets/fp-facts.php:93
+msgid "Fourth fact name"
+msgstr "إسم الحقيقة الرابعة"
+
+#: widgets/fp-facts.php:98
+msgid "Fourth fact value"
+msgstr "قيمة الحقيقة الرابعة"
+
+#: widgets/fp-facts.php:103
+msgid "Fourth fact icon"
+msgstr "أيقونة الحقيقة الرابعة"
+
+#: widgets/fp-latest-news.php:6
+msgid "Show the latest news from your blog."
+msgstr "عرض آخر الأخبار من المدونة الخاصة بك."
+
+#: widgets/fp-latest-news.php:7
+msgid "Sydney FP: Latest News"
+msgstr "Sydney FP: أحدث الأخبار"
+
+#: widgets/fp-latest-news.php:22
+msgid "Enter the slug for your category or leave empty to show posts from all categories."
+msgstr "أدخل الإسم اللطيف للفئة الخاصة بك أو اتركه فارغًا لعرض المقالات من جميع التصنيفات."
+
+#: widgets/fp-latest-news.php:25
+msgid "Add the text for the button here if you want to change the default <em>See all our news</em>"
+msgstr "أضف نص الزر هنا إذا كنت تريد تغيير الإعداد الافتراضي <em> مشاهدة جميع أخبارنا </em>"
+
+#: widgets/fp-latest-news.php:50 widgets/fp-latest-news.php:52
+msgid "See all our news"
+msgstr "شاهد كل أخبارنا"
+
+#: widgets/fp-list.php:11
+msgid "A simple list widget"
+msgstr "قائمة ودجت بسيطة"
+
+#: widgets/fp-list.php:13
+msgid "Sydney FP: List"
+msgstr "Sydney FP: القائمة"
+
+#: widgets/contact-info.php:24
+msgid "Enter your address"
+msgstr "أدخل العنوان الخاص بك"
+
+#: widgets/contact-info.php:27
+msgid "Enter your phone number"
+msgstr "أدخل رقم الهاتف الخاص بك"
+
+#: widgets/contact-info.php:30
+msgid "Enter your email address"
+msgstr "أدخل عنوان البريد الإلكتروني الخاص بك"
+
+#: widgets/fp-call-to-action.php:6
+msgid "Display a call to action block."
+msgstr "عرض مكوّن الدعوة إلى اتخاذ إجراء."
+
+#: widgets/fp-call-to-action.php:7
+msgid "Sydney FP: Call to action"
+msgstr "ٍٍSydney FP: الدعوة إلى اتخاذ إجراء"
+
+#: widgets/fp-call-to-action.php:20
+msgid "Enter your call to action."
+msgstr "أدخل الدعوة إلى اتخاذ إجراء الخاصة بك."
+
+#: widgets/fp-call-to-action.php:22
+msgid "Link for the button"
+msgstr "رابط الزر"
+
+#: widgets/fp-call-to-action.php:24
+msgid "Title for the button"
+msgstr "إسم الزر"
+
+#: inc/customizer/options/woocommerce.php:293 widgets/contact-info.php:20
+#: widgets/fp-call-to-action.php:18 widgets/fp-clients.php:23
+#: widgets/fp-employees.php:22 widgets/fp-facts.php:39
+#: widgets/fp-latest-news.php:18 widgets/fp-services-type-a.php:29
+#: widgets/fp-services-type-b.php:29 widgets/fp-skills.php:24
+#: widgets/fp-testimonials.php:22 widgets/video-widget.php:20
+msgid "Title"
+msgstr "العنوان"
+
+#: widgets/contact-info.php:6
+msgid "Display your contact info"
+msgstr "عرض معلومات الاتصال الخاصة بك"
+
+#: widgets/contact-info.php:7
+msgid "Sydney: Contact info"
+msgstr "Sydney: معلومات الإتصال"
+
+#. translators: %s is the search query
+#: inc/extras.php:1026
+msgid "Search Results for: %s"
+msgstr "نتائج البحث عن: %s"
+
+#: inc/dashboard/class-dashboard.php:249 inc/dashboard/html-home.php:69
+#: inc/dashboard/html-home.php:166 inc/dashboard/html-home.php:200
+#: inc/dashboard/html-settings-performance.php:31
+#: inc/dashboard/html-starter-sites.php:31
+#: inc/onboarding/plugins/class-sydney-recommended-plugins.php:91
+#: inc/onboarding/plugins/class-sydney-recommended-plugins.php:111
+#: theme-dashboard/class-theme-dashboard.php:379
+msgid "Activate"
+msgstr "تفعيل"
+
+#: inc/dashboard/html-home.php:204
+msgid "Install"
+msgstr "تنصيب"
+
+#: inc/customizer/options/general.php:238
+msgid "Type"
+msgstr "النوع"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:37
+#: inc/customizer/options/cpt-panels.php:54 inc/template-tags.php:241
+msgid "Archives"
+msgstr "الأرشيف"
+
+#. translators: %1$s: Taxonomy singular name, %2$s: Current taxonomy term.
+#: inc/template-tags.php:239
+msgid "%1$s: %2$s"
+msgstr "%1$s: %2$s"
+
+#. translators: %s: post type archive title.
+#: inc/template-tags.php:236
+msgid "Archives: %s"
+msgstr "الآرشيفات: %s"
+
+#: inc/template-tags.php:233
+msgctxt "post format archive title"
+msgid "Chats"
+msgstr "المحادثات"
+
+#: inc/template-tags.php:231
+msgctxt "post format archive title"
+msgid "Audio"
+msgstr "الصوتيات"
+
+#: inc/template-tags.php:229
+msgctxt "post format archive title"
+msgid "Statuses"
+msgstr "الحالات"
+
+#: inc/template-tags.php:227
+msgctxt "post format archive title"
+msgid "Links"
+msgstr "الروابط"
+
+#: inc/template-tags.php:225
+msgctxt "post format archive title"
+msgid "Quotes"
+msgstr "الإقتباسات"
+
+#: inc/template-tags.php:223
+msgctxt "post format archive title"
+msgid "Videos"
+msgstr "الفيديوهات"
+
+#: inc/template-tags.php:221
+msgctxt "post format archive title"
+msgid "Images"
+msgstr "الصور"
+
+#: inc/template-tags.php:219
+msgctxt "post format archive title"
+msgid "Galleries"
+msgstr "المعارض"
+
+#: inc/template-tags.php:217
+msgctxt "post format archive title"
+msgid "Asides"
+msgstr "الملاحظات"
+
+#. translators: %s: day.
+#: inc/template-tags.php:214
+msgctxt "daily archives date format"
+msgid "F j, Y"
+msgstr "j F، Y"
+
+#. translators: %s: day.
+#: inc/template-tags.php:214
+msgid "Day: %s"
+msgstr "اليوم: %s"
+
+#. translators: %s: month.
+#: inc/template-tags.php:212
+msgctxt "monthly archives date format"
+msgid "F Y"
+msgstr "F Y"
+
+#. translators: %s: month.
+#: inc/template-tags.php:212
+msgid "Month: %s"
+msgstr "الشهر: %s"
+
+#. translators: %s: year.
+#: inc/template-tags.php:210
+msgctxt "yearly archives date format"
+msgid "Y"
+msgstr "Y"
+
+#. translators: %s: year.
+#: inc/template-tags.php:210
+msgid "Year: %s"
+msgstr "السنة: %s"
+
+#. translators: %s: author name.
+#: inc/template-tags.php:208
+msgid "Author: %s"
+msgstr "الكاتب: %s"
+
+#. translators: %s: tag title.
+#: inc/template-tags.php:206
+msgid "Tag: %s"
+msgstr "الوسم: %s"
+
+#. translators: %s: category title.
+#: inc/template-tags.php:204
+msgid "Category: %s"
+msgstr "التصنيف: %s"
+
+#. translators: used between list items, there is a space after the comma
+#: inc/template-tags.php:172
+msgid ", "
+msgstr "، "
+
+#: inc/template-tags.php:185
+msgid "% comments"
+msgstr "% تعليقات"
+
+#: inc/template-tags.php:185
+msgid "1 comment"
+msgstr "تعليق واحد"
+
+#. translators: %s: post date.
+#: inc/template-tags.php:345
+msgctxt "post date"
+msgid "Posted on %s"
+msgstr "نشر في %s"
+
+#: inc/customizer/options/blog-single.php:310 inc/template-tags.php:61
+msgid "Post navigation"
+msgstr "تصفّح المقالات"
+
+#: inc/template-tags.php:31
+msgid "Newer posts"
+msgstr "مقالات أحدث"
+
+#: inc/template-tags.php:27
+msgid "Older posts"
+msgstr "مقالات أقدم"
+
+#: inc/template-tags.php:23
+msgid "Posts navigation"
+msgstr "تصفّح المقالات"
+
+#: inc/page-builder.php:98 inc/so-page-builder.php:98
+msgid "0"
+msgstr "0"
+
+#: inc/page-builder.php:99 inc/so-page-builder.php:99
+msgid "15px"
+msgstr "15 بكسل"
+
+#: inc/page-builder.php:100 inc/so-page-builder.php:100
+msgid "30px"
+msgstr "30 بكسل"
+
+#: inc/page-builder.php:101 inc/so-page-builder.php:101
+msgid "45px"
+msgstr "45 بكسل"
+
+#: inc/page-builder.php:97 inc/so-page-builder.php:97
+msgid "Default"
+msgstr "افتراضي"
+
+#: inc/page-builder.php:93 inc/so-page-builder.php:93
+msgid "Mobile padding"
+msgstr "الهامش الداخلي الجوال"
+
+#: inc/page-builder.php:95 inc/so-page-builder.php:95
+msgid "Here you can select a top/bottom row padding for screen sizes < 1024px"
+msgstr "يمكنك هنا تحديد أسفل/أعلى صف الهوامش الداخلية لأحجام الشاشة < 1024 بيكسل (px)"
+
+#: inc/page-builder.php:87 inc/so-page-builder.php:87
+msgid "Background image of the row."
+msgstr "الصورة الخلفية للصف."
+
+#: inc/modules/hf-builder/components/footer/footer-builder/customize-options.php:109
+#: inc/modules/hf-builder/components/footer/row/customize-options.php:311
+#: inc/modules/hf-builder/components/header/header-builder/customize-options.php:227
+#: inc/modules/hf-builder/components/header/row/customize-options.php:345
+#: inc/page-builder.php:85 inc/so-page-builder.php:85
+msgid "Background Image"
+msgstr "صورة الخلفية"
+
+#: inc/page-builder.php:80 inc/so-page-builder.php:80
+msgid "Color of the row."
+msgstr "لون الصف."
+
+#: inc/customizer/options/header-mobile.php:485
+#: inc/customizer/options/woocommerce.php:851 inc/page-builder.php:78
+#: inc/so-page-builder.php:78
+msgid "Color"
+msgstr "لون"
+
+#: inc/page-builder.php:44 inc/so-page-builder.php:44
+msgid "Sydney Theme Widgets"
+msgstr "ودجات قالب Sydney"
+
+#: inc/page-builder.php:57 inc/so-page-builder.php:57
+msgid "Bottom Border Color"
+msgstr "لون الإطار السفلي"
+
+#: inc/page-builder.php:63 inc/so-page-builder.php:63
+msgid "Top/bottom padding"
+msgstr "أعلى/أسفل الهوامش الداخلية"
+
+#: inc/page-builder.php:70 inc/so-page-builder.php:70
+msgid "Center align the content?"
+msgstr "توسيط محاذاة المحتوى؟"
+
+#: inc/page-builder.php:72 inc/so-page-builder.php:72
+msgid "This may or may not work. It depends on the widget styles."
+msgstr "قد يعمل أو لا يعمل. يعتمد ذلك على نمط الودجت."
+
+#: inc/customizer/options/colors.php:93 inc/customizer/options/colors.php:478
+#: inc/customizer/options/footer.php:224 inc/customizer/options/footer.php:712
+#: inc/customizer/options/general.php:459
+#: inc/customizer/options/general.php:773
+#: inc/customizer/options/general.php:879
+#: inc/customizer/options/header-mobile.php:351
+#: inc/customizer/options/header-mobile.php:453
+#: inc/customizer/options/header.php:713
+#: inc/customizer/options/woocommerce.php:831
+#: inc/modules/hf-builder/components/footer/footer-builder/customize-options.php:89
+#: inc/modules/hf-builder/components/header/header-builder/customize-options.php:207
+msgid "Background color"
+msgstr "لون الخلفية"
+
+#: inc/customizer/customizer.php:499
+msgid "Theme info"
+msgstr "معلومات القالب"
+
+#: inc/customizer/customizer.php:502
+msgid " 1. Documentation for Sydney can be found "
+msgstr " 1. يمكن العثور على وثائق Sydney "
+
+#: inc/customizer/customizer.php:561
+msgid "Nothing (only menu)"
+msgstr "لا شيء (القائمة فقط)"
+
+#: inc/customizer/options/colors.php:581
+msgid "Menu background"
+msgstr "خلفية القائمة"
+
+#: inc/customizer/options/colors.php:641
+msgid "Top level menu items"
+msgstr "عناصر المستوى الأعلى للقائمة"
+
+#: inc/customizer/options/colors.php:678
+msgid "Sub-menu items"
+msgstr "عناصر القائمة الفرعية"
+
+#: inc/customizer/options/colors.php:696
+msgid "Sub-menu background"
+msgstr "خلفية القائمة الفرعية"
+
+#: inc/customizer/options/colors.php:123
+msgid "Body text"
+msgstr "نص الجسم"
+
+#: inc/customizer/options/colors.php:758
+msgid "Sidebar background"
+msgstr "خلفية الشريط الجانبي"
+
+#: inc/customizer/options/colors.php:790
+msgid "Sidebar color"
+msgstr "لون الشريط الجانبي"
+
+#: inc/customizer/options/colors.php:621
+msgid "Site description"
+msgstr "وصف الموقع"
+
+#: inc/customizer/options/colors.php:601
+msgid "Site title"
+msgstr "اسم الموقع"
+
+#: inc/customizer/controls/typography/class_sydney_typography.php:85
+msgid "Font family"
+msgstr "عائلة الخط"
+
+#: inc/customizer/customizer.php:588
+msgid "Three"
+msgstr "ثلاثة"
+
+#: inc/customizer/customizer.php:589
+msgid "Four"
+msgstr "أربعة"
+
+#: inc/customizer/customizer.php:586
+msgid "One"
+msgstr "واحد"
+
+#: inc/customizer/customizer.php:587
+msgid "Two"
+msgstr "اثنان"
+
+#: inc/customizer/options/footer.php:194
+msgid "Footer widget areas"
+msgstr "مناطق الودجات التذييل"
+
+#: inc/customizer/options/footer.php:29 inc/dashboard/html-builder.php:19
+#: inc/theme-dashboard-settings.php:244
+msgid "Footer"
+msgstr "أسفل الصفحة (الفوتر)"
+
+#: inc/customizer/options/blog.php:201
+msgid "Featured image"
+msgstr "الصورة البارزة للصفحة"
+
+#: inc/customizer/options/blog-single.php:182
+#: inc/customizer/options/blog.php:468
+msgid "Meta"
+msgstr "منوعات"
+
+#: inc/customizer/customizer.php:615
+msgid "Full width (no sidebar)"
+msgstr "عرض كامل (لا يوجد شريط جانبي)"
+
+#: inc/customizer/customizer.php:616
+msgid "Masonry (grid style)"
+msgstr "البناء (نمط الشبكة)"
+
+#: inc/customizer/options/blog.php:423
+msgid "Excerpt length"
+msgstr "طول المقتطف"
+
+#: inc/customizer/options/blog.php:74
+msgid "Blog layout"
+msgstr "تخطيط المدونة"
+
+#: inc/customizer/customizer.php:612 inc/customizer/options/blog.php:79
+msgid "Classic"
+msgstr "تقليدي"
+
+#: inc/customizer/options/header-mobile.php:76
+#: inc/customizer/options/header.php:268 inc/customizer/options/layouts.php:42
+#: inc/customizer/options/woocommerce.php:59
+#: inc/customizer/options/woocommerce.php:373
+#: inc/customizer/options/woocommerce.php:478
+#: inc/customizer/options/woocommerce.php:571
+#: inc/customizer/options/woocommerce.php:641
+#: inc/integrations/learndash/customize.php:18
+#: inc/modules/hf-builder/components/footer/button/customize-options.php:299
+#: inc/modules/hf-builder/components/footer/copyright/customize-options.php:180
+#: inc/modules/hf-builder/components/footer/html/customize-options.php:246
+#: inc/modules/hf-builder/components/footer/social/customize-options.php:163
+#: inc/modules/hf-builder/components/footer/widget-1/customize-options.php:205
+#: inc/modules/hf-builder/components/footer/widget-2/customize-options.php:205
+#: inc/modules/hf-builder/components/footer/widget-3/customize-options.php:206
+#: inc/modules/hf-builder/components/header/button/customize-options.php:416
+#: inc/modules/hf-builder/components/header/contact-info/customize-options.php:324
+#: inc/modules/hf-builder/components/header/header-builder/customize-options.php:460
+#: inc/modules/hf-builder/components/header/header-builder/customize-options.php:506
+#: inc/modules/hf-builder/components/header/html/customize-options.php:333
+#: inc/modules/hf-builder/components/header/logo/customize-options.php:261
+#: inc/modules/hf-builder/components/header/menu/customize-options.php:546
+#: inc/modules/hf-builder/components/header/mobile-hamburger/customize-options.php:151
+#: inc/modules/hf-builder/components/header/mobile-offcanvas-menu/customize-options.php:202
+#: inc/modules/hf-builder/components/header/mobile-offcanvas/customize-options.php:218
+#: inc/modules/hf-builder/components/header/search/customize-options.php:217
+#: inc/modules/hf-builder/components/header/secondary-menu/customize-options.php:347
+#: inc/modules/hf-builder/components/header/social/customize-options.php:220
+#: inc/modules/hf-builder/components/header/wc-icons/customize-options.php:263
+msgid "Layout"
+msgstr "الشكل العام"
+
+#: inc/customizer/customizer.php:429 inc/customizer/customizer.php:575
+#: inc/modules/hf-builder/components/footer/footer-builder/customize-options.php:133
+#: inc/modules/hf-builder/components/footer/row/customize-options.php:335
+#: inc/modules/hf-builder/components/header/header-builder/customize-options.php:251
+#: inc/modules/hf-builder/components/header/row/customize-options.php:369
+msgid "Contain"
+msgstr "يحتوي على"
+
+#: inc/customizer/customizer.php:445
+msgid "Header height [default: 300px]"
+msgstr "ارتفاع الترويسة [افتراضي: 300بيكسل(px)]"
+
+#: inc/customizer/customizer.php:463
+msgid "Disable the overlay?"
+msgstr "تعطيل الغطاء؟"
+
+#: inc/customizer/customizer.php:482
+msgid "Upload your logo"
+msgstr "رفع الشعار الخاص بك"
+
+#: inc/onboarding/theme-info.php:110 inc/onboarding/theme-info.php:188
+msgid "Blog options"
+msgstr "خيارات المدونة"
+
+#: inc/customizer/customizer.php:428 inc/customizer/customizer.php:574
+#: inc/modules/hf-builder/components/footer/footer-builder/customize-options.php:132
+#: inc/modules/hf-builder/components/footer/row/customize-options.php:334
+#: inc/modules/hf-builder/components/header/header-builder/customize-options.php:250
+#: inc/modules/hf-builder/components/header/row/customize-options.php:368
+msgid "Cover"
+msgstr "التفاف"
+
+#: inc/customizer/customizer.php:163 inc/customizer/customizer.php:601
+msgid "Static"
+msgstr "ثابت"
+
+#: inc/customizer/customizer.php:183 inc/customizer/customizer.php:640
+#: inc/modules/hf-builder/components/footer/columns/customize-options.php:164
+#: inc/modules/hf-builder/components/header/columns/customize-options.php:168
+msgid "Inline"
+msgstr "مضمنة"
+
+#: inc/customizer/customizer.php:184 inc/customizer/customizer.php:641
+msgid "Centered (menu and site logo)"
+msgstr "توسيط (القائمة وشعار الموقع)"
+
+#: inc/customizer/customizer.php:425
+msgid "Header background size"
+msgstr "حجم خلفية الترويسة"
+
+#: inc/customizer/options/hero-area.php:243
+msgid "Third slide"
+msgstr "Third Slide"
+
+#: inc/customizer/options/hero-area.php:314
+msgid "Fourth slide"
+msgstr "Fourth Slide"
+
+#: inc/customizer/options/hero-area.php:385
+msgid "Fifth slide"
+msgstr "Fifth Slide"
+
+#: inc/customizer/customizer.php:162 inc/customizer/customizer.php:600
+msgid "Sticky"
+msgstr "مثبت"
+
+#: inc/customizer/options/hero-area.php:191
+msgid "Upload your second image for the slider"
+msgstr "رفع الصورة الثانية الخاصة بك لعارض الشرائح"
+
+#: inc/customizer/options/hero-area.php:210
+msgid "Title for the second slide"
+msgstr "عنوان الشريحة الثانية"
+
+#: inc/customizer/options/hero-area.php:227
+msgid "Subtitle for the second slide"
+msgstr "العنوان الفرعي للشريحة الثانية"
+
+#: inc/customizer/options/hero-area.php:262
+msgid "Upload your third image for the slider"
+msgstr "رفع صورتك الثالثة لعارض الشرائح"
+
+#: inc/customizer/options/hero-area.php:281
+msgid "Title for the third slide"
+msgstr "عنوان الشريحة الثالثة"
+
+#: inc/customizer/options/hero-area.php:298
+msgid "Subtitle for the third slide"
+msgstr "العنوان الفرعي للشريحة الثالثة"
+
+#: inc/customizer/options/hero-area.php:333
+msgid "Upload your fourth image for the slider"
+msgstr "رفع صورتك الرابعة لعارض الشرائح"
+
+#: inc/customizer/options/hero-area.php:352
+msgid "Title for the fourth slide"
+msgstr "عنوان الشريحة الرابعة"
+
+#: inc/customizer/options/hero-area.php:369
+msgid "Subtitle for the fourth slide"
+msgstr "العنوان الفرعي للشريحة الرابعة"
+
+#: inc/customizer/options/hero-area.php:404
+msgid "Upload your fifth image for the slider"
+msgstr "رفع صورتك الخامسة لعارض الشرائح"
+
+#: inc/customizer/options/hero-area.php:423
+msgid "Title for the fifth slide"
+msgstr "عنوان الشريحة الخامسة"
+
+#: inc/customizer/options/hero-area.php:440
+msgid "Subtitle for the fifth slide"
+msgstr "العنوان الفرعي للشريحة الخامسة"
+
+#: inc/customizer/options/hero-area.php:474
+msgid "URL for your call to action button"
+msgstr "URL للدعوة إلى اتخاذ الإجراء الخاصة بك"
+
+#: inc/customizer/options/hero-area.php:482
+msgid "Click to begin"
+msgstr "انقر للبدأ"
+
+#: inc/customizer/options/hero-area.php:490
+msgid "Text for your call to action button"
+msgstr "نص زر الدعوة إلى اتخاذ الإجراء الخاص بك"
+
+#: inc/customizer/customizer.php:180
+msgid "Menu style"
+msgstr "نمط القائمة"
+
+#: inc/customizer/customizer.php:159
+msgid "Sticky menu"
+msgstr "قائمة مثبّتة"
+
+#: inc/customizer/options/hero-area.php:101
+msgid "First slide"
+msgstr "First Slide"
+
+#: inc/customizer/options/hero-area.php:172
+msgid "Second slide"
+msgstr "Second Slide"
+
+#: inc/customizer/options/hero-area.php:52
+#: inc/customizer/options/hero-area.php:75
+msgid "No header (only menu)"
+msgstr "لا توجد ترويسة (القائمة فقط)"
+
+#: inc/customizer/options/hero-area.php:68
+msgid "Site header type"
+msgstr "نوع ترويسة الموقع"
+
+#: inc/customizer/options/hero-area.php:70
+msgid "Select the hero type for all pages except the front page"
+msgstr "حدد نوع البطل (hero) لجميع الصفحات باستثناء الصفحة الرئيسية"
+
+#: inc/customizer/options/hero-area.php:520
+msgid "4000"
+msgstr "4000"
+
+#: inc/customizer/options/hero-area.php:527
+msgid "Slider speed"
+msgstr "سرعة عارض الشرائح"
+
+#: inc/customizer/options/hero-area.php:530
+msgid "Slider speed in miliseconds. Use 0 to disable [default: 4000]"
+msgstr "سرعة عارض الشرائح بالملي ثانية. استخدم 0 للتعطيل [افتراضي: 4000]"
+
+#: inc/customizer/options/hero-area.php:120
+msgid "Upload your first image for the slider"
+msgstr "رفع الصورة الأولى الخاصة بك لعارض الشرائح"
+
+#: inc/dashboard/class-dashboard-settings.php:35
+#: inc/onboarding/theme-info.php:32 inc/theme-dashboard-settings.php:142
+msgid "Welcome to Sydney"
+msgstr "مرحبا بكم في Sydney"
+
+#: inc/customizer/options/hero-area.php:139
+msgid "Title for the first slide"
+msgstr "عنوان الشريحة الأولى"
+
+#: inc/customizer/options/hero-area.php:156
+msgid "Subtitle for the first slide"
+msgstr "العنوان الفرعي للشريحة الأولى"
+
+#: inc/customizer/customizer.php:559 inc/customizer/options/blog-single.php:106
+#: inc/customizer/options/hero-area.php:50
+#: inc/customizer/options/hero-area.php:73
+msgid "Image"
+msgstr "صورة"
+
+#: inc/customizer/options/hero-area.php:22
+msgid "You can select your header type from here. After that, continue below to the next two tabs (Hero Slider and Header Image) and configure them."
+msgstr "يمكنك تحديد نوع الترويسة الخاصة بك من هنا. بعد ذلك، تابع أدناه إلى علامتي التبويب التاليتين (عارض شرائح البطل (Hero) و صورة الترويسة) وقم بإعدادهما."
+
+#: inc/customizer/options/hero-area.php:45
+msgid "Front page header type"
+msgstr "نوع ترويسة الصفحة الأمامية"
+
+#: inc/customizer/options/hero-area.php:47
+msgid "Select the header type for your front page"
+msgstr "حدد نوع ترويسة الصفحة الأمامية الخاصة بك"
+
+#: inc/customizer/customizer.php:558 inc/customizer/options/hero-area.php:49
+#: inc/customizer/options/hero-area.php:72
+msgid "Full screen slider"
+msgstr "عارض الشرائح في وضع ملء الشاشة"
+
+#: inc/customizer/controls/class_sydney_tab_control.php:40
+#: inc/customizer/options/colors.php:64 inc/customizer/options/general.php:14
+#: inc/customizer/options/woocommerce.php:12
+#: inc/integrations/lifter/customize.php:18
+#: inc/theme-dashboard-settings.php:171
+msgid "General"
+msgstr "عام"
+
+#: header.php:29
+msgid "Skip to content"
+msgstr "انتقل إلى المحتوى"
+
+#: functions.php:359
+msgid "Create your menu here"
+msgstr "قم بإنشاء القائمة الخاصة بك هنا"
+
+#: functions.php:148
+msgid "Footer "
+msgstr "أسفل الصفحة (الفوتر)"
+
+#: functions.php:136 inc/customizer/options/blog.php:592
+#: inc/customizer/options/colors.php:730
+#: inc/customizer/options/woocommerce.php:98
+msgid "Sidebar"
+msgstr "الشريط الجانبي"
+
+#: functions.php:57 inc/modules/hf-builder/class-header-footer-builder.php:90
+#: inc/modules/hf-builder/components/header/menu/customize-options.php:22
+msgid "Primary Menu"
+msgstr "القائمة الأساسية"
+
+#: content-page.php:33 inc/dashboard/html-builder.php:126
+#: inc/template-tags.php:164
+msgid "Edit"
+msgstr "تحرير"
+
+#: content-page.php:26 content-search.php:32 content-single.php:45
+msgid "Pages:"
+msgstr "الصفحات:"
+
+#: content-none.php:33
+msgid "It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps searching can help."
+msgstr "يبدو أنه لا يمكن إيجاد ما تبحث عنه. قد تفيدك خاصية البحث."
+
+#: content-none.php:28
+msgid "Sorry, but nothing matched your search terms. Please try again with some different keywords."
+msgstr "عذرا، لا يوجد شيء يتطابق مع كلمات البحث التي استعملتها، المرجو المحاولة من جديد باستعمال كلمات مفتاحية أخرى."
+
+#. translators: %1$s: URL to create a new post
+#: content-none.php:22
+msgid "Ready to publish your first post? <a href=\"%1$s\">Get started here</a>."
+msgstr "هل أنت على استعداد لنشر مقالتك الأولى؟ <a href=\"%1$s\">ابدأ من هنا</a>."
+
+#: content-none.php:13
+msgid "Nothing Found"
+msgstr "لم يتم العثور على شيء"
+
+#: comments.php:66
+msgid "Comments are closed."
+msgstr "التعليقات مغلقة."
+
+#: comments.php:38 comments.php:56
+msgid "Newer Comments &rarr;"
+msgstr "تعليقات أحدث &larr;"
+
+#: comments.php:37 comments.php:55
+msgid "&larr; Older Comments"
+msgstr "&rarr; تعليقات أقدم"
+
+#: comments.php:36 comments.php:54
+msgid "Comment navigation"
+msgstr "تصفّح التعليقات"
+
+#. translators: 1: Number of comments, 2: Post title.
+#: comments.php:29
+msgctxt "comments title"
+msgid "One thought on &ldquo;%2$s&rdquo;"
+msgid_plural "%1$s thoughts on &ldquo;%2$s&rdquo;"
+msgstr[0] "لا توجد أراء حول &ldquo;%2$s&rdquo;"
+msgstr[1] "رأي واحد حول &ldquo;%2$s&rdquo;"
+msgstr[2] "رأيان حول &ldquo;%2$s&rdquo;"
+msgstr[3] "%1$s رأي حول &ldquo;%2$s&rdquo;"
+msgstr[4] "%1$s رأي حول &ldquo;%2$s&rdquo;"
+msgstr[5] "%1$s رأي حول &ldquo;%2$s&rdquo;"
+
+#: inc/extras.php:773
+msgid "It looks like nothing was found at this location. Maybe try one of the links below or a search?"
+msgstr "It looks like nothing was found at this location. Maybe try one of the links below or a search?"
+
+#: inc/extras.php:769
+msgid "Oops! That page can&rsquo;t be found."
+msgstr "عذراً! لايمكن العثور على تلك الصفحة."
+
+#. Theme URI of the theme
+#: style.css
+#, gp-priority: low
+msgid "https://athemes.com/theme/sydney"
+msgstr "https://athemes.com/theme/sydney"
+
+#. Author of the theme
+#: style.css theme-dashboard/class-theme-dashboard.php:579
+#, gp-priority: low
+msgid "aThemes"
+msgstr "aThemes"
+
+#. Author URI of the theme
+#: style.css
+#, gp-priority: low
+msgid "https://athemes.com"
+msgstr "https://athemes.com"

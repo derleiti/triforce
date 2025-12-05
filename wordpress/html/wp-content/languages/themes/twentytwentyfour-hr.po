@@ -1,0 +1,1780 @@
+# Translation of Themes - Twenty Twenty-Four in Croatian
+# This file is distributed under the same license as the Themes - Twenty Twenty-Four package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-01-04 09:59:21+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n % 10 == 1 && n % 100 != 11) ? 0 : ((n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) ? 1 : 2);\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: hr\n"
+"Project-Id-Version: Themes - Twenty Twenty-Four\n"
+
+#. Description of the theme
+#: style.css
+#, gp-priority: high
+msgid "Twenty Twenty-Four is designed to be flexible, versatile and applicable to any website. Its collection of templates and patterns tailor to different needs, such as presenting a business, blogging and writing or showcasing work. A multitude of possibilities open up with just a few adjustments to color and typography. Twenty Twenty-Four comes with style variations and full page designs to help speed up the site building process, is fully compatible with the site editor, and takes advantage of new design tools introduced in WordPress 6.4."
+msgstr "Twenty Twenty-Four dizajnirana je da bude fleksibilna, svestrana i primjenjiva na bilo koju web-stranicu. Njena kolekcija predložaka i uzoraka prilagođena je različitim potrebama, kao što je predstavljanje tvrtke, blog i pisanje ili izlaganje radova. Mnoštvo mogućnosti otvara se uz samo nekoliko prilagodbi boja i tipografije. Twenty Twenty-Four dolazi sa stilskim varijacijama i dizajnom cijele stranice kako bi se ubrzao proces izrade web-stranice, potpuno je kompatibilna s uređivačem web-stranice i koristi prednosti novih alata za dizajn predstavljenih u WordPressu 6.4."
+
+#. Theme Name of the theme
+#: style.css
+#, gp-priority: high
+msgid "Twenty Twenty-Four"
+msgstr "Twenty Twenty-Four"
+
+#: patterns/text-centered-statement.php
+msgctxt "Pattern description"
+msgid "A centered text statement with a large amount of padding on all sides."
+msgstr "Centrirana tekstualna izjava s velikom količinom ispune sa svih strana."
+
+#: patterns/hidden-posts-heading.php
+msgctxt "Pattern title"
+msgid "Posts heading"
+msgstr "Zaglavlje objave"
+
+#: patterns/text-title-left-image-right.php
+msgctxt "Pattern description"
+msgid "A title, a paragraph and a CTA button on the left with an image on the right."
+msgstr "Naslov, odlomak i dugme CTA s lijeve strane sa slikom s desne strane."
+
+#: patterns/text-project-details.php
+msgctxt "Pattern description"
+msgid "A text-only section for project details."
+msgstr "Odjeljak samo za tekst o detaljima projekta."
+
+#: patterns/text-feature-grid-3-col.php
+msgctxt "Pattern description"
+msgid "A feature grid of 2 rows and 3 columns with headings and text."
+msgstr "Mreža značajki od 2 retka i 3 stupca s naslovima i tekstom."
+
+#: patterns/text-faq.php:35
+msgctxt "Question in the FAQ pattern"
+msgid "Who is behind Études?"
+msgstr "Tko je iza Études?"
+
+#: patterns/text-faq.php
+msgctxt "Pattern description"
+msgid "A FAQ section with a large FAQ heading and a group of questions and answers."
+msgstr "Odjeljak FAQ s velikim naslovom FAQ i grupom pitanja i odgovora."
+
+#: patterns/text-centered-statement-small.php
+msgctxt "Pattern description"
+msgid "A centered italic text statement with compact padding."
+msgstr "Centrirana kurzivna tekstualna izjava sa kompaktnim ispunama."
+
+#: patterns/text-alternating-images.php
+msgctxt "Pattern description"
+msgid "A text section, then a two-column section with text in one column and an image in the other."
+msgstr "Tekstualni odjeljak, zatim odjeljak u dva stupca s tekstom u jednom i slikom u drugom."
+
+#: patterns/testimonial-centered.php
+msgctxt "Pattern description"
+msgid "A centered testimonial section with an avatar, name, and job title."
+msgstr "Centrirani odjeljak s izjavama s avatarom, imenom i nazivom posla."
+
+#: patterns/team-4-col.php
+msgctxt "Pattern description"
+msgid "A team section, with a heading, a paragraph, and 4 columns for team members."
+msgstr "Timski odjeljak s naslovom, odlomkom i 4 stupca za članove tima."
+
+#: patterns/posts-list.php
+msgctxt "Pattern description"
+msgid "A list of posts without images, 1 column."
+msgstr "Popis objava bez slika, 1 stupac."
+
+#: patterns/posts-images-only-offset-4-col.php
+msgctxt "Pattern description"
+msgid "A list of posts with featured images only, 4 columns."
+msgstr "Popis objava samo s istaknutim slikama, 4 stupca."
+
+#: patterns/posts-images-only-3-col.php
+msgctxt "Pattern description"
+msgid "A list of posts with featured images only, 3 columns."
+msgstr "Popis objava samo s istaknutim slikama, 3 stupca."
+
+#: patterns/posts-grid-2-col.php
+msgctxt "Pattern description"
+msgid "A grid of posts featuring the first post, 2 columns."
+msgstr "Mreža objava s prvom objavom, 2 stupca."
+
+#: patterns/posts-3-col.php
+msgctxt "Pattern description"
+msgid "A list of posts, 3 columns."
+msgstr "Popis objava, 3 stupca"
+
+#: patterns/posts-1-col.php
+msgctxt "Pattern description"
+msgid "A list of posts, 1 column."
+msgstr "Popis objava, 1 stupac"
+
+#: patterns/page-portfolio-overview.php
+msgctxt "Pattern description"
+msgid "A full portfolio page with a section for project description, project details, a full screen image, and a gallery section with two images."
+msgstr "Puna stranica portfelja s odjeljkom za opis projekta, detaljima projekta, slikom preko cijelog zaslona i odjeljkom galerije s dvije slike."
+
+#: patterns/page-newsletter-landing.php
+msgctxt "Pattern description"
+msgid "A block with a newsletter subscription CTA for a landing page."
+msgstr "Blok s CTA-om za pretplatu na newsletter za odredišnu stranicu."
+
+#: patterns/page-home-portfolio.php
+msgctxt "Pattern description"
+msgid "A portfolio home page with a description and a 4-column post section with only feature images."
+msgstr "Početna stranica portfelja s opisom i odjeljkom s objavama u 4 stupca sa samo istaknutim slikama."
+
+#: patterns/page-home-portfolio-gallery.php
+msgctxt "Pattern description"
+msgid "A portfolio home page that features a gallery."
+msgstr "Početna stranica portfelja koja sadrži galeriju."
+
+#: patterns/page-home-business.php
+msgctxt "Pattern description"
+msgid "A business home page with a hero section, a text section, a services section, a team section, a clients section, a FAQ section, and a CTA section."
+msgstr "Poslovna početna stranica s glavnim odjeljkom, tekstualnim odjeljkom, odjeljkom za usluge, odjeljkom za tim, odjeljkom za klijente, odjeljkom s često postavljanim pitanjima i odjeljkom s CTA-om."
+
+#: patterns/page-home-blogging.php
+msgctxt "Pattern description"
+msgid "A blogging home page with a hero section, a text section, a blog section, and a CTA section."
+msgstr "Početna stranica za bloganje s odjeljkom heroja, odjeljkom teksta, odjeljkom bloga i odjeljkom CTA."
+
+#: patterns/page-about-business.php
+msgctxt "Pattern description"
+msgid "A business about page with a hero section, a text section, a services section, a team section, a clients section, a FAQ section, and a CTA section."
+msgstr "Stranica o tvrtki s glavnim odjeljkom, odjeljkom za tekst, odjeljkom za usluge, odjeljkom za tim, odjeljkom za klijente, odjeljkom s često postavljanim pitanjima i odjeljkom s CTA-om."
+
+#: patterns/gallery-project-layout.php
+msgctxt "Pattern description"
+msgid "A gallery section with a project layout with 2 images."
+msgstr "Dio galerije s izgledom projekta s 2 slike."
+
+#: patterns/gallery-offset-images-grid-4-col.php
+msgctxt "Pattern description"
+msgid "A gallery section with 4 columns and offset images."
+msgstr "Odjeljak galerije s 4 stupca i offset slikama."
+
+#: patterns/gallery-offset-images-grid-3-col.php
+msgctxt "Pattern description"
+msgid "A gallery section with 3 columns and offset images."
+msgstr "Odjeljak galerije s 3 stupca i offset slikama."
+
+#: patterns/gallery-offset-images-grid-2-col.php
+msgctxt "Pattern description"
+msgid "A gallery section with 2 columns and offset images."
+msgstr "Odjeljak galerije s 2 stupca i offset slikama."
+
+#: patterns/gallery-full-screen-image.php
+msgctxt "Pattern description"
+msgid "A cover image section that covers the entire width."
+msgstr "Odjeljak naslovne slike koji pokriva cijelu širinu."
+
+#: patterns/footer.php
+msgctxt "Pattern description"
+msgid "A footer section with a colophon and 4 columns."
+msgstr "Podnožje s kolofonom i 4 stupca."
+
+#: patterns/footer-colophon-3-col.php
+msgctxt "Pattern description"
+msgid "A footer section with a colophon and 3 columns."
+msgstr "Podnožje s kolofonom i 3 stupca."
+
+#: patterns/footer-centered-logo-nav.php
+msgctxt "Pattern description"
+msgid "A footer section with a centered logo, navigation, and WordPress credits."
+msgstr "Odjeljak podnožja s logotipom u sredini, navigacijom i zaslugama za WordPress."
+
+#: patterns/cta-subscribe-centered.php
+msgctxt "Pattern description"
+msgid "Subscribers CTA section with a title, a paragraph and a CTA button."
+msgstr "CTA odjeljak za pretplatnike s naslovom, odlomkom i gumbom CTA."
+
+#: patterns/cta-services-image-left.php
+msgctxt "Pattern description"
+msgid "An image, title, paragraph and a CTA button to describe services."
+msgstr "Slika, naslov, odlomak i CTA dugme za opis usluga."
+
+#: patterns/cta-rsvp.php patterns/page-rsvp-landing.php
+msgctxt "Pattern description"
+msgid "A large RSVP heading sideways, a description, and a CTA button."
+msgstr "Veliki RSVP naslov postrance, opis i dugme CTA."
+
+#: patterns/cta-pricing.php
+msgctxt "Pattern description"
+msgid "A pricing section with a title, a paragraph and three pricing levels."
+msgstr "Odjeljak s cijenama s naslovom, odlomkom i tri razine cijena."
+
+#: patterns/cta-content-image-on-right.php
+msgctxt "Pattern description"
+msgid "A title, paragraph, two CTA buttons, and an image for a general CTA section."
+msgstr "Naslov, odlomak, dva CTA dugme i slika za opći CTA odjeljak."
+
+#: patterns/banner-project-description.php
+msgctxt "Pattern description"
+msgid "Project description section with title, paragraph, and an image."
+msgstr "Odjeljak opisa projekta s naslovom, odlomkom i slikom."
+
+#: patterns/banner-hero.php
+msgctxt "Pattern description"
+msgid "A hero section with a title, a paragraph, a CTA button, and an image."
+msgstr "Glavni odjeljak s naslovom, odlomkom, dugmetom CTA i slikom."
+
+#: patterns/footer.php:96
+msgid "Twitter/X"
+msgstr "Twitter/X"
+
+#: patterns/footer.php:74
+msgid "Contact Us"
+msgstr "Kontaktirajte nas"
+
+#: patterns/footer.php:73
+msgid "Terms and Conditions"
+msgstr "Opći uvjeti poslovanja"
+
+#: patterns/footer.php:72
+msgid "Privacy Policy"
+msgstr "Pravila privatnosti"
+
+#: patterns/footer.php:51
+msgid "Careers"
+msgstr "Karijere"
+
+#: patterns/footer.php:50
+msgid "History"
+msgstr "Povijest"
+
+#: patterns/footer.php:49
+msgid "Team"
+msgstr "Tim"
+
+#: patterns/posts-list.php
+msgctxt "Pattern title"
+msgid "List of posts without images, 1 column"
+msgstr "Popis objava bez slika, 1 stupac"
+
+#: patterns/hidden-portfolio-hero.php:16
+msgid "I’m <em>Leia Acosta</em>, a passionate photographer who finds inspiration in capturing the fleeting beauty of life."
+msgstr "Ja sam <em>Leia Acosta</em>, strastvena fotografkinja koja pronalazi inspiraciju u bilježenju prolazne ljepote života."
+
+#: functions.php:200
+msgid "A collection of full page layouts."
+msgstr "Zbirka postave cijele stranice."
+
+#: functions.php:199
+msgctxt "Block pattern category"
+msgid "Pages"
+msgstr "Stranice"
+
+#: theme.json
+msgctxt "Custom template name"
+msgid "Single with Sidebar"
+msgstr "Jedan s bočnom trakom"
+
+#: theme.json
+msgctxt "Custom template name"
+msgid "Page with Wide Image"
+msgstr "Stranica sa širokom slikom"
+
+#: theme.json
+msgctxt "Custom template name"
+msgid "Page with Sidebar"
+msgstr "Stranica s bočnom trakom"
+
+#: theme.json
+msgctxt "Custom template name"
+msgid "Page No Title"
+msgstr "Stranica bez naslova"
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Post Meta"
+msgstr "Meta podaci objave"
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Sidebar"
+msgstr "Bočna traka"
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Footer"
+msgstr "Podnožje"
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Header"
+msgstr "Zaglavlje"
+
+#: theme.json
+msgctxt "Space size name"
+msgid "6"
+msgstr "6"
+
+#: theme.json
+msgctxt "Space size name"
+msgid "5"
+msgstr "5"
+
+#: theme.json
+msgctxt "Space size name"
+msgid "4"
+msgstr "4"
+
+#: theme.json
+msgctxt "Space size name"
+msgid "3"
+msgstr "3"
+
+#: theme.json
+msgctxt "Space size name"
+msgid "2"
+msgstr "2"
+
+#: theme.json
+msgctxt "Space size name"
+msgid "1"
+msgstr "1"
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Vertical hard pewter to white"
+msgstr "Okomiti tvrdi kositar do bijele"
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Vertical hard mint to white"
+msgstr "Okomiti jaki mint do bijele"
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Vertical hard sage to white"
+msgstr "Okomita jaka kadulja do bijele"
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Vertical hard rust to white"
+msgstr "Okomita jaka hrđa do bijele"
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Vertical hard sandstone to white"
+msgstr "Okomiti tvrdi pješčenjak do bijele"
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Vertical hard beige to white"
+msgstr "Okomita jaka bež do bijele"
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Vertical soft pewter to white"
+msgstr "Okomiti meki kositar do bijele"
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Vertical soft mint to white"
+msgstr "Okomita blaga menta do bijele"
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Vertical soft sage to white"
+msgstr "Okomita blaga kadulja do bijele"
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Vertical soft rust to white"
+msgstr "Okomita blaga hrđa do bijele"
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Vertical soft sandstone to white"
+msgstr "Okomiti meki pješčenjak do bijele"
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Vertical soft beige to white"
+msgstr "Okomita blaga bež do bijele"
+
+#: theme.json
+msgctxt "Duotone name"
+msgid "Black and pastel blue"
+msgstr "Crna i pastelna plava"
+
+#: theme.json
+msgctxt "Duotone name"
+msgid "Black and sage"
+msgstr "Crna i kadulja"
+
+#: theme.json
+msgctxt "Duotone name"
+msgid "Black and rust"
+msgstr "Crna i hrđa"
+
+#: theme.json
+msgctxt "Duotone name"
+msgid "Black and sandstone"
+msgstr "Crna i pješčenjak"
+
+#: theme.json
+msgctxt "Duotone name"
+msgid "Black and white"
+msgstr "Crna i bijela"
+
+#: styles/rust.json
+msgctxt "Color name"
+msgid "Base / 2"
+msgstr "Baza / 2"
+
+#: styles/rust.json
+msgctxt "Gradient name"
+msgid "Vertical hard rust to beige"
+msgstr "Okomita tvrda hrđa do bež"
+
+#: styles/rust.json
+msgctxt "Gradient name"
+msgid "Vertical rust to beige"
+msgstr "Okomita hrđa do bež"
+
+#: styles/rust.json
+msgctxt "Gradient name"
+msgid "Vertical hard transparent rust to beige"
+msgstr "Okomita jako prozirna hrđa do bež"
+
+#: styles/rust.json
+msgctxt "Gradient name"
+msgid "Vertical transparent rust to beige"
+msgstr "Okomita prozirna hrđa do bež"
+
+#: styles/rust.json
+msgctxt "Duotone name"
+msgid "Dark rust to beige"
+msgstr "Tamna hrđa do bež"
+
+#: styles/rust.json
+msgctxt "Style variation name"
+msgid "Rust"
+msgstr "Hrđa"
+
+#: styles/onyx.json theme.json
+msgctxt "Color name"
+msgid "Accent / Five"
+msgstr "Akcent / Pet"
+
+#: styles/onyx.json theme.json
+msgctxt "Color name"
+msgid "Accent / Four"
+msgstr "Akcent / Četiri"
+
+#: styles/onyx.json theme.json
+msgctxt "Color name"
+msgid "Accent / Three"
+msgstr "Akcent / Tri"
+
+#: styles/onyx.json theme.json
+msgctxt "Color name"
+msgid "Accent / Two"
+msgstr "Akcent / Dva"
+
+#: styles/onyx.json theme.json
+msgctxt "Color name"
+msgid "Accent"
+msgstr "Akcent"
+
+#: styles/onyx.json
+msgctxt "Gradient name"
+msgid "Vertical hard pewter to dark gray"
+msgstr "Okomiti tvrdi kositar do tamnosive"
+
+#: styles/onyx.json
+msgctxt "Gradient name"
+msgid "Vertical hard steel to dark gray"
+msgstr "Okomiti tvrdi čelik do tamnosive"
+
+#: styles/onyx.json
+msgctxt "Gradient name"
+msgid "Vertical hard olive to dark gray"
+msgstr "Okomito jako maslinasta do tamnosiva"
+
+#: styles/onyx.json
+msgctxt "Gradient name"
+msgid "Vertical hard cinnamon to dark gray"
+msgstr "Okomiti jaki cimet do tamno sive"
+
+#: styles/onyx.json
+msgctxt "Gradient name"
+msgid "Vertical hard walnut to dark gray"
+msgstr "Okomiti tvrdi orah do tamnosive"
+
+#: styles/onyx.json
+msgctxt "Gradient name"
+msgid "Vertical hard beige to dark gray"
+msgstr "Okomita jaka bež do tamno sive"
+
+#: styles/onyx.json
+msgctxt "Gradient name"
+msgid "Vertical soft pewter to dark gray"
+msgstr "Okomiti mekani kositar do tamnosive"
+
+#: styles/onyx.json
+msgctxt "Gradient name"
+msgid "Vertical soft steel to dark gray"
+msgstr "Okomiti mekani čelik do tamnosive"
+
+#: styles/onyx.json
+msgctxt "Gradient name"
+msgid "Vertical soft olive to dark gray"
+msgstr "Okomita blaga maslinasta do tamno sivo"
+
+#: styles/onyx.json
+msgctxt "Gradient name"
+msgid "Vertical soft cinnamon to dark gray"
+msgstr "Okomiti blagi cimet do tamno siva"
+
+#: styles/onyx.json
+msgctxt "Gradient name"
+msgid "Vertical soft walnut to dark gray"
+msgstr "Okomiti blagi orah do tamno sive"
+
+#: styles/onyx.json
+msgctxt "Gradient name"
+msgid "Vertical soft driftwood to dark gray"
+msgstr "Okomito meko naplavljeno drvo do tamno sive"
+
+#: styles/onyx.json
+msgctxt "Duotone name"
+msgid "Dark gray and steel"
+msgstr "Tamno siva i čelik"
+
+#: styles/onyx.json
+msgctxt "Duotone name"
+msgid "Dark gray and olive"
+msgstr "Tamno siva i maslinasta"
+
+#: styles/onyx.json
+msgctxt "Duotone name"
+msgid "Dark gray and cinnamon"
+msgstr "Tamno siva i cimet"
+
+#: styles/onyx.json
+msgctxt "Duotone name"
+msgid "Dark gray and walnut"
+msgstr "Tamno siva i orah"
+
+#: styles/onyx.json
+msgctxt "Duotone name"
+msgid "Dark gray and white"
+msgstr "Tamno siva i bijela"
+
+#: styles/onyx.json
+msgctxt "Style variation name"
+msgid "Onyx"
+msgstr "Oniks"
+
+#: styles/mint.json
+msgctxt "Style variation name"
+msgid "Mint"
+msgstr "Menta"
+
+#: styles/maelstrom.json
+msgctxt "Color name"
+msgid "Contrast / 3"
+msgstr "Kontrast / 3"
+
+#: styles/maelstrom.json
+msgctxt "Style variation name"
+msgid "Maelstrom"
+msgstr "Vrtlog"
+
+#: styles/ice.json
+msgctxt "Gradient name"
+msgid "Vertical hard ink to ocean"
+msgstr "Okomita jaka tinta do oceana"
+
+#: styles/ice.json
+msgctxt "Gradient name"
+msgid "Vertical hard ocean to slate"
+msgstr "Okomita jaka ocean do škriljevca"
+
+#: styles/ice.json
+msgctxt "Gradient name"
+msgid "Vertical hard ink to ice"
+msgstr "Okomita jaka tinta do leda"
+
+#: styles/ice.json
+msgctxt "Gradient name"
+msgid "Vertical hard ocean to ice"
+msgstr "Okomita jaka ocean do leda"
+
+#: styles/ice.json
+msgctxt "Gradient name"
+msgid "Vertical hard slate to ice"
+msgstr "Okomiti jaki škriljevac do leda"
+
+#: styles/ice.json
+msgctxt "Gradient name"
+msgid "Vertical hard ice to azure"
+msgstr "Okomiti jaki led do plavetnila"
+
+#: styles/ice.json
+msgctxt "Gradient name"
+msgid "Vertical ink to ocean"
+msgstr "Okomita tinta do oceana"
+
+#: styles/ice.json
+msgctxt "Gradient name"
+msgid "Vertical ocean to slate"
+msgstr "Okomiti ocean do škriljevca"
+
+#: styles/ice.json
+msgctxt "Gradient name"
+msgid "Vertical ink to ice"
+msgstr "Okomita tinta do leda"
+
+#: styles/ice.json
+msgctxt "Gradient name"
+msgid "Vertical ocean to ice"
+msgstr "Okomiti ocean do leda"
+
+#: styles/ice.json
+msgctxt "Gradient name"
+msgid "Vertical slate to ice"
+msgstr "Okomiti škriljevac do leda"
+
+#: styles/ice.json
+msgctxt "Gradient name"
+msgid "Vertical azure to ice"
+msgstr "Okomito plavetnilo do leda"
+
+#: styles/ice.json
+msgctxt "Style variation name"
+msgid "Ice"
+msgstr "Led"
+
+#: styles/fossil.json styles/ice.json styles/maelstrom.json theme.json
+msgctxt "Font size name"
+msgid "Extra Extra Large"
+msgstr "Ekstra ekstra veliko"
+
+#: styles/fossil.json styles/ice.json styles/maelstrom.json theme.json
+msgctxt "Font size name"
+msgid "Extra Large"
+msgstr "Ekstra veliko"
+
+#: styles/fossil.json styles/ice.json styles/maelstrom.json theme.json
+msgctxt "Font size name"
+msgid "Large"
+msgstr "Veliko"
+
+#: styles/fossil.json styles/ice.json styles/maelstrom.json theme.json
+msgctxt "Font size name"
+msgid "Medium"
+msgstr "Srednje"
+
+#: styles/fossil.json styles/ice.json styles/maelstrom.json theme.json
+msgctxt "Font size name"
+msgid "Small"
+msgstr "Malo"
+
+#: styles/fossil.json styles/maelstrom.json theme.json
+msgctxt "Font family name"
+msgid "Cardo"
+msgstr "Cardo"
+
+#: styles/fossil.json styles/ice.json theme.json
+msgctxt "Font family name"
+msgid "Inter"
+msgstr "Inter"
+
+#: styles/fossil.json styles/ice.json styles/mint.json styles/onyx.json
+#: theme.json
+msgctxt "Color name"
+msgid "Contrast / Three"
+msgstr "Kontrast / Tri"
+
+#: styles/fossil.json styles/ice.json styles/mint.json styles/onyx.json
+#: theme.json
+msgctxt "Color name"
+msgid "Contrast / Two"
+msgstr "Kontrast / Dva"
+
+#: styles/fossil.json
+msgctxt "Style variation name"
+msgid "Fossil"
+msgstr "Fosil"
+
+#: styles/ember.json styles/fossil.json styles/ice.json styles/maelstrom.json
+#: styles/mint.json theme.json
+msgctxt "Font family name"
+msgid "System Serif"
+msgstr "System Serif"
+
+#: styles/ember.json styles/fossil.json styles/ice.json styles/maelstrom.json
+#: styles/mint.json theme.json
+msgctxt "Font family name"
+msgid "System Sans-serif"
+msgstr "System Sans-serif"
+
+#: styles/ember.json styles/ice.json styles/maelstrom.json styles/mint.json
+msgctxt "Font family name"
+msgid "Jost"
+msgstr "Jost"
+
+#: styles/ember.json styles/mint.json
+msgctxt "Font family name"
+msgid "Instrument Sans"
+msgstr "Instrument Sans"
+
+#: styles/ember.json styles/fossil.json styles/ice.json styles/maelstrom.json
+#: styles/mint.json styles/onyx.json theme.json
+msgctxt "Color name"
+msgid "Base / Two"
+msgstr "Baza / Dva"
+
+#: styles/ember.json styles/fossil.json styles/ice.json styles/maelstrom.json
+#: styles/mint.json styles/onyx.json styles/rust.json theme.json
+msgctxt "Color name"
+msgid "Contrast"
+msgstr "Kontrast"
+
+#: styles/ember.json styles/maelstrom.json
+msgctxt "Color name"
+msgid "Contrast / 2"
+msgstr "Kontrast / 2"
+
+#: styles/ember.json styles/fossil.json styles/ice.json styles/maelstrom.json
+#: styles/mint.json styles/onyx.json styles/rust.json theme.json
+msgctxt "Color name"
+msgid "Base"
+msgstr "Osnovica"
+
+#: styles/ember.json styles/fossil.json
+msgctxt "Gradient name"
+msgid "Vertical hard ebony to sable"
+msgstr "Okomita tvrda ebanovina do samurovine"
+
+#: styles/ember.json styles/fossil.json
+msgctxt "Gradient name"
+msgid "Vertical hard sable to taupe"
+msgstr "Okomito tvrda samurovina do tamnosmeđe"
+
+#: styles/ember.json styles/fossil.json
+msgctxt "Gradient name"
+msgid "Vertical hard ebony to beige"
+msgstr "Okomita tvrda ebanovina do bež"
+
+#: styles/ember.json styles/fossil.json
+msgctxt "Gradient name"
+msgid "Vertical hard sable to beige"
+msgstr "Okomiti tvrdi samur do bež"
+
+#: styles/ember.json styles/fossil.json
+msgctxt "Gradient name"
+msgid "Vertical hard taupe to beige"
+msgstr "Okomita tvrda tamnosmeđa do bež"
+
+#: styles/ember.json styles/fossil.json
+msgctxt "Gradient name"
+msgid "Vertical hard beige to linen"
+msgstr "Okomito tvrda bež do lana"
+
+#: styles/ember.json styles/fossil.json
+msgctxt "Gradient name"
+msgid "Vertical ebony to sable"
+msgstr "Okomita ebanovina do samurovine"
+
+#: styles/ember.json styles/fossil.json
+msgctxt "Gradient name"
+msgid "Vertical ebony to beige"
+msgstr "Okomita ebanovina do bež"
+
+#: styles/ember.json styles/fossil.json
+msgctxt "Gradient name"
+msgid "Vertical sable to beige"
+msgstr "Okomita samurovina do bež"
+
+#: styles/ember.json styles/fossil.json
+msgctxt "Gradient name"
+msgid "Vertical taupe to beige"
+msgstr "Vertikalna tamnosmeđa do bež"
+
+#: styles/ember.json styles/fossil.json
+msgctxt "Gradient name"
+msgid "Vertical linen to beige"
+msgstr "Okomito lan do bež"
+
+#: styles/ember.json
+msgctxt "Duotone name"
+msgid "Orange and white"
+msgstr "Narančasta i bijela"
+
+#: styles/ember.json
+msgctxt "Style variation name"
+msgid "Ember"
+msgstr "Ember"
+
+#: patterns/text-title-left-image-right.php:35
+msgctxt "Call to Action button text"
+msgid "About us"
+msgstr "O nama"
+
+#: patterns/text-title-left-image-right.php:28
+msgctxt "Description for the About pattern"
+msgid "Leaving an indelible mark on the landscape of tomorrow."
+msgstr "Ostavljajući neizbrisiv trag na pejzažu sutrašnjice."
+
+#: patterns/text-title-left-image-right.php:21
+msgctxt "Headline for the About pattern"
+msgid "Études offers comprehensive consulting, management, design, and research solutions. Every architectural endeavor is an opportunity to shape the future."
+msgstr "Études nudi sveobuhvatna rješenja za savjetovanje, upravljanje, dizajn i istraživanje. Svaki arhitektonski pothvat prilika je za oblikovanje budućnosti."
+
+#: patterns/text-title-left-image-right.php
+msgctxt "Pattern title"
+msgid "Title text and button on left with image on right"
+msgstr "Tekst naslova i dugme lijevo sa slikom desno"
+
+#: patterns/text-project-details.php:35 patterns/text-project-details.php:43
+msgctxt "Descriptive text for the feature area"
+msgid "The revitalized Art Gallery is set to redefine the cultural landscape of Toronto, serving as a nexus of artistic expression, community engagement, and architectural marvel. The expansion and renovation project pay homage to the Art Gallery's rich history while embracing the future, ensuring that the gallery remains a beacon of inspiration."
+msgstr "Revitalizirana umjetnička galerija trebala bi redefinirati kulturni krajolik Toronta, služeći kao poveznica umjetničkog izražavanja, angažmana zajednice i arhitektonskog čuda. Projekt proširenja i obnove odaje počast bogatoj povijesti Umjetničke galerije, istovremeno prihvaćajući budućnost, osiguravajući da galerija ostane svjetionik inspiracije."
+
+#: patterns/text-project-details.php:27
+msgctxt "Descriptive title for the feature area"
+msgid "With meticulous attention to detail and a commitment to excellence, we create spaces that inspire, elevate, and enrich the lives of those who inhabit them."
+msgstr "S pažnjom posvećenom detaljima i predanošću izvrsnosti, stvaramo prostore koji nadahnjuju, uzdižu i obogaćuju živote onih koji ih nastanjuju."
+
+#: patterns/text-project-details.php:18
+msgctxt "Title text for the feature area"
+msgid "The revitalized art gallery is set to redefine cultural landscape."
+msgstr "Revitalizirana umjetnička galerija trebala bi redefinirati kulturni krajolik."
+
+#: patterns/text-project-details.php
+msgctxt "Pattern title"
+msgid "Project details"
+msgstr "Pojedinosti projekta"
+
+#: patterns/text-feature-grid-3-col.php:112
+msgctxt "Sample content"
+msgid "Experience the fusion of imagination and expertise with Études Architectural Solutions."
+msgstr "Doživite spoj mašte i stručnosti s Études arhitektonskim rješenjima."
+
+#: patterns/text-feature-grid-3-col.php:108
+msgctxt "Sample heading"
+msgid "Architectural Solutions"
+msgstr "Arhitektonska rješenja"
+
+#: patterns/text-feature-grid-3-col.php:96
+msgctxt "Sample feature heading"
+msgid "Project Management"
+msgstr "Upravljanje projektom"
+
+#: patterns/text-feature-grid-3-col.php:84
+msgctxt "Sample feature heading"
+msgid "Consulting"
+msgstr "Savjetovanje"
+
+#: patterns/text-feature-grid-3-col.php:63
+msgctxt "Sample feature heading"
+msgid "App Access"
+msgstr "Pristup aplikaciji"
+
+#: patterns/text-feature-grid-3-col.php:51
+msgctxt "Sample feature heading"
+msgid "Continuous Support"
+msgstr "Trajna podrška"
+
+#: patterns/text-feature-grid-3-col.php:43
+#: patterns/text-feature-grid-3-col.php:55
+#: patterns/text-feature-grid-3-col.php:67
+#: patterns/text-feature-grid-3-col.php:88
+#: patterns/text-feature-grid-3-col.php:100
+msgctxt "Sample feature content"
+msgid "Experience the fusion of imagination and expertise with Études Architectural Solutions."
+msgstr "Doživite spoj mašte i stručnosti s Études arhitektonskim rješenjima."
+
+#: patterns/text-feature-grid-3-col.php:39
+msgctxt "Sample feature heading"
+msgid "Renovation and restoration"
+msgstr "Obnova i restauriranje"
+
+#: patterns/text-feature-grid-3-col.php:24
+msgctxt "Sub-heading of the features"
+msgid "Our comprehensive suite of professional services caters to a diverse clientele, ranging from homeowners to commercial developers."
+msgstr "Naš sveobuhvatni paket profesionalnih usluga služi raznolikoj klijenteli, od vlasnika kuća do komercijalnih programera."
+
+#: patterns/text-feature-grid-3-col.php:16
+msgctxt "Heading of the features"
+msgid "A passion for creating spaces"
+msgstr "Strast za stvaranjem prostora"
+
+#: patterns/text-feature-grid-3-col.php
+msgctxt "Pattern title"
+msgid "Feature grid, 3 columns"
+msgstr "Rešetka značajki, 3 stupca"
+
+#: patterns/text-faq.php:57
+msgctxt "Question in the FAQ pattern"
+msgid "Can I apply to be a part of the team or work as a contractor?"
+msgstr "Mogu li se prijaviti da budem dio tima ili da radim kao izvođač?"
+
+#: patterns/text-faq.php:46
+msgctxt "Question in the FAQ pattern"
+msgid "I'd like to get to meet fellow architects, how can I do that?"
+msgstr "Htio bih upoznati kolege arhitekte, kako to mogu učiniti?"
+
+#: patterns/text-faq.php:27 patterns/text-faq.php:38 patterns/text-faq.php:49
+#: patterns/text-faq.php:60
+msgctxt "Answer in the FAQ pattern"
+msgid "Études offers comprehensive consulting, management, design, and research solutions. Our vision is to be at the forefront of architectural innovation, fostering a global community of architects and enthusiasts united by a passion for creating spaces. Every architectural endeavor is an opportunity to shape the future."
+msgstr "Études nudi sveobuhvatna rješenja za savjetovanje, upravljanje, dizajn i istraživanje. Naša je vizija biti na čelu arhitektonskih inovacija, njegujući globalnu zajednicu arhitekata i entuzijasta ujedinjenih strašću za stvaranjem prostora. Svaki arhitektonski pothvat prilika je za oblikovanje budućnosti."
+
+#: patterns/text-faq.php:24
+msgctxt "Question in the FAQ pattern"
+msgid "What is your process working in smaller projects?"
+msgstr "Kakav je vaš proces rada na manjim projektima?"
+
+#: patterns/text-faq.php:15
+msgctxt "Heading of the FAQs"
+msgid "FAQs"
+msgstr "ČPP"
+
+#: patterns/text-faq.php:12
+msgctxt "Name of the FAQ pattern"
+msgid "FAQs"
+msgstr "ČPP"
+
+#: patterns/text-faq.php
+msgctxt "Pattern title"
+msgid "FAQ"
+msgstr "ČPP"
+
+#: patterns/text-centered-statement.php:21
+msgid "<em>Études</em> is not confined to the past—we are passionate about the cutting edge designs shaping our world today."
+msgstr "<em>Études</em> nije ograničen na prošlost — mi smo strastveni prema vrhunskim dizajnima koji oblikuju naš današnji svijet."
+
+#: patterns/text-centered-statement.php
+msgctxt "Pattern title"
+msgid "Centered statement"
+msgstr "Centrirana izjava"
+
+#. Translators: About text placeholder
+#: patterns/text-centered-statement-small.php:23
+msgid "I write about finance, management and economy, my book “%1$s” is out now."
+msgstr "Pišem o financijama, menadžmentu i ekonomiji, moja knjiga \"%1$s\" upravo je izašla.\t"
+
+#. Translators: About link placeholder
+#: patterns/text-centered-statement-small.php:20
+msgid "Money Studies"
+msgstr "Money Studies"
+
+#: patterns/text-centered-statement-small.php
+msgctxt "Pattern title"
+msgid "Centered statement, small"
+msgstr "Centrirana izjava, mala"
+
+#: patterns/text-alternating-images.php:105
+msgctxt "Sample list item"
+msgid "Exclusive access to design insights."
+msgstr "Ekskluzivan pristup uvidima u dizajn."
+
+#: patterns/text-alternating-images.php:101
+msgctxt "Sample list item"
+msgid "Case studies that celebrate architecture."
+msgstr "Studije slučaja koje slave arhitekturu."
+
+#: patterns/text-alternating-images.php:97
+msgctxt "Sample list item"
+msgid "A world of thought-provoking articles."
+msgstr "Svijet članaka koji potiču na razmišljanje."
+
+#: patterns/text-alternating-images.php:91
+msgctxt "Sample heading"
+msgid "Études Newsletter"
+msgstr "Bilten Études"
+
+#: patterns/text-alternating-images.php:82
+msgid "Windows of a building in Nuremberg, Germany"
+msgstr "Prozori zgrade u Nürnbergu, Njemačka"
+
+#: patterns/text-alternating-images.php:64
+msgid "Tourist taking photo of a building"
+msgstr "Turist koji fotografira zgradu"
+
+#: patterns/text-alternating-images.php:37
+msgctxt "Sample list heading"
+msgid "Études Architect App"
+msgstr "Aplikacija Études Architect"
+
+#: patterns/text-alternating-images.php:23
+msgctxt "Sample subheading content"
+msgid "Our comprehensive suite of professional services caters to a diverse clientele, ranging from homeowners to commercial developers."
+msgstr "Naš sveobuhvatni paket profesionalnih usluga služi raznolikoj klijenteli, od vlasnika kuća do komercijalnih programera."
+
+#: patterns/text-alternating-images.php:19
+msgctxt "Sample heading content"
+msgid "An array of resources"
+msgstr "Niz izvora"
+
+#: patterns/text-alternating-images.php
+msgctxt "Pattern title"
+msgid "Text with alternating images"
+msgstr "Tekst s izmjeničnim slikama"
+
+#: patterns/testimonial-centered.php:39
+msgctxt "Designation of Person Provided Testimonial"
+msgid "CEO, Greenprint"
+msgstr "CEO, Greenprint"
+
+#: patterns/testimonial-centered.php:35
+msgctxt "Name of Person Provided the Testimonial"
+msgid "Annie Steiner"
+msgstr "Annie Steiner"
+
+#: patterns/testimonial-centered.php:26
+msgctxt "Name of testimonial citation group"
+msgid "Testimonial source"
+msgstr "Izvor preporuka"
+
+#: patterns/testimonial-centered.php:18
+msgctxt "Testimonial Text or Review Text Got From the Person"
+msgid "“Études has saved us thousands of hours of work and has unlocked insights we never thought possible.”"
+msgstr "\"Études nam je uštedio tisuće sati rada i otključao uvide za koje nismo mislili da su mogući.\""
+
+#: patterns/testimonial-centered.php:12
+msgctxt "Name of testimonial pattern"
+msgid "Testimonial"
+msgstr "Preporuke"
+
+#: patterns/testimonial-centered.php
+msgctxt "Pattern title"
+msgid "Centered testimonial"
+msgstr "Centrirana preporuka"
+
+#: patterns/template-single-portfolio.php
+msgctxt "Pattern title"
+msgid "Portfolio single post template"
+msgstr "Predložak samostalne objave za portfelj"
+
+#: patterns/template-search-blogging.php
+msgctxt "Pattern title"
+msgid "Blogging search template"
+msgstr "Predložak za pretraživanje blogova"
+
+#: patterns/template-search-portfolio.php
+msgctxt "Pattern title"
+msgid "Portfolio search template"
+msgstr "Predložak za pretraživanje portfelja"
+
+#: patterns/template-index-portfolio.php
+msgctxt "Pattern title"
+msgid "Portfolio index template"
+msgstr "Predložak indeksa portfelja"
+
+#: patterns/template-index-blogging.php
+msgctxt "Pattern title"
+msgid "Blogging index template"
+msgstr "Predložak indeksa bloga"
+
+#: patterns/template-home-portfolio.php
+msgctxt "Pattern title"
+msgid "Portfolio home template with post featured images"
+msgstr "Početni predložak portfelja s istaknutim slikama objave"
+
+#: patterns/template-home-business.php
+msgctxt "Pattern title"
+msgid "Business home template"
+msgstr "Predložak poslovne početne stranice"
+
+#: patterns/template-home-blogging.php
+msgctxt "Pattern title"
+msgid "Blogging home template"
+msgstr "Predložak početne stranice bloga"
+
+#: patterns/template-archive-portfolio.php
+msgctxt "Pattern title"
+msgid "Portfolio archive template"
+msgstr "Predložak arhive portfelja"
+
+#: patterns/template-archive-blogging.php
+msgctxt "Pattern title"
+msgid "Blogging archive template"
+msgstr "Predložak arhive bloga"
+
+#: patterns/team-4-col.php:121
+msgctxt "Sample role of a team member"
+msgid "Project Manager"
+msgstr "Voditelj projekta"
+
+#: patterns/team-4-col.php:116
+msgctxt "Sample name of a team member"
+msgid "Ivan Lawrence"
+msgstr "Ivan Lawrence"
+
+#: patterns/team-4-col.php:97
+msgctxt "Sample role of a team member"
+msgid "Architect"
+msgstr "Arhitekt"
+
+#: patterns/team-4-col.php:92
+msgctxt "Sample name of a team member"
+msgid "Helga Steiner"
+msgstr "Helga Steiner"
+
+#: patterns/team-4-col.php:73
+msgctxt "Sample role of a team member"
+msgid "Engineering Manager"
+msgstr "Menadžer inženjerstva"
+
+#: patterns/team-4-col.php:68
+msgctxt "Sample name of a team member"
+msgid "Rhye Moore"
+msgstr "Rhye Moore"
+
+#: patterns/team-4-col.php:49
+msgctxt "Sample role of a team member"
+msgid "Founder, CEO & Architect"
+msgstr "Osnivač, izvršni direktor & arhitekt"
+
+#: patterns/team-4-col.php:44
+msgctxt "Sample name of a team member"
+msgid "Francesca Piovani"
+msgstr "Francesca Piovani"
+
+#: patterns/team-4-col.php:20
+msgctxt "Sample descriptive text of the team pattern"
+msgid "Our comprehensive suite of professionals caters to a diverse team, ranging from seasoned architects to renowned engineers."
+msgstr "Naš sveobuhvatni skup profesionalaca čini raznolik tim, od iskusnih arhitekata do renomiranih inženjera."
+
+#: patterns/team-4-col.php:16
+msgctxt "Sample heading for the team pattern"
+msgid "Meet our team"
+msgstr "Upoznajte naš tim"
+
+#: patterns/team-4-col.php:11
+msgctxt "Name of team pattern"
+msgid "Team members"
+msgstr "Članovi tima"
+
+#: patterns/team-4-col.php
+msgctxt "Pattern title"
+msgid "Team members, 4 columns"
+msgstr "Članovi tima, 4 stupca"
+
+#: patterns/posts-images-only-offset-4-col.php
+msgctxt "Pattern title"
+msgid "Offset posts with featured images only, 4 columns"
+msgstr "Odmak objave samo s istaknutim slikama, 4 stupca"
+
+#: patterns/posts-images-only-3-col.php
+msgctxt "Pattern title"
+msgid "Posts with featured images only, 3 columns"
+msgstr "Objave samo s istaknutim slikama, 3 stupca"
+
+#: patterns/posts-grid-2-col.php:14 patterns/posts-list.php:14
+#: patterns/template-index-blogging.php:16
+msgid "Watch, Read, Listen"
+msgstr "Gledajte, čitajte, slušajte"
+
+#: patterns/posts-grid-2-col.php
+msgctxt "Pattern title"
+msgid "Grid of posts featuring the first post, 2 columns"
+msgstr "Rešetka objava s prvom objavom, 2 stupca"
+
+#: patterns/posts-3-col.php
+msgctxt "Pattern title"
+msgid "List of posts, 3 columns"
+msgstr "Popis objava, 3 stupca"
+
+#: patterns/posts-1-col.php
+msgctxt "Pattern title"
+msgid "List of posts, 1 column"
+msgstr "Popis objava, 1 stupac"
+
+#: patterns/page-rsvp-landing.php:49
+msgid "Green staircase at Western University, London, Canada"
+msgstr "Zeleno stubište na Sveučilištu Western, London, Kanada"
+
+#: patterns/page-rsvp-landing.php:14
+msgctxt "Name of RSVP landing page pattern"
+msgid "RSVP Landing Page"
+msgstr "RSVP odredišna stranica"
+
+#: patterns/page-rsvp-landing.php
+msgctxt "Pattern title"
+msgid "RSVP landing"
+msgstr "RSVP odredište"
+
+#: patterns/page-portfolio-overview.php
+msgctxt "Pattern title"
+msgid "Portfolio project overview"
+msgstr "Pregled portfelja projekta"
+
+#: patterns/page-newsletter-landing.php:40
+msgctxt "Sample content for newsletter subscribe button"
+msgid "Sign up"
+msgstr "Prijavi se"
+
+#: patterns/page-newsletter-landing.php:29
+msgctxt "sample content for newsletter subscription"
+msgid "Subscribe to the newsletter and stay connected with our community"
+msgstr "Pretplatite se na bilten i ostanite povezani s našom zajednicom"
+
+#: patterns/page-newsletter-landing.php
+msgctxt "Pattern title"
+msgid "Newsletter landing"
+msgstr "Odredište biltena"
+
+#: patterns/page-home-portfolio.php
+msgctxt "Pattern title"
+msgid "Portfolio home with post featured images"
+msgstr "Početna stranica portfelja s istaknutim slikama objava"
+
+#: patterns/page-home-portfolio-gallery.php
+msgctxt "Pattern title"
+msgid "Portfolio home image gallery"
+msgstr "Početna galerija slika portfelja"
+
+#: patterns/page-home-business.php
+msgctxt "Pattern title"
+msgid "Business home"
+msgstr "Poslovno sjedište"
+
+#: patterns/page-home-blogging.php
+msgctxt "Pattern title"
+msgid "Blogging home"
+msgstr "Početna stranica bloga"
+
+#: patterns/page-about-business.php
+msgctxt "Pattern title"
+msgid "About"
+msgstr "Informacije"
+
+#: patterns/hidden-sidebar.php:75
+msgctxt "search form placeholder"
+msgid "Search..."
+msgstr "Pretraži..."
+
+#: patterns/hidden-sidebar.php:72
+msgid "Search the website"
+msgstr "Pretraži web-stranicu"
+
+#: patterns/hidden-sidebar.php:60
+msgid "Financial apps for families"
+msgstr "Financijske aplikacije za obitelji"
+
+#: patterns/hidden-sidebar.php:59
+msgid "Latest inflation report"
+msgstr "Najnovije izvješće o inflaciji"
+
+#: patterns/hidden-sidebar.php:53
+msgid "Links I found useful and wanted to share."
+msgstr "Poveznice koje smatram korisnima i želio sam ih podijeliti."
+
+#: patterns/hidden-sidebar.php:49
+msgid "Useful Links"
+msgstr "Korisne poveznice"
+
+#: patterns/hidden-sidebar.php:33
+msgid "Popular Categories"
+msgstr "Popularne kategorije"
+
+#: patterns/hidden-sidebar.php:17
+msgid "About the author"
+msgstr "O autoru"
+
+#: patterns/hidden-sidebar.php
+msgctxt "Pattern title"
+msgid "Sidebar"
+msgstr "Bočna traka"
+
+#: patterns/hidden-search.php:9
+msgctxt "search button text"
+msgid "Search"
+msgstr "Pretraži"
+
+#: patterns/hidden-search.php:9 patterns/hidden-sidebar.php:75
+msgctxt "search form label"
+msgid "Search"
+msgstr "Pretraži"
+
+#: patterns/hidden-search.php
+msgctxt "Pattern title"
+msgid "Search"
+msgstr "Pretraži"
+
+#: patterns/hidden-post-navigation.php:12
+msgctxt "Label before the title of the next post. There is a space after the colon."
+msgid "Next: "
+msgstr "Sljedeće: "
+
+#: patterns/hidden-post-navigation.php:11
+msgctxt "Label before the title of the previous post. There is a space after the colon."
+msgid "Previous: "
+msgstr "Prethodno: "
+
+#: patterns/hidden-post-navigation.php:9 patterns/hidden-post-navigation.php:10
+#: patterns/hidden-posts-heading.php:10
+#: patterns/template-index-portfolio.php:16
+msgid "Posts"
+msgstr "Objave"
+
+#: patterns/hidden-post-navigation.php
+msgctxt "Pattern title"
+msgid "Post navigation"
+msgstr "Navigacija objava"
+
+#: patterns/hidden-post-meta.php:25
+msgctxt "Prefix for the post category block: in category name"
+msgid "in "
+msgstr "u "
+
+#: patterns/hidden-post-meta.php:20
+msgctxt "Prefix for the post author block: By author name"
+msgid "by"
+msgstr "od"
+
+#: patterns/hidden-post-meta.php
+msgctxt "Pattern title"
+msgid "Post meta"
+msgstr "Meta podaci objave"
+
+#: patterns/hidden-portfolio-hero.php
+msgctxt "Pattern title"
+msgid "Portfolio hero"
+msgstr "Portfelj heroj"
+
+#: patterns/hidden-no-results.php:9
+msgctxt "Message explaining that there are no results returned from a search"
+msgid "No posts were found."
+msgstr "Nije pronađena ni jedna objava."
+
+#: patterns/hidden-no-results.php
+msgctxt "Pattern title"
+msgid "No results"
+msgstr "Nema rezultata"
+
+#: patterns/hidden-comments.php:12
+msgid "Comments"
+msgstr "Komentari"
+
+#: patterns/hidden-comments.php
+msgctxt "Pattern title"
+msgid "Comments"
+msgstr "Komentari"
+
+#: patterns/hidden-404.php:13
+msgctxt "Message to convey that a webpage could not be found"
+msgid "The page you are looking for does not exist, or it has been moved. Please try searching using the form below."
+msgstr "Stranica koju tražite ne postoji ili je premještena. Pokušajte s pretraživanjem koristeći donji obrazac."
+
+#: patterns/hidden-404.php:10
+msgctxt "Heading for a webpage that is not found"
+msgid "Page Not Found"
+msgstr "Stranica nije pronađena"
+
+#: patterns/hidden-404.php
+msgctxt "Pattern title"
+msgid "404"
+msgstr "404"
+
+#: patterns/gallery-project-layout.php:54
+msgid "Art Gallery of Ontario, Toronto, Canada"
+msgstr "Umjetnička galerija Ontarija, Toronto, Kanada"
+
+#: patterns/gallery-project-layout.php:49
+msgctxt "Sample text for the feature area"
+msgid "2. Case studies that celebrate the artistry can fuel curiosity and ignite inspiration."
+msgstr "2. Studije slučaja koje slave umjetnost mogu potaknuti znatiželju i rasplamsati inspiraciju."
+
+#: patterns/gallery-project-layout.php:38
+msgctxt "Sample text for the feature area"
+msgid "Our comprehensive suite of professional services caters to a diverse clientele, ranging from homeowners to commercial developers. With a commitment to innovation and sustainability, Études is the bridge that transforms architectural dreams into remarkable built realities."
+msgstr "Naš sveobuhvatni paket profesionalnih usluga služi raznolikoj klijenteli, od vlasnika kuća do komercijalnih programera. Uz predanost danu inovacijama i održivosti, Études je most koji pretvara arhitektonske snove u izvanredne izgrađene stvarnosti."
+
+#: patterns/gallery-project-layout.php:26
+msgctxt "Sample text for the feature area"
+msgid "1. Through Études, we aspire to redefine architectural boundaries and usher in a new era of design excellence that leaves an indelible mark on the built environment."
+msgstr "1. Kroz Études težimo redefiniranju arhitektonskih granica i uvodu u novu eru izvrsnosti dizajna koja ostavlja neizbrisiv trag na izgrađenom okolišu."
+
+#: patterns/gallery-project-layout.php:21
+msgid "An empty staircase under an angular roof in Darling Harbour, Sydney, Australia"
+msgstr "Prazno stubište ispod uglatog krova u Darling Harbouru, Sydney, Australija"
+
+#: patterns/gallery-project-layout.php
+msgctxt "Pattern title"
+msgid "Project layout"
+msgstr "Izgled projekta"
+
+#: patterns/gallery-offset-images-grid-4-col.php
+msgctxt "Pattern title"
+msgid "Offset gallery, 4 columns"
+msgstr "Odmak galerija, 4 stupca"
+
+#: patterns/gallery-offset-images-grid-3-col.php
+msgctxt "Pattern title"
+msgid "Offset gallery, 3 columns"
+msgstr "Odmak galerija, 3 stupca"
+
+#: patterns/gallery-offset-images-grid-2-col.php
+msgctxt "Pattern title"
+msgid "Offset gallery, 2 columns"
+msgstr "Odmak galerija, 2 stupca"
+
+#: patterns/gallery-full-screen-image.php
+msgctxt "Pattern title"
+msgid "Full screen image"
+msgstr "Slika preko cijelog zaslona"
+
+#: patterns/footer.php:92
+msgid "Social Media"
+msgstr "Društveni mediji"
+
+#: patterns/footer.php:86
+msgid "Social"
+msgstr "Društvene"
+
+#: patterns/footer.php:64 patterns/footer.php:70
+msgid "Privacy"
+msgstr "Privatnost"
+
+#: patterns/footer.php:41 patterns/footer.php:47
+msgid "About"
+msgstr "Informacije"
+
+#: patterns/footer.php
+msgctxt "Pattern title"
+msgid "Footer with colophon, 4 columns"
+msgstr "Podnožje s kolofonom, 4 stupca"
+
+#: patterns/footer-colophon-3-col.php:82
+msgid "&copy;"
+msgstr "&copy;"
+
+#: patterns/footer-colophon-3-col.php:60 patterns/footer.php:94
+msgid "Facebook"
+msgstr "Facebook"
+
+#: patterns/footer-colophon-3-col.php:60 patterns/footer.php:95
+msgid "Instagram"
+msgstr "Instagram"
+
+#: patterns/footer-colophon-3-col.php:57
+msgid "Follow"
+msgstr "Prati"
+
+#: patterns/footer-colophon-3-col.php:42
+msgctxt "Example email in site footer"
+msgid "info@example.com"
+msgstr "info@example.com"
+
+#: patterns/footer-colophon-3-col.php:39
+msgid "Contact"
+msgstr "Kontakt"
+
+#: patterns/footer-colophon-3-col.php:30
+msgid "Keep up, get in touch."
+msgstr "Budite u toku, javite se."
+
+#: patterns/footer-colophon-3-col.php
+msgctxt "Pattern title"
+msgid "Footer with colophon, 3 columns"
+msgstr "Podnožje s kolofonom, 3 stupca"
+
+#. Translators: Designed with WordPress
+#: patterns/footer-centered-logo-nav.php:25
+#: patterns/footer-colophon-3-col.php:94 patterns/footer.php:120
+msgid "Designed with %1$s"
+msgstr "Dizajnirano s %1$s"
+
+#: patterns/footer-centered-logo-nav.php
+msgctxt "Pattern title"
+msgid "Footer with centered logo and navigation"
+msgstr "Podnožje s centriranim logom i navigacijom"
+
+#: patterns/cta-subscribe-centered.php:31
+msgctxt "Sample text for Sign Up Button"
+msgid "Sign up"
+msgstr "Prijavi se"
+
+#: patterns/cta-subscribe-centered.php:24
+msgctxt "Sample text for Subscriber Description"
+msgid "Stay in the loop with everything you need to know."
+msgstr "Budite u tijeku sa svime što trebate znati."
+
+#: patterns/cta-subscribe-centered.php:20
+msgctxt "Sample text for Subscriber Heading with numbers"
+msgid "Join 900+ subscribers"
+msgstr "Budite uz 900+ pretplatnika"
+
+#: patterns/cta-subscribe-centered.php
+msgctxt "Pattern title"
+msgid "Centered call to action"
+msgstr "Centrirani poziv na akciju"
+
+#: patterns/cta-services-image-left.php:39
+msgctxt "Sample button text to view the services"
+msgid "Our services"
+msgstr "Naše usluge"
+
+#: patterns/cta-services-image-left.php:32
+msgctxt "Sample description of the services pattern"
+msgid "Experience the fusion of imagination and expertise with Études—the catalyst for architectural transformations that enrich the world around us."
+msgstr "Doživite spoj mašte i stručnosti uz Études — katalizator arhitektonskih transformacija koje obogaćuju svijet oko nas."
+
+#: patterns/cta-services-image-left.php:28
+msgctxt "Sample heading of the services pattern"
+msgid "Guiding your business through the project"
+msgstr "Vođenje vašeg poslovanja kroz projekt"
+
+#: patterns/cta-services-image-left.php
+msgctxt "Pattern title"
+msgid "Services call to action with image on left"
+msgstr "Usluga poziv na akciju sa slikom lijevo"
+
+#: patterns/cta-rsvp.php:50 patterns/text-title-left-image-right.php:51
+msgid "A ramp along a curved wall in the Kiasma Museu, Helsinki, Finland"
+msgstr "Rampa duž zakrivljenog zida u Kiasma muzeju, Helsinki, Finska"
+
+#: patterns/cta-rsvp.php:34 patterns/page-rsvp-landing.php:34
+msgctxt "Call to action button text for the reservation button"
+msgid "Reserve your spot"
+msgstr "Rezervirajte svoje mjesto"
+
+#: patterns/cta-rsvp.php:27 patterns/page-rsvp-landing.php:28
+msgctxt "RSVP call to action description"
+msgid "Experience the fusion of imagination and expertise with Études Arch Summit, February 2025."
+msgstr "Doživite spoj mašte i stručnosti uz Études Arch Summit, veljača 2025."
+
+#: patterns/cta-rsvp.php:21 patterns/page-rsvp-landing.php:23
+msgctxt "Initials for ´please respond´"
+msgid "RSVP"
+msgstr "RSVP"
+
+#: patterns/cta-rsvp.php:11
+msgctxt "Name of RSVP pattern"
+msgid "RSVP"
+msgstr "RSVP"
+
+#: patterns/cta-rsvp.php
+msgctxt "Pattern title"
+msgid "RSVP"
+msgstr "RSVP"
+
+#: patterns/cta-pricing.php:203
+msgctxt "Button text for the third pricing level"
+msgid "Subscribe"
+msgstr "Pretplatite se"
+
+#: patterns/cta-pricing.php:189
+msgctxt "Feature for pricing level"
+msgid "Exclusive access to the <em>Études</em> app for iOS and Android"
+msgstr "Ekskluzivni pristup aplikaciji <em>Études</em> za iOS i Android"
+
+#: patterns/cta-pricing.php:173
+msgctxt "Feature for pricing level"
+msgid "Exclusive, unlimited access to <em>Études Articles</em>."
+msgstr "Ekskluzivan, neograničen pristup <em>člancima Études</em>."
+
+#: patterns/cta-pricing.php:162
+msgctxt "Sample price for the third pricing level"
+msgid "$28"
+msgstr "$28"
+
+#: patterns/cta-pricing.php:157
+msgctxt "Sample heading for the third pricing level"
+msgid "Expert"
+msgstr "Stručnjak"
+
+#: patterns/cta-pricing.php:145
+msgctxt "Button text for the second pricing level"
+msgid "Subscribe"
+msgstr "Pretplatite se"
+
+#: patterns/cta-pricing.php:115
+msgctxt "Feature for pricing level"
+msgid "Access to 20 exclusive <em>Études Articles</em> per month."
+msgstr "Pristup do 20 ekskluzivnih <em>članaka Études</em> mjesečno."
+
+#: patterns/cta-pricing.php:104
+msgctxt "Sample price for the second pricing level"
+msgid "$12"
+msgstr "$12"
+
+#: patterns/cta-pricing.php:99
+msgctxt "Sample heading for the second pricing level"
+msgid "Connoisseur"
+msgstr "Znalac"
+
+#: patterns/cta-pricing.php:87
+msgctxt "Button text for the first pricing level"
+msgid "Subscribe"
+msgstr "Pretplatite se"
+
+#: patterns/cta-pricing.php:72 patterns/cta-pricing.php:131
+msgctxt "Feature for pricing level"
+msgid "Exclusive access to the <em>Études</em> app for iOS and Android."
+msgstr "Ekskluzivni pristup aplikaciji <em>Études</em> za iOS i Android."
+
+#: patterns/cta-pricing.php:62 patterns/cta-pricing.php:123
+#: patterns/cta-pricing.php:181
+msgctxt "Feature for pricing level"
+msgid "Weekly print edition."
+msgstr "Tjedno tiskano izdanje."
+
+#: patterns/cta-pricing.php:53
+msgctxt "Feature for pricing level"
+msgid "Access to 5 exclusive <em>Études Articles</em> per month."
+msgstr "Pristup do 5 ekskluzivnih <em>članaka Études</em> mjesečno."
+
+#: patterns/cta-pricing.php:42
+msgctxt "Sample price for the first pricing level"
+msgid "$0"
+msgstr "$0"
+
+#: patterns/cta-pricing.php:37
+msgctxt "Sample heading for the first pricing level"
+msgid "Free"
+msgstr "Besplatno"
+
+#: patterns/cta-pricing.php:22
+msgctxt "Sample description for a pricing table"
+msgid "We offer flexible options, which you can adapt to the different needs of each project."
+msgstr "Nudimo fleksibilne opcije koje možete prilagoditi različitim potrebama svakog projekta."
+
+#: patterns/cta-pricing.php:18
+msgctxt "Sample heading for pricing pattern"
+msgid "Our Services"
+msgstr "Naše usluge"
+
+#: patterns/cta-pricing.php:11
+msgctxt "Name for the pricing pattern"
+msgid "Pricing Table"
+msgstr "Tablica cijena"
+
+#: patterns/cta-pricing.php
+msgctxt "Pattern title"
+msgid "Pricing"
+msgstr "Cjenik"
+
+#: patterns/cta-content-image-on-right.php:59
+#: patterns/cta-services-image-left.php:19
+msgid "White abstract geometric artwork from Dresden, Germany"
+msgstr "Bijelo apstraktno geometrijsko umjetničko djelo iz Dresdena, Njemačka"
+
+#: patterns/cta-content-image-on-right.php:47
+msgctxt "Button text of this section"
+msgid "How it works"
+msgstr "Kako radi:"
+
+#: patterns/cta-content-image-on-right.php:41
+msgctxt "Button text of this section"
+msgid "Download app"
+msgstr "Preuzmi aplikaciju"
+
+#: patterns/cta-content-image-on-right.php:32
+#: patterns/text-alternating-images.php:52
+msgctxt "Sample list item"
+msgid "Experience the world of architecture."
+msgstr "Doživite svijet arhitekture."
+
+#: patterns/cta-content-image-on-right.php:28
+#: patterns/text-alternating-images.php:48
+msgctxt "Sample list item"
+msgid "Showcase your projects."
+msgstr "Predstavite svoje projekte."
+
+#: patterns/cta-content-image-on-right.php:24
+#: patterns/text-alternating-images.php:44
+msgctxt "Sample list item"
+msgid "Collaborate with fellow architects."
+msgstr "Surađujte ​​s kolegama arhitektima."
+
+#: patterns/cta-content-image-on-right.php:18
+msgctxt "Sample heading"
+msgid "Enhance your architectural journey with the Études Architect app."
+msgstr "Unaprijedite svoje arhitektonsko iskustvo s aplikacijom Études Architect."
+
+#: patterns/cta-content-image-on-right.php
+msgctxt "Pattern title"
+msgid "Call to action with image on right"
+msgstr "Poziv na akciju sa slikom desno"
+
+#: patterns/banner-project-description.php:41
+msgid "Hyatt Regency San Francisco, San Francisco, United States"
+msgstr "Hyatt Regency San Francisco, San Francisco, Sjedinjene Američke Države"
+
+#: patterns/banner-project-description.php:26
+msgctxt "Sample descriptive text for a project or post."
+msgid "This transformative project seeks to enhance the gallery's infrastructure, accessibility, and exhibition spaces while preserving its rich cultural heritage."
+msgstr "Ovaj transformativni projekt nastoji poboljšati galerijsku infrastrukturu, pristupačnost i izložbene prostore, istovremeno čuvajući njezinu bogatu kulturnu baštinu."
+
+#: patterns/banner-project-description.php:17
+msgctxt "Sample title for a project or post"
+msgid "Art Gallery — Overview"
+msgstr "Umjetnička galerija — Pregled"
+
+#: patterns/banner-project-description.php
+msgctxt "Pattern title"
+msgid "Project description"
+msgstr "Opis projekta"
+
+#: patterns/banner-hero.php:52
+msgid "Building exterior in Toronto, Canada"
+msgstr "Vanjski izgled zgrade u Torontu, Kanada"
+
+#: patterns/banner-hero.php:37
+msgctxt "Button text of the hero section"
+msgid "About us"
+msgstr "O nama"
+
+#: patterns/banner-hero.php:26
+msgctxt "Content of the hero section"
+msgid "Études is a pioneering firm that seamlessly merges creativity and functionality to redefine architectural excellence."
+msgstr "Études je pionirska tvrtka koja besprijekorno spaja kreativnost i funkcionalnost kako bi redefinirala arhitektonsku izvrsnost."
+
+#: patterns/banner-hero.php:18
+msgctxt "Heading of the hero section"
+msgid "A commitment to innovation and sustainability"
+msgstr "Posvećenost inovacijama i održivosti"
+
+#: patterns/banner-hero.php
+msgctxt "Pattern title"
+msgid "Hero"
+msgstr "Junak"
+
+#: functions.php:111
+msgid "With asterisk"
+msgstr "Sa zvjezdicom"
+
+#: functions.php:93
+msgid "With arrow"
+msgstr "Sa strelicom"
+
+#: functions.php:74
+msgid "Checkmark"
+msgstr "Kvačica provjere"
+
+#: functions.php:51
+msgid "Pill"
+msgstr "Tableta"
+
+#: functions.php:28
+msgid "Arrow icon"
+msgstr "Ikona strelice"
+
+#. Author URI of the theme
+#. Translators: WordPress link.
+#: style.css patterns/footer-centered-logo-nav.php:22
+#: patterns/footer-colophon-3-col.php:91 patterns/footer.php:117
+msgid "https://wordpress.org"
+msgstr "https://wordpress.org"
+
+#. Author of the theme
+#: style.css
+#, gp-priority: low
+msgid "the WordPress team"
+msgstr "WordPress tim"
+
+#. Theme URI of the theme
+#: style.css
+#, gp-priority: low
+msgid "https://wordpress.org/themes/twentytwentyfour/"
+msgstr "https://wordpress.org/themes/twentytwentyfour/"

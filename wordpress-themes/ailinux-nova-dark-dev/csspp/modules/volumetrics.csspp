@@ -1,0 +1,453 @@
+/**
+ * CSS++ Module: Volumetrics
+ *
+ * Atmosphärische Effekte: Nebel, Partikel, Glow, Bloom
+ *
+ * @version 0.1.0
+ * @module volumetrics
+ */
+
+/* ============================================
+   FOG SYSTEM
+   ============================================ */
+
+/**
+ * fog-density: <value> | <type>(<density>)
+ *
+ * Nebel-Layering für Tiefenwirkung
+ *
+ * Werte:
+ * - 0.0 (kein Nebel) bis 1.0 (dicht)
+ * - linear(<start>, <end>) – Linearer Nebel
+ * - exponential(<density>) – Exponentieller Falloff
+ * - layered(<height>) – Schichten-Nebel
+ */
+
+.foggy-background {
+  fog-density: 0.2;
+  fog-color: #ffffff;
+  fog-falloff: linear(0%, 100%);
+}
+
+.thick-fog {
+  fog-density: exponential(0.8);
+  fog-color: rgba(200, 200, 200, 0.9);
+}
+
+.ground-fog {
+  fog-density: layered(30%);
+  /* Nebel nur im unteren Bereich */
+}
+
+
+/* ============================================
+   PARTICLE SYSTEMS
+   ============================================ */
+
+/**
+ * particle: <type>(<density>, <options>)
+ *
+ * Partikel-Effekte
+ *
+ * Types:
+ * - dust(<density>, drift: <speed>) – Schwebender Staub
+ * - sparks(<density>, color: <color>) – Funken
+ * - rain(<density>, angle: <deg>) – Regen
+ * - snow(<density>, wind: <direction>) – Schnee
+ * - embers(<density>, rise: <speed>) – Glühende Partikel
+ * - fireflies(<density>, blink: <interval>) – Leuchtende Punkte
+ */
+
+.ambient-dust {
+  particle: dust(5%, drift: slow);
+}
+
+.rainy-scene {
+  particle: rain(30%, angle: 75deg);
+  fog-density: 0.15;
+}
+
+.snow-effect {
+  particle: snow(10%, wind: left);
+}
+
+.fire-scene {
+  particle: embers(8%, rise: fast, color: #ff6600);
+}
+
+.magical-atmosphere {
+  particle: fireflies(3%, blink: 2s, color: #ffff00);
+}
+
+
+/* ============================================
+   BLOOM & GLOW
+   ============================================ */
+
+/**
+ * bloom-strength: <value>
+ * bloom-threshold: <value>
+ * bloom-radius: <length>
+ *
+ * Post-Processing Bloom-Effekt
+ *
+ * Werte:
+ * - strength: 0.0 (aus) bis 1.0 (intensiv)
+ * - threshold: Helligkeit ab der Bloom greift (0.0–1.0)
+ * - radius: Ausbreitung des Glows
+ */
+
+.glowing-container {
+  bloom-strength: 0.4;
+  bloom-threshold: 0.6;
+  bloom-radius: 2rem;
+}
+
+.intense-glow {
+  bloom-strength: 0.8;
+  bloom-threshold: 0.3;
+  /* Mehr Elemente leuchten */
+}
+
+
+/* ============================================
+   ATMOSPHERIC LIGHTING
+   ============================================ */
+
+/**
+ * atmosphere: <preset> | custom(<properties>)
+ *
+ * Kombinierte atmosphärische Effekte
+ *
+ * Presets:
+ * - clear – Keine Effekte
+ * - hazy – Leichter Nebel + sanftes Licht
+ * - misty – Dichter Nebel + Partikel
+ * - stormy – Regen + dunkle Wolken
+ * - magical – Partikel + Bloom + Farbverschiebung
+ */
+
+.clear-sky {
+  atmosphere: clear;
+}
+
+.hazy-afternoon {
+  atmosphere: hazy;
+  /* fog-density: 0.1, ambient-light: 0.7 */
+}
+
+.misty-forest {
+  atmosphere: misty;
+  fog-density: 0.3;
+  particle: mist(slow-drift);
+}
+
+.storm-scene {
+  atmosphere: stormy;
+  particle: rain(50%, angle: 65deg);
+  fog-density: 0.4;
+  ambient-light: 0.2;
+}
+
+
+/* ============================================
+   DEPTH FOG (Z-AXIS)
+   ============================================ */
+
+/**
+ * depth-fog: enabled | <start> <end>
+ *
+ * Nebel basierend auf Z-Tiefe
+ * Elemente im Hintergrund verschwinden im Nebel
+ *
+ * Nur aktiv bei depth: 3d (aus geometry.csspp)
+ */
+
+.scene-3d {
+  depth: 3d;
+  depth-fog: 10rem 50rem;
+  fog-color: #cccccc;
+  /* Elemente zwischen 10rem und 50rem Tiefe werden im Nebel */
+}
+
+
+/* ============================================
+   VOLUMETRIC LIGHT SHAFTS
+   ============================================ */
+
+/**
+ * light-shafts: <type>(<angle>, <intensity>)
+ *
+ * Godrays / Lichtstrahlen durch Nebel
+ *
+ * Types:
+ * - radial(<origin>) – Von Punkt ausgehend
+ * - directional(<angle>) – Parallele Strahlen
+ */
+
+.godray-scene {
+  fog-density: 0.2;
+  light-shafts: radial(50% 0);
+  /* Lichtstrahlen von oben */
+}
+
+.window-light {
+  light-shafts: directional(135deg);
+  light-shaft-intensity: 0.5;
+}
+
+
+/* ============================================
+   COLOR GRADING & FILM EFFECTS
+   ============================================ */
+
+/**
+ * color-grade: <preset> | lut(<file>)
+ * film-grain: <intensity>
+ * vignette: <intensity>
+ *
+ * Post-Processing Effekte
+ *
+ * Color Grades:
+ * - neutral – Keine Änderung
+ * - warm – Warme Farbtöne (+orange/yellow)
+ * - cool – Kühle Farbtöne (+blue/cyan)
+ * - sepia – Vintage Brauntöne
+ * - noir – Schwarz-weiß High-Contrast
+ * - cyberpunk – Magenta/Cyan Split-Toning
+ */
+
+.warm-scene {
+  color-grade: warm;
+  /* Temperatur +20K */
+}
+
+.noir-atmosphere {
+  color-grade: noir;
+  vignette: 0.6;
+  film-grain: 0.2;
+}
+
+.cyberpunk-look {
+  color-grade: cyberpunk;
+  bloom-strength: 0.5;
+  /* Magenta Shadows, Cyan Highlights */
+}
+
+
+/* ============================================
+   FILM GRAIN
+   ============================================ */
+
+/**
+ * film-grain: <intensity> | <type>(<size>, <intensity>)
+ *
+ * Analog-Film-Rauschen
+ *
+ * Werte:
+ * - 0.0 (aus) bis 1.0 (stark)
+ * - fine(0.3) – Feines Korn
+ * - coarse(0.5) – Grobes Korn
+ */
+
+.vintage-look {
+  film-grain: 0.3;
+}
+
+.lo-fi-aesthetic {
+  film-grain: coarse(0.6);
+  color-grade: sepia;
+}
+
+
+/* ============================================
+   VIGNETTE
+   ============================================ */
+
+/**
+ * vignette: <intensity> | <shape>(<intensity>)
+ *
+ * Abdunkelung der Bildränder
+ *
+ * Shapes:
+ * - radial (default) – Kreisförmig
+ * - rectangular – Rechteckig
+ */
+
+.focused-center {
+  vignette: 0.5;
+}
+
+.dramatic-vignette {
+  vignette: rectangular(0.7);
+}
+
+
+/* ============================================
+   CHROMATIC ABERRATION
+   ============================================ */
+
+/**
+ * chromatic-aberration: <intensity>
+ *
+ * Farbverschiebung an Kanten (wie Linsen-Fehler)
+ *
+ * Werte: 0.0 (aus) bis 1.0 (stark)
+ */
+
+.lens-distortion {
+  chromatic-aberration: 0.3;
+  /* RGB-Channels leicht versetzt */
+}
+
+
+/* ============================================
+   HEAT DISTORTION
+   ============================================ */
+
+/**
+ * heat-distortion: <intensity> | <wave>(<speed>)
+ *
+ * Hitzeflimmern-Effekt
+ */
+
+.fire-background {
+  heat-distortion: 0.5;
+  particle: embers(10%);
+}
+
+.desert-mirage {
+  heat-distortion: wave(slow);
+}
+
+
+/* ============================================
+   PARTICLE EMITTERS
+   ============================================ */
+
+/**
+ * emit-particles: <type> from <source>
+ *
+ * Partikel-Emission von bestimmten Elementen
+ */
+
+.button-sparkle {
+  emit-particles: sparks(2%) from center;
+}
+
+.cursor-trail {
+  emit-particles: fireflies(5%) from cursor;
+  /* Partikel folgen Cursor */
+}
+
+
+/* ============================================
+   AMBIENT OCCLUSION (Volumetric)
+   ============================================ */
+
+/**
+ * volumetric-ao: <radius> <intensity>
+ *
+ * Screen-Space Ambient Occlusion für Tiefe
+ */
+
+.scene-with-ao {
+  depth: 3d;
+  volumetric-ao: 2rem 0.4;
+  /* Dunkle Bereiche wo Geometrie nah ist */
+}
+
+
+/* ============================================
+   ANIMATION
+   ============================================ */
+
+/**
+ * Volumetrische Effekte können animiert werden
+ */
+
+@keyframes fog-drift {
+  0% { fog-density: 0.1; }
+  50% { fog-density: 0.3; }
+  100% { fog-density: 0.1; }
+}
+
+.animated-fog {
+  animation: fog-drift 10s ease-in-out infinite;
+}
+
+@keyframes particle-storm {
+  0% { particle: rain(10%); }
+  50% { particle: rain(80%); }
+  100% { particle: rain(10%); }
+}
+
+.storm-intensify {
+  animation: particle-storm 5s ease-in-out;
+}
+
+
+/* ============================================
+   PERFORMANCE MODES
+   ============================================ */
+
+/**
+ * volumetric-quality: low | medium | high | ultra
+ *
+ * Performance-Abstufungen
+ */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    particle: none;
+    bloom-strength: 0;
+    film-grain: 0;
+  }
+}
+
+:root[data-performance="low"] {
+  volumetric-quality: low;
+  /* Nur Fog, keine Partikel */
+}
+
+
+/* ============================================
+   COMPILER TRANSFORMATIONS
+   ============================================ */
+
+/**
+ * Der Compiler transformiert Volumetrics:
+ *
+ * fog-density: 0.2        → CSS filter + mask-image gradient
+ * particle: dust(5%)      → Canvas/WebGL Particle-System (JSON-IR)
+ * bloom-strength: 0.4     → CSS filter: brightness() + blur()
+ * film-grain: 0.3         → SVG noise filter
+ * vignette: 0.5           → radial-gradient overlay
+ *
+ * Komplexe Effekte (Partikel, Light Shafts) werden als JSON exportiert
+ * und von der Runtime gerendert (Canvas/WebGL)
+ */
+
+
+/* ============================================
+   THEME INTEGRATION
+   ============================================ */
+
+/**
+ * Volumetrics können in Themes definiert werden
+ */
+
+@theme foggy-morning {
+  fog-density: 0.25;
+  particle: mist(slow);
+  color-grade: cool;
+  vignette: 0.2;
+}
+
+@theme cyberpunk-night {
+  fog-density: 0.15;
+  particle: rain(20%, neon: true);
+  color-grade: cyberpunk;
+  bloom-strength: 0.6;
+  chromatic-aberration: 0.2;
+}

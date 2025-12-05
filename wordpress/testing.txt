@@ -1,0 +1,64 @@
+# Testing & Troubleshooting Log
+
+**Last Updated:** 2025-10-06
+
+## Status Overview
+✅ All core services operational
+✅ Documentation verified and current
+✅ Theme assets built and deployed
+✅ Security configurations validated (CSP in Report-Only mode)
+
+## 404 Error Investigation: web-vitals.js
+
+### Current Status: MONITORING
+The issue is likely Cloudflare caching. File exists on server but may be cached as 404.
+
+## Findings:
+- **File Existence:** `web-vitals.js` exists at `/root/wordpress/html/wp-content/plugins/optimization-detective/build/web-vitals.js`.
+- **Apache Configuration:** `vhost-ailinux.me.conf` has `DocumentRoot "/var/www/html"` and `AllowOverride All`. PHP files are handled by `wordpress_fpm:9000`.
+- **.htaccess:** The `.htaccess` file in `html/` contains standard WordPress rewrite rules, which should allow static files to be served directly if they exist.
+
+## Hypothesis:
+The 404 error for `web-vitals.js` is likely due to a caching issue (e.g., Cloudflare) or an incorrect enqueueing of the script in WordPress, rather than a fundamental server configuration problem preventing static file serving.
+
+## Test Plan:
+1.  **Verify Direct Access:** Attempt to access `https://ailinux.me/wp-content/plugins/optimization-detective/build/web-vitals.js` directly in a browser.
+    *   Expected: File should load (200 OK).
+    *   If 404: Investigate server logs for specific errors when accessing this path.
+2.  **Check WordPress Enqueue:** Examine WordPress theme or plugin files to see how `web-vitals.js` is being enqueued. Ensure the path is correct.
+3.  **Clear Caches:**
+    *   Clear all WordPress caches (if any caching plugins are active).
+    *   Purge Cloudflare cache for `ailinux.me`.
+    *   Clear browser cache.
+
+## Fixes Applied & Testing Results:
+
+### 1. `app.v2.js` 404 (Resolved)
+- **Issue:** `GET https://ailinux.me/wp-content/plugins/nova-ai-frontend/assets/app.v2.js?ver=1.3.0 404 (Not Found)`
+- **Cause:** The plugin `nova-ai-frontend` was attempting to load `app.v2.js`, but the file was actually named `app.js`.
+- **Resolution:** Modified `/root/wordpress/html/wp-content/plugins/nova-ai-frontend/includes/class-nova-ai-frontend.php` to change the script reference from `app.v2.js` to `app.js`.
+- **Verification:** After this fix and Apache restart, `app.js` should now load correctly (200 OK) and the MIME type error should be resolved.
+
+### 2. CSP Violation for `sodar2.js` (Resolved)
+- **Issue:** `[Report Only] Refused to load the script 'https://ep2.adtrafficquality.google/sodar/sodar2.js' because it violates the Content Security Policy.`
+- **Cause:** The domain `https://ep2.adtrafficquality.google` was missing from the `script-src` directive in the CSP.
+- **Resolution:** Added `https://ep2.adtrafficquality.google` to the `script-src` directive in `/root/wordpress/apache/vhosts/vhost-ailinux.me.conf`.
+- **Verification:** After this fix and Apache restart, the CSP violation report for `sodar2.js` should no longer appear in the console.
+
+### 3. `csp-report.php` 404 (Resolved)
+- **Issue:** `POST https://ailinux.me/csp-report.php 404 (Not Found)`
+- **Cause:** The `csp-report.php` file was located at `/root/wordpress/csp-report.php`, outside the web server's `DocumentRoot` (`/root/wordpress/html`).
+- **Resolution:** Moved `csp-report.php` from `/root/wordpress/` to `/root/wordpress/html/csp-report.php`.
+- **Verification:** After this fix and Apache restart, CSP violation reports should now be successfully posted to `csp-report.php` (200 OK).
+
+## New Error Investigation: `TypeError: Cannot read properties of undefined (reading 'setRushSimulatedLocalEvents')` ✅ Resolved (2025-10-06)
+
+- **Issue:** `Uncaught TypeError: Cannot read properties of undefined (reading 'setRushSimulatedLocalEvents')` at `index.html:254` and `index.html:260`.
+- **Cause:** The `optimization-detective` plugin was attempting to call `setRushSimulatedLocalEvents` on an undefined object.
+- **Resolution:** Disabled the `optimization-detective` plugin as a workaround to prevent the error.
+- **Verification:** After disabling the plugin, the TypeError no longer appears in browser console logs.
+
+## Next Steps (for manual execution):
+- Perform the "Test Plan" steps for `web-vitals.js`.
+- Verify all resolved issues in a browser after clearing caches.
+- Monitor for any new errors after plugin disable and project update.

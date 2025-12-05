@@ -1,0 +1,68 @@
+# Translation of Plugins - Embed Optimizer - Stable (latest release) in Vietnamese
+# This file is distributed under the same license as the Plugins - Embed Optimizer - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2024-08-11 13:58:05+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: vi_VN\n"
+"Project-Id-Version: Plugins - Embed Optimizer - Stable (latest release)\n"
+
+#: hooks.php:410
+msgid "This plugin is strongly recommended to be active by <strong>Embed Optimizer</strong>."
+msgstr "Plugin này được khuyến khích nên được kích hoạt bởi <strong>Embed Optimizer</strong>."
+
+#: hooks.php:406
+msgid "Recommended by:"
+msgstr "Được đề xuất bởi:"
+
+#: hooks.php:392
+msgid "This plugin performs best when <a>Optimization Detective</a> is also installed and active."
+msgstr "Plugin này hoạt động tốt nhất khi <a>Optimization Detective</a> cũng được cài đặt và kích hoạt."
+
+#: hooks.php:380
+msgid "https://wordpress.org/plugins/"
+msgstr "https://wordpress.org/plugins/"
+
+#. translators: %s: Plugin name.
+#: hooks.php:379
+msgid "Visit plugin site for %s"
+msgstr "Truy cập trang plugin cho %s"
+
+#. translators: %s: Plugin name and version.
+#: hooks.php:375
+msgid "More information about %s"
+msgstr "Thêm thông tin về %s"
+
+#. translators: %s is bookmark name
+#: hooks.php:273 hooks.php:300
+msgid "Embed Optimizer unable to seek to %s bookmark."
+msgstr "Embed Optimizer không thể tìm kiếm đến bookmark %s."
+
+#. translators: %s is bookmark name
+#: hooks.php:244 hooks.php:256
+msgid "Embed Optimizer unable to set %s bookmark."
+msgstr "Embed Optimizer không thể thiết lập bookmark %s."
+
+#. Author URI of the plugin
+#: load.php
+msgid "https://make.wordpress.org/performance/"
+msgstr "https://make.wordpress.org/performance/"
+
+#. Author of the plugin
+#: load.php
+msgid "WordPress Performance Team"
+msgstr "Nhóm Hiệu suất WordPress"
+
+#. Plugin URI of the plugin
+#: load.php
+msgid "https://github.com/WordPress/performance/tree/trunk/plugins/embed-optimizer"
+msgstr "https://github.com/WordPress/performance/tree/trunk/plugins/embed-optimizer"
+
+#. Plugin Name of the plugin
+#: load.php
+msgid "Embed Optimizer"
+msgstr "Embed Optimizer"

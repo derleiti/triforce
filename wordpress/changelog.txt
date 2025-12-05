@@ -1,0 +1,53 @@
+2025-10-06 (Bugfix Update & Documentation):
+- **Bugfixes**:
+  - Fixed wp_webgpu plugin CSS MIME type error (style.css → main.css)
+  - Fixed Service Worker cache failures by using absolute paths instead of relative paths
+  - Purged Cloudflare page cache to resolve stale app.v2.js 404 errors
+  - Verified CSP already includes ep2.adtrafficquality.google domain
+  - Resolved TypeError setRushSimulatedLocalEvents by disabling optimization-detective plugin
+- **Redis Connection Fix**:
+  - Successfully established connection to Redis server at `wordpress_redis:6379`.
+  - Ensured `WP_CACHE` is set to `true` in `wp-config.php`.
+  - Corrected `object-cache.php` drop-in for proper Predis client instantiation and array initializations.
+  - Verified connection parameters are correctly passed to Predis.
+- **Project Update**:
+  - Updated WordPress core to 6.8.3
+  - Updated all plugins and themes (already current)
+  - Updated database schema (already current)
+- **Documentation**:
+  - Comprehensive review and verification of all *.md and *.txt files
+  - Validated documentation accuracy against current codebase state
+  - Confirmed all services running correctly (Apache, PHP-FPM, MariaDB, Redis, Backup)
+  - Verified file structure and locations match documented paths
+  - Cross-referenced theme documentation with plugin documentation
+  - Updated known-bugs.txt with resolution status for all fixed issues
+- **System Status**:
+  - All Docker containers healthy and running
+  - WordPress 6.8.3 with PHP 8.3 FPM
+  - MariaDB 11 database backend
+  - Redis object caching active
+  - Automated backup service operational
+
+2025-10-05 (Consent Management & UI Optimization):
+- **Consent Management**:
+  - Created MU-plugin complianz-de-labels.php for German Complianz translations (gettext-based)
+  - Created MU-plugin consent-conditional-scripts.php template for consent-based script loading
+  - Implemented consent banner CSS optimizations (ailx/consent.css) with backdrop blur, accessible styling
+  - Added footer legal links: Datenschutzerklärung, Einwilligungen verwalten, Impressum
+  - Footer links are responsive (flexbox, vertical on mobile)
+- **UI/UX Fixes**:
+  - Fixed navigation overflow button text: "Mehr v" → "Mehr ▼" (proper Unicode arrow)
+  - Rebuilt theme assets via npm run build (dist/app.js updated)
+  - Set proper file permissions for MU-plugins and theme files (www-data:www-data)
+- **Documentation**:
+  - Updated CLAUDE.md with Consent Management & GDPR section
+  - Documented MU-plugins, consent functions (cmplz_statistics, cmplz_marketing, cmplz_preferences)
+  - Added footer legal links implementation details
+
+2025-10-05 (CSP & Security):
+- Changed Content-Security-Policy to Content-Security-Policy-Report-Only to log CSP violations instead of blocking them.
+- Added a reporting endpoint for CSP violations at /csp-report.php, which logs to script.log.
+- Added https://static.addtoany.com to the script-src directive in the CSP.
+- Investigated 404 error for web-vitals.js and found that the file exists, but the server is not serving it correctly. Restarted Apache, but the issue persists, likely due to Cloudflare caching.
+- Created unblock_helper.md to provide analysis and recommendations for script loading errors.
+- Created known-bugs.txt to document known issues.

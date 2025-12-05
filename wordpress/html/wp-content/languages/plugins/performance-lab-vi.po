@@ -1,0 +1,395 @@
+# Translation of Plugins - Performance Lab - Stable (latest release) in Vietnamese
+# This file is distributed under the same license as the Plugins - Performance Lab - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2024-07-19 02:57:29+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: vi_VN\n"
+"Project-Id-Version: Plugins - Performance Lab - Stable (latest release)\n"
+
+#. translators: Accessibility text.
+#: includes/site-health/webp-support/helper.php:46
+msgid "WebP support can only be enabled by your hosting provider. Please contact them to inquire about switching to a plan that supports WebP, or consider switching to a host that offers this capability. <a href=\"https://make.wordpress.org/hosting/2022/03/30/wordpress-hosting-and-webp-support/\" target=\"_blank\">Learn more</a> about WebP image support for WordPress sites."
+msgstr "Hỗ trợ WebP chỉ có thể được kích hoạt bởi nhà cung cấp dịch vụ lưu trữ của bạn. Vui lòng liên hệ với họ để hỏi về việc chuyển sang gói hỗ trợ WebP hoặc cân nhắc chuyển sang nhà cung cấp dịch vụ lưu trữ cung cấp khả năng này. <a href=\"https://make.wordpress.org/hosting/2022/03/30/wordpress-hosting-and-webp-support/\" target=\"_blank\">Tìm hiểu thêm</a> về hỗ trợ hình ảnh WebP cho các trang web WordPress."
+
+#. translators: %s: link to Performance Lab settings screen
+#: includes/admin/load.php:630
+msgid "This plugin is installed by <a href=\"%s\">Performance Lab</a>."
+msgstr "Plugin này được cài đặt bởi <a href=\"%s\">Performance Lab</a>."
+
+#: includes/site-health/avif-support/hooks.php:25
+msgid "AVIF Support"
+msgstr "Hỗ trợ AVIF"
+
+#. translators: Accessibility text.
+#: includes/site-health/avif-support/helper.php:46
+msgid "AVIF support can only be enabled by your hosting provider, so contact them for more information."
+msgstr "Hỗ trợ AVIF chỉ có thể được kích hoạt bởi nhà cung cấp dịch vụ lưu trữ của bạn, vì vậy hãy liên hệ với họ để biết thêm thông tin."
+
+#: includes/site-health/avif-support/helper.php:42
+msgid "Your site does not support AVIF"
+msgstr "Trang web của bạn không hỗ trợ AVIF"
+
+#: includes/site-health/avif-support/helper.php:32
+msgid "The AVIF image format generally has better compression than WebP, JPEG, PNG and GIF and is designed to supersede them, which can reduce page load time and consume less bandwidth."
+msgstr "Định dạng hình ảnh AVIF thường có khả năng nén tốt hơn WebP, JPEG, PNG và GIF và được thiết kế để thay thế chúng, điều này có thể giảm thời gian tải trang và tiêu thụ ít băng thông hơn."
+
+#: includes/site-health/avif-support/helper.php:24
+msgid "Your site supports AVIF"
+msgstr "Trang web của bạn hỗ trợ AVIF"
+
+#: includes/admin/plugins.php:587
+msgid "Visit plugin site"
+msgstr "Truy cập trang plugin"
+
+#: includes/admin/plugins.php:221 includes/admin/plugins.php:581
+msgid "https://wordpress.org/plugins/"
+msgstr "https://wordpress.org/plugins/"
+
+#. translators: %s: Plugin name.
+#: includes/admin/plugins.php:579
+msgid "Visit plugin site for %s"
+msgstr "Truy cập trang plugin cho %s"
+
+#. translators: %s is the settings URL
+#: includes/admin/load.php:555
+msgid "Review <a href=\"%s\">settings</a>."
+msgstr "Xem lại <a href=\"%s\">cài đặt</a>."
+
+#: includes/site-health/audit-autoloaded-options/hooks.php:113
+msgid "The option has been successfully updated."
+msgstr "Tùy chọn đã được cập nhật thành công."
+
+#: includes/site-health/audit-autoloaded-options/hooks.php:95
+msgid "Failed to disable autoload."
+msgstr "Không thể tắt tự động tải."
+
+#: includes/site-health/audit-autoloaded-options/hooks.php:73
+msgid "The option does not exist."
+msgstr "Tùy chọn không tồn tại."
+
+#: includes/site-health/audit-autoloaded-options/hooks.php:67
+msgid "Invalid option name."
+msgstr "Tên tùy chọn không hợp lệ."
+
+#: includes/site-health/audit-autoloaded-options/hooks.php:63
+msgid "Permission denied."
+msgstr "Quyền bị từ chối."
+
+#: includes/site-health/audit-autoloaded-options/helper.php:266
+msgid "Revert to Autoload"
+msgstr "Quay lại Tự động tải"
+
+#: includes/site-health/audit-autoloaded-options/helper.php:246
+msgid "The following table shows the options for which you have previously disabled Autoload."
+msgstr "Bảng sau hiển thị các tùy chọn mà bạn đã tắt Tự động tải trước đó."
+
+#: includes/site-health/audit-autoloaded-options/helper.php:201
+msgid "Disable Autoload"
+msgstr "Tắt Tự động tải"
+
+#: includes/site-health/audit-autoloaded-options/helper.php:185
+#: includes/site-health/audit-autoloaded-options/helper.php:249
+msgid "Action"
+msgstr "Hành động"
+
+#: includes/admin/plugins.php:668
+msgctxt "plugin suffix"
+msgid "(experimental)"
+msgstr "(thử nghiệm)"
+
+#: includes/admin/plugins.php:573
+msgid "Learn more"
+msgstr "Tìm hiểu thêm"
+
+#: includes/admin/load.php:550
+msgid "Feature activated."
+msgstr "Tính năng đã được kích hoạt."
+
+#: includes/admin/load.php:535
+msgid "Due to your site's configuration, you may not be able to activate the performance features, unless the underlying plugin is already installed. Please install the relevant plugins manually."
+msgstr "Do cấu hình trang web của bạn, bạn có thể không thể kích hoạt các tính năng hiệu suất, trừ khi plugin cơ bản đã được cài đặt. Vui lòng cài đặt thủ công các plugin có liên quan."
+
+#: includes/admin/plugins.php:447
+msgid "Sorry, you are not allowed to install plugins on this site."
+msgstr "Xin lỗi, bạn không được phép cài đặt plugin trên trang web này."
+
+#: includes/admin/load.php:441
+#: includes/site-health/audit-autoloaded-options/hooks.php:56
+msgid "Missing required parameter."
+msgstr "Thiếu tham số bắt buộc."
+
+#: includes/admin/load.php:22 includes/admin/plugins.php:279
+msgid "Performance Features"
+msgstr "Tính năng Hiệu suất"
+
+#: includes/admin/plugins.php:645
+msgid "This plugin does not work with your version of PHP."
+msgstr "Plugin này không hoạt động với phiên bản PHP của bạn."
+
+#: includes/admin/plugins.php:634
+msgid "This plugin does not work with your version of WordPress."
+msgstr "Plugin này không hoạt động với phiên bản WordPress của bạn."
+
+#. translators: %s: URL to Update PHP page.
+#: includes/admin/plugins.php:627 includes/admin/plugins.php:650
+msgid "<a href=\"%s\">Learn more about updating PHP</a>."
+msgstr "<a href=\"%s\">Tìm hiểu thêm về cách cập nhật PHP</a>."
+
+#. translators: %s: URL to WordPress Updates screen.
+#: includes/admin/plugins.php:619 includes/admin/plugins.php:639
+msgid "<a href=\"%s\">Please update WordPress</a>."
+msgstr "<a href=\"%s\">Vui lòng cập nhật WordPress</a>."
+
+#. translators: 1: URL to WordPress Updates screen, 2: URL to Update PHP page.
+#: includes/admin/plugins.php:609
+msgid "<a href=\"%1$s\">Please update WordPress</a>, and then <a href=\"%2$s\">learn more about updating PHP</a>."
+msgstr "<a href=\"%1$s\">Vui lòng cập nhật WordPress</a>, sau đó <a href=\"%2$s\">tìm hiểu thêm về cách cập nhật PHP</a>."
+
+#: includes/admin/plugins.php:604
+msgid "This plugin does not work with your versions of WordPress and PHP."
+msgstr "Plugin này không hoạt động với phiên bản WordPress và PHP của bạn."
+
+#. translators: %s: Plugin name and version.
+#: includes/admin/plugins.php:571
+msgid "More information about %s"
+msgstr "Thêm thông tin về %s"
+
+#: includes/admin/plugins.php:545
+msgctxt "plugin"
+msgid "Cannot Activate"
+msgstr "Không thể kích hoạt"
+
+#: includes/admin/plugins.php:542 includes/admin/plugin-activate-ajax.js:102
+msgid "Activate"
+msgstr "Kích hoạt"
+
+#: includes/admin/plugins.php:519
+msgctxt "plugin"
+msgid "Active"
+msgstr "Đang hoạt động"
+
+#: includes/admin/plugins.php:545
+msgctxt "plugin"
+msgid "Cannot Install"
+msgstr "Không thể cài đặt"
+
+#: includes/admin/plugins.php:283
+msgid "Plugins list"
+msgstr "Danh sách plugin"
+
+#: includes/admin/load.php:446
+msgid "Invalid plugin."
+msgstr "Plugin không hợp lệ."
+
+#: includes/admin/plugins.php:478
+msgid "Sorry, you are not allowed to activate this plugin."
+msgstr "Xin lỗi, bạn không được phép kích hoạt plugin này."
+
+#: includes/admin/server-timing.php:138
+msgid "Filters"
+msgstr "Bộ lọc"
+
+#: includes/admin/server-timing.php:53
+msgid "Output Buffering"
+msgstr "Bộ đệm đầu ra"
+
+#: includes/admin/server-timing.php:264
+msgid "Output buffering is needed to capture metrics after headers have been sent and while the template is being rendered. Note that output buffering may possibly cause an increase in TTFB if the response would be flushed multiple times."
+msgstr "Bộ đệm đầu ra là cần thiết để nắm bắt các số liệu sau khi tiêu đề đã được gửi và trong khi mẫu đang được hiển thị. Lưu ý rằng bộ đệm đầu ra có thể gây ra sự gia tăng TTFB nếu phản hồi bị xóa nhiều lần."
+
+#. translators: %s: perflab_server_timing_use_output_buffer
+#: includes/admin/server-timing.php:256
+msgid "Output buffering has been forcibly disabled via the %s filter."
+msgstr "Bộ đệm đầu ra đã bị tắt bởi bộ lọc %s."
+
+#. translators: %s: perflab_server_timing_use_output_buffer
+#: includes/admin/server-timing.php:245
+msgid "Output buffering has been forcibly enabled via the %s filter."
+msgstr "Bộ đệm đầu ra đã được bật bởi bộ lọc %s."
+
+#: includes/admin/server-timing.php:236
+msgid "Enable output buffering of template rendering"
+msgstr "Bật bộ đệm đầu ra của kết xuất mẫu"
+
+#: includes/admin/server-timing.php:199
+msgid "Enter a single hook name per line."
+msgstr "Nhập một tên hook duy nhất cho mỗi dòng."
+
+#: includes/admin/server-timing.php:128
+msgid "Actions"
+msgstr "Hành động"
+
+#. translators: 1: Server-Timing, 2: template_include, 3: anchor link
+#: includes/admin/server-timing.php:103
+msgid "Since the %1$s header is sent before the template is loaded, only hooks before the %2$s filter can be measured. Enable <a href=\"%3$s\">Output Buffering</a> to measure hooks during template rendering."
+msgstr "Vì tiêu đề %1$s được gửi trước khi mẫu được tải, nên chỉ có thể đo các hook trước bộ lọc %2$s. Bật <a href=\"%3$s\">Bộ đệm đầu ra</a> để đo các hook trong quá trình hiển thị mẫu."
+
+#: includes/admin/server-timing.php:92
+msgid "For any hook name provided, the <strong>cumulative duration between all callbacks</strong> attached to the hook is measured, in milliseconds."
+msgstr "Đối với bất kỳ tên hook nào được cung cấp, <strong>thời lượng tích lũy giữa tất cả các cuộc gọi lại</strong> được đính kèm với hook được đo bằng mili giây."
+
+#. translators: %s: Server-Timing
+#: includes/admin/server-timing.php:85
+msgid "In this section, you can provide hook names to include measurements for them in the %s header."
+msgstr "Trong phần này, bạn có thể cung cấp tên hook để bao gồm các phép đo cho chúng trong tiêu đề %s."
+
+#: includes/admin/server-timing.php:77
+msgid "Benchmarking"
+msgstr "Đánh giá hiệu suất"
+
+#: includes/admin/server-timing.php:26 includes/admin/server-timing.php:27
+#: includes/admin/server-timing.php:158
+msgid "Server-Timing"
+msgstr "Thời gian máy chủ"
+
+#: includes/server-timing/class-perflab-server-timing.php:147
+msgid "The method must be called before headers have been sent."
+msgstr "Phương thức phải được gọi trước khi tiêu đề được gửi."
+
+#. translators: %s: PHP parameter name
+#: includes/server-timing/class-perflab-server-timing.php:100
+msgid "The %s argument is required and must be a string."
+msgstr "Đối số %s là bắt buộc và phải là một chuỗi."
+
+#. translators: %s: PHP parameter name
+#: includes/server-timing/class-perflab-server-timing.php:91
+msgid "The %s argument is required and must be a callable."
+msgstr "Đối số %s là bắt buộc và phải có thể gọi được."
+
+#. translators: %s: metric slug
+#: includes/server-timing/class-perflab-server-timing.php:64
+msgid "A metric with the slug %s is already registered."
+msgstr "Một số liệu có slug %s đã được đăng ký."
+
+#. translators: %s: PHP method name
+#: includes/server-timing/class-perflab-server-timing-metric.php:137
+msgid "The %s method must be called before."
+msgstr "Phương thức %s phải được gọi trước."
+
+#. translators: %s: WordPress action name
+#: includes/server-timing/class-perflab-server-timing-metric.php:87
+#: includes/server-timing/class-perflab-server-timing.php:74
+msgid "The method must be called before or during the %s action."
+msgstr "Phương thức phải được gọi trước hoặc trong hành động %s."
+
+#. translators: %s: PHP parameter name
+#: includes/server-timing/class-perflab-server-timing-metric.php:77
+msgid "The %s parameter must be an integer, float, or numeric string."
+msgstr "Tham số %s phải là một số nguyên, số thực hoặc chuỗi số."
+
+#: includes/site-health/audit-autoloaded-options/helper.php:184
+#: includes/site-health/audit-autoloaded-options/helper.php:248
+#: includes/site-health/audit-enqueued-assets/helper.php:556
+msgid "Size"
+msgstr "Kích thước"
+
+#: includes/site-health/audit-autoloaded-options/helper.php:183
+#: includes/site-health/audit-autoloaded-options/helper.php:247
+msgid "Option Name"
+msgstr "Tên tùy chọn"
+
+#. Author URI of the plugin
+#: load.php
+msgid "https://make.wordpress.org/performance/"
+msgstr "https://make.wordpress.org/performance/"
+
+#: includes/site-health/audit-autoloaded-options/helper.php:80
+msgid "https://wordpress.org/support/article/optimization/#autoloaded-options"
+msgstr "https://wordpress.org/support/article/optimization/#autoloaded-options"
+
+#: includes/site-health/webp-support/helper.php:32
+msgid "The WebP image format produces images that are usually smaller in size than JPEG images, which can reduce page load time and consume less bandwidth."
+msgstr "Định dạng hình ảnh WebP tạo ra các hình ảnh thường có kích thước nhỏ hơn hình ảnh JPEG, điều này có thể giảm thời gian tải trang và tiêu thụ ít băng thông hơn."
+
+#. translators: 1. Number of autoloaded options. 2. Autoloaded options size.
+#: includes/site-health/audit-autoloaded-options/helper.php:63
+msgid "Your site has %1$s autoloaded options (size: %2$s) in the options table, which could cause your site to be slow. You can reduce the number of autoloaded options by cleaning up your site's options table."
+msgstr "Trang web của bạn có %1$s tùy chọn tự động tải (kích thước: %2$s) trong bảng tùy chọn, điều này có thể khiến trang web của bạn bị chậm. Bạn có thể giảm số lượng tùy chọn tự động tải bằng cách dọn dẹp bảng tùy chọn của trang web."
+
+#: includes/site-health/audit-autoloaded-options/helper.php:60
+msgid "Autoloaded options could affect performance"
+msgstr "Các tùy chọn tự động tải có thể ảnh hưởng đến hiệu suất"
+
+#. translators: 1. Number of autoloaded options. 2. Autoloaded options size.
+#: includes/site-health/audit-autoloaded-options/helper.php:38
+msgid "Your site has %1$s autoloaded options (size: %2$s) in the options table, which is acceptable."
+msgstr "Trang web của bạn có %1$s tùy chọn tự động tải (kích thước: %2$s) trong bảng tùy chọn, điều này là chấp nhận được."
+
+#: includes/site-health/audit-autoloaded-options/helper.php:30
+msgid "Autoloaded options are acceptable"
+msgstr "Các tùy chọn tự động tải là chấp nhận được"
+
+#: includes/site-health/audit-autoloaded-options/helper.php:27
+msgid "Autoloaded options are configuration settings for plugins and themes that are automatically loaded with every page load in WordPress. Having too many autoloaded options can slow down your site."
+msgstr "Các tùy chọn tự động tải là cài đặt cấu hình cho plugin và theme được tự động tải với mỗi lần tải trang trong WordPress. Việc có quá nhiều tùy chọn tự động tải có thể làm chậm trang web của bạn."
+
+#: includes/site-health/audit-autoloaded-options/hooks.php:30
+msgid "Autoloaded options"
+msgstr "Tùy chọn tự động tải"
+
+#: includes/site-health/webp-support/helper.php:42
+msgid "Your site does not support WebP"
+msgstr "Trang web của bạn không hỗ trợ WebP"
+
+#: includes/site-health/webp-support/helper.php:24
+msgid "Your site supports WebP"
+msgstr "Trang web của bạn hỗ trợ WebP"
+
+#: includes/site-health/webp-support/hooks.php:25
+msgid "WebP Support"
+msgstr "Hỗ trợ WebP"
+
+#: includes/site-health/audit-autoloaded-options/helper.php:81
+#: includes/site-health/audit-enqueued-assets/helper.php:190
+msgid "More info about performance optimization"
+msgstr "Thêm thông tin về tối ưu hóa hiệu suất"
+
+#: includes/site-health/audit-enqueued-assets/helper.php:189
+msgid "https://wordpress.org/support/article/optimization/"
+msgstr "https://wordpress.org/support/article/optimization/"
+
+#. translators: %s is the settings URL
+#: includes/admin/load.php:324 includes/admin/plugins.php:595
+#: includes/admin/plugin-activate-ajax.js:87
+msgid "Settings"
+msgstr "Cài đặt"
+
+#: includes/admin/load.php:244
+msgid "Settings > Performance"
+msgstr "Cài đặt > Hiệu suất"
+
+#: includes/admin/load.php:23
+#: includes/site-health/audit-autoloaded-options/helper.php:33
+#: includes/site-health/audit-enqueued-assets/helper.php:157
+#: includes/site-health/avif-headers/helper.php:27
+#: includes/site-health/avif-support/helper.php:27
+#: includes/site-health/bfcache-compatibility-headers/helper.php:28
+#: includes/site-health/effective-asset-cache-headers/helper.php:28
+#: includes/site-health/webp-support/helper.php:27
+msgid "Performance"
+msgstr "Hiệu suất"
+
+#. Author of the plugin
+#: load.php
+msgid "WordPress Performance Team"
+msgstr "Nhóm Hiệu suất WordPress"
+
+#. Description of the plugin
+#: load.php
+msgid "Performance plugin from the WordPress Performance Team, which is a collection of standalone performance features."
+msgstr "Plugin hiệu suất từ Nhóm Hiệu suất WordPress, là tập hợp các tính năng hiệu suất độc lập."
+
+#. Plugin URI of the plugin
+#: load.php
+msgid "https://github.com/WordPress/performance"
+msgstr "https://github.com/WordPress/performance"
+
+#. Plugin Name of the plugin
+#: load.php includes/admin/load.php:228
+msgid "Performance Lab"
+msgstr "Performance Lab"

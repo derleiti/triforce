@@ -1,0 +1,170 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/theme.json",
+  "version": 2,
+  "settings": {
+    "color": {
+      "duotone": [],
+      "gradients": [
+        {
+          "name": "Aurora",
+          "slug": "aurora",
+          "gradient": "linear-gradient(135deg, #3aa0ff 0%, #44d19a 100%)"
+        }
+      ],
+      "palette": [
+        {
+          "name": "Hintergrund",
+          "slug": "bg-0",
+          "color": "#0e1116"
+        },
+        {
+          "name": "Sektion",
+          "slug": "bg-1",
+          "color": "#131822"
+        },
+        {
+          "name": "Text",
+          "slug": "text",
+          "color": "#e8edf2"
+        },
+        {
+          "name": "Muted",
+          "slug": "muted",
+          "color": "#a9b3c0"
+        },
+        {
+          "name": "Akzent Blau",
+          "slug": "accent-blue",
+          "color": "#3aa0ff"
+        },
+        {
+          "name": "Akzent Gruen",
+          "slug": "accent-green",
+          "color": "#44d19a"
+        }
+      ],
+      "link": true,
+      "custom": false
+    },
+    "custom": {
+      "spacing": {
+        "scale": {
+          "space-2": "8px",
+          "space-3": "12px",
+          "space-4": "16px",
+          "space-5": "20px",
+          "space-6": "24px",
+          "space-8": "32px",
+          "space-10": "40px",
+          "space-12": "48px",
+          "space-14": "56px",
+          "space-18": "72px"
+        }
+      }
+    },
+    "layout": {
+      "contentSize": "72ch",
+      "wideSize": "1240px"
+    },
+    "spacing": {
+      "units": [
+        "px",
+        "rem",
+        "%",
+        "vw"
+      ],
+      "padding": true,
+      "margin": true,
+      "blockGap": true
+    },
+    "typography": {
+      "customFontSize": false,
+      "dropCap": false,
+      "fontFamilies": [
+        {
+          "fontFamily": "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+          "name": "Inter",
+          "slug": "inter"
+        },
+        {
+          "fontFamily": "'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, monospace",
+          "name": "JetBrains Mono",
+          "slug": "jetbrains-mono"
+        }
+      ],
+      "fontSizes": [
+        {
+          "name": "Klein",
+          "slug": "small",
+          "size": "0.9rem"
+        },
+        {
+          "name": "Normal",
+          "slug": "medium",
+          "size": "1rem"
+        },
+        {
+          "name": "Gross",
+          "slug": "large",
+          "size": "1.3rem"
+        },
+        {
+          "name": "XL",
+          "slug": "x-large",
+          "size": "1.6rem"
+        }
+      ],
+      "lineHeight": true
+    },
+    "blocks": {
+      "core/button": {
+        "border": {
+          "radius": "12px"
+        }
+      },
+      "core/image": {
+        "border": {
+          "radius": "16px"
+        }
+      }
+    }
+  },
+  "styles": {
+    "color": {
+      "background": "var(--bg-0)",
+      "text": "var(--text)"
+    },
+    "elements": {
+      "link": {
+        "color": {
+          "text": "var(--accent-active)"
+        },
+        "typography": {
+          "textDecoration": "none"
+        }
+      },
+      "button": {
+        "color": {
+          "background": "var(--accent-active)",
+          "text": "#ffffff"
+        },
+        "border": {
+          "radius": "12px"
+        }
+      }
+    },
+    "typography": {
+      "fontFamily": "var(--font-sans)",
+      "fontSize": "18px",
+      "lineHeight": 1.6
+    },
+    "spacing": {
+      "padding": {
+        "top": "clamp(3rem, 5vw, 4rem)",
+        "bottom": "clamp(3rem, 5vw, 4rem)",
+        "left": "var(--container-padding)",
+        "right": "var(--container-padding)"
+      }
+    }
+  }
+}

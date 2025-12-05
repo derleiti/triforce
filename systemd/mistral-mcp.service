@@ -1,0 +1,47 @@
+[Unit]
+Description=Mistral MCP Agent - TriStar Reviewer (Review, Security)
+Documentation=https://api.ailinux.me/docs
+After=network-online.target tristar-kernel.service
+Wants=network-online.target
+PartOf=tristar-kernel.service
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/home/zombie/ailinux-ai-server-backend
+
+# Environment
+Environment=PYTHONUNBUFFERED=1
+Environment=AGENT_ID=mistral
+Environment=AGENT_ROLE=reviewer
+Environment=TRISTAR_API=https://api.ailinux.me/v1/tristar
+EnvironmentFile=/home/zombie/ailinux-ai-server-backend/.env
+
+# Bootstrap and System Prompt
+ExecStartPre=/bin/bash -c 'mkdir -p /var/tristar/agents/mistral'
+ExecStartPre=/bin/bash -c 'cat /var/tristar/prompts/bootstrap.txt /var/tristar/prompts/mistral-reviewer.txt > /var/tristar/agents/mistral/systemprompt.txt 2>/dev/null || true'
+
+# Execute Agent
+ExecStart=/home/zombie/ailinux-ai-server-backend/.venv/bin/python -m app.agents.mistral_mcp \
+    --system-prompt-file /var/tristar/agents/mistral/systemprompt.txt \
+    --api-base https://api.ailinux.me/v1 \
+    --agent-id mistral \
+    --role reviewer
+
+# Restart policy
+Restart=always
+RestartSec=15
+TimeoutStartSec=120
+TimeoutStopSec=60
+
+# Limits
+LimitNOFILE=65535
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=mistral-mcp
+
+[Install]
+WantedBy=multi-user.target

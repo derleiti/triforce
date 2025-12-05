@@ -1,0 +1,885 @@
+# Translation of Themes - GeneratePress in Croatian
+# This file is distributed under the same license as the Themes - GeneratePress package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2020-10-06 18:05:21+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n % 10 == 1 && n % 100 != 11) ? 0 : ((n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) ? 1 : 2);\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: hr\n"
+"Project-Id-Version: Themes - GeneratePress\n"
+
+#. Theme Name of the theme
+#: style.css inc/class-dashboard.php:59 inc/class-dashboard.php:60
+#: inc/dashboard.php:20 inc/structure/footer.php:84
+#, gp-priority: high
+msgid "GeneratePress"
+msgstr "GeneratePress"
+
+#: inc/general.php:118
+msgid "Close Search Bar"
+msgstr "Zatvori pretraživač"
+
+#: inc/general.php:117 inc/structure/navigation.php:194
+#: inc/structure/navigation.php:553 inc/structure/navigation.php:594
+#: inc/structure/navigation.php:635
+msgid "Open Search Bar"
+msgstr "Otvori pretraživač"
+
+#: inc/customizer.php:1510
+msgid "Reduce the number of CSS file requests and use a lite version of our grid system."
+msgstr "Smanjite broj zahtjeva za CSS datoteke i koristite laganu inačicu našeg grid sistema."
+
+#: inc/customizer.php:1509
+msgid "Combine CSS"
+msgstr "Spoji CSS"
+
+#: inc/customizer.php:1464
+msgid "Font"
+msgstr "Font"
+
+#: inc/customizer.php:1463
+msgid "SVG"
+msgstr "SVG"
+
+#: inc/customizer.php:1460
+msgid "Icon Type"
+msgstr "Vrsta ikone"
+
+#: inc/customizer.php:1082 inc/customizer/fields/back-to-top.php:122
+#: inc/customizer/fields/body.php:55 inc/customizer/fields/buttons.php:123
+#: inc/customizer/fields/content.php:58 inc/customizer/fields/footer-bar.php:58
+#: inc/customizer/fields/footer-widgets.php:58
+#: inc/customizer/fields/forms.php:118 inc/customizer/fields/header.php:56
+#: inc/customizer/fields/primary-navigation.php:207
+#: inc/customizer/fields/sidebar-widgets.php:58
+#: inc/customizer/fields/top-bar.php:58
+msgid "Text"
+msgstr "Tekst"
+
+#: inc/customizer.php:1081
+msgid "Boxes"
+msgstr "Okviri"
+
+#: inc/customizer.php:1078
+msgid "Container Alignment"
+msgstr "Poravnanje kontejnera"
+
+#: inc/customizer.php:226
+msgid "Place logo next to title"
+msgstr "Smjesti logo do naslova"
+
+#: inc/typography.php:659 assets/dist/customizer.js:1
+msgid "Heading 3 (H3)"
+msgstr "Naslov 3 (H3)"
+
+#: inc/typography.php:512 assets/dist/customizer.js:1
+msgid "Heading 2 (H2)"
+msgstr "Naslov 2 (H2)"
+
+#: inc/typography.php:365 assets/dist/customizer.js:1
+msgid "Heading 1 (H1)"
+msgstr "Naslov 1 (H1)"
+
+#: inc/dashboard.php:261
+msgid "Reset Settings"
+msgstr "Vrati izvorne postavke"
+
+#: inc/dashboard.php:247
+msgid "Visit documentation &rarr;"
+msgstr "Posjetite dokumentaciju &rarr;"
+
+#: inc/dashboard.php:246
+msgid "Want to learn more about the theme? Check out our extensive documentation."
+msgstr "Želite saznati više o temi? Provjerite našu opširnu dokumentaciju."
+
+#: inc/dashboard.php:231 assets/dist/dashboard.js:1
+msgid "Start Customizing"
+msgstr "Počnite prilagođavati"
+
+#: inc/dashboard.php:221
+msgid "All Options"
+msgstr "Sve opcije"
+
+#: inc/dashboard.php:216 assets/dist/dashboard.js:1
+msgid "Layout Options"
+msgstr "Opcije razmještaja"
+
+#: inc/dashboard.php:211
+msgid "Customize Colors"
+msgstr "Prilagodite boje"
+
+#: inc/dashboard.php:206
+msgid "Customize Fonts"
+msgstr "Prilagodite fontove"
+
+#: inc/dashboard.php:201
+msgid "Upload Logo"
+msgstr "Prijenos logotipa"
+
+#: inc/customizer.php:981
+msgid "Dropdown Direction"
+msgstr "Direkcija padajućeg izbornika"
+
+#: inc/customizer.php:924
+msgid "The width when the navigation ceases to float and drops below your logo."
+msgstr "Širina kada navigacija prestane plutati i padne ispod vašeg logotipa."
+
+#: inc/customizer.php:923
+msgid "Navigation Drop Point"
+msgstr "Točka padanja navigacije"
+
+#: inc/customizer.php:669
+msgid "Navigation Left"
+msgstr "Navigacija lijevo"
+
+#: inc/customizer.php:668
+msgid "Navigation After - Centered"
+msgstr "Navigacija nakon - centrirano"
+
+#: inc/customizer.php:667
+msgid "Navigation Before - Centered"
+msgstr "Navigacija prije - centrirano"
+
+#: inc/customizer.php:659
+msgid "Header Presets"
+msgstr "Predlošci zaglavlja"
+
+#: inc/customizer.php:662
+msgid "Current"
+msgstr "Trenutno"
+
+#: inc/customizer.php:194
+msgid "Logo Width"
+msgstr "Širina logotipa"
+
+#: inc/structure/navigation.php:665
+msgid "Mobile Menu"
+msgstr "Mobilni izbornik"
+
+#: inc/meta-box.php:196
+msgid "Premium module available"
+msgstr "Dostupan je premium modul"
+
+#: inc/dashboard.php:263
+msgid "Deleting your settings can not be undone."
+msgstr "Brisanje postavki ne može se poništiti."
+
+#: inc/dashboard.php:157
+msgid "Premium Modules"
+msgstr "Premium moduli"
+
+#: inc/customizer.php:1394
+msgid "Load essential Font Awesome icons instead of the full library."
+msgstr "Učitaj osnovne Font Awesome ikone umjesto cijele zbirke."
+
+#: inc/customizer.php:1393
+msgid "Load essential icons only"
+msgstr "Učitaj samo osnovne ikone"
+
+#: inc/customizer.php:1374
+msgid "General"
+msgstr "Općenito"
+
+#: inc/customizer.php:1346
+msgid "Excerpt"
+msgstr "Sažetak"
+
+#: inc/customizer.php:1342
+msgid "Content Type"
+msgstr "Vrsta sadržaja"
+
+#: inc/customizer.php:1362 inc/typography.php:747
+msgid "More options are available for this section in our premium version."
+msgstr "Više opcija za ovu sekciju dostupno je u našoj premium inačici."
+
+#: inc/customizer.php:171
+msgid "Retina Logo"
+msgstr "Retina Logo"
+
+#: inc/customizer.php:86
+msgid "Premium Modules Available"
+msgstr "Dostupni su premium moduli"
+
+#: inc/customizer/controls/class-typography-control.php:80
+#: assets/dist/customizer.js:3
+msgid "Variants"
+msgstr "Varijante"
+
+#: inc/customizer/controls/class-typography-control.php:73
+#: assets/dist/customizer.js:3
+msgid "System fonts"
+msgstr "Sistem fontovi"
+
+#: inc/structure/comments.php:156
+msgid "Comment"
+msgstr "Komentar"
+
+#: inc/customizer.php:1530
+msgid "Cache CSS generated by your options to boost performance."
+msgstr "Predmemorija CSS-a generirana od strane postavljenih opcija za poboljšanje performansi."
+
+#: inc/customizer.php:1529
+msgid "Cache dynamic CSS"
+msgstr "Predmemoriraj dinamički CSS"
+
+#: inc/customizer/controls/class-range-control.php:70
+#: assets/dist/customizer.js:1
+msgid "Tablet"
+msgstr "Tablet"
+
+#: inc/customizer/controls/class-range-control.php:69
+#: assets/dist/customizer.js:1
+msgid "Desktop"
+msgstr "Desktop"
+
+#: inc/customizer/controls/class-range-control.php:71
+#: assets/dist/customizer.js:1
+msgid "Mobile"
+msgstr "Mobitel"
+
+#: inc/meta-box.php:181
+msgid "Full Width"
+msgstr "Puna širina"
+
+#: inc/customizer.php:623
+msgid "Top Bar Alignment"
+msgstr "Poravnavanje gornje trake"
+
+#: inc/customizer.php:597
+msgid "Top Bar Inner Width"
+msgstr "Unutarnja širina gornje trake"
+
+#: inc/customizer.php:571
+msgid "Top Bar Width"
+msgstr "Širina gornje trake"
+
+#: inc/customizer.php:551 inc/customizer/fields/top-bar.php:16
+#: inc/general.php:167 assets/dist/customizer.js:1
+msgid "Top Bar"
+msgstr "Gornja traka"
+
+#: inc/customizer.php:1361 inc/dashboard.php:168 inc/typography.php:746
+msgid "Learn more"
+msgstr "Saznaj više"
+
+#: inc/class-dashboard.php:147 inc/dashboard.php:56
+msgid "Documentation"
+msgstr "Dokumentacija"
+
+#: inc/class-dashboard.php:132 inc/dashboard.php:53
+msgid "Premium"
+msgstr "Premium"
+
+#: inc/customizer.php:1283
+msgid "Footer Bar Alignment"
+msgstr "Poravnavanje trake podnožja"
+
+#: inc/customizer/fields/footer-bar.php:16 inc/general.php:166
+#: assets/dist/customizer.js:1
+msgid "Footer Bar"
+msgstr "Traka podnožja"
+
+#: inc/customizer/controls/class-range-control.php:72 inc/dashboard.php:272
+#: assets/dist/dashboard.js:1
+msgid "Reset"
+msgstr "Vrati izvorno"
+
+#: inc/customizer.php:1230
+msgid "Inner Footer Width"
+msgstr "Unutarnja širina podnožja"
+
+#: inc/customizer.php:842
+msgid "Inner Navigation Width"
+msgstr "Unutarnja širina navigacije"
+
+#: inc/customizer.php:757
+msgid "Inner Header Width"
+msgstr "Unutarnja širina zaglavlja"
+
+#: inc/typography.php:297
+msgid "Paragraph margin"
+msgstr "Margina paragrafa"
+
+#: inc/typography.php:263 inc/typography.php:444 inc/typography.php:591
+#: inc/typography.php:720
+msgid "Line height"
+msgstr "Visina retka"
+
+#: inc/customizer.php:1185 assets/dist/customizer.js:1
+msgid "Footer"
+msgstr "Podnožje"
+
+#: inc/customizer.php:1092 inc/meta-box.php:90
+msgid "Sidebars"
+msgstr "Bočne trake"
+
+#: inc/customizer.php:797 inc/customizer/fields/primary-navigation.php:23
+#: assets/dist/customizer.js:1
+msgid "Primary Navigation"
+msgstr "Osnovna navigacija"
+
+#: inc/customizer.php:507
+msgid "Container"
+msgstr "Kontejner"
+
+#: inc/structure/footer.php:228
+msgid "Scroll back to top"
+msgstr "Vrati se ne vrh"
+
+#: inc/customizer.php:1205
+msgid "Footer Width"
+msgstr "Širina podnožja"
+
+#: inc/customizer.php:961
+msgid "Click - Arrow"
+msgstr "Klik - Strelica"
+
+#: inc/customizer.php:960
+msgid "Click - Menu Item"
+msgstr "Klik - Stavka izbornika"
+
+#: inc/customizer.php:1309
+msgid "Back to Top Button"
+msgstr "Dugme Povratak na vrh"
+
+#: inc/customizer.php:817
+msgid "Navigation Width"
+msgstr "Širina navigacije "
+
+#: inc/customizer.php:956
+msgid "Navigation Dropdown"
+msgstr "Padajući izbornik navigacije"
+
+#: inc/customizer.php:959
+msgid "Hover"
+msgstr "Dodirnuto"
+
+#: inc/customizer.php:574 inc/customizer.php:600 inc/customizer.php:735
+#: inc/customizer.php:761 inc/customizer.php:820 inc/customizer.php:846
+#: inc/customizer.php:1208 inc/customizer.php:1234
+msgid "Full"
+msgstr "Puna"
+
+#: inc/customizer.php:732
+msgid "Header Width"
+msgstr "Širina zaglavlja"
+
+#. translators: %s: Heart icon
+#: inc/dashboard.php:302
+msgctxt "made with love"
+msgid "Made with %s by Tom Usborne"
+msgstr "Napravljeno sa %s autor Tom Usborne"
+
+#: inc/customizer.php:899
+msgid "Float Left"
+msgstr "Plutajući lijevo"
+
+#: inc/class-dashboard.php:140 inc/dashboard.php:55
+msgid "Support"
+msgstr "Podrška"
+
+#: inc/customizer/fields/content.php:147 inc/meta-box.php:189
+#: inc/meta-box.php:191
+msgid "Content Title"
+msgstr "Naslov sadržaja"
+
+#: content-404.php:51
+msgid "It looks like nothing was found at this location. Maybe try searching?"
+msgstr "Izgleda da ništa nije nađeno na ovoj lokaciji. Možda da pokušate s pretraživanjem?"
+
+#: inc/structure/search-modal.php:104 searchform.php:15
+msgctxt "placeholder"
+msgid "Search &hellip;"
+msgstr "Pretraži &hellip;"
+
+#: inc/structure/search-modal.php:102 searchform.php:14 searchform.php:15
+msgctxt "label"
+msgid "Search for:"
+msgstr "Pretraži:"
+
+#. translators: 1: Search query name
+#: inc/structure/archives.php:136
+msgid "Search Results for: %s"
+msgstr "Rezultati pretrage za: %s"
+
+#: no-results.php:62
+msgid "It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps searching can help."
+msgstr "Izgleda da ne možemo pronaći ono što tražite. Možda pretraga može pomoći."
+
+#: no-results.php:57
+msgid "Sorry, but nothing matched your search terms. Please try again with some different keywords."
+msgstr "Nažalost, nije pronađeno ništa što odgovara vašim kriterijima pretraživanja. Pokušajte ponovno s nekim drugim ključnim riječima."
+
+#. translators: 1: Admin URL
+#: no-results.php:49
+msgid "Ready to publish your first post? <a href=\"%1$s\">Get started here</a>."
+msgstr "Spremni ste za objavu vaše prve objave? <a href=\"%1$s\">Započnite ovdje</a>."
+
+#: no-results.php:27
+msgid "Nothing Found"
+msgstr "Ništa nije pronađeno"
+
+#: inc/structure/post-meta.php:274
+msgid "% Comments"
+msgstr "% komentara"
+
+#: inc/structure/post-meta.php:274
+msgid "1 Comment"
+msgstr "1 komentar"
+
+#: inc/structure/post-meta.php:274
+msgid "Leave a comment"
+msgstr "Komentiraj"
+
+#: inc/structure/post-meta.php:258
+msgctxt "Used before tag names."
+msgid "Tags"
+msgstr "Oznake"
+
+#: inc/structure/post-meta.php:241
+msgctxt "Used before category names."
+msgid "Categories"
+msgstr "Kategorije"
+
+#: inc/structure/post-meta.php:233 inc/structure/post-meta.php:250
+msgctxt "Used between list items, there is a space after the comma."
+msgid ", "
+msgstr ", "
+
+#: inc/structure/navigation.php:490
+msgctxt "label"
+msgid "Search"
+msgstr "Pretraži"
+
+#: inc/structure/post-meta.php:581
+msgid "Read more"
+msgstr "Opširnije"
+
+#. translators: 1: Author name
+#: inc/structure/post-meta.php:222
+msgid "View all posts by %s"
+msgstr "Pogledaj sve objave od %s"
+
+#: inc/structure/post-meta.php:301
+msgid "by"
+msgstr "od"
+
+#: inc/structure/comments.php:91
+msgid "Your comment is awaiting moderation."
+msgstr "Vaš komentar čeka na odobrenje."
+
+#. translators: 1: date, 2: time
+#: inc/structure/comments.php:71
+msgctxt "1: date, 2: time"
+msgid "%1$s at %2$s"
+msgstr "%1$s u %2$s"
+
+#: inc/structure/comments.php:28
+msgid "Pingback:"
+msgstr "Povratni ping:"
+
+#: inc/structure/post-meta.php:85
+msgid "Newer posts"
+msgstr "Novije objave"
+
+#: inc/structure/post-meta.php:76
+msgid "Older posts"
+msgstr "Starije objave"
+
+#: inc/structure/post-meta.php:85
+msgid "Next"
+msgstr "Sljedeće"
+
+#: inc/structure/post-meta.php:76
+msgid "Previous"
+msgstr "Prethodno"
+
+#: inc/deprecated.php:31
+msgid "Next &rarr;"
+msgstr "Sljedeće &rarr;"
+
+#: inc/deprecated.php:30
+msgid "&larr; Previous"
+msgstr "&larr; Prethodno"
+
+#: inc/dashboard.php:373
+msgid "Settings removed."
+msgstr "Postavke uklonjene."
+
+#: inc/dashboard.php:368
+msgid "Import successful."
+msgstr "Uvezeno uspješno."
+
+#: inc/dashboard.php:363
+msgid "Settings saved."
+msgstr "Postavke spremljene."
+
+#: inc/meta-box.php:100 inc/meta-box.php:186
+msgid "Disable Elements"
+msgstr "Onemogući elemente"
+
+#: inc/dashboard.php:268
+msgid "Warning: This will delete your settings."
+msgstr "Upozorenje: Ovo će obrisati vaše postavke."
+
+#: inc/dashboard.php:93
+msgid "Customize"
+msgstr "Prilagodite"
+
+#: inc/structure/search-modal.php:105 searchform.php:21 searchform.php:27
+msgctxt "submit button"
+msgid "Search"
+msgstr "Pretraži"
+
+#: inc/structure/header.php:379 inc/structure/header.php:380
+msgid "Skip to content"
+msgstr "Preskoči na sadržaj"
+
+#: inc/structure/navigation.php:50 inc/structure/navigation.php:60
+#: inc/structure/navigation.php:139 inc/structure/navigation.php:155
+msgid "Menu"
+msgstr "Izbornik"
+
+#: inc/meta-box.php:168
+msgid "5 Widgets"
+msgstr "5 Widgeta"
+
+#: inc/meta-box.php:167
+msgid "4 Widgets"
+msgstr "4 Widgeta"
+
+#: inc/meta-box.php:166
+msgid "3 Widgets"
+msgstr "3 Widgeta"
+
+#: inc/meta-box.php:165
+msgid "2 Widgets"
+msgstr "2 Widgeta"
+
+#: inc/meta-box.php:164
+msgid "1 Widgets"
+msgstr "1 Widget"
+
+#: inc/meta-box.php:163
+msgid "0 Widgets"
+msgstr "0 Widgeta"
+
+#: inc/meta-box.php:152
+msgid "Both Sidebars on Right"
+msgstr "Obje bočne trake na desno"
+
+#: inc/meta-box.php:151
+msgid "Both Sidebars on Left"
+msgstr "Obje bočne trake na lijevo"
+
+#: inc/meta-box.php:150
+msgid "Both Sidebars"
+msgstr "Obje bočne trake"
+
+#: inc/meta-box.php:149
+msgid "No Sidebars"
+msgstr "Bez bočnih traka"
+
+#: inc/customizer/fields/content.php:16 assets/dist/customizer.js:1
+msgid "Content"
+msgstr "Sadržaj"
+
+#: inc/customizer.php:663 inc/meta-box.php:146 inc/meta-box.php:162
+#: inc/meta-box.php:180 assets/dist/customizer.js:1 assets/dist/customizer.js:3
+msgid "Default"
+msgstr "Izvorno"
+
+#: inc/customizer.php:1323
+msgid "Blog"
+msgstr "Blog"
+
+#: inc/customizer.php:1167
+msgid "Single Post Sidebar Layout"
+msgstr "Izgled bočne trake pojedine objave"
+
+#: inc/customizer.php:1139
+msgid "Blog Sidebar Layout"
+msgstr "Izgled bočne trake bloga"
+
+#: inc/customizer.php:1119 inc/customizer.php:1147 inc/customizer.php:1175
+msgid "Content / Sidebar / Sidebar"
+msgstr "Sadržaj / Bočna traka / Bočna traka"
+
+#: inc/customizer.php:1118 inc/customizer.php:1146 inc/customizer.php:1174
+msgid "Sidebar / Sidebar / Content"
+msgstr "Bočna traka / Bočna traka / Sadržaj"
+
+#: inc/customizer.php:1117 inc/customizer.php:1145 inc/customizer.php:1173
+msgid "Sidebar / Content / Sidebar"
+msgstr "Bočna traka / Sadržaj / Bočna traka"
+
+#: inc/customizer.php:1116 inc/customizer.php:1144 inc/customizer.php:1172
+msgid "Content (no sidebars)"
+msgstr "Sadržaj (bez bočne trake)"
+
+#: inc/customizer.php:1115 inc/customizer.php:1143 inc/customizer.php:1171
+msgid "Content / Sidebar"
+msgstr "Sadržaj / Bočna traka"
+
+#: inc/customizer.php:1254 inc/customizer/fields/footer-widgets.php:16
+#: inc/meta-box.php:95 inc/meta-box.php:159
+msgid "Footer Widgets"
+msgstr "Widgeti u podnožju"
+
+#: inc/customizer.php:1114 inc/customizer.php:1142 inc/customizer.php:1170
+msgid "Sidebar / Content"
+msgstr "Bočna traka / Sadržaj"
+
+#: inc/customizer.php:1111 inc/meta-box.php:143
+msgid "Sidebar Layout"
+msgstr "Izgled bočne trake"
+
+#: inc/customizer.php:1058
+msgid "One Container"
+msgstr "Jedan kontejner"
+
+#: inc/customizer.php:1057
+msgid "Separate Containers"
+msgstr "Odvojeni kontejneri"
+
+#: inc/customizer.php:1054
+msgid "Content Layout"
+msgstr "Izgled sadržaja"
+
+#: inc/customizer.php:1009 inc/customizer.php:1313
+msgid "Disable"
+msgstr "Onemogućeno"
+
+#: inc/customizer.php:896
+msgid "Below Header"
+msgstr "Ispod zaglavlja"
+
+#: inc/customizer.php:1008 inc/customizer.php:1312
+msgid "Enable"
+msgstr "Omogućeno"
+
+#: inc/customizer.php:902
+msgid "No Navigation"
+msgstr "Bez navigacije"
+
+#: inc/customizer.php:897
+msgid "Above Header"
+msgstr "Iznad zaglavlja"
+
+#: inc/customizer.php:867
+msgid "Navigation Alignment"
+msgstr "Smještaj navigacije"
+
+#: inc/customizer.php:893
+msgid "Navigation Location"
+msgstr "Pozicija navigacije"
+
+#: inc/customizer.php:898
+msgid "Float Right"
+msgstr "Plutajući desno"
+
+#: inc/customizer.php:1005 inc/customizer/fields/primary-navigation.php:166
+msgid "Navigation Search"
+msgstr "Pretraga u navigaciji"
+
+#: inc/customizer.php:628 inc/customizer.php:787 inc/customizer.php:872
+#: inc/customizer.php:984 inc/customizer.php:1288
+msgid "Right"
+msgstr "Desno"
+
+#: inc/customizer.php:627 inc/customizer.php:786 inc/customizer.php:871
+#: inc/customizer.php:1287
+msgid "Center"
+msgstr "Centar"
+
+#: inc/customizer.php:626 inc/customizer.php:785 inc/customizer.php:870
+#: inc/customizer.php:985 inc/customizer.php:1286
+msgid "Left"
+msgstr "Lijevo"
+
+#: inc/customizer.php:782
+msgid "Header Alignment"
+msgstr "Smještaj zaglavlja"
+
+#: inc/customizer.php:575 inc/customizer.php:601 inc/customizer.php:736
+#: inc/customizer.php:760 inc/customizer.php:821 inc/customizer.php:845
+#: inc/customizer.php:1209 inc/customizer.php:1233 inc/meta-box.php:182
+msgid "Contained"
+msgstr "Sadržano"
+
+#: inc/customizer.php:529
+msgid "Container Width"
+msgstr "Širina kontejnera"
+
+#: inc/customizer.php:499 inc/meta-box.php:62
+msgid "Layout"
+msgstr "Izgled"
+
+#: inc/customizer/fields/body.php:146
+msgid "Link Color Visited"
+msgstr "Boja posjećene poveznice"
+
+#: inc/customizer.php:235
+msgid "Colors"
+msgstr "Boje"
+
+#: inc/customizer.php:149
+msgid "Logo"
+msgstr "Logo"
+
+#: inc/customizer.php:128
+msgid "Hide site tagline"
+msgstr "Sakrij slogan stranice"
+
+#: inc/customizer.php:109
+msgid "Hide site title"
+msgstr "Sakrij naslov stranice"
+
+#: inc/typography.php:229 inc/typography.php:403 inc/typography.php:550
+#: inc/typography.php:687 assets/dist/customizer.js:3
+msgid "Font size"
+msgstr "Veličina fonta"
+
+#: inc/customizer/controls/class-typography-control.php:78
+msgid "Text transform"
+msgstr "Transformacija teksta"
+
+#: inc/customizer/fields/body.php:16 inc/typography.php:199
+#: assets/dist/customizer.js:1
+msgid "Body"
+msgstr "Tijelo teksta"
+
+#: inc/customizer/controls/class-typography-control.php:77
+msgid "Font weight"
+msgstr "Debljina fonta"
+
+#: inc/customizer.php:314 inc/typography.php:135
+msgid "Typography"
+msgstr "Tipografija"
+
+#: inc/customizer/controls/class-deprecated.php:72
+#: inc/customizer/controls/class-typography-control.php:76
+msgid "Font family"
+msgstr "Skupina fonta"
+
+#: inc/customizer/controls/class-deprecated.php:71
+#: inc/customizer/controls/class-typography-control.php:74
+msgid "Google fonts"
+msgstr "Google fontovi"
+
+#: inc/customizer/controls/class-deprecated.php:70
+msgid "Default fonts"
+msgstr "Zadani fontovi"
+
+#: inc/customizer.php:639 inc/customizer/fields/header.php:16
+#: inc/general.php:160 assets/dist/customizer.js:1
+msgid "Header"
+msgstr "Zaglavlje"
+
+#: inc/customizer.php:900 inc/general.php:159 inc/meta-box.php:148
+msgid "Left Sidebar"
+msgstr "Lijeva bočna traka"
+
+#: inc/customizer.php:901 inc/general.php:158 inc/meta-box.php:147
+msgid "Right Sidebar"
+msgstr "Desna bočna traka"
+
+#: functions.php:58
+msgid "Primary Menu"
+msgstr "Glavni izbornik"
+
+#: inc/general.php:161
+msgid "Footer Widget 1"
+msgstr "Podnožni Widget 1"
+
+#: inc/general.php:165
+msgid "Footer Widget 5"
+msgstr "Podnožni Widget 5"
+
+#: inc/general.php:164
+msgid "Footer Widget 4"
+msgstr "Podnožni Widget 4"
+
+#: inc/general.php:163
+msgid "Footer Widget 3"
+msgstr "Podnožni Widget 3"
+
+#: inc/general.php:162
+msgid "Footer Widget 2"
+msgstr "Podnožni Widget 2"
+
+#: inc/structure/comments.php:28 inc/structure/comments.php:82
+msgid "Edit"
+msgstr "Uredi"
+
+#: content-link.php:84 content-page.php:77 content-single.php:77 content.php:84
+msgid "Pages:"
+msgstr "Stranice:"
+
+#: inc/structure/comments.php:164
+msgid "Post Comment"
+msgstr "Objavi komentar"
+
+#: inc/structure/comments.php:163
+msgid "Leave a Comment"
+msgstr "Komentiraj"
+
+#: inc/structure/comments.php:199
+msgid "Website"
+msgstr "Web-stranica"
+
+#: inc/structure/comments.php:191
+msgid "Email"
+msgstr "E-pošta"
+
+#: inc/structure/comments.php:183
+msgid "Name"
+msgstr "Ime"
+
+#: comments.php:123
+msgid "Comments are closed."
+msgstr "Komentari su zatvoreni."
+
+#: comments.php:86 comments.php:113
+msgid "Newer Comments &rarr;"
+msgstr "Noviji komentari &rarr;"
+
+#: comments.php:85 comments.php:112
+msgid "&larr; Older Comments"
+msgstr "&larr; Stariji Komentari"
+
+#: comments.php:84 comments.php:111
+msgid "Comment navigation"
+msgstr "Navigacija komentara"
+
+#. translators: 1: number of comments, 2: post title
+#: comments.php:50
+msgctxt "comments title"
+msgid "%1$s thought on &ldquo;%2$s&rdquo;"
+msgid_plural "%1$s thoughts on &ldquo;%2$s&rdquo;"
+msgstr[0] "%1$s misao o &ldquo;%2$s&rdquo;"
+msgstr[1] "%1$s misli o &ldquo;%2$s&rdquo;"
+msgstr[2] "%1$s misli o &ldquo;%2$s&rdquo;"
+
+#: inc/structure/sidebars.php:77
+msgid "Archives"
+msgstr "Arhiva"
+
+#: content-404.php:27
+msgid "Oops! That page can&rsquo;t be found."
+msgstr "Ups! Ta stranica nije pronađena."
+
+#. Author of the theme
+#: style.css
+#, gp-priority: low
+msgid "Tom Usborne"
+msgstr "Tom Usborne"
+
+#. Theme URI of the theme
+#: style.css
+#, gp-priority: low
+msgid "https://generatepress.com"
+msgstr "https://generatepress.com"

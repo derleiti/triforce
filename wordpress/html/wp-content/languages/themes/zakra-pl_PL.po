@@ -1,0 +1,840 @@
+# Translation of Themes - Zakra in Polish
+# This file is distributed under the same license as the Themes - Zakra package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2024-04-13 08:26:50+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) ? 1 : 2);\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: pl\n"
+"Project-Id-Version: Themes - Zakra\n"
+
+#. Theme Name of the theme
+#: style.css inc/admin/views/header.php:22 inc/helper/utils.php:288
+#: inc/helper/utils.php:331 assets/build/dashboard.js:1
+#, gp-priority: high
+msgid "Zakra"
+msgstr "Zakra"
+
+#: inc/core/class-zakra-widgets.php:85
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:188
+#: assets/build/meta.js:1
+msgid "Sidebar Left"
+msgstr "Panel boczny po lewej"
+
+#: inc/core/class-zakra-widgets.php:84
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:187
+#: assets/build/meta.js:1
+msgid "Sidebar Right"
+msgstr "Panel boczny po prawej"
+
+#: inc/customizer/options/footer/footer-bar.php:23
+#: inc/customizer/options/footer/footer-bar.php:50
+#: inc/customizer/options/footer/footer-column.php:66
+#: inc/customizer/options/global/container.php:42
+#: inc/customizer/options/global/content-area.php:47
+#: inc/customizer/options/header/breadcrumb.php:32
+#: inc/customizer/options/header/header-button.php:63
+#: inc/customizer/options/header/main-header.php:106
+#: inc/customizer/options/header/page-header.php:61
+#: inc/customizer/options/header/primary-menu.php:144
+#: inc/customizer/options/header/top-bar.php:37
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:276
+#: assets/build/meta.js:1 inc/customizer/build/customind.js:1
+#: inc/customizer/customind/build/customind.js:1
+msgid "Style"
+msgstr "Styl"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:261
+msgid "Remove Logo"
+msgstr "Usuń logo"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:257
+msgid "Upload Logo"
+msgstr "Prześlij logo"
+
+#: inc/customizer/options/header-builder/header-builder.php:82
+#: inc/customizer/options/header-builder/logo.php:22
+#: inc/customizer/options/header/site-identity.php:22
+#: inc/customizer/panels-sections/panels-sections.php:186
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:244
+#: assets/build/meta.js:1
+msgid "Logo"
+msgstr "Logo"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:216
+#: assets/build/meta.js:1
+msgid "Enable Transparent Header"
+msgstr "Włącz przezroczysty nagłówek"
+
+#: inc/customizer/options/global/sidebar.php:38
+#: inc/customizer/panels-sections/panels-sections.php:56
+#: inc/customizer/panels-sections/panels-sections.php:156
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:180
+#: assets/build/dashboard.js:1 assets/build/meta.js:1
+msgid "Sidebar"
+msgstr "Panel boczny"
+
+#: inc/customizer/options/content/blog-meta.php:16
+#: inc/customizer/options/global/container.php:19
+#: inc/customizer/options/global/content-area.php:22
+#: inc/customizer/options/global/sidebar.php:67
+#: inc/customizer/options/header/main-header.php:17
+#: inc/customizer/options/header/page-header.php:19
+#: inc/customizer/options/woocommerce/woocommerce.php:37
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:118
+#: assets/build/meta.js:1
+msgid "Layout"
+msgstr "Układ"
+
+#: inc/customizer/options/header/page-header.php:5
+#: inc/customizer/options/header/page-header.php:120
+#: inc/customizer/panels-sections/panels-sections.php:116
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:94
+msgid "Page Header"
+msgstr "Nagłówek strony"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:84
+msgid "Header"
+msgstr "Nagłówek"
+
+#: inc/customizer/options/footer/footer-bar.php:16
+#: inc/customizer/options/global/button.php:13
+#: inc/customizer/options/global/container.php:13
+#: inc/customizer/options/global/content-area.php:16
+#: inc/customizer/options/header/breadcrumb.php:15
+#: inc/customizer/options/header/header-button.php:15
+#: inc/customizer/options/header/primary-menu.php:15
+#: inc/customizer/options/header/top-bar.php:15
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:79
+msgid "General"
+msgstr "Ogólne"
+
+#: inc/class-breadcrumb-trail.php:271
+msgid "Archives"
+msgstr "Archiwa"
+
+#: inc/class-breadcrumb-trail.php:267
+msgid "Browse:"
+msgstr "Przeglądaj:"
+
+#: inc/meta-boxes/class-zakra-meta-box.php:198
+msgid "Page Settings"
+msgstr "Ustawienia strony"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:413
+#: assets/build/meta.js:1
+msgid "Enable Page Header"
+msgstr "Włącz nagłówek strony"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:393
+msgid "Right Border"
+msgstr "Ramka po prawej"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:385
+msgid "Left Border"
+msgstr "Ramka po lewej"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:364
+#: assets/build/meta.js:1
+msgid "Active Menu Item Style"
+msgstr "Styl pozycji aktywnego menu"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:354
+#: assets/build/meta.js:1
+msgid "Menu Item Active Color"
+msgstr "Aktywny kolor pozycji menu"
+
+#: inc/customizer/options/footer/footer-bar.php:127
+#: inc/customizer/options/footer/footer-bar.php:210
+#: inc/customizer/options/header/top-bar.php:90
+#: inc/customizer/options/header/top-bar.php:155 inc/helper/utils.php:438
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:369
+msgid "None"
+msgstr "Żaden"
+
+#: inc/class-breadcrumb-trail.php:790
+msgctxt "weekly archives date format"
+msgid "W"
+msgstr "W"
+
+#: inc/class-breadcrumb-trail.php:763 inc/class-breadcrumb-trail.php:1203
+msgctxt "daily archives date format"
+msgid "j"
+msgstr "j"
+
+#: inc/class-breadcrumb-trail.php:762 inc/class-breadcrumb-trail.php:828
+#: inc/class-breadcrumb-trail.php:1201
+msgctxt "monthly archives date format"
+msgid "F"
+msgstr "F"
+
+#: inc/class-breadcrumb-trail.php:761 inc/class-breadcrumb-trail.php:789
+#: inc/class-breadcrumb-trail.php:827 inc/class-breadcrumb-trail.php:853
+#: inc/class-breadcrumb-trail.php:1199
+msgctxt "yearly archives date format"
+msgid "Y"
+msgstr "Y"
+
+#: inc/class-breadcrumb-trail.php:728
+msgctxt "minute archives time format"
+msgid "i"
+msgstr "i"
+
+#. Translators: Weekly archive title. %s is the week date format.
+#: inc/class-breadcrumb-trail.php:281
+msgid "Week %s"
+msgstr "Tydzień %s"
+
+#. Translators: Minute archive title. %s is the minute time format.
+#: inc/class-breadcrumb-trail.php:279
+msgid "Minute %s"
+msgstr "Minuta %s"
+
+#. Translators: %s is the page number.
+#: inc/class-breadcrumb-trail.php:275
+msgid "Page %s"
+msgstr "Strona %s"
+
+#: inc/admin/views/help.php:43 assets/build/dashboard.js:1
+msgid "Support"
+msgstr "Pomoc techniczna"
+
+#: inc/customizer/options/content/blog.php:8
+#: inc/customizer/options/header/page-header.php:109
+msgid "Page Title"
+msgstr "Tytuł strony"
+
+#: inc/customizer/options/global/sidebar.php:97
+#: inc/customizer/panels-sections/panels-sections.php:146
+#: assets/build/dashboard.js:1
+msgid "Single Post"
+msgstr "Pojedynczy wpis"
+
+#: inc/customizer/options/footer/footer-bar.php:129
+#: inc/customizer/options/footer/footer-bar.php:212
+#: inc/customizer/options/header/top-bar.php:92
+#: inc/customizer/options/header/top-bar.php:157
+msgid "Menu"
+msgstr "Menu"
+
+#: inc/admin/views/free-vs-pro.php:201 inc/admin/views/header.php:78
+msgid "Pro"
+msgstr "Pro"
+
+#: inc/customizer/options/content/blog.php:66
+#: inc/customizer/options/content/single-post.php:20
+#: inc/customizer/options/footer/footer-column.php:216
+msgid "Title"
+msgstr "Tytuł"
+
+#: inc/customizer/options/content/blog.php:65
+#: inc/customizer/options/content/single-post.php:19
+msgid "Featured Image"
+msgstr "Obrazek wyróżniający"
+
+#: inc/customizer/options/content/blog-sidebar.php:54
+#: inc/customizer/options/content/blog-sidebar.php:114
+#: inc/customizer/options/content/blog.php:172
+#: inc/customizer/options/footer-builder/copyright.php:100
+#: inc/customizer/options/footer-builder/footer-menu-2.php:80
+#: inc/customizer/options/footer-builder/footer-menu.php:80
+#: inc/customizer/options/global/button.php:99
+#: inc/customizer/options/header-builder/header-button.php:111
+#: inc/customizer/options/header-builder/logo.php:129
+#: inc/customizer/options/header-builder/logo.php:204
+#: inc/customizer/options/header-builder/mobile-menu.php:54
+#: inc/customizer/options/header-builder/primary-menu.php:181
+#: inc/customizer/options/header-builder/primary-menu.php:233
+#: inc/customizer/options/header-builder/quaternary-menu.php:94
+#: inc/customizer/options/header-builder/secondary-menu.php:129
+#: inc/customizer/options/header-builder/secondary-menu.php:180
+#: inc/customizer/options/header-builder/tertiary-menu.php:130
+#: inc/customizer/options/header-builder/tertiary-menu.php:181
+#: inc/customizer/options/header/breadcrumb.php:59
+#: inc/customizer/options/header/page-header.php:198
+#: inc/customizer/options/header/primary-menu.php:221
+#: inc/customizer/options/header/primary-menu.php:275
+#: inc/customizer/options/header/primary-menu.php:334
+#: inc/customizer/options/header/site-identity.php:129
+#: inc/customizer/options/header/site-identity.php:204
+#: inc/customizer/panels-sections/panels-sections.php:61
+msgid "Typography"
+msgstr "Typografia"
+
+#: inc/customizer/panels-sections/panels-sections.php:21
+msgid "Footer"
+msgstr "Stopka"
+
+#: inc/customizer/options/content/blog.php:205
+#: inc/customizer/options/global/button.php:6
+#: inc/customizer/options/header-builder/header-builder.php:92
+#: inc/customizer/panels-sections/panels-sections.php:66
+msgid "Button"
+msgstr "Przycisk"
+
+#: inc/customizer/options/header/page-header.php:136
+msgid "Heading 4"
+msgstr "Nagłówek 4"
+
+#: inc/customizer/options/header/page-header.php:135
+msgid "Heading 3"
+msgstr "Nagłówek 3"
+
+#: inc/customizer/options/header/page-header.php:134
+msgid "Heading 2"
+msgstr "Nagłówek 2"
+
+#: inc/customizer/options/header/page-header.php:133
+msgid "Heading 1"
+msgstr "Nagłówek 1"
+
+#: inc/customizer/options/global/content-area.php:8
+#: inc/customizer/options/header/page-header.php:121
+#: inc/customizer/panels-sections/panels-sections.php:51
+msgid "Content Area"
+msgstr "Obszar treści"
+
+#: inc/customizer/options/content/blog.php:88
+#: inc/customizer/options/content/single-post.php:52
+msgid "Tags"
+msgstr "Tagi"
+
+#: inc/customizer/options/content/blog.php:87
+#: inc/customizer/options/content/single-post.php:51
+msgid "Date"
+msgstr "Data"
+
+#: inc/customizer/options/footer-builder/bottom-area.php:73
+#: inc/customizer/options/footer-builder/main-area.php:97
+#: inc/customizer/options/footer-builder/top-area.php:73
+#: inc/customizer/options/footer/footer-bar.php:64
+#: inc/customizer/options/footer/footer-column.php:83
+#: inc/customizer/options/footer/scroll-to-top.php:20
+#: inc/customizer/options/global/button.php:41
+#: inc/customizer/options/global/container.php:68
+#: inc/customizer/options/header-builder/bottom-area.php:61
+#: inc/customizer/options/header-builder/header-builder.php:293
+#: inc/customizer/options/header-builder/header-button.php:55
+#: inc/customizer/options/header-builder/main-area.php:61
+#: inc/customizer/options/header-builder/offset-area.php:14
+#: inc/customizer/options/header-builder/search.php:42
+#: inc/customizer/options/header-builder/top-area.php:64
+#: inc/customizer/options/header/header-button.php:93
+#: inc/customizer/options/header/main-header.php:121
+#: inc/customizer/options/header/page-header.php:77
+#: inc/customizer/options/header/top-bar.php:65
+msgid "Background"
+msgstr "Tło"
+
+#: inc/customizer/options/content/blog.php:86
+#: inc/customizer/options/content/single-post.php:50
+msgid "Author"
+msgstr "Autor"
+
+#: inc/customizer/options/content/blog.php:85
+#: inc/customizer/options/content/single-post.php:49
+msgid "Categories"
+msgstr "Kategorie"
+
+#: inc/customizer/options/content/blog.php:84
+#: inc/customizer/options/content/single-post.php:48
+msgid "Comments"
+msgstr "Komentarze"
+
+#: inc/customizer/options/content/blog.php:68
+#: inc/customizer/options/content/single-post.php:22
+#: inc/customizer/panels-sections/panels-sections.php:17
+msgid "Content"
+msgstr "Treść"
+
+#: inc/customizer/options/content/blog.php:67
+#: inc/customizer/options/content/single-post.php:21
+msgid "Meta Tags"
+msgstr "Meta tagi"
+
+#: inc/customizer/options/footer-builder/main-area.php:65
+msgid "Link Color"
+msgstr "Kolor odnośnika"
+
+#: inc/customizer/options/content/blog.php:223
+#: inc/customizer/options/footer-builder/copyright.php:127
+#: inc/customizer/options/footer-builder/footer-menu-2.php:92
+#: inc/customizer/options/footer-builder/footer-menu.php:92
+#: inc/customizer/options/footer-builder/html-1.php:89
+#: inc/customizer/options/footer-builder/html-2.php:89
+#: inc/customizer/options/footer-builder/socials.php:44
+#: inc/customizer/options/footer-builder/widget-1.php:130
+#: inc/customizer/options/footer-builder/widget-2.php:130
+#: inc/customizer/options/footer-builder/widget-3.php:130
+#: inc/customizer/options/footer-builder/widget-4.php:130
+#: inc/customizer/options/footer-builder/widget-5.php:130
+#: inc/customizer/options/footer-builder/widget-6.php:130
+msgid "Alignment"
+msgstr "Wyrównanie"
+
+#: inc/customizer/options/header-builder/search.php:28
+msgid "Text Color"
+msgstr "Kolor tekstu"
+
+#: inc/customizer/options/header/page-header.php:140
+msgid "Paragraph"
+msgstr "Akapit"
+
+#: inc/customizer/options/header/page-header.php:138
+msgid "Heading 6"
+msgstr "Nagłówek 6"
+
+#: inc/customizer/options/header/page-header.php:137
+msgid "Heading 5"
+msgstr "Nagłówek 5"
+
+#: inc/customizer/options/footer/footer-bar.php:77
+#: inc/customizer/options/footer/footer-column.php:101
+msgid "Border Top"
+msgstr "Górna ramka"
+
+#: inc/customizer/options/content/blog.php:183
+#: inc/customizer/options/content/blog.php:195
+msgid "Excerpt"
+msgstr "Zajawka"
+
+#: inc/customizer/options/global/sidebar.php:108
+msgid "Page"
+msgstr "Strona"
+
+#: inc/customizer/options/footer-builder/main-area.php:163
+#: inc/customizer/options/footer/footer-bar.php:130
+#: inc/customizer/options/footer/footer-bar.php:213
+#: inc/customizer/options/footer/footer-column.php:208
+#: inc/customizer/options/header/top-bar.php:93
+#: inc/customizer/options/header/top-bar.php:158
+msgid "Widget"
+msgstr "Widżet"
+
+#: inc/customizer/options/footer/footer-bar.php:128
+#: inc/customizer/options/footer/footer-bar.php:211
+#: inc/customizer/options/header/top-bar.php:91
+#: inc/customizer/options/header/top-bar.php:156
+msgid "Text/HTML"
+msgstr "Tekst/HTML"
+
+#: inc/customizer/options/footer-builder/main-area.php:197
+#: inc/customizer/options/footer/footer-column.php:282
+#: inc/customizer/options/header-builder/primary-menu.php:60
+#: inc/customizer/options/header-builder/secondary-menu.php:41
+#: inc/customizer/options/header-builder/tertiary-menu.php:42
+msgid "Border Bottom Color"
+msgstr "Kolor dolnej ramki"
+
+#: inc/customizer/options/header-builder/primary-menu.php:39
+#: inc/customizer/options/header/main-header.php:132
+#: inc/customizer/options/header/primary-menu.php:44
+msgid "Border Bottom"
+msgstr "Dolna ramka"
+
+#: inc/customizer/options/content/blog.php:113
+#: inc/customizer/options/footer-builder/bottom-area.php:57
+#: inc/customizer/options/footer-builder/copyright.php:34
+#: inc/customizer/options/footer-builder/html-1.php:19
+#: inc/customizer/options/footer-builder/html-2.php:19
+#: inc/customizer/options/footer-builder/main-area.php:57
+#: inc/customizer/options/footer-builder/top-area.php:57
+#: inc/customizer/options/footer/footer-bar.php:100
+#: inc/customizer/options/footer/footer-bar.php:270
+#: inc/customizer/options/footer/footer-bar.php:290
+#: inc/customizer/options/footer/footer-column.php:131
+#: inc/customizer/options/footer/footer-column.php:153
+#: inc/customizer/options/footer/footer-column.php:178
+#: inc/customizer/options/footer/footer-column.php:233
+#: inc/customizer/options/footer/scroll-to-top.php:56
+#: inc/customizer/options/global/button.php:19
+#: inc/customizer/options/header-builder/bottom-area.php:45
+#: inc/customizer/options/header-builder/cart.php:14
+#: inc/customizer/options/header-builder/header-button.php:34
+#: inc/customizer/options/header-builder/html-1.php:19
+#: inc/customizer/options/header-builder/html-2.php:19
+#: inc/customizer/options/header-builder/logo.php:74
+#: inc/customizer/options/header-builder/logo.php:157
+#: inc/customizer/options/header-builder/main-area.php:45
+#: inc/customizer/options/header-builder/search.php:21
+#: inc/customizer/options/header-builder/top-area.php:47
+#: inc/customizer/options/header/breadcrumb.php:79
+#: inc/customizer/options/header/breadcrumb.php:103
+#: inc/customizer/options/header/breadcrumb.php:128
+#: inc/customizer/options/header/header-button.php:71
+#: inc/customizer/options/header/main-header.php:155
+#: inc/customizer/options/header/page-header.php:149
+#: inc/customizer/options/header/primary-menu.php:73
+#: inc/customizer/options/header/site-identity.php:74
+#: inc/customizer/options/header/site-identity.php:157
+#: inc/customizer/options/header/top-bar.php:45
+msgid "Color"
+msgstr "Kolor"
+
+#. translators: used between list items, there is a space after the comma
+#: inc/template-tags.php:243
+msgctxt "list item separator"
+msgid ", "
+msgstr ", "
+
+#. translators: %s: post title
+#: inc/template-tags.php:213
+msgid "No Comments<span class=\"screen-reader-text\"> on %s</span>"
+msgstr "Brak komentarzy<span class=\"screen-reader-text\"> do %s</span>"
+
+#. translators: used between list items, there is a space after the comma
+#: inc/template-tags.php:188
+msgid ", "
+msgstr ", "
+
+#: template-parts/hooks/header/header.php:69
+msgid "Skip to content"
+msgstr "Przejdź do treści"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:332
+#: assets/build/meta.js:1
+msgid "Menu Item Color"
+msgstr "Kolor pozycji menu"
+
+#: inc/customizer/options/header-builder/header-builder.php:243
+msgid "Bottom"
+msgstr "Na dole"
+
+#: inc/customizer/options/footer-builder/copyright.php:133
+#: inc/customizer/options/footer-builder/footer-menu-2.php:97
+#: inc/customizer/options/footer-builder/footer-menu.php:97
+#: inc/customizer/options/footer-builder/html-1.php:95
+#: inc/customizer/options/footer-builder/html-2.php:95
+#: inc/customizer/options/footer-builder/socials.php:50
+#: inc/customizer/options/footer-builder/widget-1.php:136
+#: inc/customizer/options/footer-builder/widget-2.php:136
+#: inc/customizer/options/footer-builder/widget-3.php:136
+#: inc/customizer/options/footer-builder/widget-4.php:136
+#: inc/customizer/options/footer-builder/widget-5.php:136
+#: inc/customizer/options/footer-builder/widget-6.php:136
+#: inc/customizer/build/customind.js:1
+#: inc/customizer/customind/build/customind.js:1
+msgid "Right"
+msgstr "Po prawej"
+
+#: template-parts/entry/entry-content.php:41
+#: template-parts/entry/entry-summary.php:39
+msgid "Pages:"
+msgstr "Strony:"
+
+#. translators: 1: list of tags.
+#: inc/template-tags.php:238
+msgid "Tagged %1$s"
+msgstr "Otagowano %1$s"
+
+#. translators: %s: Name of current post. Only visible to screen readers
+#: template-parts/content-page.php:52
+msgid "Edit <span class=\"screen-reader-text\">%s</span>"
+msgstr "Edytuj <span class=\"screen-reader-text\">%s</span>"
+
+#: inc/customizer/options/header/breadcrumb.php:8
+#: template-parts/page-header/page-header.php:92
+msgid "Breadcrumbs"
+msgstr "Okruszki"
+
+#: inc/core/class-zakra-after-setup-theme.php:102
+#: inc/customizer/options/header-builder/header-builder.php:87
+#: inc/customizer/options/header-builder/mobile-menu.php:11
+#: inc/customizer/options/header/primary-menu.php:292
+#: inc/customizer/panels-sections/panels-sections.php:211
+#: assets/build/dashboard.js:1
+msgid "Mobile Menu"
+msgstr "Menu dla urządzeń mobilnych"
+
+#: inc/customizer/options/header/page-header.php:130
+msgid "Markup"
+msgstr "Znacznik"
+
+#: inc/customizer/options/content/blog.php:63
+#: inc/customizer/options/content/blog.php:82
+#: inc/customizer/options/content/single-post.php:17
+#: inc/customizer/options/content/single-post.php:46
+msgid "Drag & Drop items to re-arrange the order"
+msgstr "Przeciągaj i upuszczaj pozycje, aby na przearanżować kolejność"
+
+#: inc/customizer/options/header/page-header.php:139
+msgid "Span"
+msgstr "Przęsło"
+
+#: inc/customizer/options/global/typography.php:119
+msgid "Heading"
+msgstr "Nagłówek"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:344
+#: assets/build/meta.js:1
+msgid "Menu Item Hover Color"
+msgstr "Kolor wiszący pozycji menu"
+
+#: inc/class-breadcrumb-trail.php:268
+msgctxt "breadcrumbs aria label"
+msgid "Breadcrumbs"
+msgstr "Okruszki"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:377
+msgid "Underline Border"
+msgstr "Podkreśl granicę"
+
+#. Translators: %s is the search query.
+#: inc/class-breadcrumb-trail.php:273
+msgid "Search results for: %s"
+msgstr "Wyniki wyszukiwania dla: %s"
+
+#: inc/admin/class-zakra-notice.php:62 inc/admin/class-zakra-notice.php:81
+#: inc/admin/class-zakra-welcome-notice.php:199
+msgid "Cheatin&#8217; huh?"
+msgstr "Oszukujemy, co?"
+
+#: inc/class-breadcrumb-trail.php:269
+msgid "Home"
+msgstr "Strona główna"
+
+#. translators: 1: link to WP admin new post page.
+#: template-parts/content-none.php:35
+msgid "Ready to publish your first post? <a href=\"%1$s\">Get started here</a>."
+msgstr "Wszystko gotowe? <a href=\"%1$s\">Zacznij tutaj</a> i opublikuj swój pierwszy wpis."
+
+#: inc/customizer/options/footer-builder/bottom-area.php:87
+#: inc/customizer/options/footer-builder/main-area.php:111
+#: inc/customizer/options/footer-builder/top-area.php:87
+#: inc/customizer/options/global/button.php:113
+#: inc/customizer/options/global/content-area.php:56
+#: inc/customizer/options/header-builder/bottom-area.php:75
+#: inc/customizer/options/header-builder/header-button.php:123
+#: inc/customizer/options/header-builder/main-area.php:75
+#: inc/customizer/options/header-builder/top-area.php:77
+#: inc/customizer/options/header/header-button.php:122
+#: inc/customizer/options/header/page-header.php:93
+msgid "Padding"
+msgstr "Dopełnienie"
+
+#: inc/template-functions.php:230 inc/template-functions.php:272
+#: inc/template-tags.php:53
+msgid "Oops! That page can&rsquo;t be found."
+msgstr "Ups! Nie udało się znaleźć pożądanej strony."
+
+#: template-parts/content-none.php:55
+msgid "It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps searching can help."
+msgstr "Nie udało się znaleźć tego, czego szukasz. Być może wyszukiwanie przyniesie lepsze rezultaty."
+
+#: inc/template-functions.php:227 inc/template-tags.php:50
+msgid "Page Not Found"
+msgstr "Strona nie została znaleziona"
+
+#: inc/customizer/options/global/colors.php:107
+msgid "Primary"
+msgstr "Podstawowy"
+
+#. translators: %s: search query.
+#: inc/template-tags.php:41
+msgid "Search Results for: %s"
+msgstr "Wyniki wyszukiwania: %s"
+
+#: inc/customizer/options/footer-builder/bottom-area.php:127
+#: inc/customizer/options/footer-builder/main-area.php:151
+#: inc/customizer/options/footer-builder/top-area.php:127
+#: inc/customizer/options/header-builder/bottom-area.php:115
+#: inc/customizer/options/header-builder/header-builder.php:315
+#: inc/customizer/options/header-builder/header-button.php:147
+#: inc/customizer/options/header-builder/main-area.php:115
+#: inc/customizer/options/header-builder/top-area.php:100
+msgid "Border Color"
+msgstr "Kolor obramowania"
+
+#: inc/template-functions.php:234
+msgid "Search Results"
+msgstr "Wyniki wyszukiwania"
+
+#. translators: %s: post author.
+#: inc/template-tags.php:162
+msgctxt "post author"
+msgid "By %s"
+msgstr "Autor: %s"
+
+#: inc/core/class-zakra-after-setup-theme.php:96
+#: inc/customizer/options/header-builder/header-builder.php:16
+#: inc/customizer/options/header-builder/primary-menu.php:11
+#: inc/customizer/options/header/primary-menu.php:8
+#: inc/customizer/panels-sections/panels-sections.php:96
+#: inc/customizer/panels-sections/panels-sections.php:191
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:89
+#: template-parts/header-builder-elements/toggle-button.php:35
+#: template-parts/header/primary-menu/mobile-toggle.php:32
+#: assets/build/dashboard.js:1
+msgid "Primary Menu"
+msgstr "Menu główne"
+
+#: template-parts/content-none.php:15
+msgid "Nothing Found"
+msgstr "Niczego nie znaleziono"
+
+#: inc/admin/class-zakra-demo-import-migration-notice.php:80
+#: inc/admin/class-zakra-notice.php:58 inc/admin/class-zakra-notice.php:77
+#: inc/admin/class-zakra-pro-minimum-version-notice.php:80
+#: inc/admin/class-zakra-theme-review-notice.php:157
+#: inc/admin/class-zakra-theme-review-notice.php:175
+#: inc/admin/class-zakra-welcome-notice.php:195
+#: inc/migration/class-zakra-migration.php:2170
+msgid "Action failed. Please refresh the page and retry."
+msgstr "Nie powiodło się wybrane działanie. Proszę odświeżyć stronę i spróbować ponownie."
+
+#. translators: 1: comment count number, 2: title.
+#: comments.php:41
+msgctxt "comments title"
+msgid "%1$s thought on &ldquo;%2$s&rdquo;"
+msgid_plural "%1$s thoughts on &ldquo;%2$s&rdquo;"
+msgstr[0] "%1$s komentarz do &ldquo;%2$s&rdquo;"
+msgstr[1] "%1$s komentarze do &ldquo;%2$s&rdquo;"
+msgstr[2] "%1$s komentarzy do &ldquo;%2$s&rdquo;"
+
+#. translators: 1: title.
+#: comments.php:35
+msgid "One thought on &ldquo;%1$s&rdquo;"
+msgstr "Jeden komentarz do &ldquo;%1$s&rdquo;"
+
+#: inc/customizer/options/global/typography.php:38
+#: inc/customizer/options/global/typography.php:80
+msgid "Body"
+msgstr "Treść"
+
+#. translators: 1: list of categories.
+#: inc/template-tags.php:183
+msgid "Posted in %1$s"
+msgstr "Opublikowano w %1$s"
+
+#: inc/compatibility/woocommerce/class-zakra-woocommerce.php:219
+msgid "View your shopping cart"
+msgstr "Zobacz zawartość koszyka"
+
+#: inc/class-breadcrumb-trail.php:711
+msgctxt "minute and hour archives time format"
+msgid "g:i a"
+msgstr "H:i"
+
+#: comments.php:66
+msgid "Comments are closed."
+msgstr "Możliwość komentowania została wyłączona."
+
+#: inc/customizer/options/global/sidebar.php:75
+#: inc/customizer/options/woocommerce/woocommerce.php:45
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:186
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:221
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:368
+#: assets/build/meta.js:1 inc/customizer/build/customind.js:1
+#: inc/customizer/customind/build/customind.js:1
+msgid "Default"
+msgstr "Domyślne"
+
+#: inc/customizer/options/header/page-header.php:141
+msgid "Div"
+msgstr "Div"
+
+#: inc/customizer/options/footer-builder/html-1.php:50
+#: inc/customizer/options/footer-builder/html-2.php:50
+#: inc/customizer/options/header-builder/html-1.php:50
+#: inc/customizer/options/header-builder/html-2.php:50
+#: inc/customizer/build/customind.js:1
+#: inc/customizer/customind/build/customind.js:1
+msgid "Font Size"
+msgstr "Wielkość liter"
+
+#: inc/core/class-zakra-widgets.php:88
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:189
+#: assets/build/meta.js:1
+msgid "Footer One"
+msgstr "Pierwsza stopka"
+
+#: inc/core/class-zakra-widgets.php:89
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:190
+#: assets/build/meta.js:1
+msgid "Footer Two"
+msgstr "Druga stopka"
+
+#: inc/core/class-zakra-widgets.php:90
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:191
+#: assets/build/meta.js:1
+msgid "Footer Three"
+msgstr "Trzecia stopka"
+
+#: inc/core/class-zakra-widgets.php:91
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:192
+#: assets/build/meta.js:1
+msgid "Footer Four"
+msgstr "Czwarta stopka"
+
+#: inc/class-breadcrumb-trail.php:270
+msgid "404 Not Found"
+msgstr "404 nie znaleziono"
+
+#: inc/core/class-zakra-widgets.php:65
+msgid "Add widgets here."
+msgstr "Tutaj można dodawać widżety."
+
+#. translators: %s: post date.
+#: inc/template-tags.php:126
+msgctxt "post date"
+msgid "Posted on %s"
+msgstr "Opublikowano %s"
+
+#: inc/customizer/panels-sections/panels-sections.php:171
+msgid "Scroll to Top"
+msgstr "Przewiń na górę"
+
+#: template-parts/footer/scroll-to-top.php:20
+#: template-parts/footer/scroll-to-top.php:25
+msgid "Scroll to top"
+msgstr "Przewiń na górę"
+
+#. Translators: %s is the page number.
+#: inc/class-breadcrumb-trail.php:277
+msgid "Comment Page %s"
+msgstr "Strona komentarzy %s"
+
+#: inc/class-breadcrumb-trail.php:745
+msgctxt "hour archives time format"
+msgid "g a"
+msgstr "G"
+
+#. translators: %s: Name of current post. Only visible to screen readers
+#: template-parts/entry/entry-content.php:24
+#: template-parts/entry/entry-summary.php:25
+msgid "Continue reading<span class=\"screen-reader-text\"> \"%s\"</span>"
+msgstr "Czytaj dalej<span class=\"screen-reader-text\"> „%s”</span>"
+
+#: inc/customizer/options/footer-builder/copyright.php:131
+#: inc/customizer/options/footer-builder/footer-menu-2.php:95
+#: inc/customizer/options/footer-builder/footer-menu.php:95
+#: inc/customizer/options/footer-builder/html-1.php:93
+#: inc/customizer/options/footer-builder/html-2.php:93
+#: inc/customizer/options/footer-builder/socials.php:48
+#: inc/customizer/options/footer-builder/widget-1.php:134
+#: inc/customizer/options/footer-builder/widget-2.php:134
+#: inc/customizer/options/footer-builder/widget-3.php:134
+#: inc/customizer/options/footer-builder/widget-4.php:134
+#: inc/customizer/options/footer-builder/widget-5.php:134
+#: inc/customizer/options/footer-builder/widget-6.php:134
+msgid "Left"
+msgstr "Do lewej"
+
+#: inc/hooks/content.php:21
+msgid "Read More"
+msgstr "Dowiedz się więcej"
+
+#. Author URI of the theme
+#: style.css
+#, gp-priority: low
+msgid "https://themegrill.com"
+msgstr "https://themegrill.com"
+
+#. Author of the theme
+#: style.css
+#, gp-priority: low
+msgid "ThemeGrill"
+msgstr "ThemeGrill"

@@ -1,0 +1,64 @@
+# Translation of Plugins - Performance Lab - Stable (latest release) in German (Switzerland)
+# This file is distributed under the same license as the Plugins - Performance Lab - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2022-03-08 12:21:38+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: de_CH\n"
+"Project-Id-Version: Plugins - Performance Lab - Stable (latest release)\n"
+
+#: includes/site-health/webp-support/helper.php:42
+msgid "Your site does not support WebP"
+msgstr "Ihre Website hat keine WebP-Unterstützung"
+
+#: includes/site-health/webp-support/helper.php:24
+msgid "Your site supports WebP"
+msgstr "Ihre Website unterstützt WebP"
+
+#: includes/site-health/webp-support/hooks.php:25
+msgid "WebP Support"
+msgstr "WebP-Unterstützung"
+
+#: includes/site-health/audit-autoloaded-options/helper.php:81
+#: includes/site-health/audit-enqueued-assets/helper.php:190
+msgid "More info about performance optimization"
+msgstr "Mehr Informationen zur Performance-Optimierung"
+
+#: includes/site-health/audit-enqueued-assets/helper.php:189
+msgid "https://wordpress.org/support/article/optimization/"
+msgstr "https://wordpress.org/support/article/optimization/"
+
+#. translators: %s is the settings URL
+#: includes/admin/load.php:324 includes/admin/plugins.php:595
+#: includes/admin/plugin-activate-ajax.js:87
+msgid "Settings"
+msgstr "Einstellungen"
+
+#: includes/admin/load.php:244
+msgid "Settings > Performance"
+msgstr "Einstellungen > Performance"
+
+#: includes/admin/load.php:23
+#: includes/site-health/audit-autoloaded-options/helper.php:33
+#: includes/site-health/audit-enqueued-assets/helper.php:157
+#: includes/site-health/avif-headers/helper.php:27
+#: includes/site-health/avif-support/helper.php:27
+#: includes/site-health/bfcache-compatibility-headers/helper.php:28
+#: includes/site-health/effective-asset-cache-headers/helper.php:28
+#: includes/site-health/webp-support/helper.php:27
+msgid "Performance"
+msgstr "Performance"
+
+#. Plugin URI of the plugin
+#: load.php
+msgid "https://github.com/WordPress/performance"
+msgstr "https://github.com/WordPress/performance"
+
+#. Plugin Name of the plugin
+#: load.php includes/admin/load.php:228
+msgid "Performance Lab"
+msgstr "Performance Lab"

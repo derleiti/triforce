@@ -1,0 +1,98 @@
+###############
+# Ubuntu Noble (24.04 LTS) – Vollständige Multiarch-Unterstützung
+###############
+
+############# config ##############
+set base_path    /var/spool/apt-mirror
+set mirror_path  $base_path/mirror
+set skel_path    $base_path/skel
+set var_path     $base_path/var
+set cleanscript  $var_path/clean.sh
+set defaultarch  amd64
+set nthreads     150
+set _tilde 0
+##############################
+
+
+deb-amd64 http://archive.ubuntu.com/ubuntu noble main restricted universe multiverse
+deb-i386  http://archive.ubuntu.com/ubuntu noble main restricted universe multiverse
+
+deb-amd64 http://archive.ubuntu.com/ubuntu noble-updates main restricted universe multiverse
+deb-i386  http://archive.ubuntu.com/ubuntu noble-updates main restricted universe multiverse
+
+deb-amd64 http://archive.ubuntu.com/ubuntu noble-security main restricted universe multiverse
+deb-i386  http://archive.ubuntu.com/ubuntu noble-security main restricted universe multiverse
+
+deb-amd64 http://archive.ubuntu.com/ubuntu noble-backports main restricted universe multiverse
+deb-i386  http://archive.ubuntu.com/ubuntu noble-backports main restricted universe multiverse
+
+###############
+# Canonical Partner (liefert NUR amd64)
+###############
+
+# deb-amd64 http://archive.canonical.com/ubuntu noble partner
+
+###############
+# KDE Neon (nur amd64)
+###############
+
+deb-amd64 https://archive.neon.kde.org/user noble main
+
+###############
+# LibreOffice PPA
+###############
+
+deb-amd64 https://ppa.launchpadcontent.net/libreoffice/ppa/ubuntu/ noble main
+deb-i386  https://ppa.launchpadcontent.net/libreoffice/ppa/ubuntu/ noble main
+
+###############
+# WineHQ – Ubuntu Noble (amd64 & i386)
+###############
+
+deb-amd64 https://dl.winehq.org/wine-builds/ubuntu/ noble main
+deb-i386  https://dl.winehq.org/wine-builds/ubuntu/ noble main
+
+
+###############
+# Docker CE (nur amd64)
+###############
+
+deb-amd64 https://download.docker.com/linux/ubuntu/ noble stable
+
+
+###############
+# NodeJS 22 (nur amd64)
+###############
+
+deb-amd64 https://deb.nodesource.com/node_22.x nodistro main
+
+
+###############
+# Google Chrome (nur amd64)
+###############
+
+deb-amd64 http://dl.google.com/linux/chrome/deb/ stable main
+
+
+###############
+# Steam Installer (amd64 + i386)
+###############
+
+deb-amd64 http://repo.steampowered.com/steam/ stable steam
+deb-i386  http://repo.steampowered.com/steam/ stable steam
+
+
+###############
+# Clean Directives
+###############
+
+clean http://archive.ubuntu.com/ubuntu/
+clean http://security.ubuntu.com/ubuntu/
+clean http://archive.canonical.com/ubuntu/
+clean https://archive.neon.kde.org/
+clean https://ppa.launchpadcontent.net/libreoffice/ppa/ubuntu/
+clean https://dl.winehq.org/
+clean https://download.docker.com/
+clean https://deb.nodesource.com/
+clean http://dl.google.com/linux/chrome/deb/
+clean http://repo.steampowered.com/steam/

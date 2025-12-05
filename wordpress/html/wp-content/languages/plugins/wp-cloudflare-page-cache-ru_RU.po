@@ -1,0 +1,310 @@
+# Translation of Plugins - Super Page Cache - Development (trunk) in Russian
+# This file is distributed under the same license as the Plugins - Super Page Cache - Development (trunk) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-08-01 11:14:18+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n % 10 == 1 && n % 100 != 11) ? 0 : ((n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) ? 1 : 2);\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: ru\n"
+"Project-Id-Version: Plugins - Super Page Cache - Development (trunk)\n"
+
+#: src/Utils/I18n.php:36
+msgid "Close"
+msgstr "Закрыть"
+
+#: src/Utils/I18n.php:37
+msgid "Error"
+msgstr "Ошибка"
+
+#: src/Services/Asset_Exclusion_Handler.php:234 assets/build/154.js:1
+msgid "404 Page"
+msgstr "Страница 404"
+
+#: src/Modules/Dashboard.php:560
+msgid "Advanced Settings"
+msgstr "Расширенные настройки"
+
+#: src/Modules/Dashboard.php:141
+msgid "Dashboard"
+msgstr "Консоль"
+
+#: src/Modules/Rest_Server.php:828
+msgid "Deactivated"
+msgstr "Деактивировано"
+
+#: src/Modules/Assets_Manager.php:381 src/Modules/Assets_Manager.php:554
+#: src/Services/Asset_Exclusion_Handler.php:249 assets/build/154.js:1
+msgid "Front Page"
+msgstr "Главная страница"
+
+#: src/Modules/Dashboard.php:546
+msgid "Getting Started"
+msgstr "Начало работы"
+
+#: src/Modules/Dashboard.php:187 assets/build/450.js:1
+msgid "Help"
+msgstr "Помощь"
+
+#: src/Modules/Assets_Manager.php:384
+#: src/Services/Asset_Exclusion_Handler.php:277
+msgid "Home Page"
+msgstr "Главная страница"
+
+#. Author of the plugin
+#: wp-cloudflare-super-page-cache.php
+msgid "Themeisle"
+msgstr "Themeisle"
+
+#. Author URI of the plugin
+#: wp-cloudflare-super-page-cache.php
+msgid "https://themeisle.com"
+msgstr "https://themeisle.com"
+
+#: src/Utils/Cache_Tester.php:149 assets/build/719.js:4
+msgid "Status"
+msgstr "Статус"
+
+#. Plugin Name of the plugin
+#: wp-cloudflare-super-page-cache.php src/Modules/Dashboard.php:131
+#: assets/build/102.js:1 assets/build/450.js:1 assets/build/504.js:1
+#: assets/build/719.js:1 assets/build/798.js:1 assets/build/806.js:1
+msgid "Super Page Cache"
+msgstr "Super Page Cache"
+
+#. translators: %s is the static resource URL.
+#: libs/wpcli.class.php:168
+msgid "Page caching is working for static page (%s) but seems not working for dynamic pages."
+msgstr "Кэширование страниц работает для статической страницы (%s), но не работает для динамических страниц."
+
+#. translators: %s is the path to the .htaccess file
+#: libs/cache_controller.class.php:2152
+msgid "The .htaccess file (%s) could not be edited. Check if the file has write permissions."
+msgstr "Не удалось отредактировать файл .htaccess (%s). Проверьте, есть ли у файла права на запись."
+
+#. translators: %1$s is the dynamic resource URL, %2$s is the error message.
+#: libs/wpcli.class.php:160 libs/wpcli.class.php:171
+msgid "Error on dynamic page (%1$s): %2$s"
+msgstr "Ошибка на динамической странице (%1$s): %2$s"
+
+#. translators: %1$s is the static resource URL, %2$s is the error message.
+#: libs/wpcli.class.php:163
+msgid "Error on static resource (%1$s): %2$s"
+msgstr "Ошибка на статическом ресурсе (%1$s): %2$s"
+
+#. Plugin URI of the plugin
+#: wp-cloudflare-super-page-cache.php
+msgid "https://wordpress.org/plugins/wp-cloudflare-page-cache/"
+msgstr "https://wordpress.org/plugins/wp-cloudflare-page-cache/"
+
+#: libs/backend.class.php:149
+msgid "Force purge everything"
+msgstr "Принудительно очистить все"
+
+#: libs/backend.class.php:161
+msgid "Purge cache for this page only"
+msgstr "Очистить кеш только для этой страницы"
+
+#: src/Services/Cloudflare_Client.php:282
+msgid "Unable to find a valid account ID."
+msgstr "Не удалось найти действительный ID учетной записи."
+
+#: src/Modules/Dashboard.php:163
+msgid "Import/Export"
+msgstr "Импорт/экспорт"
+
+#: libs/wpcli.class.php:35 libs/wpcli.class.php:55 libs/wpcli.class.php:72
+#: libs/wpcli.class.php:84 libs/wpcli.class.php:96
+msgid "Cache purged successfully"
+msgstr "Кэш успешно очищен"
+
+#: libs/wpcli.class.php:37
+msgid "An error occurred while purging the cache"
+msgstr "Произошла ошибка при очистке кэша"
+
+#: libs/backend.class.php:138 assets/build/154.js:1
+msgid "Purge whole cache"
+msgstr "Очистить весь кэш"
+
+#: libs/wpcli.class.php:112
+msgid "Cache enabled successfully"
+msgstr "Кэш успешно включен"
+
+#. translators: %s is the CF-Cache-Status header value.
+#: libs/test_cache.class.php:72 libs/wpcli.class.php:270
+msgid "Cache status: %s - Cloudflare has been instructed to not cache this asset. It has been served directly from the origin."
+msgstr "Состояние кэша: %s - Cloudflare было приказано не кэшировать этот ресурс. Он был подан прямо с исходного веб-сервера."
+
+#: libs/test_cache.class.php:95 libs/wpcli.class.php:245
+msgid "Invalid Cache-Control response header. If you are using Litespeed Server, please disable the option <strong>Overwrite the cache-control header for WordPress's pages using web server rules</strong>, purge the cache and retry."
+msgstr "Недопустимый заголовок ответа Cache-Control. Если вы используете Litespeed Server, отключите параметр <strong>Перезаписывать заголовок cache-control для страниц WordPress, используя правила веб-сервера</strong>, очистите кэш и повторите попытку."
+
+#: src/Modules/Admin.php:95
+msgid "Rate"
+msgstr "Оценить"
+
+#. translators: %s is the CF-Cache-Status header value.
+#: libs/wpcli.class.php:281
+msgid "Cache status: %s - The resource was not cached by default and your current Cloudflare caching configuration doesn't instruct Cloudflare to cache the resource. Try to enable the <strong>Strip response cookies on pages that should be cached</strong> option and retry."
+msgstr "Состояние кэша: %s - ресурс не был кэширован по умолчанию, и ваша текущая конфигурация кэширования Cloudflare не указывает необходимость кэшировать ресурс. Попробуйте включить параметр <strong>Удалять cookie-файлы в ответах на страницах, которые следует кэшировать</strong>, и повторите попытку."
+
+#: libs/test_cache.class.php:109 libs/wpcli.class.php:291
+msgid "Undefined error"
+msgstr "Неизвестная ошибка"
+
+#: libs/wpcli.class.php:157
+msgid "Page caching seems not working for both dynamic and static pages."
+msgstr "Судя по всему, кэширование страниц не работает ни для динамических, ни для статических страниц."
+
+#: libs/wpcli.class.php:233
+msgid "Unable to find the Cache-Control response header."
+msgstr "Не удалось найти заголовок ответа Cache-Control."
+
+#: libs/wpcli.class.php:239
+msgid "Unable to find the X-WP-CF-Super-Cache-Cache-Control response header."
+msgstr "Не удалось найти заголовок ответа X-WP-CF-Super-Cache-Cache-Control."
+
+#: src/Modules/Rest_Server.php:630
+msgid "Preloader is not enabled"
+msgstr "Предварительная загрузка не включена"
+
+#: src/Modules/Rest_Server.php:639
+msgid "Unable to start the preloader. Another preloading process is currently running."
+msgstr "Невозможно запустить предварительную загрузку. В настоящее время уже выполняется один процесс предварительной загрузки."
+
+#: libs/backend.class.php:126 assets/build/154.js:1
+msgid "Cache"
+msgstr "Кэш"
+
+#. translators: %1$s is the name of the sitemap, %2$s is the error message
+#: libs/cache_controller.class.php:2576
+msgid "Connection error while retriving the sitemap %1$s: %2$s"
+msgstr "Ошибка подключения при получении карты сайта %1$s: %2$s"
+
+#: src/Utils/I18n.php:49 src/Utils/I18n.php:59 assets/build/assets-manager.js:1
+#: assets/build/dashboard.js:1
+msgid "General"
+msgstr "Общие"
+
+#: libs/test_cache.class.php:51 libs/wpcli.class.php:227
+msgid "Seem that your website is not behind Cloudflare. If you have recently enabled the cache or it is your first test, wait about 30 seconds and try again because the changes take a few seconds for Cloudflare to propagate them on the web. If the error persists, request support for a detailed check."
+msgstr "Кажется, что ваш сайт не находится за Cloudflare. Если вы недавно включили кэш или это ваша первая проверка, подождите около 30 секунд и повторите попытку, потому что Cloudflare распространяет изменения в интернете в течении нескольких секунд. Если ошибка повторится, обратитесь в службу поддержки для подробной проверки."
+
+#: libs/varnish.class.php:196
+msgid "Varnish cache purged successfully!"
+msgstr "Кеш Varnish успешно очищен!"
+
+#: libs/varnish.class.php:57
+msgid "Invalid hostname or port"
+msgstr "Неверный имя хоста или порт"
+
+#. translators: %s is the CF-Cache-Status header value.
+#: libs/test_cache.class.php:58 libs/wpcli.class.php:256
+msgid "Cache status: %s - The resource is served from cache but is stale. The resource was revalidated by either an If-Modified-Since header or an If-None-Match header."
+msgstr "Состояние кэша: %s - ресурс раздаётся из кэша, но устарел. Ресурс был повторно проверен заголовком If-Modified-Since или If-None-Match."
+
+#. translators: %s is the CF-Cache-Status header value.
+#: libs/wpcli.class.php:284
+msgid "Cache status: %s - The resource was not cached by default and your current Cloudflare caching configuration doesn't instruct Cloudflare to cache the resource.  Instead, the resource was requested from the origin web server."
+msgstr "Состояние кэша: %s - ресурс не был кэширован по умолчанию, и ваша текущая конфигурация кэширования Cloudflare не указывает необходимость кэшировать ресурс. Вместо этого ресурс был запрошен с исходного веб-сервера."
+
+#: libs/cache_controller.class.php:2255
+msgid "An error occurred while cleaning the cache. Please check log file for further details."
+msgstr "Произошла ошибка при очистке кэша. Пожалуйста, проверьте файл журнала для получения дополнительной информации."
+
+#. translators: %s is the CF-Cache-Status header value.
+#: libs/test_cache.class.php:65 libs/wpcli.class.php:263
+msgid "Cache status: %s - The resource was served from cache but is expired. The resource is currently being updated by the origin web server. UPDATING is typically seen only for very popular cached resources."
+msgstr "Состояние кэша: %s - ресурс обслуживается из к'ша, но срок его действия истек. Ресурс в настоящее время обновляется исходным веб-сервером. ОБНОВЛЕНИЕ обычно наблюдается только для очень часто используемых кэшированных ресурсов."
+
+#: libs/wpcli.class.php:221
+msgid "The cache is not enabled on your home page. It's not possible to verify if the page caching is working properly."
+msgstr "Кєш не включен на вашей главной странице. Невозможно проверить, правильно ли работает кэширование страниц."
+
+#: src/Services/Cloudflare_Client.php:262
+msgid "Unable to retrive account ID"
+msgstr "Невозможно получить ID учетной записи"
+
+#: libs/wpcli.class.php:215
+msgid "The plugin is not detected on your home page. If you have activated other caching systems, please disable them and retry the test."
+msgstr "Плагин не обнаружен на вашей главной странице. Если вы активировали другие системы кэширования, отключите их и повторите тест."
+
+#: src/Modules/Rest_Server.php:646
+msgid "Unable to start background processes: SWCFPC_Preloader_Process does not exists."
+msgstr "Невозможно запустить фоновые процессы: SWCFPC_Preloader_Process не существует."
+
+#: src/Modules/Rest_Server.php:653
+msgid "You cannot start the preloader while the page cache is disabled."
+msgstr "Вы не можете запустить предварительную загрузку, пока кэш страницы отключен."
+
+#: src/Modules/Rest_Server.php:660
+msgid "Preloader started successfully"
+msgstr "Предварительная загрузка успешно запущена"
+
+#: libs/cache_controller.class.php:343
+msgid "Bypass the cache for this page"
+msgstr "Обходить кэш для этой страницы"
+
+#: libs/cache_controller.class.php:329
+msgid "Cloudflare Page Cache Settings"
+msgstr "Настройки кэша страницы Cloudflare"
+
+#: src/Modules/Admin.php:73 src/Modules/Dashboard.php:152 assets/build/102.js:1
+#: assets/build/450.js:1 assets/build/504.js:1 assets/build/719.js:5
+#: assets/build/798.js:1 assets/build/806.js:1
+msgid "Settings"
+msgstr "Настройки"
+
+#: libs/wpcli.class.php:179
+msgid "Page caching is working properly"
+msgstr "Кеширование страниц работает нормально"
+
+#: src/Modules/Rest_Server.php:777
+msgid "Page cache enabled successfully"
+msgstr "Кэш страниц успешно включен"
+
+#: libs/backend.class.php:183 assets/build/719.js:4
+msgid "Purge Cache"
+msgstr "Очистить кэш"
+
+#: libs/cache_controller.class.php:356 assets/build/806.js:1
+msgid "Yes"
+msgstr "Да"
+
+#: libs/cache_controller.class.php:350 assets/build/806.js:1
+msgid "No"
+msgstr "Нет"
+
+#: libs/cache_controller.class.php:2202 libs/cache_controller.class.php:2222
+#: libs/cache_controller.class.php:2245
+msgid "Permission denied"
+msgstr "В доступе отказано"
+
+#: src/Services/Cloudflare_Client.php:191 src/Services/Cloudflare_Rule.php:168
+#: src/Services/Cloudflare_Rule.php:203
+msgid "There is not zone id to use"
+msgstr "ID зоны для использования отсутствует"
+
+#: libs/test_cache.class.php:135 libs/wpcli.class.php:202
+#: src/Services/Cloudflare_Rule.php:474
+msgid "Connection error: "
+msgstr "Ошибка подключения: "
+
+#: src/Services/Cloudflare_Client.php:114
+msgid "Unable to find Browser Cache TTL settings "
+msgstr "Не удалось найти настройки TTL кеша браузера "
+
+#: src/Services/Cloudflare_Client.php:359
+msgid "Unable to find domains configured on Cloudflare"
+msgstr "Невозможно найти домены, настроенные на Cloudflare"
+
+#: src/Modules/Rest_Server.php:789
+msgid "Page cache enabled successfully."
+msgstr "Кэш страниц успешно включен."
+
+#: libs/cache_controller.class.php:2209 libs/cache_controller.class.php:2229
+#: libs/cache_controller.class.php:2261
+msgid "Cache purged successfully! It may take up to 30 seconds for the cache to be permanently cleaned."
+msgstr "Кэш успешно очищен! Для окончательной очистки кэша может потребоваться до 30 секунд."

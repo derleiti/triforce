@@ -1,0 +1,34 @@
+{
+  "version": "0.1.0",
+  "timestamp": "2025-11-25T13:51:45.504Z",
+  "assets": {
+    "textures": {},
+    "audio": {
+      "/**\n * CSS++ Theme Enhancements\n *\n * Verbessert bestehende Theme-Elemente mit CSS++ Features\n * Kompiliert zu Standard CSS – kompatibel mit bestehendem SCSS\n */\n\n/* Imported: modules/geometry */\n/* Imported: modules/lighting */\n/* Imported: modules/audio */\n\n/* ============================================\n   ENHANCED BUTTONS\n   Erweitert .btn, .btn-secondary aus _components.scss\n   ============================================ */\n\n/**\n * Primary Button mit Glow und Audio\n */\n.btn-csspp": {
+        "/* Audio (optional, benötigt Runtime) */\n  hover-sfx": "chime(440Hz, decay",
+        "click-sfx": "click(soft)"
+      },
+      "/* ============================================\n   ENHANCED NAVIGATION\n   Navigation mit Audio-Feedback\n   ============================================ */\n\n/**\n * Nav-Links mit Hover-Sound\n */\n.nav-csspp a": {
+        "/* Audio */\n  hover-sfx": "chime(523Hz, decay"
+      },
+      ".mobile-menu-csspp a": {
+        "/* Audio */\n  hover-sfx": "chime(440Hz, decay",
+        "click-sfx": "click(soft)"
+      },
+      "/* Reduziere Audio auf Mobile (Performance) */\n  .mobile-menu-csspp a": {
+        "hover-sfx": "none"
+      },
+      "}\n\n@media (prefers-reduced-motion: reduce)": {
+        "/* Deaktiviere alle Sounds */\n  * {\n    hover-sfx": "none",
+        "click-sfx": "none"
+      }
+    },
+    "materials": {},
+    "geometries": {}
+  },
+  "metadata": {
+    "rules": 22,
+    "errors": 0,
+    "warnings": 0
+  }
+}

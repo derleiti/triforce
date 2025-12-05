@@ -1,0 +1,491 @@
+# Translation of Plugins - Performance Lab - Stable (latest release) in French (France)
+# This file is distributed under the same license as the Plugins - Performance Lab - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-06-02 11:55:55+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: fr\n"
+"Project-Id-Version: Plugins - Performance Lab - Stable (latest release)\n"
+
+#: includes/site-health/effective-asset-cache-headers/hooks.php:32
+msgid "Effective Caching Headers"
+msgstr "Entêtes de cache efficaces"
+
+#: includes/site-health/audit-enqueued-assets/helper.php:557
+#: includes/site-health/effective-asset-cache-headers/helper.php:317
+msgid "Status"
+msgstr "État"
+
+#: includes/site-health/effective-asset-cache-headers/helper.php:316
+msgid "File"
+msgstr "Fichier"
+
+#. translators: 1: actual Expires header value in seconds, 2: threshold in
+#. seconds
+#: includes/site-health/effective-asset-cache-headers/helper.php:236
+msgid "expires below threshold (actual: %1$s seconds, threshold: %2$s seconds)"
+msgstr "expire sous le seuil (actuellement %1$s secondes, seuil : %2$s secondes)"
+
+#. translators: 1: actual max-age value in seconds, 2: threshold in seconds
+#: includes/site-health/effective-asset-cache-headers/helper.php:225
+#: includes/site-health/effective-asset-cache-headers/helper.php:257
+msgid "max-age below threshold (actual: %1$s seconds, threshold: %2$s seconds)"
+msgstr "âge maximal sous le seuil (actuellement %1$s secondes, seuil : %2$s secondes)"
+
+#: includes/site-health/effective-asset-cache-headers/helper.php:144
+msgid "No effective caching headers but conditionally cached"
+msgstr "Aucun entête de mise en cache efficace mais mise en cache conditionnelle"
+
+#: includes/site-health/effective-asset-cache-headers/helper.php:139
+msgid "No effective caching headers and no conditional caching"
+msgstr "Aucun entête de mise en cache et aucune mise en cache conditionnelle"
+
+#: includes/site-health/effective-asset-cache-headers/helper.php:120
+msgid "No valid headers retrieved"
+msgstr "Aucun entête valide récupéré"
+
+#: includes/site-health/effective-asset-cache-headers/helper.php:109
+msgid "Could not retrieve headers"
+msgstr "Impossible de récupérer les en-têtes"
+
+#: includes/site-health/effective-asset-cache-headers/helper.php:77
+msgid "Effective Cache-Control or Expires headers can be added or adjusted with a small configuration change by your hosting provider."
+msgstr "Les entêtes efficaces Cache-Control et Expires peuvent être ajoutés ou ajustés avec une simple modification de la configuration par votre fournisseur d’hébergement."
+
+#: includes/site-health/effective-asset-cache-headers/helper.php:72
+msgid "Note: \"Conditionally cached\" means that the browser can re-validate the resource using ETag or Last-Modified headers. This results in fewer full downloads but still requires the browser to make requests, unlike far-future expiration headers that allow the browser to fully rely on its local cache for a longer duration."
+msgstr "Note : « Mise en cache conditionnelle » signifie que les navigateurs peuvent re-valider la ressource en utilisant ETag ou les entêtes Last-Modified. Cela génère moins de téléchargements mais le navigateur doit toujours faire des requêtes, contrairement aux entêtes far-future qui permettent au navigateur de se reposer complètement sur son cache local pour une durée plus longue."
+
+#: includes/site-health/effective-asset-cache-headers/helper.php:70
+msgid "The following file types do not have the recommended effective Cache-Control or Expires headers. Consider adding or adjusting Cache-Control or Expires headers for these asset types."
+msgstr "Les types de fichier suivants n’ont pas les entêtes recommandés de Contrôle de Cache ou d’Expiration. Considérez l’ajout ou l’ajustement des entêtes de Contrôle de Cache ou d’Expiration pour ces types d’éléments."
+
+#: includes/site-health/effective-asset-cache-headers/helper.php:65
+msgid "Your site does not serve static assets with an effective caching strategy"
+msgstr "Votre site ne sert pas de contenu statique avec une stratégie de mise en cache efficace."
+
+#: includes/site-health/effective-asset-cache-headers/helper.php:25
+msgid "Your site serves static assets with an effective caching strategy"
+msgstr "Votre site sert des contenus statiques avec une stratégie de mise en cache efficace."
+
+#: includes/site-health/bfcache-compatibility-headers/hooks.php:26
+msgid "Cache-Control headers may prevent fast back/forward navigation"
+msgstr "Les entêtes Cache-Control peuvent empêcher la navigation rapide précédent/suivant."
+
+#. translators: 1: Cache-Control, 2: no-store
+#: includes/site-health/bfcache-compatibility-headers/helper.php:76
+msgid "The %1$s response header for an unauthenticated request to the home page includes the %2$s directive. This can affect the performance of your site by preventing fast back/forward navigations (via the browser's bfcache)."
+msgstr "L’entête de réponse %1$s pour une requête non authentifiée vers la page d’accueil inclut la directive %2$s. Ceci peut affecter la performance de votre site en empêchant les navigations rapides Précédent/Suivant (via le bfcache du navigateur)."
+
+#: includes/site-health/bfcache-compatibility-headers/helper.php:70
+msgid "The Cache-Control page header is preventing fast back/forward navigations"
+msgstr "L’entête de page Cache-Control empêche les navigations rapides précédent/suivant."
+
+#. translators: 1: the error code, 2: the error message
+#: includes/site-health/bfcache-compatibility-headers/helper.php:53
+msgid "The unauthenticated request to check the <code>Cache-Control</code> response header for the home page resulted in an error with code <code>%1$s</code> and the following message: %2$s."
+msgstr "La requête non authentifiée pour vérifier l’entête de réponse <code>Cache-Control</code> de la page d’accueil a renvoyé une erreur avec le code <code>%1$s</code> et le message suivant : %2$s."
+
+#: includes/site-health/bfcache-compatibility-headers/helper.php:48
+msgid "Unable to check whether the Cache-Control page header is compatible with fast back/forward navigations"
+msgstr "Impossible de vérifier si l’entête de page Cache-Control est compatible avec les navigations rapides précédent/suivant."
+
+#: includes/site-health/bfcache-compatibility-headers/helper.php:32
+msgid "If the <code>Cache-Control</code> page response header includes the <code>no-store</code> directive then it can prevent instant back/forward navigations (using the browser's bfcache). This is not present for unauthenticated requests on your site, so it is configured properly. Note that there are other ways that bfcache can be disabled (e.g. you have JavaScript which uses a <code>unload</code> event listener). Also note that WordPress adds this directive for logged-in page responses for privacy/security reasons."
+msgstr "Si l’entête de réponse de page <code>Cache-Control</code> inclut la directive <code>no-store</code>, cela peut empêcher les navigations instantanées précédent/suivant (qui utilisent le bfcache du navigateur). Ce n’est pas le cas pour les requêtes non authentifiées sur votre site, donc c’est correctement configuré. Notez qu’il existe d’autres manières de désactiver bfcache (par exemple si vous avez du JavaScript qui écoute l’évènement <code>unload</code>). Notez également que WordPress ajoute cette directive pour les réponses de page lorsqu’on est connecté pour des raisons de Confidentialité/sécurité."
+
+#: includes/site-health/avif-headers/hooks.php:25
+msgid "AVIF Headers"
+msgstr "En-têtes AVIF"
+
+#: includes/site-health/avif-headers/helper.php:24
+msgid "Your site sends AVIF image headers"
+msgstr "Votre site envoie des en-têtes d'images AVIF"
+
+#: includes/admin/plugins.php:214
+msgid "(installed)"
+msgstr "(installé)"
+
+#: includes/admin/plugins.php:212
+msgid "(active)"
+msgstr "(actif)"
+
+#: includes/site-health/avif-support/hooks.php:25
+msgid "AVIF Support"
+msgstr "Prise en charge de AVIF"
+
+#. translators: Accessibility text.
+#: includes/site-health/avif-support/helper.php:46
+msgid "AVIF support can only be enabled by your hosting provider, so contact them for more information."
+msgstr "La prise en charge du format AVIF peut uniquement être activée par votre fournisseur d’hébergement, contactez-le pour plus d’informations."
+
+#: includes/site-health/avif-support/helper.php:42
+msgid "Your site does not support AVIF"
+msgstr "Votre site ne prends pas en charge le format AVIF"
+
+#: includes/site-health/avif-support/helper.php:32
+msgid "The AVIF image format generally has better compression than WebP, JPEG, PNG and GIF and is designed to supersede them, which can reduce page load time and consume less bandwidth."
+msgstr "Le format d’image AVIF a généralement une meilleure compression que les formats WebP, JPEG, PNG et GIF, il a été pensé pour les remplacer, cela peut réduire le temps de chargement des pages et consomme moins de bande passante."
+
+#: includes/site-health/avif-support/helper.php:24
+msgid "Your site supports AVIF"
+msgstr "Votre site prend en charge AVIF"
+
+#: includes/admin/plugins.php:587
+msgid "Visit plugin site"
+msgstr "Consultez le site de l’extension"
+
+#: includes/admin/plugins.php:221 includes/admin/plugins.php:581
+msgid "https://wordpress.org/plugins/"
+msgstr "https://wordpress.org/plugins/"
+
+#. translators: %s: Plugin name.
+#: includes/admin/plugins.php:579
+msgid "Visit plugin site for %s"
+msgstr "Consultez le site de l’extension %s"
+
+#. translators: %s is the settings URL
+#: includes/admin/load.php:555
+msgid "Review <a href=\"%s\">settings</a>."
+msgstr "Consultez <a href=\"%s\">les réglages</a>."
+
+#: includes/site-health/audit-autoloaded-options/hooks.php:113
+msgid "The option has been successfully updated."
+msgstr "L’option a été mise à jour avec succès."
+
+#: includes/site-health/audit-autoloaded-options/hooks.php:95
+msgid "Failed to disable autoload."
+msgstr "Échec de la désactivation de l’autoload."
+
+#: includes/site-health/audit-autoloaded-options/hooks.php:73
+msgid "The option does not exist."
+msgstr "Cette option n’existe pas."
+
+#: includes/site-health/audit-autoloaded-options/hooks.php:67
+msgid "Invalid option name."
+msgstr "Nom d’option invalide."
+
+#: includes/site-health/audit-autoloaded-options/hooks.php:63
+msgid "Permission denied."
+msgstr "Permission refusée."
+
+#: includes/site-health/audit-autoloaded-options/helper.php:266
+msgid "Revert to Autoload"
+msgstr "Revenir à Autoload"
+
+#: includes/site-health/audit-autoloaded-options/helper.php:246
+msgid "The following table shows the options for which you have previously disabled Autoload."
+msgstr "Les tableaux suivants affichent les options pour lesquelles vous avez précédemment désactivé l’Autoload."
+
+#: includes/site-health/audit-autoloaded-options/helper.php:201
+msgid "Disable Autoload"
+msgstr "Désactiver Autoload"
+
+#: includes/site-health/audit-autoloaded-options/helper.php:185
+#: includes/site-health/audit-autoloaded-options/helper.php:249
+msgid "Action"
+msgstr "Action"
+
+#: includes/admin/plugins.php:668
+msgctxt "plugin suffix"
+msgid "(experimental)"
+msgstr "(expérimental)"
+
+#: includes/admin/plugins.php:573
+msgid "Learn more"
+msgstr "En savoir plus"
+
+#: includes/admin/load.php:550
+msgid "Feature activated."
+msgstr "Fonctionnalité activée"
+
+#: includes/admin/load.php:535
+msgid "Due to your site's configuration, you may not be able to activate the performance features, unless the underlying plugin is already installed. Please install the relevant plugins manually."
+msgstr "En raison de la configuration de votre site, il se peut que vous ne puissiez pas activer les fonctionnalités de performance, à moins que l’extension sous-jacents ne soit déjà installée. Veuillez installer manuellement les extensions concernées."
+
+#: includes/admin/plugins.php:447
+msgid "Sorry, you are not allowed to install plugins on this site."
+msgstr "Désolé, vous n’avez pas l’autorisation d’installer des extensions sur ce site."
+
+#: includes/admin/load.php:441
+#: includes/site-health/audit-autoloaded-options/hooks.php:56
+msgid "Missing required parameter."
+msgstr "Paramètres obligatoires manquants."
+
+#: includes/admin/load.php:22 includes/admin/plugins.php:279
+msgid "Performance Features"
+msgstr "Fonctionnalités de performance"
+
+#: includes/admin/plugins.php:645
+msgid "This plugin does not work with your version of PHP."
+msgstr "Cette extension ne fonctionne pas avec votre version de PHP."
+
+#: includes/admin/plugins.php:634
+msgid "This plugin does not work with your version of WordPress."
+msgstr "Cette extension ne fonctionne pas avec votre version de WordPress."
+
+#. translators: %s: URL to Update PHP page.
+#: includes/admin/plugins.php:627 includes/admin/plugins.php:650
+msgid "<a href=\"%s\">Learn more about updating PHP</a>."
+msgstr "<a href=\"%s\">En savoir plus sur la mise à jour de PHP</a>."
+
+#. translators: %s: URL to WordPress Updates screen.
+#: includes/admin/plugins.php:619 includes/admin/plugins.php:639
+msgid "<a href=\"%s\">Please update WordPress</a>."
+msgstr "<a href=\"%s\">Veuillez mettre à jour WordPress</a>."
+
+#. translators: 1: URL to WordPress Updates screen, 2: URL to Update PHP page.
+#: includes/admin/plugins.php:609
+msgid "<a href=\"%1$s\">Please update WordPress</a>, and then <a href=\"%2$s\">learn more about updating PHP</a>."
+msgstr "<a href=\"%1$s\">Veuillez mettre à jour WordPress</a>, puis <a href=\"%2$s\">apprenez-en plus sur la mise à jour de PHP</a>."
+
+#: includes/admin/plugins.php:604
+msgid "This plugin does not work with your versions of WordPress and PHP."
+msgstr "Cette extension ne fonctionne pas avec vos versions de WordPress et de PHP."
+
+#. translators: %s: Plugin name and version.
+#: includes/admin/plugins.php:571
+msgid "More information about %s"
+msgstr "Plus d’informations sur %s"
+
+#: includes/admin/plugins.php:545
+msgctxt "plugin"
+msgid "Cannot Activate"
+msgstr "Activation impossible"
+
+#: includes/admin/plugins.php:542 includes/admin/plugin-activate-ajax.js:102
+msgid "Activate"
+msgstr "Activer"
+
+#: includes/admin/plugins.php:519
+msgctxt "plugin"
+msgid "Active"
+msgstr "Actif"
+
+#: includes/admin/plugins.php:545
+msgctxt "plugin"
+msgid "Cannot Install"
+msgstr "Impossible d’installer"
+
+#: includes/admin/plugins.php:283
+msgid "Plugins list"
+msgstr "Liste des extensions"
+
+#: includes/admin/load.php:446
+msgid "Invalid plugin."
+msgstr "Extension non valide."
+
+#: includes/admin/rest-api.php:70
+msgid "Sorry, you are not allowed to activate this feature."
+msgstr "Désolé, vous n’avez pas l’autorisation pour activer cette fonctionnalité."
+
+#: includes/admin/plugins.php:478
+msgid "Sorry, you are not allowed to activate this plugin."
+msgstr "Désolé, vous n'avez pas l’autorisation pour activer cette extension."
+
+#: includes/admin/server-timing.php:264
+msgid "Output buffering is needed to capture metrics after headers have been sent and while the template is being rendered. Note that output buffering may possibly cause an increase in TTFB if the response would be flushed multiple times."
+msgstr "La mise en mémoire tampon de la sortie est nécessaire pour capturer les métriques après l’envoi des en-têtes et pendant que le modèle est rendu. Notez que la mise en mémoire tampon de sortie peut éventuellement entraîner une augmentation du TTFB si la réponse est vidée plusieurs fois."
+
+#. translators: %s: perflab_server_timing_use_output_buffer
+#: includes/admin/server-timing.php:256
+msgid "Output buffering has been forcibly disabled via the %s filter."
+msgstr "La mise en mémoire tampon de la sortie a été désactivée de force par l’intermédiaire du filtre %s."
+
+#. translators: %s: perflab_server_timing_use_output_buffer
+#: includes/admin/server-timing.php:245
+msgid "Output buffering has been forcibly enabled via the %s filter."
+msgstr "La mise en mémoire tampon a été activée de force par l'intermédiaire du filtre %s."
+
+#: includes/admin/server-timing.php:236
+msgid "Enable output buffering of template rendering"
+msgstr "Activer la mise en mémoire tampon du rendu des modèles"
+
+#: includes/admin/server-timing.php:199
+msgid "Enter a single hook name per line."
+msgstr "Saisir un seul nom de crochet par ligne."
+
+#: includes/admin/server-timing.php:138
+msgid "Filters"
+msgstr "Filtres"
+
+#: includes/admin/server-timing.php:128
+msgid "Actions"
+msgstr "Actions"
+
+#. translators: 1: Server-Timing, 2: template_include, 3: anchor link
+#: includes/admin/server-timing.php:103
+msgid "Since the %1$s header is sent before the template is loaded, only hooks before the %2$s filter can be measured. Enable <a href=\"%3$s\">Output Buffering</a> to measure hooks during template rendering."
+msgstr "Comme l'en-tête %1$s est envoyée avant que le modèle soit chargé, seuls les crochets éxécutés avant le filtre %2$s peuvent être mesurés. Activez <a href=\"%3$s\">la mise en mémoire tampon</a> afin de mesurer les crochets pendant le rendu des modèles."
+
+#: includes/admin/server-timing.php:92
+msgid "For any hook name provided, the <strong>cumulative duration between all callbacks</strong> attached to the hook is measured, in milliseconds."
+msgstr "Pour tout nom de crochet fourni, la <strong>durée cumulée entre tous les rappels</strong> attachés au crochet est mesurée, en millisecondes."
+
+#. translators: %s: Server-Timing
+#: includes/admin/server-timing.php:85
+msgid "In this section, you can provide hook names to include measurements for them in the %s header."
+msgstr "Dans cette section, vous pouvez fournir des noms de crochets pour inclure des mesures dans l'en-tête %s."
+
+#: includes/admin/server-timing.php:77
+msgid "Benchmarking"
+msgstr "Analyse comparative"
+
+#: includes/admin/server-timing.php:53
+msgid "Output Buffering"
+msgstr "Mise en mémoire tampon"
+
+#: includes/admin/server-timing.php:26 includes/admin/server-timing.php:27
+#: includes/admin/server-timing.php:158
+msgid "Server-Timing"
+msgstr "Synchronisation du serveur"
+
+#: includes/server-timing/class-perflab-server-timing.php:147
+msgid "The method must be called before headers have been sent."
+msgstr "La méthode doit être appelée avant que les en-têtes aient été envoyés."
+
+#. translators: %s: PHP parameter name
+#: includes/server-timing/class-perflab-server-timing.php:100
+msgid "The %s argument is required and must be a string."
+msgstr "L’argument %s est nécessaire et doit être une chaine."
+
+#. translators: %s: PHP parameter name
+#: includes/server-timing/class-perflab-server-timing.php:91
+msgid "The %s argument is required and must be a callable."
+msgstr "L’argument %s est nécessaire et doit être appelé."
+
+#. translators: %s: metric slug
+#: includes/server-timing/class-perflab-server-timing.php:64
+msgid "A metric with the slug %s is already registered."
+msgstr "Une métrique avec le slug %s est déjà enregistrée."
+
+#. translators: %s: PHP method name
+#: includes/server-timing/class-perflab-server-timing-metric.php:137
+msgid "The %s method must be called before."
+msgstr "La méthode %s doit être appellée avant."
+
+#. translators: %s: WordPress action name
+#: includes/server-timing/class-perflab-server-timing-metric.php:87
+#: includes/server-timing/class-perflab-server-timing.php:74
+msgid "The method must be called before or during the %s action."
+msgstr "La méthode doit être appelée avant ou pendant l’action %s."
+
+#. translators: %s: PHP parameter name
+#: includes/server-timing/class-perflab-server-timing-metric.php:77
+msgid "The %s parameter must be an integer, float, or numeric string."
+msgstr "Le paramètre %s doit être un nombre entier, flottant ou une chaine numérique."
+
+#: includes/site-health/audit-enqueued-assets/helper.php:585
+msgid "OK"
+msgstr "OK"
+
+#: includes/site-health/audit-autoloaded-options/helper.php:184
+#: includes/site-health/audit-autoloaded-options/helper.php:248
+#: includes/site-health/audit-enqueued-assets/helper.php:556
+msgid "Size"
+msgstr "Taille"
+
+#: includes/site-health/audit-autoloaded-options/helper.php:183
+#: includes/site-health/audit-autoloaded-options/helper.php:247
+msgid "Option Name"
+msgstr "Nom de l’option"
+
+#. Author URI of the plugin
+#: load.php
+msgid "https://make.wordpress.org/performance/"
+msgstr "https://make.wordpress.org/performance/"
+
+#: includes/site-health/audit-autoloaded-options/helper.php:80
+msgid "https://wordpress.org/support/article/optimization/#autoloaded-options"
+msgstr "https://fr.wordpress.org/support/article/optimization/#autoloaded-options"
+
+#: includes/site-health/webp-support/helper.php:32
+msgid "The WebP image format produces images that are usually smaller in size than JPEG images, which can reduce page load time and consume less bandwidth."
+msgstr "Le format d’image WebP produit des images généralement plus petites que les images JPEG, ce qui réduit le temps de chargement des pages et la bande passante."
+
+#. translators: 1. Number of autoloaded options. 2. Autoloaded options size.
+#: includes/site-health/audit-autoloaded-options/helper.php:63
+msgid "Your site has %1$s autoloaded options (size: %2$s) in the options table, which could cause your site to be slow. You can reduce the number of autoloaded options by cleaning up your site's options table."
+msgstr "Votre site contient %1$s options chargées automatiquement (taille : %2$s) dans le tableau des options, cela peut ralentir votre site. Vous pouvez réduire le nombre d’options en nettoyant le tableau des options du site."
+
+#: includes/site-health/audit-autoloaded-options/helper.php:60
+msgid "Autoloaded options could affect performance"
+msgstr "Les options chargées automatiquement peuvent affecter les performances"
+
+#. translators: 1. Number of autoloaded options. 2. Autoloaded options size.
+#: includes/site-health/audit-autoloaded-options/helper.php:38
+msgid "Your site has %1$s autoloaded options (size: %2$s) in the options table, which is acceptable."
+msgstr "Votre site contient %1$s options chargées automatiquement (taille : %2$s) dans le tableau des options, ce qui est acceptable."
+
+#: includes/site-health/audit-autoloaded-options/helper.php:30
+msgid "Autoloaded options are acceptable"
+msgstr "Les options chargées automatiquement sont acceptables"
+
+#: includes/site-health/audit-autoloaded-options/helper.php:27
+msgid "Autoloaded options are configuration settings for plugins and themes that are automatically loaded with every page load in WordPress. Having too many autoloaded options can slow down your site."
+msgstr "Les options chargées automatiquement sont des réglages de configuration pour les extensions et thèmes qui sont chargés à chaque visite de page dans WordPress. Avoir trop d’options  automatiquement chargées peut ralentir le site."
+
+#: includes/site-health/audit-autoloaded-options/hooks.php:30
+msgid "Autoloaded options"
+msgstr "Options chargées automatiquement"
+
+#: includes/site-health/webp-support/helper.php:42
+msgid "Your site does not support WebP"
+msgstr "Votre site ne prend pas en charge WebP"
+
+#: includes/site-health/webp-support/helper.php:24
+msgid "Your site supports WebP"
+msgstr "Votre site prend en charge WebP"
+
+#: includes/site-health/webp-support/hooks.php:25
+msgid "WebP Support"
+msgstr "Prise en charge de WebP"
+
+#: includes/site-health/audit-autoloaded-options/helper.php:81
+#: includes/site-health/audit-enqueued-assets/helper.php:190
+msgid "More info about performance optimization"
+msgstr "En savoir plus sur l’optimisation de la performance"
+
+#: includes/site-health/audit-enqueued-assets/helper.php:189
+msgid "https://wordpress.org/support/article/optimization/"
+msgstr "https://fr.wordpress.org/support/article/optimization/"
+
+#. translators: %s is the settings URL
+#: includes/admin/load.php:324 includes/admin/plugins.php:595
+#: includes/admin/plugin-activate-ajax.js:87
+msgid "Settings"
+msgstr "Réglages"
+
+#: includes/admin/load.php:244
+msgid "Settings > Performance"
+msgstr "Réglages > Performance"
+
+#: includes/admin/load.php:23
+#: includes/site-health/audit-autoloaded-options/helper.php:33
+#: includes/site-health/audit-enqueued-assets/helper.php:157
+#: includes/site-health/avif-headers/helper.php:27
+#: includes/site-health/avif-support/helper.php:27
+#: includes/site-health/bfcache-compatibility-headers/helper.php:28
+#: includes/site-health/effective-asset-cache-headers/helper.php:28
+#: includes/site-health/webp-support/helper.php:27
+msgid "Performance"
+msgstr "Performance"
+
+#. Author of the plugin
+#: load.php
+msgid "WordPress Performance Team"
+msgstr "WordPress Performance Team"
+
+#. Plugin URI of the plugin
+#: load.php
+msgid "https://github.com/WordPress/performance"
+msgstr "https://github.com/WordPress/performance"
+
+#. Plugin Name of the plugin
+#: load.php includes/admin/load.php:228
+msgid "Performance Lab"
+msgstr "Performance Lab"

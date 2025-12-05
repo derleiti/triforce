@@ -1,0 +1,47 @@
+[Unit]
+Description=Codex MCP Agent - TriStar Reviewer (Code Review, Security)
+Documentation=https://api.ailinux.me/docs
+After=network-online.target tristar-kernel.service
+Wants=network-online.target
+PartOf=tristar-kernel.service
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/home/zombie/ailinux-ai-server-backend
+
+# Environment
+Environment=PYTHONUNBUFFERED=1
+Environment=AGENT_ID=codex
+Environment=AGENT_ROLE=reviewer
+Environment=TRISTAR_API=https://api.ailinux.me/v1/tristar
+EnvironmentFile=/home/zombie/ailinux-ai-server-backend/.env
+
+# Bootstrap and System Prompt
+ExecStartPre=/bin/bash -c 'mkdir -p /var/tristar/agents/codex'
+ExecStartPre=/bin/bash -c 'cat /var/tristar/prompts/bootstrap.txt /var/tristar/prompts/codex-reviewer.txt > /var/tristar/agents/codex/systemprompt.txt 2>/dev/null || true'
+
+# Execute Agent
+ExecStart=/home/zombie/ailinux-ai-server-backend/.venv/bin/python -m app.agents.codex_mcp \
+    --system-prompt-file /var/tristar/agents/codex/systemprompt.txt \
+    --api-base https://api.ailinux.me/v1 \
+    --agent-id codex \
+    --role reviewer
+
+# Restart policy
+Restart=always
+RestartSec=15
+TimeoutStartSec=120
+TimeoutStopSec=60
+
+# Limits
+LimitNOFILE=65535
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=codex-mcp
+
+[Install]
+WantedBy=multi-user.target

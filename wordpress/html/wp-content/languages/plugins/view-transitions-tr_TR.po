@@ -1,0 +1,237 @@
+# Translation of Plugins - View Transitions - Stable (latest release) in Turkish
+# This file is distributed under the same license as the Plugins - View Transitions - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-07-16 06:22:03+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: tr\n"
+"Project-Id-Version: Plugins - View Transitions - Stable (latest release)\n"
+
+#: includes/settings.php:360
+msgid "Enable view transitions in the WordPress admin area."
+msgstr "Geçiş Görünümlerini WordPress yönetici alanında etkinleştir."
+
+#: includes/settings.php:359
+msgid "WP Admin"
+msgstr "WP Yönetici"
+
+#: includes/settings.php:330
+msgid "Control the duration of the view transition. Enter the value in milliseconds (e.g., 500, 1000, 2000)."
+msgstr "Geçiş görünümü süresini kontrol edin. Değeri milisaniye cinsinden girin (örneğin, 500, 1000, 2000)."
+
+#: includes/settings.php:329
+msgid "Transition Animation Duration"
+msgstr "Geçiş Animasyonu Süresi"
+
+#: includes/settings.php:320
+msgid "Override the theme provided configuration with the settings below."
+msgstr "Aşağıdaki ayarlarla temanın sağladığı yapılandırmayı geçersiz kılın."
+
+#: includes/settings.php:319
+msgid "Override Theme Configuration"
+msgstr "Tema Yapılandırmasını Geçersiz Kıl"
+
+#: includes/settings.php:305
+msgid "This section allows you to control view transitions usage in the WordPress admin area."
+msgstr "Bu bölüm WordPress yönetici alanında görünüm geçişlerinin kullanımını kontrol etmenizi sağlar."
+
+#: includes/settings.php:301
+msgctxt "Settings section"
+msgid "Admin View Transitions"
+msgstr "Yönetici Geçiş Görünümleri"
+
+#: includes/settings.php:284
+msgid "Your theme already supports view transitions with its own adapted configuration. The settings below will override those."
+msgstr "Temanız, kendi uyarlanmış yapılandırmasıyla geçiş görünümlerini zaten destekliyor. Aşağıdaki ayarlar bunları geçersiz kılacaktır."
+
+#: includes/settings.php:272
+msgctxt "Settings section"
+msgid "View Transitions"
+msgstr "Geçiş Görünümleri"
+
+#: includes/settings.php:526
+msgid "Settings"
+msgstr "Ayarlar"
+
+#: includes/settings.php:355
+msgid "Provide the CSS selector to detect the post content element."
+msgstr "CSS seçicisini gönderi içeriği öğesini tespit etmek için tanımlayın."
+
+#: includes/settings.php:354
+msgid "Post Content Selector"
+msgstr "Gönderi İçeriği Seçici"
+
+#: includes/settings.php:350
+msgid "Provide the CSS selector to detect the post thumbnail element."
+msgstr "Gönderi küçük resim öğesini tespit etmek için CSS seçicisini tanımlayın."
+
+#: includes/settings.php:349
+msgid "Post Thumbnail Selector"
+msgstr "Gönderi Küçük Resim Seçici"
+
+#: includes/settings.php:345
+msgid "Provide the CSS selector to detect the post title element."
+msgstr "Gönderi başlık öğesini tespit etmek için CSS seçicisini tanımlayın."
+
+#: includes/settings.php:344
+msgid "Post Title Selector"
+msgstr "Gönderi Başlık Seçici"
+
+#: includes/settings.php:340
+msgid "Provide the CSS selector to detect the global main element."
+msgstr "Genel ana öğeyi tespit etmek için CSS seçicisini tanımlayın."
+
+#: includes/settings.php:339
+msgid "Main Selector"
+msgstr "Genel Seçici"
+
+#: includes/settings.php:335
+msgid "Provide the CSS selector to detect the global header element."
+msgstr "Genel üst bilgi öğesini tespit etmek için CSS seçicisini tanımlayın."
+
+#: includes/settings.php:334
+msgid "Header Selector"
+msgstr "Üst Bilgi Seçici"
+
+#: includes/settings.php:325
+msgid "Choose the animation that is used for the default view transition type."
+msgstr "Varsayılan geçiş görünüm türü için kullanılacak animasyonu seçin."
+
+#: includes/settings.php:324
+msgid "Default Transition Animation"
+msgstr "Varsayılan Geçiş Animasyonu"
+
+#: includes/settings.php:279
+msgid "To reset any of the selector text inputs, clear the field and save the changes."
+msgstr "Herhangi bir seçici metin girişini sıfırlamak için form alanını temizleyin ve değişiklikleri kaydedin."
+
+#: includes/settings.php:277
+msgid "This section allows you to control view transitions usage on your site to enhance the navigation user experience."
+msgstr "Bu bölüm, sitenizdeki geçiş görünümlerinin kullanımını kontrol ederek gezinme kullanıcı deneyimini geliştirmenize olanak tanır."
+
+#: includes/settings.php:192
+msgid "Animation to use for the default view transition type."
+msgstr "Varsayılan geçiş görünüm türü için kullanılacak animasyon."
+
+#: includes/settings.php:184
+msgid "Configuration for View Transitions."
+msgstr "Geçiş Görünümleri için Yapılandırma."
+
+#: includes/settings.php:36
+msgctxt "animation label"
+msgid "Wipe (from top)"
+msgstr "Silme (yukarıdan)"
+
+#: includes/settings.php:35
+msgctxt "animation label"
+msgid "Wipe (from bottom)"
+msgstr "Silme (aşağıdan)"
+
+#: includes/settings.php:34
+msgctxt "animation label"
+msgid "Wipe (from left)"
+msgstr "Silme (soldan)"
+
+#: includes/settings.php:33
+msgctxt "animation label"
+msgid "Wipe (from right)"
+msgstr "Silme (sağdan)"
+
+#: includes/settings.php:32
+msgctxt "animation label"
+msgid "Swipe (from top)"
+msgstr "Kaydırma (yukarıdan)"
+
+#: includes/settings.php:31
+msgctxt "animation label"
+msgid "Swipe (from bottom)"
+msgstr "Kaydırma (aşağıdan)"
+
+#: includes/settings.php:30
+msgctxt "animation label"
+msgid "Swipe (from left)"
+msgstr "Kaydırma (soldan)"
+
+#: includes/settings.php:29
+msgctxt "animation label"
+msgid "Swipe (from right)"
+msgstr "Kaydırma (sağdan)"
+
+#: includes/settings.php:28
+msgctxt "animation label"
+msgid "Slide (from top)"
+msgstr "Yan geçiş (yukarıdan)"
+
+#: includes/settings.php:27
+msgctxt "animation label"
+msgid "Slide (from bottom)"
+msgstr "Yan geçiş (aşağıdan)"
+
+#: includes/settings.php:26
+msgctxt "animation label"
+msgid "Slide (from left)"
+msgstr "Yan geçiş (soldan)"
+
+#: includes/settings.php:25
+msgctxt "animation label"
+msgid "Slide (from right)"
+msgstr "Yan geçiş (sağdan)"
+
+#: includes/settings.php:24
+msgctxt "animation label"
+msgid "Fade (default)"
+msgstr "Solarak (varsayılan)"
+
+#. translators: %s is the minified asset path
+#: includes/functions.php:47
+msgid "Minified asset has not been built: %s"
+msgstr "Sıkıştırılmış varlık oluşturulmadı: %s"
+
+#. translators: %s: invalid alias
+#: includes/class-plvt-view-transition-animation.php:273
+msgid "The animation alias \"%s\" is invalid."
+msgstr "Animasyon adı “%s” geçersiz."
+
+#. translators: %s: invalid slug
+#: includes/class-plvt-view-transition-animation.php:139
+msgid "The animation slug \"%s\" is invalid."
+msgstr "Animasyon kısa adı “%s” geçersiz."
+
+#. translators: %s: duplicate alias
+#: includes/class-plvt-view-transition-animation-registry.php:90
+msgid "The animation alias \"%s\" conflicts with an existing slug or alias."
+msgstr "Animasyon takma adı “%s”, mevcut bir kısa ad veya takma ad ile çakışıyor."
+
+#. translators: %s: duplicate slug
+#: includes/class-plvt-view-transition-animation-registry.php:63
+msgid "The animation slug \"%s\" conflicts with an existing slug or alias."
+msgstr "Animasyon kısa adı “%s”, mevcut bir kısa ad veya takma ad ile çakışıyor."
+
+#. Author URI of the plugin
+#: view-transitions.php
+msgid "https://make.wordpress.org/performance/"
+msgstr "https://make.wordpress.org/performance/"
+
+#. Author of the plugin
+#: view-transitions.php
+msgid "WordPress Performance Team"
+msgstr "WordPress Performans Takımı"
+
+#. Description of the plugin
+#: view-transitions.php
+msgid "Adds smooth transitions between navigations to your WordPress site."
+msgstr "WordPress sitenize gezinmeler arasında yumuşak geçişler ekler."
+
+#. Plugin URI of the plugin
+#: view-transitions.php
+msgid "https://github.com/WordPress/performance/tree/trunk/plugins/view-transitions"
+msgstr "https://github.com/WordPress/performance/tree/trunk/plugins/view-transitions"
+
+#. Plugin Name of the plugin
+#: view-transitions.php
+msgid "View Transitions"
+msgstr "Geçiş Görünümleri"

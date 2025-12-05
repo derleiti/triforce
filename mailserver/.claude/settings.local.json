@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker logs:*)",
+      "Bash(docker exec:*)",
+      "Bash(cat:*)",
+      "Bash(docker ps:*)",
+      "Bash(docker inspect:*)",
+      "Read(//etc/letsencrypt/live/ailinux.me/**)",
+      "Bash(docker pull:*)",
+      "Bash(docker-compose:*)",
+      "Bash(docker compose:*)",
+      "Bash(python3:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

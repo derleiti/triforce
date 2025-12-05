@@ -1,0 +1,732 @@
+# Translation of Plugins - Simple CAPTCHA Alternative with Cloudflare Turnstile - Stable (latest release) in Czech
+# This file is distributed under the same license as the Plugins - Simple CAPTCHA Alternative with Cloudflare Turnstile - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-12-03 20:10:03+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n >= 2 && n <= 4) ? 1 : 2);\n"
+"X-Generator: GlotPress/4.0.3\n"
+"Language: cs_CZ\n"
+"Project-Id-Version: Plugins - Simple CAPTCHA Alternative with Cloudflare Turnstile - Stable (latest release)\n"
+
+#: inc/admin/admin-options.php:1276
+msgid "After Form"
+msgstr "Po formuláři"
+
+#: inc/admin/admin-options.php:658
+msgid "WooCommerce Pay for Order"
+msgstr "WooCommerce Pay for Order"
+
+#: inc/admin/admin-options.php:1169
+msgid "Enable on all Forminator Forms"
+msgstr "Povolit na všech formulářích Forminator"
+
+#: inc/admin/admin-options.php:1162
+msgid "Forminator Forms"
+msgstr "Formuláře Forminator"
+
+#: inc/admin/admin-options.php:1176
+msgid "When enabled, Turnstile will be added above the submit button, on ALL your forms created with Forminator Forms."
+msgstr "Pokud je tato funkce povolena, bude Turnstile přidán nad tlačítko Odeslat ve VŠECH formulářích vytvořených pomocí nástroje Forminator Forms."
+
+#: inc/admin/admin-options.php:650
+msgid "After Billing"
+msgstr "Po formuláři Fakturační údaje"
+
+#: inc/admin/admin-options.php:641
+msgid "After Payment"
+msgstr "Po platbě"
+
+#: inc/admin/admin-options.php:647
+msgid "Before Billing"
+msgstr "Před formulářem Fakturační adresa"
+
+#: inc/admin/admin-options.php:644
+msgid "Before Pay Button"
+msgstr "Před tlačítkem Zaplatit"
+
+#: inc/admin/admin-options.php:638
+msgid "Before Payment"
+msgstr "Před platbou"
+
+#: inc/admin/admin-options.php:908
+msgid "Enable on all CF7 Forms"
+msgstr "Povolit na všech formulářích CF7"
+
+#: inc/admin/admin-options.php:1503 inc/admin/admin-options.php:1535
+msgid "Ultimate Member"
+msgstr "Ultimate Member"
+
+#: inc/admin/admin-options.php:1510
+msgid "UM Login Form"
+msgstr "Přihlašovací formulář UM"
+
+#: inc/admin/admin-options.php:1524
+msgid "UM Password Reset Form"
+msgstr "Formulář pro obnovení hesla UM"
+
+#: inc/admin/admin-options.php:1517
+msgid "UM Register Form"
+msgstr "Registrační formulář UM"
+
+#: inc/admin/admin-options.php:392
+msgid "Custom Error Message"
+msgstr "Vlastní chybová zpráva"
+
+#: inc/admin/admin-options.php:966 inc/admin/admin-options.php:1022
+#: inc/admin/admin-options.php:1060 inc/admin/admin-options.php:1142
+#: inc/admin/admin-options.php:1198
+msgid "Disabled Form IDs"
+msgstr "Zakázané ID formuláře"
+
+#: inc/admin/admin-options.php:973 inc/admin/admin-options.php:1029
+#: inc/admin/admin-options.php:1067 inc/admin/admin-options.php:1149
+#: inc/admin/admin-options.php:1205
+msgid "If you want to DISABLE the Turnstile widget on certain forms, enter the %s ID in this field."
+msgstr "Pokud chcete widget Turnstile v určitých formulářích ZAKÁZAT, zadejte do tohoto pole ID %s."
+
+#: inc/admin/admin-options.php:88
+msgid "Like this plugin?"
+msgstr "Líbí se vám tento plugin?"
+
+#: inc/admin/admin-options.php:88
+msgid "Review on WordPress.org"
+msgstr "Recenze na WordPress.org"
+
+#: inc/admin/admin-options.php:1113
+msgid "Enable on all Formidable Forms"
+msgstr "Povolit ve všech formulářích Formidable"
+
+#: inc/admin/admin-options.php:1106
+msgid "Formidable Forms"
+msgstr "Formidable formulářem"
+
+#: inc/admin/admin-options.php:1120
+msgid "When enabled, Turnstile will be added above the submit button, on ALL your forms created with Formidable Forms."
+msgstr "Pokud je tato funkce povolena, bude Turnstile přidán nad tlačítko Odeslat ve VŠECH formulářích vytvořených pomocí Formidable Forms."
+
+#: inc/admin/admin-options.php:1247 inc/admin/admin-options.php:1356
+msgid "Elementor Forms"
+msgstr "Formuláře Elementor"
+
+#: inc/admin/admin-options.php:1254
+msgid "Enable on all Elementor Forms"
+msgstr "Povolit na všech formulářích Elementor"
+
+#: inc/admin/admin-options.php:1261
+msgid "When enabled, Turnstile will be added above the submit button, on ALL your forms created with Elementor Pro Forms."
+msgstr "Pokud je tato funkce povolena, bude Turnstile přidán nad tlačítko Odeslat ve VŠECH formulářích vytvořených pomocí Elementor Pro Forms."
+
+#: inc/admin/admin-options.php:575
+msgid "Compatible with wpDiscuz!"
+msgstr "Kompatibilní s wpDiscuz!"
+
+#: inc/admin/admin-options.php:572
+msgid "Due to Jetpack limitations, this does NOT currently work with Jetpack comments form enabled."
+msgstr "Vzhledem k omezením Jetpack to v současné době nefunguje s povoleným Jetpack komentáře formulářem."
+
+#: inc/admin/admin-options.php:1710
+msgid "wpDiscuz"
+msgstr "wpDiscuz"
+
+#: inc/admin/admin-options.php:956 inc/admin/admin-options.php:1012
+#: inc/admin/admin-options.php:1132 inc/admin/admin-options.php:1188
+#: inc/admin/admin-options.php:1273
+msgid "After Button"
+msgstr "Za tlačítkem"
+
+#: inc/admin/admin-options.php:953 inc/admin/admin-options.php:1009
+#: inc/admin/admin-options.php:1129 inc/admin/admin-options.php:1185
+#: inc/admin/admin-options.php:1270
+msgid "Before Button"
+msgstr "Před tlačítkem"
+
+#: inc/admin/admin-options.php:628 inc/admin/admin-options.php:949
+#: inc/admin/admin-options.php:1005 inc/admin/admin-options.php:1125
+#: inc/admin/admin-options.php:1181 inc/admin/admin-options.php:1266
+msgid "Widget Location"
+msgstr "Umístění widgetu"
+
+#: inc/admin/admin-options.php:1904
+msgid "Create a support topic"
+msgstr "Vytvoření tématu podpory"
+
+#: inc/admin/admin-options.php:495
+msgid "Enable Turnstile on your forms:"
+msgstr "Povolte ve formulářích funkci Turnstile:"
+
+#: inc/admin/admin-options.php:1371
+msgid "Mailchimp for WordPress"
+msgstr "Mailchimp pro WordPress"
+
+#: inc/admin/admin-options.php:1727
+msgid "Other Integrations"
+msgstr "Další integrace"
+
+#: inc/admin/admin-options.php:135 inc/admin/admin-options.php:172
+msgid "Secret Key"
+msgstr "Secret Key"
+
+#: inc/admin/admin-options.php:1907
+msgid "Translate into your language"
+msgstr "Přeložit do vašeho jazyka"
+
+#: inc/admin/admin-options.php:774
+msgid "WooCommerce"
+msgstr "WooCommerce"
+
+#: inc/admin/admin-options.php:1730
+msgid "You can also enable Turnstile on"
+msgstr "Turnstile můžete povolit také na"
+
+#: inc/admin/admin-options.php:1909
+msgid "View on GitHub"
+msgstr "Zobrazit na GitHubu"
+
+#: inc/admin/admin-options.php:974 inc/admin/admin-options.php:1030
+#: inc/admin/admin-options.php:1068 inc/admin/admin-options.php:1150
+#: inc/admin/admin-options.php:1206
+msgid "Separate each ID with a comma, for example: 5,10"
+msgstr "Jednotlivá ID oddělujte čárkou, například: 5,10"
+
+#: inc/admin/admin-options.php:993
+msgid "Enable on all Gravity Forms"
+msgstr "Povolit na všech formulářích Gravity"
+
+#: inc/admin/admin-options.php:986 inc/admin/admin-options.php:1036
+msgid "Gravity Forms"
+msgstr "Gravity Forms"
+
+#: inc/admin/admin-options.php:1000
+msgid "When enabled, Turnstile will be added before/after the submit button, on ALL your forms created with Gravity Forms."
+msgstr "Pokud je tato funkce povolena, bude Turnstile přidán před/za tlačítko Odeslat ve VŠECH formulářích vytvořených pomocí Gravity Forms."
+
+#: inc/admin/admin-options.php:1049
+msgid "Enable on all Fluent Forms"
+msgstr "Povolit na všech formulářích Fluent"
+
+#: inc/admin/admin-options.php:58
+msgid "Error message:"
+msgstr "Chybová zpráva:"
+
+#: inc/admin/admin-options.php:1042 inc/admin/admin-options.php:1075
+msgid "Fluent Forms"
+msgstr "Fluent formuláře"
+
+#: inc/admin/admin-options.php:1056
+msgid "When enabled, Turnstile will be added above the submit button, on ALL your forms created with Fluent Forms."
+msgstr "Pokud je tato funkce povolena, bude Turnstile přidán nad tlačítko Odeslat ve VŠECH formulářích vytvořených pomocí Fluent Forms."
+
+#: inc/admin/admin-options.php:39
+msgid "Almost done..."
+msgstr "Téměř hotovo..."
+
+#: inc/admin/admin-options.php:1471
+msgid "Alignment"
+msgstr "Zarovnání"
+
+#: inc/errors.php:61
+msgid "An internal error happened while validating the response. The request can be retried."
+msgstr "Při ověřování odpovědi došlo k interní chybě. Požadavek lze zopakovat."
+
+#: inc/admin/admin-options.php:43
+msgid "API keys have been updated. Please test the Turnstile API response below."
+msgstr "Byly aktualizovány klíče API. Otestujte prosím níže uvedenou odezvu rozhraní API Turnstile."
+
+#: inc/admin/admin-options.php:1451 inc/admin/admin-options.php:1497
+msgid "bbPress"
+msgstr "bbPress"
+
+#: inc/admin/admin-options.php:1458
+msgid "bbPress Create Topic"
+msgstr "bbPress Vytvořit téma"
+
+#: inc/admin/admin-options.php:1465
+msgid "bbPress Reply"
+msgstr "bbPress Odpovědět"
+
+#: inc/admin/admin-options.php:54
+msgid "Failed! There is an error with your API settings. Please check & update them."
+msgstr "Nepovedlo se! V nastavení API došlo k chybě. Zkontrolujte jej a aktualizujte."
+
+#: inc/admin/admin-options.php:1486
+msgid "Guest Users Only"
+msgstr "Pouze pro host uživatele"
+
+#: inc/admin/admin-options.php:1475
+msgid "Left"
+msgstr "Vlevo"
+
+#: inc/admin/admin-options.php:1478
+msgid "Right"
+msgstr "Vpravo"
+
+#: inc/admin/admin-options.php:124
+msgid "Success! Turnstile is working correctly with your API keys."
+msgstr "Úspěch! Zdá se, že Turnstile s vašimi klíči API funguje správně."
+
+#: inc/errors.php:57
+msgid "The request was rejected because it was malformed."
+msgstr "Požadavek byl odmítnut, protože byl nesprávně formulován."
+
+#: inc/errors.php:59
+msgid "The response parameter has already been validated before."
+msgstr "Parametr odpovědi byl již dříve ověřen."
+
+#: inc/errors.php:55
+msgid "The response parameter is invalid or has expired."
+msgstr "Parametr odpovědi je neplatný nebo jeho platnost vypršela."
+
+#: inc/errors.php:53
+msgid "The response parameter was not passed."
+msgstr "Parametr odpovědi nebyl předán."
+
+#: inc/errors.php:51
+msgid "The secret parameter was invalid or did not exist."
+msgstr "Secret parametr byl neplatný nebo neexistoval."
+
+#: inc/errors.php:49
+msgid "The secret parameter was not passed."
+msgstr "Nebyl předán parametr secret."
+
+#: inc/errors.php:63
+msgid "There was an error with Turnstile response. Please check your keys are correct."
+msgstr "V odezvě turniketu došlo k chybě. Zkontrolujte prosím, zda jsou vaše klíče správné."
+
+#: inc/admin/admin-options.php:45
+msgid "Turnstile will not be added to any forms until the test is successfully complete."
+msgstr "Turnstile nebude přidán do žádného přihlašovacího formuláře, dokud test nebude úspěšně dokončen."
+
+#: inc/admin/admin-options.php:502
+msgid "Default WordPress Forms"
+msgstr "Výchozí formuláře WordPress"
+
+#: inc/admin/admin-options.php:936
+msgid "Enable on all WPForms"
+msgstr "Povolit na všech formulářích WPForms"
+
+#: inc/admin/admin-options.php:496
+msgid "Select the dropdown for each integration, and choose when specific forms you want to enable Turnstile on."
+msgstr "Vyberte rozevírací seznam pro každou integraci a zvolte, kdy chcete povolit funkci Turnstile pro konkrétní formuláře."
+
+#: inc/admin/admin-options.php:943
+msgid "When enabled, Turnstile will be added before/after the submit button, on ALL your forms created with WPForms."
+msgstr "Pokud je tato funkce povolena, bude Turnstile přidán před/za tlačítko Odeslat ve VŠECH formulářích vytvořených pomocí WPForms."
+
+#: inc/admin/admin-options.php:929 inc/admin/admin-options.php:980
+msgid "WPForms"
+msgstr "WPForms"
+
+#: inc/admin/admin-options.php:1362
+msgid "MC4WP: Mailchimp for WordPress"
+msgstr "MC4WP: Mailchimp pro WordPress"
+
+#: inc/admin/admin-options.php:1365
+msgid "To add Turnstile to Mailchimp for WordPress, simply add this shortcode to any of your forms (in the form editor):"
+msgstr "Chcete-li přidat Turnstile do aplikace Mailchimp pro WordPress, jednoduše přidejte tento zkrácený kód do kteréhokoli z formulářů (v editoru formuláře):"
+
+#: inc/admin/admin-options.php:1428 inc/admin/admin-options.php:1445
+msgid "BuddyPress"
+msgstr "BuddyPress"
+
+#: inc/admin/admin-options.php:1435
+msgid "BuddyPress Register"
+msgstr "BuddyPress Registrace"
+
+#: inc/integrations/community/buddypress.php:22
+#: inc/integrations/community/buddypress.php:25
+#: inc/integrations/ecommerce/edd.php:59 inc/integrations/ecommerce/pmp.php:62
+#: inc/integrations/membership/wp-members.php:13
+#: inc/integrations/membership/wpuf.php:59
+#: inc/integrations/membership/wpuf.php:64 inc/wordpress.php:223
+msgid "ERROR:"
+msgstr "CHYBA:"
+
+#: inc/admin/admin-options.php:243
+msgid "Auto"
+msgstr "Auto"
+
+#: inc/admin/admin-options.php:901 inc/admin/admin-options.php:923
+msgid "Contact Form 7"
+msgstr "Contact Form 7"
+
+#: inc/admin/admin-options.php:917
+msgid "To add Turnstile to individual Contact Form 7 forms, simply add this shortcode to any of your forms (in the form editor):"
+msgstr "Chcete-li přidat Turnstile do jednotlivých formulářů Contact Form 7, jednoduše přidejte tento zkrácený kód do libovolného formuláře (v editoru formuláře):"
+
+#: inc/integrations/forms/contact-form-7.php:105
+msgid "Insert Tag"
+msgstr "Vložit štítek"
+
+#: inc/integrations/forms/contact-form-7.php:95
+msgid "cloudflare turnstile"
+msgstr "cloudflare turnstile"
+
+#: inc/admin/admin-options.php:113
+msgid "API Key Settings:"
+msgstr "Nastavení klíče API:"
+
+#: inc/admin/admin-options.php:316
+msgid "Disable Submit Button"
+msgstr "Zakázat tlačítko Odeslat"
+
+#. Author of the plugin
+#: simple-cloudflare-turnstile.php
+msgid "Elliot Sowersby, RelyWP"
+msgstr "Elliot Sowersby, RelyWP"
+
+#: inc/admin/admin-options.php:229
+msgid "General Settings:"
+msgstr "Hlavní nastavení:"
+
+#: inc/admin/admin-options.php:1904
+msgid "Need help? Have a suggestion?"
+msgstr "Potřebujete pomoc? Máte návrh?"
+
+#: inc/admin/admin-options.php:88
+msgid "Please submit a review"
+msgstr "Pošlete prosím recenzi"
+
+#: inc/admin/admin-options.php:319
+msgid "When enabled, the user will not be able to click submit until the Turnstile challenge is completed."
+msgstr "Pokud je tato možnost povolena, uživatel nebude moci kliknout na tlačítko odeslat, dokud nebude ověřování na Turnstile dokončeno."
+
+#: inc/admin/admin-options.php:558
+msgid "WordPress Comment"
+msgstr "WordPress komentář"
+
+#. Description of the plugin
+#: simple-cloudflare-turnstile.php
+msgid "Easily add Cloudflare Turnstile to your WordPress forms. The user-friendly, privacy-preserving CAPTCHA alternative."
+msgstr "Snadno přidejte Cloudflare Turnstile do formulářů WordPress. Uživatelsky přívětivá alternativa CAPTCHA, která zachovává soukromí."
+
+#: inc/admin/admin-options.php:240
+msgid "Dark"
+msgstr "Tmavý"
+
+#: inc/wordpress.php:140
+msgid "ERROR"
+msgstr "CHYBA"
+
+#: inc/admin/admin-options.php:626 inc/admin/admin-options.php:789
+#: inc/admin/admin-options.php:832
+msgid "Guest Checkout Only"
+msgstr "Pouze pro hosty v pokladně"
+
+#. Author URI of the plugin
+#: simple-cloudflare-turnstile.php
+msgid "https://www.relywp.com"
+msgstr "https://www.relywp.com"
+
+#: inc/admin/admin-options.php:237
+msgid "Light"
+msgstr "Světlý"
+
+#: inc/errors.php:36 inc/integrations/forms/kadence.php:46
+#: inc/integrations/forms/kadence.php:52
+msgid "Please verify that you are human."
+msgstr "Ověřte, zda jste člověk."
+
+#: simple-cloudflare-turnstile.php:52
+msgid "Settings"
+msgstr "Nastavení"
+
+#: inc/admin/admin-options.php:134 inc/admin/admin-options.php:154
+msgid "Site Key"
+msgstr "Site Key"
+
+#: inc/admin/admin-options.php:233
+msgid "Theme"
+msgstr "Šablona"
+
+#: inc/admin/admin-options.php:624
+msgid "WooCommerce Checkout"
+msgstr "Pokladna WooCommerce"
+
+#: inc/admin/admin-options.php:596
+msgid "WooCommerce Forms"
+msgstr "Formuláře WooCommerce"
+
+#: inc/admin/admin-options.php:603
+msgid "WooCommerce Login"
+msgstr "Přihlášení WooCommerce"
+
+#: inc/admin/admin-options.php:610
+msgid "WooCommerce Register"
+msgstr "Registrace WooCommerce"
+
+#: inc/admin/admin-options.php:617
+msgid "WooCommerce Reset Password"
+msgstr "Obnovení hesla WooCommerce"
+
+#: inc/admin/admin-options.php:509
+msgid "WordPress Login"
+msgstr "Přihlášení WordPress"
+
+#: inc/admin/admin-options.php:530
+msgid "WordPress Register"
+msgstr "Registrace WordPress"
+
+#: inc/admin/admin-options.php:551
+msgid "WordPress Reset Password"
+msgstr "Obnovení hesla WordPress"
+
+#: inc/admin/admin-options.php:129
+msgid "You can get your site key and secret key from here:"
+msgstr "Klíč k webu a tajný klíč můžete získat zde:"
+
+#: inc/admin/admin-options.php:83
+msgid "Learn more."
+msgstr "Zjistěte více."
+
+#: inc/admin/admin-options.php:1237
+msgid "Currently Ninja Forms is not supported by this plugin."
+msgstr "V současné době tento plugin nepodporuje Ninja Forms."
+
+#: inc/admin/admin-options.php:1233
+msgid "Ninja Forms"
+msgstr "Ninja Forms"
+
+#: inc/admin/admin-options.php:1223
+msgid "Click here for more information."
+msgstr "Pro více informací klikněte sem."
+
+#: inc/admin/admin-options.php:1222
+msgid "Currently WS Form is not supported by this plugin, however their plugin does have its own Turnstile addon."
+msgstr "V současné době tento plugin nepodporuje WS Form, ale jejich plugin má svůj vlastní turniketový doplněk."
+
+#: inc/admin/admin-options.php:1218
+msgid "WS Form"
+msgstr "Formulář WS"
+
+#: inc/admin/admin-options.php:823
+msgid "Paid Memberships Pro"
+msgstr "Paid Memberships Pro"
+
+#: inc/admin/admin-options.php:531
+msgid "Enable this option to only enable on default WordPress register form at wp-login.php?action=register"
+msgstr "Povolením této možnosti povolíte pouze výchozí registrační formulář WordPress na adrese wp-login.php?action=register"
+
+#: inc/admin/admin-options.php:512 inc/admin/admin-options.php:533
+msgid "Only enable on default wp-login.php page"
+msgstr "Povolit pouze na výchozí stránce wp-login.php"
+
+#: inc/admin/admin-options.php:510
+msgid "Enable this option to only enable on default WordPress login form at wp-login.php"
+msgstr "Povolením této možnosti povolíte pouze výchozí přihlašovací formulář WordPress na adrese wp-login.php"
+
+#: inc/admin/admin-options.php:421
+msgid "Currently it is not possible to edit the actual \"Failure!\" message shown on the widget."
+msgstr "Aktuálně není možné editovat aktuální \"Failure!\" zpráva zobrazená na widgetu."
+
+#: inc/admin/admin-options.php:419
+msgid "This will show a message below the Turnstile widget if they receive the \"Failure!\" response. Useful to give instructions in the *very rare* case a valid user is being flagged as spam."
+msgstr "Toto zobrazí zprávu pod widgetem Turnstile, pokud obdrží odpověď \"Failure!\". Užitečné pro poskytnutí instrukcí v *velmi vzácném* případě, kdy je platný uživatel označen jako spam."
+
+#: inc/admin/admin-options.php:417 inc/turnstile.php:113
+msgid "Failed to verify you are human. Please contact us if you are having issues."
+msgstr "Nepodařilo se ověřit, že jste člověk. Pokud máte problémy, kontaktujte nás."
+
+#: inc/admin/admin-options.php:412
+msgid "HTML Markup Allowed."
+msgstr "HTML značky povoleny."
+
+#: inc/admin/admin-options.php:403
+msgid "Extra Failure Message"
+msgstr "Mimořádná chybová zpráva"
+
+#: inc/admin/admin-options.php:397
+msgid "Shown if the form is submitted without completing the Turnstile challenge. Leave blank to use the default message (localized):"
+msgstr "Zobrazuje se, pokud je formulář odeslán bez dokončení turniketové výzvy. Chcete-li použít výchozí zprávu (lokalizovanou), ponechte prázdné:"
+
+#: inc/admin/admin-options.php:436
+msgid "When enabled, the javascript files loaded by the plugin will be deferred. You can disable this if it causes any issues with your other optimisations."
+msgstr "Pokud je povoleno, soubory javascriptu načtené pluginem budou odloženy. Můžete to zakázat, pokud to způsobuje nějaké problémy s vašimi dalšími optimalizacemi."
+
+#: inc/admin/admin-options.php:433
+msgid "Defer Scripts"
+msgstr "Odložit skripty"
+
+#: inc/admin/admin-options.php:329
+msgid "These settings are for more advanced customisation. If you are not sure about these, they do not need to be changed."
+msgstr "Tato nastavení slouží k pokročilejšímu přizpůsobení. Pokud si tím nejste jisti, není třeba je měnit."
+
+#: inc/admin/admin-options.php:325
+msgid "Advanced Settings"
+msgstr "Pokročílé nastavení"
+
+#: inc/admin/admin-options.php:866 inc/admin/admin-options.php:874
+msgid "Currently Turnstile can not be implemented on the lost password form when PMP is installed."
+msgstr "V současné době nelze turniket implementovat do formuláře ztraceného hesla, když je nainstalován PMP."
+
+#: inc/admin/admin-options.php:863
+msgid "Lost Password Form"
+msgstr "Formulář ztraceného hesla"
+
+#: inc/admin/admin-options.php:830
+msgid "Checkout / Registration"
+msgstr "Pokladna / Registrace"
+
+#: inc/admin/admin-options.php:895
+msgid "Paid Memberships PRO"
+msgstr "Paid Memberships Pro"
+
+#: inc/errors.php:20
+msgid "Cloudflare Turnstile is not currently showing on your forms. Please test the API response on the <a href=\"%s\">settings page</a>."
+msgstr "<p>Turniket Cloudflare se aktuálně nezobrazuje na vašich formulářích. Otestujte prosím odpověď API na <a href=\"%s\">stránce nastavení</a> .</p>"
+
+#: inc/admin/admin-options.php:704
+msgid "If selected below, Turnstile check will not be run for that specific payment method."
+msgstr "Pokud vyberete níže, nebude kontrola turniketem pro tuto konkrétní platební metodu spuštěna."
+
+#: inc/admin/admin-options.php:479
+msgid "One per line.  All visitors with listed User Agents will not see the Turnstile challenge. Warning: If an attacker knows one of the whitelisted User Agents, they might be able to spoof that User Agent to bypass Turnstile."
+msgstr "Jeden na řádek. Všichni návštěvníci s uvedenými IP adresami neuvidí výzvu Turniket. Upozornění: Pokud útočník zná jednu z povolených IP adres, může být schopen tuto adresu podvrhnout a obejít Turniket."
+
+#: inc/admin/admin-options.php:468
+msgid "IP Addresses"
+msgstr "IP adresy"
+
+#: inc/admin/admin-options.php:463
+msgid "When enabled, logged in users will not see the Turnstile challenge."
+msgstr "Je-li povoleno, přihlášení uživatelé neuvidí výzvu Turniket."
+
+#: inc/admin/admin-options.php:460
+msgid "Logged In Users"
+msgstr "Přihlášené"
+
+#: inc/admin/admin-options.php:453
+msgid "Whitelist Settings"
+msgstr "Nastavení bílé listiny"
+
+#: inc/admin/admin-options.php:561
+msgid "AJAX comments form?"
+msgstr "Formulář komentářů AJAX?"
+
+#: inc/admin/admin-options.php:559
+msgid "Enable this if you are using an AJAX based comments form plugin or theme."
+msgstr "Povolte toto, pokud používáte plugin nebo téma pro komentáře založené na AJAX."
+
+#: inc/admin/admin-options.php:1677
+msgid "Post Forms"
+msgstr "Formuláře vložení judikátů"
+
+#: inc/admin/admin-options.php:1670
+msgid "Register Form"
+msgstr "Registrační formulář"
+
+#: inc/admin/admin-options.php:1665
+msgid "Edit via \"WordPress Reset Password\" option in the \"Default WordPress Forms\" settings."
+msgstr "Upravte pomocí možnosti \"WordPress Reset Password\" v nastavení \"Výchozí formuláře WordPress\"."
+
+#: inc/admin/admin-options.php:1662
+msgid "Reset Password Form"
+msgstr "Formulář pro resetování hesla"
+
+#: inc/admin/admin-options.php:1625 inc/admin/admin-options.php:1688
+msgid "WP User Frontend"
+msgstr "Uživatelské rozhraní WP"
+
+#: inc/admin/admin-options.php:88 inc/admin/admin-options.php:1901
+msgid "View setup guide"
+msgstr "Zobrazit průvodce nastavením"
+
+#: inc/admin/admin-options.php:66
+msgid "TEST RESPONSE"
+msgstr "TESTOVACÍ ODPOVĚĎ"
+
+#: inc/admin/admin-options.php:381
+msgid "Turnstile Widget is only displayed in cases where an interaction is required. This essentially makes it \"invisible\" for most valid users."
+msgstr "Widget turniketu se zobrazuje pouze v případech, kdy je vyžadována interakce. Tím je v podstatě \"neviditelný\" pro většinu platných uživatelů."
+
+#: inc/admin/admin-options.php:380
+msgid "Turnstile Widget is only displayed after the challenge begins."
+msgstr "Widget turniketu se zobrazí až po zahájení výzvy."
+
+#: inc/admin/admin-options.php:379
+msgid "Turnstile Widget is always displayed for all visitors."
+msgstr "Turniket Widget se vždy zobrazí všem návštěvníkům."
+
+#: inc/admin/admin-options.php:365
+msgid "Interaction Only"
+msgstr "Pouze interakce"
+
+#: inc/admin/admin-options.php:363
+msgid "Always"
+msgstr "Vždy"
+
+#: inc/admin/admin-options.php:358
+msgid "Appearance Mode"
+msgstr "Režim vzhledu"
+
+#: inc/admin/admin-options.php:857 inc/admin/admin-options.php:1568
+#: inc/admin/admin-options.php:1646
+msgid "Edit via \"WordPress Login\" option in the \"Default WordPress Forms\" settings."
+msgstr "Upravte pomocí možnosti „Přihlášení do WordPressu“ v nastavení „Výchozí formuláře WordPress“."
+
+#: inc/admin/admin-options.php:854 inc/admin/admin-options.php:1565
+#: inc/admin/admin-options.php:1643
+msgid "Login Form"
+msgstr "Přihlašovací formulář"
+
+#: inc/admin/admin-options.php:1547 inc/admin/admin-options.php:1598
+msgid "MemberPress"
+msgstr "MemberPress"
+
+#: inc/admin/admin-options.php:1760
+msgid "Delete all of this plugins saved options when the plugin is deleted via plugins page."
+msgstr "Smažte všechny tyto uložené možnosti zásuvných modulů, když je zásuvný modul smazán prostřednictvím stránky zásuvných modulů."
+
+#: inc/admin/admin-options.php:1743
+msgid "Simply install the plugin and new settings will appear above."
+msgstr "Jednoduše nainstalujte plugin a výše se objeví nové nastavení."
+
+#: inc/admin/admin-options.php:1610
+msgid "Turnstile is supported for WP-Members Login and Registration forms. Enable for these forms in the \"Default WordPress Forms\" settings."
+msgstr "Turniket je podporován pro přihlašovací a registrační formuláře WP-Members. Povolte pro tyto formuláře v nastavení „Výchozí formuláře WordPress“."
+
+#: inc/admin/admin-options.php:1604 inc/admin/admin-options.php:1619
+msgid "WP-Members"
+msgstr "Členové WP"
+
+#: inc/admin/admin-options.php:1212
+msgid "Forminator"
+msgstr "Formátor"
+
+#: inc/admin/admin-options.php:1156
+msgid "Formidable"
+msgstr "Impozantní"
+
+#: inc/admin/admin-options.php:807
+msgid "EDD Register"
+msgstr "Registrace EDD"
+
+#: inc/admin/admin-options.php:800
+msgid "EDD Login"
+msgstr "Přihlášení EDD"
+
+#: inc/admin/admin-options.php:787
+msgid "EDD Checkout"
+msgstr "Pokladna EDD"
+
+#: inc/admin/admin-options.php:780 inc/admin/admin-options.php:817
+msgid "Easy Digital Downloads"
+msgstr "Easy Digital Downloads"
+
+#: inc/admin/admin-options.php:690
+msgid "Payment Methods to Skip"
+msgstr "Platební metody k přeskočení"
+
+#: inc/admin/admin-options.php:282
+msgid "Portuguese (Brazil)"
+msgstr "Portugalština (brazilská)"
+
+#: inc/admin/admin-options.php:250
+msgid "Language"
+msgstr "Jazyk"
+
+#: inc/admin/admin-options.php:255
+msgid "Auto Detect"
+msgstr "Automatická detekce"

@@ -1,0 +1,198 @@
+/**
+ * import-metabox-edit.css
+ *
+ * @since	1.2.0
+ * @package feedzy-rss-feeds-pro
+ */
+
+.feedzy-toggle {
+	visibility: hidden;
+	position: absolute;
+	margin-left: -9999px;
+}
+
+.feedzy-toggle + label {
+	display: block;
+	position: relative;
+	outline: none;
+	cursor: pointer;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+input.feedzy-toggle-round + label {
+	width: 2rem;
+	height: 1rem;
+	border: 1px solid #5555559c;
+	border-radius: 22px;
+	background-color: #f1f1f1;
+}
+
+input.feedzy-toggle-round + label:before,
+input.feedzy-toggle-round + label:after {
+	display: block;
+	position: absolute;
+	top: 1px;
+	bottom: 1px;
+	left: 1px;
+	content: "";
+}
+
+input.feedzy-toggle-round + label:before {
+	right: 1px;
+	border-radius: 15px;
+	background-color: #f1f1f1;
+	-webkit-transition: background 0.4s;
+	transition: background 0.4s;
+}
+
+input.feedzy-toggle-round + label:after {
+	width: 0.75rem;
+	height: 0.75rem;
+	border-radius: 100%;
+	background-color: #f6f7f7;
+	-webkit-transition: margin 0.4s;
+	transition: margin 0.4s;
+}
+
+input.feedzy-toggle-round:checked + label:before {
+	background-color:#2271b1;
+}
+
+input.feedzy-toggle-round:checked + label:after {
+	margin-left: 16px;
+	background: #f1f1f1;
+}
+input.feedzy-toggle-round:checked + label{
+	border-color: #f6f7f7;
+}
+.feedzy-dialog:not(.feedzy-dialog-content){
+	display:none;
+}
+
+input.feedzy-toggle-round + label:before,
+input.feedzy-toggle-round + label:after {
+	display: block;
+	position: absolute;
+	top: 1px;
+	bottom: 1px;
+	left: 1px;
+	content: "";
+}
+
+input.feedzy-toggle-round + label:before {
+	right: 1px;
+	border-radius: 15px;
+	background-color: #f1f1f1;
+	-webkit-transition: background 0.4s;
+	transition: background 0.4s;
+}
+
+input.feedzy-toggle-round + label:after {
+	border-radius: 100%;
+	background-color:#5555559c;
+	-webkit-transition: margin 0.4s;
+	transition: margin 0.4s;
+	margin-top:1px;
+}
+span.feedzy-spinner:not(.is-active) {
+    display: none;
+}
+span.feedzy-spinner {
+	float: none !important;
+}
+#TB_ajaxContent ul {
+	list-style: decimal;
+	margin-left: 20px;
+}
+
+#TB_ajaxContent ul li {
+    padding: 5px !important;
+}
+
+#TB_ajaxContent p.loading-img {
+	text-align: center;
+}
+
+#TB_ajaxContent.loaded p.hide-when-loaded {
+	display: none;
+}
+
+#TB_ajaxContent div.dry_run span {
+	display: block;
+}
+
+#TB_ajaxContent div.dry_run span i.pass {
+	color: #149714;
+}
+
+#TB_ajaxContent div.dry_run span i.fail {
+	color: #ca4a1f;
+}
+
+.feedzy-errors-dialog + .ui-widget-content .ui-dialog-buttonset {
+	width: 100%;
+}
+.feedzy-errors-dialog + .ui-widget-content button.feedzy-clear-logs {
+	margin-left: 0;
+}
+
+.wp-core-ui .fz-export-import-btn,
+.wp-core-ui .feedzy-import-limit{
+	display: inline-flex !important;
+	align-items: stretch;
+}
+
+.wp-core-ui .fz-header-action {
+	display: inline-flex !important;
+	gap: 8px;
+}
+
+.fz-import-field {
+	background-color: #fff;
+	max-width: 400px;
+	width: 100%;
+	margin: 0 auto;
+	position: relative;
+	padding: 15px;
+	height: 120px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+.fz-import-field.hidden {
+	display: none;
+}
+
+.feedzy-wrap .fz-validation-message {
+    margin: 10px 0;
+    padding: 12px 15px;
+    border-radius: 4px;
+    font-size: 14px;
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    border: 1px solid #5555559c;
+}
+
+.feedzy-wrap .fz-validation-message button {
+	margin-left: auto;
+}
+
+.fz-validation-message .fz-success {
+    color: #155724;
+}
+
+.fz-validation-message .fz-error {
+    color: #721c24;
+}
+
+.fz-validation-message  .fz-warning {
+    color: #856404;
+}

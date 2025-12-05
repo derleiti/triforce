@@ -1,0 +1,251 @@
+/* AI Panel Model Select - Better Visibility */
+.ai-model-select-wrapper {
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background: var(--bg-2, #1b2330);
+  border-radius: 6px;
+}
+
+.ai-model-select-wrapper label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text, #e8edf2);
+}
+
+.ai-model-select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg-1, #131822);
+  color: var(--text, #e8edf2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ai-model-select:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: var(--bg-0, #0e1116);
+}
+
+.ai-model-select:focus {
+  outline: none;
+  border-color: var(--accent, #3b82f6);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.ai-model-select option {
+  background: var(--bg-1, #131822);
+  color: var(--text, #e8edf2);
+  padding: 0.5rem;
+}
+
+/* Light mode adjustments */
+html[data-theme='light'] .ai-model-select-wrapper {
+  background: var(--bg-2, #f0f4ff);
+}
+
+html[data-theme='light'] .ai-model-select {
+  background: var(--bg-1, #ffffff);
+  color: var(--text, #0f141b);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+html[data-theme='light'] .ai-model-select:hover {
+  border-color: rgba(0, 0, 0, 0.2);
+  background: var(--bg-0, #f5f7fb);
+}
+
+html[data-theme='light'] .ai-model-select option {
+  background: var(--bg-1, #ffffff);
+  color: var(--text, #0f141b);
+}
+
+/* AI Panel Text Input & Output - Light Mode */
+html[data-theme='light'] #ai-input {
+  background: var(--bg-1, #ffffff);
+  color: var(--text, #0f141b);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+html[data-theme='light'] #ai-input::placeholder {
+  color: var(--muted, #6b7280);
+  opacity: 0.7;
+}
+
+html[data-theme='light'] #ai-output {
+  color: var(--text, #0f141b);
+  background: var(--bg-1, #ffffff);
+}
+
+html[data-theme='light'] .ai-panel__title {
+  color: var(--text, #0f141b);
+}
+
+html[data-theme='light'] .ai-model-select-wrapper label {
+  color: var(--text, #0f141b);
+}
+
+/* Header Brand Styling */
+.site-brand {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.site-brand-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.site-title {
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.site-title-main {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text, #e8edf2);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.site-title-tagline {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--muted, #a9b3c0);
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.site-title:hover .site-title-main {
+  color: var(--accent, #3b82f6);
+  transition: color 0.2s ease;
+}
+
+/* Light Mode */
+html[data-theme='light'] .site-title-main {
+  color: var(--text, #0f141b);
+}
+
+html[data-theme='light'] .site-title-tagline {
+  color: var(--muted, #6b7280);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .site-title-main {
+    font-size: 0.9375rem;
+  }
+
+  .site-title-tagline {
+    font-size: 0.6875rem;
+  }
+}
+
+/* css/ai-panel-fixes.css */
+.ai-btn.is-disabled { opacity: .55; pointer-events: none; }
+
+/* Hide Google Funding Choices / AdSense Consent Banner */
+/* This banner was blocking the Nova AI console with z-index: 2147483644 */
+iframe[name="googlefcPresent"],
+iframe[src*="fundingchoicesmessages.google.com"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  position: absolute !important;
+  left: -9999px !important;
+  top: -9999px !important;
+}
+
+/* Block any fixed bottom banners with extreme z-index that might interfere */
+body > div[style*="position: fixed"][style*="bottom: 0"],
+body > div[style*="position:fixed"][style*="bottom:0"] {
+  z-index: 999 !important; /* Reset to reasonable z-index */
+}
+
+/* Ensure Nova AI Console stays accessible */
+#nova-ai-fab-root,
+.nova-ai-container,
+[data-nova-ai-fab],
+#nova-ai-console {
+  z-index: 9999 !important;
+  position: relative !important;
+}
+
+/* ============================================
+   Nova AI Shortcode [nova_ai] Mobile Fixes
+   Prevent footer from overlapping the Nova AI app
+   ============================================ */
+
+/* Ensure Nova AI container grows with content */
+#nova-ai-root,
+.nova-ai-app {
+  display: block !important;
+  height: auto !important;
+  min-height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  position: relative;
+  z-index: 10;
+}
+
+/* Ensure all Nova AI child elements are visible */
+#nova-ai-root .nova-shell,
+#nova-ai-root .nova-panel,
+#nova-ai-root .nova-panel.active,
+#nova-ai-root .form,
+#nova-ai-root .form-actions {
+  overflow: visible !important;
+  height: auto !important;
+  max-height: none !important;
+}
+
+/* Ensure form-actions (buttons) are always visible */
+#nova-ai-root .form-actions {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: relative !important;
+  z-index: 100;
+}
+
+/* Mobile specific fixes */
+@media (max-width: 768px) {
+  /* Ensure entry-content grows with Nova AI */
+  .entry-content,
+  .post-content,
+  .page-content,
+  .single-post__content {
+    overflow: visible !important;
+    height: auto !important;
+  }
+
+  /* Add margin to Nova AI to push footer down */
+  #nova-ai-root {
+    margin-bottom: 3rem !important;
+  }
+
+  /* Ensure footer doesn't overlap */
+  .site-footer {
+    position: relative !important;
+    z-index: 1 !important;
+    clear: both;
+  }
+
+  /* Ensure main content area doesn't clip Nova AI */
+  .site-main,
+  main.site-main {
+    overflow: visible !important;
+    min-height: auto !important;
+  }
+}

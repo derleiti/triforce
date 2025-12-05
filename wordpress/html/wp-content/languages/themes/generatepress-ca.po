@@ -1,0 +1,1378 @@
+# Translation of Themes - GeneratePress in Catalan
+# This file is distributed under the same license as the Themes - GeneratePress package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-01-11 20:00:52+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: ca\n"
+"Project-Id-Version: Themes - GeneratePress\n"
+
+#. Description of the theme
+#: style.css
+#, gp-priority: high
+msgid "GeneratePress is a lightweight WordPress theme built with a focus on speed and usability. Performance is important to us, which is why a fresh GeneratePress install adds less than 10kb (gzipped) to your page size. We take full advantage of the block editor (Gutenberg), which gives you more control over creating your content. If you use page builders, GeneratePress is the right theme for you. It is completely compatible with all major page builders, including Beaver Builder and Elementor. Thanks to our emphasis on WordPress coding standards, we can boast full compatibility with all well-coded plugins, including WooCommerce. GeneratePress is fully responsive, uses valid HTML/CSS, and is translated into over 25 languages by our amazing community of users. A few of our many features include 60+ color controls, powerful dynamic typography, 5 navigation locations, 5 sidebar layouts, dropdown menus (click or hover), and 9 widget areas. Learn more and check out our powerful premium version at https://generatepress.com"
+msgstr "GeneratePress és un tema lleuger de WordPress construït amb un enfocament en la velocitat i usabilitat. El rendiment és important per a nosaltres, per la qual cosa una nova instal·lació de GeneratePress afegeix menys de 10kb (utilitzant gzip) al pes de la vostra pàgina. Aprofitem al màxim el nou editor de blocs (Gutenberg), que us dóna més control sobre la creació del vostre contingut. Si utilitzeu maquetadors de pàgines, GeneratePress és el tema adequat. És totalment compatible amb tots els principals maquetadors de pàgines, incloent Beaver Builder i Elementor. Gràcies a la nostra èmfasi en els estàndards de codificació de WordPress, podem presumir de compatibilitat total amb totes les extensions ben codificades, incloent WooCommerce. GeneratePress és totalment adaptable, utilitza HTML/CSS vàlid i està traduït a més de 25 idiomes gràcies a la nostra increïble comunitat d'usuaris. Algunes de les moltes característiques inclouen més de 60 controls de color, una potent tipografia dinàmica, 5 ubicacions de navegació, 5 dissenys de barra lateral, menús desplegables (clic o flotant) i 9 àrees de ginys. Obtingueu més informació i feu un cop d'ull a la nostra potent versió prèmium a https://generatepress.com"
+
+#. Theme Name of the theme
+#: style.css inc/class-dashboard.php:59 inc/class-dashboard.php:60
+#: inc/dashboard.php:20 inc/structure/footer.php:84
+#, gp-priority: high
+msgid "GeneratePress"
+msgstr "GeneratePress"
+
+#. translators: Aria-label describing the read more button
+#: inc/structure/post-meta.php:595
+msgctxt "read more about post title"
+msgid "Read more about %s"
+msgstr "Més informació sobre %s"
+
+#: inc/structure/search-modal.php:40
+msgid "Open search"
+msgstr "Obre la cerca"
+
+#: inc/customizer/fields/search-modal.php:85
+msgid "Overlay Background"
+msgstr "Fons de la superposició"
+
+#: inc/customizer/fields/search-modal.php:62
+msgid "Field Text"
+msgstr "Text del camp"
+
+#: inc/customizer/fields/search-modal.php:39
+msgid "Field Background"
+msgstr "Fons del camp"
+
+#: inc/customizer/fields/search-modal.php:16
+msgid "Search Modal"
+msgstr "Cerca en una finestra emergent"
+
+#: inc/customizer.php:1032
+msgid "Enable navigation search modal"
+msgstr "Activa la navegació per la finestra emergent de cerca"
+
+#: inc/class-html-attributes.php:316
+msgid "Posts"
+msgstr "Entrades"
+
+#: inc/defaults.php:106
+msgid "Accent"
+msgstr "Èmfasi"
+
+#. translators: Base number
+#: inc/defaults.php:95 inc/defaults.php:101
+msgid "Base %s"
+msgstr "Base %s"
+
+#: inc/defaults.php:89 assets/dist/customizer.js:1
+msgid "Base"
+msgstr "Base"
+
+#. translators: Contrast number
+#: inc/defaults.php:78 inc/defaults.php:84
+msgid "Contrast %s"
+msgstr "Contrast %s"
+
+#: inc/defaults.php:72
+msgid "Contrast"
+msgstr "Contrast"
+
+#: inc/customizer/fields/sidebar-widgets.php:16
+msgid "Sidebar Widgets"
+msgstr "Ginys de la barra lateral"
+
+#: inc/customizer/fields/primary-navigation.php:153
+msgid "Sub-Menu Text Current"
+msgstr "Text del submenú actual"
+
+#: inc/customizer/fields/primary-navigation.php:145
+msgid "Sub-Menu Text Hover"
+msgstr "Text del submenú en passar el ratolí"
+
+#: inc/customizer/fields/primary-navigation.php:137
+msgid "Sub-Menu Text"
+msgstr "Text del submenú"
+
+#: inc/customizer/fields/primary-navigation.php:120
+msgid "Sub-Menu Background Current"
+msgstr "Fons del submenú actual"
+
+#: inc/customizer/fields/primary-navigation.php:112
+msgid "Sub-Menu Background Hover"
+msgstr "Fons del submenú en passar el ratolí"
+
+#: inc/customizer/fields/primary-navigation.php:104
+msgid "Sub-Menu Background"
+msgstr "Fons del submenú"
+
+#: inc/customizer/fields/primary-navigation.php:87
+msgid "Navigation Text Current"
+msgstr "Text de la navegació actual"
+
+#: inc/customizer/fields/primary-navigation.php:79
+msgid "Navigation Text Hover"
+msgstr "Text de la navegació en passar el ratolí"
+
+#: inc/customizer/fields/primary-navigation.php:71
+msgid "Navigation Text"
+msgstr "Text de la navegació"
+
+#: inc/customizer/fields/primary-navigation.php:55
+#: inc/customizer/fields/primary-navigation.php:88
+#: inc/customizer/fields/primary-navigation.php:121
+#: inc/customizer/fields/primary-navigation.php:154
+msgid "Choose Current Color"
+msgstr "Trieu el color actual"
+
+#: inc/customizer/fields/primary-navigation.php:54
+msgid "Navigation Background Current"
+msgstr "Fons de la navegació actual"
+
+#: inc/customizer/fields/primary-navigation.php:46
+msgid "Navigation Background Hover"
+msgstr "Fons de la navegació en passar el ratolí"
+
+#: inc/customizer/fields/primary-navigation.php:38
+msgid "Navigation Background"
+msgstr "Fons de la navegació"
+
+#: inc/customizer/fields/header.php:168
+msgid "Tagline"
+msgstr "Lema"
+
+#: inc/customizer/fields/header.php:145 assets/dist/customizer.js:1
+msgid "Site Title"
+msgstr "Títol del lloc web"
+
+#: inc/customizer/fields/forms.php:210
+msgid "Border Focus"
+msgstr "Enfocament de la vora"
+
+#: inc/customizer/fields/forms.php:184
+msgid "Border"
+msgstr "Vora"
+
+#: inc/customizer/fields/forms.php:143
+msgid "Text Focus"
+msgstr "Text enfocat"
+
+#: inc/customizer/fields/forms.php:82 inc/customizer/fields/forms.php:148
+#: inc/customizer/fields/forms.php:216
+msgid "Choose Focus Color"
+msgstr "Trieu el color d'enfocament"
+
+#: inc/customizer/fields/forms.php:76
+msgid "Background Focus"
+msgstr "Enfocament del fons"
+
+#: inc/customizer/fields/forms.php:16
+msgid "Forms"
+msgstr "Formularis"
+
+#: inc/customizer/fields/footer-widgets.php:149
+#: inc/customizer/fields/sidebar-widgets.php:149
+msgid "Widget Title"
+msgstr "Títol del giny"
+
+#: inc/customizer/fields/content.php:344
+msgid "Heading 6 (H6) Color"
+msgstr "Color de la capçalera 6 (H6)"
+
+#: inc/customizer/fields/content.php:339
+msgid "Heading 5 (H5) Color"
+msgstr "Color de la capçalera 5 (H5)"
+
+#: inc/customizer/fields/content.php:334
+msgid "Heading 4 (H4) Color"
+msgstr "Color de la capçalera 4 (H4)"
+
+#: inc/customizer/fields/content.php:329
+msgid "Heading 3 (H3) Color"
+msgstr "Color de la capçalera 3 (H3)"
+
+#: inc/customizer/fields/content.php:324
+msgid "Heading 2 (H2) Color"
+msgstr "Color de la capçalera 2 (H2)"
+
+#: inc/customizer/fields/content.php:319
+msgid "Heading 1 (H1) Color"
+msgstr "Color de la capçalera 1 (H1)"
+
+#: inc/customizer/fields/content.php:299
+msgid "Entry Meta Links Hover"
+msgstr "Enllaços a les metadades de les entrades en passa el ratolí"
+
+#: inc/customizer/fields/content.php:274
+msgid "Entry Meta Links"
+msgstr "Enllaços a les metadades de les entrades"
+
+#: inc/customizer/fields/content.php:236
+msgid "Entry Meta Text"
+msgstr "Text a les metadades de les entrades"
+
+#: inc/customizer/fields/content.php:210
+msgid "Archive Content Title Hover"
+msgstr "Títol del contingut de l'arxiu en passar el ratolí"
+
+#: inc/customizer/fields/content.php:185
+msgid "Archive Content Title"
+msgstr "Títol del contingut de l'arxiu"
+
+#: inc/customizer/fields/buttons.php:16 assets/dist/customizer.js:1
+msgid "Buttons"
+msgstr "Botons"
+
+#: inc/customizer/fields/body.php:150
+msgid "Choose Visited Color"
+msgstr "Trieu el color visitat"
+
+#: inc/customizer/fields/body.php:119 inc/customizer/fields/content.php:121
+#: inc/customizer/fields/footer-bar.php:123
+#: inc/customizer/fields/footer-widgets.php:123
+#: inc/customizer/fields/header.php:119
+#: inc/customizer/fields/sidebar-widgets.php:123
+#: inc/customizer/fields/top-bar.php:123
+msgid "Link Hover"
+msgstr "Enllaç en passar el ratolí"
+
+#: inc/customizer/fields/body.php:94 inc/customizer/fields/content.php:96
+#: inc/customizer/fields/footer-bar.php:98
+#: inc/customizer/fields/footer-widgets.php:98
+#: inc/customizer/fields/header.php:94
+#: inc/customizer/fields/sidebar-widgets.php:98
+#: inc/customizer/fields/top-bar.php:97
+msgid "Link"
+msgstr "Enllaç"
+
+#: inc/customizer/fields/back-to-top.php:147
+#: inc/customizer/fields/buttons.php:148
+msgid "Text Hover"
+msgstr "Text en passar el ratolí"
+
+#: inc/customizer/fields/back-to-top.php:86
+#: inc/customizer/fields/back-to-top.php:152 inc/customizer/fields/body.php:123
+#: inc/customizer/fields/buttons.php:87 inc/customizer/fields/buttons.php:153
+#: inc/customizer/fields/content.php:125 inc/customizer/fields/content.php:214
+#: inc/customizer/fields/content.php:303
+#: inc/customizer/fields/footer-bar.php:128
+#: inc/customizer/fields/footer-widgets.php:128
+#: inc/customizer/fields/header.php:124
+#: inc/customizer/fields/primary-navigation.php:47
+#: inc/customizer/fields/primary-navigation.php:80
+#: inc/customizer/fields/primary-navigation.php:113
+#: inc/customizer/fields/primary-navigation.php:146
+#: inc/customizer/fields/sidebar-widgets.php:128
+#: inc/customizer/fields/top-bar.php:128
+msgid "Choose Hover Color"
+msgstr "Trieu el color en passar el ratolí"
+
+#: inc/customizer/fields/back-to-top.php:60
+#: inc/customizer/fields/back-to-top.php:127 inc/customizer/fields/body.php:98
+#: inc/customizer/fields/buttons.php:61 inc/customizer/fields/buttons.php:128
+#: inc/customizer/fields/content.php:100 inc/customizer/fields/content.php:189
+#: inc/customizer/fields/content.php:278
+#: inc/customizer/fields/footer-bar.php:38
+#: inc/customizer/fields/footer-bar.php:63
+#: inc/customizer/fields/footer-bar.php:103
+#: inc/customizer/fields/footer-widgets.php:38
+#: inc/customizer/fields/footer-widgets.php:63
+#: inc/customizer/fields/footer-widgets.php:103
+#: inc/customizer/fields/forms.php:56 inc/customizer/fields/forms.php:123
+#: inc/customizer/fields/forms.php:190 inc/customizer/fields/header.php:99
+#: inc/customizer/fields/primary-navigation.php:39
+#: inc/customizer/fields/primary-navigation.php:72
+#: inc/customizer/fields/primary-navigation.php:105
+#: inc/customizer/fields/primary-navigation.php:138
+#: inc/customizer/fields/sidebar-widgets.php:38
+#: inc/customizer/fields/sidebar-widgets.php:63
+#: inc/customizer/fields/sidebar-widgets.php:103
+#: inc/customizer/fields/top-bar.php:102
+msgid "Choose Initial Color"
+msgstr "Trieu el color inicial"
+
+#: inc/customizer/fields/back-to-top.php:16
+msgid "Back to Top"
+msgstr "Vés a dalt"
+
+#. translators: Learn more here
+#: inc/customizer.php:1564
+msgid "Switching to our dynamic typography system can change how your fonts display. Review your website thoroughly before publishing this change. Learn more %s."
+msgstr "El canvi al nostre sistema de tipografia dinàmica pot canviar la manera com es mostren els tipus de lletra. Reviseu bé el vostre lloc web abans de publicar aquest canvi. Més informació %s."
+
+#: inc/customizer.php:1561
+msgid "Use dynamic typography system"
+msgstr "Utilitza el sistema de tipografia dinàmica"
+
+#: inc/customizer.php:1490
+msgid "Never"
+msgstr "Mai"
+
+#: inc/customizer.php:1489
+msgid "Not on hover"
+msgstr "No en passar el ratolí"
+
+#: inc/customizer.php:1488
+msgid "On hover"
+msgstr "En passar el ratolí"
+
+#: inc/customizer.php:1487
+msgid "Always"
+msgstr "Sempre"
+
+#: inc/customizer.php:1484
+msgid "Add underlines to your links in your main content areas."
+msgstr "Afegiu un subratllat als enllaços de les vostres àrees de contingut principals."
+
+#: inc/customizer.php:1483
+msgid "Underline Links"
+msgstr "Subratlla els enllaços"
+
+#: inc/customizer.php:489
+msgid "Configure"
+msgstr "Configura"
+
+#: inc/customizer.php:424
+msgid "Typography Manager"
+msgstr "Gestor de tipografies"
+
+#: inc/customizer.php:402
+msgid "Optional"
+msgstr "Opcional"
+
+#: inc/customizer.php:401
+msgid "Fallback"
+msgstr "De reserva"
+
+#: inc/customizer.php:400
+msgid "Swap"
+msgstr "Intercanvia"
+
+#: inc/customizer.php:399
+msgid "Block"
+msgstr "Bloc"
+
+#: inc/customizer.php:398
+msgid "Auto"
+msgstr "Automàtic"
+
+#: inc/customizer.php:394
+msgid "Learn about font-display"
+msgstr "Més informació sobre font-display"
+
+#: inc/customizer.php:390
+msgid "Google font-display"
+msgstr "font-display de Google"
+
+#: inc/customizer.php:375
+msgid "Choose Font"
+msgstr "Trieu el tipus de lletra"
+
+#: inc/customizer.php:330
+msgid "Font Manager"
+msgstr "Gestor de tipus de lletra"
+
+#: inc/customizer.php:281 assets/dist/customizer.js:1
+msgid "Choose Color"
+msgstr "Trieu el color"
+
+#: inc/customizer.php:244
+msgid "Global Colors"
+msgstr "Colors globals"
+
+#: inc/class-rest.php:96 assets/dist/dashboard.js:1
+msgid "Settings reset."
+msgstr "Configuració reiniciada."
+
+#: inc/class-html-attributes.php:461
+msgid "Entry meta"
+msgstr "Metadades de les entrades"
+
+#: inc/class-html-attributes.php:448
+msgid "Comment meta"
+msgstr "Metadades dels comentaris"
+
+#: inc/class-html-attributes.php:319
+msgid "Archive Page"
+msgstr "Pàgina d'arxiu"
+
+#: inc/class-html-attributes.php:302
+msgid "Page"
+msgstr "Pàgina"
+
+#: inc/class-html-attributes.php:244
+msgid "Mobile Toggle"
+msgstr "Canvia a mòbil"
+
+#: inc/class-html-attributes.php:214
+msgid "Primary"
+msgstr "Principal"
+
+#: inc/class-html-attributes.php:171 inc/class-html-attributes.php:257
+msgid "Site"
+msgstr "Lloc"
+
+#: inc/class-dashboard.php:123
+msgid "Dashboard"
+msgstr "Tauler"
+
+#: inc/meta-box.php:176
+msgid "Choose your content container type."
+msgstr "Trieu el tipus de contenidor del contingut."
+
+#: inc/meta-box.php:105 inc/meta-box.php:173
+msgid "Content Container"
+msgstr "Contenidor de contingut"
+
+#: inc/general.php:83 inc/general.php:99
+msgid "Close Sub-Menu"
+msgstr "Tanca el submenú"
+
+#: inc/general.php:82 inc/general.php:98 inc/structure/navigation.php:377
+#: inc/structure/navigation.php:459
+msgid "Open Sub-Menu"
+msgstr "Obre el submenú"
+
+#: inc/structure/footer.php:83
+msgctxt "GeneratePress"
+msgid "Built with"
+msgstr "Funciona gràcies a"
+
+#: inc/structure/post-meta.php:112
+msgctxt "prepends the pagination page number for screen readers"
+msgid "Page"
+msgstr "Pàgina"
+
+#. translators: right arrow
+#: inc/structure/post-meta.php:106
+msgid "Next %s"
+msgstr "Següent %s"
+
+#. translators: left arrow
+#: inc/structure/post-meta.php:98
+msgid "%s Previous"
+msgstr "%s anterior"
+
+#: inc/customizer.php:1439 inc/customizer.php:1565
+msgid "here"
+msgstr "aquí"
+
+#. translators: Learn more here
+#: inc/customizer.php:1438
+msgid "Switching your structure can change how your website displays. Review your website thoroughly before publishing this change, or use a staging site to review the potential changes. Learn more %s."
+msgstr "Un canvi d'estructura pot alterar la visualització del vostre lloc web. Reviseu bé el vostre lloc web abans de publicar aquest canvi o utilitzeu un lloc de prova per revisar els possibles canvis. Més informació %s."
+
+#: inc/customizer.php:1435
+msgid "Caution:"
+msgstr "Atenció:"
+
+#: inc/customizer.php:1431
+msgid "Floats"
+msgstr "Flotants"
+
+#: inc/customizer.php:1430
+msgid "Flexbox"
+msgstr "Flexbox"
+
+#: inc/customizer.php:1427
+msgid "Structure"
+msgstr "Estructura"
+
+#: inc/customizer.php:1345
+msgid "Full Content"
+msgstr "Contingut sencer"
+
+#: inc/customizer.php:666
+msgid "Navigation After"
+msgstr "Navegació després"
+
+#: inc/customizer.php:665
+msgid "Navigation Before"
+msgstr "Navegació abans"
+
+#: inc/customizer.php:664
+msgid "Classic"
+msgstr "Clàssic"
+
+#: inc/general.php:118
+msgid "Close Search Bar"
+msgstr "Tanca la barra de cerca"
+
+#: inc/general.php:117 inc/structure/navigation.php:194
+#: inc/structure/navigation.php:553 inc/structure/navigation.php:594
+#: inc/structure/navigation.php:635
+msgid "Open Search Bar"
+msgstr "Obre la barra de cerca"
+
+#: inc/customizer.php:1510
+msgid "Reduce the number of CSS file requests and use a lite version of our grid system."
+msgstr "Reduïu el nombre de peticions de fitxers CSS i utilitzeu una versió lleugera del nostre sistema de quadrícula."
+
+#: inc/customizer.php:1509
+msgid "Combine CSS"
+msgstr "Combina CSS"
+
+#: inc/customizer.php:1464
+msgid "Font"
+msgstr "Tipus de lletra"
+
+#: inc/customizer.php:1463
+msgid "SVG"
+msgstr "SVG"
+
+#: inc/customizer.php:1460
+msgid "Icon Type"
+msgstr "Tipus d'icona"
+
+#: inc/customizer.php:1082 inc/customizer/fields/back-to-top.php:122
+#: inc/customizer/fields/body.php:55 inc/customizer/fields/buttons.php:123
+#: inc/customizer/fields/content.php:58 inc/customizer/fields/footer-bar.php:58
+#: inc/customizer/fields/footer-widgets.php:58
+#: inc/customizer/fields/forms.php:118 inc/customizer/fields/header.php:56
+#: inc/customizer/fields/primary-navigation.php:207
+#: inc/customizer/fields/sidebar-widgets.php:58
+#: inc/customizer/fields/top-bar.php:58
+msgid "Text"
+msgstr "Text"
+
+#: inc/customizer.php:1081
+msgid "Boxes"
+msgstr "Caixes"
+
+#: inc/customizer.php:1078
+msgid "Container Alignment"
+msgstr "Alineació del contenidor"
+
+#: inc/customizer.php:226
+msgid "Place logo next to title"
+msgstr "Posa el logotip al costat del títol"
+
+#: inc/typography.php:659 assets/dist/customizer.js:1
+msgid "Heading 3 (H3)"
+msgstr "Capçalera 3 (H3)"
+
+#: inc/typography.php:512 assets/dist/customizer.js:1
+msgid "Heading 2 (H2)"
+msgstr "Capçalera 2 (H2)"
+
+#: inc/typography.php:365 assets/dist/customizer.js:1
+msgid "Heading 1 (H1)"
+msgstr "Capçalera 1 (H1)"
+
+#: inc/dashboard.php:261
+msgid "Reset Settings"
+msgstr "Torneu a la configuració original"
+
+#: inc/dashboard.php:247
+msgid "Visit documentation &rarr;"
+msgstr "Visiteu la documentació &rarr;"
+
+#: inc/dashboard.php:246
+msgid "Want to learn more about the theme? Check out our extensive documentation."
+msgstr "Voleu saber més coses sobre el tema? Consulteu la nostra extensa documentació."
+
+#: inc/dashboard.php:231 assets/dist/dashboard.js:1
+msgid "Start Customizing"
+msgstr "Comenceu a personalitzar"
+
+#: inc/dashboard.php:221
+msgid "All Options"
+msgstr "Totes les opcions"
+
+#: inc/dashboard.php:216 assets/dist/dashboard.js:1
+msgid "Layout Options"
+msgstr "Opcions de disseny"
+
+#: inc/dashboard.php:211
+msgid "Customize Colors"
+msgstr "Personalitza els colors"
+
+#: inc/dashboard.php:206
+msgid "Customize Fonts"
+msgstr "Personalitza els tipus de lletra"
+
+#: inc/dashboard.php:201
+msgid "Upload Logo"
+msgstr "Penja el logotip"
+
+#: inc/customizer.php:981
+msgid "Dropdown Direction"
+msgstr "Direcció del desplegable"
+
+#: inc/customizer.php:924
+msgid "The width when the navigation ceases to float and drops below your logo."
+msgstr "L'amplada quan la navegació deixa de surar i cau sota el vostre logotip."
+
+#: inc/customizer.php:923
+msgid "Navigation Drop Point"
+msgstr "Punt de caiguda de navegació"
+
+#: inc/customizer.php:669
+msgid "Navigation Left"
+msgstr "Navegació a l'esquerra"
+
+#: inc/customizer.php:668
+msgid "Navigation After - Centered"
+msgstr "Navegació després - Centrada"
+
+#: inc/customizer.php:667
+msgid "Navigation Before - Centered"
+msgstr "Navegació abans - Centrada"
+
+#: inc/customizer.php:659
+msgid "Header Presets"
+msgstr "Configuracions predeterminades de la capçalera"
+
+#: inc/customizer.php:662
+msgid "Current"
+msgstr "Actual"
+
+#: inc/customizer.php:194
+msgid "Logo Width"
+msgstr "Amplada del logotip"
+
+#: inc/structure/navigation.php:665
+msgid "Mobile Menu"
+msgstr "Menú del mòbil"
+
+#: inc/meta-box.php:196
+msgid "Premium module available"
+msgstr "Mòdul prèmium disponible"
+
+#: inc/dashboard.php:263
+msgid "Deleting your settings can not be undone."
+msgstr "S'està suprimint la configuració i no es pot desfer."
+
+#: inc/dashboard.php:157
+msgid "Premium Modules"
+msgstr "Mòduls prèmium"
+
+#: inc/customizer.php:1530
+msgid "Cache CSS generated by your options to boost performance."
+msgstr "Memòria cau dels fulls d'estil CSS generada per les vostres opcions per augmentar el rendiment."
+
+#: inc/customizer.php:1529
+msgid "Cache dynamic CSS"
+msgstr "Memòria cau dinàmica de les CSS"
+
+#: inc/customizer.php:1394
+msgid "Load essential Font Awesome icons instead of the full library."
+msgstr "Carrega les icones essencials de Font Awesome en lloc de la llibreria completa."
+
+#: inc/customizer.php:1393
+msgid "Load essential icons only"
+msgstr "Carrega les icones essencials només"
+
+#: inc/customizer.php:1374
+msgid "General"
+msgstr "General"
+
+#: inc/customizer.php:1346
+msgid "Excerpt"
+msgstr "Extracte"
+
+#: inc/customizer.php:1342
+msgid "Content Type"
+msgstr "Tipus de contingut"
+
+#: inc/customizer.php:1362 inc/typography.php:747
+msgid "More options are available for this section in our premium version."
+msgstr "Hi ha més opcions disponibles per secció en la versió prèmium."
+
+#: inc/customizer.php:171
+msgid "Retina Logo"
+msgstr "Logotip de retina"
+
+#: inc/customizer.php:86
+msgid "Premium Modules Available"
+msgstr "Mòduls prèmium disponibles"
+
+#: inc/customizer/controls/class-typography-control.php:80
+#: assets/dist/customizer.js:3
+msgid "Variants"
+msgstr "Variants"
+
+#: inc/customizer/controls/class-typography-control.php:73
+#: assets/dist/customizer.js:3
+msgid "System fonts"
+msgstr "Tipus de lletra del sistema"
+
+#: inc/structure/comments.php:156
+msgid "Comment"
+msgstr "Comentari"
+
+#: inc/customizer/controls/class-range-control.php:71
+#: assets/dist/customizer.js:1
+msgid "Mobile"
+msgstr "Mòbil"
+
+#: inc/customizer/controls/class-range-control.php:70
+#: assets/dist/customizer.js:1
+msgid "Tablet"
+msgstr "Tauleta"
+
+#: inc/customizer/controls/class-range-control.php:69
+#: assets/dist/customizer.js:1
+msgid "Desktop"
+msgstr "Escriptori"
+
+#: inc/meta-box.php:181
+msgid "Full Width"
+msgstr "Amplada total"
+
+#: inc/customizer.php:623
+msgid "Top Bar Alignment"
+msgstr "Alineació de la barra superior"
+
+#: inc/customizer.php:597
+msgid "Top Bar Inner Width"
+msgstr "Amplada interior de la barra superior"
+
+#: inc/customizer.php:571
+msgid "Top Bar Width"
+msgstr "Amplada de la barra superior"
+
+#: inc/customizer.php:551 inc/customizer/fields/top-bar.php:16
+#: inc/general.php:167 assets/dist/customizer.js:1
+msgid "Top Bar"
+msgstr "Barra superior"
+
+#: inc/customizer.php:1361 inc/dashboard.php:168 inc/typography.php:746
+msgid "Learn more"
+msgstr "Saber-ne més"
+
+#: inc/class-dashboard.php:147 inc/dashboard.php:56
+msgid "Documentation"
+msgstr "Documentació"
+
+#: inc/class-dashboard.php:132 inc/dashboard.php:53
+msgid "Premium"
+msgstr "Prèmium"
+
+#: inc/customizer.php:1283
+msgid "Footer Bar Alignment"
+msgstr "Alineació de la barra del peu de pàgina"
+
+#: inc/customizer/fields/footer-bar.php:16 inc/general.php:166
+#: assets/dist/customizer.js:1
+msgid "Footer Bar"
+msgstr "Barra del peu de pàgina"
+
+#: inc/customizer.php:1230
+msgid "Inner Footer Width"
+msgstr "Amplada interior del peu de pàgina"
+
+#: inc/customizer.php:842
+msgid "Inner Navigation Width"
+msgstr "Amplada interior de navegació"
+
+#: inc/customizer.php:757
+msgid "Inner Header Width"
+msgstr "Amplada interior de la capçalera"
+
+#: inc/typography.php:297
+msgid "Paragraph margin"
+msgstr "Marge del paràgraf"
+
+#: inc/typography.php:263 inc/typography.php:444 inc/typography.php:591
+#: inc/typography.php:720
+msgid "Line height"
+msgstr "Alçada de la línia"
+
+#: inc/customizer/controls/class-range-control.php:72 inc/dashboard.php:272
+#: assets/dist/dashboard.js:1
+msgid "Reset"
+msgstr "Reinicialitza"
+
+#: inc/customizer.php:1185 assets/dist/customizer.js:1
+msgid "Footer"
+msgstr "Peu de pàgina"
+
+#: inc/customizer.php:1092 inc/meta-box.php:90
+msgid "Sidebars"
+msgstr "Barres laterals"
+
+#: inc/customizer.php:797 inc/customizer/fields/primary-navigation.php:23
+#: assets/dist/customizer.js:1
+msgid "Primary Navigation"
+msgstr "Navegació principal"
+
+#: inc/customizer.php:507
+msgid "Container"
+msgstr "Contenidor"
+
+#: inc/structure/footer.php:228
+msgid "Scroll back to top"
+msgstr "Desplaçar-se fins dalt"
+
+#: inc/customizer.php:1309
+msgid "Back to Top Button"
+msgstr "Botó Vés a dalt"
+
+#: inc/customizer.php:1205
+msgid "Footer Width"
+msgstr "Amplada del peu de pàgina"
+
+#: inc/customizer.php:961
+msgid "Click - Arrow"
+msgstr "Clic - Fletxa"
+
+#: inc/customizer.php:960
+msgid "Click - Menu Item"
+msgstr "Clic - Element de menú"
+
+#: inc/customizer.php:959
+msgid "Hover"
+msgstr "En passar el ratolí"
+
+#: inc/customizer.php:956
+msgid "Navigation Dropdown"
+msgstr "Desplegable de navegació"
+
+#: inc/customizer.php:817
+msgid "Navigation Width"
+msgstr "Amplada de la navegació"
+
+#: inc/customizer.php:574 inc/customizer.php:600 inc/customizer.php:735
+#: inc/customizer.php:761 inc/customizer.php:820 inc/customizer.php:846
+#: inc/customizer.php:1208 inc/customizer.php:1234
+msgid "Full"
+msgstr "Complet"
+
+#: inc/customizer.php:732
+msgid "Header Width"
+msgstr "Amplada de la capçalera"
+
+#. translators: %s: Heart icon
+#: inc/dashboard.php:302
+msgctxt "made with love"
+msgid "Made with %s by Tom Usborne"
+msgstr "Fet amb %s per Tom Usborne"
+
+#: inc/customizer.php:899
+msgid "Float Left"
+msgstr "Flota a l'esquerra"
+
+#: inc/class-dashboard.php:140 inc/dashboard.php:55
+msgid "Support"
+msgstr "Suport"
+
+#: inc/customizer/fields/content.php:147 inc/meta-box.php:189
+#: inc/meta-box.php:191
+msgid "Content Title"
+msgstr "Títol del contingut"
+
+#: content-404.php:51
+msgid "It looks like nothing was found at this location. Maybe try searching?"
+msgstr "Sembla que no s'ha trobat res en aquest lloc. I si proveu amb una cerca?"
+
+#: inc/structure/search-modal.php:104 searchform.php:15
+msgctxt "placeholder"
+msgid "Search &hellip;"
+msgstr "Cerca &hellip;"
+
+#: inc/structure/search-modal.php:102 searchform.php:14 searchform.php:15
+msgctxt "label"
+msgid "Search for:"
+msgstr "Cerca:"
+
+#. translators: 1: Search query name
+#: inc/structure/archives.php:136
+msgid "Search Results for: %s"
+msgstr "Resultats de la cerca per a: %s"
+
+#: no-results.php:62
+msgid "It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps searching can help."
+msgstr "Sembla que no podem trobar el que esteu cercant. Potser ajudaria si feu una cerca."
+
+#: no-results.php:57
+msgid "Sorry, but nothing matched your search terms. Please try again with some different keywords."
+msgstr "Res no coincideix amb els termes de cerca. Torneu-ho a provar amb algunes paraules claus diferents."
+
+#. translators: 1: Admin URL
+#: no-results.php:49
+msgid "Ready to publish your first post? <a href=\"%1$s\">Get started here</a>."
+msgstr "Preparats per a publicar la primera entrada? <a href=\"%s\">Comenceu aquí</a>."
+
+#: no-results.php:27
+msgid "Nothing Found"
+msgstr "No s'ha trobat res"
+
+#: inc/structure/post-meta.php:274
+msgid "% Comments"
+msgstr "% comentaris"
+
+#: inc/structure/post-meta.php:274
+msgid "1 Comment"
+msgstr "1 comentari"
+
+#: inc/structure/post-meta.php:274
+msgid "Leave a comment"
+msgstr "Feu un comentari"
+
+#: inc/structure/post-meta.php:258
+msgctxt "Used before tag names."
+msgid "Tags"
+msgstr "Etiquetes"
+
+#: inc/structure/post-meta.php:241
+msgctxt "Used before category names."
+msgid "Categories"
+msgstr "Categories"
+
+#: inc/structure/post-meta.php:233 inc/structure/post-meta.php:250
+msgctxt "Used between list items, there is a space after the comma."
+msgid ", "
+msgstr ", "
+
+#: inc/structure/navigation.php:490
+msgctxt "label"
+msgid "Search"
+msgstr "Cerca"
+
+#: inc/structure/post-meta.php:581
+msgid "Read more"
+msgstr "Llegiu més"
+
+#. translators: 1: Author name
+#: inc/structure/post-meta.php:222
+msgid "View all posts by %s"
+msgstr "Mostra totes les entrades de %s"
+
+#: inc/structure/post-meta.php:301
+msgid "by"
+msgstr "per"
+
+#: inc/structure/comments.php:91
+msgid "Your comment is awaiting moderation."
+msgstr "El comentari està pendent de moderació."
+
+#. translators: 1: date, 2: time
+#: inc/structure/comments.php:71
+msgctxt "1: date, 2: time"
+msgid "%1$s at %2$s"
+msgstr "%1$s a les %2$s"
+
+#: inc/structure/comments.php:28
+msgid "Pingback:"
+msgstr "Retroenllaç:"
+
+#: inc/structure/post-meta.php:85
+msgid "Newer posts"
+msgstr "Entrades més recents"
+
+#: inc/structure/post-meta.php:76
+msgid "Older posts"
+msgstr "Entrades anteriors"
+
+#: inc/structure/post-meta.php:85
+msgid "Next"
+msgstr "Següent"
+
+#: inc/structure/post-meta.php:76
+msgid "Previous"
+msgstr "Anterior"
+
+#: inc/deprecated.php:31
+msgid "Next &rarr;"
+msgstr "Següent &rarr;"
+
+#: inc/deprecated.php:30
+msgid "&larr; Previous"
+msgstr "&larr; Anteriors"
+
+#: inc/dashboard.php:373
+msgid "Settings removed."
+msgstr "Configuració suprimida."
+
+#: inc/dashboard.php:368
+msgid "Import successful."
+msgstr "Importat correctament."
+
+#: inc/dashboard.php:363
+msgid "Settings saved."
+msgstr "S'ha desat la configuració."
+
+#: inc/customizer/fields/back-to-top.php:54 inc/customizer/fields/body.php:32
+#: inc/customizer/fields/buttons.php:55 inc/customizer/fields/content.php:34
+#: inc/customizer/fields/footer-bar.php:32
+#: inc/customizer/fields/footer-widgets.php:32
+#: inc/customizer/fields/forms.php:50 inc/customizer/fields/header.php:32
+#: inc/customizer/fields/primary-navigation.php:189
+#: inc/customizer/fields/sidebar-widgets.php:32
+#: inc/customizer/fields/top-bar.php:32
+msgid "Background"
+msgstr "Fons"
+
+#: inc/meta-box.php:100 inc/meta-box.php:186
+msgid "Disable Elements"
+msgstr "Desactiva elements"
+
+#: inc/dashboard.php:268
+msgid "Warning: This will delete your settings."
+msgstr "Avís: Això suprimirà la configuració."
+
+#: inc/dashboard.php:93
+msgid "Customize"
+msgstr "Personalitza"
+
+#: inc/structure/search-modal.php:105 searchform.php:21 searchform.php:27
+msgctxt "submit button"
+msgid "Search"
+msgstr "Cerca"
+
+#: inc/structure/header.php:379 inc/structure/header.php:380
+msgid "Skip to content"
+msgstr "Vés al contingut"
+
+#: inc/structure/navigation.php:50 inc/structure/navigation.php:60
+#: inc/structure/navigation.php:139 inc/structure/navigation.php:155
+msgid "Menu"
+msgstr "Menú"
+
+#: inc/meta-box.php:168
+msgid "5 Widgets"
+msgstr "5 ginys"
+
+#: inc/meta-box.php:167
+msgid "4 Widgets"
+msgstr "4 ginys"
+
+#: inc/meta-box.php:166
+msgid "3 Widgets"
+msgstr "3 ginys"
+
+#: inc/meta-box.php:165
+msgid "2 Widgets"
+msgstr "2 ginys"
+
+#: inc/meta-box.php:164
+msgid "1 Widgets"
+msgstr "1 giny"
+
+#: inc/meta-box.php:163
+msgid "0 Widgets"
+msgstr "0 ginys"
+
+#: inc/meta-box.php:152
+msgid "Both Sidebars on Right"
+msgstr "Ambdues barres laterals a la dreta"
+
+#: inc/meta-box.php:151
+msgid "Both Sidebars on Left"
+msgstr "Ambdues barres laterals a l'esquerra"
+
+#: inc/meta-box.php:150
+msgid "Both Sidebars"
+msgstr "Ambdues barres laterals"
+
+#: inc/meta-box.php:149
+msgid "No Sidebars"
+msgstr "Cap barra lateral"
+
+#: inc/customizer/fields/content.php:16 assets/dist/customizer.js:1
+msgid "Content"
+msgstr "Contingut"
+
+#: inc/customizer.php:663 inc/meta-box.php:146 inc/meta-box.php:162
+#: inc/meta-box.php:180 assets/dist/customizer.js:1 assets/dist/customizer.js:3
+msgid "Default"
+msgstr "Predeterminada"
+
+#: inc/customizer.php:1323
+msgid "Blog"
+msgstr "Blog"
+
+#: inc/customizer.php:1254 inc/customizer/fields/footer-widgets.php:16
+#: inc/meta-box.php:95 inc/meta-box.php:159
+msgid "Footer Widgets"
+msgstr "Ginys del peu de pàgina"
+
+#: inc/customizer.php:1167
+msgid "Single Post Sidebar Layout"
+msgstr "Disseny de la barra lateral a les entrades individuals"
+
+#: inc/customizer.php:1139
+msgid "Blog Sidebar Layout"
+msgstr "Disseny de la barra lateral del blog"
+
+#: inc/customizer.php:1119 inc/customizer.php:1147 inc/customizer.php:1175
+msgid "Content / Sidebar / Sidebar"
+msgstr "Contingut / Barra lateral / Barra lateral"
+
+#: inc/customizer.php:1118 inc/customizer.php:1146 inc/customizer.php:1174
+msgid "Sidebar / Sidebar / Content"
+msgstr "Barra lateral / Barra lateral / Contingut"
+
+#: inc/customizer.php:1117 inc/customizer.php:1145 inc/customizer.php:1173
+msgid "Sidebar / Content / Sidebar"
+msgstr "Barra lateral / Contingut / Barra lateral "
+
+#: inc/customizer.php:1116 inc/customizer.php:1144 inc/customizer.php:1172
+msgid "Content (no sidebars)"
+msgstr "Contingut (cap barra lateral)"
+
+#: inc/customizer.php:1115 inc/customizer.php:1143 inc/customizer.php:1171
+msgid "Content / Sidebar"
+msgstr "Contingut / Barra lateral"
+
+#: inc/customizer.php:1114 inc/customizer.php:1142 inc/customizer.php:1170
+msgid "Sidebar / Content"
+msgstr "Barra lateral / Contingut"
+
+#: inc/customizer.php:1111 inc/meta-box.php:143
+msgid "Sidebar Layout"
+msgstr "Disseny de la barra lateral"
+
+#: inc/customizer.php:1058
+msgid "One Container"
+msgstr "Un contenidor"
+
+#: inc/customizer.php:1057
+msgid "Separate Containers"
+msgstr "Contenidors separats"
+
+#: inc/customizer.php:1054
+msgid "Content Layout"
+msgstr "Disseny del contingut"
+
+#: inc/customizer.php:1009 inc/customizer.php:1313
+msgid "Disable"
+msgstr "Desactiva"
+
+#: inc/customizer.php:1008 inc/customizer.php:1312
+msgid "Enable"
+msgstr "Activa"
+
+#: inc/customizer.php:1005 inc/customizer/fields/primary-navigation.php:166
+msgid "Navigation Search"
+msgstr "Cercador a la navegació"
+
+#: inc/customizer.php:867
+msgid "Navigation Alignment"
+msgstr "Alineació de la navegació"
+
+#: inc/customizer.php:902
+msgid "No Navigation"
+msgstr "Sense navegació"
+
+#: inc/customizer.php:898
+msgid "Float Right"
+msgstr "Flota a la dreta"
+
+#: inc/customizer.php:897
+msgid "Above Header"
+msgstr "Sobre la capçalera"
+
+#: inc/customizer.php:896
+msgid "Below Header"
+msgstr "Sota la capçalera"
+
+#: inc/customizer.php:893
+msgid "Navigation Location"
+msgstr "Posició de la navegació"
+
+#: inc/customizer.php:628 inc/customizer.php:787 inc/customizer.php:872
+#: inc/customizer.php:984 inc/customizer.php:1288
+msgid "Right"
+msgstr "Dreta"
+
+#: inc/customizer.php:627 inc/customizer.php:786 inc/customizer.php:871
+#: inc/customizer.php:1287
+msgid "Center"
+msgstr "Centrat"
+
+#: inc/customizer.php:626 inc/customizer.php:785 inc/customizer.php:870
+#: inc/customizer.php:985 inc/customizer.php:1286
+msgid "Left"
+msgstr "Esquerra"
+
+#: inc/customizer.php:782
+msgid "Header Alignment"
+msgstr "Alineació de la capçalera"
+
+#: inc/customizer.php:575 inc/customizer.php:601 inc/customizer.php:736
+#: inc/customizer.php:760 inc/customizer.php:821 inc/customizer.php:845
+#: inc/customizer.php:1209 inc/customizer.php:1233 inc/meta-box.php:182
+msgid "Contained"
+msgstr "Contingut"
+
+#: inc/customizer.php:529
+msgid "Container Width"
+msgstr "Amplada del contenidor"
+
+#: inc/customizer.php:499 inc/meta-box.php:62
+msgid "Layout"
+msgstr "Disseny"
+
+#: inc/customizer/fields/body.php:146
+msgid "Link Color Visited"
+msgstr "Color dels enllaços visitats"
+
+#: inc/customizer/fields/back-to-top.php:80
+#: inc/customizer/fields/buttons.php:81
+msgid "Background Hover"
+msgstr "Color de fons en passar el ratolí"
+
+#: inc/customizer.php:235
+msgid "Colors"
+msgstr "Colors"
+
+#: inc/customizer.php:149
+msgid "Logo"
+msgstr "Logotip"
+
+#: inc/customizer.php:128
+msgid "Hide site tagline"
+msgstr "Amaga la descripció curta"
+
+#: inc/customizer.php:109
+msgid "Hide site title"
+msgstr "Amaga el títol del lloc"
+
+#: inc/typography.php:229 inc/typography.php:403 inc/typography.php:550
+#: inc/typography.php:687 assets/dist/customizer.js:3
+msgid "Font size"
+msgstr "Mida del tipus de lletra"
+
+#: inc/customizer/controls/class-typography-control.php:78
+msgid "Text transform"
+msgstr "Transformació del text"
+
+#: inc/customizer/controls/class-typography-control.php:77
+msgid "Font weight"
+msgstr "Pes del tipus de lletra"
+
+#: inc/customizer/fields/body.php:16 inc/typography.php:199
+#: assets/dist/customizer.js:1
+msgid "Body"
+msgstr "Cos"
+
+#: inc/customizer.php:314 inc/typography.php:135
+msgid "Typography"
+msgstr "Tipografia"
+
+#: inc/customizer/controls/class-deprecated.php:72
+#: inc/customizer/controls/class-typography-control.php:76
+msgid "Font family"
+msgstr "Família del tipus de lletra"
+
+#: inc/customizer/controls/class-deprecated.php:71
+#: inc/customizer/controls/class-typography-control.php:74
+msgid "Google fonts"
+msgstr "Tipus de lletra de Google"
+
+#: inc/customizer/controls/class-deprecated.php:70
+msgid "Default fonts"
+msgstr "Tipus de lletra predeterminats"
+
+#: inc/customizer.php:639 inc/customizer/fields/header.php:16
+#: inc/general.php:160 assets/dist/customizer.js:1
+msgid "Header"
+msgstr "Capçalera"
+
+#: inc/customizer.php:900 inc/general.php:159 inc/meta-box.php:148
+msgid "Left Sidebar"
+msgstr "Barra lateral esquerra"
+
+#: inc/customizer.php:901 inc/general.php:158 inc/meta-box.php:147
+msgid "Right Sidebar"
+msgstr "Barra lateral dreta"
+
+#: functions.php:58
+msgid "Primary Menu"
+msgstr "Menú principal"
+
+#: inc/general.php:165
+msgid "Footer Widget 5"
+msgstr "Giny del peu de pàgina 5"
+
+#: inc/general.php:164
+msgid "Footer Widget 4"
+msgstr "Giny del peu de pàgina 4"
+
+#: inc/general.php:163
+msgid "Footer Widget 3"
+msgstr "Giny del peu de pàgina 3"
+
+#: inc/general.php:162
+msgid "Footer Widget 2"
+msgstr "Giny del peu de pàgina 2"
+
+#: inc/general.php:161
+msgid "Footer Widget 1"
+msgstr "Giny del peu de pàgina 1"
+
+#: inc/structure/comments.php:28 inc/structure/comments.php:82
+msgid "Edit"
+msgstr "Edita"
+
+#: content-link.php:84 content-page.php:77 content-single.php:77 content.php:84
+msgid "Pages:"
+msgstr "Pàgines:"
+
+#: inc/structure/comments.php:164
+msgid "Post Comment"
+msgstr "Envia un comentari"
+
+#: inc/structure/comments.php:163
+msgid "Leave a Comment"
+msgstr "Feu un comentari"
+
+#: inc/structure/comments.php:199
+msgid "Website"
+msgstr "Lloc web"
+
+#: inc/structure/comments.php:191
+msgid "Email"
+msgstr "Correu electrònic"
+
+#: inc/structure/comments.php:183
+msgid "Name"
+msgstr "Nom"
+
+#: comments.php:123
+msgid "Comments are closed."
+msgstr "Els comentaris estan tancats."
+
+#: comments.php:86 comments.php:113
+msgid "Newer Comments &rarr;"
+msgstr "Comentaris més recents  &rarr;"
+
+#: comments.php:85 comments.php:112
+msgid "&larr; Older Comments"
+msgstr "&larr; Comentaris anteriors"
+
+#: comments.php:84 comments.php:111
+msgid "Comment navigation"
+msgstr "Navegació dels comentaris"
+
+#. translators: 1: number of comments, 2: post title
+#: comments.php:50
+msgctxt "comments title"
+msgid "%1$s thought on &ldquo;%2$s&rdquo;"
+msgid_plural "%1$s thoughts on &ldquo;%2$s&rdquo;"
+msgstr[0] "%1$s comentari a &ldquo;%2$s&rdquo;"
+msgstr[1] "%1$s comentaris a &ldquo;%2$s&rdquo;"
+
+#: inc/structure/sidebars.php:77
+msgid "Archives"
+msgstr "Arxius"
+
+#: content-404.php:27
+msgid "Oops! That page can&rsquo;t be found."
+msgstr "No s'ha trobat la pàgina."
+
+#. Author of the theme
+#: style.css
+#, gp-priority: low
+msgid "Tom Usborne"
+msgstr "Tom Usborne"
+
+#. Theme URI of the theme
+#: style.css
+#, gp-priority: low
+msgid "https://generatepress.com"
+msgstr "https://generatepress.com"

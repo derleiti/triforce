@@ -1,0 +1,72 @@
+# Translation of Plugins - Image Placeholders - Stable (latest release) in Spanish (Spain)
+# This file is distributed under the same license as the Plugins - Image Placeholders - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2024-06-29 09:00:54+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: es\n"
+"Project-Id-Version: Plugins - Image Placeholders - Stable (latest release)\n"
+
+#: helper.php:87
+msgid "No editor could be selected."
+msgstr "No se ha podido seleccionar ningún editor."
+
+#. Description of the plugin
+#: load.php
+msgid "Displays placeholders based on an image's dominant color while the image is loading."
+msgstr "Muestra marcadores de posición basados en el color dominante de una imagen mientras esta se carga."
+
+#. Plugin Name of the plugin
+#: load.php
+msgid "Image Placeholders"
+msgstr "Marcadores de posición de imágenes"
+
+#: helper.php:54 helper.php:61
+msgid "Unable to load image."
+msgstr "No se puede subir la imagen."
+
+#. translators: %s is the error message
+#: class-dominant-color-image-editor-imagick.php:94
+msgid "Transparency detection failed: %s"
+msgstr "Fallo en el detector de transparencia: %s"
+
+#. translators: %s is the error message.
+#: class-dominant-color-image-editor-imagick.php:47
+msgid "Dominant color detection failed: %s"
+msgstr "El detector de color dominante falló: %s"
+
+#: class-dominant-color-image-editor-gd.php:72
+#: class-dominant-color-image-editor-imagick.php:62
+msgid "Transparency detection no image found."
+msgstr "El detector de transparencia no ha encontrado ninguna imagen."
+
+#: class-dominant-color-image-editor-gd.php:36
+#: class-dominant-color-image-editor-gd.php:48
+#: class-dominant-color-image-editor-gd.php:55
+#: class-dominant-color-image-editor-imagick.php:41
+msgid "Dominant color detection failed."
+msgstr "El detector de color dominante ha fallado."
+
+#: class-dominant-color-image-editor-gd.php:31
+#: class-dominant-color-image-editor-imagick.php:31
+msgid "Dominant color detection no image found."
+msgstr "El detector de color dominante no ha encontrado ninguna imagen."
+
+#. Author URI of the plugin
+#: load.php
+msgid "https://make.wordpress.org/performance/"
+msgstr "https://make.wordpress.org/performance/"
+
+#. Author of the plugin
+#: load.php
+msgid "WordPress Performance Team"
+msgstr "Equipo de rendimiento de WordPress"
+
+#. Plugin URI of the plugin
+#: load.php
+msgid "https://github.com/WordPress/performance/tree/trunk/plugins/dominant-color-images"
+msgstr "https://github.com/WordPress/performance/tree/trunk/plugins/dominant-color-images"

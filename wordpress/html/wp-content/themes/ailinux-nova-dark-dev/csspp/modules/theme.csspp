@@ -1,0 +1,486 @@
+/**
+ * CSS++ Module: Theme
+ *
+ * Globales Design-System mit sensorischer Tiefe
+ *
+ * @version 0.1.0
+ * @module theme
+ */
+
+/* ============================================
+   THEME DEFINITION
+   ============================================ */
+
+/**
+ * @theme <name> { ... }
+ *
+ * Definiert ein vollständiges Theme mit allen Sinnesebenen
+ *
+ * Struktur:
+ * - Colors (visuell)
+ * - Materials (haptisch/visuell)
+ * - Sounds (akustisch)
+ * - Atmosphere (volumetrisch)
+ * - Interactions (behavioral)
+ */
+
+@theme safe-room {
+  /* Visual Foundation */
+  primary-color: #4a5568;
+  accent-color: #d4af37; /* Gold */
+  background-base: #2d3748;
+  surface-color: #374151;
+
+  /* Material Style */
+  material-style: vintage-industrial;
+  texture-preference: rough;
+
+  /* Acoustic Profile */
+  ui-soundscape: ambient(quiet-room);
+  interaction-sounds: mechanical;
+
+  /* Atmospheric */
+  ambient-light: 0.4;
+  fog-density: 0.1;
+  particle-system: dust(sparse);
+
+  /* Behavioral */
+  animation-speed: slow;
+  transition-style: smooth;
+  cursor-style: cloth-pointer;
+}
+
+
+/* ============================================
+   COLOR SYSTEM
+   ============================================ */
+
+/**
+ * primary-color: <color> | <material-color>
+ * accent-color: <color> | <effect>
+ * surface-color: <color> | <texture>
+ *
+ * Farben mit optionalen Materialeffekten
+ */
+
+:root {
+  /* Basic Colors */
+  primary-color: #4466ff;
+  accent-color: #ff6644;
+
+  /* Material Colors */
+  surface-color: brushed-aluminum(#e0e0e0);
+  highlight-color: gold(0.8, shimmer: true);
+
+  /* Semantic Colors */
+  success-color: #10b981;
+  warning-color: #f59e0b;
+  error-color: #ef4444;
+
+  /* Depth-Based Colors */
+  background-near: #1a1a1a;
+  background-far: #0d0d0d;
+}
+
+
+/* ============================================
+   MATERIAL STYLE PRESETS
+   ============================================ */
+
+/**
+ * material-style: <preset>
+ *
+ * Globales Material-Theme
+ *
+ * Presets:
+ * - safe-room – Warm, metallisch, gedämpft
+ * - cyberpunk – Neon, glänzend, futuristisch
+ * - minimalist – Flat, clean, zurückhaltend
+ * - organic – Natürlich, texturiert, warm
+ * - brutalist – Beton, rau, monochrom
+ * - vintage-industrial – Rost, Patina, mechanisch
+ */
+
+@theme cyberpunk-night {
+  material-style: cyberpunk;
+
+  primary-color: #00ffff;
+  accent-color: #ff00ff;
+
+  reflectivity: high;
+  glow-preference: enabled;
+
+  ui-soundscape: synthetic;
+  particle-system: rain(neon);
+}
+
+@theme minimalist-clean {
+  material-style: minimalist;
+
+  primary-color: #000000;
+  accent-color: #ffffff;
+
+  shadow-type: none;
+  texture-preference: flat;
+
+  ui-soundscape: silent;
+  animation-speed: instant;
+}
+
+
+/* ============================================
+   UI ACCENT EFFECTS
+   ============================================ */
+
+/**
+ * ui-accent: <color>(<intensity>, <effects>)
+ *
+ * Akzentfarbe mit Spezialeffekten
+ *
+ * Effekte:
+ * - shimmer: true – Schimmernde Animation
+ * - glow: true – Leuchten
+ * - metallic: true – Metallischer Glanz
+ * - iridescent: true – Regenbogen-Reflexion
+ */
+
+:root {
+  ui-accent: gold(0.6, shimmer: true, metallic: true);
+}
+
+.accent-element {
+  color: var(--ui-accent);
+  /* Compiler expandiert zu color + animation + glow */
+}
+
+
+/* ============================================
+   ACOUSTIC PROFILE
+   ============================================ */
+
+/**
+ * ui-soundscape: <preset> | ambient(<type>)
+ * interaction-sounds: <style>
+ *
+ * Globales Soundprofil
+ *
+ * Soundscapes:
+ * - ambient(quiet-room) – Subtiles Raumgeräusch
+ * - ambient(outdoor) – Natürliche Außengeräusche
+ * - synthetic – Elektronische Klänge
+ * - mechanical – Metallische Klicks
+ * - organic – Natürliche Sounds
+ * - silent – Keine UI-Sounds
+ */
+
+@theme mechanical-ui {
+  ui-soundscape: mechanical;
+  interaction-sounds: mechanical;
+
+  /* Alle Buttons erben mechanische Clicks */
+  button-click-sfx: switch(mechanical);
+  hover-sfx: gear(light);
+}
+
+
+/* ============================================
+   ATMOSPHERIC SETTINGS
+   ============================================ */
+
+/**
+ * ambient-light: <value>
+ * fog-density: <value>
+ * particle-system: <type>
+ *
+ * Globale Atmosphäre
+ */
+
+:root {
+  ambient-light: 0.5;
+  fog-density: 0.05;
+  particle-system: none;
+}
+
+@theme foggy-morning {
+  ambient-light: 0.3;
+  fog-density: 0.3;
+  particle-system: mist(slow-drift);
+
+  /* Alle Elemente bekommen Nebel-Layering */
+}
+
+
+/* ============================================
+   CURSOR STYLING
+   ============================================ */
+
+/**
+ * cursor-style: <preset> | custom(<texture>)
+ *
+ * Globaler Cursor mit Textur
+ *
+ * Presets:
+ * - cloth-pointer – Stoff-Textur
+ * - metal-pointer – Metallisch
+ * - glass-pointer – Durchsichtig
+ * - pixel-pointer – Retro-Pixel
+ * - custom(<texture>) – Eigene Textur
+ */
+
+:root {
+  cursor-style: cloth-pointer;
+  cursor-texture: linen;
+  cursor-move-sfx: cloth-rub(quiet);
+}
+
+@media (pointer: coarse) {
+  /* Touch-Geräte: Kein Cursor-Sound */
+  :root {
+    cursor-move-sfx: none;
+  }
+}
+
+
+/* ============================================
+   ANIMATION & TRANSITION STYLE
+   ============================================ */
+
+/**
+ * animation-speed: instant | fast | normal | slow | cinematic
+ * transition-style: smooth | snappy | elastic | none
+ *
+ * Globale Bewegungsstile
+ */
+
+:root {
+  animation-speed: normal;
+  transition-style: smooth;
+}
+
+@theme snappy-ui {
+  animation-speed: fast;
+  transition-style: snappy;
+
+  /* Alle Transitions: 150ms ease-out */
+}
+
+@theme cinematic {
+  animation-speed: cinematic;
+  transition-style: elastic;
+
+  /* Dramatische, langsame Übergänge */
+}
+
+
+/* ============================================
+   TEXTURE PREFERENCE
+   ============================================ */
+
+/**
+ * texture-preference: flat | subtle | rough | heavy
+ *
+ * Globale Textur-Intensität
+ */
+
+:root {
+  texture-preference: subtle;
+  /* Leichte Texturen auf Surfaces */
+}
+
+@theme heavy-texture {
+  texture-preference: heavy;
+
+  /* Alle Surfaces bekommen sichtbare Texturen */
+  surface-texture: canvas;
+  button-texture: brushed-metal;
+  card-texture: paper(rough);
+}
+
+
+/* ============================================
+   RESPONSIVE THEME SWITCHING
+   ============================================ */
+
+/**
+ * Themes können medienabhängig wechseln
+ */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    @apply theme: safe-room;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    @apply theme: minimalist-clean;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    animation-speed: instant;
+    particle-system: none;
+  }
+}
+
+
+/* ============================================
+   THEME INHERITANCE & MIXINS
+   ============================================ */
+
+/**
+ * @theme <name> extends <parent> { ... }
+ *
+ * Theme-Vererbung für Variationen
+ */
+
+@theme safe-room-light extends safe-room {
+  background-base: #f5f5f5;
+  surface-color: #ffffff;
+  ambient-light: 0.8;
+
+  /* Überschreibt nur spezifische Properties */
+}
+
+
+/* ============================================
+   THEME VARIABLES
+   ============================================ */
+
+/**
+ * Compiler generiert CSS Custom Properties
+ */
+
+:root {
+  /* Generiert von @theme safe-room */
+  --theme-primary: #4a5568;
+  --theme-accent: #d4af37;
+  --theme-bg-base: #2d3748;
+  --theme-surface: #374151;
+
+  --theme-material-style: vintage-industrial;
+  --theme-ambient-light: 0.4;
+  --theme-fog-density: 0.1;
+}
+
+
+/* ============================================
+   SEMANTIC THEME TOKENS
+   ============================================ */
+
+/**
+ * Semantic Tokens für konsistentes Design
+ */
+
+:root {
+  /* Spacing */
+  spacing-unit: 0.25rem;
+  card-spacing: calc(var(--spacing-unit) * 4);
+
+  /* Typography */
+  font-base: system-ui, -apple-system, sans-serif;
+  font-display: "Georgia", serif;
+  font-mono: "Fira Code", monospace;
+
+  /* Borders */
+  border-radius-sm: 0.25rem;
+  border-radius-md: 0.5rem;
+  border-radius-lg: 1rem;
+
+  /* Shadows (linked to lighting.csspp) */
+  shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
+  shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+
+/* ============================================
+   THEME COMPONENTS
+   ============================================ */
+
+/**
+ * Theme definiert Standard-Styles für Components
+ */
+
+@theme safe-room {
+  /* Buttons */
+  button-material: brushed-metal;
+  button-hover-glow: gold(0.3);
+  button-click-sfx: switch(mechanical);
+
+  /* Cards */
+  card-material: paper(textured);
+  card-shadow: soft;
+  card-border: none;
+
+  /* Inputs */
+  input-material: glass(0.2);
+  input-focus-glow: accent;
+  input-type-sfx: typewriter(quiet);
+}
+
+
+/* ============================================
+   THEME MOOD SYSTEM
+   ============================================ */
+
+/**
+ * mood: <state>
+ *
+ * Dynamische Theme-Anpassung basierend auf Context
+ *
+ * States:
+ * - calm – Beruhigend, gedämpft
+ * - energetic – Lebendig, kontrastreich
+ * - focused – Minimalistisch, ablenkungsfrei
+ * - playful – Farbenfroh, animiert
+ */
+
+:root[data-mood="calm"] {
+  animation-speed: slow;
+  particle-system: none;
+  glow-preference: disabled;
+  ambient-light: 0.3;
+}
+
+:root[data-mood="energetic"] {
+  animation-speed: fast;
+  particle-system: sparks(active);
+  glow-preference: enabled;
+  ambient-light: 0.8;
+}
+
+
+/* ============================================
+   THEME EXPORT
+   ============================================ */
+
+/**
+ * Der Compiler exportiert Theme-Definitionen als:
+ *
+ * 1. CSS Custom Properties (--theme-*)
+ * 2. JSON Theme-Manifest (colors, materials, sounds)
+ * 3. Asset-Bundles (textures, audio files)
+ *
+ * Format: theme-name.json + theme-name.assets/
+ */
+
+
+/* ============================================
+   AI-GENERATED THEMES
+   ============================================ */
+
+/**
+ * @theme-generator <prompt>
+ *
+ * KI-generierte Themes via Prompt
+ *
+ * Beispiel:
+ * @theme-generator "Create a warm, cozy autumn evening theme"
+ *
+ * Compiler ruft KI-Service auf und generiert vollständiges Theme
+ */
+
+/* Zukünftige Feature-Flag */
+/* @theme-generator "Cyberpunk alley at 3am, neon rain" */

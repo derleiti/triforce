@@ -1,0 +1,72 @@
+<?php
+/**
+ * Plugin Name: AILinux – Fix Loopback Requests
+ * Description: Allows WordPress to make loopback requests to itself by routing them through the internal Apache container
+ * Version: 1.0.1
+ * Author: AILinux
+ */
+
+// Prevent direct access
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+/**
+ * Fix loopback requests by rewriting URLs to use the internal Apache container
+ * This resolves "cURL error 7: Failed to connect to ailinux.me" issues
+ */
+add_filter('http_request_args', function($parsed_args, $url) {
+    // Only modify requests to our own domain
+    if (strpos($url, 'ailinux.me') === false) {
+        return $parsed_args;
+    }
+
+    // Disable SSL verification for internal requests
+    $parsed_args['sslverify'] = false;
+    $parsed_args['reject_unsafe_urls'] = false;
+
+    return $parsed_args;
+}, 10, 2);
+
+add_filter('pre_http_request', function($preempt, $parsed_args, $url) {
+    // Only modify requests to our own domain
+    if (strpos($url, 'ailinux.me') === false) {
+        return $preempt;
+    }
+
+    // Parse the original URL
+    $url_parts = parse_url($url);
+    if (!$url_parts) {
+        return $preempt;
+    }
+
+    // Build new URL using internal Apache hostname (use HTTP instead of HTTPS)
+    $new_url = 'http://wordpress_apache';
+
+    if (!empty($url_parts['path'])) {
+        $new_url .= $url_parts['path'];
+    }
+    if (!empty($url_parts['query'])) {
+        $new_url .= '?' . $url_parts['query'];
+    }
+    if (!empty($url_parts['fragment'])) {
+        $new_url .= '#' . $url_parts['fragment'];
+    }
+
+    // Set Host header so Apache knows which vhost to use
+    if (!isset($parsed_args['headers'])) {
+        $parsed_args['headers'] = array();
+    }
+
+    if (is_array($parsed_args['headers'])) {
+        $parsed_args['headers']['Host'] = 'ailinux.me';
+    }
+
+    // Disable SSL verification for internal requests
+    $parsed_args['sslverify'] = false;
+
+    // Make the request using WordPress HTTP API
+    $response = _wp_http_get_object()->request($new_url, $parsed_args);
+
+    return $response;
+}, 10, 3);

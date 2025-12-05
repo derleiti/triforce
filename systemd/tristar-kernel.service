@@ -1,0 +1,40 @@
+[Unit]
+Description=TriStar Kernel - Chain Orchestration Engine
+Documentation=https://api.ailinux.me/docs
+After=network-online.target redis.service postgresql.service
+Wants=network-online.target
+Requires=redis.service
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/home/zombie/ailinux-ai-server-backend
+
+# Environment
+Environment=PYTHONUNBUFFERED=1
+Environment=TRISTAR_MODE=production
+Environment=TRISTAR_WORKSPACE=/var/tristar
+EnvironmentFile=/home/zombie/ailinux-ai-server-backend/.env
+
+# Execute
+ExecStartPre=/bin/mkdir -p /var/tristar/projects /var/tristar/logs /var/tristar/reports
+ExecStart=/home/zombie/ailinux-ai-server-backend/.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 9100
+
+# Restart policy
+Restart=always
+RestartSec=10
+TimeoutStartSec=60
+TimeoutStopSec=30
+
+# Limits
+LimitNOFILE=65535
+LimitNPROC=4096
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=tristar-kernel
+
+[Install]
+WantedBy=multi-user.target

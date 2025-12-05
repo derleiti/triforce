@@ -1,0 +1,408 @@
+# Translation of Plugins - Super Page Cache - Development (trunk) in Turkish
+# This file is distributed under the same license as the Plugins - Super Page Cache - Development (trunk) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-06-08 13:59:41+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: tr\n"
+"Project-Id-Version: Plugins - Super Page Cache - Development (trunk)\n"
+
+#. translators: %1$s - HTML tag, %2$s - discount, %3$s - HTML tag, %4$s -
+#. product name.
+#: src/Services/SDK_Integrations.php:63
+msgid "Our biggest sale of the year: %1$sup to %2$s OFF%3$s on %4$s. Don't miss this limited-time offer."
+msgstr "Yılın en büyük indirimi: %1$s ila %2$s İNDİRİM %3$s ürünlerinde %4$s. Bu sınırlı süreli fırsatı kaçırmayın."
+
+#. translators: %1$s - HTML tag, %2$s - discount, %3$s - HTML tag, %4$s -
+#. product name.
+#: src/Services/SDK_Integrations.php:73
+msgid "Get %1$sup to %2$s off%3$s when you upgrade your %4$s plan or renew early."
+msgstr "%4$s planınızı yükseltir veya erken yenilerseniz %1$s ila %2$s indirim %3$s kazanın."
+
+#. translators: %s: 'General'.
+#: src/Utils/I18n.php:58
+msgid "Media optimizations only work if the Disk Page cache is enabled. You have to turn it on in the %s tab before these options can take effect."
+msgstr "Medya optimizasyonları yalnızca Disk Sayfası önbelleği etkinse çalışır. Bu seçeneklerin etkili olabilmesi için %s sekmesinde açmanız gerekir."
+
+#: src/Modules/Rest_Server.php:1038
+msgid "Disconnected from Cloudflare."
+msgstr "Cloudflare ile bağlantı kesildi."
+
+#: src/Services/Cloudflare_Rule.php:487
+msgid "Invalid response data"
+msgstr "Ggeçersiz yanıt verileri"
+
+#: src/Services/Cloudflare_Client.php:226
+#: src/Services/Cloudflare_Client.php:233
+msgid "Unable to retrieve account ID"
+msgstr "Hesap kimliği alınamıyor"
+
+#: src/Modules/Admin.php:164
+msgid "Settings page"
+msgstr "Ayarlar sayfası"
+
+#. translators: %s: Enable Cloudflare CDN & Caching
+#: src/Utils/I18n.php:68
+msgid "We can attempt to reset the rule automatically for you, or you could toggle the %s setting on and off to fix this."
+msgstr "Kuralı sizin için otomatik olarak sıfırlamayı deneyebiliriz veya bunu düzeltmek için %s ayarını açıp kapatabilirsiniz."
+
+#: src/Utils/I18n.php:66
+msgid "It seems that Super Page Cache failed to update the Cloudflare cache rule."
+msgstr "Görünüşe göre Super Page Cache, Cloudflare önbellek kuralını güncelleyemedi."
+
+#: libs/wpcli.class.php:128
+msgid "Cache disabled successfully"
+msgstr "Önbellek başarıyla devre dışı bırakıldı"
+
+#. Author URI of the plugin
+#: wp-cloudflare-super-page-cache.php
+msgid "https://themeisle.com"
+msgstr "https://themeisle.com"
+
+#. Author of the plugin
+#: wp-cloudflare-super-page-cache.php
+msgid "Themeisle"
+msgstr "Themeisle"
+
+#. translators: %s: 0
+#: src/Utils/I18n.php:63
+msgid "Indicate how many images at the top of each page should bypass lazy loading, ensuring they're instantly visible. Enter %s to not exclude any images from the lazy loading process."
+msgstr "Her sayfanın üst kısmındaki kaç resmin tembel yüklemeyi atlayarak anında görünür olmasını sağlayacağını belirtin. Hiçbir görüntüyü tembel yükleme işleminden hariç tutmamak için %s girin."
+
+#. translators: %s: '/' character.
+#: src/Utils/I18n.php:53
+msgid "Enter keywords (one per line) to be matched against URL paths. Use %s for home page."
+msgstr "URL yollarıyla eşleştirilecek anahtar kelimeleri (satır başına bir tane) girin. Ana sayfa için %s kullanın."
+
+#. translators: %s: Name of deactivated plugin
+#: bootstrap.php:487
+msgid "%s plugin deactivated."
+msgstr "%s eklentisi devre dışı bırakıldı."
+
+#: src/Modules/Dashboard.php:372
+msgid "Install Optimole"
+msgstr "Optimole'u yükleyin"
+
+#. translators: %s: number of active installations.
+#: src/Modules/Dashboard.php:371
+msgid "%s+ Active installations"
+msgstr "%s+ etkin kurulum"
+
+#. translators: %1$s: rating, %2$d: number of reviews.
+#: src/Modules/Dashboard.php:369
+msgid "%1$s out of 5 stars (%2$d reviews)"
+msgstr "5 yıldız üzerinden %1$s (%2$d değerlendirme)"
+
+#: src/Utils/Cache_Tester.php:183
+msgid "Cloudflare Test Page"
+msgstr "Cloudflare Test Sayfası"
+
+#: src/Utils/Cache_Tester.php:168
+msgid "Issues"
+msgstr "Sorunlar"
+
+#: src/Utils/Cache_Tester.php:149 assets/build/719.js:4
+msgid "Status"
+msgstr "Durum"
+
+#: src/Utils/Cache_Tester.php:133
+msgid "Disk Page Caching is functional."
+msgstr "Disk Sayfası Önbelleğe Alma işlevseldir."
+
+#: src/Utils/Cache_Tester.php:126
+msgid "Disk Page Caching has an issue."
+msgstr "Disk Sayfası Önbelleğe Alma'da bir sorun var."
+
+#: src/Utils/Cache_Tester.php:127
+msgid "Could not cache the page on the disk. [Page Disk Cache]"
+msgstr "Sayfa disk üzerinde önbelleğe alınamadı. [Sayfa Disk Önbelleği]"
+
+#: src/Utils/Cache_Tester.php:93
+msgid "Cloudflare Page Caching is working properly."
+msgstr "Cloudflare Sayfa Önbelleğe Alma düzgün çalışıyor."
+
+#: src/Utils/Cache_Tester.php:85
+msgid "Cloudflare integration has an issue."
+msgstr "Cloudflare entegrasyonunda bir sorun var."
+
+#: src/Utils/Cache_Tester.php:110
+msgid "Disk Page Cache is not enabled."
+msgstr "Disk Sayfası Önbelleği etkin değil."
+
+#. translators: %s: Enable Cloudflare CDN & Caching
+#: src/Utils/I18n.php:68 assets/build/806.js:1
+msgid "Enable Cloudflare CDN & Caching"
+msgstr "Cloudflare CDN ve Önbelleğe Almayı Etkinleştir"
+
+#: libs/test_cache.class.php:122
+msgid "The testing URL is empty!"
+msgstr "Test URL'si boş!"
+
+#: libs/test_cache.class.php:86
+msgid "Instead, the resource was requested from the origin web server."
+msgstr "Bunun yerine kaynak, kaynak web sunucusundan talep edilmiştir."
+
+#: libs/test_cache.class.php:84
+msgid "Try to enable the <strong>Strip response cookies on pages that should be cached</strong> option and retry."
+msgstr "<strong>Önbelleğe alınması gereken sayfalarda yanıt çerezlerini atla</strong> seçeneğini etkinleştirmeyi ve yeniden denemeyi deneyin."
+
+#. translators: %s is the CF-Cache-Status header value.
+#: libs/test_cache.class.php:81
+msgid "Cache status: %s - The resource was not cached by default and your current Cloudflare caching configuration doesn't instruct Cloudflare to cache the resource."
+msgstr "Önbellek durumu: %s - Kaynak varsayılan olarak önbelleğe alınmadı ve mevcut Cloudflare önbelleğe alma yapılandırmanız Cloudflare'e kaynağı önbelleğe alma talimatı vermiyor."
+
+#: libs/cache_controller.class.php:2381
+msgid "Super Page Cache - Purge Cache Cron Interval"
+msgstr "Süper Sayfa Önbelleği - Önbellek Cron Aralığını Temizle"
+
+#. Description of the plugin
+#: wp-cloudflare-super-page-cache.php
+msgid "A WordPress performance plugin that lets you get Edge Caching enabled on a Cloudflare free plan."
+msgstr "Cloudflare ücretsiz planında Edge Caching'i etkinleştirmenizi sağlayan bir WordPress performans eklentisi."
+
+#. Plugin Name of the plugin
+#: wp-cloudflare-super-page-cache.php src/Modules/Dashboard.php:131
+#: assets/build/102.js:1 assets/build/450.js:1 assets/build/504.js:1
+#: assets/build/719.js:1 assets/build/798.js:1 assets/build/806.js:1
+msgid "Super Page Cache"
+msgstr "Süper Sayfa Önbelleği"
+
+#. translators: %s is the static resource URL.
+#: libs/wpcli.class.php:168
+msgid "Page caching is working for static page (%s) but seems not working for dynamic pages."
+msgstr "Sayfa önbelleğe alma statik sayfa (%s) için çalışıyor ancak dinamik sayfalar için çalışmıyor gibi görünüyor."
+
+#. translators: %1$s is the static resource URL, %2$s is the error message.
+#: libs/wpcli.class.php:163
+msgid "Error on static resource (%1$s): %2$s"
+msgstr "Statik kaynakta hata (%1$s): %2$s"
+
+#. translators: %1$s is the dynamic resource URL, %2$s is the error message.
+#: libs/wpcli.class.php:160 libs/wpcli.class.php:171
+msgid "Error on dynamic page (%1$s): %2$s"
+msgstr "Dinamik sayfada hata (%1$s): %2$s"
+
+#. translators: %s is the path to the .htaccess file
+#: libs/cache_controller.class.php:2152
+msgid "The .htaccess file (%s) could not be edited. Check if the file has write permissions."
+msgstr ".htaccess dosyası (%s) düzenlenemedi. Dosyanın yazma izinleri olup olmadığını kontrol edin."
+
+#. Plugin URI of the plugin
+#: wp-cloudflare-super-page-cache.php
+msgid "https://wordpress.org/plugins/wp-cloudflare-page-cache/"
+msgstr "https://wordpress.org/plugins/wp-cloudflare-page-cache/"
+
+#: libs/backend.class.php:149
+msgid "Force purge everything"
+msgstr "Her şeyi temizlemeye zorla"
+
+#: src/Services/Cloudflare_Client.php:282
+msgid "Unable to find a valid account ID."
+msgstr "Geçerli bir hesap kimliği bulunamıyor."
+
+#: libs/backend.class.php:161
+msgid "Purge cache for this page only"
+msgstr "Yalnızca bu sayfa için önbelleği temizle"
+
+#: src/Modules/Dashboard.php:163
+msgid "Import/Export"
+msgstr "İçe/Dışa Aktarma"
+
+#: libs/backend.class.php:138 assets/build/154.js:1
+msgid "Purge whole cache"
+msgstr "Tüm önbelleği temizle"
+
+#: libs/wpcli.class.php:112
+msgid "Cache enabled successfully"
+msgstr "Önbellek başarıyla etkinleştirildi."
+
+#: libs/wpcli.class.php:35 libs/wpcli.class.php:55 libs/wpcli.class.php:72
+#: libs/wpcli.class.php:84 libs/wpcli.class.php:96
+msgid "Cache purged successfully"
+msgstr "Önbellek başarıyla temizlendi."
+
+#: libs/wpcli.class.php:37
+msgid "An error occurred while purging the cache"
+msgstr "Önbellek temizlenirken bir hata oluştu"
+
+#: src/Modules/Admin.php:95
+msgid "Rate"
+msgstr "Oran"
+
+#: libs/test_cache.class.php:95 libs/wpcli.class.php:245
+msgid "Invalid Cache-Control response header. If you are using Litespeed Server, please disable the option <strong>Overwrite the cache-control header for WordPress's pages using web server rules</strong>, purge the cache and retry."
+msgstr "Geçersiz Cache-Control yanıt başlığı. Litespeed Server kullanıyorsanız, lütfen <strong>Web sunucusu kurallarını kullanarak WordPress sayfaları için cache-control başlığının üzerine yaz</strong> seçeneğini devre dışı bırakın, önbelleği temizleyin ve yeniden deneyin."
+
+#. translators: %s is the CF-Cache-Status header value.
+#: libs/test_cache.class.php:72 libs/wpcli.class.php:270
+msgid "Cache status: %s - Cloudflare has been instructed to not cache this asset. It has been served directly from the origin."
+msgstr "Önbellek durumu: %s - Cloudflare bu varlığı önbelleğe almaması talimatı verildi. Doğrudan kaynaktan sunulmuştur."
+
+#: libs/test_cache.class.php:109 libs/wpcli.class.php:291
+msgid "Undefined error"
+msgstr "Tanımlanmamış hata"
+
+#: libs/wpcli.class.php:157
+msgid "Page caching seems not working for both dynamic and static pages."
+msgstr "Sayfa önbelleğe alma hem dinamik hem de statik sayfalar için çalışmıyor gibi görünüyor."
+
+#. translators: %s is the CF-Cache-Status header value.
+#: libs/wpcli.class.php:281
+msgid "Cache status: %s - The resource was not cached by default and your current Cloudflare caching configuration doesn't instruct Cloudflare to cache the resource. Try to enable the <strong>Strip response cookies on pages that should be cached</strong> option and retry."
+msgstr "Önbellek durumu: %s - Kaynak varsayılan olarak önbelleğe alınmadı ve mevcut Cloudflare önbelleğe alma yapılandırmanız Cloudflare'e kaynağı önbelleğe alma talimatı vermiyor. <strong>Önbelleğe alınması gereken sayfalarda yanıt çerezlerini kırp</strong> seçeneğini etkinleştirmeyi ve yeniden denemeyi deneyin."
+
+#: libs/wpcli.class.php:233
+msgid "Unable to find the Cache-Control response header."
+msgstr "Cache-Control yanıt başlığı bulunamıyor."
+
+#: libs/wpcli.class.php:239
+msgid "Unable to find the X-WP-CF-Super-Cache-Cache-Control response header."
+msgstr "X-WP-CF-Super-Cache-Cache-Control yanıt başlığı bulunamıyor."
+
+#: libs/backend.class.php:126 assets/build/154.js:1
+msgid "Cache"
+msgstr "Önbellek"
+
+#: src/Utils/I18n.php:49 src/Utils/I18n.php:59 assets/build/assets-manager.js:1
+#: assets/build/dashboard.js:1
+msgid "General"
+msgstr "Genel"
+
+#: src/Modules/Rest_Server.php:630
+msgid "Preloader is not enabled"
+msgstr "Ön yükleyici etkin değil"
+
+#. translators: %1$s is the name of the sitemap, %2$s is the error message
+#: libs/cache_controller.class.php:2576
+msgid "Connection error while retriving the sitemap %1$s: %2$s"
+msgstr "Site haritası %1$s alınırken bağlantı hatası: %2$s"
+
+#: src/Modules/Rest_Server.php:639
+msgid "Unable to start the preloader. Another preloading process is currently running."
+msgstr "Ön yükleyici başlatılamıyor. Şu anda başka bir ön yükleme işlemi çalışıyor."
+
+#: libs/test_cache.class.php:51 libs/wpcli.class.php:227
+msgid "Seem that your website is not behind Cloudflare. If you have recently enabled the cache or it is your first test, wait about 30 seconds and try again because the changes take a few seconds for Cloudflare to propagate them on the web. If the error persists, request support for a detailed check."
+msgstr "Web siteniz Cloudflare arkasında değil gibi görünüyor. Önbelleği yeni etkinleştirdiyseniz veya bu ilk testinizse, yaklaşık 30 saniye bekleyin ve tekrar deneyin çünkü değişikliklerin Cloudflare tarafından web'e yayılması birkaç saniye sürer. Hata devam ederse, ayrıntılı bir kontrol için destek isteyin."
+
+#: libs/varnish.class.php:196
+msgid "Varnish cache purged successfully!"
+msgstr "Varnish önbelleği başarıyla temizlendi!"
+
+#: libs/varnish.class.php:57
+msgid "Invalid hostname or port"
+msgstr "Geçersiz ana bilgisayar adı veya bağlantı noktası"
+
+#. translators: %s is the CF-Cache-Status header value.
+#: libs/test_cache.class.php:58 libs/wpcli.class.php:256
+msgid "Cache status: %s - The resource is served from cache but is stale. The resource was revalidated by either an If-Modified-Since header or an If-None-Match header."
+msgstr "Önbellek durumu: %s - Kaynak önbellekten alınıyor ancak güncel değil. Kaynak, ya If-Modified-Since başlığı ya da If-None-Match başlığı ile yeniden doğrulandı."
+
+#: libs/cache_controller.class.php:2255
+msgid "An error occurred while cleaning the cache. Please check log file for further details."
+msgstr "Önbellek temizlenirken bir hata oluştu. Daha fazla ayrıntı için lütfen günlük dosyasını kontrol edin."
+
+#. translators: %s is the CF-Cache-Status header value.
+#: libs/test_cache.class.php:65 libs/wpcli.class.php:263
+msgid "Cache status: %s - The resource was served from cache but is expired. The resource is currently being updated by the origin web server. UPDATING is typically seen only for very popular cached resources."
+msgstr "Önbellek durumu: %s - Kaynak önbellekten sunuldu ancak süresi doldu. Kaynak şu anda kaynak web sunucusu tarafından güncelleniyor. UPDATING genellikle yalnızca çok popüler önbellek kaynakları için görülür."
+
+#. translators: %s is the CF-Cache-Status header value.
+#: libs/wpcli.class.php:284
+msgid "Cache status: %s - The resource was not cached by default and your current Cloudflare caching configuration doesn't instruct Cloudflare to cache the resource.  Instead, the resource was requested from the origin web server."
+msgstr "Önbellek durumu: %s - Kaynak varsayılan olarak önbelleğe alınmadı ve mevcut Cloudflare önbelleğe alma yapılandırmanız Cloudflare'e kaynağı önbelleğe alma talimatı vermiyor.  Bunun yerine kaynak, kaynak web sunucusundan talep edildi."
+
+#: libs/wpcli.class.php:221
+msgid "The cache is not enabled on your home page. It's not possible to verify if the page caching is working properly."
+msgstr "Ana sayfanızda önbellek etkin değil. Sayfa önbelleğinin düzgün çalışıp çalışmadığını doğrulamak mümkün değil."
+
+#: src/Services/Cloudflare_Client.php:262
+msgid "Unable to retrive account ID"
+msgstr "Hesap kimliği alınamıyor."
+
+#: libs/wpcli.class.php:215
+msgid "The plugin is not detected on your home page. If you have activated other caching systems, please disable them and retry the test."
+msgstr "Eklenti ana sayfanızda algılanmadı. Başka ön bellekleme sistemlerini etkinleştirdiyseniz, lütfen bunları devre dışı bırakın ve testi yeniden çalıştırın."
+
+#: libs/cache_controller.class.php:343
+msgid "Bypass the cache for this page"
+msgstr "Bu sayfa için önbelleği devre dışı bırak"
+
+#: libs/cache_controller.class.php:329
+msgid "Cloudflare Page Cache Settings"
+msgstr "Cloudflare Sayfa Önbelleği Ayarları"
+
+#: src/Modules/Rest_Server.php:660
+msgid "Preloader started successfully"
+msgstr "Ön yükleyici başarıyla başlatıldı."
+
+#: src/Modules/Rest_Server.php:653
+msgid "You cannot start the preloader while the page cache is disabled."
+msgstr "Sayfa önbelleği devre dışıyken ön yükleyiciyi başlatamazsınız."
+
+#: src/Modules/Rest_Server.php:646
+msgid "Unable to start background processes: SWCFPC_Preloader_Process does not exists."
+msgstr "Arka plan süreçlerini başlatamıyorum: SWCFPC_Preloader_Process mevcut değil."
+
+#: src/Modules/Admin.php:73 src/Modules/Dashboard.php:152 assets/build/102.js:1
+#: assets/build/450.js:1 assets/build/504.js:1 assets/build/719.js:5
+#: assets/build/798.js:1 assets/build/806.js:1
+msgid "Settings"
+msgstr "Ayarlar"
+
+#: libs/cache_controller.class.php:2202 libs/cache_controller.class.php:2222
+#: libs/cache_controller.class.php:2245
+msgid "Permission denied"
+msgstr "İzin reddedildi"
+
+#: src/Modules/Rest_Server.php:777
+msgid "Page cache enabled successfully"
+msgstr "Sayfa önbelleği başarıyla etkinleştirildi"
+
+#: libs/wpcli.class.php:179
+msgid "Page caching is working properly"
+msgstr "Sayfa önbelleğe alma düzgün çalışıyor"
+
+#: libs/backend.class.php:183 assets/build/719.js:4
+msgid "Purge Cache"
+msgstr "Önbelleği Temizle"
+
+#: libs/cache_controller.class.php:350 assets/build/806.js:1
+msgid "No"
+msgstr "Hayır"
+
+#: libs/cache_controller.class.php:356 assets/build/806.js:1
+msgid "Yes"
+msgstr "Evet"
+
+#: src/Services/Cloudflare_Client.php:191 src/Services/Cloudflare_Rule.php:168
+#: src/Services/Cloudflare_Rule.php:203
+msgid "There is not zone id to use"
+msgstr "Kullanılacak bölge kimliği yok."
+
+#: libs/test_cache.class.php:135 libs/wpcli.class.php:202
+#: src/Services/Cloudflare_Rule.php:474
+msgid "Connection error: "
+msgstr "Bağlantı hatası: "
+
+#: src/Services/Cloudflare_Client.php:114
+msgid "Unable to find Browser Cache TTL settings "
+msgstr "Tarayıcı Önbellek TTL ayarlarını bulamıyorum "
+
+#: src/Services/Cloudflare_Client.php:359
+msgid "Unable to find domains configured on Cloudflare"
+msgstr "Cloudflare üzerinde yapılandırılmış alan adları bulunamıyor"
+
+#: libs/cache_controller.class.php:2209 libs/cache_controller.class.php:2229
+#: libs/cache_controller.class.php:2261
+msgid "Cache purged successfully! It may take up to 30 seconds for the cache to be permanently cleaned."
+msgstr "Önbellek başarıyla temizlendi! Önbelleğin kalıcı olarak temizlenmesi 30 saniye kadar sürebilir."
+
+#: src/Services/Cloudflare_Client.php:322
+#: src/Services/Cloudflare_Client.php:347
+msgid "Unable to retrieve zone id due to invalid response data"
+msgstr "Geçersiz yanıt veri nedeniyle bölge kimliği alınamıyor."

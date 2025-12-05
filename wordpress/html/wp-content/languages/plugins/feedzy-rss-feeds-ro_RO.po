@@ -1,0 +1,4222 @@
+# Translation of Plugins - RSS Aggregator by Feedzy – Feed to Post, Autoblogging, News &amp; YouTube Video Feeds Aggregator - Stable (latest release) in Romanian
+# This file is distributed under the same license as the Plugins - RSS Aggregator by Feedzy – Feed to Post, Autoblogging, News &amp; YouTube Video Feeds Aggregator - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-11-22 13:04:31+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n == 0 || n % 100 >= 2 && n % 100 <= 19) ? 1 : 2);\n"
+"X-Generator: GlotPress/4.0.3\n"
+"Language: ro\n"
+"Project-Id-Version: Plugins - RSS Aggregator by Feedzy – Feed to Post, Autoblogging, News &amp; YouTube Video Feeds Aggregator - Stable (latest release)\n"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:515
+msgid "Your current plan supports only one import setup. Upgrade to unlock unlimited import configurations and make the most of Feedzy's powerful features!"
+msgstr "Planul tău actual acceptă o singură inițializare de import. Actualizează pentru a debloca configurații de import nelimitate și profită la maximum de funcționalitățile puternice ale Feedzy!"
+
+#: includes/views/misc-view.php:63
+msgid "Specify a custom User-Agent string for feed requests. Some feed providers block automated requests. If you're experiencing issues accessing a feed, try setting this to a common browser string like \"Mozilla/5.0\". In most cases, you can leave this field empty."
+msgstr "Specifică un șir de agent utilizator personalizat pentru cererile de flux. Unii furnizori de fluxuri blochează solicitările automate. Dacă întâmpini probleme la accesarea unui flux, încearcă să setezi acest câmp la un șir de navigator obișnuit, cum ar fi „Mozilla/5.0”. În majoritatea cazurilor poți lăsa gol acest câmp."
+
+#: includes/views/import-metabox-edit.php:904
+msgid "Oldest items first"
+msgstr "Mai întâi elementele mai vechi"
+
+#: includes/views/import-metabox-edit.php:903
+msgid "Latest items first"
+msgstr "Mai întâi elementele mai noi"
+
+#: includes/views/import-metabox-edit.php:902
+msgid "Original feed order"
+msgstr "Ordine flux original"
+
+#: includes/views/import-metabox-edit.php:892
+msgid "Feed Order"
+msgstr "Ordine flux"
+
+#: includes/views/import-metabox-edit.php:885
+msgid "Enable this to automatically remove all HTML tags from feed content upon import. This can help ensure clean, plain-text output and is especially useful for feeds that contain unexpected or unsafe markup."
+msgstr "Activează această opțiune pentru a elimina automat toate tagurile HTML din conținutul fluxului la import. Acest lucru poate ajuta la asigurarea unei ieșiri curate, în text simplu și este util mai ales pentru fluxurile care conțin marcaje neașteptate sau nesigure."
+
+#: includes/views/import-metabox-edit.php:881
+msgid "Remove HTML tags from improted content"
+msgstr "Înlătură tagurile HTML din conținutul importat"
+
+#: includes/views/import-metabox-edit.php:873
+msgid "Strip HTML Tags"
+msgstr "Elimină tagurile HTML"
+
+#: includes/views/import-metabox-edit.php:820
+msgid "Helpful for setting a fallback image for feed items without an image during the import process."
+msgstr "Utilă pentru setarea unei imagini alternative pentru elementele din flux fără o imagine în timpul procesului de import."
+
+#: includes/views/import-metabox-edit.php:761
+msgid "Use a specific image just for this feed."
+msgstr "Folosește o imagine specifică doar pentru acest flux."
+
+#: includes/views/import-metabox-edit.php:757
+msgid "Add custom fallback image"
+msgstr "Adaugă o imagine alternativă personalizată"
+
+#: includes/views/import-metabox-edit.php:740
+msgid "Feedzy Settings"
+msgstr "Setări Feedzy"
+
+#. translators: %s is replaced with a link to the Feedzy Settings page
+#: includes/views/import-metabox-edit.php:739
+msgid "You can update the general fallback image in %s."
+msgstr "Poți actualiza imaginea generală alternativă în %s."
+
+#: includes/views/import-metabox-edit.php:727
+msgid "No general fallback image set. "
+msgstr "Nu este setată o imagine generală alternativă. "
+
+#: includes/views/import-metabox-edit.php:718
+msgid "General fallback image not found (may have been deleted)"
+msgstr "Nu am găsit imaginea generală alternativă (este posibil să fi fost ștearsă)"
+
+#: includes/views/import-metabox-edit.php:701
+msgid "Updates automatically when the general fallback image changes."
+msgstr "Se actualizează automat atunci când imaginea generală alternativă se modifică."
+
+#: includes/views/import-metabox-edit.php:697
+msgid "Use general setting"
+msgstr "Folosește setarea generală"
+
+#: includes/views/import-metabox-edit.php:680
+msgid "Which fallback featured image should be used for this feed?"
+msgstr "Ce imagine reprezentativă alternativă ar trebui să fie utilizată pentru acest flux?"
+
+#: includes/views/import-metabox-edit.php:657
+msgid "externally created)"
+msgstr "creat din exterior"
+
+#: includes/views/import-metabox-edit.php:636
+msgid "Import schedule"
+msgstr "Programare import"
+
+#: includes/views/import-metabox-edit.php:624
+msgid "Set the number of feed items to import per run."
+msgstr "Setează numărul de elemente de flux care urmează să fie importate per rulare."
+
+#: includes/views/import-metabox-edit.php:621
+msgid "Number of items to import"
+msgstr "Număr de elemente de importat"
+
+#: includes/views/import-metabox-edit.php:617
+msgid "Items"
+msgstr "Elemente"
+
+#: includes/views/import-metabox-edit.php:275
+msgid "Tip: Click the settings icon to add actions to this field."
+msgstr "Sfat: dă clic pe pictograma de setări pentru a adăuga acțiuni la acest câmp."
+
+#. translators: %1$s: magic tag, %2$s: opening anchor tag, %3$s: closing anchor
+#. tag.
+#: includes/views/import-metabox-edit.php:206
+msgid "Auto-assign by title keywords: %1$s %2$s Configure %3$s"
+msgstr "Atribuire automată după cuvintele cheie din titlu: %1$s %2$s Configurează %3$s"
+
+#. translators: %1$s: magic tag, %2$s: opening anchor tag, %3$s: closing anchor
+#. tag.
+#: includes/views/import-metabox-edit.php:192
+msgid "Auto-create categories from source: %1$s %2$s Learn More %3$s"
+msgstr "Creează categorii automat din sursă: %1$s %2$s Află mai multe %3$s"
+
+#: includes/views/import-metabox-edit.php:183
+msgid "If you don't select at least one taxonomy, posts will be assigned to Uncategorized by default."
+msgstr "Dacă nu selectezi cel puțin o taxonomie, articolele vor fi atribuite implicit categoriei Fără categorie."
+
+#: includes/views/amazon-product-advertising-view.php:2
+#: includes/views/openai-view.php:2 includes/views/openrouter-view.php:2
+#: includes/views/spinnerchief-view.php:2 includes/views/wordai-view.php:2
+msgid "Your current plan does not include support for this feature."
+msgstr "Planul tău actual nu include suport pentru această funcționalitate."
+
+#: includes/layouts/setup-wizard.php:233
+msgid "Posts will not be imported if their title includes these keywords."
+msgstr "Articolele nu vor fi importate dacă titlul lor include aceste cuvinte cheie."
+
+#: includes/layouts/setup-wizard.php:228
+msgid "Exclude posts with title not containing"
+msgstr "Exclude articolele cu titlu care nu conține"
+
+#: includes/layouts/setup-wizard.php:220
+msgid "Optional. Used as fallback for imported posts without images."
+msgstr "Opțională. Utilizată ca alternativă pentru articolele importate fără imagini."
+
+#: includes/layouts/settings.php:429
+msgid "View proxy setup guide"
+msgstr "Vezi ghidul de configurare proxy"
+
+#: includes/layouts/settings.php:427
+msgid "Use a proxy to bypass firewalls, geographic restrictions, or IP blocks from feed sources. This ensures you can reliably access restricted RSS feeds."
+msgstr "Folosește un proxy pentru a ocoli firewall-urile, restricțiile geografice sau blocările IP de la sursele de fluxuri. Acest lucru îți asigură accesul în mod fiabil la fluxurile RSS restricționate."
+
+#: includes/layouts/settings.php:424
+msgid "Proxy Configuration"
+msgstr "Configurare proxy"
+
+#: includes/layouts/settings.php:372
+msgid "Email Reporting Frequency"
+msgstr "Frecvență de rapoarte prin email"
+
+#: includes/layouts/settings.php:358
+msgid "Email address"
+msgstr "Adresă de email"
+
+#: includes/layouts/settings.php:351
+msgid "Enable email alerts for feed errors."
+msgstr "Activează alertele prin email pentru erorile din flux."
+
+#: includes/layouts/settings.php:347
+msgid "Report errors via email"
+msgstr "Reportare de erori prin email"
+
+#: includes/layouts/settings.php:278
+msgid "Logging Level"
+msgstr "Nivel de jurnalizare"
+
+#. translators: (externally created) is used to indicate that the schedule is
+#. created by another plugin or manually.
+#: includes/layouts/settings.php:259
+msgid "externally created"
+msgstr "creat din exterior"
+
+#: includes/layouts/settings.php:232
+msgid "Default Importing Schedule"
+msgstr "Program implicit de import"
+
+#: includes/layouts/settings.php:154
+msgid "Choose a default image to display when RSS feeds don't include images."
+msgstr "Alege o imagine implicită pentru a o afișa atunci când fluxurile RSS nu includ imagini."
+
+#: includes/layouts/settings.php:153
+msgid "Fallback Featured Image Settings"
+msgstr "Setări imagine reprezentativă alternativă"
+
+#: includes/layouts/settings.php:99
+msgid "Schedules"
+msgstr "Programări"
+
+#: includes/layouts/feedzy-tutorial.php:81 includes/layouts/settings.php:91
+msgid "Logs"
+msgstr "Jurnale"
+
+#: includes/layouts/feedzy-support.php:42
+msgid "License"
+msgstr "Licență"
+
+#: includes/layouts/feedzy-subscribe-notice.php:54
+msgid "Help improve Feedzy with anonymous usage insights"
+msgstr "Ajută la îmbunătățirea Feedzy cu informații anonime despre utilizare"
+
+#: includes/layouts/feedzy-subscribe-notice.php:51
+msgid "Get tips, updates & unlock exclusive guides"
+msgstr "Obține sfaturi, actualizări și deblochează ghiduri exclusive"
+
+#. translators: %s is the number of users.
+#: includes/layouts/feedzy-subscribe-notice.php:30
+msgid "Join %s+ users aggregating RSS feeds effortlessly"
+msgstr "Alătură-te celor peste %s de utilizatori care agregă fluxuri RSS fără efort"
+
+#: includes/layouts/feedzy-subscribe-notice.php:15
+msgid "Dismiss this notice"
+msgstr "Respinge această notificare"
+
+#: includes/layouts/feedzy-schedules.php:94
+msgid "Interval"
+msgstr "Interval"
+
+#. translators: %s is the number of custom schedules.
+#: includes/layouts/feedzy-schedules.php:86
+msgid "%s items"
+msgstr "%s elemente"
+
+#: includes/layouts/feedzy-schedules.php:50
+#: includes/layouts/feedzy-schedules.php:93
+msgid "Internal Name"
+msgstr "Nume intern"
+
+#: includes/layouts/feedzy-schedules.php:37
+#: includes/layouts/feedzy-schedules.php:95
+msgid "Display Name"
+msgstr "Nume afișat"
+
+#: includes/layouts/feedzy-schedules.php:23
+msgid "Interval (seconds)"
+msgstr "Interval (secunde)"
+
+#: includes/layouts/feedzy-schedules.php:14
+#: includes/layouts/feedzy-schedules.php:66
+msgid "Add Cron Schedule"
+msgstr "Adaugă programare cron"
+
+#: includes/layouts/feedzy-logs-viewer.php:72
+msgid "No logs found."
+msgstr "Nu am găsit niciun jurnal."
+
+#: includes/layouts/feedzy-logs-viewer.php:68
+msgid "An error occurred while fetching logs."
+msgstr "A apărut o eroare în timpul aducerii jurnalelor."
+
+#: includes/layouts/feedzy-logs-viewer.php:44
+msgid "All"
+msgstr "Toate"
+
+#: includes/layouts/feedzy-logs-viewer.php:29
+msgid "Recent Logs"
+msgstr "Jurnale recente"
+
+#: includes/layouts/feedzy-logs-viewer.php:15 includes/layouts/settings.php:291
+msgid "Error"
+msgstr "Eroare"
+
+#: includes/layouts/feedzy-logs-viewer.php:14 includes/layouts/settings.php:297
+msgid "Warning"
+msgstr "Avertizare"
+
+#: includes/layouts/feedzy-logs-viewer.php:13 includes/layouts/settings.php:303
+msgid "Info"
+msgstr "Informație"
+
+#: includes/layouts/feedzy-logs-viewer.php:12 includes/layouts/settings.php:309
+msgid "Debug"
+msgstr "Depanare"
+
+#: includes/layouts/feedzy-email-report.php:106
+msgid "See all the logs"
+msgstr "Vezi toate jurnalele"
+
+#: includes/layouts/feedzy-email-report.php:95
+msgid "Context:"
+msgstr "Context:"
+
+#: includes/layouts/feedzy-email-report.php:83
+msgid "No recent error entries found."
+msgstr "Nu am găsit intrări de eroare recente."
+
+#: includes/layouts/feedzy-email-report.php:80
+msgid "Recent Log Entries"
+msgstr "Intrări recente în jurnal"
+
+#. translators: %1$s is the error count, %2$s is the date since errors are
+#. counted.
+#: includes/layouts/feedzy-email-report.php:71
+msgid "Errors logged: %1$s (since %2$s)"
+msgstr "Erori înregistrate: %1$s (începând din %2$s)"
+
+#: includes/layouts/feedzy-email-report.php:66
+msgid "Error Statistics"
+msgstr "Statistici de erori"
+
+#. translators: %s is the generated date.
+#: includes/layouts/feedzy-email-report.php:56
+msgid "Generated on %s"
+msgstr "Generat pe %s"
+
+#. translators: %s is the site name.
+#: includes/layouts/feedzy-email-report.php:50
+msgid "Feedzy RSS Feeds Log Report for %s"
+msgstr "Raport de jurnale Feedzy RSS Feeds pentru %s"
+
+#: includes/feedzy-rss-feeds-activator.php:77
+msgid "News sites"
+msgstr "Site-uri de știri"
+
+#. translators: %s is the post title.
+#: includes/admin/feedzy-rss-feeds-import.php:3068
+msgid "Could not set the thumbnail for: %s"
+msgstr "Nu am putut seta miniatura pentru: %s"
+
+#. translators: %s is the image source URL.
+#: includes/admin/feedzy-rss-feeds-import.php:3037
+msgid "Cannot upload the image to Media Library: %s"
+msgstr "Nu am putut încărca imaginea în biblioteca Media: %s"
+
+#. translators: %s the name of the post.
+#: includes/admin/feedzy-rss-feeds-import.php:3018
+msgid "Could not rename temporary file for: %s"
+msgstr "Nu am putut redenumi fișierul temporar pentru: %s"
+
+#. translators: %s is the image source URL.
+#: includes/admin/feedzy-rss-feeds-import.php:2982
+msgid "Unable to download image: %s"
+msgstr "Nu am putut descărca imaginea: %s"
+
+#. translators: %s is the invalid image URL.
+#: includes/admin/feedzy-rss-feeds-import.php:2951
+msgid "Invalid image URL: %s"
+msgstr "URL-ul imaginii nu este valid: %s"
+
+#. translators: %1$s is the item URL, %2$s is the error message.
+#: includes/admin/feedzy-rss-feeds-import.php:2612
+msgid "Error fetching image from Graby for item \"%1$s\": %2$s"
+msgstr "Eroare la aducerea imaginii din Graby pentru elementul „%1$s”: %2$s"
+
+#. translators: %1$s is the item URL, %2$s is the error message.
+#: includes/admin/feedzy-rss-feeds-import.php:2405
+msgid "Could not save the \"%1$s\" as post: %2$s"
+msgstr "Nu am putut salva „%1$s” ca articol: %2$s"
+
+#. translators: %s is the error message.
+#: includes/admin/feedzy-rss-feeds-import.php:1788
+msgid "Error when fetching the feed items: %s"
+msgstr "Eroare la aducerea elementelor din flux: %s"
+
+#. translators: %1$s is the import job title, %2$s is the error message.
+#: includes/admin/feedzy-rss-feeds-import.php:1577
+msgid "Error when running \"%1$s\": %2$s"
+msgstr "Eroare la rularea „%1$s”: %2$s"
+
+#: includes/admin/feedzy-rss-feeds-import.php:528
+#: includes/admin/feedzy-rss-feeds-import.php:529
+msgid "PRO"
+msgstr "PRO"
+
+#: includes/admin/feedzy-rss-feeds-import.php:524
+#: includes/admin/feedzy-rss-feeds-import.php:529
+msgid "Auto Categories by keyword"
+msgstr "Categorii automate după cuvânt cheie"
+
+#: includes/admin/feedzy-rss-feeds-import.php:205
+msgid "Error validating feed URL."
+msgstr "Eroare la validarea URL-ului fluxului."
+
+#: includes/admin/feedzy-rss-feeds-import.php:204
+msgid "Invalid feed URL."
+msgstr "URL-ul fluxului nu este valid."
+
+#: includes/admin/feedzy-rss-feeds-import.php:191
+msgid "See more details"
+msgstr "Vezi mai multe detalii"
+
+#. translators: %s is the error message
+#: includes/admin/feedzy-rss-feeds-admin.php:3171
+msgid "An error occurred: %s"
+msgstr "A apărut o eroare: %s"
+
+#. translators: %s is the error message
+#: includes/admin/feedzy-rss-feeds-admin.php:3157
+msgid "Error reading feed: %s"
+msgstr "Eroare la citirea fluxului: %s"
+
+#. translators: %d is the number of items found in the feed
+#: includes/admin/feedzy-rss-feeds-admin.php:3140
+msgid "%d item found"
+msgid_plural "%d items found"
+msgstr[0] "un element găsit"
+msgstr[1] "%d elemente găsite"
+msgstr[2] "%d de elemente găsite"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:3130
+msgid "Feed is empty"
+msgstr "Fluxul este gol"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:3107
+msgid "Invalid feed object returned"
+msgstr "Obiect de flux nevalid returnat"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:3095
+#: includes/admin/feedzy-rss-feeds-admin.php:3121
+msgid "Error fetching feed: "
+msgstr "Eroare la aducerea fluxului: "
+
+#: includes/admin/feedzy-rss-feeds-admin.php:3084
+msgid "Invalid URL format"
+msgstr "Formatul URL-ului nu este valid"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:3072
+msgid "No valid URLs provided."
+msgstr "Nu ai furnizat niciun URL valid."
+
+#: includes/admin/feedzy-rss-feeds-admin.php:3065
+msgid "Feed URL cannot be empty."
+msgstr "URL-ul fluxului nu poate fi gol."
+
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:562
+#: includes/admin/feedzy-rss-feeds-admin.php:3059
+msgid "Security check failed."
+msgstr "Verificarea de securitate a eșuat."
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2396 build/block/index.js:13
+#: build/loop/index.js:1 js/FeedzyLoop/placeholder.js:86
+msgid "Validation failed"
+msgstr "Validarea a eșuat"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2011
+msgid "Remove image"
+msgstr "Înlătură imaginea"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1876
+msgid "No feeds provided for validation."
+msgstr "Nu sunt furnizate fluxuri pentru validare."
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1267
+#: includes/admin/feedzy-rss-feeds-admin.php:1268
+#: includes/layouts/header.php:13
+msgid "Dashboard"
+msgstr "Panou control"
+
+#. translators: %s is the time difference.
+#: includes/admin/feedzy-rss-feeds-admin.php:1054
+msgid "%s ago"
+msgstr "acum %s"
+
+#. translators: %1$s the number of maximum displayed items, %2$s is the total
+#. number of items available in the feed.
+#: includes/admin/feedzy-rss-feeds-admin.php:1007
+msgid "Latest %1$s feed items out of %2$s available from"
+msgstr "Ultimele %1$s elemente din flux din %2$s disponibile de la"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:981
+msgid "No feeds available for preview."
+msgstr "Nu există fluxuri disponibile pentru previzualizare."
+
+#: includes/admin/feedzy-rss-feeds-admin.php:962
+msgid "Validate & Remove Invalid Feeds"
+msgstr "Validează și elimină fluxurile nevalide"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:908
+msgid "Feed Preview"
+msgstr "Previzualizare flux"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:633
+msgid "Save time by reusing your import setups"
+msgstr "Economisește timp prin reutilizarea inițializărilor de import"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:630
+msgid "Unlock Upload & Export with Feedzy PRO"
+msgstr "Deblochează încărcarea și exportul cu Feedzy PRO"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:594
+msgid "Duplicate your imports with one click"
+msgstr "Duplică-ți importurile cu un singur clic"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:591
+msgid "Unlock Cloning with Feedzy PRO"
+msgstr "Deblochează clonarea cu Feedzy PRO"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:530
+#: includes/admin/feedzy-rss-feeds-admin.php:614
+#: includes/admin/feedzy-rss-feeds-admin.php:653 build/conditions/index.js:4
+#: build/loop/index.js:4
+msgid "30-day money-back guarantee. No questions asked."
+msgstr "Garantăm restituirea banilor în 30 de zile (de la cumpărare). Fără să punem întrebări."
+
+#. translators: %1$s is the number of imports used, %2$s is the total number of
+#. imports allowed.
+#: includes/admin/feedzy-rss-feeds-admin.php:508 build/conditions/index.js:4
+#: build/loop/index.js:4
+msgid "%1$s/%2$s used"
+msgstr "utilizate %1$s/%2$s"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:504
+msgid "Import limit reached"
+msgstr "Limită de import atinsă"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:154
+msgid "An error occurred while checking the license. Please try again."
+msgstr "A apărut o eroare în timpul verificării licenței. Te rog să încerci din nou."
+
+#: includes/admin/feedzy-rss-feeds-admin.php:153
+msgid "Check License"
+msgstr "Verifică licența"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:152
+msgid "License Key"
+msgstr "Cheie de licență"
+
+#. translators: %1$s is the feed URL, %2$s is the error message.
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:938
+msgid "Error while parsing feed URL \"%1$s\": %2$s"
+msgstr "Eroare în timpul parcurgerii URL-ului fluxului „%1$s”: %2$s"
+
+#: includes/layouts/setup-wizard.php:239
+msgid "Create a draft import"
+msgstr "Creează o ciornă de import"
+
+#: includes/layouts/setup-wizard.php:190
+msgid "Post status"
+msgstr "Stare articol"
+
+#: includes/layouts/setup-wizard.php:177
+msgid "Import as"
+msgstr "Importă ca"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2268
+msgid "Redirecting to import feed"
+msgstr "Redirecționez către fluxul de import"
+
+#: includes/layouts/setup-wizard.php:421
+msgid "Skip for now"
+msgstr "Sari deocamdată"
+
+#: includes/layouts/setup-wizard.php:420
+msgid "Complete Setup & Start Using Feedzy"
+msgstr "Finalizează inițializarea și începe să folosești Feedzy"
+
+#: includes/layouts/setup-wizard.php:406
+msgid "Your privacy matters: We only collect anonymous plugin usage data. No sensitive information is shared with third parties."
+msgstr "Confidențialitatea ta contează: colectăm doar date anonime privind utilizarea modulului. Nicio informație sensibilă nu este partajată cu terți."
+
+#: includes/layouts/setup-wizard.php:398
+msgid "Get priority notification about new features"
+msgstr "Primești notificări prioritare despre noile funcționalități"
+
+#: includes/layouts/setup-wizard.php:392
+msgid "Help improve Feedzy by sharing anonymous usage data"
+msgstr "Ajuți la îmbunătățirea Feedzy prin partajarea datelor anonime de utilizare"
+
+#: includes/layouts/setup-wizard.php:386
+msgid "Receive product updates, tutorials, and exclusive offers"
+msgstr "Primești actualizări de produse, tutoriale și oferte exclusive"
+
+#. translators: %1$s - HTML tag, %2$s - discount, %3$s - HTML tag, %4$s -
+#. product name.
+#: includes/admin/feedzy-rss-feeds-admin.php:3026
+msgid "Get %1$sup to %2$s off%3$s when you upgrade your %4$s plan or renew early."
+msgstr "Primești %1$so reducere de până la %2$s%3$s când îți actualizezi planul %4$s sau îl reînnoiești anticipat."
+
+#. translators: %1$s - HTML tag, %2$s - discount, %3$s - HTML tag, %4$s -
+#. product name.
+#: includes/admin/feedzy-rss-feeds-admin.php:3018
+msgid "Our biggest sale of the year: %1$sup to %2$s OFF%3$s on %4$s. Don't miss this limited-time offer."
+msgstr "Cea mai mare vânzare a noastră din acest an: %1$spână la %2$s REDUCERE%3$s la %4$s. Nu rata această ofertă limitată."
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2760
+msgid "Choose Language"
+msgstr "Alege limba"
+
+#: includes/layouts/settings.php:465
+msgid "Add the port number"
+msgstr "Adaugă numărul portului"
+
+#. translators: %s: the value to introduce.
+#: includes/layouts/settings.php:457 includes/layouts/settings.php:470
+msgid "Example: %s"
+msgstr "Exemplu: %s"
+
+#: includes/layouts/settings.php:452
+msgid "Enter the IP address or Domain name of the proxy server"
+msgstr "Introdu adresa IP sau numele de domeniu al serverului proxy"
+
+#: includes/layouts/settings.php:445
+msgid "Enter the password for the authorized user"
+msgstr "Introdu parola pentru utilizatorul autorizat"
+
+#: includes/layouts/settings.php:438
+msgid "Enter the authorized username"
+msgstr "Introdu numele de utilizator autorizat"
+
+#: includes/views/misc-view.php:58
+msgid "Add the user agent string"
+msgstr "Adaugă șirul agentului utilizator"
+
+#. translators: this sentence is wrapped with a link tag.
+#: includes/elementor/widgets/register-widget.php:474
+#: includes/elementor/widgets/register-widget.php:491
+msgid "View documentation here."
+msgstr "Vezi aici documentația."
+
+#: includes/elementor/widgets/register-widget.php:471
+msgid "You can add multiple tags at once, by separating them with commas."
+msgstr "Poți adăuga mai multe etichete deodată, separându-le cu virgulă."
+
+#: includes/elementor/widgets/register-widget.php:256
+msgid "To"
+msgstr "Către"
+
+#. translators: %s is the default value.
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:181
+msgid "default: %s"
+msgstr "implicit: %s"
+
+#. translators: %s is the list of examples.
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:150
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:179
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:330
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:337
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:344
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:367
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:460
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:526
+#: includes/elementor/widgets/register-widget.php:483 build/block/index.js:7
+#: build/block/index.js:10 build/block/index.js:13 build/loop/index.js:7
+#: js/FeedzyLoop/controls.js:315
+msgid "eg: %s"
+msgstr "de exemplu: %s"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:931
+msgid "View more details"
+msgstr "Vezi mai multe detalii"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:929
+msgid "Elementor Templates support"
+msgstr "Suport pentru șabloane Elementor"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:928
+msgid "Translate content"
+msgstr "Tradu conținut"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:927
+msgid "Paraphrase content"
+msgstr "Parafrazează conținut"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:926
+msgid "Full Text Import"
+msgstr "Importă text întreg"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:925
+msgid "Auto add referral parameters to links"
+msgstr "Adaugă parametrii de referință la legături în mod automat"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:923
+msgid "Get access to more features."
+msgstr "Obții acces la mai multe funcționalități."
+
+#: feedzy-rss-feed.php:321
+msgid "Rate Us"
+msgstr "Evaluează-ne"
+
+#: feedzy-rss-feed.php:320
+msgid "Suggest a Feature"
+msgstr "Sugerează o funcționalitate"
+
+#: feedzy-rss-feed.php:318
+msgid "Run Setup Wizard"
+msgstr "Rulează asistentul de inițializare"
+
+#: feedzy-rss-feed.php:317
+msgid "Get Support"
+msgstr "Obține suport"
+
+#: feedzy-rss-feed.php:313
+msgid "Close Toggle Help Widget"
+msgstr "Închide comutatorul piesei de ajutor"
+
+#: feedzy-rss-feed.php:312
+msgid "How can we help you?"
+msgstr "Cum te putem ajuta?"
+
+#. translators: %s: Product name
+#: feedzy-rss-feed.php:311
+msgid "Thank you for using %s"
+msgstr "Îți mulțumim că folosești %s"
+
+#. translators: %s: Product name
+#: feedzy-rss-feed.php:308
+msgid "Toggle Help Widget for %s"
+msgstr "Comutator piesă de ajutor pentru %s"
+
+#: feedzy-rss-feed.php:224
+msgid "No, thanks."
+msgstr "Nu, mulțumesc."
+
+#: feedzy-rss-feed.php:218
+msgid "Upgrade Now!"
+msgstr "Actualizează acum!"
+
+#: build/loop/block.json js/FeedzyLoop/block.json
+msgctxt "block description"
+msgid "Display curated RSS content in a dynamic, customizable loop directly in the Block Editor—no coding required."
+msgstr "Afișează conținut RSS atent selectat într-o buclă dinamică, personalizabilă, direct în Editorul de blocuri, fără a fi necesară codarea."
+
+#: build/loop/block.json js/FeedzyLoop/block.json
+msgctxt "block keyword"
+msgid "feedzy"
+msgstr "feedzy"
+
+#: build/loop/block.json js/FeedzyLoop/block.json
+msgctxt "block keyword"
+msgid "feed"
+msgstr "feed"
+
+#: build/loop/block.json js/FeedzyLoop/block.json
+msgctxt "block keyword"
+msgid "rss"
+msgstr "rss"
+
+#: build/loop/block.json js/FeedzyLoop/block.json
+msgctxt "block title"
+msgid "Feedzy Loop"
+msgstr "Feedzy Loop"
+
+#: includes/layouts/setup-wizard.php:159 includes/layouts/setup-wizard.php:243
+#: build/onboarding/index.js:1
+msgid "Skip"
+msgstr "Sari"
+
+#. translators: this followed by sentence: View documentation here.
+#: includes/elementor/widgets/register-widget.php:487
+msgid "You can find more info about available meta field values here."
+msgstr "Poți găsi mai multe informații despre valorile câmpurilor meta disponibile aici."
+
+#: build/block/index.js:1 build/loop/index.js:4
+#: js/FeedzyLoop/components/FallbackImageLoader.jsx:90
+msgid "Upload Image"
+msgstr "Încarcă imagine"
+
+#: build/block/index.js:1 build/loop/index.js:4
+#: js/FeedzyLoop/components/FallbackImageLoader.jsx:74
+msgid "Remove Image"
+msgstr "Înlătură imaginea"
+
+#: includes/views/import-metabox-edit.php:606 build/block/index.js:1
+msgid "Advanced"
+msgstr "Avansate"
+
+#: includes/views/wordai-view.php:26
+msgid "WordAI API key"
+msgstr "Cheie API WordAi"
+
+#: includes/views/wordai-view.php:23
+msgid "The WordAi account API key:"
+msgstr "Cheia API a contului WordAi:"
+
+#: includes/views/wordai-view.php:20
+msgid "WordAi Email"
+msgstr "Email WordAi"
+
+#: includes/views/wordai-view.php:19
+msgid "The WordAi account email:"
+msgstr "Emailul contului WordAi:"
+
+#: includes/views/spinnerchief-view.php:21
+msgid "SpinnerChief API Key"
+msgstr "Cheie API SpinnerChief"
+
+#: includes/views/spinnerchief-view.php:18
+msgid "SpinnerChief API key"
+msgstr "Cheie API SpinnerChief"
+
+#. translators: %1$s: openrouter pricing url, %2$s: link text.
+#: includes/views/openrouter-view.php:32
+msgid "OpenRouter API models <a href=\"%1$s\" target=\"_blank\">%2$s</a>"
+msgstr "API modele OpenRouter <a href=\"%1$s\" target=\"_blank\">%2$s</a>"
+
+#: includes/views/openrouter-view.php:28
+msgid "The OpenRouter model:"
+msgstr "Modelul OpenRouter:"
+
+#. translators: %1$s: openrouter key document url, %2$s: link text.
+#: includes/views/openrouter-view.php:22
+msgid "OpenRouter API keys"
+msgstr "chei API OpenRouter"
+
+#. translators: %1$s: openrouter key document url, %2$s: link text.
+#: includes/views/openrouter-view.php:22
+msgid "Get your OpenRouter API key from <a href=\"%1$s\" target=\"_blank\">%2$s</a>"
+msgstr "Obține cheia ta API OpenRouter din <a href=\"%1$s\" target=\"_blank\">%2$s</a>"
+
+#: includes/views/openrouter-view.php:18
+msgid "The OpenRouter account API key:"
+msgstr "Cheia API a contului OpenRouter:"
+
+#: includes/views/openai-view.php:43 includes/views/openrouter-view.php:37
+msgid "Model"
+msgstr "Model"
+
+#. translators: %1$s: openrouter pricing url, %2$s: link text.
+#: includes/views/openai-view.php:36 includes/views/openrouter-view.php:32
+msgid "Pricing"
+msgstr "Prețuri"
+
+#. translators: %1$s: OpenAI pricing url, %2$s: link text.
+#: includes/views/openai-view.php:34
+msgid "OpenAI API models <a href=\"%1$s\" target=\"_blank\">%2$s</a>"
+msgstr "API modele OpenAI <a href=\"%1$s\" target=\"_blank\">%2$s</a>"
+
+#: includes/views/openai-view.php:28
+msgid "The OpenAI model:"
+msgstr "Modelul OpenAI:"
+
+#: includes/views/openai-view.php:25 includes/views/openrouter-view.php:25
+msgid "API key"
+msgstr "Cheie API"
+
+#. translators: %1$s: OpenAI key document url, %2$s: link text.
+#: includes/views/openai-view.php:22
+msgid "OpenAI API keys"
+msgstr "chei API OpenAI"
+
+#. translators: %1$s: OpenAI key document url, %2$s: link text.
+#: includes/views/openai-view.php:22
+msgid "Get your OpenAI API key from <a href=\"%1$s\" target=\"_blank\">%2$s</a>"
+msgstr "Obține cheia ta API OpenAI din <a href=\"%1$s\" target=\"_blank\">%2$s</a>"
+
+#: includes/views/openai-view.php:18
+msgid "The OpenAI account API key:"
+msgstr "Cheia API a contului OpenAI:"
+
+#: includes/views/misc-view.php:46
+msgid "This setting controls whether there are featured images available in the RSS XML Feed of your own website."
+msgstr "Această setare controlează dacă există imagini reprezentative disponibile în fluxul RSS XML al site-ului tău web propriu."
+
+#: includes/views/misc-view.php:44
+msgid "Do NOT add the featured image to the website's RSS feed."
+msgstr "NU adăuga imaginea reprezentativă la fluxul RSS al site-ului."
+
+#: includes/views/misc-view.php:17
+msgid "Add canonical URL to imported posts from RSS feeds."
+msgstr "Adaugă un URL canonic la articolele importate din fluxuri RSS."
+
+#: includes/views/import-metabox-edit.php:1025
+msgid "Loading..."
+msgstr "Încarc..."
+
+#: includes/layouts/settings.php:285
+#: includes/views/import-metabox-edit.php:1021
+msgid "None"
+msgstr "Niciunul"
+
+#: includes/views/import-metabox-edit.php:1011
+msgid "Save & Activate importing"
+msgstr "Salvează și activează importul"
+
+#: includes/views/import-metabox-edit.php:1006
+#: includes/views/import-metabox-edit.php:1010
+msgid "Save"
+msgstr "Salvează"
+
+#: includes/layouts/setup-wizard.php:144
+#: includes/views/import-metabox-edit.php:1001
+msgid "Preview Import"
+msgstr "Previzualizează import"
+
+#: includes/views/import-metabox-edit.php:1000
+msgid "Click to see what items will be imported from the source, according to the filters specified"
+msgstr "Dă clic pentru a vedea care elemente vor fi importate din sursă, în funcție de filtrele specificate"
+
+#: includes/views/import-metabox-edit.php:995
+msgid "Clone Import"
+msgstr "Clonează import"
+
+#: includes/views/import-metabox-edit.php:969
+msgid "Help us improve Feedzy"
+msgstr "Ajută-ne să îmbunătățim Feedzy"
+
+#: includes/views/import-metabox-edit.php:957
+msgid "Select the language the content will have when it will be imported."
+msgstr "Selectează limba pe care o va avea conținutul atunci când va fi importat."
+
+#: includes/views/import-metabox-edit.php:934
+msgid "Content Language after import"
+msgstr "Limba conținutului după import"
+
+#: includes/views/import-metabox-edit.php:927
+msgid "This feature is only for Pro users."
+msgstr "Această funcționalitate este disponibilă doar pentru utilizatorii Pro."
+
+#: includes/views/import-metabox-edit.php:924
+msgid "Assign Language"
+msgstr "Atribuie limbă"
+
+#: includes/views/import-metabox-edit.php:914
+msgid "How often Feedzy will run the import."
+msgstr "Cât de des va rula Feedzy importul."
+
+#: includes/layouts/setup-wizard.php:208
+#: includes/views/import-metabox-edit.php:674
+msgid "Fallback Image"
+msgstr "Imagine alternativă"
+
+#: includes/views/import-metabox-edit.php:865
+msgid "Define a custom duplication key for identifying unique feed items when importing content. By default, items are considered unique based on their title and URL. Enter one or multiple magic tags."
+msgstr "Definește o cheie de duplicare personalizată pentru identificarea elementelor unice din flux atunci când imporți conținut. În mod implicit, elementele sunt considerate unice pe baza titlului și a URL-ului lor. Introdu una sau mai multe etichete magice."
+
+#: includes/views/import-metabox-edit.php:862
+msgid "Set a custom duplication key to identify unique feed items"
+msgstr "Setează o cheie de duplicare personalizată pentru a identifica elementele unice din flux"
+
+#: includes/views/import-metabox-edit.php:858
+msgid "Duplication Key"
+msgstr "Cheie de duplicare"
+
+#: includes/views/import-metabox-edit.php:851
+msgid "Documentation."
+msgstr "Documentație."
+
+#: includes/views/import-metabox-edit.php:850
+msgid "To understand how duplicates will be removed, check out our"
+msgstr "Pentru a înțelege cum vor fi înlăturate duplicatele, consultă pagina de"
+
+#: includes/views/import-metabox-edit.php:845
+msgid "Remove Duplicate Items"
+msgstr "Înlătură elementele duplicate"
+
+#: includes/views/import-metabox-edit.php:832
+msgid "Remove Duplicates"
+msgstr "Înlătură duplicate"
+
+#: includes/views/import-metabox-edit.php:595
+msgid "General feed settings"
+msgstr "Setări generale flux"
+
+#: includes/views/import-metabox-edit.php:594
+msgid "Step 4"
+msgstr "Pasul 4"
+
+#. translators: %1$s: opening anchor tag, %2$s: closing anchor tag.
+#: includes/views/import-metabox-edit.php:576 includes/views/misc-view.php:24
+msgid "Check the %1$s Documentation %2$s for more details."
+msgstr "Consultă %1$sdocumentația%2$s pentru mai multe detalii."
+
+#: includes/views/import-metabox-edit.php:567
+msgid "Add Custom Field"
+msgstr "Adaugă câmp personalizat"
+
+#: includes/views/import-metabox-edit.php:551 build/conditions/index.js:1
+#: build/loop/index.js:1
+msgid "Value"
+msgstr "Valoare"
+
+#: includes/views/import-metabox-edit.php:544
+msgid "Key Name"
+msgstr "Nume cheie"
+
+#: includes/views/import-metabox-edit.php:513
+msgid "Add magic tags to extract custom elements from your feed. This will work only for single-feeds, not feed groups."
+msgstr "Adaugă etichete magice pentru a extrage elemente personalizate din fluxul tău. Acest lucru va funcționa numai pentru fluxuri unice, nu și pentru grupuri de fluxuri."
+
+#: includes/views/import-metabox-edit.php:488
+#: includes/views/import-metabox-edit.php:497
+msgid "Post Excerpt"
+msgstr "Rezumat articol"
+
+#: includes/views/import-metabox-edit.php:478
+msgid "The source author will appear in Archive Pages"
+msgstr "Autorul sursei va apărea în paginile de arhivă"
+
+#: includes/views/import-metabox-edit.php:474
+msgid "Save it in Frontend"
+msgstr "Salvează-l în partea din față a site-ului"
+
+#: includes/views/import-metabox-edit.php:464
+msgid "The source author will appear in the Dashboard"
+msgstr "Autorul sursei va apărea în Panou control"
+
+#: includes/views/import-metabox-edit.php:460
+msgid "Save it in Backend"
+msgstr "Salvează-l în partea administrativă a site-ului"
+
+#: includes/views/import-metabox-edit.php:451
+msgid "Select the author to assign to the imported posts. By default, this will be set to your current account. Note that this choice is independent of the options below, which control how the source author details are displayed."
+msgstr "Selectează autorul pentru a-l atribui articolelor importate. În mod implicit, acesta va fi setat la contul tău curent. Reține că această alegere este independentă de opțiunile de mai jos, care controlează modul în care sunt afișate detaliile autorului sursei."
+
+#: includes/views/import-metabox-edit.php:433
+msgid "Post Author"
+msgstr "Autor articol"
+
+#: includes/views/import-metabox-edit.php:425
+msgid "This will use the external featured image of the imported article and won't save the image to the Media Library on your website."
+msgstr "Acest lucru va utiliza imaginea reprezentativă externă a articolului importat și nu va salva imaginea în biblioteca Media de pe site-ul tău web."
+
+#: includes/views/import-metabox-edit.php:421
+msgid "Use external image URL, Ignore feature post thumbnail"
+msgstr "Folosește URL-ul extern al imaginii, ignoră miniatura articolului reprezentativ"
+
+#: includes/views/import-metabox-edit.php:413
+msgid "External image"
+msgstr "Imagine externă"
+
+#: includes/views/import-metabox-edit.php:399
+msgid "You can use the magic tags, URL, or leave it empty."
+msgstr "Poți utiliza etichetele magice, URL-ul sau îl poți lăsa gol."
+
+#: includes/views/import-metabox-edit.php:383
+msgid "Add a tag for the featured image"
+msgstr "Adaugă o etichetă pentru imaginea reprezentativă"
+
+#: includes/views/import-metabox-edit.php:375 build/block/index.js:1
+#: build/loop/index.js:4 js/FeedzyLoop/components/FallbackImageLoader.jsx:56
+msgid "Featured image"
+msgstr "Imagine reprezentativă"
+
+#. translators: %1$s: opening anchor tag, %2$s: closing anchor tag.
+#: includes/views/import-metabox-edit.php:362
+msgid "Add more advanced tags, like item price, rating and many more, by %1$s upgrading to Feedzy Pro %2$s"
+msgstr "Adaugă etichete mai avansate, cum ar fi prețul elementului, evaluare și multe altele, prin %1$s actualizare la Feedzy Pro %2$s"
+
+#: includes/views/import-metabox-edit.php:350
+msgid "You can add more tags and other things that will be added in the Single Post layout. This field is mandatory."
+msgstr "Poți adăuga mai multe etichete și alte lucruri care vor fi adăugate în aranjamentul articolului singular. Acest câmp este obligatoriu."
+
+#: includes/views/import-metabox-edit.php:324 build/block/index.js:1
+msgid "Content"
+msgstr "Conținut"
+
+#: includes/views/import-metabox-edit.php:312
+msgid "Leave blank, if unsure."
+msgstr "Lasă gol dacă nu îți este clar."
+
+#: includes/views/import-metabox-edit.php:270
+msgid "You can add multiple items. Keep in mind that this field is mandatory - without it, a post will not be created."
+msgstr "Poți adăuga mai multe elemente. Reține că acest câmp este obligatoriu – fără el, nu va fi creat un articol."
+
+#: includes/views/import-metabox-edit.php:238
+msgid "Choose Published if you want to publish your posts right away, or you can use Draft if you want to draft your posts and publish them after reviewing them manually."
+msgstr "Alege publicat dacă vrei să-ți publici imediat articolele, sau poți utiliza ciornă dacă vrei să-ți redactezi articolele și să le publici după ce le revizuiești manual."
+
+#: includes/views/import-metabox-edit.php:220
+msgid "Post Status"
+msgstr "Stare articol"
+
+#: includes/views/import-metabox-edit.php:173
+msgid "Post Taxonomy"
+msgstr "Taxonomie articol"
+
+#: includes/views/import-metabox-edit.php:150
+msgid "Post Type"
+msgstr "Tip de articol"
+
+#: includes/views/import-metabox-edit.php:141
+msgid "Advanced Options"
+msgstr "Opțiuni avansate"
+
+#: includes/views/import-metabox-edit.php:130
+msgid "Map content"
+msgstr "Mapare conținut"
+
+#: includes/views/import-metabox-edit.php:129
+msgid "Step 3"
+msgstr "Pasul 3"
+
+#: includes/views/import-metabox-edit.php:113
+msgid "Filters"
+msgstr "Filtre"
+
+#: includes/views/import-metabox-edit.php:112
+msgid "Step 2"
+msgstr "Pasul 2"
+
+#: includes/views/import-metabox-edit.php:101
+msgid "How do I find an RSS feed URL?"
+msgstr "Cum găsesc o adresă URL pentru un flux RSS?"
+
+#: includes/views/import-metabox-edit.php:88
+msgid "Add a Group"
+msgstr "Adaugă un grup"
+
+#: includes/views/import-metabox-edit.php:87
+msgid "You don&#8217;t have any groups, yet."
+msgstr "Încă nu ai niciun grup."
+
+#: includes/views/import-metabox-edit.php:73
+msgid "Use Feed Group"
+msgstr "Folosește grupul de fluxuri"
+
+#: includes/views/import-metabox-edit.php:64
+msgid "You can add multiple sources at once, by separating them with commas. Make sure to use the validate button. Invalid feeds may not import anything."
+msgstr "Poți adăuga mai multe surse simultan separându-le cu virgulă. Asigură-te că utilizezi butonul de validare. Este posibil ca sursele nevalide să nu importe nimic."
+
+#: includes/views/import-metabox-edit.php:56
+msgid "Validate Feed"
+msgstr "Validează fluxul"
+
+#: includes/views/import-metabox-edit.php:49
+msgid "Paste your feed URL and click the plus icon to add it in the list"
+msgstr "Plasează URL-ul fluxului tău și dă clic pe pictograma plus pentru a-l adăuga în listă"
+
+#: includes/views/import-metabox-edit.php:48
+msgid "Make sure you validate the feed by using the validate button on the right"
+msgstr "Asigură-te că validezi fluxul folosind butonul de validare din dreapta"
+
+#: includes/views/import-metabox-edit.php:32
+msgid "RSS Feed sources "
+msgstr "Surse fluxuri RSS "
+
+#: includes/views/import-metabox-edit.php:24
+msgid "Sources configuration"
+msgstr "Configurare surse"
+
+#: includes/views/import-metabox-edit.php:23
+msgid "Step 1"
+msgstr "Pasul 1"
+
+#: includes/views/amazon-product-advertising-view.php:71
+#: includes/views/openai-view.php:44 includes/views/openrouter-view.php:38
+#: includes/views/spinnerchief-view.php:22 includes/views/wordai-view.php:27
+msgid "API Status: Invalid | Last check: Never"
+msgstr "Stare API: nevalidă | Ultima verificare: niciodată"
+
+#: includes/views/amazon-product-advertising-view.php:70
+msgid "Partner Tag (store/tracking id)"
+msgstr "Etichetă partener (ID magazin sau urmărire)"
+
+#: includes/views/amazon-product-advertising-view.php:67
+msgid "Partner Tag (store/tracking id):"
+msgstr "Etichetă partener (ID magazin sau urmărire):"
+
+#: includes/views/amazon-product-advertising-view.php:59
+msgid "Region:"
+msgstr "Regiune:"
+
+#: includes/views/amazon-product-advertising-view.php:51
+msgid "Host:"
+msgstr "Gazdă:"
+
+#: includes/views/amazon-product-advertising-view.php:44
+msgid "Secret key"
+msgstr "Cheie secretă"
+
+#: includes/views/amazon-product-advertising-view.php:43
+msgid "Secret key:"
+msgstr "Cheie secretă:"
+
+#: includes/views/amazon-product-advertising-view.php:38
+msgid "Access Key"
+msgstr "Cheie de acces"
+
+#: includes/views/amazon-product-advertising-view.php:37
+msgid "Access Key:"
+msgstr "Cheie de acces:"
+
+#. translators: %1$s to available amazon domain, %2$s example URL with ASIN,
+#. %3$s list of available Amazon domains.
+#: includes/views/amazon-product-advertising-view.php:26
+msgid "Please use this URL structure %1$s or %2$s while getting Amazon product information. <br> Here are the available Amazon domains: %3$s"
+msgstr "Te rog folosește această structură URL %1$s sau %2$s atunci când obții informații despre produsele Amazon. <br> Iată domeniile Amazon disponibile: %3$s"
+
+#. translators: %1$s: opening anchor tag, %2$s: closing anchor tag.
+#: includes/views/amazon-product-advertising-view.php:13
+#: includes/views/openai-view.php:12 includes/views/openrouter-view.php:12
+#: includes/views/spinnerchief-view.php:12 includes/views/wordai-view.php:12
+msgid "Unlock more powerful features, by %1$s upgrading to Feedzy Pro %2$s"
+msgstr "Deblochează funcționalități mai puternice prin %1$s actualizare la Feedzy Pro %2$s"
+
+#: includes/util/feedzy-rss-feeds-conditions.php:100
+msgid "Matches Regular Expression"
+msgstr "Se potrivește cu expresia regulată"
+
+#: includes/util/feedzy-rss-feeds-conditions.php:99
+msgid "Less Than or Equals"
+msgstr "Mai mic sau egal"
+
+#: includes/util/feedzy-rss-feeds-conditions.php:98
+msgid "Less Than"
+msgstr "Mai mic decât"
+
+#: includes/util/feedzy-rss-feeds-conditions.php:97
+msgid "Greater Than or Equals"
+msgstr "Mai mare sau egal"
+
+#: includes/util/feedzy-rss-feeds-conditions.php:96
+msgid "Greater Than"
+msgstr "Mai mare decât"
+
+#: includes/util/feedzy-rss-feeds-conditions.php:95
+msgid "Not Contains"
+msgstr "Nu conține"
+
+#: includes/util/feedzy-rss-feeds-conditions.php:94
+msgid "Contains"
+msgstr "Conține"
+
+#: includes/util/feedzy-rss-feeds-conditions.php:93
+msgid "Is Empty"
+msgstr "Este gol"
+
+#: includes/util/feedzy-rss-feeds-conditions.php:92
+msgid "Not Equals"
+msgstr "Nu este egal"
+
+#: includes/util/feedzy-rss-feeds-conditions.php:91
+msgid "Equals"
+msgstr "Egal"
+
+#: includes/util/feedzy-rss-feeds-conditions.php:90
+msgid "Has Any Value"
+msgstr "Are orice valoare"
+
+#: includes/layouts/setup-wizard.php:379
+msgid "Let us know your email so that we can send you product updates, helpful tutorials, exclusive offers and more useful stuff."
+msgstr "Lasă-ne adresa ta de email pentru a-ți putea trimite actualizări de produse, tutoriale folositoare, oferte exclusive și multe alte lucruri utile."
+
+#: includes/layouts/setup-wizard.php:371
+msgid "Updates, tutorials, special offers & more"
+msgstr "Actualizări, tutoriale, oferte speciale și altele"
+
+#: includes/layouts/setup-wizard.php:359
+msgid "Skip Improvement"
+msgstr "Sari peste îmbunătățire"
+
+#: includes/layouts/setup-wizard.php:358
+msgid "Improve now"
+msgstr "Îmbunătățește acum"
+
+#. translators: %1$s is the percentage improvement, %2$s and %3$s are HTML tags
+#. for the link to the Optimole website.
+#: includes/layouts/setup-wizard.php:341
+msgid "Improve your website speed and images by %1$s with %2$s Optimole %3$s"
+msgstr "Îmbunătățește viteza site-ului tău web și a imaginilor cu %1$s cu %2$s Optimole %3$s"
+
+#: includes/layouts/setup-wizard.php:334
+msgid "Boost your website speed"
+msgstr "Crește viteza site-ului tău web"
+
+#: includes/layouts/setup-wizard.php:322
+msgid "Optimise and speed up your site with our trusted addon - It’s Free"
+msgstr "Optimizează și accelerează-ți site-ul cu extensia noastră de încredere – este gratuită"
+
+#: includes/layouts/setup-wizard.php:320
+msgid "Enable performance features for your website."
+msgstr "Activează funcționalitățile de performanță pentru site-ul tău web."
+
+#: includes/layouts/setup-wizard.php:303
+msgid "Extra Features"
+msgstr "Funcționalități suplimentare"
+
+#: includes/layouts/setup-wizard.php:285
+msgid "No other parameters specified beside the source"
+msgstr "Nu sunt specificați alți parametri în afară de sursă"
+
+#: includes/layouts/setup-wizard.php:282
+msgid "click to copy"
+msgstr "dă clic pentru a copia"
+
+#: includes/layouts/setup-wizard.php:279
+msgid "Basic Shortcode"
+msgstr "Scurtcod de bază"
+
+#: includes/layouts/setup-wizard.php:272
+msgid "Add basic short code in a draft page"
+msgstr "Adaugă un scurtcod de bază într-o pagină ciornă"
+
+#: includes/layouts/setup-wizard.php:267
+msgid "We will automatically create a draft page with Feedzy shortcodes for preview"
+msgstr "Vom crea automat o pagină ciornă cu scurtcodurile Feedzy pentru previzualizare"
+
+#: includes/layouts/setup-wizard.php:266
+msgid "Create a draft page"
+msgstr "Creează o pagină ciornă"
+
+#: includes/layouts/setup-wizard.php:254
+msgid "Feed preview and shortcode"
+msgstr "Previzualizare flux și scurtcod"
+
+#: includes/layouts/setup-wizard.php:182
+msgid "Page"
+msgstr "Pagină"
+
+#: includes/layouts/setup-wizard.php:181
+msgid "Post"
+msgstr "Articol"
+
+#: includes/layouts/setup-wizard.php:170
+msgid "Import RSS feed content as"
+msgstr "Importă conținutul fluxului RSS ca"
+
+#: includes/layouts/setup-wizard.php:152
+msgid "Save and Continue"
+msgstr "Salvează și continuă"
+
+#: includes/layouts/setup-wizard.php:150
+msgid "Create draft page"
+msgstr "Creează pagină ciornă"
+
+#. translators: %1$s and %2$s are HTML tags for the link to the demo URL.
+#: includes/layouts/setup-wizard.php:131
+msgid "No Feed URL? %1$s Click here %2$s to use demo URL"
+msgstr "Nu ai un URL pentru flux? %1$sDă clic aici%2$s pentru a utiliza URL-ul demo"
+
+#: includes/layouts/setup-wizard.php:122
+msgid "Paste RSS feed URL here"
+msgstr "Plasează aici adresa URL a fluxului RSS"
+
+#: includes/layouts/setup-wizard.php:111
+msgid "Feed Source URL"
+msgstr "URL sursă flux"
+
+#: includes/layouts/setup-wizard.php:108
+msgid "Add RSS feed URL"
+msgstr "Adaugă adresa URL a fluxului RSS"
+
+#: includes/layouts/feedzy-subscribe-notice.php:63
+#: includes/layouts/setup-wizard.php:98
+msgid "Get Started"
+msgstr "Începe"
+
+#: includes/layouts/setup-wizard.php:91
+msgid "Display RSS feed using block editor"
+msgstr "Afișează fluxul RSS folosind editorul de blocuri"
+
+#: includes/layouts/setup-wizard.php:89
+msgid "Display RSS feed using elementor"
+msgstr "Afișează fluxul RSS folosind elementor"
+
+#: includes/layouts/setup-wizard.php:82
+msgid "Display RSS feeds using shortcodes"
+msgstr "Afișează fluxurile RSS folosind scurtcoduri"
+
+#: includes/layouts/setup-wizard.php:78
+msgid "Importing RSS feeds to your website content"
+msgstr "Importul fluxurilor RSS în conținutul site-ului tău"
+
+#: includes/layouts/setup-wizard.php:70
+msgid "How would you like to integrate Feedzy into your website?"
+msgstr "Cum ai vrea să integrezi Feedzy în site-ul tău web?"
+
+#: includes/layouts/setup-wizard.php:38
+msgid "Go to dashboard"
+msgstr "Mergi la panoul de control"
+
+#: includes/layouts/settings.php:508
+msgid "Save Settings"
+msgstr "Salvează setările"
+
+#: includes/layouts/settings.php:464
+msgid "Port"
+msgstr "Port"
+
+#: includes/layouts/settings.php:451
+msgid "Host"
+msgstr "Gazdă"
+
+#: includes/layouts/settings.php:444
+msgid "Password"
+msgstr "Parolă"
+
+#: includes/layouts/settings.php:437
+msgid "Username"
+msgstr "Nume de utilizator"
+
+#: includes/views/misc-view.php:52
+msgid "User Agent"
+msgstr "Agent utilizator"
+
+#: includes/layouts/settings.php:413
+msgid "Send data about plugin settings to measure the usage of the features. The data is private and not shared with third-party entities. Only plugin data is collected without sensitive information."
+msgstr "Trimite date despre setările modulului pentru a măsura utilizarea funcționalităților. Datele sunt private și nu sunt partajate cu entități terțe. Sunt colectate doar datele modulului, fără informații sensibile."
+
+#: includes/layouts/settings.php:410
+msgid "Enable Telemetry"
+msgstr "Activare telemetrie"
+
+#: includes/views/import-metabox-edit.php:632
+msgid "Schedule"
+msgstr "Programare"
+
+#: includes/views/import-metabox-edit.php:530
+#: includes/views/import-metabox-edit.php:928
+msgid "Learn More"
+msgstr "Află mai multe"
+
+#: includes/views/misc-view.php:92
+msgid "Helpful if you want to delete attached featured image when posts are automatically deleted."
+msgstr "Util dacă vrei să ștergi imaginea reprezentativă atașată atunci când articolele sunt șterse automat."
+
+#: includes/views/misc-view.php:89
+msgid "Delete attached featured image"
+msgstr "Șterge imaginea reprezentativă atașată"
+
+#: includes/views/misc-view.php:82
+msgid "Helpful if you want to remove stale or old items automatically. If you choose 0, it will be considered the individual import setting."
+msgstr "Util dacă vrei să înlături automat elementele vechi sau expirate. Dacă alegi 0, se va considera ca setarea individuală de import."
+
+#: includes/views/misc-view.php:80
+msgid "Delete the posts created from all feeds, after a number of days"
+msgstr "Șterge articolele create din toate fluxurile, după un anumit număr de zile"
+
+#. translators: %s is a placeholder for the auto categories tag, like
+#. [#auto_categories].
+#: includes/layouts/settings.php:220
+msgid "Automatically assign categories to your posts based on their titles. You need to add %s tag to the category field of your import to support this feature."
+msgstr "Atribuie automat categorii articolelor tale pe baza titlurilor acestora. Trebuie să adaugi eticheta %s în câmpul categoriei din importul tău pentru a activa această funcționalitate."
+
+#: includes/layouts/settings.php:214
+msgid "Add New"
+msgstr "Adaugă nou"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:234
+#: includes/layouts/feedzy-schedules.php:120 includes/layouts/settings.php:206
+#: includes/layouts/settings.php:327 build/conditions/index.js:1
+#: build/loop/index.js:1
+msgid "Delete"
+msgstr "Șterge"
+
+#: includes/layouts/settings.php:194
+msgid "Select a category"
+msgstr "Selectează o categorie"
+
+#: includes/layouts/settings.php:190
+msgid "Values separated by commas"
+msgstr "Valori separate cu virgulă"
+
+#: includes/layouts/settings.php:184
+msgid "Auto Categories Mapping"
+msgstr "Maparea automată a categoriilor"
+
+#: includes/layouts/settings.php:178
+msgid "This setting will be used to inherit the current theme style instead of the default style. If disabled, it will be considered the individual widget/block/shortcode setting."
+msgstr "Această setare va fi utilizată pentru a moșteni stilul temei curente în locul stilului implicit. Dacă este dezactivată, va fi considerată setarea individuală a piesei, blocului sau scurtcodului."
+
+#: includes/layouts/settings.php:166 includes/layouts/setup-wizard.php:217
+#: includes/views/import-metabox-edit.php:808
+msgid "Remove"
+msgstr "Înlătură"
+
+#: includes/layouts/settings.php:83
+msgid "Proxy"
+msgstr "Proxy"
+
+#: includes/layouts/settings.php:75 includes/views/import-metabox-edit.php:138
+#: includes/views/import-metabox-edit.php:603 build/block/index.js:1
+msgid "General"
+msgstr "Generale"
+
+#: includes/layouts/integration.php:91 includes/layouts/settings.php:525
+msgid "Need help?"
+msgstr "Ai nevoie de ajutor?"
+
+#: includes/layouts/integration.php:80
+msgid "Validate & Save"
+msgstr "Validează și salvează"
+
+#: includes/layouts/feedzy-tutorial.php:187
+msgid "Filter feed items, and Display or Exclude items if the title or content contains specific keyword(s)."
+msgstr "Filtrează elementele din flux și afișează sau exclude elementele dacă titlul sau conținutul conține unul sau mai multe cuvânt cheie."
+
+#: includes/layouts/feedzy-tutorial.php:186
+msgid "Keyword Filtering"
+msgstr "Filtrare de cuvinte cheie"
+
+#: includes/layouts/feedzy-tutorial.php:178
+msgid "Advanced Elementor template builder integration to build content areas directly from feeds."
+msgstr "Integrare avansată a constructorului de șabloane Elementor pentru a crea zone de conținut direct din fluxuri."
+
+#: includes/layouts/feedzy-tutorial.php:177
+msgid "Enhanced Elementor support"
+msgstr "Suport îmbunătățit pentru Elementor"
+
+#: includes/layouts/feedzy-tutorial.php:167
+msgid "The Spintax service is very useful for blogs, as it is easily configurable and a time saver."
+msgstr "Serviciul Spintax este foarte util pentru bloguri, deoarece este ușor de configurat și economisește timp."
+
+#: includes/layouts/feedzy-tutorial.php:166
+msgid "Spintax Text"
+msgstr "Text Spintax"
+
+#: includes/layouts/feedzy-tutorial.php:156
+msgid "Automatically paraphrase or translate content on import."
+msgstr "Parafrazează sau traduce automat conținutul la import."
+
+#: includes/layouts/feedzy-tutorial.php:155
+msgid "Paraphrase & Translate Content"
+msgstr "Parafrazarea și traducerea conținutului"
+
+#: includes/layouts/feedzy-tutorial.php:145
+msgid "Get full content of posts/articles from your RSS feeds."
+msgstr "Obține tot conținutul articolelor din fluxurile tale RSS."
+
+#: includes/layouts/feedzy-tutorial.php:144
+msgid "Full text import"
+msgstr "Importă text întreg"
+
+#: includes/layouts/feedzy-tutorial.php:134
+msgid "Automatically add referral parameters, and Feedzy will automatically configure affiliate links for each item in the feed."
+msgstr "Adaugă automat parametrii de referință, iar Feedzy va configura automat legăturile de afiliere pentru fiecare element din flux."
+
+#: includes/layouts/feedzy-tutorial.php:133
+msgid "Referral Links"
+msgstr "Legături de referință"
+
+#: includes/layouts/feedzy-tutorial.php:123
+msgid "Feedzy is compatible with most popular page builders, so you can easily configure your feed imports directly in Elementor & Gutenberg."
+msgstr "Feedzy este compatibil cu cei mai populari constructori de pagini, astfel încât să poți configura cu ușurință importurile de fluxuri direct în Elementor și Gutenberg."
+
+#: includes/layouts/feedzy-tutorial.php:122
+msgid "Pagebuilders integration"
+msgstr "Integrarea constructorilor de pagini"
+
+#. translators: %s: [feedzy-rss]
+#: includes/layouts/feedzy-tutorial.php:108
+msgid "Display feed items using %s shortcode. The advantage of this approach is that it can be used with any WordPress theme or page builder."
+msgstr "Afișează elementele fluxului utilizând scurtcodul %s. Avantajul acestei abordări este că poate fi utilizată cu orice temă WordPress sau constructor de pagini."
+
+#: includes/layouts/feedzy-tutorial.php:96
+msgid "Organize feeds in Categories"
+msgstr "Organizarea fluxurilor în categorii"
+
+#: includes/layouts/feedzy-tutorial.php:95
+msgid "Customizing Feedzy"
+msgstr "Personalizarea Feedzy"
+
+#: includes/layouts/feedzy-tutorial.php:94
+msgid "Troubleshooting Guide"
+msgstr "Ghid pentru depanare"
+
+#: includes/layouts/feedzy-tutorial.php:91
+msgid "Feedzy Widget"
+msgstr "Piesa Feedzy"
+
+#: includes/layouts/feedzy-tutorial.php:90
+msgid "How to use Feed to post"
+msgstr "Cum să folosești Din flux în articol"
+
+#: includes/layouts/feedzy-tutorial.php:89
+msgid "General Guide"
+msgstr "Ghid general"
+
+#: includes/layouts/feedzy-tutorial.php:85
+msgid "New here? Learn how to use Feedzy by following our tips and tricks:"
+msgstr "Prima dată aici? Află cum să folosești Feedzy urmărind sfaturile și trucurile noastre:"
+
+#: includes/layouts/feedzy-tutorial.php:59
+msgid "Quick Links"
+msgstr "Legături rapide"
+
+#: includes/layouts/feedzy-tutorial.php:51
+msgid "Import your first feed"
+msgstr "Importă primul tău flux"
+
+#: includes/layouts/feedzy-tutorial.php:46
+msgid "Translate content automatically on import."
+msgstr "Traducerea automată a conținutului la import."
+
+#: includes/layouts/feedzy-tutorial.php:45
+msgid "Pagebuilders integration."
+msgstr "Integrarea constructorilor de pagini."
+
+#: includes/layouts/feedzy-tutorial.php:44
+msgid "Automatically add referral links."
+msgstr "Adăugarea automată de legături de referință."
+
+#: includes/layouts/feedzy-tutorial.php:43
+msgid "Paraphrase content before import."
+msgstr "Parafrazarea conținutului înainte de import."
+
+#: includes/layouts/feedzy-tutorial.php:42
+msgid "Get full content from your RSS feeds."
+msgstr "Obținerea conținutului complet din fluxurile tale RSS."
+
+#: includes/layouts/feedzy-tutorial.php:41
+msgid "Display or Import content from RSS feeds."
+msgstr "Afișarea sau importul conținutului din fluxuri RSS."
+
+#: includes/layouts/feedzy-tutorial.php:38
+msgid "Collect the Best Content, Automatically Add It to Your WordPress Site. Grow your site with features like:"
+msgstr "Colectează cel mai bun conținut, adaugă-l automat în site-ul tău WordPress. Crește-ți site-ul cu funcționalități precum:"
+
+#: includes/layouts/feedzy-subscribe-notice.php:21
+#: includes/layouts/feedzy-tutorial.php:35 build/onboarding/index.js:1
+msgid "Welcome to Feedzy!"
+msgstr "Bine ai venit la Feedzy!"
+
+#: includes/layouts/feedzy-support.php:128
+msgid "Contact Support"
+msgstr "Contactează suportul"
+
+#: includes/layouts/feedzy-support.php:125
+msgid "If you didn't found an answer in our Knowledge Base, our dedicated support team standby to help you."
+msgstr "Dacă nu ai găsit un răspuns în baza noastră de cunoștințe, echipa noastră de asistență dedicată este pregătită să te ajute."
+
+#: includes/layouts/feedzy-support.php:120
+msgid "Community Forum"
+msgstr "Forum pentru comunitate"
+
+#. Translators: %1$s is the opening anchor tag for the upsell link, %2$s is the
+#. closing anchor tag.
+#: includes/layouts/feedzy-support.php:111
+msgid "If you did not found an answer in our Knowledge Base, you can always ask for help from our community based forum or %1$s get dedicated support with our premium plans. %2$s"
+msgstr "Dacă nu ai găsit un răspuns în Baza noastră de cunoștințe, poți să soliciți oricând ajutor în comunitatea noastră de pe forum sau %1$s să obții asistență dedicată prin planurile noastre premium. %2$s"
+
+#: includes/layouts/feedzy-support.php:101
+msgid "Need help with Feedzy?"
+msgstr "Ai nevoie de ajutor cu Feedzy?"
+
+#: includes/layouts/feedzy-support.php:47
+msgid "Help us improve!"
+msgstr "Ajută-ne să îmbunătățim!"
+
+#: includes/layouts/feedzy-support.php:36
+msgid "Free vs Pro"
+msgstr "Gratuit versus Pro"
+
+#: feedzy-rss-feed.php:316 includes/layouts/feedzy-support.php:31
+msgid "Documentation"
+msgstr "Documentație"
+
+#: includes/layouts/feedzy-support.php:27
+msgid "Getting Started"
+msgstr "Să începem"
+
+#: includes/layouts/feedzy-pro.php:188 includes/layouts/feedzy-tutorial.php:199
+msgid "View all Premium features"
+msgstr "Vezi toate funcționalitățile premium"
+
+#: includes/layouts/feedzy-pro.php:173
+msgid "Paraphrase or translate content before import using the built-in service, no separate subscription required."
+msgstr "Parafrazează sau tradu conținutul înainte de import folosind serviciul nativ, fără a fi necesar un abonament separat."
+
+#: includes/layouts/feedzy-pro.php:170
+msgid "Access to Translation and Paraphrasing service"
+msgstr "Acces la serviciul de traducere și parafrazare"
+
+#. translators: %1$s: WordAi, %2$s: SpinnerChief
+#: includes/layouts/feedzy-pro.php:155
+msgid "%1$s and %2$s can be used to rephrase RSS feeds when they are imported as posts in WordPress."
+msgstr "%1$s și %2$s pot fi utilizate pentru a reformula fluxurile RSS atunci când acestea sunt importate ca articole în WordPress."
+
+#: includes/layouts/feedzy-pro.php:149 includes/layouts/feedzy-pro.php:170
+msgid "Agency plan"
+msgstr "Plan pentru agenție"
+
+#. translators: %s: WordAI & SpinnerChief
+#: includes/layouts/feedzy-pro.php:147
+msgid "WordAI & SpinnerChief"
+msgstr "WordAI și SpinnerChief"
+
+#. translators: %s: WordAI & SpinnerChief
+#: includes/layouts/feedzy-pro.php:147
+msgid "%s integration"
+msgstr "Integrare cu %s"
+
+#. translators: %s: OpenAI (ChatGPT) or OpenRouter
+#: includes/layouts/feedzy-pro.php:130
+msgid "OpenAI (ChatGPT) or OpenRouter"
+msgstr "OpenAI (ChatGPT) sau OpenRouter"
+
+#. translators: %s: OpenAI (ChatGPT) or OpenRouter
+#: includes/layouts/feedzy-pro.php:130
+msgid "Using the %s integration, paraphrase, summarize, generate missing featured images, or apply your custom prompt to the imported content."
+msgstr "Folosind integrarea %s, parafrazezi, rezumi, generezi imaginile care lipsesc sau aplici cererea ta personalizată la conținutul importat."
+
+#: includes/layouts/feedzy-pro.php:123
+msgid "AI Support"
+msgstr "Suport IA"
+
+#: includes/layouts/feedzy-pro.php:109
+msgid "Create customizable fields and fetch custom values from the feed such as date updated, rating, etc."
+msgstr "Creează câmpuri personalizabile și adu valori personalizate din flux, cum ar fi data actualizării, evaluarea etc."
+
+#: includes/layouts/feedzy-pro.php:105
+#: includes/views/import-metabox-edit.php:526
+msgid "Custom Fields"
+msgstr "Câmpuri personalizate"
+
+#: includes/layouts/feedzy-pro.php:92
+msgid "During the import, Feedzy will visit URLs of all items and parse the content directly from the website, importing ALL the content from a item , compared to #item_content tag which only imports the post excerpts."
+msgstr "În timpul importului, Feedzy va vizita URL-urile tuturor elementelor și va parcurge conținutul direct de pe site-ul web, importând TOT conținutul dintr-un element, în comparație cu eticheta #item_content care importă doar rezumatele articolelor."
+
+#: includes/layouts/feedzy-pro.php:89 includes/layouts/feedzy-pro.php:106
+#: includes/layouts/feedzy-pro.php:125
+msgid "Developer & Agency plans"
+msgstr "Planuri pentru dezvoltatori și agenții"
+
+#: includes/layouts/feedzy-pro.php:88
+msgid "Importing the full-text content"
+msgstr "Importarea conținutului integral"
+
+#: includes/layouts/feedzy-pro.php:74
+msgid "Add referral parameters, and Feedzy will automatically configure affiliate links for each item in the feed. You can even import prices from product sources to create extra value for your readers."
+msgstr "Adaugă parametrii de referință, iar Feedzy va configura automat legăturile de afiliere pentru fiecare element din flux. Poți importa și prețurile din sursele de produse pentru a crea valoare suplimentară pentru cititorii tăi."
+
+#: includes/layouts/feedzy-pro.php:71
+msgid "Referral/Affiliate links"
+msgstr "Legături de referință sau afiliere"
+
+#: includes/layouts/feedzy-pro.php:57
+msgid "Choose the best template for each feed, such as standard grid layout, blog layout, online shop layout, or audio playback (soundcloud) layout."
+msgstr "Alege cel mai bun șablon pentru fiecare flux, cum ar fi aranjamentul grilă standard, aranjamentul pentru blog, aranjamentul pentru magazin online sau aranjamentul redării audio (soundcloud)."
+
+#: includes/layouts/feedzy-pro.php:54
+msgid "Multiple feed templates"
+msgstr "Șabloane multiple de flux"
+
+#: includes/layouts/feedzy-pro.php:41
+msgid "With robust filtering options, you can include items matching any condition, filter by fields like title, description, or custom fields, and use operators like contains, equals, or regex for precise control."
+msgstr "Cu opțiuni robuste de filtrare, poți include elemente care corespund oricărei condiții, poți filtra după câmpuri precum titlu, descriere sau câmpuri personalizate și poți utiliza operatori precum conține, egal sau regex pentru un control precis."
+
+#: includes/layouts/feedzy-pro.php:39
+msgid "Advanced Filtering"
+msgstr "Filtrare avansată"
+
+#: includes/layouts/feedzy-pro.php:27
+msgid "Filter and display RSS feeds items directly with your favourite page builders."
+msgstr "Filtrează și afișează elemente din fluxurile RSS direct cu constructorii tăi de pagini preferați."
+
+#: includes/layouts/feedzy-pro.php:26
+msgid "Pagebuilder integration"
+msgstr "Integrarea constructorilor de pagini"
+
+#: includes/layouts/feedzy-pro.php:15
+msgid "Create unlimited import routines for your RSS feeds and let them run on autopilot."
+msgstr "Creează rutine de import nelimitate pentru fluxurile tale RSS și lasă-le să ruleze pe pilot automat."
+
+#: includes/layouts/feedzy-pro.php:14
+msgid "Import content from RSS feeds"
+msgstr "Importarea conținutului din fluxurile RSS"
+
+#: includes/layouts/feedzy-pro.php:8
+msgid "Pro"
+msgstr "Pro"
+
+#: includes/layouts/feedzy-pro.php:7 includes/layouts/setup-wizard.php:273
+#: includes/layouts/setup-wizard.php:334
+msgid "Free"
+msgstr "Gratuit"
+
+#: includes/layouts/feedzy-improve.php:18
+msgid "Take the Survey"
+msgstr "Participă la sondaj"
+
+#: includes/layouts/feedzy-improve.php:13
+msgid "If your feedback is especially helpful and we choose to do an interview with you to discuss your suggestions, you will even gain a yearly membership for free for your trouble."
+msgstr "Dacă impresiile tale sunt deosebit de utile și alegem să-ți acordăm un interviu pentru a discuta despre sugestiile tale, vei obține chiar și un abonament anual gratuit pentru deranjul tău."
+
+#: includes/layouts/feedzy-improve.php:11
+msgid "We're always looking for suggestions to further improve Feedzy."
+msgstr "Suntem mereu în căutare de sugestii pentru a îmbunătăți Feedzy."
+
+#: includes/layouts/feedzy-improve.php:8
+msgid "Answer a few questions to help us improve Feedzy"
+msgstr "Răspunde la câteva întrebări pentru a ne ajuta să îmbunătățim Feedzy"
+
+#: includes/layouts/feedzy-documentation.php:97
+msgid "Open Feedzy Documentation page"
+msgstr "Deschide pagina de documentație Feedzy"
+
+#: includes/layouts/feedzy-documentation.php:88
+msgid "Learn some of the most popular hooks you can use with the Feedzy plugin."
+msgstr "Află câteva dintre cele mai populare cârlige pe care le poți utiliza cu modulul Feedzy."
+
+#: includes/layouts/feedzy-documentation.php:87
+msgid "In Feedzy how do I..."
+msgstr "În Feedzy cum pot să..."
+
+#: includes/layouts/feedzy-documentation.php:74
+msgid "Learn how to check if a RSS feed is valid or not in Feedzy."
+msgstr "Află cum să verifici dacă un flux RSS este valid sau nu în Feedzy."
+
+#: includes/layouts/feedzy-documentation.php:73
+msgid "How to validate a RSS feed"
+msgstr "Cum să validezi un flux RSS"
+
+#. translators: %1$s and %2$s are the service names (WordAi and SpinnerChief)
+#: includes/layouts/feedzy-documentation.php:58
+msgid "Learn how to use %1$s and %2$s to rephrase RSS feeds content."
+msgstr "Află cum să folosești %1$s și %2$s pentru a reformula conținutul din fluxurile RSS."
+
+#: includes/layouts/feedzy-documentation.php:53
+msgid "Rephrase Feeds content"
+msgstr "Reformulează conținutul din flux"
+
+#. translators: %s is the shortcode [feedzy-rss]
+#: includes/layouts/feedzy-documentation.php:38
+msgid "Learn how to display feed items using the %s shortcode in a few easy steps."
+msgstr "Află cum să afișezi elemente din flux utilizând scurtcodul %s în câțiva pași simpli."
+
+#: includes/layouts/feedzy-documentation.php:34
+#: includes/layouts/feedzy-tutorial.php:103
+msgid "Shortcode"
+msgstr "Scurtcod"
+
+#: includes/layouts/feedzy-documentation.php:21
+msgid "Learn how to convert feed items into Posts, Pages, or any custom post type."
+msgstr "Află cum să convertești elementele din flux în articole, pagini sau orice tip de articol personalizat."
+
+#: includes/layouts/feedzy-documentation.php:20
+msgid "Feed to Post"
+msgstr "Din flux în articol"
+
+#. translators: 1: date, 2: time
+#: includes/gutenberg/feedzy-rss-feeds-loop-block.php:263
+msgid "%1$s at %2$s"
+msgstr "%1$s la %2$s"
+
+#: includes/gutenberg/feedzy-rss-feeds-loop-block.php:186
+msgid "No items to display."
+msgstr "Nu există elemente de afișat."
+
+#: includes/gutenberg/feedzy-rss-feeds-loop-block.php:180
+msgid "An error occurred while fetching the feed."
+msgstr "A apărut o eroare în timpul aducerii fluxului."
+
+#: includes/gutenberg/feedzy-rss-feeds-loop-block.php:119
+msgid "No feeds to display"
+msgstr "Niciun flux de afișat"
+
+#: includes/gutenberg/feedzy-rss-feeds-gutenberg-block.php:341
+msgid "Invalid Feed URL"
+msgstr "URL-ul fluxului nu este valid."
+
+#: includes/feedzy-rss-feeds-limited-offers.php:158
+msgid "Invalid nonce! Refresh the page and try again."
+msgstr "Nunic incorect! Reîmprospătează pagina și încearcă din nou."
+
+#: includes/feedzy-rss-feeds-feed-tweaks.php:605
+#: includes/feedzy-rss-feeds-feed-tweaks.php:609
+msgid "Days"
+msgstr "Zile"
+
+#: includes/feedzy-rss-feeds-feed-tweaks.php:601
+msgid "Day"
+msgstr "Zi"
+
+#: includes/feedzy-rss-feeds-feed-tweaks.php:593
+#: includes/feedzy-rss-feeds-feed-tweaks.php:597
+msgid "Hours"
+msgstr "Ore"
+
+#: includes/feedzy-rss-feeds-feed-tweaks.php:589
+msgid "Hour"
+msgstr "Oră"
+
+#. Translators: %d represents the number of days.
+#: includes/feedzy-rss-feeds-feed-tweaks.php:569
+#: includes/feedzy-rss-feeds-feed-tweaks.php:574
+msgid "%d Days"
+msgstr "%d zile"
+
+#. Translators: %d represents the number of one day.
+#: includes/feedzy-rss-feeds-feed-tweaks.php:564
+msgid "%d Day"
+msgstr "%d zi"
+
+#. Translators: %d represents the number of hours.
+#: includes/feedzy-rss-feeds-feed-tweaks.php:554
+#: includes/feedzy-rss-feeds-feed-tweaks.php:559
+msgid "%d Hours"
+msgstr "%d ore"
+
+#. Translators: %d represents the number of one hour.
+#: includes/feedzy-rss-feeds-feed-tweaks.php:549
+msgid "%d Hour"
+msgstr "o oră"
+
+#. translators: %1$s: opening anchor tag, %2$s: closing anchor tag.
+#: includes/elementor/widgets/register-widget.php:575
+msgid "Unlock this feature and more advanced options with %1$s Feedzy Pro %1$s."
+msgstr "Deblochează această funcționalitate și alte opțiuni avansate cu %1$s Feedzy Pro %1$s."
+
+#: includes/elementor/widgets/register-widget.php:568
+msgid "Add your referral parameters"
+msgstr "Adaugă parametrii referinței tale"
+
+#: includes/elementor/widgets/register-widget.php:561 build/block/index.js:10
+#: build/loop/index.js:4 js/FeedzyLoop/controls.js:285
+msgid "Referral URL"
+msgstr "URL referință"
+
+#: includes/elementor/widgets/register-widget.php:552
+msgid "Enabling this won't slow down the page."
+msgstr "Activarea acesteia nu va încetini pagina."
+
+#: includes/elementor/widgets/register-widget.php:545
+msgid "Lazy load the feed"
+msgstr "Încarcă lent fluxul"
+
+#: includes/elementor/widgets/register-widget.php:533
+msgid "Ignore the first N items of the feed"
+msgstr "Ignoră primele N elemente din flux"
+
+#: includes/elementor/widgets/register-widget.php:527
+msgid "When using multiple sources this will append the item source to the author tag (required)."
+msgstr "Atunci când se folosesc mai multe surse, aceasta va adăuga sursa elementului la eticheta autor (obligatorie)."
+
+#: includes/elementor/widgets/register-widget.php:520
+msgid "Show item source"
+msgstr "Arată sursa elementului"
+
+#. translators: %1$s: opening anchor tag, %2$s: closing anchor tag.
+#: includes/elementor/widgets/register-widget.php:507
+msgid "Learn more about this feature in %1$s Feedzy docs %2$s ."
+msgstr "Află mai multe despre această funcționalitate în %1$s documentația Feedzy %2$s."
+
+#: includes/elementor/widgets/register-widget.php:498
+msgid "Display price if available"
+msgstr "Afișează prețul dacă este disponibil"
+
+#: includes/elementor/widgets/register-widget.php:481
+msgid "When using multiple sources, should we display additional meta fields?"
+msgstr "Atunci când se folosesc mai multe surse, ar trebui să afișăm câmpuri meta suplimentare?"
+
+#: includes/elementor/widgets/register-widget.php:468
+msgid "Display additional meta fields (author, date, time or categories)"
+msgstr "Afișează câmpuri meta suplimentare (autor, dată, oră sau categorii)"
+
+#: includes/elementor/widgets/register-widget.php:457
+msgid "Hide items Meta"
+msgstr "Ascunde metadate elemente"
+
+#: includes/elementor/widgets/register-widget.php:451 build/block/index.js:1
+msgid "Feed Items Custom Options"
+msgstr "Opțiuni personalizate pentru elementele din flux"
+
+#: includes/elementor/widgets/register-widget.php:412 build/block/index.js:1
+msgid "Columns"
+msgstr "Coloane"
+
+#: includes/elementor/widgets/register-widget.php:405 build/block/index.js:1
+msgid "Feed Layout"
+msgstr "Aranjament flux"
+
+#: includes/elementor/widgets/register-widget.php:381
+msgid "Eg. 250"
+msgstr "De exemplu, 250"
+
+#: includes/elementor/widgets/register-widget.php:378
+msgid "Thumbnails dimensions"
+msgstr "Dimensiuni miniaturi"
+
+#: includes/elementor/widgets/register-widget.php:368
+msgid "Choose the Fallback Image"
+msgstr "Alege imaginea alternativă"
+
+#: includes/elementor/widgets/register-widget.php:354
+msgid "Display first image, when available"
+msgstr "Afișează prima imagine dacă este disponibilă"
+
+#: includes/elementor/widgets/register-widget.php:347
+msgid "Item Thumbnail Options"
+msgstr "Opțiuni miniatură element"
+
+#: includes/elementor/widgets/register-widget.php:334
+msgid "Max Description length (in characters)"
+msgstr "Lungimea maximă a descrierii (în caractere)"
+
+#: includes/elementor/widgets/register-widget.php:322
+msgid "Display item Description"
+msgstr "Afișează descrierea elementului"
+
+#: includes/elementor/widgets/register-widget.php:312
+msgid "Max Title length (in characters)"
+msgstr "Lungimea maximă a titlului (în caractere)"
+
+#: includes/elementor/widgets/register-widget.php:300 build/block/index.js:1
+msgid "Display item Title"
+msgstr "Afișează titlul elementului"
+
+#: includes/elementor/widgets/register-widget.php:289
+msgid "Add ”nofollow” tag to links"
+msgstr "Adaugă eticheta „nofollow” la legături"
+
+#: includes/elementor/widgets/register-widget.php:274
+msgid "Links behavior (opened in the same window or a new tab)"
+msgstr "Comportament legături (deschis în aceeași fereastră sau într-o filă nouă)"
+
+#: includes/elementor/widgets/register-widget.php:246
+msgid "Filter items by time range, from:"
+msgstr "Filtrează elementele după intervalul de timp, de la:"
+
+#: includes/elementor/widgets/register-widget.php:220
+msgid "Exclude items if"
+msgstr "Exclude elementele dacă"
+
+#: includes/elementor/widgets/register-widget.php:213
+#: includes/elementor/widgets/register-widget.php:238
+msgid "You can add multiple keywords at once by separating them with comma (,) or use the plus sign (+) to bind multiple keywords."
+msgstr "Poți adăuga mai multe cuvinte cheie deodată, separându-le cu virgulă (,) sau utilizând semnul plus (+) pentru a lega mai multe cuvinte cheie."
+
+#: includes/elementor/widgets/register-widget.php:211
+#: includes/elementor/widgets/register-widget.php:236
+msgid "Contains:"
+msgstr "Conține:"
+
+#: includes/elementor/widgets/register-widget.php:196
+msgid "Display items if"
+msgstr "Afișează elementele dacă"
+
+#: includes/elementor/widgets/register-widget.php:189 build/block/index.js:1
+#: build/loop/index.js:4 js/FeedzyLoop/controls.js:242
+msgid "Filter items"
+msgstr "Filtrează elemente"
+
+#: includes/elementor/widgets/register-widget.php:146
+msgid "For how long we will cache the feed results"
+msgstr "Pentru cât timp vom păstra în cache rezultatele fluxului"
+
+#: includes/elementor/widgets/register-widget.php:130
+msgid "Order items by"
+msgstr "Ordonează elementele după"
+
+#: includes/elementor/widgets/register-widget.php:119
+msgid "Number of items to display"
+msgstr "Număr de elemente de afișat"
+
+#. translators: %1$s: opening anchor tag, %2$s: closing anchor tag.
+#: includes/elementor/widgets/register-widget.php:109
+msgid "You can add multiple sources at once, by separating them with commas. %1$s Click here %2$s to check if the feed is valid. Invalid feeds may not import anything."
+msgstr "Poți adăuga mai multe surse simultan, separându-le cu virgulă. %1$s Dă clic aici %2$s pentru a verifica dacă fluxul este valid. Este posibil ca fluxurile nevalide să nu importe nimic."
+
+#: includes/elementor/widgets/register-widget.php:105
+msgid "RSS Feed source"
+msgstr "Sursă flux RSS"
+
+#: includes/elementor/widgets/register-widget.php:59
+msgid "Add your title, that will be added in page"
+msgstr "Adaugă titlul tău, cel care va fi adăugat în pagină"
+
+#: includes/elementor/widgets/register-widget.php:56
+msgid "Section Title"
+msgstr "Titlu secțiune"
+
+#: includes/elementor/widgets/register-widget.php:50
+msgid "General Settings"
+msgstr "Setări generale"
+
+#: includes/elementor/controls/template-layout.php:64
+msgid "Unlock this feature with Feedzy Pro"
+msgstr "Deblochează această funcționalitate cu Feedzy Pro"
+
+#. translators: %1$s: opening anchor tag, %2$s: closing anchor tag.
+#: includes/elementor/controls/template-layout.php:52
+msgid "Create Reusable Elementor Templates with Feedzy's Dynamic Tags Using Feedzy Pro. %1$sLearn more%2$s"
+msgstr "Creează șabloane Elementor reutilizabile cu etichetele dinamice de la Feedzy folosind Feedzy Pro. %1$sAflă mai multe%2$s"
+
+#: includes/elementor/controls/template-layout.php:44
+msgid "Open Feedzy docs"
+msgstr "Deschide documentația Feedzy"
+
+#: includes/elementor/controls/template-layout.php:43
+#: includes/feedzy-rss-feeds-limited-offers.php:228
+#: includes/layouts/feedzy-documentation.php:23
+#: includes/layouts/feedzy-documentation.php:42
+#: includes/layouts/feedzy-documentation.php:62
+#: includes/layouts/feedzy-documentation.php:76
+#: includes/layouts/feedzy-documentation.php:90
+#: includes/layouts/feedzy-tutorial.php:115
+#: includes/layouts/feedzy-tutorial.php:126
+#: includes/layouts/feedzy-tutorial.php:137
+#: includes/layouts/feedzy-tutorial.php:148
+#: includes/layouts/feedzy-tutorial.php:159
+#: includes/layouts/feedzy-tutorial.php:170
+#: includes/layouts/feedzy-tutorial.php:180
+#: includes/layouts/feedzy-tutorial.php:190
+msgid "Learn more"
+msgstr "Află mai multe"
+
+#: includes/elementor/controls/template-layout.php:41
+msgid "With Feedzy Pro you get more features, like Custom Templates, Magic Tags, Keywords filters and much more."
+msgstr "Cu Feedzy Pro obții mai multe funcționalități, cum ar fi șabloane personalizate, etichete magice, filtre de cuvinte cheie și multe altele."
+
+#: includes/elementor/controls/template-layout.php:40
+msgid "Discover Feedzy Pro"
+msgstr "Descoperă Feedzy Pro"
+
+#: includes/admin/feedzy-rss-feeds-ui.php:251
+msgid "Add a name for your import"
+msgstr "Adaugă un nume pentru importul tău"
+
+#: includes/admin/feedzy-rss-feeds-ui.php:250
+msgid "Import Name"
+msgstr "Nume import"
+
+#. translators: %1$s: opening anchor tag, %2$s: closing anchor tag.
+#: includes/admin/feedzy-rss-feeds-ui.php:241
+msgid "Unlock more powerful features, by %1$s upgrading to Feedzy Pro %2$s and get 50%% off."
+msgstr "Deblochează funcționalități mai puternice prin %1$s actualizare la Feedzy Pro %2$s și primești 50%% reducere."
+
+#: includes/admin/feedzy-rss-feeds-ui.php:239
+#: includes/views/amazon-product-advertising-view.php:2
+#: includes/views/openai-view.php:2 includes/views/openrouter-view.php:2
+#: includes/views/spinnerchief-view.php:2 includes/views/wordai-view.php:2
+msgid "You are using Feedzy Lite."
+msgstr "Folosești Feedzy Lite."
+
+#: includes/admin/feedzy-rss-feeds-ui.php:199
+msgid "Edit Import"
+msgstr "Editează importul"
+
+#. translators: 1: <a> tag opening, 2: </a> tag closing.
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:534
+msgid "Provide mapping for custom feed elements as per %1$s this document here %2$s. This will only work for single feeds, not comma-separated feeds."
+msgstr "Furnizează mapare pentru elementele personalizate din flux conform %1$s acestui document de aici %2$s. Acest lucru va funcționa doar pentru fluxuri singulare, nu pentru fluxuri separate prin virgulă."
+
+#. translators: 1: <a> tag opening, 2: </a> tag closing.
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:514
+msgid "Referral URL parameters as per %1$s this document here %2$s"
+msgstr "Parametrii URL-ului de referință conform %1$s acest document de aici %2$s"
+
+#. translators: 1: <br/> tag, 2: <a> tag opening, 3: </a> tag closing.
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:492
+msgid "Should we display the price from the feed if it is available? %1$s You can read about how to extract price from a custom tag %2$s here %3$s"
+msgstr "Ar trebui să afișăm prețul din flux dacă acesta este disponibil?%1$s%2$sAici%3$s poți citi despre cum să extragi prețul dintr-o etichetă personalizată"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:478
+#: includes/elementor/widgets/register-widget.php:394
+msgid "Ignore and show the default image instead"
+msgstr "Ignoră și arată imaginea implicită în schimb"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:474
+#: includes/elementor/widgets/register-widget.php:393
+msgid "Force HTTPS (please verify that the images exist on HTTPS)"
+msgstr "Forțează HTTPS (te rog să verifici dacă imaginile există pe HTTPS)"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:470
+#: includes/elementor/widgets/register-widget.php:392
+msgid "Show with HTTP link"
+msgstr "Arată cu legătură HTTP"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:465
+#: includes/elementor/widgets/register-widget.php:388
+msgid "How should we treat HTTP images?"
+msgstr "Cum ar trebui să tratăm imaginile HTTP?"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:449 build/block/index.js:1
+#: build/loop/index.js:4 js/FeedzyLoop/components/FallbackImageLoader.jsx:18
+#: js/FeedzyLoop/controls.js:231
+msgid "Fallback image if no image is found."
+msgstr "Imagine ca alternativă, dacă nu este găsită nicio imagine."
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:439
+#: includes/elementor/widgets/register-widget.php:359 build/block/index.js:1
+#: build/loop/index.js:4 js/FeedzyLoop/controls.js:201
+msgid "Yes (with a fallback image)"
+msgstr "Da (cu o imagine de rezervă)"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:435
+#: includes/elementor/widgets/register-widget.php:358 build/block/index.js:1
+#: build/loop/index.js:4 js/FeedzyLoop/controls.js:194
+msgid "Yes (without a fallback image)"
+msgstr "Da (fără o imagine de rezervă)"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:405
+msgid "Select a specific item if you want to exclude a keyword filter."
+msgstr "Selectează un element specific dacă vrei să excluzi un filtru de cuvinte cheie."
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:399
+msgid "(eg: politics, gossip + stock etc.)"
+msgstr "(de exemplu: politică, bârfe + acțiuni etc.)"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:398
+msgid "Exclude items if selected field contains specific keyword(s) (Use comma(,) and plus(+) keyword)."
+msgstr "Exclude elementele dacă câmpul selectat conține cuvinte cheie specifice (folosește virgulă (,) și cuvântul cheie plus (+))."
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:392
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:419
+#: includes/elementor/widgets/register-widget.php:201
+#: includes/elementor/widgets/register-widget.php:225 build/block/index.js:1
+#: build/conditions/index.js:1 build/loop/index.js:1
+msgid "Description"
+msgstr "Descriere"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:388
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:415
+#: includes/elementor/widgets/register-widget.php:202
+#: includes/elementor/widgets/register-widget.php:226 build/block/index.js:1
+#: build/conditions/index.js:1 build/loop/index.js:1
+msgid "Author"
+msgstr "Author"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:384
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:411
+#: includes/elementor/widgets/register-widget.php:200
+#: includes/elementor/widgets/register-widget.php:224 build/block/index.js:1
+#: build/conditions/index.js:1 build/loop/index.js:1
+msgid "Title"
+msgstr "Titlu"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:378
+msgid "Select a specific item if you want to include a keyword filter."
+msgstr "Selectează un element specific dacă vrei să incluzi un filtru de cuvinte cheie."
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:372
+msgid "(eg: news, stock + market etc.)"
+msgstr "(de exemplu: știri, acțiuni + piață etc.)"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:371
+msgid "Only display item if selected field contains specific keyword(s) (Use comma(,) and plus(+) keyword)."
+msgstr "Afișează elementul doar dacă câmpul selectat conține cuvântul (cuvintele) cheie specific(e) (folosește virgulă (,) și cuvântul cheie plus (+))."
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:328
+msgid "Trim the title of the item after X characters. A value of 0 will remove the title."
+msgstr "Taie titlul elementului după X caractere. Valoarea 0 va elimina titlul."
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:313
+#: build/action-popup/index.js:4 build/block/index.js:10
+msgid "Make this link a \"nofollow\" link?"
+msgstr "Faci din această legătură una „nofollow”?"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:272
+#: includes/elementor/widgets/register-widget.php:179 build/block/index.js:13
+msgid "Dry run tags"
+msgstr "Simulează etichete"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:257
+#: includes/elementor/widgets/register-widget.php:166 build/block/index.js:13
+msgid "Dry run?"
+msgstr "Simulezi?"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:252
+#: includes/elementor/widgets/register-widget.php:87 build/block/index.js:13
+msgid "Wrap custom class"
+msgstr "Încadrează clasă personalizată"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:237
+#: includes/elementor/widgets/register-widget.php:80 build/block/index.js:1
+msgid "If disabled, it will be considered the global setting."
+msgstr "Dacă este dezactivată, aceasta va considera setarea globală."
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:236
+#: includes/elementor/widgets/register-widget.php:74
+#: includes/layouts/settings.php:175
+msgid "Disable default style"
+msgstr "Dezactivare stil implicit"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:221
+msgid "Lazy load the feed (without slowing down the page)"
+msgstr "Încărcare lentă a fluxului (fără a încetini pagina)"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:215
+#: includes/elementor/widgets/register-widget.php:157 build/block/index.js:13
+msgid "Message to show when feed is empty"
+msgstr "Mesaj de arătat atunci când fluxul este gol"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:209
+#: includes/elementor/widgets/register-widget.php:138 build/block/index.js:1
+#: build/loop/index.js:7 js/FeedzyLoop/controls.js:357
+msgid "Title Ascending"
+msgstr "Titlu în ordine ascendentă"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:205
+#: includes/elementor/widgets/register-widget.php:137 build/block/index.js:1
+#: build/loop/index.js:7 js/FeedzyLoop/controls.js:353
+msgid "Title Descending"
+msgstr "Titlu în ordine descendentă"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:201
+#: includes/elementor/widgets/register-widget.php:136 build/block/index.js:1
+#: build/loop/index.js:7 js/FeedzyLoop/controls.js:349
+msgid "Date Ascending"
+msgstr "Dată în ordine ascendentă"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:197
+#: includes/elementor/widgets/register-widget.php:135 build/block/index.js:1
+#: build/loop/index.js:7 js/FeedzyLoop/controls.js:345
+msgid "Date Descending"
+msgstr "Dată în ordine descendentă"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:188
+msgid "Sorting order."
+msgstr "Ordine de sortare."
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:176
+msgid "For how long we will cache the feed results."
+msgstr "Pentru cât timp vom păstra în cache rezultatele fluxului."
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:156
+msgid "(eg: 5, if you want to start from the 6th item.)"
+msgstr "(de exemplu: 5, dacă vrei să începi de la elementul al șaselea.)"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:155
+msgid "Ignore the first N items of the feed."
+msgstr "Ignoră primele N elemente din flux."
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:141
+msgid "Invalid feeds will NOT display items."
+msgstr "Fluxurile nevalide NU vor afișa elemente."
+
+#. translators: 1: <a> tag opening, 2: </a> tag closing.
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:137
+msgid "Click %1$s here %2$s to check if feed is valid."
+msgstr "Dă clic %1$s aici %2$s pentru a verifica dacă fluxul este valid."
+
+#. translators: 1: <code> tag for source, 2: closing </code> tag.
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:123
+msgid "When using multiple sources, should we display additional meta fields? %1$s source %2$s (feed title)."
+msgstr "Atunci când se utilizează surse multiple, ar trebui să afișăm câmpuri meta suplimentare? %1$s sursă %2$s (titlu flux)."
+
+#. translators: 1: <code> tag for author, 2: closing </code> tag, 3: <code> tag
+#. for date, 4: closing </code> tag, 5: <code> tag for time, 6: closing </code>
+#. tag, 7: <code> tag for categories, 8: closing </code> tag, 9: <a> tag for
+#. documentation link, 10: closing </a> tag.
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:107
+msgid "Should we display additional meta fields out of %1$s author%2$s, %3$s date%4$s, %5$s time %6$s and %7$s categories %8$s? (comma-separated list). View documentation %9$s here %10$s."
+msgstr "Ar trebui să afișăm câmpuri meta suplimentare în afară de %1$sautor%2$s, %3$sdată%4$s, %5$soră%6$s și %7$scategorii%8$s? (listă separată prin virgulă). Vezi documentația %9$saici%10$s."
+
+#. translators: 1: <code> tag for author, 2: closing </code> tag, 3: <code> tag
+#. for date, 4: closing </code> tag, 5: <code> tag for time, 6: closing </code>
+#. tag, 7: <a> tag for documentation link, 8: closing </a> tag.
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:94
+msgid "Should we display additional meta fields out of %1$s author %2$s, %3$s date %4$s and %5$s time %6$s? (comma-separated list, in order of display). View documentation %7$s here %8$s."
+msgstr "Ar trebui să afișăm câmpuri meta suplimentare în afară de %1$sautor%2$s, %3$sdată%4$s și %5$soră%6$s? (listă separată prin virgulă, în ordinea afișării). Vezi documentația %7$saici%8$s."
+
+#: includes/admin/feedzy-rss-feeds-import.php:4179
+msgid "Import"
+msgstr "Importă"
+
+#: includes/admin/feedzy-rss-feeds-import.php:4176
+msgid "Choose the import job .json file to import."
+msgstr "Alege fișierul .json al sarcinii de import pentru import."
+
+#: includes/admin/feedzy-rss-feeds-admin.php:638
+msgid "Upload/export of import configuration is not available on your plan. Please upgrade to the Pro plan to unlock all these features."
+msgstr "Încărcarea sau exportarea configurației de import nu este disponibilă în planul tău. Te rog actualizează la planul Pro pentru a debloca toate aceste funcționalități."
+
+#: includes/admin/feedzy-rss-feeds-import.php:4024
+msgid "Duplicate import job created"
+msgstr "Sarcină de import duplicat creată"
+
+#: includes/admin/feedzy-rss-feeds-import.php:4005
+msgid "Post creation failed, could not find original post."
+msgstr "Crearea articolului a eșuat, nu am putut să găsesc articolul original."
+
+#: includes/admin/feedzy-rss-feeds-import.php:3944
+msgid "No post to duplicate has been provided!"
+msgstr "Nu a fost furnizat niciun articol pentru a fi duplicat!"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3918
+msgid "🚫 Translated Description"
+msgstr "🚫 Descriere tradusă"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3917
+msgid "🚫 Translated Content"
+msgstr "🚫 Conținut tradus"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3916
+msgid "🚫 Translated Title"
+msgstr "🚫 Titlu tradus"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3896
+msgid "No matches found"
+msgstr "Nu am găsit nicio potrivire"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3666
+msgid "Imported by Feedzy from"
+msgstr "Importat de Feedzy din"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3659
+#: includes/layouts/feedzy-logs-viewer.php:35
+msgid "Export"
+msgstr "Exportă"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3638
+msgid "Edit"
+msgstr "Editează"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3625
+#: includes/admin/feedzy-rss-feeds-import.php:3631
+msgid "Clone"
+msgstr "Clonează"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3607
+msgid "Purge &amp; Reset"
+msgstr "Curăță și resetează"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3514
+msgid "🚫 Item Full Content"
+msgstr "🚫 Conținut întreg element"
+
+#: includes/admin/feedzy-rss-feeds-import.php:523
+#: includes/admin/feedzy-rss-feeds-import.php:528
+#: includes/admin/feedzy-rss-feeds-import.php:3509
+msgid "Item Categories"
+msgstr "Categorii element"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3508
+msgid "Item URL"
+msgstr "URL element"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3507
+#: includes/admin/feedzy-rss-feeds-import.php:3529
+msgid "Item Image"
+msgstr "Imagine element"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3506
+#: includes/admin/feedzy-rss-feeds-import.php:3913
+msgid "Item Description"
+msgstr "Descriere element"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3505
+#: includes/admin/feedzy-rss-feeds-import.php:3912
+msgid "Item Content"
+msgstr "Conținut element"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3489
+#: includes/views/import-metabox-edit.php:287
+#: includes/views/import-metabox-edit.php:296
+msgid "Post Date"
+msgstr "Dată articol"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3488
+msgid "Item Date"
+msgstr "Dată element"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3472
+#: includes/admin/feedzy-rss-feeds-import.php:3510
+msgid "Item Source"
+msgstr "Sursă element"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3471
+msgid "Item Date (feed timezone)"
+msgstr "Dată element (fus orar flux)"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3470
+msgid "Item Date (local timezone)"
+msgstr "Dată element (fus orar local)"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3469
+msgid "Item Date (UTC/GMT)"
+msgstr "Dată element (UTC sau GMT)"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3468
+msgid "Item Author"
+msgstr "Autor element"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3467
+#: includes/admin/feedzy-rss-feeds-import.php:3911
+msgid "Item Title"
+msgstr "Titlu element"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3449
+msgid "Upgrade your license to use this tag"
+msgstr "Actualizează-ți licența pentru a folosi această etichetă"
+
+#. translators: %1$s: WordAi, %2$s: SpinnerChief
+#: includes/admin/feedzy-rss-feeds-import.php:3336
+#: includes/layouts/feedzy-pro.php:155
+msgid "WordAi"
+msgstr "WordAi"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3335
+msgid "Amazon Product Advertising"
+msgstr "Publicitate pentru produs Amazon"
+
+#. translators: %1$s: WordAi, %2$s: SpinnerChief
+#: includes/admin/feedzy-rss-feeds-import.php:3334
+#: includes/layouts/feedzy-pro.php:155
+msgid "SpinnerChief"
+msgstr "SpinnerChief"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3327
+#: includes/admin/feedzy-rss-feeds-import.php:3332
+#: build/action-popup/index.js:1
+msgid "OpenRouter"
+msgstr "OpenRouter"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3326
+#: includes/admin/feedzy-rss-feeds-import.php:3330
+#: build/action-popup/index.js:1
+msgid "OpenAI"
+msgstr "OpenAI"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3309
+msgid "Miscellaneous"
+msgstr "Diverse"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3178
+msgid "Successfully imported."
+msgstr "Importat cu succes."
+
+#: includes/admin/feedzy-rss-feeds-import.php:3173
+msgid "Unable to register cron job. Your feeds might not get updated"
+msgstr "Nu am putut înregistra sarcina programată. Este posibil ca fluxurile tale să nu fie actualizate"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3169
+msgid "WP Cron is disabled. Your feeds would not get updated. Please contact your hosting provider or system administrator"
+msgstr "WP Cron este dezactivat. Fluxurile tale nu vor fi actualizate. Te rog contactează furnizorul tău de găzduire sau administratorul de sistem"
+
+#. translators: %1$d is the number of items without images, %2$d is the total
+#. number of items imported.
+#: includes/admin/feedzy-rss-feeds-import.php:2727
+msgid "Unable to find an image for %1$d out of %2$d items imported"
+msgstr "Nu am putut găsi o imagine pentru %1$d din %2$d de elemente importate"
+
+#: includes/admin/feedzy-rss-feeds-import.php:2307
+msgid "Title or Content is empty."
+msgstr "Titlul sau conținutul este gol."
+
+#. translators: %s: Error message for empty full content.
+#: includes/admin/feedzy-rss-feeds-import.php:2139
+#: includes/admin/feedzy-rss-feeds-import.php:2146
+msgid "Full content is empty. Error: %s"
+msgstr "Conținutul complet este gol. Eroare: %s"
+
+#: includes/admin/feedzy-rss-feeds-import.php:2135
+msgid "Unknown"
+msgstr "Necunoscut"
+
+#: includes/admin/feedzy-rss-feeds-import.php:1995
+msgid "Read More"
+msgstr "Citește mai mult"
+
+#: includes/admin/feedzy-rss-feeds-import.php:1821
+msgid "Title & Content are both empty."
+msgstr "Atât titlul cât și conținutul sunt goale."
+
+#. translators: %1$s and %2$s are opening and closing bold tags respectively.
+#: includes/admin/feedzy-rss-feeds-import.php:1464
+msgid "%1$sSource invalid%2$s: One or more feeds may be misbehaving. Check each feed individually as mentioned above to weed out the problematic feed."
+msgstr "%1$sSursă nevalidă%2$s: Este posibil ca unul sau mai multe fluxuri să nu se comporte corespunzător. Verifică fiecare flux în parte, așa cum s-a menționat mai sus, pentru a elimina fluxul problematic."
+
+#. translators: %1$s and %2$s are opening and closing bold tags respectively.
+#: includes/admin/feedzy-rss-feeds-import.php:1456
+msgid "For %1$smultiple feeds%2$s (comma-separated or in a Feedzy Category), this could be because of the following reasons:"
+msgstr "Pentru %1$sfluxuri multiple%2$s (separate prin virgulă sau într-o categorie Feedzy), acest lucru ar putea fi cauzat de următoarele motive:"
+
+#. translators: %1$s and %2$s are opening and closing bold tags respectively.
+#: includes/admin/feedzy-rss-feeds-import.php:1448
+msgid "%1$sSource inaccessible from server%2$s: Check that your source is accessible from the server (not the browser). It could be an intermittent issue."
+msgstr "%1$sSursă inaccesibilă de la server%2$s: verifică dacă sursa ta este accesibilă din server (nu din navigator). Ar putea fi o problemă intermitentă."
+
+#. translators: %1$s and %2$s are opening and closing bold tags respectively.
+#: includes/admin/feedzy-rss-feeds-import.php:1440
+msgid "%1$sSource unavailable%2$s: Copy the source and paste it on the browser to check that it is available. It could be an intermittent issue."
+msgstr "%1$sSursă indisponibilă%2$s: copiază sursa și plaseaz-o în navigator pentru a verifica dacă este disponibilă. Ar putea fi o problemă intermitentă."
+
+#. translators: %1$s and %2$s are opening and closing bold tags respectively.
+#: includes/admin/feedzy-rss-feeds-import.php:1432
+msgid "%1$sSource invalid%2$s: Check that your source is valid by clicking the validate button adjacent to the source box."
+msgstr "%1$sSursă invalidă%2$s: verifică dacă sursa este validă dând clic pe butonul de validare adiacent casetei pentru sursă."
+
+#. translators: %1$s and %2$s are opening and closing bold tags respectively.
+#: includes/admin/feedzy-rss-feeds-import.php:1424
+msgid "For %1$ssingle feeds%2$s, this could be because of the following reasons:"
+msgstr "Pentru %1$sfluxuri singulare%2$s, ar putea fi din următoarele motive:"
+
+#: includes/admin/feedzy-rss-feeds-import.php:1392
+msgid "Refresh this page for the updated status"
+msgstr "Reîmprospătează această pagină pentru starea actualizată"
+
+#: includes/admin/feedzy-rss-feeds-import.php:1391
+msgid "Nothing imported!"
+msgstr "Nimic importat!"
+
+#: includes/admin/feedzy-rss-feeds-import.php:1391
+msgid "Successfully run!"
+msgstr "A rulat cu succes!"
+
+#: includes/admin/feedzy-rss-feeds-import.php:1293
+msgid "You do not have permission to do this."
+msgstr "Nu ai permisiunea să faci asta."
+
+#: includes/admin/feedzy-rss-feeds-import.php:1111
+msgid "Status"
+msgstr "Stare"
+
+#: includes/admin/feedzy-rss-feeds-import.php:1110
+msgid "Cumulative"
+msgstr "Cumulativ"
+
+#: includes/admin/feedzy-rss-feeds-import.php:1109
+msgid "Imported"
+msgstr "Importat"
+
+#: includes/admin/feedzy-rss-feeds-import.php:1108
+msgid "Duplicates"
+msgstr "Duplicate"
+
+#: includes/admin/feedzy-rss-feeds-import.php:1107
+msgid "Found"
+msgstr "Am găsit"
+
+#: includes/admin/feedzy-rss-feeds-import.php:1104
+msgid "View the errors"
+msgstr "Vezi erorile"
+
+#: includes/admin/feedzy-rss-feeds-import.php:1098
+msgid "Items that were imported across all runs"
+msgstr "Elemente care au fost importate prin toate rulările"
+
+#: includes/admin/feedzy-rss-feeds-import.php:1091
+msgid "Items that were imported"
+msgstr "Elemente care au fost importate"
+
+#: includes/admin/feedzy-rss-feeds-import.php:1083
+msgid "Items that were discarded as duplicates"
+msgstr "Elemente care au fost respinse ca duplicate"
+
+#: includes/admin/feedzy-rss-feeds-import.php:1077
+msgid "Items that were found in the feed"
+msgstr "Elemente care au fost găsite în flux"
+
+#: includes/admin/feedzy-rss-feeds-import.php:1046
+msgid "Errors"
+msgstr "Erori"
+
+#: includes/admin/feedzy-rss-feeds-import.php:1036
+msgid "Duplicates found"
+msgstr "Am găsit duplicate"
+
+#: includes/admin/feedzy-rss-feeds-import.php:1027
+msgid "Items found"
+msgstr "Elemente găsite"
+
+#: includes/admin/feedzy-rss-feeds-import.php:956
+msgid "in-progress"
+msgstr "în desfășurare"
+
+#. translators: %1$d: number of hours, %2$d: number of minutes.
+#: includes/admin/feedzy-rss-feeds-import.php:934
+msgid "Ran %1$d hours %2$d minutes ago"
+msgstr "Rulat în urmă cu %1$d ore și %2$d minute"
+
+#: includes/admin/feedzy-rss-feeds-import.php:926
+msgid "Never Run"
+msgstr "Nu a rulat niciodată"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1205
+#: includes/admin/feedzy-rss-feeds-admin.php:1212
+#: includes/admin/feedzy-rss-feeds-import.php:900
+msgid "Click to view"
+msgstr "Dă clic pentru a vedea"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1193
+#: includes/admin/feedzy-rss-feeds-import.php:893
+msgid "No Source Configured"
+msgstr "Nicio sursă configurată"
+
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:1103
+#: includes/admin/feedzy-rss-feeds-import.php:888
+msgid "Amazon Product Advertising API"
+msgstr "API de publicitate pentru produs Amazon"
+
+#: includes/admin/feedzy-rss-feeds-import.php:825
+#: includes/admin/feedzy-rss-feeds-import.php:829
+msgid "Last Run Status"
+msgstr "Starea ultimei rulări"
+
+#: includes/admin/feedzy-rss-feeds-import.php:818
+#: includes/admin/feedzy-rss-feeds-import.php:822
+msgid "Next Run"
+msgstr "Următoarea rulare"
+
+#: includes/admin/feedzy-rss-feeds-import.php:811
+#: includes/admin/feedzy-rss-feeds-import.php:815
+msgid "Current Status"
+msgstr "Stare actuală"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1144
+#: includes/admin/feedzy-rss-feeds-import.php:803
+#: includes/admin/feedzy-rss-feeds-import.php:808
+msgid "Source"
+msgstr "Sursă"
+
+#: includes/admin/feedzy-rss-feeds-import.php:802
+msgid "Import Title"
+msgstr "Titlu import"
+
+#: includes/admin/feedzy-rss-feeds-import.php:411
+msgid "Feed Import Options"
+msgstr "Opțiuni import flux"
+
+#: includes/admin/feedzy-rss-feeds-import.php:384
+msgid "Show intro message for Feedzy action popup."
+msgstr "Arată mesajul introductiv pentru popup-ul de acțiune Feedzy."
+
+#: includes/admin/feedzy-rss-feeds-import.php:373
+msgid "Show tour for Feedzy."
+msgstr "Arată turul pentru Feedzy."
+
+#: includes/admin/feedzy-rss-feeds-import.php:344
+msgid "No imports in the trash"
+msgstr "Nu există niciun import la gunoi"
+
+#: includes/admin/feedzy-rss-feeds-import.php:343
+msgid "No imports found"
+msgstr "Nu am găsit niciun import"
+
+#: includes/admin/feedzy-rss-feeds-import.php:342
+msgid "Search Imports"
+msgstr "Caută importuri"
+
+#: includes/admin/feedzy-rss-feeds-import.php:341
+msgid "View Import"
+msgstr "Vezi import"
+
+#: includes/admin/feedzy-rss-feeds-import.php:340
+msgid "New Import Post"
+msgstr "Articol nou de import"
+
+#: includes/admin/feedzy-rss-feeds-import.php:337
+#: includes/admin/feedzy-rss-feeds-import.php:338
+#: includes/admin/feedzy-rss-feeds-ui.php:199
+msgid "New Import"
+msgstr "Import nou"
+
+#: includes/admin/feedzy-rss-feeds-import.php:336
+msgid "Import Post"
+msgstr "Importă articol"
+
+#: includes/admin/feedzy-rss-feeds-import.php:335
+#: includes/layouts/feedzy-tutorial.php:74
+msgid "Import Posts"
+msgstr "Importă articole"
+
+#: includes/admin/feedzy-rss-feeds-import.php:200
+msgid "Upload Import"
+msgstr "Încarcă import"
+
+#. translators: %d select images count.
+#: includes/admin/feedzy-rss-feeds-import.php:195
+msgid "(%d) images selected"
+msgstr "(%d) imagini selectate"
+
+#: includes/admin/feedzy-rss-feeds-import.php:193
+msgid "Removed all error logs."
+msgstr "Am eliminat toate jurnalele de erori."
+
+#: includes/admin/feedzy-rss-feeds-import.php:192
+msgid "Ok"
+msgstr "Ok"
+
+#: includes/admin/feedzy-rss-feeds-import.php:190
+msgid "Clear Log"
+msgstr "Șterge jurnalul"
+
+#: includes/admin/feedzy-rss-feeds-import.php:189
+msgid "We display up to 100 users. If the desired username isn’t listed, type the exact existing username manually to save it."
+msgstr "Afișăm până la 100 de utilizatori. Dacă numele de utilizator dorit nu este listat, tastează manual exact numele de utilizator existent pentru a-l salva."
+
+#: includes/admin/feedzy-rss-feeds-import.php:184
+msgid "Would you also like to delete all the imported posts for this import job?"
+msgstr "Vrei să ștergi și toate articolele importate pentru această sarcină de import?"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2016
+#: includes/admin/feedzy-rss-feeds-import.php:183
+msgid "Importable Items"
+msgstr "Elemente care pot fi importate"
+
+#: includes/admin/feedzy-rss-feeds-import.php:181
+msgid "Please note that if some of these items have already have been imported in previous runs with the same filters, they may be shown here but will not be imported again."
+msgstr "Te rog reține, dacă unele dintre aceste elemente au fost deja importate în rulările anterioare cu aceleași filtre, acestea pot fi afișate aici, dar nu vor fi importate din nou."
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2014
+#: includes/admin/feedzy-rss-feeds-import.php:180
+msgid "Processing the source and loading the items that will be imported when it runs"
+msgstr "Procesarea sursei și încărcarea elementelor care vor fi importate atunci când se rulează"
+
+#: includes/admin/feedzy-rss-feeds-import.php:179
+#: includes/admin/feedzy-rss-feeds-import.php:944
+msgid "Run Now"
+msgstr "Rulează acum"
+
+#: includes/admin/feedzy-rss-feeds-import.php:178
+msgid "Importing"
+msgstr "Fac importul"
+
+#: includes/admin/feedzy-rss-feeds-import.php:109
+msgid "upgrading to Feedzy Pro"
+msgstr "actualizarea la Feedzy Pro"
+
+#: includes/admin/feedzy-rss-feeds-import.php:109
+msgid "Buy Now"
+msgstr "Cumpără acum"
+
+#: includes/admin/feedzy-rss-feeds-import.php:108
+msgid "This feature is available in the Pro version.  Unlock more features, by"
+msgstr "Această funcționalitate este disponibilă în versiunea Pro.  Deblochează mai multe funcționalități, prin"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2964
+msgid "Zulu"
+msgstr "Zulu"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2963
+msgid "Standard Malay"
+msgstr "Standard malaieză"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2962
+msgid "Chinese Traditional"
+msgstr "Chineză (tradițională)"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2961
+msgid "Chinese Simplified"
+msgstr "Chineză (simplificată)"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2960
+msgid "Yue Chinese"
+msgstr "Yue Chineză"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2959
+msgid "Yoruba"
+msgstr "Yoruba"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2958
+msgid "Eastern Yiddish"
+msgstr "Yiddish de Est"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2957
+msgid "Xhosa"
+msgstr "Xhosa"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2956
+msgid "Wolof"
+msgstr "Wolof"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2955
+msgid "Waray"
+msgstr "Waray"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2954
+msgid "Vietnamese"
+msgstr "Vietnameză"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2953
+msgid "Venetian"
+msgstr "Venețiană"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2952
+msgid "Northern Uzbek"
+msgstr "Uzbekistan de Nord"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2951
+msgid "Urdu"
+msgstr "Urdu"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2950
+msgid "Umbundu"
+msgstr "Umbundu"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2949
+msgid "Ukrainian"
+msgstr "Ucraineană"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2948
+msgid "Uyghur"
+msgstr "Uyghur"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2947
+msgid "Central Atlas Tamazight"
+msgstr "Central Atlas Tamazight"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2946
+msgid "Twi"
+msgstr "Twi"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2945
+msgid "Turkish"
+msgstr "Turcă"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2944
+msgid "Tumbuka"
+msgstr "Tumbuka"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2943
+msgid "Turkmen"
+msgstr "Turkmenă"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2942
+msgid "Tsonga"
+msgstr "Tsonga"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2941
+msgid "Tswana"
+msgstr "Tswana"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2940
+msgid "Tok Pisin"
+msgstr "Tok Pisin"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2939
+msgid "Tamasheq Tfng"
+msgstr "Tamasheq Tfng"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2938
+msgid "Tamasheq Latn"
+msgstr "Tamasheq Latn"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2937
+msgid "Tigrinya"
+msgstr "Tigrinya"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2936
+msgid "Thai"
+msgstr "Thailandeză"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2935
+msgid "Tagalog"
+msgstr "Tagalog"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2934
+msgid "Tajik"
+msgstr "Tadjică"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2933
+msgid "Telugu"
+msgstr "Telugu"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2932
+msgid "Tatar"
+msgstr "Tătară"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2931
+msgid "Tamil"
+msgstr "Tamilă"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2930
+msgid "Silesian"
+msgstr "Sileziană"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2929
+msgid "Swahili"
+msgstr "Swahili"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2928
+msgid "Swedish"
+msgstr "Suedeză"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2927
+msgid "Sundanese"
+msgstr "Sudaneză"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2926
+msgid "Swati"
+msgstr "Swati"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2925
+msgid "Serbian"
+msgstr "Sârbă"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2924
+msgid "Sardinian"
+msgstr "Sardă"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2923
+msgid "Tosk Albanian"
+msgstr "Tosk Albaneză"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2922
+msgid "Spanish"
+msgstr "Spaniolă"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2921
+msgid "Southern"
+msgstr "Sudică"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2920
+msgid "Somali"
+msgstr "Somaleză"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2919
+msgid "Sindhi"
+msgstr "Sindhi"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2918
+msgid "Shona"
+msgstr "Shona"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2917
+msgid "Samoan"
+msgstr "Samoană"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2916
+msgid "Slovenian"
+msgstr "Slovenă"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2915
+msgid "Slovak"
+msgstr "Slovacă"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2914
+msgid "Sinhala"
+msgstr "Sinhala"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2913
+msgid "Shan"
+msgstr "Shan"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2912
+msgid "Sicilian"
+msgstr "Siciliană"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2911
+msgid "Santali"
+msgstr "Santali"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2910
+msgid "Sanskrit"
+msgstr "Sanscrită"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2909
+msgid "Sango"
+msgstr "Sango"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2908
+msgid "Russian"
+msgstr "Rusă"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2907
+msgid "Rundi"
+msgstr "Rundi"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2906
+msgid "Romanian"
+msgstr "Română"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2905
+msgid "Ayacucho Quechua"
+msgstr "Ayacucho Quechua"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2904
+msgid "Southern Pashto"
+msgstr "Paștună din sud"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2903
+msgid "Dari"
+msgstr "Dari"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2902
+msgid "Portuguese"
+msgstr "Portugheză"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2901
+msgid "Polish"
+msgstr "Poloneză"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2900
+msgid "Western Persian"
+msgstr "Persană occidentală"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2899
+msgid "Papiamento"
+msgstr "Papiamento"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2898
+msgid "Eastern Panjabi"
+msgstr "Panjabi de est"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2897
+msgid "Pangasinan"
+msgstr "Pangasinan"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2896
+msgid "Odia"
+msgstr "Odia"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2895
+msgid "West Central Oromo"
+msgstr "Oromo de vest și central"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2894
+msgid "Occitan"
+msgstr "Occitană"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2893
+msgid "Nyanja"
+msgstr "Nyanja"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2892
+msgid "Nuer"
+msgstr "Nuer"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2891
+msgid "Northern Sotho"
+msgstr "Northern Sotho"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2890
+msgid "Nepali"
+msgstr "Nepaleză"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2889
+msgid "Norwegian Bokmål"
+msgstr "Norvegiană (Bokmål)"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2888
+msgid "Norwegian Nynorsk"
+msgstr "Norvegiană (Nynorsk)"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2887
+msgid "Dutch"
+msgstr "Neerlandeză"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2886
+msgid "Burmese"
+msgstr "Burmeză"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2885
+msgid "Maori"
+msgstr "Maori"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2884
+msgid "Mossi"
+msgstr "Mossi"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2883
+msgid "Halh Mongolian"
+msgstr "Mongolă Halh"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2882
+msgid "Meitei"
+msgstr "Meitei"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2881
+msgid "Maltese"
+msgstr "Malteză"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2880
+msgid "Plateau Malagasy"
+msgstr "Malgașă de platou"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2879
+msgid "Macedonian"
+msgstr "Macedoneană"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2878
+msgid "Minangkabau Latn"
+msgstr "Minangkabau Latn"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2877
+msgid "Minangkabau Arab"
+msgstr "Minangkabau Arab"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2876
+msgid "Marathi"
+msgstr "Marathi"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2875
+msgid "Malayalam"
+msgstr "Malayalam"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2874
+msgid "Maithili"
+msgstr "Maithili"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2873
+msgid "Magahi"
+msgstr "Magahi"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2872
+msgid "Standard Latvian"
+msgstr "Letonă (standard)"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2871
+msgid "Mizo"
+msgstr "Mizo"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2870
+msgid "Luo"
+msgstr "Luo"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2869
+msgid "Ganda"
+msgstr "Ganda"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2868
+msgid "Luba-Kasai"
+msgstr "Luba-Kasai"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2867
+msgid "Luxembourgish"
+msgstr "Luxemburgheză"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2866
+msgid "Latgalian"
+msgstr "Latgalian"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2865
+msgid "Lombard"
+msgstr "Lombardă"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2864
+msgid "Lithuanian"
+msgstr "Lituaniană"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2863
+msgid "Lingala"
+msgstr "Lingala"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2862
+msgid "Limburgish"
+msgstr "Limburgheză"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2861
+msgid "Ligurian"
+msgstr "Liguriană"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2860
+msgid "Lao"
+msgstr "Laoțiană"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2859
+msgid "Korean"
+msgstr "Coreeană"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2858
+msgid "Kikongo"
+msgstr "Kikongo"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2857
+msgid "Northern Kurdish"
+msgstr "Northern Kurdish"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2856
+msgid "Kimbundu"
+msgstr "Kimbundu"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2855
+msgid "Kyrgyz"
+msgstr "Kirghiză"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2854
+msgid "Kinyarwanda"
+msgstr "Kinyarwanda"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2853
+msgid "Kikuyu"
+msgstr "Kikuyu"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2852
+msgid "Khmer"
+msgstr "Khmeră"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2851
+msgid "Kabuverdianu"
+msgstr "Kabuverdianu"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2850
+msgid "Kabiyè"
+msgstr "Kabiyè"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2849
+msgid "Kazakh"
+msgstr "Kazahă"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2848
+msgid "Central Kanuri _Latn"
+msgstr "Central Kanuri _Latn"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2847
+msgid "Central Kanuri Arab"
+msgstr "Central Kanuri Arab"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2846
+msgid "Georgian"
+msgstr "Georgiană"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2845
+msgid "Kashmiri Devanagari"
+msgstr "Kashmiri Devanagari"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2844
+msgid "Kashmiri Arab"
+msgstr "Kashmiri Arab"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2843
+msgid "Kannada"
+msgstr "Kannada"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2842
+msgid "Kamba"
+msgstr "Kamba"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2841
+msgid "Jingpho"
+msgstr "Jingpho"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2840
+msgid "Kabyle"
+msgstr "Kabilă"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2839
+msgid "Japanese"
+msgstr "Japoneză"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2838
+msgid "Javanese"
+msgstr "Javaneză"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2837
+msgid "Italian"
+msgstr "Italiană"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2836
+msgid "Icelandic"
+msgstr "Islandeză"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2835
+msgid "Indonesian"
+msgstr "Indoneziană"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2834
+msgid "Ilocano"
+msgstr "Ilocano"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2833
+msgid "Igbo"
+msgstr "Igbo"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2832
+msgid "Armenian"
+msgstr "Armeană"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2831
+msgid "Hungarian"
+msgstr "Maghiară"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2830
+msgid "Croatian"
+msgstr "Croată"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2829
+msgid "Chhattisgarhi"
+msgstr "Chhattisgarhi"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2828
+msgid "Hindi"
+msgstr "Hindi"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2827
+msgid "Hebrew"
+msgstr "Ebraică"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2826
+msgid "Hausa"
+msgstr "Hausa"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2825
+msgid "Haitian Creole"
+msgstr "Creolă haitiană"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2824
+msgid "Gujarati"
+msgstr "Gujarati"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2823
+msgid "Guarani"
+msgstr "Guarani"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2822
+msgid "Galician"
+msgstr "Galiciană"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2821
+msgid "Irish"
+msgstr "Irlandeză"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2820
+msgid "Scottish Gaelic"
+msgstr "Galică scoțiană"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2819
+msgid "Nigerian Fulfulde"
+msgstr "Fulfulde nigeriană"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2818
+msgid "Friulian"
+msgstr "Friulană"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2817
+msgid "French"
+msgstr "Franceză"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2816
+msgid "Fon"
+msgstr "Fon"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2815
+msgid "Finnish"
+msgstr "Finlandeză"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2814
+msgid "Fijian"
+msgstr "Fijiană"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2813
+msgid "Faroese"
+msgstr "Feroeză"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2812
+msgid "Ewe"
+msgstr "Ewe"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2811
+msgid "Basque"
+msgstr "Bască"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2810
+msgid "Estonian"
+msgstr "Estonă"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2809
+msgid "Esperanto"
+msgstr "Esperanto"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2808
+msgid "Greek"
+msgstr "Greacă"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2807
+msgid "Dzongkha"
+msgstr "Bhutaneză"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2806
+msgid "Dyula"
+msgstr "Dyula"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2805
+msgid "Southwestern Dinka"
+msgstr "Dinka de sud-vest"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2804
+msgid "German"
+msgstr "Germană"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2803
+msgid "Danish"
+msgstr "Daneză"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2802
+msgid "Welsh"
+msgstr "Galeză"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2801
+msgid "Crimean Tatar"
+msgstr "Tătară crimeeană"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2800
+msgid "Central Kurdish"
+msgstr "Kurdă"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2799
+msgid "Chokwe"
+msgstr "Chokwe"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2798
+msgid "Czech"
+msgstr "Cehă"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2797
+msgid "Cebuano"
+msgstr "Cebuano"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2796
+msgid "Catalan"
+msgstr "Catalană"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2795
+msgid "Bulgarian"
+msgstr "Bulgară"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2794
+msgid "Buginese Latn"
+msgstr "Bughineză"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2793
+msgid "Bosnian"
+msgstr "Bosniacă"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2792
+msgid "Standard Tibetan"
+msgstr "Tibetană standard"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2791
+msgid "Banjar Latn"
+msgstr "Banjar Latn"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2790
+msgid "Banjar Arab"
+msgstr "Banjar Arab"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2789
+msgid "Bhojpuri"
+msgstr "Bhojpuri"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2788
+msgid "Bengali"
+msgstr "Bengali"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2787
+msgid "Bemba"
+msgstr "Bemba"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2786
+msgid "Belarusian"
+msgstr "Bielorusă"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2785
+msgid "Balinese"
+msgstr "Balineză"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2784
+msgid "Bambara"
+msgstr "Bambara"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2783
+msgid "Bashkir"
+msgstr "Bașchiră"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2782
+msgid "North Azerbaijani"
+msgstr "Nord-azeră"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2781
+msgid "South Azerbaijani"
+msgstr "Sud-azeră"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2780
+msgid "Central Aymara"
+msgstr "Central Aymara"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2779
+msgid "Awadhi"
+msgstr "Awadhi"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2778
+msgid "Asturian"
+msgstr "Asturiană"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2777
+msgid "Assamese"
+msgstr "Assamese"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2776
+msgid "Egyptian Arabic"
+msgstr "Arabă egipteană"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2775
+msgid "Moroccan Arabic"
+msgstr "Arabă marocană"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2774
+msgid "Najdi Arabic"
+msgstr "Arabă Najdi"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2773
+msgid "Modern Standard Arabic (Romanized)"
+msgstr "Arabă modernă standard (romanizată)"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2772
+msgid "Modern Standard Arabic"
+msgstr "Arabă modernă standard"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2771
+msgid "North Levantine Arabic"
+msgstr "Arabă din Levantul de Nord"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2770
+msgid "Amharic"
+msgstr "Amhară"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2769
+msgid "Akan"
+msgstr "Akan"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2768
+msgid "South Levantine Arabic"
+msgstr "Arabă din Levantul de Sud"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2767
+msgid "Afrikaans"
+msgstr "Afrikaans"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2766
+msgid "Tunisian Arabic"
+msgstr "Arabă tunisiană"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2765
+msgid "Ta’izzi-Adeni Arabic"
+msgstr "Arabă Ta'izzi-Adeni"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2764
+msgid "Mesopotamian Arabic"
+msgstr "Arabă mesopotamiană"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2763
+msgid "Acehnese Latin"
+msgstr "Acehană latină"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2762
+msgid "Acehnese Arab"
+msgstr "Acehană arabă"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2761
+msgid "English"
+msgstr "Engleză"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2468
+msgid "Feedzy Demo Page"
+msgstr "Pagina demo Feedzy"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2276
+#: includes/admin/feedzy-rss-feeds-admin.php:2320
+msgid "Redirecting to draft page"
+msgstr "Redirecționeză către pagina ciornă"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2257
+#: includes/admin/feedzy-rss-feeds-admin.php:2287
+#: includes/admin/feedzy-rss-feeds-admin.php:2300
+msgid "Redirecting to Feedzy dashboard"
+msgstr "Redirecționez către panoul de control Feedzy"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2199
+msgid "Unable to connect to the filesystem. Please confirm your credentials."
+msgstr "Nu mă pot conecta la sistemul de fișiere. Te rog confirmă-ți datele de conectare."
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2140
+msgid "Sorry, you are not allowed to install plugins on this site."
+msgstr "Regret, nu ai voie să instalezi module pe acest site."
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2131
+msgid "No plugin specified."
+msgstr "Nu ai specificat niciun modul."
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2004
+msgid "Do not create"
+msgstr "Nu crea"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2003
+#: includes/layouts/setup-wizard.php:291
+msgid "Create Page"
+msgstr "Creează o pagină"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2001 build/onboarding/index.js:1
+msgid "Back"
+msgstr "Înapoi"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2000
+msgid "Next Step"
+msgstr "Pasul următor"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1998
+msgid "Please enter a valid email address."
+msgstr "Te rog să introduci o adresă de email validă."
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1997
+msgid "This field is required."
+msgstr "Acest câmp este obligatoriu."
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1841
+msgid "Empty URL"
+msgstr "URL gol"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1820
+msgid "Please enter a valid feed URL to import the author"
+msgstr "Te rog să introduci un URL valid al fluxului pentru a importa autorul"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1816
+msgid "This source has invalid or unreachable by WordPress SimplePie URLs. Please correct/remove the following"
+msgstr "Această sursă are URL-uri nevalide sau inaccesibile de WordPress SimplePie. Te rog să corectezi sau să elimini următoarele"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1807
+msgid "We found the following invalid or unreachable by WordPress SimplePie URLs that we have removed from the list"
+msgstr "Am găsit următoarele URL-uri nevalide sau inaccesibile prin WordPress SimplePie pe care le-am eliminat din listă"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1377
+#: includes/admin/feedzy-rss-feeds-admin.php:1395
+msgid "Your settings were saved."
+msgstr "Setările tale au fost salvate."
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1332
+msgid "RSS to Social"
+msgstr "RSS în social"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1302
+#: includes/admin/feedzy-rss-feeds-admin.php:1303
+#: includes/admin/feedzy-rss-feeds-import.php:4061
+msgid "Setup Wizard"
+msgstr "Asistent de inițializare"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1289
+#: includes/admin/feedzy-rss-feeds-admin.php:1290
+#: includes/layouts/feedzy-support.php:59 includes/layouts/header.php:15
+msgid "Integration"
+msgstr "Integrare"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1263
+msgid "Feedzy"
+msgstr "Feedzy"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1242
+msgid "Upgrade your license"
+msgstr "Actualizează-ți licența"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1240
+#: includes/admin/feedzy-rss-feeds-admin.php:1242
+msgid "More Features"
+msgstr "Mai multe funcționalități"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1188
+msgid "Click to remove invalid URLs from this category"
+msgstr "Dă clic pentru a înlătura URL-urile invalide din această categorie"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1182
+#: includes/admin/feedzy-rss-feeds-import.php:907
+msgid "Undefined"
+msgstr "Nedefinit"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1137
+#: includes/admin/feedzy-rss-feeds-admin.php:1141
+#: includes/layouts/feedzy-schedules.php:96
+msgid "Actions"
+msgstr "Acțiuni"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1130
+#: includes/admin/feedzy-rss-feeds-admin.php:1134
+msgid "Slug"
+msgstr "Descriptor"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1129
+msgid "Group Title"
+msgstr "Titlu grup"
+
+#. translators: %1$s and %2$s are placeholders for HTML anchor tags.
+#: includes/admin/feedzy-rss-feeds-admin.php:953
+msgid "Please be aware that multiple feeds, when mashed together, may sometimes not work as expected as explained %1$s here %2$s."
+msgstr "Te rog reține că fluxurile multiple, atunci când sunt amestecate, pot uneori să nu funcționeze conform așteptărilor, așa cum se explică %1$saici%2$s."
+
+#: includes/admin/feedzy-rss-feeds-admin.php:894
+msgid "Extend Feedzy"
+msgstr "Extinde Feedzy"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:882
+msgid "Group Feeds"
+msgstr "Grup de fluxuri"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:822
+msgid "No groups in the trash"
+msgstr "Nu am găsit niciun grup la gunoi"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:821
+msgid "No groups found"
+msgstr "Nu am găsit niciun grup"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:820
+msgid "Search Group"
+msgstr "Caută grupul"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:819
+msgid "View Group"
+msgstr "Vezi grupul"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:818
+msgid "New Feed Group"
+msgstr "Grup de flux nou"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:817
+msgid "Edit Group"
+msgstr "Editează grupul"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:815
+#: includes/admin/feedzy-rss-feeds-admin.php:816
+msgid "Add Group"
+msgstr "Adaugă grup"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:814
+#: includes/admin/feedzy-rss-feeds-import.php:890
+#: includes/admin/feedzy-rss-feeds-import.php:895
+msgid "Feed Group"
+msgstr "Grup de flux"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:813
+msgid "Feed Groups"
+msgstr "Grupuri de fluxuri"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:599
+msgid "Cloning import setups are not available on your plan. Upgrade to the Pro plan to unlock this feature and streamline your import setup process."
+msgstr "Clonarea inițializărilor de import nu este disponibilă în planul tău. Actualizează la planul Pro pentru a debloca această funcționalitate și pentru a simplifica procesul de inițializare a importurilor."
+
+#: includes/admin/feedzy-rss-feeds-admin.php:577
+msgid "Activate License"
+msgstr "Activează licența"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:569
+msgid "Renew License"
+msgstr "Reînnoiește licența"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:558
+msgid "In order to edit premium import setups, benefit from updates and support for Feedzy Premium plugin, please renew your license code or activate it."
+msgstr "Pentru a edit setări de import premium, pentru a beneficia de actualizări și suport pentru modulul Feedzy Premium, te rog să-ți reînnoiești codul de licență sau să îl activezi."
+
+#: includes/admin/feedzy-rss-feeds-admin.php:553
+msgid "Alert!"
+msgstr "Alertă!"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:525
+#: includes/admin/feedzy-rss-feeds-admin.php:609
+#: includes/admin/feedzy-rss-feeds-admin.php:648 build/conditions/index.js:4
+#: build/loop/index.js:4
+msgid "Upgrade to PRO"
+msgstr "Actualizează la PRO"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:501
+msgid "Upgrade to Use Unlimited Imports"
+msgstr "Actualizează pentru a utiliza importuri nelimitate"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:496
+#: includes/admin/feedzy-rss-feeds-admin.php:549
+#: includes/admin/feedzy-rss-feeds-admin.php:587
+#: includes/admin/feedzy-rss-feeds-admin.php:625 build/conditions/index.js:1
+#: build/loop/index.js:1
+msgid "Dismiss this dialog"
+msgstr "Respinge acest dialog"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:392
+#: includes/admin/feedzy-rss-feeds-admin.php:1278
+#: includes/admin/feedzy-rss-feeds-admin.php:1279
+#: includes/layouts/feedzy-support.php:52
+#: includes/layouts/feedzy-tutorial.php:67 includes/layouts/header.php:11
+#: build/loop/index.js:4 js/FeedzyLoop/controls.js:116
+msgid "Settings"
+msgstr "Setări"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:233
+#: includes/admin/feedzy-rss-feeds-admin.php:2010
+#: includes/admin/feedzy-rss-feeds-import.php:188
+#: includes/layouts/settings.php:158 includes/views/import-metabox-edit.php:782
+msgid "Replace image"
+msgstr "Înlocuiește imaginea"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:232
+#: includes/admin/feedzy-rss-feeds-admin.php:2009
+#: includes/admin/feedzy-rss-feeds-import.php:187
+#: includes/layouts/settings.php:156 includes/layouts/setup-wizard.php:215
+#: includes/views/import-metabox-edit.php:771
+msgid "Choose image"
+msgstr "Alege o imagine"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:231
+#: includes/admin/feedzy-rss-feeds-admin.php:2008
+#: includes/admin/feedzy-rss-feeds-import.php:186
+msgid "Set default image"
+msgstr "Setează imagine implicită"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:230
+#: includes/admin/feedzy-rss-feeds-admin.php:2007
+#: includes/admin/feedzy-rss-feeds-import.php:185
+msgid "Select image"
+msgstr "Selectează imagine"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:214
+msgid "Removed # URL(s)!"
+msgstr "Am înlăturat # URL(uri)!"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:213
+msgid "Validating"
+msgstr "Validez"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:212
+#: includes/admin/feedzy-rss-feeds-admin.php:1188
+msgid "Validate & Clean"
+msgstr "Validează și șterge"
+
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:1666
+#: includes/views/import-metabox-edit.php:333
+msgid "Post Content"
+msgstr "Conținut articol"
+
+#. translators: %s: the category of the imported content.
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:1637
+#: build/block/index.js:22
+msgid "in %s"
+msgstr "în %s"
+
+#. translators: %s: the time of the imported content.
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:1629
+#: build/block/index.js:19
+msgid "at %s"
+msgstr "la %s"
+
+#. translators: %s: the date of the imported content.
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:1624
+#: build/block/index.js:16
+msgid "on %s"
+msgstr "pe %s"
+
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:1528
+#: includes/views/import-metabox-edit.php:247
+#: includes/views/import-metabox-edit.php:255
+msgid "Post Title"
+msgstr "Titlu articol"
+
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:1311
+msgid "Unable to find image"
+msgstr "Nu pot găsi imaginea"
+
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:1306
+msgid "Image"
+msgstr "Imagine"
+
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:1297
+msgid "Full content extracted (is empty)"
+msgstr "A fost extras tot conținutul (este gol)"
+
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:1292
+msgid "Full content extracted"
+msgstr "A fost extras tot conținutul"
+
+#. translators: %s: Error message for full content extraction.
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:1284
+msgid "Full content: %s"
+msgstr "Tot conținutul: %s"
+
+#. translators: %s: Feed URL.
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:1040
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:1060
+msgid "Feed URL: %s not valid and removed from fetch."
+msgstr "URL flux: %s nu este valid și a fost eliminat din aducere."
+
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:662
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:216
+msgid "Feed has no items."
+msgstr "Fluxul nu are niciun element."
+
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:453
+msgid "Loading"
+msgstr "Încarc"
+
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:252
+msgid "Only you are seeing this detailed error because you are the creator of this post. Other users will see the error message as below."
+msgstr "Numai tu vezi această eroare detaliată pentru că tu ai creat acest articol. Ceilalți utilizatori vor vedea mesajul de eroare de mai jos."
+
+#. translators: %s: Detailed error message.
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:248
+msgid "Sorry, some part of this feed is currently unavailable or does not exist anymore. The detailed error is %s"
+msgstr "Regret, o parte din acest flux este indisponibil acum sau nu mai există. Eroarea detaliată este %s"
+
+#. translators: 1: opening <p> tag, 2: opening <b> tag, 3: closing </b> tag, 4:
+#. product name, 5: pro product name, 6: opening <a> tag with cta link, 7:
+#. closing </a> tag, 8: discount percentage
+#: feedzy-rss-feed.php:200
+msgid "%1$sYou've been using %2$s%4$s%3$s for 7 days now and we appreciate your loyalty! We also want to make sure you're getting the most out of our product. That's why we're offering you a special deal - upgrade to %2$s%5$s%3$s in the next 5 days and receive a discount of %2$sup to %8$s%%%3$s. %6$sUpgrade now%7$s and unlock all the amazing features of %2$s%5$s%3$s!"
+msgstr "%1$sFolosești %2$s%4$s%3$s de 7 zile și îți apreciem loialitatea! De asemenea, vrem să ne asigurăm că beneficiezi la maximum de produsul nostru. De aceea îți oferim o ofertă specială – actualizează la %2$s%5$s%3$s în următoarele 5 zile și primești o reducere de %2$spână la %8$s%%%3$s. %6$sActualizează acum%7$s și deblochează toate funcționalitățile uimitoare ale %2$s%5$s%3$s!"
+
+#: feedzy-rss-feed.php:167 feedzy-rss-feed.php:319
+#: includes/admin/feedzy-rss-feeds-admin.php:1240
+msgid "Upgrade to Pro"
+msgstr "Actualizează la Pro"
+
+#. Description of the plugin
+#: feedzy-rss-feed.php
+msgid "A small and lightweight RSS aggregator plugin. Fast and very easy to use, it allows you to aggregate multiple RSS feeds into your WordPress site through fully customizable shortcodes & widgets."
+msgstr "Un modul mic și ușor de agregare RSS. Rapid și foarte ușor de utilizat, îți permite să faci agregare din mai multe fluxuri RSS în site-ul tău WordPress prin intermediul unor scurtcoduri și piese complet personalizabile."
+
+#. Author URI of the plugin
+#: feedzy-rss-feed.php
+msgid "http://themeisle.com"
+msgstr "https://themeisle.com"
+
+#. Author of the plugin
+#: feedzy-rss-feed.php
+msgid "Themeisle"
+msgstr "Themeisle"
+
+#. Plugin URI of the plugin
+#: feedzy-rss-feed.php
+msgid "https://themeisle.com/plugins/feedzy-rss-feeds/"
+msgstr "https://themeisle.com/plugins/feedzy-rss-feeds/"
+
+#. Plugin Name of the plugin
+#: feedzy-rss-feed.php
+msgid "Feedzy RSS Feeds Lite"
+msgstr "Feedzy RSS Feeds Lite"
+
+#: includes/admin/feedzy-wp-widget.php:81
+#: includes/elementor/widgets/register-widget.php:67
+msgid "Intro text"
+msgstr "Text introductiv"
+
+#: includes/admin/feedzy-wp-widget.php:77
+msgid "Widget Title"
+msgstr "Titlu piesă"
+
+#: includes/admin/feedzy-wp-widget.php:40
+#: includes/elementor/widgets/register-widget.php:25 build/block/index.js:13
+#: build/block/index.js:22 build/loop/index.js:1
+#: js/FeedzyLoop/placeholder.js:147
+msgid "Feedzy RSS Feeds"
+msgstr "Feedzy RSS Feeds"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:558
+#: includes/elementor/widgets/register-widget.php:435
+msgid "Style 2"
+msgstr "Stil 2"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:554
+#: includes/elementor/widgets/register-widget.php:430
+msgid "Style 1"
+msgstr "Stil 1"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:193
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:550
+#: includes/elementor/widgets/register-widget.php:134
+#: includes/elementor/widgets/register-widget.php:425
+#: build/action-popup/index.js:4 build/block/index.js:1 build/loop/index.js:1
+#: build/loop/index.js:7 js/FeedzyLoop/controls.js:341
+#: js/FeedzyLoop/variations.js:107
+msgid "Default"
+msgstr "Implicit"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:544
+msgid "Template to use when displaying the feed."
+msgstr "Șablon de folosit la afișarea fluxului."
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:524
+msgid "How many columns we should use to display the feed items"
+msgstr "Câte coloane ar trebui să folosim pentru a afișa elementele din flux"
+
+#: form/form.php:45
+msgid "Premium"
+msgstr "Premium"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:487
+msgid "See more features of Feedzy RSS Feeds PRO"
+msgstr "Vezi mai multe funcționalități ale Feedzy RSS Feeds PRO"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:487
+msgid "Get access to more options and customizations with full version of Feedzy RSS Feeds . Use existing templates or extend them and make them your own."
+msgstr "Obții acces la mai multe opțiuni și personalizări cu versiunea completă a Feedzy RSS Feeds. Folosești șabloanele existente sau le extinzi și devin ale tale."
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:486
+msgid "PRO Options"
+msgstr "Opțiuni PRO"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:458
+msgid "Thumbnails dimension. Do not include \"px\". Eg: 150"
+msgstr "Dimensiuni pentru miniaturi. Fără „px”. De exemplu, 150"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:454
+msgid "Select from Gallery"
+msgstr "Selectează din galerie"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:450
+msgid "Image URL"
+msgstr "URL imagine"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:430
+msgid "Should we display the first image of the content if it is available?"
+msgstr "Ar trebui să afișăm prima imagine a conținutului, dacă aceasta este disponibilă?"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:427 build/block/index.js:1
+#: build/loop/index.js:4 js/FeedzyLoop/controls.js:182
+msgid "Item Image Options"
+msgstr "Opțiuni imagine element"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:364
+msgid "Crop description (summary) of the element after X characters."
+msgstr "Taie descrierea (rezumatul) elementului după X caractere."
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:349
+msgid "Should we display a description (abstract) of the retrieved item?"
+msgstr "Ar trebui să afișăm o descriere (abstractă) a elementului obținut?"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:307
+#: includes/elementor/widgets/register-widget.php:282
+msgid "framename"
+msgstr "framename"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:303
+#: includes/elementor/widgets/register-widget.php:281
+msgid "_top"
+msgstr "_top"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:299
+msgid "_parent"
+msgstr "_parent"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:295
+#: includes/elementor/widgets/register-widget.php:280
+msgid "_self"
+msgstr "_self"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:291
+#: includes/elementor/widgets/register-widget.php:279
+msgid "_blank"
+msgstr "_blank"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:282
+msgid "Links may be opened in the same window or a new tab."
+msgstr "Legăturile pot fi deschise în aceeași fereastră sau într-o filă nouă."
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:279
+#: includes/elementor/widgets/register-widget.php:267 build/block/index.js:1
+msgid "Item Options"
+msgstr "Opțiuni element"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:170
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:230
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:246
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:266
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:318
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:358
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:443
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:506
+#: includes/elementor/widgets/register-widget.php:78
+#: includes/elementor/widgets/register-widget.php:171
+#: includes/elementor/widgets/register-widget.php:293
+#: includes/elementor/widgets/register-widget.php:304
+#: includes/elementor/widgets/register-widget.php:326
+#: includes/elementor/widgets/register-widget.php:360
+#: includes/elementor/widgets/register-widget.php:461
+#: includes/elementor/widgets/register-widget.php:502
+#: includes/elementor/widgets/register-widget.php:524
+#: includes/elementor/widgets/register-widget.php:549
+#: build/action-popup/index.js:4 build/block/index.js:1 build/block/index.js:10
+#: build/block/index.js:13 build/loop/index.js:4 js/FeedzyLoop/controls.js:208
+msgid "No"
+msgstr "Nu"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:166
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:226
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:242
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:262
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:322
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:354
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:502
+#: includes/elementor/widgets/register-widget.php:77
+#: includes/elementor/widgets/register-widget.php:170
+#: includes/elementor/widgets/register-widget.php:292
+#: includes/elementor/widgets/register-widget.php:303
+#: includes/elementor/widgets/register-widget.php:325
+#: includes/elementor/widgets/register-widget.php:460
+#: includes/elementor/widgets/register-widget.php:501
+#: includes/elementor/widgets/register-widget.php:523
+#: includes/elementor/widgets/register-widget.php:548
+#: build/action-popup/index.js:4 build/block/index.js:10
+#: build/block/index.js:13
+msgid "Yes"
+msgstr "Da"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:287
+#: includes/elementor/widgets/register-widget.php:278
+msgid "Auto"
+msgstr "Automat"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:161
+msgid "Should we display the RSS title?"
+msgstr "Ar trebui să afișăm titlul RSS?"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:148
+msgid "Number of items to display."
+msgstr "Număr de elemente de afișat."
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:143
+msgid "Feed URL"
+msgstr "URL flux"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:134
+msgid "The feed(s) URL (comma-separated list)."
+msgstr "URL-ul flux(urilor) (listă separată prin virgulă)."
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:130
+#: includes/elementor/widgets/register-widget.php:98 build/block/index.js:1
+#: build/loop/index.js:1 build/loop/index.js:4 js/FeedzyLoop/controls.js:165
+#: js/FeedzyLoop/placeholder.js:166
+msgid "Feed Source"
+msgstr "Sursă flux"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:58
+msgid "Get Feedzy RSS Feeds Premium"
+msgstr "Ia Feedzy RSS Feeds Premium"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:57
+msgid "Cancel"
+msgstr "Anulează"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:56
+msgid "Insert Shortcode"
+msgstr "Inserează scurtcod"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:55
+msgid "Use Image"
+msgstr "Folosește imaginea"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:54
+msgid "Insert Feedzy RSS Feeds Shortcode"
+msgstr "Introdu scurtcodul Feedzy RSS Feeds"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:53
+msgid "Feedzy Lite"
+msgstr "Feedzy Lite"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1237
+msgid "Documentation and examples"
+msgstr "Documentație și exemple"
+
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:1596
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:1602
+#: build/block/index.js:13
+msgid "by"
+msgstr "de"

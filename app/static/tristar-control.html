@@ -1,0 +1,2087 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TriStar Kontrollzentrum</title>
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --border-color: #30363d;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-yellow: #d29922;
+            --accent-red: #f85149;
+            --accent-purple: #a371f7;
+            --accent-orange: #db6d28;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .logo h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .logo span {
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+
+        .status-bar {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.offline { background: var(--accent-red); animation: none; }
+        .status-dot.warning { background: var(--accent-yellow); }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 280px 1fr 350px;
+            height: calc(100vh - 73px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .section-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .agent-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .agent-card {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .agent-card:hover {
+            border-color: var(--accent-blue);
+        }
+
+        .agent-card.active {
+            border-color: var(--accent-blue);
+            background: rgba(88, 166, 255, 0.1);
+        }
+
+        .agent-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .agent-name {
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .agent-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .agent-icon.gemini { background: linear-gradient(135deg, #4285f4, #ea4335); }
+        .agent-icon.claude { background: linear-gradient(135deg, #d97706, #dc2626); }
+        .agent-icon.codex { background: linear-gradient(135deg, #10a37f, #1a7f64); }
+        .agent-icon.opencode { background: linear-gradient(135deg, #8b5cf6, #6366f1); }
+
+        .agent-status {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: var(--bg-primary);
+        }
+
+        .agent-status.running { color: var(--accent-green); }
+        .agent-status.stopped { color: var(--text-secondary); }
+        .agent-status.error { color: var(--accent-red); }
+
+        .agent-meta {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Main Content */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .tabs {
+            display: flex;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 16px;
+        }
+
+        .tab {
+            padding: 12px 16px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            color: var(--text-primary);
+        }
+
+        .tab.active {
+            color: var(--accent-blue);
+            border-bottom-color: var(--accent-blue);
+        }
+
+        .content-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Prompt Area */
+        .prompt-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 16px;
+            gap: 16px;
+            overflow: hidden;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding-right: 8px;
+        }
+
+        .message {
+            display: flex;
+            gap: 12px;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .message-avatar.user { background: var(--accent-blue); }
+        .message-avatar.gemini { background: linear-gradient(135deg, #4285f4, #ea4335); }
+        .message-avatar.claude { background: linear-gradient(135deg, #d97706, #dc2626); }
+        .message-avatar.codex { background: linear-gradient(135deg, #10a37f, #1a7f64); }
+        .message-avatar.opencode { background: linear-gradient(135deg, #8b5cf6, #6366f1); }
+        .message-avatar.system { background: var(--bg-tertiary); }
+
+        .message-content {
+            flex: 1;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+
+        .message-sender {
+            font-weight: 600;
+            color: var(--accent-blue);
+        }
+
+        .message-time {
+            color: var(--text-secondary);
+        }
+
+        .message-text {
+            font-size: 14px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .message-text code {
+            background: var(--bg-primary);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+        }
+
+        .message-text pre {
+            background: var(--bg-primary);
+            padding: 12px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 8px 0;
+        }
+
+        .input-area {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .agent-selector {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .agent-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .agent-btn:hover {
+            border-color: var(--text-secondary);
+            color: var(--text-primary);
+        }
+
+        .agent-btn.selected {
+            border-color: var(--accent-blue);
+            background: rgba(88, 166, 255, 0.1);
+            color: var(--accent-blue);
+        }
+
+        .prompt-input-wrapper {
+            display: flex;
+            gap: 8px;
+        }
+
+        .prompt-input {
+            flex: 1;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            font-size: 14px;
+            resize: none;
+            min-height: 60px;
+            max-height: 150px;
+        }
+
+        .prompt-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        .send-btn {
+            padding: 12px 24px;
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            align-self: flex-end;
+        }
+
+        .send-btn:hover {
+            background: #4393e6;
+        }
+
+        .send-btn:disabled {
+            background: var(--bg-tertiary);
+            cursor: not-allowed;
+        }
+
+        /* Logs Panel */
+        .logs-panel {
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logs-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logs-title {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .logs-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .log-filter {
+            padding: 4px 8px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-primary);
+            font-size: 12px;
+        }
+
+        .logs-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .log-entry {
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-bottom: 2px;
+        }
+
+        .log-entry:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .log-time {
+            color: var(--text-secondary);
+            margin-right: 8px;
+        }
+
+        .log-level {
+            padding: 1px 4px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .log-level.info { background: rgba(88, 166, 255, 0.2); color: var(--accent-blue); }
+        .log-level.warning { background: rgba(210, 153, 34, 0.2); color: var(--accent-yellow); }
+        .log-level.error { background: rgba(248, 81, 73, 0.2); color: var(--accent-red); }
+        .log-level.debug { background: rgba(139, 148, 158, 0.2); color: var(--text-secondary); }
+        .log-level.llm { background: rgba(163, 113, 247, 0.2); color: var(--accent-purple); }
+        .log-level.mcp { background: rgba(63, 185, 80, 0.2); color: var(--accent-green); }
+
+        .log-message {
+            color: var(--text-primary);
+            word-break: break-all;
+        }
+
+        /* Chain Panel - hidden by default */
+        .chain-panel {
+            display: none;
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .chain-panel.active {
+            display: block;
+        }
+
+        .chain-form {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 8px 12px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .chain-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .chain-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .chain-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .chain-id {
+            font-family: monospace;
+            font-size: 12px;
+            color: var(--accent-blue);
+        }
+
+        .chain-status {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .chain-status.running { background: rgba(63, 185, 80, 0.2); color: var(--accent-green); }
+        .chain-status.completed { background: rgba(88, 166, 255, 0.2); color: var(--accent-blue); }
+        .chain-status.failed { background: rgba(248, 81, 73, 0.2); color: var(--accent-red); }
+
+        .chain-prompt {
+            font-size: 13px;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .chain-meta {
+            font-size: 11px;
+            color: var(--text-secondary);
+            display: flex;
+            gap: 12px;
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+
+        /* Loading Spinner */
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--border-color);
+            border-top-color: var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .stat-card {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent-blue);
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .main-container {
+                grid-template-columns: 220px 1fr 280px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+            .sidebar, .logs-panel {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">TS</div>
+            <div>
+                <h1>TriStar Kontrollzentrum</h1>
+                <span>Multi-LLM Chain Orchestration v2.80</span>
+            </div>
+        </div>
+        <div class="status-bar">
+            <div class="status-indicator">
+                <div class="status-dot" id="backendStatus"></div>
+                <span>Backend</span>
+            </div>
+            <div class="status-indicator">
+                <div class="status-dot" id="mcpStatus"></div>
+                <span>MCP</span>
+            </div>
+            <div class="status-indicator">
+                <span id="agentCount">0</span> Agents
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="section-title">CLI Agents</div>
+            <div class="agent-list" id="agentList">
+                <!-- Agents werden dynamisch geladen -->
+            </div>
+
+            <div class="section-title">Statistiken</div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="statChains">0</div>
+                    <div class="stat-label">Chains</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statLogs">0</div>
+                    <div class="stat-label">Log Eintr.</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statMemory">0</div>
+                    <div class="stat-label">Memory</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="statModels">0</div>
+                    <div class="stat-label">Models</div>
+                </div>
+            </div>
+
+            <div class="section-title">Quick Actions</div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <button class="agent-btn" onclick="refreshAll()">
+                    <span>🔄</span> Refresh All
+                </button>
+                <button class="agent-btn" onclick="clearLogs()">
+                    <span>🗑️</span> Clear Logs
+                </button>
+                <button class="agent-btn" onclick="showMemory()">
+                    <span>🧠</span> Memory Search
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="tabs">
+                <div class="tab active" data-tab="prompt" onclick="switchTab('prompt')">Prompt Interface</div>
+                <div class="tab" data-tab="chain" onclick="switchTab('chain')">Chain Builder</div>
+                <div class="tab" data-tab="projects" onclick="switchTab('projects')">Projects</div>
+                <div class="tab" data-tab="console" onclick="switchTab('console')">🖥️ CLI Console</div>
+                <div class="tab" data-tab="settings" onclick="switchTab('settings')">⚙️ Settings</div>
+            </div>
+
+            <!-- Prompt Tab -->
+            <div class="content-area" id="promptTab">
+                <div class="prompt-container">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message">
+                            <div class="message-avatar system">🌟</div>
+                            <div class="message-content">
+                                <div class="message-header">
+                                    <span class="message-sender">TriStar System</span>
+                                    <span class="message-time" id="welcomeTime"></span>
+                                </div>
+                                <div class="message-text">
+Willkommen im TriStar Kontrollzentrum!
+
+Wähle einen oder mehrere Agents aus und sende einen Prompt.
+• <strong>Gemini</strong> - Lead Agent für Koordination
+• <strong>Claude</strong> - Code-Analyse und Implementierung
+• <strong>Codex</strong> - OpenAI Code-Completion
+• <strong>OpenCode</strong> - Alternative Code-AI
+
+Tipp: Mehrere Agents auswählen für parallele Ausführung.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-area">
+                        <div class="agent-selector">
+                            <button class="agent-btn selected" data-agent="gemini-mcp" onclick="toggleAgent(this)">
+                                <span class="agent-icon gemini">G</span> Gemini
+                            </button>
+                            <button class="agent-btn" data-agent="claude-mcp" onclick="toggleAgent(this)">
+                                <span class="agent-icon claude">C</span> Claude
+                            </button>
+                            <button class="agent-btn" data-agent="codex-mcp" onclick="toggleAgent(this)">
+                                <span class="agent-icon codex">X</span> Codex
+                            </button>
+                            <button class="agent-btn" data-agent="opencode-mcp" onclick="toggleAgent(this)">
+                                <span class="agent-icon opencode">O</span> OpenCode
+                            </button>
+                            <button class="agent-btn" onclick="selectAllAgents()">
+                                <span>✨</span> Alle
+                            </button>
+                        </div>
+                        <div class="prompt-input-wrapper">
+                            <textarea class="prompt-input" id="promptInput" placeholder="Gib deinen Prompt ein... (Shift+Enter für Zeilenumbruch)" onkeydown="handleKeyDown(event)"></textarea>
+                            <button class="send-btn" id="sendBtn" onclick="sendPrompt()">Senden</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chain Tab -->
+            <div class="chain-panel" id="chainTab">
+                <div class="chain-form">
+                    <h3 style="margin-bottom: 16px; font-size: 16px;">Neue Chain starten</h3>
+                    <div class="form-group">
+                        <label class="form-label">Prompt</label>
+                        <textarea class="form-input" id="chainPrompt" rows="3" placeholder="Beschreibe die Aufgabe..."></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Projekt (optional)</label>
+                            <input type="text" class="form-input" id="chainProject" placeholder="project-id">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Max Cycles</label>
+                            <input type="number" class="form-input" id="chainCycles" value="10" min="1" max="50">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="chainAggressive">
+                            <span class="form-label" style="margin: 0;">Aggressive Mode (parallele Ausführung)</span>
+                        </label>
+                    </div>
+                    <button class="send-btn" onclick="startChain()">Chain starten</button>
+                </div>
+
+                <div class="section-title">Aktive Chains</div>
+                <div class="chain-list" id="chainList">
+                    <div style="color: var(--text-secondary); font-size: 13px; text-align: center; padding: 20px;">
+                        Keine aktiven Chains
+                    </div>
+                </div>
+            </div>
+
+            <!-- Projects Tab -->
+            <div class="chain-panel" id="projectsTab">
+                <div class="chain-form">
+                    <h3 style="margin-bottom: 16px; font-size: 16px;">Neues Projekt erstellen</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Projekt ID</label>
+                            <input type="text" class="form-input" id="projectId" placeholder="mein-projekt">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Name</label>
+                            <input type="text" class="form-input" id="projectName" placeholder="Mein Projekt">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Beschreibung</label>
+                        <textarea class="form-input" id="projectDesc" rows="2" placeholder="Projekt-Beschreibung..."></textarea>
+                    </div>
+                    <button class="send-btn" onclick="createProject()">Projekt erstellen</button>
+                </div>
+
+                <div class="section-title">Projekte</div>
+                <div class="chain-list" id="projectList">
+                    <div style="color: var(--text-secondary); font-size: 13px; text-align: center; padding: 20px;">
+                        Keine Projekte vorhanden
+                    </div>
+                </div>
+            </div>
+
+            <!-- CLI Console Tab -->
+            <div class="chain-panel" id="consoleTab">
+                <div style="display: flex; flex-direction: column; height: 100%; gap: 16px;">
+                    <div class="chain-form" style="margin-bottom: 0;">
+                        <h3 style="margin-bottom: 12px; font-size: 16px;">🖥️ TriStar CLI Console</h3>
+                        <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 16px;">
+                            Interaktive Kommandozeilen-Schnittstelle zu den CLI-Agents. Sende Befehle und sieh die Ausgabe in Echtzeit.
+                        </p>
+                        <div class="form-row" style="grid-template-columns: 1fr auto;">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <select class="form-input" id="consoleAgent" style="padding: 10px 12px;">
+                                    <option value="gemini-mcp">🌟 Gemini</option>
+                                    <option value="claude-mcp">🔶 Claude</option>
+                                    <option value="codex-mcp">💚 Codex</option>
+                                    <option value="opencode-mcp">💜 OpenCode</option>
+                                </select>
+                            </div>
+                            <button class="agent-btn" onclick="clearConsole()" style="padding: 10px 16px;">
+                                🗑️ Clear
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="consoleOutput" style="flex: 1; background: #0d1117; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; font-family: 'Fira Code', 'Consolas', monospace; font-size: 12px; overflow-y: auto; white-space: pre-wrap; min-height: 300px;">
+<span style="color: var(--accent-green);">TriStar CLI Console v2.80</span>
+<span style="color: var(--text-secondary);">═══════════════════════════════════════════════════════════════</span>
+
+<span style="color: var(--accent-blue);">Willkommen!</span> Wähle einen Agent und gib einen Befehl ein.
+
+<span style="color: var(--text-secondary);">Tastenkürzel:</span>
+  <span style="color: var(--accent-yellow);">Enter</span>     - Befehl senden
+  <span style="color: var(--accent-yellow);">Ctrl+L</span>    - Console leeren
+  <span style="color: var(--accent-yellow);">↑ / ↓</span>     - Befehlshistorie
+
+<span style="color: var(--text-secondary);">Für das vollständige Terminal-TUI nutze:</span>
+  <span style="color: var(--accent-green);">$ tristar</span> (ohne Parameter)
+
+<span style="color: var(--text-secondary);">───────────────────────────────────────────────────────────────</span>
+                    </div>
+
+                    <div style="display: flex; gap: 8px;">
+                        <span style="color: var(--accent-green); font-family: monospace; padding: 10px 0;">$</span>
+                        <input type="text" class="form-input" id="consoleInput" placeholder="Befehl eingeben..." style="flex: 1; font-family: 'Fira Code', monospace; background: #0d1117;" onkeydown="handleConsoleKey(event)">
+                        <button class="send-btn" onclick="sendConsoleCommand()">Senden</button>
+                    </div>
+
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button class="agent-btn" onclick="sendQuickCommand('status')">📊 Status</button>
+                        <button class="agent-btn" onclick="sendQuickCommand('list agents')">👥 Agents</button>
+                        <button class="agent-btn" onclick="sendQuickCommand('logs --tail 20')">📜 Logs</button>
+                        <button class="agent-btn" onclick="sendQuickCommand('memory search')">🧠 Memory</button>
+                        <button class="agent-btn" onclick="sendQuickCommand('help')">❓ Help</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div class="chain-panel" id="settingsTab" style="overflow-y: auto; max-height: calc(100vh - 150px);">
+                <div style="display: flex; flex-direction: column; gap: 16px; padding-bottom: 20px;">
+
+                    <!-- API Keys Section -->
+                    <div class="chain-form">
+                        <h3 style="margin-bottom: 16px; font-size: 16px; display: flex; align-items: center; gap: 8px;">
+                            🔑 API Keys
+                            <span id="apiKeyStatus" style="font-size: 11px; padding: 2px 8px; background: var(--bg-primary); border-radius: 10px;"></span>
+                        </h3>
+                        <div id="apiKeysContainer">
+                            <!-- API Keys werden dynamisch geladen -->
+                            <div style="color: var(--text-secondary); font-size: 13px;">Lade API Keys...</div>
+                        </div>
+                        <button class="send-btn" onclick="saveApiKeys()" style="margin-top: 12px;">💾 API Keys speichern</button>
+                    </div>
+
+                    <!-- Model Temperatures Section -->
+                    <div class="chain-form">
+                        <h3 style="margin-bottom: 16px; font-size: 16px;">🌡️ Modell-Temperaturen & Prioritäten</h3>
+                        <p style="color: var(--text-secondary); font-size: 12px; margin-bottom: 12px;">
+                            Temperatur: 0.0 = deterministisch, 1.0+ = kreativ | Priorität: 0-100 (höher = bevorzugt)
+                        </p>
+                        <div id="modelConfigContainer">
+                            <!-- Model configs werden dynamisch geladen -->
+                            <div style="color: var(--text-secondary); font-size: 13px;">Lade Modelle...</div>
+                        </div>
+                        <button class="send-btn" onclick="saveModelConfigs()" style="margin-top: 12px;">💾 Modell-Einstellungen speichern</button>
+                    </div>
+
+                    <!-- Agent Settings Section -->
+                    <div class="chain-form">
+                        <h3 style="margin-bottom: 16px; font-size: 16px;">🤖 Agent-Einstellungen</h3>
+                        <div id="agentConfigContainer">
+                            <!-- Agent configs werden dynamisch geladen -->
+                            <div style="color: var(--text-secondary); font-size: 13px;">Lade Agents...</div>
+                        </div>
+                        <button class="send-btn" onclick="saveAgentConfigs()" style="margin-top: 12px;">💾 Agent-Einstellungen speichern</button>
+                    </div>
+
+                    <!-- Global Settings Section -->
+                    <div class="chain-form">
+                        <h3 style="margin-bottom: 16px; font-size: 16px;">⚙️ Globale Einstellungen</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Request Timeout (s)</label>
+                                <input type="number" class="form-input" id="settingRequestTimeout" value="30" min="1" max="300">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Max Concurrent Requests</label>
+                                <input type="number" class="form-input" id="settingMaxConcurrent" value="8" min="1" max="100">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Default Chat Model</label>
+                                <select class="form-input" id="settingDefaultChatModel">
+                                    <option value="gemini/gemini-2.0-flash">Gemini 2.0 Flash</option>
+                                    <option value="anthropic/claude-sonnet-4">Claude Sonnet</option>
+                                    <option value="ollama/qwen3:30b-cloud">Qwen3 30B</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Default Code Model</label>
+                                <select class="form-input" id="settingDefaultCodeModel">
+                                    <option value="anthropic/claude-sonnet-4">Claude Sonnet</option>
+                                    <option value="ollama/qwen3-coder:480b-cloud">Qwen3 Coder</option>
+                                    <option value="ollama/deepseek-v3.1:671b-cloud">DeepSeek V3</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Log Level</label>
+                                <select class="form-input" id="settingLogLevel">
+                                    <option value="DEBUG">DEBUG</option>
+                                    <option value="INFO" selected>INFO</option>
+                                    <option value="WARNING">WARNING</option>
+                                    <option value="ERROR">ERROR</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">GUI Theme</label>
+                                <select class="form-input" id="settingGuiTheme">
+                                    <option value="dark" selected>Dark</option>
+                                    <option value="light">Light</option>
+                                    <option value="auto">Auto</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button class="send-btn" onclick="saveGlobalSettings()" style="margin-top: 12px;">💾 Globale Einstellungen speichern</button>
+                    </div>
+
+                    <!-- Fallback & Caching Section -->
+                    <div class="chain-form">
+                        <h3 style="margin-bottom: 16px; font-size: 16px;">🔄 Fallback & Caching</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Fallback Reihenfolge</label>
+                                <input type="text" class="form-input" id="settingFallbackOrder" value="gemini,ollama,mistral,anthropic" placeholder="provider1,provider2,...">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Fallback Timeout (s)</label>
+                                <input type="number" class="form-input" id="settingFallbackTimeout" value="30" min="5" max="300">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                    <input type="checkbox" id="settingCacheEnabled" checked>
+                                    <span class="form-label" style="margin: 0;">Caching aktivieren</span>
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Cache TTL (s)</label>
+                                <input type="number" class="form-input" id="settingCacheTtl" value="3600" min="60" max="86400">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                    <input type="checkbox" id="settingCircuitBreaker" checked>
+                                    <span class="form-label" style="margin: 0;">Circuit Breaker aktivieren</span>
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                    <input type="checkbox" id="settingAutoFallback" checked>
+                                    <span class="form-label" style="margin: 0;">Auto-Fallback aktivieren</span>
+                                </label>
+                            </div>
+                        </div>
+                        <button class="send-btn" onclick="saveFallbackSettings()" style="margin-top: 12px;">💾 Fallback-Einstellungen speichern</button>
+                    </div>
+
+                    <!-- Import/Export Section -->
+                    <div class="chain-form">
+                        <h3 style="margin-bottom: 16px; font-size: 16px;">📦 Import / Export</h3>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button class="agent-btn" onclick="exportSettings()">📤 Einstellungen exportieren</button>
+                            <button class="agent-btn" onclick="document.getElementById('importFile').click()">📥 Einstellungen importieren</button>
+                            <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importSettings(event)">
+                            <button class="agent-btn" onclick="resetSettings()" style="color: var(--accent-red);">🔄 Auf Standard zurücksetzen</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Logs Panel -->
+        <aside class="logs-panel">
+            <div class="logs-header">
+                <span class="logs-title">Live Logs</span>
+                <div class="logs-controls">
+                    <select class="log-filter" id="logFilter" onchange="filterLogs()">
+                        <option value="all">Alle</option>
+                        <option value="info">Info</option>
+                        <option value="warning">Warning</option>
+                        <option value="error">Error</option>
+                        <option value="llm_call">LLM</option>
+                        <option value="mcp_call">MCP</option>
+                    </select>
+                    <button class="agent-btn" onclick="toggleAutoScroll()" id="autoScrollBtn" style="padding: 4px 8px; font-size: 11px;">
+                        ⬇️ Auto
+                    </button>
+                </div>
+            </div>
+            <div class="logs-content" id="logsContent">
+                <div class="log-entry">
+                    <span class="log-time">--:--:--</span>
+                    <span class="log-level info">INFO</span>
+                    <span class="log-message">Lade Logs...</span>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        // API Base URL
+        const API_BASE = window.location.origin;
+
+        // State
+        let selectedAgents = ['gemini-mcp'];
+        let autoScroll = true;
+        let logPollInterval = null;
+        let lastLogTimestamp = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('welcomeTime').textContent = new Date().toLocaleTimeString('de-DE');
+            loadAgents();
+            loadStats();
+            startLogPolling();
+            checkBackendStatus();
+        });
+
+        // Tab Switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+            document.getElementById('promptTab').style.display = tabName === 'prompt' ? 'flex' : 'none';
+            document.getElementById('chainTab').style.display = tabName === 'chain' ? 'block' : 'none';
+            document.getElementById('chainTab').classList.toggle('active', tabName === 'chain');
+            document.getElementById('projectsTab').style.display = tabName === 'projects' ? 'block' : 'none';
+            document.getElementById('projectsTab').classList.toggle('active', tabName === 'projects');
+            document.getElementById('consoleTab').style.display = tabName === 'console' ? 'block' : 'none';
+            document.getElementById('consoleTab').classList.toggle('active', tabName === 'console');
+            document.getElementById('settingsTab').style.display = tabName === 'settings' ? 'block' : 'none';
+            document.getElementById('settingsTab').classList.toggle('active', tabName === 'settings');
+
+            if (tabName === 'chain') loadChains();
+            if (tabName === 'projects') loadProjects();
+            if (tabName === 'console') document.getElementById('consoleInput').focus();
+            if (tabName === 'settings') loadAllSettings();
+        }
+
+        // Agent Selection
+        function toggleAgent(btn) {
+            const agent = btn.dataset.agent;
+            btn.classList.toggle('selected');
+
+            if (btn.classList.contains('selected')) {
+                if (!selectedAgents.includes(agent)) selectedAgents.push(agent);
+            } else {
+                selectedAgents = selectedAgents.filter(a => a !== agent);
+            }
+        }
+
+        function selectAllAgents() {
+            document.querySelectorAll('.agent-btn[data-agent]').forEach(btn => {
+                btn.classList.add('selected');
+                const agent = btn.dataset.agent;
+                if (!selectedAgents.includes(agent)) selectedAgents.push(agent);
+            });
+        }
+
+        // Load Agents
+        async function loadAgents() {
+            try {
+                const res = await fetch(`${API_BASE}/v1/tristar/cli-agents`);
+                const data = await res.json();
+
+                const agentList = document.getElementById('agentList');
+                agentList.innerHTML = '';
+
+                document.getElementById('agentCount').textContent = data.count || 0;
+
+                (data.cli_agents || []).forEach(agent => {
+                    const iconClass = agent.agent_type;
+                    const iconLetter = agent.agent_type.charAt(0).toUpperCase();
+                    const statusClass = agent.status === 'running' ? 'running' :
+                                        agent.status === 'error' ? 'error' : 'stopped';
+
+                    agentList.innerHTML += `
+                        <div class="agent-card" onclick="selectAgentCard('${agent.agent_id}')">
+                            <div class="agent-header">
+                                <div class="agent-name">
+                                    <span class="agent-icon ${iconClass}">${iconLetter}</span>
+                                    ${agent.name.split(' ')[0]}
+                                </div>
+                                <span class="agent-status ${statusClass}">${agent.status}</span>
+                            </div>
+                            <div class="agent-meta">
+                                PID: ${agent.pid || '-'} | Output: ${agent.output_lines} lines
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (e) {
+                console.error('Failed to load agents:', e);
+            }
+        }
+
+        function selectAgentCard(agentId) {
+            const btn = document.querySelector(`[data-agent="${agentId}"]`);
+            if (btn) toggleAgent(btn);
+        }
+
+        // Send Prompt
+        async function sendPrompt() {
+            const input = document.getElementById('promptInput');
+            const prompt = input.value.trim();
+
+            if (!prompt || selectedAgents.length === 0) return;
+
+            const sendBtn = document.getElementById('sendBtn');
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<div class="loading"></div>';
+
+            // Add user message
+            addMessage('user', 'Du', prompt);
+            input.value = '';
+
+            // Send to each selected agent
+            for (const agentId of selectedAgents) {
+                const agentType = agentId.replace('-mcp', '');
+                addMessage(agentType, agentType.charAt(0).toUpperCase() + agentType.slice(1), 'Verarbeite...', true);
+
+                try {
+                    const res = await fetch(`${API_BASE}/v1/tristar/cli-agents/${agentId}/call`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            message: prompt,
+                            timeout: 120
+                        })
+                    });
+
+                    const data = await res.json();
+
+                    // Update last message
+                    updateLastMessage(agentType, data.response || data.error || 'Keine Antwort');
+                } catch (e) {
+                    updateLastMessage(agentType, `Fehler: ${e.message}`);
+                }
+            }
+
+            sendBtn.disabled = false;
+            sendBtn.textContent = 'Senden';
+        }
+
+        function addMessage(type, sender, text, loading = false) {
+            const messages = document.getElementById('chatMessages');
+            const time = new Date().toLocaleTimeString('de-DE');
+
+            const msgHtml = `
+                <div class="message" data-type="${type}">
+                    <div class="message-avatar ${type}">${type === 'user' ? '👤' : type.charAt(0).toUpperCase()}</div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <span class="message-sender">${sender}</span>
+                            <span class="message-time">${time}</span>
+                        </div>
+                        <div class="message-text">${loading ? '<div class="loading"></div> ' : ''}${escapeHtml(text)}</div>
+                    </div>
+                </div>
+            `;
+
+            messages.insertAdjacentHTML('beforeend', msgHtml);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        function updateLastMessage(type, text) {
+            const messages = document.querySelectorAll(`.message[data-type="${type}"]`);
+            if (messages.length > 0) {
+                const lastMsg = messages[messages.length - 1];
+                lastMsg.querySelector('.message-text').innerHTML = escapeHtml(text).replace(/\n/g, '<br>');
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function handleKeyDown(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendPrompt();
+            }
+        }
+
+        // Load Stats
+        async function loadStats() {
+            try {
+                // Agent Stats
+                const agentRes = await fetch(`${API_BASE}/v1/tristar/cli-agents`);
+                const agentData = await agentRes.json();
+
+                // Log Stats
+                const logRes = await fetch(`${API_BASE}/v1/triforce/logs/stats`);
+                const logData = await logRes.json();
+
+                // Memory Stats
+                const memRes = await fetch(`${API_BASE}/v1/tristar/memory/search?limit=1`);
+                const memData = await memRes.json();
+
+                // Model Stats
+                const modelRes = await fetch(`${API_BASE}/v1/tristar/models`);
+                const modelData = await modelRes.json();
+
+                document.getElementById('statChains').textContent = agentData.total_agents || 0;
+                document.getElementById('statLogs').textContent = logData.total_logged || 0;
+                document.getElementById('statMemory').textContent = memData.total || 0;
+                document.getElementById('statModels').textContent = (modelData.models || []).length;
+            } catch (e) {
+                console.error('Failed to load stats:', e);
+            }
+        }
+
+        // Log Polling
+        function startLogPolling() {
+            loadLogs();
+            logPollInterval = setInterval(loadLogs, 3000);
+        }
+
+        async function loadLogs() {
+            try {
+                const filter = document.getElementById('logFilter').value;
+                let url = `${API_BASE}/v1/triforce/logs/recent?limit=50`;
+                if (filter !== 'all') url += `&category=${filter}`;
+
+                const res = await fetch(url);
+                const data = await res.json();
+
+                const logsContent = document.getElementById('logsContent');
+                logsContent.innerHTML = '';
+
+                (data.logs || []).reverse().forEach(log => {
+                    const time = new Date(log.timestamp).toLocaleTimeString('de-DE');
+                    const level = (log.category || log.level || 'info').toLowerCase();
+                    const levelClass = level.includes('error') ? 'error' :
+                                       level.includes('warn') ? 'warning' :
+                                       level.includes('llm') ? 'llm' :
+                                       level.includes('mcp') ? 'mcp' :
+                                       level.includes('debug') ? 'debug' : 'info';
+
+                    logsContent.innerHTML += `
+                        <div class="log-entry">
+                            <span class="log-time">${time}</span>
+                            <span class="log-level ${levelClass}">${level.toUpperCase().slice(0, 5)}</span>
+                            <span class="log-message">${escapeHtml(log.message || JSON.stringify(log.data || {})).slice(0, 200)}</span>
+                        </div>
+                    `;
+                });
+
+                if (autoScroll) {
+                    logsContent.scrollTop = logsContent.scrollHeight;
+                }
+            } catch (e) {
+                console.error('Failed to load logs:', e);
+            }
+        }
+
+        function filterLogs() {
+            loadLogs();
+        }
+
+        function toggleAutoScroll() {
+            autoScroll = !autoScroll;
+            document.getElementById('autoScrollBtn').style.opacity = autoScroll ? 1 : 0.5;
+        }
+
+        function clearLogs() {
+            document.getElementById('logsContent').innerHTML = '';
+        }
+
+        // Backend Status Check
+        async function checkBackendStatus() {
+            try {
+                const res = await fetch(`${API_BASE}/health`);
+                const backendDot = document.getElementById('backendStatus');
+                const mcpDot = document.getElementById('mcpStatus');
+
+                if (res.ok) {
+                    backendDot.classList.remove('offline', 'warning');
+                    mcpDot.classList.remove('offline', 'warning');
+                } else {
+                    backendDot.classList.add('warning');
+                }
+            } catch (e) {
+                document.getElementById('backendStatus').classList.add('offline');
+                document.getElementById('mcpStatus').classList.add('offline');
+            }
+
+            setTimeout(checkBackendStatus, 10000);
+        }
+
+        // Chain Functions
+        async function startChain() {
+            const prompt = document.getElementById('chainPrompt').value.trim();
+            if (!prompt) return;
+
+            const project = document.getElementById('chainProject').value.trim();
+            const cycles = document.getElementById('chainCycles').value;
+            const aggressive = document.getElementById('chainAggressive').checked;
+
+            try {
+                const res = await fetch(`${API_BASE}/v1/tristar/chain`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        prompt,
+                        project_id: project || undefined,
+                        max_cycles: parseInt(cycles),
+                        aggressive
+                    })
+                });
+
+                const data = await res.json();
+                alert(`Chain gestartet: ${data.chain_id || 'OK'}`);
+                document.getElementById('chainPrompt').value = '';
+                loadChains();
+            } catch (e) {
+                alert(`Fehler: ${e.message}`);
+            }
+        }
+
+        async function loadChains() {
+            try {
+                const res = await fetch(`${API_BASE}/v1/tristar/chains`);
+                const data = await res.json();
+
+                const chainList = document.getElementById('chainList');
+
+                if (!data.chains || data.chains.length === 0) {
+                    chainList.innerHTML = '<div style="color: var(--text-secondary); font-size: 13px; text-align: center; padding: 20px;">Keine aktiven Chains</div>';
+                    return;
+                }
+
+                chainList.innerHTML = data.chains.map(chain => `
+                    <div class="chain-item">
+                        <div class="chain-item-header">
+                            <span class="chain-id">${chain.id}</span>
+                            <span class="chain-status ${chain.status}">${chain.status}</span>
+                        </div>
+                        <div class="chain-prompt">${escapeHtml(chain.prompt || '').slice(0, 100)}...</div>
+                        <div class="chain-meta">
+                            <span>Cycle: ${chain.current_cycle || 0}/${chain.max_cycles || 10}</span>
+                            <span>Project: ${chain.project_id || '-'}</span>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                console.error('Failed to load chains:', e);
+            }
+        }
+
+        // Project Functions
+        async function createProject() {
+            const id = document.getElementById('projectId').value.trim();
+            const name = document.getElementById('projectName').value.trim();
+            const desc = document.getElementById('projectDesc').value.trim();
+
+            if (!id || !name) {
+                alert('ID und Name sind erforderlich');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/v1/tristar/project`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        project_id: id,
+                        name,
+                        description: desc
+                    })
+                });
+
+                if (res.ok) {
+                    alert('Projekt erstellt!');
+                    document.getElementById('projectId').value = '';
+                    document.getElementById('projectName').value = '';
+                    document.getElementById('projectDesc').value = '';
+                    loadProjects();
+                } else {
+                    const data = await res.json();
+                    alert(`Fehler: ${data.detail || 'Unbekannt'}`);
+                }
+            } catch (e) {
+                alert(`Fehler: ${e.message}`);
+            }
+        }
+
+        async function loadProjects() {
+            try {
+                const res = await fetch(`${API_BASE}/v1/tristar/projects`);
+                const data = await res.json();
+
+                const projectList = document.getElementById('projectList');
+
+                if (!data.projects || data.projects.length === 0) {
+                    projectList.innerHTML = '<div style="color: var(--text-secondary); font-size: 13px; text-align: center; padding: 20px;">Keine Projekte vorhanden</div>';
+                    return;
+                }
+
+                projectList.innerHTML = data.projects.map(proj => `
+                    <div class="chain-item">
+                        <div class="chain-item-header">
+                            <span class="chain-id">${proj.id}</span>
+                            <span>${proj.name}</span>
+                        </div>
+                        <div class="chain-prompt">${escapeHtml(proj.description || '-')}</div>
+                        <div class="chain-meta">
+                            <span>Chains: ${proj.chain_count || 0}</span>
+                            <span>Erstellt: ${proj.created_at ? new Date(proj.created_at).toLocaleDateString('de-DE') : '-'}</span>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                console.error('Failed to load projects:', e);
+            }
+        }
+
+        // Utility Functions
+        function refreshAll() {
+            loadAgents();
+            loadStats();
+            loadLogs();
+        }
+
+        function showMemory() {
+            const query = prompt('Memory-Suche:');
+            if (query) {
+                window.open(`${API_BASE}/v1/tristar/memory/search?query=${encodeURIComponent(query)}&limit=20`, '_blank');
+            }
+        }
+
+        // =========================================
+        // CLI Console Functions
+        // =========================================
+        let consoleHistory = [];
+        let historyIndex = -1;
+
+        function appendToConsole(text, color = 'var(--text-primary)') {
+            const output = document.getElementById('consoleOutput');
+            output.innerHTML += `<span style="color: ${color};">${escapeHtml(text)}</span>\n`;
+            output.scrollTop = output.scrollHeight;
+        }
+
+        function clearConsole() {
+            const output = document.getElementById('consoleOutput');
+            output.innerHTML = `<span style="color: var(--accent-green);">Console geleert.</span>\n<span style="color: var(--text-secondary);">───────────────────────────────────────────────────────────────</span>\n`;
+        }
+
+        function handleConsoleKey(event) {
+            const input = document.getElementById('consoleInput');
+
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                sendConsoleCommand();
+            } else if (event.key === 'ArrowUp') {
+                event.preventDefault();
+                if (historyIndex < consoleHistory.length - 1) {
+                    historyIndex++;
+                    input.value = consoleHistory[consoleHistory.length - 1 - historyIndex] || '';
+                }
+            } else if (event.key === 'ArrowDown') {
+                event.preventDefault();
+                if (historyIndex > 0) {
+                    historyIndex--;
+                    input.value = consoleHistory[consoleHistory.length - 1 - historyIndex] || '';
+                } else {
+                    historyIndex = -1;
+                    input.value = '';
+                }
+            } else if (event.ctrlKey && event.key === 'l') {
+                event.preventDefault();
+                clearConsole();
+            }
+        }
+
+        async function sendConsoleCommand() {
+            const input = document.getElementById('consoleInput');
+            const command = input.value.trim();
+            const agentId = document.getElementById('consoleAgent').value;
+
+            if (!command) return;
+
+            // Add to history
+            consoleHistory.push(command);
+            historyIndex = -1;
+            input.value = '';
+
+            // Show command in console
+            const agentName = agentId.replace('-mcp', '').toUpperCase();
+            appendToConsole(`\n[${agentName}] $ ${command}`, 'var(--accent-blue)');
+
+            try {
+                const res = await fetch(`${API_BASE}/v1/tristar/cli-agents/${agentId}/call`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: command,
+                        timeout: 120
+                    })
+                });
+
+                const data = await res.json();
+
+                if (data.response) {
+                    appendToConsole(data.response, 'var(--text-primary)');
+                } else if (data.error) {
+                    appendToConsole(`Fehler: ${data.error}`, 'var(--accent-red)');
+                } else {
+                    appendToConsole('Keine Antwort erhalten.', 'var(--accent-yellow)');
+                }
+            } catch (e) {
+                appendToConsole(`Verbindungsfehler: ${e.message}`, 'var(--accent-red)');
+            }
+
+            appendToConsole('───────────────────────────────────────────────────────────────', 'var(--text-secondary)');
+        }
+
+        function sendQuickCommand(cmd) {
+            document.getElementById('consoleInput').value = cmd;
+            sendConsoleCommand();
+        }
+
+        // =========================================
+        // Settings Functions
+        // =========================================
+        let currentSettings = {};
+        let currentApiKeys = {};
+        let currentModels = [];
+        let currentAgentConfigs = {};
+
+        async function loadAllSettings() {
+            await Promise.all([
+                loadApiKeys(),
+                loadModelConfigs(),
+                loadAgentSettings(),
+                loadGlobalSettings(),
+                loadFallbackSettings()
+            ]);
+        }
+
+        async function loadApiKeys() {
+            try {
+                const res = await fetch(`${API_BASE}/v1/tristar/settings/api-keys`);
+                if (res.status === 401) {
+                    document.getElementById('apiKeysContainer').innerHTML = '<div style="color: var(--accent-red);">Authentifizierung erforderlich</div>';
+                    return;
+                }
+                const data = await res.json();
+                currentApiKeys = data.api_keys || {};
+
+                const container = document.getElementById('apiKeysContainer');
+                const keyGroups = {
+                    'LLM Provider': ['gemini_api_key', 'anthropic_api_key', 'mistral_api_key', 'huggingface_api_key', 'gpt_oss_api_key'],
+                    'Ollama': ['ollama_base_url', 'ollama_bearer_token'],
+                    'WordPress': ['wordpress_url', 'wordpress_user', 'wordpress_password'],
+                    'Stable Diffusion': ['stable_diffusion_url', 'stable_diffusion_username', 'stable_diffusion_password', 'comfyui_url'],
+                    'GUI Auth': ['tristar_gui_user', 'tristar_gui_password'],
+                    'Redis': ['redis_url']
+                };
+
+                let html = '';
+                for (const [group, keys] of Object.entries(keyGroups)) {
+                    html += `<div style="margin-bottom: 12px;"><strong style="color: var(--text-secondary); font-size: 11px;">${group}</strong></div>`;
+                    html += '<div class="form-row" style="margin-bottom: 8px;">';
+                    keys.forEach((key, idx) => {
+                        const isPassword = key.includes('password') || key.includes('api_key') || key.includes('token');
+                        const value = currentApiKeys[key] || '';
+                        const label = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                        html += `
+                            <div class="form-group" style="flex: 1; min-width: 200px;">
+                                <label class="form-label">${label}</label>
+                                <input type="${isPassword ? 'password' : 'text'}" class="form-input api-key-input"
+                                    data-key="${key}" value="${escapeHtml(value)}" placeholder="${isPassword ? '••••••••' : ''}">
+                            </div>
+                        `;
+                        if ((idx + 1) % 2 === 0 && idx < keys.length - 1) {
+                            html += '</div><div class="form-row" style="margin-bottom: 8px;">';
+                        }
+                    });
+                    html += '</div>';
+                }
+
+                container.innerHTML = html;
+
+                // Check API key status
+                const statusRes = await fetch(`${API_BASE}/v1/tristar/settings/api-keys/status`);
+                if (statusRes.ok) {
+                    const statusData = await statusRes.json();
+                    const configured = Object.values(statusData.providers).filter(p => p.configured).length;
+                    document.getElementById('apiKeyStatus').textContent = `${configured}/${Object.keys(statusData.providers).length} konfiguriert`;
+                    document.getElementById('apiKeyStatus').style.color = configured > 3 ? 'var(--accent-green)' : 'var(--accent-yellow)';
+                }
+            } catch (e) {
+                console.error('Failed to load API keys:', e);
+                document.getElementById('apiKeysContainer').innerHTML = `<div style="color: var(--accent-red);">Fehler: ${e.message}</div>`;
+            }
+        }
+
+        async function saveApiKeys() {
+            const inputs = document.querySelectorAll('.api-key-input');
+            const keys = {};
+            inputs.forEach(input => {
+                const key = input.dataset.key;
+                const value = input.value.trim();
+                // Only include non-empty values that aren't masked
+                if (value && !value.startsWith('*')) {
+                    keys[key] = value;
+                }
+            });
+
+            if (Object.keys(keys).length === 0) {
+                alert('Keine Änderungen zum Speichern');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/v1/tristar/settings/api-keys`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ keys })
+                });
+
+                if (res.ok) {
+                    alert('API Keys gespeichert!');
+                    loadApiKeys();
+                } else {
+                    const data = await res.json();
+                    alert(`Fehler: ${data.detail || 'Unbekannt'}`);
+                }
+            } catch (e) {
+                alert(`Fehler: ${e.message}`);
+            }
+        }
+
+        async function loadModelConfigs() {
+            try {
+                // First, get available models from Ollama
+                const modelsRes = await fetch(`${API_BASE}/v1/models`);
+                if (modelsRes.ok) {
+                    const modelsData = await modelsRes.json();
+                    currentModels = modelsData.models || [];
+                }
+
+                // Then get saved configs
+                const configRes = await fetch(`${API_BASE}/v1/tristar/settings/models`);
+                let savedConfigs = {};
+                if (configRes.ok) {
+                    const configData = await configRes.json();
+                    savedConfigs = configData.models || {};
+                }
+
+                const container = document.getElementById('modelConfigContainer');
+                let html = '<div style="display: flex; flex-direction: column; gap: 8px;">';
+
+                // Show saved configs + top models from Ollama
+                const modelsToShow = new Set(Object.keys(savedConfigs));
+                currentModels.slice(0, 10).forEach(m => modelsToShow.add(`ollama/${m.name}`));
+
+                // Add some default cloud models
+                ['gemini/gemini-2.0-flash', 'anthropic/claude-sonnet-4', 'mistral/mistral-large'].forEach(m => modelsToShow.add(m));
+
+                modelsToShow.forEach(modelId => {
+                    const config = savedConfigs[modelId] || { temperature: 0.7, priority: 50, enabled: true };
+                    html += `
+                        <div class="chain-item" style="padding: 8px;">
+                            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 150px;">
+                                    <span style="font-family: monospace; font-size: 12px; color: var(--accent-blue);">${escapeHtml(modelId)}</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <label style="font-size: 11px; color: var(--text-secondary);">Temp:</label>
+                                    <input type="range" class="model-temp" data-model="${modelId}" min="0" max="2" step="0.1" value="${config.temperature}"
+                                        style="width: 80px;" oninput="this.nextElementSibling.textContent = this.value">
+                                    <span style="font-size: 11px; width: 25px;">${config.temperature}</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <label style="font-size: 11px; color: var(--text-secondary);">Prio:</label>
+                                    <input type="number" class="model-priority form-input" data-model="${modelId}" min="0" max="100" value="${config.priority}"
+                                        style="width: 60px; padding: 4px 8px;">
+                                </div>
+                                <label style="display: flex; align-items: center; gap: 4px;">
+                                    <input type="checkbox" class="model-enabled" data-model="${modelId}" ${config.enabled ? 'checked' : ''}>
+                                    <span style="font-size: 11px;">Aktiv</span>
+                                </label>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += '</div>';
+                container.innerHTML = html;
+            } catch (e) {
+                console.error('Failed to load model configs:', e);
+                document.getElementById('modelConfigContainer').innerHTML = `<div style="color: var(--accent-red);">Fehler: ${e.message}</div>`;
+            }
+        }
+
+        async function saveModelConfigs() {
+            const temps = document.querySelectorAll('.model-temp');
+            const priorities = document.querySelectorAll('.model-priority');
+            const enableds = document.querySelectorAll('.model-enabled');
+
+            const models = {};
+            temps.forEach(input => {
+                const modelId = input.dataset.model;
+                models[modelId] = {
+                    temperature: parseFloat(input.value),
+                    priority: parseInt(document.querySelector(`.model-priority[data-model="${modelId}"]`).value),
+                    enabled: document.querySelector(`.model-enabled[data-model="${modelId}"]`).checked
+                };
+            });
+
+            try {
+                const res = await fetch(`${API_BASE}/v1/tristar/settings/models`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ models })
+                });
+
+                if (res.ok) {
+                    alert('Modell-Einstellungen gespeichert!');
+                } else {
+                    const data = await res.json();
+                    alert(`Fehler: ${data.detail || 'Unbekannt'}`);
+                }
+            } catch (e) {
+                alert(`Fehler: ${e.message}`);
+            }
+        }
+
+        async function loadAgentSettings() {
+            try {
+                const res = await fetch(`${API_BASE}/v1/tristar/settings/agents`);
+                if (!res.ok) throw new Error('Failed to load');
+
+                const data = await res.json();
+                currentAgentConfigs = data.agents || {};
+
+                const container = document.getElementById('agentConfigContainer');
+                let html = '<div style="display: flex; flex-direction: column; gap: 8px;">';
+
+                const defaultAgents = ['gemini-mcp', 'claude-mcp', 'codex-mcp', 'opencode-mcp'];
+                const agentIcons = { 'gemini': '🌟', 'claude': '🔶', 'codex': '💚', 'opencode': '💜' };
+
+                defaultAgents.forEach(agentId => {
+                    const config = currentAgentConfigs[agentId] || { display_name: agentId, temperature: 0.7, priority: 50, enabled: true, auto_start: false };
+                    const agentType = agentId.replace('-mcp', '');
+                    const icon = agentIcons[agentType] || '🤖';
+
+                    html += `
+                        <div class="chain-item" style="padding: 10px;">
+                            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                                <span style="font-size: 18px;">${icon}</span>
+                                <div style="flex: 1; min-width: 120px;">
+                                    <input type="text" class="form-input agent-name" data-agent="${agentId}" value="${escapeHtml(config.display_name)}"
+                                        style="padding: 4px 8px; font-weight: 600;">
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <label style="font-size: 11px; color: var(--text-secondary);">Temp:</label>
+                                    <input type="range" class="agent-temp" data-agent="${agentId}" min="0" max="2" step="0.1" value="${config.temperature}"
+                                        style="width: 80px;" oninput="this.nextElementSibling.textContent = this.value">
+                                    <span style="font-size: 11px; width: 25px;">${config.temperature}</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <label style="font-size: 11px; color: var(--text-secondary);">Prio:</label>
+                                    <input type="number" class="agent-priority form-input" data-agent="${agentId}" min="0" max="100" value="${config.priority}"
+                                        style="width: 60px; padding: 4px 8px;">
+                                </div>
+                                <label style="display: flex; align-items: center; gap: 4px;">
+                                    <input type="checkbox" class="agent-enabled" data-agent="${agentId}" ${config.enabled ? 'checked' : ''}>
+                                    <span style="font-size: 11px;">Aktiv</span>
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 4px;">
+                                    <input type="checkbox" class="agent-autostart" data-agent="${agentId}" ${config.auto_start ? 'checked' : ''}>
+                                    <span style="font-size: 11px;">Auto-Start</span>
+                                </label>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += '</div>';
+                container.innerHTML = html;
+            } catch (e) {
+                console.error('Failed to load agent configs:', e);
+                document.getElementById('agentConfigContainer').innerHTML = `<div style="color: var(--accent-red);">Fehler: ${e.message}</div>`;
+            }
+        }
+
+        async function saveAgentConfigs() {
+            const agents = {};
+            document.querySelectorAll('.agent-temp').forEach(input => {
+                const agentId = input.dataset.agent;
+                agents[agentId] = {
+                    display_name: document.querySelector(`.agent-name[data-agent="${agentId}"]`).value,
+                    temperature: parseFloat(input.value),
+                    priority: parseInt(document.querySelector(`.agent-priority[data-agent="${agentId}"]`).value),
+                    enabled: document.querySelector(`.agent-enabled[data-agent="${agentId}"]`).checked,
+                    auto_start: document.querySelector(`.agent-autostart[data-agent="${agentId}"]`).checked
+                };
+            });
+
+            try {
+                const res = await fetch(`${API_BASE}/v1/tristar/settings/agents`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ agents })
+                });
+
+                if (res.ok) {
+                    alert('Agent-Einstellungen gespeichert!');
+                } else {
+                    const data = await res.json();
+                    alert(`Fehler: ${data.detail || 'Unbekannt'}`);
+                }
+            } catch (e) {
+                alert(`Fehler: ${e.message}`);
+            }
+        }
+
+        async function loadGlobalSettings() {
+            try {
+                const res = await fetch(`${API_BASE}/v1/tristar/settings/global`);
+                if (!res.ok) return;
+
+                currentSettings = await res.json();
+
+                document.getElementById('settingRequestTimeout').value = currentSettings.request_timeout || 30;
+                document.getElementById('settingMaxConcurrent').value = currentSettings.max_concurrent_requests || 8;
+                document.getElementById('settingDefaultChatModel').value = currentSettings.default_chat_model || 'gemini/gemini-2.0-flash';
+                document.getElementById('settingDefaultCodeModel').value = currentSettings.default_code_model || 'anthropic/claude-sonnet-4';
+                document.getElementById('settingLogLevel').value = currentSettings.log_level || 'INFO';
+                document.getElementById('settingGuiTheme').value = currentSettings.gui_theme || 'dark';
+            } catch (e) {
+                console.error('Failed to load global settings:', e);
+            }
+        }
+
+        async function saveGlobalSettings() {
+            const updates = {
+                request_timeout: parseFloat(document.getElementById('settingRequestTimeout').value),
+                max_concurrent_requests: parseInt(document.getElementById('settingMaxConcurrent').value),
+                default_chat_model: document.getElementById('settingDefaultChatModel').value,
+                default_code_model: document.getElementById('settingDefaultCodeModel').value,
+                log_level: document.getElementById('settingLogLevel').value,
+                gui_theme: document.getElementById('settingGuiTheme').value
+            };
+
+            try {
+                const res = await fetch(`${API_BASE}/v1/tristar/settings/global`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updates)
+                });
+
+                if (res.ok) {
+                    alert('Globale Einstellungen gespeichert!');
+                } else {
+                    const data = await res.json();
+                    alert(`Fehler: ${data.detail || 'Unbekannt'}`);
+                }
+            } catch (e) {
+                alert(`Fehler: ${e.message}`);
+            }
+        }
+
+        async function loadFallbackSettings() {
+            try {
+                const fallbackRes = await fetch(`${API_BASE}/v1/tristar/settings/fallback`);
+                const cachingRes = await fetch(`${API_BASE}/v1/tristar/settings/caching`);
+
+                if (fallbackRes.ok) {
+                    const fallback = await fallbackRes.json();
+                    document.getElementById('settingFallbackOrder').value = fallback.fallback_order || '';
+                    document.getElementById('settingFallbackTimeout').value = fallback.fallback_timeout || 30;
+                    document.getElementById('settingCircuitBreaker').checked = fallback.circuit_breaker_enabled !== false;
+                    document.getElementById('settingAutoFallback').checked = fallback.auto_fallback_enabled !== false;
+                }
+
+                if (cachingRes.ok) {
+                    const caching = await cachingRes.json();
+                    document.getElementById('settingCacheEnabled').checked = caching.cache_enabled !== false;
+                    document.getElementById('settingCacheTtl').value = caching.cache_ttl_seconds || 3600;
+                }
+            } catch (e) {
+                console.error('Failed to load fallback settings:', e);
+            }
+        }
+
+        async function saveFallbackSettings() {
+            try {
+                // Save fallback config
+                await fetch(`${API_BASE}/v1/tristar/settings/fallback`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        fallback_order: document.getElementById('settingFallbackOrder').value,
+                        fallback_timeout: parseFloat(document.getElementById('settingFallbackTimeout').value),
+                        circuit_breaker_enabled: document.getElementById('settingCircuitBreaker').checked,
+                        auto_fallback_enabled: document.getElementById('settingAutoFallback').checked
+                    })
+                });
+
+                // Save caching config
+                await fetch(`${API_BASE}/v1/tristar/settings/caching`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        cache_enabled: document.getElementById('settingCacheEnabled').checked,
+                        cache_ttl_seconds: parseInt(document.getElementById('settingCacheTtl').value)
+                    })
+                });
+
+                alert('Fallback-Einstellungen gespeichert!');
+            } catch (e) {
+                alert(`Fehler: ${e.message}`);
+            }
+        }
+
+        async function exportSettings() {
+            try {
+                const res = await fetch(`${API_BASE}/v1/tristar/settings/export`);
+                if (!res.ok) throw new Error('Export failed');
+
+                const data = await res.json();
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `tristar-settings-${new Date().toISOString().slice(0, 10)}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+            } catch (e) {
+                alert(`Export fehlgeschlagen: ${e.message}`);
+            }
+        }
+
+        async function importSettings(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            try {
+                const text = await file.text();
+                const data = JSON.parse(text);
+
+                const res = await fetch(`${API_BASE}/v1/tristar/settings/import`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (res.ok) {
+                    alert('Einstellungen importiert!');
+                    loadAllSettings();
+                } else {
+                    const errData = await res.json();
+                    alert(`Import fehlgeschlagen: ${errData.detail || 'Unbekannt'}`);
+                }
+            } catch (e) {
+                alert(`Import fehlgeschlagen: ${e.message}`);
+            }
+
+            event.target.value = '';
+        }
+
+        async function resetSettings() {
+            if (!confirm('Alle Einstellungen auf Standard zurücksetzen? Diese Aktion kann nicht rückgängig gemacht werden!')) {
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/v1/tristar/settings/reset`, {
+                    method: 'POST'
+                });
+
+                if (res.ok) {
+                    alert('Einstellungen zurückgesetzt!');
+                    loadAllSettings();
+                } else {
+                    const data = await res.json();
+                    alert(`Reset fehlgeschlagen: ${data.detail || 'Unbekannt'}`);
+                }
+            } catch (e) {
+                alert(`Reset fehlgeschlagen: ${e.message}`);
+            }
+        }
+    </script>
+</body>
+</html>

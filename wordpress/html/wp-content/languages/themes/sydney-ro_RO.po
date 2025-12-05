@@ -1,0 +1,4595 @@
+# Translation of Themes - Sydney in Romanian
+# This file is distributed under the same license as the Themes - Sydney package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-09-11 19:31:01+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n == 0 || n % 100 >= 2 && n % 100 <= 19) ? 1 : 2);\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: ro\n"
+"Project-Id-Version: Themes - Sydney\n"
+
+#. Description of the theme
+#: style.css
+#, gp-priority: high
+msgid "Sydney is a powerful business theme that provides a fast way for companies or freelancers to create an awesome online presence. As well as being fully compatible with Elementor, Sydney brings plenty of customization possibilities like access to all Google Fonts, full color control, layout control, logo upload, full screen slider, header image, sticky navigation and much more. Also, Sydney provides all the construction blocks you need to rapidly create an engaging front page. Looking for a quick start with Sydney? With just a few clicks, you can import one of our existing demos (https://athemes.com/sydney-demos/)"
+msgstr "Sydney este o temă solidă de afaceri ce asigură un mod rapid pentru companii sau liberi-profesioniști de a crea o prezență online impresionantă. Pe lângă faptul că este total compatibilă cu Elementor, Sydney oferă o mulțime de posibilități de personalizare precum acces la toate fonturile Google, controlul complet al culorilor, controlul aranjamentului, încărcare logo, carusel pe tot ecranul, imagine de antet, navigare fixă și multe altele. De asemenea, Sydney oferă toate blocurile de construcție de care ai nevoie pentru a crea rapid o primă pagină captivantă. Dorești un început rapid cu Sydney? Cu doar câteva clicuri, poți importa una dintre demonstrațiile noastre existente (https://athemes.com/sydney-demos/)"
+
+#. Theme Name of the theme
+#: style.css inc/dashboard/class-dashboard.php:124
+#: inc/dashboard/class-dashboard.php:125
+#: inc/dashboard/html-notifications-sidebar.php:46 inc/extras.php:383
+#: inc/modules/hf-builder/components/footer/copyright/copyright.php:17
+#: inc/onboarding/theme-info.php:137 inc/theme-dashboard-settings.php:21
+#, gp-priority: high
+msgid "Sydney"
+msgstr "Sydney"
+
+#: inc/customizer/options/general.php:955
+msgid "Images"
+msgstr "Imagini"
+
+#: inc/customizer/style-book/class-sydney-style-book.php:557
+msgid "Author Name"
+msgstr "Nume autor"
+
+#: inc/customizer/options/blog.php:56
+msgid "Main content area"
+msgstr "Zonă conținut principal"
+
+#: inc/customizer/customizer.php:543
+msgid "Enable featured images on all pages"
+msgstr "Activează imaginile reprezentative în toate paginile"
+
+#: inc/block-styles.php:37 inc/block-styles.php:46
+msgid "Slightly rounded"
+msgstr "Puțin rotunjit"
+
+#: inc/block-styles.php:13 inc/block-styles.php:21 inc/block-styles.php:29
+msgid "No margin"
+msgstr "Fără margini"
+
+#: inc/customizer/options/upsell.php:88
+msgid "Customizable background"
+msgstr "Fundal personalizabil"
+
+#: inc/customizer/options/header-mobile.php:556
+msgid "Submenu font size"
+msgstr "Dimensiune font sub-meniu"
+
+#: inc/customizer/options/header-mobile.php:516
+msgid "Submenu items color"
+msgstr "Culoare elemente sub-meniu"
+
+#: inc/customizer/options/header-mobile.php:154
+#: inc/customizer/options/header-mobile.php:170
+msgid "Custom text"
+msgstr "Text personalizat"
+
+#: inc/classes/class-sydney-header.php:69
+#: inc/customizer/options/header-mobile.php:162
+msgid "Menu"
+msgstr "Meniu"
+
+#: inc/dashboard/class-dashboard-settings.php:490
+msgid "Hooks"
+msgstr "Cârlige"
+
+#: inc/customizer/options/performance.php:67
+msgid "Disable Emojis"
+msgstr "Dezactivează emoticoanele"
+
+#: inc/dashboard/class-dashboard-settings.php:430
+msgid "Extended sidebar options."
+msgstr "Opțiuni extinse pentru bara laterală"
+
+#: inc/dashboard/class-dashboard-settings.php:425
+msgid "Sidebar Module"
+msgstr "Extensie bară laterală"
+
+#: inc/dashboard/html-builder.php:158
+msgid "Add Template"
+msgstr "Adaugă șablon"
+
+#: inc/dashboard/html-builder.php:141
+msgid "WordPress Editor"
+msgstr "Editor WordPress"
+
+#: inc/dashboard/html-builder.php:139
+msgid "Elementor"
+msgstr "Elementor"
+
+#: inc/dashboard/html-builder.php:127
+msgid "Reset"
+msgstr "Resetează"
+
+#: inc/dashboard/html-builder.php:124
+msgid "Select Existing"
+msgstr "Selectează unul existent"
+
+#. translators: %s is the template type
+#: inc/dashboard/html-builder.php:120
+msgid "%s Selected"
+msgstr "Ai selectat %s"
+
+#. translators: %s is the template type
+#: inc/dashboard/html-builder.php:115
+msgid "Select %s"
+msgstr "Selectează %s"
+
+#: inc/dashboard/html-builder.php:103
+msgid "Delete"
+msgstr "Șterge"
+
+#: inc/dashboard/html-builder.php:102
+msgid "Duplicate"
+msgstr "Fă duplicat"
+
+#: inc/dashboard/html-builder.php:91
+msgid "Global Template"
+msgstr "Șablon global"
+
+#: inc/dashboard/html-builder.php:89
+msgid "Template Name"
+msgstr "Nume șablon"
+
+#: inc/dashboard/html-builder.php:43
+msgid "Need help?"
+msgstr "Ai nevoie de ajutor?"
+
+#: inc/dashboard/html-builder.php:125
+msgid "Create New"
+msgstr "Creează unul nou"
+
+#: inc/dashboard/html-builder.php:34
+msgid "This feature is available only in Sydney Pro"
+msgstr "Această funcționalitate este disponibilă numai în Sydney Pro"
+
+#: inc/dashboard/html-builder.php:34
+msgid "Please note: "
+msgstr "Te rog reține: "
+
+#: inc/customizer/options/blog.php:307 inc/dashboard/html-builder.php:18
+msgid "Content"
+msgstr "Conținut"
+
+#: inc/dashboard/html-builder.php:17
+msgid "Page Title"
+msgstr "Titlu pagină"
+
+#: inc/dashboard/class-dashboard.php:823
+msgid "No templates found."
+msgstr "Nu am găsit niciun șablon."
+
+#: inc/dashboard/class-dashboard.php:258 inc/dashboard/html-builder.php:164
+msgid "Save"
+msgstr "Salvează"
+
+#: inc/dashboard/class-dashboard.php:257
+msgid "You have unsaved changes."
+msgstr "Ai modificări nesalvate."
+
+#: inc/dashboard/class-dashboard.php:255
+msgid "Saving..."
+msgstr "Salvez..."
+
+#: inc/dashboard/class-dashboard.php:254
+msgid "Loading..."
+msgstr "Încarc..."
+
+#: inc/dashboard/class-dashboard-settings.php:127
+#: inc/dashboard/class-dashboard-settings.php:289
+#: inc/dashboard/html-builder.php:31
+msgid "Template Builder"
+msgstr "Constructor de șabloane"
+
+#: inc/customizer/options/upsell.php:274 inc/customizer/options/upsell.php:299
+msgid "An option to upload custom fonts"
+msgstr "O opțiune pentru a încărca fonturi personalizate"
+
+#: inc/customizer/options/colors.php:18
+msgid "Global colors"
+msgstr "Culori globale"
+
+#: inc/customizer/controls/class_sydney_upsell_message.php:61
+msgid "You’ll get access to:"
+msgstr "Vei primi acces la:"
+
+#: inc/customizer/controls/class_sydney_upsell_message.php:50
+#: inc/dashboard/html-builder.php:149
+msgid "Upgrade to Sydney Pro"
+msgstr "Actualizează la Sydney Pro"
+
+#: inc/customizer/controls/alpha-color/class_sydney_alpha_color.php:60
+msgid "Select a Global Color"
+msgstr "Selectează o culoare globală"
+
+#: inc/integrations/elementor/class-sydney-elementor-global-colors.php:107
+msgid "Global Color 9"
+msgstr "A 9-a culoare globală"
+
+#: inc/integrations/elementor/class-sydney-elementor-global-colors.php:106
+msgid "Global Color 8"
+msgstr "A 8-a culoare globală"
+
+#: inc/integrations/elementor/class-sydney-elementor-global-colors.php:105
+msgid "Global Color 7"
+msgstr "A 7-a culoare globală"
+
+#: inc/integrations/elementor/class-sydney-elementor-global-colors.php:104
+msgid "Global Color 6"
+msgstr "A 6-a culoare globală"
+
+#: inc/integrations/elementor/class-sydney-elementor-global-colors.php:103
+msgid "Global Color 5"
+msgstr "A 5-a culoare globală"
+
+#: inc/integrations/elementor/class-sydney-elementor-global-colors.php:102
+msgid "Global Color 4"
+msgstr "A 4-a culoare globală"
+
+#: inc/integrations/elementor/class-sydney-elementor-global-colors.php:101
+msgid "Global Color 3"
+msgstr "A 3-a culoare globală"
+
+#: inc/integrations/elementor/class-sydney-elementor-global-colors.php:100
+msgid "Global Color 2"
+msgstr "A 2-a culoare globală"
+
+#: inc/integrations/elementor/class-sydney-elementor-global-colors.php:99
+msgid "Global Color 1"
+msgstr "Prima culoare globală"
+
+#: inc/dashboard/html-builder.php:137
+msgid "Choose your builder:"
+msgstr "Alege constructorul:"
+
+#: inc/dashboard/html-builder.php:43
+msgid "Watch a quick tutorial video."
+msgstr "Urmărește un tutorial video rapid"
+
+#: inc/dashboard/class-dashboard.php:256
+msgid "Saved!"
+msgstr "Am salvat!"
+
+#: inc/dashboard/html-builder.php:40
+msgid "You can create multiple templates and assign them to specific pages."
+msgstr "Poți să creezi mai multe șabloane și să le atribui unor anumite pagini."
+
+#: inc/dashboard/html-builder.php:39
+msgid "Use the Global Template to create parts for all pages."
+msgstr "Folosește șablonul global ca să creezi părți pentru toate paginile."
+
+#: inc/dashboard/html-builder.php:38
+msgid "Replace theme-built components like header, footer, etc. on specific pages or everywhere."
+msgstr "Înlocuiești componentele din construcția temei, cum ar fi antetul, subsolul etc., în anumite pagini sau peste tot."
+
+#: inc/customizer/options/upsell.php:183 inc/customizer/options/upsell.php:212
+msgid "Social sharing buttons"
+msgstr "Butoane de partajare pe media socială"
+
+#: inc/customizer/options/upsell.php:182 inc/customizer/options/upsell.php:210
+msgid "Progress bar"
+msgstr "Bară de progres"
+
+#: inc/customizer/options/upsell.php:181 inc/customizer/options/upsell.php:209
+msgid "Reading time"
+msgstr "Timp de citire"
+
+#: inc/customizer/options/upsell.php:213
+msgid "Elementor template builder for single posts"
+msgstr "Constructor de șabloane Elementor pentru articole singulare"
+
+#: inc/customizer/options/upsell.php:184
+msgid "Elementor template builder for category pages"
+msgstr "Constructor de șabloane Elementor pentru pagini categorii"
+
+#: inc/customizer/options/upsell.php:117 inc/customizer/options/upsell.php:148
+#: inc/modules/hf-builder/components/footer/footer-builder/customize-options.php:280
+msgid "Elementor footer builder"
+msgstr "Constructor de subsoluri Elementor"
+
+#: inc/customizer/options/upsell.php:30
+#: inc/modules/hf-builder/components/header/header-builder/customize-options.php:420
+msgid "Language switcher"
+msgstr "Comutator de limbă"
+
+#: inc/customizer/options/upsell.php:28
+#: inc/modules/hf-builder/components/header/header-builder/customize-options.php:419
+msgid "Extra header layouts"
+msgstr "Aranjamente suplimentare pentru antet"
+
+#: inc/customizer/options/upsell.php:25
+#: inc/modules/hf-builder/components/header/header-builder/customize-options.php:416
+msgid "Enhance your header with Sydney Pro!"
+msgstr "Cu Sydney Pro, îți îmbunătățești antetul!"
+
+#: inc/customizer/options/header.php:70
+msgid "Show site title and description next to the logo"
+msgstr "Arată titlul și descrierea site-ului lângă logo"
+
+#: inc/customizer/options/upsell.php:118 inc/customizer/options/upsell.php:149
+#: inc/modules/hf-builder/components/footer/footer-builder/customize-options.php:281
+msgid "Footer background image"
+msgstr "Imagine fundal pentru subsol"
+
+#: inc/dashboard/html-builder.php:96
+msgid "Display conditions"
+msgstr "Condiții pentru afișare"
+
+#: inc/customizer/options/footer.php:593
+msgid "Text size"
+msgstr "Dimensiune text"
+
+#: inc/dashboard/html-starter-sites.php:29
+msgid "Install and Activate"
+msgstr "Instalează și activează"
+
+#: inc/dashboard/html-settings-performance.php:21
+msgid "Activate this option to load the Google fonts locally."
+msgstr "Activează această opțiune pentru a încărca fonturile Google local."
+
+#: inc/dashboard/html-settings-general.php:57
+msgid "Take Sydney to a whole other level by upgrading to the premium version."
+msgstr "Du Sydney la un alt nivel prin actualizarea la versiunea premium."
+
+#: inc/dashboard/html-settings-general.php:21
+msgid "Sydney Pro License"
+msgstr "Licență Sydney Pro"
+
+#: inc/dashboard/html-notifications-sidebar.php:98
+#: inc/dashboard/html-notifications-sidebar.php:146
+msgid "No notifications found"
+msgstr "Nu am găsit nicio notificare"
+
+#: inc/dashboard/html-notifications-sidebar.php:35
+msgid "New Update"
+msgstr "Actualizare nouă"
+
+#: inc/dashboard/html-notifications-sidebar.php:16
+msgid "Close the sidebar"
+msgstr "Închide bara laterală"
+
+#: inc/dashboard/html-home.php:245
+msgid "Leave a review"
+msgstr "Scrie o recenzie"
+
+#: inc/dashboard/html-home.php:133
+msgid "This option is only available on Sydney Pro"
+msgstr "Această opțiune este disponibilă numai cu Sydney Pro"
+
+#: inc/dashboard/html-home.php:93
+msgid "Upgrade To Pro"
+msgstr "Actualizează la Pro"
+
+#: inc/dashboard/html-home.php:21
+msgid "Customize your site"
+msgstr "Personalizează-ți site-ul"
+
+#: inc/dashboard/html-hero.php:73
+msgid "Start Customizing"
+msgstr "Începe personalizarea"
+
+#: inc/dashboard/class-dashboard.php:259
+msgid "Redirecting..."
+msgstr "Redirecționez..."
+
+#: inc/dashboard/class-dashboard.php:253
+msgid "Deactivating..."
+msgstr "Dezactivez..."
+
+#: inc/dashboard/class-dashboard.php:252
+msgid "Activating..."
+msgstr "Activez..."
+
+#: inc/dashboard/class-dashboard.php:251
+msgid "Installing..."
+msgstr "Instalez..."
+
+#: inc/dashboard/class-dashboard-settings.php:324
+msgid "Add custom fonts to your site."
+msgstr "Adaugă fonturi personalizate pe site."
+
+#: inc/dashboard/class-dashboard-settings.php:319
+msgid "Custom Fonts"
+msgstr "Fonturi personalizate"
+
+#: inc/dashboard/class-dashboard-settings.php:280
+msgid "Customize the top bar of your theme."
+msgstr "Personalizează bara de sus a temei."
+
+#: inc/dashboard/class-dashboard-settings.php:235
+msgid "Customize the footer credits for your theme."
+msgstr "Personalizează recunoștințele din subsol pentru tema ta."
+
+#: inc/dashboard/class-dashboard-settings.php:260
+msgid "Customize the buttons in your theme."
+msgstr "Personalizează butoanele din temă."
+
+#: inc/dashboard/class-dashboard-settings.php:199
+msgid "Set the title and upload logo."
+msgstr "Setează titlul și încarcă un logo."
+
+#: inc/dashboard/class-dashboard-settings.php:198
+msgid "Site Title and Logo"
+msgstr "Titlul și logo site"
+
+#: inc/dashboard/class-dashboard-settings.php:187
+msgid "HubSpot"
+msgstr "HubSpot"
+
+#: inc/dashboard/class-dashboard-settings.php:179
+msgid "The best WordPress contact form plugin. Drag & Drop online form builder that helps you create beautiful contact forms + custom forms in minutes."
+msgstr "Cel mai bun modul WordPress pentru formulare de contact. Constructor de formulare online care folosește trage și plasează și te ajută să creezi formulare de contact frumoase și formulare personalizate în câteva minute."
+
+#: inc/dashboard/class-dashboard-settings.php:178
+msgid "WPForms"
+msgstr "WPForms"
+
+#: inc/dashboard/class-dashboard-settings.php:170
+msgid "Extend the Gutenberg Block Editor with additional functionality."
+msgstr "Extinzi editorul de blocuri Gutenberg cu funcționalități suplimentare."
+
+#: inc/dashboard/class-dashboard-settings.php:169
+msgid "aThemes Blocks"
+msgstr "Blocuri aThemes"
+
+#: inc/dashboard/class-dashboard-settings.php:120
+#: inc/dashboard/class-dashboard-settings.php:137
+msgid "License"
+msgstr "Licență"
+
+#: inc/dashboard/class-dashboard-settings.php:118
+msgid "Home"
+msgstr "Prima pagină"
+
+#: inc/dashboard/class-dashboard-settings.php:36
+msgid "Sydney is now installed and ready to go. To help you with the next step, we’ve gathered together on this page all the resources you might need. We hope you enjoy using Sydney."
+msgstr "Acum Sydney este instalată și gata de funcționare. Pentru a te ajuta cu următorul pas, am adunat pe această pagină toate resursele de care ai putea avea nevoie. Sperăm să îți placă să folosești Sydney."
+
+#: functions.php:58
+msgid "Mobile menu (optional)"
+msgstr "Meniu pentru mobil (opțional)"
+
+#: inc/dashboard/class-dashboard-settings.php:188
+msgid "HubSpot is a platform with all the tools and integrations you need for marketing, sales, and customer service."
+msgstr "HubSpot este o platformă cu toate instrumentele și integrările de care ai nevoie pentru marketing, vânzări și servicii pentru clienți."
+
+#: inc/dashboard/html-home.php:306
+msgid "Suggest An Idea"
+msgstr "Sugerează o idee"
+
+#: inc/dashboard/html-free-vs-pro.php:1767
+msgid "Buy Sydney Pro Today"
+msgstr "Cumpără Sydney Pro azi"
+
+#: inc/dashboard/class-dashboard.php:886
+msgid "Website"
+msgstr "Site web"
+
+#: inc/dashboard/html-settings-general.php:28
+msgid "Instructions"
+msgstr "Instrucțiuni"
+
+#: inc/dashboard/class-dashboard-settings.php:268
+msgid "Customize the blog options for your theme."
+msgstr "Personalizează opțiunile blog pentru tema ta."
+
+#: inc/dashboard/html-home.php:278
+msgid "Browse documentation and tutorials for the Sydney theme."
+msgstr "Răsfoiește documentația și tutorialele pentru tema Sydney."
+
+#: inc/dashboard/html-home.php:89
+msgid "Do more with Sydney Pro"
+msgstr "Cu Sydney Pro, faci mai multe"
+
+#: inc/dashboard/html-home.php:304
+msgid "Got an idea for how to improve Sydney and Sydney Pro? Let us know."
+msgstr "Ai idei despre cum să îmbunătățim Sydney și Sydney Pro? Spune-ne."
+
+#: inc/dashboard/class-dashboard-settings.php:475
+msgid "Add an extra widget area to your theme."
+msgstr "Adaugă o zonă suplimentară cu piese în tema ta."
+
+#: inc/dashboard/class-dashboard-settings.php:361
+msgid "Mega Menu"
+msgstr "Meniu mega"
+
+#: inc/dashboard/class-dashboard-settings.php:227
+msgid "Customize the header options for your theme."
+msgstr "Personalizează opțiunile pentru antet în tema ta."
+
+#: inc/dashboard/class-dashboard-settings.php:252
+msgid "Change the colors for various elements."
+msgstr "Schimbă culorile pentru diferite elemente."
+
+#: inc/dashboard/html-settings-performance.php:20
+msgid "Load Google Fonts Locally"
+msgstr "Încarcă local Google Fonts"
+
+#: theme-dashboard/class-theme-dashboard.php:726
+msgid "Get Premium Support"
+msgstr "Ai suport premium"
+
+#: inc/dashboard/html-home.php:228
+#: theme-dashboard/class-theme-dashboard.php:718
+msgid "Premium support"
+msgstr "Suport premium"
+
+#: inc/customizer/options/upsell.php:243
+msgid "Button and text animations"
+msgstr "Animații pentru butoane și text"
+
+#: inc/customizer/options/upsell.php:211
+msgid "Last updated date"
+msgstr "Data ultimei actualizări"
+
+#: inc/customizer/options/upsell.php:180
+msgid "Featured posts area"
+msgstr "Zonă articole reprezentative"
+
+#: inc/dashboard/html-patcher.php:304
+#: inc/dashboard/html-settings-general.php:61
+msgid "Upgrade Now"
+msgstr "Actualizează acum"
+
+#: inc/customizer/options/upsell.php:273 inc/customizer/options/upsell.php:298
+msgid "Adobe Fonts integration"
+msgstr "Integrare fonturi Adobe"
+
+#: inc/customizer/options/upsell.php:270 inc/customizer/options/upsell.php:295
+msgid "Get access to more fonts with Sydney Pro!"
+msgstr "Cu Sydney Pro, ai acces la mai multe fonturi!"
+
+#: inc/customizer/options/header-mobile.php:53
+msgid "Enable sticky header on mobiles"
+msgstr "Activează antetul fixat pe dispozitive mobile"
+
+#: inc/customizer/options/header-mobile.php:108
+msgid "The values for these elements are set from the main header."
+msgstr "Valorile pentru aceste elemente sunt setate din antetul principal."
+
+#: inc/theme-dashboard-settings.php:259
+msgid "Integrations"
+msgstr "Integrări"
+
+#: inc/theme-dashboard-settings.php:229
+msgid "Blog & pages"
+msgstr "Blog și pagini"
+
+#: inc/theme-dashboard-settings.php:180
+msgid "Typography Options"
+msgstr "Opțiuni tipografice"
+
+#: inc/customizer/options/blog.php:409
+msgid "Full-content"
+msgstr "Conținut întreg"
+
+#: inc/customizer/options/blog.php:405
+msgid "Content type"
+msgstr "Tip de conținut"
+
+#: inc/customizer/options/blog.php:387
+msgid "Show post content"
+msgstr "Arată conținutul articolului"
+
+#: inc/classes/class-sydney-modules.php:135
+#: inc/dashboard/class-dashboard-settings.php:460
+msgid "Live chat floating icon"
+msgstr "Icon plutitor pentru chat în timp real"
+
+#: inc/classes/class-sydney-modules.php:130
+#: inc/dashboard/class-dashboard-settings.php:455
+msgid "Live Chat (WhatsApp)"
+msgstr "Chat în timp real (WhatsApp)"
+
+#: inc/classes/class-sydney-modules.php:126
+#: inc/dashboard/class-dashboard-settings.php:450
+msgid "Custom CSS and other tools for Elementor"
+msgstr "CSS personalizat și alte unelte pentru Elementor"
+
+#: inc/classes/class-sydney-modules.php:121
+#: inc/dashboard/class-dashboard-settings.php:445
+msgid "Elementor Tools"
+msgstr "Unelte pentru Elementor"
+
+#: inc/classes/class-sydney-modules.php:96
+#: inc/dashboard/class-dashboard-settings.php:410
+msgid "Page Header options for posts, pages, archives etc."
+msgstr "Opțiuni pentru antetul paginii pentru articole, pagini, arhive etc."
+
+#: inc/classes/class-sydney-modules.php:91
+#: inc/dashboard/class-dashboard-settings.php:405
+msgid "Page Headers"
+msgstr "Antete pagină"
+
+#: inc/classes/class-sydney-modules.php:29
+msgid "Templates Builder"
+msgstr "Constructor de șabloane"
+
+#: inc/integrations/elementor/library/templates.php:88
+msgid "Search Templates:"
+msgstr "Caută șabloane:"
+
+#: inc/integrations/elementor/library/templates.php:76
+msgid "Filter"
+msgstr "Filtru"
+
+#: inc/dashboard/class-dashboard-settings.php:582
+#: inc/integrations/elementor/library/templates.php:54
+msgid "Get Pro"
+msgstr "Ia Pro"
+
+#: inc/integrations/elementor/library/templates.php:47
+msgid "Insert"
+msgstr "Inserează"
+
+#: inc/integrations/elementor/library/templates.php:18
+msgid "Back to Library"
+msgstr "Înapoi la bibliotecă"
+
+#: inc/integrations/elementor/library/templates.php:29
+#: inc/integrations/elementor/library/templates.php:30
+msgid "Sync Library"
+msgstr "Sincronizează biblioteca"
+
+#: inc/integrations/elementor/library/library-source.php:198
+msgid "Template does not have any content"
+msgstr "Șablonul nu are niciun fel de conținut"
+
+#: inc/integrations/elementor/library/library-manager.php:40
+msgid "Please make sure your search is spelled correctly or try a different word."
+msgstr "Te rog, asigură-te că ai scris corect căutarea sau încearcă un cuvânt diferit."
+
+#: inc/integrations/elementor/library/library-manager.php:39
+msgid "No Results Found"
+msgstr "Nu am găsit niciun rezultat"
+
+#: inc/integrations/elementor/library/library-manager.php:38
+msgid "Try different category or sync for new templates."
+msgstr "Încearcă o categorie diferită sau sincronizează pentru șabloane noi."
+
+#: inc/integrations/elementor/library/library-manager.php:37
+msgid "No Templates Found"
+msgstr "Nu am găsit niciun șablon"
+
+#: inc/classes/class-sydney-modules.php:52
+#: inc/dashboard/class-dashboard-settings.php:314
+msgid "Modal with custom content"
+msgstr "Modal cu conținut personalizat"
+
+#: inc/classes/class-sydney-header.php:595
+#: inc/classes/class-sydney-header.php:646
+msgid "Toggle menu"
+msgstr "Comută meniul"
+
+#: inc/classes/class-sydney-header.php:85
+msgid "Close menu"
+msgstr "Închide meniul"
+
+#: inc/integrations/elementor/library/library-manager.php:71
+msgid "Post not found."
+msgstr "Nu am găsit articolul."
+
+#: inc/integrations/elementor/library/library-manager.php:91
+msgid "Post not found"
+msgstr "Nu am găsit articolul"
+
+#: inc/integrations/elementor/library/templates.php:68
+msgid "Loading"
+msgstr "Încarc"
+
+#: inc/integrations/elementor/library/templates.php:114
+msgid "Preview"
+msgstr "Previzualizează"
+
+#: inc/integrations/elementor/library/library-manager.php:98
+msgid "Template id missing"
+msgstr "ID-ul șablonului lipsește"
+
+#: inc/classes/class-sydney-modules.php:47
+#: inc/dashboard/class-dashboard-settings.php:309
+msgid "Modal"
+msgstr "Fereastră modală"
+
+#: inc/integrations/elementor/library/library-source.php:32
+msgid "Template Library"
+msgstr "Bibliotecă cu șabloane"
+
+#: inc/customizer/options/performance.php:48
+msgid "Disable Google Fonts preconnect"
+msgstr "Dezactivează pre-conexiunea către fonturile Google"
+
+#: inc/customizer/options/performance.php:30
+msgid "This option refers only to Google Fonts loaded by the theme, not by third-party plugins."
+msgstr "Această opțiune se referă doar la fonturile Google încărcate de către temă, nu de module terțe."
+
+#: inc/customizer/options/hero-area.php:582
+msgid "Click here to select where you want to display the slider"
+msgstr "Dă clic aici pentru a alege unde vrei să afișezi caruselul"
+
+#: inc/customizer/options/hero-area.php:564
+msgid "Mobile behavior for the slider images"
+msgstr "Comportament pe mobil pentru imaginile caruselului"
+
+#: inc/customizer/options/hero-area.php:546
+msgid "Use this if you want to show the same text on all slides."
+msgstr "Folosește aceasta dacă vrei să arăți același text pe toate diapozitivele."
+
+#: inc/customizer/options/hero-area.php:545
+msgid "Prevent the text from changing?"
+msgstr "Previi schimbarea textului?"
+
+#: inc/customizer/options/hero-area.php:509
+msgid "Slider settings"
+msgstr "Setări carusel"
+
+#: inc/customizer/options/hero-area.php:457
+msgid "Slider button"
+msgstr "Buton carusel"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:161
+msgid "CPT: Taxonomy name"
+msgstr "TAP: numele taxonomiei"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:156
+msgid "CPT: Term name"
+msgstr "TAP: numele termenului"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:151
+msgid "CPT: Post name"
+msgstr "TAP: numele articolului"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:134
+msgid "Author name"
+msgstr "Nume autor"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:129
+msgid "Tag name"
+msgstr "Nume etichetă"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:124
+msgid "Category name"
+msgstr "Nume categorie"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:119
+msgid "Page name"
+msgstr "Nume pagină"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:114
+msgid "Post name"
+msgstr "Nume articol"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:100
+msgid "Product name"
+msgstr "Nume produs"
+
+#: inc/customizer/options/layouts.php:99
+msgid "Boxed"
+msgstr "Încasetat"
+
+#: inc/customizer/options/layouts.php:95
+msgid "Boxed content area"
+msgstr "Zonă conținut încasetată"
+
+#: inc/customizer/options/layouts.php:76
+msgid "Stretched"
+msgstr "Întins"
+
+#: inc/customizer/options/layouts.php:72
+msgid "Narrow"
+msgstr "Îngust"
+
+#: inc/customizer/options/layouts.php:62
+msgid "Select your layout"
+msgstr "Selectează aranjamentul tău"
+
+#: inc/customizer/options/header.php:810
+msgid "Text color (sticky)"
+msgstr "Culoare text (fix)"
+
+#: inc/customizer/options/header.php:391
+msgid "Transparent header"
+msgstr "Antet transparent"
+
+#: inc/customizer/options/general.php:69
+msgid "Narrow container width"
+msgstr "Lățime container îngust"
+
+#: inc/customizer/options/general.php:44
+msgid "Container width"
+msgstr "Lățime container"
+
+#: inc/customizer/options/general.php:25
+msgid "Layouts"
+msgstr "Aranjamente"
+
+#: inc/customizer/options/cpt-panels.php:45
+msgid "Singles"
+msgstr "Singulare"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:365
+msgid "Save Conditions"
+msgstr "Salvează condițiile"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:361
+msgid "Add User Condition"
+msgstr "Adaugă condiție utilizator"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:360
+msgid "Add Display Condition"
+msgstr "Adaugă condiție de afișare"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:222
+msgid "User Logged Out"
+msgstr "Utilizator dezautentificat"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:218
+msgid "User Logged In"
+msgstr "Utilizator autentificat"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:214
+msgid "User Auth"
+msgstr "Autentificare utilizator"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:195
+msgid "Privacy Policy Page"
+msgstr "Pagină Politică de confidențialitate"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:191
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:239
+msgid "Author"
+msgstr "Autor"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:187
+msgid "404"
+msgstr "404"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:171
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:235
+msgid "Other"
+msgstr "Altele"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:147
+msgid "Custom Post Types"
+msgstr "Tipuri de articol personalizat"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:110
+msgid "Specific"
+msgstr "Specific"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:96
+msgid "Product Tags"
+msgstr "Etichete produse"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:92
+msgid "Product Categories"
+msgstr "Categorii de produse"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:88
+msgid "Product Archives"
+msgstr "Arhive produse"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:80
+msgid "WooCommerce"
+msgstr "WooCommerce"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:71
+msgid "Single Page"
+msgstr "Pagină singulară"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:67
+#: inc/customizer/customizer.php:526
+msgid "Pages"
+msgstr "Pagini"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:60
+msgid "Post Tags"
+msgstr "Etichete articol"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:48
+msgid "Single Post"
+msgstr "Articol singular"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:44
+msgid "Posts"
+msgstr "Articole"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:33
+msgid "Singulars"
+msgstr "Singulare"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:29
+msgid "Basic"
+msgstr "De bază"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:24
+msgid "Entire Site"
+msgstr "Site întreg"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:19
+msgid "Exclude"
+msgstr "Exclude"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:14
+msgid "Include"
+msgstr "Include"
+
+#: inc/customizer/controls/display-conditions/class_sydney_display_conditions_control.php:68
+msgid "Add/Edit Conditions"
+msgstr "Adaugă sau editează condițiile"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:52
+msgid "Post Archives"
+msgstr "Arhive articole"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:229
+msgid "User Roles"
+msgstr "Roluri de utilizator"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:56
+msgid "Post Categories"
+msgstr "Categorii de articole"
+
+#: inc/customizer/options/footer.php:256
+msgid "Widget titles color (deprecated)"
+msgstr "Culoare titluri piese (învechit)"
+
+#: inc/customizer/customizer.php:503
+msgid " 2. All of our starter sites, both free and pro, can be previewed "
+msgstr " 2. Toate site-urile noastre de început, atât gratuite cât și pro, pot fi previzualizate "
+
+#: inc/classes/class-sydney-modules.php:34
+#: inc/dashboard/class-dashboard-settings.php:294
+msgid "Build headers, footers etc. with Elementor."
+msgstr "Construiește anteturi, subsoluri etc. cu Elementor."
+
+#: inc/customizer/customizer.php:504
+msgid " 3. You can receive free support on the community forums "
+msgstr " 3. Poți primi suport gratuit pe forumurile comunității "
+
+#: inc/customizer/customizer.php:505
+msgid " 4. Priority email support is available for our premium users. You can upgrade "
+msgstr " 4. Suportul prioritar pe email este disponibil pentru utilizatorii noștri premium. Poți actualiza "
+
+#: inc/customizer/options/header.php:746
+msgid "Background color (sticky)"
+msgstr "Culoare de fundal (fix)"
+
+#: inc/classes/class-sydney-modules.php:117
+#: inc/dashboard/class-dashboard-settings.php:440
+msgid "Extra features for WooCommerce"
+msgstr "Funcționalități suplimentare pentru WooCommerce"
+
+#: inc/classes/class-sydney-modules.php:112
+#: inc/dashboard/class-dashboard-settings.php:435
+msgid "Extended WooCommerce"
+msgstr "WooCommerce extins"
+
+#: woocommerce/cart/proceed-to-checkout-button.php:26
+msgid "Proceed to checkout"
+msgstr "Continuă cu finalizarea comenzii"
+
+#: inc/theme-dashboard-settings.php:69
+msgid "Extended WooCommerce Module"
+msgstr "Extensie WooCommerce extins"
+
+#: inc/theme-dashboard-settings.php:74
+msgid "Built-in Wishlist, Product Swatch"
+msgstr "Listă de dorințe nativă, eșantioane de produs"
+
+#: inc/customizer/options/performance.php:29
+msgid "Load Google Fonts Locally?"
+msgstr "Încarci fonturile Google local?"
+
+#: inc/classes/class-sydney-modules.php:38
+#: inc/dashboard/class-dashboard-settings.php:299
+msgid "Quick Links Module"
+msgstr "Extensie legături rapide"
+
+#: inc/classes/class-sydney-modules.php:43
+#: inc/dashboard/class-dashboard-settings.php:304
+msgid "Floating quick links bar (contact, social etc.)"
+msgstr "Bară plutitoare cu legături rapide (contact, media socială etc.)"
+
+#: inc/theme-dashboard-settings.php:37
+msgid "Sticky and transparent menu"
+msgstr "Meniu fix și transparent"
+
+#: inc/customizer/upsell/class-customize.php:76
+msgid "Want more customization options?"
+msgstr "Vrei să ai mai multe opțiuni de personalizare?"
+
+#: inc/dashboard/class-dashboard-settings.php:502
+#: inc/dashboard/html-home.php:130
+msgid "Learn More"
+msgstr "Află mai multe"
+
+#: inc/classes/class-sydney-modules.php:76
+#: inc/dashboard/class-dashboard-settings.php:377
+msgid "Extra features for your footer"
+msgstr "Funcționalități suplimentare pentru subsol"
+
+#: inc/classes/class-sydney-modules.php:100
+#: inc/dashboard/class-dashboard-settings.php:415
+#: inc/theme-dashboard-settings.php:84
+msgid "Breadcrumbs Module"
+msgstr "Extensie firimituri"
+
+#: inc/classes/class-sydney-modules.php:87
+#: inc/dashboard/class-dashboard-settings.php:400
+msgid "Extra features for your blog."
+msgstr "Funcționalități suplimentare pentru blog."
+
+#: inc/classes/class-sydney-modules.php:64
+#: inc/dashboard/class-dashboard-settings.php:355
+msgid "New features for your header area."
+msgstr "Funcționalități noi pentru zona antet."
+
+#: inc/theme-dashboard-settings.php:59
+msgid "Templates Module"
+msgstr "Extensie șabloane"
+
+#: inc/classes/class-sydney-modules.php:59
+#: inc/dashboard/class-dashboard-settings.php:350
+#: inc/theme-dashboard-settings.php:64
+msgid "Extended Header Module"
+msgstr "Extensie antet extins"
+
+#: inc/classes/class-sydney-modules.php:71
+#: inc/dashboard/class-dashboard-settings.php:372
+#: inc/theme-dashboard-settings.php:89
+msgid "Extended Footer Module"
+msgstr "Extensie subsol extins"
+
+#: inc/classes/class-sydney-modules.php:105
+#: inc/dashboard/class-dashboard-settings.php:420
+msgid "Breadcrumbs functionality."
+msgstr "Funcționalitate firimituri."
+
+#: inc/classes/class-sydney-modules.php:82
+#: inc/dashboard/class-dashboard-settings.php:395
+#: inc/theme-dashboard-settings.php:79
+msgid "Extended Blog Module"
+msgstr "Extensie blog extins"
+
+#: theme-dashboard/class-theme-dashboard.php:722
+msgid "Get direct support from our developers via email. We aim to answer all premium support requests within 24 hours."
+msgstr "Ai suport prin email direct de la dezvoltatorii noștri. Ne propunem să răspundem la toate cererile de suport premium în maxim 24 de ore."
+
+#: inc/dashboard/html-home.php:233
+msgid "Get Premium Support With Sydney Pro"
+msgstr "Cu Sydney Pro, ai suport premium"
+
+#: inc/classes/class-sydney-modules.php:34
+#: inc/classes/class-sydney-modules.php:43
+#: inc/classes/class-sydney-modules.php:52
+#: inc/classes/class-sydney-modules.php:64
+#: inc/classes/class-sydney-modules.php:76
+#: inc/classes/class-sydney-modules.php:87
+#: inc/classes/class-sydney-modules.php:96
+#: inc/classes/class-sydney-modules.php:105
+#: inc/classes/class-sydney-modules.php:117
+#: inc/classes/class-sydney-modules.php:126
+#: inc/classes/class-sydney-modules.php:135
+#: inc/modules/class-sydney-modules.php:36
+msgid "Documentation article"
+msgstr "Articol cu documentație"
+
+#: inc/classes/class-sydney-modules.php:32
+#: inc/modules/class-sydney-modules.php:34
+msgid "Build templates"
+msgstr "Construiește șabloane"
+
+#: inc/woocommerce.php:1136
+msgid "Clear"
+msgstr "Șterge"
+
+#: inc/woocommerce.php:1120
+msgid "This product is currently out of stock and unavailable."
+msgstr "În prezent, acest produs nu este în stoc și este indisponibil."
+
+#. translators: %s: quick view product title
+#: inc/woocommerce.php:877
+msgid "Quick View"
+msgstr "Vizualizare rapidă"
+
+#. translators: %s: quick view product title
+#: inc/woocommerce.php:876
+msgid "Quick view the %s product"
+msgstr "Vizualizează rapid produsul %s"
+
+#: inc/modules/hf-builder/class-header-footer-builder.php:223
+#: inc/woocommerce.php:698
+msgid "Login/Register"
+msgstr "Autentificare/înregistrare"
+
+#: inc/woocommerce.php:696
+msgid "My Account"
+msgstr "Contul meu"
+
+#: inc/customizer/options/woocommerce.php:947
+msgid "Large"
+msgstr "Mare"
+
+#: inc/customizer/options/woocommerce.php:946
+msgid "Medium"
+msgstr "Mediu"
+
+#: inc/customizer/options/woocommerce.php:945
+msgid "Small"
+msgstr "Mic"
+
+#: inc/customizer/options/woocommerce.php:923
+msgid "Button color"
+msgstr "Culoare buton"
+
+#: inc/customizer/options/woocommerce.php:905
+msgid "Button background color"
+msgstr "Culoare fundal buton"
+
+#: inc/customizer/options/woocommerce.php:793
+msgid "Product prices color"
+msgstr "Culoare pentru prețuri produse"
+
+#: inc/customizer/options/woocommerce.php:774
+msgid "Product prices font size"
+msgstr "Dimensiune font pentru prețuri produse"
+
+#: inc/customizer/options/woocommerce.php:755
+msgid "Product title"
+msgstr "Titlu produs"
+
+#: inc/customizer/options/woocommerce.php:735
+msgid "Card background"
+msgstr "Fundal coș"
+
+#: inc/customizer/options/woocommerce.php:708
+msgid "Image radius"
+msgstr "Rotunjire imagine"
+
+#: inc/customizer/options/woocommerce.php:621
+#: inc/customizer/options/woocommerce.php:670
+msgid "Display Coupon Form"
+msgstr "Afișează formularul de cupoane"
+
+#: inc/customizer/options/woocommerce.php:601
+msgid "Cross Sell"
+msgstr "Vânzări încrucișate"
+
+#: inc/customizer/options/woocommerce.php:553
+msgid "Cart"
+msgstr "Coș"
+
+#: inc/customizer/options/woocommerce.php:442
+msgid "Badge text"
+msgstr "Text insignă"
+
+#: inc/customizer/options/woocommerce.php:438 inc/woocommerce.php:1245
+msgid "Sale!"
+msgstr "Reduceri!"
+
+#: inc/customizer/options/woocommerce.php:420
+#: inc/customizer/options/woocommerce.php:535
+msgid "Border radius"
+msgstr "Rotunjire chenar"
+
+#: inc/customizer/options/woocommerce.php:329
+#: inc/modules/hf-builder/components/header/wc-icons/customize-options.php:233
+msgid "Elements spacing"
+msgstr "Spațiu între elemente"
+
+#: inc/customizer/options/woocommerce.php:297
+msgid "Short description"
+msgstr "Descriere scurtă"
+
+#: inc/customizer/options/woocommerce.php:296
+msgid "Category"
+msgstr "Categorie"
+
+#: inc/customizer/options/woocommerce.php:295
+msgid "Price"
+msgstr "Preț"
+
+#: inc/customizer/options/woocommerce.php:294
+msgid "Reviews"
+msgstr "Recenzii"
+
+#: inc/customizer/options/woocommerce.php:290
+msgid "Card elements"
+msgstr "Elemente de coș"
+
+#: inc/customizer/options/woocommerce.php:266
+msgid "Add to cart button"
+msgstr "Buton Adaugă în coș"
+
+#: inc/customizer/options/woocommerce.php:227
+msgid "Display breadcrumbs"
+msgstr "Afișează firimituri"
+
+#: inc/customizer/options/woocommerce.php:208
+msgid "Results count"
+msgstr "Număr de rezultate"
+
+#: inc/customizer/options/woocommerce.php:189
+msgid "Product sorting"
+msgstr "Sortare produse"
+
+#: inc/customizer/options/woocommerce.php:170
+msgid "Page Description"
+msgstr "Descriere pagină"
+
+#: inc/customizer/options/woocommerce.php:151
+msgid "Page title"
+msgstr "Titlu pagină"
+
+#: inc/customizer/options/woocommerce.php:131
+msgid "Page elements"
+msgstr "Elemente de pagină"
+
+#: inc/customizer/options/woocommerce.php:103
+msgid "No Sidebar"
+msgstr "Fără bară laterală"
+
+#: inc/customizer/options/woocommerce.php:76
+msgid "Layout type"
+msgstr "Tip de aranjament"
+
+#: inc/customizer/options/woocommerce-single.php:395
+msgid "Product price color"
+msgstr "Culoare preț produse"
+
+#: inc/customizer/options/woocommerce-single.php:365
+msgid "Product price size"
+msgstr "Dimensiune preț produse"
+
+#: inc/customizer/options/woocommerce-single.php:338
+msgid "Product title color"
+msgstr "Culoare titlu produse"
+
+#: inc/customizer/options/woocommerce-single.php:309
+msgid "Product title size"
+msgstr "Dimensiune titlu produse"
+
+#: inc/customizer/options/woocommerce-single.php:277
+msgid "Related products"
+msgstr "Produse similare"
+
+#: inc/customizer/options/woocommerce-single.php:239
+msgid "Product tabs"
+msgstr "File produse"
+
+#: inc/customizer/options/woocommerce-single.php:220
+msgid "Tags"
+msgstr "Etichete"
+
+#: inc/customizer/options/woocommerce-single.php:201
+#: inc/customizer/options/woocommerce.php:459
+msgid "Categories"
+msgstr "Categorii"
+
+#: inc/customizer/options/woocommerce-single.php:182
+msgid "Ratings"
+msgstr "Evaluări"
+
+#: inc/customizer/options/woocommerce-single.php:162
+msgid "SKU"
+msgstr "SKU"
+
+#: inc/customizer/options/woocommerce-single.php:143
+msgid "Breadcrumbs"
+msgstr "Firimituri"
+
+#: inc/customizer/options/woocommerce-single.php:105
+msgid "Requires page refresh after saving"
+msgstr "După salvare, pagina trebuie să fie reîmprospătată"
+
+#: inc/customizer/options/woocommerce-single.php:70
+msgid "Product Image"
+msgstr "Imagine produs"
+
+#: inc/customizer/options/header.php:1249
+msgid "Menu Items Font size"
+msgstr "Dimensiune font elemente de meniu"
+
+#: inc/customizer/options/colors.php:540
+msgid "Placeholder color"
+msgstr "Culoare substituent"
+
+#: inc/customizer/options/colors.php:419
+msgid "Form fields"
+msgstr "Câmpuri formular"
+
+#: inc/customizer/options/colors.php:170
+msgid "Content links"
+msgstr "Legături conținut"
+
+#: inc/customizer/options/colors.php:143
+msgid "Links"
+msgstr "Legături"
+
+#: inc/customizer/options/header.php:1170
+msgid "Top-level menu items"
+msgstr "Elemente de meniu de nivel superior"
+
+#: inc/customizer/options/colors.php:201
+msgid "Content links hover"
+msgstr "Trecere peste legături din conținut"
+
+#: inc/classes/class-sydney-page-metabox.php:32
+msgid "Sydney page options"
+msgstr "Opțiuni pagini Sydney"
+
+#: inc/customizer/options/header.php:1190
+msgid "Enable top-level menu items typography options"
+msgstr "Activează opțiunile pentru tipografice pentru elementele de meniu de nivel superior"
+
+#: inc/customizer/options/woocommerce.php:941
+msgid "Loop add to cart button size"
+msgstr "Mărimea butonului Adaugă în coș din buclă"
+
+#: inc/customizer/options/woocommerce.php:888
+msgid "Hide button icon"
+msgstr "Ascunde iconul butonului"
+
+#: inc/customizer/options/woocommerce.php:354
+#: inc/customizer/options/woocommerce.php:811
+msgid "Sale tag"
+msgstr "Etichetă reduceri"
+
+#: inc/customizer/options/woocommerce.php:245
+#: inc/customizer/options/woocommerce.php:692
+msgid "Product card"
+msgstr "Card de produs"
+
+#: inc/customizer/options/woocommerce-single.php:258
+msgid "Upsell products"
+msgstr "Produse upsell"
+
+#: inc/customizer/options/woocommerce-single.php:123
+msgid "Gallery columns"
+msgstr "Coloane galerie"
+
+#: inc/customizer/options/woocommerce-single.php:104
+msgid "Gallery thumbnail slider"
+msgstr "Carusel de miniaturi al galeriei"
+
+#: inc/customizer/options/typography.php:463
+#: inc/customizer/options/typography.php:598
+msgid "Body"
+msgstr "Corp"
+
+#: inc/customizer/options/colors.php:399
+#: inc/customizer/options/typography.php:414
+#: inc/customizer/style-book/class-sydney-style-book.php:386
+msgid "Heading 6"
+msgstr "Subtitlu 6"
+
+#: inc/customizer/options/colors.php:369
+#: inc/customizer/options/typography.php:363
+#: inc/customizer/style-book/class-sydney-style-book.php:381
+msgid "Heading 5"
+msgstr "Subtitlu 5"
+
+#: inc/customizer/options/colors.php:339
+#: inc/customizer/options/typography.php:312
+#: inc/customizer/style-book/class-sydney-style-book.php:376
+msgid "Heading 4"
+msgstr "Subtitlu 4"
+
+#: inc/customizer/options/colors.php:309
+#: inc/customizer/options/typography.php:261
+#: inc/customizer/style-book/class-sydney-style-book.php:371
+msgid "Heading 3"
+msgstr "Subtitlu 3"
+
+#: inc/customizer/options/colors.php:279
+#: inc/customizer/options/typography.php:210
+#: inc/customizer/style-book/class-sydney-style-book.php:366
+msgid "Heading 2"
+msgstr "Subtitlu 2"
+
+#: inc/customizer/options/colors.php:249
+#: inc/customizer/options/typography.php:158
+#: inc/customizer/style-book/class-sydney-style-book.php:361
+msgid "Heading 1"
+msgstr "Subtitlu 1"
+
+#: inc/customizer/options/typography.php:139
+#: inc/customizer/options/typography.php:579
+msgid "Text decoration"
+msgstr "Decorare text"
+
+#: inc/customizer/options/typography.php:96
+#: inc/customizer/options/typography.php:536
+msgid "Letter spacing"
+msgstr "Spațiu între litere"
+
+#: inc/customizer/options/typography.php:74
+#: inc/customizer/options/typography.php:514
+msgid "Line height"
+msgstr "Înălțime linie"
+
+#: inc/customizer/options/typography.php:62
+#: inc/customizer/options/typography.php:502
+msgid "Oblique"
+msgstr "Oblic"
+
+#: inc/customizer/options/typography.php:61
+#: inc/customizer/options/typography.php:501
+msgid "Italic"
+msgstr "Cursiv"
+
+#: inc/customizer/options/typography.php:58
+#: inc/customizer/options/typography.php:498
+msgid "Font style"
+msgstr "Stil font"
+
+#: inc/customizer/options/colors.php:221
+#: inc/customizer/options/typography.php:22
+#: inc/customizer/style-book/class-sydney-style-book.php:358
+msgid "Headings"
+msgstr "Subtitluri"
+
+#: inc/customizer/options/typography.php:11
+#: inc/customizer/style-book/class-sydney-style-book.php:130
+#: inc/customizer/style-book/class-sydney-style-book.php:354
+#: inc/dashboard/class-dashboard-settings.php:243
+msgid "Typography"
+msgstr "Tipografice"
+
+#: inc/customizer/options/header.php:204
+msgid "Site description font size"
+msgstr "Dimensiune font pentru descriere site"
+
+#: inc/customizer/options/header.php:132
+msgid "Site title font size"
+msgstr "Dimensiune font pentru titlu site"
+
+#: inc/customizer/options/general.php:175
+msgid "Enable preloader"
+msgstr "Activează pre-încărcătorul"
+
+#: inc/theme-update.php:119
+msgid "Continue to use the old header"
+msgstr "Continuă să folosești antetul vechi"
+
+#: inc/theme-update.php:111
+msgid "Note 4: Please take a full backup of your website before upgrading."
+msgstr "A patra notă: înainte de a face actualizarea, creează o copie de siguranță completă a site-ului."
+
+#: inc/theme-update.php:102
+msgid "Note 1: this upgrade is optional, there is no need to do it if you are happy with your current header."
+msgstr "Prima notă: această actualizare este opțională, nu trebuie să o faci dacă ești mulțumit de antetul actual."
+
+#: functions.php:218
+msgid "Are you sure you want to dismiss this notice?"
+msgstr "Sigur vrei să respingi această notificare?"
+
+#: inc/classes/class-sydney-header.php:513
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:183
+#: inc/extras.php:613 inc/integrations/elementor/library/templates.php:89
+#: inc/modules/hf-builder/class-header-footer-builder.php:102
+#: inc/modules/hf-builder/class-header-footer-builder.php:142
+#: inc/modules/hf-builder/components/header/search/customize-options.php:22
+msgid "Search"
+msgstr "Caută"
+
+#: inc/template-tags.php:185
+msgid "0 comments"
+msgstr "Niciun comentariu"
+
+#: inc/woocommerce.php:514
+msgid "Your cart"
+msgstr "Coșul tău"
+
+#: inc/woocommerce.php:504
+msgid "Your account"
+msgstr "Contul tău"
+
+#: inc/woocommerce.php:475
+msgid "View your shopping cart"
+msgstr "Vezi coșul tău de cumpărături"
+
+#: inc/theme-update.php:118
+msgid "Upgrade Theme Header"
+msgstr "Actualizează antetul temei"
+
+#. translators: %s: Documentation link
+#: inc/theme-update.php:116
+msgid "Want to see the new header options before upgrading? Check out our %s."
+msgstr "Vrei să vezi opțiunile noi pentru antet înainte de a face actualizarea? Mergi aici: %s."
+
+#: inc/theme-update.php:108
+msgid "Note 3: this upgrade refers only to the header (site identity and menu bar). It does not change any settings regarding your hero area (slider, video etc)."
+msgstr "A treia notă: această actualizare se referă numai la antet (identitate site și bara cu meniul principal). Nu modifică alte setări sau alte zone (carusel, video etc.)."
+
+#: inc/theme-update.php:105
+msgid "Note 2: your current header customizations will be lost and you will have to use the new options to customize your header."
+msgstr "A doua notă: personalizările actuale făcute la antet vor fi pierdute și va trebui să folosești opțiunile noi ca să-ți personalizezi antetul din nou."
+
+#: inc/theme-update.php:98
+msgid "This version of Sydney comes with a new and improved header. Activate it by clicking the button below and you can access new options."
+msgstr "Versiunea nouă Sydney are un antet nou și îmbunătățit. Dă clic pe butonul de mai jos pentru a activa antetul nou și pentru a accesa opțiunile noi."
+
+#: inc/theme-update.php:96
+msgid "Sydney Header Update"
+msgstr "Actualizare antet Sydney"
+
+#: inc/customizer/options/upsell.php:29
+#: inc/dashboard/class-dashboard-settings.php:279
+#: inc/theme-dashboard-settings.php:210
+msgid "Top bar"
+msgstr "Bara de sus"
+
+#: inc/customizer/options/woocommerce.php:495 inc/extras.php:573
+msgid "Layout 4"
+msgstr "Al patrulea aranjament"
+
+#: inc/customizer/options/woocommerce.php:499 inc/extras.php:577
+msgid "Layout 5"
+msgstr "Al cincilea aranjament"
+
+#: inc/customizer/options/woocommerce-single.php:83
+#: inc/customizer/options/woocommerce.php:491 inc/extras.php:569
+#: inc/extras.php:599
+msgid "Layout 3"
+msgstr "Al treilea aranjament"
+
+#: inc/customizer/options/header.php:1149
+msgid "Border width"
+msgstr "Lățime chenar"
+
+#: inc/customizer/options/colors.php:509 inc/customizer/options/header.php:1135
+#: inc/customizer/style-book/class-sydney-style-book.php:192
+msgid "Border color"
+msgstr "Culoare chenar"
+
+#: inc/customizer/options/header.php:1119
+msgid "Border size"
+msgstr "Dimensiune chenar"
+
+#: inc/customizer/options/header.php:1096
+msgid "Bottom row padding"
+msgstr "Distanțare rânduri în partea de jos"
+
+#: inc/customizer/options/header.php:940
+msgid "Submenu color"
+msgstr "Culoare sub-meniu"
+
+#: inc/customizer/options/header.php:908
+msgid "Submenu background"
+msgstr "Fundal sub-meniu"
+
+#: inc/customizer/options/header.php:875
+msgid "Bottom row text color"
+msgstr "Culoare text rânduri în partea de jos"
+
+#: inc/customizer/options/header.php:842
+msgid "Bottom row background color"
+msgstr "Culoare fundal rânduri în partea de jos"
+
+#: inc/customizer/options/header.php:681
+msgid "Phone number"
+msgstr "Număr de telefon"
+
+#: inc/customizer/options/header.php:666
+msgid "Email address"
+msgstr "Adresă email"
+
+#: inc/extras.php:616
+msgid "Contact info"
+msgstr "Informații de contact"
+
+#: inc/customizer/options/header.php:649
+#: inc/modules/hf-builder/components/footer/button/customize-options.php:116
+msgid "Open in a new tab?"
+msgstr "Deschizi într-o filă nouă?"
+
+#: inc/customizer/options/header.php:598
+msgid "Enable account icon"
+msgstr "Activează iconul pentru cont"
+
+#: inc/customizer/options/header.php:579
+msgid "Enable cart icon"
+msgstr "Activează iconul pentru coș"
+
+#: inc/extras.php:614
+msgid "Cart &amp; account icons"
+msgstr "Iconuri coș și cont"
+
+#: inc/customizer/options/header.php:505
+msgid "Top right"
+msgstr "Dreapta sus"
+
+#: inc/customizer/options/header.php:492
+msgid "Top left"
+msgstr "Stânga sus"
+
+#: inc/customizer/options/header.php:478
+msgid "Bottom row"
+msgstr "Rândul de jos"
+
+#: inc/customizer/options/header.php:465
+msgid "Top row"
+msgstr "Rândul de sus"
+
+#: inc/customizer/options/header.php:371
+msgid "Always sticky"
+msgstr "Mereu fix"
+
+#: inc/customizer/options/header.php:368
+msgid "Sticky header type"
+msgstr "Tip de antet fix"
+
+#: inc/customizer/options/header.php:354
+msgid "Enable sticky header"
+msgstr "Activează antetul fix"
+
+#: inc/customizer/options/header.php:312
+msgid "Menu position"
+msgstr "Poziție meniu"
+
+#: inc/customizer/options/header.php:296
+msgid "Settings"
+msgstr "Setări"
+
+#: inc/customizer/options/header.php:227
+msgid "Main header"
+msgstr "Antet principal"
+
+#: inc/customizer/options/header.php:101
+msgid "Site title color"
+msgstr "Culoare titlu site"
+
+#: inc/customizer/options/header.php:173
+msgid "Site description color"
+msgstr "Culoare descriere site"
+
+#: inc/customizer/options/header.php:43
+msgid "Logo height"
+msgstr "Înălțime logo"
+
+#: inc/customizer/options/header-mobile.php:632
+msgid "Separator color"
+msgstr "Culoare separator"
+
+#: inc/customizer/options/header-mobile.php:595
+msgid "Separator size"
+msgstr "Dimensiune separator"
+
+#: inc/customizer/options/header-mobile.php:401
+msgid "Top &amp; bottom padding"
+msgstr "Distanțare în partea de sus și de jos"
+
+#: inc/customizer/options/header-mobile.php:324
+msgid "Menu bar"
+msgstr "Bară meniu"
+
+#: inc/customizer/options/header-mobile.php:301
+msgid "Menu icon"
+msgstr "Icon meniu"
+
+#: inc/customizer/options/header-mobile.php:201
+#: inc/customizer/options/woocommerce-single.php:79
+#: inc/customizer/options/woocommerce.php:275
+#: inc/customizer/options/woocommerce.php:382
+#: inc/customizer/options/woocommerce.php:487
+#: inc/customizer/options/woocommerce.php:580
+#: inc/customizer/options/woocommerce.php:650 inc/extras.php:565
+#: inc/extras.php:595
+msgid "Layout 2"
+msgstr "Al doilea aranjament"
+
+#: inc/customizer/options/header-mobile.php:197
+#: inc/customizer/options/woocommerce-single.php:75
+#: inc/customizer/options/woocommerce.php:271
+#: inc/customizer/options/woocommerce.php:378
+#: inc/customizer/options/woocommerce.php:483
+#: inc/customizer/options/woocommerce.php:576
+#: inc/customizer/options/woocommerce.php:646 inc/extras.php:561
+#: inc/extras.php:591
+msgid "Layout 1"
+msgstr "Primul aranjament"
+
+#: inc/customizer/options/header-mobile.php:105
+msgid "Additional elements"
+msgstr "Elemente suplimentare"
+
+#: inc/customizer/options/header-mobile.php:14
+msgid "Mobile header"
+msgstr "Antet pentru mobil"
+
+#: inc/customizer/options/header-mobile.php:241
+msgid "Link alignment"
+msgstr "Aliniere legături"
+
+#: inc/customizer/options/header-mobile.php:264
+#: inc/customizer/options/header-mobile.php:579
+msgid "Link separator"
+msgstr "Separator legături"
+
+#: inc/customizer/options/header-mobile.php:278
+msgid "Link spacing"
+msgstr "Spațiu între legături"
+
+#: functions.php:214
+msgid "Are you sure you want to upgrade your header?"
+msgstr "Sigur vrei să actualizezi antetul?"
+
+#: inc/customizer/options/hero-area.php:13
+msgid "Hero area"
+msgstr "Zonă Hero"
+
+#: inc/classes/class-sydney-header.php:481
+#: inc/customizer/options/header.php:676
+#: inc/modules/hf-builder/components/header/contact-info/contact-info.php:15
+msgid "111222333"
+msgstr "111222333"
+
+#: inc/classes/class-sydney-header.php:480
+#: inc/customizer/options/header.php:661
+#: inc/modules/hf-builder/components/header/contact-info/contact-info.php:14
+msgid "office@example.org"
+msgstr "office@exemplu.org"
+
+#: inc/customizer/options/header.php:372
+msgid "On scroll to top"
+msgstr "La derulare în sus"
+
+#: inc/customizer/options/header-mobile.php:424
+msgid "Offcanvas menu"
+msgstr "Meniu în afara ecranului"
+
+#: inc/customizer/options/header-mobile.php:217
+msgid "Additional offcanvas elements"
+msgstr "Elemente adiționale pentru meniul în afara ecranului"
+
+#: inc/customizer/options/header-mobile.php:192
+msgid "Off-canvas mode"
+msgstr "Mod în afara paginii"
+
+#: inc/customizer/options/hero-area.php:84
+msgid "Hero Slider"
+msgstr "Carusel Hero"
+
+#: inc/customizer/options/hero-area.php:19
+msgid "Hero type"
+msgstr "Tip de Hero"
+
+#: inc/classes/class-sydney-header.php:463
+#: inc/customizer/options/header.php:610
+#: inc/modules/hf-builder/components/footer/button/button.php:13
+#: inc/modules/hf-builder/components/footer/button/customize-options.php:63
+#: inc/modules/hf-builder/components/header/button/button.php:13
+msgid "Click me"
+msgstr "Dă clic aici"
+
+#: inc/customizer/options/blog-single.php:329
+msgid "Related posts"
+msgstr "Articole similare"
+
+#. translators: %1$s: avatar, %2$s: author name.
+#: inc/template-tags.php:134
+msgctxt "post author"
+msgid "By %1$s %2$s"
+msgstr "De %1$s %2$s"
+
+#. translators: %s: Author name
+#: inc/extras.php:466
+msgid "See all posts by %s"
+msgstr "Vezi toate articolele lui %s"
+
+#. translators: %s: Author name
+#: inc/extras.php:456
+msgid "By %s"
+msgstr "De %s"
+
+#: inc/customizer/options/general.php:833
+#: inc/customizer/options/general.php:939
+#: inc/modules/hf-builder/components/footer/button/customize-options.php:274
+#: inc/modules/hf-builder/components/header/button/customize-options.php:267
+#: inc/modules/hf-builder/components/header/button/customize-options.php:390
+msgid "Border Color"
+msgstr "Culoare chenar"
+
+#: inc/customizer/options/general.php:746
+#: inc/modules/hf-builder/components/header/button/customize-options.php:170
+msgid "Default state"
+msgstr "Stare implicită"
+
+#: inc/customizer/options/general.php:726
+#: inc/customizer/options/header.php:1229
+#: inc/customizer/options/typography.php:119
+#: inc/customizer/options/typography.php:559
+msgid "Text transform"
+msgstr "Transformare text"
+
+#: inc/customizer/options/footer.php:774 inc/customizer/options/general.php:701
+#: inc/customizer/options/header-mobile.php:534
+#: inc/customizer/options/typography.php:185
+#: inc/customizer/options/typography.php:236
+#: inc/customizer/options/typography.php:287
+#: inc/customizer/options/typography.php:338
+#: inc/customizer/options/typography.php:389
+#: inc/customizer/options/typography.php:440
+#: inc/customizer/options/typography.php:625
+msgid "Font size"
+msgstr "Dimensiune font"
+
+#: inc/customizer/options/general.php:803
+#: inc/customizer/options/general.php:909
+#: inc/modules/hf-builder/components/footer/button/customize-options.php:241
+#: inc/modules/hf-builder/components/footer/copyright/customize-options.php:126
+#: inc/modules/hf-builder/components/footer/html/customize-options.php:192
+#: inc/modules/hf-builder/components/footer/widget-1/customize-options.php:151
+#: inc/modules/hf-builder/components/footer/widget-2/customize-options.php:151
+#: inc/modules/hf-builder/components/footer/widget-3/customize-options.php:152
+#: inc/modules/hf-builder/components/footer/widget-4/customize-options.php:151
+#: inc/modules/hf-builder/components/header/button/customize-options.php:355
+#: inc/modules/hf-builder/components/header/contact-info/customize-options.php:209
+#: inc/modules/hf-builder/components/header/contact-info/customize-options.php:298
+#: inc/modules/hf-builder/components/header/html/customize-options.php:202
+#: inc/modules/hf-builder/components/header/html/customize-options.php:277
+#: inc/modules/hf-builder/components/header/menu/customize-options.php:388
+#: inc/modules/hf-builder/components/header/mobile-offcanvas-menu/customize-options.php:144
+#: inc/modules/hf-builder/components/header/secondary-menu/customize-options.php:158
+#: inc/modules/hf-builder/components/header/secondary-menu/customize-options.php:266
+msgid "Text Color"
+msgstr "Culoare text"
+
+#: inc/customizer/options/general.php:643
+msgid "Left/Right padding"
+msgstr "Distanțare stânga/dreapta"
+
+#: inc/customizer/options/general.php:607
+msgid "Top/Bottom padding"
+msgstr "Distanțare sus/jos"
+
+#: inc/customizer/options/blog.php:832
+msgid "Excerpt color"
+msgstr "Culoare rezumat"
+
+#: inc/customizer/options/blog.php:795
+msgid "Excerpt font size"
+msgstr "Dimensiune font rezumat"
+
+#: inc/customizer/options/blog.php:727
+msgid "Meta font size"
+msgstr "Dimensiune font metadate"
+
+#: inc/customizer/options/blog.php:660
+msgid "Post title font size"
+msgstr "Dimensiune font titlu articole"
+
+#: inc/customizer/options/blog.php:565
+msgid "None"
+msgstr "Niciuna"
+
+#: inc/customizer/options/blog.php:487
+msgid "Below excerpt"
+msgstr "Sub rezumat"
+
+#: inc/customizer/options/blog.php:360
+msgid "Title spacing"
+msgstr "Spațiere titlu"
+
+#: inc/customizer/options/blog.php:323
+#: inc/customizer/options/woocommerce.php:310
+#: inc/customizer/options/woocommerce.php:516
+msgid "Text alignment"
+msgstr "Aliniere text"
+
+#: inc/customizer/options/blog.php:260
+msgid "Image size"
+msgstr "Dimensiune imagine"
+
+#: inc/customizer/options/blog.php:221
+msgid "Enable featured image"
+msgstr "Activează imaginile reprezentative"
+
+#: inc/customizer/options/blog.php:145
+msgid "4"
+msgstr "4"
+
+#: inc/customizer/options/blog.php:144
+msgid "3"
+msgstr "3"
+
+#: inc/customizer/options/blog.php:143
+msgid "2"
+msgstr "2"
+
+#: inc/customizer/options/blog.php:140
+#: inc/modules/hf-builder/components/footer/row/customize-options.php:139
+#: inc/modules/hf-builder/components/header/row/customize-options.php:151
+msgid "Columns"
+msgstr "Coloane"
+
+#: inc/customizer/options/blog.php:99
+msgid "List zig-zag"
+msgstr "Listă în zig-zag"
+
+#: inc/customizer/options/blog.php:95
+msgid "Masonry"
+msgstr "Zidărie"
+
+#: inc/customizer/options/blog.php:91 inc/customizer/options/woocommerce.php:80
+msgid "List"
+msgstr "Listă"
+
+#: inc/customizer/options/blog.php:87 inc/customizer/options/woocommerce.php:79
+msgid "Grid"
+msgstr "Grilă"
+
+#: inc/customizer/options/blog.php:83
+msgid "Classic 2"
+msgstr "Clasic 2"
+
+#: inc/customizer/options/blog.php:20
+msgid "Blog archives"
+msgstr "Arhive blog"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:179
+#: inc/customizer/options/blog.php:11
+msgid "Blog"
+msgstr "Blog"
+
+#: inc/customizer/options/blog-single.php:492
+#: inc/customizer/options/blog.php:764
+msgid "Meta color"
+msgstr "Culoare metadate"
+
+#: inc/customizer/options/blog-single.php:455
+msgid "Meta size"
+msgstr "Dimensiune metadate"
+
+#: inc/customizer/options/blog-single.php:424
+#: inc/customizer/options/blog.php:696
+msgid "Title color"
+msgstr "Culoare titlu"
+
+#: inc/customizer/options/blog-single.php:388
+msgid "Post title size"
+msgstr "Dimensiune titlu articole"
+
+#: inc/customizer/options/blog-single.php:346
+msgid "Related posts title"
+msgstr "Titlu pentru Articole similare"
+
+#: inc/customizer/options/blog-single.php:338 inc/extras.php:488
+msgid "You might also like:"
+msgstr "S-ar putea să-ți placă și:"
+
+#: inc/customizer/options/blog-single.php:292
+msgid "Author box"
+msgstr "Casetă autor"
+
+#: inc/customizer/options/blog-single.php:274
+#: inc/customizer/options/blog.php:506
+msgid "Post tags"
+msgstr "Etichete articol"
+
+#: inc/customizer/options/blog-single.php:255
+#: inc/customizer/options/header.php:406
+msgid "Elements"
+msgstr "Elemente"
+
+#: inc/customizer/options/blog-single.php:231
+#: inc/customizer/options/blog.php:283 inc/customizer/options/blog.php:539
+#: inc/customizer/options/woocommerce.php:398
+msgid "Spacing"
+msgstr "Spațiere"
+
+#: inc/customizer/options/blog-single.php:219
+#: inc/customizer/options/blog.php:505
+msgid "Post comments"
+msgstr "Comentarii la articol"
+
+#: inc/customizer/options/blog-single.php:218
+#: inc/customizer/options/blog.php:504
+msgid "Post categories"
+msgstr "Categorii de articole"
+
+#: inc/customizer/options/blog-single.php:217
+#: inc/customizer/options/blog.php:503
+msgid "Post author"
+msgstr "Autor articol"
+
+#: inc/customizer/options/blog-single.php:216
+#: inc/customizer/options/blog.php:502
+msgid "Post date"
+msgstr "Dată articol"
+
+#: inc/customizer/options/blog-single.php:213
+#: inc/customizer/options/blog.php:499
+msgid "Meta elements"
+msgstr "Elemente meta"
+
+#: inc/customizer/options/blog-single.php:202
+msgid "Below title"
+msgstr "Sub titlu"
+
+#: inc/customizer/options/blog-single.php:201
+#: inc/customizer/options/blog.php:486
+msgid "Above title"
+msgstr "Deasupra titlului"
+
+#: inc/customizer/options/blog-single.php:158
+msgid "Image spacing"
+msgstr "Spațiu între imagini"
+
+#: inc/customizer/options/blog-single.php:145
+msgid "Above"
+msgstr "Deasupra"
+
+#: inc/customizer/options/blog-single.php:144
+msgid "Below"
+msgstr "Sub"
+
+#: inc/customizer/options/blog-single.php:141
+#: inc/customizer/options/blog.php:242
+msgid "Image placement"
+msgstr "Plasare imagine"
+
+#: inc/customizer/options/blog-single.php:126
+msgid "Show featured image"
+msgstr "Arată imaginea reprezentativă"
+
+#: inc/customizer/options/blog-single.php:82
+msgid "Header spacing"
+msgstr "Spațiere în antet"
+
+#: inc/customizer/options/blog-single.php:65
+msgid "Header alignment"
+msgstr "Aliniere antet"
+
+#: inc/customizer/options/blog.php:626 inc/customizer/options/layouts.php:134
+msgid "Sidebar position"
+msgstr "Poziție bară laterală"
+
+#: inc/customizer/options/blog.php:611 inc/customizer/options/layouts.php:118
+msgid "Enable sidebar"
+msgstr "Activează bara laterală"
+
+#: inc/customizer/options/blog-single.php:14
+msgid "Single posts"
+msgstr "Articole singulare"
+
+#: inc/customizer/options/general.php:852
+msgid "Hover state"
+msgstr "Stare trecere peste"
+
+#: inc/customizer/options/blog.php:562
+msgid "Delimiter style"
+msgstr "Stil delimitator"
+
+#: inc/customizer/options/blog.php:450
+msgid "Read more link"
+msgstr "Legătură la Citește mai mult"
+
+#: inc/customizer/options/blog.php:523
+msgid "Show author avatar"
+msgstr "Arată avatarul autorului"
+
+#: inc/customizer/options/general.php:561
+#: inc/customizer/options/header.php:1074
+#: inc/modules/hf-builder/components/footer/columns/customize-options.php:303
+#: inc/modules/hf-builder/components/footer/footer-builder/customize-options.php:220
+#: inc/modules/hf-builder/components/footer/row/customize-options.php:465
+#: inc/modules/hf-builder/components/header/columns/customize-options.php:309
+#: inc/modules/hf-builder/components/header/header-builder/customize-options.php:338
+#: inc/modules/hf-builder/components/header/row/customize-options.php:499
+msgid "Padding"
+msgstr "Distanțare"
+
+#: inc/customizer/options/general.php:539
+msgid "Icon size"
+msgstr "Dimensiune icon"
+
+#: inc/customizer/options/general.php:521
+msgid "Background hover color"
+msgstr "Culoare trecere peste fundal"
+
+#: inc/customizer/options/general.php:490
+msgid "Icon hover color"
+msgstr "Culoare trecere peste icon"
+
+#: inc/customizer/options/general.php:428
+#: inc/modules/hf-builder/components/header/mobile-hamburger/customize-options.php:130
+msgid "Icon color"
+msgstr "Culoare icon"
+
+#: inc/customizer/options/general.php:291
+msgid "Icon 4"
+msgstr "Icon 4"
+
+#: inc/customizer/options/general.php:287
+msgid "Icon 3"
+msgstr "Icon 3"
+
+#: inc/customizer/options/general.php:283
+msgid "Icon 2"
+msgstr "Icon 2"
+
+#: inc/customizer/options/general.php:279
+msgid "Icon 1"
+msgstr "Icon 1"
+
+#: inc/customizer/options/general.php:256
+msgid "Text"
+msgstr "Text"
+
+#: inc/customizer/options/general.php:252 inc/extras.php:317
+msgid "Back to top"
+msgstr "Înapoi sus"
+
+#: inc/customizer/options/general.php:187
+msgid "Scroll to top"
+msgstr "Derulează în sus"
+
+#: inc/customizer/options/footer.php:881
+msgid "Vertical Padding"
+msgstr "Distanțare pe verticală"
+
+#: inc/customizer/options/colors.php:447 inc/customizer/options/footer.php:744
+#: inc/customizer/options/header-mobile.php:383
+#: inc/customizer/options/header.php:778
+#: inc/modules/hf-builder/components/header/menu/customize-options.php:189
+msgid "Text color"
+msgstr "Culoare text"
+
+#: inc/customizer/options/footer.php:615
+msgid "Copyright area"
+msgstr "Zonă drepturi de autor"
+
+#: inc/customizer/options/footer.php:522
+msgid "Column spacing"
+msgstr "Spațiu între coloane"
+
+#: inc/customizer/options/footer.php:467 inc/customizer/options/footer.php:863
+msgid "Divider width"
+msgstr "Lățime separator"
+
+#: inc/customizer/options/footer.php:448 inc/customizer/options/footer.php:844
+msgid "Divider color"
+msgstr "Culoare separator"
+
+#: inc/customizer/options/footer.php:422 inc/customizer/options/footer.php:818
+msgid "Divider size"
+msgstr "Dimensiune separator"
+
+#: inc/customizer/options/footer.php:352
+msgid "Links color"
+msgstr "Culoare legături"
+
+#: inc/customizer/options/footer.php:384
+msgid "Links color (hover)"
+msgstr "Culoare legături (la trecere peste)"
+
+#: inc/customizer/options/footer.php:180 inc/customizer/options/general.php:398
+msgid "Desktop only"
+msgstr "Numai pe desktop"
+
+#: inc/customizer/options/footer.php:181 inc/customizer/options/general.php:399
+msgid "Mobile/tablet only"
+msgstr "Numai pe mobil/tabletă"
+
+#: inc/customizer/options/footer.php:179 inc/customizer/options/general.php:397
+msgid "Show on all devices"
+msgstr "Arată pe toate dispozitivele"
+
+#: inc/customizer/options/footer.php:177 inc/customizer/options/general.php:395
+#: inc/modules/hf-builder/components/footer/button/customize-options.php:153
+#: inc/modules/hf-builder/components/footer/copyright/customize-options.php:95
+#: inc/modules/hf-builder/components/footer/html/customize-options.php:161
+#: inc/modules/hf-builder/components/footer/social/customize-options.php:99
+#: inc/modules/hf-builder/components/footer/widget-1/customize-options.php:99
+#: inc/modules/hf-builder/components/footer/widget-2/customize-options.php:99
+#: inc/modules/hf-builder/components/footer/widget-3/customize-options.php:100
+#: inc/modules/hf-builder/components/footer/widget-4/customize-options.php:99
+#: inc/modules/hf-builder/components/header/button/customize-options.php:115
+#: inc/modules/hf-builder/components/header/contact-info/customize-options.php:132
+#: inc/modules/hf-builder/components/header/html/customize-options.php:171
+#: inc/modules/hf-builder/components/header/logo/customize-options.php:183
+#: inc/modules/hf-builder/components/header/menu/customize-options.php:130
+#: inc/modules/hf-builder/components/header/mobile-hamburger/customize-options.php:99
+#: inc/modules/hf-builder/components/header/mobile-offcanvas-menu/customize-options.php:105
+#: inc/modules/hf-builder/components/header/search/customize-options.php:98
+#: inc/modules/hf-builder/components/header/secondary-menu/customize-options.php:119
+#: inc/modules/hf-builder/components/header/social/customize-options.php:101
+#: inc/modules/hf-builder/components/header/wc-icons/customize-options.php:106
+msgid "Visibility"
+msgstr "Vizibilitate"
+
+#: inc/customizer/options/blog.php:341 inc/customizer/options/footer.php:159
+msgid "Vertical alignment"
+msgstr "Aliniere pe verticală"
+
+#: inc/customizer/options/footer.php:144 inc/customizer/options/footer.php:471
+#: inc/customizer/options/footer.php:652 inc/customizer/options/footer.php:867
+#: inc/customizer/options/header.php:336 inc/customizer/options/header.php:1153
+msgid "Full-width"
+msgstr "Lățime completă"
+
+#: inc/customizer/options/footer.php:140 inc/customizer/options/footer.php:648
+#: inc/customizer/options/header.php:332
+msgid "Container type"
+msgstr "Tip de container"
+
+#: inc/customizer/options/footer.php:78
+msgid "Footer widgets layout"
+msgstr "Aranjament piese în subsol"
+
+#: inc/customizer/options/footer.php:40
+msgid "Footer widgets"
+msgstr "Piese în subsol"
+
+#: inc/customizer/controls/repeater/class_sydney_repeater.php:32
+msgid "Add"
+msgstr "Adaugă"
+
+#: inc/customizer/options/general.php:372
+msgid "Bottom offset"
+msgstr "Distanțare jos"
+
+#: inc/customizer/options/general.php:350
+msgid "Side offset"
+msgstr "Distanțare în lateral"
+
+#: inc/customizer/options/blog-single.php:198
+#: inc/customizer/options/blog.php:483 inc/customizer/options/general.php:331
+msgid "Position"
+msgstr "Poziție"
+
+#: inc/customizer/options/general.php:308
+#: inc/customizer/options/general.php:667
+msgid "Button radius"
+msgstr "Rotunjire buton"
+
+#: inc/customizer/options/general.php:242
+msgid "Text + Icon"
+msgstr "Text + icon"
+
+#: inc/customizer/options/general.php:241
+#: inc/customizer/options/general.php:274
+msgid "Icon"
+msgstr "Icon"
+
+#: inc/customizer/options/general.php:140
+msgid "Misc"
+msgstr "Diverse"
+
+#: inc/customizer/options/footer.php:668
+msgid "You can use the following tags: {copyright}, {year}, {site_title}, {theme_author}"
+msgstr "Poți să folosești următoarele taguri: {copyright}, {year}, {site_title}, {theme_author}"
+
+#: inc/customizer/options/footer.php:556
+msgid "Widget titles size"
+msgstr "Dimensiune titluri piese"
+
+#: inc/customizer/options/footer.php:320
+msgid "Widget text color"
+msgstr "Culoare text pentru piese"
+
+#: inc/customizer/options/footer.php:194
+msgid "Widget area 4"
+msgstr "A 4-a zonă cu piese"
+
+#: inc/customizer/options/footer.php:194
+msgid "Widget area 3"
+msgstr "A 3-a zonă cu piese"
+
+#: inc/customizer/options/footer.php:194
+msgid "Widget area 2"
+msgstr "A 2-a zonă cu piese"
+
+#: inc/customizer/options/footer.php:194
+msgid "Widget area 1"
+msgstr "Prima zonă cu piese"
+
+#: inc/customizer/controls/dimensions/class_sydney_dimensions_control.php:109
+#: inc/customizer/controls/dimensions/class_sydney_dimensions_control.php:137
+#: inc/customizer/controls/dimensions/class_sydney_dimensions_control.php:164
+#: inc/customizer/options/blog.php:346 inc/customizer/options/footer.php:164
+#: inc/customizer/options/header.php:518
+#: inc/modules/hf-builder/components/footer/columns/customize-options.php:117
+#: inc/modules/hf-builder/components/footer/footer-builder/customize-options.php:158
+#: inc/modules/hf-builder/components/footer/row/customize-options.php:360
+#: inc/modules/hf-builder/components/header/columns/customize-options.php:119
+#: inc/modules/hf-builder/components/header/header-builder/customize-options.php:276
+#: inc/modules/hf-builder/components/header/row/customize-options.php:394
+msgid "Bottom"
+msgstr "Jos"
+
+#: inc/customizer/options/blog-single.php:69
+#: inc/customizer/options/blog.php:345 inc/customizer/options/footer.php:163
+#: inc/modules/hf-builder/components/footer/columns/customize-options.php:116
+#: inc/modules/hf-builder/components/header/columns/customize-options.php:118
+msgid "Middle"
+msgstr "La mijloc"
+
+#: inc/customizer/controls/dimensions/class_sydney_dimensions_control.php:97
+#: inc/customizer/controls/dimensions/class_sydney_dimensions_control.php:125
+#: inc/customizer/controls/dimensions/class_sydney_dimensions_control.php:152
+#: inc/customizer/options/blog.php:344 inc/customizer/options/footer.php:162
+#: inc/modules/hf-builder/components/footer/columns/customize-options.php:115
+#: inc/modules/hf-builder/components/footer/footer-builder/customize-options.php:156
+#: inc/modules/hf-builder/components/footer/row/customize-options.php:358
+#: inc/modules/hf-builder/components/header/columns/customize-options.php:117
+#: inc/modules/hf-builder/components/header/header-builder/customize-options.php:274
+#: inc/modules/hf-builder/components/header/row/customize-options.php:392
+msgid "Top"
+msgstr "Sus"
+
+#: inc/customizer/options/footer.php:115 inc/customizer/options/footer.php:119
+#: inc/customizer/options/footer.php:123
+msgid "4 columns"
+msgstr "4 coloane"
+
+#: inc/customizer/options/footer.php:103 inc/customizer/options/footer.php:107
+#: inc/customizer/options/footer.php:111
+msgid "3 columns"
+msgstr "3 coloane"
+
+#: inc/customizer/options/footer.php:91 inc/customizer/options/footer.php:95
+#: inc/customizer/options/footer.php:99
+msgid "2 columns"
+msgstr "2 coloane"
+
+#: inc/customizer/options/footer.php:87
+msgid "1 column"
+msgstr "O coloană"
+
+#: inc/customizer/options/footer.php:83
+msgid "Disabled"
+msgstr "Dezactivat"
+
+#: inc/customizer/controls/class_sydney_tab_control.php:41
+msgid "Style"
+msgstr "Stil"
+
+#: functions.php:768
+msgid "Update to v5"
+msgstr "Actualizează la versiunea 5"
+
+#: functions.php:766 functions.php:782
+msgid "Important: "
+msgstr "Important:"
+
+#: inc/customizer/options/footer.php:685 inc/customizer/options/header.php:555
+msgid "Add new"
+msgstr "Adaugă nou"
+
+#: inc/customizer/options/footer.php:682 inc/customizer/options/header.php:552
+msgid "Social profile"
+msgstr "Profil social"
+
+#: inc/customizer/options/footer.php:498
+msgid "Vertical section padding"
+msgstr "Distanțare secțiune pe verticală"
+
+#: functions.php:211 functions.php:215 functions.php:219
+msgid "It was not possible complete the request, please reload the page and try again."
+msgstr "Nu am putut să finalizez cererea, te rog reîncarcă pagina și încearcă din nou."
+
+#: widgets/fp-facts.php:33
+msgid "Usage example: <strong>fas fa-cloud</strong> (solid). <strong>far fa-building</strong> (regular), <strong>fab fa-android</strong> (brands)"
+msgstr "Exemplu folosire: <strong>fas fa-cloud</strong> (solid). <strong>far fa-building</strong> (obișnuit), <strong>fab fa-android</strong> (mărci)"
+
+#. translators: %1$1s, %2$2s theme copyright tags
+#: inc/customizer/options/footer.php:662 inc/extras.php:380
+#: inc/modules/hf-builder/components/footer/copyright/copyright.php:14
+msgid "%1$1s. Proudly powered by %2$2s"
+msgstr "%1$1s. Propulsat cu mândrie de %2$2s"
+
+#: inc/customizer/options/footer.php:406 inc/customizer/options/footer.php:802
+msgid "Enable top divider"
+msgstr "Activează separatorul de sus"
+
+#: functions.php:766 functions.php:782
+msgid "This is a global change. That means this change will affect all website icons and you will need update the icons class names in all theme widgets and post types that use Font Awesome 4 icons. For example: \"fa-android\" to \"fab fa-android\"."
+msgstr "Aceasta este o schimbare globală. Acest lucru înseamnă că vor fi afectate toate iconurile de pe website iar tu va trebui să actualizezi clasele iconurilor în toate piesele temei și în toate tipurile de articole ce utilizează iconuri Font Awesome 4. De exemplu: „fa-android” în „fab-android”."
+
+#: functions.php:764
+msgid "Your website is currently running the version 4. Click in the below button to update to version 5."
+msgstr "Site-ul tău folosește momentan versiunea 4. Dă clic pe butonul de mai jos pentru a actualiza la versiunea 5."
+
+#: functions.php:764
+msgid "Sydney Font Awesome Update: "
+msgstr "Actualizare Font Awesome în Sydney: "
+
+#. translators: %s: URL to plugins page
+#: functions.php:780
+msgid "<strong>Optional:</strong> Now <strong>Sydney</strong> is compatible with Font Awesome 5. For it is needed the latest version of <strong>Sydney Toolbox</strong> plugin. You can update the plugin <a href=\"%s\">here</a>."
+msgstr "<strong>Opțional:</strong> acum<strong>Sydney</strong> este compatibilă cu Font Awesome 5. Ai nevoie de ultima versiune a modulului <strong>Sydney Toolbox</strong>. Poți actualiza modulul <a href=\"%s\">aici</a>."
+
+#: functions.php:210
+msgid "Are you sure? Keep in mind this is a global change and you will need update your icons class names in all theme widgets and post types that use Font Awesome 4 icons."
+msgstr "Sigur? Ține cont că aceasta este o schimbare globală si va trebui să actualizezi toate clasele iconurilor în toate piesele temei și tipuri de articole ce utilizează iconuri Font Awesome 4."
+
+#: inc/customizer/options/general.php:224
+msgid "Enable scroll to top"
+msgstr "Activează Derulează în sus"
+
+#: inc/modules/hf-builder/components/footer/widget-1/customize-options.php:130
+#: inc/modules/hf-builder/components/footer/widget-2/customize-options.php:130
+#: inc/modules/hf-builder/components/footer/widget-3/customize-options.php:131
+#: inc/modules/hf-builder/components/footer/widget-4/customize-options.php:130
+msgid "Widget Title Color"
+msgstr "Culoare titlu piesă"
+
+#: inc/theme-dashboard-settings.php:100
+msgid "Hooks system"
+msgstr "Sistem de cârlige"
+
+#: inc/customizer/options/footer.php:667 inc/theme-dashboard-settings.php:94
+msgid "Footer credits"
+msgstr "Recunoștințe în subsol"
+
+#: inc/classes/class-sydney-page-metabox.php:78
+msgid "Transparent menu bar"
+msgstr "Bară de meniu transparentă"
+
+#: inc/dashboard/html-home.php:301
+#: theme-dashboard/class-theme-dashboard.php:750
+msgid "Have an idea or feedback?"
+msgstr "Ai o idee sau vrei să ne spui părerea ta?"
+
+#: theme-dashboard/class-theme-dashboard.php:681
+msgid "Join Our Community"
+msgstr "Alătură-te comunității noastre"
+
+#: inc/theme-dashboard-settings.php:116
+msgid "Full list of differences between Sydney and Sydney Pro"
+msgstr "Lista completă a diferențelor dintre Sydney și Sydney Pro"
+
+#: inc/theme-dashboard-settings.php:105
+msgid "Custom Elementor widgets"
+msgstr "Piese personalizate Elementor"
+
+#: inc/theme-dashboard-settings.php:49
+msgid "Type of starter sites"
+msgstr "Tip de site-uri de început"
+
+#: theme-dashboard/class-theme-dashboard.php:752
+msgid "Let us know. We'd love to hear from you."
+msgstr "Anunță-ne. Ne-am bucura să te auzim."
+
+#: inc/theme-dashboard-settings.php:42
+msgid "Multiple blog layouts"
+msgstr "Aranjamente multiple pentru blog"
+
+#: inc/theme-dashboard-settings.php:54
+msgid "Starter sites"
+msgstr "Site-uri pentru a începe"
+
+#: inc/customizer/options/general.php:157
+msgid "Enable Schema markup"
+msgstr "Activează Schema Markup"
+
+#: theme-dashboard/class-theme-dashboard.php:772
+msgid "See the Changelog"
+msgstr "Vezi istoricul modificărilor"
+
+#: inc/dashboard/html-home.php:267
+#: theme-dashboard/class-theme-dashboard.php:744
+msgid "Submit a Review"
+msgstr "Trimite o recenzie"
+
+#: inc/dashboard/html-notifications-sidebar.php:33
+#: theme-dashboard/class-theme-dashboard.php:762
+msgid "Changelog"
+msgstr "Istoric modificări"
+
+#: inc/dashboard/html-home.php:322
+#: theme-dashboard/class-theme-dashboard.php:688
+msgid "Join Now"
+msgstr "Alătură-te acum"
+
+#: theme-dashboard/class-theme-dashboard.php:677
+msgid "Community"
+msgstr "Comunitate"
+
+#: inc/dashboard/html-home.php:293
+#: theme-dashboard/class-theme-dashboard.php:668
+msgid "Get Support"
+msgstr "Ai acces la suport"
+
+#: theme-dashboard/class-theme-dashboard.php:661
+msgid "Need help? We're here for you!"
+msgstr "Ai nevoie de ajutor? Suntem aici pentru tine!"
+
+#: theme-dashboard/class-theme-dashboard.php:655
+msgid "Priority Status"
+msgstr "Stare prioritate"
+
+#: inc/dashboard/html-hero.php:27 theme-dashboard/class-theme-dashboard.php:503
+msgid "👋🏻"
+msgstr "👋🏻"
+
+#: inc/dashboard/html-hero.php:25 theme-dashboard/class-theme-dashboard.php:495
+msgid "Hello, "
+msgstr "Bună,"
+
+#: theme-dashboard/class-theme-dashboard.php:755
+msgid "Suggest an Idea"
+msgstr "Sugerează o idee"
+
+#: theme-dashboard/class-theme-dashboard.php:769
+msgid "Keep informed with the latest changes about each theme."
+msgstr "Ești la curent cu ultimele modificări la fiecare temă."
+
+#: theme-dashboard/class-theme-dashboard.php:735
+msgid "Review"
+msgstr "Recenzie"
+
+#: theme-dashboard/class-theme-dashboard.php:684
+msgid "Discuss products and ask for community support or help the community."
+msgstr "Discuți despre produse și ceri ajutorul comunității sau ajuți comunitatea."
+
+#: theme-dashboard/class-theme-dashboard.php:719
+msgid "pro"
+msgstr "pro"
+
+#: theme-dashboard/class-theme-dashboard.php:664
+msgid "Have a question? Hit a bug? Get the help you need, when you need it from our friendly support staff."
+msgstr "Ai o întrebare? Ai întâlnit o eroare? Primește ajutorul de care ai nevoie, când ai nevoie, de la echipa noastră prietenoasă de suport."
+
+#: theme-dashboard/class-theme-dashboard.php:552
+msgid "Clicking “Starter Sites” button will install and activate the demo importer plugin."
+msgstr "Dând clic pe butonul „Site-uri de început” va începe instalarea și activarea modulului importator de demonstrații."
+
+#: theme-dashboard/class-theme-dashboard.php:469
+msgid "A slow host can really put a drag on your site’s performance, even an optimized one. Make sure you get a host that won’t hold you back by reading our review, complete with real speed tests, of the fastest WordPress hosts. "
+msgstr "O gazdă lentă poate afecta cu adevărat performanța site-ului tău, chiar și optimizat. Asigură-te că ai o gazdă care nu te dă în spate, citind recenzia noastră, cu tot cu teste reale de viteză, a celor mai rapide gazde pentru WordPress. "
+
+#: inc/dashboard/html-home.php:317
+msgid "Join our Facebook community"
+msgstr "Alătură-te comunității noastre pe Facebook"
+
+#: inc/dashboard/class-dashboard-settings.php:119
+#: inc/dashboard/class-dashboard.php:159 inc/dashboard/class-dashboard.php:160
+#: inc/dashboard/html-hero.php:49 inc/dashboard/html-hero.php:53
+#: theme-dashboard/class-theme-dashboard.php:540
+msgid "Starter Sites"
+msgstr "Site-uri pentru a începe"
+
+#: inc/dashboard/class-dashboard.php:262
+#: theme-dashboard/class-theme-dashboard.php:123
+msgid "Something went wrong, contact support."
+msgstr "Ceva nu a mers bine, contactează suportul."
+
+#: inc/dashboard/class-dashboard.php:136 inc/dashboard/class-dashboard.php:137
+#: inc/dashboard/html-hero.php:58 theme-dashboard/class-theme-dashboard.php:109
+#: theme-dashboard/class-theme-dashboard.php:545
+#: theme-dashboard/class-theme-dashboard.php:596
+msgid "Theme Dashboard"
+msgstr "Panou control temă"
+
+#: inc/theme-dashboard-settings.php:156
+msgid "Free vs PRO"
+msgstr "Gratuită versus PRO"
+
+#: inc/dashboard/class-dashboard-settings.php:474
+#: inc/theme-dashboard-settings.php:220
+msgid "Extra Widget Area"
+msgstr "Zonă piese suplimentară"
+
+#: inc/customizer/options/general.php:581
+#: inc/customizer/options/woocommerce.php:870
+#: inc/customizer/style-book/class-sydney-style-book.php:129
+#: inc/customizer/style-book/class-sydney-style-book.php:335
+#: inc/dashboard/class-dashboard-settings.php:259
+#: inc/theme-dashboard-settings.php:185
+msgid "Buttons"
+msgstr "Butoane"
+
+#: inc/dashboard/class-dashboard-settings.php:234
+#: inc/theme-dashboard-settings.php:248
+msgid "Footer Credits"
+msgstr "Recunoștințe în subsol"
+
+#: inc/dashboard/class-dashboard-settings.php:251
+#: inc/theme-dashboard-settings.php:175
+msgid "Color Options"
+msgstr "Opțiuni culoare"
+
+#: inc/dashboard/class-dashboard-settings.php:226
+#: inc/theme-dashboard-settings.php:205
+msgid "Header Options"
+msgstr "Opțiuni antet"
+
+#: inc/theme-dashboard-settings.php:200
+msgid "Change Site Title or Logo"
+msgstr "Schimbă titlul sau logoul site-ului"
+
+#: inc/theme-dashboard-settings.php:150
+msgid "Theme Features"
+msgstr "Funcționalități temă"
+
+#: inc/dashboard/class-dashboard.php:489
+#: theme-dashboard/class-theme-dashboard.php:278
+msgid "Insufficient permissions to install the plugin."
+msgstr "Nu ai permisiuni suficiente pentru a instala modulul."
+
+#: inc/dashboard/class-dashboard.php:519
+#: theme-dashboard/class-theme-dashboard.php:297
+msgid "Failed to initialize or activate importer plugin."
+msgstr "Inițializarea sau activarea importatorului de module a eșuat."
+
+#: theme-dashboard/class-theme-dashboard.php:425
+msgid "Best WordPress Speed Optimization Plugins"
+msgstr "Cele mai bune module pentru optimizarea vitezei pe WordPress"
+
+#: inc/classes/class-sydney-modules.php:41
+#: inc/classes/class-sydney-modules.php:50
+#: inc/classes/class-sydney-modules.php:62
+#: inc/classes/class-sydney-modules.php:74
+#: inc/classes/class-sydney-modules.php:85
+#: inc/classes/class-sydney-modules.php:103
+#: inc/classes/class-sydney-modules.php:115
+#: inc/classes/class-sydney-modules.php:133
+#: inc/dashboard/class-dashboard-settings.php:200
+#: inc/dashboard/class-dashboard-settings.php:210
+#: inc/dashboard/class-dashboard-settings.php:218
+#: inc/dashboard/class-dashboard-settings.php:228
+#: inc/dashboard/class-dashboard-settings.php:236
+#: inc/dashboard/class-dashboard-settings.php:245
+#: inc/dashboard/class-dashboard-settings.php:253
+#: inc/dashboard/class-dashboard-settings.php:261
+#: inc/dashboard/class-dashboard-settings.php:269
+#: inc/dashboard/class-dashboard-settings.php:281
+#: inc/dashboard/class-dashboard-settings.php:302
+#: inc/dashboard/class-dashboard-settings.php:312
+#: inc/dashboard/class-dashboard-settings.php:322
+#: inc/dashboard/class-dashboard-settings.php:332
+#: inc/dashboard/class-dashboard-settings.php:342
+#: inc/dashboard/class-dashboard-settings.php:353
+#: inc/dashboard/class-dashboard-settings.php:375
+#: inc/dashboard/class-dashboard-settings.php:387
+#: inc/dashboard/class-dashboard-settings.php:398
+#: inc/dashboard/class-dashboard-settings.php:418
+#: inc/dashboard/class-dashboard-settings.php:428
+#: inc/dashboard/class-dashboard-settings.php:438
+#: inc/dashboard/class-dashboard-settings.php:458
+#: inc/dashboard/class-dashboard-settings.php:468
+#: inc/dashboard/class-dashboard-settings.php:476
+#: inc/dashboard/class-dashboard-settings.php:484
+#: inc/dashboard/class-dashboard-settings.php:493
+#: inc/dashboard/class-dashboard-settings.php:513
+#: inc/dashboard/class-dashboard.php:148 inc/dashboard/class-dashboard.php:149
+#: inc/dashboard/html-home.php:55 inc/dashboard/html-home.php:64
+#: inc/dashboard/html-home.php:73 inc/dashboard/html-home.php:152
+#: inc/dashboard/html-home.php:161 inc/dashboard/html-home.php:170
+#: theme-dashboard/class-theme-dashboard.php:400
+msgid "Customize"
+msgstr "Personalizează"
+
+#: inc/dashboard/class-dashboard-settings.php:67
+#: inc/dashboard/class-dashboard.php:182 inc/dashboard/class-dashboard.php:183
+#: inc/theme-dashboard-settings.php:277
+msgid "Upgrade to Pro"
+msgstr "Actualizează la Pro"
+
+#: inc/customizer/options/performance.php:11
+#: inc/theme-dashboard-settings.php:162
+msgid "Performance"
+msgstr "Performanță"
+
+#: inc/dashboard/class-dashboard-settings.php:482
+#: inc/theme-dashboard-settings.php:267
+msgid "Google Maps"
+msgstr "Hărți Google"
+
+#: inc/dashboard/class-dashboard-settings.php:267
+#: inc/theme-dashboard-settings.php:233
+msgid "Blog Options"
+msgstr "Opțiuni blog"
+
+#: inc/theme-dashboard-settings.php:124
+msgid "Get Sydney Pro Today"
+msgstr "Ia Sydney Pro azi"
+
+#: theme-dashboard/class-theme-dashboard.php:445
+msgid "WP Rocket Review"
+msgstr "Recenzie WP Rocket"
+
+#: inc/theme-dashboard-settings.php:15
+msgid "Here are some of the differences between Sydney and Sydney Pro:"
+msgstr "Iată diferențele dintre Sydney și Sydney Pro:"
+
+#: theme-dashboard/class-theme-dashboard.php:465
+msgid "Fastest WordPress Hosts"
+msgstr "Cele mai rapide firme de găzduire"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:84
+msgid "Single Product"
+msgstr "Produs singular"
+
+#: inc/theme-dashboard-settings.php:143
+msgid "Sydney is now installed and ready to use. Click on Starter Sites to get off to a flying start with one of our pre-made templates, or go to Theme Dashboard to get an overview of everything."
+msgstr "Sydney este acum instalată și gata de utilizare. Dă clic pe Site-uri de început pentru a porni rapid cu unul dintre șabloanele noastre predefinite sau mergi la panoul de control al temei pentru a vedea o prezentare generală."
+
+#: inc/theme-dashboard-settings.php:14
+msgid "Differences between Sydney and Sydney Pro"
+msgstr "Diferențe între Sydney și Sydney Pro"
+
+#: theme-dashboard/class-theme-dashboard.php:449
+msgid "Every site that is serious about speed (and should be pretty much all sites these days) needs a caching plugin and WP Rocket is our pick of the bunch. Get the lowdown on why we recommend it n our data-backed review: "
+msgstr "Fiecare site care ia în serios viteza (în zilele noastre toate ar trebui să o facă) are nevoie de un modul de caching iar WP Rocket este alegerea noastră. Află motivele pentru care îl recomandăm în recenzia noastră bazată pe date: "
+
+#: theme-dashboard/class-theme-dashboard.php:429
+msgid "We run through the top 10 WordPress performance plugins to keep your site running fast. Goes beyond just caching plugins (though those are on there too!). A must-read for all WordPress site owners."
+msgstr "Parcurgem topul celor 10 module de performanță pentru WordPress care îți mențin site-ul rapid. Mergem dincolo de modulele de caching (cu toate că și acestea sunt prezente acolo). O lectură obligatorie pentru toți posesorii de site-uri WordPress."
+
+#: inc/notices/class-sydney-review.php:71
+msgid "I already did"
+msgstr "Deja am făcut asta"
+
+#: inc/notices/class-sydney-review.php:69
+msgid "Maybe later"
+msgstr "Poate mai târziu"
+
+#: inc/notices/class-sydney-review.php:67
+msgid "Sure"
+msgstr "Sigur"
+
+#. Translators: %1$s current user display name.
+#: inc/notices/class-sydney-review.php:58
+msgid "Hey, %1$s! You've been using Sydney for more than two weeks now and we hope you're happy with it. If you have a few minutes, we would love to get a 5 star review from you."
+msgstr "Salut, %1$s! Folosești Sydney de mai mult de două săptămâni și sperăm că te mulțumește. Dacă ai câteva minute, ne-ar plăcea să primim o recenzie de 5 stele din partea ta."
+
+#: inc/integrations/learnpress/customize.php:12
+msgid "Learnpress"
+msgstr "LearnPress"
+
+#: inc/integrations/learnpress/customize.php:28
+msgid "Sidebar layout (course archive)"
+msgstr "Aranjament bară laterală (arhivă cursuri)"
+
+#: inc/integrations/learnpress/customize.php:50
+msgid "Sidebar layout (single course)"
+msgstr "Aranjament bară laterală (curs singular)"
+
+#: inc/integrations/learndash/customize.php:12
+msgid "Learndash"
+msgstr "LearnDash"
+
+#: inc/integrations/learndash/customize.php:31
+msgid "Single courses"
+msgstr "Cursuri singulare"
+
+#: inc/integrations/learndash/customize.php:64
+msgid "Single lessons, topics, quizzes, etc."
+msgstr "Lecții, subiecte, chestionare singulare etc."
+
+#: inc/integrations/lifter/customize.php:12
+msgid "LifterLMS"
+msgstr "LifterLMS"
+
+#: inc/integrations/lifter/customize.php:325
+msgid "Lesson title font size"
+msgstr "Dimensiune font titlu lecție"
+
+#: inc/integrations/lifter/customize.php:308
+msgid "Lesson title"
+msgstr "Titlu lecție"
+
+#: inc/integrations/lifter/customize.php:260
+msgid "Course title font size"
+msgstr "Dimensiune font titlu curs"
+
+#: inc/integrations/lifter/customize.php:243
+msgid "Course title"
+msgstr "Titlu curs"
+
+#: inc/integrations/learndash/customize.php:48
+#: inc/integrations/learndash/customize.php:81
+#: inc/integrations/lifter/customize.php:68
+#: inc/integrations/lifter/customize.php:122
+msgid "Sidebar layout"
+msgstr "Aranjament bară laterală"
+
+#: inc/integrations/lifter/customize.php:31
+msgid "Courses archives"
+msgstr "Arhive cursuri"
+
+#: inc/integrations/lifter/customize.php:290
+msgid "Single lesson"
+msgstr "Lecție singulară"
+
+#: inc/integrations/lifter/customize.php:280
+msgid "Course accent color"
+msgstr "Culoare de accent pentru cursuri"
+
+#: inc/integrations/lifter/customize.php:225
+msgid "Single course"
+msgstr "Curs singular"
+
+#: inc/integrations/lifter/customize.php:211
+msgid "Archives titles font size"
+msgstr "Dimensiune font titluri arhive"
+
+#: inc/integrations/lifter/customize.php:156
+msgid "Archives titles color"
+msgstr "Culoare titluri arhive"
+
+#: inc/integrations/lifter/customize.php:138
+msgid "Styling"
+msgstr "Design"
+
+#: inc/integrations/lifter/customize.php:175
+msgid "Archives titles color (hover)"
+msgstr "Culoare trecere peste titluri arhive"
+
+#: inc/integrations/lifter/customize.php:194
+msgid "Archives entry meta"
+msgstr "Metadate intrări arhive"
+
+#: inc/integrations/learndash/customize.php:53
+#: inc/integrations/learndash/customize.php:86
+#: inc/integrations/learnpress/customize.php:33
+#: inc/integrations/learnpress/customize.php:55
+#: inc/integrations/lifter/customize.php:73
+#: inc/integrations/lifter/customize.php:127
+msgid "Sidebar right"
+msgstr "Bară laterală dreapta"
+
+#: inc/integrations/learndash/customize.php:52
+#: inc/integrations/learndash/customize.php:85
+#: inc/integrations/learnpress/customize.php:32
+#: inc/integrations/learnpress/customize.php:54
+#: inc/integrations/lifter/customize.php:72
+#: inc/integrations/lifter/customize.php:126
+msgid "Sidebar left"
+msgstr "Bară laterală stânga"
+
+#: inc/integrations/lifter/customize.php:100
+msgid "Memberships columns"
+msgstr "Coloane participări"
+
+#: inc/integrations/lifter/customize.php:85
+msgid "Membership archives"
+msgstr "Arhive participări"
+
+#: inc/integrations/lifter/customize.php:46
+msgid "Course catalog columns"
+msgstr "Coloane catalog de cursuri"
+
+#: inc/customizer/options/woocommerce-single.php:52
+msgid "Remove sidebar from single products?"
+msgstr "Înlături bara laterală în produsele singulare?"
+
+#: inc/customizer/options/woocommerce-single.php:14
+msgid "Single products"
+msgstr "Produse singulare"
+
+#: inc/customizer/customizer.php:350 inc/customizer/options/woocommerce.php:963
+msgid "Button font size"
+msgstr "Dimensiune font buton"
+
+#: inc/customizer/customizer.php:329
+msgid "Left/right button padding"
+msgstr "Distanțare buton stânga/dreapta"
+
+#: inc/customizer/customizer.php:309
+msgid "Top/bottom button padding"
+msgstr "Distanțare buton sus/jos"
+
+#: inc/customizer/customizer.php:291
+msgid "Open link in a new tab?"
+msgstr "Deschizi legătura într-o filă nouă?"
+
+#: inc/customizer/customizer.php:405
+msgid "Custom HTML"
+msgstr "HTML personalizat"
+
+#: inc/customizer/customizer.php:371
+msgid "Button border radius"
+msgstr "Rotunjire chenar buton"
+
+#: inc/customizer/customizer.php:266 inc/extras.php:227
+msgid "Get in touch"
+msgstr "Contactează-ne"
+
+#: inc/customizer/customizer.php:227
+#: inc/modules/hf-builder/class-header-footer-builder.php:118
+#: inc/modules/hf-builder/class-header-footer-builder.php:158
+#: inc/modules/hf-builder/class-header-footer-builder.php:191
+#: inc/modules/hf-builder/components/footer/html/customize-options.php:22
+#: inc/modules/hf-builder/components/header/html/customize-options.php:22
+msgid "HTML"
+msgstr "HTML"
+
+#: inc/customizer/customizer.php:226
+#: inc/customizer/style-book/class-sydney-style-book.php:339 inc/extras.php:615
+#: inc/modules/hf-builder/class-header-footer-builder.php:110
+#: inc/modules/hf-builder/class-header-footer-builder.php:150
+#: inc/modules/hf-builder/components/header/button/customize-options.php:27
+msgid "Button"
+msgstr "Buton"
+
+#: inc/customizer/customizer.php:225
+#: inc/customizer/options/header-mobile.php:152
+msgid "Nothing"
+msgstr "Nimic"
+
+#: inc/customizer/customizer.php:141
+msgid "Menu layout"
+msgstr "Aranjament meniu"
+
+#: inc/customizer/customizer.php:201
+msgid "Menu container"
+msgstr "Container meniu"
+
+#: inc/customizer/customizer.php:222
+msgid "Header custom item"
+msgstr "Element personalizat în antet"
+
+#: inc/customizer/customizer.php:204 inc/customizer/options/footer.php:143
+#: inc/customizer/options/footer.php:470 inc/customizer/options/footer.php:651
+#: inc/customizer/options/footer.php:866 inc/customizer/options/header.php:335
+#: inc/customizer/options/header.php:1152
+msgid "Contained"
+msgstr "Încasetat"
+
+#: inc/customizer/customizer.php:256 inc/customizer/options/header.php:630
+#: inc/modules/hf-builder/components/footer/button/customize-options.php:82
+msgid "Button link"
+msgstr "Legătură la buton"
+
+#: inc/customizer/customizer.php:273 inc/customizer/options/header.php:615
+#: inc/modules/hf-builder/components/footer/button/customize-options.php:67
+msgid "Button text"
+msgstr "Text pentru buton"
+
+#: inc/integrations/wpml/class-sydney-wpml.php:38
+msgid "[aThemes Posts] See all button text"
+msgstr "[aThemes Posts] Text pentru butonul „Vezi tot”"
+
+#: inc/integrations/wpml/class-sydney-wpml-testimonials.php:37
+msgid "[aThemes Testimonials] Testimonial"
+msgstr "[aThemes Testimonials] Testimonial"
+
+#: inc/integrations/wpml/class-sydney-wpml-testimonials.php:34
+msgid "[aThemes Testimonials] Position"
+msgstr "[aThemes Testimonials] Funcție"
+
+#: inc/integrations/wpml/class-sydney-wpml-testimonials.php:31
+msgid "[aThemes Testimonials] Name"
+msgstr "[aThemes Testimonials] Nume"
+
+#: inc/integrations/wpml/class-sydney-wpml-employee-carousel.php:37
+msgid "[aThemes Employees] Link"
+msgstr "[aThemes Employees] Legătură"
+
+#: inc/integrations/wpml/class-sydney-wpml-employee-carousel.php:34
+msgid "[aThemes Employees] Position"
+msgstr "[aThemes Employees] Funcție"
+
+#: inc/integrations/wpml/class-sydney-wpml-employee-carousel.php:31
+msgid "[aThemes Employees] Name"
+msgstr "[aThemes Employees] Nume"
+
+#: inc/integrations/wpml/class-sydney-wpml-portfolio.php:37
+msgid "[aThemes Portfolio] Link"
+msgstr "[aThemes Portfolio] Legătură"
+
+#: inc/integrations/wpml/class-sydney-wpml-portfolio.php:34
+msgid "[aThemes Portfolio] Term"
+msgstr "[aThemes Portfolio] Termen"
+
+#: inc/integrations/wpml/class-sydney-wpml-portfolio.php:31
+msgid "[aThemes Portfolio] Title"
+msgstr "[aThemes Portfolio] Titlu"
+
+#: inc/onboarding/theme-info.php:109
+msgid "Font options"
+msgstr "Opțiuni font"
+
+#: inc/onboarding/theme-info.php:107
+msgid "Header options"
+msgstr "Opțiuni antet"
+
+#: inc/onboarding/theme-info.php:49
+msgid "Install recommended plugins"
+msgstr "Instalează modulele recomandate"
+
+#: inc/onboarding/plugins/class-sydney-recommended-plugins.php:154
+msgid "Activating "
+msgstr "Activez"
+
+#: inc/onboarding/theme-info.php:85
+msgid "Import demo content (optional)"
+msgstr "Importă conținutul demonstrativ (opțional)"
+
+#: inc/onboarding/plugins/class-sydney-recommended-plugins.php:111
+msgid "Jetpack Portfolio"
+msgstr "Portofoliu Jetpack"
+
+#: inc/dashboard/class-dashboard.php:250 inc/dashboard/html-home.php:60
+#: inc/dashboard/html-home.php:157 inc/dashboard/html-home.php:208
+#: inc/dashboard/html-settings-performance.php:27
+#: inc/onboarding/plugins/class-sydney-recommended-plugins.php:106
+#: theme-dashboard/class-theme-dashboard.php:383
+msgid "Deactivate"
+msgstr "Dezactivează"
+
+#: inc/onboarding/theme-info.php:104
+msgid "Styling with the Customizer"
+msgstr "Modifică aspectul prin Personalizator"
+
+#: inc/onboarding/theme-info.php:105
+msgid "Theme elements can be styled from the Customizer. Use the links below to go straight to the section you want."
+msgstr "Elementele temei pot fi proiectate din Personalizator. Folosește legăturile de mai jos pentru a merge direct la secțiunea dorită."
+
+#: inc/onboarding/theme-info.php:98
+msgid "All recommended plugins need to be installed and activated for this step."
+msgstr "Pentru acest pas, toate modulele recomandate trebuie să fie instalate și activate."
+
+#: inc/onboarding/theme-info.php:77
+msgid "This plugin is useful for importing our demos. You can uninstall it after you're done with it."
+msgstr "Acest modul este util pentru importul demonstrațiilor noastre. Îl poți dezinstala după ce ai terminat."
+
+#: inc/onboarding/theme-info.php:68
+msgid "First time Elementor user?"
+msgstr "Folosești pentru prima dată Elementor?"
+
+#: inc/onboarding/theme-info.php:63
+msgid "Elementor will enable you to create pages by adding widgets to them using drag and drop."
+msgstr "Elementor îți va permite să creezi pagini prin adăugarea pieselor în ele folosind trage și plasează."
+
+#. translators: %s: Link to site editor
+#: inc/customizer/options/modules/block-templates.php:47
+msgid "here"
+msgstr "aici"
+
+#: inc/onboarding/theme-info.php:264
+msgid "See the changelog"
+msgstr "Vezi istoricul modificărilor"
+
+#: inc/onboarding/theme-info.php:249
+msgid "View Sydney Pro"
+msgstr "Vezi Sydney Pro"
+
+#: inc/onboarding/theme-info.php:258
+msgid "Submit a review here"
+msgstr "Trimite o recenzie aici"
+
+#: inc/onboarding/theme-info.php:86
+msgid "Importing the demo will make your website look like our website."
+msgstr "Importul demonstrației îți va face site-ul să arate exact ca site-ul nostru."
+
+#: inc/onboarding/theme-info.php:106
+msgid "Change your site title or add a logo"
+msgstr "Modifică titlul site-ului sau adaugă un logo"
+
+#: inc/customizer/controls/typography/class_sydney_typography.php:110
+msgid "Font weight"
+msgstr "Grosime font"
+
+#: inc/dashboard/class-dashboard-settings.php:69
+#: inc/onboarding/theme-info.php:270 inc/theme-dashboard-settings.php:279
+msgid "Discover Sydney Pro"
+msgstr "Descoperă Sydney Pro"
+
+#: inc/onboarding/theme-info.php:263
+msgid "Keep informed about each theme update."
+msgstr "Ești la curent cu fiecare actualizare a temei."
+
+#: inc/dashboard/class-dashboard-settings.php:68
+#: inc/onboarding/theme-info.php:269 inc/theme-dashboard-settings.php:278
+msgid "Take Sydney to a whole other level by upgrading to the Pro version."
+msgstr "Du Sydney la un cu totul alt nivel actualizând la versiunea Pro."
+
+#: inc/dashboard/html-home.php:265 inc/onboarding/theme-info.php:257
+#: theme-dashboard/class-theme-dashboard.php:740
+msgid "It makes us happy to hear from our users. We would appreciate a review."
+msgstr "Ne face fericiți să auzim părerea utilizatorilor noștri. Am aprecia o recenzie."
+
+#: inc/onboarding/theme-info.php:56
+msgid "Sydney Toolbox is a free addon for the Sydney WordPress theme. It helps with things like demo import and additional Elementor widgets."
+msgstr "Sydney Toolbox este un modul gratuit pentru tema de WordPress Sydney. Acesta ajută cu lucruri precum importul de demonstrații și piese suplimentare pentru Elementor."
+
+#: inc/onboarding/theme-info.php:33
+msgid "Sydney is now installed and ready to go. To help you with the next step, we've gathered together on this page all the resources you might need. We hope you enjoy using Sydney. You can always come back to this page by going to <strong>Appearance > Sydney Info</strong>."
+msgstr "Sydney este acum instalată și gata de utilizare. Pentru a te ajuta cu următorul pas, am adunat pe această pagină toate resursele de care ai putea avea nevoie. Sperăm că îți va plăcea să folosești Sydney. Poți oricând să te întorci la această pagină mergând la <strong>Aspect > Informații despre Sydney</strong>."
+
+#: inc/onboarding/theme-info.php:50
+msgid "Install one plugin at a time. Wait for each plugin to activate."
+msgstr "Instalează câte un modul pe rând. Așteaptă ca fiecare modul să se activeze."
+
+#: inc/customizer/customizer.php:614
+msgid "Modern"
+msgstr "Modern"
+
+#: inc/classes/class-sydney-posts-archive.php:233
+#: theme-dashboard/class-theme-dashboard.php:433
+#: theme-dashboard/class-theme-dashboard.php:453
+#: theme-dashboard/class-theme-dashboard.php:473
+msgid "Read more"
+msgstr "Citește mai mult"
+
+#: inc/customizer/customizer.php:793 inc/customizer/options/hero-area.php:148
+msgid "or go to the Customizer"
+msgstr "sau mergi la Personalizator"
+
+#: inc/customizer/customizer.php:777 inc/customizer/options/hero-area.php:131
+msgid "Click the pencil icon to change this text"
+msgstr "Fă clic pe iconul creion pentru a schimba acest text"
+
+#: inc/customizer/customizer.php:613
+msgid "Classic (alternative)"
+msgstr "Clasic (alternativ)"
+
+#. Template Name of the theme
+msgid "Page builder ready"
+msgstr "Pregătit pentru constructori de pagină"
+
+#. Template Name of the theme
+#: inc/integrations/learndash/customize.php:51
+#: inc/integrations/learndash/customize.php:84
+#: inc/integrations/learnpress/customize.php:31
+#: inc/integrations/learnpress/customize.php:53
+#: inc/integrations/lifter/customize.php:71
+#: inc/integrations/lifter/customize.php:125
+msgid "No sidebar"
+msgstr "Fără bară laterală"
+
+#: inc/dashboard/html-notifications-sidebar.php:51
+#: inc/onboarding/theme-info.php:138 inc/theme-dashboard-settings.php:22
+msgid "Sydney Pro"
+msgstr "Sydney Pro"
+
+#: inc/onboarding/theme-info.php:198
+msgid "Background image support"
+msgstr "Suport pentru imagine de fundal"
+
+#: inc/modules/hf-builder/components/footer/social/customize-options.php:24
+#: inc/modules/hf-builder/components/header/social/customize-options.php:24
+#: inc/onboarding/theme-info.php:158
+msgid "Social Icons"
+msgstr "Iconuri sociale"
+
+#: inc/onboarding/theme-info.php:243
+msgid "Priority support"
+msgstr "Suport prioritar"
+
+#: inc/onboarding/theme-info.php:128
+msgid "See the Documentation"
+msgstr "Vezi documentația"
+
+#: inc/onboarding/theme-info.php:143 inc/theme-dashboard-settings.php:27
+msgid "Access to all Google Fonts"
+msgstr "Acces la toate fonturile Google"
+
+#: inc/onboarding/theme-info.php:178
+msgid "Polylang integration"
+msgstr "Integrare cu Polylang"
+
+#: inc/onboarding/theme-info.php:96
+msgid "Go to the automatic importer"
+msgstr "Mergi la importatorul automat"
+
+#: inc/dashboard/html-home.php:23
+msgid "Go To Customizer"
+msgstr "Mergi la Personalizator"
+
+#: inc/onboarding/plugins/class-sydney-recommended-plugins.php:87
+msgid "Install and activate"
+msgstr "Instalează și activează"
+
+#: inc/onboarding/theme-info.php:223
+msgid "Header support for shortcodes"
+msgstr "Suport în antet pentru scurtcoduri"
+
+#: inc/onboarding/theme-info.php:193
+msgid "Widgetized footer"
+msgstr "Subsol pregătit pentru piese"
+
+#: inc/onboarding/theme-info.php:203
+msgid "Footer Credits option"
+msgstr "Opțiune pentru recunoștințe în subsol"
+
+#: inc/onboarding/theme-info.php:168
+msgid "Front Page Blocks"
+msgstr "Blocuri în pagina din față"
+
+#: inc/onboarding/theme-info.php:163
+msgid "Slider, image or video header"
+msgstr "Antet carusel, imagine sau video"
+
+#: inc/onboarding/theme-info.php:127
+msgid "Our documentation can help you learn how to use the theme and also provides you with premade code snippets and answers to FAQs."
+msgstr "Documentația noastră te poate ajuta să înveți cum să folosești tema și îți oferă și fragmente de cod gata pregătite și răspunsuri la întrebările frecvente."
+
+#: inc/onboarding/theme-info.php:122
+msgid "Visit the forums"
+msgstr "Vizitează forumurile"
+
+#: inc/onboarding/theme-info.php:121
+msgid "Need help? Go ahead and visit our support forums and we'll be happy to assist you with any theme related questions you might have"
+msgstr "Ai nevoie de ajutor? Mergi și vizitează forumurile noastre pentru suport și vom fi bucuroși să te ajutăm dacă ai vreo întrebare legată de temă."
+
+#: inc/onboarding/theme-info.php:120
+msgid "Visit our forums"
+msgstr "Vizitează forumurile noastre"
+
+#: inc/onboarding/theme-info.php:39
+msgid "Getting started"
+msgstr "Începe"
+
+#. translators: %s is the user's display name
+#: inc/onboarding/theme-info.php:31
+msgid "Hello, %s,"
+msgstr "Bună %s,"
+
+#: inc/onboarding/theme-info.php:228
+msgid "Single Post/Page Options"
+msgstr "Opțiuni articol singular/pagină singulară"
+
+#: inc/onboarding/theme-info.php:208
+msgid "Extra widgets (timeline, latest news in carousel, pricing tables, a new employees widget and a new contact widget)"
+msgstr "Piese suplimentare (cronologie, ultimele știri în carusel, tabele de prețuri, o piesă nouă pentru angajați și alta pentru contact)"
+
+#: inc/onboarding/theme-info.php:218
+msgid "Header support for Crelly Slider"
+msgstr "Suport în antet pentru Crelly Slider"
+
+#: inc/onboarding/theme-info.php:238
+msgid "5 Extra Page Templates (Contact, Featured Header - Default, Featured Header - Wide, No Header - Default, No Header - Wide)"
+msgstr "5 șabloane de pagină suplimentare (Contact, Antet reprezentativ - implicit, Antet reprezentativ - lat, Fără antet - implicit, Fără antet - lat)"
+
+#: inc/dashboard/class-dashboard-settings.php:121
+#: inc/onboarding/theme-info.php:41
+msgid "Free vs Pro"
+msgstr "Gratuită versus Pro"
+
+#: inc/theme-dashboard-settings.php:144
+msgid "Sydney is now installed and ready to go. To help you with the next step, we've gathered together on this page all the resources you might need. We hope you enjoy using Sydney."
+msgstr "Acum Sydney este instalată și gata de funcționare. Pentru a te ajuta cu următorul pas, am adunat pe această pagină toate resursele de care ai putea avea nevoie. Sperăm să îți placă să folosești Sydney."
+
+#: inc/onboarding/theme-info.php:233
+msgid "WooCommerce compatible"
+msgstr "Compatibilă cu WooCommerce"
+
+#: inc/customizer/upsell/class-customize.php:77
+msgid "Buy Sydney Pro"
+msgstr "Cumpără Sydney Pro"
+
+#: inc/onboarding/theme-info.php:136 inc/theme-dashboard-settings.php:20
+msgid "Feature"
+msgstr "Funcționalitate"
+
+#: inc/onboarding/theme-info.php:173
+msgid "Translation ready"
+msgstr "Pregătită pentru traducere"
+
+#: inc/onboarding/theme-info.php:108 inc/onboarding/theme-info.php:183
+msgid "Color options"
+msgstr "Opțiuni culoare"
+
+#: inc/onboarding/theme-info.php:153
+msgid "Parallax backgrounds"
+msgstr "Fundaluri paralaxe"
+
+#: inc/onboarding/theme-info.php:213
+msgid "Extra Customizer Options (Front Page Section Titles, Single Employees, Single Projects, Header Contact Info, Buttons)"
+msgstr "Opțiuni extra pentru Personalizator (titluri pentru secțiunile din pagina din față, angajați singulari, proiecte singulare, informații de contact în antet, butoane)"
+
+#: inc/customizer/customizer.php:629 inc/customizer/options/hero-area.php:568
+#: inc/onboarding/theme-info.php:148 inc/theme-dashboard-settings.php:32
+msgid "Responsive"
+msgstr "Responsivă"
+
+#: inc/customizer/customizer.php:628 inc/customizer/options/hero-area.php:567
+msgid "Full screen"
+msgstr "Ecran întreg"
+
+#: widgets/video-widget.php:29
+msgid "Lightbox"
+msgstr "Lightbox"
+
+#: inc/customizer/controls/color-group/class_sydney_color_group.php:30
+#: inc/customizer/options/layouts.php:68
+#: inc/customizer/options/typography.php:60
+#: inc/customizer/options/typography.php:500 widgets/video-widget.php:28
+msgid "Normal"
+msgstr "Normal"
+
+#: widgets/video-widget.php:26
+msgid "Video mode:"
+msgstr "Mod video:"
+
+#: inc/customizer/options/colors.php:714
+msgid "Mobile menu button"
+msgstr "Buton meniu pentru mobil"
+
+#: inc/customizer/options/colors.php:659 inc/customizer/options/header.php:970
+msgid "Menu items hover"
+msgstr "Trecere peste elemente de meniu"
+
+#: widgets/video-widget.php:32
+msgid "Text before the play button (only for lightbox mode):"
+msgstr "Text înainte de butonul de redare (numai pentru modul lightbox):"
+
+#: inc/customizer/customizer.php:560 inc/customizer/options/hero-area.php:51
+#: inc/customizer/options/hero-area.php:74
+msgid "Video"
+msgstr "Video"
+
+#: inc/page-builder.php:65 inc/so-page-builder.php:65
+msgid "Add a value in the field to change the top/bottom row padding, otherwise 100px will be applied by default"
+msgstr "Adaugă o valoare în cîmp pentru a modifica spațierea rândului sus/jos, altfel va fi aplicată implicit o spațiere de 100 px"
+
+#: widgets/fp-services-type-a.php:44 widgets/fp-services-type-b.php:53
+msgid "Full content"
+msgstr "Conținut complet"
+
+#: inc/dashboard/html-settings-general.php:56
+#: inc/theme-dashboard-settings.php:321
+msgid "Get Sydney Pro"
+msgstr "Cumpără Sydney Pro"
+
+#: inc/customizer/controls/dimensions/class_sydney_dimensions_control.php:103
+#: inc/customizer/controls/dimensions/class_sydney_dimensions_control.php:131
+#: inc/customizer/controls/dimensions/class_sydney_dimensions_control.php:158
+#: inc/customizer/options/blog.php:246 inc/customizer/options/blog.php:630
+#: inc/customizer/options/general.php:335 inc/customizer/options/header.php:317
+#: inc/customizer/options/header.php:451 inc/customizer/options/layouts.php:138
+#: inc/customizer/options/woocommerce.php:111 inc/page-builder.php:180
+#: inc/so-page-builder.php:180
+msgid "Right"
+msgstr "Dreapta"
+
+#: inc/customizer/options/header.php:316
+#: inc/modules/hf-builder/components/footer/columns/customize-options.php:211
+#: inc/modules/hf-builder/components/footer/footer-builder/customize-options.php:157
+#: inc/modules/hf-builder/components/footer/row/customize-options.php:359
+#: inc/modules/hf-builder/components/header/columns/customize-options.php:217
+#: inc/modules/hf-builder/components/header/header-builder/customize-options.php:275
+#: inc/modules/hf-builder/components/header/row/customize-options.php:393
+#: inc/page-builder.php:179 inc/so-page-builder.php:179
+msgid "Center"
+msgstr "Centru"
+
+#: inc/page-builder.php:174 inc/so-page-builder.php:174
+msgid "Content alignment"
+msgstr "Aliniere conținut"
+
+#: inc/modules/hf-builder/components/footer/button/customize-options.php:179
+msgid "Colors"
+msgstr "Culori"
+
+#: inc/customizer/options/blog-single.php:51
+#: inc/customizer/options/colors.php:561 inc/customizer/options/header.php:14
+#: inc/dashboard/html-builder.php:16
+#: inc/modules/hf-builder/components/header/header-builder/customize-options.php:88
+#: inc/theme-dashboard-settings.php:196
+msgid "Header"
+msgstr "Antet"
+
+#: inc/customizer/options/blog.php:408 widgets/fp-services-type-a.php:45
+#: widgets/fp-services-type-b.php:54
+msgid "Excerpt"
+msgstr "Rezumat"
+
+#: widgets/fp-services-type-a.php:42 widgets/fp-services-type-b.php:51
+msgid "Content to display:"
+msgstr "Conținut de afișat:"
+
+#: inc/page-builder.php:187 inc/so-page-builder.php:187
+msgid "Widget title color"
+msgstr "Culoare titlu piesă"
+
+#: inc/page-builder.php:183 inc/so-page-builder.php:183
+msgid "This setting depends on the content, it may or may not work"
+msgstr "Această setare depinde de conținut, ea poate funcționa sau nu"
+
+#: inc/customizer/controls/dimensions/class_sydney_dimensions_control.php:115
+#: inc/customizer/controls/dimensions/class_sydney_dimensions_control.php:143
+#: inc/customizer/controls/dimensions/class_sydney_dimensions_control.php:170
+#: inc/customizer/options/blog-single.php:68
+#: inc/customizer/options/blog.php:245 inc/customizer/options/blog.php:629
+#: inc/customizer/options/general.php:334 inc/customizer/options/header.php:315
+#: inc/customizer/options/header.php:438 inc/customizer/options/layouts.php:137
+#: inc/customizer/options/woocommerce.php:107 inc/page-builder.php:178
+#: inc/so-page-builder.php:178
+msgid "Left"
+msgstr "Stânga"
+
+#: inc/page-builder.php:107 inc/so-page-builder.php:107
+msgid "Disable row overlay?"
+msgstr "Dezactivezi suprapunere rând?"
+
+#: inc/page-builder.php:198 inc/so-page-builder.php:198
+msgid "This applies to all headings in the widget, except the widget title"
+msgstr "Se aplică tuturor subtitlurilor din piesă, cu excepția titlului piesei"
+
+#: inc/customizer/options/footer.php:288 inc/page-builder.php:194
+#: inc/so-page-builder.php:194
+msgid "Headings color"
+msgstr "Culoare subtitluri"
+
+#: inc/page-builder.php:113 inc/so-page-builder.php:113
+msgid "Overlay color"
+msgstr "Culoare suprapunere"
+
+#: widgets/fp-portfolio.php:12
+msgid "Display your projects in a grid."
+msgstr "Afișează-ți proiectele într-o grilă."
+
+#: widgets/fp-portfolio.php:13
+msgid "Sydney FP: Portfolio"
+msgstr "Sydney FP: Portfoliu"
+
+#: widgets/fp-portfolio.php:35 widgets/fp-portfolio.php:147
+msgid "Show all"
+msgstr "Arată tot"
+
+#: widgets/fp-portfolio.php:153
+msgid "Number of projects to show (-1 shows all of them):"
+msgstr "Număr de proiecte de arătat (-1 le arată pe toate):"
+
+#: widgets/fp-portfolio.php:162
+msgid "Show project title?"
+msgstr "Arăți titlul proiectului?"
+
+#: widgets/fp-portfolio.php:159
+msgid "\"Show all\" text:"
+msgstr "Text pentru „Arată tot”:"
+
+#: widgets/fp-portfolio.php:158
+msgid "Show navigation filter? (Category slugs must be specified)."
+msgstr "Arăți filtru de navigare? (Trebuie să specifici descriptorii categoriilor.)"
+
+#: widgets/fp-portfolio.php:155
+msgid "Enter the slugs (comma separated) for your categories or leave empty to show all projects."
+msgstr "Introdu descriptorii (separați cu virgulă) pentru categorii sau lasă gol pentru a arăta toate proiectele."
+
+#: inc/customizer/options/general.php:117
+msgid "Page wrapper - bottom padding"
+msgstr "Învelitoare pagină - distanțare în partea de jos"
+
+#: widgets/fp-clients.php:35
+msgid "Open clients links in a new tab?"
+msgstr "Deschizi legăturile clienților într-o filă nouă?"
+
+#: inc/customizer/options/general.php:120
+msgid "Bottom padding for the page wrapper (the space between the page content and the footer)"
+msgstr "Distanțare în partea de jos pentru învelitoarea paginii (spațiul dintre conținutul paginii și subsol)"
+
+#: inc/customizer/options/general.php:96
+msgid "Top padding for the page wrapper (the space between the header and the page title)"
+msgstr "Distanțare în partea de sus pentru învelitoarea paginii (spațiul dintre antet și titlul paginii)"
+
+#: inc/customizer/options/general.php:93
+msgid "Page wrapper - top padding"
+msgstr "Învelitoare pagină - distanțare în partea de sus"
+
+#: inc/dashboard/html-home.php:288 inc/onboarding/theme-info.php:40
+#: theme-dashboard/class-theme-dashboard.php:652
+msgid "Support"
+msgstr "Suport"
+
+#: widgets/fp-testimonials.php:33
+msgid "Autoplay time [ms]"
+msgstr "Timp de redare automată [ms]"
+
+#: inc/dashboard/html-home.php:45 inc/dashboard/html-home.php:142
+#: inc/dashboard/html-home.php:275 inc/onboarding/theme-info.php:126
+#: theme-dashboard/class-theme-dashboard.php:587
+msgid "Documentation"
+msgstr "Documentație"
+
+#: inc/onboarding/theme-info.php:21
+msgid "Sydney Info"
+msgstr "Informații despre Sydney"
+
+#. Template Name of the theme
+#: inc/customizer/customizer.php:205
+msgid "Full width"
+msgstr "Lățime întreagă"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:175
+msgid "Front Page"
+msgstr "Pagina din față"
+
+#: widgets/fp-testimonials.php:6
+msgid "Display your testimonials in a slider."
+msgstr "Afișează testimonialele într-un carusel."
+
+#: widgets/fp-testimonials.php:20
+msgid "In order to display this widget, you must first add some testimonials from your admin area."
+msgstr "Pentru a afișa această piesă, mai întâi trebuie să adaugi unele testimoniale din zona ta de administrare."
+
+#: widgets/fp-testimonials.php:25
+msgid "Number of testimonials to show (-1 shows all of them):"
+msgstr "Număr de testimoniale de arătat (-1 le arată pe toate)"
+
+#: widgets/fp-testimonials.php:27
+msgid "The URL for your button [In case you want a button below your testimonials block]"
+msgstr "URL-ul pentru buton [În cazul în care vrei un buton sub blocul testimonialelor]"
+
+#: widgets/fp-testimonials.php:29
+msgid "The text for the button [Defaults to <em>See all our testimonials</em> if left empty]"
+msgstr "Textul pentru buton [Implicit este <em>Vezi toate testimonialele noastre</em> dacă este lăsat necompletat]"
+
+#: widgets/fp-testimonials.php:108
+msgid "See all our testimonials"
+msgstr "Vezi toate testimonialele noastre"
+
+#: widgets/fp-testimonials.php:31
+msgid "Enter the slug for your category or leave empty to show all testimonials."
+msgstr "Introdu descriptorul pentru categoria ta sau lasă necompletat pentru a arăta toate testimonialele."
+
+#: widgets/video-widget.php:6
+msgid "Display a video from Youtube, Vimeo etc."
+msgstr "Afișează un video de pe Youtube, Vimeo etc."
+
+#: widgets/video-widget.php:24
+msgid "Paste the URL of the video (only from a network that supports oEmbed, like Youtube, Vimeo etc.):"
+msgstr "Plasează URL-ul videoului (numai dintr-o rețea care acceptă oEmbed, cum ar fi YouTube, Vimeo etc.):"
+
+#: widgets/video-widget.php:7
+msgid "Sydney: Video"
+msgstr "Sydney: video"
+
+#: widgets/fp-testimonials.php:7
+msgid "Sydney FP: Testimonials"
+msgstr "Sydney FP: testimoniale"
+
+#: widgets/fp-social.php:65
+msgid "&mdash; Select &mdash;"
+msgstr "- selectează -"
+
+#: widgets/fp-social.php:63
+msgid "Select your social menu:"
+msgstr "Selectează meniul social:"
+
+#: widgets/fp-social.php:61
+msgid "In order to display your social icons in a widget, all you need to do is go to <strong>Appearance > Menus</strong> and create a menu containing links to your social profiles, then assign that menu here. Supported networks: Facebook, Twitter, Google Plus, Instagram, Dribble, Vimeo, Linkedin, Youtube, Flickr, Pinterest, Tumblr, Foursquare, Behance."
+msgstr "Pentru a afișa iconurile sociale într-o piesă, trebuie să mergi la <strong>Aspect > Meniuri</strong> și să creezi un meniu care să conțină legături la profilurile tale sociale, apoi să atribui acel meniu aici. Rețele sociale acceptate: Facebook, Twitter, Google Plus, Instagram, Dribble, Vimeo, Linkedin, Youtube, Flickr, Pinterest, Tumblr, Foursquare, Behance."
+
+#: widgets/fp-social.php:53
+msgid "No menus have been created yet. <a href=\"%s\">Create some</a>."
+msgstr "Încă nu a fost creat niciun meniu. <a href=\"%s\">Creează câteva</a>."
+
+#: widgets/fp-skills.php:6
+msgid "Show your visitors some of your skills."
+msgstr "Arată-le vizitatorilor unele dintre aptitudinile tale."
+
+#: widgets/fp-skills.php:35
+msgid "First skill value"
+msgstr "Valoare pentru prima aptitudine"
+
+#: widgets/fp-skills.php:46
+msgid "Second skill value"
+msgstr "Valoare pentru a doua aptitudine"
+
+#: widgets/fp-skills.php:57
+msgid "Third skill value"
+msgstr "Valoare pentru a treia aptitudine"
+
+#: widgets/fp-skills.php:68
+msgid "Fourth skill value"
+msgstr "Valoare pentru a patra aptitudine"
+
+#: widgets/fp-social.php:6
+msgid "Sydney FP: Social Profile"
+msgstr "Sydney FP: profiluri sociale"
+
+#: widgets/fp-social.php:5
+msgid "Display your social profile on your front page"
+msgstr "Afișează profilurile sociale în pagina din față"
+
+#: widgets/fp-skills.php:63
+msgid "Fourth skill name"
+msgstr "Nume pentru a patra aptitudine"
+
+#: widgets/fp-skills.php:52
+msgid "Third skill name"
+msgstr "Nume pentru a treia aptitudine"
+
+#: widgets/fp-skills.php:41
+msgid "Second skill name"
+msgstr "Nume pentru a doua aptitudine"
+
+#: widgets/fp-skills.php:30
+msgid "First skill name"
+msgstr "Nume pentru prima aptitudine"
+
+#: widgets/fp-skills.php:7
+msgid "Sydney FP: Skills"
+msgstr "Sydney FP: aptitudini"
+
+#: widgets/fp-services-type-b.php:41
+msgid "Number of columns:"
+msgstr "Număr de coloane:"
+
+#: widgets/fp-services-type-a.php:146 widgets/fp-services-type-b.php:162
+msgid "See all our services"
+msgstr "Vezi toate serviciile noastre"
+
+#: widgets/fp-list.php:66
+msgid "Add a bit of text here. It will be displayed."
+msgstr "Adaugă puțin text aici. Va fi afișat."
+
+#: widgets/fp-list.php:69
+msgid "Add your list items here. One item per row, start each row with <strong>^</strong>. Example: <strong>^ list item </strong>"
+msgstr "Adaugă-ți aici elemente de listă. Un element pe un rând, începe fiecare rând cu <strong>^</strong>. Exemplu: <strong>^ element de listă</strong>"
+
+#: widgets/fp-services-type-a.php:27 widgets/fp-services-type-b.php:27
+msgid "In order to display this widget, you must first add some services from your admin area."
+msgstr "Pentru a afișa această piesă, mai întâi trebuie să adaugi unele servicii din zona ta de administrare."
+
+#: widgets/fp-services-type-a.php:32 widgets/fp-services-type-b.php:32
+msgid "Number of services to show (-1 shows all of them):"
+msgstr "Număr de servicii de arătat (-1 le arată pe toate):"
+
+#: widgets/fp-services-type-a.php:34 widgets/fp-services-type-b.php:34
+msgid "The URL for your button [In case you want a button below your services block]"
+msgstr "URL-ul pentru buton [În cazul în care vrei un buton sub blocul serviciilor]"
+
+#: widgets/fp-services-type-a.php:36 widgets/fp-services-type-b.php:36
+msgid "The text for the button [Defaults to <em>See all our services</em> if left empty]"
+msgstr "Textul pentru buton [Implicit este <em>Vezi toate serviciile noastre</em> dacă este lăsat necompletat]"
+
+#: widgets/fp-services-type-a.php:38 widgets/fp-services-type-b.php:38
+msgid "Enter the slug for your category or leave empty to show all services."
+msgstr "Introdu descriptorul pentru categoria ta sau lasă necompletat pentru a arăta toate serviciile."
+
+#: widgets/fp-services-type-a.php:41
+msgid "Display services in two columns instead of three?"
+msgstr "Afișezi serviciile pe două coloane în loc de trei?"
+
+#: widgets/fp-services-type-b.php:12
+msgid "Sydney FP: Services type B"
+msgstr "Sydney FP: servicii de tipul B"
+
+#: widgets/fp-services-type-a.php:12
+msgid "Sydney FP: Services Type A"
+msgstr "Sydney FP: servicii de tipul A"
+
+#: widgets/fp-services-type-a.php:11 widgets/fp-services-type-b.php:11
+msgid "Show what services you are able to provide."
+msgstr "Arată ce servicii poți să oferi."
+
+#: widgets/fp-list.php:75
+msgid "Call to action button text:"
+msgstr "Text buton Îndemn la acțiune:"
+
+#: widgets/fp-list.php:72
+msgid "Call to action button URL:"
+msgstr "URL buton Îndemn la acțiune:"
+
+#: widgets/fp-list.php:63 widgets/fp-portfolio.php:151 widgets/fp-social.php:58
+msgid "Title:"
+msgstr "Titlu:"
+
+#: widgets/fp-facts.php:8
+msgid "Sydney FP: Facts"
+msgstr "Sydney FP: Date"
+
+#: widgets/fp-facts.php:30
+msgid "here."
+msgstr "aici."
+
+#: widgets/fp-facts.php:35
+msgid "Usage example: <strong>fa-android</strong>"
+msgstr "Exemplu de utilizare: <strong>fa-android</strong>"
+
+#: widgets/fp-clients.php:21
+msgid "In order to display this widget, you must first add some clients from your admin area. Set your client logos as featured images."
+msgstr "Pentru a afișa această piesă, mai întâi trebuie să adaugi câțiva clienți din zona ta de administrare. Setează-le logourile ca imagini reprezentative."
+
+#: widgets/fp-employees.php:20
+msgid "In order to display this widget, you must first add some employees from the dashboard. Add as many as you want and the theme will automatically display them all."
+msgstr "Pentru a afișa această piesă, mai întâi trebuie să adaugi câțiva angajați din zona ta de administrare. Adaugă cât de mulți vrei și tema îi va afișa automat pe toți."
+
+#: widgets/fp-clients.php:28
+msgid "The URL for your button [In case you want a button below your clients block]"
+msgstr "URL-ul pentru buton [În cazul în care vrei un buton sub blocul clienților]"
+
+#: widgets/fp-clients.php:30
+msgid "The text for the button [Defaults to <em>See all our clients</em> if left empty]"
+msgstr "Textul pentru buton [Implicit este <em>Vezi toți clienții noștri</em> dacă este lăsat necompletat]"
+
+#: widgets/fp-employees.php:29
+msgid "The text for the button [Defaults to <em>See all our employees</em> if left empty]"
+msgstr "Textul pentru buton [Implicit este <em>Vezi toți angajații noștri</em> dacă este lăsat necompletat]"
+
+#: widgets/fp-latest-news.php:25
+msgid "Add the text for the button here if you want to change the default <em>See all our news</em>"
+msgstr "Adaugă aici textul pentru buton dacă vrei să modifici valoarea implicită <em>Vezi toate noutățile noastre</em>"
+
+#: widgets/fp-clients.php:32
+msgid "Enter the slug for your category or leave empty to show all clients."
+msgstr "Introdu descriptorul pentru categoria ta sau lasă necompletat pentru a arăta toți clienții."
+
+#: widgets/fp-employees.php:31
+msgid "Enter the slug for your category or leave empty to show all employees."
+msgstr "Introdu descriptorul pentru categoria ta sau lasă necompletat pentru a arăta toți angajații."
+
+#: widgets/fp-employees.php:34
+msgid "Center the employees? (use only if you have 1 or 2 employees)"
+msgstr "Centrezi angajații? (folosește numai dacă ai 1 sau 2 angajați)"
+
+#: widgets/fp-latest-news.php:22
+msgid "Enter the slug for your category or leave empty to show posts from all categories."
+msgstr "Introdu descriptorul pentru categoria ta sau lasă necompletat pentru a arăta articole din toate categoriile."
+
+#: widgets/fp-call-to-action.php:27
+msgid "Display the button inline with the text?"
+msgstr "Afișezi butonul în-linie cu textul?"
+
+#: widgets/fp-clients.php:26
+msgid "Number of clients to show (-1 shows all of them):"
+msgstr "Număr de clienți de arătat (-1 îi arată pe toți)"
+
+#: widgets/fp-clients.php:111
+msgid "See all our clients"
+msgstr "Vezi toți clienții noștri"
+
+#: widgets/fp-employees.php:6
+msgid "Display your team members in a stylish way."
+msgstr "Afișează-ți membrii echipei într-un mod elegant."
+
+#: widgets/fp-employees.php:25
+msgid "Number of employees to show (-1 shows all of them):"
+msgstr "Număr de angajați de arătat (-1 îi arată pe toți)"
+
+#: widgets/fp-employees.php:27
+msgid "Enter an URL here if you want to section to link somewhere."
+msgstr "Introdu aici un URL dacă vrei să secționezi pentru legare undeva."
+
+#: widgets/fp-employees.php:142
+msgid "See all our employees"
+msgstr "Vezi toți angajații noștri"
+
+#: widgets/fp-facts.php:7
+msgid "Show your visitors some facts about your company."
+msgstr "Arată-le vizitatorilor câteva date despre companie ta."
+
+#: widgets/fp-facts.php:30
+msgid "You can find a list of the available icons "
+msgstr "Poți găsi o listă a iconurilor disponibile"
+
+#: widgets/fp-latest-news.php:6
+msgid "Show the latest news from your blog."
+msgstr "Arată ultimele noutăți din blogul tău."
+
+#: widgets/fp-latest-news.php:50 widgets/fp-latest-news.php:52
+msgid "See all our news"
+msgstr "Vezi toate noutățile noastre"
+
+#: widgets/fp-list.php:11
+msgid "A simple list widget"
+msgstr "O piesă listă simplă"
+
+#: widgets/fp-facts.php:50
+msgid "First fact value"
+msgstr "Valoarea pentru prima dată"
+
+#: widgets/fp-facts.php:55
+msgid "First fact icon"
+msgstr "Icon pentru prima dată"
+
+#: widgets/fp-facts.php:45
+msgid "First fact name"
+msgstr "Nume pentru prima dată"
+
+#: widgets/fp-facts.php:61
+msgid "Second fact name"
+msgstr "Nume pentru a doua dată"
+
+#: widgets/fp-facts.php:77
+msgid "Third fact name"
+msgstr "Nume pentru a treia dată"
+
+#: widgets/fp-facts.php:93
+msgid "Fourth fact name"
+msgstr "Nume pentru a patra dată"
+
+#: widgets/fp-facts.php:66
+msgid "Second fact value"
+msgstr "Valoarea pentru a doua dată"
+
+#: widgets/fp-facts.php:82
+msgid "Third fact value"
+msgstr "Valoarea pentru a treia dată"
+
+#: widgets/fp-facts.php:98
+msgid "Fourth fact value"
+msgstr "Valoarea pentru a patra dată"
+
+#: widgets/fp-facts.php:71
+msgid "Second fact icon"
+msgstr "Icon pentru a doua dată"
+
+#: widgets/fp-facts.php:87
+msgid "Third fact icon"
+msgstr "Icon pentru a treia dată"
+
+#: widgets/fp-facts.php:103
+msgid "Fourth fact icon"
+msgstr "Icon pentru a patra dată"
+
+#: widgets/fp-list.php:13
+msgid "Sydney FP: List"
+msgstr "Sydney FP: listă"
+
+#: widgets/fp-latest-news.php:7
+msgid "Sydney FP: Latest News"
+msgstr "Sydney FP: ultimele noutăți"
+
+#: widgets/fp-employees.php:7
+msgid "Sydney FP: Employees"
+msgstr "Sydney FP: angajați"
+
+#: widgets/fp-clients.php:7
+msgid "Sydney FP: Clients"
+msgstr "Sydney FP: clienți"
+
+#: widgets/fp-clients.php:6
+msgid "Display your clients list."
+msgstr "Afișează o listă cu clienții tăi."
+
+#: widgets/contact-info.php:30
+msgid "Enter your email address"
+msgstr "Introdu adresa ta de email"
+
+#: widgets/contact-info.php:27
+msgid "Enter your phone number"
+msgstr "Introdu numărul tău de telefon"
+
+#: widgets/contact-info.php:24
+msgid "Enter your address"
+msgstr "Introdu adresa ta"
+
+#: widgets/fp-call-to-action.php:22
+msgid "Link for the button"
+msgstr "Legătură pentru buton"
+
+#: widgets/fp-call-to-action.php:24
+msgid "Title for the button"
+msgstr "Titlu pentru buton"
+
+#: widgets/fp-call-to-action.php:20
+msgid "Enter your call to action."
+msgstr "Introdu îndemnul tău la acțiune"
+
+#: widgets/fp-call-to-action.php:7
+msgid "Sydney FP: Call to action"
+msgstr "Sydney FP: îndemn la acțiune"
+
+#: widgets/fp-call-to-action.php:6
+msgid "Display a call to action block."
+msgstr "Afișează un bloc Îndemn la acțiune."
+
+#: inc/customizer/options/woocommerce.php:293 widgets/contact-info.php:20
+#: widgets/fp-call-to-action.php:18 widgets/fp-clients.php:23
+#: widgets/fp-employees.php:22 widgets/fp-facts.php:39
+#: widgets/fp-latest-news.php:18 widgets/fp-services-type-a.php:29
+#: widgets/fp-services-type-b.php:29 widgets/fp-skills.php:24
+#: widgets/fp-testimonials.php:22 widgets/video-widget.php:20
+msgid "Title"
+msgstr "Titlu"
+
+#: widgets/contact-info.php:6
+msgid "Display your contact info"
+msgstr "Afișează datele tale de contact"
+
+#: widgets/contact-info.php:7
+msgid "Sydney: Contact info"
+msgstr "Sydney: informații de contact"
+
+#. translators: %s is the search query
+#: inc/extras.php:1026
+msgid "Search Results for: %s"
+msgstr "Rezultate de căutare pentru: %s"
+
+#: inc/dashboard/class-dashboard.php:249 inc/dashboard/html-home.php:69
+#: inc/dashboard/html-home.php:166 inc/dashboard/html-home.php:200
+#: inc/dashboard/html-settings-performance.php:31
+#: inc/dashboard/html-starter-sites.php:31
+#: inc/onboarding/plugins/class-sydney-recommended-plugins.php:91
+#: inc/onboarding/plugins/class-sydney-recommended-plugins.php:111
+#: theme-dashboard/class-theme-dashboard.php:379
+msgid "Activate"
+msgstr "Activează"
+
+#: inc/dashboard/html-home.php:204
+msgid "Install"
+msgstr "Instalare"
+
+#: inc/customizer/options/general.php:238
+msgid "Type"
+msgstr "Tip"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:37
+#: inc/customizer/options/cpt-panels.php:54 inc/template-tags.php:241
+msgid "Archives"
+msgstr "Arhive"
+
+#. translators: %1$s: Taxonomy singular name, %2$s: Current taxonomy term.
+#: inc/template-tags.php:239
+msgid "%1$s: %2$s"
+msgstr "%1$s: %2$s"
+
+#. translators: %s: post type archive title.
+#: inc/template-tags.php:236
+msgid "Archives: %s"
+msgstr "Arhive: %s"
+
+#: inc/template-tags.php:233
+msgctxt "post format archive title"
+msgid "Chats"
+msgstr "Conversații"
+
+#: inc/template-tags.php:231
+msgctxt "post format archive title"
+msgid "Audio"
+msgstr "Audio"
+
+#: inc/template-tags.php:229
+msgctxt "post format archive title"
+msgid "Statuses"
+msgstr "Stări"
+
+#: inc/template-tags.php:227
+msgctxt "post format archive title"
+msgid "Links"
+msgstr "Legături"
+
+#: inc/template-tags.php:225
+msgctxt "post format archive title"
+msgid "Quotes"
+msgstr "Citate"
+
+#: inc/template-tags.php:223
+msgctxt "post format archive title"
+msgid "Videos"
+msgstr "Videouri"
+
+#: inc/template-tags.php:221
+msgctxt "post format archive title"
+msgid "Images"
+msgstr "Imagini"
+
+#: inc/template-tags.php:219
+msgctxt "post format archive title"
+msgid "Galleries"
+msgstr "Galerii"
+
+#: inc/template-tags.php:217
+msgctxt "post format archive title"
+msgid "Asides"
+msgstr "Note"
+
+#. translators: %s: day.
+#: inc/template-tags.php:214
+msgctxt "daily archives date format"
+msgid "F j, Y"
+msgstr "j F Y"
+
+#. translators: %s: day.
+#: inc/template-tags.php:214
+msgid "Day: %s"
+msgstr "Zi: %s"
+
+#. translators: %s: month.
+#: inc/template-tags.php:212
+msgctxt "monthly archives date format"
+msgid "F Y"
+msgstr "F Y"
+
+#. translators: %s: month.
+#: inc/template-tags.php:212
+msgid "Month: %s"
+msgstr "Lună: %s"
+
+#. translators: %s: year.
+#: inc/template-tags.php:210
+msgctxt "yearly archives date format"
+msgid "Y"
+msgstr "Y"
+
+#. translators: %s: year.
+#: inc/template-tags.php:210
+msgid "Year: %s"
+msgstr "An: %s"
+
+#. translators: %s: author name.
+#: inc/template-tags.php:208
+msgid "Author: %s"
+msgstr "Autor: %s"
+
+#. translators: %s: tag title.
+#: inc/template-tags.php:206
+msgid "Tag: %s"
+msgstr "Etichetă: %s"
+
+#. translators: %s: category title.
+#: inc/template-tags.php:204
+msgid "Category: %s"
+msgstr "Categorie: %s"
+
+#. translators: used between list items, there is a space after the comma
+#: inc/template-tags.php:172
+msgid ", "
+msgstr ", "
+
+#: inc/template-tags.php:185
+msgid "% comments"
+msgstr "% comentarii"
+
+#: inc/template-tags.php:185
+msgid "1 comment"
+msgstr "Un comentariu"
+
+#. translators: %s: post date.
+#: inc/template-tags.php:345
+msgctxt "post date"
+msgid "Posted on %s"
+msgstr "Publicat pe %s"
+
+#: inc/customizer/options/blog-single.php:310 inc/template-tags.php:61
+msgid "Post navigation"
+msgstr "Navigare în articole"
+
+#: inc/template-tags.php:31
+msgid "Newer posts"
+msgstr "Articole mai noi"
+
+#: inc/template-tags.php:27
+msgid "Older posts"
+msgstr "Articole mai vechi"
+
+#: inc/template-tags.php:23
+msgid "Posts navigation"
+msgstr "Navigare în articole"
+
+#: inc/page-builder.php:98 inc/so-page-builder.php:98
+msgid "0"
+msgstr "0"
+
+#: inc/page-builder.php:101 inc/so-page-builder.php:101
+msgid "45px"
+msgstr "45 px"
+
+#: inc/page-builder.php:100 inc/so-page-builder.php:100
+msgid "30px"
+msgstr "30 px"
+
+#: inc/page-builder.php:99 inc/so-page-builder.php:99
+msgid "15px"
+msgstr "15 px"
+
+#: inc/page-builder.php:93 inc/so-page-builder.php:93
+msgid "Mobile padding"
+msgstr "Distanțare pentru mobil"
+
+#: inc/page-builder.php:97 inc/so-page-builder.php:97
+msgid "Default"
+msgstr "Implicit"
+
+#: inc/page-builder.php:95 inc/so-page-builder.php:95
+msgid "Here you can select a top/bottom row padding for screen sizes < 1024px"
+msgstr "Aici poți să selectezi o distanțare pentru rândul de sus/jos pentru dimensiuni de ecran < 1024 px"
+
+#: inc/page-builder.php:87 inc/so-page-builder.php:87
+msgid "Background image of the row."
+msgstr "Imaginea de fundal a rândului."
+
+#: inc/modules/hf-builder/components/footer/footer-builder/customize-options.php:109
+#: inc/modules/hf-builder/components/footer/row/customize-options.php:311
+#: inc/modules/hf-builder/components/header/header-builder/customize-options.php:227
+#: inc/modules/hf-builder/components/header/row/customize-options.php:345
+#: inc/page-builder.php:85 inc/so-page-builder.php:85
+msgid "Background Image"
+msgstr "Imagine fundal"
+
+#: inc/page-builder.php:80 inc/so-page-builder.php:80
+msgid "Color of the row."
+msgstr "Culoarea rândului."
+
+#: inc/customizer/options/header-mobile.php:485
+#: inc/customizer/options/woocommerce.php:851 inc/page-builder.php:78
+#: inc/so-page-builder.php:78
+msgid "Color"
+msgstr "Culoare"
+
+#: inc/page-builder.php:44 inc/so-page-builder.php:44
+msgid "Sydney Theme Widgets"
+msgstr "Piese ale temei Sydney"
+
+#: inc/page-builder.php:57 inc/so-page-builder.php:57
+msgid "Bottom Border Color"
+msgstr "Culoare chenar jos"
+
+#: inc/page-builder.php:70 inc/so-page-builder.php:70
+msgid "Center align the content?"
+msgstr "Centrezi alinierea conținutului?"
+
+#: inc/page-builder.php:72 inc/so-page-builder.php:72
+msgid "This may or may not work. It depends on the widget styles."
+msgstr "Acest lucru poate funcționa sau nu. Depinde de stilurile piesei."
+
+#: inc/customizer/options/colors.php:93 inc/customizer/options/colors.php:478
+#: inc/customizer/options/footer.php:224 inc/customizer/options/footer.php:712
+#: inc/customizer/options/general.php:459
+#: inc/customizer/options/general.php:773
+#: inc/customizer/options/general.php:879
+#: inc/customizer/options/header-mobile.php:351
+#: inc/customizer/options/header-mobile.php:453
+#: inc/customizer/options/header.php:713
+#: inc/customizer/options/woocommerce.php:831
+#: inc/modules/hf-builder/components/footer/footer-builder/customize-options.php:89
+#: inc/modules/hf-builder/components/header/header-builder/customize-options.php:207
+msgid "Background color"
+msgstr "Culoare fundal"
+
+#: inc/page-builder.php:63 inc/so-page-builder.php:63
+msgid "Top/bottom padding"
+msgstr "Distanțare sus/jos"
+
+#: inc/customizer/customizer.php:561
+msgid "Nothing (only menu)"
+msgstr "Nimic (doar meniu)"
+
+#: inc/customizer/customizer.php:499
+msgid "Theme info"
+msgstr "Informații despre temă"
+
+#: inc/customizer/customizer.php:502
+msgid " 1. Documentation for Sydney can be found "
+msgstr "1. Documentația pentru Sydney poate fi găsită "
+
+#: inc/customizer/options/colors.php:123
+msgid "Body text"
+msgstr "Text corp"
+
+#: inc/customizer/options/colors.php:581
+msgid "Menu background"
+msgstr "Fundal meniu"
+
+#: inc/customizer/options/colors.php:641
+msgid "Top level menu items"
+msgstr "Elemente de meniu de nivel superior"
+
+#: inc/customizer/options/colors.php:678
+msgid "Sub-menu items"
+msgstr "Elemente de sub-meniu"
+
+#: inc/customizer/options/colors.php:696
+msgid "Sub-menu background"
+msgstr "Fundal sub-meniu"
+
+#: inc/customizer/options/colors.php:758
+msgid "Sidebar background"
+msgstr "Fundal bară laterală"
+
+#: inc/customizer/options/colors.php:790
+msgid "Sidebar color"
+msgstr "Culoare bară laterală"
+
+#: inc/customizer/options/colors.php:621
+msgid "Site description"
+msgstr "Descriere site"
+
+#: inc/customizer/options/colors.php:601
+msgid "Site title"
+msgstr "Titlu site"
+
+#: inc/customizer/controls/typography/class_sydney_typography.php:85
+msgid "Font family"
+msgstr "Familie de fonturi"
+
+#: inc/customizer/customizer.php:588
+msgid "Three"
+msgstr "Trei"
+
+#: inc/customizer/customizer.php:589
+msgid "Four"
+msgstr "Patru"
+
+#: inc/customizer/customizer.php:586
+msgid "One"
+msgstr "Una"
+
+#: inc/customizer/customizer.php:587
+msgid "Two"
+msgstr "Două"
+
+#: inc/customizer/options/footer.php:194
+msgid "Footer widget areas"
+msgstr "Zone cu piese în subsol"
+
+#: inc/customizer/options/footer.php:29 inc/dashboard/html-builder.php:19
+#: inc/theme-dashboard-settings.php:244
+msgid "Footer"
+msgstr "Subsol"
+
+#: inc/customizer/options/blog.php:201
+msgid "Featured image"
+msgstr "Imagine reprezentativă"
+
+#: inc/customizer/customizer.php:615
+msgid "Full width (no sidebar)"
+msgstr "Lățime completă (fără bară laterală)"
+
+#: inc/customizer/options/blog.php:423
+msgid "Excerpt length"
+msgstr "Lungime rezumat"
+
+#: inc/customizer/options/blog-single.php:182
+#: inc/customizer/options/blog.php:468
+msgid "Meta"
+msgstr "Metadate"
+
+#: inc/customizer/customizer.php:616
+msgid "Masonry (grid style)"
+msgstr "Zidărie (stil grilă)"
+
+#: inc/customizer/options/blog.php:74
+msgid "Blog layout"
+msgstr "Aranjament blog"
+
+#: inc/customizer/customizer.php:612 inc/customizer/options/blog.php:79
+msgid "Classic"
+msgstr "Clasic"
+
+#: inc/onboarding/theme-info.php:110 inc/onboarding/theme-info.php:188
+msgid "Blog options"
+msgstr "Opțiuni blog"
+
+#: inc/customizer/options/header-mobile.php:76
+#: inc/customizer/options/header.php:268 inc/customizer/options/layouts.php:42
+#: inc/customizer/options/woocommerce.php:59
+#: inc/customizer/options/woocommerce.php:373
+#: inc/customizer/options/woocommerce.php:478
+#: inc/customizer/options/woocommerce.php:571
+#: inc/customizer/options/woocommerce.php:641
+#: inc/integrations/learndash/customize.php:18
+#: inc/modules/hf-builder/components/footer/button/customize-options.php:299
+#: inc/modules/hf-builder/components/footer/copyright/customize-options.php:180
+#: inc/modules/hf-builder/components/footer/html/customize-options.php:246
+#: inc/modules/hf-builder/components/footer/social/customize-options.php:163
+#: inc/modules/hf-builder/components/footer/widget-1/customize-options.php:205
+#: inc/modules/hf-builder/components/footer/widget-2/customize-options.php:205
+#: inc/modules/hf-builder/components/footer/widget-3/customize-options.php:206
+#: inc/modules/hf-builder/components/header/button/customize-options.php:416
+#: inc/modules/hf-builder/components/header/contact-info/customize-options.php:324
+#: inc/modules/hf-builder/components/header/header-builder/customize-options.php:460
+#: inc/modules/hf-builder/components/header/header-builder/customize-options.php:506
+#: inc/modules/hf-builder/components/header/html/customize-options.php:333
+#: inc/modules/hf-builder/components/header/logo/customize-options.php:261
+#: inc/modules/hf-builder/components/header/menu/customize-options.php:546
+#: inc/modules/hf-builder/components/header/mobile-hamburger/customize-options.php:151
+#: inc/modules/hf-builder/components/header/mobile-offcanvas-menu/customize-options.php:202
+#: inc/modules/hf-builder/components/header/mobile-offcanvas/customize-options.php:218
+#: inc/modules/hf-builder/components/header/search/customize-options.php:217
+#: inc/modules/hf-builder/components/header/secondary-menu/customize-options.php:347
+#: inc/modules/hf-builder/components/header/social/customize-options.php:220
+#: inc/modules/hf-builder/components/header/wc-icons/customize-options.php:263
+msgid "Layout"
+msgstr "Aranjament"
+
+#: inc/customizer/customizer.php:445
+msgid "Header height [default: 300px]"
+msgstr "Înălțime antet [implicit: 300px]"
+
+#: inc/customizer/customizer.php:429 inc/customizer/customizer.php:575
+#: inc/modules/hf-builder/components/footer/footer-builder/customize-options.php:133
+#: inc/modules/hf-builder/components/footer/row/customize-options.php:335
+#: inc/modules/hf-builder/components/header/header-builder/customize-options.php:251
+#: inc/modules/hf-builder/components/header/row/customize-options.php:369
+msgid "Contain"
+msgstr "Conține"
+
+#: inc/customizer/customizer.php:463
+msgid "Disable the overlay?"
+msgstr "Dezactivezi suprapunerea?"
+
+#: inc/customizer/customizer.php:482
+msgid "Upload your logo"
+msgstr "Încarcă-ți logoul"
+
+#: inc/customizer/customizer.php:425
+msgid "Header background size"
+msgstr "Dimensiune fundal antet"
+
+#: inc/customizer/customizer.php:163 inc/customizer/customizer.php:601
+msgid "Static"
+msgstr "Static"
+
+#: inc/customizer/customizer.php:428 inc/customizer/customizer.php:574
+#: inc/modules/hf-builder/components/footer/footer-builder/customize-options.php:132
+#: inc/modules/hf-builder/components/footer/row/customize-options.php:334
+#: inc/modules/hf-builder/components/header/header-builder/customize-options.php:250
+#: inc/modules/hf-builder/components/header/row/customize-options.php:368
+msgid "Cover"
+msgstr "Copertă"
+
+#: inc/customizer/customizer.php:184 inc/customizer/customizer.php:641
+msgid "Centered (menu and site logo)"
+msgstr "Centrat (meniu și logo site)"
+
+#: inc/customizer/customizer.php:183 inc/customizer/customizer.php:640
+#: inc/modules/hf-builder/components/footer/columns/customize-options.php:164
+#: inc/modules/hf-builder/components/header/columns/customize-options.php:168
+msgid "Inline"
+msgstr "În-linie"
+
+#: inc/customizer/options/hero-area.php:210
+msgid "Title for the second slide"
+msgstr "Titlu pentru al doilea diapozitiv"
+
+#: inc/customizer/options/hero-area.php:227
+msgid "Subtitle for the second slide"
+msgstr "Subtitlu pentru al doilea diapozitiv"
+
+#: inc/customizer/options/hero-area.php:243
+msgid "Third slide"
+msgstr "Al treilea diapozitiv"
+
+#: inc/customizer/options/hero-area.php:281
+msgid "Title for the third slide"
+msgstr "Titlu pentru al treilea diapozitiv"
+
+#: inc/customizer/options/hero-area.php:298
+msgid "Subtitle for the third slide"
+msgstr "Subtitlu pentru al treilea diapozitiv"
+
+#: inc/customizer/options/hero-area.php:314
+msgid "Fourth slide"
+msgstr "Al patrulea diapozitiv"
+
+#: inc/customizer/options/hero-area.php:352
+msgid "Title for the fourth slide"
+msgstr "Titlu pentru al patrulea diapozitiv"
+
+#: inc/customizer/options/hero-area.php:369
+msgid "Subtitle for the fourth slide"
+msgstr "Subtitlu pentru al patrulea diapozitiv"
+
+#: inc/customizer/options/hero-area.php:385
+msgid "Fifth slide"
+msgstr "Al cincilea diapozitiv"
+
+#: inc/customizer/options/hero-area.php:423
+msgid "Title for the fifth slide"
+msgstr "Titlu pentru al cincilea diapozitiv"
+
+#: inc/customizer/options/hero-area.php:191
+msgid "Upload your second image for the slider"
+msgstr "Încarcă-ți a doua imagine pentru carusel"
+
+#: inc/customizer/options/hero-area.php:262
+msgid "Upload your third image for the slider"
+msgstr "Încarcă-ți a treia imagine pentru carusel"
+
+#: inc/customizer/options/hero-area.php:333
+msgid "Upload your fourth image for the slider"
+msgstr "Încarcă-ți a patra imagine pentru carusel"
+
+#: inc/customizer/options/hero-area.php:404
+msgid "Upload your fifth image for the slider"
+msgstr "Încarcă-ți a cincea imagine pentru carusel"
+
+#: inc/customizer/options/hero-area.php:440
+msgid "Subtitle for the fifth slide"
+msgstr "Subtitlu pentru al cincilea diapozitiv"
+
+#: inc/customizer/options/hero-area.php:482
+msgid "Click to begin"
+msgstr "Dă clic pentru a începe"
+
+#: inc/customizer/customizer.php:180
+msgid "Menu style"
+msgstr "Stil meniu"
+
+#: inc/customizer/customizer.php:162 inc/customizer/customizer.php:600
+msgid "Sticky"
+msgstr "Reprezentativ"
+
+#: inc/customizer/customizer.php:159
+msgid "Sticky menu"
+msgstr "Meniu fix"
+
+#: inc/customizer/options/hero-area.php:490
+msgid "Text for your call to action button"
+msgstr "Text pentru butonul Îndemn la acțiune"
+
+#: inc/customizer/options/hero-area.php:474
+msgid "URL for your call to action button"
+msgstr "URL pentru butonul Îndemn la acțiune"
+
+#: inc/customizer/options/hero-area.php:520
+msgid "4000"
+msgstr "4000"
+
+#: inc/customizer/options/hero-area.php:101
+msgid "First slide"
+msgstr "Primul diapozitiv"
+
+#: inc/dashboard/class-dashboard-settings.php:35
+#: inc/onboarding/theme-info.php:32 inc/theme-dashboard-settings.php:142
+msgid "Welcome to Sydney"
+msgstr "Bine ai venit la Sydney"
+
+#: inc/customizer/options/hero-area.php:156
+msgid "Subtitle for the first slide"
+msgstr "Subtitlu pentru primul diapozitiv"
+
+#: inc/customizer/options/hero-area.php:172
+msgid "Second slide"
+msgstr "Al doilea diapozitiv"
+
+#: inc/customizer/options/hero-area.php:52
+#: inc/customizer/options/hero-area.php:75
+msgid "No header (only menu)"
+msgstr "Fără antet (numai meniu)"
+
+#: inc/customizer/options/hero-area.php:527
+msgid "Slider speed"
+msgstr "Viteză carusel"
+
+#: inc/customizer/options/hero-area.php:530
+msgid "Slider speed in miliseconds. Use 0 to disable [default: 4000]"
+msgstr "Viteză carusel în milisecunde. Folosește 0 pentru dezactivare [implicit: 4000]"
+
+#: inc/customizer/options/hero-area.php:120
+msgid "Upload your first image for the slider"
+msgstr "Încarcă-ți prima imagine pentru carusel"
+
+#: inc/customizer/options/hero-area.php:139
+msgid "Title for the first slide"
+msgstr "Titlu pentru primul diapozitiv"
+
+#: inc/customizer/options/hero-area.php:68
+msgid "Site header type"
+msgstr "Tip de antet site"
+
+#: inc/customizer/options/hero-area.php:70
+msgid "Select the hero type for all pages except the front page"
+msgstr "Selectează tipul de erou pentru toate paginile, cu excepția paginii din față"
+
+#: inc/customizer/customizer.php:559 inc/customizer/options/blog-single.php:106
+#: inc/customizer/options/hero-area.php:50
+#: inc/customizer/options/hero-area.php:73
+msgid "Image"
+msgstr "Imagine"
+
+#: inc/customizer/options/hero-area.php:45
+msgid "Front page header type"
+msgstr "Tip de antet pentru pagina din față"
+
+#: inc/customizer/options/hero-area.php:22
+msgid "You can select your header type from here. After that, continue below to the next two tabs (Hero Slider and Header Image) and configure them."
+msgstr "Poți să-ți selectezi tipul de antet de aici. După aceea, continuă mai jos cu următoarele două file (Carusel Hero și Imagine antet) și configurează-le."
+
+#: inc/customizer/customizer.php:558 inc/customizer/options/hero-area.php:49
+#: inc/customizer/options/hero-area.php:72
+msgid "Full screen slider"
+msgstr "Carusel pe întregul ecran"
+
+#: inc/customizer/options/hero-area.php:47
+msgid "Select the header type for your front page"
+msgstr "Selectează tipul de antet pentru pagina din față"
+
+#: inc/customizer/options/header-mobile.php:148
+msgid "Header type"
+msgstr "Tip de antet"
+
+#: inc/customizer/controls/class_sydney_tab_control.php:40
+#: inc/customizer/options/colors.php:64 inc/customizer/options/general.php:14
+#: inc/customizer/options/woocommerce.php:12
+#: inc/integrations/lifter/customize.php:18
+#: inc/theme-dashboard-settings.php:171
+msgid "General"
+msgstr "Generale"
+
+#: header.php:29
+msgid "Skip to content"
+msgstr "Sari la conținut"
+
+#: functions.php:359
+msgid "Create your menu here"
+msgstr "Creează-ți meniul aici"
+
+#: functions.php:148
+msgid "Footer "
+msgstr "Subsol"
+
+#: functions.php:136 inc/customizer/options/blog.php:592
+#: inc/customizer/options/colors.php:730
+#: inc/customizer/options/woocommerce.php:98
+msgid "Sidebar"
+msgstr "Bară laterală"
+
+#: functions.php:57 inc/modules/hf-builder/class-header-footer-builder.php:90
+#: inc/modules/hf-builder/components/header/menu/customize-options.php:22
+msgid "Primary Menu"
+msgstr "Meniu principal"
+
+#: content-page.php:33 inc/dashboard/html-builder.php:126
+#: inc/template-tags.php:164
+msgid "Edit"
+msgstr "Editează"
+
+#: content-page.php:26 content-search.php:32 content-single.php:45
+msgid "Pages:"
+msgstr "Pagini:"
+
+#: content-none.php:33
+msgid "It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps searching can help."
+msgstr "Se pare că nu putem să găsim ceea ce cauți. Probabil o căutare te poate ajuta."
+
+#: content-none.php:28
+msgid "Sorry, but nothing matched your search terms. Please try again with some different keywords."
+msgstr "Regret, dar nu s-a potrivit nimic cu termenii tăi de căutare. Te rog încearcă din nou cu alte cuvinte cheie."
+
+#. translators: %1$s: URL to create a new post
+#: content-none.php:22
+msgid "Ready to publish your first post? <a href=\"%1$s\">Get started here</a>."
+msgstr "Ești gata să-ți publici primul articol? <a href=\"%1$s\">Începe de aici</a>."
+
+#: content-none.php:13
+msgid "Nothing Found"
+msgstr "Nu am găsit nimic"
+
+#: comments.php:66
+msgid "Comments are closed."
+msgstr "Comentariile sunt închise."
+
+#: comments.php:38 comments.php:56
+msgid "Newer Comments &rarr;"
+msgstr "Comentarii mai noi &rarr;"
+
+#: comments.php:37 comments.php:55
+msgid "&larr; Older Comments"
+msgstr "&larr; Comentarii mai vechi"
+
+#: comments.php:36 comments.php:54
+msgid "Comment navigation"
+msgstr "Navigare în comentarii"
+
+#. translators: 1: Number of comments, 2: Post title.
+#: comments.php:29
+msgctxt "comments title"
+msgid "One thought on &ldquo;%2$s&rdquo;"
+msgid_plural "%1$s thoughts on &ldquo;%2$s&rdquo;"
+msgstr[0] "Un comentariu la &bdquo;%2$s&rdquo;"
+msgstr[1] "%1$s comentarii la &bdquo;%2$s&rdquo;"
+msgstr[2] "%1$s de comentarii la &bdquo;%2$s&rdquo;"
+
+#: inc/extras.php:773
+msgid "It looks like nothing was found at this location. Maybe try one of the links below or a search?"
+msgstr "Se pare că nu am găsit nimic la această locație. Poate încerci una din legăturile de mai jos sau o căutare?"
+
+#: inc/extras.php:769
+msgid "Oops! That page can&rsquo;t be found."
+msgstr "Hopa! Acea pagină nu poate fi găsită."
+
+#. Author of the theme
+#: style.css theme-dashboard/class-theme-dashboard.php:579
+#, gp-priority: low
+msgid "aThemes"
+msgstr "aThemes"
+
+#. Author URI of the theme
+#: style.css
+#, gp-priority: low
+msgid "https://athemes.com"
+msgstr "https://athemes.com"
+
+#. Theme URI of the theme
+#: style.css
+#, gp-priority: low
+msgid "https://athemes.com/theme/sydney"
+msgstr "https://athemes.com/theme/sydney"

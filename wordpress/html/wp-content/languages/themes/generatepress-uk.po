@@ -1,0 +1,1389 @@
+# Translation of Themes - GeneratePress in Ukrainian
+# This file is distributed under the same license as the Themes - GeneratePress package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-07-03 08:58:56+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n % 10 == 1 && n % 100 != 11) ? 0 : ((n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) ? 1 : 2);\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: uk_UA\n"
+"Project-Id-Version: Themes - GeneratePress\n"
+
+#. Description of the theme
+#: style.css
+#, gp-priority: high
+msgid "GeneratePress is a lightweight WordPress theme built with a focus on speed and usability. Performance is important to us, which is why a fresh GeneratePress install adds less than 10kb (gzipped) to your page size. We take full advantage of the block editor (Gutenberg), which gives you more control over creating your content. If you use page builders, GeneratePress is the right theme for you. It is completely compatible with all major page builders, including Beaver Builder and Elementor. Thanks to our emphasis on WordPress coding standards, we can boast full compatibility with all well-coded plugins, including WooCommerce. GeneratePress is fully responsive, uses valid HTML/CSS, and is translated into over 25 languages by our amazing community of users. A few of our many features include 60+ color controls, powerful dynamic typography, 5 navigation locations, 5 sidebar layouts, dropdown menus (click or hover), and 9 widget areas. Learn more and check out our powerful premium version at https://generatepress.com"
+msgstr "GeneratePress - це легка тема для WordPress, створена з акцентом на швидкість і зручність використання. Продуктивність важлива для нас, саме тому свіже встановлення GeneratePress додає до розміру вашої сторінки менше 10кб (gzipped). Ми використовуємо всі переваги редактора блоків (Gutenberg), який дає вам більше контролю над створенням вашого вмісту. Якщо ви користуєтеся конструкторами сторінок, GeneratePress - це правильна тема для вас. Вона повністю сумісна з усіма основними конструкторами сторінок, включаючи Beaver Builder і Elementor. Завдяки нашому акценту на стандартах кодування WordPress, ми можемо похвалитися повною сумісністю з усіма добре закодованими плагінами, включаючи WooCommerce. GeneratePress повністю адаптивний, використовує правильні HTML/CSS і перекладений більш ніж 25 мовами нашою дивовижною спільнотою користувачів. Деякі з наших численних функцій включають 60 елементів керування кольором, потужну динамічну типографіку, 5 варіантів розміщення навігації, 5 варіантів компонування бічних колонок, випадаючі меню (клацанням миші або наведенням курсору) та 9 областей для віджетів. Дізнайтеся більше та перевірте нашу потужну преміум-версію на https://generatepress.com"
+
+#. Theme Name of the theme
+#: style.css inc/class-dashboard.php:59 inc/class-dashboard.php:60
+#: inc/dashboard.php:20 inc/structure/footer.php:84
+#, gp-priority: high
+msgid "GeneratePress"
+msgstr "GeneratePress"
+
+#: inc/structure/search-modal.php:21
+msgid "Search"
+msgstr "Пошук"
+
+#. translators: Aria-label describing the read more button
+#: inc/structure/post-meta.php:595
+msgctxt "read more about post title"
+msgid "Read more about %s"
+msgstr "Докладніше про %s"
+
+#: inc/structure/search-modal.php:40
+msgid "Open search"
+msgstr "Відкрити пошук"
+
+#: inc/customizer/fields/search-modal.php:85
+msgid "Overlay Background"
+msgstr "Накладання фону"
+
+#: inc/customizer/fields/search-modal.php:62
+msgid "Field Text"
+msgstr "Текст поля"
+
+#: inc/customizer/fields/search-modal.php:39
+msgid "Field Background"
+msgstr "Фон поля"
+
+#: inc/customizer/fields/search-modal.php:16
+msgid "Search Modal"
+msgstr "Пошук модальний"
+
+#: inc/customizer.php:1032
+msgid "Enable navigation search modal"
+msgstr "Увімкнути модальний режим навігаційного пошуку"
+
+#: inc/class-html-attributes.php:316
+msgid "Posts"
+msgstr "Записи"
+
+#: inc/defaults.php:106
+msgid "Accent"
+msgstr "Акцент"
+
+#. translators: Base number
+#: inc/defaults.php:95 inc/defaults.php:101
+msgid "Base %s"
+msgstr "Основа %s"
+
+#: inc/defaults.php:89 assets/dist/customizer.js:1
+msgid "Base"
+msgstr "Основа"
+
+#. translators: Contrast number
+#: inc/defaults.php:78 inc/defaults.php:84
+msgid "Contrast %s"
+msgstr "Контраст %s"
+
+#: inc/defaults.php:72
+msgid "Contrast"
+msgstr "Контрастність"
+
+#: inc/customizer/fields/sidebar-widgets.php:16
+msgid "Sidebar Widgets"
+msgstr "Віджети бокової колонки"
+
+#: inc/customizer/fields/primary-navigation.php:153
+msgid "Sub-Menu Text Current"
+msgstr "Поточний текст підменю"
+
+#: inc/customizer/fields/primary-navigation.php:145
+msgid "Sub-Menu Text Hover"
+msgstr "Тексту підменю при наведенні"
+
+#: inc/customizer/fields/primary-navigation.php:137
+msgid "Sub-Menu Text"
+msgstr "Текст підменю"
+
+#: inc/customizer/fields/primary-navigation.php:120
+msgid "Sub-Menu Background Current"
+msgstr "Поточний фон підменю"
+
+#: inc/customizer/fields/primary-navigation.php:112
+msgid "Sub-Menu Background Hover"
+msgstr "Фон підменю при наведенні"
+
+#: inc/customizer/fields/primary-navigation.php:104
+msgid "Sub-Menu Background"
+msgstr "Фон підменю"
+
+#: inc/customizer/fields/primary-navigation.php:87
+msgid "Navigation Text Current"
+msgstr "Поточний текст навігації"
+
+#: inc/customizer/fields/primary-navigation.php:79
+msgid "Navigation Text Hover"
+msgstr "Текст навігація при наведенні"
+
+#: inc/customizer/fields/primary-navigation.php:71
+msgid "Navigation Text"
+msgstr "Текст навігації"
+
+#: inc/customizer/fields/primary-navigation.php:55
+#: inc/customizer/fields/primary-navigation.php:88
+#: inc/customizer/fields/primary-navigation.php:121
+#: inc/customizer/fields/primary-navigation.php:154
+msgid "Choose Current Color"
+msgstr "Виберіть поточний колір"
+
+#: inc/customizer/fields/primary-navigation.php:54
+msgid "Navigation Background Current"
+msgstr "Поточний фон навігації"
+
+#: inc/customizer/fields/primary-navigation.php:46
+msgid "Navigation Background Hover"
+msgstr "Фон навігації при наведенні"
+
+#: inc/customizer/fields/primary-navigation.php:38
+msgid "Navigation Background"
+msgstr "Фон навігації"
+
+#: inc/customizer/fields/header.php:168
+msgid "Tagline"
+msgstr "Ключова фраза"
+
+#: inc/customizer/fields/header.php:145 assets/dist/customizer.js:1
+msgid "Site Title"
+msgstr "Назва сайту"
+
+#: inc/customizer/fields/forms.php:210
+msgid "Border Focus"
+msgstr "Фокус межі"
+
+#: inc/customizer/fields/forms.php:184
+msgid "Border"
+msgstr "Межа"
+
+#: inc/customizer/fields/forms.php:143
+msgid "Text Focus"
+msgstr "Фокус тексту"
+
+#: inc/customizer/fields/forms.php:82 inc/customizer/fields/forms.php:148
+#: inc/customizer/fields/forms.php:216
+msgid "Choose Focus Color"
+msgstr "Виберіть колір фокусування"
+
+#: inc/customizer/fields/forms.php:76
+msgid "Background Focus"
+msgstr "Фон фокусування"
+
+#: inc/customizer/fields/forms.php:16
+msgid "Forms"
+msgstr "Форми"
+
+#: inc/customizer/fields/footer-widgets.php:149
+#: inc/customizer/fields/sidebar-widgets.php:149
+msgid "Widget Title"
+msgstr "Назва віджету"
+
+#: inc/customizer/fields/content.php:344
+msgid "Heading 6 (H6) Color"
+msgstr "Колір заголовку 6 (H6)"
+
+#: inc/customizer/fields/content.php:339
+msgid "Heading 5 (H5) Color"
+msgstr "Колір заголовку 5 (H5)"
+
+#: inc/customizer/fields/content.php:334
+msgid "Heading 4 (H4) Color"
+msgstr "Колір заголовку 4 (H4)"
+
+#: inc/customizer/fields/content.php:329
+msgid "Heading 3 (H3) Color"
+msgstr "Колір заголовку 3 (H3)"
+
+#: inc/customizer/fields/content.php:324
+msgid "Heading 2 (H2) Color"
+msgstr "Колір заголовку 2 (H2)"
+
+#: inc/customizer/fields/content.php:319
+msgid "Heading 1 (H1) Color"
+msgstr "Колір заголовку 1 (H1"
+
+#: inc/customizer/fields/content.php:299
+msgid "Entry Meta Links Hover"
+msgstr "Мета-посилання входу при наведенні"
+
+#: inc/customizer/fields/content.php:274
+msgid "Entry Meta Links"
+msgstr "Посилання метаданих записів"
+
+#: inc/customizer/fields/content.php:236
+msgid "Entry Meta Text"
+msgstr "Текст мета входу"
+
+#: inc/customizer/fields/content.php:210
+msgid "Archive Content Title Hover"
+msgstr "Назва вмісту архіву при наведенні"
+
+#: inc/customizer/fields/content.php:185
+msgid "Archive Content Title"
+msgstr "Назва вмісту архіву"
+
+#: inc/customizer/fields/buttons.php:16 assets/dist/customizer.js:1
+msgid "Buttons"
+msgstr "Кнопки"
+
+#: inc/customizer/fields/body.php:150
+msgid "Choose Visited Color"
+msgstr "Виберіть колір відвідування"
+
+#: inc/customizer/fields/body.php:119 inc/customizer/fields/content.php:121
+#: inc/customizer/fields/footer-bar.php:123
+#: inc/customizer/fields/footer-widgets.php:123
+#: inc/customizer/fields/header.php:119
+#: inc/customizer/fields/sidebar-widgets.php:123
+#: inc/customizer/fields/top-bar.php:123
+msgid "Link Hover"
+msgstr "Посилання при наведенні"
+
+#: inc/customizer/fields/body.php:94 inc/customizer/fields/content.php:96
+#: inc/customizer/fields/footer-bar.php:98
+#: inc/customizer/fields/footer-widgets.php:98
+#: inc/customizer/fields/header.php:94
+#: inc/customizer/fields/sidebar-widgets.php:98
+#: inc/customizer/fields/top-bar.php:97
+msgid "Link"
+msgstr "Посилання"
+
+#: inc/customizer/fields/back-to-top.php:147
+#: inc/customizer/fields/buttons.php:148
+msgid "Text Hover"
+msgstr "Текст при наведенні"
+
+#: inc/customizer/fields/back-to-top.php:86
+#: inc/customizer/fields/back-to-top.php:152 inc/customizer/fields/body.php:123
+#: inc/customizer/fields/buttons.php:87 inc/customizer/fields/buttons.php:153
+#: inc/customizer/fields/content.php:125 inc/customizer/fields/content.php:214
+#: inc/customizer/fields/content.php:303
+#: inc/customizer/fields/footer-bar.php:128
+#: inc/customizer/fields/footer-widgets.php:128
+#: inc/customizer/fields/header.php:124
+#: inc/customizer/fields/primary-navigation.php:47
+#: inc/customizer/fields/primary-navigation.php:80
+#: inc/customizer/fields/primary-navigation.php:113
+#: inc/customizer/fields/primary-navigation.php:146
+#: inc/customizer/fields/sidebar-widgets.php:128
+#: inc/customizer/fields/top-bar.php:128
+msgid "Choose Hover Color"
+msgstr "Виберіть колір наведення"
+
+#: inc/customizer/fields/back-to-top.php:60
+#: inc/customizer/fields/back-to-top.php:127 inc/customizer/fields/body.php:98
+#: inc/customizer/fields/buttons.php:61 inc/customizer/fields/buttons.php:128
+#: inc/customizer/fields/content.php:100 inc/customizer/fields/content.php:189
+#: inc/customizer/fields/content.php:278
+#: inc/customizer/fields/footer-bar.php:38
+#: inc/customizer/fields/footer-bar.php:63
+#: inc/customizer/fields/footer-bar.php:103
+#: inc/customizer/fields/footer-widgets.php:38
+#: inc/customizer/fields/footer-widgets.php:63
+#: inc/customizer/fields/footer-widgets.php:103
+#: inc/customizer/fields/forms.php:56 inc/customizer/fields/forms.php:123
+#: inc/customizer/fields/forms.php:190 inc/customizer/fields/header.php:99
+#: inc/customizer/fields/primary-navigation.php:39
+#: inc/customizer/fields/primary-navigation.php:72
+#: inc/customizer/fields/primary-navigation.php:105
+#: inc/customizer/fields/primary-navigation.php:138
+#: inc/customizer/fields/sidebar-widgets.php:38
+#: inc/customizer/fields/sidebar-widgets.php:63
+#: inc/customizer/fields/sidebar-widgets.php:103
+#: inc/customizer/fields/top-bar.php:102
+msgid "Choose Initial Color"
+msgstr "Виберіть початковий колір"
+
+#: inc/customizer/fields/back-to-top.php:16
+msgid "Back to Top"
+msgstr "Повернутись до верху"
+
+#. translators: Learn more here
+#: inc/customizer.php:1564
+msgid "Switching to our dynamic typography system can change how your fonts display. Review your website thoroughly before publishing this change. Learn more %s."
+msgstr "Перехід до нашої динамічної системи типографіки може змінити спосіб відображення шрифтів. Перегляньте ваш веб-сайт уважно перед публікацією цієї зміни. Дізнайтеся більше %s."
+
+#: inc/customizer.php:1561
+msgid "Use dynamic typography system"
+msgstr "Використовуйте динамічну систему типографії."
+
+#: inc/customizer.php:1490
+msgid "Never"
+msgstr "Ніколи"
+
+#: inc/customizer.php:1489
+msgid "Not on hover"
+msgstr "Не при наведенні"
+
+#: inc/customizer.php:1488
+msgid "On hover"
+msgstr "При наведенні"
+
+#: inc/customizer.php:1487
+msgid "Always"
+msgstr "Завжди"
+
+#: inc/customizer.php:1484
+msgid "Add underlines to your links in your main content areas."
+msgstr "Додайте підкреслення до посилань у вашому основному вмісті."
+
+#: inc/customizer.php:1483
+msgid "Underline Links"
+msgstr "Підкреслені посилання"
+
+#: inc/customizer.php:489
+msgid "Configure"
+msgstr "Налаштувати"
+
+#: inc/customizer.php:424
+msgid "Typography Manager"
+msgstr "Менеджер типографіки"
+
+#: inc/customizer.php:402
+msgid "Optional"
+msgstr "Необов’язково"
+
+#: inc/customizer.php:401
+msgid "Fallback"
+msgstr "Fallback"
+
+#: inc/customizer.php:400
+msgid "Swap"
+msgstr "Поміняти місцями"
+
+#: inc/customizer.php:399
+msgid "Block"
+msgstr "Блок"
+
+#: inc/customizer.php:398
+msgid "Auto"
+msgstr "Авто"
+
+#: inc/customizer.php:394
+msgid "Learn about font-display"
+msgstr "Дізнатися про font-display"
+
+#: inc/customizer.php:390
+msgid "Google font-display"
+msgstr "Google font-display"
+
+#: inc/customizer.php:375
+msgid "Choose Font"
+msgstr "Виберіть шрифт"
+
+#: inc/customizer.php:330
+msgid "Font Manager"
+msgstr "Менеджер шрифтів"
+
+#: inc/customizer.php:281 assets/dist/customizer.js:1
+msgid "Choose Color"
+msgstr "Виберіть колір"
+
+#: inc/customizer.php:244
+msgid "Global Colors"
+msgstr "Глобальні кольори"
+
+#: inc/class-rest.php:96 assets/dist/dashboard.js:1
+msgid "Settings reset."
+msgstr "Скидання налаштувань."
+
+#: inc/class-html-attributes.php:461
+msgid "Entry meta"
+msgstr "Мета входу"
+
+#: inc/class-html-attributes.php:448
+msgid "Comment meta"
+msgstr "Мета-дані коментарів"
+
+#: inc/class-html-attributes.php:319
+msgid "Archive Page"
+msgstr "Сторінка архіву"
+
+#: inc/class-html-attributes.php:302
+msgid "Page"
+msgstr "Сторінка"
+
+#: inc/class-html-attributes.php:244
+msgid "Mobile Toggle"
+msgstr "Мобільний перемикач"
+
+#: inc/class-html-attributes.php:214
+msgid "Primary"
+msgstr "Головна"
+
+#: inc/class-html-attributes.php:171 inc/class-html-attributes.php:257
+msgid "Site"
+msgstr "Сайт"
+
+#: inc/class-dashboard.php:123
+msgid "Dashboard"
+msgstr "Майстерня"
+
+#: inc/meta-box.php:176
+msgid "Choose your content container type."
+msgstr "Виберіть тип контейнера для вмісту."
+
+#: inc/meta-box.php:105 inc/meta-box.php:173
+msgid "Content Container"
+msgstr "Контейнер вмісту"
+
+#: inc/general.php:83 inc/general.php:99
+msgid "Close Sub-Menu"
+msgstr "Закрити підменю"
+
+#: inc/general.php:82 inc/general.php:98 inc/structure/navigation.php:377
+#: inc/structure/navigation.php:459
+msgid "Open Sub-Menu"
+msgstr "Відкрити підменю"
+
+#: inc/structure/footer.php:83
+msgctxt "GeneratePress"
+msgid "Built with"
+msgstr "Побудований на"
+
+#: inc/structure/post-meta.php:112
+msgctxt "prepends the pagination page number for screen readers"
+msgid "Page"
+msgstr "Сторінка"
+
+#. translators: right arrow
+#: inc/structure/post-meta.php:106
+msgid "Next %s"
+msgstr "Далі %s"
+
+#. translators: left arrow
+#: inc/structure/post-meta.php:98
+msgid "%s Previous"
+msgstr "%s Попередній"
+
+#: inc/customizer.php:1439 inc/customizer.php:1565
+msgid "here"
+msgstr "тут"
+
+#. translators: Learn more here
+#: inc/customizer.php:1438
+msgid "Switching your structure can change how your website displays. Review your website thoroughly before publishing this change, or use a staging site to review the potential changes. Learn more %s."
+msgstr "Зміна структури може змінити зовнішній вигляд вашого веб-сайту. Ретельно перевірте свій веб-сайт перед публікацією цієї зміни або скористайтеся налагоджувальним сайтом для перевірки потенційних змін. Дізнатися більше %s."
+
+#: inc/customizer.php:1435
+msgid "Caution:"
+msgstr "Увага:"
+
+#: inc/customizer.php:1431
+msgid "Floats"
+msgstr "Обтікання"
+
+#: inc/customizer.php:1430
+msgid "Flexbox"
+msgstr "Flexbox"
+
+#: inc/customizer.php:1427
+msgid "Structure"
+msgstr "Структура"
+
+#: inc/customizer.php:1345
+msgid "Full Content"
+msgstr "Повний вміст"
+
+#: inc/customizer.php:666
+msgid "Navigation After"
+msgstr "Навігація після"
+
+#: inc/customizer.php:665
+msgid "Navigation Before"
+msgstr "Навігація перед"
+
+#: inc/customizer.php:664
+msgid "Classic"
+msgstr "Класичний"
+
+#: inc/general.php:118
+msgid "Close Search Bar"
+msgstr "Закрити пошук"
+
+#: inc/general.php:117 inc/structure/navigation.php:194
+#: inc/structure/navigation.php:553 inc/structure/navigation.php:594
+#: inc/structure/navigation.php:635
+msgid "Open Search Bar"
+msgstr "Відкрийте панель пошуку"
+
+#: inc/customizer.php:1510
+msgid "Reduce the number of CSS file requests and use a lite version of our grid system."
+msgstr "Зменшіть кількість запитів на CSS-файли та використовуйте легку версію нашої сіткової системи."
+
+#: inc/customizer.php:1509
+msgid "Combine CSS"
+msgstr "Об'єднати CSS"
+
+#: inc/customizer.php:1464
+msgid "Font"
+msgstr "Шрифт"
+
+#: inc/customizer.php:1463
+msgid "SVG"
+msgstr "SVG"
+
+#: inc/customizer.php:1460
+msgid "Icon Type"
+msgstr "Тип значка"
+
+#: inc/customizer.php:1082 inc/customizer/fields/back-to-top.php:122
+#: inc/customizer/fields/body.php:55 inc/customizer/fields/buttons.php:123
+#: inc/customizer/fields/content.php:58 inc/customizer/fields/footer-bar.php:58
+#: inc/customizer/fields/footer-widgets.php:58
+#: inc/customizer/fields/forms.php:118 inc/customizer/fields/header.php:56
+#: inc/customizer/fields/primary-navigation.php:207
+#: inc/customizer/fields/sidebar-widgets.php:58
+#: inc/customizer/fields/top-bar.php:58
+msgid "Text"
+msgstr "Текст"
+
+#: inc/customizer.php:1081
+msgid "Boxes"
+msgstr "Блоки"
+
+#: inc/customizer.php:1078
+msgid "Container Alignment"
+msgstr "Вирівнювання контейнера"
+
+#: inc/customizer.php:226
+msgid "Place logo next to title"
+msgstr "Місце логотипу поруч із заголовком"
+
+#: inc/typography.php:659 assets/dist/customizer.js:1
+msgid "Heading 3 (H3)"
+msgstr "Заголовок 3 (H3)"
+
+#: inc/typography.php:512 assets/dist/customizer.js:1
+msgid "Heading 2 (H2)"
+msgstr "Заголовок 2 (H2)"
+
+#: inc/typography.php:365 assets/dist/customizer.js:1
+msgid "Heading 1 (H1)"
+msgstr "Заголовок 1 (H1)"
+
+#: inc/dashboard.php:261
+msgid "Reset Settings"
+msgstr "Скинути налаштування"
+
+#: inc/dashboard.php:247
+msgid "Visit documentation &rarr;"
+msgstr "Перейти до документації &rarr;"
+
+#: inc/dashboard.php:246
+msgid "Want to learn more about the theme? Check out our extensive documentation."
+msgstr "Хочете дізнатись більше про тему? Перегляньте нашу велику документацію."
+
+#: inc/dashboard.php:231 assets/dist/dashboard.js:1
+msgid "Start Customizing"
+msgstr "Почати налаштування"
+
+#: inc/dashboard.php:221
+msgid "All Options"
+msgstr "Всі параметри"
+
+#: inc/dashboard.php:216 assets/dist/dashboard.js:1
+msgid "Layout Options"
+msgstr "Параметри компонування"
+
+#: inc/dashboard.php:211
+msgid "Customize Colors"
+msgstr "Налаштування кольорів"
+
+#: inc/dashboard.php:206
+msgid "Customize Fonts"
+msgstr "Налаштувати шрифти"
+
+#: inc/dashboard.php:201
+msgid "Upload Logo"
+msgstr "Завантажити логотип"
+
+#: inc/customizer.php:981
+msgid "Dropdown Direction"
+msgstr "Напрямок випадання меню"
+
+#: inc/customizer.php:924
+msgid "The width when the navigation ceases to float and drops below your logo."
+msgstr "Ширина, коли навігація перестає плавати і опускається нижче вашого логотипу."
+
+#: inc/customizer.php:923
+msgid "Navigation Drop Point"
+msgstr "Точка падіння навігації"
+
+#: inc/customizer.php:669
+msgid "Navigation Left"
+msgstr "Навігація ліворуч"
+
+#: inc/customizer.php:668
+msgid "Navigation After - Centered"
+msgstr "Навігація після заголовка по центру"
+
+#: inc/customizer.php:667
+msgid "Navigation Before - Centered"
+msgstr "Навігація перед заголовком по центру"
+
+#: inc/customizer.php:659
+msgid "Header Presets"
+msgstr "Попередні налаштування заголовка"
+
+#: inc/customizer.php:662
+msgid "Current"
+msgstr "Поточний"
+
+#: inc/customizer.php:194
+msgid "Logo Width"
+msgstr "Ширина логотипу"
+
+#: inc/structure/navigation.php:665
+msgid "Mobile Menu"
+msgstr "Мобільне меню"
+
+#: inc/meta-box.php:196
+msgid "Premium module available"
+msgstr "Преміум-модуль доступний"
+
+#: inc/dashboard.php:263
+msgid "Deleting your settings can not be undone."
+msgstr "Видалення ваших налаштувань неможливо скасувати."
+
+#: inc/dashboard.php:157
+msgid "Premium Modules"
+msgstr "Преміум-модулі"
+
+#: inc/customizer.php:1530
+msgid "Cache CSS generated by your options to boost performance."
+msgstr "Кеш CSS, створений вашими параметрами для підвищення продуктивності."
+
+#: inc/customizer.php:1529
+msgid "Cache dynamic CSS"
+msgstr "Кеш динамічної CSS"
+
+#: inc/customizer.php:1394
+msgid "Load essential Font Awesome icons instead of the full library."
+msgstr "Завантажте необхідні іконки Font Awesome замість повної бібліотеки."
+
+#: inc/customizer.php:1393
+msgid "Load essential icons only"
+msgstr "Завантажити лише необхідні іконки"
+
+#: inc/customizer.php:1374
+msgid "General"
+msgstr "Загальні"
+
+#: inc/customizer.php:1346
+msgid "Excerpt"
+msgstr "Уривок"
+
+#: inc/customizer.php:1342
+msgid "Content Type"
+msgstr "Тип вмісту"
+
+#: inc/customizer.php:1362 inc/typography.php:747
+msgid "More options are available for this section in our premium version."
+msgstr "Додаткові параметри доступні для цього розділу у нашій преміум-версії."
+
+#: inc/customizer.php:171
+msgid "Retina Logo"
+msgstr "Логотип Retina"
+
+#: inc/customizer.php:86
+msgid "Premium Modules Available"
+msgstr "Преміальні модулі доступні"
+
+#: inc/customizer/controls/class-typography-control.php:80
+#: assets/dist/customizer.js:3
+msgid "Variants"
+msgstr "Варіанти"
+
+#: inc/customizer/controls/class-typography-control.php:73
+#: assets/dist/customizer.js:3
+msgid "System fonts"
+msgstr "Системні шрифти"
+
+#: inc/structure/comments.php:156
+msgid "Comment"
+msgstr "Коментар"
+
+#: inc/customizer/controls/class-range-control.php:71
+#: assets/dist/customizer.js:1
+msgid "Mobile"
+msgstr "Мобільний"
+
+#: inc/customizer/controls/class-range-control.php:70
+#: assets/dist/customizer.js:1
+msgid "Tablet"
+msgstr "Планшет"
+
+#: inc/customizer/controls/class-range-control.php:69
+#: assets/dist/customizer.js:1
+msgid "Desktop"
+msgstr "Настільний ПК"
+
+#: inc/meta-box.php:181
+msgid "Full Width"
+msgstr "На всю ширину"
+
+#: inc/customizer.php:623
+msgid "Top Bar Alignment"
+msgstr "Вирівнювання верхньої панелі"
+
+#: inc/customizer.php:597
+msgid "Top Bar Inner Width"
+msgstr "Внутрішня ширина верхньої панелі"
+
+#: inc/customizer.php:571
+msgid "Top Bar Width"
+msgstr "Ширина верхньої панелі"
+
+#: inc/customizer.php:551 inc/customizer/fields/top-bar.php:16
+#: inc/general.php:167 assets/dist/customizer.js:1
+msgid "Top Bar"
+msgstr "Верхня панель навігації"
+
+#: inc/customizer.php:1361 inc/dashboard.php:168 inc/typography.php:746
+msgid "Learn more"
+msgstr "Дізнатись більше"
+
+#: inc/class-dashboard.php:147 inc/dashboard.php:56
+msgid "Documentation"
+msgstr "Документація"
+
+#: inc/class-dashboard.php:132 inc/dashboard.php:53
+msgid "Premium"
+msgstr "Преміум"
+
+#: inc/customizer.php:1283
+msgid "Footer Bar Alignment"
+msgstr "Вирівнювання панелі підвалу"
+
+#: inc/customizer/fields/footer-bar.php:16 inc/general.php:166
+#: assets/dist/customizer.js:1
+msgid "Footer Bar"
+msgstr "Панель підвалу"
+
+#: inc/customizer.php:1230
+msgid "Inner Footer Width"
+msgstr "Ширина вмісту підвалу"
+
+#: inc/customizer.php:842
+msgid "Inner Navigation Width"
+msgstr "Ширина вмісту меню"
+
+#: inc/customizer.php:757
+msgid "Inner Header Width"
+msgstr "Ширина вмісту шапки"
+
+#: inc/typography.php:297
+msgid "Paragraph margin"
+msgstr "Відступ параграфу"
+
+#: inc/typography.php:263 inc/typography.php:444 inc/typography.php:591
+#: inc/typography.php:720
+msgid "Line height"
+msgstr "Висота рядка"
+
+#: inc/customizer/controls/class-range-control.php:72 inc/dashboard.php:272
+#: assets/dist/dashboard.js:1
+msgid "Reset"
+msgstr "Скинути"
+
+#: inc/customizer.php:1185 assets/dist/customizer.js:1
+msgid "Footer"
+msgstr "Підвал"
+
+#: inc/customizer.php:1092 inc/meta-box.php:90
+msgid "Sidebars"
+msgstr "Бічні колонки"
+
+#: inc/customizer.php:797 inc/customizer/fields/primary-navigation.php:23
+#: assets/dist/customizer.js:1
+msgid "Primary Navigation"
+msgstr "Первинна навігація"
+
+#: inc/customizer.php:507
+msgid "Container"
+msgstr "Контейнер"
+
+#: inc/structure/footer.php:228
+msgid "Scroll back to top"
+msgstr "Прокрутити назад до верху"
+
+#: inc/customizer.php:1309
+msgid "Back to Top Button"
+msgstr "Кнопка Повернутись до верху"
+
+#: inc/customizer.php:1205
+msgid "Footer Width"
+msgstr "Ширина підвалу"
+
+#: inc/customizer.php:961
+msgid "Click - Arrow"
+msgstr "Клік по стрілці"
+
+#: inc/customizer.php:960
+msgid "Click - Menu Item"
+msgstr "Клік по пункту меню"
+
+#: inc/customizer.php:959
+msgid "Hover"
+msgstr "Наведення"
+
+#: inc/customizer.php:956
+msgid "Navigation Dropdown"
+msgstr "Випадаюче меню"
+
+#: inc/customizer.php:817
+msgid "Navigation Width"
+msgstr "Ширина навігації"
+
+#: inc/customizer.php:574 inc/customizer.php:600 inc/customizer.php:735
+#: inc/customizer.php:761 inc/customizer.php:820 inc/customizer.php:846
+#: inc/customizer.php:1208 inc/customizer.php:1234
+msgid "Full"
+msgstr "Повний"
+
+#: inc/customizer.php:732
+msgid "Header Width"
+msgstr "Ширина заголовка"
+
+#. translators: %s: Heart icon
+#: inc/dashboard.php:302
+msgctxt "made with love"
+msgid "Made with %s by Tom Usborne"
+msgstr "Зроблено з %s Том Усборн"
+
+#: inc/customizer.php:899
+msgid "Float Left"
+msgstr "Притиснути вліво"
+
+#: inc/class-dashboard.php:140 inc/dashboard.php:55
+msgid "Support"
+msgstr "Техпідтримка"
+
+#: inc/customizer/fields/content.php:147 inc/meta-box.php:189
+#: inc/meta-box.php:191
+msgid "Content Title"
+msgstr "Назва вмісту"
+
+#: content-404.php:51
+msgid "It looks like nothing was found at this location. Maybe try searching?"
+msgstr "Схоже, що тут нічого не знайдено. Може спробуйте пошук?"
+
+#: inc/structure/search-modal.php:104 searchform.php:15
+msgctxt "placeholder"
+msgid "Search &hellip;"
+msgstr "Пошук &hellip;"
+
+#: inc/structure/search-modal.php:102 searchform.php:14 searchform.php:15
+msgctxt "label"
+msgid "Search for:"
+msgstr "Пошук:"
+
+#. translators: 1: Search query name
+#: inc/structure/archives.php:136
+msgid "Search Results for: %s"
+msgstr "Результати пошуку для фрази: %s"
+
+#: no-results.php:62
+msgid "It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps searching can help."
+msgstr "Інформацію на запит знайти не вдалося. Можливо, буде корисний пошук по сайту."
+
+#: no-results.php:57
+msgid "Sorry, but nothing matched your search terms. Please try again with some different keywords."
+msgstr "Вибачте, за вашим запитом нічого не знайдено. Спробуйте інші ключові слова."
+
+#. translators: 1: Admin URL
+#: no-results.php:49
+msgid "Ready to publish your first post? <a href=\"%1$s\">Get started here</a>."
+msgstr "Готові опублікувати свій перший запис? <a href=\"%1$s\">Почніть звідси</a>."
+
+#: no-results.php:27
+msgid "Nothing Found"
+msgstr "Нічого не знайдено"
+
+#: inc/structure/post-meta.php:274
+msgid "% Comments"
+msgstr "% коментарів"
+
+#: inc/structure/post-meta.php:274
+msgid "1 Comment"
+msgstr "1 коментар"
+
+#: inc/structure/post-meta.php:274
+msgid "Leave a comment"
+msgstr "Залишити коментар"
+
+#: inc/structure/post-meta.php:258
+msgctxt "Used before tag names."
+msgid "Tags"
+msgstr "Позначки"
+
+#: inc/structure/post-meta.php:241
+msgctxt "Used before category names."
+msgid "Categories"
+msgstr "Категорії"
+
+#: inc/structure/post-meta.php:233 inc/structure/post-meta.php:250
+msgctxt "Used between list items, there is a space after the comma."
+msgid ", "
+msgstr ", "
+
+#: inc/structure/navigation.php:490
+msgctxt "label"
+msgid "Search"
+msgstr "Пошук"
+
+#: inc/structure/post-meta.php:581
+msgid "Read more"
+msgstr "Читати далі"
+
+#. translators: 1: Author name
+#: inc/structure/post-meta.php:222
+msgid "View all posts by %s"
+msgstr "Подивитися всі записи автора %s"
+
+#: inc/structure/post-meta.php:301
+msgid "by"
+msgstr "Автор"
+
+#: inc/structure/comments.php:91
+msgid "Your comment is awaiting moderation."
+msgstr "Ваш коментар очікує на перевірку."
+
+#. translators: 1: date, 2: time
+#: inc/structure/comments.php:71
+msgctxt "1: date, 2: time"
+msgid "%1$s at %2$s"
+msgstr "%1$s о %2$s"
+
+#: inc/structure/comments.php:28
+msgid "Pingback:"
+msgstr "Сповіщення:"
+
+#: inc/structure/post-meta.php:85
+msgid "Newer posts"
+msgstr "Новіші дописи"
+
+#: inc/structure/post-meta.php:76
+msgid "Older posts"
+msgstr "Старіші записи"
+
+#: inc/structure/post-meta.php:85
+msgid "Next"
+msgstr "Далі"
+
+#: inc/structure/post-meta.php:76
+msgid "Previous"
+msgstr "Назад"
+
+#: inc/deprecated.php:31
+msgid "Next &rarr;"
+msgstr "Далі &rarr;"
+
+#: inc/deprecated.php:30
+msgid "&larr; Previous"
+msgstr "&larr; Попереднє"
+
+#: inc/dashboard.php:373
+msgid "Settings removed."
+msgstr "Налаштування видалені."
+
+#: inc/dashboard.php:368
+msgid "Import successful."
+msgstr "Імпорт успішний."
+
+#: inc/dashboard.php:363
+msgid "Settings saved."
+msgstr "Налаштування збережені."
+
+#: inc/customizer/fields/back-to-top.php:54 inc/customizer/fields/body.php:32
+#: inc/customizer/fields/buttons.php:55 inc/customizer/fields/content.php:34
+#: inc/customizer/fields/footer-bar.php:32
+#: inc/customizer/fields/footer-widgets.php:32
+#: inc/customizer/fields/forms.php:50 inc/customizer/fields/header.php:32
+#: inc/customizer/fields/primary-navigation.php:189
+#: inc/customizer/fields/sidebar-widgets.php:32
+#: inc/customizer/fields/top-bar.php:32
+msgid "Background"
+msgstr "Фон"
+
+#: inc/meta-box.php:100 inc/meta-box.php:186
+msgid "Disable Elements"
+msgstr "Вимкнути елементи"
+
+#: inc/dashboard.php:268
+msgid "Warning: This will delete your settings."
+msgstr "Попередження: Це призведе до видалення налаштувань."
+
+#: inc/dashboard.php:93
+msgid "Customize"
+msgstr "Налаштувати"
+
+#: inc/structure/search-modal.php:105 searchform.php:21 searchform.php:27
+msgctxt "submit button"
+msgid "Search"
+msgstr "Шукати"
+
+#: inc/structure/header.php:379 inc/structure/header.php:380
+msgid "Skip to content"
+msgstr "Перейти до вмісту"
+
+#: inc/structure/navigation.php:50 inc/structure/navigation.php:60
+#: inc/structure/navigation.php:139 inc/structure/navigation.php:155
+msgid "Menu"
+msgstr "Меню"
+
+#: inc/meta-box.php:168
+msgid "5 Widgets"
+msgstr "5 Віджетів"
+
+#: inc/meta-box.php:167
+msgid "4 Widgets"
+msgstr "4 Віджети"
+
+#: inc/meta-box.php:166
+msgid "3 Widgets"
+msgstr "3 Віджети"
+
+#: inc/meta-box.php:165
+msgid "2 Widgets"
+msgstr "2 Віджети"
+
+#: inc/meta-box.php:164
+msgid "1 Widgets"
+msgstr "1 Віджет"
+
+#: inc/meta-box.php:163
+msgid "0 Widgets"
+msgstr "0 Віджетів"
+
+#: inc/meta-box.php:152
+msgid "Both Sidebars on Right"
+msgstr "Обидві бічні колонки праворуч"
+
+#: inc/meta-box.php:151
+msgid "Both Sidebars on Left"
+msgstr "Обидві бічні колонки ліворуч"
+
+#: inc/meta-box.php:150
+msgid "Both Sidebars"
+msgstr "Обидві бічні колонки"
+
+#: inc/meta-box.php:149
+msgid "No Sidebars"
+msgstr "Без бічної колонки"
+
+#: inc/customizer/fields/content.php:16 assets/dist/customizer.js:1
+msgid "Content"
+msgstr "Вміст"
+
+#: inc/customizer.php:663 inc/meta-box.php:146 inc/meta-box.php:162
+#: inc/meta-box.php:180 assets/dist/customizer.js:1 assets/dist/customizer.js:3
+msgid "Default"
+msgstr "За замовчуванням"
+
+#: inc/customizer.php:1323
+msgid "Blog"
+msgstr "Блог"
+
+#: inc/customizer.php:1254 inc/customizer/fields/footer-widgets.php:16
+#: inc/meta-box.php:95 inc/meta-box.php:159
+msgid "Footer Widgets"
+msgstr "Віджети підвалу"
+
+#: inc/customizer.php:1167
+msgid "Single Post Sidebar Layout"
+msgstr "Розміщення бічної колонки в записі"
+
+#: inc/customizer.php:1139
+msgid "Blog Sidebar Layout"
+msgstr "Розміщення бічної колонки в блозі"
+
+#: inc/customizer.php:1119 inc/customizer.php:1147 inc/customizer.php:1175
+msgid "Content / Sidebar / Sidebar"
+msgstr "Вміст / Бічна колонка / Бічна колонка"
+
+#: inc/customizer.php:1118 inc/customizer.php:1146 inc/customizer.php:1174
+msgid "Sidebar / Sidebar / Content"
+msgstr "Бічна колонка / Бічна колонка / Вміст"
+
+#: inc/customizer.php:1117 inc/customizer.php:1145 inc/customizer.php:1173
+msgid "Sidebar / Content / Sidebar"
+msgstr "Бічна колонка / Вміст / Бічна колонка"
+
+#: inc/customizer.php:1116 inc/customizer.php:1144 inc/customizer.php:1172
+msgid "Content (no sidebars)"
+msgstr "Вміст (без бічної колонки)"
+
+#: inc/customizer.php:1115 inc/customizer.php:1143 inc/customizer.php:1171
+msgid "Content / Sidebar"
+msgstr "Вміст / Бічна колонка"
+
+#: inc/customizer.php:1114 inc/customizer.php:1142 inc/customizer.php:1170
+msgid "Sidebar / Content"
+msgstr "Бічна колонка / Вміст"
+
+#: inc/customizer.php:1111 inc/meta-box.php:143
+msgid "Sidebar Layout"
+msgstr "Макет сайдбара"
+
+#: inc/customizer.php:1058
+msgid "One Container"
+msgstr "Один блок"
+
+#: inc/customizer.php:1057
+msgid "Separate Containers"
+msgstr "Відокремити блоки"
+
+#: inc/customizer.php:1054
+msgid "Content Layout"
+msgstr "Компонування вмісту"
+
+#: inc/customizer.php:1009 inc/customizer.php:1313
+msgid "Disable"
+msgstr "Відключити"
+
+#: inc/customizer.php:1008 inc/customizer.php:1312
+msgid "Enable"
+msgstr "Увімкнути"
+
+#: inc/customizer.php:1005 inc/customizer/fields/primary-navigation.php:166
+msgid "Navigation Search"
+msgstr "Навігація пошуку"
+
+#: inc/customizer.php:867
+msgid "Navigation Alignment"
+msgstr "Вирівнювання меню"
+
+#: inc/customizer.php:902
+msgid "No Navigation"
+msgstr "Без навігації"
+
+#: inc/customizer.php:898
+msgid "Float Right"
+msgstr "Притиснути вправо"
+
+#: inc/customizer.php:897
+msgid "Above Header"
+msgstr "Над заголовком"
+
+#: inc/customizer.php:896
+msgid "Below Header"
+msgstr "Нижче заголовка"
+
+#: inc/customizer.php:893
+msgid "Navigation Location"
+msgstr "Місце навігації"
+
+#: inc/customizer.php:628 inc/customizer.php:787 inc/customizer.php:872
+#: inc/customizer.php:984 inc/customizer.php:1288
+msgid "Right"
+msgstr "Праворуч"
+
+#: inc/customizer.php:627 inc/customizer.php:786 inc/customizer.php:871
+#: inc/customizer.php:1287
+msgid "Center"
+msgstr "Центр"
+
+#: inc/customizer.php:626 inc/customizer.php:785 inc/customizer.php:870
+#: inc/customizer.php:985 inc/customizer.php:1286
+msgid "Left"
+msgstr "Ліворуч"
+
+#: inc/customizer.php:782
+msgid "Header Alignment"
+msgstr "Вирівнювання заголовка"
+
+#: inc/customizer.php:575 inc/customizer.php:601 inc/customizer.php:736
+#: inc/customizer.php:760 inc/customizer.php:821 inc/customizer.php:845
+#: inc/customizer.php:1209 inc/customizer.php:1233 inc/meta-box.php:182
+msgid "Contained"
+msgstr "Обмежений"
+
+#: inc/customizer.php:529
+msgid "Container Width"
+msgstr "Ширина контейнера"
+
+#: inc/customizer.php:499 inc/meta-box.php:62
+msgid "Layout"
+msgstr "Розмітка"
+
+#: inc/customizer/fields/body.php:146
+msgid "Link Color Visited"
+msgstr "Колір відвіданого посилання"
+
+#: inc/customizer/fields/back-to-top.php:80
+#: inc/customizer/fields/buttons.php:81
+msgid "Background Hover"
+msgstr "Фон при наведенні"
+
+#: inc/customizer.php:235
+msgid "Colors"
+msgstr "Кольори"
+
+#: inc/customizer.php:149
+msgid "Logo"
+msgstr "Логотип"
+
+#: inc/customizer.php:128
+msgid "Hide site tagline"
+msgstr "Приховати короткий опис сайту"
+
+#: inc/customizer.php:109
+msgid "Hide site title"
+msgstr "Приховати назву сайту"
+
+#: inc/typography.php:229 inc/typography.php:403 inc/typography.php:550
+#: inc/typography.php:687 assets/dist/customizer.js:3
+msgid "Font size"
+msgstr "Розмір шрифту"
+
+#: inc/customizer/controls/class-typography-control.php:78
+msgid "Text transform"
+msgstr "Перетворення тексту"
+
+#: inc/customizer/controls/class-typography-control.php:77
+msgid "Font weight"
+msgstr "Товщина шрифту"
+
+#: inc/customizer/fields/body.php:16 inc/typography.php:199
+#: assets/dist/customizer.js:1
+msgid "Body"
+msgstr "Тіло"
+
+#: inc/customizer.php:314 inc/typography.php:135
+msgid "Typography"
+msgstr "Типографіка"
+
+#: inc/customizer/controls/class-deprecated.php:72
+#: inc/customizer/controls/class-typography-control.php:76
+msgid "Font family"
+msgstr "Сімейство шрифтів"
+
+#: inc/customizer/controls/class-deprecated.php:71
+#: inc/customizer/controls/class-typography-control.php:74
+msgid "Google fonts"
+msgstr "Шрифти Google"
+
+#: inc/customizer/controls/class-deprecated.php:70
+msgid "Default fonts"
+msgstr "Шрифти за замовчуванням"
+
+#: inc/customizer.php:639 inc/customizer/fields/header.php:16
+#: inc/general.php:160 assets/dist/customizer.js:1
+msgid "Header"
+msgstr "Заголовок"
+
+#: inc/customizer.php:900 inc/general.php:159 inc/meta-box.php:148
+msgid "Left Sidebar"
+msgstr "Ліва бічна колонка"
+
+#: inc/customizer.php:901 inc/general.php:158 inc/meta-box.php:147
+msgid "Right Sidebar"
+msgstr "Права бічна колонка"
+
+#: functions.php:58
+msgid "Primary Menu"
+msgstr "Головне меню"
+
+#: inc/general.php:165
+msgid "Footer Widget 5"
+msgstr "Віджет Footer 5"
+
+#: inc/general.php:164
+msgid "Footer Widget 4"
+msgstr "Віджет підвалу 4"
+
+#: inc/general.php:163
+msgid "Footer Widget 3"
+msgstr "Віджет підвалу 3"
+
+#: inc/general.php:162
+msgid "Footer Widget 2"
+msgstr "Віджет підвалу 2"
+
+#: inc/general.php:161
+msgid "Footer Widget 1"
+msgstr "Віджет підвалу 1"
+
+#: inc/structure/comments.php:28 inc/structure/comments.php:82
+msgid "Edit"
+msgstr "Редагувати"
+
+#: content-link.php:84 content-page.php:77 content-single.php:77 content.php:84
+msgid "Pages:"
+msgstr "Сторінки:"
+
+#: inc/structure/comments.php:164
+msgid "Post Comment"
+msgstr "Додати коментар"
+
+#: inc/structure/comments.php:163
+msgid "Leave a Comment"
+msgstr "Залишити коментар"
+
+#: inc/structure/comments.php:199
+msgid "Website"
+msgstr "Сайт"
+
+#: inc/structure/comments.php:191
+msgid "Email"
+msgstr "E-mail"
+
+#: inc/structure/comments.php:183
+msgid "Name"
+msgstr "Ім’я"
+
+#: comments.php:123
+msgid "Comments are closed."
+msgstr "Коментарі закриті."
+
+#: comments.php:86 comments.php:113
+msgid "Newer Comments &rarr;"
+msgstr "Новіші коментарі &rarr;"
+
+#: comments.php:85 comments.php:112
+msgid "&larr; Older Comments"
+msgstr "&larr; Старіші коментарі"
+
+#: comments.php:84 comments.php:111
+msgid "Comment navigation"
+msgstr "Навігація по коментарях"
+
+#. translators: 1: number of comments, 2: post title
+#: comments.php:50
+msgctxt "comments title"
+msgid "%1$s thought on &ldquo;%2$s&rdquo;"
+msgid_plural "%1$s thoughts on &ldquo;%2$s&rdquo;"
+msgstr[0] "%1$s коментар до &ldquo;%2$s&rdquo;"
+msgstr[1] "%1$s коментарі до &ldquo;%2$s&rdquo;"
+msgstr[2] "%1$s коментарів до &ldquo;%2$s&rdquo;"
+
+#: inc/structure/sidebars.php:77
+msgid "Archives"
+msgstr "Архіви"
+
+#: content-404.php:27
+msgid "Oops! That page can&rsquo;t be found."
+msgstr "Отакої! Цю сторінку не знайдено."
+
+#. Author URI of the theme
+#: style.css
+#, gp-priority: low
+msgid "https://generatepress.com/about"
+msgstr "https://generatepress.com/about"
+
+#. Author of the theme
+#: style.css
+#, gp-priority: low
+msgid "Tom Usborne"
+msgstr "Tom Usborne"
+
+#. Theme URI of the theme
+#: style.css
+#, gp-priority: low
+msgid "https://generatepress.com"
+msgstr "https://generatepress.com"

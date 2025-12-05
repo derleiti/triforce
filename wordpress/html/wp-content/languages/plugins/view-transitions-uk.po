@@ -1,0 +1,237 @@
+# Translation of Plugins - View Transitions - Stable (latest release) in Ukrainian
+# This file is distributed under the same license as the Plugins - View Transitions - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-07-19 11:54:35+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n % 10 == 1 && n % 100 != 11) ? 0 : ((n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) ? 1 : 2);\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: uk_UA\n"
+"Project-Id-Version: Plugins - View Transitions - Stable (latest release)\n"
+
+#: includes/settings.php:360
+msgid "Enable view transitions in the WordPress admin area."
+msgstr "Увімкніть переходи між видами в адміністративній області WordPress."
+
+#: includes/settings.php:359
+msgid "WP Admin"
+msgstr "WP Адмін"
+
+#: includes/settings.php:330
+msgid "Control the duration of the view transition. Enter the value in milliseconds (e.g., 500, 1000, 2000)."
+msgstr "Керуйте тривалістю переходу між виглядами. Введіть значення в мілісекундах (наприклад, 500, 1000, 2000)."
+
+#: includes/settings.php:329
+msgid "Transition Animation Duration"
+msgstr "Тривалість анімації переходу"
+
+#: includes/settings.php:320
+msgid "Override the theme provided configuration with the settings below."
+msgstr "Замінити конфігурацію, надану темою, налаштуваннями, наведеними нижче."
+
+#: includes/settings.php:319
+msgid "Override Theme Configuration"
+msgstr "Перевизначити конфігурацію теми"
+
+#: includes/settings.php:305
+msgid "This section allows you to control view transitions usage in the WordPress admin area."
+msgstr "Цей розділ дозволяє вам керувати використанням переходів між переглядами в адміністративній панелі WordPress."
+
+#: includes/settings.php:301
+msgctxt "Settings section"
+msgid "Admin View Transitions"
+msgstr "Переходи в Режимі Адміністратора"
+
+#: includes/settings.php:284
+msgid "Your theme already supports view transitions with its own adapted configuration. The settings below will override those."
+msgstr "Ваша тема вже підтримує переходи між екранами з власною адаптованою конфігурацією. Налаштування, наведені нижче, замінять ці налаштування."
+
+#: includes/settings.php:272
+msgctxt "Settings section"
+msgid "View Transitions"
+msgstr "Переходи між переглядами"
+
+#: includes/settings.php:526
+msgid "Settings"
+msgstr "Налаштування"
+
+#: includes/settings.php:355
+msgid "Provide the CSS selector to detect the post content element."
+msgstr "Вкажіть селектор CSS для виявлення елемента вмісту запису."
+
+#: includes/settings.php:354
+msgid "Post Content Selector"
+msgstr "Вибір контенту запису"
+
+#: includes/settings.php:350
+msgid "Provide the CSS selector to detect the post thumbnail element."
+msgstr "Вкажіть селектор CSS для виявлення елемента мініатюри запису."
+
+#: includes/settings.php:349
+msgid "Post Thumbnail Selector"
+msgstr "Вибір мініатюр запису"
+
+#: includes/settings.php:345
+msgid "Provide the CSS selector to detect the post title element."
+msgstr "Надайте селектор CSS для виявлення елемента заголовка запису."
+
+#: includes/settings.php:344
+msgid "Post Title Selector"
+msgstr "Вибір Заголовка запису"
+
+#: includes/settings.php:340
+msgid "Provide the CSS selector to detect the global main element."
+msgstr "Вкажіть селектор CSS для виявлення глобального головного елемента."
+
+#: includes/settings.php:339
+msgid "Main Selector"
+msgstr "Головний селектор"
+
+#: includes/settings.php:335
+msgid "Provide the CSS selector to detect the global header element."
+msgstr "Надайте селектор CSS для виявлення глобального хедер елемента."
+
+#: includes/settings.php:334
+msgid "Header Selector"
+msgstr "Хедер селектор"
+
+#: includes/settings.php:325
+msgid "Choose the animation that is used for the default view transition type."
+msgstr "Виберіть анімацію, яка використовується для типу переходу між переглядами за замовчуванням."
+
+#: includes/settings.php:324
+msgid "Default Transition Animation"
+msgstr "Анімація переходу за замовчуванням"
+
+#: includes/settings.php:279
+msgid "To reset any of the selector text inputs, clear the field and save the changes."
+msgstr "Щоб скинути будь-який з введених текстів селектора, очистіть поле та збережіть зміни."
+
+#: includes/settings.php:277
+msgid "This section allows you to control view transitions usage on your site to enhance the navigation user experience."
+msgstr "Цей розділ дозволяє вам керувати переходами між переглядами на вашому сайті, щоб покращити взаємодію з користувачем під час навігації."
+
+#: includes/settings.php:192
+msgid "Animation to use for the default view transition type."
+msgstr "Анімація, яка використовуватиметься для типу переходу перегляду за замовчуванням."
+
+#: includes/settings.php:184
+msgid "Configuration for View Transitions."
+msgstr "Конфігурація для переходів між переглядами."
+
+#: includes/settings.php:36
+msgctxt "animation label"
+msgid "Wipe (from top)"
+msgstr "Протирання (зверху)"
+
+#: includes/settings.php:35
+msgctxt "animation label"
+msgid "Wipe (from bottom)"
+msgstr "Протирання (знизу)"
+
+#: includes/settings.php:34
+msgctxt "animation label"
+msgid "Wipe (from left)"
+msgstr "Протирання (зліва направо)"
+
+#: includes/settings.php:33
+msgctxt "animation label"
+msgid "Wipe (from right)"
+msgstr "Протирання (справа на ліво)"
+
+#: includes/settings.php:32
+msgctxt "animation label"
+msgid "Swipe (from top)"
+msgstr "Свайп (зверху)"
+
+#: includes/settings.php:31
+msgctxt "animation label"
+msgid "Swipe (from bottom)"
+msgstr "Свайп (знизу)"
+
+#: includes/settings.php:30
+msgctxt "animation label"
+msgid "Swipe (from left)"
+msgstr "Свайп (зліва на право)"
+
+#: includes/settings.php:29
+msgctxt "animation label"
+msgid "Swipe (from right)"
+msgstr "Свайп (зправа на ліво)"
+
+#: includes/settings.php:28
+msgctxt "animation label"
+msgid "Slide (from top)"
+msgstr "Зсування (вгору)"
+
+#: includes/settings.php:27
+msgctxt "animation label"
+msgid "Slide (from bottom)"
+msgstr "Зсування (вниз)"
+
+#: includes/settings.php:26
+msgctxt "animation label"
+msgid "Slide (from left)"
+msgstr "Зсування (зліва на право)"
+
+#: includes/settings.php:25
+msgctxt "animation label"
+msgid "Slide (from right)"
+msgstr "Зсування (зправа на ліво)"
+
+#: includes/settings.php:24
+msgctxt "animation label"
+msgid "Fade (default)"
+msgstr "Зникання (за замовчуванням)"
+
+#. translators: %s is the minified asset path
+#: includes/functions.php:47
+msgid "Minified asset has not been built: %s"
+msgstr "Мінімізований ресурс не створено: %s"
+
+#. translators: %s: invalid alias
+#: includes/class-plvt-view-transition-animation.php:273
+msgid "The animation alias \"%s\" is invalid."
+msgstr "Псевдонім анімації \"%s\" є недійсним."
+
+#. translators: %s: invalid slug
+#: includes/class-plvt-view-transition-animation.php:139
+msgid "The animation slug \"%s\" is invalid."
+msgstr "Частина посилання анімації \"%s\" є невірною."
+
+#. translators: %s: duplicate alias
+#: includes/class-plvt-view-transition-animation-registry.php:90
+msgid "The animation alias \"%s\" conflicts with an existing slug or alias."
+msgstr "Псевдонім анімації \"%s\" конфліктує з існуючим словом або псевдонімом."
+
+#. translators: %s: duplicate slug
+#: includes/class-plvt-view-transition-animation-registry.php:63
+msgid "The animation slug \"%s\" conflicts with an existing slug or alias."
+msgstr "Анімаційна частина посилання \"%s\" конфліктує з існуючою частиною посилання або псевдонімом."
+
+#. Author URI of the plugin
+#: view-transitions.php
+msgid "https://make.wordpress.org/performance/"
+msgstr "https://make.wordpress.org/performance/"
+
+#. Author of the plugin
+#: view-transitions.php
+msgid "WordPress Performance Team"
+msgstr "Команда продуктивності WordPress"
+
+#. Description of the plugin
+#: view-transitions.php
+msgid "Adds smooth transitions between navigations to your WordPress site."
+msgstr "Додає плавні переходи між навігацією на вашому сайті WordPress."
+
+#. Plugin URI of the plugin
+#: view-transitions.php
+msgid "https://github.com/WordPress/performance/tree/trunk/plugins/view-transitions"
+msgstr "https://github.com/WordPress/performance/tree/trunk/plugins/view-transitions"
+
+#. Plugin Name of the plugin
+#: view-transitions.php
+msgid "View Transitions"
+msgstr "Переглянути Переходи"

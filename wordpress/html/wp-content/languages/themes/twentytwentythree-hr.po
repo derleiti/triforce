@@ -1,0 +1,462 @@
+# Translation of Themes - Twenty Twenty-Three in Croatian
+# This file is distributed under the same license as the Themes - Twenty Twenty-Three package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-01-04 10:00:20+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n % 10 == 1 && n % 100 != 11) ? 0 : ((n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) ? 1 : 2);\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: hr\n"
+"Project-Id-Version: Themes - Twenty Twenty-Three\n"
+
+#. Description of the theme
+#: style.css
+#, gp-priority: high
+msgid "Twenty Twenty-Three is designed to take advantage of the new design tools introduced in WordPress 6.1. With a clean, blank base as a starting point, this default theme includes ten diverse style variations created by members of the WordPress community. Whether you want to build a complex or incredibly simple website, you can do it quickly and intuitively through the bundled styles or dive into creation and full customization yourself."
+msgstr "Twenty Twenty-Three dizajnirana je da iskoristi prednosti novih alata za dizajn predstavljenih u WordPressu 6.1. S čistom, praznom bazom kao početnom točkom, ova zadana tema uključuje deset različitih stilskih varijacija koje su stvorili članovi WordPress zajednice. Bilo da želite izgraditi složenu ili nevjerojatno jednostavnu web-stranicu, možete to učiniti brzo i intuitivno putem paketa stilova ili sami uronite u izradu i potpunu prilagodbu."
+
+#. Theme Name of the theme
+#: style.css
+#, gp-priority: high
+msgid "Twenty Twenty-Three"
+msgstr "Twenty Twenty-Three"
+
+#: patterns/hidden-heading.php:9
+msgctxt "Main heading for homepage"
+msgid "Mindblown: a blog about philosophy."
+msgstr "Mindblown: blog o filozofiji."
+
+#: patterns/hidden-heading.php
+msgctxt "Pattern title"
+msgid "Hidden Heading for Homepage"
+msgstr "Skriveno zaglavlje za početnu stranicu"
+
+#: patterns/post-meta.php
+msgctxt "Pattern description"
+msgid "Post meta information with separator on the top."
+msgstr "Meta podaci objave s razdjelnikom na vrhu."
+
+#: patterns/footer-default.php
+msgctxt "Pattern description"
+msgid "Footer with site title and powered by WordPress."
+msgstr "Podnožje s naslovom stranice i tekstom pokreće WordPress."
+
+#: patterns/call-to-action.php
+msgctxt "Pattern description"
+msgid "Left-aligned text with a CTA button and a separator."
+msgstr "Tekst poravnat lijevo s CTA gumbom i razdjelnikom."
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Comments Template Part"
+msgstr "Dio predloška za komentare"
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Post Meta"
+msgstr "Meta podaci objave"
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Footer"
+msgstr "Podnožje"
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Header"
+msgstr "Zaglavlje"
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Source Serif Pro"
+msgstr "Source Serif Pro"
+
+#: theme.json
+msgctxt "Font family name"
+msgid "System Font"
+msgstr "Sistemski font"
+
+#: theme.json
+msgctxt "Font family name"
+msgid "Inter"
+msgstr "Inter"
+
+#: theme.json
+msgctxt "Font family name"
+msgid "IBM Plex Mono"
+msgstr "IBM Plex Mono"
+
+#: theme.json
+msgctxt "Font family name"
+msgid "DM Sans"
+msgstr "DM Sans"
+
+#: theme.json
+msgctxt "Custom template name"
+msgid "404"
+msgstr "404"
+
+#: theme.json
+msgctxt "Custom template name"
+msgid "Blog (Alternative)"
+msgstr "Blog (Alternativno)"
+
+#: theme.json
+msgctxt "Custom template name"
+msgid "Blank"
+msgstr "Prazno"
+
+#: styles/whisper.json
+msgctxt "Style variation name"
+msgid "Whisper"
+msgstr "Šapat"
+
+#: styles/sherbet.json
+msgctxt "Gradient name"
+msgid "Tertiary to Secondary to Primary Fixed"
+msgstr "Tercijarno do Sekundarno do Primarno Fiksno"
+
+#: styles/sherbet.json
+msgctxt "Gradient name"
+msgid "Primary to Secondary to Tertiary Fixed"
+msgstr "Primarno na sekundarno na tercijarno fiksno"
+
+#: styles/sherbet.json
+msgctxt "Gradient name"
+msgid "Primary to Secondary to Tertiary"
+msgstr "Primarni do Sekundarni do Tercijarni"
+
+#: styles/sherbet.json
+msgctxt "Style variation name"
+msgid "Sherbet"
+msgstr "Sherbet"
+
+#: styles/pitch.json
+msgctxt "Font size name"
+msgid "2X Large"
+msgstr "2X veliko"
+
+#: styles/pitch.json
+msgctxt "Font size name"
+msgid "Extra Large"
+msgstr "Ekstra veliko"
+
+#: styles/pitch.json
+msgctxt "Font size name"
+msgid "Large"
+msgstr "Veliko"
+
+#: styles/pitch.json
+msgctxt "Font size name"
+msgid "Medium"
+msgstr "Srednje"
+
+#: styles/pitch.json
+msgctxt "Font size name"
+msgid "small"
+msgstr "malo"
+
+#: styles/pitch.json
+msgctxt "Space size name"
+msgid "7"
+msgstr "7"
+
+#: styles/pitch.json
+msgctxt "Style variation name"
+msgid "Pitch"
+msgstr "Pitch"
+
+#: styles/pilgrimage.json
+msgctxt "Gradient name"
+msgid "Dots"
+msgstr "Točke"
+
+#: styles/pilgrimage.json
+msgctxt "Gradient name"
+msgid "Base to Primary"
+msgstr "Od baze do primarne"
+
+#: styles/pilgrimage.json
+msgctxt "Gradient name"
+msgid "Tertiary to Secondary"
+msgstr "Tercijarno u sekundarno"
+
+#: styles/pilgrimage.json
+msgctxt "Gradient name"
+msgid "Secondary to Primary"
+msgstr "Sekundarno prema Primarnom"
+
+#: styles/pilgrimage.json
+msgctxt "Gradient name"
+msgid "Primary to Secondary"
+msgstr "Od primarnog do sekundarnog"
+
+#: styles/pilgrimage.json
+msgctxt "Style variation name"
+msgid "Pilgrimage"
+msgstr "Hodočašće"
+
+#: styles/marigold.json
+msgctxt "Font size name"
+msgid "Gigantic"
+msgstr "Gigantsko"
+
+#: styles/marigold.json
+msgctxt "Font size name"
+msgid "Huge"
+msgstr "Ogromno"
+
+#: styles/marigold.json
+msgctxt "Font size name"
+msgid "Normal"
+msgstr "Normalno"
+
+#: styles/marigold.json
+msgctxt "Font size name"
+msgid "Tiny"
+msgstr "Sitno"
+
+#: styles/marigold.json styles/pitch.json theme.json
+msgctxt "Space size name"
+msgid "6"
+msgstr "6"
+
+#: styles/marigold.json styles/pitch.json theme.json
+msgctxt "Space size name"
+msgid "5"
+msgstr "5"
+
+#: styles/marigold.json styles/pitch.json theme.json
+msgctxt "Space size name"
+msgid "4"
+msgstr "4"
+
+#: styles/marigold.json styles/pitch.json theme.json
+msgctxt "Space size name"
+msgid "3"
+msgstr "3"
+
+#: styles/marigold.json styles/pitch.json theme.json
+msgctxt "Space size name"
+msgid "2"
+msgstr "2"
+
+#: styles/marigold.json styles/pitch.json theme.json
+msgctxt "Space size name"
+msgid "1"
+msgstr "1"
+
+#: styles/marigold.json
+msgctxt "Style variation name"
+msgid "Marigold"
+msgstr "Marigold"
+
+#: styles/grapes.json
+msgctxt "Style variation name"
+msgid "Grapes"
+msgstr "Grožđe"
+
+#: styles/electric.json
+msgctxt "Style variation name"
+msgid "Electric"
+msgstr "Električno"
+
+#: styles/canary.json
+msgctxt "Style variation name"
+msgid "Canary"
+msgstr "Kanari"
+
+#: styles/block-out.json styles/canary.json styles/pilgrimage.json
+#: styles/sherbet.json
+msgctxt "Duotone name"
+msgid "Default filter"
+msgstr "Izvorni filter"
+
+#: styles/block-out.json
+msgctxt "Style variation name"
+msgid "Block out"
+msgstr "Blokiranje"
+
+#: styles/aubergine.json styles/block-out.json styles/canary.json
+#: styles/electric.json styles/grapes.json styles/marigold.json
+#: styles/pilgrimage.json styles/pitch.json styles/sherbet.json
+#: styles/whisper.json theme.json
+msgctxt "Color name"
+msgid "Tertiary"
+msgstr "Tercijarni"
+
+#: styles/aubergine.json styles/block-out.json styles/canary.json
+#: styles/electric.json styles/grapes.json styles/marigold.json
+#: styles/pilgrimage.json styles/pitch.json styles/sherbet.json
+#: styles/whisper.json theme.json
+msgctxt "Color name"
+msgid "Secondary"
+msgstr "Sekundarni"
+
+#: styles/aubergine.json styles/block-out.json styles/canary.json
+#: styles/electric.json styles/grapes.json styles/marigold.json
+#: styles/pilgrimage.json styles/pitch.json styles/sherbet.json
+#: styles/whisper.json theme.json
+msgctxt "Color name"
+msgid "Primary"
+msgstr "Primarni"
+
+#: styles/aubergine.json styles/block-out.json styles/canary.json
+#: styles/electric.json styles/grapes.json styles/marigold.json
+#: styles/pilgrimage.json styles/pitch.json styles/sherbet.json
+#: styles/whisper.json theme.json
+msgctxt "Color name"
+msgid "Contrast"
+msgstr "Kontrast"
+
+#: styles/aubergine.json styles/block-out.json styles/canary.json
+#: styles/electric.json styles/grapes.json styles/marigold.json
+#: styles/pilgrimage.json styles/pitch.json styles/sherbet.json
+#: styles/whisper.json theme.json
+msgctxt "Color name"
+msgid "Base"
+msgstr "Osnovica"
+
+#: styles/aubergine.json
+msgctxt "Gradient name"
+msgid "Primary to Tertiary"
+msgstr "Primarni do tercijarni"
+
+#: styles/aubergine.json styles/pilgrimage.json
+msgctxt "Gradient name"
+msgid "Tertiary to Primary"
+msgstr "Tercijarno do Primarno"
+
+#: styles/aubergine.json
+msgctxt "Gradient name"
+msgid "Base to Secondary to Base"
+msgstr "Od baze do sekundarne do baze"
+
+#: styles/aubergine.json
+msgctxt "Gradient name"
+msgid "Secondary to Base"
+msgstr "Sekundarno do baze"
+
+#: styles/aubergine.json
+msgctxt "Style variation name"
+msgid "Aubergine"
+msgstr "Aubergine"
+
+#: patterns/post-meta.php:65
+msgctxt "Label for a list of post tags"
+msgid "Tags:"
+msgstr "Oznake:"
+
+#: patterns/post-meta.php:49
+msgctxt "Preposition to show the relationship between the post and its author"
+msgid "by"
+msgstr "autor/ica"
+
+#: patterns/post-meta.php:37
+msgctxt "Preposition to show the relationship between the post and its categories"
+msgid "in"
+msgstr "u"
+
+#: patterns/post-meta.php:29
+msgctxt "Verb to explain the publication status of a post"
+msgid "Posted"
+msgstr "Objavljeno"
+
+#: patterns/post-meta.php
+msgctxt "Pattern title"
+msgid "Post Meta"
+msgstr "Meta podaci objave"
+
+#: patterns/hidden-no-results.php:10
+msgctxt "Message explaining that there are no results returned from a search"
+msgid "Sorry, but nothing matched your search terms. Please try again with some different keywords."
+msgstr "Žao nam je, ali ništa se ne podudara s vašim pojmovima za pretraživanje. Pokušajte ponovo s nekim različitim ključnim riječima."
+
+#: patterns/hidden-no-results.php
+msgctxt "Pattern title"
+msgid "Hidden No Results Content"
+msgstr "Skriveni sadržaj bez rezultata"
+
+#: patterns/hidden-comments.php:13
+msgctxt "Title of comments section"
+msgid "Comments"
+msgstr "Komentari"
+
+#: patterns/hidden-comments.php
+msgctxt "Pattern title"
+msgid "Hidden Comments"
+msgstr "Skriveni komentari"
+
+#: patterns/hidden-404.php:22 patterns/hidden-no-results.php:14
+msgid "Search"
+msgstr "Pretraga"
+
+#: patterns/hidden-404.php:22 patterns/hidden-no-results.php:14
+msgctxt "placeholder for search field"
+msgid "Search..."
+msgstr "Pretraga…"
+
+#: patterns/hidden-404.php:22 patterns/hidden-no-results.php:14
+msgctxt "label"
+msgid "Search"
+msgstr "Pretraga"
+
+#: patterns/hidden-404.php:19
+msgctxt "Message to convey that a webpage could not be found"
+msgid "This page could not be found."
+msgstr "Stranicu nije moguće pronaći."
+
+#: patterns/hidden-404.php:13
+msgctxt "Error code for a webpage that is not found."
+msgid "404"
+msgstr "404"
+
+#: patterns/hidden-404.php
+msgctxt "Pattern title"
+msgid "Hidden 404"
+msgstr "Skriveni 404"
+
+#. Translators: WordPress link.
+#: patterns/footer-default.php:20
+msgid "Proudly powered by %s"
+msgstr "Ponosno pokreće %s"
+
+#: patterns/footer-default.php
+msgctxt "Pattern title"
+msgid "Default Footer"
+msgstr "Izvorno podnožje"
+
+#: patterns/call-to-action.php:25
+msgctxt "sample content for call to action button"
+msgid "Get In Touch"
+msgstr "Stupite u kontakt"
+
+#: patterns/call-to-action.php:16
+msgctxt "sample content for call to action"
+msgid "Got any book recommendations?"
+msgstr "Imate li kakvu preporuku knjige?"
+
+#: patterns/call-to-action.php
+msgctxt "Pattern title"
+msgid "Call to action"
+msgstr "Poziv na akciju"
+
+#. Author URI of the theme
+#: style.css patterns/footer-default.php:21
+#, gp-priority: low
+msgid "https://wordpress.org"
+msgstr "https://wordpress.org"
+
+#. Author of the theme
+#: style.css
+#, gp-priority: low
+msgid "the WordPress team"
+msgstr "WordPress tim"
+
+#. Theme URI of the theme
+#: style.css
+#, gp-priority: low
+msgid "https://wordpress.org/themes/twentytwentythree"
+msgstr "https://wordpress.org/themes/twentytwentythree"

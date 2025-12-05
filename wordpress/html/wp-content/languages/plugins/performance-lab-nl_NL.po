@@ -1,0 +1,704 @@
+# Translation of Plugins - Performance Lab - Stable (latest release) in Dutch
+# This file is distributed under the same license as the Plugins - Performance Lab - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-09-24 12:15:50+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: nl\n"
+"Project-Id-Version: Plugins - Performance Lab - Stable (latest release)\n"
+
+#: includes/site-health/audit-enqueued-assets/hooks.php:25
+msgid "Blocking assets"
+msgstr "Blokkerende assets"
+
+#: includes/site-health/audit-enqueued-assets/helper.php:583
+msgid "Error"
+msgstr "Fout"
+
+#: includes/site-health/audit-enqueued-assets/helper.php:578
+msgid "N/A"
+msgstr "N/B"
+
+#: includes/site-health/audit-enqueued-assets/helper.php:562
+msgid "Style"
+msgstr "Stijl"
+
+#: includes/site-health/audit-enqueued-assets/helper.php:561
+msgid "Script"
+msgstr "Script"
+
+#: includes/site-health/audit-enqueued-assets/helper.php:555
+msgid "Source"
+msgstr "Bron"
+
+#: includes/site-health/audit-enqueued-assets/helper.php:554
+msgid "Type"
+msgstr "Type"
+
+#. translators: %d is the HTTP status code, %s is the status header description
+#: includes/site-health/audit-enqueued-assets/helper.php:504
+msgid "Failed to retrieve the above asset with an HTTP status of <code>%1$d %2$s</code>."
+msgstr "Het is niet gelukt het bovenstaande bestand op te halen met een HTTP status van <code>%1$d %2$s</code>."
+
+#. translators: %1$s is the error code
+#: includes/site-health/audit-enqueued-assets/helper.php:468
+msgid "There was an error while retrieving the home page to analyze the blocking assets, with the error code %1$s and the following message:"
+msgstr "Er is een fout opgetreden bij het ophalen van de homepage om de blokkerende assets te analyseren, met de foutcode %1$s en het volgende bericht:"
+
+#: includes/site-health/audit-enqueued-assets/helper.php:454
+msgid "Raw response:"
+msgstr "Onbewerkte reactie:"
+
+#. translators: %d is the HTTP status code, %s is the status header description
+#: includes/site-health/audit-enqueued-assets/helper.php:444
+msgid "While retrieving the home page to analyze the blocking assets, the request returned with an HTTP status of <code>%1$d %2$s</code>."
+msgstr "Tijdens het ophalen van de homepage om de blokkerende assets te analyseren, kwam het verzoek terug met een HTTP status van <code>%1$d %2$s</code>."
+
+#: includes/site-health/audit-enqueued-assets/helper.php:437
+msgid "While retrieving the home page to analyze the blocking assets, the request was successfully but response body was empty."
+msgstr "Bij het ophalen van de homepage om de blokkerende assets te analyseren, werd het verzoek met succes uitgevoerd, maar de reactie was leeg."
+
+#: includes/site-health/audit-enqueued-assets/helper.php:417
+msgid "Unable to check site for blocking assets"
+msgstr "Kan site niet controleren op blokkeermiddelen"
+
+#: includes/site-health/audit-enqueued-assets/helper.php:184
+msgid "Your site may have a problem with blocking assets"
+msgstr "Je site hebt mogelijk een probleem met blokkerende assets"
+
+#: includes/site-health/audit-enqueued-assets/helper.php:154
+msgid "Any blocking assets do not appear to be particularly problematic"
+msgstr "Eventuele blokkerende assets lijken niet bijzonder problematisch te zijn"
+
+#. translators: %s: settings page link
+#: includes/admin/load.php:243
+msgid "Open %s to individually toggle the performance features and access any relevant settings."
+msgstr "Open %s om de prestatiekenmerken afzonderlijk te togglen en relevante instellingen te openen."
+
+#: includes/admin/load.php:119
+msgid "<strong>Speculative Loading</strong> now includes an opt-in setting for logged-in users."
+msgstr "<strong>Speculatief laden</strong> bevat nu een instelling voor ingelogde gebruikers."
+
+#: includes/admin/load.php:106
+msgid "New <strong>No-cache BFCache</strong> feature now available."
+msgstr "Nieuwe <strong>No-cache BFCache</strong> functie nu beschikbaar."
+
+#: includes/admin/load.php:101
+msgid "New <strong>View Transitions</strong> feature now available."
+msgstr "Nieuwe <strong>weergave transities</strong> functie nu beschikbaar."
+
+#: includes/admin/load.php:96
+msgid "You can now test upcoming WordPress performance features."
+msgstr "Je kunt nu de aankomende prestatie functies van WordPress testen."
+
+#: includes/site-health/effective-asset-cache-headers/hooks.php:32
+msgid "Effective Caching Headers"
+msgstr "Effectieve headers voor caching"
+
+#: includes/site-health/audit-enqueued-assets/helper.php:557
+#: includes/site-health/effective-asset-cache-headers/helper.php:317
+msgid "Status"
+msgstr "Status"
+
+#: includes/site-health/effective-asset-cache-headers/helper.php:316
+msgid "File"
+msgstr "Bestand"
+
+#. translators: 1: actual Expires header value in seconds, 2: threshold in
+#. seconds
+#: includes/site-health/effective-asset-cache-headers/helper.php:236
+msgid "expires below threshold (actual: %1$s seconds, threshold: %2$s seconds)"
+msgstr "verloopt onder drempel (actueel: %1$s seconden, drempel: %2$s seconden)"
+
+#. translators: 1: actual max-age value in seconds, 2: threshold in seconds
+#: includes/site-health/effective-asset-cache-headers/helper.php:225
+#: includes/site-health/effective-asset-cache-headers/helper.php:257
+msgid "max-age below threshold (actual: %1$s seconds, threshold: %2$s seconds)"
+msgstr "max-age onder drempel (actueel: %1$s seconden, drempel: %2$s seconden)"
+
+#: includes/site-health/effective-asset-cache-headers/helper.php:144
+msgid "No effective caching headers but conditionally cached"
+msgstr "Geen effectieve caching headers, maar voorwaardelijk gecached"
+
+#: includes/site-health/effective-asset-cache-headers/helper.php:139
+msgid "No effective caching headers and no conditional caching"
+msgstr "Geen effectieve caching headers en geen conditionele caching"
+
+#: includes/site-health/effective-asset-cache-headers/helper.php:120
+msgid "No valid headers retrieved"
+msgstr "Geen geldige headers opgehaald"
+
+#: includes/site-health/effective-asset-cache-headers/helper.php:109
+msgid "Could not retrieve headers"
+msgstr "Kon headers niet ophalen"
+
+#: includes/site-health/effective-asset-cache-headers/helper.php:77
+msgid "Effective Cache-Control or Expires headers can be added or adjusted with a small configuration change by your hosting provider."
+msgstr "Effectieve Cache-Control of Expires headers kunnen worden toegevoegd of aangepast met een kleine configuratiewijziging door je hostingprovider."
+
+#: includes/site-health/effective-asset-cache-headers/helper.php:72
+msgid "Note: \"Conditionally cached\" means that the browser can re-validate the resource using ETag or Last-Modified headers. This results in fewer full downloads but still requires the browser to make requests, unlike far-future expiration headers that allow the browser to fully rely on its local cache for a longer duration."
+msgstr "Let op: \"Conditionally cached\" betekent dat de browser de gegevensbron opnieuw kan valideren met behulp van ETag of Last-Modified headers. Dit resulteert in minder volledige downloads, maar vereist nog steeds dat de browser aanvragen doet, in tegenstelling tot headers die in de verre toekomst verlopen en waarmee de browser volledig kan vertrouwen op zijn lokale cache voor een langere duur."
+
+#: includes/site-health/effective-asset-cache-headers/helper.php:70
+msgid "The following file types do not have the recommended effective Cache-Control or Expires headers. Consider adding or adjusting Cache-Control or Expires headers for these asset types."
+msgstr "De volgende bestandstypen hebben niet de aanbevolen effectieve Cache-Control of Expires headers. Overweeg om Cache-Control of Expires headers toe te voegen of aan te passen voor deze asset types."
+
+#: includes/site-health/effective-asset-cache-headers/helper.php:65
+msgid "Your site does not serve static assets with an effective caching strategy"
+msgstr "Je site serveert geen statische assets met een effectieve cachingstrategie"
+
+#: includes/site-health/effective-asset-cache-headers/helper.php:33
+msgid "Serving static assets with far-future expiration headers improves performance by allowing browsers to cache files for a long time, reducing repeated requests."
+msgstr "Het serveren van statische assets met headers die in de toekomst verlopen, verbetert de prestaties doordat browsers bestanden lange tijd in de cache kunnen plaatsen, waardoor er minder vaak een aanvraag hoeft te worden gedaan."
+
+#: includes/site-health/effective-asset-cache-headers/helper.php:25
+msgid "Your site serves static assets with an effective caching strategy"
+msgstr "Je site serveert statische assets met een effectieve cachingstrategie"
+
+#: includes/site-health/bfcache-compatibility-headers/hooks.php:26
+msgid "Cache-Control headers may prevent fast back/forward navigation"
+msgstr "Cache-Control headers kunnen snel terug/vooruit navigeren voorkomen"
+
+#. translators: 1: Cache-Control, 2: no-store
+#: includes/site-health/bfcache-compatibility-headers/helper.php:76
+msgid "The %1$s response header for an unauthenticated request to the home page includes the %2$s directive. This can affect the performance of your site by preventing fast back/forward navigations (via the browser's bfcache)."
+msgstr "De %1$s reactie header voor een niet geauthenticeerde aanvraag naar de homepage bevat de %2$s richtlijn. Dit kan de prestaties van je site beïnvloeden door snelle terug/vooruit navigaties (via de bfcache van de browser) te voorkomen."
+
+#: includes/site-health/bfcache-compatibility-headers/helper.php:70
+msgid "The Cache-Control page header is preventing fast back/forward navigations"
+msgstr "De Cache-Control pagina header voorkomt snel terug/vooruit navigeren"
+
+#. translators: 1: the error code, 2: the error message
+#: includes/site-health/bfcache-compatibility-headers/helper.php:53
+msgid "The unauthenticated request to check the <code>Cache-Control</code> response header for the home page resulted in an error with code <code>%1$s</code> and the following message: %2$s."
+msgstr "De niet geauthenticeerde aanvraag om de <code>Cache-Control</code> reactie header te controleren voor de homepage resulteerde in een fout met code <code>%1$s</code> en het volgende bericht: %2$s."
+
+#: includes/site-health/bfcache-compatibility-headers/helper.php:48
+msgid "Unable to check whether the Cache-Control page header is compatible with fast back/forward navigations"
+msgstr "Kan niet controleren of de Cache-Control pagina header compatibel is met snel terug/vooruit navigeren"
+
+#: includes/site-health/bfcache-compatibility-headers/helper.php:32
+msgid "If the <code>Cache-Control</code> page response header includes the <code>no-store</code> directive then it can prevent instant back/forward navigations (using the browser's bfcache). This is not present for unauthenticated requests on your site, so it is configured properly. Note that there are other ways that bfcache can be disabled (e.g. you have JavaScript which uses a <code>unload</code> event listener). Also note that WordPress adds this directive for logged-in page responses for privacy/security reasons."
+msgstr "Als de <code>Cache-Control</code> pagina reactie header de <code>no-store</code> richtlijn bevat, kan het direct terug/vooruit navigeren voorkomen (met behulp van de bfcache van de browser). Dit is niet aanwezig voor niet geauthenticeerde aanvragen op je site, dus het is goed geconfigureerd. Let op dat er andere manieren zijn om bfcache uit te schakelen (bijv. Je hebt JavaScript dat een <code>unload</code> event listener gebruikt). Let ook op dat WordPress deze richtlijn toevoegt voor ingelogde pagina reacties om privacy/beveiliging redenen."
+
+#: includes/site-health/bfcache-compatibility-headers/helper.php:25
+msgid "The Cache-Control page header is compatible with fast back/forward navigations"
+msgstr "De Cache-Control pagina header is compatibel met snelle terug/vooruit navigaties"
+
+#. translators: %s is the URL to the plugins screen
+#: includes/admin/plugins.php:311
+msgid "Performance features are installed as plugins. To update features or remove them, <a href=\"%s\">manage them on the plugins screen</a>."
+msgstr ""
+"Uitgelichte functies worden geïnstalleerd als plugins. Om functies te updaten of te verwijderen, \n"
+" <a href=\"%s\">beheer ze in het scherm plugins</a>."
+
+#: includes/admin/plugins.php:133
+msgid "The requested plugin is not part of Performance Lab plugins."
+msgstr "De aangevraagde plugin maakt geen deel uit van Performance Lab plugins."
+
+#. translators: %s is the minified asset path
+#: includes/admin/load.php:376
+msgid "Minified asset has not been built: %s"
+msgstr "Verkleinde asset is niet gebouwd: %s"
+
+#: includes/site-health/avif-headers/hooks.php:25
+msgid "AVIF Headers"
+msgstr "AVIF headers"
+
+#: includes/site-health/avif-headers/helper.php:52
+msgid "AVIF headers can be enabled with a small configuration change by your hosting provider."
+msgstr "AVIF headers kunnen worden ingeschakeld met een kleine configuratiewijziging door je hostingprovider."
+
+#: includes/site-health/avif-headers/helper.php:49
+msgid "Your site does not send AVIF image headers correctly"
+msgstr "Je site verzendt AVIF afbeelding headers niet correct."
+
+#. translators: 1: image/avif, 2: content-type
+#: includes/site-health/avif-headers/helper.php:35
+msgid "Images with the mime type %1$s served without the correct %2$s header may not render properly."
+msgstr "Afbeeldingen met het mime type %1$s die zonder de juiste %2$s header worden geleverd, worden mogelijk niet correct weergegeven."
+
+#: includes/site-health/avif-headers/helper.php:24
+msgid "Your site sends AVIF image headers"
+msgstr "Je site stuurt AVIF afbeelding headers"
+
+#: includes/admin/rest-api.php:94
+msgid "Sorry, you are not allowed to access plugin/feature information on this site."
+msgstr "Je hebt geen toestemming om toegang te krijgen tot plugin/functie informatie op deze site."
+
+#: includes/admin/rest-api.php:83
+msgid "Plugin slug of plugin/feature whose information is needed."
+msgstr "Plugin slug van plugin/functie waarvan informatie nodig is."
+
+#: includes/admin/rest-api.php:58
+msgid "Plugin slug of the Performance Lab feature to be activated."
+msgstr "Plugin slug van de Performance Lab functie om te activeren."
+
+#: includes/admin/plugins.php:467
+msgid "Plugin not found among installed plugins."
+msgstr "Plugin niet gevonden tussen geïnstalleerde plugins."
+
+#: includes/admin/plugins.php:112
+msgid "Plugin not found in API response."
+msgstr "Plugin niet gevonden in API reactie."
+
+#: includes/admin/plugins.php:83
+msgid "No plugins found in the API response."
+msgstr "Geen plugins gevonden in de API reactie."
+
+#. translators: %s: API error message
+#: includes/admin/plugins.php:68
+msgid "Failed to retrieve plugins data from WordPress.org API: %s"
+msgstr "Het ophalen van plugins gegevens van WordPress.org API is mislukt: %s"
+
+#: includes/admin/plugins.php:236
+msgid "The following errors occurred:"
+msgstr "De volgende fouten zijn opgetreden:"
+
+#: includes/admin/plugins.php:235
+msgid "Failed to query WordPress.org Plugin Directory for the following plugins:"
+msgstr "Het is niet gelukt de WordPress.org plugin directory op te vragen voor de volgende plugins:"
+
+#: includes/admin/plugins.php:254
+msgid "Please consider manual plugin installation and activation. You can then access each plugin's settings via its respective \"Settings\" link on the Plugins screen."
+msgstr "Overweeg om de plugin handmatig te installeren en activeren. Je hebt dan toegang tot de instellingen van elke plugin via de bijbehorende \"Instellingen\" link in het plugins scherm."
+
+#: includes/admin/plugins.php:233
+msgid "The following error occurred:"
+msgstr "De volgende fout is opgetreden:"
+
+#: includes/admin/plugins.php:232
+msgid "Failed to query WordPress.org Plugin Directory for the following plugin:"
+msgstr "Het is niet gelukt om WordPress.org plugin directory te doorzoeken voor de volgende plugin:"
+
+#: includes/admin/plugins.php:214
+msgid "(installed)"
+msgstr "(geïnstalleerd)"
+
+#: includes/admin/plugins.php:212
+msgid "(active)"
+msgstr "(actief)"
+
+#. translators: Accessibility text.
+#: includes/site-health/webp-support/helper.php:46
+msgid "WebP support can only be enabled by your hosting provider. Please contact them to inquire about switching to a plan that supports WebP, or consider switching to a host that offers this capability. <a href=\"https://make.wordpress.org/hosting/2022/03/30/wordpress-hosting-and-webp-support/\" target=\"_blank\">Learn more</a> about WebP image support for WordPress sites."
+msgstr "WebP ondersteuning kan alleen worden ingeschakeld door je hostingprovider. Neem contact met hen op om te informeren naar het overstappen naar een abonnement dat WebP ondersteunt, of overweeg over te stappen naar een host die deze rechten biedt. <a href=\"https://make.wordpress.org/hosting/2022/03/30/wordpress-hosting-and-webp-support/\" target=\"_blank\">Meer informatie</a> over WebP afbeelding ondersteuning voor WordPress sites."
+
+#. translators: %s: link to Performance Lab settings screen
+#: includes/admin/load.php:630
+msgid "This plugin is installed by <a href=\"%s\">Performance Lab</a>."
+msgstr "Deze plugin is geïnstalleerd door <a href=\"%s\">Performance Lab</a>."
+
+#: includes/site-health/avif-support/hooks.php:25
+msgid "AVIF Support"
+msgstr "AVIF ondersteuning"
+
+#. translators: Accessibility text.
+#: includes/site-health/avif-support/helper.php:46
+msgid "AVIF support can only be enabled by your hosting provider, so contact them for more information."
+msgstr "Ondersteuning voor AVIF kan alleen worden ingeschakeld door je hosting provider, dus neem contact met hen op voor meer informatie."
+
+#: includes/site-health/avif-support/helper.php:42
+msgid "Your site does not support AVIF"
+msgstr "Je site biedt geen ondersteuning voor AVIF"
+
+#: includes/site-health/avif-support/helper.php:32
+msgid "The AVIF image format generally has better compression than WebP, JPEG, PNG and GIF and is designed to supersede them, which can reduce page load time and consume less bandwidth."
+msgstr "Het AVIF afbeelding format heeft over het algemeen een betere compressie dan WepP, JPEG, PNG en GIF en is ontworpen om deze te vervangen, wat de laadtijd van pagina's kan verkorten en minder bandbreedte verbruikt."
+
+#: includes/site-health/avif-support/helper.php:24
+msgid "Your site supports AVIF"
+msgstr "Je site ondersteunt AVIF"
+
+#: includes/admin/plugins.php:587
+msgid "Visit plugin site"
+msgstr "Bezoek de plugin site"
+
+#: includes/admin/plugins.php:221 includes/admin/plugins.php:581
+msgid "https://wordpress.org/plugins/"
+msgstr "https://wordpress.org/plugins/"
+
+#. translators: %s: Plugin name.
+#: includes/admin/plugins.php:579
+msgid "Visit plugin site for %s"
+msgstr "Bezoek plugin site van %s"
+
+#. translators: %s is the settings URL
+#: includes/admin/load.php:555
+msgid "Review <a href=\"%s\">settings</a>."
+msgstr "Beoordeling <a href=\"%s\">instellingen</a>."
+
+#: includes/site-health/audit-autoloaded-options/hooks.php:113
+msgid "The option has been successfully updated."
+msgstr "De optie heeft succesvol geüpdatet."
+
+#: includes/site-health/audit-autoloaded-options/hooks.php:95
+msgid "Failed to disable autoload."
+msgstr "Autoload is niet uitgeschakeld."
+
+#: includes/site-health/audit-autoloaded-options/hooks.php:73
+msgid "The option does not exist."
+msgstr "De optie bestaat niet."
+
+#: includes/site-health/audit-autoloaded-options/hooks.php:67
+msgid "Invalid option name."
+msgstr "Ongeldige optienaam."
+
+#: includes/site-health/audit-autoloaded-options/hooks.php:63
+msgid "Permission denied."
+msgstr "Toestemming geweigerd."
+
+#: includes/site-health/audit-autoloaded-options/helper.php:266
+msgid "Revert to Autoload"
+msgstr "Terugzetten naar automatisch laden"
+
+#: includes/site-health/audit-autoloaded-options/helper.php:246
+msgid "The following table shows the options for which you have previously disabled Autoload."
+msgstr "De volgende tabel toont de opties waarvoor je autoload eerder hebt uitgeschakeld."
+
+#: includes/site-health/audit-autoloaded-options/helper.php:201
+msgid "Disable Autoload"
+msgstr "Automatisch laden uitschakelen"
+
+#: includes/site-health/audit-autoloaded-options/helper.php:185
+#: includes/site-health/audit-autoloaded-options/helper.php:249
+msgid "Action"
+msgstr "Actie"
+
+#: includes/admin/plugins.php:668
+msgctxt "plugin suffix"
+msgid "(experimental)"
+msgstr "(experimenteel)"
+
+#: includes/admin/plugins.php:573
+msgid "Learn more"
+msgstr "Meer informatie"
+
+#: includes/admin/load.php:550
+msgid "Feature activated."
+msgstr "Functie geactiveerd."
+
+#: includes/admin/load.php:535
+msgid "Due to your site's configuration, you may not be able to activate the performance features, unless the underlying plugin is already installed. Please install the relevant plugins manually."
+msgstr "Door de configuratie van je site is het mogelijk dat je de prestatiefuncties niet kunt activeren, tenzij de sub plugin al is geïnstalleerd. Installeer de relevante plugins handmatig."
+
+#: includes/admin/plugins.php:447
+msgid "Sorry, you are not allowed to install plugins on this site."
+msgstr "Je hebt geen toestemming om plugins op deze site installeren."
+
+#: includes/admin/load.php:441
+#: includes/site-health/audit-autoloaded-options/hooks.php:56
+msgid "Missing required parameter."
+msgstr "Ontbrekende vereiste parameter."
+
+#: includes/admin/load.php:22 includes/admin/plugins.php:279
+msgid "Performance Features"
+msgstr "Prestatiegerichte functies"
+
+#: includes/admin/plugins.php:645
+msgid "This plugin does not work with your version of PHP."
+msgstr "Deze plugin is incompatibel met je PHP versie."
+
+#: includes/admin/plugins.php:634
+msgid "This plugin does not work with your version of WordPress."
+msgstr "Deze plugin is incompatibel met je WordPress versie."
+
+#. translators: %s: URL to Update PHP page.
+#: includes/admin/plugins.php:627 includes/admin/plugins.php:650
+msgid "<a href=\"%s\">Learn more about updating PHP</a>."
+msgstr "<a href=\"%s\">Lees meer over het updaten van PHP</a>."
+
+#. translators: %s: URL to WordPress Updates screen.
+#: includes/admin/plugins.php:619 includes/admin/plugins.php:639
+msgid "<a href=\"%s\">Please update WordPress</a>."
+msgstr "<a href=\"%s\">Update WordPress</a>."
+
+#. translators: 1: URL to WordPress Updates screen, 2: URL to Update PHP page.
+#: includes/admin/plugins.php:609
+msgid "<a href=\"%1$s\">Please update WordPress</a>, and then <a href=\"%2$s\">learn more about updating PHP</a>."
+msgstr "<a href=\"%1$s\">Update WordPress</a> en <a href=\"%2$s\">lees meer over het updaten van pHP</a>."
+
+#: includes/admin/plugins.php:604
+msgid "This plugin does not work with your versions of WordPress and PHP."
+msgstr "Deze plugin werkt niet met je versies van WordPress en PHP."
+
+#. translators: %s: Plugin name and version.
+#: includes/admin/plugins.php:571
+msgid "More information about %s"
+msgstr "Meer informatie over %s"
+
+#: includes/admin/plugins.php:545
+msgctxt "plugin"
+msgid "Cannot Activate"
+msgstr "Activeren niet mogelijk"
+
+#: includes/admin/plugins.php:542 includes/admin/plugin-activate-ajax.js:102
+msgid "Activate"
+msgstr "Activeren"
+
+#: includes/admin/plugins.php:519
+msgctxt "plugin"
+msgid "Active"
+msgstr "Actief"
+
+#: includes/admin/plugins.php:545
+msgctxt "plugin"
+msgid "Cannot Install"
+msgstr "Kan niet installeren"
+
+#: includes/admin/plugins.php:283
+msgid "Plugins list"
+msgstr "Plugins lijst"
+
+#: includes/admin/load.php:446
+msgid "Invalid plugin."
+msgstr "Ongeldige plugins."
+
+#: includes/admin/rest-api.php:70
+msgid "Sorry, you are not allowed to activate this feature."
+msgstr "Je hebt geen toestemming om deze functie te activeren."
+
+#: includes/admin/plugins.php:478
+msgid "Sorry, you are not allowed to activate this plugin."
+msgstr "Je hebt geen toestemming om deze plugin te activeren."
+
+#: includes/admin/server-timing.php:264
+msgid "Output buffering is needed to capture metrics after headers have been sent and while the template is being rendered. Note that output buffering may possibly cause an increase in TTFB if the response would be flushed multiple times."
+msgstr "Uitvoer buffering is nodig om statistieken vast te leggen nadat headers zijn verzonden en terwijl de template wordt gerenderd. Merk op dat uitvoer buffering mogelijk een toename in TTFB kan veroorzaken als het reactie meerdere keren wordt doorgespoeld."
+
+#. translators: %s: perflab_server_timing_use_output_buffer
+#: includes/admin/server-timing.php:256
+msgid "Output buffering has been forcibly disabled via the %s filter."
+msgstr "Uitgang buffering is geforceerd uitgeschakeld via het %s filter."
+
+#. translators: %s: perflab_server_timing_use_output_buffer
+#: includes/admin/server-timing.php:245
+msgid "Output buffering has been forcibly enabled via the %s filter."
+msgstr "Uitgang buffering is geforceerd ingeschakeld via het %s filter."
+
+#: includes/admin/server-timing.php:236
+msgid "Enable output buffering of template rendering"
+msgstr "Uitvoer buffering van template rendering inschakelen"
+
+#: includes/admin/server-timing.php:199
+msgid "Enter a single hook name per line."
+msgstr "Voer een enkele hook naam per regel in."
+
+#: includes/admin/server-timing.php:138
+msgid "Filters"
+msgstr "Filters"
+
+#: includes/admin/server-timing.php:128
+msgid "Actions"
+msgstr "Acties"
+
+#. translators: 1: Server-Timing, 2: template_include, 3: anchor link
+#: includes/admin/server-timing.php:103
+msgid "Since the %1$s header is sent before the template is loaded, only hooks before the %2$s filter can be measured. Enable <a href=\"%3$s\">Output Buffering</a> to measure hooks during template rendering."
+msgstr "Omdat de %1$s header wordt verzonden voordat de template wordt geladen, kunnen alleen hooks vóór het %2$s filter worden gemeten. Schakel <a href=\"%3$s\">Output buffering</a> in om hooks te meten tijdens het renderen van de template."
+
+#: includes/admin/server-timing.php:92
+msgid "For any hook name provided, the <strong>cumulative duration between all callbacks</strong> attached to the hook is measured, in milliseconds."
+msgstr "Voor elke hook naam die is opgegeven, wordt de <strong>cumulatieve duur tussen alle callbacks</strong> die aan de hook zijn gekoppeld gemeten, in milliseconden."
+
+#. translators: %s: Server-Timing
+#: includes/admin/server-timing.php:85
+msgid "In this section, you can provide hook names to include measurements for them in the %s header."
+msgstr "In deze sectie kun je hook namen opgeven om er metingen voor op te nemen in de %s header."
+
+#: includes/admin/server-timing.php:77
+msgid "Benchmarking"
+msgstr "Benchmarking"
+
+#: includes/admin/server-timing.php:53
+msgid "Output Buffering"
+msgstr "Uitvoer buffering"
+
+#: includes/admin/server-timing.php:26 includes/admin/server-timing.php:27
+#: includes/admin/server-timing.php:158
+msgid "Server-Timing"
+msgstr "Server-timing"
+
+#: includes/server-timing/class-perflab-server-timing.php:147
+msgid "The method must be called before headers have been sent."
+msgstr "Deze methode moet worden aangeroepen voordat headers zijn verzonden."
+
+#. translators: %s: PHP parameter name
+#: includes/server-timing/class-perflab-server-timing.php:100
+msgid "The %s argument is required and must be a string."
+msgstr "Het %s argument is vereist en moet een string zijn."
+
+#. translators: %s: PHP parameter name
+#: includes/server-timing/class-perflab-server-timing.php:91
+msgid "The %s argument is required and must be a callable."
+msgstr "Het argument %s is vereist en moet een oproepbaar object zijn."
+
+#. translators: %s: metric slug
+#: includes/server-timing/class-perflab-server-timing.php:64
+msgid "A metric with the slug %s is already registered."
+msgstr "Een metriek met de slug %s is al geregistreerd."
+
+#. translators: %s: PHP method name
+#: includes/server-timing/class-perflab-server-timing-metric.php:137
+msgid "The %s method must be called before."
+msgstr "De %s methode moet eerst worden aangeroepen."
+
+#. translators: %s: WordPress action name
+#: includes/server-timing/class-perflab-server-timing-metric.php:87
+#: includes/server-timing/class-perflab-server-timing.php:74
+msgid "The method must be called before or during the %s action."
+msgstr "De methode moet worden opgeroepen vóór of tijdens de %s actie."
+
+#. translators: %s: PHP parameter name
+#: includes/server-timing/class-perflab-server-timing-metric.php:77
+msgid "The %s parameter must be an integer, float, or numeric string."
+msgstr "De parameter '%s' moet een geheel getal, een decimaal getal of een numerieke string zijn."
+
+#: includes/site-health/audit-enqueued-assets/helper.php:585
+msgid "OK"
+msgstr "OK"
+
+#: includes/site-health/audit-autoloaded-options/helper.php:184
+#: includes/site-health/audit-autoloaded-options/helper.php:248
+#: includes/site-health/audit-enqueued-assets/helper.php:556
+msgid "Size"
+msgstr "Grootte"
+
+#: includes/site-health/audit-autoloaded-options/helper.php:183
+#: includes/site-health/audit-autoloaded-options/helper.php:247
+msgid "Option Name"
+msgstr "Optienaam"
+
+#. Author URI of the plugin
+#: load.php
+msgid "https://make.wordpress.org/performance/"
+msgstr "https://make.wordpress.org/performance/"
+
+#: includes/site-health/audit-autoloaded-options/helper.php:80
+msgid "https://wordpress.org/support/article/optimization/#autoloaded-options"
+msgstr "https://wordpress.org/support/article/optimization/#autoloaded-options"
+
+#: includes/site-health/webp-support/helper.php:32
+msgid "The WebP image format produces images that are usually smaller in size than JPEG images, which can reduce page load time and consume less bandwidth."
+msgstr "Het WebP afbeelding format produceert afbeeldingen die normaal kleiner zijn qua grootte dan JPEG afbeelding, dit reduceert laadtijd van de pagina en consumeert minder bandbreedte."
+
+#. translators: 1. Number of autoloaded options. 2. Autoloaded options size.
+#: includes/site-health/audit-autoloaded-options/helper.php:63
+msgid "Your site has %1$s autoloaded options (size: %2$s) in the options table, which could cause your site to be slow. You can reduce the number of autoloaded options by cleaning up your site's options table."
+msgstr "Je site heeft %1$s automatisch geladen opties (grootte: %2$s) in de opties tabel wat ervoor kan zorgen dat je site langzaam is. Je kunt het aantal autoloaded opties verminderen door je site opties tabel op te schonen."
+
+#: includes/site-health/audit-autoloaded-options/helper.php:60
+msgid "Autoloaded options could affect performance"
+msgstr "Automatisch geladen opties kunnen prestaties beïnvloeden"
+
+#. translators: 1. Number of autoloaded options. 2. Autoloaded options size.
+#: includes/site-health/audit-autoloaded-options/helper.php:38
+msgid "Your site has %1$s autoloaded options (size: %2$s) in the options table, which is acceptable."
+msgstr "Je site heeft %1$s automatisch geladen opties (grootte: %2$s) in de opties tabel, dit is acceptabel."
+
+#: includes/site-health/audit-autoloaded-options/helper.php:30
+msgid "Autoloaded options are acceptable"
+msgstr "Automatisch geladen opties zijn acceptabel"
+
+#: includes/site-health/audit-autoloaded-options/helper.php:27
+msgid "Autoloaded options are configuration settings for plugins and themes that are automatically loaded with every page load in WordPress. Having too many autoloaded options can slow down your site."
+msgstr "Automatisch geladen opties zijn configuratie instellingen voor plugins en thema's die automatisch geladen worden elke keer dat er een pagina geladen wordt in WordPress. Het hebben van teveel autoloaded opties kan je site vertragen."
+
+#: includes/site-health/audit-autoloaded-options/hooks.php:30
+msgid "Autoloaded options"
+msgstr "Automatisch geladen opties"
+
+#: includes/site-health/webp-support/helper.php:42
+msgid "Your site does not support WebP"
+msgstr "Je site ondersteunt geen WebP"
+
+#: includes/site-health/webp-support/helper.php:24
+msgid "Your site supports WebP"
+msgstr "Je site ondersteunt WebP"
+
+#: includes/site-health/webp-support/hooks.php:25
+msgid "WebP Support"
+msgstr "WebP ondersteuning"
+
+#. translators: 1: Number of blocking styles. 2.Styles size.
+#: includes/site-health/audit-enqueued-assets/helper.php:374
+msgid "Your website has %1$s blocking style (size: %2$s). Try to reduce the number or to concatenate them."
+msgid_plural "Your website has %1$s blocking styles (size: %2$s). Try to reduce the number or to concatenate them."
+msgstr[0] "Je site heeft %1$s blokkerende stijl (grootte: %2$s). Probeer het aantal te verminderen of ze samen te voegen."
+msgstr[1] "Je site heeft %1$s blokkerende stijlen (grootte: %2$s). Probeer het aantal te verminderen of ze samen te voegen."
+
+#. translators: 1: Number of blocking styles. 2. Styles size.
+#: includes/site-health/audit-enqueued-assets/helper.php:335
+msgid "The amount of %1$s blocking style (size: %2$s) is acceptable."
+msgid_plural "The amount of %1$s blocking styles (size: %2$s) is acceptable."
+msgstr[0] "Het aantal %1$s blokkerende stijl (grootte: %2$s) is acceptabel."
+msgstr[1] "Het aantal van %1$s blokkerende stijlen (grootte: %2$s) is acceptabel."
+
+#: includes/site-health/audit-autoloaded-options/helper.php:81
+#: includes/site-health/audit-enqueued-assets/helper.php:190
+msgid "More info about performance optimization"
+msgstr "Meer informatie over prestatie optimalisatie"
+
+#: includes/site-health/audit-enqueued-assets/helper.php:189
+msgid "https://wordpress.org/support/article/optimization/"
+msgstr "https://wordpress.org/support/article/optimization/"
+
+#. translators: 1: Number of blocking scripts. 2. Scripts size.
+#: includes/site-health/audit-enqueued-assets/helper.php:281
+msgid "Your website has %1$s blocking script (size: %2$s). Try to reduce the number or to concatenate them."
+msgid_plural "Your website has %1$s blocking scripts (size: %2$s). Try to reduce the number or to concatenate them."
+msgstr[0] "Je site heeft %1$s blokkerend script (grootte: %2$s). Probeer het aantal te verminderen of ze samen te voegen."
+msgstr[1] "Je site heeft %1$s blokkerende scripts (grootte: %2$s). Probeer het aantal te verminderen of ze samen te voegen."
+
+#. translators: 1: Number of blocking styles. 2.Styles size.
+#: includes/site-health/audit-enqueued-assets/helper.php:242
+msgid "The amount of %1$s blocking script (size: %2$s) is acceptable."
+msgid_plural "The amount of %1$s blocking scripts (size: %2$s) is acceptable."
+msgstr[0] "De aantal %1$s blokkerend script (grootte: %2$s) is acceptabel."
+msgstr[1] "Het aantal van %1$s blokkerende scripts (grootte: %2$s) is acceptabel."
+
+#. translators: %s is the settings URL
+#: includes/admin/load.php:324 includes/admin/plugins.php:595
+#: includes/admin/plugin-activate-ajax.js:87
+msgid "Settings"
+msgstr "Instellingen"
+
+#: includes/admin/load.php:244
+msgid "Settings > Performance"
+msgstr "Instellingen > Performance"
+
+#: includes/admin/load.php:23
+#: includes/site-health/audit-autoloaded-options/helper.php:33
+#: includes/site-health/audit-enqueued-assets/helper.php:157
+#: includes/site-health/avif-headers/helper.php:27
+#: includes/site-health/avif-support/helper.php:27
+#: includes/site-health/bfcache-compatibility-headers/helper.php:28
+#: includes/site-health/effective-asset-cache-headers/helper.php:28
+#: includes/site-health/webp-support/helper.php:27
+msgid "Performance"
+msgstr "Performance"
+
+#. Author of the plugin
+#: load.php
+msgid "WordPress Performance Team"
+msgstr "WordPress Performance Team"
+
+#. Description of the plugin
+#: load.php
+msgid "Performance plugin from the WordPress Performance Team, which is a collection of standalone performance features."
+msgstr "Performance plugin van het WordPress Performance team, dat een verzameling op zichzelf staande prestatie functies is."
+
+#. Plugin URI of the plugin
+#: load.php
+msgid "https://github.com/WordPress/performance"
+msgstr "https://github.com/WordPress/performance"
+
+#. Plugin Name of the plugin
+#: load.php includes/admin/load.php:228
+msgid "Performance Lab"
+msgstr "Performance Lab"

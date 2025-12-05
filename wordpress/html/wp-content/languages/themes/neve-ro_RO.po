@@ -1,0 +1,2950 @@
+# Translation of Themes - Neve in Romanian
+# This file is distributed under the same license as the Themes - Neve package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-09-01 20:57:49+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n == 0 || n % 100 >= 2 && n % 100 <= 19) ? 1 : 2);\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: ro\n"
+"Project-Id-Version: Themes - Neve\n"
+
+#. Description of the theme
+#: style.css
+#, gp-priority: high
+msgid "Neve is a next-generation, ultra-fast WordPress theme designed for top performance, SEO, and Core Web Vitals. Its lightweight codebase and small size ensure minimal overhead and lightning-fast load times. Fully compatible with the block editor, popular page builders (Elementor, Bricks, Oxygen etc), and WooCommerce, it’s perfect for blogs, small businesses, agencies, portfolios, and online stores. With responsive design, multilingual translations, and easy customization options, Neve empowers you to create a future-proof, high-ranking online presence. Discover everything Neve has to offer and explore our powerful premium version at https://themeisle.com/themes/neve/."
+msgstr "Neve este o temă WordPress ultra-rapidă de ultimă generație, proiectată pentru performanțe de top, SEO și Core Web Vitals. Baza sa de cod ușoară și dimensiunea mică asigură timpi de încărcare fulminanți. Complet compatibilă cu editorul de blocuri, constructorii populari de pagini (Elementor, Bricks, Oxygen etc.) și WooCommerce, este perfectă pentru bloguri, afaceri mici, agenții, portofolii și magazine online. Cu design responsiv, traduceri multilingve și opțiuni de personalizare ușoară, Neve îți permite să-ți creezi o prezență online de rang înalt, pregătită pentru viitor. Descoperă tot ce are Neve de oferit și explorează versiunea noastră premium puternică la https://themeisle.com/themes/neve/."
+
+#: inc/admin/dashboard/main.php:526
+msgid "Custom footer layouts"
+msgstr "Aranjamente personalizate pentru subsol"
+
+#: inc/customizer/traits/features_upsell.php:80
+#: inc/customizer/traits/features_upsell.php:118
+msgid "View features comparison"
+msgstr "Vezi o comparație între funcționalități"
+
+#: inc/customizer/options/upsells.php:583
+msgid "More components"
+msgstr "Mai multe componente"
+
+#: inc/customizer/options/upsells.php:582
+msgid "Display rules"
+msgstr "Reguli de afișare"
+
+#: inc/customizer/options/upsells.php:581
+msgid "Transparent header"
+msgstr "Antet transparent"
+
+#: inc/customizer/options/upsells.php:580
+msgid "Sticky header"
+msgstr "Antet fix"
+
+#: inc/customizer/options/upsells.php:574
+msgid "Extend your header capabilities with more powerful customization options."
+msgstr "Extinzi capabilitățile pentru antet cu opțiuni de personalizare mai puternice."
+
+#: inc/customizer/options/upsells.php:561
+msgid "Custom layouts"
+msgstr "Aranjamente personalizate"
+
+#: inc/customizer/options/upsells.php:560
+msgid "Payments & social icons"
+msgstr "Plăți și iconuri sociale"
+
+#: inc/customizer/options/upsells.php:559
+msgid "Divider element"
+msgstr "Element separator"
+
+#: inc/customizer/options/upsells.php:552
+msgid "Extend your footer capabilities with more powerful customization options."
+msgstr "Extinzi capabilitățile pentru subsol cu opțiuni de personalizare mai puternice."
+
+#: inc/customizer/options/upsells.php:539
+msgid "Neve Pro Features"
+msgstr "Funcționalități Neve Pro"
+
+#: inc/customizer/options/upsells.php:537
+msgid "Comparison table"
+msgstr "Tabel comparativ"
+
+#: inc/customizer/options/upsells.php:536
+msgid "Variations swatches"
+msgstr "Mostre variații"
+
+#: inc/customizer/options/upsells.php:535
+msgid "Wishlist"
+msgstr "Listă cu preferințe"
+
+#: inc/customizer/options/upsells.php:534
+msgid "Quick view"
+msgstr "Vizualizare rapidă"
+
+#: inc/customizer/options/upsells.php:528
+msgid "Extend your WooCommerce with powerful features available in Neve Pro Business and Agency plans."
+msgstr "Extinde-ți instalarea WooCommerce cu funcționalități puternice disponibile în planurile Neve Pro Business și Agency."
+
+#: inc/customizer/options/upsells.php:510
+msgid "Estimated reading time"
+msgstr "Timp de citire estimat"
+
+#: inc/customizer/options/upsells.php:509
+msgid "Author biography"
+msgstr "Biografie autor"
+
+#: inc/customizer/options/upsells.php:508
+msgid "Sharing icons"
+msgstr "Iconuri de partajare"
+
+#: inc/customizer/options/upsells.php:507
+msgid "Related post"
+msgstr "Articole similare"
+
+#: inc/customizer/options/upsells.php:501
+msgid "Extend your single post capabilities with more powerful customization options."
+msgstr "Extinzi capabilitățile pentru articole singulare cu opțiuni de personalizare mai puternice."
+
+#: inc/customizer/options/upsells.php:489
+#: inc/customizer/options/upsells.php:512
+#: inc/customizer/options/upsells.php:563
+#: inc/customizer/options/upsells.php:585
+msgid "Unlock Full Potential"
+msgstr "Deblochezi întregul potențial"
+
+#: inc/customizer/options/upsells.php:487
+msgid "Grid spacing"
+msgstr "Spațiere grilă"
+
+#: inc/customizer/options/upsells.php:485
+msgid "Content padding"
+msgstr "Distanțare conținut"
+
+#: inc/customizer/options/upsells.php:484
+msgid "Image style"
+msgstr "Stil imagine"
+
+#: inc/customizer/options/upsells.php:479
+#: inc/customizer/options/upsells.php:502
+#: inc/customizer/options/upsells.php:529
+#: inc/customizer/options/upsells.php:553
+#: inc/customizer/options/upsells.php:575
+msgid "Upgrade to unlock"
+msgstr "Actualizează pentru a debloca"
+
+#: inc/customizer/options/upsells.php:478
+msgid "Extend your blog/archive capabilities with more powerful customization options."
+msgstr "Extinzi capabilitățile pentru blog/arhivă cu opțiuni de personalizare mai puternice."
+
+#: inc/customizer/options/layout_single_post.php:325
+msgid "Post meta separator"
+msgstr "Separator metadate articol"
+
+#: inc/customizer/options/layout_sidebar.php:155
+msgid "Inner Pages"
+msgstr "Pagini interioare"
+
+#: inc/customizer/options/layout_blog.php:1019
+msgid "Card Box Shadow"
+msgstr "Umbră casetă card"
+
+#: inc/customizer/options/layout_blog.php:949
+msgid "Card Background Color"
+msgstr "Culoare fundal card"
+
+#: inc/customizer/options/layout_blog.php:933
+msgid "Enable Card Style"
+msgstr "Activează stil card"
+
+#: inc/customizer/options/layout_blog.php:908
+msgid "Content Padding"
+msgstr "Distanțare conținut"
+
+#: inc/customizer/options/layout_blog.php:654
+msgid "Post Meta Order"
+msgstr "Ordine metadate articol"
+
+#: inc/customizer/options/layout_blog.php:458
+msgid "Author Avatar Size"
+msgstr "Dimensiune avatar autor"
+
+#: inc/customizer/options/layout_blog.php:449
+msgid "Show Last Updated Date"
+msgstr "Arată data ultimei actualizări"
+
+#: inc/customizer/options/layout_blog.php:444
+msgid "Meta Separator"
+msgstr "Separator metadate"
+
+#: inc/customizer/options/layout_blog.php:434
+#: inc/customizer/options/layout_single_post.php:354
+msgid "Image Aspect Ratio"
+msgstr "Raport aspect imagine"
+
+#: inc/customizer/options/layout_blog.php:417
+#: inc/customizer/options/layout_single_post.php:297
+msgid "Original"
+msgstr "Original"
+
+#: inc/customizer/options/layout_blog.php:310
+msgid "Posts per Page"
+msgstr "Articole per pagină"
+
+#: inc/customizer/options/layout_blog.php:243
+msgid "Post Cards Layout"
+msgstr "Aranjament carduri articol"
+
+#: inc/customizer/options/layout_blog.php:172
+#: inc/customizer/options/layout_single_post.php:144
+msgid "Design"
+msgstr "Design"
+
+#: inc/customizer/options/base_layout_single.php:353
+msgid "Cover overlay color"
+msgstr "Culoare suprapunere copertă"
+
+#: inc/customizer/loader.php:313
+msgid "You do not have permission to perform this action."
+msgstr "Nu ai permisiunea să efectuezi această acțiune."
+
+#: inc/customizer/loader.php:305
+msgid "Invalid security token."
+msgstr "Tokenul de securitate nu este valid."
+
+#: inc/customizer/loader.php:164
+msgid "Don't worry - you can always add or remove pages later"
+msgstr "Nu-ți face griji – poți oricând să adaugi sau să înlături pagini mai târziu"
+
+#: inc/customizer/loader.php:163
+msgid "Start with a clean slate"
+msgstr "Începe cu o tablă curată"
+
+#: inc/customizer/loader.php:162
+msgid "Keep these helpful pages"
+msgstr "Păstrează aceste pagini utile"
+
+#: inc/customizer/loader.php:161
+msgid "We've added some starter pages to help you get going quickly."
+msgstr "Am adăugat câteva pagini de pornire pentru a te ajuta să începi rapid."
+
+#: inc/customizer/loader.php:160
+msgid "Welcome to your new site!"
+msgstr "Bine ai venit pe noul tău site!"
+
+#: inc/core/admin.php:512
+msgid "Neve Theme"
+msgstr "Temă Neve"
+
+#. translators: %s: the name of the theme (Neve Theme).
+#: inc/core/admin.php:511
+msgid "Thanks for downloading %s"
+msgstr "Îți mulțumim că ai descărcat %s"
+
+#: inc/core/admin.php:506
+msgid "I want to build this website from scratch"
+msgstr "Vreau să construiesc acest site de la zero"
+
+#: inc/compatibility/starter-content/theme-mods.php:556
+msgid "Green"
+msgstr "Verde"
+
+#. translators: name of the color pallet.
+#: inc/compatibility/starter-content/theme-mods.php:539
+msgid "East Bay"
+msgstr "Golful de Est"
+
+#: inc/admin/hooks_upsells.php:518
+msgid "Upgrade to Neve Pro to create a Custom Layout."
+msgstr "Treci la Neve Pro pentru a crea un aranjament personalizat."
+
+#: inc/admin/hooks_upsells.php:510 inc/admin/hooks_upsells.php:531
+msgid "Status"
+msgstr "Stare"
+
+#: inc/admin/hooks_upsells.php:509 inc/admin/hooks_upsells.php:530
+msgid "Location"
+msgstr "Locație"
+
+#: inc/admin/hooks_upsells.php:508 inc/admin/hooks_upsells.php:529
+msgid "Type"
+msgstr "Tip"
+
+#: inc/admin/hooks_upsells.php:458
+msgid "See All Features"
+msgstr "Vezi toate funcționalitățile"
+
+#: inc/admin/hooks_upsells.php:448
+msgid "All layouts are lightweight and load only where needed"
+msgstr "Toate aranjamentele sunt ușoare și se încarcă doar acolo unde este necesar"
+
+#: inc/admin/hooks_upsells.php:447
+msgid "Optimized Performance"
+msgstr "Performanță optimizată"
+
+#: inc/admin/hooks_upsells.php:441
+msgid "Design custom shop pages, product layouts, and checkout experiences"
+msgstr "Proiectează pagini de magazin personalizate, aranjamente de produse și experiențe de finalizare"
+
+#: inc/admin/hooks_upsells.php:440
+msgid "WooCommerce Ready"
+msgstr "Pregătită pentru WooCommerce"
+
+#: inc/admin/hooks_upsells.php:434
+msgid "Show different layouts based on user roles, devices, or content types"
+msgstr "Afișează aranjamente diferite în funcție de rolurile utilizatorilor, dispozitive sau tipuri de conținut"
+
+#: inc/admin/hooks_upsells.php:433
+msgid "Smart Display Rules"
+msgstr "Reguli de afișare inteligentă"
+
+#: inc/admin/hooks_upsells.php:427
+msgid "Create stunning headers, footers, and content sections with our visual drag & drop builder"
+msgstr "Creează anteturi, subsoluri și secțiuni de conținut uimitoare cu constructorul nostru vizual de tragere și plasare"
+
+#: inc/admin/hooks_upsells.php:426
+msgid "Build Without Code"
+msgstr "Construiește fără cod"
+
+#: inc/admin/hooks_upsells.php:419
+msgid "Custom Layouts helps you create a unique website that stands out"
+msgstr "Aranjamentele personalizate te ajută să creezi un site web unic care iese în evidență"
+
+#: inc/admin/hooks_upsells.php:415
+msgid "Take Your Site to the Next Level"
+msgstr "Du-ți site-ul la nivelul următor"
+
+#: inc/admin/dashboard/main.php:1065
+msgid "Neve Logo"
+msgstr "Logo Neve"
+
+#: inc/admin/dashboard/main.php:930
+msgid "Design unique website sections without touching code. Create custom headers, footers, and content areas that match your vision."
+msgstr "Proiectează secțiuni unice ale site-ului web fără a atinge codul. Creează anteturi, subsoluri și zone de conținut personalizate care corespund viziunii tale."
+
+#: inc/admin/dashboard/main.php:923
+msgid "View Tutorial"
+msgstr "Vezi tutorial"
+
+#: inc/admin/dashboard/main.php:916
+msgid "Add New Layout"
+msgstr "Adaugă aranjament nou"
+
+#: inc/admin/dashboard/main.php:759
+msgid "AI chatbot for your website"
+msgstr "Chatbot IA pentru site-ul tău web"
+
+#: inc/admin/dashboard/main.php:752
+msgid "RSS feeds aggregator and content curator"
+msgstr "Agregator de fluxuri RSS și curator de conținut"
+
+#: inc/admin/dashboard/main.php:747
+msgid "Lightning-fast caching made simple"
+msgstr "Caching simplificat rapid ca fulgerul"
+
+#: inc/admin/dashboard/main.php:743
+msgid "Smart image optimization and CDN"
+msgstr "Optimizare inteligentă a imaginilor și CDN"
+
+#: inc/admin/dashboard/main.php:739
+msgid "Simple ecommerce solution with Stripe integration"
+msgstr "Soluție simplă de ecommerce cu integrare Stripe"
+
+#: inc/admin/dashboard/main.php:735
+msgid "Import ready-made websites with a single click"
+msgstr "Importă cu un singur clic site-uri web gata făcute"
+
+#: inc/admin/dashboard/main.php:731
+msgid "Advanced blocks for modern WordPress editing"
+msgstr "Blocuri avansate pentru editarea modernă WordPress"
+
+#: inc/admin/dashboard/main.php:710
+msgid "Create members-only content areas. Control access by user roles, logged-in status, or custom rules."
+msgstr "Creează zone de conținut exclusive pentru membri. Controlează accesul în funcție de rolurile utilizatorilor, starea de autentificare sau reguli personalizate."
+
+#: inc/admin/dashboard/main.php:709
+msgid "Content restriction"
+msgstr "Restricție conținut"
+
+#: inc/admin/dashboard/main.php:706
+msgid "Create unique sidebar layouts for different sections. Show relevant content based on user context."
+msgstr "Creează aranjamente unice ale barei laterale pentru diferite secțiuni. Afișează conținut relevant bazat pe contextul utilizatorului."
+
+#: inc/admin/dashboard/main.php:705
+msgid "Custom Sidebars"
+msgstr "Bare laterale personalizate"
+
+#: inc/admin/dashboard/main.php:702
+msgid "Access premium Adobe fonts directly in your theme. Add professional typography to any element."
+msgstr "Accesează fonturi Adobe premium direct în tema ta. Adaugă tipografie profesională la orice element."
+
+#: inc/admin/dashboard/main.php:701
+msgid "Typekit Fonts"
+msgstr "Fonturi Typekit"
+
+#: inc/admin/dashboard/main.php:697
+msgid "Enhanced course layouts, student dashboards, and learning features for your online education platform."
+msgstr "Aspecte îmbunătățite ale cursurilor, tablouri de bord pentru studenți și funcționalități de învățare pentru platforma ta de educație online."
+
+#: inc/admin/dashboard/main.php:688
+msgid "Create conditional headers, footers, and content blocks. Perfect for custom landing pages and marketing campaigns."
+msgstr "Creează anteturi, subsoluri și blocuri de conținut condiționate. Perfect pentru pagini de destinație personalizate și campanii de marketing."
+
+#: inc/admin/dashboard/main.php:684
+msgid "Rebrand Neve as your own. Change theme name, author, and links to match your agency identity."
+msgstr "Rebranduiește Neve ca fiind al tău. Schimbă numele temei, autorul și legăturile pentru a se potrivi cu identitatea agenției tale."
+
+#: inc/admin/dashboard/main.php:680
+msgid "Advanced Gutenberg blocks designed specifically for Neve. Build faster with pre-styled patterns."
+msgstr "Blocuri Gutenberg avansate concepute special pentru Neve. Construiește mai rapid cu modele pre-stilizate."
+
+#: inc/admin/dashboard/main.php:676
+msgid "Optimize core vitals, enable lazy loading, and minify resources for lightning-fast load times."
+msgstr "Optimizează elementele vitale de bază, activează încărcarea lentă și minifică resursele pentru timpi de încărcare extrem de rapizi."
+
+#: inc/admin/dashboard/main.php:675 assets/apps/dashboard/build/dashboard.js:2
+msgid "Performance"
+msgstr "Performanță"
+
+#: inc/admin/dashboard/main.php:672
+msgid "Add a customizable scroll-to-top button that appears exactly when needed. Style it to match your brand."
+msgstr "Adaugă un buton personalizabil de derulare în partea de sus care apare exact atunci când este necesar. Stilizează-l pentru a se potrivi cu brandul tău."
+
+#: inc/admin/dashboard/main.php:668
+msgid "Extend Neve's powerful features to custom post types. Create unique layouts for portfolios, testimonials, and more."
+msgstr "Extinde caracteristicile puternice ale Neve la tipurile de articole personalizate. Creează aranjamente unice pentru portofolii, testimoniale și multe altele."
+
+#: inc/admin/dashboard/main.php:667
+msgid "Post types enhancements"
+msgstr "Îmbunătățiri ale tipurilor de articol"
+
+#: inc/admin/dashboard/main.php:664
+msgid "Advanced layouts, reading time estimates, and social sharing to keep readers engaged longer."
+msgstr "Aranjamente avansate, estimări ale timpului de citire și partajare socială pentru a menține cititorii implicați mai mult timp."
+
+#: inc/admin/dashboard/main.php:659
+msgid "Enhance your Easy Digital Downloads store with additional customization settings."
+msgstr "Îmbunătățește-ți magazinul Easy Digital Downloads cu setări suplimentare de personalizare."
+
+#: inc/admin/dashboard/main.php:658
+msgid "Easy Digital Downloads Booster"
+msgstr "Booster Easy Digital Downloads"
+
+#: inc/admin/dashboard/main.php:654
+msgid "Boost conversion rates up to 15%"
+msgstr "Crește ratele de conversie cu până la 15%"
+
+#: inc/admin/dashboard/main.php:653
+msgid "Transform your store with quick-view popups, wishlist features, and optimized checkout flow. Boost sales instantly."
+msgstr "Transformă-ți magazinul cu pop-up-uri cu vizualizare rapidă, funcții de listă de dorințe și flux optimizat de plată. Crește vânzările instantaneu."
+
+#: inc/admin/dashboard/main.php:649
+msgid "Create unique sticky & transparent headers that adapt to scroll. Perfect for modern, immersive websites."
+msgstr "Creează anteturi unice reprezentative și transparente care se adaptează la derulare. Perfecte pentru site-uri web moderne, imersive."
+
+#: inc/admin/dashboard/main.php:633
+msgid "Remove Neve branding and rebrand it as your own for client websites."
+msgstr "Înlătură brandingul Neve și rebranduiește-l ca fiind al tău pentru site-urile clienților."
+
+#: inc/admin/dashboard/main.php:629
+msgid "Get fast and reliable assistance directly from our expert team."
+msgstr "Obține asistență rapidă și de încredere direct de la echipa noastră de experți."
+
+#: inc/admin/dashboard/main.php:628
+msgid "Priority Support"
+msgstr "Suport prioritar"
+
+#: inc/admin/dashboard/main.php:625
+msgid "Professional Features"
+msgstr "Funcționalități profesionale"
+
+#: inc/admin/dashboard/main.php:620
+msgid "Custom thank you pages & announcement bars."
+msgstr "Pagini personalizate de mulțumire și bare de anunțuri."
+
+#: inc/admin/dashboard/main.php:619
+msgid "Sales Features"
+msgstr "Funcționalități de vânzare"
+
+#: inc/admin/dashboard/main.php:616
+msgid "Product comparison, advance product review & variation swatches."
+msgstr "Comparație între produse, revizuire în avans a produselor și mostre de variație."
+
+#: inc/admin/dashboard/main.php:615
+msgid "Shopping Enhancement"
+msgstr "Îmbunătățire cumpărături"
+
+#: inc/admin/dashboard/main.php:612
+msgid "Quick view popup, features video & wishlist functionality."
+msgstr "Popup de vizualizare rapidă, caracteristici video și funcționalitate de listă cu preferințe."
+
+#: inc/admin/dashboard/main.php:611
+msgid "Product Experience"
+msgstr "Experiența produsului"
+
+#: inc/admin/dashboard/main.php:608
+msgid "Store Features"
+msgstr "Funcționalități magazin"
+
+#: inc/admin/dashboard/main.php:603
+msgid "Seamlessly integrate with WPML, Weglot, and Polylang for enhanced multilingual capabilities."
+msgstr "Integrează-te perfect cu WPML, Weglot și Polylang pentru capabilități multilingve îmbunătățite."
+
+#: inc/admin/dashboard/main.php:602
+msgid "Multilingual Support"
+msgstr "Suport multilingv"
+
+#: inc/admin/dashboard/main.php:599
+msgid "Restrict content access by user, role, or password—ideal for membership sites."
+msgstr "Restricționează accesul la conținut în funcție de utilizator, rol sau parolă – ideal pentru site-urile de membri."
+
+#: inc/admin/dashboard/main.php:598
+msgid "Content Restriction"
+msgstr "Restricție conținut"
+
+#: inc/admin/dashboard/main.php:595
+msgid "Access a growing library of beautiful, ready-to-use templates for every niche and industry."
+msgstr "Accesează o bibliotecă în creștere de aranjamente frumoase, șabloane gata de utilizat pentru fiecare nișă și industrie."
+
+#: inc/admin/dashboard/main.php:591
+msgid "Multiple layouts, reading time estimates, social sharing & related posts."
+msgstr "Aranjamente multiple, estimări ale timpului de citire, partajare socială și articole similare."
+
+#: inc/admin/dashboard/main.php:590
+msgid "Advanced Blog Features"
+msgstr "Funcționalități avansate blog"
+
+#: inc/admin/dashboard/main.php:587
+msgid "Content & Blog Features"
+msgstr "Funcționalități conținut și blog"
+
+#: inc/admin/dashboard/main.php:582
+msgid "Advanced Gutenberg blocks with animations & visibility controls."
+msgstr "Blocuri Gutenberg avansate cu animații și controale de vizibilitate."
+
+#: inc/admin/dashboard/main.php:578
+msgid "Add engaging elements, protect content, and create dynamic layouts with our advanced toolkit."
+msgstr "Adaugă elemente atractive, protejează conținutul și creează aranjamente dinamice cu ajutorul setului nostru de instrumente avansate."
+
+#: inc/admin/dashboard/main.php:577
+msgid "Elementor Add-ons"
+msgstr "Suplimente Elementor"
+
+#: inc/admin/dashboard/main.php:574
+msgid "Page Builder Features"
+msgstr "Funcționalități constructor de pagină"
+
+#: inc/admin/dashboard/main.php:569
+msgid "Add custom blocks or content using hooks for headers, footers, 404 pages, and more."
+msgstr "Adaugă blocuri personalizate sau conținut folosind cârlige pentru anteturi, subsoluri, pagini 404 și multe altele."
+
+#: inc/admin/dashboard/main.php:565
+msgid "Social icons, payment icons, divider, footer copyright editor and 15+ header components."
+msgstr "Iconuri sociale, pictograme de plată, separator, editor de drepturi de autor în subsol și peste 15 componente de antet."
+
+#: inc/admin/dashboard/main.php:564
+msgid "Design Components"
+msgstr "Componente de design"
+
+#: inc/admin/dashboard/main.php:561
+msgid "Full header settings control with sticky/transparent header, page-specific settings & mobile layouts."
+msgstr "Control complet al setărilor antetului cu antet reprezentativ sau transparent, setări specifice paginii și aranjamente mobile."
+
+#: inc/admin/dashboard/main.php:560
+msgid "Advanced Header Features"
+msgstr "Funcționalități avansate antet"
+
+#: inc/admin/dashboard/main.php:557
+msgid "Website Essentials"
+msgstr "Esențiale site web"
+
+#: inc/admin/dashboard/main.php:531
+msgid "Widget areas & layout"
+msgstr "Zone și aspect piese"
+
+#: inc/admin/dashboard/main.php:521
+msgid "Post display & formatting"
+msgstr "Afișare și formatare articol"
+
+#: inc/admin/dashboard/main.php:516
+msgid "Navigation & branding setup"
+msgstr "Configurare navigație și branding"
+
+#: inc/admin/dashboard/main.php:511
+msgid "Content structure & spacing"
+msgstr "Structură și spațiere conținut"
+
+#: inc/admin/dashboard/main.php:506
+msgid "Typography & text styles"
+msgstr "Tipografie și stiluri de text"
+
+#: inc/admin/dashboard/main.php:501
+msgid "Brand colors & site palette"
+msgstr "Culori brand și paletă site"
+
+#: inc/admin/dashboard/main.php:496
+msgid "Recommended size: 200x50px"
+msgstr "Dimensiune recomandată: 200x50px"
+
+#: inc/admin/dashboard/main.php:195 inc/admin/dashboard/main.php:196
+msgid "Dashboard"
+msgstr "Panou control"
+
+#: header-footer-grid/Core/Components/MenuIcon.php:545
+msgid "Dots"
+msgstr "Puncte"
+
+#: header-footer-grid/Core/Components/MenuIcon.php:544
+msgid "Donner"
+msgstr "Donner"
+
+#: header-footer-grid/Core/Builder/Header.php:531
+msgid "Button Item"
+msgstr "Element buton"
+
+#: header-footer-grid/Core/Builder/Header.php:521
+msgid "Collapsed"
+msgstr "Restrâns"
+
+#: header-footer-grid/Core/Builder/Header.php:516
+msgid "Spaced"
+msgstr "Distanțat"
+
+#: header-footer-grid/Core/Builder/Header.php:511
+msgid "Centered"
+msgstr "Centrat"
+
+#: header-footer-grid/Core/Builder/Header.php:506
+msgid "Inverted"
+msgstr "Inversat"
+
+#: header-footer-grid/Core/Builder/Header.php:501
+msgid "Classic"
+msgstr "Clasic"
+
+#: header-footer-grid/Core/Builder/Footer.php:319
+msgid "Payment icons"
+msgstr "Iconuri de plată"
+
+#: header-footer-grid/Core/Builder/Footer.php:315
+msgid "Contact"
+msgstr "Contact"
+
+#. translators: %1$s: opening anchor tag, %2$s: closing anchor tag
+#: header-footer-grid/Core/Builder/Footer.php:80
+msgid "The Neve theme free version doesn't support copyright edits. Pro unlocks this and more—%1$sexplore%2$s it when you're ready!"
+msgstr "Versiunea gratuită a temei Neve nu acceptă editarea drepturilor de autor. Pro deblochează acest lucru și multe altele – %1$sexploreaz-o%2$s când ești gata!"
+
+#: header-footer-grid/Core/Magic_Tags.php:607
+msgid "Current Single Content"
+msgstr "Conținut singular curent"
+
+#. translators: Module name for the upsell.
+#: inc/customizer/options/upsells.php:458
+msgid "Unlock %s with the Pro version."
+msgstr "Deblochează %s cu versiunea Pro."
+
+#: inc/customizer/options/base_layout_single.php:580
+#: inc/customizer/options/layout_single_post.php:550
+msgid "Custom Value"
+msgstr "Valoare personalizată"
+
+#: inc/customizer/options/base_layout_single.php:562
+#: inc/customizer/options/layout_single_post.php:532
+msgid "Customize the default vertical spacing <ctaButton>here</ctaButton>."
+msgstr "Personalizează spațierea verticală implicită <ctaButton>aici</ctaButton>."
+
+#: inc/customizer/options/base_layout_single.php:556
+#: inc/customizer/options/layout_single_post.php:526
+msgid "Custom"
+msgstr "Personalizat"
+
+#: inc/customizer/options/base_layout_single.php:547
+#: inc/customizer/options/layout_container.php:114
+#: inc/customizer/options/layout_single_post.php:517
+msgid "Content Vertical Spacing"
+msgstr "Spațiere conținut pe verticală"
+
+#: inc/admin/hooks_upsells.php:72
+msgid "Hide Hooks"
+msgstr "Ascunde cârligele"
+
+#: inc/admin/hooks_upsells.php:69
+msgid "Show Hooks"
+msgstr "Arată cârligele"
+
+#: inc/customizer/options/typography.php:77
+#: inc/customizer/options/typography.php:97
+msgid "Font presets"
+msgstr "Presetări fonturi"
+
+#: inc/customizer/options/typography.php:73
+msgid "Choose Font family presets for your Headings and Text."
+msgstr "Alege presetări ale familiei de fonturi pentru titlurile și textele tale."
+
+#: inc/customizer/options/colors_background.php:122
+#: assets/apps/customizer-controls/build/controls.js:2
+#: assets/apps/customizer-controls/build/controls.js:4
+msgid "Custom Colors"
+msgstr "Culori personalizate"
+
+#: inc/compatibility/fse.php:330 inc/compatibility/fse.php:346
+msgid "Full Site Editing"
+msgstr "Editare completă site"
+
+#: inc/compatibility/fse.php:46
+msgid "Front Page"
+msgstr "Pagina din față"
+
+#: inc/views/nav_walker.php:165
+msgid "Open Submenu"
+msgstr "Deschide sub-meniu"
+
+#: inc/customizer/options/base_layout_single.php:527
+#: inc/customizer/options/layout_single_post.php:221
+#: assets/apps/customizer-controls/build/controls.js:5
+#: assets/apps/dashboard/build/dashboard.js:2
+msgid "Settings"
+msgstr "Setări"
+
+#: inc/views/nav_walker.php:122
+msgid "Dropdown"
+msgstr "Listă derulantă"
+
+#. translators: s - Discount Code
+#: inc/admin/dashboard/main.php:453
+msgid "From 3.3.0 we decided to remove the copyright component from the free version. You can continue using it if you rollback to 3.2.x or you can upgrade to pro, using a one time 50%% discount: %s"
+msgstr "De la 3.3.0 am decis să eliminăm componenta drepturi de autor din versiunea gratuită. Poți continua să o folosești dacă restaurezi la 3.2.x sau poți actualiza la pro, folosind o reducere unică de 50%%: %s"
+
+#: inc/customizer/options/layout_blog.php:659
+#: inc/customizer/options/layout_single_post.php:606
+msgid "Hide on mobile"
+msgstr "Ascunde pe mobil"
+
+#: header-footer-grid/Core/Magic_Tags.php:699
+msgid "Current Page Title"
+msgstr "Titlul paginii curente"
+
+#: header-footer-grid/Core/Components/Utility/SearchIconButton.php:190
+#: assets/apps/components/build/components.js:1
+#: assets/apps/customizer-controls/build/controls.js:1
+msgid "Custom SVG"
+msgstr "SVG personalizat"
+
+#: inc/customizer/options/layout_blog.php:395
+msgid "Sticky Post"
+msgstr "Articol reprezentativ"
+
+#: inc/customizer/options/layout_blog.php:394
+msgid "Latest Post"
+msgstr "Ultimul articol"
+
+#: inc/customizer/options/layout_blog.php:372
+msgid "Enable featured post section"
+msgstr "Activează secțiunea Articole reprezentative"
+
+#: inc/customizer/options/layout_blog.php:389
+msgid "Featured Post"
+msgstr "Articol reprezentativ"
+
+#: inc/compatibility/easy_digital_downloads.php:85
+msgid "Neve Theme controls base style settings of Easy Digital Downloads. Additional settings from other extensions might appear below."
+msgstr "Tema Neve controlează setările stilului de bază din Easy Digital Downloads. Mai jos pot apărea setări suplimentare de la alte extensii."
+
+#: inc/compatibility/easy_digital_downloads.php:84
+msgid "Controlled by Neve"
+msgstr "Controlat de Neve"
+
+#: header-footer-grid/Core/Magic_Tags.php:737
+msgid "EDD Cart"
+msgstr "Coș EDD"
+
+#: header-footer-grid/Core/Components/EddCartIcon.php:41
+msgid "Easy Digital Downloads Cart"
+msgstr "Coș Easy Digital Downloads"
+
+#: inc/admin/dashboard/main.php:679
+msgid "Block Editor Booster"
+msgstr "Booster editor de blocuri"
+
+#: inc/admin/hooks_upsells.php:174 inc/customizer/loader.php:144
+#: inc/customizer/options/typography.php:74
+#: assets/apps/dashboard/build/dashboard.js:2
+msgid "Learn more"
+msgstr "Află mai multe"
+
+#: header-footer-grid/Core/Components/Logo.php:364
+msgid "Use one logo for both modes"
+msgstr "Folosește un logo pentru ambele moduri"
+
+#: inc/admin/hooks_upsells.php:455 assets/apps/dashboard/build/dashboard.js:2
+msgid "Get Neve Pro"
+msgstr "Ia Neve Pro"
+
+#: inc/admin/hooks_upsells.php:174 inc/customizer/options/upsells.php:404
+#: inc/customizer/options/upsells.php:436
+msgid "Neve PRO Features"
+msgstr "Funcționalități Neve PRO"
+
+#: inc/customizer/options/upsells.php:119
+msgid "Stepped"
+msgstr "În pași"
+
+#: inc/customizer/options/upsells.php:114
+msgid "Vertical"
+msgstr "Vertical"
+
+#: inc/customizer/options/upsells.php:110
+msgid "Standard"
+msgstr "Standard"
+
+#: inc/customizer/options/checkout.php:85
+msgid "Checkout Style"
+msgstr "Stil finalizare"
+
+#: inc/admin/dashboard/main.php:331
+msgid "Upgrade to the Pro version and get instant access to all Premium Starter Sites — including Expert Sites — and much more."
+msgstr "Actualizează la versiunea Pro și ai acces instant la toate Site-urile de început Premium - inclusiv Site-uri expert - și multe altele."
+
+#: inc/core/front_end.php:558
+msgid "Upgrade to Neve Pro and unlock all components, including Wish List, Breadcrumbs, Custom Layouts and many more."
+msgstr "Actualizează la Neve Pro și deblochează toate componentele, inclusiv Lista de dorințe, Firimituri, Aranjamente personalizate și multe altele."
+
+#: header-footer-grid/Core/Builder/Footer.php:323
+#: header-footer-grid/Core/Builder/Header.php:561
+msgid "Social Icons"
+msgstr "Iconuri sociale"
+
+#: header-footer-grid/Core/Builder/Header.php:156
+msgid "Global Header Settings"
+msgstr "Setări antet global"
+
+#: inc/compatibility/amp.php:433 inc/compatibility/fse.php:50
+#: inc/customizer/options/base_layout_single.php:84
+#: inc/customizer/options/base_layout_single.php:527
+#: inc/customizer/options/layout_single_post.php:221
+msgid "Page"
+msgstr "Pagină"
+
+#. translators: Theme Name
+#: inc/admin/troubleshoot/main.php:115
+msgid "API for %s is reachable on your site."
+msgstr "API-ul pentru %s este accesibil pe site-ul tău."
+
+#: inc/admin/troubleshoot/main.php:110
+msgid "Can not connect to API"
+msgstr "Nu se poate conecta la API."
+
+#. translators: Theme Name
+#: inc/admin/troubleshoot/main.php:102
+msgid "API for %s is reachable."
+msgstr "API-ul pentru %s este accesibil."
+
+#: inc/admin/troubleshoot/main.php:51
+msgid "Customizer Custom CSS"
+msgstr "CSS personalizat din Personalizator"
+
+#: inc/admin/troubleshoot/main.php:46
+msgid "Child theme files"
+msgstr "Fișiere temă copil"
+
+#: inc/admin/troubleshoot/main.php:42 inc/admin/troubleshoot/main.php:47
+#: inc/admin/troubleshoot/main.php:52
+msgid "No"
+msgstr "Nu"
+
+#: inc/admin/troubleshoot/main.php:42 inc/compatibility/fse.php:390
+msgid "Yes"
+msgstr "Da"
+
+#: inc/admin/troubleshoot/main.php:41 inc/admin/troubleshoot/main.php:79
+#: inc/admin/troubleshoot/main.php:93
+msgid "API connectivity"
+msgstr "Conectivitate API"
+
+#: inc/core/front_end.php:587
+msgid "Switch Skin"
+msgstr "Schimbă aspect"
+
+#: inc/core/front_end.php:586
+msgid "Switching skin"
+msgstr "Se schimbă aspectul"
+
+#: inc/core/front_end.php:585
+msgid "Neve 3.0"
+msgstr "Neve 3.0"
+
+#: inc/core/front_end.php:584
+msgid "Legacy Skin"
+msgstr "Aspect moștenit"
+
+#: inc/core/front_end.php:583
+msgid "Migrate Builders Data"
+msgstr "Migrează datele constructorilor"
+
+#: inc/core/front_end.php:581
+msgid "Some manual adjustments may be required."
+msgstr "S-ar putea să fie nevoie de câteva ajustări manuale."
+
+#: inc/core/front_end.php:580
+msgid "We've created a new Header/Footer Builder experience! You can always roll back to the old builder from right here."
+msgstr "Am creat o nouă experiență cu constructorul de antet/subsol! Poți reveni oricând la vechiul constructor chiar de aici."
+
+#: inc/core/front_end.php:589
+msgid "Roll Back"
+msgstr "Revino"
+
+#: inc/core/front_end.php:582
+msgid "Reload"
+msgstr "Reîncarcă"
+
+#: inc/core/front_end.php:579
+msgid "Want to roll back to the old builder?"
+msgstr "Vrei să revii la vechiul constructor?"
+
+#: inc/core/front_end.php:577
+msgid "You must save the current customizer values before running the migration."
+msgstr "Trebuie să salvezi valorile curente din personalizator înainte de rularea migrației."
+
+#: inc/core/front_end.php:576
+msgid "Removing old data"
+msgstr "Înlăturare date vechi"
+
+#: inc/core/front_end.php:575
+msgid "Rolling back builder"
+msgstr "Revenire constructor"
+
+#: inc/core/front_end.php:574
+msgid "Migrating builder data"
+msgstr "Se migrează date constructor"
+
+#: woocommerce/product-searchform.php:22
+msgid "Search products&hellip;"
+msgstr "Caută produse…"
+
+#: inc/customizer/options/main.php:102
+msgid "Change archive font size"
+msgstr "Schimbă mărime font arhivă"
+
+#: inc/customizer/options/main.php:98
+msgid "Change H1 font size"
+msgstr "Schimbă mărime font H1"
+
+#: inc/customizer/options/main.php:94
+msgid "Change headings font"
+msgstr "Schimbă font subtitluri"
+
+#: inc/customizer/options/main.php:90
+msgid "Change main font"
+msgstr "Schimbă font principal"
+
+#: inc/customizer/options/layout_single_post.php:819
+msgid "Button text"
+msgstr "Text pentru buton"
+
+#: inc/customizer/options/layout_single_post.php:797
+msgid "Button style"
+msgstr "Stil buton"
+
+#: inc/customizer/options/layout_single_post.php:740
+msgid "The following magic tags are available for this field: {title} and {comments_number}. Leave this field empty for default behavior."
+msgstr "Următoarele etichete magice sunt disponibile pentru acest câmp: {title} și {comments_number}. Lasă acest câmp gol pentru comportament implicit. "
+
+#: inc/customizer/options/layout_single_post.php:739
+#: inc/customizer/options/layout_single_post.php:778
+msgid "Section title"
+msgstr "Titlu secțiune"
+
+#: inc/customizer/options/layout_single_post.php:472
+msgid "Spacing between elements"
+msgstr "Spațiu între elemente"
+
+#: inc/customizer/options/base_layout_single.php:660
+msgid "Full width"
+msgstr "Lățime întreagă"
+
+#: inc/customizer/options/base_layout_single.php:483
+msgid "Cover container"
+msgstr "Container copertă"
+
+#: inc/customizer/options/base_layout_single.php:650
+msgid "Luminosity"
+msgstr "Luminozitate"
+
+#: inc/customizer/options/base_layout_single.php:649
+msgid "Hue"
+msgstr "Nuanță"
+
+#: inc/customizer/options/base_layout_single.php:648
+msgid "Exclusion"
+msgstr "Excludere"
+
+#: inc/customizer/options/base_layout_single.php:647
+msgid "Difference"
+msgstr "Diferență"
+
+#: inc/customizer/options/base_layout_single.php:645
+msgid "Saturation"
+msgstr "Saturație"
+
+#: inc/customizer/options/base_layout_single.php:644
+msgid "Color Dodge"
+msgstr "Culoare amestecată"
+
+#: inc/customizer/options/base_layout_single.php:643
+msgid "Lighten"
+msgstr "Deschis"
+
+#: inc/customizer/options/base_layout_single.php:642
+msgid "Darken"
+msgstr "Întunecat"
+
+#: inc/customizer/options/base_layout_single.php:641
+#: inc/customizer/options/upsells.php:210
+msgid "Overlay"
+msgstr "Suprapunere"
+
+#: inc/customizer/options/base_layout_single.php:640
+msgid "Screen"
+msgstr "Ecran"
+
+#: inc/customizer/options/base_layout_single.php:639
+msgid "Multiply"
+msgstr "Multiplicare"
+
+#: inc/customizer/options/base_layout_single.php:458
+#: inc/customizer/options/layout_single_post.php:369
+msgid "Blend mode"
+msgstr "Mod amestecare"
+
+#: inc/customizer/options/base_layout_single.php:439
+#: inc/customizer/options/layout_single_post.php:365
+msgid "Hide featured image"
+msgstr "Ascunde imaginea reprezentativă"
+
+#: inc/customizer/options/base_layout_single.php:408
+#: inc/customizer/options/layout_single_post.php:374
+msgid "Overlay opacity"
+msgstr "Opacitate suprapunere"
+
+#: inc/customizer/options/upsells.php:486
+msgid "Overlay color"
+msgstr "Culoare suprapunere"
+
+#: inc/customizer/options/layout_single_post.php:281
+msgid "Display meta before title"
+msgstr "Afișează metadate înainte de titlu"
+
+#: inc/customizer/options/base_layout_single.php:309
+msgid "Title Position"
+msgstr "Poziție titlu"
+
+#: inc/customizer/options/base_layout_single.php:232
+msgid "Cover padding"
+msgstr "Distanțare copertă"
+
+#: inc/customizer/options/base_layout_single.php:190
+msgid "Cover height"
+msgstr "Înălțime copertă"
+
+#: inc/customizer/options/base_layout_single.php:172
+msgid "Cover"
+msgstr "Copertă"
+
+#: inc/customizer/options/layout_single_post.php:236
+msgid "Submit Form Section"
+msgstr "Trimite secțiune formular"
+
+#: inc/customizer/options/layout_single_post.php:227
+msgid "Comments Section"
+msgstr "Secțiune comentarii"
+
+#: inc/customizer/options/layout_single_post.php:215
+msgid "Page Elements"
+msgstr "Elemente de pagină"
+
+#: inc/customizer/options/base_layout_single.php:137
+#: inc/customizer/options/base_layout_single.php:163
+msgid "Header Layout"
+msgstr "Aranjament în antet"
+
+#: inc/customizer/options/layout_blog.php:570
+#: inc/customizer/options/layout_single_post.php:661
+msgid "Avatar Size"
+msgstr "Dimensiune avatar"
+
+#: inc/customizer/options/layout_blog.php:445
+#: inc/customizer/options/layout_single_post.php:629
+msgid "For special characters make sure to use Unicode. For example > can be displayed using \\003E."
+msgstr "Pentru caractere speciale asigură-te că folosești Unicode. De exemplu > poate fi afișat folosind \\003E."
+
+#: inc/customizer/options/layout_single_post.php:628
+msgid "Separator"
+msgstr "Separator"
+
+#: inc/customizer/options/form_fields.php:55
+msgid "Customize the general design of the form elements across the site."
+msgstr "Personalizează designul general al elementelor de formular de pe site."
+
+#: inc/customizer/options/buttons.php:161
+msgid "Secondary Button"
+msgstr "Buton secundar"
+
+#: inc/customizer/options/buttons.php:160
+msgid "Primary Button"
+msgstr "Buton primar"
+
+#: inc/customizer/loader.php:141
+msgid "update"
+msgstr "actualizează"
+
+#: inc/customizer/base_customizer.php:476
+msgid "Text color"
+msgstr "Culoare text"
+
+#: inc/customizer/base_customizer.php:452
+msgid "Background color"
+msgstr "Culoare fundal"
+
+#: inc/customizer/base_customizer.php:426
+msgid "Section padding"
+msgstr "Distanțare secțiune"
+
+#: inc/customizer/base_customizer.php:357
+msgid "Boxed layout"
+msgstr "Aranjament încasetat"
+
+#. translators: %1$s - &rarr; symbol %2$s - &rarr; symbol %3$s - &rarr; symbol
+#: header-footer-grid/templates/components/component-footer-sidebar.php:36
+msgid "Appearance %1$s Customize %2$s Footer %3$s"
+msgstr "Aspect %1$s Personalizează %2$s Subsol %3$s"
+
+#. translators: %s: Link to Learn More page.
+#: header-footer-grid/Core/Components/PaletteSwitch.php:480
+msgid "Adjust default color scheme based on the user device preferences. %1$sLearn More%2$s."
+msgstr "Ajustează schema de culori implicită bazată pe preferințele de dispozitiv ale utilizatorului. %1$sAflă mai multe%2$s."
+
+#: header-footer-grid/Core/Components/PaletteSwitch.php:478
+msgid "Automatically adjust color scheme"
+msgstr "Ajustează automat schema de culori"
+
+#: header-footer-grid/Core/Components/PaletteSwitch.php:461
+msgid "Leave blank for no label ..."
+msgstr "Lasă gol pentru nicio etichetă..."
+
+#: header-footer-grid/Core/Components/MenuIcon.php:512
+#: header-footer-grid/Core/Components/PaletteSwitch.php:458
+msgid "Label"
+msgstr "Etichetă"
+
+#: header-footer-grid/Core/Components/PaletteSwitch.php:392
+#: header-footer-grid/Core/Components/PaletteSwitch.php:393
+msgid "Select icon"
+msgstr "Selectează icon"
+
+#: header-footer-grid/Core/Components/PaletteSwitch.php:359
+#: header-footer-grid/Core/Components/PaletteSwitch.php:360
+#: assets/apps/customizer-controls/build/controls.js:5
+msgid "Dark Palette"
+msgstr "Paletă închisă"
+
+#. translators: %s: Link to Edit global color customizer.
+#: header-footer-grid/Core/Components/PaletteSwitch.php:346
+msgid "The base palette is used for light mode. %1$sEdit color palettes%2$s."
+msgstr "Paleta de bază este folosită pentru modul luminos. %1$sEditează paletele de culoare%2$s."
+
+#: header-footer-grid/Core/Components/PaletteSwitch.php:344
+#: assets/apps/customizer-controls/build/controls.js:5
+msgid "Light Palette"
+msgstr "Paletă deschisă"
+
+#: header-footer-grid/Core/Components/PaletteSwitch.php:97
+#: header-footer-grid/templates/components/component-palette-switch.php:25
+msgid "Palette Switch"
+msgstr "Comutator paletă"
+
+#: header-footer-grid/Core/Builder/Header.php:486
+msgid "Mobile Sidebar"
+msgstr "Bară laterală mobil"
+
+#: header-footer-grid/Core/Builder/Footer.php:280
+msgid "Footer Main"
+msgstr "Subsol principal"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:2020
+msgid "Columns Layout"
+msgstr "Aranjament coloane"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:2003
+msgid "Number of Columns"
+msgstr "Număr de coloane"
+
+#. translators: %s - Theme name
+#: inc/admin/dashboard/main.php:337
+msgid "In order to be able to import any starter sites for %1$s you would need to have the %2$s plugin updated to the latest version."
+msgstr "Pentru a putea importa orice site de început pentru %1$s ar trebui să ai actualizat modulul %2$s la ultima versiune."
+
+#. translators: 1 - Theme name, 2 - Cloud Templates & Patterns Collection
+#: inc/admin/dashboard/main.php:335
+msgid "In order to be able to import any starter sites for %1$s you would need to have the %2$s plugin active."
+msgstr "Pentru a putea importa orice site de început pentru %1$s ar trebui să ai activ modulul %2$s."
+
+#: globals/utilities.php:444 header-footer-grid/Core/Builder/Footer.php:53
+#: header-footer-grid/Core/Builder/Header.php:70
+#: header-footer-grid/Core/Components/Button.php:165
+#: inc/admin/dashboard/main.php:350 inc/core/front_end.php:570
+#: inc/customizer/controls/simple_upsell.php:92
+#: inc/customizer/controls/simple_upsell_section.php:66
+#: assets/apps/customizer-controls/build/controls.js:5
+#: assets/apps/dashboard/build/dashboard.js:1
+msgid "(opens in a new tab)"
+msgstr "(se deschide într-o filă nouă)"
+
+#: inc/customizer/options/layout_blog.php:629
+#: inc/customizer/options/layout_single_post.php:718
+msgid "Use last updated date instead of the published one"
+msgstr "Folosește ultima dată actualizată în loc de cea publicată"
+
+#. translators: %s: commands to run the theme
+#: functions.php:64
+msgid "You appear to be running the Neve theme from source code. Please finish installation by running %s."
+msgstr "Se pare că rulezi tema Neve din codul sursă. Te rog finalizează instalarea rulând %s."
+
+#: inc/views/product_layout.php:68
+msgid "Out of stock"
+msgstr "Indisponibil"
+
+#: inc/compatibility/starter-content/project-details.php:10
+msgctxt "Theme starter content"
+msgid "Project Details"
+msgstr "Detalii proiect"
+
+#: inc/compatibility/starter-content/contact.php:11
+msgctxt "Theme starter content"
+msgid "Contact"
+msgstr "Contact"
+
+#: inc/compatibility/starter-content/portofolio.php:10
+msgctxt "Theme starter content"
+msgid "Portofolio"
+msgstr "Portofoliu"
+
+#: inc/compatibility/elementor.php:385 inc/core/front_end.php:97
+msgid "Theme"
+msgstr "Temă"
+
+#: inc/customizer/options/form_fields.php:598
+msgid "Customize the default button styles"
+msgstr "Personalizează stilurile implicite pentru buton"
+
+#: inc/customizer/options/form_fields.php:587
+#: inc/customizer/options/upsells.php:196
+msgid "Button Style"
+msgstr "Stil buton"
+
+#: inc/customizer/options/form_fields.php:478
+msgid "Form Labels"
+msgstr "Etichete formular"
+
+#: inc/customizer/options/form_fields.php:335
+msgid "Input Text"
+msgstr "Introdu text"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:455
+#: inc/customizer/options/form_fields.php:293
+msgid "Border Color"
+msgstr "Culoare chenar"
+
+#: inc/customizer/options/form_fields.php:148
+msgid "Field Background Color"
+msgstr "Culoare fundal câmp"
+
+#: inc/customizer/options/form_fields.php:96
+msgid "Field Padding"
+msgstr "Distanțare câmp"
+
+#: inc/customizer/options/form_fields.php:56
+#: inc/customizer/options/form_fields.php:74
+msgid "Form Fields"
+msgstr "Câmpuri formular"
+
+#: inc/compatibility/starter-content/home.php:9
+msgctxt "Theme starter content"
+msgid "Home"
+msgstr "Prima pagină"
+
+#: inc/compatibility/starter-content/about.php:10
+msgctxt "Theme starter content"
+msgid "About"
+msgstr "Despre"
+
+#: inc/compatibility/starter_content.php:213
+msgctxt "Theme starter content"
+msgid "Blog"
+msgstr "Blog"
+
+#: inc/customizer/options/typography.php:246
+msgid "Learn more about fallback fonts"
+msgstr "Află mai multe despre fonturile alternative"
+
+#: inc/customizer/options/typography.php:239
+msgid "Fallback Font"
+msgstr "Font alternativ"
+
+#: inc/customizer/options/colors_background.php:103
+msgid "How the color system works"
+msgstr "Cum funcționează sistemul de culori"
+
+#: inc/customizer/options/colors_background.php:95
+#: assets/apps/components/build/components.js:1
+msgid "Global Colors"
+msgstr "Culori globale"
+
+#: inc/compatibility/elementor.php:201 inc/core/front_end.php:134
+#: assets/apps/components/build/components.js:1
+msgid "Extra Color 2"
+msgstr "Culoare suplimentară 2"
+
+#: inc/compatibility/elementor.php:200 inc/core/front_end.php:130
+#: assets/apps/components/build/components.js:1
+msgid "Extra Color 1"
+msgstr "Culoare suplimentară 1"
+
+#: inc/compatibility/elementor.php:199 inc/core/front_end.php:126
+#: assets/apps/components/build/components.js:1
+msgid "Text Dark Background"
+msgstr "Text pe fundal întunecat"
+
+#: inc/compatibility/elementor.php:197 inc/core/front_end.php:118
+#: assets/apps/components/build/components.js:1
+msgid "Dark Background"
+msgstr "Fundal întunecat"
+
+#: inc/compatibility/elementor.php:196 inc/core/front_end.php:114
+#: assets/apps/components/build/components.js:1
+msgid "Light Background"
+msgstr "Fundal luminos"
+
+#: inc/compatibility/elementor.php:195 inc/core/front_end.php:110
+#: assets/apps/components/build/components.js:1
+msgid "Site Background"
+msgstr "Fundal site"
+
+#: inc/compatibility/elementor.php:194 inc/core/front_end.php:106
+#: assets/apps/components/build/components.js:1
+msgid "Secondary Accent"
+msgstr "Accent secundar"
+
+#: inc/compatibility/elementor.php:193 inc/core/front_end.php:102
+#: assets/apps/components/build/components.js:1
+msgid "Primary Accent"
+msgstr "Accent principal"
+
+#. translators: name of the color pallet.
+#: globals/utilities.php:471
+#: inc/compatibility/starter-content/theme-mods.php:504
+msgid "Base"
+msgstr "Bază"
+
+#: inc/core/front_end.php:566
+msgid "Extend your header with more components and settings, build sticky/transparent headers or display them conditionally."
+msgstr "Extinde-ți antetul cu mai multe componente și setări, construiește anteturi evidențiate/transparente sau afișează-le condiționat."
+
+#. translators: %s is the header name
+#: header-footer-grid/Core/Customizer.php:288
+#: assets/apps/customizer-controls/build/fe21e704398fee9da3e4.js:5
+msgid "Click on any empty space to add components, or existing components to adjust settings."
+msgstr "Dă clic pe orice spațiu gol pentru a adăuga componente sau pe componente existente pentru a ajusta setările."
+
+#. translators: %s is the type of builder
+#: header-footer-grid/Core/Customizer.php:285
+msgid "%s Builder:"
+msgstr "Constructor %s:"
+
+#: header-footer-grid/Core/Builder/Header.php:81
+msgid "Build your own header or choose from preset options."
+msgstr "Construiește-ți propriul antet sau alege din opțiunile presetate."
+
+#: inc/views/nav_walker.php:154
+#: assets/apps/customizer-controls/build/controls.js:1
+#: assets/apps/customizer-controls/build/controls.js:5
+#: assets/apps/metabox/build/index.js:1
+msgid "Toggle"
+msgstr "Comută"
+
+#. translators: %s: Author's display name.
+#: inc/views/partials/post_meta.php:299
+msgid "Posts by %s"
+msgstr "Articole de %s"
+
+#: inc/customizer/options/layout_blog.php:274
+msgid "Columns"
+msgstr "Coloane"
+
+#: inc/customizer/options/layout_blog.php:255
+#: inc/customizer/options/upsells.php:172
+msgid "Grid"
+msgstr "Grilă"
+
+#: inc/customizer/options/layout_blog.php:251
+msgid "Covers"
+msgstr "Coperte"
+
+#: inc/customizer/options/layout_blog.php:247
+#: inc/customizer/options/upsells.php:176
+msgid "List"
+msgstr "Listă"
+
+#: inc/customizer/options/buttons.php:97
+msgid "Button Text"
+msgstr "Text pentru buton"
+
+#: inc/compatibility/block-patterns/two-columns-image-text.php:9
+msgid "Two columns with image and text"
+msgstr "Două coloane cu imagini și text"
+
+#: inc/compatibility/block-patterns/two-columns-with-text.php:9
+msgid "Two columns with text"
+msgstr "Două coloane cu text"
+
+#: inc/compatibility/block-patterns/light-header-left-aligned-content.php:9
+msgid "Light header with left-aligned content"
+msgstr "Antet luminos cu conținutul aliniat în stânga"
+
+#: inc/compatibility/block-patterns/gallery-title-buttons.php:9
+msgid "Gallery with title and button"
+msgstr "Galerie cu titlu și buton"
+
+#: inc/compatibility/block-patterns/testimonials-columns.php:9
+msgid "Testimonial columns"
+msgstr "Coloane testimonial"
+
+#: inc/compatibility/block-patterns/two-columns-centered-content.php:9
+msgid "Two columns with centered content"
+msgstr "Două coloane cu conținutul centrat"
+
+#: inc/compatibility/block-patterns/three-columns-images-text.php:9
+msgid "Three columns with images and text"
+msgstr "Trei coloane cu imagini și text"
+
+#: inc/compatibility/block-patterns/three-columns-images-texts-content.php:9
+msgid "Three columns with images, content and buttons"
+msgstr "Trei coloane cu imagini, conținut și butoane"
+
+#: inc/compatibility/block-patterns/dark-header-centered-content.php:9
+msgid "Dark header with centered content"
+msgstr "Antet întunecat cu conținutul centrat"
+
+#: inc/compatibility/block-patterns/gallery-grid-buttons.php:9
+msgid "Gallery grid with buttons"
+msgstr "Grilă de galerii cu butoane"
+
+#: inc/compatibility/block-patterns/four-columns-team-members.php:9
+msgid "Four columns with team members"
+msgstr "Patru coloane cu membrii echipei"
+
+#: inc/customizer/options/base_layout_single.php:264
+msgid "Title Alignment"
+msgstr "Aliniere titlu"
+
+#: inc/core/front_end.php:557
+msgid "Page Title"
+msgstr "Titlu pagină"
+
+#: inc/core/front_end.php:556
+msgid "Page Layout"
+msgstr "Aranjament pagină"
+
+#: header-footer-grid/Core/Components/Nav.php:429
+msgid "Expand first level of dropdowns when menu is in mobile menu content."
+msgstr "Extinde primul nivel al listei derulante când meniul se află în conținutul meniului mobil."
+
+#: header-footer-grid/Core/Components/MenuIcon.php:496
+msgid "Mobile Menu Options"
+msgstr "Opțiuni meniu pentru mobil"
+
+#: header-footer-grid/Core/Components/MenuIcon.php:492
+msgid "Show Mobile Menu"
+msgstr "Arată meniul pentru mobil"
+
+#: header-footer-grid/Core/Components/Nav.php:394
+#: header-footer-grid/Core/Components/NavFooter.php:190
+#: header-footer-grid/Core/Components/SecondNav.php:274
+msgid "Items Min Height (px)"
+msgstr "Înălțime minimă elemente (px)"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:1934
+msgid "Sidebar Width"
+msgstr "Lățime bară laterală"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:1919
+msgid "Slide Down"
+msgstr "Glisează jos"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:1918
+msgid "Full Canvas"
+msgstr "Pânză plină"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:1917
+msgid "Pull from Right"
+msgstr "Trage din dreapta"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:1916
+msgid "Pull from Left"
+msgstr "Trage din stânga"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:1915
+msgid "Slide from Right"
+msgstr "Glisează din dreapta"
+
+#: inc/admin/metabox/manager.php:198
+msgid "or"
+msgstr "sau"
+
+#. translators: %1$s - Keyboard shortcut.   %2&s - svg icon
+#: inc/admin/metabox/manager.php:191
+msgid "Click the %1$s icon in the top bar or use the keyboard shortcut ( %2$s ) to customise the layout settings for this page"
+msgstr "Dă clic pe iconul %1$s din bara de sus sau folosește comanda rapidă de tastatură (%2$s) pentru a personaliza setările de aranjament pentru această pagină."
+
+#: inc/admin/metabox/manager.php:187
+msgid "Page Settings are now accessible from the top bar"
+msgstr "Setările paginii sunt acum accesibile din bara de sus"
+
+#: header-footer-grid/Core/Magic_Tags.php:631
+msgid "Comments meta"
+msgstr "Metadate comentarii"
+
+#: header-footer-grid/Core/Magic_Tags.php:627
+msgid "Category meta"
+msgstr "Metadate categorie"
+
+#: header-footer-grid/Core/Magic_Tags.php:623
+msgid "Date meta"
+msgstr "Metadate dată"
+
+#: header-footer-grid/Core/Magic_Tags.php:619
+msgid "Author meta"
+msgstr "Metadate autor"
+
+#: header-footer-grid/Core/Magic_Tags.php:615
+msgid "Current Post Meta"
+msgstr "Metadate articol curent"
+
+#: inc/admin/dashboard/main.php:1069 assets/apps/dashboard/build/dashboard.js:2
+msgid "Free"
+msgstr "Gratuit"
+
+#: inc/core/front_end.php:555
+msgid "All items are already selected."
+msgstr "Sunt deja selectate toate elementele."
+
+#: inc/core/front_end.php:554
+msgid "Add items by clicking the ones below."
+msgstr "Adaugă elemente dând clic pe cele de mai jos."
+
+#: inc/core/front_end.php:553
+msgid "Add item"
+msgstr "Adaugă element"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:2056
+msgid "Vertical Alignment"
+msgstr "Aliniere pe verticală"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:2038
+#: inc/customizer/options/base_layout_single.php:318
+msgid "Middle"
+msgstr "La mijloc"
+
+#: inc/customizer/options/typography.php:475
+msgid "Comments reply title"
+msgstr "Titlu pentru răspuns la comentarii"
+
+#: inc/customizer/options/typography.php:453
+#: inc/customizer/options/typography.php:468
+msgid "Post meta"
+msgstr "Metadate articol"
+
+#: inc/customizer/options/typography.php:446
+msgid "Post excerpt"
+msgstr "Rezumat articol"
+
+#: inc/customizer/options/typography.php:438
+#: inc/customizer/options/typography.php:460
+msgid "Post title"
+msgstr "Titlu articol"
+
+#: inc/customizer/loader.php:165 inc/customizer/loader.php:325
+#: assets/apps/dashboard/build/dashboard.js:4
+msgid "An error occurred. Please reload the page and try again."
+msgstr "A apărut o eroare. Te rog reîncarcă pagina și încearcă din nou."
+
+#: header-footer-grid/Core/Components/Search.php:80
+#: header-footer-grid/Core/Components/SearchResponsive.php:251
+msgid "Height"
+msgstr "Înălțime"
+
+#: header-footer-grid/Core/Builder/Header.php:526
+#: header-footer-grid/Core/Components/SearchResponsive.php:234
+msgid "Search Field"
+msgstr "Câmp de căutare"
+
+#: header-footer-grid/Core/Components/MenuIcon.php:536
+#: header-footer-grid/Core/Components/MenuIcon.php:537
+#: header-footer-grid/Core/Components/SearchResponsive.php:129
+#: header-footer-grid/Core/Components/Utility/SearchIconButton.php:143
+#: header-footer-grid/Core/Components/Utility/SearchIconButton.php:170
+msgid "Icon"
+msgstr "Icon"
+
+#: header-footer-grid/Core/Components/SearchResponsive.php:113
+msgid "Float Above Header"
+msgstr "Plutește deasupra antetului"
+
+#: header-footer-grid/Core/Components/SearchResponsive.php:112
+msgid "Minimal"
+msgstr "Minim"
+
+#: header-footer-grid/Core/Components/SearchResponsive.php:111
+msgid "Canvas"
+msgstr "Pânză"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:1909
+#: header-footer-grid/Core/Components/SearchResponsive.php:107
+msgid "Open Behaviour"
+msgstr "Comportament deschis"
+
+#: inc/core/front_end.php:588
+msgid "Dismiss"
+msgstr "Respinge"
+
+#: inc/core/front_end.php:578
+msgid "Something went wrong. Please reload the page and try again."
+msgstr "Ceva nu a mers bine. Te rog reîncarcă pagina și încearcă din nou."
+
+#: inc/admin/dashboard/main.php:594 inc/admin/dashboard/main.php:734
+#: inc/core/admin.php:543 assets/apps/dashboard/build/dashboard.js:2
+msgid "Starter Sites"
+msgstr "Site-uri pentru a începe"
+
+#: globals/utilities.php:441 inc/customizer/options/upsells.php:437
+#: assets/apps/customizer-controls/build/controls.js:5
+msgid "Learn More"
+msgstr "Află mai multe"
+
+#: inc/admin/dashboard/main.php:99 inc/admin/dashboard/main.php:458
+#: assets/apps/dashboard/build/dashboard.js:2
+msgid "Upgrade"
+msgstr "Actualizează"
+
+#. translators: 1 - Theme Name (Neve), 2 - Plugin Name (Neve Pro)
+#: inc/admin/dashboard/main.php:465
+msgid "We recommend that both %1$s and %2$s are updated to the latest version to ensure optimal intercompatibility."
+msgstr "Recomandăm ca ambele %1$s și %2$s să fie actualizate la ultima versiune pentru a te asigura de intercompatibilitate optimă."
+
+#. translators: s - Pro plugin name (Neve Pro)
+#: inc/admin/dashboard/main.php:434
+msgid "New plugin update for %1$s! Please update to %2$s."
+msgstr "Actualizare nouă de modul pentru %1$s! Te rog actualizează la %2$s."
+
+#: inc/admin/dashboard/main.php:422 inc/admin/dashboard/main.php:443
+msgid "Update Now"
+msgstr "Actualizează acum"
+
+#. translators: s - theme name (Neve).
+#: inc/admin/dashboard/main.php:417
+msgid "New theme update for %1$s! Please update to %2$s."
+msgstr "Actualizare nouă de temă pentru %1$s! Te rog actualizează la %2$s."
+
+#. translators: store name (Themeisle)
+#: inc/admin/dashboard/main.php:349
+msgid "Enter your license from %1$s purchase history in order to get plugin updates"
+msgstr "Introdu licența ta din istoricul achizițiilor %1$s pentru a primi actualizări la modul."
+
+#. translators: %s - "Neve Pro Addon"
+#: inc/admin/dashboard/main.php:345
+msgid "Please update %s to the latest version and then refresh this page to have access to the options."
+msgstr "Te rog actualizează %s la ultima versiune și apoi reîmprospătează această pagină pentru a avea acces la opțiuni."
+
+#. translators: %s - "Neve Pro Addon"
+#: inc/admin/dashboard/main.php:343
+msgid "%s license"
+msgstr "Licență %s"
+
+#. translators: %s - Theme name
+#: inc/admin/dashboard/main.php:174 inc/admin/dashboard/main.php:176
+#: inc/core/front_end.php:573 assets/apps/metabox/build/index.js:2
+msgid "%s Options"
+msgstr "Opțiuni %s"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:413
+#: header-footer-grid/Core/Components/Search.php:208
+#: header-footer-grid/Core/Components/SearchResponsive.php:377
+#: inc/customizer/options/form_fields.php:193
+#: assets/apps/components/build/components.js:1
+msgid "Border Width"
+msgstr "Lățime chenar"
+
+#: header-footer-grid/Core/Components/Search.php:271
+#: header-footer-grid/Core/Components/SearchResponsive.php:440
+#: inc/customizer/options/form_fields.php:240
+#: inc/customizer/options/layout_blog.php:869
+#: assets/apps/components/build/components.js:1
+msgid "Border Radius"
+msgstr "Rotunjire chenar"
+
+#: inc/customizer/options/layout_container.php:68
+msgid "Container width"
+msgstr "Lățime container"
+
+#: header-footer-grid/Core/Components/Logo.php:433
+msgid "Logo max width"
+msgstr "Lățime maximă logo"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:368
+msgid "Row height"
+msgstr "Înălțime rând"
+
+#: header-footer-grid/Core/Magic_Tags.php:728
+#: header-footer-grid/Core/Magic_Tags.php:752
+msgid "Currency Symbol"
+msgstr "Simbol monedă"
+
+#: header-footer-grid/Core/Magic_Tags.php:724
+#: header-footer-grid/Core/Magic_Tags.php:748
+msgid "Currency Name"
+msgstr "Nume monedă"
+
+#: header-footer-grid/Core/Magic_Tags.php:720
+#: header-footer-grid/Core/Magic_Tags.php:744
+msgid "Total"
+msgstr "Total"
+
+#: header-footer-grid/Core/Magic_Tags.php:716
+#: header-footer-grid/Core/Magic_Tags.php:740
+msgid "Total + Currency Symbol"
+msgstr "Total + simbol monedă"
+
+#: header-footer-grid/Core/Components/Logo.php:468
+msgid "Disable Homepage Link"
+msgstr "Dezactivează legătura în prima pagină"
+
+#: header-footer-grid/Core/Magic_Tags.php:682
+msgid "User Email"
+msgstr "Email utilizator"
+
+#: header-footer-grid/Core/Magic_Tags.php:678
+msgid "Display Name"
+msgstr "Nume de afișat"
+
+#: header-footer-grid/Core/Magic_Tags.php:674
+msgid "User Nice Name"
+msgstr "Nume frumos utilizator"
+
+#: header-footer-grid/Core/Magic_Tags.php:671
+msgid "Current User"
+msgstr "Utilizator curent"
+
+#: header-footer-grid/Core/Components/Nav.php:363
+#: header-footer-grid/Core/Components/NavFooter.php:159
+#: header-footer-grid/Core/Components/SecondNav.php:243
+msgid "Items Spacing (px)"
+msgstr "Spațiere elemente (px)"
+
+#: header-footer-grid/Core/Components/Nav.php:184
+#: header-footer-grid/Core/Components/Nav.php:281
+#: header-footer-grid/Core/Components/NavFooter.php:68
+#: header-footer-grid/Core/Components/SecondNav.php:102
+#: header-footer-grid/Core/Components/SecondNav.php:199
+msgid "Hover Skin Mode"
+msgstr "Mod aspect trecere peste"
+
+#: header-footer-grid/Core/Components/Abstract_Component.php:943
+msgid "Justify"
+msgstr "Justificat"
+
+#: header-footer-grid/Core/Builder/Header.php:125
+#: header-footer-grid/Core/Builder/Header.php:135
+msgid "Header Presets"
+msgstr "Presetări antet"
+
+#: inc/views/pluggable/pagination.php:273 inc/views/template_parts.php:539
+msgid "Pages:"
+msgstr "Pagini:"
+
+#: inc/customizer/defaults/utils.php:85
+msgid "edit"
+msgstr "editează"
+
+#. translators: %s is edit page link
+#: inc/customizer/defaults/utils.php:81
+msgid "Note: It seems that the shop page has an individual sidebar layout already set. To be able to control the layout from here, %s your page and set the sidebar to \"Inherit\"."
+msgstr "Notă: se pare că pagina de magazin are deja un aranjament de zonă laterală setată. Pentru a putea controla aranjamentul de aici, %s pagina și setează zona laterală la „Moștenit”."
+
+#. translators: %s is the header name
+#: header-footer-grid/Core/Customizer.php:277
+msgid "You are customizing the %s Header"
+msgstr "Personalizezi antetul %s"
+
+#: header-footer-grid/Core/Magic_Tags.php:776
+msgid "Checkout URL"
+msgstr "URL finalizare comandă"
+
+#: header-footer-grid/Core/Magic_Tags.php:772
+msgid "Cart URL"
+msgstr "URL coș"
+
+#: header-footer-grid/Core/Magic_Tags.php:768
+msgid "Product Title"
+msgstr "Titlu produs"
+
+#: header-footer-grid/Core/Magic_Tags.php:764
+#: assets/apps/customizer-controls/build/controls.js:1
+msgid "Product Price"
+msgstr "Preț produs"
+
+#: header-footer-grid/Core/Magic_Tags.php:761
+msgid "WooCommerce"
+msgstr "WooCommerce"
+
+#: header-footer-grid/Core/Magic_Tags.php:707
+msgid "Current Year"
+msgstr "Anul curent"
+
+#: header-footer-grid/Core/Magic_Tags.php:703
+msgid "Home URL"
+msgstr "URL prima pagină"
+
+#: header-footer-grid/Core/Magic_Tags.php:695
+msgid "Site Tagline"
+msgstr "Slogan site"
+
+#: header-footer-grid/Core/Components/Logo.php:483
+#: header-footer-grid/Core/Magic_Tags.php:691
+msgid "Site Title"
+msgstr "Titlu site"
+
+#: header-footer-grid/Core/Builder/Header.php:256
+#: header-footer-grid/Core/Magic_Tags.php:688
+#: inc/customizer/options/main.php:56 inc/customizer/options/typography.php:93
+msgid "Global"
+msgstr "Globale"
+
+#: header-footer-grid/Core/Magic_Tags.php:665
+msgid "Author URL"
+msgstr "URL autor"
+
+#: header-footer-grid/Core/Magic_Tags.php:661
+msgid "Author Name"
+msgstr "Nume autor"
+
+#: header-footer-grid/Core/Magic_Tags.php:657
+msgid "Author Bio"
+msgstr "Biografie autor"
+
+#: header-footer-grid/Core/Magic_Tags.php:648
+msgid "Archive URL"
+msgstr "URL arhivă"
+
+#: header-footer-grid/Core/Magic_Tags.php:644
+msgid "Archive Title"
+msgstr "Titlu arhivă"
+
+#: header-footer-grid/Core/Magic_Tags.php:640
+msgid "Archive Description"
+msgstr "Descriere arhivă"
+
+#: header-footer-grid/Core/Magic_Tags.php:637 inc/compatibility/fse.php:47
+msgid "Archive"
+msgstr "Arhivă"
+
+#: header-footer-grid/Core/Magic_Tags.php:611
+msgid "Current Single URL"
+msgstr "URL singular curent"
+
+#: header-footer-grid/Core/Magic_Tags.php:603
+msgid "Current Single Excerpt"
+msgstr "Rezumat singular curent"
+
+#: header-footer-grid/Core/Magic_Tags.php:599
+msgid "Current Single Title"
+msgstr "Titlu singular curent"
+
+#: header-footer-grid/Core/Magic_Tags.php:596
+msgid "Single"
+msgstr "Singular"
+
+#: inc/customizer/options/base_layout_single.php:552
+#: inc/customizer/options/layout_single_post.php:522
+#: assets/apps/customizer-controls/build/7e5613fb2e01e74b5136.js:1
+#: assets/apps/metabox/build/index.js:1
+msgid "Inherit"
+msgstr "Moștenit"
+
+#: header-footer-grid/Core/Components/Logo.php:383
+msgid "Display"
+msgstr "Afișează"
+
+#: header-footer-grid/Core/Components/CartIcon.php:146
+#: header-footer-grid/Core/Components/EddCartIcon.php:63
+#: header-footer-grid/Core/Components/MenuIcon.php:564
+#: header-footer-grid/Core/Components/PaletteSwitch.php:423
+#: header-footer-grid/Core/Components/SearchResponsive.php:148
+msgid "Icon Size"
+msgstr "Dimensiune icon"
+
+#: header-footer-grid/Core/Components/Search.php:341
+#: header-footer-grid/Core/Components/SearchResponsive.php:510
+#: assets/apps/components/build/components.js:1
+msgid "Text and Border"
+msgstr "Text și chenar"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:546
+#: header-footer-grid/Core/Builder/Header.php:219
+#: assets/apps/components/build/components.js:1
+#: assets/apps/customizer-controls/build/controls.js:1
+msgid "Background"
+msgstr "Fundal"
+
+#: inc/customizer/options/base_layout_single.php:168
+#: inc/customizer/options/base_layout_single.php:638
+#: assets/apps/components/build/components.js:1
+msgid "Normal"
+msgstr "Normal"
+
+#: header-footer-grid/Core/Components/Utility/SearchIconButton.php:134
+#: header-footer-grid/Core/Components/Utility/SearchIconButton.php:247
+#: inc/customizer/options/buttons.php:195
+msgid "Button Appearance"
+msgstr "Aspect buton"
+
+#: header-footer-grid/Core/Components/Button.php:181
+#: header-footer-grid/Core/Components/MenuIcon.php:633
+msgid "Appearance"
+msgstr "Aspect"
+
+#: header-footer-grid/Core/Components/MenuIcon.php:466
+msgid "Menu label"
+msgstr "Etichetă meniu"
+
+#: header-footer-grid/Core/Components/CustomHtml.php:148
+msgid "Arbitrary HTML code. It supports also shortcodes."
+msgstr "Cod HTML arbitrar. Suportă și scurtcoduri."
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:1857
+#: header-footer-grid/Core/Components/Abstract_Component.php:960
+#: inc/customizer/options/upsells.php:354
+msgid "Alignment"
+msgstr "Aliniere"
+
+#: header-footer-grid/templates/rows.php:78
+msgid "Hide"
+msgstr "Ascunde"
+
+#: header-footer-grid/templates/rows.php:77
+msgid "Show"
+msgstr "Arată"
+
+#: header-footer-grid/templates/rows.php:74
+msgid "Mobile menu content"
+msgstr "Conținut meniu pentru mobil"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:246
+#: header-footer-grid/Core/Builder/Footer.php:106
+#: assets/apps/components/build/components.js:1
+#: assets/apps/customizer-controls/build/fe21e704398fee9da3e4.js:5
+msgid "Mobile"
+msgstr "Mobil"
+
+#: inc/customizer/options/typography.php:149
+msgid "Body"
+msgstr "Corp"
+
+#: header-footer-grid/Core/Customizer.php:342
+msgid "Search Components"
+msgstr "Caută componente"
+
+#: header-footer-grid/Core/Components/Logo.php:81
+msgid "Display your company logo here or simply use words to describe your business."
+msgstr "Afișează aici logoul companiei sau folosește câteva cuvinte pentru a-ți descrie afacerea."
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:1842
+#: header-footer-grid/Core/Components/Abstract_Component.php:933
+#: inc/customizer/options/base_layout_single.php:623
+#: inc/customizer/options/upsells.php:363
+msgid "Center"
+msgstr "Centru"
+
+#: header-footer-grid/Core/Builder/Footer.php:98
+msgid "Change Footer Color"
+msgstr "Schimbă culoarea subsolului"
+
+#: header-footer-grid/Core/Builder/Footer.php:64
+#: header-footer-grid/Core/Builder/Footer.php:172
+msgid "Change Copyright"
+msgstr "Modifică Drepturi de autor"
+
+#: header-footer-grid/Core/Builder/Header.php:92
+msgid "Change Menu"
+msgstr "Modifică meniul"
+
+#: header-footer-grid/Core/Builder/Header.php:88
+msgid "Change Header Color"
+msgstr "Schimbă culoarea antetului"
+
+#: header-footer-grid/Core/Builder/Header.php:84
+#: assets/apps/customizer-controls/build/controls.js:5
+msgid "Change Logo"
+msgstr "Schimbă logoul"
+
+#. translators: 1: builder, 2: builder symbol
+#: header-footer-grid/Core/Builder/Footer.php:91
+msgid "Welcome to the %1$s builder! Click the %2$s button to add a new component or follow the Quick Links."
+msgstr "Bine ai venit la constructorul %1$s! Dă clic pe butonul %2$s pentru a adăuga o componentă nouă sau urmărește Legăturile rapide."
+
+#: inc/compatibility/pwa.php:63
+msgid "Oops! Something went wrong."
+msgstr "Hopa! Ceva nu a mers bine."
+
+#: inc/compatibility/pwa.php:50
+msgid "Oops! It looks like you&#8217;re offline."
+msgstr "Hopa! Se pare că ești offline."
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:245
+#: header-footer-grid/Core/Builder/Footer.php:105
+#: assets/apps/components/build/components.js:1
+#: assets/apps/customizer-controls/build/fe21e704398fee9da3e4.js:5
+msgid "Desktop"
+msgstr "Desktop"
+
+#: inc/admin/dashboard/main.php:696
+msgid "LifterLMS Booster"
+msgstr "LifterLMS Booster"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:484
+msgid "Row Background"
+msgstr "Fundal rând"
+
+#. translators: %s link to documentation
+#: header-footer-grid/Core/Builder/Footer.php:47
+#: header-footer-grid/Core/Builder/Header.php:64
+msgid "Design your %1$s by dragging, dropping and resizing all the elements in real-time. %2$s."
+msgstr "Proiectează %1$s prin tragerea, plasarea și redimensionarea tuturor elementelor în timp real. %2$s."
+
+#: inc/views/partials/post_meta.php:292
+msgid "by"
+msgstr "de"
+
+#: inc/customizer/options/layout_blog.php:453
+#: inc/customizer/options/layout_blog.php:554
+#: inc/customizer/options/layout_single_post.php:644
+msgid "Show Author Avatar"
+msgstr "Arată avatarul autorului"
+
+#. translators: Module name for the upsell.
+#: inc/admin/dashboard/main.php:671 inc/customizer/options/upsells.php:417
+#: inc/customizer/options/upsells.php:458
+msgid "Scroll To Top"
+msgstr "Derulează în sus"
+
+#: inc/admin/dashboard/main.php:632 inc/admin/dashboard/main.php:683
+#: assets/apps/dashboard/build/dashboard.js:2
+msgid "White Label"
+msgstr "Etichetă albă"
+
+#: header-footer-grid/Core/Builder/Footer.php:70
+#: inc/admin/dashboard/main.php:526 inc/admin/dashboard/main.php:1069
+#: inc/customizer/controls/upsell_control.php:95
+#: inc/customizer/options/upsells.php:418
+#: assets/apps/customizer-controls/build/fe21e704398fee9da3e4.js:1
+#: assets/apps/dashboard/build/dashboard.js:2
+msgid "PRO"
+msgstr "PRO"
+
+#: inc/admin/dashboard/main.php:692 inc/core/front_end.php:568
+msgid "Leverage the true flexibility of Elementor with powerful addons and templates that you can import with just one click."
+msgstr "Profită de adevărata flexibilitate a Elementor cu suplimente și șabloane puternice pe care le poți importa cu un singur clic."
+
+#: inc/core/front_end.php:567
+msgid "Easily create custom headers and footers as well as adding your own custom code or content in any of the hooks locations."
+msgstr "Creezi cu ușurință anteturi și subsoluri personalizate precum adaugi și codul sau conținutul tău personalizat în oricare dintre locațiile cârligelor."
+
+#: inc/admin/dashboard/main.php:691 inc/core/front_end.php:565
+msgid "Elementor Booster"
+msgstr "Extensie Elementor Booster"
+
+#: inc/core/front_end.php:564
+msgid "Scroll to Top module"
+msgstr "Extensie Derulează în sus"
+
+#: inc/core/front_end.php:563
+msgid "White Label module"
+msgstr "Extensie White Label"
+
+#: header-footer-grid/Core/Builder/Header.php:557
+#: inc/admin/dashboard/main.php:379 inc/admin/dashboard/main.php:568
+#: inc/admin/dashboard/main.php:687 inc/admin/dashboard/main.php:911
+#: inc/admin/hooks_upsells.php:221 inc/admin/hooks_upsells.php:222
+#: inc/core/front_end.php:562
+msgid "Custom Layouts"
+msgstr "Aranjamente personalizate"
+
+#: inc/admin/dashboard/main.php:652 inc/core/front_end.php:561
+msgid "WooCommerce Booster"
+msgstr "Extensie WooCommerce Booster"
+
+#: inc/admin/dashboard/main.php:663 inc/core/front_end.php:560
+msgid "Blog Booster"
+msgstr "Extensie Blog Booster"
+
+#: inc/admin/dashboard/main.php:648 inc/core/front_end.php:559
+msgid "Header Booster"
+msgstr "Extensie Header Booster"
+
+#: header-footer-grid/Core/Components/CartIcon.php:208
+#: header-footer-grid/Core/Components/EddCartIcon.php:114
+#: header-footer-grid/Core/Components/SearchResponsive.php:208
+msgid "Hover Color"
+msgstr "Culoare trecere peste"
+
+#: header-footer-grid/Core/Components/CartIcon.php:177
+#: header-footer-grid/Core/Components/EddCartIcon.php:94
+#: header-footer-grid/Core/Components/Nav.php:281
+#: header-footer-grid/Core/Components/SearchResponsive.php:183
+#: header-footer-grid/Core/Components/SecondNav.php:199
+#: inc/customizer/options/base_layout_single.php:646
+#: inc/customizer/options/form_fields.php:357
+#: assets/apps/components/build/components.js:1
+#: assets/apps/customizer-controls/build/controls.js:5
+msgid "Color"
+msgstr "Culoare"
+
+#: inc/customizer/options/base_layout_single.php:381
+msgid "Cover text color"
+msgstr "Culoare text copertă"
+
+#: header-footer-grid/Core/Components/Search.php:310
+#: header-footer-grid/Core/Components/SearchResponsive.php:479
+msgid "Background Color"
+msgstr "Culoare fundal"
+
+#: inc/customizer/options/form_fields.php:593
+#: inc/customizer/options/layout_single_post.php:803
+msgid "Secondary"
+msgstr "Secundar"
+
+#: inc/customizer/options/form_fields.php:592
+#: inc/customizer/options/layout_single_post.php:802
+msgid "Primary"
+msgstr "Principal"
+
+#: inc/customizer/options/buttons.php:44
+msgid "Buttons"
+msgstr "Butoane"
+
+#: header-footer-grid/Core/Settings/Manager.php:210
+#: inc/customizer/options/upsells.php:304
+#: assets/apps/components/build/components.js:1
+msgid "Style"
+msgstr "Stil"
+
+#: header-footer-grid/Core/Components/SecondNav.php:231
+msgid "Select Menu"
+msgstr "Selectează meniul"
+
+#: header-footer-grid/Core/Components/Abstract_Component.php:545
+#: header-footer-grid/Core/Components/MenuIcon.php:512
+msgid "Margin"
+msgstr "Margine"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:1838
+#: header-footer-grid/Core/Components/Abstract_Component.php:929
+#: inc/customizer/defaults/utils.php:32
+#: inc/customizer/options/base_layout_single.php:619
+#: inc/customizer/options/upsells.php:359
+#: inc/customizer/options/upsells.php:373
+#: assets/apps/components/build/components.js:1
+#: assets/apps/customizer-controls/build/controls.js:5
+#: assets/apps/metabox/build/index.js:1
+msgid "Left"
+msgstr "Stânga"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:2042
+#: inc/customizer/options/base_layout_single.php:322
+#: inc/customizer/options/upsells.php:205
+#: assets/apps/components/build/components.js:1
+#: assets/apps/customizer-controls/build/controls.js:5
+msgid "Bottom"
+msgstr "Jos"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:1846
+#: header-footer-grid/Core/Components/Abstract_Component.php:937
+#: inc/customizer/defaults/utils.php:36
+#: inc/customizer/options/base_layout_single.php:627
+#: inc/customizer/options/upsells.php:368
+#: inc/customizer/options/upsells.php:373
+#: assets/apps/components/build/components.js:1
+#: assets/apps/customizer-controls/build/controls.js:5
+#: assets/apps/metabox/build/index.js:1
+msgid "Right"
+msgstr "Dreapta"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:2034
+#: inc/customizer/options/base_layout_single.php:314
+#: assets/apps/components/build/components.js:1
+#: assets/apps/customizer-controls/build/controls.js:5
+msgid "Top"
+msgstr "Sus"
+
+#: header-footer-grid/Core/Components/Abstract_Component.php:515
+#: inc/customizer/options/buttons.php:77
+msgid "Padding"
+msgstr "Distanțare"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:1914
+msgid "Slide from Left"
+msgstr "Glisează de la stânga"
+
+#: inc/customizer/options/layout_single_product.php:125
+msgid "All"
+msgstr "Toate"
+
+#: inc/admin/hooks_upsells.php:507 inc/admin/hooks_upsells.php:528
+#: inc/customizer/options/layout_single_product.php:92
+#: assets/apps/customizer-controls/build/controls.js:1
+#: assets/apps/metabox/build/index.js:1
+msgid "Title"
+msgstr "Titlu"
+
+#: inc/customizer/options/layout_single_product.php:71
+msgid "Exclusive Products"
+msgstr "Produse exclusive"
+
+#: inc/compatibility/lifter.php:341
+msgid "Catalog Sidebar"
+msgstr "Bară laterală pentru catalog"
+
+#: header-footer-grid/Core/Builder/Footer.php:284
+#: header-footer-grid/Core/Builder/Footer.php:296
+msgid "Footer Bottom"
+msgstr "Jos în subsol"
+
+#: header-footer-grid/Core/Builder/Footer.php:276
+#: header-footer-grid/Core/Builder/Footer.php:292
+msgid "Footer Top"
+msgstr "Sus în subsol"
+
+#: header-footer-grid/Core/Builder/Header.php:482
+msgid "Header Bottom"
+msgstr "Jos în antet"
+
+#: header-footer-grid/Core/Builder/Header.php:478
+msgid "Header Main"
+msgstr "Antet principal"
+
+#: header-footer-grid/Core/Builder/Header.php:474
+msgid "Header Top"
+msgstr "Partea de sus a antetului"
+
+#. translators: %s - customizer link
+#: header-footer-grid/templates/components/component-footer-sidebar.php:31
+msgid "Replace this widget content by going to %s and add widgets into this widget area."
+msgstr "Înlocuiește conținutul acestei piese mergând la %s și adaugă piese în această zonă pentru piese."
+
+#: header-footer-grid/Core/Components/Nav.php:330
+msgid "Last Menu Item"
+msgstr "Ultimul element din meniu"
+
+#: header-footer-grid/Core/Components/Nav.php:228
+#: header-footer-grid/Core/Components/SecondNav.php:146
+msgid "Active Item Color"
+msgstr "Culoare element activ"
+
+#: header-footer-grid/Core/Components/SearchResponsive.php:42
+msgid "Search Icon"
+msgstr "Icon pentru căutare"
+
+#: header-footer-grid/Core/Components/Search.php:66
+#: header-footer-grid/Core/Components/SearchResponsive.php:92
+msgid "Placeholder"
+msgstr "Substituent"
+
+#: header-footer-grid/Core/Components/Search.php:65
+#: header-footer-grid/Core/Components/Search.php:452
+#: header-footer-grid/Core/Components/SearchResponsive.php:91
+#: header-footer-grid/Core/Components/SearchResponsive.php:633
+#: searchform.php:10 searchform.php:37
+msgid "Search for..."
+msgstr "Caută..."
+
+#: header-footer-grid/Core/Components/Search.php:42
+msgid "Search Form"
+msgstr "Formular de căutare"
+
+#: header-footer-grid/Core/Components/Nav.php:253
+#: header-footer-grid/Core/Components/NavFooter.php:112
+#: header-footer-grid/Core/Components/SecondNav.php:167
+msgid "Items Hover Color"
+msgstr "Culoare trecere peste elemente"
+
+#: header-footer-grid/Core/Components/Nav.php:203
+#: header-footer-grid/Core/Components/NavFooter.php:86
+#: header-footer-grid/Core/Components/SecondNav.php:120
+msgid "Items Color"
+msgstr "Culoare elemente"
+
+#: header-footer-grid/Core/Components/SecondNav.php:42
+#: header-footer-grid/Core/Components/SecondNav.php:225
+#: header-footer-grid/templates/components/component-nav-secondary.php:27
+#: inc/core/front_end.php:79
+msgid "Secondary Menu"
+msgstr "Meniu secundar"
+
+#: header-footer-grid/Core/Components/CartIcon.php:45
+msgid "Cart Icon"
+msgstr "Icon coș de cumpărături"
+
+#: header-footer-grid/Core/Components/Button.php:135
+msgid "Link"
+msgstr "Legătură"
+
+#: header-footer-grid/Core/Components/Button.php:81
+#: header-footer-grid/Core/Components/Button.php:150
+#: header-footer-grid/Core/Components/Utility/SearchIconButton.php:143
+#: header-footer-grid/Core/Components/Utility/SearchIconButton.php:147
+#: inc/customizer/options/form_fields.php:567
+#: assets/apps/components/build/components.js:1
+msgid "Button"
+msgstr "Buton"
+
+#: header-footer-grid/Core/Components/Logo.php:403
+msgid "Show Site Tagline"
+msgstr "Arată sloganul site-ului"
+
+#: header-footer-grid/Core/Components/Logo.php:418
+msgid "Show Site Title"
+msgstr "Arată titlul site-ului"
+
+#: header-footer-grid/Core/Components/Logo.php:80
+msgid "Logo & Site Identity"
+msgstr "Logo și identitate site"
+
+#: header-footer-grid/Core/Components/MenuIcon.php:113
+msgid "Menu Icon"
+msgstr "Icon meniu"
+
+#: header-footer-grid/Core/Builder/Header.php:553
+#: header-footer-grid/Core/Components/CustomHtml.php:35
+#: header-footer-grid/Core/Components/CustomHtml.php:147
+msgid "HTML"
+msgstr "HTML"
+
+#: globals/utilities.php:486
+#: inc/compatibility/starter-content/theme-mods.php:521
+msgid "Dark Mode"
+msgstr "Mod întunecat"
+
+#: inc/views/pluggable/pagination.php:295
+msgid "next"
+msgstr "următor"
+
+#: inc/views/pluggable/pagination.php:290
+msgid "previous"
+msgstr "anterior"
+
+#: inc/customizer/options/layout_single_post.php:388
+msgid "Post navigation"
+msgstr "Navigare în articole"
+
+#. translators: %s - post type
+#: inc/admin/metabox/manager.php:131 inc/admin/metabox/manager.php:148
+msgid "%s Settings"
+msgstr "Setări %s"
+
+#. translators: %s: number of comments
+#: inc/views/partials/post_meta.php:402
+msgid "%s Comment"
+msgid_plural "%s Comments"
+msgstr[0] "Un comentariu"
+msgstr[1] "%s comentarii"
+msgstr[2] "%s de comentarii"
+
+#: functions.php:40
+msgid "upgrading PHP to the latest version"
+msgstr "actualizând PHP la ultima versiune"
+
+#. Template Name of the theme
+msgid "Page Builder Full Width (Neve)"
+msgstr "Constructor de pagini în lățime completă (Neve)"
+
+#. Theme Name of the theme
+#. translators: Theme Name
+#: style.css inc/admin/dashboard/main.php:1068
+#: inc/admin/dashboard/main.php:1140 inc/admin/troubleshoot/main.php:38
+#: inc/admin/troubleshoot/main.php:79 inc/admin/troubleshoot/main.php:93
+#: inc/admin/troubleshoot/main.php:96 inc/admin/troubleshoot/main.php:102
+#: inc/admin/troubleshoot/main.php:115 inc/customizer/options/main.php:117
+#: assets/apps/metabox/build/index.js:2
+msgid "Neve"
+msgstr "Neve"
+
+#: inc/core/front_end.php:569 inc/customizer/options/upsells.php:459
+msgid "Get the PRO version!"
+msgstr "Ia versiunea PRO!"
+
+#: inc/views/content_404.php:37
+msgid "It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps searching can help."
+msgstr "Se pare că nu putem să găsim ceea ce cauți. Probabil o căutare te poate ajuta."
+
+#: inc/views/content_none.php:79
+msgid "Sorry, but nothing matched your search terms. Please try again with some different keywords."
+msgstr "Regret, dar nu s-a potrivit nimic cu termenii tăi de căutare. Te rog încearcă din nou cu alte cuvinte cheie."
+
+#: inc/views/content_none.php:61
+msgid "Get started here"
+msgstr "Începe de aici"
+
+#. translators: %s is Link to new post
+#: inc/views/content_none.php:56
+msgid "Ready to publish your first post? %s."
+msgstr "Ești gata să publici primul tău articol? %s."
+
+#: inc/views/template_parts.php:470
+msgid "Read More"
+msgstr "Citește mai mult"
+
+#: inc/customizer/options/layout_single_post.php:384
+#: inc/customizer/options/upsells.php:282 inc/views/partials/post_meta.php:416
+#: assets/apps/metabox/build/index.js:1
+msgid "Tags"
+msgstr "Etichete"
+
+#. translators: number of comments
+#: inc/views/partials/comments.php:280
+msgctxt "comments title"
+msgid "%1$s thought on &ldquo;%2$s&rdquo;"
+msgid_plural "%1$s thoughts on &ldquo;%2$s&rdquo;"
+msgstr[0] "Un comentariu la &bdquo;%2$s&rdquo;"
+msgstr[1] "%1$s comentarii la &bdquo;%2$s&rdquo;"
+msgstr[2] "%1$s de comentarii la &bdquo;%2$s&rdquo;"
+
+#: inc/views/partials/comments.php:219
+msgid "Comment awaiting moderation."
+msgstr "Comentariul așteaptă moderarea."
+
+#: inc/views/partials/comments.php:252
+msgid "Reply"
+msgstr "Răspunde"
+
+#. translators: 1: date, 2: time
+#: inc/views/partials/comments.php:206
+msgid "%1$s at %2$s"
+msgstr "%1$s la %2$s"
+
+#: inc/views/partials/comments.php:181 inc/views/partials/comments.php:246
+#: assets/apps/components/build/components.js:1
+msgid "Edit"
+msgstr "Editează"
+
+#: inc/views/partials/comments.php:179
+msgid "Pingback:"
+msgstr "Pingback:"
+
+#: inc/views/partials/comments.php:142
+msgid "Next"
+msgstr "Următor"
+
+#: inc/views/partials/comments.php:139
+msgid "Previous"
+msgstr "Anterior"
+
+#: inc/views/partials/comments.php:134
+msgid "Comments Navigation"
+msgstr "Navigare în comentarii"
+
+#: inc/views/partials/comments.php:87
+msgid "Comments are closed."
+msgstr "Comentariile sunt închise."
+
+#. translators: search result
+#: inc/views/page_header.php:85
+msgid "Search Results for: %s"
+msgstr "Rezultate căutare pentru: %s"
+
+#: header-footer-grid/templates/components/component-menu-icon.php:31
+#: header-footer-grid/templates/components/component-menu-icon.php:35
+#: header-footer-grid/templates/components/component-menu-icon.php:66
+#: header-footer-grid/templates/row-wrapper-mobile.php:45
+#: header-footer-grid/templates/row-wrapper-mobile.php:46
+#: header-footer-grid/templates/row-wrapper-mobile.php:75
+msgid "Navigation Menu"
+msgstr "Meniu de navigare"
+
+#: header-footer-grid/Core/Customizer.php:297
+#: header-footer-grid/templates/components/component-cart-icon.php:27
+#: header-footer-grid/templates/components/component-search-responsive.php:47
+#: inc/admin/hooks_upsells.php:410 inc/views/header.php:141
+#: inc/views/layouts/layout_sidebar.php:189
+msgid "Close"
+msgstr "Închide"
+
+#: header-footer-grid/Core/Components/Logo.php:483
+#: header-footer-grid/Core/Components/Search.php:130
+#: header-footer-grid/Core/Components/SearchResponsive.php:301
+#: assets/apps/customizer-controls/build/controls.js:1
+msgid "Font Size"
+msgstr "Dimensiune font"
+
+#: inc/customizer/options/typography.php:105
+msgid "Headings"
+msgstr "Subtitluri"
+
+#: header-footer-grid/Core/Builder/Header.php:195
+#: header-footer-grid/Core/Settings/Manager.php:202
+#: inc/customizer/options/buttons.php:57
+#: inc/customizer/options/checkout.php:105
+#: inc/customizer/options/layout_blog.php:168
+#: inc/customizer/options/layout_single_post.php:140
+#: inc/customizer/options/typography.php:101
+#: assets/apps/dashboard/build/dashboard.js:2
+msgid "General"
+msgstr "General"
+
+#: header-footer-grid/Core/Components/Abstract_Component.php:791
+#: inc/customizer/options/main.php:64 inc/customizer/options/typography.php:439
+#: inc/customizer/options/typography.php:461
+msgid "Typography"
+msgstr "Tipografice"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:679
+#: header-footer-grid/Core/Builder/Header.php:57 inc/compatibility/fse.php:413
+msgid "Header"
+msgstr "Antet"
+
+#: inc/customizer/options/layout_single_post.php:454
+msgid "Elements Order"
+msgstr "Ordine elemente"
+
+#: inc/customizer/options/layout_blog.php:220
+#: inc/customizer/options/layout_sidebar.php:233
+#: inc/customizer/options/layout_single_post.php:193
+msgid "Content Width (%)"
+msgstr "Lățime conținut (%)"
+
+#: inc/customizer/options/layout_blog.php:199
+#: inc/customizer/options/layout_sidebar.php:209
+#: inc/customizer/options/layout_single_post.php:172
+msgid "Sidebar Layout"
+msgstr "Aranjament bară laterală"
+
+#: inc/customizer/options/layout_sidebar.php:48
+#: inc/customizer/options/layout_single_product.php:52
+msgid "Single Product"
+msgstr "Produs singular"
+
+#: inc/customizer/options/layout_sidebar.php:47
+msgid "Shop / Archive"
+msgstr "Magazin/arhivă"
+
+#: inc/compatibility/fse.php:51
+#: inc/customizer/options/base_layout_single.php:83
+msgid "Single Post"
+msgstr "Articol singular"
+
+#: header-footer-grid/Core/Builder/Header.php:238
+#: inc/customizer/options/layout_sidebar.php:136
+msgid "Enable Advanced Options"
+msgstr "Activează opțiunile avansate"
+
+#: inc/customizer/options/layout_sidebar.php:112
+msgid "Sitewide Content Width (%)"
+msgstr "Lățime conținut pe tot site-ul (%)"
+
+#: inc/customizer/options/layout_sidebar.php:93
+msgid "Sitewide Sidebar Layout"
+msgstr "Aranjament bară laterală pe tot site-ul"
+
+#: globals/utilities.php:233 header-footer-grid/Core/Components/Nav.php:304
+#: header-footer-grid/Core/Components/Utility/SearchIconButton.php:95
+#: inc/compatibility/fse.php:49 searchform.php:19 searchform.php:41
+#: assets/apps/customizer-controls/build/7e5613fb2e01e74b5136.js:1
+#: assets/apps/customizer-controls/build/c8e135098e958bb39090.js:1
+#: assets/apps/customizer-controls/build/controls.js:5
+msgid "Search"
+msgstr "Caută"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:763
+msgid "Section Content"
+msgstr "Conținut secțiune"
+
+#. translators: %1$s is Theme Name ( Neve ), %2$s is WordPress
+#: header-footer-grid/Core/Builder/Footer.php:336
+msgid "%1$s | Powered by %2$s"
+msgstr "%1$s | Propulsată de %2$s"
+
+#: header-footer-grid/Core/Builder/Footer.php:189
+#: header-footer-grid/Core/Components/Button.php:151
+#: header-footer-grid/Core/Components/Utility/SearchIconButton.php:147
+#: header-footer-grid/Core/Components/Utility/SearchIconButton.php:229
+#: assets/apps/components/build/components.js:1
+msgid "Text"
+msgstr "Text"
+
+#: inc/customizer/options/layout_single_product.php:124
+#: inc/customizer/options/upsells.php:201
+#: assets/apps/customizer-controls/build/controls.js:1
+#: assets/apps/metabox/build/index.js:1
+msgid "None"
+msgstr "Nespecificat"
+
+#: inc/customizer/options/layout_single_post.php:380
+#: inc/customizer/options/upsells.php:332 assets/apps/metabox/build/index.js:1
+msgid "Content"
+msgstr "Conținut"
+
+#: header-footer-grid/Core/Builder/Footer.php:39 inc/compatibility/fse.php:436
+msgid "Footer"
+msgstr "Subsol"
+
+#: inc/customizer/options/layout_container.php:168
+msgid "Single Product Container Style"
+msgstr "Stil container produs singular"
+
+#: inc/customizer/options/layout_container.php:164
+msgid "Shop / Archive Container Style"
+msgstr "Stil container magazin/arhivă"
+
+#: inc/customizer/options/layout_container.php:154
+msgid "Single Post Container Style"
+msgstr "Stil container articol singular"
+
+#: inc/customizer/options/layout_container.php:150
+msgid "Blog / Archive Container Style"
+msgstr "Stil container blog/arhivă"
+
+#: inc/customizer/options/layout_container.php:146
+msgid "Default Container Style"
+msgstr "Stil container implicit"
+
+#: inc/customizer/options/layout_single_post.php:601
+msgid "Meta Order"
+msgstr "Ordine metadate"
+
+#: globals/utilities.php:714
+#: inc/compatibility/starter-content/theme-mods.php:802
+#: inc/customizer/options/layout_blog.php:668
+#: inc/customizer/options/layout_single_post.php:392
+#: inc/customizer/options/layout_single_post.php:587
+#: inc/views/partials/post_meta.php:237 assets/apps/metabox/build/index.js:1
+msgid "Comments"
+msgstr "Comentarii"
+
+#: globals/utilities.php:713 inc/admin/hooks_upsells.php:511
+#: inc/admin/hooks_upsells.php:532
+#: inc/compatibility/starter-content/theme-mods.php:802
+#: inc/customizer/options/layout_blog.php:667
+#: inc/customizer/options/layout_single_post.php:586
+#: inc/views/partials/post_meta.php:236
+msgid "Date"
+msgstr "Dată"
+
+#: globals/utilities.php:712
+#: inc/compatibility/starter-content/theme-mods.php:802
+#: inc/customizer/options/layout_blog.php:666
+#: inc/customizer/options/layout_single_post.php:585
+#: inc/customizer/options/layout_single_product.php:107
+#: inc/customizer/options/upsells.php:228 inc/views/partials/post_meta.php:235
+msgid "Category"
+msgstr "Categorie"
+
+#: globals/utilities.php:711 header-footer-grid/Core/Magic_Tags.php:654
+#: inc/compatibility/starter-content/theme-mods.php:802
+#: inc/customizer/options/layout_blog.php:665
+#: inc/customizer/options/layout_single_post.php:584
+#: inc/views/partials/post_meta.php:234
+msgid "Author"
+msgstr "Autor"
+
+#: inc/customizer/options/layout_blog.php:487
+msgid "Post Content Order"
+msgstr "Ordine conținut articol"
+
+#: inc/customizer/options/layout_blog.php:463
+msgid "Excerpt"
+msgstr "Rezumat"
+
+#: inc/customizer/options/layout_blog.php:441
+#: inc/customizer/options/layout_single_post.php:309
+msgid "Title & Meta"
+msgstr "Titlu și meta"
+
+#: inc/customizer/options/layout_blog.php:431
+#: inc/customizer/options/layout_single_post.php:346
+msgid "Thumbnail"
+msgstr "Miniatură"
+
+#: inc/customizer/options/layout_blog.php:466
+msgid "Excerpt Length"
+msgstr "Lungime rezumat"
+
+#: inc/customizer/options/layout_blog.php:353
+msgid "Enable Masonry"
+msgstr "Activează zidăria"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:345
+#: header-footer-grid/Core/Settings/Manager.php:206
+#: inc/customizer/options/upsells.php:144
+#: inc/customizer/options/upsells.php:167
+#: inc/customizer/options/upsells.php:250 assets/apps/metabox/build/index.js:1
+msgid "Layout"
+msgstr "Aranjament"
+
+#: inc/compatibility/fse.php:45 inc/customizer/options/main.php:60
+#: inc/customizer/options/typography.php:109
+msgid "Blog"
+msgstr "Blog"
+
+#: inc/customizer/options/layout_blog.php:152
+msgid "Blog / Archive"
+msgstr "Blog/arhivă"
+
+#: inc/customizer/options/colors_background.php:46
+msgid "Colors & Background"
+msgstr "Culori și fundal"
+
+#. translators: %s is the header name
+#: header-footer-grid/Core/Components/MenuIcon.php:543
+#: header-footer-grid/Core/Customizer.php:277
+#: assets/apps/customizer-controls/build/7e5613fb2e01e74b5136.js:1
+#: assets/apps/metabox/build/index.js:1
+msgid "Default"
+msgstr "Implicit"
+
+#: header-footer-grid/Core/Components/FooterWidgetFour.php:32
+#: inc/core/front_end.php:527
+msgid "Footer Four"
+msgstr "Subsol patru"
+
+#: header-footer-grid/Core/Components/FooterWidgetThree.php:31
+#: inc/core/front_end.php:526
+msgid "Footer Three"
+msgstr "Subsol trei"
+
+#: header-footer-grid/Core/Components/FooterWidgetTwo.php:32
+#: inc/core/front_end.php:525
+msgid "Footer Two"
+msgstr "Subsol doi"
+
+#: header-footer-grid/Core/Components/FooterWidgetOne.php:31
+#: inc/core/front_end.php:524
+msgid "Footer One"
+msgstr "Subsol unu"
+
+#: inc/core/front_end.php:518
+msgid "Shop Sidebar"
+msgstr "Bară laterală magazin"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:517
+#: header-footer-grid/Core/Components/CustomHtml.php:171
+#: header-footer-grid/Core/Components/Logo.php:526
+#: inc/compatibility/elementor.php:198 inc/core/front_end.php:122
+#: inc/customizer/options/layout_blog.php:841
+#: inc/customizer/options/layout_blog.php:985
+#: assets/apps/components/build/components.js:1
+msgid "Text Color"
+msgstr "Culoare text"
+
+#. translators: %s - Theme name
+#: inc/admin/dashboard/main.php:333
+msgid "With %s, you can choose from multiple unique demos, specially designed for you, that can be installed with a single click. You just need to choose your favorite, and we will take care of everything else."
+msgstr "Cu %s, poți alege din mai multe demonstrații unice, special concepute pentru tine, care pot fi instalate cu un singur clic. Trebuie doar să alegi ceea ce preferi și vom avea grijă de toate."
+
+#: header-footer-grid/Core/Components/NavFooter.php:41
+#: header-footer-grid/Core/Components/NavFooter.php:146
+#: header-footer-grid/templates/components/component-nav-footer.php:25
+#: inc/core/front_end.php:78
+msgid "Footer Menu"
+msgstr "Meniu subsol"
+
+#: header-footer-grid/Core/Components/Nav.php:45
+#: header-footer-grid/Core/Components/Nav.php:348
+#: header-footer-grid/templates/components/component-nav.php:31
+#: inc/core/front_end.php:77
+msgid "Primary Menu"
+msgstr "Meniu principal"
+
+#: inc/admin/dashboard/main.php:530
+#: inc/customizer/options/layout_sidebar.php:74
+msgid "Content / Sidebar"
+msgstr "Conținut/bară laterală"
+
+#: inc/admin/dashboard/main.php:525
+msgid "Footer Options"
+msgstr "Opțiuni subsol"
+
+#: inc/admin/dashboard/main.php:520
+msgid "Blog Layouts"
+msgstr "Aranjamente blog"
+
+#: inc/admin/dashboard/main.php:515
+msgid "Header Options"
+msgstr "Opțiuni antet"
+
+#: inc/admin/dashboard/main.php:510
+msgid "Layout Options"
+msgstr "Opțiuni aranjament"
+
+#: inc/admin/dashboard/main.php:505
+msgid "Customize Fonts"
+msgstr "Personalizează fonturile"
+
+#: inc/admin/dashboard/main.php:500
+msgid "Set Colors"
+msgstr "Setează culorile"
+
+#: inc/admin/dashboard/main.php:495
+#: assets/apps/customizer-controls/build/controls.js:5
+msgid "Upload Logo"
+msgstr "Încarcă logo"
+
+#: inc/admin/dashboard/main.php:1082 assets/apps/dashboard/build/dashboard.js:2
+msgid "Changelog"
+msgstr "Istoric modificări"
+
+#: header-footer-grid/Core/Builder/Footer.php:54
+#: header-footer-grid/Core/Builder/Header.php:71
+msgid "Read full documentation"
+msgstr "Citește întreaga documentație"
+
+#. translators: %s - Theme name
+#: inc/admin/dashboard/main.php:341
+msgid "Need more details? Please check our full documentation for detailed information on how to use %s."
+msgstr "Ai nevoie de mai multe detalii? Te rog verifică întreaga documentație pentru informații detaliate despre cum să folosești %s."
+
+#. translators: %s - Theme name
+#: inc/admin/dashboard/main.php:339
+msgid "We want to make sure you have the best experience using %1$s, and that is why we have gathered all the necessary information here for you. We hope you will enjoy using %1$s as much as we enjoy creating great products."
+msgstr "Vrem să ne asigurăm că ai cea mai bună experiență folosind %1$s și de aceea am adunat la un loc toate informațiile necesare pentru tine. Sperăm că îți va plăcea %1$s la fel de mult cât ne place și nouă să creăm produse excelente."
+
+#: inc/admin/dashboard/main.php:1077
+#: assets/apps/customizer-controls/build/controls.js:5
+#: assets/apps/dashboard/build/dashboard.js:2
+msgid "Documentation"
+msgstr "Documentație"
+
+#. translators: %s - Theme name
+#: inc/admin/dashboard/main.php:330
+msgid "%s now comes with a sites library with various designs to pick from. Visit our collection of demos that are constantly being added."
+msgstr "%s vine acum cu o bibliotecă de site-uri cu diverse designuri din care poți alege. Vizitează colecția noastră de demonstrații în care sunt adăugate continuu altele."
+
+#: header-footer-grid/Core/Components/Nav.php:309
+#: header-footer-grid/Core/Magic_Tags.php:713
+#: header-footer-grid/templates/components/component-cart-icon.php:51
+#: header-footer-grid/templates/components/component-edd-cart-icon.php:32
+#: inc/views/header.php:180
+msgid "Cart"
+msgstr "Coș"
+
+#: inc/core/front_end.php:571
+msgid "Filter"
+msgstr "Filtrează"
+
+#: inc/admin/metabox/main.php:61 inc/core/front_end.php:517
+#: assets/apps/metabox/build/index.js:1
+msgid "Sidebar"
+msgstr "Bară laterală"
+
+#: inc/admin/metabox/main.php:59
+msgid "No Sidebar"
+msgstr "Fără bară laterală"
+
+#: inc/admin/metabox/main.php:58
+msgid "Right Sidebar"
+msgstr "Bară laterală dreapta"
+
+#: inc/admin/metabox/main.php:57
+msgid "Left Sidebar"
+msgstr "Bară laterală stânga"
+
+#: inc/admin/metabox/main.php:43 inc/customizer/options/layout_container.php:48
+#: assets/apps/metabox/build/index.js:1
+msgid "Container"
+msgstr "Container"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:350
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:351
+#: inc/admin/metabox/main.php:41 inc/customizer/defaults/utils.php:28
+#: inc/customizer/options/layout_container.php:199
+#: assets/apps/metabox/build/index.js:1
+msgid "Full Width"
+msgstr "Lățime întreagă"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:350
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:352
+#: inc/admin/metabox/main.php:40
+#: inc/customizer/options/base_layout_single.php:659
+#: inc/customizer/options/layout_container.php:198
+#: assets/apps/metabox/build/index.js:1
+msgid "Contained"
+msgstr "Încasetat"
+
+#: inc/admin/metabox/main.php:39 inc/admin/metabox/main.php:56
+msgid "Customizer Setting"
+msgstr "Setări Personalizator"
+
+#: inc/admin/metabox/main.php:93 assets/apps/metabox/build/index.js:1
+msgid "Disable Footer"
+msgstr "Dezactivează subsolul"
+
+#: inc/admin/metabox/main.php:87
+msgid "Disable Featured Image"
+msgstr "Dezactivează imaginea reprezentativă"
+
+#: inc/admin/metabox/main.php:81 inc/customizer/options/layout_blog.php:330
+#: inc/customizer/options/layout_single_page.php:48
+#: assets/apps/metabox/build/index.js:1
+msgid "Disable Title"
+msgstr "Dezactivează titlul"
+
+#: inc/admin/metabox/main.php:76 assets/apps/metabox/build/index.js:1
+msgid "Disable Header"
+msgstr "Dezactivează antetul"
+
+#: inc/admin/metabox/main.php:75
+#: assets/apps/customizer-controls/build/fe21e704398fee9da3e4.js:1
+msgid "Components"
+msgstr "Componente"
+
+#: inc/admin/metabox/main.php:137
+msgid "Enable Individual Content Width"
+msgstr "Activează lățime conținut individual"
+
+#: inc/admin/metabox/main.php:136
+msgid "Content Width"
+msgstr "Lățime conținut"
+
+#: header.php:80 inc/compatibility/fse.php:191
+msgid "Skip to content"
+msgstr "Sari la conținut"
+
+#. translators: %s message to upgrade PHP to the latest version
+#: functions.php:36
+msgid "Hey, we've noticed that you're running an outdated version of PHP which is no longer supported. Make sure your site is fast and secure, by %1$s. Neve's minimal requirement is PHP%2$s."
+msgstr "Hei, am observat că rulezi o versiune învechită a PHP care nu mai este suportată. Asigură-te că site-ul tău este rapid și sigur, prin %1$s. Cerința minimă a temei Neve este PHP %2$s."
+
+#. Author URI of the theme
+#: style.css
+#, gp-priority: low
+msgid "https://themeisle.com"
+msgstr "https://themeisle.com"
+
+#. Author of the theme
+#: style.css
+#, gp-priority: low
+msgid "ThemeIsle"
+msgstr "ThemeIsle"
+
+#. Theme URI of the theme
+#: style.css
+#, gp-priority: low
+msgid "https://themeisle.com/themes/neve/"
+msgstr "https://themeisle.com/themes/neve/"

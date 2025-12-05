@@ -1,0 +1,57 @@
+{
+  "version": "0.1.0",
+  "timestamp": "2025-11-25T12:51:36.595Z",
+  "assets": {
+    "textures": {},
+    "audio": {
+      "/**\n * CSS++ Example: Enhanced Button Styles\n *\n * Demonstrates multisensory button design using CSS++\n */\n\n/* Imported: modules/geometry */\n/* Imported: modules/lighting */\n/* Imported: modules/texture */\n/* Imported: modules/audio */\n\n/* ============================================\n   METALLIC BUTTON\n   ============================================ */\n\n.btn-metal": {
+        "/* Audio */\n  hover-sfx": "chime(440Hz, decay",
+        "click-sfx": "click(mechanical)"
+      },
+      "/* ============================================\n   GLASS BUTTON\n   ============================================ */\n\n.btn-glass": {
+        "/* Audio */\n  hover-sfx": "chime(880Hz, decay",
+        "click-sfx": "pop(0.4)"
+      },
+      "/* ============================================\n   FABRIC BUTTON (Safe Room Theme)\n   ============================================ */\n\n.btn-cloth": {
+        "/* Audio */\n  cursor-move-sfx": "cloth-rub(quiet)",
+        "hover-sfx": "none",
+        "click-sfx": "click(soft)"
+      },
+      "/* ============================================\n   NEON BUTTON (Cyberpunk Theme)\n   ============================================ */\n\n.btn-neon": {
+        "/* Audio */\n  hover-sfx": "whoosh(up)",
+        "click-sfx": "pop(0.6)"
+      },
+      "/* ============================================\n   GOLD COIN BUTTON (Vintage Theme)\n   ============================================ */\n\n.btn-coin": {
+        "/* Audio */\n  click-sfx": "coin-drop",
+        "hover-sfx": "chime(523Hz, decay"
+      },
+      "/* ============================================\n   RETRO PIXEL BUTTON\n   ============================================ */\n\n.btn-pixel": {
+        "/* Audio */\n  click-sfx": "synthesized"
+      },
+      "/* ============================================\n   WOOD BUTTON (Organic Theme)\n   ============================================ */\n\n.btn-wood": {
+        "/* Audio */\n  click-sfx": "wood-knock",
+        "hover-sfx": "none"
+      },
+      "/* ============================================\n   INTERACTIVE SURFACE BUTTON\n   ============================================ */\n\n.btn-reactive": {
+        "/* Audio */\n  hover-sfx": "chime(440Hz)",
+        "cursor-move-sfx": "metal-scrape(0.1)"
+      },
+      ".btn-group[data-theme=\"safe-room\"] .btn": {
+        "hover-sfx": "gear(light)",
+        "click-sfx": "switch(mechanical)",
+        "ambient-sound": "quiet-room(0.05)"
+      },
+      "}\n\n@media (prefers-reduced-motion: reduce)": {
+        "/* Disable animations and sounds */\n  * {\n    hover-sfx": "none",
+        "click-sfx": "none"
+      }
+    },
+    "materials": {},
+    "geometries": {}
+  },
+  "metadata": {
+    "rules": 17,
+    "errors": 0,
+    "warnings": 0
+  }
+}

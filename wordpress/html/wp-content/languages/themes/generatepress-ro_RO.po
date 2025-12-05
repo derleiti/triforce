@@ -1,0 +1,1342 @@
+# Translation of Themes - GeneratePress in Romanian
+# This file is distributed under the same license as the Themes - GeneratePress package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-04-02 14:37:31+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n == 0 || n % 100 >= 2 && n % 100 <= 19) ? 1 : 2);\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: ro\n"
+"Project-Id-Version: Themes - GeneratePress\n"
+
+#. Description of the theme
+#: style.css
+#, gp-priority: high
+msgid "GeneratePress is a lightweight WordPress theme built with a focus on speed and usability. Performance is important to us, which is why a fresh GeneratePress install adds less than 10kb (gzipped) to your page size. We take full advantage of the block editor (Gutenberg), which gives you more control over creating your content. If you use page builders, GeneratePress is the right theme for you. It is completely compatible with all major page builders, including Beaver Builder and Elementor. Thanks to our emphasis on WordPress coding standards, we can boast full compatibility with all well-coded plugins, including WooCommerce. GeneratePress is fully responsive, uses valid HTML/CSS, and is translated into over 25 languages by our amazing community of users. A few of our many features include 60+ color controls, powerful dynamic typography, 5 navigation locations, 5 sidebar layouts, dropdown menus (click or hover), and 9 widget areas. Learn more and check out our powerful premium version at https://generatepress.com"
+msgstr "GeneratePress este o temă WordPress eficientă, construită cu accent pe viteză și ușurință în utilizare. Performanța este importantă pentru noi, de aceea o instalare nouă a GeneratePress adaugă dimensiunii paginii mai puțin de 10kb (comprimată gzipped). Profităm din plin de noul editor de blocuri (Gutenberg), care îți oferă mai mult control asupra creării conținutului. Dacă folosești constructori de pagină, GeneratePress este tema potrivită pentru tine. Este compatibilă cu toți principalii constructori de pagină, inclusiv Beaver Builder și Elementor. Datorită accentului pus pe standardele WordPress pentru cod, ne putem mândri că tema este perfect compatibilă cu toate modulele bine create, inclusiv WooCommerce. GeneratePress este complet responsivă, folosește HTML/CSS valid și este tradusă în peste 25 de limbi de către o comunitate uimitoare de utilizatori. Printre numeroasele noastre funcționalități se numără peste 60 de controale pentru culori, tipografice elegante, cinci locații pentru navigare, cinci aranjamente ale barei laterale, meniuri derulante (la clic sau la trecerea peste) și 9 zone pentru piese. Află mai multe și vezi versiunea noastră premium la https://generatepress.com"
+
+#. Theme Name of the theme
+#: style.css inc/class-dashboard.php:59 inc/class-dashboard.php:60
+#: inc/dashboard.php:20 inc/structure/footer.php:84
+#, gp-priority: high
+msgid "GeneratePress"
+msgstr "GeneratePress"
+
+#. translators: Aria-label describing the read more button
+#: inc/structure/post-meta.php:595
+msgctxt "read more about post title"
+msgid "Read more about %s"
+msgstr "Citește mai multe despre %s"
+
+#: inc/structure/search-modal.php:40
+msgid "Open search"
+msgstr "Deschide căutarea"
+
+#: inc/customizer/fields/search-modal.php:85
+msgid "Overlay Background"
+msgstr "Fundal suprapunere"
+
+#: inc/customizer/fields/search-modal.php:62
+msgid "Field Text"
+msgstr "Text câmp"
+
+#: inc/customizer/fields/search-modal.php:39
+msgid "Field Background"
+msgstr "Fundal câmp"
+
+#: inc/customizer/fields/search-modal.php:16
+msgid "Search Modal"
+msgstr "Fereastră modală de căutare"
+
+#: inc/customizer.php:1032
+msgid "Enable navigation search modal"
+msgstr "Activează fereastra modală de căutare în navigare"
+
+#: inc/class-html-attributes.php:316
+msgid "Posts"
+msgstr "Articole"
+
+#: inc/defaults.php:106
+msgid "Accent"
+msgstr "Accent"
+
+#. translators: Base number
+#: inc/defaults.php:95 inc/defaults.php:101
+msgid "Base %s"
+msgstr "Bază %s"
+
+#: inc/defaults.php:89 assets/dist/customizer.js:1
+msgid "Base"
+msgstr "Bază"
+
+#. translators: Contrast number
+#: inc/defaults.php:78 inc/defaults.php:84
+msgid "Contrast %s"
+msgstr "Contrast %s"
+
+#: inc/defaults.php:72
+msgid "Contrast"
+msgstr "Contrast"
+
+#: inc/customizer/fields/sidebar-widgets.php:16
+msgid "Sidebar Widgets"
+msgstr "Piese în bara laterală"
+
+#: inc/customizer/fields/primary-navigation.php:153
+msgid "Sub-Menu Text Current"
+msgstr "Text curent sub-meniu"
+
+#: inc/customizer/fields/primary-navigation.php:145
+msgid "Sub-Menu Text Hover"
+msgstr "Trecere peste text sub-meniu"
+
+#: inc/customizer/fields/primary-navigation.php:137
+msgid "Sub-Menu Text"
+msgstr "Text sub-meniu"
+
+#: inc/customizer/fields/primary-navigation.php:120
+msgid "Sub-Menu Background Current"
+msgstr "Fundal curent sub-meniu"
+
+#: inc/customizer/fields/primary-navigation.php:112
+msgid "Sub-Menu Background Hover"
+msgstr "Trecere peste fundal sub-meniu"
+
+#: inc/customizer/fields/primary-navigation.php:104
+msgid "Sub-Menu Background"
+msgstr "Fundal sub-meniu"
+
+#: inc/customizer/fields/primary-navigation.php:87
+msgid "Navigation Text Current"
+msgstr "Text curent pentru navigare"
+
+#: inc/customizer/fields/primary-navigation.php:79
+msgid "Navigation Text Hover"
+msgstr "Trecere peste text pentru navigare"
+
+#: inc/customizer/fields/primary-navigation.php:71
+msgid "Navigation Text"
+msgstr "Text pentru navigare"
+
+#: inc/customizer/fields/primary-navigation.php:55
+#: inc/customizer/fields/primary-navigation.php:88
+#: inc/customizer/fields/primary-navigation.php:121
+#: inc/customizer/fields/primary-navigation.php:154
+msgid "Choose Current Color"
+msgstr "Alege culoarea curentă"
+
+#: inc/customizer/fields/primary-navigation.php:54
+msgid "Navigation Background Current"
+msgstr "Fundal curent de navigare"
+
+#: inc/customizer/fields/primary-navigation.php:46
+msgid "Navigation Background Hover"
+msgstr "Trecere peste fundal de navigare"
+
+#: inc/customizer/fields/primary-navigation.php:38
+msgid "Navigation Background"
+msgstr "Fundal de navigare"
+
+#: inc/customizer/fields/header.php:168
+msgid "Tagline"
+msgstr "Slogan"
+
+#: inc/customizer/fields/header.php:145 assets/dist/customizer.js:1
+msgid "Site Title"
+msgstr "Titlu site"
+
+#: inc/customizer/fields/forms.php:184
+msgid "Border"
+msgstr "Chenar"
+
+#: inc/customizer/fields/forms.php:16
+msgid "Forms"
+msgstr "Formulare"
+
+#: inc/customizer/fields/footer-widgets.php:149
+#: inc/customizer/fields/sidebar-widgets.php:149
+msgid "Widget Title"
+msgstr "Titlu piesă"
+
+#: inc/customizer/fields/content.php:344
+msgid "Heading 6 (H6) Color"
+msgstr "Culoare subtitlu 6 (H6)"
+
+#: inc/customizer/fields/content.php:339
+msgid "Heading 5 (H5) Color"
+msgstr "Culoare subtitlu 5 (H5)"
+
+#: inc/customizer/fields/content.php:334
+msgid "Heading 4 (H4) Color"
+msgstr "Culoare subtitlu 4 (H4)"
+
+#: inc/customizer/fields/content.php:329
+msgid "Heading 3 (H3) Color"
+msgstr "Culoare subtitlu 3 (H3)"
+
+#: inc/customizer/fields/content.php:324
+msgid "Heading 2 (H2) Color"
+msgstr "Culoare subtitlu 2 (H2)"
+
+#: inc/customizer/fields/content.php:319
+msgid "Heading 1 (H1) Color"
+msgstr "Culoare subtitlu 1 (H1)"
+
+#: inc/customizer/fields/content.php:185
+msgid "Archive Content Title"
+msgstr "Titlu conținut arhivă"
+
+#: inc/customizer/fields/buttons.php:16 assets/dist/customizer.js:1
+msgid "Buttons"
+msgstr "Butoane"
+
+#: inc/customizer/fields/body.php:119 inc/customizer/fields/content.php:121
+#: inc/customizer/fields/footer-bar.php:123
+#: inc/customizer/fields/footer-widgets.php:123
+#: inc/customizer/fields/header.php:119
+#: inc/customizer/fields/sidebar-widgets.php:123
+#: inc/customizer/fields/top-bar.php:123
+msgid "Link Hover"
+msgstr "Trece peste legătură"
+
+#: inc/customizer/fields/body.php:94 inc/customizer/fields/content.php:96
+#: inc/customizer/fields/footer-bar.php:98
+#: inc/customizer/fields/footer-widgets.php:98
+#: inc/customizer/fields/header.php:94
+#: inc/customizer/fields/sidebar-widgets.php:98
+#: inc/customizer/fields/top-bar.php:97
+msgid "Link"
+msgstr "Legătură"
+
+#: inc/customizer/fields/back-to-top.php:147
+#: inc/customizer/fields/buttons.php:148
+msgid "Text Hover"
+msgstr "Trecere peste text"
+
+#: inc/customizer/fields/back-to-top.php:86
+#: inc/customizer/fields/back-to-top.php:152 inc/customizer/fields/body.php:123
+#: inc/customizer/fields/buttons.php:87 inc/customizer/fields/buttons.php:153
+#: inc/customizer/fields/content.php:125 inc/customizer/fields/content.php:214
+#: inc/customizer/fields/content.php:303
+#: inc/customizer/fields/footer-bar.php:128
+#: inc/customizer/fields/footer-widgets.php:128
+#: inc/customizer/fields/header.php:124
+#: inc/customizer/fields/primary-navigation.php:47
+#: inc/customizer/fields/primary-navigation.php:80
+#: inc/customizer/fields/primary-navigation.php:113
+#: inc/customizer/fields/primary-navigation.php:146
+#: inc/customizer/fields/sidebar-widgets.php:128
+#: inc/customizer/fields/top-bar.php:128
+msgid "Choose Hover Color"
+msgstr "Alege culoarea de trecere peste"
+
+#: inc/customizer/fields/back-to-top.php:60
+#: inc/customizer/fields/back-to-top.php:127 inc/customizer/fields/body.php:98
+#: inc/customizer/fields/buttons.php:61 inc/customizer/fields/buttons.php:128
+#: inc/customizer/fields/content.php:100 inc/customizer/fields/content.php:189
+#: inc/customizer/fields/content.php:278
+#: inc/customizer/fields/footer-bar.php:38
+#: inc/customizer/fields/footer-bar.php:63
+#: inc/customizer/fields/footer-bar.php:103
+#: inc/customizer/fields/footer-widgets.php:38
+#: inc/customizer/fields/footer-widgets.php:63
+#: inc/customizer/fields/footer-widgets.php:103
+#: inc/customizer/fields/forms.php:56 inc/customizer/fields/forms.php:123
+#: inc/customizer/fields/forms.php:190 inc/customizer/fields/header.php:99
+#: inc/customizer/fields/primary-navigation.php:39
+#: inc/customizer/fields/primary-navigation.php:72
+#: inc/customizer/fields/primary-navigation.php:105
+#: inc/customizer/fields/primary-navigation.php:138
+#: inc/customizer/fields/sidebar-widgets.php:38
+#: inc/customizer/fields/sidebar-widgets.php:63
+#: inc/customizer/fields/sidebar-widgets.php:103
+#: inc/customizer/fields/top-bar.php:102
+msgid "Choose Initial Color"
+msgstr "Alege culoarea inițială"
+
+#: inc/customizer/fields/back-to-top.php:16
+msgid "Back to Top"
+msgstr "Înapoi sus"
+
+#. translators: Learn more here
+#: inc/customizer.php:1564
+msgid "Switching to our dynamic typography system can change how your fonts display. Review your website thoroughly before publishing this change. Learn more %s."
+msgstr "Dacă folosești sistemul nostru dinamic pentru tipografice, se poate schimba modul în care fonturile tale sunt afișate. Examinează site-ul cu mare atenție înainte de a face această modificare. Află mai multe %s."
+
+#: inc/customizer.php:1561
+msgid "Use dynamic typography system"
+msgstr "Folosește sistemul dinamic pentru tipografice"
+
+#: inc/customizer.php:1490
+msgid "Never"
+msgstr "Niciodată"
+
+#: inc/customizer.php:1489
+msgid "Not on hover"
+msgstr "Nu la trecere peste"
+
+#: inc/customizer.php:1488
+msgid "On hover"
+msgstr "La trecere peste"
+
+#: inc/customizer.php:1487
+msgid "Always"
+msgstr "Mereu"
+
+#: inc/customizer.php:1484
+msgid "Add underlines to your links in your main content areas."
+msgstr "Subliniază legăturile în principalele zone cu conținut."
+
+#: inc/customizer.php:1483
+msgid "Underline Links"
+msgstr "Subliniază legăturile"
+
+#: inc/customizer.php:489
+msgid "Configure"
+msgstr "Configurează"
+
+#: inc/customizer.php:424
+msgid "Typography Manager"
+msgstr "Manager de tipografice"
+
+#: inc/customizer.php:402
+msgid "Optional"
+msgstr "Opțional"
+
+#: inc/customizer.php:401
+msgid "Fallback"
+msgstr "Alternativă"
+
+#: inc/customizer.php:400
+msgid "Swap"
+msgstr "Schimbă"
+
+#: inc/customizer.php:399
+msgid "Block"
+msgstr "Bloc"
+
+#: inc/customizer.php:398
+msgid "Auto"
+msgstr "Automat"
+
+#: inc/customizer.php:394
+msgid "Learn about font-display"
+msgstr "Învață despre afișarea fonturilor"
+
+#: inc/customizer.php:390
+msgid "Google font-display"
+msgstr "Afișarea fonturilor Google"
+
+#: inc/customizer.php:375
+msgid "Choose Font"
+msgstr "Alege un font"
+
+#: inc/customizer.php:330
+msgid "Font Manager"
+msgstr "Manager de fonturi"
+
+#: inc/customizer.php:281 assets/dist/customizer.js:1
+msgid "Choose Color"
+msgstr "Alege o culoare"
+
+#: inc/customizer.php:244
+msgid "Global Colors"
+msgstr "Culori globale"
+
+#: inc/class-rest.php:96 assets/dist/dashboard.js:1
+msgid "Settings reset."
+msgstr "Am resetat setările."
+
+#: inc/class-html-attributes.php:461
+msgid "Entry meta"
+msgstr "Metadate intrare"
+
+#: inc/class-html-attributes.php:448
+msgid "Comment meta"
+msgstr "Metadate comentarii"
+
+#: inc/class-html-attributes.php:319
+msgid "Archive Page"
+msgstr "Pagină arhivă"
+
+#: inc/class-html-attributes.php:302
+msgid "Page"
+msgstr "Pagină"
+
+#: inc/class-html-attributes.php:244
+msgid "Mobile Toggle"
+msgstr "Comutare la mobil"
+
+#: inc/class-html-attributes.php:214
+msgid "Primary"
+msgstr "Principal"
+
+#: inc/class-html-attributes.php:171 inc/class-html-attributes.php:257
+msgid "Site"
+msgstr "Site"
+
+#: inc/class-dashboard.php:123
+msgid "Dashboard"
+msgstr "Panou control"
+
+#: inc/meta-box.php:176
+msgid "Choose your content container type."
+msgstr "Alege tipul de container pentru conținut."
+
+#: inc/meta-box.php:105 inc/meta-box.php:173
+msgid "Content Container"
+msgstr "Container conținut"
+
+#: inc/general.php:83 inc/general.php:99
+msgid "Close Sub-Menu"
+msgstr "Închide sub-meniul"
+
+#: inc/general.php:82 inc/general.php:98 inc/structure/navigation.php:377
+#: inc/structure/navigation.php:459
+msgid "Open Sub-Menu"
+msgstr "Deschide sub-meniul"
+
+#: inc/structure/footer.php:83
+msgctxt "GeneratePress"
+msgid "Built with"
+msgstr "Construit cu"
+
+#: inc/structure/post-meta.php:112
+msgctxt "prepends the pagination page number for screen readers"
+msgid "Page"
+msgstr "Pagina"
+
+#. translators: right arrow
+#: inc/structure/post-meta.php:106
+msgid "Next %s"
+msgstr "Următor %s"
+
+#. translators: left arrow
+#: inc/structure/post-meta.php:98
+msgid "%s Previous"
+msgstr "%s Anterior"
+
+#: inc/customizer.php:1439 inc/customizer.php:1565
+msgid "here"
+msgstr "aici"
+
+#. translators: Learn more here
+#: inc/customizer.php:1438
+msgid "Switching your structure can change how your website displays. Review your website thoroughly before publishing this change, or use a staging site to review the potential changes. Learn more %s."
+msgstr "Schimbarea structurii poate altera modul în care web site-ul tău este afișat. Examinează cu atenție site-ul web înainte de a publica această modificare sau folosește un site pentru instanțiere ca să examinezi potențialele modificări. Află mai multe %s."
+
+#: inc/customizer.php:1435
+msgid "Caution:"
+msgstr "Atenție:"
+
+#: inc/customizer.php:1431
+msgid "Floats"
+msgstr "Plutește"
+
+#: inc/customizer.php:1430
+msgid "Flexbox"
+msgstr "Flexbox"
+
+#: inc/customizer.php:1427
+msgid "Structure"
+msgstr "Structură"
+
+#: inc/customizer.php:1345
+msgid "Full Content"
+msgstr "Conținut întreg"
+
+#: inc/customizer.php:666
+msgid "Navigation After"
+msgstr "Navigare după"
+
+#: inc/customizer.php:665
+msgid "Navigation Before"
+msgstr "Navigare înainte"
+
+#: inc/customizer.php:664
+msgid "Classic"
+msgstr "Clasic"
+
+#: inc/general.php:118
+msgid "Close Search Bar"
+msgstr "Închide bara de căutare"
+
+#: inc/general.php:117 inc/structure/navigation.php:194
+#: inc/structure/navigation.php:553 inc/structure/navigation.php:594
+#: inc/structure/navigation.php:635
+msgid "Open Search Bar"
+msgstr "Deschide bara de căutare"
+
+#: inc/customizer.php:1510
+msgid "Reduce the number of CSS file requests and use a lite version of our grid system."
+msgstr "Reduce numărul de cereri de fișiere CSS și folosește o versiune mai ușoară a sistemului nostru grilă."
+
+#: inc/customizer.php:1509
+msgid "Combine CSS"
+msgstr "Combină CSS-ul"
+
+#: inc/customizer.php:1464
+msgid "Font"
+msgstr "Font"
+
+#: inc/customizer.php:1463
+msgid "SVG"
+msgstr "SVG"
+
+#: inc/customizer.php:1460
+msgid "Icon Type"
+msgstr "Tip de icon"
+
+#: inc/customizer.php:1082 inc/customizer/fields/back-to-top.php:122
+#: inc/customizer/fields/body.php:55 inc/customizer/fields/buttons.php:123
+#: inc/customizer/fields/content.php:58 inc/customizer/fields/footer-bar.php:58
+#: inc/customizer/fields/footer-widgets.php:58
+#: inc/customizer/fields/forms.php:118 inc/customizer/fields/header.php:56
+#: inc/customizer/fields/primary-navigation.php:207
+#: inc/customizer/fields/sidebar-widgets.php:58
+#: inc/customizer/fields/top-bar.php:58
+msgid "Text"
+msgstr "Text"
+
+#: inc/customizer.php:1081
+msgid "Boxes"
+msgstr "Casete"
+
+#: inc/customizer.php:1078
+msgid "Container Alignment"
+msgstr "Aliniere container"
+
+#: inc/customizer.php:226
+msgid "Place logo next to title"
+msgstr "Plasează logoul lângă titlu"
+
+#: inc/typography.php:659 assets/dist/customizer.js:1
+msgid "Heading 3 (H3)"
+msgstr "Subtitlu 3 (H3)"
+
+#: inc/typography.php:512 assets/dist/customizer.js:1
+msgid "Heading 2 (H2)"
+msgstr "Subtitlu 2 (H2)"
+
+#: inc/typography.php:365 assets/dist/customizer.js:1
+msgid "Heading 1 (H1)"
+msgstr "Subtitlu 1 (H1)"
+
+#: inc/dashboard.php:261
+msgid "Reset Settings"
+msgstr "Resetează setările"
+
+#: inc/dashboard.php:247
+msgid "Visit documentation &rarr;"
+msgstr "Vezi documentația &rarr;"
+
+#: inc/dashboard.php:246
+msgid "Want to learn more about the theme? Check out our extensive documentation."
+msgstr "Vrei să afli mai multe despre temă? Consultă documentația noastră amplă."
+
+#: inc/dashboard.php:231 assets/dist/dashboard.js:1
+msgid "Start Customizing"
+msgstr "Începe personalizarea"
+
+#: inc/dashboard.php:221
+msgid "All Options"
+msgstr "Toate opțiunile"
+
+#: inc/dashboard.php:216 assets/dist/dashboard.js:1
+msgid "Layout Options"
+msgstr "Opțiuni aranjament"
+
+#: inc/dashboard.php:211
+msgid "Customize Colors"
+msgstr "Personalizează culorile"
+
+#: inc/dashboard.php:206
+msgid "Customize Fonts"
+msgstr "Personalizează fonturile"
+
+#: inc/dashboard.php:201
+msgid "Upload Logo"
+msgstr "Încarcă logo"
+
+#: inc/customizer.php:981
+msgid "Dropdown Direction"
+msgstr "Direcție listă derulantă"
+
+#: inc/customizer.php:924
+msgid "The width when the navigation ceases to float and drops below your logo."
+msgstr "Lățimea la care navigarea nu mai plutește și cade sub logoul tău."
+
+#: inc/customizer.php:923
+msgid "Navigation Drop Point"
+msgstr "Punctul de cădere al navigării"
+
+#: inc/customizer.php:669
+msgid "Navigation Left"
+msgstr "Navigare în stânga"
+
+#: inc/customizer.php:668
+msgid "Navigation After - Centered"
+msgstr "Navigare după - centrată"
+
+#: inc/customizer.php:667
+msgid "Navigation Before - Centered"
+msgstr "Navigare înainte - centrată"
+
+#: inc/customizer.php:659
+msgid "Header Presets"
+msgstr "Presetări antet"
+
+#: inc/customizer.php:662
+msgid "Current"
+msgstr "Actuală"
+
+#: inc/customizer.php:194
+msgid "Logo Width"
+msgstr "Lățime logo"
+
+#: inc/structure/navigation.php:665
+msgid "Mobile Menu"
+msgstr "Meniu pentru mobil"
+
+#: inc/meta-box.php:196
+msgid "Premium module available"
+msgstr "Extensie premium disponibilă"
+
+#: inc/dashboard.php:263
+msgid "Deleting your settings can not be undone."
+msgstr "Ștergerea setărilor nu poate fi anulată."
+
+#: inc/dashboard.php:157
+msgid "Premium Modules"
+msgstr "Extensii premium"
+
+#: inc/customizer.php:1530
+msgid "Cache CSS generated by your options to boost performance."
+msgstr "Memorează în cache CSS-ul generat de opțiunile tale pentru a îmbunătăți performanța."
+
+#: inc/customizer.php:1529
+msgid "Cache dynamic CSS"
+msgstr "Memorează în cache CSS-ul dinamic"
+
+#: inc/customizer.php:1394
+msgid "Load essential Font Awesome icons instead of the full library."
+msgstr "Încarcă doar iconurile Font Awesome esențiale în loc de toată biblioteca."
+
+#: inc/customizer.php:1393
+msgid "Load essential icons only"
+msgstr "Încarcă doar iconurile esențiale"
+
+#: inc/customizer.php:1374
+msgid "General"
+msgstr "Generale"
+
+#: inc/customizer.php:1346
+msgid "Excerpt"
+msgstr "Rezumat"
+
+#: inc/customizer.php:1342
+msgid "Content Type"
+msgstr "Tip de conținut"
+
+#: inc/customizer.php:1362 inc/typography.php:747
+msgid "More options are available for this section in our premium version."
+msgstr "Sunt disponibile mai multe opțiuni pentru această secțiune în versiunea noastră premium."
+
+#: inc/customizer.php:171
+msgid "Retina Logo"
+msgstr "Logo retina"
+
+#: inc/customizer.php:86
+msgid "Premium Modules Available"
+msgstr "Sunt disponibile extensii premium"
+
+#: inc/customizer/controls/class-typography-control.php:80
+#: assets/dist/customizer.js:3
+msgid "Variants"
+msgstr "Variante"
+
+#: inc/customizer/controls/class-typography-control.php:73
+#: assets/dist/customizer.js:3
+msgid "System fonts"
+msgstr "Fonturi de sistem"
+
+#: inc/structure/comments.php:156
+msgid "Comment"
+msgstr "Comentariu"
+
+#: inc/customizer/controls/class-range-control.php:71
+#: assets/dist/customizer.js:1
+msgid "Mobile"
+msgstr "Mobil"
+
+#: inc/customizer/controls/class-range-control.php:70
+#: assets/dist/customizer.js:1
+msgid "Tablet"
+msgstr "Tabletă"
+
+#: inc/customizer/controls/class-range-control.php:69
+#: assets/dist/customizer.js:1
+msgid "Desktop"
+msgstr "Desktop"
+
+#: inc/meta-box.php:181
+msgid "Full Width"
+msgstr "Lățime întreagă"
+
+#: inc/customizer.php:623
+msgid "Top Bar Alignment"
+msgstr "Aliniere bara de sus"
+
+#: inc/customizer.php:597
+msgid "Top Bar Inner Width"
+msgstr "Lățime interioară bara de sus"
+
+#: inc/customizer.php:571
+msgid "Top Bar Width"
+msgstr "Lățime bara de sus"
+
+#: inc/customizer.php:551 inc/customizer/fields/top-bar.php:16
+#: inc/general.php:167 assets/dist/customizer.js:1
+msgid "Top Bar"
+msgstr "Bara de sus"
+
+#: inc/customizer.php:1361 inc/dashboard.php:168 inc/typography.php:746
+msgid "Learn more"
+msgstr "Află mai multe"
+
+#: inc/class-dashboard.php:147 inc/dashboard.php:56
+msgid "Documentation"
+msgstr "Documentație"
+
+#: inc/class-dashboard.php:132 inc/dashboard.php:53
+msgid "Premium"
+msgstr "Premium"
+
+#: inc/customizer.php:1283
+msgid "Footer Bar Alignment"
+msgstr "Aliniere bară în subsol"
+
+#: inc/customizer/fields/footer-bar.php:16 inc/general.php:166
+#: assets/dist/customizer.js:1
+msgid "Footer Bar"
+msgstr "Bară subsol"
+
+#: inc/customizer.php:1230
+msgid "Inner Footer Width"
+msgstr "Lățime interioară subsol"
+
+#: inc/customizer.php:842
+msgid "Inner Navigation Width"
+msgstr "Lățime interioară navigare"
+
+#: inc/customizer.php:757
+msgid "Inner Header Width"
+msgstr "Lățime interioară antet"
+
+#: inc/typography.php:297
+msgid "Paragraph margin"
+msgstr "Margine paragraf"
+
+#: inc/typography.php:263 inc/typography.php:444 inc/typography.php:591
+#: inc/typography.php:720
+msgid "Line height"
+msgstr "Înălțime linie"
+
+#: inc/customizer/controls/class-range-control.php:72 inc/dashboard.php:272
+#: assets/dist/dashboard.js:1
+msgid "Reset"
+msgstr "Resetează"
+
+#: inc/customizer.php:1185 assets/dist/customizer.js:1
+msgid "Footer"
+msgstr "Subsol"
+
+#: inc/customizer.php:1092 inc/meta-box.php:90
+msgid "Sidebars"
+msgstr "Bare laterale"
+
+#: inc/customizer.php:797 inc/customizer/fields/primary-navigation.php:23
+#: assets/dist/customizer.js:1
+msgid "Primary Navigation"
+msgstr "Navigare principală"
+
+#: inc/customizer.php:507
+msgid "Container"
+msgstr "Container"
+
+#: inc/structure/footer.php:228
+msgid "Scroll back to top"
+msgstr "Derulează înapoi în sus"
+
+#: inc/customizer.php:1309
+msgid "Back to Top Button"
+msgstr "Buton Înapoi sus"
+
+#: inc/customizer.php:1205
+msgid "Footer Width"
+msgstr "Lățime subsol"
+
+#: inc/customizer.php:961
+msgid "Click - Arrow"
+msgstr "Clic - săgeată"
+
+#: inc/customizer.php:960
+msgid "Click - Menu Item"
+msgstr "Clic - element de meniu"
+
+#: inc/customizer.php:959
+msgid "Hover"
+msgstr "Trecere peste"
+
+#: inc/customizer.php:956
+msgid "Navigation Dropdown"
+msgstr "Listă derulantă de navigare"
+
+#: inc/customizer.php:817
+msgid "Navigation Width"
+msgstr "Lățime navigare"
+
+#: inc/customizer.php:574 inc/customizer.php:600 inc/customizer.php:735
+#: inc/customizer.php:761 inc/customizer.php:820 inc/customizer.php:846
+#: inc/customizer.php:1208 inc/customizer.php:1234
+msgid "Full"
+msgstr "Completă"
+
+#: inc/customizer.php:732
+msgid "Header Width"
+msgstr "Lățime antet"
+
+#. translators: %s: Heart icon
+#: inc/dashboard.php:302
+msgctxt "made with love"
+msgid "Made with %s by Tom Usborne"
+msgstr "Făcută cu %s de Tom Usborne"
+
+#: inc/customizer.php:899
+msgid "Float Left"
+msgstr "Plutește în stânga"
+
+#: inc/class-dashboard.php:140 inc/dashboard.php:55
+msgid "Support"
+msgstr "Suport"
+
+#: inc/customizer/fields/content.php:147 inc/meta-box.php:189
+#: inc/meta-box.php:191
+msgid "Content Title"
+msgstr "Titlu conținut"
+
+#: content-404.php:51
+msgid "It looks like nothing was found at this location. Maybe try searching?"
+msgstr "Se pare că nu am găsit nimic la această locație. Încerci o nouă căutare?"
+
+#: inc/structure/search-modal.php:104 searchform.php:15
+msgctxt "placeholder"
+msgid "Search &hellip;"
+msgstr "Caută..."
+
+#: inc/structure/search-modal.php:102 searchform.php:14 searchform.php:15
+msgctxt "label"
+msgid "Search for:"
+msgstr "Caută după:"
+
+#. translators: 1: Search query name
+#: inc/structure/archives.php:136
+msgid "Search Results for: %s"
+msgstr "Rezultate de căutare pentru: %s"
+
+#: no-results.php:62
+msgid "It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps searching can help."
+msgstr "Se pare că nu putem să găsim ceea ce cauți. Probabil o căutare te poate ajuta."
+
+#: no-results.php:57
+msgid "Sorry, but nothing matched your search terms. Please try again with some different keywords."
+msgstr "Regret, dar nu s-a potrivit nimic cu termenii tăi de căutare. Te rog încearcă din nou cu alte cuvinte cheie."
+
+#. translators: 1: Admin URL
+#: no-results.php:49
+msgid "Ready to publish your first post? <a href=\"%1$s\">Get started here</a>."
+msgstr "Ești gata să-ți publici primul articol? <a href=\"%1$s\">Începe de aici</a>."
+
+#: no-results.php:27
+msgid "Nothing Found"
+msgstr "Nu am găsit nimic"
+
+#: inc/structure/post-meta.php:274
+msgid "% Comments"
+msgstr "% comentarii"
+
+#: inc/structure/post-meta.php:274
+msgid "1 Comment"
+msgstr "Un comentariu"
+
+#: inc/structure/post-meta.php:274
+msgid "Leave a comment"
+msgstr "Lasă un comentariu"
+
+#: inc/structure/post-meta.php:258
+msgctxt "Used before tag names."
+msgid "Tags"
+msgstr "Etichete"
+
+#: inc/structure/post-meta.php:241
+msgctxt "Used before category names."
+msgid "Categories"
+msgstr "Categorii"
+
+#: inc/structure/post-meta.php:233 inc/structure/post-meta.php:250
+msgctxt "Used between list items, there is a space after the comma."
+msgid ", "
+msgstr ", "
+
+#: inc/structure/navigation.php:490
+msgctxt "label"
+msgid "Search"
+msgstr "Căutare"
+
+#: inc/structure/post-meta.php:581
+msgid "Read more"
+msgstr "Citește mai mult"
+
+#. translators: 1: Author name
+#: inc/structure/post-meta.php:222
+msgid "View all posts by %s"
+msgstr "Vezi toate articolele lui %s"
+
+#: inc/structure/post-meta.php:301
+msgid "by"
+msgstr "de"
+
+#: inc/structure/comments.php:91
+msgid "Your comment is awaiting moderation."
+msgstr "Comentariul tău așteaptă să fie moderat."
+
+#. translators: 1: date, 2: time
+#: inc/structure/comments.php:71
+msgctxt "1: date, 2: time"
+msgid "%1$s at %2$s"
+msgstr "%1$s la %2$s"
+
+#: inc/structure/comments.php:28
+msgid "Pingback:"
+msgstr "Pingback:"
+
+#: inc/structure/post-meta.php:85
+msgid "Newer posts"
+msgstr "Articole mai noi"
+
+#: inc/structure/post-meta.php:76
+msgid "Older posts"
+msgstr "Articole mai vechi"
+
+#: inc/structure/post-meta.php:85
+msgid "Next"
+msgstr "Următor"
+
+#: inc/structure/post-meta.php:76
+msgid "Previous"
+msgstr "Anterior"
+
+#: inc/deprecated.php:31
+msgid "Next &rarr;"
+msgstr "Următor &rarr;"
+
+#: inc/deprecated.php:30
+msgid "&larr; Previous"
+msgstr "&larr; Anterior"
+
+#: inc/dashboard.php:373
+msgid "Settings removed."
+msgstr "Am înlăturat setările."
+
+#: inc/dashboard.php:368
+msgid "Import successful."
+msgstr "Importat cu succes."
+
+#: inc/dashboard.php:363
+msgid "Settings saved."
+msgstr "Am salvat setările."
+
+#: inc/customizer/fields/back-to-top.php:54 inc/customizer/fields/body.php:32
+#: inc/customizer/fields/buttons.php:55 inc/customizer/fields/content.php:34
+#: inc/customizer/fields/footer-bar.php:32
+#: inc/customizer/fields/footer-widgets.php:32
+#: inc/customizer/fields/forms.php:50 inc/customizer/fields/header.php:32
+#: inc/customizer/fields/primary-navigation.php:189
+#: inc/customizer/fields/sidebar-widgets.php:32
+#: inc/customizer/fields/top-bar.php:32
+msgid "Background"
+msgstr "Fundal"
+
+#: inc/meta-box.php:100 inc/meta-box.php:186
+msgid "Disable Elements"
+msgstr "Dezactivează elementele"
+
+#: inc/dashboard.php:268
+msgid "Warning: This will delete your settings."
+msgstr "Avertizare: asta îți va șterge setările."
+
+#: inc/dashboard.php:93
+msgid "Customize"
+msgstr "Personalizează"
+
+#: inc/structure/search-modal.php:105 searchform.php:21 searchform.php:27
+msgctxt "submit button"
+msgid "Search"
+msgstr "Caută"
+
+#: inc/structure/header.php:379 inc/structure/header.php:380
+msgid "Skip to content"
+msgstr "Sari la conținut"
+
+#: inc/structure/navigation.php:50 inc/structure/navigation.php:60
+#: inc/structure/navigation.php:139 inc/structure/navigation.php:155
+msgid "Menu"
+msgstr "Meniu"
+
+#: inc/meta-box.php:168
+msgid "5 Widgets"
+msgstr "5 piese"
+
+#: inc/meta-box.php:167
+msgid "4 Widgets"
+msgstr "4 piese"
+
+#: inc/meta-box.php:166
+msgid "3 Widgets"
+msgstr "3 piese"
+
+#: inc/meta-box.php:165
+msgid "2 Widgets"
+msgstr "2 piese"
+
+#: inc/meta-box.php:164
+msgid "1 Widgets"
+msgstr "O piesă"
+
+#: inc/meta-box.php:163
+msgid "0 Widgets"
+msgstr "Nicio piesă"
+
+#: inc/meta-box.php:152
+msgid "Both Sidebars on Right"
+msgstr "Ambele bare laterale în dreapta"
+
+#: inc/meta-box.php:151
+msgid "Both Sidebars on Left"
+msgstr "Ambele bare laterale în stânga"
+
+#: inc/meta-box.php:150
+msgid "Both Sidebars"
+msgstr "Ambele bare laterale"
+
+#: inc/meta-box.php:149
+msgid "No Sidebars"
+msgstr "Fără bare laterale"
+
+#: inc/customizer/fields/content.php:16 assets/dist/customizer.js:1
+msgid "Content"
+msgstr "Conținut"
+
+#: inc/customizer.php:663 inc/meta-box.php:146 inc/meta-box.php:162
+#: inc/meta-box.php:180 assets/dist/customizer.js:1 assets/dist/customizer.js:3
+msgid "Default"
+msgstr "Implicit"
+
+#: inc/customizer.php:1323
+msgid "Blog"
+msgstr "Blog"
+
+#: inc/customizer.php:1254 inc/customizer/fields/footer-widgets.php:16
+#: inc/meta-box.php:95 inc/meta-box.php:159
+msgid "Footer Widgets"
+msgstr "Piese în subsol"
+
+#: inc/customizer.php:1167
+msgid "Single Post Sidebar Layout"
+msgstr "Aranjament bară laterală pentru articole singulare"
+
+#: inc/customizer.php:1139
+msgid "Blog Sidebar Layout"
+msgstr "Aranjament bară laterală blog"
+
+#: inc/customizer.php:1119 inc/customizer.php:1147 inc/customizer.php:1175
+msgid "Content / Sidebar / Sidebar"
+msgstr "Conținut/bară laterală/bară laterală"
+
+#: inc/customizer.php:1118 inc/customizer.php:1146 inc/customizer.php:1174
+msgid "Sidebar / Sidebar / Content"
+msgstr "Bară laterală/bară laterală/conținut"
+
+#: inc/customizer.php:1117 inc/customizer.php:1145 inc/customizer.php:1173
+msgid "Sidebar / Content / Sidebar"
+msgstr "Bară laterală/conținut/bară laterală"
+
+#: inc/customizer.php:1116 inc/customizer.php:1144 inc/customizer.php:1172
+msgid "Content (no sidebars)"
+msgstr "Conținut (fără bare laterale)"
+
+#: inc/customizer.php:1115 inc/customizer.php:1143 inc/customizer.php:1171
+msgid "Content / Sidebar"
+msgstr "Conținut/bară laterală"
+
+#: inc/customizer.php:1114 inc/customizer.php:1142 inc/customizer.php:1170
+msgid "Sidebar / Content"
+msgstr "Bară laterală/conținut"
+
+#: inc/customizer.php:1111 inc/meta-box.php:143
+msgid "Sidebar Layout"
+msgstr "Aranjament bară laterală"
+
+#: inc/customizer.php:1058
+msgid "One Container"
+msgstr "Un container"
+
+#: inc/customizer.php:1057
+msgid "Separate Containers"
+msgstr "Containere separate"
+
+#: inc/customizer.php:1054
+msgid "Content Layout"
+msgstr "Aranjament conținut"
+
+#: inc/customizer.php:1009 inc/customizer.php:1313
+msgid "Disable"
+msgstr "Dezactivează"
+
+#: inc/customizer.php:1008 inc/customizer.php:1312
+msgid "Enable"
+msgstr "Activează"
+
+#: inc/customizer.php:1005 inc/customizer/fields/primary-navigation.php:166
+msgid "Navigation Search"
+msgstr "Căutare navigare"
+
+#: inc/customizer.php:867
+msgid "Navigation Alignment"
+msgstr "Aliniere navigare"
+
+#: inc/customizer.php:902
+msgid "No Navigation"
+msgstr "Fără navigare"
+
+#: inc/customizer.php:898
+msgid "Float Right"
+msgstr "Plutește în dreapta"
+
+#: inc/customizer.php:897
+msgid "Above Header"
+msgstr "Deasupra antetului"
+
+#: inc/customizer.php:896
+msgid "Below Header"
+msgstr "Sub antet"
+
+#: inc/customizer.php:893
+msgid "Navigation Location"
+msgstr "Poziție navigare"
+
+#: inc/customizer.php:628 inc/customizer.php:787 inc/customizer.php:872
+#: inc/customizer.php:984 inc/customizer.php:1288
+msgid "Right"
+msgstr "Dreapta"
+
+#: inc/customizer.php:627 inc/customizer.php:786 inc/customizer.php:871
+#: inc/customizer.php:1287
+msgid "Center"
+msgstr "Centru"
+
+#: inc/customizer.php:626 inc/customizer.php:785 inc/customizer.php:870
+#: inc/customizer.php:985 inc/customizer.php:1286
+msgid "Left"
+msgstr "Stânga"
+
+#: inc/customizer.php:782
+msgid "Header Alignment"
+msgstr "Aliniere antet"
+
+#: inc/customizer.php:575 inc/customizer.php:601 inc/customizer.php:736
+#: inc/customizer.php:760 inc/customizer.php:821 inc/customizer.php:845
+#: inc/customizer.php:1209 inc/customizer.php:1233 inc/meta-box.php:182
+msgid "Contained"
+msgstr "Încasetat"
+
+#: inc/customizer.php:529
+msgid "Container Width"
+msgstr "Lățime container"
+
+#: inc/customizer.php:499 inc/meta-box.php:62
+msgid "Layout"
+msgstr "Aranjament"
+
+#: inc/customizer/fields/body.php:146
+msgid "Link Color Visited"
+msgstr "Culoare legătură vizitată"
+
+#: inc/customizer/fields/back-to-top.php:80
+#: inc/customizer/fields/buttons.php:81
+msgid "Background Hover"
+msgstr "Trecere peste fundal"
+
+#: inc/customizer.php:235
+msgid "Colors"
+msgstr "Culori"
+
+#: inc/customizer.php:149
+msgid "Logo"
+msgstr "Logo"
+
+#: inc/customizer.php:128
+msgid "Hide site tagline"
+msgstr "Ascunde sloganul site-ului"
+
+#: inc/customizer.php:109
+msgid "Hide site title"
+msgstr "Ascunde titlul site-ului"
+
+#: inc/typography.php:229 inc/typography.php:403 inc/typography.php:550
+#: inc/typography.php:687 assets/dist/customizer.js:3
+msgid "Font size"
+msgstr "Dimensiune font"
+
+#: inc/customizer/controls/class-typography-control.php:78
+msgid "Text transform"
+msgstr "Transformare text"
+
+#: inc/customizer/controls/class-typography-control.php:77
+msgid "Font weight"
+msgstr "Grosime font"
+
+#: inc/customizer/fields/body.php:16 inc/typography.php:199
+#: assets/dist/customizer.js:1
+msgid "Body"
+msgstr "Corp"
+
+#: inc/customizer.php:314 inc/typography.php:135
+msgid "Typography"
+msgstr "Tipografice"
+
+#: inc/customizer/controls/class-deprecated.php:72
+#: inc/customizer/controls/class-typography-control.php:76
+msgid "Font family"
+msgstr "Familie de fonturi"
+
+#: inc/customizer/controls/class-deprecated.php:71
+#: inc/customizer/controls/class-typography-control.php:74
+msgid "Google fonts"
+msgstr "Google Fonts"
+
+#: inc/customizer/controls/class-deprecated.php:70
+msgid "Default fonts"
+msgstr "Fonturi implicite"
+
+#: inc/customizer.php:639 inc/customizer/fields/header.php:16
+#: inc/general.php:160 assets/dist/customizer.js:1
+msgid "Header"
+msgstr "Antet"
+
+#: inc/customizer.php:900 inc/general.php:159 inc/meta-box.php:148
+msgid "Left Sidebar"
+msgstr "Bară laterală stânga"
+
+#: inc/customizer.php:901 inc/general.php:158 inc/meta-box.php:147
+msgid "Right Sidebar"
+msgstr "Bară laterală dreapta"
+
+#: functions.php:58
+msgid "Primary Menu"
+msgstr "Meniu principal"
+
+#: inc/general.php:165
+msgid "Footer Widget 5"
+msgstr "A 5-a piesă din subsol"
+
+#: inc/general.php:164
+msgid "Footer Widget 4"
+msgstr "A 4-a piesă din subsol"
+
+#: inc/general.php:163
+msgid "Footer Widget 3"
+msgstr "A 3-a piesă din subsol"
+
+#: inc/general.php:162
+msgid "Footer Widget 2"
+msgstr "A 2-a piesă din subsol"
+
+#: inc/general.php:161
+msgid "Footer Widget 1"
+msgstr "Prima piesă din subsol"
+
+#: inc/structure/comments.php:28 inc/structure/comments.php:82
+msgid "Edit"
+msgstr "Editează"
+
+#: content-link.php:84 content-page.php:77 content-single.php:77 content.php:84
+msgid "Pages:"
+msgstr "Pagini:"
+
+#: inc/structure/comments.php:164
+msgid "Post Comment"
+msgstr "Publică comentariul"
+
+#: inc/structure/comments.php:163
+msgid "Leave a Comment"
+msgstr "Lasă un comentariu"
+
+#: inc/structure/comments.php:199
+msgid "Website"
+msgstr "Site web"
+
+#: inc/structure/comments.php:191
+msgid "Email"
+msgstr "Email"
+
+#: inc/structure/comments.php:183
+msgid "Name"
+msgstr "Nume"
+
+#: comments.php:123
+msgid "Comments are closed."
+msgstr "Comentariile sunt închise."
+
+#: comments.php:86 comments.php:113
+msgid "Newer Comments &rarr;"
+msgstr "Comentarii mai noi &rarr;"
+
+#: comments.php:85 comments.php:112
+msgid "&larr; Older Comments"
+msgstr "&larr; Comentarii mai vechi"
+
+#: comments.php:84 comments.php:111
+msgid "Comment navigation"
+msgstr "Navigare în comentarii"
+
+#. translators: 1: number of comments, 2: post title
+#: comments.php:50
+msgctxt "comments title"
+msgid "%1$s thought on &ldquo;%2$s&rdquo;"
+msgid_plural "%1$s thoughts on &ldquo;%2$s&rdquo;"
+msgstr[0] "Un comentariu la &bdquo;%2$s&rdquo;"
+msgstr[1] "%1$s comentarii la &bdquo;%2$s&rdquo;"
+msgstr[2] "%1$s de comentarii la &bdquo;%2$s&rdquo;"
+
+#: inc/structure/sidebars.php:77
+msgid "Archives"
+msgstr "Arhive"
+
+#: content-404.php:27
+msgid "Oops! That page can&rsquo;t be found."
+msgstr "Hopa! Acea pagină nu poate fi găsită."
+
+#. Author of the theme
+#: style.css
+#, gp-priority: low
+msgid "Tom Usborne"
+msgstr "Tom Usborne"
+
+#. Theme URI of the theme
+#: style.css
+#, gp-priority: low
+msgid "https://generatepress.com"
+msgstr "https://generatepress.com"

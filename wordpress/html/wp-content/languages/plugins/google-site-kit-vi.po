@@ -1,0 +1,1767 @@
+# Translation of Plugins - Site Kit by Google &#8211; Analytics, Search Console, AdSense, Speed - Stable (latest release) in Vietnamese
+# This file is distributed under the same license as the Plugins - Site Kit by Google &#8211; Analytics, Search Console, AdSense, Speed - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-08-03 09:08:23+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: vi_VN\n"
+"Project-Id-Version: Plugins - Site Kit by Google &#8211; Analytics, Search Console, AdSense, Speed - Stable (latest release)\n"
+
+#: includes/Core/Conversion_Tracking/Conversion_Event_Providers/WooCommerce.php:148
+msgid "Events tracked through Analytics integration addon"
+msgstr "Sự kiện được theo dõi thông qua addon tích hợp Analytics"
+
+#: dist/assets/blocks/reader-revenue-manager/subscribe-with-google/block.json
+msgctxt "block description"
+msgid "Allow users to subscribe using Reader Revenue Manager to access content behind a paywall."
+msgstr "Cho phép người dùng đăng ký bằng Trình quản lý doanh thu người đọc để truy cập nội dung phía sau tường thanh toán."
+
+#: dist/assets/blocks/reader-revenue-manager/subscribe-with-google/block.json
+msgctxt "block title"
+msgid "Subscribe with Google"
+msgstr "Đăng ký với Google"
+
+#: dist/assets/blocks/reader-revenue-manager/contribute-with-google/block.json
+msgctxt "block description"
+msgid "Allow users to make voluntary contributions using Reader Revenue Manager."
+msgstr "Cho phép người dùng đóng góp tự nguyện bằng Trình quản lý doanh thu người đọc."
+
+#: dist/assets/blocks/reader-revenue-manager/contribute-with-google/block.json
+msgctxt "block title"
+msgid "Contribute with Google"
+msgstr "Đóng góp với Google"
+
+#: includes/Modules/Reader_Revenue_Manager/Admin_Post_List.php:157
+msgid "— No Change —"
+msgstr "— Không thay đổi —"
+
+#: includes/Modules/Reader_Revenue_Manager/Admin_Post_List.php:145
+#: includes/Modules/Reader_Revenue_Manager/Admin_Post_List.php:158
+#: dist/assets/blocks/reader-revenue-manager/block-editor-plugin/index.js:2
+msgid "Default"
+msgstr "Mặc định"
+
+#: includes/Modules/Reader_Revenue_Manager/Admin_Post_List.php:96
+#: includes/Modules/Reader_Revenue_Manager/Admin_Post_List.php:166
+msgid "Reader Revenue CTA"
+msgstr "Lời kêu gọi hành động doanh thu người đọc"
+
+#: includes/Modules/Analytics_4.php:1486
+msgid "User does not have permission to save audience settings."
+msgstr "Người dùng không có quyền lưu cài đặt đối tượng."
+
+#: includes/Modules/Ads.php:407
+msgid "Ads: Conversion ID"
+msgstr "Quảng cáo: ID chuyển đổi"
+
+#: dist/assets/blocks/sign-in-with-google/block.json
+msgctxt "block description"
+msgid "Allow users to sign in to your site using their Google Account."
+msgstr "Cho phép người dùng đăng nhập vào trang web của bạn bằng tài khoản Google của họ."
+
+#: dist/assets/blocks/sign-in-with-google/block.json
+msgctxt "block title"
+msgid "Sign in with Google"
+msgstr "Đăng nhập với Google"
+
+#: includes/Modules/Reader_Revenue_Manager/Admin_Post_List.php:121
+#: includes/Modules/Reader_Revenue_Manager/Admin_Post_List.php:160
+#: dist/assets/blocks/reader-revenue-manager/block-editor-plugin/index.js:2
+#: dist/assets/js/googlesitekit-modules-reader-revenue-manager-58e722e6c731c342356d.js:25
+#: dist/assets/js/googlesitekit-modules-reader-revenue-manager-58e722e6c731c342356d.js:26
+msgid "Open access"
+msgstr "Truy cập mở"
+
+#. translators: %1$s: Sign in with Google service name, %2$s: Plugin name
+#: includes/Modules/Sign_In_With_Google.php:662
+msgid "%1$s (via %2$s)"
+msgstr "%1$s (qua %2$s)"
+
+#: includes/Modules/Reader_Revenue_Manager.php:779
+msgid "Reader Revenue Manager: Payment option"
+msgstr "Trình quản lý doanh thu người đọc: Tùy chọn thanh toán"
+
+#: includes/Modules/Reader_Revenue_Manager.php:774
+msgid "Reader Revenue Manager: Available product IDs"
+msgstr "Trình quản lý doanh thu người đọc: ID sản phẩm khả dụng"
+
+#: includes/Modules/Reader_Revenue_Manager.php:789
+msgid "Reader Revenue Manager: Product ID"
+msgstr "Trình quản lý doanh thu người đọc: ID sản phẩm"
+
+#: includes/Modules/Reader_Revenue_Manager.php:797
+msgid "Reader Revenue Manager: Post types"
+msgstr "Trình quản lý doanh thu người đọc: Loại bài viết"
+
+#: includes/Modules/Reader_Revenue_Manager.php:784
+msgid "Reader Revenue Manager: Snippet placement"
+msgstr "Trình quản lý doanh thu người đọc: Vị trí đoạn code"
+
+#: includes/Modules/Reader_Revenue_Manager.php:746
+msgid "Sitewide"
+msgstr "Toàn trang web"
+
+#: includes/Modules/Reader_Revenue_Manager.php:745
+msgid "Per post"
+msgstr "Mỗi bài viết"
+
+#. translators: %s: Sign in with Google service name
+#: includes/Modules/Sign_In_With_Google.php:583
+msgid "%s button added by Site Kit"
+msgstr "Nút %s được thêm bởi Site Kit"
+
+#. translators: %1$s: Sign in with Google service name
+#: includes/Modules/Sign_In_With_Google.php:493
+msgid "%1$s: Number of users who have authenticated using %1$s"
+msgstr "%1$s: Số người dùng đã xác thực bằng %1$s"
+
+#. translators: %s: Sign in with Google service name
+#: includes/Modules/Sign_In_With_Google.php:487
+msgid "%s: One Tap Enabled"
+msgstr "%s: Bật One Tap"
+
+#. translators: %s: Sign in with Google service name
+#: includes/Modules/Sign_In_With_Google.php:481
+msgid "%s: Theme"
+msgstr "%s: Chủ đề"
+
+#. translators: %s: Sign in with Google service name
+#: includes/Modules/Sign_In_With_Google.php:475
+msgid "%s: Text"
+msgstr "%s: Văn bản"
+
+#. translators: %s: Sign in with Google service name
+#: includes/Modules/Sign_In_With_Google.php:469
+msgid "%s: Shape"
+msgstr "%s: Hình dạng"
+
+#. translators: %s: Sign in with Google service name
+#: includes/Modules/Sign_In_With_Google.php:463
+msgid "%s: Client ID"
+msgstr "%s: Client ID"
+
+#. translators: %s: Sign in with Google service name
+#: includes/Modules/Sign_In_With_Google.php:234
+msgid "Login with %s failed."
+msgstr "Đăng nhập với %s không thành công."
+
+#: includes/Core/Admin/Screens.php:487
+msgid "Select Key Metrics"
+msgstr "Chọn chỉ số chính"
+
+#: includes/Modules/Sign_In_With_Google.php:682
+msgid "Disconnect Google Account"
+msgstr "Ngắt kết nối Tài khoản Google"
+
+#: includes/Modules/Sign_In_With_Google.php:673
+msgid "This user can sign in with their Google account."
+msgstr "Người dùng này có thể đăng nhập bằng tài khoản Google của họ."
+
+#: includes/Modules/Sign_In_With_Google.php:668
+msgid "You can sign in with your Google account."
+msgstr "Bạn có thể đăng nhập bằng tài khoản Google của mình."
+
+#: includes/Modules/Sign_In_With_Google.php:237
+msgid "The user is not registered on this site."
+msgstr "Người dùng chưa được đăng ký trên trang web này."
+
+#: includes/Modules/Reader_Revenue_Manager.php:384
+#: includes/Modules/Reader_Revenue_Manager.php:399
+msgid "Publication not found."
+msgstr "Không tìm thấy bài viết."
+
+#: includes/Modules/AdSense.php:286
+msgid "AdSense: Ad Blocking Recovery setup status"
+msgstr "AdSense: Trạng thái thiết lập phục hồi chặn quảng cáo"
+
+#: includes/Modules/AdSense.php:270
+msgid "AdSense: Ad Blocking Recovery snippet placed"
+msgstr "AdSense: Đoạn mã phục hồi chặn quảng cáo đã được đặt"
+
+#: includes/Modules/AdSense.php:257
+msgid "AdSense: Web Stories Ad Unit ID"
+msgstr "AdSense: ID đơn vị quảng cáo Web Stories"
+
+#: includes/Core/Site_Health/Debug_Data.php:682
+msgid "Key Metrics Source"
+msgstr "Nguồn chỉ số chính"
+
+#: includes/Core/Site_Health/Debug_Data.php:674
+msgid "Tailored Metrics"
+msgstr "Chỉ số được tùy chỉnh"
+
+#: includes/Core/Site_Health/Debug_Data.php:673
+msgid "Manual Selection"
+msgstr "Chọn thủ công"
+
+#: includes/Core/Site_Health/Debug_Data.php:669
+msgid "Setup and Enabled"
+msgstr "Đã thiết lập và bật"
+
+#: includes/Core/Site_Health/Debug_Data.php:668
+msgid "Setup and Disabled"
+msgstr "Đã thiết lập và tắt"
+
+#: includes/Core/Site_Health/Debug_Data.php:662
+msgid "Not setup"
+msgstr "Chưa thiết lập"
+
+#: includes/Core/Site_Health/Debug_Data.php:661
+#: includes/Core/Site_Health/Debug_Data.php:678
+msgid "Key Metrics Status"
+msgstr "Trạng thái chỉ số chính"
+
+#: includes/Modules/Sign_In_With_Google/Web_Tag.php:225
+msgid "End Sign in with Google button added by Site Kit"
+msgstr "Nút đăng nhập bằng Google đã được thêm bởi Site Kit"
+
+#: includes/Modules/Sign_In_With_Google/Web_Tag.php:222
+msgid "Sign in with Google button added by Site Kit"
+msgstr "Nút đăng nhập bằng Google đã được thêm bởi Site Kit"
+
+#: includes/Modules/Analytics_4.php:1516
+msgid "User must be authenticated to sync audiences."
+msgstr "Người dùng phải được xác thực để đồng bộ hóa đối tượng."
+
+#: includes/Modules/Ads.php:305
+msgid "Grow sales, leads or awareness for your business by advertising with Google Ads"
+msgstr "Tăng doanh số, khách hàng tiềm năng hoặc nhận thức về doanh nghiệp của bạn bằng cách quảng cáo với Google Ads."
+
+#: includes/Modules/Sign_In_With_Google.php:288
+msgid "https://developers.google.com/identity/gsi/web/guides/overview"
+msgstr "https://developers.google.com/identity/gsi/web/guides/overview"
+
+#: includes/Modules/Sign_In_With_Google.php:287
+msgid "Improve user engagement, trust and data privacy, while creating a simple, secure and personalized experience for your visitors"
+msgstr "Cải thiện sự tương tác của người dùng, niềm tin và quyền riêng tư dữ liệu, đồng thời tạo ra một trải nghiệm đơn giản, an toàn và cá nhân hóa cho khách truy cập của bạn."
+
+#: includes/Modules/Reader_Revenue_Manager/Web_Tag.php:140
+msgid "End Google Reader Revenue Manager snippet added by Site Kit"
+msgstr "Đoạn mã quản lý doanh thu Google Reader đã được thêm bởi Site Kit"
+
+#: includes/Modules/Reader_Revenue_Manager/Web_Tag.php:139
+msgid "Google Reader Revenue Manager snippet added by Site Kit"
+msgstr "Đoạn mã quản lý doanh thu Google Reader được thêm bởi Site Kit"
+
+#: includes/Modules/Reader_Revenue_Manager.php:769
+msgid "Reader Revenue Manager: Publication onboarding state"
+msgstr "Quản lý doanh thu độc giả: Trạng thái tiếp nhận xuất bản"
+
+#: includes/Modules/Reader_Revenue_Manager.php:764
+msgid "Reader Revenue Manager: Publication ID"
+msgstr "Quản lý doanh thu độc giả: ID xuất bản"
+
+#: includes/Core/Consent_Mode/Consent_Mode.php:136
+msgid "You do not have permission to activate plugins on this site."
+msgstr "Bạn không có quyền kích hoạt plugin trên trang web này."
+
+#: includes/Modules/Reader_Revenue_Manager.php:465
+msgid "Reader Revenue Manager helps publishers grow, retain, and engage their audiences, creating new revenue opportunities"
+msgstr "Quản lý Doanh thu Độc giả giúp các nhà xuất bản phát triển, giữ chân và thu hút khán giả của họ, tạo ra các cơ hội doanh thu mới"
+
+#: includes/Modules/Reader_Revenue_Manager.php:464
+#: dist/assets/js/googlesitekit-modules-reader-revenue-manager-58e722e6c731c342356d.js:26
+msgctxt "Service name"
+msgid "Reader Revenue Manager"
+msgstr "Quản lý doanh thu độc giả"
+
+#: includes/Modules/Analytics_4.php:629
+msgid "Analytics: Site created audiences"
+msgstr "Phân tích: Đối tượng được tạo ra từ trang web"
+
+#: includes/Core/Admin/Authorize_Application.php:126
+msgid "Powered by Site Kit"
+msgstr "Được cung cấp bởi Site Kit"
+
+#. translators: %s: Missing parameter name
+#: includes/Core/Expirables/REST_Expirable_Items_Controller.php:134
+msgid "Request parameter is invalid: %s."
+msgstr "Tham số yêu cầu không hợp lệ: %s."
+
+#: includes/Core/Site_Health/Debug_Data.php:641
+msgid "Active conversion event providers"
+msgstr "Nhà cung cấp sự kiện chuyển đổi đang hoạt động"
+
+#: includes/Modules/Analytics_4/Web_Tag.php:72
+msgid "Please use the Consent Mode feature instead."
+msgstr "Vui lòng sử dụng tính năng Chế độ Đồng ý thay thế."
+
+#. translators: 1: provider classname 2: Conversion_Events_Provider classname
+#: includes/Core/Conversion_Tracking/Conversion_Tracking.php:203
+msgid "The '%1$s' class must extend the base conversion event provider class: %2$s"
+msgstr "Lớp '%1$s' phải mở rộng lớp cung cấp sự kiện chuyển đổi cơ bản: %2$s"
+
+#. translators: %s: provider classname
+#: includes/Core/Conversion_Tracking/Conversion_Tracking.php:193
+msgid "The '%s' class does not exist"
+msgstr "Lớp '%s' không tồn tại"
+
+#. translators: %s: provider slug
+#: includes/Core/Conversion_Tracking/Conversion_Tracking.php:183
+msgid "A conversion event provider class name is required to instantiate a provider: %s"
+msgstr "Tên lớp cung cấp sự kiện chuyển đổi là bắt buộc để khởi tạo một nhà cung cấp: %s"
+
+#: includes/Modules/Ads/AMP_Tag.php:83
+msgid "Google Ads AMP snippet added by Site Kit"
+msgstr "Đoạn mã Google Ads AMP được thêm bởi Site Kit"
+
+#: includes/Core/Site_Health/Debug_Data.php:616
+msgid "Not detected"
+msgstr "Không phát hiện"
+
+#: includes/Core/Site_Health/Debug_Data.php:616
+msgid "Detected"
+msgstr "Phát hiện"
+
+#: includes/Core/Site_Health/Debug_Data.php:615
+msgid "WP Consent API"
+msgstr "API Đồng ý WP"
+
+#: includes/Modules/Analytics_4.php:618
+msgid "Analytics: AdSense Linked Last Synced At"
+msgstr "Phân tích: AdSense Liên kết Lần đồng bộ cuối cùng tại"
+
+#: includes/Modules/Analytics_4.php:612
+msgid "Analytics: AdSense Linked"
+msgstr "Phân tích: Liên kết AdSense"
+
+#: includes/Modules/Analytics_4.php:604
+msgid "Analytics: Ads Linked Last Synced At"
+msgstr "Phân tích: Quảng cáo liên kết cuối cùng đồng bộ vào lúc"
+
+#: includes/Modules/Analytics_4.php:599
+msgid "Analytics: Ads Linked"
+msgstr "Phân tích: Liên kết quảng cáo"
+
+#: includes/Modules/Ads/Web_Tag.php:83
+msgid "Google Ads snippet added by Site Kit"
+msgstr "Đoạn mã Google Ads được thêm bởi Site Kit"
+
+#: includes/Core/Tags/GTag.php:199
+msgid "Google tag (gtag.js) snippet added by Site Kit"
+msgstr "Đoạn mã Google tag (gtag.js) được thêm bởi Site Kit"
+
+#. translators: %s: Invalid parameter
+#: includes/Core/REST_API/Exception/Invalid_Param_Exception.php:46
+msgid "Invalid parameter: %s."
+msgstr "Tham số không hợp lệ: %s."
+
+#: includes/Core/Site_Health/Debug_Data.php:610
+#: dist/assets/js/googlesitekit-settings-2b36b453bed7cb0967c1.js:46
+msgid "Consent Mode"
+msgstr "Chế độ Đồng ý"
+
+#: includes/Core/Consent_Mode/Consent_Mode.php:259
+msgid "End Google tag (gtag.js) Consent Mode dataLayer added by Site Kit"
+msgstr "Kết thúc thẻ Google (gtag.js) chế độ đồng ý dataLayer được thêm bởi Site Kit"
+
+#: includes/Core/Consent_Mode/Consent_Mode.php:246
+msgid "Google tag (gtag.js) Consent Mode dataLayer added by Site Kit"
+msgstr "Chế độ đồng ý Google tag (gtag.js) dataLayer được thêm bởi Site Kit"
+
+#: includes/Modules/Analytics_4.php:605 includes/Modules/Analytics_4.php:619
+msgid "Never synced"
+msgstr "Chưa bao giờ đồng bộ"
+
+#: includes/Modules/Ads.php:306
+msgid "https://google.com/ads"
+msgstr "https://google.com/ads"
+
+#: includes/Modules/Ads.php:305
+msgid "Track conversions for your existing Google Ads campaigns"
+msgstr "Theo dõi chuyển đổi cho các chiến dịch Google Ads hiện tại của bạn"
+
+#: includes/Modules/Ads.php:304
+#: dist/assets/js/googlesitekit-modules-ads-376bcc528ed64ac0302c.js:8
+msgctxt "Service name"
+msgid "Ads"
+msgstr "Quảng cáo"
+
+#. translators: %s: Invalid property names
+#: includes/Modules/Analytics_4.php:1162
+msgid "Invalid properties in audience: %s."
+msgstr "Thuộc tính không hợp lệ trong đối tượng: %s."
+
+#: includes/Modules/Analytics_4.php:731
+msgid "You’ll need to grant Site Kit permission to create new audiences for your Analytics property on your behalf."
+msgstr "Bạn cần cấp quyền cho Site Kit để tạo đối tượng mới cho thuộc tính Analytics của bạn thay mặt bạn."
+
+#: includes/Modules/AdSense.php:976
+msgid "End Google AdSense meta tags added by Site Kit"
+msgstr "Kết thúc thẻ meta Google AdSense được thêm bởi Site Kit"
+
+#: includes/Modules/AdSense.php:972
+msgid "Google AdSense meta tags added by Site Kit"
+msgstr "Thẻ meta Google AdSense được thêm bởi Site Kit"
+
+#: includes/Core/Site_Health/Tag_Placement.php:244
+#: includes/Core/Site_Health/Tag_Placement.php:251
+msgid "No tag detected."
+msgstr "Không phát hiện thẻ."
+
+#: includes/Core/Site_Health/Tag_Placement.php:237
+msgid "Tag detected but could not verify that Site Kit placed the tag."
+msgstr "Phát hiện thẻ nhưng không thể xác minh rằng Site Kit đã đặt thẻ."
+
+#: includes/Core/Site_Health/Tag_Placement.php:230
+msgid "Tag detected and placed by Site Kit."
+msgstr "Phát hiện thẻ và được đặt bởi Site Kit."
+
+#: includes/Core/Site_Health/Tag_Placement.php:151
+msgid "Tag placement disabled in settings."
+msgstr "Vị trí đặt thẻ bị vô hiệu hóa trong cài đặt."
+
+#: includes/Core/Site_Health/Tag_Placement.php:125
+msgid "Tags are not output in the current environment."
+msgstr "Thẻ không được xuất ra trong môi trường hiện tại."
+
+#: includes/Core/Site_Health/Tag_Placement.php:168
+msgid "There was an error while trying to get the status, please try again later."
+msgstr "Có lỗi khi cố gắng lấy trạng thái, vui lòng thử lại sau."
+
+#: includes/Core/Site_Health/Tag_Placement.php:135
+msgid "Tag status not available: no modules that place tags are connected."
+msgstr "Trạng thái thẻ không khả dụng: không có mô-đun nào đặt thẻ được kết nối."
+
+#: includes/Core/Site_Health/Tag_Placement.php:116
+msgid "This feature requires WordPress version 5.6 or higher"
+msgstr "Tính năng này yêu cầu phiên bản WordPress 5.6 trở lên"
+
+#: includes/Core/Site_Health/Tag_Placement.php:73
+#: includes/Core/Site_Health/Tag_Placement.php:81
+#: includes/Core/Site_Health/Tag_Placement.php:103
+msgid "Tag Placement"
+msgstr "Vị trí đặt thẻ"
+
+#. translators: %s: translatable module name
+#: includes/Core/Modules/Module_With_Tag_Trait.php:38
+msgid "Google %s snippet added by Site Kit"
+msgstr "Đoạn mã Google %s được thêm bởi Site Kit"
+
+#: includes/Core/Site_Health/Debug_Data.php:611
+#: includes/Core/Tags/Google_Tag_Gateway/Google_Tag_Gateway.php:192
+#: dist/assets/js/googlesitekit-modules-ads-376bcc528ed64ac0302c.js:5
+#: dist/assets/js/googlesitekit-modules-analytics-4-01b087350c9abdbbe075.js:49
+#: dist/assets/js/googlesitekit-modules-sign-in-with-google-1d35a8ab929b43958ea7.js:3
+#: dist/assets/js/googlesitekit-modules-tagmanager-214fe54794a20166bf04.js:3
+msgid "Disabled"
+msgstr "Bị vô hiệu hóa"
+
+#: includes/Core/Site_Health/Debug_Data.php:611
+#: includes/Core/Tags/Google_Tag_Gateway/Google_Tag_Gateway.php:192
+#: dist/assets/js/googlesitekit-modules-ads-376bcc528ed64ac0302c.js:5
+#: dist/assets/js/googlesitekit-modules-analytics-4-01b087350c9abdbbe075.js:49
+#: dist/assets/js/googlesitekit-modules-sign-in-with-google-1d35a8ab929b43958ea7.js:3
+#: dist/assets/js/googlesitekit-modules-tagmanager-214fe54794a20166bf04.js:3
+msgid "Enabled"
+msgstr "Đã bật"
+
+#. translators: %s: Invalid custom dimension slug
+#: includes/Modules/Analytics_4.php:1565
+msgid "Invalid custom dimension slug: %s."
+msgstr "Slug chiều tùy chỉnh không hợp lệ: %s."
+
+#: includes/Modules/Analytics_4.php:586
+msgid "Analytics: Available Custom Dimensions"
+msgstr "Phân tích: Các kích thước tùy chỉnh có sẵn"
+
+#. translators: %s: Invalid scope
+#: includes/Modules/Analytics_4.php:1449
+msgid "Invalid scope: %s."
+msgstr "Phạm vi không hợp lệ: %s."
+
+#. translators: %s: Invalid property names
+#: includes/Modules/Analytics_4.php:1433
+msgid "Invalid properties in customDimension: %s."
+msgstr "Thuộc tính không hợp lệ trong customDimension: %s."
+
+#. translators: %s: Invalid property names
+#: includes/Modules/Analytics_4.php:1376
+msgid "Invalid properties in enhancedMeasurementSettings: %s."
+msgstr "Thuộc tính không hợp lệ trong enhancedMeasurementSettings: %s."
+
+#: includes/Modules/Analytics_4.php:709
+msgid "You’ll need to grant Site Kit permission to update enhanced measurement settings for this Analytics web data stream on your behalf."
+msgstr "Bạn cần cấp quyền cho Site Kit để cập nhật cài đặt đo lường nâng cao cho luồng dữ liệu web Analytics này thay mặt bạn."
+
+#: includes/Core/Key_Metrics/REST_Key_Metrics_Controller.php:128
+msgid "Selected metrics cannot be empty."
+msgstr "Các chỉ số đã chọn không thể trống."
+
+#: includes/Modules/AdSense.php:1115
+msgid "Not set up"
+msgstr "Chưa thiết lập"
+
+#: includes/Modules/AdSense.php:1113
+msgid "Setup complete"
+msgstr "Thiết lập hoàn tất"
+
+#: includes/Modules/AdSense.php:1111
+msgid "Snippet is placed"
+msgstr "Snippet đã được đặt"
+
+#: includes/Modules/AdSense.php:278
+msgid "AdSense: Ad Blocking Recovery error protection snippet placed"
+msgstr "AdSense: Đoạn mã bảo vệ lỗi phục hồi chặn quảng cáo đã được đặt"
+
+#: includes/Modules/AdSense.php:266
+msgid "Not available"
+msgstr "Không khả dụng"
+
+#: includes/Modules/AdSense.php:262
+msgid "AdSense: Setup completed at"
+msgstr "AdSense: Cài đặt đã hoàn tất tại"
+
+#: includes/Modules/AdSense/Ad_Blocking_Recovery_Web_Tag.php:92
+msgid "End Google AdSense Ad Blocking Recovery Error Protection snippet added by Site Kit"
+msgstr "Kết thúc đoạn mã Bảo vệ lỗi khôi phục chặn quảng cáo Google AdSense được thêm bởi Site Kit"
+
+#: includes/Modules/AdSense/Ad_Blocking_Recovery_Web_Tag.php:90
+msgid "Google AdSense Ad Blocking Recovery Error Protection snippet added by Site Kit"
+msgstr "Đoạn mã Bảo vệ lỗi khôi phục chặn quảng cáo Google AdSense được thêm bởi Site Kit"
+
+#: includes/Modules/AdSense/Ad_Blocking_Recovery_Web_Tag.php:88
+msgid "End Google AdSense Ad Blocking Recovery snippet added by Site Kit"
+msgstr "Kết thúc đoạn mã Khôi phục chặn quảng cáo Google AdSense được thêm bởi Site Kit"
+
+#: includes/Modules/AdSense/Ad_Blocking_Recovery_Web_Tag.php:86
+msgid "Google AdSense Ad Blocking Recovery snippet added by Site Kit"
+msgstr "Đoạn mã Khôi phục chặn quảng cáo Google AdSense được thêm bởi Site Kit"
+
+#: includes/Core/Admin/Screens.php:478
+#: dist/assets/js/googlesitekit-ad-blocking-recovery-2c30c1ff9976655238a8.js:14
+#: dist/assets/js/googlesitekit-modules-adsense-7be3dd970adbc67b0b5b.js:43
+msgid "Ad Blocking Recovery"
+msgstr "Phục hồi chặn quảng cáo"
+
+#. translators: 1: the regular expression for a valid name, 2: the invalid
+#. metric.
+#: includes/Modules/Analytics_4/Report/RequestHelpers.php:182
+msgid "Metric name should match the expression %1$s: %2$s"
+msgstr "Tên số liệu phải khớp với biểu thức %1$s: %2$s"
+
+#. translators: 1: the regular expression for a valid name, 2: a comma
+#. separated list of the invalid metrics.
+#: includes/Modules/Analytics_4/Report/RequestHelpers.php:170
+msgid "Metric names should match the expression %1$s: %2$s"
+msgstr "Tên số liệu phải khớp với biểu thức %1$s: %2$s"
+
+#: includes/Core/Modules/REST_Modules_Controller.php:520
+msgid "Module does not support setting data available state."
+msgstr "Mô-đun không hỗ trợ cài đặt trạng thái dữ liệu khả dụng."
+
+#: includes/Modules/Analytics_4.php:1135 includes/Modules/Analytics_4.php:1282
+#: includes/Modules/Analytics_4.php:1525 includes/Modules/Analytics_4.php:1541
+#: includes/Modules/Analytics_4.php:1701
+msgid "No connected Google Analytics property ID."
+msgstr "Không có ID thuộc tính Google Analytics 4 được kết nối."
+
+#: includes/Core/Key_Metrics/REST_Key_Metrics_Controller.php:140
+msgid "No more than 4 key metrics can be selected."
+msgstr "Có thể chọn không quá 4 chỉ số chính."
+
+#: includes/Core/Modules/REST_Modules_Controller.php:161
+msgid "Whether the module is recoverable."
+msgstr "Cho dù mô-đun có thể phục hồi hay không."
+
+#: includes/Core/Modules/REST_Modules_Controller.php:157
+msgid "Whether the module is shareable."
+msgstr "Cho dù mô-đun có thể chia sẻ được hay không."
+
+#. translators: %s: is replaced with a comma separated list of the invalid
+#. dimensions.
+#: includes/Modules/AdSense.php:1078
+#: includes/Modules/Analytics_4/Report/RequestHelpers.php:308
+msgid "Unsupported dimensions requested: %s"
+msgstr "Yêu cầu kích thước không được hỗ trợ: %s"
+
+#. translators: %s: is replaced with a comma separated list of the invalid
+#. metrics.
+#: includes/Modules/AdSense.php:1034
+#: includes/Modules/Analytics_4/Report/RequestHelpers.php:241
+msgid "Unsupported metrics requested: %s"
+msgstr "Yêu cầu số liệu không được hỗ trợ: %s"
+
+#: includes/Core/Modules/REST_Modules_Controller.php:623
+msgid "Request parameter slugs is not valid."
+msgstr "Slug tham số yêu cầu không hợp lệ."
+
+#: includes/Plugin.php:76
+msgid "The Site Kit by Google plugin does <strong>not yet offer</strong> a network mode, but we&#8217;re actively working on that."
+msgstr "Plugin Site Kit by Google <strong>chưa cung cấp</strong> chế độ mạng, nhưng chúng tôi đang tích cực làm việc để phát triển tính năng này."
+
+#: includes/Core/Util/BC_Functions.php:144
+msgid "Inactive widgets"
+msgstr "Tiện ích không hoạt động"
+
+#: includes/Core/Modules/REST_Modules_Controller.php:552
+#: includes/Core/Modules/REST_Modules_Controller.php:574
+msgid "Module must be active to request data."
+msgstr "Mô-đun phải hoạt động để yêu cầu dữ liệu."
+
+#. translators: 1: Admin splash URL. 2: Support link URL.
+#: includes/Core/Authentication/Authentication.php:1316
+msgid "<a href=\"%1$s\">Please try again</a>. Retry didn’t work? <a href=\"%2$s\" target=\"_blank\">Get help</a>."
+msgstr "<a href=\"%1$s\">Vui lòng thử lại</a>. Thử lại không thành công? <a href=\"%2$s\" target=\"_blank\">Nhận hỗ trợ</a>."
+
+#. translators: %s: version number
+#: google-site-kit.php:58
+msgid "Site Kit requires WordPress version %s or higher"
+msgstr "Site Kit yêu cầu phiên bản WordPress %s trở lên"
+
+#. translators: %s: version number
+#: google-site-kit.php:50
+msgid "Site Kit requires PHP version %s or higher"
+msgstr "Site Kit yêu cầu phiên bản PHP %s trở lên"
+
+#: includes/Core/Dashboard_Sharing/View_Only_Pointer.php:54
+msgid "Check Site Kit’s dashboard to find out how much traffic your site is getting, your most popular pages, top keywords people use to find your site on Search, and more."
+msgstr "Kiểm tra bảng điều khiển của Site Kit để tìm hiểu lượng truy cập vào trang web của bạn, các trang phổ biến nhất, các từ khóa hàng đầu mà mọi người sử dụng để tìm trang web của bạn trên Tìm kiếm, v.v."
+
+#: includes/Core/Dashboard_Sharing/View_Only_Pointer.php:53
+msgid "You now have access to Site Kit"
+msgstr "Bây giờ bạn đã có quyền truy cập vào Site Kit"
+
+#. translators: %s: is replaced with the invalid dimension.
+#: includes/Modules/AdSense.php:1089
+#: includes/Modules/Analytics_4/Report/RequestHelpers.php:319
+msgid "Unsupported dimension requested: %s"
+msgstr "Yêu cầu chiều không hợp lệ: %s"
+
+#. translators: %s: is replaced with the invalid metric.
+#: includes/Modules/AdSense.php:1045
+#: includes/Modules/Analytics_4/Report/RequestHelpers.php:252
+msgid "Unsupported metric requested: %s"
+msgstr "Yêu cầu số liệu không hợp lệ: %s"
+
+#: includes/Modules/Reader_Revenue_Manager.php:744
+msgid "Post types"
+msgstr "Loại nội dung"
+
+#. translators: 1: Support link URL. 2: Get help string.
+#: includes/Core/Authentication/Setup.php:127
+msgid "<a href=\"%1$s\" target=\"_blank\">%2$s</a>"
+msgstr "<a href=\"%1$s\" target=\"_blank\">%2$s</a>"
+
+#. translators: 1: Plugin name. 2: URL change message. 3: Proxy setup URL. 4:
+#. Reconnect string. 5: Proxy support link for the url-has-changed help page.
+#. 6: Help link message.
+#: includes/Core/Authentication/Authentication.php:1078
+msgid "%1$s: %2$s <a href=\"%3$s\">%4$s</a>. <a target=\"_blank\" href=\"%5$s\">%6$s</a>"
+msgstr "%1$s: %2$s <a href=\"%3$s\">%4$s</a>. <a target=\"_blank\" href=\"%5$s\">%6$s</a>"
+
+#: includes/Core/Authentication/Authentication.php:1084
+#: includes/Core/Authentication/Setup.php:129
+#: dist/assets/js/googlesitekit-ad-blocking-recovery-2c30c1ff9976655238a8.js:10
+#: dist/assets/js/googlesitekit-adminbar-d186945219cb93560f5d.js:4
+#: dist/assets/js/googlesitekit-entity-dashboard-948461b5b99c6d8b49f5.js:4
+#: dist/assets/js/googlesitekit-main-dashboard-a725fcbefd2a71260086.js:22
+#: dist/assets/js/googlesitekit-main-dashboard-a725fcbefd2a71260086.js:33
+#: dist/assets/js/googlesitekit-main-dashboard-a725fcbefd2a71260086.js:38
+#: dist/assets/js/googlesitekit-main-dashboard-a725fcbefd2a71260086.js:43
+#: dist/assets/js/googlesitekit-modules-ads-376bcc528ed64ac0302c.js:5
+#: dist/assets/js/googlesitekit-modules-adsense-7be3dd970adbc67b0b5b.js:22
+#: dist/assets/js/googlesitekit-modules-adsense-7be3dd970adbc67b0b5b.js:33
+#: dist/assets/js/googlesitekit-modules-adsense-7be3dd970adbc67b0b5b.js:35
+#: dist/assets/js/googlesitekit-modules-analytics-4-01b087350c9abdbbe075.js:22
+#: dist/assets/js/googlesitekit-modules-analytics-4-01b087350c9abdbbe075.js:33
+#: dist/assets/js/googlesitekit-modules-analytics-4-01b087350c9abdbbe075.js:34
+#: dist/assets/js/googlesitekit-modules-analytics-4-01b087350c9abdbbe075.js:41
+#: dist/assets/js/googlesitekit-modules-analytics-4-01b087350c9abdbbe075.js:42
+#: dist/assets/js/googlesitekit-modules-c69030e789b0d41ff748.js:2
+#: dist/assets/js/googlesitekit-modules-pagespeed-insights-3321ee5a21873d686513.js:4
+#: dist/assets/js/googlesitekit-modules-search-console-79a6c932436e46c38049.js:3
+#: dist/assets/js/googlesitekit-modules-search-console-79a6c932436e46c38049.js:14
+#: dist/assets/js/googlesitekit-notifications-1a6dbda4f6737b1f2e87.js:25
+#: dist/assets/js/googlesitekit-settings-2b36b453bed7cb0967c1.js:22
+#: dist/assets/js/googlesitekit-settings-2b36b453bed7cb0967c1.js:33
+#: dist/assets/js/googlesitekit-settings-2b36b453bed7cb0967c1.js:38
+#: dist/assets/js/googlesitekit-settings-2b36b453bed7cb0967c1.js:42
+#: dist/assets/js/googlesitekit-settings-2b36b453bed7cb0967c1.js:43
+#: dist/assets/js/googlesitekit-splash-e3abaa080b4064076a63.js:3
+#: dist/assets/js/googlesitekit-splash-e3abaa080b4064076a63.js:13
+#: dist/assets/js/googlesitekit-widgets-6e28ae3fe2a03c31814e.js:22
+#: dist/assets/js/googlesitekit-widgets-6e28ae3fe2a03c31814e.js:33
+#: dist/assets/js/googlesitekit-widgets-6e28ae3fe2a03c31814e.js:34
+#: dist/assets/js/googlesitekit-widgets-6e28ae3fe2a03c31814e.js:39
+#: dist/assets/js/googlesitekit-widgets-6e28ae3fe2a03c31814e.js:40
+#: dist/assets/js/googlesitekit-wp-dashboard-1f99443cbca11efb3fe5.js:4
+msgid "Get help"
+msgstr "Nhận trợ giúp"
+
+#. translators: %s: Sign in with Google service name
+#. translators: %1$s: Sign in with Google service name
+#. translators: %1$s: Sign in with Google service name, %2$s: Plugin name
+#: includes/Modules/Sign_In_With_Google.php:234
+#: includes/Modules/Sign_In_With_Google.php:286
+#: includes/Modules/Sign_In_With_Google.php:463
+#: includes/Modules/Sign_In_With_Google.php:469
+#: includes/Modules/Sign_In_With_Google.php:475
+#: includes/Modules/Sign_In_With_Google.php:481
+#: includes/Modules/Sign_In_With_Google.php:487
+#: includes/Modules/Sign_In_With_Google.php:493
+#: includes/Modules/Sign_In_With_Google.php:583
+#: includes/Modules/Sign_In_With_Google.php:662
+#: dist/assets/js/googlesitekit-ad-blocking-recovery-2c30c1ff9976655238a8.js:8
+#: dist/assets/js/googlesitekit-entity-dashboard-948461b5b99c6d8b49f5.js:18
+#: dist/assets/js/googlesitekit-main-dashboard-a725fcbefd2a71260086.js:36
+#: dist/assets/js/googlesitekit-metric-selection-917182e3b042960cfed2.js:6
+#: dist/assets/js/googlesitekit-modules-adsense-7be3dd970adbc67b0b5b.js:29
+#: dist/assets/js/googlesitekit-modules-sign-in-with-google-1d35a8ab929b43958ea7.js:1
+#: dist/assets/js/googlesitekit-modules-sign-in-with-google-1d35a8ab929b43958ea7.js:2
+#: dist/assets/js/googlesitekit-modules-sign-in-with-google-1d35a8ab929b43958ea7.js:4
+#: dist/assets/js/googlesitekit-modules-sign-in-with-google-1d35a8ab929b43958ea7.js:5
+#: dist/assets/js/googlesitekit-modules-sign-in-with-google-1d35a8ab929b43958ea7.js:6
+#: dist/assets/js/googlesitekit-modules-sign-in-with-google-1d35a8ab929b43958ea7.js:7
+#: dist/assets/js/googlesitekit-modules-sign-in-with-google-1d35a8ab929b43958ea7.js:8
+#: dist/assets/js/googlesitekit-modules-sign-in-with-google-1d35a8ab929b43958ea7.js:14
+#: dist/assets/js/googlesitekit-modules-sign-in-with-google-1d35a8ab929b43958ea7.js:15
+#: dist/assets/js/googlesitekit-modules-sign-in-with-google-1d35a8ab929b43958ea7.js:32
+#: dist/assets/js/googlesitekit-modules-sign-in-with-google-1d35a8ab929b43958ea7.js:33
+#: dist/assets/js/googlesitekit-settings-2b36b453bed7cb0967c1.js:36
+#: dist/assets/js/googlesitekit-splash-e3abaa080b4064076a63.js:7
+#: dist/assets/js/googlesitekit-splash-e3abaa080b4064076a63.js:12
+#: dist/assets/js/googlesitekit-user-input-077ded4654be41d0bb62.js:7
+msgctxt "Service name"
+msgid "Sign in with Google"
+msgstr "Đăng nhập với Google"
+
+#: includes/Core/Site_Health/Debug_Data.php:494
+msgid "Owner"
+msgstr "Chủ sở hữu"
+
+#: includes/Core/Site_Health/Debug_Data.php:489
+#: dist/assets/js/googlesitekit-entity-dashboard-948461b5b99c6d8b49f5.js:19
+#: dist/assets/js/googlesitekit-main-dashboard-a725fcbefd2a71260086.js:49
+msgid "Any admin signed in with Google"
+msgstr "Bất kỳ quản trị viên nào đăng nhập bằng Google"
+
+#. translators: %s: module name
+#: includes/Core/Site_Health/Debug_Data.php:431
+msgid "%s: Management"
+msgstr "%s: Quản lý"
+
+#. translators: %s: module name
+#: includes/Core/Site_Health/Debug_Data.php:423
+msgid "%s: Shared Roles"
+msgstr "%s: Vai trò chia sẻ"
+
+#: includes/Core/Site_Health/Debug_Data.php:396
+msgid "Recoverable Modules"
+msgstr "Mô-đun có thể phục hồi"
+
+#: includes/Core/Modules/REST_Modules_Controller.php:360
+msgid "Module access cannot be checked."
+msgstr "Không thể kiểm tra quyền truy cập mô-đun."
+
+#. translators: 1: Error message or error code. 2: Get help link.
+#: includes/Core/Authentication/Setup.php:170
+msgid "The request to the authentication proxy has failed with an error: %1$s %2$s."
+msgstr "Yêu cầu đến proxy xác thực đã thất bại với lỗi: %1$s %2$s."
+
+#. translators: 1: Plugin name. 2: Message.
+#. translators: 1: Module name, 2: Error message
+#: includes/Core/Authentication/Authentication.php:1135
+#: dist/assets/js/googlesitekit-notifications-1a6dbda4f6737b1f2e87.js:29
+msgid "%1$s: %2$s"
+msgstr "%1$s: %2$s"
+
+#: includes/Core/Modules/REST_Modules_Controller.php:701
+msgid "Module is not accessible by current user."
+msgstr "Mô-đun không thể truy cập bởi người dùng hiện tại."
+
+#: includes/Core/Modules/REST_Modules_Controller.php:668
+msgid "Module is not recoverable."
+msgstr "Mô-đun không thể khôi phục."
+
+#: includes/Core/Modules/REST_Modules_Controller.php:655
+msgid "Module is not shareable."
+msgstr "Mô-đun không thể chia sẻ."
+
+#: includes/Core/Modules/REST_Modules_Controller.php:348
+#: includes/Core/Modules/REST_Modules_Controller.php:516
+#: includes/Modules/AdSense.php:485
+msgid "Module is not connected."
+msgstr "Mô-đun chưa được kết nối."
+
+#. translators: %s: The module name
+#: includes/Core/Admin/Screens.php:390
+msgid "The %s module cannot be set up as it has not been activated yet."
+msgstr "Mô-đun %s không thể được thiết lập vì nó chưa được kích hoạt."
+
+#: includes/Modules/AdSense.php:248
+msgid "AdSense: Site status"
+msgstr "AdSense: Trạng thái trang web"
+
+#. translators: %s: Get help link.
+#: includes/Core/Authentication/Setup.php:189
+msgid "The request to the authentication proxy has failed. Please, try again later. %s."
+msgstr "Yêu cầu đến proxy xác thực đã thất bại. Vui lòng thử lại sau. %s."
+
+#: includes/Core/Authentication/Google_Proxy.php:462
+msgid "Failed to retrieve redirect URL."
+msgstr "Không thể truy xuất URL chuyển hướng."
+
+#: includes/Core/Authentication/Google_Proxy.php:140
+msgid "Missing site_id or site_code parameter for setup URL."
+msgstr "Thiếu tham số site_id hoặc site_code cho URL thiết lập."
+
+#: includes/Core/Authentication/Google_Proxy.php:137
+msgid "Missing code parameter for setup URL."
+msgstr "Thiếu tham số mã cho URL thiết lập."
+
+#: includes/Modules/PageSpeed_Insights.php:184
+msgid "https://pagespeed.web.dev"
+msgstr "https://pagespeed.web.dev"
+
+#: includes/Core/Authentication/Setup.php:237
+msgid "Verifying site ownership requires a token and verification method."
+msgstr "Xác minh quyền sở hữu trang web yêu cầu mã thông báo và phương thức xác minh."
+
+#: includes/Core/Authentication/Setup.php:233
+#: includes/Core/Authentication/Setup.php:290
+msgid "Invalid request."
+msgstr "Yêu cầu không hợp lệ."
+
+#. translators: %s: Current URL
+#: includes/Core/Authentication/Authentication.php:1099
+msgid "New URL: %s"
+msgstr "URL mới: %s"
+
+#. translators: %s: Previous URL
+#: includes/Core/Authentication/Authentication.php:1094
+msgid "Old URL: %s"
+msgstr "URL cũ: %s"
+
+#: includes/Core/Authentication/Authentication.php:1312
+msgid "The link you followed has expired."
+msgstr "Liên kết bạn đã theo dõi đã hết hạn."
+
+#: includes/Modules/Tag_Manager/Web_Tag.php:130
+msgid "End Google Tag Manager (noscript) snippet added by Site Kit"
+msgstr "Kết thúc đoạn mã Google Tag Manager (noscript) được thêm bởi Site Kit"
+
+#: includes/Modules/Tag_Manager/Web_Tag.php:126
+msgid "Google Tag Manager (noscript) snippet added by Site Kit"
+msgstr "Đoạn mã Google Tag Manager (noscript) được thêm bởi Site Kit"
+
+#: includes/Modules/Tag_Manager/Web_Tag.php:104
+msgid "End Google Tag Manager snippet added by Site Kit"
+msgstr "Kết thúc đoạn mã Google Tag Manager được thêm bởi Site Kit"
+
+#: includes/Modules/Tag_Manager/Web_Tag.php:102
+#: includes/Modules/Tag_Manager/Web_Tag.php:173
+msgid "Google Tag Manager snippet added by Site Kit"
+msgstr "Đoạn mã Google Tag Manager được thêm bởi Site Kit"
+
+#: includes/Modules/Tag_Manager/AMP_Tag.php:75
+msgid "End Google Tag Manager AMP snippet added by Site Kit"
+msgstr "Kết thúc đoạn mã Google Tag Manager AMP được thêm bởi Site Kit"
+
+#: includes/Modules/Tag_Manager/AMP_Tag.php:66
+msgid "Google Tag Manager AMP snippet added by Site Kit"
+msgstr "Đoạn mã Google Tag Manager AMP được thêm bởi Site Kit"
+
+#: includes/Modules/Ads/AMP_Tag.php:91
+msgid "End Google Ads AMP snippet added by Site Kit"
+msgstr "Kết thúc đoạn mã Google Ads AMP được thêm bởi Site Kit"
+
+#: includes/Modules/Analytics_4/Web_Tag.php:144
+msgid "Google Analytics snippet added by Site Kit"
+msgstr "Đoạn mã Google Analytics được thêm bởi Site Kit"
+
+#: includes/Modules/Analytics_4/AMP_Tag.php:132
+msgid "End Google Analytics AMP snippet added by Site Kit"
+msgstr "Kết thúc đoạn mã Google Analytics AMP được thêm bởi Site Kit"
+
+#: includes/Modules/Analytics_4/AMP_Tag.php:124
+msgid "Google Analytics AMP snippet added by Site Kit"
+msgstr "Đoạn mã Google Analytics AMP được thêm bởi Site Kit"
+
+#: includes/Modules/Analytics_4.php:863
+msgid "End Google Analytics opt-out snippet added by Site Kit"
+msgstr "Kết thúc đoạn mã Google Analytics từ chối được thêm bởi Site Kit"
+
+#: includes/Modules/Analytics_4.php:854
+msgid "Google Analytics opt-out snippet added by Site Kit"
+msgstr "Mã đoạn loại trừ Google Analytics được thêm bởi Site Kit"
+
+#: includes/Modules/Analytics_4.php:852
+msgid "End Google Analytics AMP opt-out snippet added by Site Kit"
+msgstr "Kết thúc mã đoạn loại trừ Google Analytics AMP được thêm bởi Site Kit"
+
+#: includes/Modules/Analytics_4.php:850
+msgid "Google Analytics AMP opt-out snippet added by Site Kit"
+msgstr "Mã đoạn loại trừ Google Analytics AMP được thêm bởi Site Kit"
+
+#: includes/Modules/AdSense/Web_Tag.php:97
+msgid "End Google AdSense snippet added by Site Kit"
+msgstr "Kết thúc mã đoạn Google AdSense được thêm bởi Site Kit"
+
+#: includes/Modules/AdSense/Web_Tag.php:95
+msgid "Google AdSense snippet added by Site Kit"
+msgstr "Mã đoạn Google AdSense được thêm bởi Site Kit"
+
+#: includes/Modules/AdSense/AMP_Tag.php:123
+#: includes/Modules/AdSense/AMP_Tag.php:143
+#: includes/Modules/AdSense/AMP_Tag.php:188
+msgid "End Google AdSense AMP snippet added by Site Kit"
+msgstr "Kết thúc mã đoạn Google AdSense AMP được thêm bởi Site Kit"
+
+#: includes/Modules/AdSense/AMP_Tag.php:115
+#: includes/Modules/AdSense/AMP_Tag.php:142
+#: includes/Modules/AdSense/AMP_Tag.php:184
+msgid "Google AdSense AMP snippet added by Site Kit"
+msgstr "Mã đoạn Google AdSense AMP được thêm bởi Site Kit"
+
+#: includes/Modules/Analytics_4.php:693
+msgid "You’ll need to grant Site Kit permission to create a new Analytics web data stream for this site on your behalf."
+msgstr "Bạn sẽ cần cấp quyền cho Site Kit để tạo luồng dữ liệu web Analytics mới cho trang web này thay mặt bạn."
+
+#: includes/Core/Site_Health/Debug_Data.php:336
+msgid "Verified outside of Site Kit"
+msgstr "Đã được xác minh bên ngoài Site Kit"
+
+#: includes/Core/Site_Health/Debug_Data.php:329
+msgid "Verified through meta tag"
+msgstr "Đã được xác minh thông qua thẻ meta"
+
+#: includes/Core/Site_Health/Debug_Data.php:321
+msgid "Verified through file"
+msgstr "Đã được xác minh thông qua tệp"
+
+#: includes/Core/Site_Health/Debug_Data.php:313
+msgid "Not verified"
+msgstr "Chưa được xác minh"
+
+#: includes/Core/Site_Health/Debug_Data.php:304
+msgid "Verification Status"
+msgstr "Trạng thái xác minh"
+
+#. translators: %s: module name
+#: includes/Core/Modules/Module.php:440
+msgid "Site Kit can’t access the relevant data from %s because you haven’t granted all permissions requested during setup."
+msgstr "Site Kit không thể truy cập dữ liệu liên quan từ %s vì bạn chưa cấp tất cả quyền được yêu cầu trong quá trình thiết lập."
+
+#. translators: %s: List of invalid parameters.
+#: includes/Modules/Analytics_4.php:1632
+msgid "Invalid parameter(s): %s"
+msgstr "Tham số không hợp lệ: %s"
+
+#: includes/Core/Admin/Available_Tools.php:50
+msgid "Resetting will disconnect all users and remove all Site Kit settings and data within WordPress. You and any other users who wish to use Site Kit will need to reconnect to restore access."
+msgstr "Khởi động lại sẽ ngắt kết nối tất cả người dùng và xóa tất cả cài đặt và dữ liệu của Site Kit trong WordPress. Bạn và bất kỳ người dùng nào khác muốn sử dụng Site Kit sẽ cần kết nối lại để khôi phục quyền truy cập."
+
+#: includes/Modules/Analytics_4.php:714
+msgid "You’ll need to grant Site Kit permission to create a new Analytics custom dimension on your behalf."
+msgstr "Bạn sẽ cần cấp quyền cho Site Kit để tạo một chiều tùy chỉnh Analytics mới thay mặt bạn."
+
+#: includes/Modules/Analytics_4.php:576
+msgid "Analytics: Measurement ID"
+msgstr "Phân tích: ID đo lường"
+
+#: includes/Modules/Analytics_4.php:571
+msgid "Analytics: Web Data Stream ID"
+msgstr "Phân tích: ID dòng dữ liệu Web"
+
+#: includes/Core/Authentication/Google_Proxy.php:314
+msgid "Failed to parse response."
+msgstr "Không thể phân tích cú pháp phản hồi."
+
+#: includes/Core/Authentication/Google_Proxy.php:269
+#: includes/Core/Authentication/Google_Proxy.php:498
+msgid "OAuth credentials haven't been found."
+msgstr "Chưa tìm thấy thông tin xác thực OAuth."
+
+#: includes/Core/Site_Health/Debug_Data.php:584
+msgid "Features"
+msgstr "Tính năng"
+
+#: includes/Core/Admin/Plugin_Row_Meta.php:51
+msgid "Support"
+msgstr "Hỗ trợ"
+
+#: includes/Core/Admin/Plugin_Row_Meta.php:50
+msgid "Rate Site Kit"
+msgstr "Đánh giá Site Kit"
+
+#: includes/Core/Site_Health/Debug_Data.php:537
+msgid "User Capabilities"
+msgstr "Khả năng của người dùng"
+
+#: includes/Core/Modules/Datapoint.php:135
+msgid "You’ll need to grant Site Kit permission to do this."
+msgstr "Bạn sẽ cần cấp quyền cho Site Kit để làm điều này."
+
+#: includes/Core/User_Input/REST_User_Input_Controller.php:145
+msgid "Missing settings data."
+msgstr "Thiếu dữ liệu cài đặt."
+
+#: includes/Core/Authentication/Authentication.php:1320
+msgid "Something went wrong."
+msgstr "Có lỗi xảy ra."
+
+#: includes/Core/Authentication/Authentication.php:1260
+msgid "You have insufficient permissions to manage Site Kit permissions."
+msgstr "Bạn không có đủ quyền để quản lý quyền của Site Kit."
+
+#: includes/Core/Admin/Screens.php:469
+msgid "User Input"
+msgstr "Đầu vào của người dùng"
+
+#: includes/Core/Authentication/Authentication.php:1264
+#: includes/Core/Authentication/Setup.php:149
+msgid "Site Kit is not configured to use the authentication proxy."
+msgstr "Site Kit chưa được cấu hình để sử dụng proxy xác thực."
+
+#: includes/Core/Authentication/Setup.php:145
+msgid "You have insufficient permissions to connect Site Kit."
+msgstr "Bạn không có đủ quyền để kết nối Site Kit."
+
+#: includes/Core/Authentication/Authentication.php:1082
+msgid "Reconnect"
+msgstr "Kết nối lại"
+
+#: includes/Core/Authentication/Authentication.php:1080
+#: dist/assets/js/googlesitekit-splash-e3abaa080b4064076a63.js:2
+msgid "Looks like the URL of your site has changed. In order to continue using Site Kit, you’ll need to reconnect, so that your plugin settings are updated with the new URL."
+msgstr "Có vẻ URL của trang web của bạn đã thay đổi. Để tiếp tục sử dụng Site Kit, bạn sẽ cần kết nối lại để cài đặt plugin của bạn được cập nhật với URL mới."
+
+#: includes/Modules/Site_Verification.php:356
+msgctxt "Service name"
+msgid "Site Verification"
+msgstr "Xác minh trang web"
+
+#: includes/Core/Site_Health/Debug_Data.php:359
+msgid "Connected user count"
+msgstr "Số người dùng đã kết nối"
+
+#: includes/Core/Modules/REST_Modules_Controller.php:173
+msgid "Owner login."
+msgstr "Đăng nhập của chủ sở hữu."
+
+#: includes/Core/Modules/REST_Modules_Controller.php:168
+msgid "Owner ID."
+msgstr "ID của chủ sở hữu."
+
+#. translators: 1: Title prefix. 2: Title.
+#: includes/Core/Util/Entity_Factory.php:499
+msgctxt "archive title"
+msgid "%1$s %2$s"
+msgstr "%1$s %2$s"
+
+#: includes/Core/Util/Entity_Factory.php:409
+msgctxt "daily archives date format"
+msgid "F j, Y"
+msgstr "F j, Y"
+
+#: includes/Core/Util/Entity_Factory.php:408
+msgctxt "date archive title prefix"
+msgid "Day:"
+msgstr "Ngày:"
+
+#: includes/Core/Util/Entity_Factory.php:402
+msgctxt "monthly archives date format"
+msgid "F Y"
+msgstr "F Y"
+
+#: includes/Core/Util/Entity_Factory.php:401
+msgctxt "date archive title prefix"
+msgid "Month:"
+msgstr "Tháng:"
+
+#: includes/Core/Util/Entity_Factory.php:396
+msgctxt "yearly archives date format"
+msgid "Y"
+msgstr "Năm:"
+
+#: includes/Core/Util/Entity_Factory.php:395
+msgctxt "date archive title prefix"
+msgid "Year:"
+msgstr "Năm:"
+
+#: includes/Core/Util/Entity_Factory.php:367
+msgctxt "post type archive title prefix"
+msgid "Archives:"
+msgstr "Lưu trữ:"
+
+#: includes/Core/Util/Entity_Factory.php:342
+msgctxt "author archive title prefix"
+msgid "Author:"
+msgstr "Tác giả:"
+
+#. translators: %s: Taxonomy singular name.
+#: includes/Core/Util/Entity_Factory.php:314
+msgctxt "taxonomy term archive title prefix"
+msgid "%s:"
+msgstr "%s:"
+
+#: includes/Core/Util/Entity_Factory.php:305
+msgctxt "post format archive title"
+msgid "Chats"
+msgstr "Cuộc trò chuyện"
+
+#: includes/Core/Util/Entity_Factory.php:302
+msgctxt "post format archive title"
+msgid "Audio"
+msgstr "Âm thanh"
+
+#: includes/Core/Util/Entity_Factory.php:299
+msgctxt "post format archive title"
+msgid "Statuses"
+msgstr "Trạng thái"
+
+#: includes/Core/Util/Entity_Factory.php:296
+msgctxt "post format archive title"
+msgid "Links"
+msgstr "Liên kết"
+
+#: includes/Core/Util/Entity_Factory.php:293
+msgctxt "post format archive title"
+msgid "Quotes"
+msgstr "Báo giá"
+
+#: includes/Core/Util/Entity_Factory.php:290
+msgctxt "post format archive title"
+msgid "Videos"
+msgstr "Video"
+
+#: includes/Core/Util/Entity_Factory.php:287
+msgctxt "post format archive title"
+msgid "Images"
+msgstr "Hình ảnh"
+
+#: includes/Core/Util/Entity_Factory.php:284
+msgctxt "post format archive title"
+msgid "Galleries"
+msgstr "Bộ sưu tập"
+
+#: includes/Core/Util/Entity_Factory.php:281
+msgctxt "post format archive title"
+msgid "Asides"
+msgstr "Ghi chú"
+
+#: includes/Core/Util/Entity_Factory.php:275
+msgctxt "tag archive title prefix"
+msgid "Tag:"
+msgstr "Thẻ:"
+
+#: includes/Core/Util/Entity_Factory.php:271
+msgctxt "category archive title prefix"
+msgid "Category:"
+msgstr "Danh mục:"
+
+#: includes/Core/Authentication/Clients/OAuth_Client_Base.php:305
+msgid "Looks like the verification token for your site is missing."
+msgstr "Có vẻ như mã thông báo xác minh cho trang web của bạn đang bị thiếu."
+
+#: includes/Core/Authentication/Clients/OAuth_Client_Base.php:303
+msgid "Looks like there is no Search Console property for your site."
+msgstr "Có vẻ như không có thuộc tính Search Console nào cho trang web của bạn."
+
+#: includes/Core/Authentication/Clients/OAuth_Client_Base.php:301
+msgid "Looks like your site is not allowed access to Google account data and can’t display stats in the dashboard."
+msgstr "Có vẻ như trang web của bạn không được phép truy cập dữ liệu tài khoản Google và không thể hiển thị thống kê trên bảng điều khiển."
+
+#: includes/Core/Util/Entity_Factory.php:251
+msgid "Home"
+msgstr "Trang chủ"
+
+#: includes/Core/Modules/Module.php:383
+msgid "Invalid datapoint request."
+msgstr "Yêu cầu dữ liệu không hợp lệ."
+
+#: includes/Modules/Tag_Manager.php:283
+msgid "Additional permissions are required to create a new Tag Manager container on your behalf."
+msgstr "Cần thêm quyền để tạo container Tag Manager mới thay mặt bạn."
+
+#: includes/Modules/Analytics_4.php:688
+msgid "You’ll need to grant Site Kit permission to create a new Analytics property on your behalf."
+msgstr "Bạn cần cấp quyền cho Site Kit để tạo thuộc tính Analytics mới thay mặt bạn."
+
+#: includes/Modules/Analytics_4.php:677
+msgid "You’ll need to grant Site Kit permission to create a new Analytics account on your behalf."
+msgstr "Bạn cần cấp quyền cho Site Kit để tạo tài khoản Analytics mới thay mặt bạn."
+
+#: includes/Core/Authentication/Authentication.php:741
+#: includes/Core/Authentication/Authentication.php:761
+#: includes/Core/Authentication/Authentication.php:795
+msgid "You don’t have permissions to authenticate with Site Kit."
+msgstr "Bạn không có quyền xác thực với Site Kit."
+
+#: includes/Core/Authentication/Setup.php:229
+#: includes/Core/Authentication/Setup.php:286 includes/Core/Util/Reset.php:306
+msgid "You don’t have permissions to set up Site Kit."
+msgstr "Bạn không có quyền thiết lập Site Kit."
+
+#: includes/Core/Authentication/Clients/OAuth_Client_Base.php:287
+msgid "Setup was interrupted because you did not grant the necessary permissions."
+msgstr "Quá trình thiết lập bị gián đoạn vì bạn chưa cấp quyền cần thiết."
+
+#: includes/Core/Modules/REST_Modules_Controller.php:484
+msgid "Settings to set."
+msgstr "Cài đặt cần thiết lập."
+
+#: includes/Core/Modules/REST_Modules_Controller.php:437
+#: includes/Core/Modules/REST_Modules_Controller.php:470
+msgid "Module does not support settings."
+msgstr "Mô-đun này không hỗ trợ cài đặt."
+
+#: includes/Core/Util/Requires_Javascript_Trait.php:36
+msgid "The Site Kit by Google plugin requires JavaScript to be enabled in your browser."
+msgstr "Plugin Site Kit của Google yêu cầu bật JavaScript trong trình duyệt của bạn."
+
+#: includes/Core/Site_Health/Debug_Data.php:518
+msgid "Required scopes"
+msgstr "Phạm vi cần thiết"
+
+#. translators: used between list items, there is a space after the comma.
+#. translators: used between list items, there is a space after the comma
+#: includes/Core/Site_Health/Debug_Data.php:378
+#: includes/Core/Site_Health/Debug_Data.php:399
+#: includes/Core/Site_Health/Debug_Data.php:469
+#: includes/Modules/AdSense.php:1040 includes/Modules/AdSense.php:1084
+#: includes/Modules/Analytics_4.php:591 includes/Modules/Analytics_4.php:634
+#: includes/Modules/Analytics_4/Report/RequestHelpers.php:177
+#: includes/Modules/Analytics_4/Report/RequestHelpers.php:247
+#: includes/Modules/Analytics_4/Report/RequestHelpers.php:314
+#: dist/assets/js/googlesitekit-activation-9fae1c60f7fbf5c3ebf2.js:17
+#: dist/assets/js/googlesitekit-ad-blocking-recovery-2c30c1ff9976655238a8.js:35
+#: dist/assets/js/googlesitekit-adminbar-d186945219cb93560f5d.js:33
+#: dist/assets/js/googlesitekit-api-211dd5a5f4cec4400889.js:16
+#: dist/assets/js/googlesitekit-block-tracking-960782aae4a52e585358.js:16
+#: dist/assets/js/googlesitekit-datastore-forms-d8b11b656dbaf63ca0b2.js:16
+#: dist/assets/js/googlesitekit-datastore-site-fd8ee487dce1936d6d77.js:16
+#: dist/assets/js/googlesitekit-datastore-ui-f70bef39a30fd710c09c.js:16
+#: dist/assets/js/googlesitekit-datastore-user-5667e15dbb47dad16df5.js:16
+#: dist/assets/js/googlesitekit-entity-dashboard-948461b5b99c6d8b49f5.js:40
+#: dist/assets/js/googlesitekit-main-dashboard-a725fcbefd2a71260086.js:20
+#: dist/assets/js/googlesitekit-metric-selection-917182e3b042960cfed2.js:31
+#: dist/assets/js/googlesitekit-modules-ads-376bcc528ed64ac0302c.js:23
+#: dist/assets/js/googlesitekit-modules-adsense-7be3dd970adbc67b0b5b.js:20
+#: dist/assets/js/googlesitekit-modules-analytics-4-01b087350c9abdbbe075.js:20
+#: dist/assets/js/googlesitekit-modules-c69030e789b0d41ff748.js:17
+#: dist/assets/js/googlesitekit-modules-pagespeed-insights-3321ee5a21873d686513.js:22
+#: dist/assets/js/googlesitekit-modules-reader-revenue-manager-58e722e6c731c342356d.js:24
+#: dist/assets/js/googlesitekit-modules-search-console-79a6c932436e46c38049.js:35
+#: dist/assets/js/googlesitekit-modules-sign-in-with-google-1d35a8ab929b43958ea7.js:30
+#: dist/assets/js/googlesitekit-modules-tagmanager-214fe54794a20166bf04.js:27
+#: dist/assets/js/googlesitekit-notifications-1a6dbda4f6737b1f2e87.js:21
+#: dist/assets/js/googlesitekit-settings-2b36b453bed7cb0967c1.js:20
+#: dist/assets/js/googlesitekit-splash-e3abaa080b4064076a63.js:30
+#: dist/assets/js/googlesitekit-user-input-077ded4654be41d0bb62.js:27
+#: dist/assets/js/googlesitekit-widgets-6e28ae3fe2a03c31814e.js:20
+#: dist/assets/js/googlesitekit-wp-dashboard-1f99443cbca11efb3fe5.js:37
+msgid ", "
+msgstr ", "
+
+#: includes/Core/Site_Health/Debug_Data.php:375
+msgid "Active Modules"
+msgstr "Mô-đun Hoạt động"
+
+#: includes/Core/Site_Health/Debug_Data.php:291
+msgid "Not authenticated"
+msgstr "Chưa xác thực"
+
+#: includes/Core/Site_Health/Debug_Data.php:290
+msgid "Authenticated"
+msgstr "Đã xác thực"
+
+#: includes/Core/Site_Health/Debug_Data.php:288
+msgid "User Status"
+msgstr "Trạng thái người dùng"
+
+#: includes/Core/Site_Health/Debug_Data.php:271
+#: dist/assets/js/googlesitekit-modules-adsense-7be3dd970adbc67b0b5b.js:53
+msgid "Site Status"
+msgstr "Trạng thái trang web"
+
+#: includes/Core/Site_Health/Debug_Data.php:259
+#: includes/Modules/Analytics_4.php:600 includes/Modules/Analytics_4.php:613
+msgid "Not connected"
+msgstr "Chưa kết nối"
+
+#: includes/Core/Site_Health/Debug_Data.php:258
+msgid "Connected through OAuth client credentials"
+msgstr "Kết nối thông qua thông tin xác thực của khách hàng OAuth"
+
+#: includes/Core/Site_Health/Debug_Data.php:257
+msgid "Connected through site credentials"
+msgstr "Kết nối thông qua thông tin xác thực của trang web"
+
+#: includes/Core/Site_Health/Debug_Data.php:240
+msgid "AMP Mode"
+msgstr "Chế độ AMP"
+
+#: includes/Core/Site_Health/Debug_Data.php:236
+msgid "Secondary"
+msgstr "Thứ cấp"
+
+#: includes/Core/Site_Health/Debug_Data.php:235
+msgid "Primary"
+msgstr "Chủ yếu"
+
+#: includes/Core/Site_Health/Debug_Data.php:210
+#: includes/Core/Site_Health/Debug_Data.php:452
+#: includes/Modules/Analytics_4.php:588 includes/Modules/Analytics_4.php:631
+#: includes/Modules/Reader_Revenue_Manager/Admin_Post_List.php:118
+#: includes/Modules/Reader_Revenue_Manager/Admin_Post_List.php:141
+#: includes/Modules/Reader_Revenue_Manager/Admin_Post_List.php:159
+#: dist/assets/blocks/reader-revenue-manager/block-editor-plugin/index.js:2
+#: dist/assets/js/googlesitekit-modules-ads-376bcc528ed64ac0302c.js:5
+#: dist/assets/js/googlesitekit-modules-ads-376bcc528ed64ac0302c.js:8
+#: dist/assets/js/googlesitekit-modules-adsense-7be3dd970adbc67b0b5b.js:53
+#: dist/assets/js/googlesitekit-modules-analytics-4-01b087350c9abdbbe075.js:51
+msgid "None"
+msgstr "Không có"
+
+#: includes/Core/Site_Health/Debug_Data.php:183
+msgid "Reference Site URL"
+msgstr "URL trang web tham chiếu"
+
+#: includes/Core/Site_Health/Debug_Data.php:179
+msgid "WordPress Version"
+msgstr "Phiên bản WordPress"
+
+#: includes/Core/Site_Health/Debug_Data.php:175
+msgid "PHP Version"
+msgstr "Phiên bản PHP"
+
+#: includes/Core/Site_Health/Debug_Data.php:171
+msgid "Version"
+msgstr "Phiên bản"
+
+#: includes/Modules/AdSense.php:252
+msgid "AdSense: Snippet placed"
+msgstr "AdSense: Đoạn mã đã được đặt"
+
+#: includes/Modules/AdSense.php:244
+msgid "AdSense: Account status"
+msgstr "AdSense: Trạng thái tài khoản"
+
+#: includes/Modules/AdSense.php:239
+msgid "AdSense: Client ID"
+msgstr "AdSense: Client ID"
+
+#: includes/Modules/AdSense.php:234
+msgid "AdSense: Account ID"
+msgstr "AdSense: ID tài khoản"
+
+#: includes/Modules/Tag_Manager.php:235
+msgid "Tag Manager: Snippet placed"
+msgstr "Quản lý thẻ: Đoạn mã đã được đặt"
+
+#: includes/Modules/Tag_Manager.php:230
+msgid "Tag Manager: AMP Container ID"
+msgstr "Quản lý thẻ: ID Container AMP"
+
+#: includes/Modules/Tag_Manager.php:225
+msgid "Tag Manager: Container ID"
+msgstr "Quản lý thẻ: ID thẻ"
+
+#: includes/Modules/Tag_Manager.php:220
+msgid "Tag Manager: Account ID"
+msgstr "Quản lý thẻ: ID tài khoản"
+
+#: includes/Modules/Analytics_4.php:581
+msgid "Analytics: Snippet placed"
+msgstr "Phân tích: Đoạn mã đã được đặt"
+
+#: includes/Modules/Analytics_4.php:566
+msgid "Analytics: Property ID"
+msgstr "Phân tích: ID tài sản"
+
+#: includes/Modules/Analytics_4.php:561
+msgid "Analytics: Account ID"
+msgstr "Phân tích: ID tài khoản"
+
+#: includes/Modules/Search_Console.php:168
+msgid "Search Console: Property"
+msgstr "Tìm kiếm Console: Tài sản"
+
+#: includes/Core/Authentication/Clients/OAuth_Client_Base.php:307
+msgid "Unable to authenticate Site Kit, as no client credentials exist."
+msgstr "Không thể xác thực Site Kit vì không có thông tin xác thực khách hàng nào."
+
+#: includes/Core/Admin/Dashboard.php:116
+msgid "Site Kit Summary"
+msgstr "Thống kê Site Kit"
+
+#: includes/Core/Notifications/Notification.php:69
+#: dist/assets/js/googlesitekit-main-dashboard-a725fcbefd2a71260086.js:45
+#: dist/assets/js/googlesitekit-notifications-1a6dbda4f6737b1f2e87.js:6
+msgid "Dismiss"
+msgstr "Bỏ qua"
+
+#: includes/Modules/Analytics_4.php:600 includes/Modules/Analytics_4.php:613
+#: dist/assets/js/googlesitekit-settings-2b36b453bed7cb0967c1.js:47
+msgid "Connected"
+msgstr "Đã kết nối"
+
+#: includes/Core/Admin/Available_Tools.php:47
+#: includes/Core/Admin/Available_Tools.php:61
+#: dist/assets/js/googlesitekit-settings-2b36b453bed7cb0967c1.js:46
+#: dist/assets/js/googlesitekit-splash-e3abaa080b4064076a63.js:13
+msgid "Reset Site Kit"
+msgstr "Đặt lại Site Kit"
+
+#: includes/Modules/AdSense.php:751
+#: dist/assets/js/googlesitekit-ad-blocking-recovery-2c30c1ff9976655238a8.js:14
+#: dist/assets/js/googlesitekit-ad-blocking-recovery-2c30c1ff9976655238a8.js:17
+#: dist/assets/js/googlesitekit-modules-adsense-7be3dd970adbc67b0b5b.js:43
+#: dist/assets/js/googlesitekit-modules-adsense-7be3dd970adbc67b0b5b.js:46
+#: dist/assets/js/googlesitekit-modules-adsense-7be3dd970adbc67b0b5b.js:49
+msgctxt "Service name"
+msgid "AdSense"
+msgstr "AdSense"
+
+#: includes/Modules/PageSpeed_Insights.php:182
+#: dist/assets/js/googlesitekit-modules-pagespeed-insights-3321ee5a21873d686513.js:2
+msgctxt "Service name"
+msgid "PageSpeed Insights"
+msgstr "PageSpeed Insights"
+
+#: includes/Modules/Tag_Manager.php:511
+#: dist/assets/js/googlesitekit-modules-tagmanager-214fe54794a20166bf04.js:28
+msgctxt "Service name"
+msgid "Tag Manager"
+msgstr "Trình quản lý thẻ"
+
+#: includes/Modules/Search_Console.php:506
+#: dist/assets/js/googlesitekit-modules-search-console-79a6c932436e46c38049.js:1
+#: dist/assets/js/googlesitekit-splash-e3abaa080b4064076a63.js:15
+msgctxt "Service name"
+msgid "Search Console"
+msgstr "Search Console"
+
+#: includes/Modules/Analytics_4.php:1883
+#: dist/assets/js/googlesitekit-main-dashboard-a725fcbefd2a71260086.js:42
+#: dist/assets/js/googlesitekit-modules-adsense-7be3dd970adbc67b0b5b.js:53
+#: dist/assets/js/googlesitekit-modules-analytics-4-01b087350c9abdbbe075.js:38
+#: dist/assets/js/googlesitekit-modules-analytics-4-01b087350c9abdbbe075.js:58
+#: dist/assets/js/googlesitekit-modules-analytics-4-01b087350c9abdbbe075.js:70
+#: dist/assets/js/googlesitekit-modules-analytics-4-01b087350c9abdbbe075.js:75
+#: dist/assets/js/googlesitekit-modules-search-console-79a6c932436e46c38049.js:1
+#: dist/assets/js/googlesitekit-settings-2b36b453bed7cb0967c1.js:42
+#: dist/assets/js/googlesitekit-widgets-6e28ae3fe2a03c31814e.js:38
+msgctxt "Service name"
+msgid "Analytics"
+msgstr "Analytics"
+
+#: includes/Core/Authentication/Authentication.php:1144
+msgid "Click here"
+msgstr "Bấm vào đây"
+
+#: includes/Core/Authentication/Authentication.php:1137
+msgid "You need to reauthenticate your Google account."
+msgstr "Bạn cần xác minh lại tài khoản Google."
+
+#. translators: %s: error code from API
+#: includes/Core/Authentication/Clients/OAuth_Client_Base.php:316
+msgid "Unknown Error (code: %s)."
+msgstr "Lỗi chưa xác định (mã: %s)."
+
+#: includes/Core/Authentication/Clients/OAuth_Client_Base.php:313
+msgid "Unable to receive access token because of an unsupported grant type."
+msgstr "Unable to receive access token because of an unsupported grant type."
+
+#: includes/Core/Authentication/Clients/OAuth_Client_Base.php:311
+msgid "Unable to receive access token because of an unauthorized client."
+msgstr "Không thể nhận access token vì client chưa xác minh."
+
+#: includes/Core/Authentication/Clients/OAuth_Client_Base.php:297
+msgid "Unable to receive access token because of an invalid authorization code or refresh token."
+msgstr "Unable to receive access token because of an invalid authorization code or refresh token."
+
+#: includes/Core/Authentication/Clients/OAuth_Client_Base.php:293
+msgid "Unable to receive access token because of an invalid client."
+msgstr "Không thể nhận access token vì client không hợp lệ."
+
+#: includes/Core/Authentication/Clients/OAuth_Client_Base.php:299
+msgid "Unable to receive access token because of an invalid OAuth request."
+msgstr "Không thể nhận access token vì yêu cầu OAuth không hợp lệ."
+
+#: includes/Core/Authentication/Clients/OAuth_Client_Base.php:289
+msgid "Unable to receive access token because of an unknown error."
+msgstr "Không thể nhận access token vì lỗi chưa xác định."
+
+#: includes/Core/Authentication/Clients/OAuth_Client_Base.php:295
+msgid "Unable to receive access token because of an empty authorization code."
+msgstr "Không thể nhận access token bởi mã xác minh trống."
+
+#: includes/Core/Authentication/Clients/OAuth_Client_Base.php:291
+msgid "Internal error that the Google login redirect failed."
+msgstr "Lỗi nội bộ khiến chuyển hướng đăng nhập Google không thành công."
+
+#: includes/Core/Authentication/Clients/OAuth_Client_Base.php:309
+msgid "Unable to refresh access token, as no refresh token exists."
+msgstr "Không thể làm mới access token, vì không có token mới tồn tại."
+
+#: includes/Core/Site_Health/Debug_Data.php:241
+#: includes/Core/Tags/Google_Tag_Gateway/Google_Tag_Gateway.php:152
+#: includes/Modules/AdSense.php:253 includes/Modules/AdSense.php:274
+#: includes/Modules/AdSense.php:282 includes/Modules/Analytics_4.php:582
+#: includes/Modules/Sign_In_With_Google.php:488
+#: includes/Modules/Tag_Manager.php:236
+msgid "No"
+msgstr "Không"
+
+#: includes/Core/Tags/Google_Tag_Gateway/Google_Tag_Gateway.php:150
+#: includes/Modules/AdSense.php:253 includes/Modules/AdSense.php:274
+#: includes/Modules/AdSense.php:282 includes/Modules/Analytics_4.php:582
+#: includes/Modules/Sign_In_With_Google.php:488
+#: includes/Modules/Tag_Manager.php:236
+msgid "Yes"
+msgstr "Có"
+
+#: includes/Core/Modules/REST_Modules_Controller.php:149
+msgid "List of slugs of other modules depending on the module."
+msgstr "Danh sách slug module khác tùy thuộc vào module."
+
+#: includes/Core/Modules/REST_Modules_Controller.php:141
+msgid "List of slugs of other modules that the module depends on."
+msgstr "Danh sách slug module khác mà module phụ thuộc."
+
+#: includes/Core/Modules/REST_Modules_Controller.php:136
+msgid "Whether the module setup has been completed."
+msgstr "Cho dù thiết lập mô-đun đã hoàn thành hay chưa."
+
+#: includes/Core/Modules/REST_Modules_Controller.php:132
+msgid "Whether the module is active."
+msgstr "Cho dù mô-đun có hoạt động hay không."
+
+#: includes/Core/Modules/REST_Modules_Controller.php:127
+msgid "Whether the module is internal, thus without any UI."
+msgstr "Cho dù mô-đun có phải là nội bộ hay không, do đó không có giao diện người dùng nào."
+
+#: includes/Core/Modules/REST_Modules_Controller.php:121
+msgid "The module homepage."
+msgstr "Trang chủ module."
+
+#: includes/Core/Modules/REST_Modules_Controller.php:116
+msgid "Description of the module."
+msgstr "Mô tả module."
+
+#: includes/Core/Modules/REST_Modules_Controller.php:111
+msgid "Name of the module."
+msgstr "Tên module."
+
+#: includes/Core/Util/REST_Entity_Search_Controller.php:133
+msgid "Text content to search for."
+msgstr "Nội dung văn bản để tìm kiếm."
+
+#: includes/Core/Modules/REST_Modules_Controller.php:605
+msgid "Module data point to address."
+msgstr "Điểm dữ liệu mô-đun cần giải quyết."
+
+#: includes/Core/Modules/REST_Modules_Controller.php:588
+msgid "Data to set."
+msgstr "Dữ liệu cần đặt."
+
+#: includes/Core/Modules/REST_Modules_Controller.php:106
+#: includes/Core/Modules/REST_Modules_Controller.php:322
+#: includes/Core/Modules/REST_Modules_Controller.php:379
+#: includes/Core/Modules/REST_Modules_Controller.php:417
+#: includes/Core/Modules/REST_Modules_Controller.php:496
+#: includes/Core/Modules/REST_Modules_Controller.php:532
+#: includes/Core/Modules/REST_Modules_Controller.php:600
+msgid "Identifier for the module."
+msgstr "Bộ nhận dạng cho mô-đun."
+
+#: includes/Core/Modules/REST_Modules_Controller.php:285
+msgid "An internal error occurred while trying to deactivate the module."
+msgstr "Đã xảy ra lỗi nội bộ khi ngừng kích hoạt module."
+
+#. translators: %s: module name
+#: includes/Core/Modules/REST_Modules_Controller.php:280
+msgid "Module cannot be deactivated because deactivation of dependant %s failed."
+msgstr "Module cannot be deactivated because deactivation of dependant %s failed."
+
+#: includes/Core/Modules/REST_Modules_Controller.php:271
+msgid "An internal error occurred while trying to activate the module."
+msgstr "Xảy ra lỗi nội bộ khi kích hoạt module."
+
+#. translators: %s: module name
+#: includes/Core/Modules/REST_Modules_Controller.php:267
+msgid "Module cannot be activated because of inactive dependency %s."
+msgstr "Module cannot be activated because of inactive dependency %s."
+
+#: includes/Core/Modules/REST_Modules_Controller.php:344
+#: includes/Core/Modules/REST_Modules_Controller.php:395
+#: includes/Core/Modules/REST_Modules_Controller.php:433
+#: includes/Core/Modules/REST_Modules_Controller.php:466
+#: includes/Core/Modules/REST_Modules_Controller.php:512
+#: includes/Core/Modules/REST_Modules_Controller.php:548
+#: includes/Core/Modules/REST_Modules_Controller.php:570
+msgid "Invalid module slug."
+msgstr "Slug module không hợp lệ."
+
+#. translators: %s: service identifier
+#: includes/Core/Modules/Module.php:554
+msgid "Google service identified by %s does not exist."
+msgstr "Dịch vụ Google được xác định bởi %s không tồn tại."
+
+#: includes/Core/Modules/Module.php:542 includes/Core/Modules/Module.php:546
+msgid "Google services not set up correctly."
+msgstr "Dịch vụ Google chưa được cài đặt hợp lí."
+
+#: includes/Core/Modules/Module.php:488
+msgid "Google client not set up correctly."
+msgstr "Google client chưa được cài đặt hợp lí."
+
+#. translators: %s: module slug
+#: includes/Core/Modules/Modules.php:528 includes/Core/Modules/Modules.php:566
+#: includes/Core/Modules/Modules.php:587
+msgid "Invalid module slug %s."
+msgstr "Slug module không hợp lệ %s."
+
+#: includes/Core/Admin/Screen.php:129
+#: includes/Core/Site_Health/Tag_Placement.php:106
+msgid "Site Kit"
+msgstr "Site Kit"
+
+#: includes/Core/Admin/Plugin_Action_Links.php:61
+#: includes/Core/Admin/Screens.php:460
+#: dist/assets/js/googlesitekit-settings-2b36b453bed7cb0967c1.js:46
+msgid "Settings"
+msgstr "Cài đặt"
+
+#: includes/Core/Admin/Screens.php:362 includes/Core/Admin/Screens.php:408
+msgid "Dashboard"
+msgstr "Bảng tin"
+
+#: includes/Modules/Analytics_4.php:1885
+msgid "https://analytics.google.com/analytics/web"
+msgstr "https://analytics.google.com/analytics/web"
+
+#: includes/Modules/Analytics_4.php:1884
+msgid "Get a deeper understanding of your customers. Google Analytics gives you the free tools you need to analyze data for your business in one place."
+msgstr "Hiểu sâu hơn về khách hàng. Google Analytics cung cấp công cụ miễn phí cần thiết để phân tích dữ liệu cho doanh nghiệp của bạn."
+
+#: includes/Modules/Site_Verification.php:359
+msgid "https://www.google.com/webmasters/verification/home"
+msgstr "https://www.google.com/webmasters/verification/home"
+
+#: includes/Modules/Site_Verification.php:357
+msgid "Google Site Verification allows you to manage ownership of your site."
+msgstr "Google Site Verification cho phép bạn quản lí chủ sở hữu trang web."
+
+#: includes/Modules/Site_Verification.php:180
+msgid "Unknown user."
+msgstr "Thành viên không xác định."
+
+#: includes/Modules/AdSense.php:752
+msgid "Earn money by placing ads on your website. It’s free and easy."
+msgstr "Đặt quảng cáo lên trang web để kiếm tiền. Miễn phí và đơn giản."
+
+#: includes/Modules/AdSense.php:644
+msgid "Invalid date range."
+msgstr "Khoảng ngày không hợp lệ."
+
+#: includes/Modules/AdSense.php:403
+msgid "Go to AdSense"
+msgstr "Đi tới AdSense"
+
+#: includes/Modules/AdSense.php:679
+msgid "AdSense account ID not set."
+msgstr "Chưa thiết lập ID tài khoản AdSense."
+
+#: includes/Modules/Tag_Manager.php:513
+msgid "https://tagmanager.google.com/"
+msgstr "https://tagmanager.google.com/"
+
+#: includes/Modules/Tag_Manager.php:512
+msgid "Tag Manager creates an easy to manage way to create tags on your site without updating code"
+msgstr "Trình quản lý thẻ tạo ra một cách dễ dàng để quản lý việc tạo thẻ trên trang web của bạn mà không cần cập nhật mã"
+
+#: includes/Modules/PageSpeed_Insights.php:183
+msgid "Google PageSpeed Insights gives you metrics about performance, accessibility, SEO and PWA"
+msgstr "Google PageSpeed Insights cung cấp cho bạn các số liệu về hiệu suất, khả năng truy cập, SEO và PWA"
+
+#. translators: 1: Invalid parameter name, 2: list of valid values
+#: includes/Modules/PageSpeed_Insights.php:114
+#: includes/Modules/Tag_Manager.php:328
+msgid "Request parameter %1$s is not one of %2$s"
+msgstr "Tham số yêu cầu %1$s không phải là một trong số %2$s"
+
+#: includes/Modules/Search_Console.php:509
+msgid "https://search.google.com/search-console"
+msgstr "https://search.google.com/search-console"
+
+#: includes/Modules/Search_Console.php:507
+msgid "Google Search Console and helps you understand how Google views your site and optimize its performance in search results."
+msgstr "Google Search Console giúp bạn hiểu cách Google đọc trang web và tối ưu hiệu suất ở kết quả tìm kiếm."
+
+#: includes/Core/REST_API/Exception/Invalid_Datapoint_Exception.php:38
+msgid "Invalid datapoint."
+msgstr "Datapoint không hợp lệ."
+
+#: includes/Modules/Search_Console.php:266
+msgid "Error adding the site to Search Console."
+msgstr "Lỗi khi thêm web vào Search Console."
+
+#. translators: %s: Missing parameter name
+#: includes/Core/Dismissals/REST_Dismissals_Controller.php:148
+#: includes/Core/Expirables/REST_Expirable_Items_Controller.php:110
+#: includes/Core/Expirables/REST_Expirable_Items_Controller.php:120
+#: includes/Core/Feature_Tours/REST_Feature_Tours_Controller.php:108
+#: includes/Core/Notifications/Notifications.php:286
+#: includes/Core/Prompts/REST_Prompts_Controller.php:109
+#: includes/Core/REST_API/Exception/Missing_Required_Param_Exception.php:46
+#: includes/Modules/AdSense.php:342 includes/Modules/AdSense.php:347
+#: includes/Modules/AdSense.php:355 includes/Modules/AdSense.php:364
+#: includes/Modules/AdSense.php:476 includes/Modules/Analytics_4.php:1214
+#: includes/Modules/Analytics_4.php:1230 includes/Modules/Analytics_4.php:1245
+#: includes/Modules/Analytics_4.php:1261 includes/Modules/Analytics_4.php:1273
+#: includes/Modules/Analytics_4.php:1303 includes/Modules/Analytics_4.php:1312
+#: includes/Modules/Analytics_4.php:1331 includes/Modules/Analytics_4.php:1340
+#: includes/Modules/Analytics_4.php:1349 includes/Modules/Analytics_4.php:1403
+#: includes/Modules/Analytics_4.php:1412 includes/Modules/Analytics_4.php:1556
+#: includes/Modules/Analytics_4.php:1606 includes/Modules/Analytics_4.php:1623
+#: includes/Modules/Analytics_4.php:1658 includes/Modules/Analytics_4.php:1669
+#: includes/Modules/Analytics_4.php:1677 includes/Modules/Analytics_4.php:1690
+#: includes/Modules/PageSpeed_Insights.php:100
+#: includes/Modules/Search_Console.php:238
+#: includes/Modules/Site_Verification.php:173
+#: includes/Modules/Tag_Manager.php:308 includes/Modules/Tag_Manager.php:316
+#: includes/Modules/Tag_Manager.php:359 includes/Modules/Tag_Manager.php:367
+msgid "Request parameter is empty: %s."
+msgstr "Request parameter trống: %s."
+
+#: google-site-kit.php:51 google-site-kit.php:59
+msgid "Error Activating"
+msgstr "Lỗi kích hoạt"
+
+#. Author URI of the plugin
+#: google-site-kit.php
+msgid "https://opensource.google.com"
+msgstr "https://opensource.google.com"
+
+#. Author of the plugin
+#: google-site-kit.php
+msgid "Google"
+msgstr "Google"
+
+#. Description of the plugin
+#: google-site-kit.php
+msgid "Site Kit is a one-stop solution for WordPress users to use everything Google has to offer to make them successful on the web."
+msgstr "Site Kit là giải pháp trọn gói cho phép khách hàng sử dụng mọi dịch vụ của Google để thành công."
+
+#. Plugin URI of the plugin
+#: google-site-kit.php
+msgid "https://sitekit.withgoogle.com"
+msgstr "https://sitekit.withgoogle.com"
+
+#. Plugin Name of the plugin
+#. translators: %1$s: Sign in with Google service name, %2$s: Plugin name
+#: google-site-kit.php includes/Core/Admin/Screen.php:87
+#: includes/Core/Authentication/Authentication.php:1079
+#: includes/Core/Authentication/Authentication.php:1136
+#: includes/Core/Site_Health/Debug_Data.php:124
+#: includes/Modules/Sign_In_With_Google.php:662
+msgid "Site Kit by Google"
+msgstr "Site Kit by Google"

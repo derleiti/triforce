@@ -1,0 +1,619 @@
+# Translation of Feedzy RSS Feeds Pro in German
+# This file is distributed under the same license as the Feedzy RSS Feeds Pro package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-11-07 10:55:56+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: de\n"
+"Project-Id-Version: Feedzy RSS Feeds Pro\n"
+
+#: includes/views/openai-view.php:98
+msgid "Deprecated models"
+msgstr "Veraltete Modelle"
+
+#: includes/views/openai-view.php:86
+msgid "Latest models"
+msgstr "Neueste Modelle"
+
+#: includes/views/license-setting-template.php:17
+msgid "License Key"
+msgstr "Lizenzschlüssel"
+
+#: includes/admin/feedzy-rss-feeds-pro-admin.php:2681
+msgid "Personal"
+msgstr "Persönlich"
+
+#: includes/admin/feedzy-rss-feeds-pro-admin.php:2678
+msgid "Developer"
+msgstr "Entwickler"
+
+#: includes/admin/feedzy-rss-feeds-pro-admin.php:2676
+msgid "Agency"
+msgstr "Agentur"
+
+#: includes/admin/feedzy-rss-feeds-pro-admin.php:2386
+msgid "Image generation request failed."
+msgstr "Die Anforderung zur Bilderzeugung ist fehlgeschlagen."
+
+#: includes/admin/feedzy-rss-feeds-pro-admin.php:2322
+msgid "Content summarize request failed."
+msgstr "Die Anforderung zum Zusammenfassen des Inhalts ist fehlgeschlagen."
+
+#: includes/admin/feedzy-rss-feeds-pro-admin.php:2260
+msgid "OpenAI request failed."
+msgstr "Der Aufruf von OpenAI ist fehlgeschlagen."
+
+#: includes/admin/feedzy-rss-feeds-pro-admin.php:2134
+msgid "Rewrite content request failed."
+msgstr "Die Anforderung zum Umschreiben des Inhalts ist fehlgeschlagen."
+
+#: includes/admin/feedzy-rss-feeds-pro-admin.php:1685
+#: includes/admin/feedzy-rss-feeds-pro-admin.php:1714
+msgid "Failed to invoke the service."
+msgstr "Der Dienst konnte nicht aufgerufen werden."
+
+#: includes/admin/feedzy-rss-feeds-pro-admin.php:1473
+msgid "Invalid response for Full Content import"
+msgstr "Ungültige Antwort beim Import des gesamten Inhalts"
+
+#: includes/admin/feedzy-rss-feeds-pro-admin.php:1449
+#: includes/admin/feedzy-rss-feeds-pro-admin.php:1461
+#: includes/admin/feedzy-rss-feeds-pro-admin.php:2119
+#: includes/admin/feedzy-rss-feeds-pro-admin.php:2248
+#: includes/admin/feedzy-rss-feeds-pro-admin.php:2309
+#: includes/admin/feedzy-rss-feeds-pro-admin.php:2373
+msgid "Corrupted data."
+msgstr "Beschädigte Daten."
+
+#: includes/admin/feedzy-rss-feeds-pro-admin.php:1303
+msgid "Could not translate the content."
+msgstr "Der Inhalt konnte nicht übersetzt werden."
+
+#: includes/admin/feedzy-rss-feeds-pro-admin.php:1286
+msgid "Missing translation."
+msgstr "Die Übersetzung fehlt."
+
+#: includes/admin/feedzy-rss-feeds-pro-admin.php:1133
+msgid "Could not find the requested attribute."
+msgstr "Das gesuchte Attribut konnte nicht gefunden werden."
+
+#: includes/admin/feedzy-rss-feeds-pro-admin.php:1055
+msgid "Could not find the requested item element."
+msgstr "Das gesuchte Eintragselement konnte nicht gefunden werden."
+
+#. translators: %1$s: openrouter pricing url, %2$s: link text.
+#: includes/views/openrouter-view.php:67
+msgid "OpenRouter API models <a href=\"%1$s\" target=\"_blank\">%2$s</a>"
+msgstr "OpenRouter-API-Modelle <a href=\"%1$s\" target=\"_blank\">%2$s</a>"
+
+#: includes/views/openrouter-view.php:63
+msgid "The OpenRouter model"
+msgstr "Das OpenRouter-Modell"
+
+#. translators: %1$s: openrouter key document url, %2$s: link text.
+#: includes/views/openrouter-view.php:50
+msgid "OpenRouter API keys"
+msgstr "OpenRouter-API-Schlüssel"
+
+#. translators: %1$s: openrouter key document url, %2$s: link text.
+#: includes/views/openrouter-view.php:50
+msgid "Get your OpenRouter API key from <a href=\"%1$s\" target=\"_blank\">%2$s</a>"
+msgstr "Hol dir deinen OpenRouter-API-Schlüssel unter<a href=\"%1$s\" target=\"_blank\">%2$s</a>"
+
+#: includes/views/openrouter-view.php:33 includes/views/openrouter-view.php:39
+msgid "OpenRouter"
+msgstr "OpenRouter"
+
+#. translators: %1$s: OpenAI pricing url, %2$s: link text.
+#. translators: %1$s: openrouter pricing url, %2$s: link text.
+#: includes/views/openai-view.php:67 includes/views/openrouter-view.php:67
+msgid "Pricing"
+msgstr "Preise"
+
+#. translators: %1$s: OpenAI pricing url, %2$s: link text.
+#: includes/views/openai-view.php:67
+msgid "OpenAI API models <a href=\"%1$s\" target=\"_blank\">%2$s</a>"
+msgstr "OpenAI-API-Modelle <a href=\"%1$s\" target=\"_blank\">%2$s</a>"
+
+#. translators: %1$s: OpenAI key document url, %2$s: link text.
+#: includes/views/openai-view.php:50
+msgid "OpenAI API keys"
+msgstr "OpenAI-API-Schlüssel"
+
+#. translators: %1$s: OpenAI key document url, %2$s: link text.
+#: includes/views/openai-view.php:50
+msgid "Get your OpenAI API key from <a href=\"%1$s\" target=\"_blank\">%2$s</a>"
+msgstr "Hol dir deinen OpenAI-API-Schlüssel von <a href=\"%1$s\" target=\"_blank\">%2$s</a>"
+
+#: includes/views/license-setting-template.php:75
+msgid "Deactivate"
+msgstr "Deaktivieren"
+
+#: includes/views/license-setting-template.php:73
+msgid "Activate"
+msgstr "Aktivieren"
+
+#: includes/views/license-setting-template.php:49
+msgid "Valid — Expires"
+msgstr "Gültig – Läuft ab"
+
+#: includes/views/license-setting-template.php:40
+msgid "Invalid license provided"
+msgstr "Ungültige Lizenz bereitgestellt"
+
+#. translators: %s store link.
+#: includes/views/license-setting-template.php:36
+msgid "Enter your license from <a href=\"%s\" target=\"_blank\" rel=\"external noreferrer noopener\">Themeisle</a> purchase history in order to get plugin updates."
+msgstr "Gib deine Lizenz aus der <a href=\"%s\" target=\"_blank\" rel=\"external noreferrer noopener\">Themeisle</a>-Kaufhistorie ein, um Plugin-Updates zu erhalten."
+
+#: includes/views/license-setting-template.php:31
+msgid "Enter License Key"
+msgstr "Lizenzschlüssel eingeben"
+
+#: includes/views/amazon-product-advertising-view.php:164
+#: includes/views/openai-view.php:156 includes/views/openrouter-view.php:117
+#: includes/views/spinnerchief-view.php:101 includes/views/wordai-view.php:106
+msgid "Validate & Save"
+msgstr "Prüfen und speichern"
+
+#: includes/views/amazon-product-advertising-view.php:160
+#: includes/views/openai-view.php:153 includes/views/spinnerchief-view.php:98
+#: includes/views/wordai-view.php:103
+msgid "Checking"
+msgstr "Wird geprüft"
+
+#: includes/views/amazon-product-advertising-view.php:84
+msgid "Host"
+msgstr "Host"
+
+#: includes/views/amazon-product-advertising-view.php:41
+#: includes/views/openai-view.php:19 includes/views/spinnerchief-view.php:14
+#: includes/views/wordai-view.php:19
+msgid "Valid"
+msgstr "Gültig"
+
+#: includes/views/amazon-product-advertising-view.php:34
+#: includes/views/openai-view.php:12 includes/views/spinnerchief-view.php:7
+#: includes/views/wordai-view.php:12
+msgid "Invalid"
+msgstr "Ungültig"
+
+#: includes/admin/feedzy-rss-feeds-pro-admin.php:2584
+msgid "Invalid JSON file"
+msgstr "Ungültige JSON-Datei"
+
+#: includes/admin/feedzy-rss-feeds-pro-admin.php:2509
+#: includes/admin/feedzy-rss-feeds-pro-admin.php:2568
+msgid "Security check failed"
+msgstr "Die Sicherheitsprüfung ist fehlgeschlagen"
+
+#: includes/admin/feedzy-rss-feeds-pro-admin.php:2470
+msgid "Invalid Action. Please refresh the page and try again."
+msgstr "Ungültige Aktion. Bitte aktualisiere die Seite und versuche es erneut."
+
+#: includes/views/wordai-view.php:33 includes/views/wordai-view.php:39
+msgid "WordAi"
+msgstr "WordAi"
+
+#: includes/views/spinnerchief-view.php:28
+#: includes/views/spinnerchief-view.php:41
+msgid "SpinnerChief"
+msgstr "SpinnerChief"
+
+#. translators: %s the name of 3-rd party service used.
+#: includes/views/openai-view.php:38 includes/views/openrouter-view.php:38
+#: includes/views/spinnerchief-view.php:27
+#: includes/views/spinnerchief-view.php:40 includes/views/wordai-view.php:38
+msgid "%s API key"
+msgstr "%s-API-Schlüssel"
+
+#: includes/views/openai-view.php:33 includes/views/openai-view.php:39
+msgid "OpenAI"
+msgstr "OpenAI"
+
+#. translators: %s the name of 3-rd party service used.
+#: includes/views/openai-view.php:32 includes/views/openrouter-view.php:32
+#: includes/views/wordai-view.php:32
+msgid "The %s account API key"
+msgstr "Der API-Schlüssel des %s-Kontos"
+
+#: includes/views/wordai-view.php:47
+msgid "WordAi Email"
+msgstr "WordAi-E-Mail-Adresse"
+
+#: includes/views/wordai-view.php:46
+msgid "The WordAi account email"
+msgstr "Die E-Mail-Adresse des WordAi-Kontos"
+
+#: includes/views/openai-view.php:63
+msgid "The OpenAI model"
+msgstr "Das OpenAI-Modell"
+
+#: includes/views/metabox-business.php:6
+msgid "If you choose to display the full content, you may want to specify the language of the website that will provide the full content. The default is English"
+msgstr "Wenn du dich dafür entscheidest, den vollständigen Inhalt anzuzeigen, möchtest du vielleicht die Sprache der Website angeben, die den vollständigen Inhalt bereitstellt. Die Standardeinstellung ist Englisch"
+
+#: includes/views/metabox-business.php:4
+msgid "Item Full Content Language"
+msgstr "Sprache des vollständigen Inhalts des Eintrags"
+
+#: includes/views/openrouter-view.php:114
+msgid "Checking ..."
+msgstr "Wird geprüft …"
+
+#: includes/views/amazon-product-advertising-view.php:134
+msgid "Error"
+msgstr "Fehler"
+
+#. translators: %1$s is the date of the last API status check.
+#: includes/views/amazon-product-advertising-view.php:129
+#: includes/views/openai-view.php:126 includes/views/openrouter-view.php:88
+#: includes/views/spinnerchief-view.php:71 includes/views/wordai-view.php:76
+msgid "Last check: %1$s"
+msgstr "Letzte Überprüfung: %1$s"
+
+#. translators: %1$s is the API status message.
+#: includes/views/amazon-product-advertising-view.php:119
+#: includes/views/openai-view.php:116 includes/views/openrouter-view.php:78
+#: includes/views/spinnerchief-view.php:61 includes/views/wordai-view.php:66
+msgid "API Status: %1$s"
+msgstr "API-Status: %1$s"
+
+#: includes/views/amazon-product-advertising-view.php:110
+#: includes/views/amazon-product-advertising-view.php:113
+msgid "Partner Tag (store/tracking id)"
+msgstr "Partner-Tag (Store/Tracking-ID)"
+
+#: includes/views/amazon-product-advertising-view.php:97
+msgid "Region"
+msgstr "Region"
+
+#: includes/views/amazon-product-advertising-view.php:76
+#: includes/views/amazon-product-advertising-view.php:77
+msgid "Secret key"
+msgstr "Geheimer Schlüssel"
+
+#: includes/views/amazon-product-advertising-view.php:70
+#: includes/views/amazon-product-advertising-view.php:71
+msgid "Access Key"
+msgstr "Zugangsschlüssel"
+
+#. translators: %1$s to available amazon domain, %2$s example URL with ASIN,
+#. %3$s list of available Amazon domains.
+#: includes/views/amazon-product-advertising-view.php:59
+msgid "Please use this URL structure %1$s or %2$s while getting Amazon product information. <br> Here are the available Amazon domains: %3$s"
+msgstr "Bitte verwende diese URL-Struktur %1$s oder %2$s, wenn du Amazon-Produktinformationen abrufst. <br> Hier sind die verfügbaren Amazon-Domains: %3$s"
+
+#: includes/views/amazon-product-advertising-view.php:37
+#: includes/views/openai-view.php:15 includes/views/openrouter-view.php:15
+#: includes/views/spinnerchief-view.php:10 includes/views/wordai-view.php:15
+msgid "Never"
+msgstr "Nie"
+
+#. translators: %s is the URL of the audio source.
+#: includes/public/template-functions.php:140
+msgid "Your browser does not support the audio element. But you can check this for the original link: %s"
+msgstr "Dein Browser unterstützt das Audio-Element nicht. Du kannst dies jedoch über den Original-Link überprüfen: %s"
+
+#: includes/elementor/widgets/feedzy-rss-loop-widget.php:263
+msgid "Please enter a valid feed URL/feed groups slug in feed source setting."
+msgstr "Bitte gib eine gültige Feed-URL/Feed-Gruppen-Titelform in den Einstellungen der Feed-Quelle ein."
+
+#: includes/elementor/widgets/feedzy-rss-loop-widget.php:261
+msgid "Feed has no items."
+msgstr "Der Feed hat keine Einträge."
+
+#: includes/elementor/widgets/feedzy-rss-loop-widget.php:196
+msgid "Choose Template"
+msgstr "Template auswählen"
+
+#: includes/elementor/widgets/feedzy-rss-loop-widget.php:189
+msgid "Template"
+msgstr "Template"
+
+#: includes/elementor/widgets/feedzy-rss-loop-widget.php:171
+msgid "Filter items by time range, from: "
+msgstr "Filtere Einträge nach Zeitraum, von: "
+
+#: includes/elementor/widgets/feedzy-rss-loop-widget.php:147
+msgid "Exclude items if"
+msgstr "Einträge ausschließen, wenn"
+
+#: includes/elementor/widgets/feedzy-rss-loop-widget.php:141
+#: includes/elementor/widgets/feedzy-rss-loop-widget.php:164
+msgid "You can add multiple keywords at once by separating them with comma (,) or use the plus sign (+) to bind multiple keywords."
+msgstr "Du kannst mehrere Schlüsselwörter auf einmal hinzufügen, indem du sie mit einem Komma (,) trennst oder das Pluszeichen (+) verwendest, um mehrere Schlüsselwörter zu verbinden."
+
+#: includes/elementor/widgets/feedzy-rss-loop-widget.php:139
+#: includes/elementor/widgets/feedzy-rss-loop-widget.php:162
+msgid "Contains"
+msgstr "Beinhaltet"
+
+#: includes/elementor/widgets/feedzy-rss-loop-widget.php:131
+#: includes/elementor/widgets/feedzy-rss-loop-widget.php:153
+msgid "Author"
+msgstr "Autor"
+
+#: includes/elementor/widgets/feedzy-rss-loop-widget.php:130
+#: includes/elementor/widgets/feedzy-rss-loop-widget.php:152
+msgid "Description"
+msgstr "Beschreibung"
+
+#: includes/elementor/widgets/feedzy-rss-loop-widget.php:129
+#: includes/elementor/widgets/feedzy-rss-loop-widget.php:151
+msgid "Title"
+msgstr "Titel"
+
+#: includes/elementor/widgets/feedzy-rss-loop-widget.php:125
+msgid "Display items if"
+msgstr "Einträge anzeigen, wenn"
+
+#: includes/elementor/widgets/feedzy-rss-loop-widget.php:119
+msgid "Filter items"
+msgstr "Einträge filtern"
+
+#: includes/elementor/widgets/feedzy-rss-loop-widget.php:108
+msgid "(eg: 1_days, defaults: 12_hours)"
+msgstr "(z. B.: 1_days, Standardwert: 12_hours)"
+
+#: includes/elementor/widgets/feedzy-rss-loop-widget.php:105
+msgid "For how long we will cache the feed results."
+msgstr "Wie lange wir die Feed-Ergebnisse zwischenspeichern."
+
+#: includes/elementor/widgets/feedzy-rss-loop-widget.php:96
+msgid "Crop description (summary) of the element after X characters."
+msgstr "Beschreibung (Zusammenfassung) des Elements nach X Zeichen abschneiden."
+
+#: includes/elementor/widgets/feedzy-rss-loop-widget.php:95
+msgid "(eg: 160)"
+msgstr "(z. B.: 160)"
+
+#: includes/elementor/widgets/feedzy-rss-loop-widget.php:93
+msgid "Summary Length."
+msgstr "Länge der Zusammenfassung."
+
+#: includes/elementor/widgets/feedzy-rss-loop-widget.php:84
+msgid "eg: 5, if you want to start from the 6th item."
+msgstr "z. B.: 5, wenn du mit dem 6. Eintrag beginnen möchtest."
+
+#: includes/elementor/widgets/feedzy-rss-loop-widget.php:81
+msgid "Ignore the first N items of the feed."
+msgstr "Ignoriert die ersten n Einträge des Feeds."
+
+#: includes/elementor/widgets/feedzy-rss-loop-widget.php:72
+#: includes/elementor/widgets/feedzy-rss-loop-widget.php:83
+msgid "(eg: 5)"
+msgstr "(z. B.: 5)"
+
+#: includes/elementor/widgets/feedzy-rss-loop-widget.php:70
+msgid "Number of items to display."
+msgstr "Anzahl der anzuzeigenden Einträge."
+
+#: includes/elementor/widgets/feedzy-rss-loop-widget.php:61
+msgid "RSS Feed sources (comma separated URLs or Feed Groups slug)."
+msgstr "RSS-Feed-Quellen (kommagetrennte URLs oder Feed-Gruppen-Titelform)."
+
+#: includes/elementor/widgets/feedzy-rss-loop-widget.php:57
+#: includes/elementor/widgets/feedzy-rss-loop-widget.php:60
+msgid "Feed Source"
+msgstr "Feed-Quelle"
+
+#: includes/elementor/widgets/feedzy-rss-loop-widget.php:50
+msgid "Config Feedzy RSS Feeds"
+msgstr "Feedzy RSS Feeds konfigurieren"
+
+#: includes/elementor/library-document/feedzy-rss-loop-template.php:57
+msgid "Feedzy Loops"
+msgstr "Feedzy Loops"
+
+#: includes/elementor/feedzy-rss-feeds-pro-elementor.php:55
+#: includes/elementor/library-document/feedzy-rss-loop-template.php:48
+#: includes/elementor/widgets/feedzy-rss-loop-widget.php:26
+msgid "Feedzy Loop"
+msgstr "Feedzy Loop"
+
+#: includes/elementor/dynamic-tags/feedzy-rss-items.php:121
+msgid "Feed item source"
+msgstr "Quelle des Feed-Eintrags"
+
+#: includes/elementor/dynamic-tags/feedzy-rss-items.php:120
+msgid "Feed item content"
+msgstr "Inhalt des Feed-Eintrags"
+
+#: includes/elementor/dynamic-tags/feedzy-rss-items.php:119
+msgid "Feed item description"
+msgstr "Beschreibung des Feed-Eintrags"
+
+#: includes/elementor/dynamic-tags/feedzy-rss-items.php:118
+msgid "Feed item author"
+msgstr "Autor des Feed-Eintrags"
+
+#: includes/elementor/dynamic-tags/feedzy-rss-items.php:117
+msgid "Feed date"
+msgstr "Feed-Datum"
+
+#: includes/elementor/dynamic-tags/feedzy-rss-items.php:116
+msgid "Feed item local date"
+msgstr "Lokales Datum des Feed-Eintrags"
+
+#: includes/elementor/dynamic-tags/feedzy-rss-items.php:115
+msgid "Feed item date"
+msgstr "Datum des Feed-Eintrags"
+
+#: includes/elementor/dynamic-tags/feedzy-rss-items.php:114
+msgid "Feed item title"
+msgstr "Titel des Feed-Eintrags"
+
+#: includes/elementor/dynamic-tags/feedzy-rss-items.php:75
+msgid "Feed tags"
+msgstr "Feed-Schlagwörter"
+
+#: includes/elementor/dynamic-tags/feedzy-rss-items.php:70
+msgid "Item source"
+msgstr "Quelle des Eintrags"
+
+#: includes/elementor/dynamic-tags/feedzy-rss-items.php:69
+msgid "Item Content"
+msgstr "Inhalt des Eintrags"
+
+#: includes/elementor/dynamic-tags/feedzy-rss-items.php:68
+msgid "Item Description"
+msgstr "Beschreibung des Eintrags"
+
+#: includes/elementor/dynamic-tags/feedzy-rss-items.php:67
+msgid "Item author"
+msgstr "Autor des Eintrags"
+
+#: includes/elementor/dynamic-tags/feedzy-rss-items.php:66
+msgid "Item feed date"
+msgstr "Feed-Datum des Eintrags"
+
+#: includes/elementor/dynamic-tags/feedzy-rss-items.php:65
+msgid "Item local date"
+msgstr "Lokales Datum des Eintrags"
+
+#: includes/elementor/dynamic-tags/feedzy-rss-items.php:64
+msgid "Item date"
+msgstr "Datum des Eintrags"
+
+#: includes/elementor/dynamic-tags/feedzy-rss-items.php:63
+msgid "Item title"
+msgstr "Titel des Eintrags"
+
+#: includes/elementor/dynamic-tags/feedzy-rss-items.php:62
+msgid "Item URL"
+msgstr "URL des Eintrags"
+
+#: includes/elementor/dynamic-tags/feedzy-rss-items.php:25
+#: includes/elementor/feedzy-rss-feeds-pro-elementor.php:34
+msgid "Feedzy Feed Items"
+msgstr "Feedzy-Feed-Einträge"
+
+#: includes/elementor/dynamic-tags/feedzy-rss-item-image.php:36
+msgid "Feedzy item image"
+msgstr "Bild des Feedzy-Eintrags"
+
+#. translators: %s: Error message from Amazon Product Advertising API.
+#: includes/admin/services/feedzy-rss-feeds-pro-amazon-product-advertising.php:570
+msgid "[Amazon Product Advertising API] %s"
+msgstr "[Amazon Product Advertising API] %s"
+
+#: includes/admin/services/feedzy-rss-feeds-pro-amazon-product-advertising.php:541
+msgid "Amazon"
+msgstr "Amazon"
+
+#: includes/admin/services/feedzy-rss-feeds-pro-amazon-product-advertising.php:476
+msgid "Amazon Product Advertising"
+msgstr "Amazon-Produktwerbung"
+
+#: includes/admin/services/feedzy-rss-feeds-pro-amazon-product-advertising.php:225
+msgid "Please upgrade plan"
+msgstr "Bitte führe ein Tarif-Upgrade durch"
+
+#: includes/admin/services/feedzy-rss-feeds-pro-amazon-product-advertising.php:225
+msgid "Invalid license plan"
+msgstr "Ungültiger Lizenz-Tarif"
+
+#: includes/admin/feedzy-rss-feeds-pro-ui.php:95
+#: includes/admin/feedzy-rss-feeds-pro-ui.php:96
+#: includes/elementor/widgets/feedzy-rss-loop-widget.php:180
+msgid "To"
+msgstr "An"
+
+#: includes/admin/feedzy-rss-feeds-pro-ui.php:89
+#: includes/admin/feedzy-rss-feeds-pro-ui.php:90
+msgid "From"
+msgstr "Von"
+
+#: includes/admin/feedzy-rss-feeds-pro-ui.php:86
+msgid "Filter feed item by date range."
+msgstr "Feed-Eintrag nach Datumsbereich filtern."
+
+#: includes/admin/feedzy-rss-feeds-pro-ui.php:74
+msgid "Docs FEEDZY RSS Feeds"
+msgstr "Dokumentation zu FEEDZY RSS Feeds"
+
+#: includes/admin/feedzy-rss-feeds-pro-ui.php:74
+msgid "Need help? Check out our documentation."
+msgstr "Brauchst du Hilfe? Schau dir unsere Dokumentation an."
+
+#: includes/admin/feedzy-rss-feeds-pro-ui.php:73
+msgid "Other Options"
+msgstr "Andere Optionen"
+
+#: includes/admin/feedzy-rss-feeds-pro-ui-lang.php:55
+msgid "Read FEEDZY RSS Feeds Docs"
+msgstr "FEEDZY-RSS-Feeds-Dokumentation lesen"
+
+#: includes/admin/feedzy-rss-feeds-pro-ui-lang.php:54
+msgid "Insert FEEDZY RSS Feeds Shortcode"
+msgstr "FEEDZY-RSS-Feeds-Shortcode einfügen"
+
+#: includes/admin/feedzy-rss-feeds-pro-ui-lang.php:53
+msgid "Feedzy RSS Feeds"
+msgstr "Feedzy RSS Feeds"
+
+#: includes/admin/feedzy-rss-feeds-pro-admin.php:1943
+#: includes/admin/feedzy-rss-feeds-pro-admin.php:1945
+msgid "Item Full Content"
+msgstr "Vollständiger Inhalt des Eintrags"
+
+#: includes/admin/feedzy-rss-feeds-pro-admin.php:1332
+#: includes/admin/feedzy-rss-feeds-pro-admin.php:1336
+msgid "Translated Description"
+msgstr "Übersetzte Beschreibung"
+
+#: includes/admin/feedzy-rss-feeds-pro-admin.php:1331
+#: includes/admin/feedzy-rss-feeds-pro-admin.php:1335
+msgid "Translated Content"
+msgstr "Übersetzter Inhalt"
+
+#: includes/admin/feedzy-rss-feeds-pro-admin.php:1330
+#: includes/admin/feedzy-rss-feeds-pro-admin.php:1334
+msgid "Translated Title"
+msgstr "Übersetzter Titel"
+
+#: includes/admin/feedzy-rss-feeds-pro-admin.php:120
+msgid "Value"
+msgstr "Wert"
+
+#: includes/admin/feedzy-rss-feeds-pro-admin.php:114
+msgid "Key Name"
+msgstr "Schlüsselname"
+
+#: includes/admin/feedzy-rss-feeds-pro-admin.php:93
+msgid "More Plugins"
+msgstr "Weitere Plugins"
+
+#: includes/admin/feedzy-rss-feeds-pro-admin.php:92
+msgid "Documentation and examples"
+msgstr "Dokumentation und Beispiele"
+
+#. Author URI of the plugin
+#: feedzy-rss-feeds-pro.php
+msgid "https://themeisle.com"
+msgstr "https://themeisle.com"
+
+#. Author of the plugin
+#: feedzy-rss-feeds-pro.php
+msgid "Themeisle"
+msgstr "Themeisle"
+
+#. Description of the plugin
+#: feedzy-rss-feeds-pro.php
+msgid "FEEDZY RSS Feeds Premium extends the functionality of FEEDZY RSS Feeds Lite."
+msgstr "FEEDZY RSS Feeds Premium erweitert die Funktionalität von FEEDZY RSS Feeds Lite."
+
+#. Plugin URI of the plugin
+#: feedzy-rss-feeds-pro.php
+msgid "http://themeisle.com/plugins/feedzy-rss-feeds/"
+msgstr "https://themeisle.com/plugins/feedzy-rss-feeds/"
+
+#. Plugin Name of the plugin
+#: feedzy-rss-feeds-pro.php
+msgid "Feedzy RSS Feeds Premium"
+msgstr "Feedzy RSS Feeds Premium"

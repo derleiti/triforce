@@ -1,0 +1,736 @@
+# Translation of Plugins - Simple CAPTCHA Alternative with Cloudflare Turnstile - Stable (latest release) in Greek
+# This file is distributed under the same license as the Plugins - Simple CAPTCHA Alternative with Cloudflare Turnstile - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2024-07-18 20:37:07+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: el_GR\n"
+"Project-Id-Version: Plugins - Simple CAPTCHA Alternative with Cloudflare Turnstile - Stable (latest release)\n"
+
+#: inc/admin/admin-options.php:1070
+msgid "Click here for more information."
+msgstr "Κάντε κλικ εδώ για περισσότερες πληροφορίες."
+
+#: inc/admin/admin-options.php:670
+msgid "Paid Memberships Pro"
+msgstr "Paid Memberships Pro"
+
+#: inc/admin/admin-options.php:414
+msgid "Enable this option to only enable on default WordPress login form at wp-login.php"
+msgstr "Ενεργοποιήστε αυτή την επιλογή για ενεργοποίηση μόνο στην κλασική φόρμα σύνδεσης του WordPress στο wp-login.php"
+
+#: inc/admin/admin-options.php:416 inc/admin/admin-options.php:437
+msgid "Only enable on default wp-login.php page"
+msgstr "Ενεργοποίηση μόνο στην κλασική σελίδα wp-login.php"
+
+#: inc/admin/admin-options.php:435
+msgid "Enable this option to only enable on default WordPress register form at wp-login.php?action=register"
+msgstr "Ενεργοποιήστε αυτή την επιλογή για ενεργοποίηση μόνο στην κλασική φόρμα εγγραφής του WordPress στη διεύθυνση wp-login.php?action=register"
+
+#: inc/admin/admin-options.php:1065
+msgid "WS Form"
+msgstr "WS Form"
+
+#: inc/admin/admin-options.php:1069
+msgid "Currently WS Form is not supported by this plugin, however their plugin does have its own Turnstile addon."
+msgstr "Επί του παρόντος, το WS Form δεν υποστηρίζεται από αυτό το πρόσθετο, ωστόσο το πρόσθετό τους έχει δική του ενσωμάτωση με το Turnstile."
+
+#: inc/admin/admin-options.php:1080
+msgid "Ninja Forms"
+msgstr "Ninja Forms"
+
+#: inc/admin/admin-options.php:1084
+msgid "Currently Ninja Forms is not supported by this plugin."
+msgstr "Επί του παρόντος, το Ninja Forms δεν υποστηρίζεται από αυτό το πρόσθετο."
+
+#: inc/admin/admin-options.php:334
+msgid "Currently it is not possible to edit the actual \"Failure!\" message shown on the widget."
+msgstr "Προς το παρόν δεν είναι δυνατή η επεξεργασία του πραγματικού μηνύματος \"Αποτυχία!\" που εμφανίζεται στη μικροεφαρμογή."
+
+#: inc/admin/admin-options.php:325
+msgid "HTML Markup Allowed."
+msgstr "Επιτρέπεται η σήμανση HTML."
+
+#: inc/admin/admin-options.php:316
+msgid "Extra Failure Message"
+msgstr "Επιπλέον μήνυμα αποτυχίας"
+
+#: inc/admin/admin-options.php:246
+msgid "These settings are for more advanced customisation. If you are not sure about these, they do not need to be changed."
+msgstr "Αυτές οι ρυθμίσεις είναι για πιο προχωρημένη προσαρμογή. Εάν δεν είστε σίγουροι για αυτές, δεν χρειάζεται να τις αλλάξετε."
+
+#: inc/admin/admin-options.php:242
+msgid "Advanced Settings"
+msgstr "Ρυθμίσεις για προχωρημένους"
+
+#: inc/admin/admin-options.php:332
+msgid "This will show a message below the Turnstile widget if they receive the \"Failure!\" response. Useful to give instructions in the *very rare* case a valid user is being flagged as spam."
+msgstr "Αυτό θα εμφανίσει ένα μήνυμα κάτω από τη μικροεφαρμογή Turnstile εάν οι χρήστες λάβουν την απάντηση \"Αποτυχία!\". Χρήσιμο για την παροχή οδηγιών στην *πολύ σπάνια* περίπτωση που ένας έγκυρος χρήστης χαρακτηρίζεται ως ύποπτος."
+
+#: inc/admin/admin-options.php:330 inc/turnstile.php:113
+msgid "Failed to verify you are human. Please contact us if you are having issues."
+msgstr "Αποτυχία επιβεβαίωσης ότι είστε άνθρωπος. Παρακαλούμε επικοινωνήστε μαζί μας εάν έχετε πρόβλημα με την επιβεβαίωση."
+
+#: inc/admin/admin-options.php:310
+msgid "Shown if the form is submitted without completing the Turnstile challenge. Leave blank to use the default message (localized):"
+msgstr "Εμφανίζεται εάν μία φόρμα υποβληθεί χωρίς να έχει ολοκληρωθεί η πρόκληση Turnstile. Αφήστε το κενό για να χρησιμοποιήσετε το προεπιλεγμένο μήνυμα (είναι ήδη προ-μεταφρασμένο στη γλώσσα του χρήστη):"
+
+#: inc/admin/admin-options.php:301
+msgid "When enabled, the javascript files loaded by the plugin will be deferred. You can disable this if it causes any issues with your other optimisations."
+msgstr "Όταν είναι ενεργοποιημένο, η εκτέλεση των αρχείων javascript που φορτώνονται από αυτό το πρόσθετο θα αναβάλλεται μέχρις οτου ολοκληρωθεί η φόρτωση της σελίδας. Μπορείτε να το απενεργοποιήσετε αν αυτό προκαλεί προβλήματα με άλλες βελτιστοποιήσεις ταχύτητας."
+
+#: inc/admin/admin-options.php:298
+msgid "Defer Scripts"
+msgstr "Αναβολή εκτέλεσης scripts"
+
+#: inc/admin/admin-options.php:713 inc/admin/admin-options.php:721
+msgid "Currently Turnstile can not be implemented on the lost password form when PMP is installed."
+msgstr "Επί του παρόντος, το Turnstile δεν μπορεί να εφαρμοστεί στη φόρμα επαναφοράς συνθηματικού πρόσβασης όταν έχει εγκατασταθεί το PMP."
+
+#: inc/admin/admin-options.php:742
+msgid "Paid Memberships PRO"
+msgstr "Paid Memberships PRO"
+
+#: inc/admin/admin-options.php:677
+msgid "Checkout / Registration"
+msgstr "Ολοκλήρωση παραγγελίας / Εγγραφή"
+
+#: inc/admin/admin-options.php:710
+msgid "Lost Password Form"
+msgstr "Φόρμα επαναφοράς συνθηματικού"
+
+#: inc/admin/admin-options.php:372
+msgid "IP Addresses"
+msgstr "Διευθύνσεις IP"
+
+#: inc/admin/admin-options.php:357
+msgid "Whitelist Settings"
+msgstr "Ρυθμίσεις Whitelist"
+
+#: inc/admin/admin-options.php:364
+msgid "Logged In Users"
+msgstr "Συνδεδεμένοι χρήστες"
+
+#: inc/admin/admin-options.php:367
+msgid "When enabled, logged in users will not see the Turnstile challenge."
+msgstr "Όταν είναι ενεργοποιημένο, οι συνδεδεμένοι χρήστες δεν θα βλέπουν την πρόκληση Turnstile."
+
+#: inc/admin/admin-options.php:594
+msgid "Useful for 'Express Checkout' payment methods compatibility."
+msgstr "Χρήσιμο για τη συμβατότητα με μεθόδους πληρωμής «Express Checkout»."
+
+#: inc/admin/admin-options.php:592
+msgid "If selected below, Turnstile check will not be run for that specific payment method."
+msgstr "Εάν επιλεχθεί παρακάτω, δεν θα εμφανιστεί πρόκληση Turnstile για τη συγκεκριμένη μέθοδο πληρωμής."
+
+#: inc/admin/admin-options.php:465
+msgid "AJAX comments form?"
+msgstr "Φόρμα σχολίων με λειτουργία μέσω AJAX;"
+
+#: inc/admin/admin-options.php:463
+msgid "Enable this if you are using an AJAX based comments form plugin or theme."
+msgstr "Ενεργοποιήστε το εάν χρησιμοποιείτε ένα πρόσθετο ή θέμα εμφάνισης που προσθέτει λειτουργία μέσω AJAX στη φόρμα σχολίων."
+
+#: inc/admin/admin-options.php:1453
+msgid "Register Form"
+msgstr "Φόρμα εγγραφής"
+
+#: inc/admin/admin-options.php:1445
+msgid "Reset Password Form"
+msgstr "Φόρμα επαναφοράς κωδικού πρόσβασης"
+
+#: inc/admin/admin-options.php:1460
+msgid "Post Forms"
+msgstr "Φόρμες άρθρων"
+
+#: inc/admin/admin-options.php:1408 inc/admin/admin-options.php:1471
+msgid "WP User Frontend"
+msgstr "WP User Frontend"
+
+#: inc/admin/admin-options.php:1448
+msgid "Edit via \"WordPress Reset Password\" option in the \"Default WordPress Forms\" settings."
+msgstr "Επεξεργασία μέσω της επιλογής «Φόρμα επαναφοράς συνθηματικού του WordPress» στις ρυθμίσεις «Κλασικές φόρμες WordPress»."
+
+#: inc/admin/admin-options.php:88 inc/admin/admin-options.php:1648
+msgid "View setup guide"
+msgstr "Προβολή οδηγού ρύθμισης"
+
+#: inc/admin/admin-options.php:66
+msgid "TEST RESPONSE"
+msgstr "Απάντηση δοκιμής"
+
+#: inc/admin/admin-options.php:274
+msgid "Always"
+msgstr "Πάντα"
+
+#: inc/admin/admin-options.php:290
+msgid "Turnstile Widget is always displayed for all visitors."
+msgstr "Η μικροεφαρμογή του Turnstile θα εμφανίζεται πάντα για όλους τους επισκέπτες."
+
+#: inc/admin/admin-options.php:292
+msgid "Turnstile Widget is only displayed in cases where an interaction is required. This essentially makes it \"invisible\" for most valid users."
+msgstr "Η μικροεφαρμογή του Turnstile θα εμφανίζεται μόνο σε περιπτώσεις όπου απαιτείται αλληλεπίδραση. Αυτό το καθιστά ουσιαστικά \"αόρατο\" για τους περισσότερους κανονικούς χρήστες."
+
+#: inc/admin/admin-options.php:291
+msgid "Turnstile Widget is only displayed after the challenge begins."
+msgstr "Η μικροεφαρμογή του Turnstile θα εμφανίζεται μόνο μετά την έναρξη της πρόκλησης."
+
+#: inc/admin/admin-options.php:276
+msgid "Interaction Only"
+msgstr "Μόνο στην αλληλεπίδραση"
+
+#: inc/admin/admin-options.php:269
+msgid "Appearance Mode"
+msgstr "Λειτουργία εμφάνισης"
+
+#: inc/admin/admin-options.php:701 inc/admin/admin-options.php:1348
+#: inc/admin/admin-options.php:1426
+msgid "Login Form"
+msgstr "Φόρμα σύνδεσης"
+
+#: inc/admin/admin-options.php:1330 inc/admin/admin-options.php:1381
+msgid "MemberPress"
+msgstr "MemberPress"
+
+#: inc/admin/admin-options.php:704 inc/admin/admin-options.php:1351
+#: inc/admin/admin-options.php:1429
+msgid "Edit via \"WordPress Login\" option in the \"Default WordPress Forms\" settings."
+msgstr "Επεξεργασία μέσω της επιλογής «Φόρμα σύνδεσης του WordPress» στις ρυθμίσεις «Κλασικές φόρμες WordPress»."
+
+#: inc/admin/admin-options.php:1543
+msgid "Delete all of this plugins saved options when the plugin is deleted via plugins page."
+msgstr "Διαγραφή όλων των αποθηκευμένων ρυθμίσεων αυτού του πρόσθετου όταν το πρόσθετο διαγραφεί μέσω της σελίδας πρόσθετων."
+
+#: inc/admin/admin-options.php:1526
+msgid "Simply install the plugin and new settings will appear above."
+msgstr "Απλά εγκαταστήστε το πρόσθετο και οι νέες ρυθμίσεις θα εμφανιστούν παραπάνω."
+
+#: inc/admin/admin-options.php:1393
+msgid "Turnstile is supported for WP-Members Login and Registration forms. Enable for these forms in the \"Default WordPress Forms\" settings."
+msgstr "Το Turnstile υποστηρίζεται για τις φόρμες σύνδεσης και εγγραφής WP-Members. Ενεργοποιήστε για αυτές τις φόρμες στις ρυθμίσεις \"Default WordPress Forms\"."
+
+#: inc/admin/admin-options.php:578
+msgid "Payment Methods to Skip"
+msgstr "Μέθοδοι πληρωμής προς παράλειψη"
+
+#: inc/admin/admin-options.php:1003
+msgid "Formidable"
+msgstr "Formidable"
+
+#: inc/admin/admin-options.php:1387 inc/admin/admin-options.php:1402
+msgid "WP-Members"
+msgstr "WP-Members"
+
+#: inc/admin/admin-options.php:1059
+msgid "Forminator"
+msgstr "Forminator"
+
+#: inc/admin/admin-options.php:654
+msgid "EDD Register"
+msgstr "EDD Register"
+
+#: inc/admin/admin-options.php:647
+msgid "EDD Login"
+msgstr "EDD Login"
+
+#: inc/admin/admin-options.php:634
+msgid "EDD Checkout"
+msgstr "EDD Checkout"
+
+#: inc/admin/admin-options.php:627 inc/admin/admin-options.php:664
+msgid "Easy Digital Downloads"
+msgstr "Easy Digital Downloads"
+
+#: inc/admin/admin-options.php:199
+msgid "Portuguese (Brazil)"
+msgstr "Πορτογαλικά (Βραζιλίας)"
+
+#: inc/admin/admin-options.php:167
+msgid "Language"
+msgstr "Γλώσσα"
+
+#: inc/admin/admin-options.php:1123
+msgid "After Form"
+msgstr "Μετά τη φόρμα"
+
+#: inc/admin/admin-options.php:562
+msgid "WooCommerce Pay for Order"
+msgstr "Σελίδα πληρωμής παραγγελίας του WooCommerce"
+
+#: inc/admin/admin-options.php:1016
+msgid "Enable on all Forminator Forms"
+msgstr "Ενεργοποίηση σε όλες τις φόρμες Forminator"
+
+#: inc/admin/admin-options.php:1009
+msgid "Forminator Forms"
+msgstr "Φόρμες Forminator"
+
+#: inc/admin/admin-options.php:1023
+msgid "When enabled, Turnstile will be added above the submit button, on ALL your forms created with Forminator Forms."
+msgstr "Όταν είναι ενεργοποιημένο, το Turnstile θα προστεθεί πάνω από το κουμπί υποβολής, σε ΟΛΕΣ τις φόρμες που έχετε δημιουργήσει με το Forminator Forms."
+
+#: inc/admin/admin-options.php:548
+msgid "Before Pay Button"
+msgstr "Πριν από το κουμπί πληρωμής"
+
+#: inc/admin/admin-options.php:554
+msgid "After Billing"
+msgstr "Μετά από τα πεδία χρέωσης"
+
+#: inc/admin/admin-options.php:551
+msgid "Before Billing"
+msgstr "Πριν από τα πεδία χρέωσης"
+
+#: inc/admin/admin-options.php:545
+msgid "After Payment"
+msgstr "Μετά από τους τρόπους πληρωμής"
+
+#: inc/admin/admin-options.php:542
+msgid "Before Payment"
+msgstr "Πριν από τους τρόπους πληρωμής"
+
+#: inc/admin/admin-options.php:1659
+msgid "Feel free to"
+msgstr "Μη διστάσετε να"
+
+#: inc/admin/admin-options.php:755
+msgid "Enable on all CF7 Forms"
+msgstr "Ενεργοποίηση σε όλες τις φόρμες CF7"
+
+#: inc/admin/admin-options.php:1300
+msgid "UM Register Form"
+msgstr "Φόρμα εγγραφής UM"
+
+#: inc/admin/admin-options.php:1293
+msgid "UM Login Form"
+msgstr "Φόρμα σύνδεσης UM"
+
+#: inc/admin/admin-options.php:1286 inc/admin/admin-options.php:1318
+msgid "Ultimate Member"
+msgstr "Ultimate Member"
+
+#: inc/admin/admin-options.php:1307
+msgid "UM Password Reset Form"
+msgstr "Φόρμα επαναφοράς συνθηματικού πρόσβασης του UM"
+
+#: inc/admin/admin-options.php:1659
+msgid "Donate"
+msgstr "Δωρίστε"
+
+#: inc/admin/admin-options.php:305
+msgid "Custom Error Message"
+msgstr "Προσαρμοσμένο μήνυμα σφάλματος"
+
+#: inc/admin/admin-options.php:88 inc/admin/admin-options.php:1654
+msgid "Review on WordPress.org"
+msgstr "Αξιολόγηση στο WordPress.org"
+
+#: inc/admin/admin-options.php:88 inc/admin/admin-options.php:1654
+msgid "Like this plugin?"
+msgstr "Σας αρέσει αυτό το πρόσθετο;"
+
+#: inc/admin/admin-options.php:820 inc/admin/admin-options.php:876
+#: inc/admin/admin-options.php:914 inc/admin/admin-options.php:996
+#: inc/admin/admin-options.php:1052
+msgid "If you want to DISABLE the Turnstile widget on certain forms, enter the %s ID in this field."
+msgstr "Εάν θέλετε να απενεργοποιήσετε τη μικροεφαρμογή Turnstile σε ορισμένες φόρμες, πληκτρολογήστε το αναγνωριστικό %s σε αυτό το πεδίο."
+
+#: inc/admin/admin-options.php:813 inc/admin/admin-options.php:869
+#: inc/admin/admin-options.php:907 inc/admin/admin-options.php:989
+#: inc/admin/admin-options.php:1045
+msgid "Disabled Form IDs"
+msgstr "Αναγνωριστικά απενεργοποιημένων φορμών"
+
+#: inc/admin/admin-options.php:967
+msgid "When enabled, Turnstile will be added above the submit button, on ALL your forms created with Formidable Forms."
+msgstr "Όταν είναι ενεργοποιημένο, το Turnstile θα προστεθεί πάνω από το κουμπί υποβολής, σε όλες τις φόρμες που έχετε δημιουργήσει με το Formidable Forms."
+
+#: inc/admin/admin-options.php:960
+msgid "Enable on all Formidable Forms"
+msgstr "Ενεργοποίηση σε όλες τις φόρμες με το Formidable Forms"
+
+#: inc/admin/admin-options.php:953
+msgid "Formidable Forms"
+msgstr "Formidable Forms"
+
+#: inc/admin/admin-options.php:1101
+msgid "Enable on all Elementor Forms"
+msgstr "Ενεργοποίηση σε όλες τις φόρμες Elementor"
+
+#: inc/admin/admin-options.php:1094 inc/admin/admin-options.php:1139
+msgid "Elementor Forms"
+msgstr "Φόρμες Elementor"
+
+#: inc/admin/admin-options.php:1108
+msgid "When enabled, Turnstile will be added above the submit button, on ALL your forms created with Elementor Pro Forms."
+msgstr "Όταν είναι ενεργοποιημένο, το Turnstile θα προστεθεί πάνω από το κουμπί υποβολής, σε όλες τις φόρμες που έχετε δημιουργήσει με το Elementor Pro."
+
+#: inc/admin/admin-options.php:1493
+msgid "wpDiscuz"
+msgstr "wpDiscuz"
+
+#: inc/admin/admin-options.php:479
+msgid "Compatible with wpDiscuz!"
+msgstr "Συμβατό με το wpDiscuz!"
+
+#: inc/admin/admin-options.php:476
+msgid "Due to Jetpack limitations, this does NOT currently work with Jetpack comments form enabled."
+msgstr "Λόγω των περιορισμών του Jetpack, αυτό δεν λειτουργεί επί του παρόντος με ενεργοποιημένη τη φόρμα σχολίων του Jetpack."
+
+#: inc/admin/admin-options.php:532 inc/admin/admin-options.php:796
+#: inc/admin/admin-options.php:852 inc/admin/admin-options.php:972
+#: inc/admin/admin-options.php:1028 inc/admin/admin-options.php:1113
+msgid "Widget Location"
+msgstr "Τοποθεσία μικροεφαρμογής"
+
+#: inc/admin/admin-options.php:803 inc/admin/admin-options.php:859
+#: inc/admin/admin-options.php:979 inc/admin/admin-options.php:1035
+#: inc/admin/admin-options.php:1120
+msgid "After Button"
+msgstr "Μετά από το κουμπί υποβολής"
+
+#: inc/admin/admin-options.php:800 inc/admin/admin-options.php:856
+#: inc/admin/admin-options.php:976 inc/admin/admin-options.php:1032
+#: inc/admin/admin-options.php:1117
+msgid "Before Button"
+msgstr "Πριν από το κουμπί υποβολής"
+
+#: inc/admin/admin-options.php:1663
+msgid "Translate into your language"
+msgstr "Μεταφράστε στη γλώσσα σας"
+
+#: inc/admin/admin-options.php:1651
+msgid "Create a support topic"
+msgstr "Δημιουργήστε ένα θέμα υποστήριξης"
+
+#: inc/admin/admin-options.php:1513
+msgid "You can also enable Turnstile on"
+msgstr "Μπορείτε επίσης να ενεργοποιήσετε το Turnstile στο"
+
+#: inc/admin/admin-options.php:1510
+msgid "Other Integrations"
+msgstr "Άλλες ενσωματώσεις"
+
+#: inc/admin/admin-options.php:621
+msgid "WooCommerce"
+msgstr "WooCommerce"
+
+#: inc/admin/admin-options.php:399
+msgid "Enable Turnstile on your forms:"
+msgstr "Ενεργοποιήστε το Turnstile στις φόρμες σας:"
+
+#: inc/admin/admin-options.php:135
+msgid "Secret Key"
+msgstr "Μυστικό κλειδί"
+
+#: inc/admin/admin-options.php:1154
+msgid "Mailchimp for WordPress"
+msgstr "Mailchimp for WordPress"
+
+#: inc/admin/admin-options.php:1665
+msgid "View on GitHub"
+msgstr "Προβολή στο GitHub"
+
+#: inc/admin/admin-options.php:821 inc/admin/admin-options.php:877
+#: inc/admin/admin-options.php:915 inc/admin/admin-options.php:997
+#: inc/admin/admin-options.php:1053
+msgid "Separate each ID with a comma, for example: 5,10"
+msgstr "Διαχωρίστε κάθε αναγνωριστικό με κόμμα, για παράδειγμα: 5,10"
+
+#: inc/admin/admin-options.php:172
+msgid "Auto Detect"
+msgstr "Αυτόματος εντοπισμός"
+
+#: inc/admin/admin-options.php:840
+msgid "Enable on all Gravity Forms"
+msgstr "Ενεργοποίηση σε όλες τις φόρμες με το Gravity Forms"
+
+#: inc/admin/admin-options.php:847
+msgid "When enabled, Turnstile will be added before/after the submit button, on ALL your forms created with Gravity Forms."
+msgstr "Όταν είναι ενεργοποιημένο, το Turnstile θα προστεθεί πριν/μετά από το κουμπί υποβολής, σε όλες τις φόρμες που έχετε δημιουργήσει με το Gravity Forms."
+
+#: inc/admin/admin-options.php:833 inc/admin/admin-options.php:883
+msgid "Gravity Forms"
+msgstr "Gravity Forms"
+
+#: inc/admin/admin-options.php:58
+msgid "Error message:"
+msgstr "Μήνυμα σφάλματος:"
+
+#: inc/admin/admin-options.php:903
+msgid "When enabled, Turnstile will be added above the submit button, on ALL your forms created with Fluent Forms."
+msgstr "Όταν είναι ενεργοποιημένο, το Turnstile θα προστεθεί πάνω από το κουμπί υποβολής, σε όλες τις φόρμες που δημιουργήσατε με το Fluent Forms."
+
+#: inc/admin/admin-options.php:896
+msgid "Enable on all Fluent Forms"
+msgstr "Ενεργοποίηση σε όλες τις φόρμες με το Fluent Forms"
+
+#: inc/admin/admin-options.php:889 inc/admin/admin-options.php:922
+msgid "Fluent Forms"
+msgstr "Fluent Forms"
+
+#: inc/admin/admin-options.php:39
+msgid "Almost done..."
+msgstr "Σχεδόν έτοιμο..."
+
+#: inc/errors.php:63
+msgid "There was an error with Turnstile response. Please check your keys are correct."
+msgstr "Υπήρξε σφάλμα με την απάντηση του Turnstile. Παρακαλούμε ελέγξτε ότι τα κλειδιά σας είναι σωστά."
+
+#: inc/errors.php:61
+msgid "An internal error happened while validating the response. The request can be retried."
+msgstr "Συνέβη ένα εσωτερικό σφάλμα κατά την επικύρωση της απάντησης. Η αίτηση μπορεί να επαναληφθεί."
+
+#: inc/errors.php:59
+msgid "The response parameter has already been validated before."
+msgstr "Η παράμετρος απόκρισης έχει ήδη επικυρωθεί προηγουμένως."
+
+#: inc/errors.php:55
+msgid "The response parameter is invalid or has expired."
+msgstr "Η παράμετρος απόκρισης είναι άκυρη ή έχει λήξει."
+
+#: inc/errors.php:53
+msgid "The response parameter was not passed."
+msgstr "Η παράμετρος απόκρισης δεν μεταβιβάστηκε."
+
+#: inc/admin/admin-options.php:45
+msgid "Turnstile will not be added to any forms until the test is successfully complete."
+msgstr "Το Turnstile δεν θα προστεθεί σε καμία φόρμα μέχρι να ολοκληρωθεί επιτυχώς η δοκιμή."
+
+#: inc/admin/admin-options.php:43
+msgid "API keys have been updated. Please test the Turnstile API response below."
+msgstr "Τα κλειδιά API έχουν ενημερωθεί. Παρακαλούμε δοκιμάστε την απόκριση του Turnstile API παρακάτω."
+
+#: inc/admin/admin-options.php:1261
+msgid "Right"
+msgstr "Δεξιά"
+
+#: inc/admin/admin-options.php:1258
+msgid "Left"
+msgstr "Αριστερά"
+
+#: inc/admin/admin-options.php:1254
+msgid "Alignment"
+msgstr "Ευθυγράμμιση"
+
+#: inc/admin/admin-options.php:1248
+msgid "bbPress Reply"
+msgstr "bbPress Απάντηση"
+
+#: inc/admin/admin-options.php:1241
+msgid "bbPress Create Topic"
+msgstr "bbPress Δημιουργία θέματος"
+
+#: inc/admin/admin-options.php:1234 inc/admin/admin-options.php:1280
+msgid "bbPress"
+msgstr "bbPress"
+
+#: inc/admin/admin-options.php:117
+msgid "Success! Turnstile is working correctly with your API keys."
+msgstr "Επιτυχία! Το Turnstile λειτουργεί σωστά με τα κλειδιά API σας."
+
+#: inc/errors.php:57
+msgid "The request was rejected because it was malformed."
+msgstr "Το αίτημα απορρίφθηκε λόγω λανθασμένης δομής."
+
+#: inc/errors.php:51
+msgid "The secret parameter was invalid or did not exist."
+msgstr "Η μυστική παράμετρος ήταν άκυρη ή δεν υπήρχε."
+
+#: inc/errors.php:49
+msgid "The secret parameter was not passed."
+msgstr "Η μυστική παράμετρος δεν μεταβιβάστηκε."
+
+#: inc/admin/admin-options.php:54
+msgid "Failed! There is an error with your API settings. Please check & update them."
+msgstr "Αποτυχία! Υπάρχει σφάλμα στις ρυθμίσεις του API σας. Παρακαλούμε ελέγξτε και ενημερώστε τις."
+
+#: inc/admin/admin-options.php:1269
+msgid "Guest Users Only"
+msgstr "Μόνο σε επισκέπτες (μη συνδεδεμένους)"
+
+#: inc/admin/admin-options.php:776 inc/admin/admin-options.php:827
+msgid "WPForms"
+msgstr "WPForms"
+
+#: inc/admin/admin-options.php:790
+msgid "When enabled, Turnstile will be added before/after the submit button, on ALL your forms created with WPForms."
+msgstr "Όταν είναι ενεργοποιημένο, το Turnstile θα προστεθεί πριν/μετά το κουμπί υποβολής, σε όλες τις φόρμες που δημιουργήσατε με το WPForms."
+
+#: inc/admin/admin-options.php:783
+msgid "Enable on all WPForms"
+msgstr "Ενεργοποίηση σε όλες τις φόρμες με το WPForms"
+
+#: inc/admin/admin-options.php:406
+msgid "Default WordPress Forms"
+msgstr "Κλασικές φόρμες WordPress"
+
+#: inc/admin/admin-options.php:400
+msgid "Select the dropdown for each integration, and choose when specific forms you want to enable Turnstile on."
+msgstr "Επιλέξτε το πτυσσόμενο πλαίσιο για κάθε ενσωμάτωση και επιλέξτε πότε θέλετε να ενεργοποιήσετε το Turnstile στις συγκεκριμένες φόρμες."
+
+#: inc/admin/admin-options.php:1148
+msgid "To add Turnstile to Mailchimp for WordPress, simply add this shortcode to any of your forms (in the form editor):"
+msgstr "Για να προσθέσετε το Turnstile στο Mailchimp for WordPress, απλά προσθέστε αυτόν τον σύντομο κωδικό σε οποιαδήποτε από τις φόρμες σας (στον επεξεργαστή φόρμας):"
+
+#: inc/admin/admin-options.php:1145
+msgid "MC4WP: Mailchimp for WordPress"
+msgstr "MC4WP: Mailchimp for WordPress"
+
+#: inc/integrations/community/buddypress.php:22
+#: inc/integrations/community/buddypress.php:25
+#: inc/integrations/ecommerce/edd.php:59 inc/integrations/ecommerce/pmp.php:62
+#: inc/integrations/membership/wp-members.php:13
+#: inc/integrations/membership/wpuf.php:59
+#: inc/integrations/membership/wpuf.php:64 inc/wordpress.php:223
+msgid "ERROR:"
+msgstr "ΣΦΑΛΜΑ:"
+
+#: inc/admin/admin-options.php:1218
+msgid "BuddyPress Register"
+msgstr "BuddyPress Εγγραφή"
+
+#: inc/admin/admin-options.php:1211 inc/admin/admin-options.php:1228
+msgid "BuddyPress"
+msgstr "BuddyPress"
+
+#: inc/admin/admin-options.php:160
+msgid "Auto"
+msgstr "Αυτόματο"
+
+#: inc/integrations/forms/contact-form-7.php:105
+msgid "Insert Tag"
+msgstr "Εισαγωγή ετικέτας"
+
+#: inc/integrations/forms/contact-form-7.php:95
+msgid "cloudflare turnstile"
+msgstr "cloudflare turnstile"
+
+#: inc/admin/admin-options.php:764
+msgid "To add Turnstile to individual Contact Form 7 forms, simply add this shortcode to any of your forms (in the form editor):"
+msgstr "Για να προσθέσετε το Turnstile σε μεμονωμένες φόρμες Contact Form 7, απλά προσθέστε αυτόν τον σύντομο κωδικό σε οποιαδήποτε από τις φόρμες σας (στον επεξεργαστή φόρμας):"
+
+#: inc/admin/admin-options.php:748 inc/admin/admin-options.php:770
+msgid "Contact Form 7"
+msgstr "Contact Form 7"
+
+#: inc/admin/admin-options.php:236
+msgid "When enabled, the user will not be able to click submit until the Turnstile challenge is completed."
+msgstr "Όταν είναι ενεργοποιημένο, ο χρήστης δεν θα μπορεί να κάνει κλικ στο κουμπί υποβολής μέχρι να ολοκληρωθεί η πρόκληση του Turnstile."
+
+#: inc/admin/admin-options.php:233
+msgid "Disable Submit Button"
+msgstr "Απενεργοποίηση κουμπιού υποβολής"
+
+#: inc/admin/admin-options.php:113
+msgid "API Key Settings:"
+msgstr "Ρυθμίσεις κλειδιού API:"
+
+#. Author of the plugin
+#: simple-cloudflare-turnstile.php
+msgid "Elliot Sowersby, RelyWP"
+msgstr "Elliot Sowersby, RelyWP"
+
+#: inc/admin/admin-options.php:1651
+msgid "Need help? Have a suggestion?"
+msgstr "Χρειάζεστε βοήθεια; Έχετε μια πρόταση;"
+
+#: inc/admin/admin-options.php:88 inc/admin/admin-options.php:1654
+msgid "Please submit a review"
+msgstr "Υποβάλετε μια κριτική"
+
+#: inc/admin/admin-options.php:146
+msgid "General Settings:"
+msgstr "Γενικές ρυθμίσεις:"
+
+#: inc/admin/admin-options.php:462
+msgid "WordPress Comment"
+msgstr "Σχόλια του WordPress"
+
+#. Description of the plugin
+#: simple-cloudflare-turnstile.php
+msgid "Easily add Cloudflare Turnstile to your WordPress forms. The user-friendly, privacy-preserving CAPTCHA alternative."
+msgstr "Προσθέστε εύκολα το Cloudflare Turnstile στις φόρμες του WordPress σας. Η φιλική προς τον χρήστη, εναλλακτική λύση για το CAPTCHA, η οποία διατηρεί την ιδιωτικότητά του."
+
+#: inc/wordpress.php:140
+msgid "ERROR"
+msgstr "ΣΦΑΛΜΑ"
+
+#: inc/errors.php:36 inc/integrations/forms/kadence.php:46
+#: inc/integrations/forms/kadence.php:52
+msgid "Please verify that you are human."
+msgstr "Παρακαλούμε επιβεβαιώστε ότι είστε άνθρωπος."
+
+#: simple-cloudflare-turnstile.php:50
+msgid "Settings"
+msgstr "Ρυθμίσεις"
+
+#: inc/admin/admin-options.php:157
+msgid "Dark"
+msgstr "Σκοτεινό"
+
+#: inc/admin/admin-options.php:154
+msgid "Light"
+msgstr "Φωτεινό"
+
+#: inc/admin/admin-options.php:150
+msgid "Theme"
+msgstr "Θέμα"
+
+#: inc/admin/admin-options.php:120
+msgid "You can get your site key and secret key from here:"
+msgstr "Μπορείτε να λάβετε το κλειδί ιστότοπου και το μυστικό κλειδί από εδώ:"
+
+#: inc/admin/admin-options.php:83
+msgid "Learn more."
+msgstr "Μάθετε περισσότερα."
+
+#. Author URI of the plugin
+#: simple-cloudflare-turnstile.php
+msgid "https://www.relywp.com"
+msgstr "https://www.relywp.com"
+
+#: inc/admin/admin-options.php:507
+msgid "WooCommerce Login"
+msgstr "Φόρμα σύνδεσης του WooCommerce"
+
+#: inc/admin/admin-options.php:514
+msgid "WooCommerce Register"
+msgstr "Φόρμα εγγραφής πελάτη του WooCommerce"
+
+#: inc/admin/admin-options.php:521
+msgid "WooCommerce Reset Password"
+msgstr "Φόρμα επαναφοράς συνθηματικού του WooCommerce"
+
+#: inc/admin/admin-options.php:530 inc/admin/admin-options.php:636
+#: inc/admin/admin-options.php:679
+msgid "Guest Checkout Only"
+msgstr "Μόνο κατά την ολοκλήρωση παραγγελίας ως επισκέπτης"
+
+#: inc/admin/admin-options.php:528
+msgid "WooCommerce Checkout"
+msgstr "Σελίδα ολοκλήρωσης παραγγελίας του WooCommerce"
+
+#: inc/admin/admin-options.php:500
+msgid "WooCommerce Forms"
+msgstr "Φόρμες του WooCommerce"
+
+#: inc/admin/admin-options.php:455
+msgid "WordPress Reset Password"
+msgstr "Φόρμα επαναφοράς συνθηματικού του WordPress"
+
+#: inc/admin/admin-options.php:413
+msgid "WordPress Login"
+msgstr "Φόρμα σύνδεσης του WordPress"
+
+#: inc/admin/admin-options.php:434
+msgid "WordPress Register"
+msgstr "Φόρμα εγγραφής του WordPress"
+
+#: inc/admin/admin-options.php:130
+msgid "Site Key"
+msgstr "Κλειδί ιστότοπου"

@@ -1,0 +1,2 @@
+<?php
+return ['x-generator'=>'GlotPress/4.0.3','translation-revision-date'=>'2019-07-30 14:38:49+0000','plural-forms'=>'nplurals=1; plural=0;','project-id-version'=>'Plugins - WPCode &#8211; Insert Headers and Footers + Custom Code Snippets &#8211; WordPress Code Manager - Stable (latest release)','language'=>'vi_VN','messages'=>['Settings'=>'Thiết lập','Settings Saved.'=>'Đã lưu thiết lập']];

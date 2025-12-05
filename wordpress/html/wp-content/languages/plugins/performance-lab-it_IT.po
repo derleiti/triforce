@@ -1,0 +1,390 @@
+# Translation of Plugins - Performance Lab - Stable (latest release) in Italian
+# This file is distributed under the same license as the Plugins - Performance Lab - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-08-03 16:18:22+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: it\n"
+"Project-Id-Version: Plugins - Performance Lab - Stable (latest release)\n"
+
+#: includes/site-health/audit-enqueued-assets/helper.php:557
+#: includes/site-health/effective-asset-cache-headers/helper.php:317
+msgid "Status"
+msgstr "Stato"
+
+#: includes/site-health/effective-asset-cache-headers/helper.php:316
+msgid "File"
+msgstr "File"
+
+#: includes/admin/plugins.php:467
+msgid "Plugin not found among installed plugins."
+msgstr "Plugin non trovato tra i plugin installati."
+
+#: includes/admin/plugins.php:112
+msgid "Plugin not found in API response."
+msgstr "Plugin non trovato nella risposta API."
+
+#: includes/admin/plugins.php:83
+msgid "No plugins found in the API response."
+msgstr "Nessun plugin trovato nella risposta API."
+
+#. translators: %s: API error message
+#: includes/admin/plugins.php:68
+msgid "Failed to retrieve plugins data from WordPress.org API: %s"
+msgstr "Impossibile recuperare i dati dei plugin dalle API di WordPress.org: %s"
+
+#: includes/admin/plugins.php:236
+msgid "The following errors occurred:"
+msgstr "Si sono verificati i seguenti errori:"
+
+#: includes/admin/plugins.php:233
+msgid "The following error occurred:"
+msgstr "Si è verificato questo errore:"
+
+#: includes/admin/plugins.php:214
+msgid "(installed)"
+msgstr "(installato)"
+
+#: includes/admin/plugins.php:212
+msgid "(active)"
+msgstr "(attivo)"
+
+#. translators: %s: link to Performance Lab settings screen
+#: includes/admin/load.php:630
+msgid "This plugin is installed by <a href=\"%s\">Performance Lab</a>."
+msgstr "Questo plugin è installato da <a href=\"%s\">Performance Lab</a>."
+
+#: includes/site-health/avif-support/hooks.php:25
+msgid "AVIF Support"
+msgstr "Supporto AVIF"
+
+#. translators: Accessibility text.
+#: includes/site-health/avif-support/helper.php:46
+msgid "AVIF support can only be enabled by your hosting provider, so contact them for more information."
+msgstr "Il supporto al formato AVIF può essere attivato solo dal tuo fornitore di hosting, quindi contattalo per maggiori informazioni."
+
+#: includes/site-health/avif-support/helper.php:42
+msgid "Your site does not support AVIF"
+msgstr "Il tuo sito non supporta il formato AVIF"
+
+#: includes/site-health/avif-support/helper.php:32
+msgid "The AVIF image format generally has better compression than WebP, JPEG, PNG and GIF and is designed to supersede them, which can reduce page load time and consume less bandwidth."
+msgstr "Il formato immagine AVIF ha generalmente una compressione migliore rispetto a WebP, JPEG, PNG e GIF ed è stato progettato per sostituirli, riducendo il tempo di caricamento delle pagine e consumando meno larghezza di banda."
+
+#: includes/site-health/avif-support/helper.php:24
+msgid "Your site supports AVIF"
+msgstr "Il tuo sito supporta il formato AVIF"
+
+#: includes/admin/plugins.php:587
+msgid "Visit plugin site"
+msgstr "Visita il sito del plugin"
+
+#: includes/admin/plugins.php:221 includes/admin/plugins.php:581
+msgid "https://wordpress.org/plugins/"
+msgstr "https://it.wordpress.org/plugins/"
+
+#. translators: %s: Plugin name.
+#: includes/admin/plugins.php:579
+msgid "Visit plugin site for %s"
+msgstr "Visita il sito del plugin per %s"
+
+#. translators: %s is the settings URL
+#: includes/admin/load.php:555
+msgid "Review <a href=\"%s\">settings</a>."
+msgstr "Rivedi le <a href=\"%s\">impostazioni</a>."
+
+#: includes/site-health/audit-autoloaded-options/hooks.php:113
+msgid "The option has been successfully updated."
+msgstr "L'opzione è stata aggiornata con successo."
+
+#: includes/site-health/audit-autoloaded-options/hooks.php:95
+msgid "Failed to disable autoload."
+msgstr "Impossibile disabilitare il caricamento automatico."
+
+#: includes/site-health/audit-autoloaded-options/hooks.php:73
+msgid "The option does not exist."
+msgstr "L'opzione non esiste."
+
+#: includes/site-health/audit-autoloaded-options/hooks.php:67
+msgid "Invalid option name."
+msgstr "Nome dell'opzione non valido."
+
+#: includes/site-health/audit-autoloaded-options/hooks.php:63
+msgid "Permission denied."
+msgstr "Autorizzazione negata."
+
+#: includes/site-health/audit-autoloaded-options/helper.php:266
+msgid "Revert to Autoload"
+msgstr "Torna al caricamento automatico"
+
+#: includes/site-health/audit-autoloaded-options/helper.php:201
+msgid "Disable Autoload"
+msgstr "Disabilita il caricamento automatico"
+
+#: includes/site-health/audit-autoloaded-options/helper.php:185
+#: includes/site-health/audit-autoloaded-options/helper.php:249
+msgid "Action"
+msgstr "Azione"
+
+#: includes/admin/plugins.php:668
+msgctxt "plugin suffix"
+msgid "(experimental)"
+msgstr "(sperimentale)"
+
+#: includes/admin/plugins.php:573
+msgid "Learn more"
+msgstr "Approfondisci"
+
+#: includes/admin/load.php:550
+msgid "Feature activated."
+msgstr "Funzionalità attivata."
+
+#: includes/admin/load.php:535
+msgid "Due to your site's configuration, you may not be able to activate the performance features, unless the underlying plugin is already installed. Please install the relevant plugins manually."
+msgstr "A causa della configurazione del tuo sito, potresti non essere in grado di attivare le funzioni di performance, a meno che il plugin sottostante non sia già installato. Installa manualmente i plugin necessari."
+
+#: includes/admin/plugins.php:447
+msgid "Sorry, you are not allowed to install plugins on this site."
+msgstr "Non hai i permessi per attivare plugin su questo sito."
+
+#: includes/admin/load.php:441
+#: includes/site-health/audit-autoloaded-options/hooks.php:56
+msgid "Missing required parameter."
+msgstr "Manca un parametro necessario."
+
+#: includes/admin/load.php:22 includes/admin/plugins.php:279
+msgid "Performance Features"
+msgstr "Funzionalità delle prestazioni"
+
+#: includes/admin/plugins.php:645
+msgid "This plugin does not work with your version of PHP."
+msgstr "Questo plugin non funziona con la tua versione di PHP."
+
+#: includes/admin/plugins.php:634
+msgid "This plugin does not work with your version of WordPress."
+msgstr "Questo plugin non funziona con la tua versione di WordPress."
+
+#. translators: %s: URL to Update PHP page.
+#: includes/admin/plugins.php:627 includes/admin/plugins.php:650
+msgid "<a href=\"%s\">Learn more about updating PHP</a>."
+msgstr "<a href=\"%s\">Ulteriori informazioni sull'aggiornamento di PHP</a>."
+
+#. translators: %s: URL to WordPress Updates screen.
+#: includes/admin/plugins.php:619 includes/admin/plugins.php:639
+msgid "<a href=\"%s\">Please update WordPress</a>."
+msgstr "<a href=\"%s\">Aggiorna WordPress</a>."
+
+#. translators: 1: URL to WordPress Updates screen, 2: URL to Update PHP page.
+#: includes/admin/plugins.php:609
+msgid "<a href=\"%1$s\">Please update WordPress</a>, and then <a href=\"%2$s\">learn more about updating PHP</a>."
+msgstr "<a href=\"%1$s\">Aggiorna WordPress</a> e quindi <a href=\"%2$s\">scopri di più sull'aggiornamento di PHP</a>."
+
+#: includes/admin/plugins.php:604
+msgid "This plugin does not work with your versions of WordPress and PHP."
+msgstr "Questo plugin non funziona con le tue versioni di WordPress e PHP."
+
+#. translators: %s: Plugin name and version.
+#: includes/admin/plugins.php:571
+msgid "More information about %s"
+msgstr "Altre informazioni su %s"
+
+#: includes/admin/plugins.php:545
+msgctxt "plugin"
+msgid "Cannot Activate"
+msgstr "Impossibile attivare"
+
+#: includes/admin/plugins.php:542 includes/admin/plugin-activate-ajax.js:102
+msgid "Activate"
+msgstr "Attiva"
+
+#: includes/admin/plugins.php:519
+msgctxt "plugin"
+msgid "Active"
+msgstr "Attivo"
+
+#: includes/admin/plugins.php:545
+msgctxt "plugin"
+msgid "Cannot Install"
+msgstr "Impossibile installare"
+
+#: includes/admin/plugins.php:283
+msgid "Plugins list"
+msgstr "Elenco dei plugin"
+
+#: includes/admin/load.php:446
+msgid "Invalid plugin."
+msgstr "Plugin non valido."
+
+#: includes/admin/rest-api.php:70
+msgid "Sorry, you are not allowed to activate this feature."
+msgstr "Non hai i permessi per attivare questa funzionalità."
+
+#: includes/admin/plugins.php:478
+msgid "Sorry, you are not allowed to activate this plugin."
+msgstr "Non hai i permessi per attivare questo plugin."
+
+#: includes/admin/server-timing.php:199
+msgid "Enter a single hook name per line."
+msgstr "Inserisci un solo nome di hook per riga."
+
+#: includes/admin/server-timing.php:138
+msgid "Filters"
+msgstr "Filtri"
+
+#: includes/admin/server-timing.php:128
+msgid "Actions"
+msgstr "Azioni"
+
+#: includes/admin/server-timing.php:77
+msgid "Benchmarking"
+msgstr "Benchmark"
+
+#: includes/server-timing/class-perflab-server-timing.php:147
+msgid "The method must be called before headers have been sent."
+msgstr "Il metodo deve essere chiamato prima dell'invio degli header."
+
+#. translators: %s: PHP parameter name
+#: includes/server-timing/class-perflab-server-timing.php:100
+msgid "The %s argument is required and must be a string."
+msgstr "L'argomento %s è necessario e deve essere una stringa."
+
+#. translators: %s: PHP parameter name
+#: includes/server-timing/class-perflab-server-timing.php:91
+msgid "The %s argument is required and must be a callable."
+msgstr "L'argomento %s è necessario e deve essere chiamabile."
+
+#. translators: %s: metric slug
+#: includes/server-timing/class-perflab-server-timing.php:64
+msgid "A metric with the slug %s is already registered."
+msgstr "È già registrata una metrica con lo slug %s."
+
+#. translators: %s: PHP method name
+#: includes/server-timing/class-perflab-server-timing-metric.php:137
+msgid "The %s method must be called before."
+msgstr "Il metodo %s deve essere chiamato prima."
+
+#. translators: %s: WordPress action name
+#: includes/server-timing/class-perflab-server-timing-metric.php:87
+#: includes/server-timing/class-perflab-server-timing.php:74
+msgid "The method must be called before or during the %s action."
+msgstr "Il metodo deve essere chiamato prima o durante l'azione %s."
+
+#. translators: %s: PHP parameter name
+#: includes/server-timing/class-perflab-server-timing-metric.php:77
+msgid "The %s parameter must be an integer, float, or numeric string."
+msgstr "Il parametro %s deve essere un intero, una variabile o una stringa numerica."
+
+#: includes/site-health/audit-enqueued-assets/helper.php:585
+msgid "OK"
+msgstr "OK"
+
+#: includes/site-health/audit-autoloaded-options/helper.php:184
+#: includes/site-health/audit-autoloaded-options/helper.php:248
+#: includes/site-health/audit-enqueued-assets/helper.php:556
+msgid "Size"
+msgstr "Dimensione"
+
+#: includes/site-health/audit-autoloaded-options/helper.php:183
+#: includes/site-health/audit-autoloaded-options/helper.php:247
+msgid "Option Name"
+msgstr "Nome dell'opzione"
+
+#. Author URI of the plugin
+#: load.php
+msgid "https://make.wordpress.org/performance/"
+msgstr "https://make.wordpress.org/performance/"
+
+#: includes/site-health/audit-autoloaded-options/helper.php:80
+msgid "https://wordpress.org/support/article/optimization/#autoloaded-options"
+msgstr "https://wordpress.org/support/article/optimization/#autoloaded-options"
+
+#: includes/site-health/webp-support/helper.php:32
+msgid "The WebP image format produces images that are usually smaller in size than JPEG images, which can reduce page load time and consume less bandwidth."
+msgstr "Il formato immagine WebP produce delle immagini generalmente più leggere delle immagini JPEG, questo può ridurre il tempo di caricamento della pagina e consumare meno banda."
+
+#: includes/site-health/audit-autoloaded-options/helper.php:60
+msgid "Autoloaded options could affect performance"
+msgstr "Le opzioni caricate automaticamente potrebbero influire sulle prestazioni"
+
+#. translators: 1. Number of autoloaded options. 2. Autoloaded options size.
+#: includes/site-health/audit-autoloaded-options/helper.php:38
+msgid "Your site has %1$s autoloaded options (size: %2$s) in the options table, which is acceptable."
+msgstr "Il tuo sito ha %1$s opzioni caricate automaticamente (dimensione: %2$s) nella tabella delle opzioni, il che è accettabile."
+
+#: includes/site-health/audit-autoloaded-options/helper.php:30
+msgid "Autoloaded options are acceptable"
+msgstr "Le opzioni caricate automaticamente sono accettabili"
+
+#: includes/site-health/audit-autoloaded-options/helper.php:27
+msgid "Autoloaded options are configuration settings for plugins and themes that are automatically loaded with every page load in WordPress. Having too many autoloaded options can slow down your site."
+msgstr "Le opzioni caricate automaticamente sono impostazioni di configurazione per plugin e temi che sono automaticamente caricate con ogni pagina caricata in WordPress. Avere molte opzioni caricate automaticamente può rallentare il tuo sito."
+
+#: includes/site-health/audit-autoloaded-options/hooks.php:30
+msgid "Autoloaded options"
+msgstr "Opzioni caricate automaticamente"
+
+#: includes/site-health/webp-support/helper.php:42
+msgid "Your site does not support WebP"
+msgstr "Il tuo sito non supporta WebP"
+
+#: includes/site-health/webp-support/helper.php:24
+msgid "Your site supports WebP"
+msgstr "Il tuo sito supporta WebP"
+
+#: includes/site-health/webp-support/hooks.php:25
+msgid "WebP Support"
+msgstr "Supporto WebP"
+
+#: includes/site-health/audit-autoloaded-options/helper.php:81
+#: includes/site-health/audit-enqueued-assets/helper.php:190
+msgid "More info about performance optimization"
+msgstr "Leggi più informazioni a proposito dell'ottimizzazione delle prestazioni"
+
+#: includes/site-health/audit-enqueued-assets/helper.php:189
+msgid "https://wordpress.org/support/article/optimization/"
+msgstr "https://wordpress.org/support/article/optimization/"
+
+#. translators: %s is the settings URL
+#: includes/admin/load.php:324 includes/admin/plugins.php:595
+#: includes/admin/plugin-activate-ajax.js:87
+msgid "Settings"
+msgstr "Impostazioni"
+
+#: includes/admin/load.php:244
+msgid "Settings > Performance"
+msgstr "Impostazioni > Prestazioni"
+
+#: includes/admin/load.php:23
+#: includes/site-health/audit-autoloaded-options/helper.php:33
+#: includes/site-health/audit-enqueued-assets/helper.php:157
+#: includes/site-health/avif-headers/helper.php:27
+#: includes/site-health/avif-support/helper.php:27
+#: includes/site-health/bfcache-compatibility-headers/helper.php:28
+#: includes/site-health/effective-asset-cache-headers/helper.php:28
+#: includes/site-health/webp-support/helper.php:27
+msgid "Performance"
+msgstr "Prestazioni"
+
+#. Author of the plugin
+#: load.php
+msgid "WordPress Performance Team"
+msgstr "WordPress Performance Team"
+
+#. Description of the plugin
+#: load.php
+msgid "Performance plugin from the WordPress Performance Team, which is a collection of standalone performance features."
+msgstr "Il plugin per le prestazioni del WordPress Performance Team, una raccolta di funzionalità indipendenti per le prestazioni."
+
+#. Plugin URI of the plugin
+#: load.php
+msgid "https://github.com/WordPress/performance"
+msgstr "https://github.com/WordPress/performance"
+
+#. Plugin Name of the plugin
+#: load.php includes/admin/load.php:228
+msgid "Performance Lab"
+msgstr "Performance Lab"

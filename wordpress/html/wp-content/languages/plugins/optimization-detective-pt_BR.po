@@ -1,0 +1,356 @@
+# Translation of Plugins - Optimization Detective - Stable (latest release) in Portuguese (Brazil)
+# This file is distributed under the same license as the Plugins - Optimization Detective - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-04-06 04:49:14+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: pt_BR\n"
+"Project-Id-Version: Plugins - Optimization Detective - Stable (latest release)\n"
+
+#: storage/class-od-url-metrics-post-type.php:216
+msgid "No URL Metrics in the group collection."
+msgstr "Nenhuma métrica de URL no conteúdo do grupo."
+
+#: class-od-html-tag-processor.php:252
+msgid "Previously this method always visited tag closers and did not allow a query to be supplied. Now, however, a query can be supplied. To align this method with the behavior of the base class, a future version of this method will default to skipping tag closers."
+msgstr "Anteriormente, esse método sempre visitava as tags de fechamento e não permitia que uma consulta fosse fornecida. No entanto agora é possível fornecer uma consulta. Para alinhar esse método com o comportamento da classe base, uma versão futura desse método ignorará as tags de fechamento por padrão."
+
+#. translators: 1: the size of the payload, 2: the maximum allowed payload size
+#: storage/class-od-rest-url-metrics-store-endpoint.php:246
+msgid "JSON payload size is %1$s bytes which is larger than the maximum allowed size of %2$s bytes."
+msgstr "O tamanho de carga JSON é %1$s bytes, o que é maior que o tamanho máximo permitido de %2$s bytes."
+
+#. translators: %d is the invalid breakpoint
+#: class-od-url-metric-group-collection.php:139
+msgid "Each of the breakpoints must be greater than zero, but encountered: %d"
+msgstr "Cada um dos pontos de quebra deve ser maior que zero, mas foi encontrado: %d"
+
+#. Description of the plugin
+#: load.php
+msgid "Provides a framework for leveraging real user metrics to detect optimizations for improving page performance."
+msgstr "Fornece uma estrutura para aproveitar métricas reais do usuário para detectar otimizações para melhorar o desempenho da página."
+
+#. translators: %s is the URL to the Site Health admin screen
+#: site-health.php:244
+msgid "Please visit <a href=\"%s\">Site Health</a> to re-check this once you believe you have resolved the issue."
+msgstr "Visite o <a href=\"%s\">Diagnóstico</a> para examinar novamente quando acreditar que resolveu o problema."
+
+#: site-health.php:234
+msgid "Warning:"
+msgstr "Alerta:"
+
+#: site-health.php:165
+msgid "Raw response:"
+msgstr "Resposta inicial:"
+
+#. translators: %d is the HTTP status code, %s is the status header description
+#: site-health.php:152
+msgid "The REST API returned with an HTTP status of <code>%1$d %2$s</code>."
+msgstr "A API REST retornou com um status HTTP de <code>%1$d %2$s</code>."
+
+#: site-health.php:145
+msgid "The Optimization Detective REST API endpoint is unavailable to logged-out users"
+msgstr "O <i>endpoint</i> da API REST do Optimization Detective não está disponível para usuários desconectados"
+
+#. translators: %s is the error code
+#: site-health.php:120
+msgid "The REST API responded with the error code <code>%s</code> and the following error message:"
+msgstr "A API REST respondeu com o código de erro <code>%s</code> e a seguinte mensagem de erro:"
+
+#: site-health.php:112
+msgid "You may have a plugin active or server configuration which restricts access to logged-in users. Unauthenticated access must be restored in order for Optimization Detective to work."
+msgstr "Você pode ter um plugin ativo ou uma configuração de servidor que restringe o acesso a usuários conectados. O acesso não-autenticado deve ser restaurado para que o Optimization Detective funcione."
+
+#: site-health.php:111
+msgid "The Optimization Detective REST API endpoint is unavailable"
+msgstr "O <i>endpoint</i> da API REST do Optimization Detective não está disponível"
+
+#: site-health.php:106
+msgid "This appears to be working properly."
+msgstr "Isso parece estar funcionando corretamente."
+
+#: site-health.php:100
+msgid "The Optimization Detective REST API endpoint is available"
+msgstr "O <i>endpoint</i> da API REST do Optimization Detective está disponível"
+
+#. translators: %s is the REST API endpoint
+#: site-health.php:93
+msgid "To collect URL Metrics from visitors the REST API must be available to unauthenticated users. Specifically, visitors must be able to perform a <code>POST</code> request to the <code>%s</code> endpoint."
+msgstr "Para coletar métricas de URL de visitantes, a API REST deve estar disponível para usuários não-autenticados. Especificamente, os visitantes devem ser capazes de executar uma solicitação <code>POST</code> para o <i>endpoint</i> <code>%s</code>."
+
+#: site-health.php:29
+msgid "Optimization Detective REST API Endpoint Availability"
+msgstr "Disponibilidade de <i>endpoints</i> da API REST do Optimization Detective Endpoint"
+
+#: optimization.php:94
+msgid "Page is not optimized because the URL has the optimization_detective_disabled query parameter."
+msgstr "A página não está otimizada porque o URL tem o parâmetro de consulta optimization_detective_disabled."
+
+#: optimization.php:90
+msgid "Page is not optimized because the REST API for storing URL Metrics is not available."
+msgstr "A página não está otimizada porque a API REST para armazenar métricas de URL não está disponível."
+
+#: optimization.php:86
+msgid "Page is not optimized because od_can_optimize_response() returned false. This can be overridden with the od_can_optimize_response filter."
+msgstr "A página não está otimizada porque od_can_optimize_response() retornou falso. Isso pode ser substituído pelo filtro od_can_optimize_response."
+
+#: storage/class-od-rest-url-metrics-store-endpoint.php:275
+msgid "Unable to store URL Metric."
+msgstr "Não foi possível armazenar a métrica de URL."
+
+#: storage/class-od-rest-url-metrics-store-endpoint.php:70
+msgid "ETag for the current environment."
+msgstr "ETag para o ambiente atual."
+
+#. translators: %s is the minified asset path
+#: helper.php:112
+msgid "Minified asset has not been built: %s"
+msgstr "O recurso minificado não foi compilado: %s"
+
+#: class-od-url-metric.php:236
+msgid "The ETag for the URL Metric."
+msgstr "ETag para a métrica de URL."
+
+#. translators: %s is the invalid ETag
+#: class-od-url-metric-group-collection.php:122
+msgid "The current ETag must be a valid MD5 hash, but provided: %s"
+msgstr "O ETag atual deve ser um hash MD5 válido, mas foi fornecido: %s"
+
+#: storage/class-od-rest-url-metrics-store-endpoint.php:165
+msgid "Cross-origin requests are not allowed for this endpoint."
+msgstr "Requisições de origem cruzada não são permitidas para este <i>endpoint</>."
+
+#: storage/class-od-rest-url-metrics-store-endpoint.php:78
+msgid "Cache purge post ID."
+msgstr "ID do post de limpeza do cache."
+
+#: storage/class-od-rest-url-metrics-store-endpoint.php:201
+msgid "The request body is not JSON array."
+msgstr "O corpo da requisição não é um <i>array</i> JSON."
+
+#: helper.php:46
+msgid "The minimum width cannot be greater than or equal to the maximum width."
+msgstr "A largura mínima não pode ser maior ou igual à largura máxima."
+
+#. translators: 1: current aspect ratio, 2: minimum aspect ratio, 3: maximum
+#. aspect ratio, 4: viewport dimensions
+#: class-od-url-metric.php:135
+msgid "Viewport aspect ratio (%1$s) is not in the accepted range of %2$s to %3$s. Viewport dimensions: %4$s"
+msgstr "A proporção da área visível (%1$s) não está no intervalo aceito de %2$s a %3$s. Dimensões da área visível: %4$s"
+
+#. translators: %s is class member variable name
+#: class-od-tag-visitor-context.php:142
+#: class-od-template-optimization-context.php:118
+#: storage/class-od-url-metric-store-request-context.php:132
+msgid "Unknown property %s."
+msgstr "Propriedade desconhecida: %s."
+
+#. translators: %s is class member variable name
+#: class-od-tag-visitor-context.php:130
+#: storage/class-od-url-metric-store-request-context.php:120
+msgid "Use %s instead."
+msgstr "Use %s como alternativa."
+
+#. translators: 1: property name, 2: 'default'
+#: class-od-url-metric.php:411
+msgid "Supplied schema property \"%1$s\" has disallowed \"%2$s\" specified."
+msgstr "A propriedade de schema \"%1$s\" fornecida invalidou \"%2$s\" especificada."
+
+#. translators: 1: property name, 2: 'required'
+#: class-od-url-metric.php:399
+msgid "Supplied schema property \"%1$s\" has a truthy value for \"%2$s\". All extended properties must be optional so that URL Metrics are not all immediately invalidated once an extension is deactivated."
+msgstr "A propriedade de schema fornecida \"%1$s\" tem um valor verdadeiro para \"%2$s\". Todas as propriedades estendidas devem ser opcionais para que as métricas de URL não sejam todas imediatamente invalidadas quando uma extensão for desativada."
+
+#. translators: 1: property name, 2: 'type'
+#: class-od-url-metric.php:388
+msgid "Supplied schema property \"%1$s\" with missing \"%2$s\" key."
+msgstr "Propriedade de schema \"%1$s\" fornecida não tem a chave \"%2$s\"."
+
+#. translators: property name
+#: class-od-url-metric.php:378
+msgid "Disallowed override of existing schema property \"%s\"."
+msgstr "Substituição não permitida da propriedade de esquema \"%s\" existente."
+
+#: class-od-url-metric.php:229
+msgid "The UUID for the URL Metric."
+msgstr "O UUID para a métrica de URL."
+
+#. translators: 1: 'href' attribute name, 2: 'imagesrcset' attribute name
+#: class-od-link-collection.php:89
+msgid "Either the \"%1$s\" or \"%2$s\" attribute must be supplied."
+msgstr "Deve-se fornecer o atributo \"%1$s\" ou \"%2$s\"."
+
+#. translators: 1: link, 2: rel=preload, 3: 'as' attribute name
+#. translators: 1: link, 2: rel=preconnect, 3: 'href' attribute name
+#: class-od-link-collection.php:78 class-od-link-collection.php:83
+msgid "A %1$s with %2$s must include an \"%3$s\" attribute."
+msgstr "Um %1$s com %2$s deve incluir um atributo \"%3$s\"."
+
+#. translators: %s: rel
+#: class-od-link-collection.php:72
+msgid "The \"%s\" attribute must be provided."
+msgstr "O argumento \"%s\" deve ser fornecido."
+
+#. translators: %s is the bookmark name
+#: class-od-html-tag-processor.php:766
+msgid "Unable to append markup to %s since the bookmark no longer exists."
+msgstr "Não é possível anexar marcação a %s porque o favorito não existe mais."
+
+#: class-od-link-collection.php:100
+msgid "Link attributes must be strings."
+msgstr "Os atributos de links devem ser strings."
+
+#: class-od-link-collection.php:96
+msgid "Maximum width must be greater than zero and greater than the minimum width."
+msgstr "A largura máxima deve ser maior que zero e maior que a largura mínima."
+
+#: class-od-link-collection.php:93
+msgid "Minimum width must be at least zero."
+msgstr "A largura mínima deve ser pelo menos zero."
+
+#. Plugin URI of the plugin
+#: load.php
+msgid "https://github.com/WordPress/performance/tree/trunk/plugins/optimization-detective"
+msgstr "https://github.com/WordPress/performance/tree/trunk/plugins/optimization-detective"
+
+#. translators: %s is exception message
+#: storage/class-od-rest-url-metrics-store-endpoint.php:226
+msgid "Failed to validate URL Metric: %s"
+msgstr "Falhou ao validar a métrica de URL: %s"
+
+#: storage/class-od-rest-url-metrics-store-endpoint.php:192
+msgid "The URL Metric group for the provided viewport is already complete."
+msgstr "O grupo de métricas de URL para a área visível fornecida já está completo."
+
+#: storage/class-od-rest-url-metrics-store-endpoint.php:121
+msgid "URL Metric storage is presently locked for the current IP."
+msgstr "O armazenamento de métricas de URL está bloqueado para o IP atual no momento."
+
+#: storage/class-od-rest-url-metrics-store-endpoint.php:89
+msgid "URL Metrics HMAC verification failure."
+msgstr "Falha na verificação do HMAC das métricas de URL."
+
+#: storage/class-od-rest-url-metrics-store-endpoint.php:84
+msgid "HMAC originally computed by server required to authorize the request."
+msgstr "HMAC originalmente calculado pelo servidor necessário para autorizar a requisição."
+
+#: storage/class-od-rest-url-metrics-store-endpoint.php:62
+msgid "An MD5 hash of the query args."
+msgstr "Um hash MD5 dos argumentos da consulta."
+
+#. translators: %s is the sample size
+#: storage/data.php:452
+msgid "Sample size must greater than zero, but saw \"%s\"."
+msgstr "O tamanho da amostra deve ser maior que zero, mas se vê \"%s\"."
+
+#. translators: %s is the actual breakpoint max width
+#: storage/data.php:395
+msgid "Breakpoint must be greater zero, but saw \"%s\"."
+msgstr "O ponto de quebra deve ser maior que zero, mas se vê \"%s\"."
+
+#. translators: %s is the TTL freshness
+#: storage/data.php:44
+msgid "Freshness TTL must be at least zero, but saw \"%s\"."
+msgstr "A medida TTL deve ser pelo menos zero, mas se vê \"%s\"."
+
+#. translators: 1: Post type slug. 2: Exception message.
+#: storage/class-od-url-metrics-post-type.php:184
+msgid "Unexpected shape to JSON array in post_content of %1$s post type: %2$s"
+msgstr "Formato inesperado para o <i>array</i> JSON em post_content do tipo de post %1$s: %2$s"
+
+#. translators: %s is post type slug
+#: storage/class-od-url-metrics-post-type.php:157
+msgid "Contents of %s post type was not a JSON array."
+msgstr "Conteúdo do tipo de post %s não era um <i>array</i> JSON."
+
+#. translators: 1: Post type slug, 2: Post ID, 3: JSON error message
+#: storage/class-od-url-metrics-post-type.php:145
+msgid "Contents of %1$s post type (ID: %2$s) not valid JSON: %3$s"
+msgstr "Conteúdo do tipo de post %1$s (ID: %2$s) JSON inválido: %3$s"
+
+#: storage/class-od-url-metrics-post-type.php:70
+#: storage/class-od-url-metrics-post-type.php:71
+msgid "URL Metrics"
+msgstr "Métricas de URL"
+
+#. translators: 1: File path. 2: CLI command.
+#: load.php:89
+msgid "Unable to load %1$s. Please make sure you have run %2$s."
+msgstr "Não foi possível carregar %1$s. Certifique-se de ter executado %2$s."
+
+#: class-od-url-metric-group.php:254
+msgid "URL Metric is not in the viewport range for group."
+msgstr "A métrica de URL não está no intervalo da área visível para o grupo."
+
+#: class-od-url-metric-group.php:128
+msgid "The minimum viewport width must be smaller than the maximum viewport width."
+msgstr "A largura mínima da área visível deve ser menor que a sua largura máxima."
+
+#: class-od-url-metric-group.php:123
+msgid "The maximum viewport width must be greater than zero."
+msgstr "A largura máxima da área visível deve ser maior que zero."
+
+#: class-od-url-metric-group.php:117
+msgid "The minimum viewport width must be at least zero."
+msgstr "A largura mínima da área visível deve ser pelo menos zero."
+
+#. translators: %d is viewport width
+#: class-od-url-metric-group-collection.php:347
+msgid "No URL Metric group found for viewport width: %d"
+msgstr "Não foi encontrado nenhum grupo de métrica de URL para a largura da <i>viewport</i>: %d"
+
+#: class-od-url-metric-group-collection.php:316
+msgid "No group available to add URL Metric to."
+msgstr "Nenhum grupo disponível para adicionar a métrica de URL."
+
+#. translators: %d is the invalid sample size
+#: class-od-url-metric-group-collection.php:176
+#: class-od-url-metric-group.php:153
+msgid "Freshness TTL must be at least zero, but provided: %d"
+msgstr "A medida TTL deve ser maior que zero, mas foi fornecido: %d"
+
+#. translators: %d is the invalid sample size
+#: class-od-url-metric-group-collection.php:162
+#: class-od-url-metric-group.php:140
+msgid "Sample size must be greater than zero, but provided: %d"
+msgstr "O tamanho da amostra deve ser maior que zero, mas foi fornecido: %d"
+
+#: class-od-url-metric.php:277
+msgid "Element metrics"
+msgstr "Métricas de elementos"
+
+#: class-od-url-metric.php:270
+msgid "Timestamp at which the URL Metric was captured."
+msgstr "Carimbo de data e hora em que a métrica de URL foi capturada."
+
+#: class-od-url-metric.php:252
+msgid "Viewport dimensions"
+msgstr "Dimensões da área visível"
+
+#: class-od-url-metric.php:245
+msgid "The URL for which the metric was obtained."
+msgstr "URL do qual a métrica foi obtida."
+
+#. translators: 1: Popped tag name, 2: Closing tag name
+#: class-od-html-tag-processor.php:385
+msgid "Expected popped tag stack element %1$s to match the currently visited closing tag %2$s."
+msgstr "Era esperado que o elemento de pilha de tags %1$s exibido correspondesse à tag de fechamento %2$s visitada no momento."
+
+#. Author URI of the plugin
+#: load.php
+msgid "https://make.wordpress.org/performance/"
+msgstr "https://make.wordpress.org/performance/"
+
+#. Author of the plugin
+#: load.php
+msgid "WordPress Performance Team"
+msgstr "Equipe de desempenho do WordPress"
+
+#. Plugin Name of the plugin
+#: load.php site-health.php:103
+msgid "Optimization Detective"
+msgstr "Optimization Detective"

@@ -1,0 +1,2379 @@
+# Translation of Themes - Zakra in Japanese
+# This file is distributed under the same license as the Themes - Zakra package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-09-04 15:25:51+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: ja_JP\n"
+"Project-Id-Version: Themes - Zakra\n"
+
+#. Description of the theme
+#: style.css
+#, gp-priority: high
+msgid "Zakra is a powerful and versatile multipurpose theme that makes it easy to create beautiful and professional websites. With over free 40 pre-designed starter demo sites to choose from, you can quickly build a unique and functional site that fits your specific needs. Whether you're launching a blog, news site, e-commerce store, showcasing your portfolio, building a business site, LMS, or niche-specific site (such as a cafe, spa, charity, yoga studio, wedding venue, dental practice, photography, restaurant, or educational institution), Zakra has everything you need to succeed. The theme integrates seamlessly with popular page builders like Elementor, Brizy, BlockArt, and the Gutenberg editor, giving you complete freedom to create any layout you can imagine. Importantly, Zakra is optimized for speed, features a mobile-first responsive design, is built with block-based technology, and is optimized for search engines. It is also compatible with a wide range of popular WordPress plugins, allowing you to extend its functionality as needed. Build your next project with Zakra today and see the difference for yourself. Check out all the starter sites at https://zakratheme.com/demos!"
+msgstr "Zakra は強力で多用途かつ多目的なテーマで、美しくプロフェッショナルなウェブサイトを簡単に作成できます。40 以上の無料のデザイン済みスターターデモサイトから選ぶことができ、ニーズに合わせたユニークかつ機能性のあるサイトをすぐに作成できます。ブログ、ニュースサイト、E コマースストア、ポートフォリオの紹介、ビジネスサイト、LMS、またはニッチなサイト (カフェ、スパ、慈善活動、ヨガスタジオ、結婚式場、歯科診療所、フォト、レストラン、教育機関)、どのようなサイトであれ、成功のすべてが Zakra に備わっています。テーマは Elementor、Brizy、BlockArt、Gutenberg エディターのような人気のページビルダーとシームレスに統合され、あらゆるレイアウトを自由に作成できます。Zakra はスピードに優れ、モバイルファーストなレスポンシブデザインの搭載、ブロックベースの技術、検索エンジンに最適化されています。幅広い人気の WordPress プラグインにも対応し、必要な場面で機能を拡張できます。今すぐ Zakra を使用して次のプロジェクトを構築し、違いを感じてください。こちらですべてのスターターサイトをご覧いただけます。https://zakratheme.com/demos"
+
+#. Theme Name of the theme
+#: style.css inc/admin/views/header.php:22 inc/helper/utils.php:288
+#: inc/helper/utils.php:331 assets/build/dashboard.js:1
+#, gp-priority: high
+msgid "Zakra"
+msgstr "Zakra"
+
+#: inc/admin/class-zakra-welcome-notice.php:225
+msgid "You do not have permission to perform this action."
+msgstr "この操作を行う権限がありません。"
+
+#. Translators: 1: Panel Title.
+#: functions.php:173
+msgid "Customizing ▶ %s"
+msgstr "カスタマイズ ▶ %s"
+
+#: inc/customizer/options/additional/additional.php:30
+msgid "Demo migrated"
+msgstr "デモが移行されました"
+
+#: inc/customizer/options/additional/additional.php:23
+msgid "Demo Migrated"
+msgstr "デモが移行されました"
+
+#: inc/admin/class-zakra-dashboard.php:98
+#: inc/admin/class-zakra-dashboard.php:99
+msgid "Demo Importer"
+msgstr "デモインポーター"
+
+#: inc/admin/class-zakra-changelog-controller.php:105
+msgid "You are not allowed to access this resource."
+msgstr "このリソースをアクセスする権限がありません。"
+
+#: inc/admin/views/header.php:56 assets/build/dashboard.js:1
+msgid "Free vs Pro"
+msgstr "無料版と有料版"
+
+#: inc/customizer/options/footer-builder/copyright.php:132
+#: inc/customizer/options/footer-builder/footer-menu-2.php:96
+#: inc/customizer/options/footer-builder/footer-menu.php:96
+#: inc/customizer/options/footer-builder/html-1.php:94
+#: inc/customizer/options/footer-builder/html-2.php:94
+#: inc/customizer/options/footer-builder/socials.php:49
+#: inc/customizer/options/footer-builder/widget-1.php:135
+#: inc/customizer/options/footer-builder/widget-2.php:135
+#: inc/customizer/options/footer-builder/widget-3.php:135
+#: inc/customizer/options/footer-builder/widget-4.php:135
+#: inc/customizer/options/footer-builder/widget-5.php:135
+#: inc/customizer/options/footer-builder/widget-6.php:135
+msgid "Center"
+msgstr "中央"
+
+#: inc/customizer/options/footer-builder/bottom-area.php:150
+#: inc/customizer/options/footer-builder/main-area.php:221
+#: inc/customizer/options/footer-builder/top-area.php:151
+msgid "Inline"
+msgstr "インライン"
+
+#: inc/customizer/options/footer-builder/bottom-area.php:149
+#: inc/customizer/options/footer-builder/main-area.php:220
+#: inc/customizer/options/footer-builder/top-area.php:150
+msgid "Stack"
+msgstr "重ね"
+
+#: inc/customizer/options/footer-builder/bottom-area.php:145
+#: inc/customizer/options/footer-builder/main-area.php:216
+#: inc/customizer/options/footer-builder/top-area.php:146
+msgid " Layout"
+msgstr " レイアウト"
+
+#: inc/customizer/options/footer-builder/bottom-area.php:140
+#: inc/customizer/options/footer-builder/main-area.php:211
+#: inc/customizer/options/footer-builder/top-area.php:141
+msgid "Inner Elements"
+msgstr "内部の要素"
+
+#: inc/customizer/panels-sections/panels-sections.php:25
+#: inc/customizer/panels-sections/panels-sections.php:86
+msgid "Footer Builder"
+msgstr "フッタービルダー"
+
+#: inc/customizer/panels-sections/panels-sections.php:13
+#: inc/customizer/panels-sections/panels-sections.php:81
+msgid "Header Builder"
+msgstr "ヘッダービルダー"
+
+#: inc/customizer/options/header/primary-menu.php:96
+msgid "Active Style"
+msgstr "有効なスタイル"
+
+#: inc/customizer/options/header/main-header.php:174
+msgid "Header Search Navigation"
+msgstr "ヘッダー検索ナビゲーション"
+
+#: inc/customizer/options/header-builder/primary-menu.php:18
+#: inc/customizer/options/header-builder/secondary-menu.php:17
+msgid "Select Menu Navigation"
+msgstr "メニューナビゲーションを選択"
+
+#: inc/customizer/options/header-builder/header-button.php:157
+msgid "Border Radius"
+msgstr "枠線の半径"
+
+#: inc/customizer/options/header-builder/header-builder.php:280
+msgid "Global Header"
+msgstr "グローバルヘッダー"
+
+#: inc/customizer/options/header-builder/header-builder.php:266
+#: inc/customizer/options/header-builder/offset-area.php:6
+#: inc/customizer/panels-sections/panels-sections.php:226
+msgid "Offset Area"
+msgstr "オフセットエリア"
+
+#: inc/customizer/options/header-builder/header-builder.php:236
+msgid "Main right"
+msgstr "メイン右"
+
+#: inc/customizer/options/header-builder/header-builder.php:231
+msgid "Main center"
+msgstr "メインセンター"
+
+#: inc/customizer/options/header-builder/header-builder.php:226
+msgid "Builder area middle left"
+msgstr "ビルダーエリア中央左"
+
+#: inc/customizer/options/header-builder/header-builder.php:221
+msgid "Builder Main area"
+msgstr "ビルダーメインエリア"
+
+#: inc/customizer/options/header-builder/header-builder.php:214
+msgid "Builder area top right"
+msgstr "ビルダーエリア右上"
+
+#: inc/customizer/options/header-builder/header-builder.php:209
+msgid "Builder area top middle"
+msgstr "ビルダーエリア上部中央"
+
+#: inc/customizer/options/header-builder/header-builder.php:204
+msgid "Builder area top left"
+msgstr "ビルダーエリア左上"
+
+#: inc/customizer/options/header-builder/header-builder.php:199
+msgid "Builder area top"
+msgstr "ビルダーエリアトップ"
+
+#: inc/customizer/options/header-builder/header-builder.php:137
+msgid "Builder Component"
+msgstr "ビルダーコンポーネント"
+
+#: inc/customizer/options/header-builder/header-builder.php:119
+#: inc/customizer/panels-sections/panels-sections.php:296
+msgid "Toggle Button"
+msgstr "トグルボタン"
+
+#: inc/customizer/options/header-builder/header-builder.php:31
+#: inc/customizer/options/header-builder/quaternary-menu.php:11
+#: inc/customizer/panels-sections/panels-sections.php:206
+msgid "Quaternary Menu"
+msgstr "第四次メニュー"
+
+#: inc/customizer/options/header-builder/header-builder.php:26
+#: inc/customizer/options/header-builder/tertiary-menu.php:11
+#: inc/customizer/panels-sections/panels-sections.php:201
+msgid "Tertiary Menu"
+msgstr "第三メニュー"
+
+#: inc/customizer/options/header-builder/header-builder.php:11
+msgid "Site Title & Logo"
+msgstr "サイトタイトルとロゴ"
+
+#: inc/customizer/options/header-builder/cart.php:6
+#: inc/customizer/options/header-builder/header-builder.php:73
+#: inc/customizer/options/header-builder/header-builder.php:124
+#: inc/customizer/panels-sections/panels-sections.php:291
+msgid "Cart"
+msgstr "カート"
+
+#: inc/customizer/options/global/container.php:98
+msgid "Outside Background"
+msgstr "外部背景"
+
+#: inc/customizer/options/global/container.php:83
+msgid "Inside Background"
+msgstr "内部背景"
+
+#: inc/customizer/options/global/colors.php:8
+#: inc/customizer/options/global/colors.php:13
+msgid "Customized Color palette"
+msgstr "カスタマイズされたカラーパレット"
+
+#: inc/customizer/options/footer/scroll-to-top.php:6
+msgid "Scroll To Top"
+msgstr "トップへスクロール"
+
+#: inc/customizer/options/footer/footer-bar.php:248
+#: inc/customizer/options/header/top-bar.php:190
+msgid "Column 2 Widget Navigation"
+msgstr "カラム 2 のウィジェットナビゲーション"
+
+#: inc/customizer/options/footer/footer-bar.php:181
+#: inc/customizer/options/header/top-bar.php:124
+msgid "Column 1 Widget Navigation"
+msgstr "カラム 1 のウィジェットナビゲーション"
+
+#: inc/customizer/options/footer/footer-bar.php:122
+#: inc/customizer/options/footer/footer-bar.php:205
+#: inc/customizer/options/header/top-bar.php:87
+#: inc/customizer/options/header/top-bar.php:152
+msgid "Content Type"
+msgstr "コンテンツのタイプ"
+
+#: inc/customizer/options/footer-builder/widget-1.php:119
+#: inc/customizer/options/footer-builder/widget-2.php:119
+#: inc/customizer/options/footer-builder/widget-3.php:119
+#: inc/customizer/options/footer-builder/widget-4.php:119
+#: inc/customizer/options/footer-builder/widget-5.php:119
+#: inc/customizer/options/footer-builder/widget-6.php:119
+#: inc/customizer/options/header-builder/widget-1.php:119
+#: inc/customizer/options/header-builder/widget-2.php:119
+msgid "Content Typography"
+msgstr "コンテンツのタイポグラフィ"
+
+#: inc/customizer/options/footer-builder/widget-1.php:78
+#: inc/customizer/options/footer-builder/widget-2.php:78
+#: inc/customizer/options/footer-builder/widget-3.php:78
+#: inc/customizer/options/footer-builder/widget-4.php:78
+#: inc/customizer/options/footer-builder/widget-5.php:78
+#: inc/customizer/options/footer-builder/widget-6.php:78
+#: inc/customizer/options/header-builder/widget-1.php:78
+#: inc/customizer/options/header-builder/widget-2.php:78
+msgid "Content Color"
+msgstr "コンテンツの色"
+
+#: inc/customizer/options/footer-builder/widget-1.php:55
+#: inc/customizer/options/footer-builder/widget-2.php:55
+#: inc/customizer/options/footer-builder/widget-3.php:55
+#: inc/customizer/options/footer-builder/widget-4.php:55
+#: inc/customizer/options/footer-builder/widget-5.php:55
+#: inc/customizer/options/footer-builder/widget-6.php:55
+#: inc/customizer/options/header-builder/widget-1.php:55
+#: inc/customizer/options/header-builder/widget-2.php:55
+msgid "Title Typography"
+msgstr "タイトルのタイポグラフィ"
+
+#: inc/customizer/options/footer-builder/top-area.php:5
+#: inc/customizer/options/header-builder/top-area.php:7
+#: inc/customizer/panels-sections/panels-sections.php:301
+#: inc/customizer/panels-sections/panels-sections.php:316
+msgid "Top Area"
+msgstr "上部エリア"
+
+#: inc/customizer/options/footer-builder/socials.php:6
+#: inc/customizer/options/footer-builder/socials.php:13
+#: inc/customizer/options/header-builder/header-builder.php:68
+#: inc/customizer/options/header-builder/socials.php:6
+#: inc/customizer/options/header-builder/socials.php:13
+msgid "Social"
+msgstr "ソーシャル"
+
+#: inc/customizer/options/footer-builder/main-area.php:180
+msgid "Widget Item List"
+msgstr "ウィジェットアイテムリスト"
+
+#: inc/customizer/options/footer-builder/main-area.php:168
+#: inc/customizer/options/footer-builder/widget-1.php:14
+#: inc/customizer/options/footer-builder/widget-2.php:14
+#: inc/customizer/options/footer-builder/widget-3.php:14
+#: inc/customizer/options/footer-builder/widget-4.php:14
+#: inc/customizer/options/footer-builder/widget-5.php:14
+#: inc/customizer/options/footer-builder/widget-6.php:14
+#: inc/customizer/options/header-builder/widget-1.php:14
+#: inc/customizer/options/header-builder/widget-2.php:14
+msgid "Title Color"
+msgstr "タイトルの色"
+
+#: inc/customizer/options/footer-builder/main-area.php:5
+#: inc/customizer/options/header-builder/main-area.php:5
+#: inc/customizer/panels-sections/panels-sections.php:306
+#: inc/customizer/panels-sections/panels-sections.php:321
+msgid "Main Area"
+msgstr "メインエリア"
+
+#: inc/customizer/options/footer-builder/html-2.php:14
+#: inc/customizer/options/header-builder/html-2.php:14
+msgid "Text/HTML for HTML 2"
+msgstr "HTML 用のテキスト/HTML 2"
+
+#: inc/customizer/options/footer-builder/html-1.php:14
+#: inc/customizer/options/header-builder/html-1.php:14
+msgid "Text/HTML for HTML 1"
+msgstr "HTML 用のテキスト/HTML 1"
+
+#: inc/customizer/options/footer-builder/footer-menu-2.php:19
+#: inc/customizer/options/footer-builder/footer-menu.php:19
+#: inc/customizer/options/header-builder/quaternary-menu.php:19
+#: inc/customizer/options/header-builder/tertiary-menu.php:19
+msgid "Select a Menu"
+msgstr "メニューを選択"
+
+#: inc/customizer/options/footer-builder/footer-menu-2.php:11
+#: inc/customizer/options/footer-builder/footer-menu.php:11
+msgid "Footer Menu"
+msgstr "フッターメニュー"
+
+#: inc/customizer/options/footer-builder/footer-builder.php:85
+#: inc/customizer/options/global/builder.php:6
+#: inc/customizer/panels-sections/panels-sections.php:36
+msgid "Builder"
+msgstr "ビルダー"
+
+#: inc/customizer/options/footer-builder/footer-builder.php:66
+#: inc/customizer/panels-sections/panels-sections.php:126
+#: inc/customizer/panels-sections/panels-sections.php:131
+msgid "Socials"
+msgstr "ソーシャル"
+
+#: inc/customizer/options/footer-builder/footer-builder.php:61
+#: inc/customizer/panels-sections/panels-sections.php:221
+msgid "Menu 2"
+msgstr "メニュー 2"
+
+#: inc/customizer/options/footer-builder/footer-builder.php:56
+#: inc/customizer/panels-sections/panels-sections.php:216
+msgid "Menu 1"
+msgstr "メニュー 1"
+
+#: inc/customizer/options/footer-builder/footer-builder.php:50
+#: inc/customizer/options/footer-builder/widget-6.php:6
+#: inc/customizer/panels-sections/panels-sections.php:286
+msgid "Widget 6"
+msgstr "ウィジェット 6"
+
+#: inc/customizer/options/footer-builder/footer-builder.php:44
+#: inc/customizer/options/footer-builder/widget-5.php:6
+#: inc/customizer/panels-sections/panels-sections.php:281
+msgid "Widget 5"
+msgstr "ウィジェット 5"
+
+#: inc/customizer/options/footer-builder/footer-builder.php:38
+#: inc/customizer/options/footer-builder/widget-4.php:6
+#: inc/customizer/panels-sections/panels-sections.php:276
+msgid "Widget 4"
+msgstr "ウィジェット 4"
+
+#: inc/customizer/options/footer-builder/footer-builder.php:32
+#: inc/customizer/options/footer-builder/widget-3.php:6
+#: inc/customizer/panels-sections/panels-sections.php:271
+msgid "Widget 3"
+msgstr "ウィジェット 3"
+
+#: inc/customizer/options/footer-builder/footer-builder.php:26
+#: inc/customizer/options/footer-builder/widget-2.php:6
+#: inc/customizer/options/header-builder/header-builder.php:62
+#: inc/customizer/options/header-builder/header-builder.php:113
+#: inc/customizer/options/header-builder/widget-2.php:6
+#: inc/customizer/panels-sections/panels-sections.php:256
+#: inc/customizer/panels-sections/panels-sections.php:266
+msgid "Widget 2"
+msgstr "ウィジェット 2"
+
+#: inc/customizer/options/footer-builder/footer-builder.php:20
+#: inc/customizer/options/footer-builder/widget-1.php:6
+#: inc/customizer/options/header-builder/header-builder.php:56
+#: inc/customizer/options/header-builder/header-builder.php:107
+#: inc/customizer/options/header-builder/widget-1.php:6
+#: inc/customizer/panels-sections/panels-sections.php:251
+#: inc/customizer/panels-sections/panels-sections.php:261
+msgid "Widget 1"
+msgstr "ウィジェット 1"
+
+#: inc/customizer/options/footer-builder/footer-builder.php:15
+#: inc/customizer/options/footer-builder/html-2.php:6
+#: inc/customizer/options/header-builder/header-builder.php:51
+#: inc/customizer/options/header-builder/header-builder.php:102
+#: inc/customizer/options/header-builder/html-2.php:6
+#: inc/customizer/panels-sections/panels-sections.php:246
+#: inc/customizer/panels-sections/panels-sections.php:336
+msgid "HTML 2"
+msgstr "HTML 2"
+
+#: inc/customizer/options/footer-builder/footer-builder.php:10
+#: inc/customizer/options/footer-builder/html-1.php:6
+#: inc/customizer/options/header-builder/header-builder.php:46
+#: inc/customizer/options/header-builder/header-builder.php:97
+#: inc/customizer/options/header-builder/html-1.php:6
+#: inc/customizer/panels-sections/panels-sections.php:241
+#: inc/customizer/panels-sections/panels-sections.php:331
+msgid "HTML 1"
+msgstr "HTML 1"
+
+#: inc/customizer/options/footer-builder/copyright.php:6
+#: inc/customizer/options/footer-builder/footer-builder.php:71
+#: inc/customizer/panels-sections/panels-sections.php:136
+msgid "Copyright"
+msgstr "著作権"
+
+#: inc/customizer/options/footer-builder/bottom-area.php:119
+#: inc/customizer/options/footer-builder/main-area.php:143
+#: inc/customizer/options/footer-builder/top-area.php:119
+#: inc/customizer/options/header-builder/bottom-area.php:107
+#: inc/customizer/options/header-builder/header-builder.php:306
+#: inc/customizer/options/header-builder/header-button.php:138
+#: inc/customizer/options/header-builder/main-area.php:107
+#: inc/customizer/options/header-builder/top-area.php:92
+msgid "Border Width"
+msgstr "枠線の幅"
+
+#: inc/customizer/options/footer-builder/bottom-area.php:103
+#: inc/customizer/options/footer-builder/main-area.php:127
+#: inc/customizer/options/footer-builder/top-area.php:103
+#: inc/customizer/options/header-builder/bottom-area.php:91
+#: inc/customizer/options/header-builder/main-area.php:91
+msgid "Margin"
+msgstr "余白"
+
+#: inc/customizer/options/footer-builder/bottom-area.php:45
+#: inc/customizer/options/footer-builder/main-area.php:45
+#: inc/customizer/options/footer-builder/top-area.php:45
+#: inc/customizer/options/header-builder/bottom-area.php:33
+#: inc/customizer/options/header-builder/logo.php:42
+#: inc/customizer/options/header-builder/main-area.php:33
+#: inc/customizer/options/header-builder/top-area.php:35
+#: inc/customizer/options/header/site-identity.php:42
+msgid "Height"
+msgstr "高さ"
+
+#: inc/customizer/options/footer-builder/bottom-area.php:5
+#: inc/customizer/options/header-builder/bottom-area.php:5
+#: inc/customizer/panels-sections/panels-sections.php:311
+#: inc/customizer/panels-sections/panels-sections.php:326
+msgid "Bottom Area"
+msgstr "下部エリア"
+
+#: inc/customizer/options/content/blog.php:53
+msgid "Elements"
+msgstr "要素"
+
+#: inc/customizer/options/content/blog.php:15
+msgid "Page Title Position Navigation"
+msgstr "ページタイトルの位置のナビゲーション"
+
+#: inc/core/class-zakra-widgets.php:93
+msgid "Footer Six"
+msgstr "フッター 6"
+
+#: inc/core/class-zakra-widgets.php:92
+msgid "Footer Five"
+msgstr "フッター 5"
+
+#: inc/core/class-zakra-after-setup-theme.php:101
+#: inc/customizer/options/header-builder/header-builder.php:21
+#: inc/customizer/options/header-builder/secondary-menu.php:11
+#: inc/customizer/panels-sections/panels-sections.php:196
+msgid "Secondary Menu"
+msgstr "サブメニュー"
+
+#: inc/admin/class-zakra-welcome-notice.php:303
+msgid "Plugin installation failed."
+msgstr "プラグインのインストールに失敗しました。"
+
+#: inc/admin/class-zakra-welcome-notice.php:178
+msgid "Clicking this button will install and activate the ThemeGrill Demo Importer and BlockArt Blocks plugins allowing you to import the theme demos."
+msgstr "このボタンをクリックすることで ThemeGrill デモインポーターと BlockArt ブロックプラグインがインストールと有効化されて、テーマデモのインポートは可能になります。"
+
+#: inc/customizer/options/global/typography.php:8
+#: inc/customizer/options/global/typography.php:15
+msgid "Root Font Size"
+msgstr "ルートのフォントサイズ"
+
+#: inc/customizer/options/header-builder/search.php:12
+#: inc/customizer/options/header/header-search.php:20
+msgid "Product Search"
+msgstr "製品の検索"
+
+#: inc/customizer/options/content/blog.php:43
+msgid "Modified Date"
+msgstr "変更日"
+
+#: inc/customizer/options/content/blog.php:42
+msgid "Published Date"
+msgstr "公開日"
+
+#: inc/customizer/options/content/blog.php:28
+#: inc/customizer/options/content/blog.php:37
+msgid "Post Date Type"
+msgstr "投稿の日付タイプ"
+
+#: inc/admin/views/help.php:199 inc/admin/views/products.php:141
+#: assets/build/dashboard.js:1
+msgid "Activate"
+msgstr "有効化"
+
+#: inc/admin/views/products.php:63 assets/build/dashboard.js:1
+msgid "Plugins"
+msgstr "プラグイン"
+
+#: inc/admin/views/products.php:56 inc/admin/views/products.php:132
+msgid "Live demo"
+msgstr "ライブデモ"
+
+#: inc/admin/views/products.php:20
+msgid "Themes"
+msgstr "テーマ"
+
+#: inc/admin/views/header.php:86 assets/build/dashboard.js:1
+msgid "Upgrade to Pro"
+msgstr "Pro へアップグレード"
+
+#: inc/admin/views/header.php:71 assets/build/dashboard.js:1
+msgid "Core"
+msgstr "コア"
+
+#. translators: %s: Theme Name.
+#: inc/admin/views/help.php:104
+msgid "Sharing your review is a valuable way to help us enhance your experience."
+msgstr "お客様の体験を向上するために、感想を残してください。"
+
+#: inc/admin/views/help.php:76 assets/build/dashboard.js:1
+msgid "Visit us on YouTube"
+msgstr "YouTube で訪問してください"
+
+#: inc/admin/views/help.php:75 assets/build/dashboard.js:1
+msgid "Visit our YouTube channel for videos about tutorials, updates, and news on our products!"
+msgstr "YouTube チャンネルで訪問して、チュートリアル、更新と商品に関するニュースのビデオをご覧いただけます。"
+
+#: inc/admin/views/help.php:74 assets/build/dashboard.js:1
+msgid "Youtube Community"
+msgstr "Youtube コミュニティー"
+
+#: inc/admin/views/help.php:71
+msgid "youtube"
+msgstr "youtube"
+
+#: inc/admin/views/help.php:66 assets/build/dashboard.js:1
+msgid "Join us on Twitter"
+msgstr "Twitter で私たちに参加"
+
+#: inc/admin/views/help.php:65 assets/build/dashboard.js:1
+msgid "Follow us on Twitter and stay in the loop for the latest news and updates on our products!"
+msgstr "Twitter でフォローして、商品に関する最新のニュースと更新をお見逃しなく。"
+
+#: inc/admin/views/help.php:61
+msgid "x"
+msgstr "x"
+
+#: inc/admin/views/help.php:56 assets/build/dashboard.js:1
+msgid "Join us on Facebook"
+msgstr "Facebook で私たちに参加"
+
+#: inc/admin/views/help.php:55
+msgid "Join our Facebook community to connect with fellow users for the latest news, updates, and discussions."
+msgstr "Facebook コミュニティーに参加して、同じユーザーと一緒に最新のニュース、更新とディスカッションをお楽しみください。"
+
+#: inc/admin/views/help.php:54 assets/build/dashboard.js:1
+msgid "Facebook Community"
+msgstr "Facebook コミュニティ"
+
+#: inc/admin/views/help.php:51
+msgid "facebook"
+msgstr "facebook"
+
+#: inc/admin/views/help.php:48 assets/build/dashboard.js:1
+msgid "Join Our Community"
+msgstr "コミュニティーに参加"
+
+#: inc/admin/views/help.php:37 assets/build/dashboard.js:1
+msgid "View Now"
+msgstr "今すぐ見る"
+
+#: inc/admin/views/help.php:36 assets/build/dashboard.js:1
+msgid "Please check out basic documentation for detailed information on how to use Zakra."
+msgstr "Zakra の使用方法については基本ドキュメントでチェックしてください。"
+
+#: inc/admin/views/help.php:35 assets/build/dashboard.js:1
+msgid "Need Some Help?"
+msgstr "ヘルプが必要ですか ?"
+
+#: inc/admin/views/free-vs-pro.php:282 assets/build/dashboard.js:1
+msgid "Get Zakra Pro Now"
+msgstr "今すぐ Zakra Pro を入手"
+
+#. translators: %s: HTML br tag
+#: inc/admin/views/free-vs-pro.php:277
+msgid "Access all premium extensions, features, and upcoming updates right away by %s upgrading to the Pro version."
+msgstr "%s からプロ版にアップグレードすることで、すべてのプレミアムな拡張や機能、今後の更新にアクセスできます。"
+
+#: inc/admin/views/help.php:202 inc/admin/views/products.php:146
+#: assets/build/dashboard.js:1
+msgid "Install"
+msgstr "インストール"
+
+#: inc/admin/views/help.php:143 assets/build/dashboard.js:1
+msgid "Useful Plugins"
+msgstr "便利なプラグイン"
+
+#: inc/admin/views/help.php:44 assets/build/dashboard.js:1
+msgid "We would be happy to guide you through any issues and queries you have regarding Zakra!"
+msgstr "Zakra に関するあらゆる問題やクエリーを喜んで案内します。"
+
+#: inc/admin/views/help.php:138 assets/build/dashboard.js:1
+msgid "Request a Feature"
+msgstr "機能をリクエスト"
+
+#. translators: %s: Theme Name.
+#: inc/admin/views/help.php:133 assets/build/dashboard.js:1
+msgid "Please take a moment to suggest any features that could enhance our product."
+msgstr "少しお時間を頂いて、商品の向上に繋がる機能をおすすめできますでしょうか。"
+
+#: inc/admin/views/help.php:126 assets/build/dashboard.js:1
+msgid "Feature Request"
+msgstr "機能のリクエスト"
+
+#: inc/admin/views/help.php:110 assets/build/dashboard.js:1
+msgid "Submit a Review"
+msgstr "レビューを送信する"
+
+#: inc/admin/views/help.php:98 assets/build/dashboard.js:1
+msgid "Based on 1430+ Reviews"
+msgstr "1,430 件以上のレビューに基づく"
+
+#: inc/admin/views/help.php:89 assets/build/dashboard.js:1
+msgid "Leave us a Review"
+msgstr "レビューを残す"
+
+#: inc/admin/views/free-vs-pro.php:272 assets/build/dashboard.js:1
+msgid "Upgrade Now"
+msgstr "今すぐアップグレードする"
+
+#: inc/admin/views/free-vs-pro.php:200 assets/build/dashboard.js:1
+msgid "Free"
+msgstr "無料"
+
+#: inc/admin/views/changelog.php:45
+msgid "No changelog data available"
+msgstr "変更履歴のデータがありません"
+
+#: inc/admin/class-zakra-welcome-notice.php:110
+msgid "Clicking this button will install and activate the ThemeGrill Demo Importer plugin allowing you to import the theme’s demos."
+msgstr "このボタンをクリックすることで ThemeGrill デモインポータープラグインがインストールと有効化されて、テーマデモのインポートは可能になります。"
+
+#. translators: 1: welcome page link starting html tag, 2: welcome page link
+#. ending html tag.
+#: inc/admin/class-zakra-welcome-notice.php:103
+#: inc/admin/class-zakra-welcome-notice.php:171
+msgid "Welcome! Thank you for choosing Zakra! Let’s get you started right away with our visually appealing and attractive demos."
+msgstr "ようこそ ! Zakra を選んでいただきありがとうございます ! 今すぐ、綺麗で魅力的なデモから始めましょう。"
+
+#: inc/admin/class-zakra-welcome-notice.php:95
+#: inc/admin/class-zakra-welcome-notice.php:163
+msgid "Start Building with Zakra!"
+msgstr "Zakra で作り始めましょう !"
+
+#. translators: %s: welcome page link starting username
+#: inc/admin/class-zakra-welcome-notice.php:87
+#: inc/admin/class-zakra-welcome-notice.php:155
+msgid "Welcome %s!"
+msgstr "%s さん、ようこそ !"
+
+#: inc/admin/views/header.php:62 assets/build/dashboard.js:1
+msgid "Help"
+msgstr "ヘルプ"
+
+#: inc/admin/views/header.php:50 assets/build/dashboard.js:1
+msgid "Products"
+msgstr "商品"
+
+#: inc/admin/views/header.php:36 inc/admin/views/header.php:43
+#: assets/build/dashboard.js:1
+msgid "Starter Templates"
+msgstr "スターターテンプレート"
+
+#: inc/admin/views/header.php:29 assets/build/dashboard.js:1
+msgid "Dashboard"
+msgstr "管理画面"
+
+#: inc/admin/class-zakra-changelog-controller.php:162
+msgid "Failed to read changelog."
+msgstr "変更履歴の読み込みに失敗しました。"
+
+#: inc/admin/class-zakra-changelog-controller.php:88
+#: inc/admin/class-zakra-changelog-controller.php:156
+msgid "Changelog not found."
+msgstr "変更履歴が見つかりません。"
+
+#: inc/admin/class-zakra-changelog-controller.php:152
+msgid "Could not access filesystem."
+msgstr "ファイルシステムにアクセスできませんでした。"
+
+#. Translators: 1. Label for Contact Page or Right sidebar area, 2. Opening of
+#. the link for widgets.php WordPress section, 3. Closing of the link for
+#. widgets.php WordPress section
+#: sidebar.php:47
+msgid "This is an example widget to show how the %s Sidebar looks by default. You can add custom widgets from the %swidgets screen%s in the admin. If custom widgets is added than this will be replaced by those widgets."
+msgstr "これは、%s サイドバーがデフォルトでどのように見えるかを示すサンプルウィジェットです。管理画面の %s widgets screen%s からカスタムウィジェットを追加できます。カスタムウィジェットが追加されると、このウィジェットはそれらのウィジェットに置き換えられます。"
+
+#: sidebar.php:44 sidebar.php:49
+msgid "Example Widget"
+msgstr "サンプルウィジェット"
+
+#: inc/customizer/options/additional/additional.php:6
+msgid "Load Google fonts locally"
+msgstr "Google フォントをローカルに読み込む"
+
+#: inc/customizer/panels-sections/panels-sections.php:176
+msgid "Optimization"
+msgstr "最適化"
+
+#: inc/customizer/panels-sections/panels-sections.php:29
+msgid "Additional"
+msgstr "追加"
+
+#: template-parts/header-builder-elements/toggle-button.php:72
+#: template-parts/header/primary-menu/mobile-toggle.php:57
+msgid "Close Button"
+msgstr "閉じるボタン"
+
+#: template-parts/content-none.php:48
+msgid "We couldnt find any results for your search. Use more generic words or double check your spelling."
+msgstr "検索が何も見つかりませんでした。もっと一般的な用語またはスペルをチェックしてください。"
+
+#: template-parts/content-none.php:25
+msgid "No Results Found"
+msgstr "結果がありません"
+
+#: searchform.php:38
+msgctxt "submit button"
+msgid "Search"
+msgstr "検索"
+
+#: searchform.php:30
+msgctxt "placeholder"
+msgid "Type & hit Enter &hellip;"
+msgstr "Enter キーで検索 &hellip;"
+
+#: searchform.php:26 searchform.php:33
+msgctxt "label"
+msgid "Search for:"
+msgstr "検索結果:"
+
+#: inc/customizer/options/header-builder/logo.php:14
+#: inc/customizer/options/header/site-identity.php:14
+msgid "Site Logo"
+msgstr "サイトのロゴ"
+
+#: inc/customizer/options/header-builder/primary-menu.php:192
+#: inc/customizer/options/header-builder/secondary-menu.php:139
+#: inc/customizer/options/header-builder/tertiary-menu.php:140
+#: inc/customizer/options/header/primary-menu.php:234
+msgid "Sub Menu"
+msgstr "サブメニュー"
+
+#: inc/customizer/options/header-builder/primary-menu.php:72
+#: inc/customizer/options/header-builder/secondary-menu.php:53
+#: inc/customizer/options/header-builder/tertiary-menu.php:54
+#: inc/customizer/options/header/primary-menu.php:88
+msgid "Main Menu"
+msgstr "メインメニュー"
+
+#: inc/customizer/options/header-builder/primary-menu.php:26
+#: inc/customizer/options/header/primary-menu.php:25
+msgid "Priority plus navigation"
+msgstr "優先ナビゲーションプラス"
+
+#: inc/customizer/options/header/main-header.php:167
+msgid "Components"
+msgstr "コンポーネント"
+
+#: inc/customizer/options/header/main-header.php:24
+msgid "Layout 2"
+msgstr "レイアウト 2"
+
+#: inc/customizer/options/header/main-header.php:23
+msgid "Layout 1"
+msgstr "レイアウト 1"
+
+#: inc/customizer/options/header-builder/header-builder.php:36
+#: inc/customizer/options/header-builder/header-button.php:6
+#: inc/customizer/options/header/header-button.php:8
+msgid "Button 1"
+msgstr "ボタン 1"
+
+#: inc/customizer/options/global/typography.php:89
+msgid "Headings"
+msgstr "見出し"
+
+#: inc/customizer/options/global/sidebar.php:119
+msgid "Others"
+msgstr "その他"
+
+#: inc/customizer/options/global/sidebar.php:86
+msgid "Archive"
+msgstr "アーカイブ"
+
+#: inc/customizer/options/global/colors.php:114
+msgid "Base"
+msgstr "ベース"
+
+#: inc/customizer/options/global/colors.php:101
+msgid "Theme Colors"
+msgstr "テーマの色"
+
+#: inc/customizer/options/global/button.php:132
+#: inc/customizer/options/header/header-button.php:154
+msgid "Radius"
+msgstr "半径"
+
+#: inc/customizer/options/footer-builder/main-area.php:190
+#: inc/customizer/options/footer/footer-column.php:266
+#: inc/customizer/options/header-builder/primary-menu.php:48
+#: inc/customizer/options/header-builder/secondary-menu.php:29
+#: inc/customizer/options/header-builder/tertiary-menu.php:30
+msgid "Border Bottom Width"
+msgstr "境界線の下の幅"
+
+#: inc/customizer/options/footer/footer-column.php:23
+#: inc/customizer/options/header-builder/primary-menu.php:80
+#: inc/customizer/options/header/main-header.php:35
+#: inc/customizer/options/header/main-header.php:72
+msgid "Advanced Style"
+msgstr "高度なスタイル"
+
+#: inc/customizer/options/footer/footer-bar.php:263
+msgid "Footer Content"
+msgstr "フッターのコンテンツ"
+
+#: inc/customizer/options/footer/footer-bar.php:237
+#: inc/customizer/options/header/top-bar.php:180
+msgid "Select a Menu for Column 2"
+msgstr "カラム 2 用のメニューを選択"
+
+#: inc/customizer/options/footer/footer-bar.php:220
+#: inc/customizer/options/header/top-bar.php:169
+msgid "Text/HTML for Column 2"
+msgstr "カラム 2 用のテキスト/HTML"
+
+#: inc/customizer/options/footer/footer-bar.php:170
+#: inc/customizer/options/header/top-bar.php:114
+msgid "Select a Menu for Column 1"
+msgstr "カラム 1 用のメニューを選択"
+
+#: inc/customizer/options/footer-builder/copyright.php:21
+#: inc/customizer/options/footer/footer-bar.php:144
+#: inc/customizer/options/header/top-bar.php:103
+msgid "Text/HTML for Column 1"
+msgstr "カラム 1 用のテキスト/HTML"
+
+#: inc/customizer/options/footer/footer-bar.php:87
+#: inc/customizer/options/global/container.php:51
+#: inc/customizer/options/global/sidebar.php:44
+#: inc/customizer/options/header/main-header.php:143
+#: inc/customizer/options/header/primary-menu.php:57
+msgid "Width"
+msgstr "幅"
+
+#: inc/customizer/options/content/blog.php:192
+#: inc/customizer/build/customind.js:4
+#: inc/customizer/customind/build/customind.js:4
+msgid "Type"
+msgstr "タイプ"
+
+#: inc/customizer/options/content/blog.php:105
+msgid "Post title"
+msgstr "投稿のタイトル"
+
+#: inc/customizer/options/content/blog.php:80
+#: inc/customizer/options/content/single-post.php:37
+#: inc/customizer/options/content/single-post.php:44
+msgid "Meta Elements"
+msgstr "メタ要素"
+
+#: inc/customizer/options/content/blog.php:61
+#: inc/customizer/options/content/single-post.php:8
+#: inc/customizer/options/content/single-post.php:15
+msgid "Post Elements"
+msgstr "投稿の要素"
+
+#: inc/customizer/options/footer/footer-bar.php:8
+#: inc/customizer/panels-sections/panels-sections.php:166
+#: assets/build/dashboard.js:1
+msgid "Footer Bar"
+msgstr "フッターバー"
+
+#: inc/customizer/options/footer/footer-column.php:8
+#: inc/customizer/panels-sections/panels-sections.php:161
+#: assets/build/dashboard.js:1
+msgid "Footer Column"
+msgstr "フッターカラム"
+
+#: inc/customizer/panels-sections/panels-sections.php:141
+#: assets/build/dashboard.js:1
+msgid "Blog"
+msgstr "ブログ"
+
+#: inc/customizer/panels-sections/panels-sections.php:121
+msgid "Breadcrumb"
+msgstr "パンくずリスト"
+
+#: inc/customizer/panels-sections/panels-sections.php:101
+msgid "Header Search"
+msgstr "ヘッダー検索"
+
+#: inc/customizer/options/header/main-header.php:8
+#: inc/customizer/panels-sections/panels-sections.php:91
+#: assets/build/dashboard.js:1
+msgid "Main Header"
+msgstr "メインヘッダー"
+
+#: inc/customizer/options/header/top-bar.php:7
+#: inc/customizer/panels-sections/panels-sections.php:71
+#: assets/build/dashboard.js:1
+msgid "Top Bar"
+msgstr "トップバー"
+
+#: inc/customizer/panels-sections/panels-sections.php:9
+msgid "Header & Navigation"
+msgstr "ヘッダー & ナビゲーション"
+
+#: inc/core/class-zakra-widgets.php:87
+#: inc/customizer/options/footer/footer-bar.php:196
+#: inc/customizer/options/header/top-bar.php:144
+msgid "Column 2"
+msgstr "カラム 2"
+
+#: inc/core/class-zakra-widgets.php:86
+#: inc/customizer/options/footer/footer-bar.php:113
+#: inc/customizer/options/header/top-bar.php:79
+msgid "Column 1"
+msgstr "カラム 1"
+
+#: inc/admin/class-zakra-welcome-notice.php:51
+msgid "FAQ"
+msgstr "FAQ"
+
+#: inc/admin/class-zakra-welcome-notice.php:39
+msgid "Learn about Zakra 3.0"
+msgstr "Zakra 3.0 について"
+
+#: inc/admin/class-zakra-demo-import-migration-notice.php:66
+#: inc/admin/class-zakra-welcome-notice.php:45 inc/admin/views/help.php:45
+#: assets/build/dashboard.js:1
+msgid "Contact Support"
+msgstr "サポートに連絡"
+
+#: inc/admin/class-zakra-demo-import-migration-notice.php:63
+msgid "Fix Migration Issue"
+msgstr "移行問題を修正"
+
+#: inc/admin/class-zakra-demo-import-migration-notice.php:55
+msgid "It seems you've either imported Zakra demos recently or updated Zakra to 3.0 version. After these actions, if you've seen any design issues in your site, please try clicking the button below:"
+msgstr "最近 Zakra のデモをインポートしたか、Zakra の 3.0 バージョンに更新したようです。この操作の後でサイトにデザインの問題があった場合、下のボタンをクリックしてみてください:"
+
+#: 404.php:42
+msgid "Go Back"
+msgstr "戻る"
+
+#: 404.php:35
+msgid "We’re sorry, the page you requested could not be found. Please go back to the homepage"
+msgstr "申し訳ございませんが、ご指定のページは見つかりませんでした。ホームページに戻ってください。"
+
+#: 404.php:30
+msgid "Oops! Page Not Found"
+msgstr "ページが見つかりません"
+
+#: inc/customizer/options/header-builder/header-builder.php:258
+msgid "Bottom right"
+msgstr "右下"
+
+#: inc/customizer/options/header-builder/header-builder.php:248
+msgid "Bottom left"
+msgstr "左下"
+
+#: inc/customizer/options/header-builder/header-builder.php:253
+msgid "Bottom center"
+msgstr "中央下"
+
+#. translators: %1$s: Author prefix, %2$s: Author.
+#. translators: %1$s: Day prefix, %2$s: Day.
+#. translators: %1$s: Month prefix, %2$s: Month.
+#. translators: %1$s: Year prefix, %2$s: Year.
+#: inc/template-functions.php:186 inc/template-functions.php:202
+#: inc/template-functions.php:208 inc/template-functions.php:214
+#: inc/template-tags.php:68 inc/template-tags.php:84 inc/template-tags.php:90
+#: inc/template-tags.php:96
+msgid "%1$s %2$s"
+msgstr "%2$s%1$s"
+
+#: inc/customizer/panels-sections/panels-sections.php:342
+msgid "Leave a Review on .org"
+msgstr ".org でレビューを書く"
+
+#: sidebar.php:36
+msgid "Click here to add widgets for this area"
+msgstr "このエリアにウィジェットを追加する場合はこちらをクリックしてください"
+
+#: inc/compatibility/jetpack/class-zakra-jetpack.php:149
+msgid "Load More"
+msgstr "さらに読み込む"
+
+#. Translators: %1$s Zakra Pro link, %2$s Zakra Pro update link, %3$s Zakra Pro
+#. update link opening, %4$s Zakra Pro update link closing, %5$s Opening strong
+#. tag, %5$s Closing strong tag
+#: inc/admin/class-zakra-pro-minimum-version-notice.php:59
+msgid "Please update the %1$s plugin to latest version i.e %5$s3.1.0%6$s for %2$s to work properly. %5$s%3$sClick here to update Zakra Pro Plugin%4$s%6$s"
+msgstr "%2$s が正常に機能するために、%1$s プラグインを最新のバージョン (%5$s3.1.0%6$s) へ更新してください。%5$s%3$s ここにクリックして、Zakra Pro プラグインを更新 %4$s%6$s"
+
+#: functions.php:174
+msgid "Customizing"
+msgstr "カスタマイズ中"
+
+#: inc/customizer/options/header-builder/logo.php:33
+#: inc/customizer/options/header/site-identity.php:33
+msgid "Upload 2X times the size of your current logo. Eg: If your current logo size is 120*60 then upload 240*120 sized logo."
+msgstr "現在のロゴの2倍のサイズをアップロードしてください。例：現在のロゴのサイズが120×60の場合、240×120のサイズのロゴをアップロードしてください。"
+
+#: inc/customizer/options/header-builder/primary-menu.php:132
+#: inc/customizer/options/header-builder/quaternary-menu.php:45
+#: inc/customizer/options/header-builder/secondary-menu.php:80
+#: inc/customizer/options/header-builder/tertiary-menu.php:81
+#: inc/customizer/options/header/primary-menu.php:172
+msgid "Active"
+msgstr "有効"
+
+#: inc/customizer/options/global/typography.php:390
+msgid "H6"
+msgstr "H6"
+
+#: inc/customizer/options/global/typography.php:346
+msgid "H5"
+msgstr "H5"
+
+#: inc/customizer/options/global/typography.php:302
+msgid "H4"
+msgstr "H4"
+
+#: inc/customizer/options/global/typography.php:258
+msgid "H3"
+msgstr "H3"
+
+#: inc/customizer/options/global/typography.php:215
+msgid "H2"
+msgstr "H2"
+
+#: inc/customizer/options/global/typography.php:171
+msgid "H1"
+msgstr "H1"
+
+#: inc/customizer/options/global/container.php:28
+#: inc/customizer/options/global/content-area.php:31
+msgid "Boxed"
+msgstr "ボックス"
+
+#: inc/customizer/options/global/container.php:24
+#: inc/customizer/options/global/content-area.php:27
+msgid "Wide"
+msgstr "幅広"
+
+#: inc/customizer/options/footer/scroll-to-top.php:49
+msgid "Icon"
+msgstr "アイコン"
+
+#: inc/customizer/options/footer/footer-column.php:254
+msgid "Widget List Item"
+msgstr "ウィジェットリスト項目"
+
+#: inc/customizer/options/content/blog-sidebar.php:68
+msgid "Widget Content"
+msgstr "ウィジェットのコンテンツ"
+
+#: inc/customizer/options/content/blog-sidebar.php:8
+msgid "Widget Title"
+msgstr "ウィジェット名"
+
+#: inc/customizer/options/content/blog.php:128
+#: inc/customizer/options/footer-builder/copyright.php:57
+#: inc/customizer/options/footer-builder/footer-menu-2.php:38
+#: inc/customizer/options/footer-builder/footer-menu.php:38
+#: inc/customizer/options/footer-builder/html-1.php:42
+#: inc/customizer/options/footer-builder/html-2.php:42
+#: inc/customizer/options/footer-builder/main-area.php:80
+#: inc/customizer/options/footer/footer-bar.php:303
+#: inc/customizer/options/footer/footer-column.php:191
+#: inc/customizer/options/footer/scroll-to-top.php:34
+#: inc/customizer/options/footer/scroll-to-top.php:70
+#: inc/customizer/options/global/button.php:33
+#: inc/customizer/options/global/button.php:55
+#: inc/customizer/options/global/colors.php:158
+#: inc/customizer/options/header-builder/header-button.php:47
+#: inc/customizer/options/header-builder/header-button.php:68
+#: inc/customizer/options/header-builder/html-1.php:42
+#: inc/customizer/options/header-builder/html-2.php:42
+#: inc/customizer/options/header-builder/primary-menu.php:125
+#: inc/customizer/options/header-builder/quaternary-menu.php:38
+#: inc/customizer/options/header-builder/secondary-menu.php:73
+#: inc/customizer/options/header-builder/tertiary-menu.php:74
+#: inc/customizer/options/header/breadcrumb.php:142
+#: inc/customizer/options/header/header-button.php:83
+#: inc/customizer/options/header/header-button.php:105
+#: inc/customizer/options/header/primary-menu.php:165
+msgid "Hover"
+msgstr "マウスオーバー"
+
+#: inc/customizer/options/content/blog.php:121
+#: inc/customizer/options/footer-builder/copyright.php:50
+#: inc/customizer/options/footer-builder/footer-menu-2.php:31
+#: inc/customizer/options/footer-builder/footer-menu.php:31
+#: inc/customizer/options/footer-builder/html-1.php:35
+#: inc/customizer/options/footer-builder/html-2.php:35
+#: inc/customizer/options/footer-builder/main-area.php:73
+#: inc/customizer/options/footer/footer-bar.php:296
+#: inc/customizer/options/footer/footer-column.php:184
+#: inc/customizer/options/footer/scroll-to-top.php:27
+#: inc/customizer/options/footer/scroll-to-top.php:63
+#: inc/customizer/options/global/button.php:26
+#: inc/customizer/options/global/button.php:48
+#: inc/customizer/options/global/colors.php:151
+#: inc/customizer/options/header-builder/header-button.php:40
+#: inc/customizer/options/header-builder/header-button.php:61
+#: inc/customizer/options/header-builder/html-1.php:35
+#: inc/customizer/options/header-builder/html-2.php:35
+#: inc/customizer/options/header-builder/logo.php:82
+#: inc/customizer/options/header-builder/primary-menu.php:118
+#: inc/customizer/options/header-builder/quaternary-menu.php:31
+#: inc/customizer/options/header-builder/secondary-menu.php:66
+#: inc/customizer/options/header-builder/tertiary-menu.php:67
+#: inc/customizer/options/header/breadcrumb.php:135
+#: inc/customizer/options/header/header-button.php:77
+#: inc/customizer/options/header/header-button.php:99
+#: inc/customizer/options/header/primary-menu.php:158
+#: inc/customizer/options/header/site-identity.php:82
+msgid "Normal"
+msgstr "普通"
+
+#: inc/customizer/options/footer-builder/widget-1.php:66
+#: inc/customizer/options/footer-builder/widget-2.php:66
+#: inc/customizer/options/footer-builder/widget-3.php:66
+#: inc/customizer/options/footer-builder/widget-4.php:66
+#: inc/customizer/options/footer-builder/widget-5.php:66
+#: inc/customizer/options/footer-builder/widget-6.php:66
+#: inc/customizer/options/footer/footer-bar.php:282
+#: inc/customizer/options/footer/footer-column.php:171
+#: inc/customizer/options/header-builder/header-button.php:19
+#: inc/customizer/options/header-builder/widget-1.php:66
+#: inc/customizer/options/header-builder/widget-2.php:66
+#: inc/customizer/options/header/breadcrumb.php:121
+#: inc/customizer/options/header/header-button.php:35
+msgid "Link"
+msgstr "リンク"
+
+#: inc/customizer/options/header/breadcrumb.php:97
+msgid "Separator"
+msgstr "区切り"
+
+#: inc/customizer/options/footer/footer-column.php:147
+#: inc/customizer/options/header-builder/header-button.php:13
+#: inc/customizer/options/header/breadcrumb.php:73
+#: inc/customizer/options/header/header-button.php:26
+msgid "Text"
+msgstr "テキスト"
+
+#: inc/customizer/override-defaults.php:71
+msgid "Header Video URL"
+msgstr "ヘッダー 動画の URL"
+
+#: inc/admin/class-zakra-theme-review-notice.php:135
+msgid "I have a query"
+msgstr "質問があります"
+
+#: inc/admin/class-zakra-theme-review-notice.php:120
+msgid "Sure, I'd love to!"
+msgstr "はい、ぜひ !"
+
+#. translators: %s: Smiley icon
+#: inc/admin/class-zakra-theme-review-notice.php:111
+msgid "Basically, it would encourage us to release updates regularly with new features & bug fixes so that you can keep on using the theme without any issues and also to provide free support like we have been doing. %s"
+msgstr "基本的には、お客様が問題なくテーマを使い続けることができるように、新機能やバグフィックスを含むアップデートを定期的にリリースし、これまでのような無料サポートを提供することを奨励しています。 %s"
+
+#: inc/admin/class-zakra-theme-review-notice.php:105
+msgid "What benefit would you have?"
+msgstr "どんなメリットがあるのでしょうか ?"
+
+#. translators: %1$s: Opening of strong tag, %2$s: Theme's Name, %3$s: Closing
+#. of strong tag
+#: inc/admin/class-zakra-theme-review-notice.php:97
+msgid "Hope you are having a nice experience with %1$s %2$s %3$s theme. Please provide this theme a nice review."
+msgstr "%1$s %2$s %3$s テーマを気に入っていただければ幸いです。このテーマに良いレビューをお願いします。"
+
+#. translators: %s: Smile icon
+#: inc/admin/class-zakra-theme-review-notice.php:88
+msgid "The above word is just to draw your attention. %s"
+msgstr "上記の単語は注意を引くためのものです。%s"
+
+#: inc/admin/class-zakra-theme-review-notice.php:80
+msgid "Zakra Logo"
+msgstr "Zakra ロゴ"
+
+#: inc/customizer/options/footer-builder/copyright.php:23
+#: inc/customizer/options/footer/footer-bar.php:146
+msgid "Docs Link"
+msgstr "ドキュメンテーションリンク"
+
+#. translators: 1: Current Year, 2: Site Name, 3: Theme Link, 4: WordPress
+#. Link.
+#: inc/customizer/options/footer-builder/copyright.php:14
+#: inc/customizer/options/footer/footer-bar.php:137 inc/helper/utils.php:274
+#: inc/helper/utils.php:320
+msgid "Copyright &copy; %1$s %2$s. Powered by %3$s and %4$s."
+msgstr "Copyright &copy; %1$s %2$s. Powered by %3$s and %4$s."
+
+#: inc/helper/utils.php:294 inc/helper/utils.php:337
+msgid "WordPress"
+msgstr "WordPress"
+
+#: inc/customizer/options/header-builder/header-builder.php:41
+#: inc/customizer/options/header-builder/search.php:6
+#: inc/customizer/options/header/header-search.php:8
+#: inc/customizer/panels-sections/panels-sections.php:236
+#: inc/customizer/build/customind.js:1
+#: inc/customizer/customind/build/customind.js:1
+msgid "Search"
+msgstr "検索"
+
+#: inc/customizer/options/header-builder/header-button.php:23
+#: inc/customizer/options/header/header-button.php:39
+msgid "https://example.com"
+msgstr "https://example.com"
+
+#: inc/customizer/options/global/button.php:127
+#: inc/customizer/options/global/colors.php:122
+#: inc/customizer/options/header/header-button.php:141
+msgid "Border"
+msgstr "枠線"
+
+#: inc/customizer/options/footer/footer-column.php:115
+#: inc/customizer/build/customind.js:1
+#: inc/customizer/customind/build/customind.js:1
+msgid "Size"
+msgstr "サイズ"
+
+#: inc/customizer/options/header/page-header.php:117
+msgid "Position"
+msgstr "位置"
+
+#: inc/customizer/options/content/blog.php:196
+msgid "Full Content"
+msgstr "全文"
+
+#: inc/customizer/options/header/header-media.php:8
+#: inc/customizer/panels-sections/panels-sections.php:111
+msgid "Header Media"
+msgstr "ヘッダーメディア"
+
+#: inc/customizer/options/footer-builder/copyright.php:42
+#: inc/customizer/options/footer-builder/html-1.php:27
+#: inc/customizer/options/footer-builder/html-2.php:27
+#: inc/customizer/options/global/colors.php:136
+#: inc/customizer/options/global/colors.php:143
+#: inc/customizer/options/header-builder/html-1.php:27
+#: inc/customizer/options/header-builder/html-2.php:27
+msgid "Links"
+msgstr "リンク"
+
+#: inc/customizer/panels-sections/panels-sections.php:181
+msgid "Sidebar Layout"
+msgstr "サイドバーレイアウト"
+
+#: inc/customizer/panels-sections/panels-sections.php:41
+msgid "Colors"
+msgstr "色"
+
+#: inc/customizer/options/footer-builder/bottom-area.php:28
+#: inc/customizer/options/footer-builder/main-area.php:28
+#: inc/customizer/options/footer-builder/top-area.php:28
+#: inc/customizer/options/global/container.php:6
+#: inc/customizer/options/header-builder/bottom-area.php:16
+#: inc/customizer/options/header-builder/main-area.php:16
+#: inc/customizer/options/header-builder/top-area.php:18
+#: inc/customizer/panels-sections/panels-sections.php:46
+msgid "Container"
+msgstr "コンテナ"
+
+#: inc/customizer/panels-sections/panels-sections.php:5
+msgid "Global"
+msgstr "全般"
+
+#: inc/admin/views/help.php:64 assets/build/dashboard.js:1
+msgid "X Community"
+msgstr "X コミュニティ"
+
+#: inc/admin/class-zakra-welcome-notice.php:39 inc/admin/views/products.php:55
+#: inc/admin/views/products.php:131
+msgid "Learn More"
+msgstr "さらに詳しく"
+
+#: inc/customizer/options/header-builder/logo.php:31
+#: inc/customizer/options/header/site-identity.php:31
+msgid "Retina Logo"
+msgstr "Retina 用ロゴ"
+
+#: inc/customizer/options/additional/additional.php:43
+#: inc/customizer/options/content/blog-meta.php:40
+#: inc/customizer/options/content/blog-sidebar.php:127
+#: inc/customizer/options/content/blog.php:261
+#: inc/customizer/options/content/single-post.php:72
+#: inc/customizer/options/footer-builder/copyright.php:145
+#: inc/customizer/options/footer-builder/footer-menu-2.php:109
+#: inc/customizer/options/footer-builder/footer-menu.php:109
+#: inc/customizer/options/footer-builder/html-1.php:107
+#: inc/customizer/options/footer-builder/html-2.php:107
+#: inc/customizer/options/footer-builder/socials.php:62
+#: inc/customizer/options/footer-builder/widget-1.php:148
+#: inc/customizer/options/footer-builder/widget-2.php:148
+#: inc/customizer/options/footer-builder/widget-3.php:148
+#: inc/customizer/options/footer-builder/widget-4.php:148
+#: inc/customizer/options/footer-builder/widget-5.php:148
+#: inc/customizer/options/footer-builder/widget-6.php:148
+#: inc/customizer/options/footer/footer-bar.php:318
+#: inc/customizer/options/footer/footer-column.php:304
+#: inc/customizer/options/footer/scroll-to-top.php:90
+#: inc/customizer/options/global/button.php:158
+#: inc/customizer/options/global/colors.php:176
+#: inc/customizer/options/global/container.php:112
+#: inc/customizer/options/global/content-area.php:77
+#: inc/customizer/options/global/sidebar.php:137
+#: inc/customizer/options/global/typography.php:404
+#: inc/customizer/options/header-builder/bottom-area.php:130
+#: inc/customizer/options/header-builder/cart.php:26
+#: inc/customizer/options/header-builder/header-button.php:177
+#: inc/customizer/options/header-builder/html-1.php:90
+#: inc/customizer/options/header-builder/html-2.php:90
+#: inc/customizer/options/header-builder/logo.php:221
+#: inc/customizer/options/header-builder/main-area.php:130
+#: inc/customizer/options/header-builder/mobile-menu.php:68
+#: inc/customizer/options/header-builder/offset-area.php:27
+#: inc/customizer/options/header-builder/primary-menu.php:248
+#: inc/customizer/options/header-builder/quaternary-menu.php:107
+#: inc/customizer/options/header-builder/search.php:58
+#: inc/customizer/options/header-builder/secondary-menu.php:194
+#: inc/customizer/options/header-builder/socials.php:45
+#: inc/customizer/options/header-builder/tertiary-menu.php:195
+#: inc/customizer/options/header-builder/toggle-button.php:8
+#: inc/customizer/options/header-builder/top-area.php:116
+#: inc/customizer/options/header-builder/widget-1.php:131
+#: inc/customizer/options/header-builder/widget-2.php:131
+#: inc/customizer/options/header/breadcrumb.php:160
+#: inc/customizer/options/header/header-button.php:178
+#: inc/customizer/options/header/header-media.php:18
+#: inc/customizer/options/header/header-search.php:35
+#: inc/customizer/options/header/main-header.php:190
+#: inc/customizer/options/header/page-header.php:217
+#: inc/customizer/options/header/primary-menu.php:354
+#: inc/customizer/options/header/site-identity.php:222
+#: inc/customizer/options/header/top-bar.php:215
+#: inc/customizer/options/woocommerce/woocommerce.php:103
+msgid "Unlock more features available in Pro version."
+msgstr "プロ版で更なる利用可能な機能のロックを解除。"
+
+#: inc/customizer/options/additional/additional.php:44
+#: inc/customizer/options/content/blog-meta.php:41
+#: inc/customizer/options/content/blog-sidebar.php:128
+#: inc/customizer/options/content/blog.php:262
+#: inc/customizer/options/content/single-post.php:73
+#: inc/customizer/options/footer-builder/copyright.php:146
+#: inc/customizer/options/footer-builder/footer-menu-2.php:110
+#: inc/customizer/options/footer-builder/footer-menu.php:110
+#: inc/customizer/options/footer-builder/html-1.php:108
+#: inc/customizer/options/footer-builder/html-2.php:108
+#: inc/customizer/options/footer-builder/socials.php:63
+#: inc/customizer/options/footer-builder/widget-1.php:149
+#: inc/customizer/options/footer-builder/widget-2.php:149
+#: inc/customizer/options/footer-builder/widget-3.php:149
+#: inc/customizer/options/footer-builder/widget-4.php:149
+#: inc/customizer/options/footer-builder/widget-5.php:149
+#: inc/customizer/options/footer-builder/widget-6.php:149
+#: inc/customizer/options/footer/footer-bar.php:319
+#: inc/customizer/options/footer/footer-column.php:305
+#: inc/customizer/options/footer/scroll-to-top.php:91
+#: inc/customizer/options/global/button.php:159
+#: inc/customizer/options/global/colors.php:177
+#: inc/customizer/options/global/container.php:113
+#: inc/customizer/options/global/content-area.php:78
+#: inc/customizer/options/global/sidebar.php:138
+#: inc/customizer/options/global/typography.php:405
+#: inc/customizer/options/header-builder/bottom-area.php:131
+#: inc/customizer/options/header-builder/cart.php:27
+#: inc/customizer/options/header-builder/header-button.php:178
+#: inc/customizer/options/header-builder/html-1.php:91
+#: inc/customizer/options/header-builder/html-2.php:91
+#: inc/customizer/options/header-builder/logo.php:222
+#: inc/customizer/options/header-builder/main-area.php:131
+#: inc/customizer/options/header-builder/mobile-menu.php:69
+#: inc/customizer/options/header-builder/offset-area.php:28
+#: inc/customizer/options/header-builder/primary-menu.php:249
+#: inc/customizer/options/header-builder/quaternary-menu.php:108
+#: inc/customizer/options/header-builder/search.php:56
+#: inc/customizer/options/header-builder/secondary-menu.php:195
+#: inc/customizer/options/header-builder/socials.php:46
+#: inc/customizer/options/header-builder/tertiary-menu.php:196
+#: inc/customizer/options/header-builder/toggle-button.php:9
+#: inc/customizer/options/header-builder/top-area.php:117
+#: inc/customizer/options/header-builder/widget-1.php:132
+#: inc/customizer/options/header-builder/widget-2.php:132
+#: inc/customizer/options/header/breadcrumb.php:161
+#: inc/customizer/options/header/header-button.php:179
+#: inc/customizer/options/header/header-media.php:19
+#: inc/customizer/options/header/header-search.php:36
+#: inc/customizer/options/header/main-header.php:191
+#: inc/customizer/options/header/page-header.php:218
+#: inc/customizer/options/header/primary-menu.php:355
+#: inc/customizer/options/header/site-identity.php:223
+#: inc/customizer/options/header/top-bar.php:216
+#: inc/customizer/options/woocommerce/woocommerce.php:104
+#: assets/build/dashboard.js:1
+msgid "Learn more"
+msgstr "さらに詳しく"
+
+#: inc/admin/class-zakra-upgrade-notice.php:105
+msgid "Got pre sales queries?"
+msgstr "購入前のご質問がある場合"
+
+#: inc/admin/class-zakra-upgrade-notice.php:95
+msgid "Upgrade to pro"
+msgstr "プロ版へアップグレード"
+
+#. Translators: %1$s current user display name., %2$s this theme name., %3$s
+#. discount coupon code., %4$s discount percentage.
+#: inc/admin/class-zakra-upgrade-notice.php:80
+msgid "Howdy, %1$s! You've been using %2$s theme for a while now, and we hope you're happy with it. To access more premium features you can always upgrade to pro. All contents and settings will remain as it is after upgrading to pro, you basically start from where you left. Also, you can use the coupon code %3$s to get %4$s discount on Zakra Pro Plan (limited time offer) while making the purchase. Enjoy! "
+msgstr "こんにちは、 %1$s! あなたはしばらくの間 %2$s のテーマを使用していますが、私たちはあなたがそのテーマに満足していることを願っています。より多くのプレミアム機能にアクセスできるように、いつでもプロ版にアップグレードできます。すべてのコンテンツや設定はプロ版にアップグレードした後もそのまま残りますが、基本的には最初からスタートします。ご購入の際にクーポンコード %3$s をご利用いただくと %4$s Zakra Pro プランの割引 (期間限定) を受けることができます。お楽しみに ! "
+
+#: inc/admin/class-zakra-welcome-notice.php:33
+msgid "Get started"
+msgstr "始めてみよう"
+
+#: inc/customizer/panels-sections/panels-sections.php:354
+msgid "View Pro Version"
+msgstr "プロ版を表示"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:229
+msgid "Disable"
+msgstr "無効化"
+
+#: inc/customizer/options/additional/additional.php:13
+#: inc/customizer/options/content/blog.php:212
+#: inc/customizer/options/footer/footer-column.php:14
+#: inc/customizer/options/footer/footer-column.php:223
+#: inc/customizer/options/footer/scroll-to-top.php:12
+#: inc/customizer/options/global/builder.php:13
+#: inc/customizer/options/header-builder/logo.php:66
+#: inc/customizer/options/header/breadcrumb.php:19
+#: inc/customizer/options/header/header-button.php:20
+#: inc/customizer/options/header/header-search.php:14
+#: inc/customizer/options/header/page-header.php:11
+#: inc/customizer/options/header/primary-menu.php:19
+#: inc/customizer/options/header/site-identity.php:66
+#: inc/customizer/options/header/top-bar.php:20
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:225
+msgid "Enable"
+msgstr "有効化"
+
+#: inc/customizer/options/content/blog-meta.php:8
+#: inc/customizer/panels-sections/panels-sections.php:151
+msgid "Meta"
+msgstr "メタ情報"
+
+#: inc/admin/class-zakra-theme-review-notice.php:125
+msgid "I already did!"
+msgstr "対応済み"
+
+#: inc/admin/class-zakra-theme-review-notice.php:130
+#: inc/admin/class-zakra-upgrade-notice.php:100
+msgid "Maybe later"
+msgstr "後で確認"
+
+#: inc/customizer/panels-sections/panels-sections.php:106
+#: inc/customizer/panels-sections/panels-sections.php:231
+msgid "Header Button"
+msgstr "ヘッダーボタン"
+
+#: inc/customizer/options/header-builder/header-button.php:28
+#: inc/customizer/options/header/header-button.php:47
+msgid "Open link in a new tab"
+msgstr "リンクを新しいタブで開く"
+
+#: inc/customizer/options/woocommerce/woocommerce.php:79
+#: inc/customizer/options/woocommerce/woocommerce.php:87
+msgid "Single Product"
+msgstr "個別商品"
+
+#: inc/customizer/options/woocommerce/woocommerce.php:58
+#: inc/customizer/options/woocommerce/woocommerce.php:66
+msgid "WooCommerce"
+msgstr "WooCommerce"
+
+#: inc/core/class-zakra-widgets.php:99
+msgid "WooCommerce Right Sidebar"
+msgstr "WooCommerce 右サイドバー"
+
+#: inc/core/class-zakra-widgets.php:98
+msgid "WooCommerce Left Sidebar"
+msgstr "WooCommerce 左サイドバー"
+
+#: inc/customizer/options/header-builder/logo.php:143
+#: inc/customizer/options/header/site-identity.php:143
+msgid "Tagline"
+msgstr "キャッチフレーズ"
+
+#: inc/customizer/options/header-builder/logo.php:59
+#: inc/customizer/options/header/site-identity.php:59
+msgid "Site Title"
+msgstr "サイトのタイトル"
+
+#: inc/customizer/options/header-builder/logo.php:8
+#: inc/customizer/options/header/site-identity.php:8
+#: inc/customizer/panels-sections/panels-sections.php:76
+#: assets/build/dashboard.js:1
+msgid "Site Identity"
+msgstr "サイト基本情報"
+
+#: inc/admin/class-zakra-admin.php:69
+msgid "Processing..."
+msgstr "処理中…"
+
+#. Template Name of the theme
+msgid "Page Builder"
+msgstr "ページビルダー"
+
+#: comments.php:66
+msgid "Comments are closed."
+msgstr "コメントは受け付けていません。"
+
+#. translators: 1: comment count number, 2: title.
+#: comments.php:41
+msgctxt "comments title"
+msgid "%1$s thought on &ldquo;%2$s&rdquo;"
+msgid_plural "%1$s thoughts on &ldquo;%2$s&rdquo;"
+msgstr[0] "「%2$s」への%1$s件のフィードバック"
+
+#. translators: 1: title.
+#: comments.php:35
+msgid "One thought on &ldquo;%1$s&rdquo;"
+msgstr "「%1$s」への1件のフィードバック"
+
+#. translators: %s: Name of current post. Only visible to screen readers
+#: template-parts/content-page.php:52
+msgid "Edit <span class=\"screen-reader-text\">%s</span>"
+msgstr "編集 <span class=\"screen-reader-text\">%s</span>"
+
+#: template-parts/content-none.php:55
+msgid "It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps searching can help."
+msgstr "お探しのコンテンツを見つけられませんでした。検索をお試しください。"
+
+#. translators: 1: link to WP admin new post page.
+#: template-parts/content-none.php:35
+msgid "Ready to publish your first post? <a href=\"%1$s\">Get started here</a>."
+msgstr "最初の投稿を公開する準備はできましたか ? <a href=\"%1$s\">ここから始めましょう</a>。"
+
+#: template-parts/content-none.php:15
+msgid "Nothing Found"
+msgstr "何も見つかりませんでした"
+
+#: inc/hooks/content.php:21
+msgid "Read More"
+msgstr "続きを読む"
+
+#: template-parts/entry/entry-content.php:41
+#: template-parts/entry/entry-summary.php:39
+msgid "Pages:"
+msgstr "固定ページ:"
+
+#. translators: %s: Name of current post. Only visible to screen readers
+#: template-parts/entry/entry-content.php:24
+#: template-parts/entry/entry-summary.php:25
+msgid "Continue reading<span class=\"screen-reader-text\"> \"%s\"</span>"
+msgstr "<span class=\"screen-reader-text\">\"%s\" の</span>続きを読む"
+
+#: inc/template-functions.php:230 inc/template-functions.php:272
+#: inc/template-tags.php:53
+msgid "Oops! That page can&rsquo;t be found."
+msgstr "お探しのページが見つかりません。"
+
+#: inc/template-functions.php:234
+msgid "Search Results"
+msgstr "検索結果"
+
+#: inc/template-functions.php:227 inc/template-tags.php:50
+msgid "Page Not Found"
+msgstr "ページが見つかりません"
+
+#. translators: 1: list of tags.
+#: inc/template-tags.php:238
+msgid "Tagged %1$s"
+msgstr "タグ: %1$s"
+
+#. translators: used between list items, there is a space after the comma
+#: inc/template-tags.php:243
+msgctxt "list item separator"
+msgid ", "
+msgstr ", "
+
+#. translators: %s: post title
+#: inc/template-tags.php:213
+msgid "No Comments<span class=\"screen-reader-text\"> on %s</span>"
+msgstr "<span class=\"screen-reader-text\">%s への</span>コメントはまだありません"
+
+#. translators: 1: list of categories.
+#: inc/template-tags.php:183
+msgid "Posted in %1$s"
+msgstr "カテゴリー: %1$s"
+
+#. translators: used between list items, there is a space after the comma
+#: inc/template-tags.php:188
+msgid ", "
+msgstr "、"
+
+#. translators: %s: post author.
+#: inc/template-tags.php:162
+msgctxt "post author"
+msgid "By %s"
+msgstr "作者: %s"
+
+#. translators: %s: post date.
+#: inc/template-tags.php:126
+msgctxt "post date"
+msgid "Posted on %s"
+msgstr "投稿日: %s"
+
+#: template-parts/footer/scroll-to-top.php:20
+#: template-parts/footer/scroll-to-top.php:25
+msgid "Scroll to top"
+msgstr "トップへ戻る"
+
+#: template-parts/hooks/header/header.php:69
+msgid "Skip to content"
+msgstr "内容をスキップ"
+
+#: inc/customizer/options/footer-builder/copyright.php:131
+#: inc/customizer/options/footer-builder/footer-menu-2.php:95
+#: inc/customizer/options/footer-builder/footer-menu.php:95
+#: inc/customizer/options/footer-builder/html-1.php:93
+#: inc/customizer/options/footer-builder/html-2.php:93
+#: inc/customizer/options/footer-builder/socials.php:48
+#: inc/customizer/options/footer-builder/widget-1.php:134
+#: inc/customizer/options/footer-builder/widget-2.php:134
+#: inc/customizer/options/footer-builder/widget-3.php:134
+#: inc/customizer/options/footer-builder/widget-4.php:134
+#: inc/customizer/options/footer-builder/widget-5.php:134
+#: inc/customizer/options/footer-builder/widget-6.php:134
+msgid "Left"
+msgstr "左"
+
+#: inc/customizer/options/header-builder/header-builder.php:243
+msgid "Bottom"
+msgstr "下"
+
+#: inc/customizer/options/footer-builder/copyright.php:133
+#: inc/customizer/options/footer-builder/footer-menu-2.php:97
+#: inc/customizer/options/footer-builder/footer-menu.php:97
+#: inc/customizer/options/footer-builder/html-1.php:95
+#: inc/customizer/options/footer-builder/html-2.php:95
+#: inc/customizer/options/footer-builder/socials.php:50
+#: inc/customizer/options/footer-builder/widget-1.php:136
+#: inc/customizer/options/footer-builder/widget-2.php:136
+#: inc/customizer/options/footer-builder/widget-3.php:136
+#: inc/customizer/options/footer-builder/widget-4.php:136
+#: inc/customizer/options/footer-builder/widget-5.php:136
+#: inc/customizer/options/footer-builder/widget-6.php:136
+#: inc/customizer/build/customind.js:1
+#: inc/customizer/customind/build/customind.js:1
+msgid "Right"
+msgstr "右"
+
+#: inc/customizer/options/footer-builder/main-area.php:163
+#: inc/customizer/options/footer/footer-bar.php:130
+#: inc/customizer/options/footer/footer-bar.php:213
+#: inc/customizer/options/footer/footer-column.php:208
+#: inc/customizer/options/header/top-bar.php:93
+#: inc/customizer/options/header/top-bar.php:158
+msgid "Widget"
+msgstr "ウィジェット"
+
+#: inc/customizer/options/footer/footer-bar.php:128
+#: inc/customizer/options/footer/footer-bar.php:211
+#: inc/customizer/options/header/top-bar.php:91
+#: inc/customizer/options/header/top-bar.php:156
+msgid "Text/HTML"
+msgstr "テキスト/HTML"
+
+#: inc/customizer/options/footer-builder/main-area.php:197
+#: inc/customizer/options/footer/footer-column.php:282
+#: inc/customizer/options/header-builder/primary-menu.php:60
+#: inc/customizer/options/header-builder/secondary-menu.php:41
+#: inc/customizer/options/header-builder/tertiary-menu.php:42
+msgid "Border Bottom Color"
+msgstr "下の枠線の色"
+
+#: inc/customizer/options/header-builder/primary-menu.php:39
+#: inc/customizer/options/header/main-header.php:132
+#: inc/customizer/options/header/primary-menu.php:44
+msgid "Border Bottom"
+msgstr "下の枠線"
+
+#: inc/customizer/options/global/sidebar.php:108
+msgid "Page"
+msgstr "固定ページ"
+
+#: inc/customizer/options/footer-builder/bottom-area.php:127
+#: inc/customizer/options/footer-builder/main-area.php:151
+#: inc/customizer/options/footer-builder/top-area.php:127
+#: inc/customizer/options/header-builder/bottom-area.php:115
+#: inc/customizer/options/header-builder/header-builder.php:315
+#: inc/customizer/options/header-builder/header-button.php:147
+#: inc/customizer/options/header-builder/main-area.php:115
+#: inc/customizer/options/header-builder/top-area.php:100
+msgid "Border Color"
+msgstr "枠線の色"
+
+#: inc/customizer/options/global/typography.php:119
+msgid "Heading"
+msgstr "見出し"
+
+#: inc/customizer/options/global/typography.php:38
+#: inc/customizer/options/global/typography.php:80
+msgid "Body"
+msgstr "本文"
+
+#: inc/customizer/options/content/blog.php:113
+#: inc/customizer/options/footer-builder/bottom-area.php:57
+#: inc/customizer/options/footer-builder/copyright.php:34
+#: inc/customizer/options/footer-builder/html-1.php:19
+#: inc/customizer/options/footer-builder/html-2.php:19
+#: inc/customizer/options/footer-builder/main-area.php:57
+#: inc/customizer/options/footer-builder/top-area.php:57
+#: inc/customizer/options/footer/footer-bar.php:100
+#: inc/customizer/options/footer/footer-bar.php:270
+#: inc/customizer/options/footer/footer-bar.php:290
+#: inc/customizer/options/footer/footer-column.php:131
+#: inc/customizer/options/footer/footer-column.php:153
+#: inc/customizer/options/footer/footer-column.php:178
+#: inc/customizer/options/footer/footer-column.php:233
+#: inc/customizer/options/footer/scroll-to-top.php:56
+#: inc/customizer/options/global/button.php:19
+#: inc/customizer/options/header-builder/bottom-area.php:45
+#: inc/customizer/options/header-builder/cart.php:14
+#: inc/customizer/options/header-builder/header-button.php:34
+#: inc/customizer/options/header-builder/html-1.php:19
+#: inc/customizer/options/header-builder/html-2.php:19
+#: inc/customizer/options/header-builder/logo.php:74
+#: inc/customizer/options/header-builder/logo.php:157
+#: inc/customizer/options/header-builder/main-area.php:45
+#: inc/customizer/options/header-builder/search.php:21
+#: inc/customizer/options/header-builder/top-area.php:47
+#: inc/customizer/options/header/breadcrumb.php:79
+#: inc/customizer/options/header/breadcrumb.php:103
+#: inc/customizer/options/header/breadcrumb.php:128
+#: inc/customizer/options/header/header-button.php:71
+#: inc/customizer/options/header/main-header.php:155
+#: inc/customizer/options/header/page-header.php:149
+#: inc/customizer/options/header/primary-menu.php:73
+#: inc/customizer/options/header/site-identity.php:74
+#: inc/customizer/options/header/site-identity.php:157
+#: inc/customizer/options/header/top-bar.php:45
+msgid "Color"
+msgstr "色"
+
+#: inc/customizer/options/footer/footer-bar.php:77
+#: inc/customizer/options/footer/footer-column.php:101
+msgid "Border Top"
+msgstr "上の枠線"
+
+#: inc/customizer/options/content/blog.php:183
+#: inc/customizer/options/content/blog.php:195
+msgid "Excerpt"
+msgstr "抜粋"
+
+#: inc/customizer/options/footer-builder/main-area.php:65
+msgid "Link Color"
+msgstr "リンク色"
+
+#: inc/customizer/options/footer-builder/bottom-area.php:87
+#: inc/customizer/options/footer-builder/main-area.php:111
+#: inc/customizer/options/footer-builder/top-area.php:87
+#: inc/customizer/options/global/button.php:113
+#: inc/customizer/options/global/content-area.php:56
+#: inc/customizer/options/header-builder/bottom-area.php:75
+#: inc/customizer/options/header-builder/header-button.php:123
+#: inc/customizer/options/header-builder/main-area.php:75
+#: inc/customizer/options/header-builder/top-area.php:77
+#: inc/customizer/options/header/header-button.php:122
+#: inc/customizer/options/header/page-header.php:93
+msgid "Padding"
+msgstr "パディング"
+
+#: inc/customizer/options/content/blog.php:223
+#: inc/customizer/options/footer-builder/copyright.php:127
+#: inc/customizer/options/footer-builder/footer-menu-2.php:92
+#: inc/customizer/options/footer-builder/footer-menu.php:92
+#: inc/customizer/options/footer-builder/html-1.php:89
+#: inc/customizer/options/footer-builder/html-2.php:89
+#: inc/customizer/options/footer-builder/socials.php:44
+#: inc/customizer/options/footer-builder/widget-1.php:130
+#: inc/customizer/options/footer-builder/widget-2.php:130
+#: inc/customizer/options/footer-builder/widget-3.php:130
+#: inc/customizer/options/footer-builder/widget-4.php:130
+#: inc/customizer/options/footer-builder/widget-5.php:130
+#: inc/customizer/options/footer-builder/widget-6.php:130
+msgid "Alignment"
+msgstr "配置"
+
+#: inc/customizer/options/footer-builder/html-1.php:50
+#: inc/customizer/options/footer-builder/html-2.php:50
+#: inc/customizer/options/header-builder/html-1.php:50
+#: inc/customizer/options/header-builder/html-2.php:50
+#: inc/customizer/build/customind.js:1
+#: inc/customizer/customind/build/customind.js:1
+msgid "Font Size"
+msgstr "フォントサイズ"
+
+#: inc/customizer/options/header-builder/search.php:28
+msgid "Text Color"
+msgstr "文字色"
+
+#: inc/customizer/options/header/page-header.php:141
+msgid "Div"
+msgstr "Div"
+
+#: inc/customizer/options/header/page-header.php:140
+msgid "Paragraph"
+msgstr "段落"
+
+#: inc/customizer/options/header/page-header.php:139
+msgid "Span"
+msgstr "スパン"
+
+#: inc/customizer/options/header/page-header.php:138
+msgid "Heading 6"
+msgstr "見出し6"
+
+#: inc/customizer/options/header/page-header.php:137
+msgid "Heading 5"
+msgstr "見出し5"
+
+#: inc/customizer/options/header/page-header.php:136
+msgid "Heading 4"
+msgstr "見出し4"
+
+#: inc/customizer/options/header/page-header.php:135
+msgid "Heading 3"
+msgstr "見出し3"
+
+#: inc/customizer/options/header/page-header.php:134
+msgid "Heading 2"
+msgstr "見出し2"
+
+#: inc/customizer/options/header/page-header.php:133
+msgid "Heading 1"
+msgstr "見出し1"
+
+#: inc/customizer/options/header/page-header.php:130
+msgid "Markup"
+msgstr "マークアップ"
+
+#: inc/customizer/options/global/content-area.php:8
+#: inc/customizer/options/header/page-header.php:121
+#: inc/customizer/panels-sections/panels-sections.php:51
+msgid "Content Area"
+msgstr "コンテンツエリア"
+
+#: inc/customizer/options/content/blog.php:88
+#: inc/customizer/options/content/single-post.php:52
+msgid "Tags"
+msgstr "タグ"
+
+#: inc/customizer/options/content/blog.php:87
+#: inc/customizer/options/content/single-post.php:51
+msgid "Date"
+msgstr "日付"
+
+#: inc/customizer/options/content/blog.php:86
+#: inc/customizer/options/content/single-post.php:50
+msgid "Author"
+msgstr "投稿者"
+
+#: inc/customizer/options/content/blog.php:85
+#: inc/customizer/options/content/single-post.php:49
+msgid "Categories"
+msgstr "カテゴリー"
+
+#: inc/customizer/options/content/blog.php:84
+#: inc/customizer/options/content/single-post.php:48
+msgid "Comments"
+msgstr "コメント"
+
+#: inc/customizer/options/content/blog.php:68
+#: inc/customizer/options/content/single-post.php:22
+#: inc/customizer/panels-sections/panels-sections.php:17
+msgid "Content"
+msgstr "コンテンツ"
+
+#: inc/customizer/options/content/blog.php:67
+#: inc/customizer/options/content/single-post.php:21
+msgid "Meta Tags"
+msgstr "メタタグ"
+
+#: inc/customizer/options/content/blog.php:66
+#: inc/customizer/options/content/single-post.php:20
+#: inc/customizer/options/footer/footer-column.php:216
+msgid "Title"
+msgstr "タイトル"
+
+#: inc/customizer/options/content/blog.php:65
+#: inc/customizer/options/content/single-post.php:19
+msgid "Featured Image"
+msgstr "アイキャッチ画像"
+
+#: inc/customizer/options/content/blog.php:63
+#: inc/customizer/options/content/blog.php:82
+#: inc/customizer/options/content/single-post.php:17
+#: inc/customizer/options/content/single-post.php:46
+msgid "Drag & Drop items to re-arrange the order"
+msgstr "項目のドラッグ & ドロップで順番を並べ替える"
+
+#: inc/customizer/panels-sections/panels-sections.php:171
+msgid "Scroll to Top"
+msgstr "トップへ戻る"
+
+#: inc/customizer/panels-sections/panels-sections.php:21
+msgid "Footer"
+msgstr "フッター"
+
+#: inc/customizer/options/content/blog-sidebar.php:54
+#: inc/customizer/options/content/blog-sidebar.php:114
+#: inc/customizer/options/content/blog.php:172
+#: inc/customizer/options/footer-builder/copyright.php:100
+#: inc/customizer/options/footer-builder/footer-menu-2.php:80
+#: inc/customizer/options/footer-builder/footer-menu.php:80
+#: inc/customizer/options/global/button.php:99
+#: inc/customizer/options/header-builder/header-button.php:111
+#: inc/customizer/options/header-builder/logo.php:129
+#: inc/customizer/options/header-builder/logo.php:204
+#: inc/customizer/options/header-builder/mobile-menu.php:54
+#: inc/customizer/options/header-builder/primary-menu.php:181
+#: inc/customizer/options/header-builder/primary-menu.php:233
+#: inc/customizer/options/header-builder/quaternary-menu.php:94
+#: inc/customizer/options/header-builder/secondary-menu.php:129
+#: inc/customizer/options/header-builder/secondary-menu.php:180
+#: inc/customizer/options/header-builder/tertiary-menu.php:130
+#: inc/customizer/options/header-builder/tertiary-menu.php:181
+#: inc/customizer/options/header/breadcrumb.php:59
+#: inc/customizer/options/header/page-header.php:198
+#: inc/customizer/options/header/primary-menu.php:221
+#: inc/customizer/options/header/primary-menu.php:275
+#: inc/customizer/options/header/primary-menu.php:334
+#: inc/customizer/options/header/site-identity.php:129
+#: inc/customizer/options/header/site-identity.php:204
+#: inc/customizer/panels-sections/panels-sections.php:61
+msgid "Typography"
+msgstr "タイポグラフィ"
+
+#: inc/customizer/options/content/blog.php:205
+#: inc/customizer/options/global/button.php:6
+#: inc/customizer/options/header-builder/header-builder.php:92
+#: inc/customizer/panels-sections/panels-sections.php:66
+msgid "Button"
+msgstr "ボタン"
+
+#: inc/customizer/options/footer-builder/bottom-area.php:73
+#: inc/customizer/options/footer-builder/main-area.php:97
+#: inc/customizer/options/footer-builder/top-area.php:73
+#: inc/customizer/options/footer/footer-bar.php:64
+#: inc/customizer/options/footer/footer-column.php:83
+#: inc/customizer/options/footer/scroll-to-top.php:20
+#: inc/customizer/options/global/button.php:41
+#: inc/customizer/options/global/container.php:68
+#: inc/customizer/options/header-builder/bottom-area.php:61
+#: inc/customizer/options/header-builder/header-builder.php:293
+#: inc/customizer/options/header-builder/header-button.php:55
+#: inc/customizer/options/header-builder/main-area.php:61
+#: inc/customizer/options/header-builder/offset-area.php:14
+#: inc/customizer/options/header-builder/search.php:42
+#: inc/customizer/options/header-builder/top-area.php:64
+#: inc/customizer/options/header/header-button.php:93
+#: inc/customizer/options/header/main-header.php:121
+#: inc/customizer/options/header/page-header.php:77
+#: inc/customizer/options/header/top-bar.php:65
+msgid "Background"
+msgstr "背景"
+
+#: inc/customizer/options/header/breadcrumb.php:8
+#: template-parts/page-header/page-header.php:92
+msgid "Breadcrumbs"
+msgstr "パンくずリスト"
+
+#: inc/customizer/options/content/blog.php:8
+#: inc/customizer/options/header/page-header.php:109
+msgid "Page Title"
+msgstr "ページタイトル"
+
+#: inc/customizer/options/global/sidebar.php:97
+#: inc/customizer/panels-sections/panels-sections.php:146
+#: assets/build/dashboard.js:1
+msgid "Single Post"
+msgstr "個別投稿"
+
+#: inc/core/class-zakra-after-setup-theme.php:102
+#: inc/customizer/options/header-builder/header-builder.php:87
+#: inc/customizer/options/header-builder/mobile-menu.php:11
+#: inc/customizer/options/header/primary-menu.php:292
+#: inc/customizer/panels-sections/panels-sections.php:211
+#: assets/build/dashboard.js:1
+msgid "Mobile Menu"
+msgstr "モバイルメニュー"
+
+#: inc/customizer/options/footer/footer-bar.php:129
+#: inc/customizer/options/footer/footer-bar.php:212
+#: inc/customizer/options/header/top-bar.php:92
+#: inc/customizer/options/header/top-bar.php:157
+msgid "Menu"
+msgstr "メニュー"
+
+#: inc/admin/views/free-vs-pro.php:201 inc/admin/views/header.php:78
+msgid "Pro"
+msgstr "プロ版"
+
+#: inc/admin/views/help.php:197 inc/admin/views/products.php:137
+#: assets/build/dashboard.js:1
+msgid "Activated"
+msgstr "有効"
+
+#: inc/admin/class-zakra-notice.php:62 inc/admin/class-zakra-notice.php:81
+#: inc/admin/class-zakra-welcome-notice.php:199
+msgid "Cheatin&#8217; huh?"
+msgstr "間違えましたか ?"
+
+#: inc/admin/class-zakra-demo-import-migration-notice.php:80
+#: inc/admin/class-zakra-notice.php:58 inc/admin/class-zakra-notice.php:77
+#: inc/admin/class-zakra-pro-minimum-version-notice.php:80
+#: inc/admin/class-zakra-theme-review-notice.php:157
+#: inc/admin/class-zakra-theme-review-notice.php:175
+#: inc/admin/class-zakra-welcome-notice.php:195
+#: inc/migration/class-zakra-migration.php:2170
+msgid "Action failed. Please refresh the page and retry."
+msgstr "操作に失敗しました。ページを再読み込みし、もう一度お試しください。"
+
+#: inc/admin/views/help.php:43 assets/build/dashboard.js:1
+msgid "Support"
+msgstr "サポート"
+
+#: inc/class-breadcrumb-trail.php:790
+msgctxt "weekly archives date format"
+msgid "W"
+msgstr "W"
+
+#: inc/class-breadcrumb-trail.php:763 inc/class-breadcrumb-trail.php:1203
+msgctxt "daily archives date format"
+msgid "j"
+msgstr "j日"
+
+#: inc/class-breadcrumb-trail.php:762 inc/class-breadcrumb-trail.php:828
+#: inc/class-breadcrumb-trail.php:1201
+msgctxt "monthly archives date format"
+msgid "F"
+msgstr "n月"
+
+#: inc/class-breadcrumb-trail.php:761 inc/class-breadcrumb-trail.php:789
+#: inc/class-breadcrumb-trail.php:827 inc/class-breadcrumb-trail.php:853
+#: inc/class-breadcrumb-trail.php:1199
+msgctxt "yearly archives date format"
+msgid "Y"
+msgstr "Y年"
+
+#: inc/class-breadcrumb-trail.php:745
+msgctxt "hour archives time format"
+msgid "g a"
+msgstr "g a"
+
+#: inc/class-breadcrumb-trail.php:728
+msgctxt "minute archives time format"
+msgid "i"
+msgstr "i"
+
+#: inc/class-breadcrumb-trail.php:711
+msgctxt "minute and hour archives time format"
+msgid "g:i a"
+msgstr "g:i a"
+
+#. Translators: Weekly archive title. %s is the week date format.
+#: inc/class-breadcrumb-trail.php:281
+msgid "Week %s"
+msgstr "%s週"
+
+#. Translators: Minute archive title. %s is the minute time format.
+#: inc/class-breadcrumb-trail.php:279
+msgid "Minute %s"
+msgstr "%s分"
+
+#. Translators: %s is the page number.
+#: inc/class-breadcrumb-trail.php:277
+msgid "Comment Page %s"
+msgstr "コメントページ %s"
+
+#. Translators: %s is the page number.
+#: inc/class-breadcrumb-trail.php:275
+msgid "Page %s"
+msgstr "ページ %s"
+
+#. Translators: %s is the search query.
+#: inc/class-breadcrumb-trail.php:273
+msgid "Search results for: %s"
+msgstr "検索結果: %s"
+
+#: inc/class-breadcrumb-trail.php:271
+msgid "Archives"
+msgstr "アーカイブ"
+
+#: inc/class-breadcrumb-trail.php:270
+msgid "404 Not Found"
+msgstr "404: 見つかりませんでした"
+
+#: inc/class-breadcrumb-trail.php:269
+msgid "Home"
+msgstr "ホーム"
+
+#: inc/class-breadcrumb-trail.php:268
+msgctxt "breadcrumbs aria label"
+msgid "Breadcrumbs"
+msgstr "パンくずリスト"
+
+#: inc/class-breadcrumb-trail.php:267
+msgid "Browse:"
+msgstr "続きを読む:"
+
+#: inc/meta-boxes/class-zakra-meta-box.php:198
+msgid "Page Settings"
+msgstr "ページ設定"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:413
+#: assets/build/meta.js:1
+msgid "Enable Page Header"
+msgstr "ページヘッダーを有効化"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:393
+msgid "Right Border"
+msgstr "右の枠線"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:385
+msgid "Left Border"
+msgstr "左の枠線"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:377
+msgid "Underline Border"
+msgstr "下線の枠線"
+
+#: inc/customizer/options/footer/footer-bar.php:127
+#: inc/customizer/options/footer/footer-bar.php:210
+#: inc/customizer/options/header/top-bar.php:90
+#: inc/customizer/options/header/top-bar.php:155 inc/helper/utils.php:438
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:369
+msgid "None"
+msgstr "なし"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:364
+#: assets/build/meta.js:1
+msgid "Active Menu Item Style"
+msgstr "有効なメニュー項目スタイル"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:354
+#: assets/build/meta.js:1
+msgid "Menu Item Active Color"
+msgstr "メニュー項目の有効時の色"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:344
+#: assets/build/meta.js:1
+msgid "Menu Item Hover Color"
+msgstr "メニュー項目のホバー色"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:332
+#: assets/build/meta.js:1
+msgid "Menu Item Color"
+msgstr "メニュー項目の色"
+
+#: inc/customizer/options/footer/footer-bar.php:23
+#: inc/customizer/options/footer/footer-bar.php:50
+#: inc/customizer/options/footer/footer-column.php:66
+#: inc/customizer/options/global/container.php:42
+#: inc/customizer/options/global/content-area.php:47
+#: inc/customizer/options/header/breadcrumb.php:32
+#: inc/customizer/options/header/header-button.php:63
+#: inc/customizer/options/header/main-header.php:106
+#: inc/customizer/options/header/page-header.php:61
+#: inc/customizer/options/header/primary-menu.php:144
+#: inc/customizer/options/header/top-bar.php:37
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:276
+#: assets/build/meta.js:1 inc/customizer/build/customind.js:1
+#: inc/customizer/customind/build/customind.js:1
+msgid "Style"
+msgstr "スタイル"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:261
+msgid "Remove Logo"
+msgstr "ロゴを削除"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:257
+msgid "Upload Logo"
+msgstr "ロゴをアップロード"
+
+#: inc/customizer/options/header-builder/header-builder.php:82
+#: inc/customizer/options/header-builder/logo.php:22
+#: inc/customizer/options/header/site-identity.php:22
+#: inc/customizer/panels-sections/panels-sections.php:186
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:244
+#: assets/build/meta.js:1
+msgid "Logo"
+msgstr "ロゴ"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:216
+#: assets/build/meta.js:1
+msgid "Enable Transparent Header"
+msgstr "透明ヘッダーを有効化"
+
+#: inc/customizer/options/global/sidebar.php:75
+#: inc/customizer/options/woocommerce/woocommerce.php:45
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:186
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:221
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:368
+#: assets/build/meta.js:1 inc/customizer/build/customind.js:1
+#: inc/customizer/customind/build/customind.js:1
+msgid "Default"
+msgstr "デフォルト"
+
+#: inc/customizer/options/global/sidebar.php:38
+#: inc/customizer/panels-sections/panels-sections.php:56
+#: inc/customizer/panels-sections/panels-sections.php:156
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:180
+#: assets/build/dashboard.js:1 assets/build/meta.js:1
+msgid "Sidebar"
+msgstr "サイドバー"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:170
+#: assets/build/meta.js:1
+msgid "Remove content padding"
+msgstr "コンテンツのパディングを削除"
+
+#: inc/customizer/options/content/blog-meta.php:16
+#: inc/customizer/options/global/container.php:19
+#: inc/customizer/options/global/content-area.php:22
+#: inc/customizer/options/global/sidebar.php:67
+#: inc/customizer/options/header/main-header.php:17
+#: inc/customizer/options/header/page-header.php:19
+#: inc/customizer/options/woocommerce/woocommerce.php:37
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:118
+#: assets/build/meta.js:1
+msgid "Layout"
+msgstr "レイアウト"
+
+#: inc/customizer/options/header/page-header.php:5
+#: inc/customizer/options/header/page-header.php:120
+#: inc/customizer/panels-sections/panels-sections.php:116
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:94
+msgid "Page Header"
+msgstr "ページヘッダー"
+
+#: inc/core/class-zakra-after-setup-theme.php:96
+#: inc/customizer/options/header-builder/header-builder.php:16
+#: inc/customizer/options/header-builder/primary-menu.php:11
+#: inc/customizer/options/header/primary-menu.php:8
+#: inc/customizer/panels-sections/panels-sections.php:96
+#: inc/customizer/panels-sections/panels-sections.php:191
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:89
+#: template-parts/header-builder-elements/toggle-button.php:35
+#: template-parts/header/primary-menu/mobile-toggle.php:32
+#: assets/build/dashboard.js:1
+msgid "Primary Menu"
+msgstr "メインメニュー"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:84
+msgid "Header"
+msgstr "ヘッダー"
+
+#: inc/customizer/options/footer/footer-bar.php:16
+#: inc/customizer/options/global/button.php:13
+#: inc/customizer/options/global/container.php:13
+#: inc/customizer/options/global/content-area.php:16
+#: inc/customizer/options/header/breadcrumb.php:15
+#: inc/customizer/options/header/header-button.php:15
+#: inc/customizer/options/header/primary-menu.php:15
+#: inc/customizer/options/header/top-bar.php:15
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:79
+msgid "General"
+msgstr "一般"
+
+#: inc/compatibility/woocommerce/class-zakra-woocommerce.php:219
+msgid "View your shopping cart"
+msgstr "お買い物カゴを表示"
+
+#. translators: %s: search query.
+#: inc/template-tags.php:41
+msgid "Search Results for: %s"
+msgstr "「%s」の検索結果"
+
+#: inc/core/class-zakra-widgets.php:65
+msgid "Add widgets here."
+msgstr "ここにウィジェットを追加。"
+
+#: inc/core/class-zakra-widgets.php:91
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:192
+#: assets/build/meta.js:1
+msgid "Footer Four"
+msgstr "フッター4"
+
+#: inc/core/class-zakra-widgets.php:90
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:191
+#: assets/build/meta.js:1
+msgid "Footer Three"
+msgstr "フッター3"
+
+#: inc/core/class-zakra-widgets.php:89
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:190
+#: assets/build/meta.js:1
+msgid "Footer Two"
+msgstr "フッター2"
+
+#: inc/core/class-zakra-widgets.php:88
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:189
+#: assets/build/meta.js:1
+msgid "Footer One"
+msgstr "フッター1"
+
+#: inc/core/class-zakra-widgets.php:85
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:188
+#: assets/build/meta.js:1
+msgid "Sidebar Left"
+msgstr "左サイドバー"
+
+#: inc/core/class-zakra-widgets.php:84
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:187
+#: assets/build/meta.js:1
+msgid "Sidebar Right"
+msgstr "右サイドバー"
+
+#: inc/customizer/options/global/colors.php:107
+msgid "Primary"
+msgstr "メイン"
+
+#. Theme URI of the theme
+#: style.css
+#, gp-priority: low
+msgid "https://zakratheme.com/"
+msgstr "https://zakratheme.com/"
+
+#. Author URI of the theme
+#: style.css
+#, gp-priority: low
+msgid "https://themegrill.com"
+msgstr "https://themegrill.com"
+
+#. Author of the theme
+#: style.css
+#, gp-priority: low
+msgid "ThemeGrill"
+msgstr "ThemeGrill"

@@ -1,0 +1,262 @@
+# Translation of Plugins - Super Page Cache - Development (trunk) in Spanish (Spain)
+# This file is distributed under the same license as the Plugins - Super Page Cache - Development (trunk) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-07-16 17:10:43+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: es\n"
+"Project-Id-Version: Plugins - Super Page Cache - Development (trunk)\n"
+
+#: src/Utils/Cache_Tester.php:168
+msgid "Issues"
+msgstr "Problemas"
+
+#: src/Utils/Cache_Tester.php:149 assets/build/719.js:4
+msgid "Status"
+msgstr "Estado"
+
+#. Plugin URI of the plugin
+#: wp-cloudflare-super-page-cache.php
+msgid "https://wordpress.org/plugins/wp-cloudflare-page-cache/"
+msgstr "https://es.wordpress.org/plugins/wp-cloudflare-page-cache/"
+
+#: libs/backend.class.php:149
+msgid "Force purge everything"
+msgstr "Forzar el vaciado de todo"
+
+#: src/Services/Cloudflare_Client.php:282
+msgid "Unable to find a valid account ID."
+msgstr "No ha sido posible encontrar un ID de cuenta válido."
+
+#: libs/backend.class.php:161
+msgid "Purge cache for this page only"
+msgstr "Vaciar caché solo para esta página"
+
+#: src/Modules/Dashboard.php:163
+msgid "Import/Export"
+msgstr "Importar/Exportar"
+
+#: libs/backend.class.php:138 assets/build/154.js:1
+msgid "Purge whole cache"
+msgstr "Vaciar toda la caché"
+
+#: libs/wpcli.class.php:112
+msgid "Cache enabled successfully"
+msgstr "Caché activada correctamente"
+
+#: libs/wpcli.class.php:37
+msgid "An error occurred while purging the cache"
+msgstr "Ocurrió un error al vaciar la caché"
+
+#: libs/wpcli.class.php:35 libs/wpcli.class.php:55 libs/wpcli.class.php:72
+#: libs/wpcli.class.php:84 libs/wpcli.class.php:96
+msgid "Cache purged successfully"
+msgstr "Caché vaciada correctamente"
+
+#: src/Utils/Cache_Tester.php:87
+msgid "Please check if the page caching is working by yourself by surfing the website in incognito mode 'cause sometimes Cloudflare bypass the cache for cURL requests. Reload a page two or three times. If you see the response header cf-cache-status: HIT, the page caching is working well."
+msgstr "Por favor, comprueba tú mismo si la caché de página está funcionando, navegando por la web en modo incógnito, porque a veces CloudFlare se salta la caché de las solicitudes cURL. Recarga una página dos o tres veces. Si ves la cabecera de respuesta «cf-cache-status: HIT», la caché de página está funcionando bien."
+
+#. translators: %s is the CF-Cache-Status header value.
+#: libs/test_cache.class.php:72 libs/wpcli.class.php:270
+msgid "Cache status: %s - Cloudflare has been instructed to not cache this asset. It has been served directly from the origin."
+msgstr "Estado de la caché: %s - CloudFlare tiene la instrucción de no cachear este recurso. Se ha servido directamente desde el origen."
+
+#: src/Modules/Admin.php:95
+msgid "Rate"
+msgstr "Valorar"
+
+#: libs/test_cache.class.php:95 libs/wpcli.class.php:245
+msgid "Invalid Cache-Control response header. If you are using Litespeed Server, please disable the option <strong>Overwrite the cache-control header for WordPress's pages using web server rules</strong>, purge the cache and retry."
+msgstr "Cabecera de respuesta cache-control no válida. Si estás usando un servidor LiteSpeed, por favor, desactiva la opción <strong>Sobrescribir la cabecera cache-control para las páginas de WordPress que usen las reglas del servidor web</strong>, vacía la caché e inténtalo de nuevo."
+
+#: libs/wpcli.class.php:157
+msgid "Page caching seems not working for both dynamic and static pages."
+msgstr "La caché de página parece que no está funcionando ni en páginas dinámicas ni estáticas."
+
+#: libs/test_cache.class.php:109 libs/wpcli.class.php:291
+msgid "Undefined error"
+msgstr "Error indefinido"
+
+#. translators: %s is the CF-Cache-Status header value.
+#: libs/wpcli.class.php:281
+msgid "Cache status: %s - The resource was not cached by default and your current Cloudflare caching configuration doesn't instruct Cloudflare to cache the resource. Try to enable the <strong>Strip response cookies on pages that should be cached</strong> option and retry."
+msgstr "Estado de la caché: %s - El recurso no se ha almacenado en la caché por defecto y tu configuración actual de caché de Cloudflare no indica a Cloudflare que almacene el recurso en la caché. Intenta activar la opción <strong>Quitar las cookies de respuesta en las páginas que deberían almacenarse en la caché</strong> e inténtalo de nuevo."
+
+#: libs/wpcli.class.php:239
+msgid "Unable to find the X-WP-CF-Super-Cache-Cache-Control response header."
+msgstr "No ha sido posible encontrar la cabecera de respuesta X-WP-CF-Super-Cache-Cache-Control"
+
+#: libs/wpcli.class.php:233
+msgid "Unable to find the Cache-Control response header."
+msgstr "No ha sido posible encontrar la cabecera de respuesta cache-control"
+
+#: src/Modules/Rest_Server.php:639
+msgid "Unable to start the preloader. Another preloading process is currently running."
+msgstr "No ha sido posible iniciar el precargador. Se está ejecutando otro proceso del precargador."
+
+#: src/Modules/Rest_Server.php:630
+msgid "Preloader is not enabled"
+msgstr "El precargador no está activo"
+
+#: libs/backend.class.php:126 assets/build/154.js:1
+msgid "Cache"
+msgstr "Caché"
+
+#: src/Utils/I18n.php:49 src/Utils/I18n.php:59 assets/build/assets-manager.js:1
+#: assets/build/dashboard.js:1
+msgid "General"
+msgstr "Generales"
+
+#. translators: %1$s is the name of the sitemap, %2$s is the error message
+#: libs/cache_controller.class.php:2576
+msgid "Connection error while retriving the sitemap %1$s: %2$s"
+msgstr "Error de conexión al obtener el mapa del sitio %1$s: %2$s"
+
+#: libs/test_cache.class.php:51 libs/wpcli.class.php:227
+msgid "Seem that your website is not behind Cloudflare. If you have recently enabled the cache or it is your first test, wait about 30 seconds and try again because the changes take a few seconds for Cloudflare to propagate them on the web. If the error persists, request support for a detailed check."
+msgstr "Parece que tu web no está en CloudFlare. Si has activado recientemente la caché o si es tu primera prueba, espera unos 30 segundos e inténtalo de nuevo, porque los cambios tardan unos pocos segundos en que CloudFlare los propague en la web. Si persiste el error solicita soporte para conseguir una prueba detallada."
+
+#: libs/varnish.class.php:196
+msgid "Varnish cache purged successfully!"
+msgstr "¡Caché de Varnish vaciada correctamente!"
+
+#: libs/varnish.class.php:57
+msgid "Invalid hostname or port"
+msgstr "Hostname o puerto no válidos"
+
+#. translators: %s is 'wp-content' (directory).
+#: src/Utils/I18n.php:43
+msgid "The directory %s is not writable. Please add write permission or you have to use the fallback cache with cURL."
+msgstr "El directorio %s no tiene permisos de escritura. Por favor, añade permisos de escritura o tendrás que usar la caché de respaldo con cURL."
+
+#. translators: %s is 'wp-config.php' (file).
+#: src/Utils/I18n.php:40
+msgid "The file %s is not writable. Please add write permission to activate the fallback cache"
+msgstr "El archivo %s no tiene permisos de escritura. Por favor, añade permisos de escritura para activar la caché de respaldo"
+
+#: libs/cache_controller.class.php:2255
+msgid "An error occurred while cleaning the cache. Please check log file for further details."
+msgstr "Ocurrió un error al vaciar la caché. Por favor, revisa el archivo de registro para más detalles."
+
+#. translators: %s is the CF-Cache-Status header value.
+#: libs/wpcli.class.php:284
+msgid "Cache status: %s - The resource was not cached by default and your current Cloudflare caching configuration doesn't instruct Cloudflare to cache the resource.  Instead, the resource was requested from the origin web server."
+msgstr "Estado de la caché: %s - El recurso no se cacheó por defecto y tu configuración actual de caché de CloudFlare no indica a CloudFlare que cachee el recurso. En su lugar, el recurso se solicitó desde el servidor web de origen."
+
+#. translators: %s is the CF-Cache-Status header value.
+#: libs/test_cache.class.php:65 libs/wpcli.class.php:263
+msgid "Cache status: %s - The resource was served from cache but is expired. The resource is currently being updated by the origin web server. UPDATING is typically seen only for very popular cached resources."
+msgstr "Estado de la caché: %s - El recurso se sirvió desde la caché pero ha caducado. El recurso se está actualizando en este momento desde el servidor web de origen. ACTUALIZANDO se suele ver solo en recursos cacheados muy populares."
+
+#. translators: %s is the CF-Cache-Status header value.
+#: libs/test_cache.class.php:58 libs/wpcli.class.php:256
+msgid "Cache status: %s - The resource is served from cache but is stale. The resource was revalidated by either an If-Modified-Since header or an If-None-Match header."
+msgstr "Estado de la caché: %s - El recurso se sirve desde la caché pero es antiguo. El recurso se volvió a validar desde una cabecera If-Modified-Since o If-None-Match."
+
+#: libs/wpcli.class.php:215
+msgid "The plugin is not detected on your home page. If you have activated other caching systems, please disable them and retry the test."
+msgstr "No se ha detectado el plugin en tu página de inicio. Si has activado otros sistemas de caché, por favor, desactívalos y vuelve a realizar la prueba."
+
+#: src/Services/Cloudflare_Client.php:262
+msgid "Unable to retrive account ID"
+msgstr "No ha sido posible recuperar el ID de la cuenta"
+
+#: libs/wpcli.class.php:221
+msgid "The cache is not enabled on your home page. It's not possible to verify if the page caching is working properly."
+msgstr "La caché no está activada en tu página de inicio. No es posible verificar si la caché de página está funcionando adecuadamente."
+
+#: libs/cache_controller.class.php:343
+msgid "Bypass the cache for this page"
+msgstr "Omitir la caché en esta página"
+
+#: libs/cache_controller.class.php:329
+msgid "Cloudflare Page Cache Settings"
+msgstr "Ajustes de caché de página de CloudFlare"
+
+#: src/Modules/Rest_Server.php:660
+msgid "Preloader started successfully"
+msgstr "Precargador iniciado correctamente"
+
+#: src/Modules/Rest_Server.php:653
+msgid "You cannot start the preloader while the page cache is disabled."
+msgstr "No puedes iniciar el precargador mientras esté desactivada la caché de página."
+
+#: src/Modules/Rest_Server.php:646
+msgid "Unable to start background processes: SWCFPC_Preloader_Process does not exists."
+msgstr "No es posible iniciar procesos en segundo plano: SWCFPC_Preloader_Process no existe."
+
+#: src/Modules/Rest_Server.php:603
+msgid "Logs cleared successfully."
+msgstr "Registro vaciado correctamente."
+
+#: src/Modules/Rest_Server.php:901
+msgid "Settings imported successfully."
+msgstr "Ajustes actualizados correctamente."
+
+#: src/Modules/Rest_Server.php:777
+msgid "Page cache enabled successfully"
+msgstr "Caché de página activada correctamente"
+
+#: libs/wpcli.class.php:179
+msgid "Page caching is working properly"
+msgstr "La caché de página está funcionando adecuadamente"
+
+#: libs/cache_controller.class.php:2202 libs/cache_controller.class.php:2222
+#: libs/cache_controller.class.php:2245
+msgid "Permission denied"
+msgstr "Permiso denegado"
+
+#: src/Modules/Admin.php:73 src/Modules/Dashboard.php:152 assets/build/102.js:1
+#: assets/build/450.js:1 assets/build/504.js:1 assets/build/719.js:5
+#: assets/build/798.js:1 assets/build/806.js:1
+msgid "Settings"
+msgstr "Ajustes"
+
+#: libs/cache_controller.class.php:350 assets/build/806.js:1
+msgid "No"
+msgstr "No"
+
+#: libs/cache_controller.class.php:356 assets/build/806.js:1
+msgid "Yes"
+msgstr "Sí"
+
+#: libs/backend.class.php:183 assets/build/719.js:4
+msgid "Purge Cache"
+msgstr "Vaciar caché"
+
+#: src/Services/Cloudflare_Client.php:191 src/Services/Cloudflare_Rule.php:168
+#: src/Services/Cloudflare_Rule.php:203
+msgid "There is not zone id to use"
+msgstr "No hay ningún id de zona que utilizar"
+
+#: src/Services/Cloudflare_Client.php:114
+msgid "Unable to find Browser Cache TTL settings "
+msgstr "No ha sido posible encontrar los ajustes TTL de caché del navegador"
+
+#: src/Services/Cloudflare_Client.php:359
+msgid "Unable to find domains configured on Cloudflare"
+msgstr "No ha sido posible encontrar dominios configurados en CloudFlare"
+
+#: libs/test_cache.class.php:135 libs/wpcli.class.php:202
+#: src/Services/Cloudflare_Rule.php:474
+msgid "Connection error: "
+msgstr "Error de conexión:"
+
+#: libs/cache_controller.class.php:2209 libs/cache_controller.class.php:2229
+#: libs/cache_controller.class.php:2261
+msgid "Cache purged successfully! It may take up to 30 seconds for the cache to be permanently cleaned."
+msgstr "¡Caché vaciada correctamente! Puede llevar hasta 30 segundos limpiar de manera permanente la caché."
+
+#: src/Services/Cloudflare_Client.php:322
+#: src/Services/Cloudflare_Client.php:347
+msgid "Unable to retrieve zone id due to invalid response data"
+msgstr "No ha sido posible recuperar el id de zona debido a datos de respuesta no válidos"
+
+#: src/Modules/Rest_Server.php:789
+msgid "Page cache enabled successfully."
+msgstr "Caché de página activada correctamente."

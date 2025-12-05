@@ -1,0 +1,120 @@
+# Translation of Plugins - Simple CAPTCHA Alternative with Cloudflare Turnstile - Stable (latest release) in Croatian
+# This file is distributed under the same license as the Plugins - Simple CAPTCHA Alternative with Cloudflare Turnstile - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2024-07-18 20:36:49+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n % 10 == 1 && n % 100 != 11) ? 0 : ((n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) ? 1 : 2);\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: hr\n"
+"Project-Id-Version: Plugins - Simple CAPTCHA Alternative with Cloudflare Turnstile - Stable (latest release)\n"
+
+#: inc/admin/admin-options.php:748 inc/admin/admin-options.php:770
+msgid "Contact Form 7"
+msgstr "Contact Form 7"
+
+#: inc/integrations/forms/contact-form-7.php:105
+msgid "Insert Tag"
+msgstr "Umetni oznaku"
+
+#: inc/integrations/forms/contact-form-7.php:95
+msgid "cloudflare turnstile"
+msgstr "cloudflare turnstile"
+
+#. Author of the plugin
+#: simple-cloudflare-turnstile.php
+msgid "Elliot Sowersby, RelyWP"
+msgstr "Elliot Sowersby, RelyWP"
+
+#: inc/admin/admin-options.php:88 inc/admin/admin-options.php:1654
+msgid "Please submit a review"
+msgstr "Pošaljite recenziju"
+
+#: inc/admin/admin-options.php:1651
+msgid "Need help? Have a suggestion?"
+msgstr "Trebate pomoć? Imate prijedlog?"
+
+#: inc/admin/admin-options.php:236
+msgid "When enabled, the user will not be able to click submit until the Turnstile challenge is completed."
+msgstr "Kada je omogućeno, korisnik neće moći kliknuti Pošalji sve dok se izazov Turnstile ne završi."
+
+#: inc/admin/admin-options.php:233
+msgid "Disable Submit Button"
+msgstr "Onemogući gumb za slanje"
+
+#: inc/admin/admin-options.php:462
+msgid "WordPress Comment"
+msgstr "WordPress komentari"
+
+#: inc/admin/admin-options.php:150
+msgid "Theme"
+msgstr "Tema"
+
+#: inc/admin/admin-options.php:157
+msgid "Dark"
+msgstr "Tamna"
+
+#: inc/admin/admin-options.php:154
+msgid "Light"
+msgstr "Svijetla"
+
+#. Author URI of the plugin
+#: simple-cloudflare-turnstile.php
+msgid "https://www.relywp.com"
+msgstr "https://www.relywp.com"
+
+#: inc/wordpress.php:140
+msgid "ERROR"
+msgstr "GREŠKA"
+
+#: inc/errors.php:36 inc/integrations/forms/kadence.php:46
+#: inc/integrations/forms/kadence.php:52
+msgid "Please verify that you are human."
+msgstr "Molimo potvrdite da ste čovjek."
+
+#: simple-cloudflare-turnstile.php:50
+msgid "Settings"
+msgstr "Postavke"
+
+#: inc/admin/admin-options.php:514
+msgid "WooCommerce Register"
+msgstr "WooCommerce obrazac za registraciju korisnika"
+
+#: inc/admin/admin-options.php:507
+msgid "WooCommerce Login"
+msgstr "WooCommerce obrazac za prijavu"
+
+#: inc/admin/admin-options.php:530 inc/admin/admin-options.php:636
+#: inc/admin/admin-options.php:679
+msgid "Guest Checkout Only"
+msgstr "Samo za goste"
+
+#: inc/admin/admin-options.php:528
+msgid "WooCommerce Checkout"
+msgstr "WooCommerce obrazac za narudžbu i naplatu"
+
+#: inc/admin/admin-options.php:500
+msgid "WooCommerce Forms"
+msgstr "WooCommerce obrasci"
+
+#: inc/admin/admin-options.php:455
+msgid "WordPress Reset Password"
+msgstr "WordPress obrazac za ponovno postavljanje lozinke"
+
+#: inc/admin/admin-options.php:521
+msgid "WooCommerce Reset Password"
+msgstr "WooCommerce obrazac za ponovno postavljanje lozinke"
+
+#: inc/admin/admin-options.php:434
+msgid "WordPress Register"
+msgstr "WordPress obrazac za registraciju"
+
+#: inc/admin/admin-options.php:413
+msgid "WordPress Login"
+msgstr "WordPress obrazac za prijavu"
+
+#: inc/admin/admin-options.php:130
+msgid "Site Key"
+msgstr "Ključ stranice"

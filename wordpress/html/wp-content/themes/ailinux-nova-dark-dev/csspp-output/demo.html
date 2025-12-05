@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS++ Live Demo</title>
+
+  <!-- Kompiliertes CSS++ Output -->
+  <link rel="stylesheet" href="demo-simple.css">
+
+  <!-- CSS++ Audio Runtime -->
+  <script src="csspp-runtime.js"></script>
+
+  <style>
+    /* Basis-Styling */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 2rem;
+      color: #333;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      color: white;
+      margin-bottom: 3rem;
+      font-size: 3rem;
+    }
+
+    .demo-section {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 1rem;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .demo-section h2 {
+      margin-bottom: 1rem;
+      color: #667eea;
+    }
+
+    .demo-section p {
+      margin-bottom: 1.5rem;
+      color: #666;
+      line-height: 1.6;
+    }
+
+    .code-block {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+    }
+
+    .code-block .keyword { color: #569cd6; }
+    .code-block .string { color: #ce9178; }
+    .code-block .comment { color: #6a9955; }
+
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    /* Verbesserte Demo-Card Styles */
+    .demo-card {
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      border-radius: 1rem;
+      transition: transform 0.3s ease;
+    }
+
+    .demo-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .demo-card h3 {
+      color: #667eea;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Hexagon Container */
+    .hexagon-demo {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    /* Text-Glow Demo */
+    .glow-demo {
+      text-align: center;
+      padding: 2rem;
+      background: #1a1a1a;
+      border-radius: 1rem;
+    }
+
+    /* Button Demo Container */
+    .button-demo {
+      text-align: center;
+      padding: 2rem;
+    }
+
+    /* Status-Anzeige */
+    .status {
+      background: #f0f9ff;
+      border-left: 4px solid #3b82f6;
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 0.5rem;
+    }
+
+    .status.warning {
+      background: #fffbeb;
+      border-left-color: #f59e0b;
+    }
+
+    .status.success {
+      background: #f0fdf4;
+      border-left-color: #10b981;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>CSS++ Live Demo 🚀</h1>
+
+    <!-- Einführung -->
+    <div class="demo-section">
+      <h2>Was ist CSS++?</h2>
+      <p>
+        CSS++ ist eine <strong>multisensorische Designsprache</strong>, die CSS um Geometrie, Lighting, Texturen und Audio erweitert.
+        Diese Seite zeigt <strong>kompiliertes CSS++ in Aktion</strong>.
+      </p>
+
+      <div class="status success">
+        ✅ <strong>Kompiliert:</strong> demo-simple.csspp → demo-simple.css (Standard CSS)
+      </div>
+
+      <div class="status success">
+        ✅ <strong>Audio-Runtime aktiv:</strong> Sounds werden abgespielt! (Web Audio API)
+        <button id="toggleAudio" style="margin-left: 1rem; padding: 0.5rem 1rem; border-radius: 0.25rem; border: none; background: #667eea; color: white; cursor: pointer;">Audio Toggle</button>
+      </div>
+    </div>
+
+    <!-- Beispiel 1: Button mit Glow -->
+    <div class="demo-section">
+      <h2>Beispiel 1: Button mit Glow-Effekt</h2>
+
+      <p><strong>CSS++ Input:</strong></p>
+      <div class="code-block">
+<span class="comment">/* CSS++ */</span>
+<span class="keyword">.demo-button</span> {
+  <span class="keyword">shape:</span> rounded-rect(<span class="string">0.5rem</span>);
+  <span class="keyword">shadow-type:</span> soft;
+  <span class="keyword">glow-color:</span> <span class="string">#4466ff</span>;
+  <span class="keyword">hover-sfx:</span> chime(<span class="string">440Hz</span>);
+
+  <span class="comment">/* Standard CSS */</span>
+  padding: <span class="string">1rem 2rem</span>;
+  background: <span class="string">#4466ff</span>;
+}
+      </div>
+
+      <p><strong>Kompiliertes CSS:</strong></p>
+      <div class="code-block">
+<span class="comment">/* Standard CSS */</span>
+<span class="keyword">.demo-button</span> {
+  box-shadow: <span class="string">0 4px 12px rgba(0, 0, 0, 0.15)</span>;
+  box-shadow: <span class="string">0 0 20px #4466ff</span>; <span class="comment">/* Glow */</span>
+  filter: <span class="string">brightness(1.2)</span>;
+  padding: <span class="string">1rem 2rem</span>;
+  background: <span class="string">#4466ff</span>;
+}
+      </div>
+
+      <div class="button-demo">
+        <button class="demo-button">Hover mich! ✨</button>
+      </div>
+
+      <div class="status">
+        🎵 <strong>Audio-Binding exportiert:</strong> hover-sfx: chime(440Hz), click-sfx: click(mechanical)
+      </div>
+    </div>
+
+    <!-- Beispiel 2: Cards -->
+    <div class="demo-section">
+      <h2>Beispiel 2: Cards mit Schatten & Tiefe</h2>
+
+      <p><strong>CSS++ Property:</strong> <code>depth: 0.3rem</code> wird zu <code>box-shadow</code> kompiliert</p>
+
+      <div class="demo-grid">
+        <div class="demo-card">
+          <h3>Card 1</h3>
+          <p>CSS++ generiert automatisch realistische Schatten basierend auf der <strong>depth</strong>-Property.</p>
+        </div>
+
+        <div class="demo-card">
+          <h3>Card 2</h3>
+          <p>Der Compiler wandelt <strong>shadow-type: soft</strong> in eine passende box-shadow um.</p>
+        </div>
+
+        <div class="demo-card">
+          <h3>Card 3</h3>
+          <p>Hover-Effekt funktioniert mit Standard CSS :hover – keine Runtime nötig!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Beispiel 3: Hexagon -->
+    <div class="demo-section">
+      <h2>Beispiel 3: Geometrie – Hexagon</h2>
+
+      <p><strong>CSS++ Property:</strong> <code>shape: polygon(6)</code> → Compiler generiert clip-path</p>
+
+      <div class="code-block">
+<span class="comment">/* CSS++ */</span>
+<span class="keyword">.demo-hexagon</span> {
+  <span class="keyword">shape:</span> polygon(<span class="string">6</span>);  <span class="comment">/* 6-Eck */</span>
+}
+
+<span class="comment">/* Kompiliert zu: */</span>
+<span class="keyword">.demo-hexagon</span> {
+  clip-path: <span class="string">polygon(50% 0%, 93.3% 25%, ...)</span>;
+}
+      </div>
+
+      <div class="hexagon-demo">
+        <div class="demo-hexagon"></div>
+      </div>
+
+      <div class="status warning">
+        ⚠️ <strong>Hinweis:</strong> Polygon-Generierung ist im aktuellen Compiler noch nicht implementiert. Kommt in Phase 2!
+      </div>
+    </div>
+
+    <!-- Beispiel 4: Glowing Text -->
+    <div class="demo-section">
+      <h2>Beispiel 4: Glowing Text</h2>
+
+      <p><strong>CSS++ Property:</strong> <code>glow-color: #00ffff</code> → text-shadow + box-shadow</p>
+
+      <div class="glow-demo">
+        <div class="demo-glow-text">NEON GLOW ✨</div>
+      </div>
+
+      <div class="status warning">
+        ⚠️ <strong>Teilweise implementiert:</strong> Glow-Color wird erkannt, aber noch nicht vollständig zu text-shadow transformiert.
+      </div>
+    </div>
+
+    <!-- Was funktioniert / Was fehlt -->
+    <div class="demo-section">
+      <h2>Status: Was funktioniert bereits?</h2>
+
+      <h3 style="color: #10b981; margin-top: 1.5rem;">✅ Funktioniert jetzt (ohne Runtime)</h3>
+      <ul style="line-height: 2; margin-left: 2rem;">
+        <li>✅ <strong>Kompilierung:</strong> .csspp → .css (Standard CSS)</li>
+        <li>✅ <strong>Basis-Transformationen:</strong> shadow-type, glow-color → box-shadow</li>
+        <li>✅ <strong>Audio-Export:</strong> Sounds werden als JSON gespeichert</li>
+        <li>✅ <strong>Standard CSS bleibt unverändert</strong></li>
+        <li>✅ <strong>Keine Installation nötig:</strong> Kompiliertes CSS funktioniert überall</li>
+      </ul>
+
+      <h3 style="color: #f59e0b; margin-top: 1.5rem;">⏳ Kommt in Phase 2 (benötigt Runtime)</h3>
+      <ul style="line-height: 2; margin-left: 2rem;">
+        <li>⏳ <strong>Audio-Playback:</strong> Web Audio API für hover-sfx, click-sfx</li>
+        <li>⏳ <strong>Polygon-Generierung:</strong> shape: polygon(6) → clip-path</li>
+        <li>⏳ <strong>Partikel-System:</strong> particle: dust(5%) → Canvas/WebGL</li>
+        <li>⏳ <strong>Erweiterte Texturen:</strong> Procedural Textures</li>
+        <li>⏳ <strong>3D-Rendering:</strong> depth: 3d → WebGL</li>
+      </ul>
+    </div>
+
+    <!-- Nächste Schritte -->
+    <div class="demo-section">
+      <h2>Nächste Schritte</h2>
+
+      <div class="status">
+        📁 <strong>Dateien erstellt:</strong>
+        <ul style="margin-left: 2rem; margin-top: 0.5rem;">
+          <li><code>csspp/examples/demo-simple.csspp</code> (Input)</li>
+          <li><code>csspp-output/demo-simple.css</code> (Kompiliertes CSS)</li>
+          <li><code>csspp-output/demo-simple.assets.json</code> (Audio-Bindings)</li>
+          <li><code>csspp-output/demo.html</code> (Diese Demo)</li>
+        </ul>
+      </div>
+
+      <h3 style="margin-top: 1.5rem;">Option A: Ins WordPress-Theme integrieren</h3>
+      <p>Kompiliertes CSS in <code>functions.php</code> einbinden:</p>
+      <div class="code-block">
+<span class="comment">// functions.php</span>
+wp_enqueue_style(
+  <span class="string">'csspp-demo'</span>,
+  get_template_directory_uri() . <span class="string">'/csspp-output/demo-simple.css'</span>
+);
+      </div>
+
+      <h3 style="margin-top: 1.5rem;">Option B: Audio-Runtime bauen</h3>
+      <p>JavaScript-Runtime, die <code>demo-simple.assets.json</code> lädt und Sounds abspielt.</p>
+
+      <h3 style="margin-top: 1.5rem;">Option C: Compiler erweitern</h3>
+      <p>Mehr CSS++-Properties implementieren (polygon, particle, etc.)</p>
+    </div>
+
+  </div>
+
+  <script>
+    // Zeige JSON-Assets in Console
+    console.log('%c🎨 CSS++ Demo geladen', 'font-size: 20px; color: #667eea; font-weight: bold;');
+    console.log('%cKompiliertes CSS:', 'font-weight: bold;', 'demo-simple.css');
+    console.log('%cAudio-Assets:', 'font-weight: bold;', 'demo-simple.assets.json');
+
+    // Lade und zeige Audio-Assets
+    fetch('demo-simple.assets.json')
+      .then(res => res.json())
+      .then(data => {
+        console.log('%cAudio-Bindings:', 'color: #10b981; font-weight: bold;');
+        console.table(data.assets.audio);
+      })
+      .catch(err => console.warn('Assets konnten nicht geladen werden:', err));
+
+    // Audio Toggle
+    document.getElementById('toggleAudio').addEventListener('click', function() {
+      if (window.cssppRuntime) {
+        window.cssppRuntime.toggle();
+        this.textContent = window.cssppRuntime.enabled ? 'Audio Toggle (ON)' : 'Audio Toggle (OFF)';
+      }
+    });
+
+    // Visual Click-Feedback
+    document.querySelector('.demo-button').addEventListener('click', function() {
+      this.style.transform = 'scale(0.95)';
+      setTimeout(() => this.style.transform = 'scale(1)', 100);
+    });
+  </script>
+</body>
+</html>

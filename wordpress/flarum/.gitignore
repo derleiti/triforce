@@ -1,0 +1,25 @@
+# Environment files
+.env
+
+# Flarum data directories
+flarum/assets/*
+flarum/extensions/*
+flarum/storage/*
+flarum/nginx/*
+
+# Keep directory structure
+!flarum/assets/.gitkeep
+!flarum/extensions/.gitkeep
+!flarum/storage/.gitkeep
+!flarum/nginx/.gitkeep
+
+# Backups
+backups/*.sql.gz
+backups/*.sql
+
+# Docker volumes
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db

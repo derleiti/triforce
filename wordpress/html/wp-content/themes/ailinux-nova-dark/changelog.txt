@@ -1,0 +1,103 @@
+= 1.0.21 - 2025-11-28 =
+- fix(customizer): Implemented direct `!important` color application for all H1-H6 headings in light mode within the Customizer's generated CSS. This ensures user-selected heading colors take absolute precedence over WordPress core presets and any other conflicting styles.
+
+= 1.0.20 - 2025-11-28 =
+- fix(customizer): Implemented critical `wp_head` hook for custom styles to guarantee precedence. Customizer-generated CSS is now injected directly into the `<head>` with priority 100, ensuring it loads after all enqueued stylesheets (including `global-theme-fixes.css`). This resolves persistent issues with text color overrides in light mode.
+
+= 1.0.19 - 2025-11-28 =
+- fix(customizer): Added `!important` to all generated CSS variables in the Customizer output. This guarantees that user-selected colors (e.g., green text) always override theme defaults and external stylesheets.
+- fix(content): Expanded light mode heading fixes to include H4-H6, ensuring consistent coloring across all heading levels.
+- chore: Recompiled theme assets to apply updated SCSS defaults.
+
+= 1.0.18 - 2025-11-28 =
+- fix(customizer): Removed `!important` from H1-H3 color rules in light mode (`global-theme-fixes.css`) to allow Customizer settings for `Text (Light)` to take full precedence for heading colors.
+
+= 1.0.17 - 2025-11-28 =
+- fix(assets): Updated enqueue dependencies to ensure `global-theme-fixes.css` (and Customizer overrides) loads *after* `theme.css`. This resolves the issue where saved Customizer colors were being overridden by the default theme stylesheet.
+
+= 1.0.16 - 2025-11-28 =
+- fix(customizer): Fixed issue where Customizer color settings were not persisting on the frontend. Attached inline styles to the last loaded stylesheet (`global-theme-fixes.css`) to ensure they override default theme presets.
+
+= 1.0.15 - 2025-11-28 =
+- fix(layout): Forced light mode background for `html` and `body` to white (`var(--bg-0)`) using `!important` to prevent black background display.
+
+= 1.0.14 - 2025-11-28 =
+- fix(content): Ensured H1, H2, H3 headings are explicitly black in light mode to prevent any visibility issues.
+
+= 1.0.13 - 2025-11-28 =
+- fix(backend): Synchronized crawler service API with frontend expectations. Backend now returns 'tags' mapped from 'keywords_matched'.
+- fix(backend): Removed erroneous detached decorator in crawler routes.
+- fix(frontend): Added robust fallback for crawler tag parsing (supports both 'tags' and 'keywords_matched').
+- fix(nav): Fixed visibility of the theme toggle button (.theme-toggle) in light/dark modes by enforcing high-contrast colors and hover states.
+- fix(nav): Updated site title and tagline styling to strictly use theme variables with !important overrides to prevent inheritance issues.
+
+= 1.0.12 - 2025-11-28 =
+- fix(nav): Fixed visibility of the theme toggle button (.theme-toggle) in light/dark modes by enforcing high-contrast colors and hover states.
+- fix(nav): Updated site title and tagline styling to strictly use theme variables with !important overrides to prevent inheritance issues.
+
+= 1.0.11 - 2025-11-28 =
+- fix(content): Ensured privacy policy and general content text is fully visible in light mode.
+- style: Added explicit color rules for text, links, headings, and block elements within content areas using theme variables for high contrast.
+- chore: Renamed `css/ai-panel-fixes.css` to `css/global-theme-fixes.css` and updated enqueue path.
+
+= 1.0.10 - 2025-11-28 =
+- fix(nav): Fixed mobile menu toggle visibility issues. The button now correctly uses the theme accent color in both light and dark modes, and has a visible hover state.
+
+= 1.0.9 - 2025-11-28 =
+- style(ai): Widened the AI console panel to 800px (desktop) for better readability.
+- style(ai): Refactored AI panel styles to use semantic CSS variables, ensuring full compatibility with high-contrast dark and light themes.
+
+= 1.0.8 - 2025-11-28 =
+- feat(theme): Implemented high-contrast theme using CSS++ for improved accessibility.
+- style: Updated color palette with deeper blacks and vibrant accents for better readability.
+- fix(csspp): Fixed regex in CSS++ compiler to support hyphenated theme names.
+- fix(csspp): Fixed parser to strip comments before processing properties.
+- chore: Compiled new theme definitions to css/theme.css.
+
+= 1.0.7 - 2025-10-06 =
+- feat(UX): Improve readability and navigation ergonomics.
+- fix(CLS): Prevent layout shift on hero images by enforcing aspect ratio.
+- perf(fonts): Add resource hints to preconnect to Google Fonts.
+- style: Refine typography for better reading rhythm.
+- style: Make table of contents sticky for easier navigation in long posts.
+- style: Improve focus visibility on navigation elements.
+- fix(bbpress): Add a 'back to overview' link in topics.
+- chore: Remove redundant header.php file.
+
+= 1.0.6 - 2025-10-06 =
+- docs: Comprehensive documentation review and validation.
+- docs: Verify all theme documentation matches current implementation.
+- docs: Update changelog with testing and maintenance notes.
+- chore: Confirm all theme assets are properly built and deployed.
+- test: Validate theme integration with WordPress 6.8.1 and PHP 8.3.
+
+= 1.0.5 - 2025-10-05 =
+- feat(consent): Add consent banner CSS optimizations (backdrop blur, accessible styling, footer legal links).
+- feat(footer): Add automated legal links (Privacy Policy, Consent Manager, Imprint) with responsive layout.
+- fix(nav): Change overflow menu button from "Mehr v" to "Mehr ▼" (proper Unicode arrow).
+- fix(nav): Verified menu configuration - single menu correctly assigned to primary/footer locations.
+- chore: Rebuild theme assets via npm run build (dist/app.js updated).
+- docs: Update CLAUDE.md with consent management integration details.
+
+= 1.0.4 - 2025-10-05 =
+- docs: Create known-bugs.txt to document common third-party/client-side console errors.
+
+= 1.0.3 - 2025-10-05 =
+- feat: Add optional Content Security Policy (CSP) nonce support for theme scripts.
+- fix(ai): Add API health check and disable UI if the endpoint is unreachable.
+- fix(ai): Harden fetch calls with safe JSON parsing and improved error handling.
+- fix(swup): Add debounce to page:view hook to prevent rapid re-initialization.
+- chore(bbpress): Automatically disable Swup on all forum and topic links.
+
+= 1.0.2 - 2025-10-05 =
+- chore: Verified theme implementation against the canonical fix plan (GEMINI.md). Confirmed all items are addressed.
+- fix: Early Color Mode: `dist/colorMode.js` is enqueued in `<head>` with priority 1.
+- fix: Single `app.js` Enqueue: The main `dist/app.js` bundle is loaded only once.
+- fix: `NOVA_API` Localization: API endpoints and settings are correctly passed to the client via `wp_localize_script`.
+- fix: bbPress Styles: The theme correctly enqueues `css/bbpress-frontend.css` and the legacy `css/bbpress.css` has been removed.
+- fix: Vite I/O: `vite.config.js` uses the correct entry points and generates un-hashed filenames.
+
+= 1.0.1 - 2025-10-05 =
+- feat: Re-enabled Swup transitions for smooth page loads.
+- fix: Minimized FOUC by removing the 'no-js' class via javascript.
+- chore: Cleaned up bbPress styles by loading them conditionally.

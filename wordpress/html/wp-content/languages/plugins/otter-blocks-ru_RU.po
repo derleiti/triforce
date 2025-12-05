@@ -1,0 +1,1848 @@
+# Translation of Plugins - Otter Blocks &#8211; Gutenberg Blocks, Page Builder for Gutenberg Editor &amp; FSE - Stable (latest release) in Russian
+# This file is distributed under the same license as the Plugins - Otter Blocks &#8211; Gutenberg Blocks, Page Builder for Gutenberg Editor &amp; FSE - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-10-02 09:29:41+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n % 10 == 1 && n % 100 != 11) ? 0 : ((n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) ? 1 : 2);\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: ru\n"
+"Project-Id-Version: Plugins - Otter Blocks &#8211; Gutenberg Blocks, Page Builder for Gutenberg Editor &amp; FSE - Stable (latest release)\n"
+
+#: build/blocks/form-hidden-field/block.json
+msgctxt "block title"
+msgid "Hidden Field"
+msgstr "Скрытое поле"
+
+#: build/blocks/form-stripe-field/block.json
+msgctxt "block description"
+msgid "A field used for adding Stripe products to the form."
+msgstr "Поле, используемое для добавления продуктов Stripe в форму."
+
+#: build/blocks/form-hidden-field/block.json
+msgctxt "block keyword"
+msgid "hidden"
+msgstr "скрытое"
+
+#: build/blocks/form-hidden-field/block.json
+msgctxt "block keyword"
+msgid "metadata"
+msgstr "метаданные"
+
+#: build/blocks/form-hidden-field/block.json
+msgctxt "block description"
+msgid "A field used for adding extra metadata to the Form via URL params."
+msgstr "Поле, используемое для добавления дополнительных метаданных в форму через параметры URL-адреса."
+
+#: build/blocks/content-generator/block.json
+msgctxt "block keyword"
+msgid "content"
+msgstr "содержимое"
+
+#: build/blocks/content-generator/block.json
+msgctxt "block title"
+msgid "AI Block (Beta)"
+msgstr "Блок AI (бета)"
+
+#: build/blocks/form-stripe-field/block.json
+msgctxt "block title"
+msgid "Stripe Field"
+msgstr "Поле Stripe"
+
+#: build/blocks/content-generator/block.json
+msgctxt "block description"
+msgid "Generate content for your block with AI."
+msgstr "Создавайте содержимое своего блока с помощью AI."
+
+#: build/blocks/content-generator/block.json
+msgctxt "block keyword"
+msgid "generator"
+msgstr "творец"
+
+#: build/blocks/content-generator/block.json
+msgctxt "block keyword"
+msgid "ai"
+msgstr "ai"
+
+#: build/blocks/form-file/block.json
+msgctxt "block keyword"
+msgid "file"
+msgstr "файл"
+
+#: build/blocks/form-multiple-choice/block.json
+msgctxt "block keyword"
+msgid "multiple"
+msgstr "несколько"
+
+#: build/blocks/form-multiple-choice/block.json
+msgctxt "block title"
+msgid "Form Multiple Choice Input"
+msgstr "Форма с полями множественного выбора"
+
+#: build/blocks/form-multiple-choice/block.json
+msgctxt "block description"
+msgid "Display a checkbox, select, radio."
+msgstr "Отобразите флажок, выпадающей список, переключатель."
+
+#: build/blocks/form-multiple-choice/block.json
+msgctxt "block keyword"
+msgid "checkbox"
+msgstr "флажок"
+
+#: build/blocks/stripe-checkout/block.json
+msgctxt "block keyword"
+msgid "payment"
+msgstr "оплата"
+
+#: build/blocks/stripe-checkout/block.json
+msgctxt "block description"
+msgid "A Stripe Checkout to sell your products on your website without any hassle. Powered by Otter."
+msgstr "Касса Stripe для продажи товаров на вашем сайте без лишних хлопот. Работает с Otter."
+
+#: build/blocks/stripe-checkout/block.json
+msgctxt "block title"
+msgid "Stripe Checkout"
+msgstr "Касса Stripe"
+
+#: build/blocks/stripe-checkout/block.json
+msgctxt "block keyword"
+msgid "checkout"
+msgstr "касса"
+
+#: build/blocks/form-nonce/block.json
+msgctxt "block title"
+msgid "CSRF Protection"
+msgstr "CSRF Защита"
+
+#: build/blocks/slider/block.json
+msgctxt "block description"
+msgid "Minimal image slider to showcase beautiful images. Powered by Otter."
+msgstr "Минималистичный слайдер для демонстрации красивых изображений. Работает с Otter."
+
+#: build/blocks/advanced-column/block.json
+msgctxt "block description"
+msgid "A single column within a Section block. Powered by Otter."
+msgstr "Один столбец в блоке «Раздел». Работает с Otter."
+
+#: build/blocks/posts-grid/block.json
+msgctxt "block description"
+msgid "Display a list of your most recent posts in a beautiful layout. Powered by Otter."
+msgstr "Отобразите список ваших последних записей в красивом формате. Работает с Otter."
+
+#: build/blocks/lottie/block.json
+msgctxt "block description"
+msgid "Add Lottie animations to your WordPress. Powered by Otter."
+msgstr "Добавьте анимацию Lottie в свой WordPress. Работает с Otter."
+
+#: build/blocks/leaflet-map/block.json
+msgctxt "block description"
+msgid "Display Open Street Maps on your website with Maps block. Powered by Otter."
+msgstr "Отобразите Open Street Maps на своем сайте с помощью блока «Карты». Работает с Otter."
+
+#: build/blocks/icon-list-item/block.json
+msgctxt "block description"
+msgid "Display an item for the icon list. Powered by Otter."
+msgstr "Отобразить элемент списка значков. Работает с Otter."
+
+#: build/blocks/icon-list/block.json
+msgctxt "block description"
+msgid "Display an icon list in a beautiful layout. Powered by Otter."
+msgstr "Отображение списка значков в красивой разметке. Работает с Otter."
+
+#: build/blocks/form/block.json
+msgctxt "block description"
+msgid "Display a form for your clients. Powered by Otter."
+msgstr "Отобразите форму для своих клиентов. Работает с Otter."
+
+#: build/blocks/countdown/block.json
+msgctxt "block description"
+msgid "Set a countdown for a date. Powered by Otter."
+msgstr "Установите обратный отсчет до даты. Работает с Otter."
+
+#: build/blocks/circle-counter/block.json
+msgctxt "block description"
+msgid "Show your progress with a beautiful Circle Counter block. Powered by Otter."
+msgstr "Покажите свой прогресс с помощью красивого блока «Круглый счётчик». Работает с Otter."
+
+#: build/blocks/button-group/block.json build/blocks/button/block.json
+msgctxt "block description"
+msgid "Prompt visitors to take action with a button group. Powered by Otter."
+msgstr "Побуждайте посетителей к действию с помощью группы кнопок. Работает с Otter."
+
+#: build/blocks/google-map/block.json
+msgctxt "block description"
+msgid "Display Google Maps on your website with Google Map block. Powered by Otter."
+msgstr "Отобразите карты Google на своем сайте с помощью блока «Карты Google». Работает с Otter."
+
+#: build/blocks/flip/block.json
+msgctxt "block description"
+msgid "Make a card with a flip effect. Powered by Otter."
+msgstr "Создайте карточку с эффектом переворачивания. Работает с Otter."
+
+#: build/blocks/progress-bar/block.json
+msgctxt "block description"
+msgid "Show your progress with a beautiful Progress Bar block. Powered by Otter."
+msgstr "Покажите свой прогресс с помощью красивого блока «Шкала прогресса». Работает с Otter."
+
+#: build/blocks/about-author/block.json
+msgctxt "block keyword"
+msgid "profile"
+msgstr "Профиль"
+
+#: build/blocks/button-group/block.json build/blocks/button/block.json
+msgctxt "block keyword"
+msgid "buttons"
+msgstr "кнопки"
+
+#: build/blocks/service/block.json
+msgctxt "block keyword"
+msgid "services"
+msgstr "сервисы"
+
+#: build/blocks/button/block.json
+msgctxt "block title"
+msgid "Button"
+msgstr "Кнопка"
+
+#: build/blocks/flip/block.json
+msgctxt "block keyword"
+msgid "container"
+msgstr "контейнер"
+
+#: build/blocks/form-multiple-choice/block.json build/blocks/form/block.json
+msgctxt "block keyword"
+msgid "form"
+msgstr "форма"
+
+#: build/blocks/posts-grid/block.json
+msgctxt "block keyword"
+msgid "posts"
+msgstr "записи"
+
+#: build/blocks/advanced-columns/block.json
+msgctxt "block keyword"
+msgid "section"
+msgstr "раздел"
+
+#: build/blocks/form-input/block.json
+msgctxt "block keyword"
+msgid "text"
+msgstr "текст"
+
+#: build/blocks/advanced-heading/block.json
+msgctxt "block keyword"
+msgid "title"
+msgstr "заголовок"
+
+#: build/blocks/icon-list-item/block.json build/blocks/icon-list/block.json
+msgctxt "block keyword"
+msgid "items"
+msgstr "элементы"
+
+#: build/blocks/slider/block.json
+msgctxt "block keyword"
+msgid "carousel"
+msgstr "карусель"
+
+#: build/blocks/posts-grid/block.json
+msgctxt "block keyword"
+msgid "grid"
+msgstr "сетка"
+
+#: build/blocks/pricing/block.json
+msgctxt "block title"
+msgid "Pricing"
+msgstr "Ценообразование"
+
+#: build/blocks/pricing/block.json
+msgctxt "block keyword"
+msgid "pricing"
+msgstr "ценообразование"
+
+#: build/blocks/pricing/block.json
+msgctxt "block keyword"
+msgid "table"
+msgstr "таблица"
+
+#: build/blocks/pricing/block.json
+msgctxt "block keyword"
+msgid "money"
+msgstr "деньги"
+
+#: build/blocks/form-multiple-choice/block.json
+msgctxt "block keyword"
+msgid "radio"
+msgstr "переключатель"
+
+#: build/blocks/progress-bar/block.json
+msgctxt "block keyword"
+msgid "bar"
+msgstr "панель"
+
+#: build/blocks/form-stripe-field/block.json build/blocks/review/block.json
+msgctxt "block keyword"
+msgid "product"
+msgstr "товар"
+
+#: build/blocks/review/block.json
+msgctxt "block keyword"
+msgid "stars"
+msgstr "звёзды"
+
+#: build/blocks/service/block.json
+msgctxt "block title"
+msgid "Service"
+msgstr "Услуга"
+
+#: build/blocks/service/block.json
+msgctxt "block keyword"
+msgid "features"
+msgstr "функции"
+
+#: build/blocks/sharing-icons/block.json
+msgctxt "block style label"
+msgid "Regular"
+msgstr "Обычный"
+
+#: build/blocks/sharing-icons/block.json
+msgctxt "block style label"
+msgid "Icons Only"
+msgstr "Только значки"
+
+#: build/blocks/slider/block.json
+msgctxt "block keyword"
+msgid "gallery"
+msgstr "галерея"
+
+#: build/blocks/tabs-item/block.json
+msgctxt "block title"
+msgid "Tab Item"
+msgstr "Элемент вкладки"
+
+#: build/blocks/tabs-item/block.json
+msgctxt "block keyword"
+msgid "tab"
+msgstr "вкладка"
+
+#: build/blocks/tabs-item/block.json
+msgctxt "block keyword"
+msgid "item"
+msgstr "элемент"
+
+#: build/blocks/tabs/block.json
+msgctxt "block title"
+msgid "Tabs"
+msgstr "Вкладки"
+
+#: build/blocks/testimonials/block.json
+msgctxt "block title"
+msgid "Testimonials"
+msgstr "Отзывы"
+
+#: build/blocks/testimonials/block.json
+msgctxt "block keyword"
+msgid "testimonials"
+msgstr "отзывы"
+
+#: build/blocks/testimonials/block.json
+msgctxt "block keyword"
+msgid "quotes"
+msgstr "цитаты"
+
+#: build/blocks/about-author/block.json
+msgctxt "block title"
+msgid "About Author"
+msgstr "Про автора"
+
+#: build/blocks/accordion-item/block.json
+msgctxt "block title"
+msgid "Accordion Item"
+msgstr "Элемент аккордеона"
+
+#: build/blocks/accordion/block.json
+msgctxt "block title"
+msgid "Accordion"
+msgstr "Аккордеон"
+
+#: build/blocks/advanced-columns/block.json
+#: build/blocks/content-generator/block.json
+msgctxt "block keyword"
+msgid "layout"
+msgstr "разметка"
+
+#: build/blocks/advanced-heading/block.json
+msgctxt "block keyword"
+msgid "heading"
+msgstr "заголовок"
+
+#: build/blocks/advanced-heading/block.json
+msgctxt "block keyword"
+msgid "advanced heading"
+msgstr "расширенный заголовок"
+
+#: build/blocks/form/block.json build/blocks/testimonials/block.json
+msgctxt "block keyword"
+msgid "business"
+msgstr "бизнес"
+
+#: build/blocks/countdown/block.json
+msgctxt "block keyword"
+msgid "time"
+msgstr "время"
+
+#: build/blocks/button-group/block.json
+msgctxt "block title"
+msgid "Button Group"
+msgstr "Группа кнопок"
+
+#: build/blocks/button-group/block.json build/blocks/button/block.json
+msgctxt "block keyword"
+msgid "button"
+msgstr "кнопка"
+
+#: build/blocks/circle-counter/block.json
+msgctxt "block keyword"
+msgid "circle"
+msgstr "круг"
+
+#: build/blocks/circle-counter/block.json build/blocks/countdown/block.json
+msgctxt "block keyword"
+msgid "counter"
+msgstr "счётчик"
+
+#: build/blocks/countdown/block.json
+msgctxt "block title"
+msgid "Countdown"
+msgstr "Обратный отсчет"
+
+#: build/blocks/countdown/block.json
+msgctxt "block keyword"
+msgid "countdown"
+msgstr "обратный отсчет"
+
+#: build/blocks/flip/block.json build/blocks/lottie/block.json
+msgctxt "block keyword"
+msgid "animation"
+msgstr "анимация"
+
+#: build/blocks/font-awesome-icons/block.json
+#: build/blocks/sharing-icons/block.json
+msgctxt "block keyword"
+msgid "icons"
+msgstr "значки"
+
+#: build/blocks/form-input/block.json
+msgctxt "block title"
+msgid "Text Field"
+msgstr "Текстовое поле"
+
+#: build/blocks/form-file/block.json build/blocks/form-input/block.json
+#: build/blocks/form-textarea/block.json
+msgctxt "block keyword"
+msgid "input"
+msgstr "ввод"
+
+#: build/blocks/form-file/block.json build/blocks/form-hidden-field/block.json
+#: build/blocks/form-nonce/block.json build/blocks/form-stripe-field/block.json
+msgctxt "block keyword"
+msgid "field"
+msgstr "поле"
+
+#: build/blocks/form-textarea/block.json
+msgctxt "block keyword"
+msgid "message"
+msgstr "сообщение"
+
+#: build/blocks/form/block.json
+msgctxt "block title"
+msgid "Form"
+msgstr "Форма"
+
+#: build/blocks/google-map/block.json
+msgctxt "block title"
+msgid "Google Maps"
+msgstr "Карты Google"
+
+#: build/blocks/google-map/block.json build/blocks/leaflet-map/block.json
+msgctxt "block keyword"
+msgid "map"
+msgstr "карта"
+
+#: build/blocks/google-map/block.json
+msgctxt "block keyword"
+msgid "google"
+msgstr "google"
+
+#: build/blocks/icon-list-item/block.json build/blocks/icon-list/block.json
+msgctxt "block keyword"
+msgid "list"
+msgstr "список"
+
+#: build/blocks/leaflet-map/block.json
+msgctxt "block title"
+msgid "Maps"
+msgstr "Карты"
+
+#: build/blocks/leaflet-map/block.json
+msgctxt "block keyword"
+msgid "location"
+msgstr "место нахождения"
+
+#: build/blocks/lottie/block.json build/blocks/tabs-item/block.json
+#: build/blocks/tabs/block.json build/blocks/timeline-item/block.json
+#: build/blocks/timeline/block.json
+msgctxt "block keyword"
+msgid "media"
+msgstr "мультимедийный элемент"
+
+#: build/blocks/lottie/block.json
+msgctxt "block keyword"
+msgid "lottie"
+msgstr "lottie"
+
+#: build/blocks/plugin-cards/block.json
+msgctxt "block keyword"
+msgid "plugin"
+msgstr "плагин"
+
+#: build/blocks/plugin-cards/block.json
+msgctxt "block keyword"
+msgid "card"
+msgstr "карточка"
+
+#: build/blocks/popup/block.json
+msgctxt "block title"
+msgid "Popup"
+msgstr "Всплывающее окно"
+
+#: build/blocks/popup/block.json
+msgctxt "block keyword"
+msgid "popup"
+msgstr "всплывающее окно"
+
+#: build/blocks/modal/block.json build/blocks/popup/block.json
+msgctxt "block keyword"
+msgid "modal"
+msgstr "модальное"
+
+#: build/blocks/modal/block.json build/blocks/popup/block.json
+msgctxt "block keyword"
+msgid "lightbox"
+msgstr "lightbox"
+
+#: build/blocks/about-author/block.json
+msgctxt "block keyword"
+msgid "author"
+msgstr "автор"
+
+#: build/blocks/accordion-item/block.json build/blocks/accordion/block.json
+msgctxt "block keyword"
+msgid "faq"
+msgstr "faq"
+
+#: build/blocks/advanced-columns/block.json
+msgctxt "block title"
+msgid "Section"
+msgstr "Раздел"
+
+#: build/blocks/advanced-column/block.json
+msgctxt "block title"
+msgid "Section Column"
+msgstr "Столбец раздела"
+
+#: build/blocks/button-group/block.json build/blocks/button/block.json
+msgctxt "block keyword"
+msgid "button group"
+msgstr "группа кнопок"
+
+#: build/blocks/form-input/block.json build/blocks/form/block.json
+msgctxt "block keyword"
+msgid "email"
+msgstr "email"
+
+#: build/blocks/posts-grid/block.json
+msgctxt "block title"
+msgid "Posts"
+msgstr "Записи"
+
+#: build/blocks/font-awesome-icons/block.json
+msgctxt "block title"
+msgid "Icon"
+msgstr "Значок"
+
+#: build/blocks/icon-list-item/block.json build/blocks/icon-list/block.json
+#: build/blocks/service/block.json
+msgctxt "block keyword"
+msgid "icon"
+msgstr "значек"
+
+#: build/blocks/sharing-icons/block.json
+msgctxt "block keyword"
+msgid "social media"
+msgstr "соцсети"
+
+#: build/blocks/testimonials/block.json
+msgctxt "block description"
+msgid "Display kudos from customers and clients and display them on your website. Powered by Otter."
+msgstr "Отобразите благодарности от покупателей и клиентов на своем сайте. Работает с Otter."
+
+#: build/blocks/service/block.json
+msgctxt "block description"
+msgid "Use this Service block to showcase services your website offers. Powered by Otter."
+msgstr "Используйте этот блок для демонстрации услуг, предлагаемых вашим сайтом. Работает с Otter."
+
+#: build/blocks/pricing/block.json
+msgctxt "block description"
+msgid "Pricing tables are a critical part in showcasing your services, prices and overall offerings. Powered by Otter."
+msgstr "Таблицы ценообразования являются важной частью демонстрации ваших услуг, цен и общих предложений. Работает с Otter."
+
+#: build/blocks/sharing-icons/block.json
+msgctxt "block description"
+msgid "Share buttons for your website visitors to share content on any social sharing service. Powered by Otter."
+msgstr "Кнопки «Поделиться», позволяющие посетителям вашего сайта делиться контентом в любой социальной сети. Работает с Otter."
+
+#: build/blocks/popup/block.json
+msgctxt "block description"
+msgid "Display your content in beautiful popup with many customization options. Powered by Otter."
+msgstr "Отобразите ваш контент в красивом всплывающем окне, у которого множество настроек. Работает с Otter."
+
+#: build/blocks/plugin-cards/block.json
+msgctxt "block description"
+msgid "Plugin Card block lets you display plugins data in your blog posts. Powered by Otter."
+msgstr "Блок «Карточка плагина» позволяет отображать данные о плагинах в записях вашего блога. Работает с Otter."
+
+#: build/blocks/font-awesome-icons/block.json
+msgctxt "block description"
+msgid "Add icons from Font Awesome or ThemeIsle Icons library to your website. Powered by Otter."
+msgstr "Добавьте на свой сайт иконки из библиотеки Font Awesome или ThemeIsle Icons. Работает с Otter."
+
+#: build/blocks/advanced-heading/block.json
+msgctxt "block description"
+msgid "Advanced Heading gives a spin to editor's Heading block with much needed customization options. Powered by Otter."
+msgstr "«Расширенный заголовок» придает блоку заголовков редактора новые черты и предоставляет столь необходимые возможности настройки. Работает с Otter."
+
+#: build/blocks/accordion-item/block.json build/blocks/accordion/block.json
+msgctxt "block description"
+msgid "Vertically collapsing accordions perfect for displaying your FAQs. Powered by Otter."
+msgstr "Вертикально сворачивающиеся аккордеоны идеально подходят для отображения ваших часто задаваемых вопросов. Работает с Otter."
+
+#: build/blocks/about-author/block.json
+msgctxt "block description"
+msgid "About Author block is the easiest way to add a author bio below your posts. Powered by Otter."
+msgstr "Блок «Об авторе» - самый простой способ добавить биографию автора под вашими записями. Работает с Otter."
+
+#: build/blocks/advanced-columns/block.json
+msgctxt "block keyword"
+msgid "advanced columns"
+msgstr "расширенные столбцы"
+
+#: build/blocks/review/block.json
+msgctxt "block title"
+msgid "Product Review"
+msgstr "Обзор товара"
+
+#: build/blocks/advanced-heading/block.json
+msgctxt "block title"
+msgid "Advanced Heading"
+msgstr "Расширенный заголовок"
+
+#: build/blocks/circle-counter/block.json
+msgctxt "block title"
+msgid "Circle Counter"
+msgstr "Круглый счётчик"
+
+#: build/blocks/flip/block.json
+msgctxt "block title"
+msgid "Flip Card"
+msgstr "Переворачивающаяся карточка"
+
+#: build/blocks/icon-list/block.json
+msgctxt "block title"
+msgid "Icon List"
+msgstr "Список значков"
+
+#: build/blocks/icon-list-item/block.json
+msgctxt "block title"
+msgid "Icon List Item"
+msgstr "Элемент списка значков"
+
+#: build/blocks/lottie/block.json
+msgctxt "block title"
+msgid "Lottie Animation"
+msgstr "Lottie-анимация"
+
+#: build/blocks/sharing-icons/block.json
+msgctxt "block title"
+msgid "Sharing Icons"
+msgstr "Значки «Поделиться»"
+
+#: build/blocks/form-stripe-field/block.json
+#: build/blocks/stripe-checkout/block.json
+msgctxt "block keyword"
+msgid "stripe"
+msgstr "stripe"
+
+#: build/blocks/flip/block.json
+msgctxt "block keyword"
+msgid "flip card"
+msgstr "переворачивающаяся карточка"
+
+#: build/blocks/sharing-icons/block.json
+msgctxt "block keyword"
+msgid "sharing"
+msgstr "делиться"
+
+#: build/blocks/review/block.json
+msgctxt "block keyword"
+msgid "review"
+msgstr "обзор"
+
+#: build/blocks/progress-bar/block.json
+msgctxt "block keyword"
+msgid "skills"
+msgstr "навыки"
+
+#: build/blocks/tabs/block.json
+msgctxt "block keyword"
+msgid "tabs"
+msgstr "вкладки"
+
+#: build/blocks/posts-grid/block.json
+msgctxt "block keyword"
+msgid "news"
+msgstr "новости"
+
+#: build/blocks/plugin-cards/block.json
+msgctxt "block title"
+msgid "Plugin Card"
+msgstr "Карточка плагина"
+
+#: build/blocks/leaflet-map/block.json
+msgctxt "block keyword"
+msgid "opeenstreetmap"
+msgstr "opeenstreetmap"
+
+#: build/blocks/google-map/block.json build/blocks/plugin-cards/block.json
+msgctxt "block keyword"
+msgid "orbitfox"
+msgstr "orbitfox"
+
+#: build/blocks/form-textarea/block.json
+msgctxt "block keyword"
+msgid "textarea"
+msgstr "текстовое поле"
+
+#: build/blocks/form-nonce/block.json
+msgctxt "block description"
+msgid "Protect the form from CSRF."
+msgstr "Защитите форму от CSRF."
+
+#: build/blocks/font-awesome-icons/block.json
+msgctxt "block keyword"
+msgid "font awesome"
+msgstr "шрифт awesome"
+
+#: build/blocks/form-file/block.json
+msgctxt "block title"
+msgid "File Field"
+msgstr "Поле файла"
+
+#: build/blocks/form-textarea/block.json
+msgctxt "block title"
+msgid "Textarea Field"
+msgstr "Поле текстовой области"
+
+#: build/blocks/form-file/block.json build/blocks/form-input/block.json
+#: build/blocks/form-textarea/block.json
+msgctxt "block description"
+msgid "Display a contact form for your clients."
+msgstr "Отобразите контактную форму для ваших клиентов."
+
+#: build/blocks/form-nonce/block.json
+msgctxt "block keyword"
+msgid "csrf"
+msgstr "csrf"
+
+#: build/blocks/form-nonce/block.json
+msgctxt "block keyword"
+msgid "protection"
+msgstr "защита"
+
+#: build/blocks/font-awesome-icons/block.json
+msgctxt "block keyword"
+msgid "dashicons"
+msgstr "dashicons"
+
+#: build/blocks/circle-counter/block.json build/blocks/progress-bar/block.json
+msgctxt "block keyword"
+msgid "progress"
+msgstr "прогресс"
+
+#: build/blocks/accordion-item/block.json build/blocks/accordion/block.json
+msgctxt "block keyword"
+msgid "collapse"
+msgstr "свернуть"
+
+#: build/blocks/accordion-item/block.json build/blocks/accordion/block.json
+msgctxt "block keyword"
+msgid "accordions"
+msgstr "аккордеоны"
+
+#: build/blocks/about-author/block.json
+msgctxt "block keyword"
+msgid "about"
+msgstr "о нас"
+
+#: build/blocks/slider/block.json
+msgctxt "block keyword"
+msgid "slider"
+msgstr "слайдер"
+
+#: build/blocks/form-multiple-choice/block.json build/blocks/tabs/block.json
+msgctxt "block keyword"
+msgid "select"
+msgstr "выпадающий список"
+
+#: build/blocks/progress-bar/block.json
+msgctxt "block title"
+msgid "Progress Bar"
+msgstr "Шкала прогресса"
+
+#: build/blocks/review/block.json
+msgctxt "block description"
+msgid "Turn your posts into smart reviews with ratings and generate leads with a performing review block. Powered by Otter."
+msgstr "Превратите свои посты в умные обзоры с рейтингами и получайте потенциальных клиентов с их помощью. Работает с Otter."
+
+#: build/blocks/advanced-columns/block.json
+msgctxt "block description"
+msgid "Add a Section block that displays content in multiple columns, then add whatever content blocks you’d like. Powered by Otter."
+msgstr "Добавьте блок «Раздел», который отображает содержимое в нескольких столбцах. Затем добавьте любые блоки содержимого, которые захотите. Работает с Otter."
+
+#: build/blocks/tabs-item/block.json build/blocks/tabs/block.json
+msgctxt "block description"
+msgid "Organize and allow navigation between groups of content with Tabs block. Powered by Otter."
+msgstr "Организуйте и обеспечьте навигацию между группами содержимого с помощью блока «Вкладки». Работает с Otter."
+
+#: inc/class-main.php:392
+msgid "Sorry, you are not allowed to upload files."
+msgstr "Извините, вам не разрешено загружать файлы."
+
+#: inc/class-main.php:401
+msgid "Sorry, this file couldn't be sanitized so for security reasons wasn't uploaded"
+msgstr "К сожалению, этот файл не удалось проверить, поэтому в целях безопасности он не был загружен"
+
+#: inc/server/class-fse-onboarding-server.php:84
+msgid "Missing templates"
+msgstr "Отсутствующие шаблоны"
+
+#: inc/plugins/class-fse-onboarding.php:51
+#: inc/plugins/class-fse-onboarding.php:52
+msgid "Theme Setup"
+msgstr "Настройка темы"
+
+#: inc/plugins/class-options-settings.php:763
+msgid "Enable FSE Onboarding Wizard."
+msgstr "Включить мастер адаптации FSE."
+
+#: inc/plugins/class-dashboard.php:414
+msgid "Export"
+msgstr "Экспорт"
+
+#: inc/render/class-posts-grid-block.php:427 build/blocks/blocks.js:26
+msgid "Prev"
+msgstr "Пред."
+
+#: inc/plugins/class-options-settings.php:742
+msgid "The disabled blocks that will no longer be shown in Inserter."
+msgstr "Отключенные блоки, которые больше не будут отображаться при вставке."
+
+#: inc/plugins/class-limited-offers.php:156
+msgid "Invalid nonce! Refresh the page and try again."
+msgstr "Недействительный сеанс. Обновите страницу и повторите попытку."
+
+#: inc/plugins/class-dashboard.php:728 build/blocks/blocks.js:4
+msgid "All"
+msgstr "Все"
+
+#: inc/plugins/class-dashboard.php:535
+msgid "No title"
+msgstr "Без заголовка"
+
+#: inc/integrations/api/form-response-data.php:397
+msgid "The payment has been processed. You will be contacted by the support team."
+msgstr "Платеж обработан. С вами свяжется служба поддержки."
+
+#: inc/plugins/class-dashboard.php:709
+msgid "Upgrade to Otter Pro"
+msgstr "Обновитесь до Otter Pro"
+
+#: inc/server/class-prompt-server.php:169
+#: inc/server/class-prompt-server.php:227
+msgid "Could not parse the response from OpenAI. Try again."
+msgstr "Не удалось разобрать ответ от OpenAI. Пробовать снова."
+
+#: inc/plugins/class-options-settings.php:680
+msgid "The OpenAI API Key required for usage of Otter AI features."
+msgstr "Ключ API OpenAI, необходимый для использования AI возможностей Otter."
+
+#: inc/plugins/class-dashboard.php:706
+msgid "Collect your Form Submissions with Otter Blocks"
+msgstr "Собирайте заявки с ваших форм с помощью блоков Otter"
+
+#: inc/plugins/class-dashboard.php:463
+msgid "Otter Blocks - Form Submissions"
+msgstr "Блоки Otter – Заявки с форм"
+
+#: inc/integrations/api/form-response-data.php:396
+msgid "The metadata submission record was not found."
+msgstr "Запись о передаче метаданных не найдена."
+
+#: inc/server/class-prompt-server.php:328
+msgid "Invalid data from central server. Please try again in"
+msgstr "Неверные данные с центрального сервера. Пожалуйста, повторите попытку через"
+
+#: inc/server/class-prompt-server.php:298
+#: inc/server/class-prompt-server.php:328
+msgid "minutes."
+msgstr "минут."
+
+#: inc/integrations/api/form-response-data.php:392
+msgid "The form dump data is missing."
+msgstr "Данные дампа формы отсутствуют."
+
+#: inc/integrations/api/form-response-data.php:390
+msgid "The request is malformed."
+msgstr "Запрос имеет неверный формат."
+
+#: inc/class-registration.php:546
+msgid "Confirming submission"
+msgstr "Подтверждение отправки"
+
+#: inc/plugins/class-dashboard.php:708
+msgid "With Otter's powerful features, you can easily store and manage form submissions - all in one place."
+msgstr "Благодаря мощным функциям Otter вы можете легко хранить и управлять заявками — всё в одном месте."
+
+#: inc/integrations/api/form-response-data.php:394
+msgid "The Stripe Checkout session was not found."
+msgstr "Сеанс кассы Stripe не найден."
+
+#: inc/integrations/api/form-response-data.php:393
+msgid "The Stripe Checkout session could not be created."
+msgstr "Не удалось создать сеанс кассы Stripe."
+
+#: inc/server/class-prompt-server.php:298
+msgid "Timeout is active. Please try again in"
+msgstr "Действует тайм-аут. Пожалуйста, повторите попытку через"
+
+#: inc/server/class-prompt-server.php:273
+msgid "Something went wrong when preparing the data for this feature."
+msgstr "Что-то пошло не так при подготовке данных для этой функции."
+
+#: inc/plugins/class-options-settings.php:692
+msgid "Usage of Otter AI features."
+msgstr "Использование функций AI Otter."
+
+#: inc/plugins/class-dashboard.php:736
+msgid "Your submission will appear here."
+msgstr "Ваша заявка появится здесь."
+
+#: inc/plugins/class-dashboard.php:730
+msgid "Unread"
+msgstr "Не прочитано"
+
+#: inc/plugins/class-dashboard.php:729
+msgid "Read"
+msgstr "Прочитано"
+
+#: inc/plugins/class-dashboard.php:718 inc/plugins/class-dashboard.php:720
+msgid "Total Entries"
+msgstr "Всего записей"
+
+#: inc/plugins/class-dashboard.php:533 inc/plugins/class-dashboard.php:741
+msgid "Submission"
+msgstr "Заявка"
+
+#: inc/plugins/class-dashboard.php:759
+msgid "Manage all Submissions"
+msgstr "Управление всеми заявками"
+
+#: inc/plugins/class-options-settings.php:607
+msgid "Otter Registered Webhooks."
+msgstr "Зарегистрированные веб-перехватчики Otter."
+
+#: inc/integrations/api/form-response-data.php:391
+msgid "The webhook could not be triggered."
+msgstr "Не удалось запустить веб-перехватчик."
+
+#: inc/integrations/api/form-response-data.php:395
+msgid "The payment was not completed."
+msgstr "Платеж не был завершен."
+
+#: inc/render/class-sharing-icons-block.php:81 build/blocks/blocks.js:33
+msgid "WhatsApp"
+msgstr "WhatsApp"
+
+#: inc/render/class-sharing-icons-block.php:95 build/blocks/blocks.js:33
+msgid "Telegram"
+msgstr "Telegram"
+
+#: inc/render/class-sharing-icons-block.php:102 build/blocks/blocks.js:33
+msgid "Mastodon"
+msgstr "Mastodon"
+
+#: inc/render/class-sharing-icons-block.php:109
+msgid "Comments"
+msgstr "Комментарии"
+
+#: inc/plugins/class-dashboard.php:79 inc/plugins/class-dashboard.php:82
+#: build/blocks/blocks.js:4
+msgid "Submissions"
+msgstr "Заявки"
+
+#: inc/integrations/api/form-response-data.php:384
+msgid "The file type is not allowed."
+msgstr "Недопустимый тип файла."
+
+#: inc/class-registration.php:543
+msgid "Too many files loaded. Maximum is: "
+msgstr "Превышено количество загрузок. Максимальное количество файлов: "
+
+#: inc/render/class-form-multiple-choice.php:40
+msgid "Select option"
+msgstr "Выберите опцию"
+
+#: inc/server/class-form-server.php:506
+msgid "Some hook is corrupting the Form processing pipeline."
+msgstr "Какой-то хук повреждает конвейер обработки форм"
+
+#: inc/integrations/class-form-email.php:153
+msgid "Files loaded to media library"
+msgstr "Файлы загружены в медиатеку"
+
+#: inc/integrations/api/form-response-data.php:389
+msgid "The file data is missing."
+msgstr "Данные файла отсутствуют."
+
+#: inc/plugins/class-dashboard.php:189
+msgid "Explore Otter PRO"
+msgstr "Исследуйте Otter PRO"
+
+#: inc/plugins/class-dashboard.php:410
+msgid "Form Submissions"
+msgstr "Заявки с форм"
+
+#: inc/plugins/class-dashboard.php:187
+msgid "Collect Your Form Submissions"
+msgstr "Собирайте заявки с ваших форм"
+
+#: inc/integrations/api/form-response-data.php:380
+msgid "The files metadata is invalid."
+msgstr "Метаданные файлов недействительны."
+
+#: inc/plugins/class-options-settings.php:469
+msgid "Form Fields used in the Form block."
+msgstr "Поля, используемые в блоке формы."
+
+#: inc/integrations/class-form-email.php:250
+msgid "Warnings: "
+msgstr "Предупреждения: "
+
+#: inc/integrations/class-form-email.php:226
+msgid "No warning found."
+msgstr "Предупреждения не найдены."
+
+#: inc/integrations/class-form-email.php:220
+msgid "Status Report "
+msgstr "Статус ответа "
+
+#: inc/integrations/class-form-email.php:218
+msgid "No error found."
+msgstr "Ошибок не обнаружено."
+
+#: inc/integrations/api/form-response-data.php:388
+msgid "The email from Autoresponder could not be sent."
+msgstr "Не удалось отправить письмо от автоответчика."
+
+#: inc/integrations/api/form-response-data.php:387
+msgid "The email field is missing from the Form Block with Autoresponder activated."
+msgstr "Поле эл. почты отсутствует в блоке формы с включенным автоответчиком."
+
+#: inc/integrations/api/form-response-data.php:386
+msgid "The file size exceed the limit."
+msgstr "Размер файла превышает лимит."
+
+#: inc/integrations/api/form-response-data.php:385
+msgid "The number of files is too big."
+msgstr "Количество файлов слишком велико."
+
+#: inc/integrations/api/form-response-data.php:383
+msgid "The file type is not allowed by host provider."
+msgstr "Этот тип файла не разрешен поставщиком хостинга."
+
+#: inc/integrations/api/form-response-data.php:381
+msgid "The files could not be uploaded."
+msgstr "Не удалось загрузить файлы."
+
+#: inc/integrations/api/form-response-data.php:376
+msgid "The user with this email was already registered."
+msgstr "Пользователь с этим адресом электронной почты уже зарегистрирован."
+
+#: inc/integrations/api/form-response-data.php:365
+msgid "The File Field is not registered. Please check the field in Editor."
+msgstr "Поле «Файл» не зарегистрировано. Пожалуйста, проверьте это поле в редакторе."
+
+#: inc/plugins/class-dashboard.php:188
+msgid "Store, manage and analyze your form submissions with ease – all in one place. With Otter powerful features, managing submissions has never been simpler."
+msgstr "С легкостью храните, управляйте и анализируйте заявки — всё в одном месте. Благодаря мощным функциям Otter управление заявками еще никогда не было таким простым."
+
+#: inc/class-registration.php:544
+msgid "File size is to big. The limit is: "
+msgstr "Размер файла слишком велик. Предел: "
+
+#: inc/class-registration.php:545
+msgid "Invalid files type. The submitted files could not be processed."
+msgstr "Недопустимый тип файлов. Отправленные файлы не удалось обработать."
+
+#: inc/integrations/api/form-response-data.php:382
+msgid "The Otter From Block service credentials are invalid."
+msgstr "Учетные данные службы блока форм Otter недействительны."
+
+#: inc/server/class-form-server.php:309 inc/server/class-form-server.php:327
+msgid "The form data class is not valid after performing provider actions! Some hook is corrupting the data."
+msgstr "Класс данных формы недействителен после выполнения действий поставщика! Какой-то перехватчик повреждает данные."
+
+#: inc/render/class-stripe-checkout-block.php:199
+msgid "Error message: "
+msgstr "Сообщение об ошибке: "
+
+#: inc/render/class-stripe-checkout-block.php:156
+msgid "An error occurred! Could not retrieve the price of the product!"
+msgstr "Произошла ошибка! Не удалось получить цену товара!"
+
+#: inc/render/class-stripe-checkout-block.php:140
+msgid "An error occurred! Could not retrieve product information!"
+msgstr "Произошла ошибка! Не удалось получить информацию о товаре!"
+
+#: inc/integrations/api/form-response-data.php:379
+msgid "Failed to validate the data. Please wait 5 seconds and try again."
+msgstr "Не удалось проверить данные. Пожалуйста, подождите 5 секунд и повторите попытку."
+
+#: inc/plugins/class-options-settings.php:123 build/dashboard/index.js:7
+msgid "Easily differentiate between dynamic and normal text in the editor."
+msgstr "Легко различайте динамический и обычный текст в редакторе."
+
+#: inc/integrations/api/form-response-data.php:369
+msgid "The 3rd-party service is not registered."
+msgstr "Сторонний сервис не зарегистрирован."
+
+#: inc/integrations/api/form-response-data.php:367
+msgid "Email could not be send. Might be an error with the service."
+msgstr "Не удалось отправить эл. письмо. Возможно, произошла ошибка в работе сервиса."
+
+#: inc/integrations/api/form-response-data.php:366
+msgid "Form ID is invalid."
+msgstr "ID формы недействителен."
+
+#: inc/integrations/api/form-response-data.php:364
+msgid "Missing CSRF protection in form."
+msgstr "В форме отсутствует защита CSRF."
+
+#: inc/integrations/api/form-response-data.php:363
+msgid "Missing email field in form."
+msgstr "В форме отсутствует поле эл. почты."
+
+#: inc/integrations/api/form-response-data.php:362
+msgid "Captcha token is missing."
+msgstr "Токен Captcha отсутствует."
+
+#: inc/integrations/api/form-response-data.php:361
+msgid "Essential data is missing: invalid Form id or protection."
+msgstr "Отсутствуют важные данные: неверный идентификатор формы или защита."
+
+#: inc/integrations/api/form-response-data.php:375
+msgid "The API key format is invalid."
+msgstr "Неверный формат ключа API."
+
+#: inc/integrations/api/form-response-data.php:373
+msgid "API Key is missing."
+msgstr "Ключ API отсутствует."
+
+#: inc/integrations/api/form-response-data.php:372
+msgid "API Key is missing from settings."
+msgstr "Ключ API отсутствует в настройках."
+
+#: inc/integrations/api/form-response-data.php:374
+msgid "The reCaptcha token is invalid."
+msgstr "Токен reCaptcha недействителен."
+
+#: inc/integrations/api/form-response-data.php:378
+msgid "The email was already registered."
+msgstr "Эл. почта уже зарегистрирована."
+
+#: inc/integrations/api/form-response-data.php:368
+msgid "Invalid service authentication credentials."
+msgstr "Неверные учетные данные для аутентификации службы."
+
+#: inc/integrations/api/form-response-data.php:377
+msgid "The email address is invalid."
+msgstr "Неверный адрес эл. почты"
+
+#: inc/integrations/api/form-response-data.php:370
+msgid "Error received from service when subscribing the user."
+msgstr "Ошибка, полученная от сервиса при подписке пользователя."
+
+#: inc/render/class-stripe-checkout-block.php:127 build/blocks/blocks.js:33
+msgid "Your payment was unsuccessful. If you have any questions, please email orders@example.com."
+msgstr "Ваш платеж завершен неудачно. Если у вас есть какие-либо вопросы, пожалуйста, напишите по адресу orders@example.com."
+
+#: inc/render/class-posts-grid-block.php:184
+msgid "Updated on"
+msgstr "Обновлено"
+
+#: inc/server/class-stripe-server.php:76
+msgid "ID of the Product."
+msgstr "Идентификатор продукта."
+
+#: inc/plugins/class-options-settings.php:248
+msgid "Stripe API key for the Stripe Block."
+msgstr "Ключ API Stripe для блока Stripe."
+
+#: inc/render/class-stripe-checkout-block.php:123 build/blocks/blocks.js:33
+msgid "Your payment was successful. If you have any questions, please email orders@example.com."
+msgstr "Ваш платеж прошел успешно. Если у вас есть какие-либо вопросы, отправьте электронное письмо по адресу orders@example.com."
+
+#: inc/render/class-stripe-checkout-block.php:181 build/blocks/blocks.js:33
+msgid "Checkout"
+msgstr "Касса"
+
+#: inc/patterns/gallery.php:9
+msgid "Gallery"
+msgstr "Галерея"
+
+#: inc/patterns/testimonial-with-inline-image.php:9
+msgid "Testimonial with Inline Image"
+msgstr "Отзыв со встроенным изображением"
+
+#: inc/patterns/contact-details-and-form.php:9
+msgid "Contact Details and Form"
+msgstr "Контактные данные и форма"
+
+#: inc/patterns/author-box.php:9
+msgid "Author Box"
+msgstr "Блок автора"
+
+#: inc/patterns/team-members.php:9
+msgid "Team Members"
+msgstr "Члены команды"
+
+#: inc/render/class-posts-grid-block.php:191
+msgid "Posted on"
+msgstr "Опубликовано в"
+
+#: inc/patterns/icons-and-text.php:9
+msgid "Icons and Text"
+msgstr "Значки и текст"
+
+#: inc/patterns/columns-with-icon-features.php:9
+msgid "Columns with Icon Features"
+msgstr "Столбцы со значками функций"
+
+#: inc/patterns/centered-testimonial-with-star-icons.php:9
+msgid "Centered Testimonial with Star Icons"
+msgstr "Отзыв по центру со значками звезд"
+
+#: inc/patterns/border-icon-features.php:9
+msgid "Border Icon Features"
+msgstr "Рамка иконок функций"
+
+#: inc/patterns/columns-with-flip-boxes.php:9
+msgid "Columns with Flip Boxes"
+msgstr "Колонки с переворачивающимися контейнерами"
+
+#: inc/patterns/image-and-text-over-dark-background.php:9
+msgid "Image and Text over Dark Background"
+msgstr "Изображение и текст на темном фоне"
+
+#: inc/patterns/service-boxes-on-dark-background.php:9
+msgid "Service Boxes on Dark Background"
+msgstr "Блоки услуг на темном фоне"
+
+#: inc/patterns/large-quote.php:9
+msgid "Large Quote"
+msgstr "Большая цитата"
+
+#: inc/patterns/border-pricing-table.php:9
+msgid "Border Pricing Table"
+msgstr "Рамка таблицы цен"
+
+#: inc/patterns/content-with-progress-bars.php:9
+msgid "Content with Progress Bars"
+msgstr "Содержимое с индикаторами прогресса"
+
+#: inc/patterns/columns-with-image-features.php:9
+msgid "Columns with Image Features"
+msgstr "Столбцы с изображениями функций"
+
+#: inc/patterns/cover-boxes-with-title-and-button.php:9
+msgid "Cover Boxes with Title and Button"
+msgstr "Обложки блока с заголовком и кнопкой"
+
+#: inc/patterns/text-with-image-columns.php:9
+msgid "Text with Image Columns"
+msgstr "Колонки текста с изображениями"
+
+#: inc/patterns/testimonial-columns.php:9
+msgid "Testimonial Columns"
+msgstr "Колонки отзывов"
+
+#: inc/patterns/hero-area-with-button.php:9
+msgid "Hero Area with Button"
+msgstr "Область героя с кнопкой"
+
+#: inc/plugins/class-options-settings.php:156
+msgid "Use 0.5 Scale for Review Block."
+msgstr "Использовать масштаб 0,5 для блока «Обзор товара»."
+
+#. translators: %1$g is the overall rating, %2$g is the maximum rating.
+#: inc/render/class-review-block.php:105 inc/render/class-review-block.php:157
+msgid "%1$g out of %2$g"
+msgstr "%1$g из %2$g"
+
+#: inc/server/class-dashboard-server.php:150
+msgid "Optimized code deleted."
+msgstr "Оптимизированный код удален."
+
+#: inc/plugins/class-options-settings.php:57
+msgid "Show Editor Onboarding."
+msgstr "Показать редактор для первичного ознакомления"
+
+#: inc/plugins/class-options-settings.php:145
+msgid "Enable Rich Schema in Product Review Block."
+msgstr "Включить расширенную схему в блоке «Обзор товара»."
+
+#: inc/plugins/class-options-settings.php:134
+msgid "Optimize Animations CSS."
+msgstr "Оптимизировать CSS анимации."
+
+#: inc/server/class-dynamic-content-server.php:96
+msgid "ID of the Post that the image belongs."
+msgstr "ID записи, к которой принадлежит изображение."
+
+#: inc/server/class-dynamic-content-server.php:74
+msgid "Unique ID."
+msgstr "Уникальный ID."
+
+#: inc/server/class-dynamic-content-server.php:62
+msgid "Image Type."
+msgstr "Тип изображения."
+
+#: inc/server/class-dynamic-content-server.php:118
+msgid "Meta key."
+msgstr "Ключ мета."
+
+#: inc/server/class-dynamic-content-server.php:107
+msgid "Fallback image."
+msgstr "Резервное изображение."
+
+#: inc/server/class-dynamic-content-server.php:85
+msgid "ID of the post being edited."
+msgstr "ID редактируемой записи."
+
+#: inc/class-pro.php:250 build/dashboard/index.js:7
+msgid "Priority Support"
+msgstr "Приоритетная поддержка"
+
+#: inc/class-pro.php:336
+msgid "Dismiss notice"
+msgstr "Отклонить уведомление"
+
+#: inc/class-pro.php:372
+msgid "Monthly"
+msgstr "Ежемесячно"
+
+#: inc/class-pro.php:323
+msgid "You're using Otter!"
+msgstr "Вы используете Otter!"
+
+#: inc/class-pro.php:335 inc/plugins/class-limited-offers.php:215
+#: build/blocks/blocks.js:4
+msgid "Learn more"
+msgstr "Подробнее"
+
+#: inc/class-pro.php:247
+msgid "WooCommerce Block Builder"
+msgstr "Конструктор блоков WooCommerce"
+
+#: inc/class-pro.php:248
+msgid "Add to Cart Block"
+msgstr "Блок «‎Добавить в корзину»"
+
+#: inc/class-pro.php:249
+msgid "Review Comparison  Block"
+msgstr "Блок сравнительной таблицы"
+
+#: inc/class-pro.php:324
+msgid "Enhance your WordPress site building with Otter Pro."
+msgstr "Улучшите разработку своего сайта WordPress с помощью Otter Pro."
+
+#: inc/class-pro.php:254
+msgid "Discover Otter Pro"
+msgstr "Открыть для себя Otter Pro"
+
+#: inc/integrations/class-form-email.php:248
+msgid "Error: "
+msgstr "Ошибка: "
+
+#: inc/server/class-form-server.php:826
+msgid "Marketing Integration is active, but there is no Email field in the form. Please check your Form block settings in the page."
+msgstr "Маркетинговая интеграция активна, но в форме нет поля эл. почты. Пожалуйста, проверьте настройки блока формы на странице."
+
+#: inc/server/class-form-server.php:792
+msgid "Contact list ID is missing!"
+msgstr "Идентификатор списка контактов отсутствует!"
+
+#: inc/server/class-form-server.php:695
+msgid "Test email for Otter Form from "
+msgstr "Тестовое эл. письмо с формы Otter от "
+
+#: inc/server/class-form-server.php:262
+msgid "The email service provider was not registered!"
+msgstr "Поставщик услуг электронной почты не зарегистрирован!"
+
+#: inc/integrations/class-form-email.php:287
+msgid "This a test email. If you receive this email, your SMTP set-up is working for sending emails via Form Block."
+msgstr "Это тестовое эл. письмо. Если вы получите это письмо, значит, ваша настройка SMTP готова для отправки писем через Form Block."
+
+#: inc/integrations/class-form-email.php:252
+msgid "Please check your Form credential from the email provider."
+msgstr "Пожалуйста, проверьте свои учетные данные формы у поставщика услуг электронной почты."
+
+#: inc/class-registration.php:539
+msgid "The email address is invalid!"
+msgstr "Неверный адрес эл. почты"
+
+#: inc/server/class-form-server.php:675
+msgid "An error with the Form blocks has occurred on  "
+msgstr "Произошла ошибка с блоками формы на  "
+
+#. Plugin Name of the plugin
+#: otter-blocks.php build/dashboard/index.js:1
+msgid "Otter – Page Builder Blocks & Extensions for Gutenberg"
+msgstr "Otter – блоки для конструктора страниц и расширения для Gutenberg"
+
+#: inc/plugins/class-options-settings.php:574
+msgid "Notifications Logs."
+msgstr "Журналы уведомлений."
+
+#: inc/class-pro.php:266
+msgid "Activate License"
+msgstr "Активировать лицензию"
+
+#: inc/class-pro.php:287
+msgid "Update"
+msgstr "Обновление"
+
+#: inc/class-pro.php:280
+msgid "You need to make sure Neve & Neve Pro Addons are updated to the latest version to continue using Block Editor Booster."
+msgstr "Чтобы продолжить использование Block Editor Booster, вам необходимо убедиться, что дополнения Neve и Neve Pro обновлены до последней версии."
+
+#: inc/class-main.php:587 inc/class-pro.php:423
+msgid "Get Otter Pro"
+msgstr "Получить Otter Pro"
+
+#: inc/class-pro.php:263
+msgid "Unlock the full power of WooCommerce Builder by activating Otter Pro license."
+msgstr "Раскройте всю мощь WooCommerce Builder, активировав лицензию Otter Pro."
+
+#: inc/class-pro.php:244
+msgid "Unlock the full power of WooCommerce Builder with Otter Pro:"
+msgstr "Раскройте всю мощь WooCommerce Builder с помощью Otter Pro:"
+
+#: inc/class-blocks-animation.php:326 build/blocks/blocks.js:4
+#: build/dashboard/index.js:7 build/dashboard/index.js:9
+msgid "Learn More"
+msgstr "Подробнее"
+
+#: inc/class-pro.php:279
+msgid "Block Editor Booster"
+msgstr "Ускоритель Редактора блоков"
+
+#: inc/class-registration.php:476 build/blocks/blocks.js:4
+msgid "Second"
+msgstr "Второй"
+
+#: inc/class-registration.php:480 build/blocks/blocks.js:4
+msgid "Hour"
+msgstr "Час"
+
+#: inc/class-registration.php:478 build/blocks/blocks.js:4
+msgid "Minute"
+msgstr "Минута"
+
+#: inc/class-registration.php:477 build/blocks/blocks.js:4
+msgid "Seconds"
+msgstr "Секунды"
+
+#: inc/class-registration.php:483 build/blocks/blocks.js:4
+msgid "Days"
+msgstr "Дни"
+
+#: inc/plugins/class-options-settings.php:90 build/dashboard/index.js:7
+msgid "Blocks Conditions module allows to hide/display blocks to your users based on selected conditions."
+msgstr "Модуль условий видимости позволяет скрывать/отображать блоки вашим пользователям на основе выбранных условий."
+
+#: inc/render/class-posts-grid-block.php:217
+msgid "comment"
+msgstr "комментарий"
+
+#: inc/render/class-posts-grid-block.php:217 build/blocks/blocks.js:26
+msgid "comments"
+msgstr "комментарии"
+
+#: inc/render/class-posts-grid-block.php:256
+msgid "Read More"
+msgstr "Читайте далее"
+
+#: inc/class-pro.php:210 inc/class-registration.php:130
+msgid "WooCommerce Builder by Otter"
+msgstr "Конструктор WooCommerce от Otter"
+
+#: inc/patterns/countdown.php:9 build/blocks/blocks.js:4
+#: build/dashboard/index.js:9
+msgid "Countdown"
+msgstr "Обратный отсчет"
+
+#: inc/class-blocks-animation.php:286 build/blocks/blocks.js:4
+#: build/dashboard/index.js:1
+msgid "Done"
+msgstr "Готово"
+
+#: inc/patterns/form-1.php:9 inc/patterns/form-2.php:9
+#: inc/patterns/form-3.php:9 inc/patterns/form-4.php:9 build/blocks/blocks.js:4
+#: build/dashboard/index.js:9
+msgid "Form"
+msgstr "Форма"
+
+#: inc/class-registration.php:479 build/blocks/blocks.js:4
+msgid "Minutes"
+msgstr "Минуты"
+
+#: inc/class-registration.php:482 build/blocks/blocks.js:4
+msgid "Day"
+msgstr "День"
+
+#: inc/plugins/class-options-settings.php:272
+msgid "Google reCaptcha Secret API key for the Form Block."
+msgstr "Google reCaptcha Секретный API ключ для Form Block."
+
+#: inc/plugins/class-dashboard.php:744 build/blocks/blocks.js:4
+msgid "Date"
+msgstr "Дата"
+
+#: inc/class-registration.php:481 build/blocks/blocks.js:4
+msgid "Hours"
+msgstr "Часы"
+
+#: inc/class-registration.php:538
+msgid "Please check the captcha."
+msgstr "Пожалуйста, проверьте Captcha."
+
+#: inc/class-blocks-animation.php:304 build/blocks/blocks.js:1
+msgid "Visibility Conditions"
+msgstr "Условия видимости"
+
+#: inc/integrations/providers/class-mailchimp.php:223
+#: inc/integrations/providers/class-sendinblue.php:191
+msgid "API Key is missing!"
+msgstr "API-ключ отсутствует!"
+
+#: inc/class-registration.php:541
+msgid "Error. Something is wrong with the server! Try again later."
+msgstr "Ошибка. Что-то не так с сервером! Попробуйте позже."
+
+#: inc/plugins/class-options-settings.php:260
+msgid "Google reCaptcha Site API key for the Form Block."
+msgstr "API-ключ сайта Google reCaptcha для блока форм."
+
+#: inc/class-registration.php:537
+msgid "Captcha is not loaded. Please check your browser plugins to allow the Google reCaptcha."
+msgstr "Капча не загружается. Пожалуйста, проверьте плагины вашего браузера, чтобы разрешить Google reCaptcha."
+
+#: inc/render/class-sharing-icons-block.php:88 build/blocks/blocks.js:4
+#: build/blocks/blocks.js:10 build/blocks/blocks.js:33
+#: build/onboarding/index.js:2
+msgid "Email"
+msgstr "Эл. почта"
+
+#: inc/class-registration.php:540
+msgid "The email was already registered!"
+msgstr "Эл. почта уже зарегистрирована!"
+
+#: inc/integrations/class-form-email.php:89
+#: inc/integrations/class-form-email.php:196
+msgid "Mail From: "
+msgstr "Почта от: "
+
+#: inc/plugins/class-options-settings.php:308
+msgid "Email used in the Form block."
+msgstr "Адрес эл. почты, используемый в блоке «Форма»."
+
+#: inc/integrations/class-form-email.php:170
+msgid "You received this email because your email address is set in the content form settings on "
+msgstr "Вы получили это письмо, потому что ваш адрес электронной почты указан в настройках содержимого формы на "
+
+#: inc/integrations/providers/class-mailchimp.php:232
+msgid "Invalid API Key format!"
+msgstr "Неверный формат ключа API!"
+
+#: inc/integrations/class-form-email.php:107
+msgid "Content Form submission from "
+msgstr "Содержимое заявки с формы с "
+
+#: inc/class-registration.php:536
+msgid "Form submission from"
+msgstr "Заявка с формы с"
+
+#: inc/server/class-form-server.php:424
+msgid "A new form submission on "
+msgstr "Новая заявка с формы на "
+
+#: inc/integrations/api/form-response-data.php:371
+msgid "Provider settings are missing."
+msgstr "Настройки поставщика отсутствуют"
+
+#: inc/server/class-form-server.php:735
+msgid "Invalid request! Provider is missing."
+msgstr "Неверный запрос! Поставщик отсутствует."
+
+#: inc/integrations/providers/class-mailchimp.php:97
+#: inc/integrations/providers/class-sendinblue.php:78
+msgid "Provider settings are invalid! Please check your API Key and the contact list in the form."
+msgstr "Настройки поставщика неверны! Пожалуйста, проверьте свой API-ключ и список контактов в форме."
+
+#: inc/plugins/class-dashboard.php:93 inc/plugins/class-dashboard.php:94
+#: build/blocks/blocks.js:1 build/dashboard/index.js:1
+msgid "Blocks"
+msgstr "Блоки"
+
+#: inc/class-patterns.php:40 inc/patterns/call-to-action-1.php:9
+#: inc/patterns/call-to-action-2.php:9 inc/patterns/call-to-action-3.php:9
+#: inc/patterns/call-to-action-4.php:9 inc/patterns/call-to-action-5.php:9
+#: inc/patterns/call-to-action-6.php:9 inc/patterns/call-to-action-7.php:9
+msgid "Call to Action"
+msgstr "Призыв к действию"
+
+#: inc/class-patterns.php:47 inc/patterns/pricing.php:9
+#: build/blocks/blocks.js:36
+msgid "Pricing"
+msgstr "Цены"
+
+#: inc/class-patterns.php:45
+msgid "Team"
+msgstr "Команда"
+
+#: inc/class-patterns.php:49 build/blocks/blocks.js:36
+msgid "Testimonials"
+msgstr "Отзывы"
+
+#: inc/plugins/class-dashboard.php:83 build/blocks/blocks.js:4
+#: build/blocks/blocks.js:26 build/dashboard/index.js:7
+#: build/dashboard/index.js:9
+msgid "Pro"
+msgstr "Pro"
+
+#: inc/render/amp/class-circle-counter-block.php:43
+#: inc/render/amp/class-circle-counter-block.php:60
+msgid "Skill"
+msgstr "Навык"
+
+#: inc/css/class-css-handler.php:140
+msgid "ID of the Post."
+msgstr "ID записи."
+
+#: inc/css/class-css-handler.php:228 inc/css/class-css-handler.php:315
+msgid "CSS updated."
+msgstr "Обновлен CSS."
+
+#: inc/plugins/class-options-settings.php:296
+msgid "Global defaults for Gutenberg Blocks."
+msgstr "Глобальные настройки блоков Gutenberg."
+
+#: inc/css/class-css-handler.php:164
+msgid "ID of the Reusable Block."
+msgstr "ID многоразового блока."
+
+#: inc/patterns/content-with-features.php:9
+msgid "Content with Features"
+msgstr "Содержимое с функциями"
+
+#: inc/plugins/class-options-settings.php:188
+msgid "Anonymous data tracking object."
+msgstr "Объект, собирающий обезличенные данные."
+
+#: inc/server/class-dashboard-server.php:150
+msgid "Sorry, the directory doesn't exist."
+msgstr "Извините, каталог не существует."
+
+#: inc/server/class-dashboard-server.php:166
+msgid "Styles deleted."
+msgstr "Стили удалены."
+
+#: inc/server/class-dashboard-server.php:131
+msgid "Sorry, the filesystem isn't writeable."
+msgstr "Извините, запись запрещена файловой системой."
+
+#: inc/plugins/class-options-settings.php:178 build/dashboard/index.js:7
+msgid "Become a contributor by opting in to our anonymous data tracking. We guarantee no sensitive data is collected."
+msgstr "Станьте участником, согласившись на анонимное отслеживание данных. Мы гарантируем, что конфиденциальные данные не собираются."
+
+#: inc/plugins/class-dashboard.php:71 inc/plugins/class-dashboard.php:72
+#: otter-blocks.php:82 build/blocks/blocks.js:1 build/blocks/blocks.js:4
+#: build/blocks/blocks.js:10 build/blocks/blocks.js:17
+#: build/blocks/blocks.js:20 build/blocks/blocks.js:26
+#: build/blocks/blocks.js:28 build/blocks/blocks.js:29
+#: build/blocks/blocks.js:33 build/blocks/blocks.js:36
+msgid "Settings"
+msgstr "Настройки"
+
+#: inc/plugins/class-options-settings.php:79 build/dashboard/index.js:7
+msgid "Blocks Animation module allows to add CSS animations to each block in Block Editor."
+msgstr "Модуль анимации блоков позволяет добавлять CSS-анимации любому блоку в редакторе блоков."
+
+#: inc/plugins/class-options-settings.php:46
+msgid "Redirect on new install."
+msgstr "Перенаправление на новую установку."
+
+#: inc/render/class-posts-grid-block.php:428 build/blocks/blocks.js:26
+msgid "Next"
+msgstr "Далее"
+
+#: inc/plugins/class-options-settings.php:284
+msgid "Make Section block your default block for Pages?"
+msgstr "Сделать блок «Раздел» вашим блоком по умолчанию для страниц?"
+
+#: inc/plugins/class-options-settings.php:68 build/dashboard/index.js:7
+msgid "Custom CSS module allows to add custom CSS to each block in Block Editor."
+msgstr "Модуль произвольного CSS позволяет добавлять пользовательские стили каждому блоку в Редакторе блоков."
+
+#: inc/class-registration.php:126
+msgid "Otter"
+msgstr "Otter"
+
+#. Author URI of the plugin
+#: otter-blocks.php
+msgid "https://themeisle.com"
+msgstr "https://themeisle.com"
+
+#. Author of the plugin
+#: otter-blocks.php
+msgid "ThemeIsle"
+msgstr "ThemeIsle"
+
+#. Plugin URI of the plugin
+#: otter-blocks.php
+msgid "https://themeisle.com/plugins/otter-blocks"
+msgstr "https://themeisle.com/plugins/otter-blocks"
+
+#: inc/render/class-sharing-icons-block.php:39 build/blocks/blocks.js:33
+msgid "Facebook"
+msgstr "Facebook"
+
+#: inc/render/class-sharing-icons-block.php:74 build/blocks/blocks.js:33
+msgid "Reddit"
+msgstr "Reddit"
+
+#: inc/render/class-sharing-icons-block.php:67 build/blocks/blocks.js:33
+msgid "Tumblr"
+msgstr "Tumblr"
+
+#: inc/render/class-plugin-card-block.php:77
+msgid "version"
+msgstr "версии"
+
+#: inc/render/class-plugin-card-block.php:69
+msgid "Plugin Stats"
+msgstr "Плагины Статистики"
+
+#: inc/render/class-plugin-card-block.php:73
+msgid "active installs"
+msgstr "активные установки"
+
+#: inc/render/class-plugin-card-block.php:81
+msgid "tested up to"
+msgstr "Протестировать до"
+
+#: inc/render/class-plugin-card-block.php:108
+msgid "Something went wrong"
+msgstr "Что-то пошло не так"
+
+#: inc/render/class-posts-grid-block.php:203
+msgid "by"
+msgstr "от"
+
+#: inc/render/class-plugin-card-block.php:87
+msgid "Download"
+msgstr "Скачать"
+
+#: inc/render/class-sharing-icons-block.php:60 build/blocks/blocks.js:33
+msgid "Pinterest"
+msgstr "Pinterest"
+
+#: inc/class-registration.php:1146 inc/class-registration.php:1158
+#: inc/css/class-block-frontend.php:703 inc/css/class-block-frontend.php:715
+#: inc/css/class-css-handler.php:614 inc/css/class-css-handler.php:626
+#: inc/integrations/class-form-email.php:309
+#: inc/integrations/class-form-email.php:321
+#: inc/integrations/class-form-providers.php:141
+#: inc/integrations/class-form-providers.php:153
+#: inc/plugins/class-block-conditions.php:373
+#: inc/plugins/class-block-conditions.php:385
+#: inc/plugins/class-dashboard.php:832 inc/plugins/class-dashboard.php:844
+#: inc/plugins/class-dynamic-content.php:809
+#: inc/plugins/class-dynamic-content.php:821
+#: inc/plugins/class-fse-onboarding.php:302
+#: inc/plugins/class-fse-onboarding.php:314
+#: inc/plugins/class-options-settings.php:956
+#: inc/plugins/class-options-settings.php:968
+#: inc/render/amp/class-circle-counter-block.php:103
+#: inc/render/amp/class-circle-counter-block.php:115
+#: inc/render/amp/class-lottie.block.php:85
+#: inc/render/amp/class-lottie.block.php:97
+#: inc/render/amp/class-slider-block.php:87
+#: inc/render/amp/class-slider-block.php:99
+#: inc/render/class-masonry-variant.php:105
+#: inc/render/class-masonry-variant.php:117
+#: inc/server/class-dashboard-server.php:229
+#: inc/server/class-dashboard-server.php:241
+#: inc/server/class-dynamic-content-server.php:285
+#: inc/server/class-dynamic-content-server.php:297
+#: inc/server/class-form-server.php:1153 inc/server/class-form-server.php:1165
+#: inc/server/class-fse-onboarding-server.php:128
+#: inc/server/class-fse-onboarding-server.php:140
+#: inc/server/class-prompt-server.php:470
+#: inc/server/class-prompt-server.php:482
+#: inc/server/class-stripe-server.php:157
+#: inc/server/class-stripe-server.php:169
+msgid "Cheatin&#8217; huh?"
+msgstr "Хакер, что ли?"
+
+#: inc/render/class-sharing-icons-block.php:53 build/blocks/blocks.js:33
+msgid "Linkedin"
+msgstr "Linkedin"
+
+#: inc/class-patterns.php:38 inc/plugins/class-dashboard.php:54
+#: inc/plugins/class-dashboard.php:55 inc/plugins/class-dashboard.php:407
+#: build/dashboard/index.js:9
+msgid "Otter Blocks"
+msgstr "Блоки Otter"
+
+#: inc/plugins/class-options-settings.php:236
+msgid "Google Map API key for the Google Maps Gutenberg Block."
+msgstr "Ключ API карт Google для Gutenberg блока «Карты Google»."
+
+#. Description of the plugin
+#: otter-blocks.php
+msgid "Create beautiful and attracting posts, pages, and landing pages with Otter – Page Builder Blocks & Extensions for Gutenberg. Otter comes with dozens of Gutenberg blocks that are all you need to build beautiful pages."
+msgstr "Создавайте с Otter красиво оформленные записи, страницы и лендинги. В наборе Otter — десятки блоков Gutenberg, среди которых есть всё для создания красивых страниц."

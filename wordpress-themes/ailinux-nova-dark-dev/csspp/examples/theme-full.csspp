@@ -1,0 +1,540 @@
+/**
+ * CSS++ Full Theme Enhancement
+ *
+ * Systematische Erweiterung des Ailinux Nova Dark Themes mit CSS++ Features
+ * Macht das Dev-Theme deutlich erkennbar und visuell beeindruckender
+ */
+
+@import "modules/geometry";
+@import "modules/lighting";
+@import "modules/texture";
+@import "modules/audio";
+
+/* ============================================
+   GLOBAL ENHANCEMENTS
+   ============================================ */
+
+/**
+ * Body mit subtiler Atmosphäre
+ */
+body {
+  /* Sehr subtiler Fog-Effekt für Tiefe */
+  fog-density: 0.02;
+  fog-color: var(--bg-0);
+
+  /* Ambient Light */
+  ambient-light: 0.5;
+}
+
+/* ============================================
+   BUTTONS - PRIMARY
+   Alle primären Buttons bekommen Glow + Audio
+   ============================================ */
+
+.btn,
+.wp-block-button__link,
+button[type="submit"] {
+  /* CSS++ Features */
+  shape: rounded-rect(var(--radius-sm));
+  shadow-type: soft;
+  glow-color: var(--accent-blue);
+  glow-intensity: 0.2;
+
+  /* Audio */
+  hover-sfx: chime(440Hz, decay: 0.2s);
+  click-sfx: click(soft);
+}
+
+.btn:hover,
+.wp-block-button__link:hover,
+button[type="submit"]:hover {
+  glow-intensity: 0.5;
+  depth: 0.15rem;
+}
+
+.btn:active {
+  depth: 0.05rem;
+}
+
+/* ============================================
+   BUTTONS - SECONDARY
+   ============================================ */
+
+.btn-secondary {
+  shadow-type: contact;
+  glow-color: var(--accent-blue);
+  glow-intensity: 0.1;
+
+  hover-sfx: chime(523Hz, decay: 0.15s);
+  click-sfx: click(soft);
+}
+
+.btn-secondary:hover {
+  glow-intensity: 0.3;
+}
+
+/* ============================================
+   CARDS
+   Alle Cards mit Tiefe und reaktivem Schatten
+   ============================================ */
+
+.post-card,
+.widget,
+article.card {
+  shape: rounded-rect(var(--radius-lg));
+  depth: 0.2rem;
+  shadow-type: soft;
+  light-intensity: 0.6;
+}
+
+.post-card:hover,
+article.card:hover {
+  depth: 0.4rem;
+  light-intensity: 0.8;
+
+  /* Subtiler Hover-Sound */
+  hover-sfx: whoosh(soft, 0.1s);
+}
+
+/* ============================================
+   HERO SECTION
+   Beeindruckender Hero mit Glow
+   ============================================ */
+
+.hero,
+.content-hero {
+  shadow-type: soft;
+  light-intensity: 0.7;
+
+  /* Subtile Partikel (optional) */
+  particle: ambient-dust(density: 0.5%) in background;
+}
+
+.hero h1,
+.content-hero h1,
+.hero__title {
+  glow-color: var(--accent-blue);
+  glow-intensity: 0.25;
+  text-shadow-type: soft;
+}
+
+/* ============================================
+   HEADER
+   Sticky Header mit Glasmorphism
+   ============================================ */
+
+.site-header {
+  material: glass(0.3);
+  transparency: frosted(10px);
+  shadow-type: soft;
+  depth: 0.1rem;
+}
+
+.site-header.scrolled {
+  depth: 0.3rem;
+  shadow-type: lifted;
+}
+
+/* ============================================
+   NAVIGATION
+   Nav-Items mit Audio-Feedback
+   ============================================ */
+
+.site-nav a,
+.primary-nav a {
+  shape: rounded-rect(var(--radius-sm));
+
+  hover-sfx: chime(523Hz, decay: 0.1s);
+  click-sfx: click(soft);
+}
+
+.site-nav a:hover,
+.primary-nav a:hover {
+  glow-color: var(--accent-blue);
+  glow-intensity: 0.2;
+}
+
+.site-nav a.current-menu-item,
+.site-nav a.current_page_item {
+  glow-color: var(--accent-blue);
+  glow-intensity: 0.3;
+}
+
+/* ============================================
+   MOBILE MENU
+   Enhanced Mobile Navigation
+   ============================================ */
+
+#mobile-nav-panel {
+  material: glass(0.4);
+  transparency: frosted(12px);
+  shadow-type: soft;
+  depth: 0.5rem;
+}
+
+#mobile-nav-panel a {
+  hover-sfx: chime(440Hz, decay: 0.15s);
+  click-sfx: click(soft);
+}
+
+#mobile-nav-panel a:hover {
+  glow-color: var(--accent-blue);
+  glow-intensity: 0.2;
+}
+
+/* ============================================
+   POST META BADGES
+   Reading Time, Tags, etc.
+   ============================================ */
+
+.reading-time,
+.post-meta .badge {
+  shape: rounded-rect(var(--radius-sm));
+  glow-color: var(--accent-green);
+  glow-intensity: 0.15;
+}
+
+.post-meta a:hover .badge {
+  glow-intensity: 0.3;
+}
+
+/* ============================================
+   TABLE OF CONTENTS
+   ============================================ */
+
+.toc,
+.table-of-contents {
+  shape: rounded-rect(var(--radius-md));
+  shadow-type: soft;
+  depth: 0.15rem;
+
+  material: glass(0.2);
+  transparency: frosted(8px);
+}
+
+.toc a {
+  hover-sfx: chime(660Hz, decay: 0.1s);
+}
+
+.toc a:hover,
+.toc a.active {
+  glow-color: var(--accent-blue);
+  glow-intensity: 0.2;
+}
+
+/* ============================================
+   FORMS & INPUTS
+   ============================================ */
+
+input[type="text"],
+input[type="email"],
+input[type="url"],
+input[type="search"],
+textarea,
+select {
+  shape: rounded-rect(var(--radius-sm));
+  shadow-type: contact;
+
+  focus-sfx: chime(880Hz, decay: 0.1s);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  glow-color: var(--accent-blue);
+  glow-intensity: 0.2;
+  shadow-type: soft;
+}
+
+/* ============================================
+   SEARCH BAR
+   ============================================ */
+
+.search-form,
+.searchform {
+  shadow-type: soft;
+}
+
+.search-form input[type="search"] {
+  material: glass(0.2);
+  transparency: frosted(6px);
+}
+
+/* ============================================
+   PAGINATION
+   ============================================ */
+
+.pagination .page-numbers {
+  shape: rounded-rect(var(--radius-sm));
+  shadow-type: contact;
+
+  hover-sfx: chime(440Hz, decay: 0.1s);
+  click-sfx: click(soft);
+}
+
+.pagination .page-numbers:hover,
+.pagination .page-numbers.current {
+  glow-color: var(--accent-blue);
+  glow-intensity: 0.25;
+  depth: 0.1rem;
+}
+
+/* ============================================
+   POST NAVIGATION (PREV/NEXT)
+   ============================================ */
+
+.post-navigation a {
+  shape: rounded-rect(var(--radius-lg));
+  shadow-type: soft;
+  depth: 0.2rem;
+
+  hover-sfx: whoosh(soft, 0.2s);
+}
+
+.post-navigation a:hover {
+  depth: 0.4rem;
+  glow-color: var(--accent-blue);
+  glow-intensity: 0.2;
+}
+
+/* ============================================
+   COMMENTS
+   ============================================ */
+
+.comment {
+  shape: rounded-rect(var(--radius-md));
+  shadow-type: soft;
+  depth: 0.1rem;
+}
+
+.comment-reply-link {
+  hover-sfx: chime(523Hz, decay: 0.15s);
+  click-sfx: click(soft);
+}
+
+.comment-reply-link:hover {
+  glow-color: var(--accent-blue);
+  glow-intensity: 0.2;
+}
+
+/* ============================================
+   SIDEBAR WIDGETS
+   ============================================ */
+
+.widget {
+  shape: rounded-rect(var(--radius-lg));
+  shadow-type: soft;
+  depth: 0.15rem;
+
+  material: glass(0.1);
+}
+
+.widget a:hover {
+  glow-color: var(--accent-blue);
+  glow-intensity: 0.15;
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+
+.site-footer {
+  shadow-type: soft;
+  light-intensity: 0.4;
+}
+
+.footer-nav a {
+  hover-sfx: chime(440Hz, decay: 0.1s);
+}
+
+.footer-nav a:hover {
+  glow-color: var(--accent-blue);
+  glow-intensity: 0.2;
+}
+
+/* ============================================
+   AI DISCUSSION PANEL
+   Besonderes Highlight für AI-Feature
+   ============================================ */
+
+#ai-discuss-btn {
+  shape: rounded-rect(var(--radius-md));
+  glow-color: var(--accent-green);
+  glow-intensity: 0.3;
+  shadow-type: soft;
+  depth: 0.2rem;
+
+  hover-sfx: chime(660Hz, decay: 0.2s);
+  click-sfx: click(mechanical);
+}
+
+#ai-discuss-btn:hover {
+  glow-intensity: 0.6;
+  depth: 0.3rem;
+
+  /* Subtile Partikel */
+  particle: sparks(1%) from center;
+}
+
+#ai-panel,
+.ai-discussion-panel {
+  material: glass(0.4);
+  transparency: frosted(15px);
+  shadow-type: soft;
+  depth: 0.5rem;
+}
+
+/* ============================================
+   BBPRESS FORUM
+   ============================================ */
+
+#bbpress-forums .bbp-header,
+#bbpress-forums li.bbp-header {
+  shadow-type: soft;
+  glow-color: var(--accent-blue);
+  glow-intensity: 0.1;
+}
+
+#bbpress-forums li.bbp-body ul.topic,
+#bbpress-forums li.bbp-body ul.reply {
+  shape: rounded-rect(var(--radius-md));
+  shadow-type: contact;
+}
+
+#bbpress-forums li.bbp-body ul.topic:hover,
+#bbpress-forums li.bbp-body ul.reply:hover {
+  depth: 0.1rem;
+  glow-color: var(--accent-blue);
+  glow-intensity: 0.1;
+}
+
+/* ============================================
+   CODE BLOCKS
+   ============================================ */
+
+pre,
+code {
+  shape: rounded-rect(var(--radius-sm));
+  shadow-type: inset;
+}
+
+pre {
+  material: glass(0.1);
+  transparency: frosted(4px);
+}
+
+/* ============================================
+   IMAGES
+   ============================================ */
+
+img {
+  shadow-type: soft;
+}
+
+.wp-block-image img,
+.post-thumbnail img {
+  shape: rounded-rect(var(--radius-md));
+  depth: 0.1rem;
+}
+
+.post-card img:hover,
+.wp-block-image img:hover {
+  depth: 0.2rem;
+}
+
+/* ============================================
+   BLOCKQUOTE
+   ============================================ */
+
+blockquote {
+  shape: rounded-rect(var(--radius-md));
+  shadow-type: soft;
+  depth: 0.15rem;
+
+  /* Subtiles Glow für Zitate */
+  glow-color: var(--accent-blue);
+  glow-intensity: 0.1;
+}
+
+/* ============================================
+   RESPONSIVE ANPASSUNGEN
+   ============================================ */
+
+@media (max-width: 768px) {
+  /* Reduzierte Effekte auf Mobile */
+
+  body {
+    fog-density: 0;
+  }
+
+  .post-card,
+  .widget,
+  article.card {
+    depth: 0.1rem;
+  }
+
+  /* Nur wichtige Audio-Events auf Mobile */
+  * {
+    hover-sfx: none;
+    cursor-move-sfx: none;
+  }
+
+  /* Behalte nur Click-Sounds für wichtige Elemente */
+  .btn,
+  button[type="submit"],
+  #ai-discuss-btn {
+    click-sfx: click(soft);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Accessibility: Alle Animationen und Sounds deaktivieren */
+  * {
+    hover-sfx: none;
+    click-sfx: none;
+    focus-sfx: none;
+    particle: none;
+    depth: 0;
+    glow-intensity: 0;
+  }
+}
+
+/* ============================================
+   DARK/LIGHT MODE ANPASSUNGEN
+   ============================================ */
+
+html[data-color-mode='light'] {
+  ambient-light: 0.8;
+}
+
+html[data-color-mode='light'] .btn,
+html[data-color-mode='light'] button[type="submit"] {
+  glow-color: #2563eb;
+}
+
+html[data-color-mode='light'] .post-card,
+html[data-color-mode='light'] .widget {
+  shadow-type: soft;
+  depth: 0.15rem;
+}
+
+/* ============================================
+   HIGH PERFORMANCE MODE
+   Optional: Nutzer kann Effekte reduzieren
+   ============================================ */
+
+body.reduce-csspp-effects {
+  fog-density: 0;
+  ambient-light: 0.5;
+}
+
+body.reduce-csspp-effects * {
+  particle: none;
+  cursor-move-sfx: none;
+  hover-sfx: none;
+}
+
+body.reduce-csspp-effects .btn,
+body.reduce-csspp-effects button {
+  click-sfx: click(soft);
+}

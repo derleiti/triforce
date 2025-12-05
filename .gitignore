@@ -1,0 +1,239 @@
+# ============================================
+# AILinux AI Server Backend - .gitignore
+# Intelligente Konfiguration für GitHub
+# ============================================
+
+# ===========================================
+# ENVIRONMENT & SECRETS (KRITISCH!)
+# ===========================================
+.env
+.env.*
+!.env.example
+*.env
+!*.env.example
+.cf_global.env
+cloudflare.env
+
+# Secrets Ordner
+**/secrets/
+secrets/
+wordpress/secrets/
+
+# API Keys & Credentials
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# ===========================================
+# NODE.JS / NPM / JavaScript
+# ===========================================
+node_modules/
+**/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn
+*.tsbuildinfo
+.pnpm-store/
+
+# ===========================================
+# PYTHON
+# ===========================================
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/
+.ruff_cache/
+venv/
+.venv/
+ENV/
+
+# ===========================================
+# DOCKER
+# ===========================================
+docker-compose.override.yml
+.docker/
+
+# ===========================================
+# IDE & EDITORS
+# ===========================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-*
+
+# ===========================================
+# BETRIEBSSYSTEM
+# ===========================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ===========================================
+# LOGS & TEMP FILES
+# ===========================================
+logs/
+**/logs/
+*.log
+*.log.*
+tmp/
+temp/
+.tmp/
+.cache/
+
+# ===========================================
+# GROSSE DATEIEN & BINARIES
+# ===========================================
+# ISO Dateien
+*.iso
+*.img
+
+# Große Medien/Downloads
+wordpress/html/downloads/
+wordpress/html/uploads/
+**/*.mp4
+**/*.avi
+**/*.mkv
+**/*.zip
+**/*.tar
+**/*.tar.gz
+**/*.tar.xz
+**/*.7z
+**/*.rar
+
+# Binaries
+*.exe
+*.dll
+*.so
+*.dylib
+
+# ===========================================
+# WORDPRESS SPEZIFISCH
+# ===========================================
+# MySQL Datenbank
+wordpress/mysql/
+**/mysql/
+
+# WP Core (nur Custom Code behalten)
+wordpress/html/wp-admin/
+wordpress/html/wp-includes/
+wordpress/html/wp-*.php
+!wordpress/html/wp-content/
+
+# Uploads (zu groß)
+wordpress/html/wp-content/uploads/
+wordpress/html/wp-content/cache/
+wordpress/html/wp-content/upgrade/
+wordpress/html/wp-content/backup*/
+wordpress/html/wp-content/wflogs/
+
+# Plugins die wir nicht tracken wollen (Standard-Plugins)
+# (Custom Plugins werden explizit inkludiert)
+
+# ===========================================
+# TESTING & DEVELOPMENT
+# ===========================================
+# Self-Optimizing Testing Area
+.self-optimizing-testing-and-updates/
+
+# Coverage
+.coverage
+coverage/
+coverage.xml
+
+# Test Daten
+data/test*/
+data/crawler_spool/
+**/test_spool/
+
+# ===========================================
+# REPO SPEZIFISCH
+# ===========================================
+# Alte Backups
+ailinux-repo/log/backups/
+ailinux-repo/node_modules/
+ailinux-repo/old_trash/
+ailinux-repo/old_scripts/
+ailinux-repo/repo/
+
+# Mailserver Daten
+mailserver/data/
+mailserver/data.bak/
+
+# Storage (runtime)
+storage/
+
+# Memory/Sessions (runtime)
+memory/*.json
+!memory/agents/README.md
+!memory/sessions/README.md
+
+# Coordination (runtime)
+coordination/memory_bank/
+coordination/orchestration/
+coordination/subtasks/
+
+# ===========================================
+# PROJEKT-DUMPS & REPORTS
+# ===========================================
+project_*.txt
+stats-*.txt
+state.txt
+status.txt
+hotfix.txt
+known-bugs.txt
+api_gen_output.txt
+*.bak
+
+# ===========================================
+# FLARUM FORUM
+# ===========================================
+wordpress/flarum/mysql/
+wordpress/flarum/storage/
+wordpress/flarum/flarum/
+
+# ===========================================
+# GRAFANA
+# ===========================================
+grafana/data/
+
+# ===========================================
+# PACKAGE LOCK FILES (optional - je nach Präferenz)
+# ===========================================
+# package-lock.json  # Auskommentiert - kann für reproduzierbare Builds nützlich sein

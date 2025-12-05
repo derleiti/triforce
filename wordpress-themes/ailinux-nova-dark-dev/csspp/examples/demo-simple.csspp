@@ -1,0 +1,88 @@
+/**
+ * CSS++ Simple Demo
+ *
+ * Zeigt die wichtigsten Features ohne Komplexität
+ */
+
+@import "modules/geometry";
+@import "modules/lighting";
+@import "modules/audio";
+
+/* ============================================
+   BEISPIEL 1: Einfacher Button mit Glow
+   ============================================ */
+
+.demo-button {
+  /* CSS++ Properties */
+  shape: rounded-rect(0.5rem);
+  shadow-type: soft;
+  glow-color: #4466ff;
+
+  /* Audio (wird zu JSON exportiert) */
+  hover-sfx: chime(440Hz);
+  click-sfx: click(mechanical);
+
+  /* Standard CSS (bleibt unverändert) */
+  padding: 1rem 2rem;
+  background: #4466ff;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.demo-button:hover {
+  /* Glow verstärkt sich bei Hover */
+  glow-intensity: 0.8;
+}
+
+
+/* ============================================
+   BEISPIEL 2: Card mit Schatten und Tiefe
+   ============================================ */
+
+.demo-card {
+  /* Geometrie */
+  shape: rounded-rect(1rem);
+  depth: 0.3rem;
+
+  /* Lighting */
+  shadow-type: soft;
+  light-intensity: 0.7;
+
+  /* Standard CSS */
+  padding: 2rem;
+  background: white;
+  max-width: 400px;
+}
+
+
+/* ============================================
+   BEISPIEL 3: Hexagon Icon
+   ============================================ */
+
+.demo-hexagon {
+  /* CSS++ generiert clip-path automatisch */
+  shape: polygon(6);
+
+  /* Standard CSS */
+  width: 100px;
+  height: 100px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+
+/* ============================================
+   BEISPIEL 4: Glowing Text
+   ============================================ */
+
+.demo-glow-text {
+  /* Glow-Effekt */
+  glow-color: #00ffff;
+  glow-intensity: 0.6;
+
+  /* Standard CSS */
+  font-size: 2rem;
+  font-weight: bold;
+  color: #00ffff;
+}

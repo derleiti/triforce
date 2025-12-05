@@ -1,0 +1,1184 @@
+# Translation of WordPress - 4.7.x - Administration - Network Admin in Cebuano
+# This file is distributed under the same license as the WordPress - 4.7.x - Administration - Network Admin package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2016-02-28 17:24:40+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/2.3.0-alpha\n"
+"Language: ceb_PH\n"
+"Project-Id-Version: WordPress - 4.7.x - Administration - Network Admin\n"
+
+#. translators: 1: wp-config.php
+#: wp-admin/includes/network.php:470
+msgid "These unique authentication keys are also missing from your %s file."
+msgstr "Kining lahi nga susi sa authentikasyon kay nawala pud gikan sa imong %s payl."
+
+#. translators: 1: wp-config.php
+#: wp-admin/includes/network.php:464
+msgid "This unique authentication key is also missing from your %s file."
+msgstr "Kining lahi nga susi sa authentikasyon kay nawala pud gikan sa imong %s payl."
+
+#. translators: 1: localhost 2: localhost.localdomain
+#: wp-admin/includes/network.php:264
+msgid "Because you are using %1$s, the sites in your WordPress network must use sub-directories. Consider using %2$s if you wish to use sub-domains."
+msgstr "Kay tungod gagamit kag %1$s, ang mga site sa imong WordPress network kay dapat gamiton ang sub-directories. Konsidara gamit ang %2$s kung gusto nimo gamiton ang sub-domains."
+
+#. translators: %s: host name
+#: wp-admin/includes/network.php:248 wp-admin/includes/network.php:297
+msgid "The internet address of your network will be %s."
+msgstr "Ang internet sa imong address sa imong network kay mahimong %s."
+
+#. translators: 1: site url 2: host name 3. www
+#: wp-admin/includes/network.php:237
+msgid "We recommend you change your siteurl to %1$s before enabling the network feature. It will still be possible to visit your site using the %3$s prefix with an address like %2$s but any links will not have the %3$s prefix."
+msgstr "Ginarekomenda ka namo na alisdan imong siteurl sa %1$s bago magtugot sa peture sa network. Possible gihapon nga mabisitahan imong site gamit ang %3$s prefix nga naay address pareha %2$s pero bisan unsa na mga link kay walay %3$s prefix."
+
+#: wp-admin/includes/network.php:203
+msgid "You cannot change this later."
+msgstr "Dili nimo ni alisdan unya."
+
+#: wp-admin/includes/network.php:202
+msgid "Please choose whether you would like sites in your WordPress network to use sub-domains or sub-directories."
+msgstr "Palihog ug pili kung asa imong gusto nga site sa imong WordPress network para gamiton ang sub-domains o sub-directories."
+
+#. translators: 1: mod_rewrite, 2: mod_rewrite documentation URL, 3: Google
+#. search for mod_rewrite
+#: wp-admin/includes/network.php:191
+msgid "If %1$s is disabled, ask your administrator to enable that module, or look at the <a href=\"%2$s\">Apache documentation</a> or <a href=\"%3$s\">elsewhere</a> for help setting it up."
+msgstr "Kung %1$s dili tugtan, pangutan-a imong administrador para sugtan kana nga modyul, o tan-awa sa <a href=\"%2$s\">Apache documentation</a> or <a href=\"%3$s\">elsewhere</a> para tabangan ang setting."
+
+#. translators: %s: mod_rewrite
+#: wp-admin/includes/network.php:182
+msgid "It looks like the Apache %s module is not installed."
+msgstr "Murag ang Apache %s nga modyul kay wala na-install."
+
+#. translators: %s: mod_rewrite
+#: wp-admin/includes/network.php:175
+msgid "Please make sure the Apache %s module is installed as it will be used at the end of this installation."
+msgstr "Palihog ug siguraduha nga ang Apache %s nga modyul kay na-install nga magamit pagkahuman sa kani nga installasyon."
+
+#. translators: %s: port number
+#: wp-admin/includes/network.php:125
+msgid "You cannot use port numbers such as %s."
+msgstr "Dili nimo magamit ang numero nga port pareha sa %s."
+
+#: wp-admin/includes/class-wp-ms-users-list-table.php:171
+msgctxt "user"
+msgid "Registered"
+msgstr "Nakarehistro"
+
+#: wp-admin/includes/class-wp-ms-users-list-table.php:142
+msgid "Super Admin <span class=\"count\">(%s)</span>"
+msgid_plural "Super Admins <span class=\"count\">(%s)</span>"
+msgstr[0] "Super Admin <span class=\"count\">(%s)</span>"
+msgstr[1] ""
+
+#: wp-admin/includes/class-wp-ms-users-list-table.php:114
+msgctxt "user"
+msgid "Not Spam"
+msgstr "Dili spam"
+
+#: wp-admin/includes/class-wp-ms-users-list-table.php:113
+msgctxt "user"
+msgid "Mark as Spam"
+msgstr "Markahan ng spam"
+
+#: wp-admin/includes/class-wp-ms-themes-list-table.php:573
+msgid "Visit Theme Site"
+msgstr "Bisitahon ang site sa tema"
+
+#: wp-admin/includes/class-wp-ms-themes-list-table.php:541
+msgid "Broken Theme:"
+msgstr "Buak nga tema:"
+
+#: wp-admin/includes/class-wp-ms-themes-list-table.php:335
+#: wp-admin/includes/class-wp-ms-themes-list-table.php:447
+msgid "Network Disable"
+msgstr "Wala gitugtan ang network"
+
+#: wp-admin/includes/class-wp-ms-themes-list-table.php:335
+#: wp-admin/includes/class-wp-ms-themes-list-table.php:447
+msgid "Disable"
+msgstr "Dili sugtan"
+
+#: wp-admin/includes/class-wp-ms-themes-list-table.php:333
+#: wp-admin/includes/class-wp-ms-themes-list-table.php:425
+msgid "Enable"
+msgstr "Sugtan"
+
+#: wp-admin/includes/class-wp-ms-themes-list-table.php:302
+msgid "Broken <span class=\"count\">(%s)</span>"
+msgid_plural "Broken <span class=\"count\">(%s)</span>"
+msgstr[0] "Buak <span class=\"count\">(%s)</span>"
+msgstr[1] "Buak <span class=\"count\">(%s)</span>"
+
+#: wp-admin/includes/class-wp-ms-themes-list-table.php:296
+msgid "Disabled <span class=\"count\">(%s)</span>"
+msgid_plural "Disabled <span class=\"count\">(%s)</span>"
+msgstr[0] "Wala gisugtan <span class=\"count\">(%s)</span>"
+msgstr[1] "Wala gisugtan <span class=\"count\">(%s)</span>"
+
+#: wp-admin/includes/class-wp-ms-themes-list-table.php:293
+msgid "Enabled <span class=\"count\">(%s)</span>"
+msgid_plural "Enabled <span class=\"count\">(%s)</span>"
+msgstr[0] "Gisugtan <span class=\"count\">(%s)</span>"
+msgstr[1] "Gisugtan <span class=\"count\">(%s)</span>"
+
+#: wp-admin/includes/class-wp-ms-themes-list-table.php:290
+msgctxt "themes"
+msgid "All <span class=\"count\">(%s)</span>"
+msgid_plural "All <span class=\"count\">(%s)</span>"
+msgstr[0] "Tanan <span class=\"count\">(%s)</span>"
+msgstr[1] "Tanan <span class=\"count\">(%s)</span>"
+
+#: wp-admin/includes/class-wp-ms-themes-list-table.php:247
+msgid "Theme"
+msgstr "Tema"
+
+#: wp-admin/includes/class-wp-ms-themes-list-table.php:236
+msgid "You do not appear to have any themes available at this time."
+msgstr "Dili ka makit-an na naay mga tema sa kini nga oras."
+
+#: wp-admin/includes/class-wp-ms-themes-list-table.php:234
+msgid "No themes found."
+msgstr "Walay nakit-an na mga tema."
+
+#: wp-admin/includes/class-wp-ms-sites-list-table.php:531
+msgctxt "verb; site"
+msgid "Archive"
+msgstr "Arkibo"
+
+#: wp-admin/includes/class-wp-ms-sites-list-table.php:529
+msgid "Unarchive"
+msgstr "Wala naarkibo"
+
+#: wp-admin/includes/class-wp-ms-sites-list-table.php:360
+msgid "Never"
+msgstr "Dili"
+
+#: wp-admin/includes/class-wp-ms-sites-list-table.php:231
+#: wp-admin/network/site-info.php:177
+msgctxt "site"
+msgid "Registered"
+msgstr "Nakarehistro"
+
+#: wp-admin/includes/class-wp-ms-sites-list-table.php:230
+#: wp-admin/network/site-info.php:181
+msgid "Last Updated"
+msgstr "Ulahi nga gibag-o"
+
+#: wp-admin/includes/class-wp-ms-sites-list-table.php:204
+#: wp-admin/includes/class-wp-ms-sites-list-table.php:535
+msgctxt "site"
+msgid "Not Spam"
+msgstr "Dili spam"
+
+#: wp-admin/includes/class-wp-ms-sites-list-table.php:203
+msgctxt "site"
+msgid "Mark as Spam"
+msgstr "Markahan nga spam"
+
+#: wp-admin/includes/class-wp-ms-sites-list-table.php:192
+msgid "No sites found."
+msgstr "Walay mga site nga nakit-an."
+
+#: wp-admin/includes/class-wp-ms-sites-list-table.php:44
+#: wp-admin/network/site-info.php:191
+msgid "Mature"
+msgstr "Tigulang"
+
+#: wp-admin/includes/class-wp-ms-sites-list-table.php:43
+#: wp-admin/network/site-info.php:189
+msgid "Deleted"
+msgstr "Natanggal"
+
+#: wp-admin/includes/class-wp-ms-sites-list-table.php:42
+#: wp-admin/includes/class-wp-ms-sites-list-table.php:537
+#: wp-admin/network/site-info.php:188
+msgctxt "site"
+msgid "Spam"
+msgstr "Spam"
+
+#: wp-admin/includes/class-wp-ms-sites-list-table.php:41
+#: wp-admin/network/site-info.php:187
+msgid "Archived"
+msgstr "Naarkibo"
+
+#: wp-admin/network/site-users.php:332 wp-admin/network/user-new.php:117
+msgid "A password reset link will be sent to the user via email."
+msgstr "Ang reset link sa imong password kay pasa sa tagagamit pinaagi sa email."
+
+#. translators: 1: NOBLOGREDIRECT 2: wp-config.php
+#: wp-admin/network/settings.php:140
+msgid "If registration is disabled, please set %1$s in %2$s to a URL you will redirect visitors to if they visit a non-existent site."
+msgstr "Kung ang pagparehistro kay gibawalan, palihog ug plastar sa %2$s ang sa URL madiristo sa mga visita didto kung adtuan ang wala nga site."
+
+#. translators: 1: WP_ALLOW_MULTISITE 2: wp-config.php
+#: wp-admin/network.php:44
+msgid "You must define the %1$s constant as true in your %2$s file to allow creation of a Network."
+msgstr "Kinahanglan nimo muhatag ug pirmi tinuod sa imong payl para mapasugtan sa paghimo sa Network."
+
+#: wp-admin/network/themes.php:235
+msgid "Themes list navigation"
+msgstr "Listahan sa themes nabigasyon"
+
+#: wp-admin/network/sites.php:48
+msgid "Sites list"
+msgstr "Listahan sa mga sites"
+
+#: wp-admin/network/sites.php:47
+msgid "Sites list navigation"
+msgstr "Listahan sa nabigasyon sa mga site"
+
+#: wp-admin/network/site-users.php:39
+msgid "Site users list"
+msgstr "Listahan sa tagagamit sa site"
+
+#: wp-admin/network/site-users.php:38
+msgid "Site users list navigation"
+msgstr "Listahan sa taggamit sa site nabigasyon"
+
+#: wp-admin/network/site-users.php:37
+msgid "Filter site users list"
+msgstr "Pilter ang listahan sa tagagamit sa site"
+
+#: wp-admin/network/site-themes.php:36
+msgid "Site themes list"
+msgstr "Listahan sa site themes"
+
+#: wp-admin/network/site-themes.php:35
+msgid "Site themes list navigation"
+msgstr "Listahan sa site themes nabigasyon"
+
+#: wp-admin/network/site-themes.php:34
+msgid "Filter site themes list"
+msgstr "Pilter sa listahan sa site themes"
+
+#: wp-admin/network/site-new.php:110
+msgid "The domain or path entered conflicts with an existing username."
+msgstr "Ang domain o path nga gisugtan kay komplikado sa karon nga username."
+
+#: wp-admin/network/sites.php:75
+msgid "The requested action is not valid."
+msgstr "Dili pwede ang gipahimo nga butang."
+
+#: wp-admin/network/sites.php:67
+msgid "You are about to mark the site %s as not mature."
+msgstr "Hapit na nimo mamarkahan nga wala galago ang site %s."
+
+#: wp-admin/network/sites.php:66
+msgid "You are about to mark the site %s as mature."
+msgstr "Hapit na nimo mamarkahan nga galago ang site %s."
+
+#: wp-admin/network/sites.php:65
+msgid "You are about to delete the site %s."
+msgstr "Hapit na nimo matanggal ang site %s."
+
+#: wp-admin/network/sites.php:64
+msgid "You are about to mark the site %s as spam."
+msgstr "Hapit na nimo mamarkahan ug spam ang site %s."
+
+#: wp-admin/network/sites.php:63
+msgid "You are about to unspam the site %s."
+msgstr "Hapit na nimo ma-unspam ang site %s."
+
+#: wp-admin/network/sites.php:62
+msgid "You are about to archive the site %s."
+msgstr "Hapit na nimo ma-arkibo ang site %s."
+
+#: wp-admin/network/sites.php:61
+msgid "You are about to unarchive the site %s."
+msgstr "Hapit na nimo dili ma-arkibo ang site %s."
+
+#: wp-admin/network/site-info.php:42 wp-admin/network/site-settings.php:40
+#: wp-admin/network/site-themes.php:63 wp-admin/network/site-users.php:56
+msgid "The requested site does not exist."
+msgstr "Ang girekwest nga site dili makit-an."
+
+#. translators: 1: site url, 2: server error message
+#: wp-admin/network/upgrade.php:87
+msgid "Warning! Problem updating %1$s. Your server may not be able to connect to sites running on it. Error message: %2$s"
+msgstr "Babala! Naay problema sa pagbag-o. Ang imong serber kay dili maka-konek sa mga site nga gadagan diria. Mensahe error:"
+
+#: wp-admin/network/themes.php:131
+msgid "You are about to remove the following themes:"
+msgstr "Hapit na nimo matanggal ang gasunod na mga themes:"
+
+#: wp-admin/network/themes.php:130
+msgid "These themes may be active on other sites in the network."
+msgstr "Kani na mga themes kay aktibo sa ubang sites sa network."
+
+#: wp-admin/network/themes.php:146
+msgid "Are you sure you wish to delete this theme?"
+msgstr "Sigurado ba ka nga gusto nimo ni tanggalon nga theme?"
+
+#: wp-admin/network/site-themes.php:193 wp-admin/network/themes.php:272
+msgid "%s theme disabled."
+msgid_plural "%s themes disabled."
+msgstr[0] "%s gipagbawalan ang theme."
+msgstr[1] ""
+
+#: wp-admin/network/site-themes.php:185 wp-admin/network/themes.php:264
+msgid "%s theme enabled."
+msgid_plural "%s themes enabled."
+msgstr[0] "%s gisugtan ang theme."
+msgstr[1] ""
+
+#: wp-admin/network/themes.php:280
+msgid "%s theme deleted."
+msgid_plural "%s themes deleted."
+msgstr[0] "%s Natanggal na ang them."
+msgstr[1] ""
+
+#: wp-admin/network/themes.php:163
+msgid "Yes, delete these themes"
+msgstr "Oo, tanggalon ni na mga theme"
+
+#: wp-admin/network/themes.php:129
+msgid "Delete Themes"
+msgstr "Tanggalon ang Themes"
+
+#: wp-admin/network/settings.php:132
+msgid "New registrations settings"
+msgstr "Bag-ong settings sa rehistro"
+
+#: wp-admin/network/settings.php:317
+msgid "Size in kilobytes"
+msgstr "Sukat sa kilobytes"
+
+#: wp-admin/network/settings.php:301
+msgid "Allowed file types. Separate types by spaces."
+msgstr "Gisugtan nga klase sa payl. Nakalain gamit ang epasyo."
+
+#: wp-admin/network/site-info.php:197
+msgid "Set site attributes"
+msgstr "I-plastar ang karakteristiks sa site"
+
+#: wp-admin/network/settings.php:380
+msgid "Enable menus"
+msgstr "Gisugtan na mga menu"
+
+#. translators: 1: a filename like .htaccess. 2: a file path.
+#: wp-admin/includes/network.php:539 wp-admin/includes/network.php:579
+msgid "Add the following to your %1$s file in %2$s, <strong>replacing</strong> other WordPress rules:"
+msgstr "Dungag ang mga gasunod sa imong %1$s payl sa %2$s, <strong>replacing</strong> sa ubang WordPress."
+
+#: wp-admin/network/sites.php:100
+msgid "Confirm your action"
+msgstr "Kompirma ang imong himuon"
+
+#: wp-admin/network/settings.php:116
+msgid "This email address will receive notifications. Registration and support emails will also come from this address."
+msgstr "Kani nga email address kay makadawat ug notipikasyon. Rehistrasyon ug suporta emails kay mugikan pud sa kani nga address."
+
+#: wp-admin/network/users.php:170
+msgid "Hover over any user on the list to make the edit links appear. The Edit link on the left will take you to their Edit User profile page; the Edit link on the right by any site name goes to an Edit Site screen for that site."
+msgstr "Atngi ang bisan unsa nga taga-gamit sa listahan mausab ang link nga makita. Ang edit link sa wala kay dal-on ka sa ilang Edit User profile page; ang Edit link sa tuo kay bisan unsa nga ngalan sa site na paadto sa Edit Site screen para sa kana nga site."
+
+#: wp-admin/network/index.php:40
+msgid "To search for a site, <strong>enter the path or domain</strong>."
+msgstr "Para mangita ug site, <strong>ibutang ang path o domain</strong>."
+
+#: wp-admin/network/index.php:39
+msgid "To search for a user, <strong>enter an email address or username</strong>. Use a wildcard to search for a partial username, such as user&#42;."
+msgstr "Para mangita ug taga-gamit, <strong>ibutang ang email address o username</strong>. Gamit ug wildcard para mangita para a parsyal nga username, pareha sa user&#42;."
+
+#: wp-admin/network/index.php:37
+msgid "To add a new site, <strong>click Create a New Site</strong>."
+msgstr "Para dungag ug bag-ong site, <strong>klik Himo ug Bag-ong SIte</strong>."
+
+#: wp-admin/network/index.php:36
+msgid "To add a new user, <strong>click Create a New User</strong>."
+msgstr "Para dungag ug bag-ong tagagamit, <strong>klik Himo ug Bag-ong Tagagamit</strong>."
+
+#: wp-admin/network/index.php:44
+msgid "Quick Tasks"
+msgstr "Paspas nga trabaho"
+
+#: wp-admin/network/index.php:38
+msgid "To search for a user or site, use the search boxes."
+msgstr "Para mangita ug taga-gamit o site, gamit ang box sa pagpangita."
+
+#: wp-admin/network/index.php:35
+msgid "The Right Now widget on this screen provides current user and site counts on your network."
+msgstr "Ang Right Now nga widget sa kani nga screen gahatag ug bilang sa kurent nga taga-gamit ug site sa imong network."
+
+#: wp-admin/network/index.php:27
+msgid "Modify global network settings"
+msgstr "Modipay ang global network settings"
+
+#: wp-admin/network/index.php:26
+msgid "Update your network"
+msgstr "Bag-uhon imong network"
+
+#: wp-admin/network/index.php:25
+msgid "Install and activate themes or plugins"
+msgstr "Ibutang ug i-aktibo ang themes o plugins"
+
+#: wp-admin/network/index.php:24
+msgid "Add and manage sites or users"
+msgstr "Dungag ug i-maneho ang mga sites o taga-gamit."
+
+#: wp-admin/network/index.php:23
+msgid "From here you can:"
+msgstr "Gikan diri pwede nimo:"
+
+#: wp-admin/network/index.php:22
+msgid "Welcome to your Network Admin. This area of the Administration Screens is used for managing all aspects of your Multisite Network."
+msgstr "Maayong pag-abot sa imong Network Admin. Kani ang lugar sa mga Administration Screens na gamiton para i-maneho ang tanang nga aspeto sa imong Multisite Network."
+
+#: wp-admin/network/upgrade.php:126
+msgid "WordPress has been updated! Before we send you on your way, we need to individually upgrade the sites in your network."
+msgstr "Nabag-o na ang WordPress. Bago namo ipasa sa imong dalan, kinahanglan namo na usa-usahon ug bag-o ang site sa imong network."
+
+#: wp-admin/network/upgrade.php:22
+msgid "Only use this screen once you have updated to a new version of WordPress through Updates/Available Updates (via the Network Administration navigation menu or the Toolbar). Clicking the Upgrade Network button will step through each site in the network, five at a time, and make sure any database updates are applied."
+msgstr "Gamita lang ni nga screen kung nabag-o na nimo ang bag-ong bersyon sa WordPress sa pamaagi sa Bag-o/Magamit nga pagbag-o (pamaagi sa Network Administrasyon nabigasyon menu o sa Toolbar). Sa pagklik sa Upgrade Network nga buton kay makalampas  sa isaisa nga site sa network, tag-limalima, and siguraduha nga ang ubang database nga pagbag-o kay nakaaplay."
+
+#: wp-admin/network/menu.php:22 wp-admin/network/upgrade.php:15
+#: wp-admin/network/upgrade.php:39 wp-admin/network/upgrade.php:130
+msgid "Upgrade Network"
+msgstr "Bag-uhon ang network"
+
+#. translators: 1: user login, 2: site url, 3: site name/title
+#: wp-admin/network/site-new.php:145
+msgid ""
+"New site created by %1$s\n"
+"\n"
+"Address: %2$s\n"
+"Name: %3$s"
+msgstr ""
+"Bag-ong site nga gibuhat ni:\n"
+"Lugar:\n"
+"Ngalan:"
+
+#: wp-admin/includes/network.php:229 wp-admin/includes/network.php:545
+#: wp-admin/includes/network.php:585
+msgid "Subdirectory networks may not be fully compatible with custom wp-content directories."
+msgstr "Subdirectory na mga network kay dili kaayo sakto sa kustom wp-content na mga direktorya."
+
+#: wp-admin/network.php:62
+msgid "Add the designated lines of code to wp-config.php (just before <code>/*...stop editing...*/</code>) and <code>.htaccess</code> (replacing the existing WordPress rules)."
+msgstr "Dungag ang naka-assayn nga linya sa code sa wp-config.php (just before <code>/*...stop editing...*/</code>) and <code>.htaccess</code> (alasdan ang karon nga patakaran sa WordPress)."
+
+#: wp-admin/network/settings.php:35
+msgid "Super admins can no longer be added on the Options screen. You must now go to the list of existing users on Network Admin > Users and click on Username or the Edit action link below that name. This goes to an Edit User page where you can check a box to grant super admin privileges."
+msgstr "Ang pinaka admins dili na madungagan sa Opsyons screen. Kinahanglan nimo muadto sa listahan sa mga karon na taga-gamit sa Network Admin > Taga-gamit ug klik ang Username o Usabon ang aksyon link sa ubos sa ngalan. Kani muadto sa Usabon ang taga-gamit nga pahina kung asa nimo ma tsek ang box para matugtan imong pribilihiyo sa admin. "
+
+#: wp-admin/network/menu.php:19
+msgid "Updates"
+msgstr "Mga pagbag-o"
+
+#: wp-admin/network/site-new.php:23
+msgid "This screen is for Super Admins to add new sites to the network. This is not affected by the registration settings."
+msgstr "Kani nga screen kay para sa Super Admins para mudungag ug bag-ong site sa network. Dili ni naapektuhan sa settings sa rehistro."
+
+#: wp-admin/network/sites.php:31
+msgid "An Edit link to a separate Edit Site screen."
+msgstr "Usabon ang link sa lahi nga site screen."
+
+#: wp-admin/network/themes.php:224
+msgid "Themes can be enabled on a site by site basis by the network admin on the Edit Site screen (which has a Themes tab); get there via the Edit action link on the All Sites screen. Only network admins are able to install or edit themes."
+msgstr "Ang mga tema kay matugtan sa site sa pamaagi sa basihan sa site sa kada admin sa network sa screen sa usabon ang site (kung asa naay tab sa tema); makaabot ka didto sa pamaagi sa Usabon ang aksyon link sa Tanang screen sa sites. Ang network admins lang ang sugtan nga magbutang o mag-usab ug tema."
+
+#: wp-admin/network/sites.php:34
+msgid "Delete which is a permanent action after the confirmation screens."
+msgstr "Tanggalon kung unsa ang permamente nga aksyon pagkahuman sa kompirmasyon screens."
+
+#: wp-admin/network/sites.php:37
+msgid "Clicking on bold headings can re-sort this table."
+msgstr "Sa pagklik sa bold heading kay matarung ni nga lamesa."
+
+#: wp-admin/network/menu.php:41 wp-admin/network/themes.php:250
+msgctxt "theme"
+msgid "Add New"
+msgstr "Dungag ug bag-o"
+
+#: wp-admin/network/sites.php:28
+msgid "Add New takes you to the Add New Site screen. You can search for a site by Name, ID number, or IP address. Screen Options allows you to choose how many sites to display on one page."
+msgstr "Dungag ug bag-o kay dal-on ka sa Dungag ug bag-o nga site screen. Pwede nimo pangitaon ang site gamit ang Ngalan, numero sa ID, o IP address. Opsyons sa screen kay tugtan ka nga mamili kung pila ka site ang mapakita sa usa ka pahina."
+
+#. translators: 1: dashboard url, 2: network admin edit url
+#: wp-admin/network/site-new.php:172
+msgid "Site added. <a href=\"%1$s\">Visit Dashboard</a> or <a href=\"%2$s\">Edit Site</a>"
+msgstr "Nadungag na ang site.<a href=\"%1$s\">Visit Dashboard</a> or <a href=\"%2$s\">Edit Site</a>"
+
+#: wp-admin/network/menu.php:28
+msgid "All Sites"
+msgstr "Tanang sites"
+
+#: wp-admin/network/menu.php:36
+msgid "Themes %s"
+msgstr "Themes %s"
+
+#: wp-admin/network/menu.php:40
+msgid "Installed Themes"
+msgstr "Install nga themes"
+
+#: wp-admin/network/site-settings.php:80
+msgid "Site options updated."
+msgstr "Nabag-o na ang opsyons sa site."
+
+#: wp-admin/network/settings.php:328
+msgid "Language Settings"
+msgstr "Settings sa lengwahe"
+
+#: wp-admin/network/settings.php:164
+msgid "Allow site administrators to add new users to their site via the \"Users &rarr; Add New\" page."
+msgstr "Sugtan ang site administrators nga mudungag ug bag-ong taga-gamit sa ilang site pinaagi sa \"Users &rarr; Add New\" na pahina."
+
+#: wp-admin/network/sites.php:32
+msgid "Dashboard leads to the Dashboard for that site."
+msgstr "Dashboard gapa-adto sa Dashbpard para sa kana nga site."
+
+#: wp-admin/network/site-info.php:21 wp-admin/network/site-settings.php:20
+#: wp-admin/network/site-themes.php:20 wp-admin/network/site-users.php:23
+msgid "The menu is for editing information specific to individual sites, particularly if the admin area of a site is unavailable."
+msgstr "Ang menu para sa pag-usab sa impormasyon sa espisipiko nga sites, lalo na kung ang admin area sa site kay dili pwede."
+
+#: wp-admin/network/site-info.php:23 wp-admin/network/site-settings.php:22
+#: wp-admin/network/site-themes.php:22 wp-admin/network/site-users.php:25
+msgid "<strong>Users</strong> &mdash; This displays the users associated with this site. You can also change their role, reset their password, or remove them from the site. Removing the user from the site does not remove the user from the network."
+msgstr "<strong>Users</strong> Kani gapakita nga ang taga-gamit nga naa diri nga site. Pwede nimo maalisdan ilang trabaho, usabon ang password, o hawaon sila gikan sa site. Ang pagtanggal sa taga-gamit gikan sa site kay wala gihawa sa taga-gamit gikan sa network."
+
+#: wp-admin/network/site-info.php:22 wp-admin/network/site-settings.php:21
+#: wp-admin/network/site-themes.php:21 wp-admin/network/site-users.php:24
+msgid "<strong>Info</strong> &mdash; The site URL is rarely edited as this can cause the site to not work properly. The Registered date and Last Updated date are displayed. Network admins can mark a site as archived, spam, deleted and mature, to remove from public listings or disable."
+msgstr "<strong>Info</strong> Kani nga URL sa site kay panagsa lang mausab kay tungod kani nga site wala gatarung ug lihok. Ang petsa sa pagparehistro ug ulahi nga petsa sa pagbag-o kay gibutang. Ang admins sa network kay mamarkahan ang site nga arkibo, spam, natanggal ug pwede na, hawaon sa listahan sa publiko o dili sugtan."
+
+#: wp-admin/network/site-info.php:25 wp-admin/network/site-settings.php:24
+#: wp-admin/network/site-themes.php:24 wp-admin/network/site-users.php:27
+msgid "<strong>Settings</strong> &mdash; This page shows a list of all settings associated with this site. Some are created by WordPress and others are created by plugins you activate. Note that some fields are grayed out and say Serialized Data. You cannot modify these values due to the way the setting is stored in the database."
+msgstr "<strong>Settings</strong> %mdash; Kani nga pahina gapakita sa listahan sa tanan nga settings uban sa kani nga site. Ang uban ang nahimo sa WordPress ug ang uban kay nahimo sa plugins na imong gi-aktibo. Pahinumdum nga ang ubang spasyo kay naka grayed out ug ingon Serialized Data. Dili nimo pwede masali ang kani nga balyu tungod sa pamaagi sa setting kay nakabutang sa database."
+
+#: wp-admin/network/themes.php:171
+msgid "No, return me to the theme list"
+msgstr "Dili, ibalik ko sa listahan sa theme"
+
+#. translators: %s: site name
+#: wp-admin/network/site-info.php:131 wp-admin/network/site-settings.php:84
+#: wp-admin/network/site-themes.php:163 wp-admin/network/site-users.php:193
+msgid "Edit Site: %s"
+msgstr "Usabon ang site:"
+
+#: wp-admin/network/site-info.php:24 wp-admin/network/site-settings.php:23
+#: wp-admin/network/site-themes.php:23 wp-admin/network/site-users.php:26
+msgid "<strong>Themes</strong> &mdash; This area shows themes that are not already enabled across the network. Enabling a theme in this menu makes it accessible to this site. It does not activate the theme, but allows it to show in the site&#8217;s Appearance menu. To enable a theme for the entire network, see the <a href=\"%s\">Network Themes</a> screen."
+msgstr "<strong>Tema</strong> Kani nga lugar gapakita sa mga teme nga dili pa pwede sa pikas network. Ang pagtugot sa tema sa kani nga menu kay mahimong paagi sa kani nga site. Dili niya ma-aktibo ang tema, pero gatugot nga makita sa site ang Appearance menu. Para masugtan ang tema sa tanang network, tan-awa ang <a href=\"%s\">Network Themes</a> nga screen."
+
+#: wp-admin/network/site-themes.php:197 wp-admin/network/themes.php:284
+msgid "No theme selected."
+msgstr "Walay theme nga gipili."
+
+#: wp-admin/network/site-themes.php:183 wp-admin/network/themes.php:262
+msgid "Theme enabled."
+msgstr "Gisugtan nga theme."
+
+#: wp-admin/network/site-info.php:37 wp-admin/network/site-settings.php:36
+#: wp-admin/network/site-themes.php:57 wp-admin/network/site-users.php:52
+msgid "Invalid site ID."
+msgstr "Inbalid ang ID sa site."
+
+#: wp-admin/network/site-themes.php:191 wp-admin/network/themes.php:270
+msgid "Theme disabled."
+msgstr "Wala na gipagana ang theme."
+
+#: wp-admin/network/user-new.php:20
+msgid "Add User will set up a new user account on the network and send that person an email with username and password."
+msgstr "Dungag ug user kay muplastar ug bag-ong taga-gamit nga account sa network and ipasa sa kana nga tawo ang email na naay username ug password."
+
+#: wp-admin/network/site-themes.php:200
+msgid "Network enabled themes are not shown on this screen."
+msgstr "Ang gisugtan nga themes sa network kay dili makit-an sa screen."
+
+#: wp-admin/network/menu.php:55 wp-admin/network/settings.php:19
+msgid "Network Settings"
+msgstr "Settings sa network"
+
+#: wp-admin/network/themes.php:125
+msgid "Delete Theme"
+msgstr "Tanggalon ang theme"
+
+#: wp-admin/network/themes.php:126
+msgid "This theme may be active on other sites in the network."
+msgstr "Kani nga theme kay aktibo gihapon sa ubang sites sa network."
+
+#: wp-admin/network/themes.php:127
+msgid "You are about to remove the following theme:"
+msgstr "Hapit na nimo matanggal ang gasunod nga theme:"
+
+#: wp-admin/network/themes.php:161
+msgid "Yes, delete this theme"
+msgstr "Oo, tanggalon ni nga theme"
+
+#: wp-admin/network/themes.php:148
+msgid "Are you sure you wish to delete these themes?"
+msgstr "Sigurado ba ka nga gusto nimo ni tanggalon nga themes?"
+
+#: wp-admin/network/site-new.php:178 wp-admin/network/site-new.php:188
+msgid "Add New Site"
+msgstr "Dungag ug bag-ong site"
+
+#: wp-admin/network/themes.php:286
+msgid "You cannot delete a theme while it is active on the main site."
+msgstr "Dili nimo matanggal ang usa ka theme kung aktibo gihapon sa dakong site."
+
+#: wp-admin/network/site-users.php:234
+msgid "Enter the username of an existing user."
+msgstr "Ibutang ang username sa taga-gamit."
+
+#: wp-admin/network/site-info.php:126
+msgid "Site info updated."
+msgstr "Ang impormasyon sa site kay nabag-o na."
+
+#: wp-admin/network/site-users.php:231
+msgid "User is already a member of this site."
+msgstr "Ang taga-gamit kay miyembro na daan sa site. "
+
+#: wp-admin/network/user-new.php:49
+msgid "Cannot add user."
+msgstr "Dili pwede makadungag ug taga-gamit."
+
+#: wp-admin/network/site-users.php:300 wp-admin/network/user-new.php:129
+msgid "Add User"
+msgstr "Dungag ug taga-gamit."
+
+#: wp-admin/network/site-users.php:249
+msgid "User created."
+msgstr "Nakahimo na ug taga-gamit."
+
+#: wp-admin/network/site-users.php:246
+msgid "Select a user to remove."
+msgstr "Pili ug taga-gamit para matanggal."
+
+#: wp-admin/network/site-users.php:240
+msgid "Select a user to change role."
+msgstr "Pili ug taga-gamit para mailisan ang posisyon."
+
+#: wp-admin/network/site-users.php:252
+msgid "Enter the username and email."
+msgstr "Ibutang ang username ug email."
+
+#: wp-admin/network.php:63
+msgid "Once you add this code and refresh your browser, multisite should be enabled. This screen, now in the Network Admin navigation menu, will keep an archive of the added code. You can toggle between Network Admin and Site Admin by clicking on the Network Admin or an individual site name under the My Sites dropdown in the Toolbar."
+msgstr "Kung i-dungag nimo ni nga code and repres imong browser, dapat ang multisite kay pwede na. Kani nga screen, karon kay naa sa Network Admin nabigasyon menu, maong magtago sa arkibo nga gidungag nga code. Pwede nimo i-toggle sa tunga sa Network Admin ug Site Admin sa pagklik sa Network Admin o indibidwal nga ngalan sa site sa ubos sa My Sites dropdown sa Toolbar."
+
+#: wp-admin/includes/network.php:140
+msgid "ERROR: The network could not be created."
+msgstr "ERROR: Ang network kay dili mahimo."
+
+#: wp-admin/includes/network.php:216
+msgid "Sub-directories"
+msgstr "Sub-direktoryas"
+
+#: wp-admin/network.php:71
+msgid "Network"
+msgstr "Network"
+
+#. translators: 1: hostname
+#: wp-admin/includes/network.php:211
+msgctxt "subdomain examples"
+msgid "like <code>site1.%1$s</code> and <code>site2.%1$s</code>"
+msgstr "pareha <code>site1.%1$s</code> ug <code>site2.%1$s</code>"
+
+#: wp-admin/includes/network.php:201
+msgid "Addresses of Sites in your Network"
+msgstr "Mga lugaw sa  mga Sites sa imong Network"
+
+#: wp-admin/includes/network.php:113 wp-admin/includes/network.php:373
+#: wp-admin/includes/network.php:545 wp-admin/includes/network.php:585
+msgid "Warning:"
+msgstr "Pahibalo:"
+
+#: wp-admin/network.php:29
+msgid "The Network creation panel is not for WordPress MU networks."
+msgstr "Ang paghimo sa panel sa Network kay dili para sa WordPress MU networks."
+
+#: wp-admin/includes/network.php:128
+msgid "Return to Dashboard"
+msgstr "Balik sa dashboard"
+
+#: wp-admin/network.php:55
+msgid "Create a Network of WordPress Sites"
+msgstr "Buhat ug Network sa WordPress Sites"
+
+#: wp-admin/network.php:59
+msgid "This screen allows you to configure a network as having subdomains (<code>site1.example.com</code>) or subdirectories (<code>example.com/site1</code>). Subdomains require wildcard subdomains to be enabled in Apache and DNS records, if your host allows it."
+msgstr "Kani nga screen sugtan ka nga tarungun ang network nga naay subdomains (<code>site1.example.com</code>) or subdirectories (<code>example.com/site1</code>). Ang mga subdomains gakinahanglan ug wildcard subdomains para masugtan sa Apache ug DNS records, kung ang kadaghan musugot niini."
+
+#: wp-admin/includes/network.php:260 wp-admin/includes/network.php:275
+msgid "Sub-directory Install"
+msgstr "Sub-directory Install"
+
+#: wp-admin/includes/network.php:113
+msgid "Please <a href=\"%s\">deactivate your plugins</a> before enabling the Network feature."
+msgstr "Palihog <a href=\"%s\">deactivate your plugins</a> bago sa pagtugot sa peture sa Network."
+
+#: wp-admin/includes/network.php:113
+msgid "Once the network is created, you may reactivate your plugins."
+msgstr "Kung nahimo na ang network, pwede na nimo i-aktibo usab imong mga plugin."
+
+#: wp-admin/network.php:64
+msgid "The choice of subdirectory sites is disabled if this setup is more than a month old because of permalink problems with &#8220;/blog/&#8221; from the main site. This disabling will be addressed in a future version."
+msgstr "Ang kagustuhan sa subdirectory nga mga site kay wala gisugtan kung kani nga plastar kay sobra na usa ka bulan kay tungod sa mga problema sa permalink nga naay &#8220;/blog/&#8221; gikan sa dako nga site. Kani wala pagtugot kay paadto sa muabotay nga bersyon."
+
+#: wp-admin/includes/network.php:160
+msgid "Welcome to the Network installation process!"
+msgstr "Maayong pag abot sa proseso sa instalsyon nga Network!"
+
+#: wp-admin/includes/network.php:256
+msgid "Network Details"
+msgstr "Detalye sa network"
+
+#: wp-admin/includes/network.php:105
+msgid "The constant DO_NOT_UPGRADE_GLOBAL_TABLES cannot be defined when creating a network."
+msgstr "Ang konstant DO_NOT_UPGRADE_GLOBAL_TABLES kay dili mabal'an kung gahimo ug network."
+
+#: wp-admin/includes/network.php:594
+msgid "Once you complete these steps, your network is enabled and configured. You will have to log in again."
+msgstr "Kung nakumpleto na nimo kani na mga hakbang, imong network kay sugtan ug configura na. Kinahanglan nimo maglog in usab."
+
+#: wp-admin/network.php:61
+msgid "The next screen for Network Setup will give you individually-generated lines of code to add to your wp-config.php and .htaccess files. Make sure the settings of your FTP client make files starting with a dot visible, so that you can find .htaccess; you may have to create this file if it really is not there. Make backup copies of those two files."
+msgstr "Ang sunod nga screen para sa pagplastar sa Network kay hatagan ka'g tag-isa ka nahimo na linya sa code para o-dungag sa imong wp-config.php and .htaccess payls. Siguraduha ang settings sa kliente FTP kay makahimo ug payls nga nagsugod sa tuldok na dili makit-an, para makit-an nimo ang .htaccess; pwede nimo ni mahimo nga payl kung wala gyud didtoa. Himo ug backup nga mga kopya sa duha nimo ka mga payl."
+
+#: wp-admin/network.php:60
+msgid "Choose subdomains or subdirectories; this can only be switched afterwards by reconfiguring your install. Fill out the network details, and click install. If this does not work, you may have to add a wildcard DNS record (for subdomains) or change to another setting in Permalinks (for subdirectories)."
+msgstr "Pili ug subdomains or subdirectories; mabalhin lang ni unya sa pagtarung sa imong butang. Ibutang ang network details, ug i-klik ang install. Kung dili pwede, pwede nimo ka mudungag ug wildcard DNS record (para sa subdomains) o ilisan sa uban nga setting sa Permalinks (para sa subdirectories)."
+
+#: wp-admin/includes/network.php:475
+msgid "To make your installation more secure, you should also add:"
+msgstr "Para mas mahimong sigurado imong instalsyon, dapat nimo i-dungag:"
+
+#: wp-admin/includes/network.php:208
+msgid "Sub-domains"
+msgstr "Sub-domains"
+
+#: wp-admin/includes/network.php:180 wp-admin/includes/network.php:229
+#: wp-admin/includes/network.php:270 wp-admin/includes/network.php:280
+msgid "Warning!"
+msgstr "Pahibalo!"
+
+#: wp-admin/includes/network.php:204
+msgid "You will need a wildcard DNS record if you are going to use the virtual host (sub-domain) functionality."
+msgstr "Kinahanglan nimo ug wildcard DNS nga rekord kung gamiton nimo ang birtwal nga host (sub-domain)."
+
+#: wp-admin/includes/network.php:122
+msgid "You cannot install a network of sites with your server address."
+msgstr "Dili nimo ma-install ang network sa imong sites nga naa imong address sa server."
+
+#: wp-admin/includes/network.php:161
+msgid "Fill in the information below and you&#8217;ll be on your way to creating a network of WordPress sites. We will create configuration files in the next step."
+msgstr "Ibutang ang impormasyon sa ubos ug naa naka sa dalan sa paghimo sa imong WordPress site. Maghimo mi ug conpigurasyon nga mga payl sunod sa hakbang. "
+
+#: wp-admin/includes/network.php:386
+msgid "Complete the following steps to enable the features for creating a network of sites."
+msgstr "Kumpletoha ang gasunod na mga hakbang para sugtan ang mga peture para sa paghimo sa network sa site."
+
+#: wp-admin/includes/network.php:385
+msgid "Enabling the Network"
+msgstr "Ginasugtan ang network"
+
+#: wp-admin/includes/network.php:374
+msgid "Please complete the configuration steps. To create a new network, you will need to empty or remove the network database tables."
+msgstr "Palihog ug kumpleto sa konpigurasyon na mga hakbang. Para makahimo ug bag-ong network, kinahanglan nimo na ibakante o tanggalon ang mga lamesa network database."
+
+#: wp-admin/includes/network.php:373
+msgid "An existing WordPress network was detected."
+msgstr "Ang karon nga WordPress network kay nadetekto."
+
+#: wp-admin/includes/network.php:368
+msgid "The original configuration steps are shown here for reference."
+msgstr "Ang orihinal nga konpigurasyon na mga hakbang kay makit-an dinhi para sa basehan."
+
+#: wp-admin/includes/network.php:317
+msgid "Your email address."
+msgstr "Imong email address."
+
+#: wp-admin/includes/network.php:308
+msgid "What would you like to call your network?"
+msgstr "Unsa imong gusto itawag sa imong network?"
+
+#: wp-admin/includes/network.php:304 wp-admin/network/settings.php:105
+msgid "Network Title"
+msgstr "Titulo sa network"
+
+#: wp-admin/includes/network.php:286
+msgid "Because your install is not new, the sites in your WordPress network must use sub-domains."
+msgstr "Kay tungod imong install kay dili bag-o, ang mga site sa imong WordPress nga network kay dapat mugamit ug sub-domains."
+
+#: wp-admin/includes/network.php:285
+msgid "Sub-domain Install"
+msgstr "Sub-domain Install"
+
+#: wp-admin/includes/network.php:277
+msgid "Because your install is in a directory, the sites in your WordPress network must use sub-directories."
+msgstr "Kay tungod imong install kay naa sa direktorya, ang mga site sa imong WordPress netwrok kay dapat mugamit sub-direktoryas."
+
+#: wp-admin/includes/network.php:270 wp-admin/includes/network.php:280
+#: wp-admin/includes/network.php:287
+msgid "The main site in a sub-directory install will need to use a modified permalink structure, potentially breaking existing links."
+msgstr "Ang dako nga site sa sub-direktorya install kay gakinahanglan ug modipiya nga permalink nga kaayuhan, potensyal nga pagbulay sa karon na mga link."
+
+#: wp-admin/includes/network.php:234 wp-admin/includes/network.php:244
+#: wp-admin/includes/network.php:293
+msgid "Server Address"
+msgstr "Address sa server"
+
+#. translators: 1: hostname
+#: wp-admin/includes/network.php:219
+msgctxt "subdirectory examples"
+msgid "like <code>%1$s/site1</code> and <code>%1$s/site2</code>"
+msgstr "pareha <code>%1$s/site1</code> ug <code>%1$s/site2</code>"
+
+#: wp-admin/network/users.php:70
+msgid "Warning! User cannot be modified. The user %s is a network administrator."
+msgstr "Babala! Ang taga-gamit kay dili mabag-o. Ang taga-gamit kay administrador sa network."
+
+#: wp-admin/network/sites.php:30
+msgid "Hovering over each site reveals seven options (three for the primary site):"
+msgstr "Ang pag-atang sa kada site gapakita ug pito ka opsyons (Tulo para sa primiro nga site):"
+
+#: wp-admin/network/sites.php:36
+msgid "The site ID is used internally, and is not shown on the front end of the site or to users/viewers."
+msgstr "Ang site ID kay ginagamit sa sulod, ug dili makit-an sa gawas sa site or sa mga taga-gamit/taga-tan-aw."
+
+#: wp-admin/network/sites.php:33
+msgid "Deactivate, Archive, and Spam which lead to confirmation screens. These actions can be reversed later."
+msgstr "Deaktibo, arkibo, ug spam nga paadto sa konpirmasyon screens. Kani nga aksyons pwede mareserba unya."
+
+#: wp-admin/network/site-new.php:24
+msgid "If the admin email for the new site does not exist in the database, a new user will also be created."
+msgstr "Kung ang email sa admin para sa bag-ong site kay dili makit-an sa database, ang bag-ong taga-gamit kay mahimo pud dapat."
+
+#: wp-admin/network/settings.php:29
+msgid "Operational settings has fields for the network&#8217;s name and admin email."
+msgstr "Ang operasyon nga settings kay naay pwesto para sa ngalan sa network ug email sa admin."
+
+#: wp-admin/network/settings.php:32
+msgid "Upload settings control the size of the uploaded files and the amount of available upload space for each site. You can change the default value for specific sites when you edit a particular site. Allowed file types are also listed (space separated only)."
+msgstr "Ang settings sa pag-upload kay mukontrol ug size sa mga gi-upload nga payl ug ang halaga sa pwede nga espasyo sa upload sa kada site. Pwede nimo ilisan ang depult balyu para espisiko nga sites kung usabon nimo ang naingon nga site. Ang ginasugtan nga klase sa payl kay nakalista (Nalahi sa espasyo)."
+
+#: wp-admin/network/users.php:173
+msgid "The bulk action will permanently delete selected users, or mark/unmark those selected as spam. Spam users will have posts removed and will be unable to sign up again with the same email addresses."
+msgstr "Ang kadaghanan nga aksyon kay mapermaninti ug tanggal sa pinilian nga taga-gamit, or markahan/dili markahan ang kato nga pinilian nga spam. Ang taga-gamit sa spam kay matanggal ang posts ug dili na pwede magsign up usab gamit ang pareha nga email addresses."
+
+#: wp-admin/network/users.php:171
+msgid "You can also go to the user&#8217;s profile page by clicking on the individual username."
+msgstr "Pwede pud ka muadto sa profile page sa taga-gamit, klik sa indibidwal username."
+
+#: wp-admin/network/users.php:174
+msgid "You can make an existing user an additional super admin by going to the Edit User profile page and checking the box to grant that privilege."
+msgstr "Pwede ka makahimo ug naa karon nga taga-gamit nga dungag nga pinaka admin sa pamaagi sa Usabon ang taga-gamit nga pahina sa profile ug sa pagtsek sa box para mahatag ang pribilihiyo."
+
+#: wp-admin/network/users.php:169
+msgid "This table shows all users across the network and the sites to which they are assigned."
+msgstr "Kani nga lamesa gapakita nga tanang taga-gamit sa network ug sa sites kung asa sila nakabutang."
+
+#: wp-admin/network/upgrade.php:23
+msgid "If a version update to core has not happened, clicking this button won&#8217;t affect anything."
+msgstr "Kung pagbag-o sa bersyon sa tunga kay wala nahitabo, sa pagklik sa kani nga buton kay dili maapektuhan ang uban."
+
+#: wp-admin/network/upgrade.php:24
+msgid "If this process fails for any reason, users logging in to their sites will force the same update."
+msgstr "Kung kani nga proseso kay nahagbong sa walay rason, ang mga taga-gamit nga naglog in sa ilang mga site kay mapwersa nga himuon ang pareha nga pagbag-o."
+
+#: wp-admin/network/user-new.php:21
+msgid "Users who are signed up to the network without a site are added as subscribers to the main or primary dashboard site, giving them profile pages to manage their accounts. These users will only see Dashboard and My Sites in the main navigation until a site is created for them."
+msgstr "Mga taga-gamit nga nagsign up sa network nga walay site kay gidungag ingon nga mga suskritor sa daku o primiro nga dashboard sa site, sa paghatag sa ila ug pahina sa profile para mamaneho ang ilang accounts. Kani nga mga taga-gamit kay makit-an lang sa Dashboard ug My Sites sa daku nga nabigasyon hantod nga ang site kay mahimo para sa ila."
+
+#: wp-admin/network/sites.php:29
+msgid "This is the main table of all sites on this network. Switch between list and excerpt views by using the icons above the right side of the table."
+msgstr "Kani kay ang daku nga lamesa para sa tanang sites sa kani nga network. Ilisan sa tunga sa listahan ug excerpt pakita sa pamaagi sa icons sa taas sa tuo nga parte sa lamesa."
+
+#: wp-admin/network/settings.php:34
+msgid "Menu setting enables/disables the plugin menus from appearing for non super admins, so that only super admins, not site admins, have access to activate plugins."
+msgstr "Ang settings sa menu kay dili sugtan/sugtan ang plugin menus gikan sa pagpakita para sa dili pinaka admins, para ang pinaka admins, dili ang site admins, ang maka-adto sa naaktibo nga plugins."
+
+#: wp-admin/network/settings.php:30
+msgid "Registration settings can disable/enable public signups. If you let others sign up for a site, install spam plugins. Spaces, not commas, should separate names banned as sites for this network."
+msgstr "Ang settings sa pagparehistro kay dili sugtan/sugtan sa publiko nga signups. Kung musugot ka nga ang uban ang musign up para sa site, i-install ang spam plugins. Mga espasyo, dili commas, dapat nakalahi ang ngalan nga gipahawa nga sites para sa diri nga network."
+
+#: wp-admin/network/settings.php:28
+msgid "This screen sets and changes options for the network as a whole. The first site is the main site in the network and network options are pulled from that original site&#8217;s options."
+msgstr "Kani nga screen nagaplastar ug ga-ilis ug opsyons para sa buo nga network. Ang una nga site kay ang daku nga site sa network ug ang opsyon sa network kay gibira gikan sa kana nga orihinal nga opsyons sa site."
+
+#: wp-admin/network/themes.php:223
+msgid "If the network admin disables a theme that is in use, it can still remain selected on that site. If another theme is chosen, the disabled theme will not appear in the site&#8217;s Appearance > Themes screen."
+msgstr "Kung ang admin sa network sa gitugtan ang tema nga gigamit, pwede gihapon pilion sa kana nga site. Kung ang uban nga tema kay napili na, ang wala gitugtan nga tema kay dili makit-an sa site Appearance > Screen sa nga Tema."
+
+#: wp-admin/network/themes.php:222
+msgid "This screen enables and disables the inclusion of themes available to choose in the Appearance menu for each site. It does not activate or deactivate which theme a site is currently using."
+msgstr "Kani nga screen gatugot ug wala gatugot sa pag-uban sa mga tema nga pwede para mapili sa Appearance menu para sa kada site. Dili niya gi-aktibo or deaktibo kung asa ang tema sa site ginagamit."
+
+#: wp-admin/network/settings.php:31
+msgid "New site settings are defaults applied when a new site is created in the network. These include welcome email for when a new site or user account is registered, and what&#8127;s put in the first post, page, comment, comment author, and comment URL."
+msgstr "Ang settings sa bag-ong site kay depult ang naaplika kung naay bag-ong site na nahimo sa network. Apil na niini ang maayong pag-abot nga email para kung naay bag-ong site or account sa taga-gamit na narehistro, ug kung unsa ang ibutang sa una nga post, pahina, komento, komento sa author, ug komento sa URL."
+
+#: wp-admin/network/upgrade.php:111
+msgid "If your browser doesn&#8217;t start loading the next page automatically, click this link:"
+msgstr "Kung ang imong browser dili magsugod ug dagan sa sunod nga pahina dayun, klik ni nga link:"
+
+#: wp-admin/network/site-new.php:37
+msgid "Can&#8217;t create an empty site."
+msgstr "Dili makahimo ug walay unod nga site."
+
+#: wp-admin/network/settings.php:197
+msgid "If you want to ban domains from site registrations. One domain per line."
+msgstr "Kung gusto nimo ibawala ang domains gikan sa rehistro sa site. Usa ka domain kada linya."
+
+#: wp-admin/network/settings.php:186
+msgid "If you want to limit site registrations to certain domains. One domain per line."
+msgstr "Kung gusto nimo limitahan ang rehistro sa site para sa domains. Usa ka domain kada linya."
+
+#: wp-admin/network/sites.php:260
+msgid "Site removed from spam."
+msgstr "Site natanggal gikan sa spam."
+
+#: wp-admin/network/users.php:203
+msgid "Users removed from spam."
+msgstr "Ang mga taga-gamit natanggal gikan sa spam."
+
+#: wp-admin/network/sites.php:233
+msgid "Sites removed from spam."
+msgstr "Ang mga site natanggal gikan sa spam."
+
+#: wp-admin/network/sites.php:236
+msgid "Sites marked as spam."
+msgstr "Namarkahan na ang mga site nga spam."
+
+#: wp-admin/network/sites.php:263
+msgid "Site marked as spam."
+msgstr "Namarkahan na ang site nga spam."
+
+#: wp-admin/network/sites.php:248
+msgid "Site archived."
+msgstr "Naarkibo ang site."
+
+#: wp-admin/network/users.php:206
+msgid "Users deleted."
+msgstr "Natanggal ang mga taga-gamit."
+
+#: wp-admin/network/sites.php:251
+msgid "Site unarchived."
+msgstr "Wala gi-arkibo ang site."
+
+#: wp-admin/network/sites.php:254
+msgid "Site activated."
+msgstr "Na-aktibo na ang site."
+
+#: wp-admin/network/sites.php:257
+msgid "Site deactivated."
+msgstr "Nadeaktibo na ang site."
+
+#: wp-admin/network/users.php:200
+msgid "Users marked as spam."
+msgstr "Namarkahan na ang taga-gamit nga spam."
+
+#: wp-admin/network/sites.php:242
+msgid "Site deleted."
+msgstr "Natanggal na ang site."
+
+#: wp-admin/network/sites.php:239
+msgid "Sites deleted."
+msgstr "Natanggal na ang mga site."
+
+#: wp-admin/network/site-new.php:115
+msgid "There was an error creating the user."
+msgstr "Naay error sa pagbuhat sa taga-gamit."
+
+#: wp-admin/network/settings.php:297
+msgid "Upload file types"
+msgstr "Klase sa payl nga i-upload"
+
+#: wp-admin/network/settings.php:289
+msgid "Limit total size of files uploaded to %s MB"
+msgstr "Limitahan ang total nga size sa payl nga ma-upload sa %s MB"
+
+#: wp-admin/network/settings.php:279
+msgid "The URL for the first comment on a new site."
+msgstr "Ang URL para sa una nga komento sa bag-ong site."
+
+#: wp-admin/network/settings.php:252
+msgid "The first comment on a new site."
+msgstr "Ang una nga komento sa bag-ong site."
+
+#: wp-admin/network/settings.php:242
+msgid "The first page on a new site."
+msgstr "Ang una nga pahina sa bag-o nga site."
+
+#: wp-admin/network/settings.php:232
+msgid "The first post on a new site."
+msgstr "Una nga post sa bag-ong site."
+
+#: wp-admin/network/settings.php:261
+msgid "The author of the first comment on a new site."
+msgstr "Ang author sa una nga komento sa bag-ong site."
+
+#: wp-admin/network/upgrade.php:67
+msgid "All done!"
+msgstr "Nahuman tanan!"
+
+#: wp-admin/network/settings.php:133
+msgid "Registration is disabled."
+msgstr "Wala gisugtan ang pagparehistro."
+
+#: wp-admin/network/settings.php:134
+msgid "User accounts may be registered."
+msgstr "Ang account sa taga-gamit kay marehistro."
+
+#: wp-admin/network/settings.php:136
+msgid "Both sites and user accounts can be registered."
+msgstr "Pareha nga account sa sites ug taga-gamit kay makarehistro."
+
+#: wp-admin/network/settings.php:135
+msgid "Logged in users may register new sites."
+msgstr "Ang naka-log in nga mga taga-gamit kay pwede makarehistro sa bag-ong sites."
+
+#: wp-admin/network/settings.php:121
+msgid "Registration Settings"
+msgstr "Rehistro settings"
+
+#: wp-admin/network/settings.php:203
+msgid "New Site Settings"
+msgstr "Bag-ong site settings"
+
+#: wp-admin/network/settings.php:284
+msgid "Upload Settings"
+msgstr "Upload settings"
+
+#: wp-admin/network/settings.php:102
+msgid "Operational Settings"
+msgstr "Operasyonal settings"
+
+#: wp-admin/network/settings.php:358
+msgid "Enable administration menus"
+msgstr "Sugtan ang adminstrasyon menus"
+
+#: wp-admin/network/site-new.php:80
+msgid "Missing email address."
+msgstr "Nawala ang email address."
+
+#: wp-admin/network/site-new.php:77
+msgid "Missing or invalid site address."
+msgstr "Nawala o inbalid ang site address."
+
+#: wp-admin/network/upgrade.php:111
+msgid "Next Sites"
+msgstr "Sunod nga mga site"
+
+#: wp-admin/network/settings.php:173
+msgid "Users are not allowed to register these sites. Separate names by spaces."
+msgstr "Ang taga-gamit kay dili sugtan para magparehistro sa kani nga sites. Ilain ang ngalan gamit ang espasyo."
+
+#: wp-admin/network/settings.php:157
+msgid "Send the network admin an email notification every time someone registers a site or user account."
+msgstr "Pasahi ang network admin ug email notipiksyon sa kada naay magrehistro sa site o taga-gamit nga account."
+
+#: wp-admin/network/settings.php:287
+msgid "Site upload space"
+msgstr "Espasyo sa site upload"
+
+#: wp-admin/network/settings.php:212
+msgid "The welcome email sent to new site owners."
+msgstr "Ang maayong pag-abot nga email kay napasa na sa bag-ong mga tag-iya sa site."
+
+#. translators: %s: network name
+#: wp-admin/network/site-new.php:140
+msgid "[%s] New Site Created"
+msgstr "Bag-ong site na nahimo"
+
+#: wp-admin/includes/network.php:313 wp-admin/network/settings.php:112
+msgid "Network Admin Email"
+msgstr "Email sa network admin"
+
+#: wp-admin/network/site-new.php:247
+msgid "The username and password will be mailed to this email address."
+msgstr "Ang username ug password kay mapasa sa kani nga email address."
+
+#: wp-admin/network/site-new.php:247
+msgid "A new user will be created if the above email address is not in the database."
+msgstr "Mahimo ang bag-ong taga-gamit kung ang naa sa taas nga email address kay wala sa database."
+
+#: wp-admin/network/site-new.php:243
+msgid "Admin Email"
+msgstr "Email sa admin"
+
+#: wp-admin/network/site-new.php:259
+msgid "Add Site"
+msgstr "Dungag nga site"
+
+#: wp-admin/network/settings.php:331
+msgid "Default Language"
+msgstr "Depult nga Lengwahe"
+
+#: wp-admin/network/settings.php:307
+msgid "Max upload file size"
+msgstr "Pinaka daku nga size sa payl nga maupload."
+
+#: wp-admin/network/settings.php:275
+msgid "First Comment URL"
+msgstr "Una nga komento sa URL"
+
+#: wp-admin/network/settings.php:257
+msgid "First Comment Author"
+msgstr "Una nga komento sa author"
+
+#: wp-admin/network/settings.php:247
+msgid "First Comment"
+msgstr "Una nga komento"
+
+#: wp-admin/network/settings.php:237
+msgid "First Page"
+msgstr "Una nga pahina"
+
+#: wp-admin/network/settings.php:222
+msgid "The welcome email sent to new users."
+msgstr "Ang email kay napasa na para sa mga bag-ong abot nga taga-gamit."
+
+#: wp-admin/network/settings.php:217
+msgid "Welcome User Email"
+msgstr "Maayong pag-abot taga-gamit sa email"
+
+#: wp-admin/network/settings.php:207
+msgid "Welcome Email"
+msgstr "Maayong pag-abot email"
+
+#: wp-admin/network/settings.php:192
+msgid "Banned Email Domains"
+msgstr "Gibawalan nga email domains"
+
+#: wp-admin/network/settings.php:179
+msgid "Limited Email Registrations"
+msgstr "Gilimitahan ang pagparehistro sa email."
+
+#: wp-admin/network/settings.php:169
+msgid "Banned Names"
+msgstr "Mga banned nga ngalan"
+
+#: wp-admin/network/settings.php:162
+msgid "Add New Users"
+msgstr "Dungag ug bag-ong taga-gamit"
+
+#: wp-admin/network/settings.php:151
+msgid "Registration notification"
+msgstr "Notipikasyon sa pagparehistro"
+
+#: wp-admin/network/settings.php:124
+msgid "Allow new registrations"
+msgstr "Sugtan ang bag-ong mga rehistro."
+
+#: wp-admin/network/site-users.php:255
+msgid "Duplicated username or email address."
+msgstr "Nadupliko ang username o email address."
+
+#: wp-admin/network/user-new.php:37
+msgid "Cannot create an empty user."
+msgstr "Dili makahimo ug walay unod nga taga-gamit."
+
+#: wp-admin/network/sites.php:107
+msgid "Confirm"
+msgstr "Kompirma"

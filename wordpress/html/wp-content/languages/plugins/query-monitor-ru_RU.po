@@ -1,0 +1,1677 @@
+# Translation of Plugins - Query Monitor &#8211; The developer tools panel for WordPress - Stable (latest release) in Russian
+# This file is distributed under the same license as the Plugins - Query Monitor &#8211; The developer tools panel for WordPress - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-09-30 17:52:07+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n % 10 == 1 && n % 100 != 11) ? 0 : ((n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14)) ? 1 : 2);\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: ru\n"
+"Project-Id-Version: Plugins - Query Monitor &#8211; The developer tools panel for WordPress - Stable (latest release)\n"
+
+#. translators: 1: PHP class name, 2: Version number.
+#: classes/Deprecated_Class_Run.php:35
+msgid "Class %1$s is deprecated since version %2$s with no alternative available."
+msgstr "Класс %1$s считается устаревшим с версии %2$s, без альтернативы для замены."
+
+#. translators: 1: PHP class name, 2: Version number, 3: Alternative class or
+#. function name.
+#: classes/Deprecated_Class_Run.php:26
+msgid "Class %1$s is deprecated since version %2$s! Use %3$s instead."
+msgstr "Класс %1$s считается устаревшим с версии %2$s! Вместо него используйте %3$s."
+
+#. translators: An HTTP API request redirected to another URL
+#: output/html/http.php:205
+msgid "This HTTP request was redirected to:"
+msgstr "Этот HTTP-запрос был перенаправлен на:"
+
+#. translators: %s: The name of a filter that short-circuited an HTTP API
+#. request
+#: output/html/http.php:194
+msgid "This HTTP request was short-circuited by the %s filter and was not sent"
+msgstr "Этот HTTP-запрос был заблокирован фильтром %s и не был отправлен"
+
+#: output/html/environment.php:281
+msgid "Basic Auth"
+msgstr "Базовая авторизация"
+
+#: output/html/assets.php:53
+msgid "Module"
+msgstr "Модуль"
+
+#: collectors/logger.php:173
+msgid "Assertion failed"
+msgstr "Утверждение не прошло"
+
+#. translators: %s: Assertion message
+#: collectors/logger.php:169
+msgid "Assertion failed: %s"
+msgstr "Утверждение не прошло: %s"
+
+#: collectors/logger.php:161
+msgid "Assertion passed"
+msgstr "Утверждение прошло"
+
+#. translators: %s: Assertion message
+#: collectors/logger.php:157
+msgid "Assertion passed: %s"
+msgstr "Утверждение прошло: %s"
+
+#: classes/Collector.php:124 output/html/environment.php:240
+msgid "empty string"
+msgstr "пустая строка"
+
+#. translators: %s: Drop-in plugin file name
+#: classes/Component_Dropin.php:12
+msgid "Drop-in: %s"
+msgstr "Вкрапление: %s"
+
+#: output/html/hooks.php:36
+msgid "Hooks, Actions, & Filters"
+msgstr "Хуки, События и Фильтры"
+
+#: output/html/environment.php:245
+msgid "Development Mode"
+msgstr "Режим разработки"
+
+#. translators: %s: Total number of Doing it Wrong occurrences
+#: output/html/doing_it_wrong.php:118
+msgctxt "Total Doing it Wrong occurrences"
+msgid "Total: %s"
+msgstr "Всего: %s"
+
+#: output/html/doing_it_wrong.php:57
+msgid "No occurrences."
+msgstr "Нет вхождений."
+
+#. translators: %s: Total number of Doing it Wrong occurrences
+#: output/html/doing_it_wrong.php:43
+msgctxt "Doing it Wrong"
+msgid "Doing it Wrong (%s)"
+msgstr "Неверные действия (%s)"
+
+#: output/html/doing_it_wrong.php:41
+msgid "Doing it Wrong occurrences"
+msgstr "Случаи неверных действий"
+
+#. translators: %s: Total number of Doing it Wrong occurrences
+#: output/html/doing_it_wrong.php:40
+msgctxt "Doing it Wrong"
+msgid "Total: %s"
+msgstr "Всего: %s"
+
+#: output/html/doing_it_wrong.php:31
+msgid "Doing it Wrong"
+msgstr "Неверное действие"
+
+#. translators: %s: Name of WordPress filter
+#: dispatchers/Html.php:608
+msgid "The file link format for your editor is set by the %s filter."
+msgstr "Формат ссылки на файл для вашего редактора устанавливается фильтром %s."
+
+#. translators: 1: WordPress hook name, 2: Version number, 3: Optional message
+#. regarding the change.
+#: classes/Deprecated_Hook_Run.php:38
+msgid "Hook %1$s is deprecated since version %2$s with no alternative available. %3$s"
+msgstr "Хук %1$s устарел с выхода версии %2$s и не имеет альтернативы. %3$s"
+
+#. translators: 1: WordPress hook name, 2: Version number, 3: Alternative hook
+#. name, 4: Optional message regarding the change.
+#: classes/Deprecated_Hook_Run.php:28
+msgid "Hook %1$s is deprecated since version %2$s! Use %3$s instead. %4$s"
+msgstr "Хук %1$s устарел начиная с версии %2$s! Используйте %3$s вместо него. %4$s"
+
+#. translators: 1: PHP function name, 2: Version number.
+#: classes/Deprecated_Argument_Run.php:35
+msgid "Function %1$s was called with an argument that is deprecated since version %2$s with no alternative available."
+msgstr "Функция %1$s была вызвана с аргументом, который устарел начиная с версии %2$s без доступной альтернативы."
+
+#. translators: 1: PHP function name, 2: Version number, 3: Optional message
+#. regarding the change.
+#: classes/Deprecated_Argument_Run.php:26
+msgid "Function %1$s was called with an argument that is deprecated since version %2$s! %3$s"
+msgstr "Функция %1$s была вызвана с аргументом, который устарел начиная с версии %2$s! %3$s."
+
+#. translators: 1: PHP file name, 2: Version number, 3: Optional message
+#. regarding the change.
+#: classes/Deprecated_File_Included.php:38
+msgid "File %1$s is deprecated since version %2$s with no alternative available. %3$s"
+msgstr "Файл %1$s устарел с версии %2$s без доступной альтернативы. %3$s."
+
+#. translators: 1: PHP file name, 2: Version number, 3: Alternative file name,
+#. 4: Optional message regarding the change.
+#: classes/Deprecated_File_Included.php:28
+msgid "File %1$s is deprecated since version %2$s! Use %3$s instead. %4$s"
+msgstr "Файл %1$s устарел с версии %2$s! Вместо него используйте %3$s. %4$s"
+
+#. translators: 1: PHP class name, 2: PHP parent class name, 3: Version number,
+#. 4: __construct() method.
+#: classes/Deprecated_Constructor_Run.php:26
+msgid "The called constructor method for %1$s class in %2$s is deprecated since version %3$s! Use %4$s instead."
+msgstr "Вызванный метод конструктора для класса %1$s в %2$s устарел, начиная с версии %3$s! Вместо этого используйте %4$s."
+
+#. translators: 1: PHP class name, 2: Version number, 3: __construct() method.
+#: classes/Deprecated_Constructor_Run.php:36
+msgid "The called constructor method for %1$s class is deprecated since version %2$s! Use %3$s instead."
+msgstr "Вызванный метод конструктора для класса %1$s устарел, начиная с версии %2$s! Вместо этого используйте %3$s."
+
+#. translators: 1: PHP function name, 2: Version number, 3: Alternative
+#. function name.
+#: classes/Deprecated_Function_Run.php:26
+msgid "Function %1$s is deprecated since version %2$s! Use %3$s instead."
+msgstr "Функция %1$s устарела, начиная с версии %2$s! Вместо этого используйте %3$s."
+
+#. translators: 1: PHP function name, 2: Version number.
+#: classes/Deprecated_Function_Run.php:35
+msgid "Function %1$s is deprecated since version %2$s with no alternative available."
+msgstr "Функция %1$s устарела с версии %2$s без доступной альтернативы."
+
+#. translators: Developer debugging message. 1: PHP function name, 2:
+#. Explanatory message, 3: WordPress version number.
+#: classes/Doing_It_Wrong_Run.php:33
+msgid "Function %1$s was called incorrectly. %2$s %3$s"
+msgstr "Функция %1$s была вызвана неправильно. %2$s %3$s"
+
+#. translators: %s: Version number.
+#: classes/Doing_It_Wrong_Run.php:26
+msgid "(This message was added in version %s.)"
+msgstr "(Это сообщение было добавлено в версии %s.)"
+
+#. translators: %s: Number of PHP errors
+#: output/html/php_errors.php:201
+msgctxt "PHP error count"
+msgid "Total: %s"
+msgid_plural "Total: %s"
+msgstr[0] "Всего: %s"
+msgstr[1] "Всего: %s"
+msgstr[2] "Всего: %s"
+
+#: output/html/theme.php:84
+msgid "Block Template"
+msgstr "Шаблон блока"
+
+#: output/html/timing.php:216
+msgid "Timings"
+msgstr "Тайминги"
+
+#. translators: %s: Link to help article
+#: output/html/timing.php:45
+msgid "No data logged. <a href=\"%s\">Read about timing and profiling in Query Monitor</a>."
+msgstr "Данных пока нет. <a href=\"%s\">Прочитайте о логировании и тайминге в Query Monitor</a>."
+
+#: output/html/multisite.php:52
+msgid "Site Switch"
+msgstr "Переключить сайт"
+
+#: output/html/multisite.php:51
+msgid "Function"
+msgstr "Функция"
+
+#: output/html/multisite.php:37
+msgid "No data logged."
+msgstr "Данных пока нет."
+
+#. translators: A closure is an anonymous PHP function
+#: classes/Util.php:421
+msgid "Unknown closure"
+msgstr "Неизвестное замыкание"
+
+#. translators: %s: Name of a multilingual plugin
+#: output/html/languages.php:62 output/html/languages.php:75
+msgid "%s Language"
+msgstr "%s язык"
+
+#: dispatchers/Html.php:624
+msgctxt "colour scheme"
+msgid "Dark"
+msgstr "Темная"
+
+#: dispatchers/Html.php:623
+msgctxt "colour scheme"
+msgid "Light"
+msgstr "Светлая"
+
+#: dispatchers/Html.php:622
+msgctxt "colour scheme"
+msgid "Auto"
+msgstr "Авто"
+
+#: dispatchers/Html.php:619
+msgid "Your browser color scheme is respected by default. You can override it here."
+msgstr "По умолчанию используется цветовая схема вашего браузера. Вы можете изменить ее здесь."
+
+#: dispatchers/Html.php:617
+msgid "Appearance"
+msgstr "Внешний вид"
+
+#. translators: %s: Memory usage in megabytes with a decimal fraction. Note the
+#. space between value and unit symbol.
+#: output/headers/overview.php:40 output/html/overview.php:392
+msgid "%s MB"
+msgstr "%s МБ"
+
+#: output/html/overview.php:361
+msgid "Speak to your web host about enabling an opcode cache such as OPcache."
+msgstr "Обратитесь к своему хостинг-провайдеру, чтобы узнать как включить кэширование опкодов, например с помощью расширения OPcache."
+
+#: output/html/overview.php:358
+msgid "Opcode cache not in use"
+msgstr "Кэш Opcode не используется"
+
+#: output/html/overview.php:342
+msgid "Opcode Cache"
+msgstr "Кэш Opcode"
+
+#: output/html/overview.php:325
+msgid "Speak to your web host about enabling an object cache extension such as Redis or Memcached."
+msgstr "Обратитесь к своему хостинг-провайдеру, чтобы узнать как включить расширения объектного кэширования, такие как Redis или Memcached."
+
+#. translators: 1: PHP extension name, 2: URL to plugin directory
+#: output/html/overview.php:308
+msgid "The %1$s object cache extension for PHP is installed but is not in use by WordPress. You should <a href=\"%2$s\" target=\"_blank\" class=\"qm-external-link\">install a %1$s plugin</a>."
+msgstr "Расширение объектного кэша %1$s для PHP установлено, но не используется WordPress. Вам нужно <a href=\"%2$s\" target=\"_blank\" class=\"qm-external-link\">установить плагин %1$s</a>."
+
+#: output/html/overview.php:293
+msgid "Persistent object cache plugin not in use"
+msgstr "Плагин постоянного объектного кэша не используется"
+
+#: output/html/overview.php:286
+msgid "Persistent object cache plugin in use"
+msgstr "Плагин постоянного объектного кэша используется"
+
+#. translators: 1: Memory used in bytes, 2: Memory used in megabytes
+#: output/html/overview.php:147
+msgid "%1$s bytes (%2$s MB)"
+msgstr "%1$s байт (%2$s МБ)"
+
+#. translators: %s: A time in seconds with a decimal fraction. No space between
+#. value and unit symbol.
+#: output/html/db_queries.php:489 output/html/overview.php:105
+#: output/html/overview.php:190 output/html/overview.php:238
+#: output/html/overview.php:387
+msgctxt "Time in seconds"
+msgid "%ss"
+msgstr "%sс"
+
+#. translators: %s: Total number of items in a list
+#: output/html/logger.php:75
+msgid "All (%d)"
+msgstr "Все (%d)"
+
+#: output/html/environment.php:280
+msgid "Architecture"
+msgstr "Архитектура"
+
+#. translators: %s: Number of database queries. Note the space between value
+#. and unit symbol.
+#: output/html/db_queries.php:494 output/html/db_queries.php:508
+msgid "%s Q"
+msgid_plural "%s Q"
+msgstr[0] "%s З"
+msgstr[1] "%s З"
+msgstr[2] "%s З"
+
+#: output/html/assets_styles.php:38
+msgid "No CSS files were enqueued."
+msgstr "Ни один файл CSS не был поставлен в очередь."
+
+#: output/html/assets_scripts.php:38
+msgid "No JavaScript files were enqueued."
+msgstr "Ни один файл JavaScript не был поставлен в очередь."
+
+#: output/Html.php:324
+msgid "Non-WordPress Core"
+msgstr "Не ядро WordPress"
+
+#: dispatchers/Html.php:664
+msgid "Allow the wp-content/db.php file symlink to be put into place during activation. Set to false to prevent the symlink creation."
+msgstr "Разрешить установку символической ссылки  на файл wp-content/db.php во время активации. Установите значение в false, чтобы предотвратить создание символической ссылки."
+
+#. translators: %s: Number of hooks
+#: dispatchers/Html.php:388
+msgid "Hooks in Use (%s)"
+msgstr "Используемые хуки (%s)"
+
+#: dispatchers/Html.php:293
+msgid "Data collection ceased"
+msgstr "Сбор данных прекращен"
+
+#: classes/Component_Core.php:10 output/Html.php:319 output/html/hooks.php:96
+msgid "WordPress Core"
+msgstr "Ядро WordPress"
+
+#: output/html/overview.php:246
+msgctxt "HTTP API calls"
+msgid "Total"
+msgstr "Всего"
+
+#: output/html/block_editor.php:64
+msgid "Context"
+msgstr "Контекст"
+
+#. translators: 1: Percentage of memory limit used, 2: Memory limit in
+#. megabytes
+#: output/headers/overview.php:47 output/html/overview.php:161
+msgid "%1$s%% of %2$s MB server limit"
+msgstr "%1$s%% от лимита сервера в %2$s МБ"
+
+#: classes/QueryMonitor.php:84
+msgctxt "verb"
+msgid "Sponsor"
+msgstr "Спонсировать"
+
+#. translators: %s: File name
+#: output/html/db_queries.php:194
+msgid "Extended query information such as the component and affected rows is not available. Query Monitor was unable to symlink its %s file into place."
+msgstr "Расширенная информация запроса, такая как компонент и затронутые строки, недоступна. Query Monitor не смог создать символическую ссылку на свой файл %s."
+
+#. translators: 1: File name, 2: Configuration constant name
+#: output/html/db_queries.php:191
+msgid "Extended query information such as the component and affected rows is not available. Query Monitor was prevented from symlinking its %1$s file into place by the %2$s constant."
+msgstr "Расширенная информация о запросе, такая как компонент и затронутые строки, недоступна. Query Monitor не смог создать символическую ссылку на свой файл %1$s из константы %2$s."
+
+#. translators: %s: File name
+#: output/html/db_queries.php:188
+msgid "Extended query information such as the component and affected rows is not available. A conflicting %s file is present."
+msgstr "Расширенная информация о запросе, такая как компонент и затронутые строки, недоступна. Присутствует конфликтующий файл %s."
+
+#. translators: %s: Dependency name
+#: classes/Component_Altis_Vendor.php:12
+msgid "Dependency: %s"
+msgstr "Зависимости: %s"
+
+#. translators: %s: Link to help article
+#: output/html/logger.php:46
+msgid "No data logged. <a href=\"%s\">Read about logging variables in Query Monitor</a>."
+msgstr "Данных нет. <a href=\"%s\">Прочтите о записи переменных в Query Monitor</a>."
+
+#: output/html/environment.php:226
+msgid "Environment Type"
+msgstr "Тип окружения"
+
+#: dispatchers/Html.php:652
+msgid "Hide Query Monitor itself from various panels. Set to false if you want to see how Query Monitor hooks into WordPress."
+msgstr "Скрыть Query Monitor из различных панелей. Установите значение false, если хотите увидеть, как Query Monitor подключается к WordPress."
+
+#: dispatchers/Html.php:264
+msgid "PHP Fatal Error"
+msgstr "Критическая ошибка PHP"
+
+#. translators: 1: CLI command to run, 2: plugin directory name
+#: dispatchers/Html.php:211
+msgid "Asset files for Query Monitor need to be built. Run %1$s from the %2$s directory."
+msgstr "Необходимо создать файлы ресурсов для Query Monitor. Запустите %1$s из каталога %2$s."
+
+#. translators: %s: Plugin or theme name
+#: dispatchers/WP_Die.php:120
+msgid "This message was triggered by %s."
+msgstr "Это сообщение инициировано %s."
+
+#: dispatchers/Html.php:604
+msgid "Saved! Reload to apply changes."
+msgstr "Сохранено! Перезагрузите, чтобы применить изменения."
+
+#: dispatchers/Html.php:600
+msgid "Set editor cookie"
+msgstr "Установить cookie-файл редактора"
+
+#: dispatchers/Html.php:576
+msgid "You can set your editor here, so that when you click on stack trace links the file opens in your editor."
+msgstr "Здесь вы можете настроить свой редактор, чтобы при нажатии на ссылки трассировки стека файл открывался в вашем редакторе."
+
+#: dispatchers/Html.php:573
+msgid "Editor"
+msgstr "Редактор"
+
+#. translators: %s: Number of logs that are available
+#: output/html/logger.php:219
+msgid "Logs (%s)"
+msgstr "Журналы (%s)"
+
+#: output/html/request.php:197
+msgid "Requested URL"
+msgstr "Запрошенный URL"
+
+#: output/html/request.php:196
+msgid "HTTP method"
+msgstr "HTTP метод"
+
+#: output/html/request.php:195
+msgid "Remote IP"
+msgstr "Удаленный IP"
+
+#: output/html/admin.php:75
+msgid "Global Variable"
+msgstr "Глобальная переменная"
+
+#: output/html/admin.php:71
+msgid "Globals"
+msgstr "Глобальные"
+
+#: output/html/headers.php:119
+msgid "Response Headers"
+msgstr "Заголовки ответа"
+
+#: output/html/headers.php:118
+msgid "Request Headers"
+msgstr "Заголовки запроса"
+
+#: output/html/headers.php:102
+msgid "Note that header names are not case-sensitive."
+msgstr "Обратите внимание, что имена заголовков не чувствительны к регистру."
+
+#: output/html/headers.php:69
+msgid "Response Header Name"
+msgstr "Имя заголовка ответа"
+
+#: output/html/headers.php:54
+msgid "Request Header Name"
+msgstr "Имя заголовка запроса"
+
+#: output/html/timing.php:61
+msgid "Stopped"
+msgstr "Остановлен"
+
+#: output/html/timing.php:60
+msgid "Started"
+msgstr "Запущен"
+
+#. translators: %s: Number of database queries
+#: output/html/db_queries.php:290
+msgctxt "Query count"
+msgid "Total: %s"
+msgid_plural "Total: %s"
+msgstr[0] "Всего: %s"
+msgstr[1] "Всего: %s"
+msgstr[2] "Всего: %s"
+
+#: output/html/overview.php:84
+msgid "Unknown HTTP Response Code"
+msgstr "Неизвестный код ответа HTTP"
+
+#: output/html/headers.php:34 output/html/request.php:191
+msgid "Request Data"
+msgstr "Данные запроса"
+
+#. translators: %s: Default value for a PHP constant
+#: dispatchers/Html.php:707
+msgid "Default value: %s"
+msgstr "Значение по умолчанию: %s"
+
+#: output/html/theme.php:181
+msgid "Not Loaded"
+msgstr "Не загружен"
+
+#. translators: 1: Query Monitor, 2: Required PHP version number, 3: Current
+#. PHP version number, 4: URL of PHP update help page
+#: classes/PHP.php:32
+msgid "The %1$s plugin requires PHP version %2$s or higher. This site is running PHP version %3$s. <a href=\"%4$s\">Learn about updating PHP</a>."
+msgstr "Плагин %1$s требует версию PHP %2$s или выше. На сайте используется PHP версии %3$s. <a href=\"%4$s\">Узнать больше об обновлении PHP</a>."
+
+#. translators: %s: Total number of enqueued scripts
+#: output/html/assets_scripts.php:37
+msgctxt "Enqueued scripts"
+msgid "Scripts (%s)"
+msgstr "Скрипты (%s)"
+
+#. translators: %s: Total number of enqueued styles
+#: output/html/assets_styles.php:37
+msgctxt "Enqueued styles"
+msgid "Styles (%s)"
+msgstr "Стили (%s)"
+
+#: output/html/overview.php:331
+msgid "Object cache statistics are not available"
+msgstr "Статистика по объектному кэшу недоступна"
+
+#: output/Html.php:393
+msgid "Toggle more information"
+msgstr "Посмотреть больше информации"
+
+#: output/Html.php:380
+msgid "Sort data by this column"
+msgstr "Сортировать данные по этому столбцу"
+
+#: output/Html.php:177 output/html/hooks.php:59
+msgid "Callback"
+msgstr "Колбэк"
+
+#. translators: %s: Panel name
+#: output/Html.php:167
+msgid "%s: Related Hooks with Filters or Actions Attached"
+msgstr "%s: Связанные хуки с прикрепленными фильтрами или событиями"
+
+#: output/Html.php:147 output/html/hooks.php:62 output/html/hooks.php:160
+msgid "Filter"
+msgstr "Фильтр"
+
+#: output/Html.php:146
+msgid "Related Hooks with Filters Attached"
+msgstr "Связанные хуки с прикрепленными фильтрами"
+
+#: output/Html.php:142
+msgid "Related Hooks with Actions Attached"
+msgstr "Связанные хуки с прикрепленными событиями"
+
+#: output/html/languages.php:95
+msgid "Translation File"
+msgstr "Файл перевода"
+
+#. translators: %s: Name of cache driver
+#: output/html/overview.php:349
+msgid "Opcode cache in use: %s"
+msgstr "Используемый драйвер для Opcode: %s"
+
+#: output/html/overview.php:212
+msgctxt "database queries"
+msgid "Total"
+msgstr "Всего"
+
+#: output/html/block_editor.php:206
+msgid "None (Classic block)"
+msgstr "Нет (классический блок)"
+
+#: output/html/block_editor.php:70
+msgid "Render Time"
+msgstr "Время отрисовки"
+
+#: output/html/theme.php:205
+msgid "Twig Template Files"
+msgstr "Файлы шаблонов Twig"
+
+#: dispatchers/Html.php:491
+msgid "Toggle panel position"
+msgstr "Переключить положение панели панели"
+
+#. translators: %1$s: Erroneous post type name, %2$s: WordPress attachment post
+#. type name
+#: output/html/block_editor.php:172
+msgid "Referenced media is of type %1$s instead of %2$s."
+msgstr "Связанный медиафайл имеет тип %1$s вместо %2$s."
+
+#: output/html/block_editor.php:164
+msgid "Referenced media does not exist."
+msgstr "Связанный медиафайл не существует."
+
+#. translators: %s: Total number of content blocks used
+#: output/html/block_editor.php:103
+msgctxt "Content blocks used"
+msgid "Total: %s"
+msgid_plural "Total: %s"
+msgstr[0] "Всего: %s"
+msgstr[1] "Всего: %s"
+msgstr[2] "Всего: %s"
+
+#: classes/QueryMonitor.php:61
+msgid "Add-ons"
+msgstr "Дополнения"
+
+#. translators: 1: Name of the PHP directive, 2: Value of the PHP directive
+#: output/html/overview.php:171
+msgid "No memory limit. The %1$s PHP configuration directive is set to %2$s."
+msgstr "Нет ограничения памяти. Директива конфигурации PHP %1$s имеет значение %2$s."
+
+#. translators: 1: Name of the PHP directive, 2: Value of the PHP directive
+#: output/html/overview.php:129
+msgid "No execution time limit. The %1$s PHP configuration directive is set to %2$s."
+msgstr "Нет ограничения по времени выполнения.   Директива конфигурации PHP %1$s имеет значение %2$s."
+
+#: classes/Collector_Assets.php:469
+msgid "Insecure content"
+msgstr "Небезопасное содержимое"
+
+#. translators: %1$s: Erroneous post type name, %2$s: WordPress block post type
+#. name
+#: output/html/block_editor.php:141
+msgid "Referenced post is of type %1$s instead of %2$s."
+msgstr "Связанная запись имеет тип %1$s вместо %2$s."
+
+#: output/html/block_editor.php:133
+msgid "Referenced block does not exist."
+msgstr "Связанный блок не найден."
+
+#: output/html/block_editor.php:73
+msgid "Inner HTML"
+msgstr "Внутренний HTML"
+
+#: output/html/block_editor.php:67
+msgid "Render Callback"
+msgstr "Колбэк отрисовки"
+
+#: output/html/block_editor.php:61
+msgid "Attributes"
+msgstr "Атрибуты"
+
+#: output/html/block_editor.php:60
+msgid "Block Name"
+msgstr "Имя блока"
+
+#: output/html/block_editor.php:47
+msgid "This post contains no blocks."
+msgstr "Эта запись не содержит блоков."
+
+#. translators: %s: The number of times that a template part file was included
+#. in the page
+#: output/html/theme.php:166
+msgctxt "template parts"
+msgid "Included %s time"
+msgid_plural "Included %s times"
+msgstr[0] "Включен %s раз"
+msgstr[1] "Включен %s раза"
+msgstr[2] "Включен %s раз"
+
+#: output/html/block_editor.php:30 output/html/block_editor.php:339
+msgid "Blocks"
+msgstr "Блоки"
+
+#: classes/QueryMonitor.php:217
+msgctxt "Human readable label for the user capability required to view Query Monitor."
+msgid "View Query Monitor"
+msgstr "Просмотр Query Monitor"
+
+#: output/html/transients.php:129
+msgid "No transients set."
+msgstr "Нет установленных транзиентов."
+
+#: output/html/overview.php:62
+msgid "PHP errors were triggered during an Ajax request. See your browser developer console for details."
+msgstr "Ошибки PHP были вызваны во время запроса Ajax. Смотрите консоль разработчика вашего браузера для подробностей."
+
+#: output/html/logger.php:221 output/raw/logger.php:21
+msgid "Logs"
+msgstr "Журналы"
+
+#: output/html/http.php:367
+msgid "No HTTP API calls."
+msgstr "Нет вызовов HTTP API."
+
+#. translators: %s: Number of HTTP API requests
+#: output/html/http.php:355
+msgctxt "HTTP API calls"
+msgid "Total: %s"
+msgid_plural "Total: %s"
+msgstr[0] "Всего: %s"
+msgstr[1] "Всего: %s"
+msgstr[2] "Всего: %s"
+
+#: output/html/environment.php:158
+msgid "Client Version"
+msgstr "Версия клиента"
+
+#: output/html/environment.php:157
+msgid "Extension"
+msgstr "Расширение"
+
+#: output/html/environment.php:156
+msgid "Server Version"
+msgstr "Версия сервера"
+
+#. translators: %s: Number of user capability checks
+#: output/html/caps.php:198
+msgctxt "User capability checks"
+msgid "Total: %s"
+msgid_plural "Total: %s"
+msgstr[0] "Всего: %s"
+msgstr[1] "Всего: %s"
+msgstr[2] "Всего: %s"
+
+#: output/html/assets.php:78
+msgid "Source"
+msgstr "Источник"
+
+#. translators: %s: Total number of enqueued styles
+#: output/html/assets_styles.php:34
+msgctxt "Enqueued styles"
+msgid "Total: %s"
+msgstr "Всего: %s"
+
+#. translators: %s: Total number of enqueued scripts
+#: output/html/assets_scripts.php:34
+msgctxt "Enqueued scripts"
+msgid "Total: %s"
+msgstr "Всего: %s"
+
+#: output/Html.php:374
+msgid "Sequence"
+msgstr "Последовательность"
+
+#. translators: %s: Current value for a PHP constant
+#: dispatchers/Html.php:721
+msgid "Current value: %s"
+msgstr "Текущее значение: %s"
+
+#. translators: %s: Name of the config file
+#: dispatchers/Html.php:687
+msgid "The following PHP constants can be defined in your %s file in order to control the behavior of Query Monitor:"
+msgstr "Следующие константы PHP могут быть заданы в вашем файле %s для того чтобы контролировать поведение Query Monitor:"
+
+#: dispatchers/Html.php:683
+msgid "Configuration"
+msgstr "Конфигурация"
+
+#: dispatchers/Html.php:660
+msgid "In the Hooks & Actions panel, show every hook that has an action or filter attached (instead of every action hook that fired during the request)."
+msgstr "Отобразить на панели «События и фильтры» все хуки, к которым прикреплено событие или фильтр (вместо каждого события хука, сработавшего во время запроса)."
+
+#: dispatchers/Html.php:656
+msgid "Don't specify jQuery as a dependency of Query Monitor. If jQuery isn't enqueued then Query Monitor will still operate, but with some reduced functionality."
+msgstr "Не указывайте jQuery как зависимость от Query Monitor. Если jQuery не поставлен в очередь, Query Monitor все еще будет работать, но с некоторыми ограниченными возможностями."
+
+#: dispatchers/Html.php:648
+msgid "Hide WordPress core on the Hooks & Actions panel."
+msgstr "Скрыть ядро ​​WordPress на панели «События и фильтры»."
+
+#: dispatchers/Html.php:644
+msgid "Enable the Capability Checks panel."
+msgstr "Включить панель проверки возможностей."
+
+#: dispatchers/Html.php:640
+msgid "Disable the handling of PHP errors."
+msgstr "Отключить обработку ошибок PHP."
+
+#: dispatchers/Html.php:636
+msgid "Disable Query Monitor entirely."
+msgstr "Полностью отключить Query Monitor."
+
+#: dispatchers/Html.php:632
+msgid "If an individual database query takes longer than this time to execute, it's considered \"slow\" and triggers a warning."
+msgstr "Если выполнение отдельного запроса к базе данных занимает больше времени, чем это время, он считается \"медленным\" и выдает предупреждение."
+
+#: dispatchers/Html.php:567
+msgid "Authentication cookie is set"
+msgstr "Cookie аутентификации установлен"
+
+#: dispatchers/Html.php:560
+msgid "You can set an authentication cookie which allows you to view Query Monitor output when you&rsquo;re not logged in, or when you&rsquo;re logged in as a different user."
+msgstr "Вы можете установить cookie аутентификации, который позволяет просматривать выходные данные Query Monitor, когда вы не вошли в систему или когда вы вошли в систему как другой пользователь."
+
+#: dispatchers/Html.php:498
+msgid "Query Monitor Menu"
+msgstr "Меню Query Monitor"
+
+#: output/html/logger.php:31
+msgid "Logger"
+msgstr "Регистратор"
+
+#. Description of the plugin
+#: query-monitor.php
+msgid "The developer tools panel for WordPress."
+msgstr "Панель инструментов разработчика для WordPress."
+
+#. translators: %s: Number of function timing results that are available
+#: output/html/timing.php:214
+msgid "Timings (%s)"
+msgstr "%s тайминг"
+
+#. translators: %s: Approximate memory used in kilobytes
+#: output/html/timing.php:110 output/html/timing.php:142
+msgid "~%s kB"
+msgstr "~%s кБ"
+
+#: output/html/timing.php:63
+msgid "Memory"
+msgstr "Память"
+
+#: output/html/timing.php:59
+msgid "Tracked Function"
+msgstr "Отслеживаемая функция"
+
+#: output/html/theme.php:275
+msgid "Template"
+msgstr "Шаблон"
+
+#: output/html/request.php:163
+msgid "Current User"
+msgstr "Текущий пользователь"
+
+#. translators: used between list items, there is a space after the comma
+#: output/html/php_errors.php:296
+msgid ", "
+msgstr ", "
+
+#. translators: %s: List of PHP error types
+#. translators: %s: Number of errors
+#: output/html/php_errors.php:293 output/html/php_errors.php:343
+msgid "PHP Errors (%s)"
+msgstr "Ошибки PHP (%s)"
+
+#. translators: %s: Number of PHP warnings
+#: output/html/php_errors.php:246
+msgctxt "PHP error level"
+msgid "%s Warning"
+msgid_plural "%s Warnings"
+msgstr[0] "%s Предупреждение"
+msgstr[1] "%s Предупреждения"
+msgstr[2] "%s Предупреждений"
+
+#. translators: %s: Number of PHP notices
+#: output/html/php_errors.php:244
+msgctxt "PHP error level"
+msgid "%s Notice"
+msgid_plural "%s Notices"
+msgstr[0] "%s Уведомление"
+msgstr[1] "%s Уведомления"
+msgstr[2] "%s Уведомлений"
+
+#. translators: %s: Number of strict PHP errors
+#: output/html/php_errors.php:242
+msgctxt "PHP error level"
+msgid "%s Strict"
+msgid_plural "%s Stricts"
+msgstr[0] "%s Требование"
+msgstr[1] "%s Требования"
+msgstr[2] "%s Требований"
+
+#. translators: %s: Number of deprecated PHP errors
+#: output/html/php_errors.php:240
+msgctxt "PHP error level"
+msgid "%s Deprecated"
+msgid_plural "%s Deprecated"
+msgstr[0] "%s Устаревшая"
+msgstr[1] "%s Устаревшие"
+msgstr[2] "%s Устаревших"
+
+#: output/html/doing_it_wrong.php:69 output/html/logger.php:85
+#: output/html/php_errors.php:79
+msgid "Message"
+msgstr "Сообщение"
+
+#: output/html/logger.php:83 output/html/php_errors.php:77
+msgid "Level"
+msgstr "Уровень"
+
+#: output/html/overview.php:61
+msgid "A JavaScript problem on the page is preventing Query Monitor from working correctly. jQuery may have been blocked from loading."
+msgstr "Проблема JavaScript на странице не позволяет корректно работать с Query Monitor. Возможно, jQuery заблокирован для загрузки."
+
+#: output/html/languages.php:96
+msgid "Size"
+msgstr "Размер"
+
+#: output/html/environment.php:276 output/html/http.php:277
+msgid "IP Address"
+msgstr "IP Адрес"
+
+#: output/html/http.php:276
+msgid "Response Content Type"
+msgstr "Тип содержимого ответа"
+
+#: output/html/http.php:81
+msgid "Response Size"
+msgstr "Размер ответа"
+
+#: output/html/http.php:262
+msgid "Transfer Start Time (TTFB)"
+msgstr "Время начала передачи (TTFB)"
+
+#: output/html/http.php:261
+msgid "Connection Time"
+msgstr "Время соединения"
+
+#: output/html/http.php:260
+msgid "DNS Resolution Time"
+msgstr "Время разрешения DNS"
+
+#: output/html/http.php:69
+msgid "URL"
+msgstr "URL"
+
+#: output/html/http.php:67
+msgid "Method"
+msgstr "Метод"
+
+#: output/Html.php:176 output/html/hooks.php:72
+msgid "Priority"
+msgstr "Приоритет"
+
+#. translators: OS stands for Operating System
+#: output/html/environment.php:279
+msgid "OS"
+msgstr "ОС"
+
+#: output/html/db_queries.php:78
+msgid "No database queries were logged."
+msgstr "Запросы к базе данных не были зарегистрированы."
+
+#: output/html/conditionals.php:57
+msgid "False Conditionals"
+msgstr "Условия со значением Ложь (false)"
+
+#: output/html/conditionals.php:44
+msgid "True Conditionals"
+msgstr "Условия со значением Истина (true)"
+
+#. translators: %s: Configuration file name.
+#: output/html/caps.php:47
+msgid "For performance reasons, this panel is not enabled by default. To enable it, add the following code to your %s file:"
+msgstr "По соображениям производительности эта панель не включена по умолчанию. Чтобы включить её, добавьте следующий код в файл %s:"
+
+#: output/html/assets.php:69
+msgid "Handle"
+msgstr "Дескриптор"
+
+#: output/html/assets.php:76 output/html/environment.php:160
+#: output/html/environment.php:277
+msgid "Host"
+msgstr "Хост"
+
+#: output/html/assets.php:61 output/html/assets.php:153
+msgid "Other"
+msgstr "Другие"
+
+#: output/html/assets.php:52
+msgid "Missing Dependencies"
+msgstr "Отсутствующие зависимости"
+
+#: output/html/admin.php:105
+msgid "Class:"
+msgstr "Класс:"
+
+#: output/html/admin.php:102
+msgid "List Table"
+msgstr "Таблица записей"
+
+#: dispatchers/Html.php:493
+msgid "Close Panel"
+msgstr "Закрыть панель"
+
+#: classes/QueryMonitor.php:60 dispatchers/Html.php:478
+#: dispatchers/Html.php:489 dispatchers/Html.php:554
+msgid "Settings"
+msgstr "Настройки"
+
+#: collectors/timing.php:143
+msgid "Timer not stopped"
+msgstr "Таймер не остановлен"
+
+#: collectors/timing.php:81 collectors/timing.php:101
+msgid "Timer not started"
+msgstr "Таймер не запущен"
+
+#: output/html/timing.php:30
+msgid "Timing"
+msgstr "Тайминг"
+
+#. translators: %d: Multisite network ID
+#: collectors/request.php:179
+msgid "Current Network: #%d"
+msgstr "Текущая сеть: #%d"
+
+#: output/html/php_errors.php:63
+msgctxt "Silenced PHP error level"
+msgid "Deprecated (Silenced)"
+msgstr "Устаревшие"
+
+#: output/html/php_errors.php:62
+msgctxt "Silenced PHP error level"
+msgid "Strict (Silenced)"
+msgstr "Строгий"
+
+#: output/html/php_errors.php:61
+msgctxt "Silenced PHP error level"
+msgid "Notice (Silenced)"
+msgstr "Уведомление"
+
+#: output/html/php_errors.php:60
+msgctxt "Silenced PHP error level"
+msgid "Warning (Silenced)"
+msgstr "Предупреждение"
+
+#. translators: A non-blocking HTTP API request
+#: output/html/http.php:57 output/html/http.php:119
+msgid "Non-blocking"
+msgstr "Не блокирующий"
+
+#. translators: %s: Timing lap number
+#: classes/Timer.php:91
+msgid "Lap %s"
+msgstr "Этап %d"
+
+#. translators: No user
+#: collectors/request.php:156
+msgctxt "user"
+msgid "None"
+msgstr "Никто"
+
+#. translators: %d: User ID
+#: collectors/request.php:151
+msgid "Current User: #%d"
+msgstr "Текущий пользователь: #%d"
+
+#: output/html/db_queries.php:218
+msgid "Non-SELECT"
+msgstr "Не SELECT"
+
+#: output/html/db_queries.php:97
+msgid "Error Message"
+msgstr "Сообщение ошибки"
+
+#: output/html/db_queries.php:98
+msgid "Error Code"
+msgstr "Код ошибки"
+
+#: output/html/caps.php:209
+msgid "No capability checks were recorded."
+msgstr "Никаких проверок возможностей не было зарегистрировано."
+
+#: output/html/caps.php:91
+msgid "Result"
+msgstr "Результат"
+
+#: output/html/caps.php:87 output/html/environment.php:81
+#: output/html/environment.php:159
+msgid "User"
+msgstr "Пользователь"
+
+#: output/html/caps.php:79
+msgid "Capability Check"
+msgstr "Возможности"
+
+#: output/html/caps.php:30
+msgid "Capability Checks"
+msgstr "Проверки возможностей"
+
+#. translators: %s: Number of transient values that were updated
+#: output/html/transients.php:148
+msgid "Transient Updates (%s)"
+msgstr "Обновления транзиентов (%s)"
+
+#: output/html/transients.php:51
+msgctxt "size of transient value"
+msgid "Size"
+msgstr "Размер"
+
+#: output/html/transients.php:48
+msgctxt "transient type"
+msgid "Type"
+msgstr "Тип"
+
+#: output/html/transients.php:46
+msgid "Updated Transient"
+msgstr "Обновленный транзиент"
+
+#: output/html/transients.php:146
+msgid "Transient Updates"
+msgstr "Транзиентный кэш"
+
+#: output/html/request.php:107
+msgid "View Main Query"
+msgstr "Просмотр основного запроса"
+
+#. translators: %s: Number of calls to the HTTP API
+#: output/html/http.php:406
+msgid "HTTP API Calls (%s)"
+msgstr "Вызовов HTTP API (%s)"
+
+#: output/html/http.php:72
+msgid "Status"
+msgstr "Статус"
+
+#: output/html/http.php:31 output/html/http.php:404
+#: output/html/overview.php:229 output/raw/http.php:21
+msgid "HTTP API Calls"
+msgstr "Вызовы HTTP API"
+
+#: output/html/environment.php:126
+msgid "Extensions"
+msgstr "Расширения"
+
+#: output/html/environment.php:111
+msgid "Error Reporting"
+msgstr "Отчет об ошибках"
+
+#: output/html/hooks.php:33
+msgid "Hooks & Actions"
+msgstr "События и фильтры"
+
+#: output/html/db_queries.php:237 output/html/db_queries.php:423
+msgid "Main Query"
+msgstr "Основной запрос"
+
+#. translators: 1: Cache hit rate percentage, 2: number of cache hits, 3:
+#. number of cache misses
+#: output/html/overview.php:273
+msgid "%1$s%% hit rate (%2$s hits, %3$s misses)"
+msgstr "Попадание %1$s%% (хиты %2$s, пропущено %3$s)"
+
+#: output/html/theme.php:133
+msgid "Template Hierarchy"
+msgstr "Иерархия шаблонов"
+
+#: output/html/php_errors.php:57
+msgctxt "Suppressed PHP error level"
+msgid "Deprecated (Suppressed)"
+msgstr "Устаревшее (скрытое)"
+
+#: output/html/php_errors.php:56
+msgctxt "Suppressed PHP error level"
+msgid "Strict (Suppressed)"
+msgstr "Строгие (скрытое)"
+
+#: output/html/php_errors.php:55
+msgctxt "Suppressed PHP error level"
+msgid "Notice (Suppressed)"
+msgstr "Уведомления (скрытые)"
+
+#: output/html/php_errors.php:54
+msgctxt "Suppressed PHP error level"
+msgid "Warning (Suppressed)"
+msgstr "Предупреждения (скрытые)"
+
+#: output/html/assets.php:68
+msgid "Position"
+msgstr "Расположение"
+
+#: output/html/assets.php:55
+msgid "Footer"
+msgstr "Подвал"
+
+#: output/html/assets.php:54
+msgid "Header"
+msgstr "Шапка"
+
+#: output/html/assets.php:51
+msgid "Missing"
+msgstr "Отсутствуют"
+
+#: output/html/admin.php:54 output/html/admin.php:76 output/html/headers.php:85
+msgid "Value"
+msgstr "Значение"
+
+#: output/html/admin.php:53
+msgid "Property"
+msgstr "Свойство"
+
+#. translators: 1: Post type name, 2: Post ID
+#: collectors/request.php:251
+msgid "Single %1$s: #%2$d"
+msgstr "Один элемент %1$s: #%2$d"
+
+#. translators: %d: Multisite site ID
+#: collectors/request.php:168
+msgid "Current Site: #%d"
+msgstr "Текущий сайт: #%d"
+
+#: output/html/php_errors.php:51
+msgctxt "PHP error level"
+msgid "Deprecated"
+msgstr "Устаревшее"
+
+#: output/html/php_errors.php:50
+msgctxt "PHP error level"
+msgid "Strict"
+msgstr "Строгие"
+
+#: output/html/php_errors.php:49
+msgctxt "PHP error level"
+msgid "Notice"
+msgstr "Уведомления"
+
+#: output/html/php_errors.php:48
+msgctxt "PHP error level"
+msgid "Warning"
+msgstr "Предупреждения"
+
+#. translators: An HTTP API request was not executed. %s: Hook name
+#: output/html/http.php:103
+msgid "Request not executed due to a filter on %s"
+msgstr "Запрос не выполнен из-за фильтра в %s"
+
+#. translators: Undefined PHP constant
+#: classes/Collector.php:122
+msgid "undefined"
+msgstr "не определено"
+
+#: output/html/theme.php:140
+msgid "Template Parts"
+msgstr "Части шаблонов"
+
+#: output/html/overview.php:261 output/raw/cache.php:21
+msgid "Object Cache"
+msgstr "Объектный кэш"
+
+#. translators: An HTTP API request has disabled certificate verification. 1:
+#. Relevant argument name
+#: output/html/http.php:145
+msgid "Certificate verification disabled (%s)"
+msgstr "Проверка сертификата отключена (%s)"
+
+#. translators: %s: Number of duplicate database queries
+#: output/html/db_dupes.php:154
+msgid "Duplicate Queries (%s)"
+msgstr "Дублирующиеся запросы (%s)"
+
+#. translators: %s: Number of calls to a PHP function
+#: output/html/db_dupes.php:65
+msgid "%s call"
+msgid_plural "%s calls"
+msgstr[0] "%s вызов"
+msgstr[1] "%s вызова"
+msgstr[2] "%s вызовов"
+
+#: output/html/db_dupes.php:57
+msgid "Potential Troublemakers"
+msgstr "Потенциальные проблемные места"
+
+#: output/html/db_dupes.php:55
+msgid "Components"
+msgstr "Компоненты"
+
+#: output/html/db_dupes.php:53
+msgid "Callers"
+msgstr "Источники вызова"
+
+#: output/html/db_dupes.php:31
+msgid "Duplicate Queries"
+msgstr "Дубли запросов"
+
+#. translators: %s: Plugin name
+#: classes/Component_MU_Plugin.php:12 classes/Component_MU_Vendor.php:12
+msgid "MU Plugin: %s"
+msgstr "MU плагин: %s"
+
+#: output/html/php_errors.php:160
+msgid "Unknown location"
+msgstr "Неизвестное расположение"
+
+#: output/html/db_callers.php:111 output/html/languages.php:137
+#: output/html/overview.php:221 output/html/overview.php:253
+#: output/html/theme.php:177
+msgid "None"
+msgstr "Ничего"
+
+#: output/html/request.php:80
+msgid "All Matching Rewrite Rules"
+msgstr "Все соответствия правилам перезаписи"
+
+#: output/html/languages.php:151
+msgid "Not Found"
+msgstr "Не найдено"
+
+#: output/html/languages.php:92
+msgid "Text Domain"
+msgstr "Текстовый домен"
+
+#: output/html/environment.php:274
+msgid "Software"
+msgstr "ПО"
+
+#: output/html/environment.php:150 output/html/environment.php:161
+msgid "Database"
+msgstr "База данных"
+
+#. translators: 1: Name of PHP constant, 2: Value of PHP constant
+#: output/html/db_queries.php:73
+msgid "No database queries were logged because the %1$s constant is set to %2$s."
+msgstr "Запросы базы данных не регистрировались, поскольку константа %1$s установлена в  %2$s."
+
+#: output/html/languages.php:30
+msgid "Languages"
+msgstr "Языки"
+
+#. Author of the plugin
+#: query-monitor.php
+msgid "John Blackbourn"
+msgstr "John Blackbourn"
+
+#. Plugin URI of the plugin
+#. Author URI of the plugin
+#: query-monitor.php
+msgid "https://querymonitor.com/"
+msgstr "https://querymonitor.com/"
+
+#. translators: %s: Symlink file location
+#: classes/QueryMonitor.php:185
+msgid "The symlink at %s is no longer pointing to the correct location. Please remove the symlink, then deactivate and reactivate Query Monitor."
+msgstr "Символическая ссылка на %s больше не указывает на правильное местоположение. Удалите символическую ссылку, затем деактивируйте и повторно активируйте Query Monitor."
+
+#: output/html/transients.php:50
+msgid "Expiration"
+msgstr "Время жизни"
+
+#: output/Html.php:175 output/html/hooks.php:63 output/html/languages.php:93
+msgid "Type"
+msgstr "Тип"
+
+#. translators: %s: Template file name
+#: output/html/theme.php:260
+msgid "Template: %s"
+msgstr "Шаблон: %s"
+
+#: output/html/theme.php:219
+msgid "Body Classes"
+msgstr "Классы body"
+
+#: output/html/theme.php:113
+msgid "Template File"
+msgstr "Файл шаблона"
+
+#. translators: %s: Number of additional query variables
+#: output/html/request.php:225
+msgid "Request (+%s)"
+msgstr "Запрос (+%s)"
+
+#: output/html/request.php:149
+msgid "Queried Object"
+msgstr "Запрошенный объект"
+
+#: output/html/multisite.php:27 output/html/request.php:175
+msgid "Multisite"
+msgstr "Мультисайт"
+
+#: output/html/request.php:100
+msgid "Query Vars"
+msgstr "Параметры запроса"
+
+#: output/html/request.php:52
+msgid "Query String"
+msgstr "Строка запроса"
+
+#: output/html/request.php:51
+msgid "Matched Query"
+msgstr "Соответствующий запрос"
+
+#: output/html/request.php:50
+msgid "Matched Rule"
+msgstr "Согласованное правило"
+
+#: output/html/php_errors.php:80
+msgid "Location"
+msgstr "Местонахождение"
+
+#: output/html/db_dupes.php:51 output/html/php_errors.php:81
+msgid "Count"
+msgstr "Количество"
+
+#. translators: %s: Memory used in kilobytes
+#: output/html/http.php:226 output/html/http.php:232
+#: output/html/languages.php:145 output/html/languages.php:168
+msgid "%s kB"
+msgstr "%s кБ"
+
+#: output/html/overview.php:139
+msgid "Peak Memory Usage"
+msgstr "Пиковое использование памяти"
+
+#: output/html/overview.php:100
+msgid "Page Generation Time"
+msgstr "Время генерации страницы"
+
+#. translators: 1: Percentage of time limit used, 2: Time limit in seconds
+#: output/headers/overview.php:32 output/html/overview.php:119
+msgid "%1$s%% of %2$ss limit"
+msgstr "%1$s%% от предела в %2$sс"
+
+#: output/html/http.php:82
+msgid "Timeout"
+msgstr "Таймаут"
+
+#: output/html/request.php:148
+msgid "Response"
+msgstr "Ответ"
+
+#. translators: %s: Error message text
+#: output/html/block_editor.php:275 output/html/hooks.php:208
+msgid "Error: %s"
+msgstr "Ошибка: %s"
+
+#. translators: %s: Action name
+#: output/html/hooks.php:152
+msgid "Warning: The %s action is extremely resource intensive. Try to avoid using it."
+msgstr "Предупреждение. Событие %s чрезвычайно ресурсоемкое. Старайтесь не использовать его."
+
+#: output/Html.php:143 output/html/hooks.php:55 output/html/hooks.php:61
+#: output/html/hooks.php:160
+msgid "Action"
+msgstr "Событие"
+
+#: output/Html.php:174 output/html/hooks.php:69
+msgid "Hook"
+msgstr "Хук"
+
+#: output/html/environment.php:271
+msgid "Server"
+msgstr "Сервер"
+
+#: classes/QueryMonitor.php:62 output/html/environment.php:56
+#: output/html/environment.php:230 output/html/environment.php:249
+msgid "Help"
+msgstr "Помощь"
+
+#. translators: %s: Number of slow database queries
+#: output/html/db_queries.php:579
+msgid "Slow Queries (%s)"
+msgstr "Медленные запросы (%s)"
+
+#. translators: %s: Number of database errors
+#: output/html/db_queries.php:565
+msgid "Database Errors (%s)"
+msgstr "Ошибки базы данных (%s)"
+
+#: output/html/db_queries.php:136 output/html/db_queries.php:265
+msgid "Rows"
+msgstr "Строки"
+
+#: output/html/caps.php:93 output/html/db_callers.php:51
+#: output/html/db_queries.php:95 output/html/db_queries.php:129
+#: output/html/db_queries.php:243 output/html/doing_it_wrong.php:70
+#: output/html/http.php:74 output/html/languages.php:94
+#: output/html/logger.php:86 output/html/multisite.php:53
+#: output/html/transients.php:52
+msgid "Caller"
+msgstr "Источник вызова"
+
+#. translators: %s: Database query time in seconds
+#: output/html/db_queries.php:121
+msgid "Slow Database Queries (above %ss)"
+msgstr "Медленные запросы к базе данных (свыше %s с.)"
+
+#: output/Html.php:178 output/html/caps.php:96 output/html/db_components.php:51
+#: output/html/db_queries.php:96 output/html/db_queries.php:132
+#: output/html/db_queries.php:254 output/html/doing_it_wrong.php:71
+#: output/html/hooks.php:76 output/html/http.php:79 output/html/logger.php:89
+#: output/html/multisite.php:56 output/html/php_errors.php:84
+#: output/html/timing.php:64 output/html/transients.php:53
+msgid "Component"
+msgstr "Компонент"
+
+#: dispatchers/WP_Die.php:127
+msgid "Call stack:"
+msgstr "Стек вызовов:"
+
+#: output/html/db_dupes.php:50 output/html/db_queries.php:94
+#: output/html/db_queries.php:128 output/html/db_queries.php:230
+msgid "Query"
+msgstr "Запрос"
+
+#: output/html/db_queries.php:90
+msgid "Database Errors"
+msgstr "Ошибки базы даных"
+
+#: output/html/db_callers.php:60 output/html/db_components.php:60
+#: output/html/db_dupes.php:52 output/html/db_queries.php:139
+#: output/html/db_queries.php:270 output/html/http.php:83
+#: output/html/timing.php:62
+msgid "Time"
+msgstr "Время"
+
+#. translators: %s: Name of missing script or style dependency
+#: output/html/assets.php:144
+msgid "%s (missing)"
+msgstr "%s (отсутствует)"
+
+#: output/html/request.php:65 output/html/request.php:141
+#: output/html/request.php:160 output/html/request.php:171
+#: output/html/transients.php:77
+msgid "none"
+msgstr "ничего"
+
+#: output/html/assets.php:85 output/html/environment.php:62
+#: output/html/environment.php:220 output/html/environment.php:275
+msgid "Version"
+msgstr "Версия"
+
+#: output/html/assets.php:83
+msgid "Dependents"
+msgstr "Зависимости"
+
+#: output/html/assets.php:80
+msgid "Dependencies"
+msgstr "Зависимости"
+
+#: output/html/assets_styles.php:25 output/html/assets_styles.php:35
+msgid "Styles"
+msgstr "Стили"
+
+#: output/html/assets_scripts.php:25 output/html/assets_scripts.php:35
+msgid "Scripts"
+msgstr "Скрипты"
+
+#: output/html/admin.php:112
+msgid "Column Action:"
+msgstr "Столбец события:"
+
+#: output/html/admin.php:109
+msgid "Column Filters:"
+msgstr "Столбец фильтров:"
+
+#: output/Html.php:316
+msgctxt "\"All\" option for filters"
+msgid "All"
+msgstr "Все"
+
+#: dispatchers/Html.php:549
+msgid "Clear authentication cookie"
+msgstr "Очистить файл cookie для проверки подлинности"
+
+#: dispatchers/Html.php:550
+msgid "Set authentication cookie"
+msgstr "Установить аутентификационный cookie"
+
+#: dispatchers/Html.php:558
+msgid "Authentication"
+msgstr "Аутентификация"
+
+#: dispatchers/Html.php:257
+msgid "PHP Errors in Ajax Response"
+msgstr "Ошибки PHP в ответе Ajax"
+
+#. Plugin Name of the plugin
+#: query-monitor.php classes/QueryMonitor.php:199 classes/QueryMonitor.php:232
+#: dispatchers/Html.php:147 dispatchers/Html.php:448 dispatchers/Html.php:841
+#: dispatchers/WP_Die.php:132
+msgid "Query Monitor"
+msgstr "Query Monitor"
+
+#: output/html/transients.php:30 output/raw/transients.php:21
+msgid "Transients"
+msgstr "Транзиенты"
+
+#: collectors/request.php:288
+msgid "Unknown queried object"
+msgstr "Неизвестный запрашиваемый объект"
+
+#. translators: %s: Post type name
+#: collectors/request.php:281
+msgid "Post type archive: %s"
+msgstr "Архив типа записей: %s"
+
+#. translators: %s: Taxonomy term name
+#: collectors/request.php:271
+msgid "Term archive: %s"
+msgstr "Архив термина: %s"
+
+#. translators: %s: Author name
+#: collectors/request.php:261
+msgid "Author archive: %s"
+msgstr "Архив автора: %s"
+
+#: output/html/request.php:30 output/html/request.php:49
+#: output/html/request.php:223
+msgid "Request"
+msgstr "HTTP запрос"
+
+#: output/html/php_errors.php:32 output/html/php_errors.php:304
+msgid "PHP Errors"
+msgstr "Ошибки PHP"
+
+#: dispatchers/Html.php:455 dispatchers/Html.php:504
+#: output/html/overview.php:30
+msgid "Overview"
+msgstr "Обзор"
+
+#: output/html/http.php:54
+msgid "Error"
+msgstr "Ошибка"
+
+#. translators: An HTTP API request timed out
+#: output/html/http.php:109
+msgid "Request timed out"
+msgstr "Истекло время запроса"
+
+#: output/html/environment.php:30
+msgid "Environment"
+msgstr "Системная среда"
+
+#: output/html/db_queries.php:38 output/html/db_queries.php:553
+#: output/html/overview.php:183 output/raw/db_queries.php:26
+msgid "Database Queries"
+msgstr "Запросы базы данных"
+
+#: output/html/db_components.php:30 output/html/db_components.php:127
+msgid "Queries by Component"
+msgstr "Запросы по компоненту"
+
+#: output/html/db_callers.php:30 output/html/db_callers.php:131
+msgid "Queries by Caller"
+msgstr "Запросы по источнику"
+
+#: output/html/conditionals.php:31 output/html/conditionals.php:107
+#: output/raw/conditionals.php:21
+msgid "Conditionals"
+msgstr "Условные теги"
+
+#: output/html/admin.php:30
+msgid "Admin Screen"
+msgstr "Консоль"
+
+#. translators: A closure is an anonymous PHP function. 1: Line number, 2: File
+#. name
+#: classes/Util.php:414 output/Html.php:508
+msgid "Closure on line %1$d of %2$s"
+msgstr "Замыкание в строке %1$d %2$s"
+
+#: classes/Component_Unknown.php:10 output/html/db_queries.php:346
+#: output/html/db_queries.php:442 output/html/environment.php:70
+#: output/html/environment.php:77 output/html/environment.php:85
+#: output/html/environment.php:171 output/html/environment.php:293
+#: output/html/overview.php:143 output/html/php_errors.php:186
+#: output/html/request.php:153 output/html/theme.php:128
+#: output/html/theme.php:254
+msgid "Unknown"
+msgstr "Неизвестно"
+
+#: classes/Component_Template.php:10 output/html/theme.php:64
+msgid "Parent Theme"
+msgstr "Родительская тема"
+
+#: classes/Component_Stylesheet.php:14 output/html/theme.php:31
+#: output/html/theme.php:48
+msgid "Theme"
+msgstr "Тема"
+
+#: classes/Component_Stylesheet.php:11
+msgid "Child Theme"
+msgstr "Дочерняя тема"
+
+#. translators: %s: Plugin name
+#: classes/Component_VIP_Plugin.php:12
+msgid "VIP Plugin: %s"
+msgstr "VIP Плагин: %s"
+
+#. translators: %s: Plugin name
+#: classes/Component_Plugin.php:12
+msgid "Plugin: %s"
+msgstr "Плагин: %s"

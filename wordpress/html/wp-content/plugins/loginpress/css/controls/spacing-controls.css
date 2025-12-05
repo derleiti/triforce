@@ -1,0 +1,52 @@
+.customize-control-wrapper{
+	display: flex;
+	gap: 5px;
+}
+.customize-control-wrapper>*{
+	flex: 1;
+}
+.customize-control-wrapper>*.loginpress-lock-option{
+	flex: none;
+}
+.loginpress-spacing-box input::-webkit-outer-spin-button,
+.loginpress-spacing-box input::-webkit-inner-spin-button {
+	/* display: none; <- Crashes Chrome on hover */
+	-webkit-appearance: none;
+	margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+.loginpress-lock-option{
+	position: relative;
+}
+
+.loginpress-lock-option input{
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 1;
+	opacity: 0;
+	cursor: pointer;
+	width: 20px;
+	height: 36px;
+}
+.loginpress-lock-option input:checked + .dashicons-editor-unlink:before{
+	content: '\f103';
+}
+.loginpress-lock-option{
+	color: #0085ba;
+}
+.loginpress-lock-option .dashicons {
+	line-height: 29px;
+	height: auto;
+}
+.loginpress-unit-select{
+	min-width: 60px;
+}
+.loginpress-lock-option .dashicons {
+	line-height: 29px;
+	height: auto;
+	font-size: 14px;
+	width: auto;
+}
+#customize-control-loginpress_customization-customize_form_padding, #customize-control-loginpress_customization-textfield_margin{
+	display: none;
+}

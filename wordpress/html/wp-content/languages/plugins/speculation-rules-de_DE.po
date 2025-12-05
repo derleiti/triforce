@@ -1,0 +1,95 @@
+# Translation of Plugins - Speculative Loading - Stable (latest release) in German
+# This file is distributed under the same license as the Plugins - Speculative Loading - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-04-08 20:57:19+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: de\n"
+"Project-Id-Version: Plugins - Speculative Loading - Stable (latest release)\n"
+
+#. Description of the plugin
+#: load.php
+msgid "Enables browsers to speculatively prerender or prefetch pages to achieve near-instant loads based on user interaction."
+msgstr "Ermöglicht Browsern das spekulative Vorladen oder die Vorberechnung von Seiten, um ein nahezu sofortiges Laden auf der Grundlage der Benutzerinteraktion zu erreichen."
+
+#: settings.php:383
+msgid "Settings"
+msgstr "Einstellungen"
+
+#. Plugin Name of the plugin
+#: load.php settings.php:210
+msgid "Speculative Loading"
+msgstr "Speculative Loading"
+
+#. Author URI of the plugin
+#: load.php
+msgid "https://make.wordpress.org/performance/"
+msgstr "https://make.wordpress.org/performance/"
+
+#. Plugin URI of the plugin
+#: load.php
+msgid "https://github.com/WordPress/performance/tree/trunk/plugins/speculation-rules"
+msgstr "https://github.com/WordPress/performance/tree/trunk/plugins/speculation-rules"
+
+#. Author of the plugin
+#: load.php
+msgid "WordPress Performance Team"
+msgstr "Das WordPress-Performance-Team"
+
+#: settings.php:70
+msgid "Prerendering will lead to faster load times than prefetching. However, in case of interactive content, prefetching may be a safer choice."
+msgstr "Prerendering führt zu schnelleren Ladezeiten als Prefetching. Bei interaktiven Inhalten kann Prefetching jedoch die sicherere Wahl sein."
+
+#: settings.php:38
+msgctxt "setting label"
+msgid "Conservative (typically on click)"
+msgstr "Konservativ (in der Regel bei Klick)"
+
+#: settings.php:39
+msgctxt "setting label"
+msgid "Moderate (typically on hover)"
+msgstr "Moderat (in der Regel bei Mauszeigerkontakt)"
+
+#: settings.php:40
+msgctxt "setting label"
+msgid "Eager (on slightest suggestion)"
+msgstr "Eifrig (bei der kleinsten Andeutung)"
+
+#: settings.php:25
+msgctxt "setting label"
+msgid "Prerender"
+msgstr "Prerender"
+
+#: settings.php:24
+msgctxt "setting label"
+msgid "Prefetch"
+msgstr "Prefetch"
+
+#: settings.php:227
+msgid "Speculation Mode"
+msgstr "Spekulationsmodus"
+
+#: settings.php:214
+msgid "This section allows you to control how URLs that your users navigate to are speculatively loaded to improve performance."
+msgstr "Dieser Abschnitt ermöglicht es dir, zu steuern, wie URLs, zu denen deine Benutzer navigieren, spekulativ geladen werden, um die Leistung zu verbessern."
+
+#. translators: %s: context string
+#: class-plsr-url-pattern-prefixer.php:74
+msgid "Invalid context %s."
+msgstr "Der Kontext %s ist ungültig."
+
+#: settings.php:231
+msgid "Eagerness"
+msgstr "Eifrigkeit"
+
+#: settings.php:170
+msgid "Configuration for the Speculation Rules API."
+msgstr "Konfiguration für die Speculation Rules API."
+
+#: settings.php:71
+msgid "The eagerness setting defines the heuristics based on which the loading is triggered. \"Eager\" will have the minimum delay to start speculative loads, \"Conservative\" increases the chance that only URLs the user actually navigates to are loaded."
+msgstr "Die Einstellung zur Eifrigkeit definiert die Heuristiken, auf deren Grundlage das Laden ausgelöst wird. „Eifrig“ hat die geringste Verzögerung beim Start spekulativer Ladevorgänge. „Konservativ“ erhöht die Wahrscheinlichkeit, dass nur URLs geladen werden, zu denen der Benutzer tatsächlich navigiert."

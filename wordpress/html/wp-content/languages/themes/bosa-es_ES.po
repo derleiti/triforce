@@ -1,0 +1,2587 @@
+# Translation of Themes - Bosa in Spanish (Spain)
+# This file is distributed under the same license as the Themes - Bosa package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2024-11-18 13:52:57+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: es\n"
+"Project-Id-Version: Themes - Bosa\n"
+
+#. Theme Name of the theme
+#: style.css
+#, gp-priority: high
+msgid "Bosa"
+msgstr "Bosa"
+
+#. Description of the theme
+#: style.css
+#, gp-priority: high
+msgid "Bosa is multipurpose theme with beautifully crafted design. Bosa is beautiful, fast, lightweight, responsive, extremely customizable, multipurpose theme that you can use as a foundation to build versatile sites such as business, startups, business agencies, corporate, law firms, blog, portfolio, travel, education, fitness, university portal, church, restaurant, medical, shop, magazines, finance, accounting, consulting and preferably ideal for any type of sites. Bosa works perfectly with Gutenberg and the most popular page builder Elementor that can easily drag-and-drop your ideas from the interface. Bosa is built with SEO, speed, and usability in mind with the multiple Header & Footer layouts, predesigned starter sites includes awesome Home & Inner Pages that is incredibly customizable and powerful enough to take a stand among the crowd. Bosa is compatible with all major plugins like WooCommerce, Yoast, Contact form 7, Mailchimp for WordPress, bbPress, etc. Looking for a Multipurpose theme? Look no further!"
+msgstr "Bosa es un tema multipropósito con un diseño bellamente elaborado. Bosa es un tema bonito, rápido, ligero, adaptable, extremadamente personalizable y multipropósito que puedes usar como base para crear sitios versátiles como negocios, startups, agencias de negocios, corporaciones, bufetes de abogados, blog, porfolio, viajes, educación, fitness, portal universitario, iglesia, restaurante, médico, tienda, revistas, finanzas, contabilidad, consultoría y preferiblemente ideal para cualquier tipo de sitios. Bosa funciona perfectamente con Gutenberg y el maquetador de páginas más popular, Elementor, con el que puedes arrastrar y soltar fácilmente tus ideas desde la interfaz. Bosa está construido teniendo en cuenta el SEO, la velocidad y la usabilidad con los múltiples diseños de cabecera y pie de página, los sitios de inicio prediseñados incluyen impresionantes páginas de inicio e interiores, que son increíblemente personalizables y lo suficientemente potentes como para destacar entre la multitud. Bosa es compatible con los principales plugins como WooCommerce, Yoast, Contact form 7, Mailchimp para WordPress, bbPress, etc. ¿Buscas un tema multipropósito? ¡No busques más!"
+
+#: inc/customizer/customizer.php:8083
+msgid "Disable Rating"
+msgstr "Desactivar puntuación"
+
+#. translators: %s: rating
+#: inc/woocommerce-functions.php:631
+msgid "Rated %s out of 5"
+msgstr "Valorado con %s de 5"
+
+#: inc/customizer/customizer.php:3314
+msgid "Disable Sidebar in WooCommerce"
+msgstr "Desactivar la barra lateral en WooCommerce"
+
+#: inc/customizer/customizer.php:3351
+msgid "Disable Sidebar in WooCommerce Single Product"
+msgstr "Desactivar la barra lateral en el producto individual de WooCommerce"
+
+#: inc/customizer/customizer.php:8589
+msgid "Icon Color"
+msgstr "Color de icono"
+
+#: inc/customizer/customizer.php:8568
+msgid "Icon Group Background Color"
+msgstr "Color de fondo del grupo de iconos"
+
+#: inc/getting-started/getting-started.php:60
+msgid "Clicking on get started will install and activate Bosa Elementor Addons for WooCommerce, Kirki, Advanced Import, Keon Toolset, Elementor, ElementsKit Lite, Breadcrumb NavXT and Contact Form 7."
+msgstr "Al hacer clic en «Primeros pasos», se instalarán y activarán Bosa Elementor Addons for WooCommerce, Kirki, Advanced Import, Keon Toolset, Elementor, Breadcrumb NavXT y Contact Form 7."
+
+#: inc/template-functions.php:1025
+msgid "80x60 Size"
+msgstr "Tamaño 80x60"
+
+#: inc/template-functions.php:1024
+msgid "290x150 Size"
+msgstr "Tamaño 290x150"
+
+#: inc/template-functions.php:1023
+msgid "420x200 Size"
+msgstr "Tamaño 420x200"
+
+#: inc/customizer/customizer.php:844 inc/customizer/customizer.php:1865
+#: inc/customizer/customizer.php:3744 inc/customizer/customizer.php:3808
+#: inc/customizer/customizer.php:3956 inc/customizer/customizer.php:4833
+#: inc/customizer/customizer.php:5698 inc/customizer/customizer.php:6269
+#: inc/customizer/customizer.php:6780 inc/customizer/customizer.php:7357
+#: inc/customizer/customizer.php:7563 inc/customizer/customizer.php:7681
+#: inc/customizer/customizer.php:7821
+msgid "Choose Image Size"
+msgstr "Elegir el tamaño de la imagen"
+
+#: inc/template-functions.php:1022
+msgid "420x300 Size"
+msgstr "Tamaño 420x300"
+
+#: inc/template-functions.php:1021
+msgid "420x380 Size"
+msgstr "Tamaño 420x380"
+
+#: inc/template-functions.php:1020
+msgid "590x310 Size"
+msgstr "Tamaño 590x310"
+
+#: inc/template-functions.php:1018
+msgid "1370x550 Size"
+msgstr "Tamaño 1370x550"
+
+#: inc/template-functions.php:1017
+msgid "1920x550 Size"
+msgstr "Tamaño 1920x550"
+
+#: inc/template-functions.php:1016
+msgid "2048x2048 Size"
+msgstr "Tamaño 2048x2048"
+
+#: inc/template-functions.php:1015
+msgid "1536x1536 Size"
+msgstr "Tamaño 1536x1536"
+
+#: inc/template-functions.php:1014
+msgid "Thumbnail Size"
+msgstr "Tamaño de la miniatura"
+
+#: inc/template-functions.php:1012
+msgid "Medium Size"
+msgstr "Tamaño medio"
+
+#: inc/template-functions.php:1011
+msgid "Large Size"
+msgstr "Tamaño grande"
+
+#: inc/template-functions.php:1010
+msgid "Full Size"
+msgstr "Tamaño completo"
+
+#: inc/customizer/customizer.php:7564
+msgid "For related posts."
+msgstr "Para entradas relacionadas."
+
+#: inc/customizer/customizer.php:849 inc/customizer/customizer.php:1870
+#: inc/customizer/customizer.php:3749 inc/customizer/customizer.php:3813
+#: inc/customizer/customizer.php:3961 inc/customizer/customizer.php:4838
+#: inc/customizer/customizer.php:5703 inc/customizer/customizer.php:6274
+#: inc/customizer/customizer.php:6785 inc/customizer/customizer.php:7362
+#: inc/customizer/customizer.php:7569 inc/customizer/customizer.php:7686
+#: inc/customizer/customizer.php:7826
+msgid "Select Image Size"
+msgstr "Selecciona el tamaño de imagen"
+
+#: inc/template-functions.php:1013
+msgid "Medium Large Size"
+msgstr "Tamaño mediano grande"
+
+#: inc/customizer/customizer.php:8102 inc/customizer/customizer.php:8357
+msgid "Add To Cart Button Options"
+msgstr "Opciones del botón «Añadir al carrito»"
+
+#: inc/customizer/customizer.php:8114
+msgid "Add To Cart Button Layout"
+msgstr "Diseño del botón «Añadir al carrito»"
+
+#: inc/customizer/customizer.php:8421 inc/customizer/customizer.php:8447
+#: inc/customizer/customizer.php:8473
+msgid "Add to Cart Button Text Color"
+msgstr "Color del texto del botón «Añadir al carrito»"
+
+#: inc/customizer/customizer.php:8369 inc/customizer/customizer.php:8395
+msgid "Add to Cart Button Background Color"
+msgstr "Color de fondo del botón «Añadir al carrito»"
+
+#: inc/customizer/customizer.php:8499
+msgid "Add to Cart Button Radius"
+msgstr "Radio del botón «Añadir al carrito»"
+
+#: inc/customizer/customizer.php:8526
+msgid "Add to Cart Button Spacing"
+msgstr "Espaciado del botón «Añadir al carrito»"
+
+#: inc/customizer/customizer.php:8305
+msgid "Product Image Radius"
+msgstr "Radio de la imagen del producto"
+
+#: inc/customizer/customizer.php:8139 inc/customizer/customizer.php:8556
+msgid "Icon Group Options"
+msgstr "Opciones del grupo de iconos"
+
+#: inc/customizer/customizer.php:7915
+msgid "Disable Shop Page Title"
+msgstr "Desactivar el título de la página de la tienda"
+
+#: inc/customizer/customizer.php:8819
+msgid "Sale Button Spacing"
+msgstr "Espaciado del botón de oferta"
+
+#: inc/customizer/customizer.php:8718
+msgid "Icon Group Spacing"
+msgstr "Espaciado del grupo de iconos"
+
+#: inc/customizer/customizer.php:8327
+msgid "Product Card Border Radius"
+msgstr "Radio del borde de la tarjeta de producto"
+
+#: inc/customizer/customizer.php:7934 inc/customizer/customizer.php:8272
+msgid "Product Wrapper Options"
+msgstr "Opciones de envoltura del producto"
+
+#: inc/customizer/customizer.php:8946
+msgid "Image Zoom / Magnification"
+msgstr "Acercamiento / Ampliación de la imagen"
+
+#: inc/customizer/customizer.php:8947
+msgid "Every slider step changes 10% zoom to the previous zoom level. For example: 1.1 zoom level is now 110% zoom."
+msgstr "Cada paso del deslizador cambia un 10% de zoom al nivel de zoom anterior. Por ejemplo: 1.1 nivel de zoom es ahora 110% de zoom."
+
+#: inc/customizer/customizer.php:7946
+msgid "Product Layout Type"
+msgstr "Tipo de diseño del producto"
+
+#: inc/customizer/customizer.php:8970
+msgid "Disable Breadcrumbs"
+msgstr "Desactivar las migas de pan"
+
+#: inc/customizer/customizer.php:8997
+msgid "Disable Tags"
+msgstr "Desactivar las etiquetas"
+
+#: inc/customizer/customizer.php:9006
+msgid "Disable Product Tabs"
+msgstr "Desactivar las pestañas de producto"
+
+#: inc/customizer/customizer.php:9015
+msgid "Disable Related Products"
+msgstr "Desactivar productos relacionados"
+
+#: inc/customizer/customizer.php:8905
+msgid "Add to Cart Button Typography"
+msgstr "Tipografía del botón «Añadir al carrito»"
+
+#: inc/customizer/customizer.php:8979
+msgid "Disable SKU"
+msgstr "Desactivar SKU"
+
+#: inc/customizer/customizer.php:8873
+msgid "Product Price Typography"
+msgstr "Tipografía del precio del producto"
+
+#: inc/customizer/customizer.php:8841
+msgid "Product Title Typography"
+msgstr "Tipografía del título del producto"
+
+#: inc/customizer/customizer.php:8610 inc/customizer/customizer.php:8637
+#: inc/customizer/customizer.php:8664 inc/customizer/customizer.php:8691
+msgid "Icon Group Border Radius"
+msgstr "Radio del borde del grupo de iconos"
+
+#: inc/customizer/customizer.php:8177 inc/customizer/customizer.php:8748
+msgid "Sale Tag Options"
+msgstr "Opciones de etiqueta de oferta"
+
+#: inc/customizer/customizer.php:8152
+msgid "Yith WooCommerce Compare, Wishlist and Quick View are grouped together. Install these plugins to use this option."
+msgstr "Yith WooCommerce Compare, Wishlist y Quick View están agrupados juntos. Instala estos plugins para utilizar esta opción."
+
+#: inc/customizer/customizer.php:8151
+msgid "Icon Group Layout"
+msgstr "Disposición del grupo de iconos"
+
+#: inc/customizer/customizer.php:8218
+msgid "Sale!"
+msgstr "¡Oferta!"
+
+#: inc/customizer/customizer.php:8776
+msgid "Sale Tag Text Color"
+msgstr "Color del texto de la etiqueta de oferta"
+
+#: inc/customizer/customizer.php:8760
+msgid "Sale Tag Background Color"
+msgstr "Color de fondo de la etiqueta de oferta"
+
+#: inc/customizer/customizer.php:8214
+msgid "Sale Badge Text"
+msgstr "Texto de la insignia de oferta"
+
+#: inc/customizer/customizer.php:8247
+msgid "Sale Badge Percentage Text"
+msgstr "Texto de porcentaje de la insignia de oferta"
+
+#: inc/customizer/customizer.php:8231
+msgid "Replaces sale badge text with sale percent."
+msgstr "Reemplaza el texto de la insignia de oferta con el porcentaje de oferta."
+
+#: inc/customizer/customizer.php:8230
+msgid "Enable Sale Badge Percentage"
+msgstr "Activar el porcentaje en la insignia de oferta"
+
+#: inc/customizer/customizer.php:8797
+msgid "Sale Button Border Radius"
+msgstr "Radio del borde del botón de oferta"
+
+#: inc/customizer/customizer.php:8252
+msgid "-{value}%"
+msgstr "-{value}%"
+
+#: inc/customizer/customizer.php:8248
+msgid "Input text to accompany with percentage {value} tag. Example: {value}% OFF!"
+msgstr "Introduce el texto que acompañará a la etiqueta porcentaje {value}. Ejemplo: ¡{value}% DE DESCUENTO!"
+
+#: inc/customizer/customizer.php:8189
+msgid "Sale Tag Layout"
+msgstr "Diseño de la etiqueta de oferta"
+
+#: inc/customizer/customizer.php:7909
+msgid "General"
+msgstr "General"
+
+#: inc/customizer/customizer.php:7986
+msgid "Text Alignment"
+msgstr "Alineación del texto"
+
+#: inc/customizer/customizer.php:8008 inc/customizer/customizer.php:8035
+msgid "Products Per Row"
+msgstr "Productos por fila"
+
+#: inc/customizer/customizer.php:8009 inc/customizer/customizer.php:8036
+msgid "How many products should be shown per row?"
+msgstr "¿Cuántos productos se deben mostrar por fila?"
+
+#: inc/customizer/customizer.php:8284
+msgid "Product Card Style"
+msgstr "Estilo de la tarjeta de producto"
+
+#: inc/customizer/customizer.php:7903
+msgid "General / Style"
+msgstr "General / Estilo"
+
+#: inc/customizer/customizer.php:7966
+msgid "Product Card Layout"
+msgstr "Diseño de la tarjeta de producto"
+
+#: inc/customizer/customizer.php:125
+msgid "Getting started will install and activate the recommended plugins."
+msgstr "Al empezar se instalarán y activarán los plugins recomendados."
+
+#: inc/customizer/customizer.php:126
+msgid "Get Started with %s"
+msgstr "Primeros pasos con %s"
+
+#: inc/customizer/customizer.php:8940
+msgid "Single Products"
+msgstr "Productos individuales"
+
+#: inc/customizer/customizer.php:8961
+msgid "Disable Single Product Page Title"
+msgstr "Desactivar el título de la página de producto individual"
+
+#: inc/customizer/customizer.php:267
+msgid "General Link Text Color"
+msgstr "Color del texto del enlace general"
+
+#: inc/customizer/customizer.php:2390
+msgid "TOP MENU"
+msgstr "MENÚ SUPERIOR"
+
+#: inc/customizer/customizer.php:2377
+msgid "Disable Top Header Menu Section"
+msgstr "Desactivar la sección del menú de cabecera superior"
+
+#: inc/customizer/customizer.php:7425 inc/customizer/customizer.php:7750
+msgid "Transparent Header Banner Image Size"
+msgstr "Tamaño de la imagen del banner de la cabecera transparente"
+
+#: inc/customizer/customizer.php:7398 inc/customizer/customizer.php:7723
+msgid "Transparent Header Banner Height (in px)"
+msgstr "Altura del banner de la cabecera transparente (en px)"
+
+#: inc/customizer/customizer.php:7382 inc/customizer/customizer.php:7706
+msgid "Disable Transparent Header"
+msgstr "Desactivar cabecera transparente"
+
+#: inc/customizer/customizer.php:3706
+msgid "If enabled, the page will be open in an another browser tab."
+msgstr "Si está activada, la página se abrirá en otra pestaña del navegador."
+
+#: inc/customizer/customizer.php:373
+msgid "Transparent Header Options"
+msgstr "Oopciones de la cabecera transparente"
+
+#: inc/customizer/customizer.php:7451 inc/customizer/customizer.php:7776
+msgid "Transparent Header Banner Overlay Opacity"
+msgstr "Opacidad de la superposición del banner de la cabecera transparente"
+
+#: inc/customizer/customizer.php:3705
+msgid "Image Target"
+msgstr "Objetivo de la imagen"
+
+#: inc/customizer/customizer.php:2341
+msgid "Transparent Fixed Header Button Text Color"
+msgstr "Color del texto del botón de la cabecera fija transparente"
+
+#: inc/customizer/customizer.php:2314
+msgid "Transparent Fixed Header Button Border Color"
+msgstr "Color del borde del botón de la cabecera fija transparente"
+
+#: inc/customizer/customizer.php:2287
+msgid "Transparent Fixed Header Button Background Color"
+msgstr "Color de fondo del botón de la cabecera fija transparente"
+
+#: inc/customizer/customizer.php:2266
+msgid "Transparent Fixed Header Text Hover Color"
+msgstr "Color al pasar el cursor del texto de la cabecera fija transparente"
+
+#: inc/customizer/customizer.php:2240
+msgid "Transparent Fixed Header Text Color"
+msgstr "Color del texto de la cabecera fija transparente"
+
+#: inc/customizer/customizer.php:2214
+msgid "Transparent Fixed Header Background Color"
+msgstr "Color del fondo de la cabecera fija transparente"
+
+#: inc/customizer/customizer.php:2178
+msgid "Transparent Fixed Header Site Tagline Color"
+msgstr "Color de la descripción corta del sitio de la cabecera fija transparente"
+
+#: inc/customizer/customizer.php:2116
+msgid "Transparent Fixed Header Site Title Color"
+msgstr "Color del título del sitio de la cabecera fija transparente"
+
+#: inc/customizer/customizer.php:1609
+msgid "Transparent Header Button Text Color"
+msgstr "Color del texto del botón de la cabecera transparente"
+
+#: inc/customizer/customizer.php:1603
+msgid "Transparent Header Button Border Color"
+msgstr "Color del borde del botón de la cabecera transparente"
+
+#: inc/customizer/customizer.php:1597
+msgid "Transparent Header Button Background Color"
+msgstr "Color del fondo del botón de la cabecera transparente"
+
+#: inc/customizer/customizer.php:1512
+msgid "Non Transparent Header Button Hover Color"
+msgstr "Color al pasar el cursor del botón de la cabecera no transparente"
+
+#: inc/customizer/customizer.php:1501 inc/customizer/customizer.php:1620
+msgid "Non Transparent Header Button Border Color"
+msgstr "Color del borde del botón de cabecera no transparente"
+
+#: inc/customizer/customizer.php:1007
+msgid "Non Transparent Bottom Header Text Link Hover Color"
+msgstr "Color del enlace de texto inferior de la cabecera no transparente al pasar el ratón por encima"
+
+#: inc/customizer/customizer.php:991
+msgid "Non Transparent Bottom Header Text Color"
+msgstr "Color del texto de la cabecera inferior no transparente"
+
+#: inc/customizer/customizer.php:975
+msgid "Non Transparent Bottom Header Background Color"
+msgstr "Color de fondo de la cabecera inferior no transparente"
+
+#: inc/customizer/customizer.php:807
+msgid "Non Transparent Mid Header Text Link Hover Color"
+msgstr "Color del enlace de texto de la cabecera central no transparente"
+
+#: inc/customizer/customizer.php:717
+msgid "Non Transparent Mid Header Background Color"
+msgstr "Color de fondo de la cabecera central no transparente"
+
+#: inc/customizer/customizer.php:687
+msgid "Non Transparent Top Header Text Link Hover Color"
+msgstr "Color del enlace de texto de cabecera superior no transparente"
+
+#: inc/customizer/customizer.php:645
+msgid "Non Transparent Top Header Text Color"
+msgstr "Color del texto de la cabecera superior no transparente"
+
+#: inc/customizer/customizer.php:624
+msgid "Non Transparent Top Header Background Color"
+msgstr "Color de fondo de la cabecera superior no transparente"
+
+#: inc/customizer/customizer.php:558
+msgid "Transparent Bottom Header Text Hover Color"
+msgstr "Color del texto de cabecera inferior transparente al pasar por encima"
+
+#: inc/customizer/customizer.php:537
+msgid "Transparent Header Menu Text Color"
+msgstr "Color del texto del menú de cabecera transparente"
+
+#: inc/customizer/customizer.php:516
+msgid "Transparent Bottom Header Background Color"
+msgstr "Color de fondo de la cabecera inferior transparente"
+
+#: inc/customizer/customizer.php:500
+msgid "Transparent Top Header Text Hover Color"
+msgstr "Color del texto de la cabecera superior transparente"
+
+#: inc/customizer/customizer.php:479
+msgid "Transparent Top Header Text Color"
+msgstr "Color del texto de la cabecera superior transparente"
+
+#: inc/customizer/customizer.php:458
+msgid "Transparent Top Header Background Color"
+msgstr "Color de fondo de la cabecera superior transparente"
+
+#: inc/customizer/customizer.php:432
+msgid "Transparent Header Site Tagline Color"
+msgstr "Color de la descripción corta del sitio en la cabecera transparente"
+
+#: inc/customizer/customizer.php:406
+msgid "Transparent Header Site Title Color"
+msgstr "Color del título del sitio en la cabecera transparente"
+
+#: inc/customizer/customizer.php:386
+msgid "Transparent Header Site Logo"
+msgstr "Logo del sitio en la cabecera transparente"
+
+#: inc/customizer/customizer.php:577
+msgid "Non Transparent Header Options"
+msgstr "Opciones de cabecera no trasparente"
+
+#: inc/customizer/customizer.php:1507 inc/customizer/customizer.php:1626
+msgid "Non Transparent Header Button Text Color"
+msgstr "Color del texto del botón de cabecera no transparente"
+
+#: inc/customizer/customizer.php:1495 inc/customizer/customizer.php:1614
+msgid "Non Transparent Header Button Background Color"
+msgstr "Color de fondo del botón de cabecera no transparente"
+
+#: inc/customizer/customizer.php:603
+msgid "Non Transparent Header Site Tagline Color"
+msgstr "Color de la descripción corta del sitio en la cabecera no transparente"
+
+#: inc/customizer/customizer.php:582
+msgid "Non Transparent Header Site Title Color"
+msgstr "Color del título del sitio en la cabecera no transparente"
+
+#: inc/customizer/customizer.php:4925
+msgid "Recommended image size 1920x940 pixel."
+msgstr "Tamaño de imagen recomendado 1920x940 píxeles."
+
+#: inc/customizer/customizer.php:3975
+msgid "Recent posts will show if any category is not chosen. Recommended posts containing feature images size with 1920x940 pixel."
+msgstr "Las entradas recientes se mostrarán si no se elige ninguna categoría. Las entradas recomendadas que contengan imágenes destacadas con un tamaño de 1920x940 píxeles."
+
+#: template-parts/site-info.php:15
+msgid "//bosathemes.com"
+msgstr "//bosathemes.com"
+
+#: template-parts/site-info.php:13
+msgid " Bosa. Powered by"
+msgstr " Bosa. Funciona con"
+
+#: inc/widgets/latest-posts.php:122
+msgid "No Posts Found."
+msgstr "No se han encontrado entradas."
+
+#: inc/customizer/customizer.php:7526
+msgid "About the Author"
+msgstr "Acerca del autor"
+
+#: inc/customizer/customizer.php:3446
+msgid "Section Background Color"
+msgstr "Color de fondo de la sección"
+
+#: inc/woocommerce-functions.php:86 inc/woocommerce-functions.php:129
+#: inc/woocommerce-functions.php:881
+msgid "Compare"
+msgstr "Comparar"
+
+#: inc/widgets/latest-posts.php:37
+msgid "Select a Category"
+msgstr "Selecciona una categoría"
+
+#: inc/widgets/latest-posts.php:58
+msgid "Full Image"
+msgstr "Imagen completa"
+
+#: inc/theme-info/theme-info.php:1214
+msgid "Pre-sale Question?"
+msgstr "¿Consulta comercial?"
+
+#: inc/customizer/customizer.php:7833
+msgid "Preloader"
+msgstr "Precargador"
+
+#: inc/customizer/customizer.php:3795
+msgid "Select Background Image"
+msgstr "Selecciona imagen de fondo"
+
+#: inc/customizer/customizer.php:2911
+msgid "Site Description"
+msgstr "Descripción del sitio"
+
+#: inc/customizer/customizer.php:4528 inc/customizer/customizer.php:7008
+#: inc/customizer/customizer.php:7477
+msgid "Disable Date"
+msgstr "Desactivar la fecha"
+
+#: inc/widgets/author.php:30 inc/widgets/author.php:185
+msgid "About Author"
+msgstr "Sobre el autor"
+
+#: inc/customizer/customizer.php:2406
+msgid "MENU"
+msgstr "MENÚ"
+
+#: inc/customizer/customizer.php:7290
+msgid "Post Title"
+msgstr "Título de la entrada"
+
+#: inc/theme-info/theme-info.php:1213
+msgid "Have any query before purchase, you are more than welcome to ask."
+msgstr "Si tienes alguna consulta antes de comprar, tus preguntas son más que bienvenidas."
+
+#: inc/theme-info/theme-info.php:1221
+msgid "Needed any customization for the theme, you can request from here."
+msgstr "Si necesitas parsonalizar el tema, puedes pedirlo aquí."
+
+#: inc/customizer/customizer.php:4743 inc/customizer/customizer.php:5227
+#: inc/customizer/customizer.php:7175
+msgid "Button Background Color"
+msgstr "Color de fondo del botón"
+
+#: inc/getting-started/getting-started.php:116
+msgid "Sorry, you are not allowed to install plugins on this site."
+msgstr "Lo siento, no tienes permisos para instalar plugins en este sitio."
+
+#: inc/template-functions.php:509
+msgid "You must supply a valid number."
+msgstr "Debes proporcionar un número válido."
+
+#: inc/customizer/customizer.php:7803
+msgid "404 Page"
+msgstr "Página 404"
+
+#: inc/theme-info/theme-info.php:1212
+msgid "Got sales related question?"
+msgstr "¿Tienes alguna pregunta relacionada con ventas?"
+
+#: inc/customizer/customizer.php:5405 inc/customizer/customizer.php:6008
+#: inc/customizer/customizer.php:6171
+msgid "Section Description"
+msgstr "Descripción de la sección"
+
+#: inc/customizer/customizer.php:308 inc/customizer/customizer.php:4189
+msgid "Hover Color"
+msgstr "Color al pasar el cursor"
+
+#: inc/theme-info/theme-info.php:1182
+msgid "Upgrade to PRO"
+msgstr "Mejora a PRO"
+
+#: inc/customizer/customizer.php:233
+msgid "Body Text Color"
+msgstr "Color del texto del cuerpo"
+
+#: functions.php:160
+msgid "Brown"
+msgstr "Marrón"
+
+#: inc/customizer/customizer.php:4755 inc/customizer/customizer.php:5239
+#: inc/customizer/customizer.php:7187
+msgid "Button Text Color"
+msgstr "Color de texto del botón"
+
+#: inc/customizer/customizer.php:3980 inc/customizer/customizer.php:5629
+#: inc/customizer/customizer.php:5646 inc/customizer/customizer.php:6086
+#: inc/customizer/customizer.php:6263
+msgid "Select category"
+msgstr "Seleccionar categoría"
+
+#: inc/theme-info/theme-info.php:1129
+msgid "Import Demo"
+msgstr "Importar demo"
+
+#: inc/widgets/author.php:28
+msgid "Widget Title"
+msgstr "Título del widget"
+
+#: inc/theme-info/theme-info.php:1071
+msgid "Welcome to %s - "
+msgstr "Bienvenido a %s - "
+
+#: inc/customizer/customizer.php:4318 inc/customizer/customizer.php:5012
+msgid "Below Header"
+msgstr "Bajo la cabecera"
+
+#: inc/theme-info/theme-info.php:1198
+msgid "Read full documentation"
+msgstr "Leer la documentación completa"
+
+#: inc/customizer/customizer.php:5634
+msgid "4 Columns"
+msgstr "4 columnas"
+
+#: inc/customizer/customizer.php:5624
+msgid "Columns"
+msgstr "Columnas"
+
+#: functions.php:197
+msgid "huge"
+msgstr "enorme"
+
+#: inc/theme-info/theme-info.php:1220 inc/theme-info/theme-info.php:1222
+msgid "Customization Request"
+msgstr "Solicitud de personalización"
+
+#: inc/customizer/customizer.php:4872
+msgid "Title Color"
+msgstr "Color del título"
+
+#: inc/customizer/customizer.php:5632
+msgid "2 Columns"
+msgstr "2 columnas"
+
+#: inc/customizer/customizer.php:5633
+msgid "3 Columns"
+msgstr "3 columnas"
+
+#: inc/customizer/customizer.php:7611
+msgid "Page Title"
+msgstr "Título de la página"
+
+#: inc/customizer/customizer.php:1468 inc/customizer/customizer.php:1567
+#: inc/customizer/customizer.php:4718 inc/customizer/customizer.php:5200
+#: inc/customizer/customizer.php:7149
+msgid "Button"
+msgstr "Botón"
+
+#: inc/customizer/customizer.php:5327
+msgid "Featured Posts"
+msgstr "Entradas destacadas"
+
+#: inc/widgets/author.php:52
+msgid "Sub Title"
+msgstr "Subtítulo"
+
+#: inc/template-functions.php:452
+msgid "Footer Sidebar"
+msgstr "Barra lateral del pie de página"
+
+#: functions.php:140
+msgid "Pink"
+msgstr "Rosa"
+
+#: inc/customizer/customizer.php:5631
+msgid "1 Column"
+msgstr "1 columna"
+
+#: inc/theme-info/theme-info.php:1089
+msgid "View Pro Version"
+msgstr "Ver la versión Pro"
+
+#: functions.php:145
+msgid "Purple"
+msgstr "Morado"
+
+#: inc/customizer/customizer.php:3931
+msgid "Banner"
+msgstr "Banner"
+
+#: functions.php:165
+msgid "Grey"
+msgstr "Gris"
+
+#: inc/customizer/customizer.php:3974 inc/customizer/customizer.php:5640
+#: inc/customizer/customizer.php:6080 inc/customizer/customizer.php:6257
+msgid "Choose Category"
+msgstr "Elige categoría"
+
+#: inc/customizer/customizer.php:5118
+msgid "Subtitle"
+msgstr "Subtítulo"
+
+#: inc/customizer/customizer.php:324 inc/customizer/customizer.php:3077
+#: inc/customizer/customizer.php:3542 inc/customizer/customizer.php:6743
+#: inc/customizer/customizer.php:7910
+msgid "Style"
+msgstr "Estilo"
+
+#: inc/theme-info/theme-info.php:697
+msgid "Download"
+msgstr "Descargar"
+
+#: inc/theme-info/theme-info.php:700
+msgid "Live Preview"
+msgstr "Vista previa en vivo"
+
+#: inc/customizer/customizer.php:6737
+msgid "Blog Page"
+msgstr "Página del blog"
+
+#: functions.php:185
+msgid "regular"
+msgstr "normal"
+
+#: functions.php:125
+msgid "Yellow"
+msgstr "Amarillo"
+
+#: inc/customizer/customizer.php:2891
+msgid "Site Title"
+msgstr "Título del sitio"
+
+#: inc/theme-info/theme-info.php:1180
+msgid "Need more features?"
+msgstr "¿Necesitas más características?"
+
+#: inc/customizer/customizer.php:2742
+msgid "Dark"
+msgstr "Oscuro"
+
+#: inc/widgets/latest-posts.php:41
+msgid "Number of Posts"
+msgstr "Número de entradas"
+
+#: inc/theme-info/theme-info.php:1093
+msgid "Rate This Theme"
+msgstr "Valora este tema"
+
+#: inc/getting-started/getting-started.php:60
+#: inc/theme-info/theme-info.php:1112
+msgid "Get started with %s"
+msgstr "Primeros pasos con %s"
+
+#: template-parts/site-info.php:11
+msgid "Copyright &copy; "
+msgstr "Copyright &copy; "
+
+#: inc/theme-info/theme-info.php:1081
+msgid "Theme Details"
+msgstr "Detalles del tema"
+
+#: inc/customizer/customizer.php:7284
+msgid "Single Post"
+msgstr "Entrada individual"
+
+#: functions.php:130
+msgid "Orange"
+msgstr "Naranja"
+
+#: inc/customizer/customizer.php:1522 inc/customizer/customizer.php:1641
+msgid "Button Link"
+msgstr "Enlace del botón"
+
+#: inc/customizer/customizer.php:1342
+msgid "Address"
+msgstr "Dirección"
+
+#: inc/theme-info/theme-info.php:1188 inc/theme-info/theme-info.php:1190
+msgid "Go to Customizer"
+msgstr "Ir al personalizador"
+
+#: inc/customizer/customizer.php:1896 inc/customizer/customizer.php:4251
+msgid "Fade"
+msgstr "Fundido"
+
+#: functions.php:198
+msgid "XL"
+msgstr "XL"
+
+#: functions.php:180
+msgid "S"
+msgstr "S"
+
+#: functions.php:192
+msgid "L"
+msgstr "L"
+
+#: inc/customizer/customizer.php:1257
+msgid "Phone Number"
+msgstr "Número de teléfono"
+
+#: functions.php:155
+msgid "Green"
+msgstr "Verde"
+
+#: inc/customizer/customizer.php:4765 inc/customizer/customizer.php:5249
+msgid "Text"
+msgstr "Texto"
+
+#: inc/widgets/author.php:33
+msgid "Select Page"
+msgstr "Seleccionar página"
+
+#: inc/customizer/customizer.php:3670 inc/customizer/customizer.php:4924
+msgid "Select Image"
+msgstr "Seleccionar imagen"
+
+#: inc/customizer/customizer.php:81
+msgid "Upgrade To Pro"
+msgstr "Mejora a Pro"
+
+#: inc/customizer/customizer.php:2749
+msgid "Social Media"
+msgstr "Redes sociales"
+
+#: functions.php:186
+msgid "M"
+msgstr "M"
+
+#: inc/theme-info/theme-info.php:1100
+msgid "Recommended Plugins"
+msgstr "Plugins recomendados"
+
+#: functions.php:150
+msgid "Blue"
+msgstr "Azul"
+
+#: inc/customizer/customizer.php:4232 inc/customizer/customizer.php:4972
+msgid "Boxed"
+msgstr "Ancho fijo"
+
+#: inc/customizer/customizer.php:3608
+msgid "Text Color"
+msgstr "Color de texto"
+
+#: inc/customizer/customizer.php:5929 inc/widgets/latest-posts.php:91
+msgid "Latest Posts"
+msgstr "Últimas entradas"
+
+#: inc/widgets/class-base-widget.php:95 inc/widgets/class-base-widget.php:223
+msgid "&mdash; Select &mdash;"
+msgstr "&mdash; Seleccionar &mdash;"
+
+#: inc/customizer/customizer.php:5352 inc/customizer/customizer.php:5955
+#: inc/customizer/customizer.php:6118
+msgid "Section Title"
+msgstr "Título de la sección"
+
+#: inc/customizer/customizer.php:2825 inc/customizer/customizer.php:5254
+msgid "Link"
+msgstr "Enlace"
+
+#: inc/customizer/customizer.php:7605
+msgid "Pages"
+msgstr "Páginas"
+
+#: inc/customizer/customizer.php:299
+msgid "Primary Color"
+msgstr "Color principal"
+
+#: inc/customizer/customizer.php:1517 inc/customizer/customizer.php:1636
+#: inc/customizer/customizer.php:7197
+msgid "Button Text"
+msgstr "Texto del botón"
+
+#: inc/customizer/customizer.php:4670 inc/customizer/customizer.php:7112
+msgid "Excerpt Length"
+msgstr "Longitud del extracto"
+
+#: inc/theme-info/theme-info.php:1204 inc/theme-info/theme-info.php:1206
+msgid "Support Forum"
+msgstr "Foro de soporte"
+
+#: inc/theme-info/theme-info.php:1102
+msgid "Changelog"
+msgstr "Registro de cambios"
+
+#: inc/customizer/customizer.php:1884 inc/customizer/customizer.php:3148
+#: inc/customizer/customizer.php:3827 inc/customizer/customizer.php:4212
+#: inc/customizer/customizer.php:4952 inc/customizer/customizer.php:5717
+#: inc/customizer/customizer.php:7433 inc/customizer/customizer.php:7758
+msgid "No Repeat"
+msgstr "Sin repetición"
+
+#: inc/customizer/customizer.php:5758
+msgid "Top"
+msgstr "Arriba"
+
+#: inc/customizer/customizer.php:1850 inc/customizer/customizer.php:7809
+msgid "Image"
+msgstr "Imagen"
+
+#: inc/customizer/customizer.php:3930
+msgid "Slider"
+msgstr "Carrusel"
+
+#: inc/theme-info/theme-info.php:1085 inc/theme-info/theme-info.php:1121
+msgid "View Demo"
+msgstr "Ver demo"
+
+#: inc/customizer/customizer.php:2802
+msgid "Social Links"
+msgstr "Enlaces sociales"
+
+#: inc/customizer/customizer.php:7881 inc/customizer/customizer.php:7887
+msgid "Breadcrumbs"
+msgstr "Migas de pan"
+
+#: inc/customizer/customizer.php:3121
+msgid "Background Image"
+msgstr "Imagen de fondo"
+
+#: archive.php:127 index.php:202 search.php:42
+msgid "Previous page"
+msgstr "Página anterior"
+
+#: archive.php:126 index.php:201 search.php:41
+msgid "Next page"
+msgstr "Siguiente página"
+
+#: inc/customizer/customizer.php:2964
+msgid "Main Menu"
+msgstr "Menú principal"
+
+#: inc/customizer/customizer.php:3100 inc/customizer/customizer.php:3591
+msgid "Background Color"
+msgstr "Color de fondo"
+
+#: inc/customizer/customizer.php:2884
+msgid "Typography"
+msgstr "Tipografía"
+
+#: inc/template-tags.php:113
+msgid "Tags"
+msgstr "Etiquetas"
+
+#: inc/theme-info/theme-info.php:1099
+msgid "Getting Started"
+msgstr "Primeros pasos"
+
+#. translators: %s: Name of current post. Only visible to screen readers
+#: template-parts/content-page.php:31
+msgid "Edit <span class=\"screen-reader-text\">%s</span>"
+msgstr "Editar <span class=\"screen-reader-text\">%s</span>"
+
+#: inc/customizer/customizer.php:318
+msgid "Header"
+msgstr "Cabecera"
+
+#: 404.php:27
+msgid "404"
+msgstr "404"
+
+#. translators: %s: post title
+#: inc/template-tags.php:85
+msgid "Leave a Comment<span class=\"screen-reader-text\"> on %s</span>"
+msgstr "Deja un comentario<span class=\"screen-reader-text\"> en %s</span>"
+
+#: inc/theme-info/theme-info.php:1101
+msgid "Support"
+msgstr "Soporte"
+
+#: inc/customizer/customizer.php:4298 inc/customizer/customizer.php:4992
+#: inc/customizer/customizer.php:5455 inc/customizer/customizer.php:5744
+#: inc/customizer/customizer.php:6058 inc/customizer/customizer.php:6221
+#: inc/customizer/customizer.php:7992 inc/widgets/author.php:61
+msgid "Left"
+msgstr "Izquierda"
+
+#: inc/customizer/customizer.php:4299 inc/customizer/customizer.php:4993
+#: inc/customizer/customizer.php:5457 inc/customizer/customizer.php:5746
+#: inc/customizer/customizer.php:6060 inc/customizer/customizer.php:6223
+#: inc/customizer/customizer.php:7994 inc/widgets/author.php:62
+msgid "Right"
+msgstr "Derecha"
+
+#: inc/template-functions.php:403 inc/template-functions.php:413
+#: inc/template-functions.php:423 inc/template-functions.php:433
+#: inc/template-functions.php:443 inc/template-functions.php:454
+msgid "Add widgets here."
+msgstr "Añade widgets aquí."
+
+#: inc/customizer/customizer.php:2741
+msgid "Default"
+msgstr "Por defecto"
+
+#: inc/theme-info/theme-info.php:1196
+msgid "Documentation"
+msgstr "Documentación"
+
+#: inc/customizer/customizer.php:1300
+msgid "Email"
+msgstr "Correo electrónico"
+
+#: inc/customizer/customizer.php:5042 inc/widgets/latest-posts.php:33
+msgid "Title"
+msgstr "Título"
+
+#: inc/template-functions.php:421
+msgid "Left Sidebar"
+msgstr "Barra lateral izquierda"
+
+#: inc/template-functions.php:401
+msgid "Right Sidebar"
+msgstr "Barra lateral derecha"
+
+#: functions.php:56
+msgid "Primary"
+msgstr "Principal"
+
+#: archive.php:128 index.php:203 search.php:43
+msgid "Page"
+msgstr "Página"
+
+#: archive.php:126 index.php:201 search.php:41
+msgid "Next"
+msgstr "Siguiente"
+
+#: 404.php:29
+msgid "It looks like nothing was found at this location. Maybe try one of the links below or a search?"
+msgstr "Parece que aquí no hay nada. ¿por qué no pruebas uno de estos enlaces o la búsqueda?"
+
+#: inc/theme-info/theme-info.php:500 inc/theme-info/theme-info.php:631
+msgid "Install"
+msgstr "Instalar"
+
+#: inc/theme-info/theme-info.php:505 inc/theme-info/theme-info.php:636
+msgid "Activate"
+msgstr "Activar"
+
+#: inc/customizer/customizer.php:3184
+msgid "Sidebar"
+msgstr "Barra lateral"
+
+#: template-parts/header/header-eleven.php:107
+#: template-parts/header/header-fifteen.php:163
+#: template-parts/header/header-fourteen.php:101
+#: template-parts/header/header-one.php:102
+#: template-parts/header/header-seven.php:72
+#: template-parts/header/header-seven.php:103
+#: template-parts/header/header-six.php:71
+#: template-parts/header/header-six.php:95
+#: template-parts/header/header-ten.php:78
+#: template-parts/header/header-thirteen.php:57
+#: template-parts/header/header-three.php:11
+#: template-parts/header/header-three.php:60
+#: template-parts/header/header-twelve.php:72
+#: template-parts/header/header-two.php:106
+msgid "Primary Menu"
+msgstr "Menú principal"
+
+#: header.php:53
+msgid "Skip to content"
+msgstr "Saltar al contenido"
+
+#: inc/template-functions.php:129
+msgid "Search Results for: %s"
+msgstr "Resultados de la búsqueda: %s"
+
+#: template-parts/content-none.php:44
+msgid "It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps searching can help."
+msgstr "Parece que no encontramos lo que estás buscando. Puede que una búsqueda te ayude."
+
+#. translators: used between list items, there is a space after the comma
+#: inc/template-tags.php:101 inc/template-tags.php:115
+msgid ", "
+msgstr ", "
+
+#: template-parts/content-none.php:14
+msgid "Nothing Found"
+msgstr "No se ha encontrado nada"
+
+#: comments.php:64
+msgid "Comments are closed."
+msgstr "Los comentarios están cerrados."
+
+#: template-parts/content-page.php:18 template-parts/content-single.php:20
+msgid "Pages:"
+msgstr "Páginas:"
+
+#: inc/customizer/customizer.php:7551 single.php:142
+msgid "You may also like these"
+msgstr "También te pueden gustar estas"
+
+#: inc/customizer/customizer.php:332 inc/customizer/customizer.php:3994
+#: inc/customizer/customizer.php:5478 inc/customizer/customizer.php:6244
+msgid "Select layout & scroll below to change its options"
+msgstr "Selecciona el diseño y desplázate hacia abajo para cambiar sus opciones"
+
+#: inc/customizer/customizer.php:331
+msgid "Header Layouts"
+msgstr "Diseños de cabecera"
+
+#: inc/customizer/customizer.php:3558
+msgid "Footer Layouts"
+msgstr "Diseños del pie de página"
+
+#: inc/customizer/customizer.php:6751
+msgid "Grid / List / Single"
+msgstr "Cuadrícula / Lista / Individual"
+
+#: inc/customizer/customizer.php:6750
+msgid "Post Layouts"
+msgstr "Diseños de las entradas"
+
+#: inc/customizer/customizer.php:1090 inc/customizer/customizer.php:3939
+#: inc/customizer/customizer.php:5682
+msgid ""
+"This option will only apply to Desktop. Please click on below Desktop Icon to see changes. Automatically adjust by theme default in the responsive devices.\n"
+"\t\t"
+msgstr ""
+"Esta opción solo se aplicará al Escritorio. Haz clic en el icono de escritorio para ver los cambios. Ajuste automático por defecto del tema los dispositivos adaptables.\n"
+"\t\t"
+
+#: inc/customizer/customizer.php:3938 inc/customizer/customizer.php:5681
+msgid "Height (in px)"
+msgstr "Altura (en px)"
+
+#: inc/customizer/customizer.php:4409 inc/customizer/customizer.php:5667
+#: inc/customizer/customizer.php:6497 inc/customizer/customizer.php:6766
+msgid "Number of posts to show."
+msgstr "Número de entradas a mostrar."
+
+#: inc/customizer/customizer.php:4408 inc/customizer/customizer.php:5666
+#: inc/customizer/customizer.php:6765
+msgid "Post View Number"
+msgstr "Número de entradas a visualizar"
+
+#: inc/customizer/customizer.php:3649
+msgid "Bottom Footer Typography"
+msgstr "Tipografía del pie de página inferior"
+
+#: inc/customizer/customizer.php:3206 inc/customizer/customizer.php:3520
+msgid "Widget Title Typography"
+msgstr "Tipografía del título del widget"
+
+#: inc/customizer/customizer.php:7084
+msgid "Post Excerpt Typography"
+msgstr "Tipografía del extracto de la entrada"
+
+#: inc/customizer/customizer.php:5888 inc/customizer/customizer.php:6612
+#: inc/customizer/customizer.php:7035
+msgid "Post Meta Typography"
+msgstr "Tipografía de los metadatos de la entrada"
+
+#: inc/customizer/customizer.php:5833 inc/customizer/customizer.php:6520
+#: inc/customizer/customizer.php:6980
+msgid "Post Category Typography"
+msgstr "Tipografía de las categorías de entradas"
+
+#: inc/customizer/customizer.php:5775 inc/customizer/customizer.php:6557
+#: inc/customizer/customizer.php:6943
+msgid "Post Title Typography"
+msgstr "Tipografía del título de la entrada"
+
+#: inc/customizer/customizer.php:5421 inc/customizer/customizer.php:6024
+#: inc/customizer/customizer.php:6187
+msgid "Section Description Typography"
+msgstr "Tipografía de la descripción de la sección"
+
+#: inc/customizer/customizer.php:5368 inc/customizer/customizer.php:5971
+#: inc/customizer/customizer.php:6134
+msgid "Section Title Typography"
+msgstr "Tipografía del título de la sección"
+
+#: inc/customizer/customizer.php:1679
+msgid "Header Buttons Typography"
+msgstr "Tipografía de los botones de la cabecera"
+
+#: inc/customizer/customizer.php:4799
+msgid "Slider Button Typography"
+msgstr "Tipografía del botón del control deslizante"
+
+#: inc/customizer/customizer.php:4637
+msgid "Excerpt Typography"
+msgstr "Tipografía del extracto"
+
+#: inc/customizer/customizer.php:4576
+msgid "Meta Typography"
+msgstr "Tipografía de los metadatos"
+
+#: inc/customizer/customizer.php:4495
+msgid "Category Typography"
+msgstr "Tipografía de la categoría"
+
+#: inc/customizer/customizer.php:4446 inc/customizer/customizer.php:5069
+msgid "Title Typography"
+msgstr "Tipografía del título"
+
+#: inc/customizer/customizer.php:3051
+msgid "Page & Single Post Title"
+msgstr "Título de página y entrada individual"
+
+#: inc/customizer/customizer.php:3033
+msgid "General Title (H1 - H6)"
+msgstr "Título general (H1 - H6)"
+
+#: inc/customizer/customizer.php:3014
+msgid "Body"
+msgstr "Cuerpo"
+
+#: inc/customizer/customizer.php:2993
+msgid "Main Menu Description"
+msgstr "Descripción del menú principal"
+
+#: archive.php:127 index.php:202 search.php:42
+msgid "Prev"
+msgstr "Ant"
+
+#: inc/getting-started/getting-started.php:58
+msgid "Plugins added successfully. You may dismiss this notice now."
+msgstr "Plugins añadidos correctamente. Ya puedes descartar este aviso."
+
+#: inc/theme-info/theme-info.php:290
+msgid "Plugins added successfully. You have completed Step 1."
+msgstr "Plugins añadidos correctamente. Has completado el Paso 1."
+
+#: template-parts/content-none.php:37
+msgid "Sorry, but nothing matched your search terms. Please try again with some different keywords."
+msgstr "Lo siento, pero nada coincide con tus términos de búsqueda. Por favor, prueba de nuevo con algunas palabras clave diferentes."
+
+#. translators: 1: link to WP admin new post page.
+#: template-parts/content-none.php:24
+msgid "Ready to publish your first post? <a href=\"%1$s\">Get started here</a>."
+msgstr "¿Preparado para publicar tu primera entrada? <a href=\"%1$s\">Primeros pasos aquí</a>."
+
+#: inc/customizer/customizer.php:3379
+msgid "Footer Widgets"
+msgstr "Widgets del pie de página"
+
+#: inc/customizer/customizer.php:4297 inc/customizer/customizer.php:4991
+#: inc/customizer/customizer.php:5456 inc/customizer/customizer.php:5745
+#: inc/customizer/customizer.php:5759 inc/customizer/customizer.php:6059
+#: inc/customizer/customizer.php:6222 inc/customizer/customizer.php:7993
+#: inc/widgets/author.php:60
+msgid "Center"
+msgstr "Centro"
+
+#: inc/widgets/latest-posts.php:53
+msgid "Layout"
+msgstr "Diseño"
+
+#: functions.php:191
+msgid "larger"
+msgstr "muy grande"
+
+#: functions.php:179
+msgid "small"
+msgstr "pequeña"
+
+#: inc/theme-info/theme-info.php:1128
+msgid "Once you have a found a site you like, you can move ahead and import it. It is to be noted that some necessary plugins will be installed to function the site as you see in the demo site. A fresh Wordpress site is recommended to mirror the demo site on your setup. Importing the demo on an already running site will create discrepancies with the site shown on the demo."
+msgstr "Una vez que hayas encontrado un sitio que te guste, puedes seguir adelante e importarlo. Hay que tener en cuenta que se instalarán algunos plugins necesarios para que el sitio funcione como se ve en el sitio de demostración. Se recomienda crear un sitio WordPress nuevo para reflejar el sitio de demostración en tu configuración. Importar la demo en un sitio ya en funcionamiento creará discrepancias con el sitio mostrado en la demo."
+
+#: 404.php:28
+msgid "Oops! that page can&rsquo;t be found."
+msgstr "¡Vaya! No se ha podido encontrar esa página."
+
+#. translators: 1: comment count number, 2: title.
+#: comments.php:41
+msgctxt "comments title"
+msgid "%1$s thought on &ldquo;%2$s&rdquo;"
+msgid_plural "%1$s thoughts on &ldquo;%2$s&rdquo;"
+msgstr[0] "%1$s comentario acerca de «%2$s»"
+msgstr[1] "%1$s comentarios acerca de «%2$s»"
+
+#. translators: 1: title.
+#: comments.php:35
+msgid "One thought on &ldquo;%1$s&rdquo;"
+msgstr "Un comentario acerca de «%1$s»"
+
+#: functions.php:170
+msgid "Black"
+msgstr "Negro"
+
+#: functions.php:135
+msgid "Red"
+msgstr "Rojo"
+
+#: functions.php:57
+msgid "Secondary"
+msgstr "Secundario"
+
+#: inc/theme-info/theme-info.php:1258
+msgid ". It will give us more energy to work on this theme."
+msgstr ". Nos dará más energía para trabajar en este tema."
+
+#: inc/theme-info/theme-info.php:1258
+msgid "If you like our work, please give us a moment of your time to rate our theme 5 stars on "
+msgstr "Si te gusta nuestro trabajo, danos un momento de tu tiempo para valorar nuestro tema con 5 estrellas en "
+
+#: inc/theme-info/theme-info.php:1257
+msgid "Show us how much you like our theme."
+msgstr "Muéstranos cuánto te gusta nuestro tema."
+
+#: inc/theme-info/theme-info.php:1247
+msgid "View All Demos"
+msgstr "Ver todas las demostraciones"
+
+#: inc/theme-info/theme-info.php:1105 inc/theme-info/theme-info.php:1259
+msgid "Rate Theme"
+msgstr "Valorar el tema"
+
+#: inc/theme-info/theme-info.php:1104
+msgid "Demos"
+msgstr "Demostraciones"
+
+#: inc/theme-info/theme-info.php:1103
+msgid "Free VS Pro"
+msgstr "Gratis Vs Pro"
+
+#: inc/theme-info/theme-info.php:1074
+msgid "%s is now installed and ready to use. We hope the following information will help and you enjoy using it!"
+msgstr "%s ya está instalado y listo para usar. ¡Esperamos que la siguiente información te sirva de ayuda y que disfrutes utilizándolo!"
+
+#: inc/theme-info/theme-info.php:532
+msgid "Show All Recommended Actions"
+msgstr "Mostrar todas las acciones recomendadas"
+
+#: inc/theme-info/theme-info.php:531
+msgid "Hooray! There are no recommended actions for you right now."
+msgstr "¡Bravo! En este momento no es necesaria ninguna acción por tu parte."
+
+#: inc/theme-info/theme-info.php:44
+msgid " Setup"
+msgstr " Configuración"
+
+#: inc/theme-info/theme-info.php:43
+msgid " Info"
+msgstr " Información"
+
+#: inc/template-tags.php:151
+msgid "Posted on"
+msgstr "Publicado el"
+
+#: inc/customizer/customizer.php:8062
+msgid "Product Display Per Page"
+msgstr "Visualización de productos por página"
+
+#: inc/theme-info/theme-info.php:1181
+msgid "Upgrade to PRO version for more exciting features and Priority Support."
+msgstr "Actualiza a la versión PRO para conseguir características más interesantes y soporte prioritario."
+
+#: inc/theme-info/theme-info.php:1232
+msgid "Free VS Pro Features"
+msgstr "Características Gratis vs Pro"
+
+#: inc/theme-info/theme-info.php:1234
+msgid "Check All Features"
+msgstr "Comprueba todas las características"
+
+#: inc/theme-info/theme-info.php:1246
+msgid "To get started with ready-made starter site templates."
+msgstr "Para empezar con plantillas de sitios de inicio preconstruidas."
+
+#: inc/theme-info/theme-info.php:1245
+msgid "Pre-built Demos"
+msgstr "Demos preconstruidas"
+
+#: inc/theme-info/theme-info.php:1139
+msgid "Step 5 - That's it!"
+msgstr "Paso 5 - ¡Ya está!"
+
+#: inc/theme-info/theme-info.php:1136
+msgid "Once finishing the import you play with the demo to your hearts content."
+msgstr "Una vez finalizada la importación, juega con la demo a tu antojo."
+
+#: inc/theme-info/theme-info.php:1135
+msgid "Step 4 - Start editing content and making your site!"
+msgstr "Paso 4 - ¡Empieza a editar el contenido y a crear tu sitio!"
+
+#: inc/theme-info/theme-info.php:1127
+msgid "Step 3 - Import demo of your choice"
+msgstr "Paso 3 - Importa la demo que elijas"
+
+#: inc/theme-info/theme-info.php:1120
+msgid "All starter demos sites comes attached to Bosa just ready to pluck one from. Discover them, be enamoured and finally decide on the one you resonate with. If one doesnt catch your fancy dont be afraid to have a go at building a site with your own design."
+msgstr "Todos los sitios de demos de inicio vienen adjuntos a Bosa, listos para arrancar. Descúbrelos, déjate seducir y decídete por el que más te guste. Si no te gusta ninguno, no tengas miedo de probar a crear un sitio con tu propio diseño."
+
+#: inc/theme-info/theme-info.php:1119
+msgid "Step 2 - Checkout starter sites (Demos)"
+msgstr "Paso 2 - Comprobar los sitios de inicio (Demos)"
+
+#: inc/theme-info/theme-info.php:1111
+msgid "Step 1 - To fully take advantage of the best our theme can offer, get started."
+msgstr "Paso 1 - Para aprovechar al máximo lo mejor que nuestro tema puede ofrecer, da tus primeros pasos."
+
+#: inc/customizer/customizer.php:7858
+msgid "Animation Five"
+msgstr "Animación cinco"
+
+#: inc/customizer/customizer.php:7857
+msgid "Animation Four"
+msgstr "Animación cuatro"
+
+#: inc/customizer/customizer.php:7856
+msgid "Animation Three"
+msgstr "Animación tres"
+
+#: inc/customizer/customizer.php:7855
+msgid "Animation Two"
+msgstr "Animación dos"
+
+#: inc/customizer/customizer.php:7854
+msgid "Animation One"
+msgstr "Animación uno"
+
+#: inc/customizer/customizer.php:7893
+msgid "Disable in all Pages Only"
+msgstr "Desactivar solo en todas las páginas"
+
+#: inc/customizer/customizer.php:7894
+msgid "Disable in all Pages & Posts"
+msgstr "Desactivar en todas las páginas y entradas"
+
+#: inc/customizer/customizer.php:7895
+msgid "Show in all Pages & Posts"
+msgstr "Mostrar en todas las páginas y entradas"
+
+#: inc/customizer/customizer.php:7839
+msgid "Disable Preloading"
+msgstr "Desactivar la precarga"
+
+#: inc/customizer/customizer.php:7848
+msgid "Preloading Animations"
+msgstr "Animaciones de precarga"
+
+#: inc/customizer/customizer.php:7274
+msgid "Disable Pagination"
+msgstr "Desactivar paginación"
+
+#: inc/customizer/customizer.php:7538
+msgid "Disable Related Posts"
+msgstr "Desactivar las entradas relacionadas"
+
+#: inc/customizer/customizer.php:7522
+msgid "Author Section Title"
+msgstr "Título de la sección del autor"
+
+#: inc/customizer/customizer.php:7504
+msgid "Disable Tag Links"
+msgstr "Desactivar enlaces de etiquetas"
+
+#: inc/customizer/customizer.php:7337 inc/customizer/customizer.php:7659
+msgid "Disable in all Pages"
+msgstr "Desactivar en todas las páginas"
+
+#: inc/customizer/customizer.php:7336 inc/customizer/customizer.php:7658
+msgid "Show in all Pages"
+msgstr "Mostrar en todas las páginas"
+
+#: inc/customizer/customizer.php:7625
+msgid "Page Title Position"
+msgstr "Posición del título de página"
+
+#: inc/customizer/customizer.php:7661
+msgid "Show in Frontpage only"
+msgstr "Mostrar solo en la portada"
+
+#: inc/customizer/customizer.php:7660
+msgid "Disable in Frontpage only"
+msgstr "Desactivar solo en la portada"
+
+#: inc/customizer/customizer.php:7810
+msgid "Recommended image size 360x200 pixel."
+msgstr "Tamaño de imagen recomendado 360x200 píxeles."
+
+#: inc/theme-info/theme-info.php:1197
+msgid "Please check our full documentation for detailed information on how to Setup and Use Bosa."
+msgstr "Por favor, consulta nuestra documentación completa para obtener información detallada sobre cómo configurar y usar Bosa."
+
+#: inc/theme-info/theme-info.php:1189
+msgid "All Settings, Header & Footer Options, Theme Options, Widgets and Menus are available via Customize screen."
+msgstr "Todos los ajustes, opciones de encabezado y pie de página, opciones del tema, widgets y menús están disponibles a través de la pantalla «Personalizar»."
+
+#: inc/customizer/customizer.php:7619
+msgid "Disable from frontpage only"
+msgstr "Desactivar solo desde la portada"
+
+#: inc/customizer/customizer.php:7583
+msgid "Total number of related posts to show."
+msgstr "Número total de entradas relacionadas a mostrar."
+
+#: inc/customizer/customizer.php:7547
+msgid "Related Posts Section Title"
+msgstr "Título de la sección de entradas relacionadas"
+
+#: inc/customizer/customizer.php:7330 inc/customizer/customizer.php:7652
+msgid "Feature Image"
+msgstr "Imagen destacada"
+
+#: inc/customizer/customizer.php:7113
+msgid "Select number of words to display in excerpt"
+msgstr "Selecciona el número de palabras para mostrar en el extracto"
+
+#: inc/customizer/customizer.php:6971 inc/customizer/customizer.php:8988
+msgid "Disable Category"
+msgstr "Desactivar la categoría"
+
+#: inc/customizer/customizer.php:6719
+msgid "Disable Highlighted Posts"
+msgstr "Desactivar las entradas destacadas"
+
+#: inc/customizer/customizer.php:6703
+msgid "Disable Latest Posts"
+msgstr "Desactivar últimas entradas"
+
+#: inc/customizer/customizer.php:6687
+msgid "Disable Featured Posts"
+msgstr "Desactivar entradas destacadas"
+
+#: inc/customizer/customizer.php:5861 inc/customizer/customizer.php:6585
+msgid "Disable Post Date"
+msgstr "Desactivar fecha de la entrada"
+
+#: inc/customizer/customizer.php:5824
+msgid "Disable Posts category"
+msgstr "Desactivar la categoría de las entradas"
+
+#: inc/customizer/customizer.php:5766 inc/customizer/customizer.php:6548
+#: inc/customizer/customizer.php:6934
+msgid "Disable Post Title"
+msgstr "Desactivar título de entrada"
+
+#: inc/customizer/customizer.php:5343 inc/customizer/customizer.php:5946
+#: inc/customizer/customizer.php:6109
+msgid "Disable Section Title"
+msgstr "Desactivar título de sección"
+
+#: inc/customizer/customizer.php:5334
+msgid "Disable Featured Posts Section"
+msgstr "Desactivar la sección de entradas destacadas"
+
+#: inc/customizer/customizer.php:5102
+msgid "Disable Subtitle"
+msgstr "Desactivar subtítulo"
+
+#: inc/customizer/customizer.php:4162 inc/customizer/customizer.php:6904
+msgid "Post Text Color"
+msgstr "Color del texto de la entrada"
+
+#: inc/customizer/customizer.php:4060 inc/customizer/customizer.php:5527
+#: inc/customizer/customizer.php:6327 inc/customizer/customizer.php:6827
+msgid "Post Category Color"
+msgstr "Color de la categoría de entradas"
+
+#: inc/customizer/customizer.php:4034 inc/customizer/customizer.php:5490
+#: inc/customizer/customizer.php:6280 inc/customizer/customizer.php:6806
+msgid "Post Title Color"
+msgstr "Color del título de la entrada"
+
+#: inc/customizer/customizer.php:3722 inc/customizer/customizer.php:7864
+msgid "Image Width"
+msgstr "Ancho de la imagen"
+
+#: inc/customizer/customizer.php:3689
+msgid "Image Link"
+msgstr "Enlace de la imagen"
+
+#: inc/customizer/customizer.php:2808
+msgid "Social Link"
+msgstr "Enlace social"
+
+#: inc/customizer/customizer.php:2804
+msgid "By default, Social Icons will appear in both header and footer section."
+msgstr "Por defecto, los iconos sociales aparecerán tanto en la cabecera como en el pie de página."
+
+#: inc/customizer/customizer.php:2780
+msgid "Only applicable to the footer social icons."
+msgstr "Solo aplicable a los iconos sociales del pie de página."
+
+#: inc/customizer/customizer.php:2779
+msgid "Footer Social Icons Size"
+msgstr "Tamaño de los iconos sociales del pie de página"
+
+#: inc/theme-info/theme-info.php:1233
+msgid "%s is a multipurpose free WordPress theme. However, Bosa Pro comes with more cool and awesome features that give you a flexible and wide range of options to build a full-fledged website."
+msgstr "%s es un tema para WordPress gratuito y multipropósito. Sin embargo, Bosa Pro incluye características adicionales y asombrosas que te proporcionan un abanico de opciones amplio y flexible para construir una web completamente desarrollada."
+
+#: inc/theme-info/theme-info.php:1205
+msgid "Got theme support question or found bug? Simply create a support ticket with your queries and we will get back to you."
+msgstr "¿Tienes preguntas para el servicio de soporte del tema o has encontrado un fallo? Solo crea un tique de soporte con tus consultas y nos comunicaremos contigo."
+
+#: inc/customizer/customizer.php:7303
+msgid "Post Title Position"
+msgstr "Posición del título de la entrada"
+
+#: inc/customizer/customizer.php:6093
+msgid "Highlighted Posts"
+msgstr "Entradas destacadas"
+
+#: inc/customizer/customizer.php:5937
+msgid "Disable Latest Posts Section From Homepage"
+msgstr "Desactivar la sección de entradas recientes de la página de inicio."
+
+#: inc/customizer/customizer.php:5930
+msgid "More options are available in Blog Page Section."
+msgstr "Más opciones disponibles en la sección de la página del blog."
+
+#: inc/customizer/customizer.php:4544 inc/customizer/customizer.php:7017
+#: inc/customizer/customizer.php:7513
+msgid "Disable Author"
+msgstr "Desactivar el autor"
+
+#: inc/customizer/customizer.php:4479 inc/customizer/customizer.php:7495
+msgid "Disable category"
+msgstr "Desactivar la categoría"
+
+#: inc/customizer/customizer.php:4430 inc/customizer/customizer.php:5026
+msgid "Disable Title"
+msgstr "Desactivar el título"
+
+#: inc/customizer/customizer.php:4319 inc/customizer/customizer.php:5013
+msgid "Below Featured Posts"
+msgstr "Debajo de las entradas destacadas"
+
+#: inc/customizer/customizer.php:4560 inc/customizer/customizer.php:7026
+#: inc/customizer/customizer.php:7486
+msgid "Disable Comments Link"
+msgstr "Desactivar el enlace a los comentarios"
+
+#: inc/customizer/customizer.php:5738
+msgid "Post Text Alignment"
+msgstr "Alineación del texto de la entrada"
+
+#: inc/customizer/customizer.php:5723 inc/customizer/customizer.php:6791
+msgid "Posts Border Radius (px)"
+msgstr "Radio del borde de las entradas (px)"
+
+#: inc/customizer/customizer.php:5652
+msgid "Featured Posts Overlay Opacity"
+msgstr "Opacidad de la superposición de las entradas destacadas"
+
+#: inc/customizer/customizer.php:5614 inc/customizer/customizer.php:6410
+#: inc/customizer/customizer.php:6925
+msgid "Post Hover Color"
+msgstr "Color de la entrada al pasar el cursor"
+
+#: inc/customizer/customizer.php:5511 inc/customizer/customizer.php:6301
+msgid "Post Category Background Color"
+msgstr "Color de fondo de la categoría de entrada"
+
+#: inc/customizer/customizer.php:5396 inc/customizer/customizer.php:5999
+#: inc/customizer/customizer.php:6162
+msgid "Disable Section Description"
+msgstr "Desactivar la descripción de sección"
+
+#: inc/customizer/customizer.php:5293
+msgid "Banner Button Typography"
+msgstr "Tipografía del botón del banner"
+
+#: inc/customizer/customizer.php:5194
+msgid "Banner Buttons"
+msgstr "Botones del banner"
+
+#: inc/customizer/customizer.php:5178
+msgid "Disable Banner Buttons"
+msgstr "Desactivar los botones del banner"
+
+#: inc/customizer/customizer.php:5145
+msgid "Subtitle Typography"
+msgstr "Tipografía del subtítulo"
+
+#: inc/customizer/customizer.php:4898
+msgid "Subtitle Color"
+msgstr "Color del subtítulo"
+
+#: inc/customizer/customizer.php:4852
+msgid "Banner Background Color"
+msgstr "Color de fondo del banner"
+
+#: inc/customizer/customizer.php:4621 inc/customizer/customizer.php:7075
+msgid "Disable Excerpt"
+msgstr "Desactivar el extracto"
+
+#: inc/customizer/customizer.php:4225 inc/customizer/customizer.php:4965
+msgid "Width Controls"
+msgstr "Controles de anchura"
+
+#: inc/customizer/customizer.php:5641 inc/customizer/customizer.php:6081
+#: inc/customizer/customizer.php:6258
+msgid "Recent posts will show if any category is not chosen."
+msgstr "Las entradas recientes se mostrarán si no se elige ninguna categoría."
+
+#: inc/customizer/customizer.php:3511
+msgid "Widgets Link Hover Color"
+msgstr "Color del enlace de los widgets al pasar el cursor"
+
+#: inc/customizer/customizer.php:3495
+msgid "Widgets Content Color"
+msgstr "Color del contenido de los widgets"
+
+#: inc/customizer/customizer.php:3479
+msgid "Widgets Link Color"
+msgstr "Color del enlace de los widgets"
+
+#: inc/customizer/customizer.php:3463
+msgid "Widget Title Color"
+msgstr "Color del título del widget"
+
+#: inc/customizer/customizer.php:3437
+msgid "Footer Widget Area Bottom Padding(in px)"
+msgstr "Relleno inferior del área del widget del pie de página (en px)"
+
+#: inc/customizer/customizer.php:3428
+msgid "Footer Widget Area Top Padding(in px)"
+msgstr "Relleno superior del área del widget del pie de página (en px)"
+
+#: inc/customizer/customizer.php:3404
+msgid "Disable Footer Widget Item List Border "
+msgstr "Desactivar el borde de la lista de elementos del widget del pie de página "
+
+#: inc/customizer/customizer.php:3395
+msgid "Disable Footer Widget Title Border"
+msgstr "Desactivar el borde del título del widget del pie de página"
+
+#: inc/customizer/customizer.php:7309 inc/customizer/customizer.php:7631
+msgid "Below Feature Image"
+msgstr "Bajo la imagen destacada"
+
+#: inc/customizer/customizer.php:7268 inc/customizer/customizer.php:7297
+#: inc/customizer/customizer.php:7617
+msgid "Disable from all"
+msgstr "Desactivar de todos"
+
+#: inc/customizer/customizer.php:7267 inc/customizer/customizer.php:7296
+#: inc/customizer/customizer.php:7618
+msgid "Enable in all"
+msgstr "Activar en todos"
+
+#: inc/customizer/customizer.php:7261
+msgid "Blog Archive Pages Title"
+msgstr "Título de las páginas de archivo del blog"
+
+#: inc/customizer/customizer.php:7143
+msgid "Post Button"
+msgstr "Botón de la entrada"
+
+#: inc/customizer/customizer.php:7225
+msgid "Post Button Typography"
+msgstr "Tipografía del botón de la entrada"
+
+#: inc/customizer/customizer.php:7134
+msgid "Disable Post Button"
+msgstr "Desativar botón de la entrada"
+
+#: inc/customizer/customizer.php:6652
+msgid "Disable Post Image"
+msgstr "Desactivar la imagen de las entradas"
+
+#: inc/customizer/customizer.php:6511
+msgid "Disable Post category"
+msgstr "Desactivar la categoría de las entradas"
+
+#: inc/customizer/customizer.php:5879 inc/customizer/customizer.php:6603
+msgid "Disable Post Comment"
+msgstr "Desactivar los comentarios en las entradas"
+
+#: inc/customizer/customizer.php:5870 inc/customizer/customizer.php:6594
+msgid "Disable Post Author"
+msgstr "Desactivar el autor de las entradas"
+
+#: inc/customizer/customizer.php:5803
+msgid "Disable Post Title Divider"
+msgstr "Desactivar el separador del título de las entradas"
+
+#: inc/customizer/customizer.php:5760
+msgid "Bottom"
+msgstr "Inferior"
+
+#: inc/customizer/customizer.php:5752
+msgid "Post Content Alignment"
+msgstr "Alineación del contenido de las entradas"
+
+#: inc/customizer/customizer.php:5548 inc/customizer/customizer.php:6348
+msgid "Post Meta Text Color"
+msgstr "Color del texto de los metadatos de las entradas"
+
+#: inc/customizer/customizer.php:3902
+msgid "Blog Homepage"
+msgstr "Página de inicio del blog"
+
+#: inc/customizer/customizer.php:3624
+msgid "Text Link Color"
+msgstr "Color del enlace de texto"
+
+#: inc/customizer/customizer.php:3640
+msgid "Text Link Hover Color"
+msgstr "Color del enlace de texto al pasar el cursor"
+
+#: inc/customizer/customizer.php:3778
+msgid "Disable Footer Menu"
+msgstr "Desactivar menú de pie de página"
+
+#: inc/customizer/customizer.php:3582
+msgid "Bottom Footer Area Bottom Padding(in px)"
+msgstr "Relleno inferior del área del pie de página inferior(en px)"
+
+#: inc/customizer/customizer.php:3573
+msgid "Bottom Footer Area Top Padding(in px)"
+msgstr "Relleno superior del área del pie de página inferior(en px)"
+
+#: inc/customizer/customizer.php:3796
+msgid "Recommended image size 1920x550 pixel."
+msgstr "Tamaño recomendado de imagen 1920x550 píxeles."
+
+#: inc/customizer/customizer.php:3850
+msgid "Disable Scroll to Top"
+msgstr "Desactivar desplazar hacia arriba"
+
+#: inc/customizer/customizer.php:1876 inc/customizer/customizer.php:3140
+#: inc/customizer/customizer.php:3819 inc/customizer/customizer.php:4204
+#: inc/customizer/customizer.php:4944 inc/customizer/customizer.php:5709
+msgid "Background Image Size"
+msgstr "Tamaño de la imagen de fondo"
+
+#: inc/customizer/customizer.php:1841
+msgid "Add New Image"
+msgstr "Añadir nueva imagen"
+
+#: inc/customizer/customizer.php:1835
+msgid "Recommended image size 1920x550 pixel. Add only one image to make header banner."
+msgstr "Tamaño de imagen recomendado 1920x550 píxeles. Añade solo una imagen para crear el banner de cabecera."
+
+#: inc/customizer/customizer.php:1834
+msgid "Header Image Slider"
+msgstr "Carrusel de imágenes de cabecera"
+
+#: inc/customizer/customizer.php:1827 inc/customizer/customizer.php:3788
+msgid "Media"
+msgstr "Medios"
+
+#: inc/customizer/customizer.php:1721
+msgid "Disable Hamburger Widget Menu Icon"
+msgstr "Desactivar el icono de menú del widget de hamburguesa"
+
+#: inc/customizer/customizer.php:1712
+msgid "Disable Search"
+msgstr "Desactivar la búsqueda"
+
+#: inc/customizer/customizer.php:1560
+msgid "Transparent Header Buttons"
+msgstr "Botones de cabecera transparentes"
+
+#: inc/customizer/customizer.php:1532 inc/customizer/customizer.php:1651
+#: inc/customizer/customizer.php:4770 inc/customizer/customizer.php:5264
+#: inc/customizer/customizer.php:7202
+msgid "Button Radius (px)"
+msgstr "Radio del botón (px)"
+
+#: inc/customizer/customizer.php:1527 inc/customizer/customizer.php:1646
+#: inc/customizer/customizer.php:2829 inc/customizer/customizer.php:5259
+msgid "Open Link in New Window"
+msgstr "Abrir el enlace en una nueva ventana"
+
+#: inc/customizer/customizer.php:1631 inc/customizer/customizer.php:4760
+#: inc/customizer/customizer.php:5244 inc/customizer/customizer.php:7192
+msgid "Button Hover Color"
+msgstr "Color del botón al pasar el cursor"
+
+#: inc/customizer/customizer.php:4749 inc/customizer/customizer.php:5233
+#: inc/customizer/customizer.php:7181
+msgid "Button Border Color"
+msgstr "Color del borde del botón"
+
+#: inc/customizer/customizer.php:1491 inc/customizer/customizer.php:1593
+#: inc/customizer/customizer.php:4739 inc/customizer/customizer.php:5223
+#: inc/customizer/customizer.php:7171
+msgid "Text Only Button"
+msgstr "Botón de solo texto"
+
+#: inc/customizer/customizer.php:1490 inc/customizer/customizer.php:1592
+#: inc/customizer/customizer.php:4738 inc/customizer/customizer.php:5222
+#: inc/customizer/customizer.php:7170
+msgid "Border Button"
+msgstr "Botón de borde"
+
+#: inc/customizer/customizer.php:1489 inc/customizer/customizer.php:1591
+#: inc/customizer/customizer.php:4737 inc/customizer/customizer.php:5221
+#: inc/customizer/customizer.php:7169
+msgid "Background Button"
+msgstr "Botón de fondo"
+
+#: inc/customizer/customizer.php:1485 inc/customizer/customizer.php:1587
+#: inc/customizer/customizer.php:4733 inc/customizer/customizer.php:5217
+#: inc/customizer/customizer.php:7165
+msgid "Button Type"
+msgstr "Tipo de botón"
+
+#: inc/customizer/customizer.php:1445 inc/customizer/customizer.php:2616
+msgid "Disable Header Buttons"
+msgstr "Desactivar botones de cabecera"
+
+#: inc/customizer/customizer.php:1461
+msgid "Header Buttons"
+msgstr "Botones de cabecera"
+
+#: inc/customizer/customizer.php:1432
+msgid "Header Button Options"
+msgstr "Opciones del botón de cabecera"
+
+#: inc/customizer/customizer.php:1193
+msgid "Disable Contact Details"
+msgstr "Desactivar los datos de contacto"
+
+#: inc/customizer/customizer.php:1180
+msgid "Contact Details Options"
+msgstr "Opciones de los datos de contacto"
+
+#: inc/customizer/customizer.php:1089
+msgid "Header Height (in px)"
+msgstr "Altura de la cabecera (en px)"
+
+#: inc/customizer/customizer.php:1016
+msgid "Sub Menu Link Hover Color"
+msgstr "Color del enlace del submenú al pasar el cursor"
+
+#: inc/customizer/customizer.php:718 inc/customizer/customizer.php:3447
+#: inc/customizer/customizer.php:3592
+msgid "It can be used as a transparent background color over image."
+msgstr "Puede utilizarse como color de fondo transparente sobre la imagen."
+
+#: inc/customizer/customizer.php:879 inc/customizer/customizer.php:2427
+msgid "Disable Mid Header Section Border"
+msgstr "Desactivar el borde de la sección central de la cabecera"
+
+#: inc/customizer/customizer.php:387
+msgid "Fully white or light color with image dimensions 320 by 120 pixels is recommended."
+msgstr "Se recomienda un color totalmente blanco o claro con unas dimensiones de imagen de 320 por 120 píxeles."
+
+#: inc/customizer/customizer.php:696 inc/customizer/customizer.php:2411
+msgid "Disable Top Header Section Border"
+msgstr "Desactivar el borde de la sección superior de la cabecera"
+
+#: inc/customizer/customizer.php:354
+msgid "Disable Top Header Section"
+msgstr "Desactivar la sección superior de la cabecera"
+
+#: inc/customizer/customizer.php:283
+msgid "Page and Single Post Title"
+msgstr "Título de página y entrada individual"
+
+#: inc/customizer/customizer.php:250
+msgid "General Heading Text Color (H1 - H6)"
+msgstr "Color del texto del encabezado general (H1 - H6)"
+
+#: inc/customizer/customizer.php:223 inc/customizer/customizer.php:2152
+msgid "Disable Site Tagline"
+msgstr "Desactivar la descripción corta del sitio"
+
+#: inc/customizer/customizer.php:214 inc/customizer/customizer.php:2090
+msgid "Disable Site Title"
+msgstr "Desactivar el título del sitio"
+
+#: inc/customizer/customizer.php:199 inc/customizer/customizer.php:2058
+msgid "Logo Image Width"
+msgstr "Anchura de la imagen del logotipo"
+
+#: inc/customizer/customizer.php:80
+msgid "Bosa Pro"
+msgstr "Bosa Pro"
+
+#: inc/widgets/latest-posts.php:57
+msgid "Right Image"
+msgstr "Imagen derecha"
+
+#: inc/widgets/latest-posts.php:56
+msgid "Left Image"
+msgstr "Imagen izquierda"
+
+#: inc/widgets/latest-posts.php:48
+msgid "Show Date & Comments"
+msgstr "Mostrar fecha y comentarios"
+
+#: inc/widgets/latest-posts.php:19
+msgid "Display your site’s most recent Posts or a Selected Category Posts with Thumbnail."
+msgstr "Muestra las entradas más recientes de tu sitio o las entradas de una categoría seleccionada con miniaturas."
+
+#: inc/widgets/latest-posts.php:17
+msgid "Bosa Latest Posts"
+msgstr "Últimas entradas de Bosa"
+
+#: inc/widgets/class-base-widget.php:75
+msgid "Type Not Supported."
+msgstr "El tipo no es compatible."
+
+#: inc/widgets/author.php:150
+msgid "Social Icon Link 10"
+msgstr "Enlace del icono social 10"
+
+#: inc/widgets/author.php:146
+msgid "Social Icon 10"
+msgstr "Icono social 10"
+
+#: inc/widgets/author.php:142
+msgid "Social Icon Link 9"
+msgstr "Enlace del icono social 9"
+
+#: inc/widgets/author.php:138
+msgid "Social Icon 9"
+msgstr "Icono social 9"
+
+#: inc/widgets/author.php:134
+msgid "Social Icon Link 8"
+msgstr "Enlace del icono social 8"
+
+#: inc/widgets/author.php:130
+msgid "Social Icon 8"
+msgstr "Icono social 8"
+
+#: inc/widgets/author.php:126
+msgid "Social Icon Link 7"
+msgstr "Enlace del icono social 7"
+
+#: inc/widgets/author.php:122
+msgid "Social Icon 7"
+msgstr "Icono social 7"
+
+#: inc/widgets/author.php:118
+msgid "Social Icon Link 6"
+msgstr "Enlace del icono social 6"
+
+#: inc/widgets/author.php:114
+msgid "Social Icon 6"
+msgstr "Icono social 6"
+
+#: inc/widgets/author.php:110
+msgid "Social Icon Link 5"
+msgstr "Enlace del icono social 5"
+
+#: inc/widgets/author.php:106
+msgid "Social Icon 5"
+msgstr "Icono social 5"
+
+#: inc/widgets/author.php:102
+msgid "Social Icon Link 4"
+msgstr "Enlace del icono social 4"
+
+#: inc/widgets/author.php:98
+msgid "Social Icon 4"
+msgstr "Icono social 4"
+
+#: inc/widgets/author.php:94
+msgid "Social Icon Link 3"
+msgstr "Enlace del icono social 3"
+
+#: inc/widgets/author.php:90
+msgid "Social Icon 3"
+msgstr "Icono social 3"
+
+#: inc/widgets/author.php:86
+msgid "Social Icon Link 2"
+msgstr "Enlace del icono social 2"
+
+#: inc/widgets/author.php:82
+msgid "Social Icon 2"
+msgstr "Icono social 2"
+
+#: inc/widgets/author.php:78
+msgid "Social Icon Link 1"
+msgstr "Enlace del icono social 1"
+
+#: inc/widgets/author.php:74
+msgid "Social Icon 1"
+msgstr "Icono social 1"
+
+#: template-parts/content-related-posts.php:47
+msgid "No Related Post"
+msgstr "No hay entradas relacionadas"
+
+#: inc/getting-started/getting-started.php:20
+msgid "Processing..."
+msgstr "Procesando..."
+
+#. translators: %s: post title
+#: inc/template-tags.php:68 template-parts/slider/slider-one.php:79
+msgid "Comment<span class=\"screen-reader-text\"> on %s</span>"
+msgstr "Comentar <span class=\"screen-reader-text\">en %s</span>"
+
+#: inc/template-functions.php:131
+msgid "Oops! That page can&#39;t be found."
+msgstr "¡Vaya! No se ha podido encontrar esa página."
+
+#: inc/back-compat.php:36 inc/back-compat.php:48 inc/back-compat.php:62
+msgid "Bosa requires at least WordPress version 5.0. You are running version %s. Please upgrade and try again."
+msgstr "Bosa necesita al menos la versión 5.0 de WordPress. Tienes la versión %s. Por favor, actualiza e inténtalo de nuevo."
+
+#: inc/getting-started/getting-started.php:212
+msgid "Unable to connect to the filesystem. Please confirm your credentials."
+msgstr "No ha sido posible conectar con el sistema de archivos. Por favor, confirma tus credenciales."
+
+#: inc/getting-started/getting-started.php:60
+msgid "Welcome! Thank you for choosing %1$s. To fully take advantage of the best our theme can offer, get started."
+msgstr "¡Bienvenido! ¡Gracias por elegir %1$s! Da tus primeros pasos para aprovechar todo lo que nuestro mejor tema puede ofrecer."
+
+#: inc/template-functions.php:441
+msgid "WooCommerce Left Sidebar"
+msgstr "Barra lateral izquierda de WooCommerce"
+
+#: inc/template-functions.php:431
+msgid "WooCommerce Right Sidebar"
+msgstr "Barra lateral derecha de WooCommerce"
+
+#: inc/widgets/author.php:42
+msgid "Enable Page Title"
+msgstr "Activar el título de la página"
+
+#: inc/widgets/author.php:66
+msgid "= Social Icons ="
+msgstr "= Iconos sociales ="
+
+#: inc/customizer/customizer.php:4291 inc/customizer/customizer.php:4985
+#: inc/widgets/author.php:57
+msgid "Content Alignment"
+msgstr "Alineación del contenido"
+
+#: inc/customizer/customizer.php:2822 inc/widgets/author.php:70
+msgid "Input Icon name. For Example:- fab fa-facebook For more icons https://fontawesome.com/icons?d=gallery&m=free"
+msgstr "Introduce el nombre del icono. Por ejemplo:- fab fa-facebook. Para más iconos https://fontawesome.com/icons?d=gallery&m=free"
+
+#: inc/widgets/author.php:22
+msgid "Bosa Author"
+msgstr "Autor de Bosa"
+
+#: inc/widgets/author.php:16
+msgid "Display your Profile Page with Social Media Links."
+msgstr "Mostrar tu página de perfil con enlaces de medios sociales."
+
+#: inc/widgets/author.php:37
+msgid "Enable Full Size Feature Image"
+msgstr "Activar la imagen destacada a tamaño completo"
+
+#: inc/customizer/customizer.php:7310 inc/customizer/customizer.php:7632
+msgid "Top of the Page"
+msgstr "Parte superior de la página"
+
+#: inc/customizer/customizer.php:6419
+msgid "Post Border Radius (px)"
+msgstr "Radio del borde de las entradas (px)"
+
+#: inc/template-functions.php:513
+msgid "Maximum no of Excerpt Lenght is 50"
+msgstr "La longitud máxima del extracto es 50"
+
+#: inc/template-functions.php:511
+msgid "Minimum no of Excerpt Lenght is 1"
+msgstr "La longitud mínima del extracto es 1"
+
+#: functions.php:58 inc/customizer/customizer.php:3373
+msgid "Footer"
+msgstr "Pie de página"
+
+#: inc/theme-info/theme-info.php:511 inc/theme-info/theme-info.php:642
+msgid "Deactivate"
+msgstr "Desactivar"
+
+#: inc/customizer/customizer.php:6671
+msgid "Disable Main Slider / Banner"
+msgstr "Desactivar el carrrusel / banner principal"
+
+#: inc/customizer/customizer.php:6100
+msgid "Disable Highlighted Posts Section"
+msgstr "Desactivar la sección de entradas destacadas"
+
+#: inc/customizer/customizer.php:5449 inc/customizer/customizer.php:6052
+#: inc/customizer/customizer.php:6215
+msgid "Section Title and Description Alignment"
+msgstr "Alineación del título de la sección y la descripción del formulario"
+
+#: inc/customizer/customizer.php:3282
+msgid "Disable Sidebar in Single Post"
+msgstr "Desactivar la barra lateral en la entrada individual"
+
+#: inc/customizer/customizer.php:3266
+msgid "Disable Sidebar in Blog Page"
+msgstr "Desactivar la barra lateral en la página de blog"
+
+#: inc/customizer/customizer.php:3191
+msgid "Right / Left / Both / None"
+msgstr "Derecha / Izquierda / Ambas / Ninguna"
+
+#: inc/customizer/customizer.php:3190
+msgid "Sidebar Layouts"
+msgstr "Diseños de barra lateral"
+
+#: inc/customizer/customizer.php:2867
+msgid "Disable Social Icons from Footer"
+msgstr "Desactivar los iconos sociales del pie de página"
+
+#: inc/customizer/customizer.php:2851
+msgid "Disable Social Icons from Header"
+msgstr "Desactivar los iconos sociales de la cabecera"
+
+#: inc/customizer/customizer.php:2770
+msgid "Disable from Footer"
+msgstr "Desactivar del pie de página"
+
+#: inc/customizer/customizer.php:2761
+msgid "Disable from Header"
+msgstr "Desactivar de la cabecera"
+
+#: inc/customizer/customizer.php:2743
+msgid "Black & White"
+msgstr "Blanco y negro"
+
+#: inc/customizer/customizer.php:2734
+msgid "Select Theme Skin"
+msgstr "Selecciona el estilo del tema"
+
+#: inc/customizer/customizer.php:2728
+msgid "All color options except primary color will be overridden by the theme in dark and B&W skin."
+msgstr "Todas las opciones de color, excepto el color principal, serán anuladas por los estilos «oscuro» y «Blanco y negro»."
+
+#: inc/customizer/customizer.php:2727
+msgid "Site Skins"
+msgstr "Estilos del sitio"
+
+#: inc/customizer/customizer.php:2595
+msgid "Disable Header Search"
+msgstr "Desactivar la búsqueda en la cabecera"
+
+#: inc/customizer/customizer.php:2569
+msgid "Disable Header Contact Details"
+msgstr "Desactivar los datos de contacto en la cabecera"
+
+#: inc/customizer/customizer.php:2548
+msgid "Disable Header Secondary Menu"
+msgstr "Desactivar el menú secundario de la cabecera"
+
+#: inc/customizer/customizer.php:2402
+msgid "Header Menu Text"
+msgstr "Texto del menú de la cabecera"
+
+#: inc/customizer/customizer.php:2386
+msgid "Top Header Bar Name"
+msgstr "Nombre de la barra superior de la cabecera"
+
+#: inc/customizer/customizer.php:2368 inc/customizer/customizer.php:2842
+#: inc/customizer/customizer.php:3860 inc/customizer/customizer.php:6662
+msgid "Responsive"
+msgstr "Adaptable"
+
+#: inc/customizer/customizer.php:2028
+msgid "Image dimensions 320 by 120 pixels is recommended. It will change in fixed header only."
+msgstr "Se recomiendan las dimensiones de imagen de 320x120 píxeles. Solo cambiarán en la cabecera fija."
+
+#: inc/customizer/customizer.php:2006
+msgid "Disable Logo"
+msgstr "Desactivar el logotipo"
+
+#: inc/customizer/customizer.php:1997 inc/customizer/customizer.php:2443
+msgid "Disable Fixed Header"
+msgstr "Desactivar la cabecera fija"
+
+#: inc/customizer/customizer.php:1992
+msgid "Fixed Header Options"
+msgstr "Opciones de la cabecera fija"
+
+#: inc/customizer/customizer.php:1982 inc/customizer/customizer.php:2754
+#: inc/customizer/customizer.php:3161 inc/customizer/customizer.php:3843
+#: inc/customizer/customizer.php:7254
+msgid "Elements"
+msgstr "Elementos"
+
+#: inc/customizer/customizer.php:1972 inc/customizer/customizer.php:3833
+msgid "Disable Parallax Scrolling"
+msgstr "Desactivar el scroll Parallax"
+
+#: inc/customizer/customizer.php:1942 inc/customizer/customizer.php:4364
+msgid "Disable Auto Play"
+msgstr "Desactivar la reproducción automática"
+
+#: inc/customizer/customizer.php:1933 inc/customizer/customizer.php:4348
+#: inc/customizer/customizer.php:6457
+msgid "Disable Dots"
+msgstr "Desactivar los puntos"
+
+#: inc/customizer/customizer.php:1924 inc/customizer/customizer.php:4332
+#: inc/customizer/customizer.php:6448
+msgid "Disable Arrows"
+msgstr "Desactivar las flechas"
+
+#: inc/customizer/customizer.php:1883 inc/customizer/customizer.php:3147
+#: inc/customizer/customizer.php:3826 inc/customizer/customizer.php:4211
+#: inc/customizer/customizer.php:4951 inc/customizer/customizer.php:5716
+#: inc/customizer/customizer.php:7432 inc/customizer/customizer.php:7757
+msgid "Pattern / Repeat"
+msgstr "Patrón / Repetir"
+
+#: inc/customizer/customizer.php:4086 inc/customizer/customizer.php:6843
+msgid "Post Meta Color"
+msgstr "Color de los metadatos de la entrada"
+
+#: inc/customizer/customizer.php:4014
+msgid "Slider Background Color"
+msgstr "Color de fondo del carrusel"
+
+#: inc/customizer/customizer.php:3915
+msgid "Disable Section"
+msgstr "Desactivar la sección"
+
+#: inc/customizer/customizer.php:3908
+msgid "Banner / Post Slider"
+msgstr "Banner / Carrusel de entradas"
+
+#: inc/customizer/customizer.php:3549
+msgid "Disable Bottom Footer Area"
+msgstr "Desactivar el área inferior del pie de página"
+
+#: inc/customizer/customizer.php:3386 inc/customizer/customizer.php:3869
+msgid "Disable Footer Widget Area"
+msgstr "Desactivar el área de widgets del pie de página"
+
+#: inc/customizer/customizer.php:3330
+msgid "Disable Sidebar in WooCommerce Shop"
+msgstr "Desactivar la barra lateral en la tienda WooCommerce"
+
+#: inc/customizer/customizer.php:3298
+msgid "Disable Sidebar in Page"
+msgstr "Desactivar la barra lateral en la página"
+
+#: inc/customizer/customizer.php:3234
+msgid "Disable Sidebar Widget Title Border"
+msgstr "Desactivar el borde del título del widget de la barra lateral"
+
+#. translators: %s: Name of current post
+#: inc/template-tags.php:172
+msgid "EDIT<span class=\"screen-reader-text\"> \"%s\"</span>"
+msgstr "EDITAR<span class=\"screen-reader-text\"> «%s»</span>"
+
+#: inc/customizer/customizer.php:7582
+msgid "Related Posts Items"
+msgstr "Elementos de las entradas relacionadas"
+
+#: inc/customizer/customizer.php:6466
+msgid "Disable Slider Auto Play"
+msgstr "Desactivar la reproducción automática del carrusel"
+
+#: inc/customizer/customizer.php:4124 inc/customizer/customizer.php:5581
+#: inc/customizer/customizer.php:6381 inc/customizer/customizer.php:6876
+msgid "Post Meta Icon Color"
+msgstr "Color del icono de los metadatos de la entrada"
+
+#: inc/customizer/customizer.php:2820
+msgid "Fontawesome Icon"
+msgstr "Icono de Fontawesome"
+
+#: inc/customizer/customizer.php:5006
+msgid "Display Banner on"
+msgstr "Mostrar banner en"
+
+#: inc/customizer/customizer.php:4312
+msgid "Display Slider on"
+msgstr "Mostrar el carrusel en"
+
+#: inc/template-functions.php:536
+msgctxt "daily archives date format"
+msgid "F j, Y"
+msgstr "j \\d\\e F \\d\\e Y"
+
+#: inc/template-functions.php:534
+msgctxt "monthly archives date format"
+msgid "F Y"
+msgstr "F Y"
+
+#: inc/template-functions.php:532
+msgctxt "yearly archives date format"
+msgid "Y"
+msgstr "Y"
+
+#: inc/customizer/customizer.php:1951 inc/customizer/customizer.php:4380
+msgid "Auto Play Timeout ( in sec )"
+msgstr "Tiempo de espera de reproducción automática ( en seg )"
+
+#: inc/customizer/customizer.php:1897 inc/customizer/customizer.php:4252
+msgid "Slide"
+msgstr "Deslizar"
+
+#: inc/customizer/customizer.php:1890 inc/customizer/customizer.php:4245
+msgid "Slide Effect"
+msgstr "Efecto de diapositiva"
+
+#: functions.php:120
+msgid "Tan"
+msgstr "Tostado"
+
+#: inc/theme-info/theme-info.php:1140
+msgid "Go live with the website and enjoy it!"
+msgstr "Pon en marcha la web ¡y disfrútala!"
+
+#: inc/customizer/customizer.php:6496
+msgid "Slider Post View Number"
+msgstr "Número de vista de la entrada deslizante"
+
+#: inc/customizer/customizer.php:6475
+msgid "Slider Auto Play Timeout ( in sec )"
+msgstr "Tiempo de espera de reproducción automática del carrusel ( en seg )"
+
+#: inc/customizer/customizer.php:6434
+msgid "Slider Columns"
+msgstr "Columnas del carrusel"
+
+#: inc/customizer/customizer.php:5477 inc/customizer/customizer.php:6243
+msgid "Section Layout"
+msgstr "Diseño de la sección"
+
+#: inc/customizer/customizer.php:4712
+msgid "Slider Button"
+msgstr "Botón del carrusel"
+
+#: inc/customizer/customizer.php:4696
+msgid "Disable Slider Button"
+msgstr "Desactivar botón del carrusel"
+
+#: inc/customizer/customizer.php:4231 inc/customizer/customizer.php:4971
+msgid "Full"
+msgstr "Completo"
+
+#: inc/customizer/customizer.php:3993
+msgid "Slider Layout"
+msgstr "Diseño del carrusel"
+
+#: inc/customizer/customizer.php:3924
+msgid "Slider / Banner"
+msgstr "Carrusel / banner"
+
+#: inc/customizer/customizer.php:3885
+msgid "Disable Scroll Top"
+msgstr "Desactivar desplazar arriba"
+
+#: inc/customizer/customizer.php:3413
+msgid "Widget Columns Layouts"
+msgstr "Diseño de columnas de widgets"
+
+#: inc/customizer/customizer.php:3250
+msgid "Disable Sticky Position"
+msgstr "Desactivar posición fija"
+
+#: inc/customizer/customizer.php:3167
+msgid "Disable Site Layouts (Box & Frame) Shadow"
+msgstr "Desactivar la sombra de diseños del sitio (caja y marco)"
+
+#: inc/customizer/customizer.php:3084
+msgid "Default / Box / Frame / Full / Extend"
+msgstr "Predeterminado / cuadro / marco / completo / extender"
+
+#: inc/customizer/customizer.php:3072 inc/customizer/customizer.php:3083
+msgid "Site Layouts"
+msgstr "Estructuras de sitio"
+
+#: inc/customizer/customizer.php:2988
+msgid "Below Main Menu Description setting will work after enabling description section in the menu. Please check https://bosathemes.com/docs/bosa/how-to-setup/how-to-setup-menu-description Documentation for more information."
+msgstr "La configuración de la descripción bajo rl menú principal funcionará después de activar la sección de descripción en el menú. Consulta la documentación de https://bosathemes.com/docs/bosa/how-to-setup/how-to-setup-menu-description para obtener más información."
+
+#: inc/customizer/customizer.php:2369 inc/customizer/customizer.php:2843
+#: inc/customizer/customizer.php:3861 inc/customizer/customizer.php:6663
+msgid ""
+"These options will only apply to Tablet and Mobile devices. Please\n"
+"\t    \tclick on below Tablet or Mobile Icons to see changes."
+msgstr ""
+"Estas opciones sólo se aplicarán a los dispositivos tableta y móvil. Por favor,\n"
+"\t    \thaz clic en los siguientes iconos de tableta o móvil para ver los cambios."
+
+#: inc/customizer/customizer.php:2027
+msgid "Separate Logo for Fixed Header"
+msgstr "Logotipo independiente para cabecera fija"
+
+#: inc/customizer/customizer.php:1903 inc/customizer/customizer.php:4265
+msgid "Fade Control Time ( in sec )"
+msgstr "Tiempo de control de fundido ( en seg )"
+
+#: inc/customizer/customizer.php:1882 inc/customizer/customizer.php:3146
+#: inc/customizer/customizer.php:3825 inc/customizer/customizer.php:4210
+#: inc/customizer/customizer.php:4950 inc/customizer/customizer.php:5715
+#: inc/customizer/customizer.php:7431 inc/customizer/customizer.php:7756
+msgid "Cover"
+msgstr "Cubrir"
+
+#: inc/customizer/customizer.php:1502 inc/customizer/customizer.php:1604
+#: inc/customizer/customizer.php:1621 inc/customizer/customizer.php:2315
+#: inc/customizer/customizer.php:4750 inc/customizer/customizer.php:5234
+#: inc/customizer/customizer.php:7182
+msgid "For border button type only."
+msgstr "Sólo para el tipo de botón de borde."
+
+#: inc/customizer/customizer.php:1496 inc/customizer/customizer.php:1598
+#: inc/customizer/customizer.php:1615 inc/customizer/customizer.php:2288
+#: inc/customizer/customizer.php:4744 inc/customizer/customizer.php:5228
+#: inc/customizer/customizer.php:7176
+msgid "For background button type only."
+msgstr "Sólo para el tipo de botón de fondo."
+
+#: inc/widgets/author.php:54
+msgid "Lifestyle Blogger"
+msgstr "Blogger de estilo de vida"
+
+#: inc/widgets/author.php:47
+msgid "Excerpt Words count to show."
+msgstr "Número de palabras del extracto que mostrar."
+
+#: inc/template-functions.php:411
+msgid "Offcanvas Menu Sidebar"
+msgstr "Barra lateral de menú fuera del lienzo"
+
+#. Theme URI of the theme
+#: style.css
+#, gp-priority: low
+msgid "https://bosathemes.com/bosa"
+msgstr "https://bosathemes.com/bosa"
+
+#. Author of the theme
+#: style.css template-parts/site-info.php:17
+#, gp-priority: low
+msgid "Bosa Themes"
+msgstr "Bosa Themes"
+
+#. Author URI of the theme
+#: style.css
+#, gp-priority: low
+msgid "https://bosathemes.com"
+msgstr "https://bosathemes.com"

@@ -1,0 +1,1265 @@
+# Translation of Plugins - Code Snippets - Stable (latest release) in Swedish
+# This file is distributed under the same license as the Plugins - Code Snippets - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2024-01-07 22:14:15+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: sv_SE\n"
+"Project-Id-Version: Plugins - Code Snippets - Stable (latest release)\n"
+
+#: php/settings/settings.php:141
+msgid "Debug"
+msgstr "Felsök"
+
+#: php/settings/settings-fields.php:74
+msgid "Upgrade Database Table"
+msgstr "Uppgradera databastabell"
+
+#: php/settings/settings-fields.php:72
+msgid "Database Table Upgrade"
+msgstr "Uppgradering av databastabell"
+
+#: php/admin-menus/class-welcome-menu.php:69 php/class-admin.php:166
+msgid "Community"
+msgstr "Gemenskap"
+
+#: php/class-admin.php:160
+msgid "Docs and Support"
+msgstr "Dokument och support"
+
+#: php/admin-menus/class-manage-menu.php:88
+msgctxt "top-level menu label"
+msgid "Go Pro"
+msgstr "Skaffa Pro"
+
+#: php/views/partials/cloud-search.php:56
+msgid "e.g. Remove unused javascript…"
+msgstr "t.ex. Ta bort oanvänt javascript …"
+
+#: php/views/partials/cloud-search.php:51
+msgid "Name of codevault"
+msgstr "Namn på ”codevault”"
+
+#: php/views/partials/cloud-search.php:48
+msgid "Search by keyword(s)"
+msgstr "Sök efter nyckelord"
+
+#: php/views/partials/cloud-search.php:42
+#: php/views/partials/cloud-search.php:59
+msgid "Search Cloud"
+msgstr "Sök i molnet"
+
+#: php/views/partials/cloud-search.php:33
+msgid "Search cloud snippets"
+msgstr "Sök moln-kodsnuttar"
+
+#: php/class-admin.php:391 php/views/manage.php:64
+msgid "Find more about Pro (opens in external tab)"
+msgstr "Läs mer om Pro (öppnas i en extern flik)"
+
+#: php/cloud/list-table-shared-ops.php:225
+msgid "Last page"
+msgstr "Sista sidan"
+
+#: php/cloud/list-table-shared-ops.php:214
+msgid "Next page"
+msgstr "Nästa sida"
+
+#. translators: 1: Current page, 2: Total pages.
+#: php/cloud/list-table-shared-ops.php:205
+msgctxt "paging"
+msgid "%1$s of %2$s"
+msgstr "%1$s av %2$s"
+
+#: php/cloud/list-table-shared-ops.php:189
+#: php/cloud/list-table-shared-ops.php:195
+msgid "Current page"
+msgstr "Nuvarande sida"
+
+#: php/cloud/list-table-shared-ops.php:183
+msgid "Previous page"
+msgstr "Förgående sida"
+
+#: php/cloud/list-table-shared-ops.php:173
+msgid "First page"
+msgstr "Första sidan"
+
+#. translators: %s: Number of items.
+#: php/cloud/list-table-shared-ops.php:140
+msgid "%s item"
+msgid_plural "%s items"
+msgstr[0] "%s objekt"
+msgstr[1] "%s objekt"
+
+#: php/cloud/list-table-shared-ops.php:123
+msgid "Preview"
+msgstr "Förhandsgranska"
+
+#: php/cloud/list-table-shared-ops.php:86
+msgid "View"
+msgstr "Visa"
+
+#: php/cloud/class-cloud-search-list-table.php:236
+msgid "Not indicated by author"
+msgstr "Inte angiven av författaren"
+
+#: php/cloud/class-cloud-search-list-table.php:211
+msgid "Last Updated:"
+msgstr "Senast uppdaterad:"
+
+#. translators: 1: number of votes with label, 2: number of users with label.
+#: php/cloud/class-cloud-search-list-table.php:206
+msgctxt "votes"
+msgid "%1$s by %2$s"
+msgstr "%1$s av %2$s"
+
+#. translators: 1: number of users.
+#: php/cloud/class-cloud-search-list-table.php:202
+msgid "%d user"
+msgid_plural "%d users"
+msgstr[0] "%d användare"
+msgstr[1] "%d användare"
+
+#. translators: 1: number of votes.
+#: php/cloud/class-cloud-search-list-table.php:198
+msgctxt "vote count"
+msgid "%d time"
+msgid_plural "%d times"
+msgstr[0] "%d gång"
+msgstr[1] "%d gånger"
+
+#: php/cloud/class-cloud-search-list-table.php:146
+msgid "Preview this snippet"
+msgstr "Förhandsgranska denna kodsnutt"
+
+#: php/cloud/class-cloud-api.php:509
+msgid "Snippet Code:"
+msgstr "Kodsnutts-kod:"
+
+#: php/cloud/class-cloud-api.php:474
+msgid "Pro Verified"
+msgstr "Pro-verifierad"
+
+#: php/cloud/class-cloud-api.php:473
+msgid "AI Verified"
+msgstr "AI-verifierad"
+
+#: php/cloud/class-cloud-api.php:472
+msgid "Unverified"
+msgstr "Obekräftad"
+
+#: php/cloud/class-cloud-api.php:471
+msgid "Public"
+msgstr "Offentlig"
+
+#: php/cloud/class-cloud-api.php:470
+msgid "Private"
+msgstr "Privat"
+
+#: php/cloud/class-cloud-api.php:402
+msgid "Updated"
+msgstr "Uppdaterad"
+
+#: php/cloud/class-cloud-api.php:336
+msgid "Invalid action."
+msgstr "Ogiltig åtgärd."
+
+#: php/class-plugin.php:344
+msgid "Bundles"
+msgstr "Paket"
+
+#: php/class-plugin.php:342
+msgid "Codevault"
+msgstr "Codevault"
+
+#: php/class-plugin.php:343
+msgid "Cloud Search"
+msgstr "Sök i molnet"
+
+#: php/class-admin.php:326
+msgid "AI"
+msgstr "AI"
+
+#: php/strings.php:52
+msgid "Select a snippet to display"
+msgstr "Välj en kodsnutt att visa"
+
+#: php/strings.php:51
+msgid "Font Size"
+msgstr "Textstorlek"
+
+#: php/strings.php:50
+msgid "Height"
+msgstr "Höjd"
+
+#: php/strings.php:49
+msgid "Off"
+msgstr "Av"
+
+#: php/strings.php:48
+msgid "On"
+msgstr "På"
+
+#: php/strings.php:47
+msgid "Word Wrap"
+msgstr "Automatiskt radbyte"
+
+#: php/strings.php:46
+msgid "Highlight Lines"
+msgstr "Markera rader"
+
+#: php/strings.php:45
+msgid "Scripts (JS)"
+msgstr "Skript (JS)"
+
+#: php/strings.php:44
+msgid "Styles (CSS)"
+msgstr "Stilar (CSS)"
+
+#: php/strings.php:43
+msgid "Content (Mixed)"
+msgstr "Innehåll (blandat)"
+
+#: php/strings.php:42
+msgid "Functions (PHP)"
+msgstr "Funktioner (PHP)"
+
+#: php/strings.php:41
+msgid "Code Snippet Source"
+msgstr "Källa för kodsnutt"
+
+#: php/strings.php:38
+msgid "Select a snippet to show"
+msgstr "Välj en kodsnutt att visa"
+
+#: php/strings.php:37
+msgid "Text Color"
+msgstr "Textfärg"
+
+#: php/strings.php:36
+msgid "Justified"
+msgstr "Justerad"
+
+#: php/strings.php:35
+msgid "Right"
+msgstr "Höger"
+
+#: php/strings.php:34
+msgid "Center"
+msgstr "Centrerat"
+
+#: php/strings.php:33
+msgid "Left"
+msgstr "Vänster"
+
+#: php/strings.php:32
+msgid "Alignment"
+msgstr "Justering"
+
+#: php/strings.php:31
+msgid "Processing Options"
+msgstr "Bearbetningsalternativ"
+
+#: php/strings.php:26
+msgid "JavaScript loaded in the site &amp;lt;head&amp;gt; section"
+msgstr "JavaScript laddas i webbplatsens &amp;lt;head&amp;gt;-sektion"
+
+#: php/strings.php:25
+msgid "Administration area stylesheet"
+msgstr "Stilmall för administrationsområdet"
+
+#: php/strings.php:24
+msgid "Site front-end stylesheet"
+msgstr "Stilmall för webbplatsens front-end"
+
+#: php/strings.php:21
+msgid "View Full Script"
+msgstr "Visa fullständigt skript"
+
+#: php/strings.php:20
+msgid "View Full Stylesheet"
+msgstr "Visa hela stilmallen"
+
+#: php/strings.php:16
+msgid "Minify Snippet Output"
+msgstr "Minifiera utmatningen av kodsnutten"
+
+#: php/strings.php:12
+msgid "Thanks"
+msgstr "Tack"
+
+#: php/strings.php:11
+msgid "Notice"
+msgstr "Meddelande"
+
+#: php/strings.php:10
+msgid "Success"
+msgstr "Klart"
+
+#: php/strings.php:8
+msgid "You can now safely remove the free version of Code Snippets"
+msgstr "Du kan nu på ett säkert sätt ta bort gratisversionen av Code Snippets"
+
+#: php/snippet-ops.php:314
+msgid "Could not activate snippet."
+msgstr "Det gick inte att aktivera kodsnutten."
+
+#: php/snippet-ops.php:302
+msgid "Could not activate snippet: code did not pass validation."
+msgstr "Det gick inte att aktivera kodsnutten: koden klarade inte valideringen."
+
+#. translators: %d: snippet identifier.
+#: php/snippet-ops.php:297
+msgid "Could not locate snippet with ID %d."
+msgstr "Det gick inte att hitta kodsnutt med ID %d."
+
+#: php/settings/settings-fields.php:208
+msgid "Sublime Text"
+msgstr "Sublime Text"
+
+#: php/settings/settings-fields.php:207
+msgid "Emacs"
+msgstr "Emacs"
+
+#: php/settings/settings-fields.php:206
+msgid "Vim"
+msgstr "Vim"
+
+#: php/settings/settings-fields.php:203
+msgid "The set of keyboard shortcuts to use in the code editor."
+msgstr "Uppsättningen av kortkommandon som ska användas i kodredigeraren."
+
+#: php/settings/settings-fields.php:201
+msgid "Keymap"
+msgstr "Knappkarta"
+
+#: php/settings/settings-fields.php:171
+msgid "Code Folding"
+msgstr "Vikning av kod"
+
+#: php/settings/settings-fields.php:159
+msgid "The number of spaces to indent a block."
+msgstr "Antal mellanslag för indrag av ett block."
+
+#: php/settings/settings-fields.php:152 php/settings/settings-fields.php:160
+msgctxt "unit"
+msgid "spaces"
+msgstr "mellanslag"
+
+#: php/settings/settings-fields.php:119
+msgid "Disable Syntax Highlighter"
+msgstr "Inaktivera färgkodare"
+
+#: php/settings/settings-fields.php:103
+msgctxt "unit"
+msgid "rows"
+msgstr "rader"
+
+#: php/settings/editor-preview.php:75 php/settings/settings-fields.php:205
+msgid "Default"
+msgstr "Standard"
+
+#: php/rest-api/class-snippets-rest-controller.php:544
+msgid "Date and time when the snippet was last modified, in ISO format."
+msgstr "Datum och tid då kodsnutten senast ändrades, i ISO-format."
+
+#: php/rest-api/class-snippets-rest-controller.php:535
+msgid "Whether the snippet is network-wide instead of site-wide."
+msgstr "Om kodsnutten är nätverksövergripande istället för webbplatsspecifik."
+
+#: php/rest-api/class-snippets-rest-controller.php:531
+msgid "Relative priority in which the snippet is executed."
+msgstr "Relativ prioritet i vilken kodsnutten exekveras."
+
+#: php/rest-api/class-snippets-rest-controller.php:527
+msgid "Snippet activation status."
+msgstr "Aktiveringsstatus för kodsnutt."
+
+#: php/rest-api/class-snippets-rest-controller.php:519
+msgid "Context in which the snippet is executable."
+msgstr "Sammanhang i vilket kodsnutten är körbar."
+
+#: php/rest-api/class-snippets-rest-controller.php:508
+msgid "Executable snippet code."
+msgstr "Exekverbar kodsnutt."
+
+#: php/rest-api/class-snippets-rest-controller.php:504
+msgid "Descriptive text associated with snippet."
+msgstr "Beskrivande text som associeras med kodsnutten."
+
+#: php/rest-api/class-snippets-rest-controller.php:500
+msgid "Descriptive title for the snippet."
+msgstr "Beskrivande rubrik för kodsnutten."
+
+#: php/rest-api/class-snippets-rest-controller.php:495
+msgid "Unique identifier for the snippet."
+msgstr "Kodsnuttens unika ID-sträng."
+
+#: php/rest-api/class-snippets-rest-controller.php:339
+msgid "The snippet could not be deactivated."
+msgstr "Kodsnutten kunde inte inaktiveras."
+
+#: php/rest-api/class-snippets-rest-controller.php:299
+msgid "The snippet could not be deleted."
+msgstr "Kodsnutten kunde inte tas bort."
+
+#: php/rest-api/class-snippets-rest-controller.php:279
+msgid "The snippet could not be updated."
+msgstr "Kodsnutten kunde inte uppdateras."
+
+#: php/rest-api/class-snippets-rest-controller.php:264
+msgid "Cannot update a snippet without a valid ID."
+msgstr "Det går inte att uppdatera en kodsnutt utan ett giltigt ID."
+
+#: php/rest-api/class-snippets-rest-controller.php:245
+msgid "The snippet could not be created."
+msgstr "Kodsnutten kunde inte skapas."
+
+#: php/rest-api/class-snippets-rest-controller.php:221
+msgid "The snippet could not be found."
+msgstr "Kodsnutten kunde inte hittas."
+
+#: php/class-list-table.php:489 dist/edit.js:2
+msgid "Export Code"
+msgstr "Exportera kod"
+
+#: php/class-admin.php:165
+msgid "Join our community on Facebook"
+msgstr "Gå med i vår gemenskap på Facebook"
+
+#: php/admin-menus/class-edit-menu.php:115
+msgid "Loading edit page…"
+msgstr "Laddar redigeringssida …"
+
+#: php/views/partials/list-table.php:22
+msgid "Search Snippets"
+msgstr "Sök kodsnuttar"
+
+#: php/views/manage.php:23
+msgid "All Snippets"
+msgstr "Alla kodsnuttar"
+
+#: php/settings/settings-fields.php:196
+msgid "Highlight the line that is currently being edited."
+msgstr "Markera den rad som för närvarande redigeras."
+
+#: php/settings/settings-fields.php:195
+msgid "Highlight Active Line"
+msgstr "Markera aktiv rad"
+
+#: php/settings/settings-fields.php:115
+msgid "Modified (oldest first)"
+msgstr "Ändrad (äldst först)"
+
+#: php/settings/settings-fields.php:114
+msgid "Modified (latest first)"
+msgstr "Ändrad (senast först)"
+
+#: php/settings/settings-fields.php:113
+msgid "Name (Z-A)"
+msgstr "Namn (Z–A)"
+
+#: php/settings/settings-fields.php:112
+msgid "Name (A-Z)"
+msgstr "Namn (A–Z)"
+
+#: php/settings/settings-fields.php:109
+msgid "Default way to order snippets on the All Snippets admin menu."
+msgstr "Standardsortering för kodsnuttar i administrationsmenyn ”Alla kodsnuttar”."
+
+#: php/settings/settings-fields.php:107
+msgid "Snippets List Order"
+msgstr "Ordning i listan för kodsnuttar"
+
+#: php/front-end/mce-strings.php:28
+msgid "Show line numbers"
+msgstr "Visa radnummer"
+
+#: php/front-end/mce-strings.php:27
+msgid "Insert Snippet Source"
+msgstr "Infoga källa för kodsnutt"
+
+#: php/front-end/mce-strings.php:26
+msgid "Snippet Source Code"
+msgstr "Källkod för kodsnutt"
+
+#: php/front-end/mce-strings.php:24
+msgid "Enable shortcodes"
+msgstr "Aktivera kortkoder"
+
+#: php/front-end/mce-strings.php:23
+msgid "Apply formatting"
+msgstr "Tillämpa formatering"
+
+#: php/front-end/mce-strings.php:22
+msgid "Run PHP code"
+msgstr "Kör PHP-kod"
+
+#: php/front-end/mce-strings.php:21
+msgid "Snippet"
+msgstr "Kodsnutt"
+
+#: php/front-end/mce-strings.php:20
+msgid "Insert Content Snippet"
+msgstr "Infoga innehållskodsnutt"
+
+#: php/front-end/mce-strings.php:19
+msgid "Content Snippet"
+msgstr "Innehållskodsnutt"
+
+#. translators: %d: snippet ID.
+#: php/front-end/class-front-end.php:207
+msgid "Could not load snippet with an invalid ID: %d."
+msgstr "Det gick inte att ladda följande kodsnutt med ogiltigt ID: %d."
+
+#: php/class-upgrade.php:213
+msgid "Shortcode for inserting the current year into a post or page.."
+msgstr "Kortkod för att infoga det aktuella året i ett inlägg eller en sida …"
+
+#: php/class-upgrade.php:211
+msgid "Current year"
+msgstr "Nuvarande år"
+
+#: php/class-upgrade.php:207
+msgid "Allows smiley conversion in obscure places."
+msgstr "Tillåter smiley-konvertering på obskyra ställen."
+
+#: php/class-upgrade.php:205
+msgid "Allow smilies"
+msgstr "Tillåt smilies"
+
+#: php/class-upgrade.php:200
+msgid "Turns off the WordPress admin bar for everyone except administrators."
+msgstr "Stänger av WordPress adminmeny för alla, förutom administratörer."
+
+#: php/class-upgrade.php:198
+msgid "Disable admin bar"
+msgstr "Inaktivera adminmeny"
+
+#: php/class-upgrade.php:194
+msgid "Makes sure that image and file uploads have lowercase filenames."
+msgstr "Ser till att uppladdade bilder och filer har filnamn med små bokstäver."
+
+#: php/class-upgrade.php:192
+msgid "Make upload filenames lowercase"
+msgstr "Gör de uppladdade filerna namn till gemener"
+
+#: php/class-upgrade.php:188
+msgid "This is a sample snippet. Feel free to use it, edit it, or remove it."
+msgstr "Detta är en exempelkodsnutt. Du kan använda, redigera eller ta bort den."
+
+#: php/class-snippet.php:333
+msgid "Front-end styles"
+msgstr "Stillmallar för front-end"
+
+#: php/class-snippet.php:331
+msgid "Admin styles"
+msgstr "Stilmallar för adminpanelen"
+
+#: php/class-snippet.php:329
+msgid "Footer content"
+msgstr "Sidfotsinnehåll"
+
+#: php/class-snippet.php:327
+msgid "Head content"
+msgstr "Sidhuvudinnehåll"
+
+#: php/class-snippet.php:323
+msgid "Single-use function"
+msgstr "Funktion för engångsbruk"
+
+#: php/class-snippet.php:321
+msgid "Front-end function"
+msgstr "Funktion för front-end"
+
+#: php/class-snippet.php:319
+msgid "Admin function"
+msgstr "Administrationsfunktion"
+
+#: php/class-snippet.php:317
+msgid "Global function"
+msgstr "Global funktion"
+
+#: php/class-plugin.php:341 dist/edit.js:2
+msgid "Scripts"
+msgstr "Skript"
+
+#: php/class-plugin.php:340 dist/edit.js:2
+msgid "Styles"
+msgstr "Stilmallar"
+
+#: php/views/manage.php:80
+msgid "Content snippets are bits of reusable PHP and HTML content that can be inserted into posts and pages."
+msgstr "Innehålls-kodsnittar är bitar av återanvändbart PHP- och HTML-innehåll som kan infogas i inlägg och sidor."
+
+#: php/views/manage.php:75
+msgid "Function snippets are run on your site as if there were in a plugin or theme functions.php file."
+msgstr "Funktionskodsnuttar körs på din webbplats som om de ingår i något tillägg, eller ditt temas functions.php-fil."
+
+#: php/class-plugin.php:339 php/class-snippet.php:325 dist/edit.js:2
+msgid "Content"
+msgstr "Innehåll"
+
+#: php/class-plugin.php:338 dist/edit.js:2
+msgid "Functions"
+msgstr "Funktioner"
+
+#. translators: %s: snippet title.
+#: php/class-list-table.php:1339
+msgid "%s [CLONE]"
+msgstr "%s [KLON]"
+
+#: php/class-list-table.php:891
+msgid "It looks like you don't have any snippets of this type."
+msgstr "Du verkar inte ha några kodsnuttar av denna typ."
+
+#: php/class-list-table.php:438
+msgid "Type"
+msgstr "Typ"
+
+#: php/class-admin.php:217
+msgid "Active Snippets"
+msgstr "Aktiva kodsnuttar"
+
+#. translators: %s: formatted last modified date
+#: php/class-admin.php:200
+msgid "Last modified %s"
+msgstr "Senast ändrad %s"
+
+#: php/admin-menus/class-manage-menu.php:94
+#: php/admin-menus/class-welcome-menu.php:82 php/class-admin.php:131
+msgid "Upgrade to Pro"
+msgstr "Uppgradera till Pro"
+
+#: php/class-admin.php:130
+msgid "Upgrade to Code Snippets Pro"
+msgstr "Uppgradera till Code Snippets Pro"
+
+#: php/class-admin.php:159
+msgid "Find out how to get support with Code Snippets"
+msgstr "Ta reda på hur du får hjälp med Code Snippets"
+
+#: php/class-admin.php:113
+msgid "Change plugin settings"
+msgstr "Ändra tilläggsinställningar"
+
+#. translators: %s: Update PHP URL.
+#: php/deactivation-notice.php:40
+msgid "Please <a href=\"%s\">upgrade your server to the latest version of PHP</a> to continue using Code Snippets."
+msgstr "<a href=\"%s\">Uppgradera din server till den senaste versionen av PHP</a> för att fortsätta använda Code Snippets."
+
+#. translators: %s: required PHP version number.
+#: php/deactivation-notice.php:32
+msgid "Code Snippets requires PHP %s or later."
+msgstr "Code Snippets kräver PHP %s eller senare."
+
+#: php/deactivation-notice.php:50
+msgid "Another version of Code Snippets appears to be installed. Deactivating this version."
+msgstr "En annan version av Code Snippets verkar vara installerad. Inaktivera denna version."
+
+#. translators: %s: PHP identifier name
+#: php/class-validator.php:220
+msgid "Cannot redeclare %s."
+msgstr "Det går inte att omdeklarera %s."
+
+#. translators: %s: PHP interface name
+#: php/class-validator.php:216
+msgid "Cannot redeclare interface %s."
+msgstr "Det går inte att omdeklarera gränssnittet %s."
+
+#. translators: %s: PHP class name
+#: php/class-validator.php:212
+msgid "Cannot redeclare class %s."
+msgstr "Det går inte att omdeklarera klassen %s."
+
+#. translators: %s: PHP function name
+#: php/class-validator.php:208
+msgid "Cannot redeclare function %s."
+msgstr "Det går inte att omdeklarera funktionen %s."
+
+#. translators: 1: search query, 2: line number.
+#: php/class-list-table.php:1276
+msgid " for &ldquo;%1$s&rdquo; on line %2$d"
+msgstr " för ”%1$s” på rad %2$d"
+
+#: php/class-list-table.php:883
+msgid "No snippets were found matching the current search query. Please enter a new query or use the \"Clear Filters\" button above."
+msgstr "Inga kodsnuttar kunde hittas med nuvarande sökning. Ange en ny sökterm eller klicka på ”Rensa filter” ovan."
+
+#: php/class-list-table.php:441
+msgid "Modified"
+msgstr "Ändrad"
+
+#: php/class-snippet.php:439
+msgid "Y/m/d"
+msgstr "Y-m-d"
+
+#. translators: %s: Human-readable time difference.
+#: php/class-snippet.php:437 php/cloud/class-cloud-search-list-table.php:214
+msgid "%s ago"
+msgstr "%s sedan"
+
+#: php/class-contextual-help.php:186
+msgid "Here you can load snippets from a code snippets export file into the database alongside existing snippets."
+msgstr "Här laddar du upp kodsnuttar från en kodsnuttsexportfil till databasen tillsammans med befintliga kodsnuttar."
+
+#: php/class-contextual-help.php:160
+msgid "Here you can add a new snippet, or edit an existing one."
+msgstr "Här kan du lägga till en ny kodsnutt eller redigera en befintlig."
+
+#: php/class-contextual-help.php:136
+msgid "Here you can manage your existing snippets and perform tasks on them such as activating, deactivating, deleting and exporting."
+msgstr "Här hanterar du dina existerande kodsnuttar och utför åtgärder med dem, såsom aktivering, inaktivering, radering och export."
+
+#: php/class-contextual-help.php:125
+msgid "Snippets are similar to plugins - they both extend and expand the functionality of WordPress. Snippets are more light-weight, just a few lines of code, and do not put as much load on your server. "
+msgstr "Kodsnuttar fungerar ungefär som tillägg – i båda fallen utökas funktionaliteten i WordPress. Kodsnuttar är mindre, bara några kodrader, och de belastar din server minimalt. "
+
+#: php/admin-menus/class-edit-menu.php:38
+msgctxt "menu label"
+msgid "Edit Snippet"
+msgstr "Redigera kodsnutt"
+
+#. Plugin URI of the plugin
+#. Author URI of the plugin
+#: code-snippets.php
+msgid "https://codesnippets.pro"
+msgstr "https://codesnippets.pro"
+
+#. Author of the plugin
+#: code-snippets.php
+msgid "Code Snippets Pro"
+msgstr "Code Snippets Pro"
+
+#. translators: %s: tag name.
+#: php/class-list-table.php:1292
+msgid " in tag &ldquo;%s&rdquo;"
+msgstr " i taggen ”%s”"
+
+#. translators: %s: search query.
+#: php/class-list-table.php:1285
+msgid " for &ldquo;%s&rdquo;"
+msgstr " för ”%s”"
+
+#: php/class-list-table.php:889
+msgid "It looks like you don't have any snippets."
+msgstr "Du verkar inte ha några kodsnuttar."
+
+#: php/class-list-table.php:261 php/class-list-table.php:488
+msgid "Clone"
+msgstr "Klona"
+
+#: php/admin-menus/class-admin-menu.php:180
+msgctxt "snippets"
+msgid "Import"
+msgstr "Importera"
+
+#: php/views/import.php:94
+msgid "Upload Files"
+msgstr "Ladda upp filer"
+
+#: php/admin-menus/class-admin-menu.php:183
+msgctxt "snippets"
+msgid "Settings"
+msgstr "Inställningar"
+
+#: php/admin-menus/class-admin-menu.php:174
+#: php/admin-menus/class-settings-menu.php:114
+msgctxt "snippets"
+msgid "Manage"
+msgstr "Hantera"
+
+#: php/views/partials/list-table-notices.php:58
+msgid "Selected snippets <strong>cloned</strong>."
+msgstr "Valda kodsnuttar <strong>klonade</strong>."
+
+#: php/views/partials/list-table-notices.php:57
+msgid "Snippet <strong>cloned</strong>."
+msgstr "Kodsnutt <strong>klonad</strong>."
+
+#: php/admin-menus/class-manage-menu.php:155
+msgctxt "tools submenu label"
+msgid "Snippets"
+msgstr "Kodsnuttar"
+
+#: php/class-list-table.php:442 php/settings/settings-fields.php:111
+#: dist/edit.js:2
+msgid "Priority"
+msgstr "Prioritet"
+
+#: php/views/import.php:89
+msgid "Do not import any duplicate snippets; leave all existing snippets unchanged."
+msgstr "Importera inte några dubbletter och lämna alla existerande kodsnuttar oförändrade."
+
+#: php/views/import.php:82
+msgid "Replace any existing snippets with a newly imported snippet of the same name."
+msgstr "Ersätt befintliga kodsnuttar med nyimporterade kodsnuttar om de har samma namn."
+
+#: php/views/import.php:75
+msgid "Ignore any duplicate snippets: import all snippets from the file regardless and leave all existing snippets unchanged."
+msgstr "Ignorera eventuella dubbletter: importera alla kodsnuttar från filen oavsett och lämna befintliga kodsnuttar oförändrade."
+
+#: php/views/import.php:68
+msgid "What should happen if an existing snippet is found with an identical name to an imported snippet?"
+msgstr "Vad ska hända om en befintlig kodsnutt hittas med exakt samma namn som för en importerad kodsnutt?"
+
+#: php/views/import.php:65
+msgid "Duplicate Snippets"
+msgstr "Duplicera kodsnuttar"
+
+#: php/views/import.php:97
+msgid "Choose one or more Code Snippets (.xml or .json) files to upload, then click \"Upload files and import\"."
+msgstr "Välj en eller flera kodsnutt-filer (.xml eller .json) att ladda upp, klicka sedan på ”Ladda upp filer och importera”."
+
+#: php/views/import.php:41
+msgid "Upload one or more Code Snippets export files and the snippets will be imported."
+msgstr "Ladda upp en eller flera exportfiler för att importera kodsnuttar."
+
+#: php/settings/settings-fields.php:137
+msgid "When the plugin is deleted from the Plugins menu, also delete all snippets and plugin settings."
+msgstr "När tillägget tas bort under menyn ”Tillägg” ska även även alla kodsnuttar och inställningar för tillägget tas bort."
+
+#: php/settings/settings-fields.php:135
+msgid "Complete Uninstall"
+msgstr "Fullständig avinstallering"
+
+#: php/cloud/list-table-shared-ops.php:105
+#: php/cloud/list-table-shared-ops.php:111
+msgid "Download"
+msgstr "Ladda ner"
+
+#: php/class-list-table.php:302
+msgid "Run Once"
+msgstr "Kör en gång"
+
+#: php/class-admin.php:87
+msgid "Snippets &raquo; Settings"
+msgstr "Kodsnutt &raquo; Inställningar"
+
+#: php/admin-menus/class-settings-menu.php:144
+msgid "Reset to Default"
+msgstr "Återställ till standard"
+
+#: php/settings/settings.php:252
+msgid "All settings have been reset to their defaults."
+msgstr "Alla inställningar har återställts till sina standardinställningar."
+
+#: php/views/partials/list-table-notices.php:50
+msgid "Snippet <strong>executed</strong>."
+msgstr "Kodsnutten <strong>har körts</strong>."
+
+#: php/admin-menus/class-import-menu.php:137
+msgid "No snippets were imported."
+msgstr "Inga kodsnuttar importerades."
+
+#: php/class-list-table.php:898
+msgid "Perhaps you would like to add a new one?"
+msgstr "Kanske vill du lägga till en ny?"
+
+#: php/class-list-table.php:254
+msgid "Network Only"
+msgstr "Endast nätverk"
+
+#: php/class-list-table.php:252
+msgid "Network Active"
+msgstr "Aktivt för nätverk"
+
+#. Description of the plugin
+#: code-snippets.php
+msgid "An easy, clean and simple way to run code snippets on your site. No need to edit to your theme's functions.php file again!"
+msgstr "Ett enkelt och snyggt sätt att köra kodsnuttar på din webbplats. Du behöver aldrig redigera filen functions.php i ditt tema igen!"
+
+#: php/views/import.php:116
+msgid "Upload files and import"
+msgstr "Ladda upp filer och importera"
+
+#. translators: %s: size in bytes
+#: php/views/import.php:105
+msgid "(Maximum size: %s)"
+msgstr "(Maximal storlek: %s)"
+
+#: php/views/import.php:102
+msgid "Choose files from your computer:"
+msgstr "Välj filer från din dator:"
+
+#: php/admin-menus/class-admin-menu.php:177
+#: php/admin-menus/class-settings-menu.php:115 dist/edit.js:2
+msgctxt "snippet"
+msgid "Add New"
+msgstr "Lägg till ny"
+
+#: php/admin-menus/class-settings-menu.php:220 php/settings/settings.php:330
+msgid "Settings saved."
+msgstr "Inställningarna har sparats."
+
+#: php/settings/settings.php:182
+msgid "Editor Preview"
+msgstr "Kodsnutt"
+
+#: php/settings/settings.php:140
+msgid "Code Editor"
+msgstr "Kodredigerare"
+
+#: php/settings/settings.php:139
+msgid "General"
+msgstr "Allmänt"
+
+#: php/settings/settings-fields.php:190
+msgid "Highlight all instances of a currently selected word."
+msgstr "Märk alla förekomster av det markerade ordet."
+
+#: php/settings/settings-fields.php:189
+msgid "Highlight Selection Matches"
+msgstr "Framhäv matchningar av markeringen"
+
+#: php/settings/settings-fields.php:185
+msgid "Auto-close brackets and quotes when typed."
+msgstr "Avsluta automatiskt hakparenteser och citationstecken vid inmatning."
+
+#: php/settings/settings-fields.php:183
+msgid "Auto Close Brackets"
+msgstr "Avsluta automatiskt hakparenteser"
+
+#: php/settings/settings-fields.php:179
+msgid "Show line numbers to the left of the editor."
+msgstr "Visa radnummer till vänster i redigeraren."
+
+#: php/settings/settings-fields.php:177
+msgid "Line Numbers"
+msgstr "Radnummer"
+
+#: php/settings/settings-fields.php:165
+msgid "Wrap Lines"
+msgstr "Radbryt texten"
+
+#: php/settings/settings-fields.php:157
+msgid "Indent Unit"
+msgstr "Stegstorlek för indrag"
+
+#: php/settings/settings-fields.php:151
+msgid "The width of a tab character."
+msgstr "Bredden hos ett tabulatortecken."
+
+#: php/settings/settings-fields.php:149
+msgid "Tab Size"
+msgstr "Flikstorlek"
+
+#: php/settings/settings-fields.php:145
+msgid "Use hard tabs instead of spaces for indentation."
+msgstr "Använd ”hårda” tabbar istället för mellanslag för indrag av rader."
+
+#: php/settings/settings-fields.php:143
+msgid "Indent With Tabs"
+msgstr "Gör indrag med tabulatortecken"
+
+#: php/settings/settings-fields.php:213
+msgid "Theme"
+msgstr "Tema"
+
+#: php/settings/settings-fields.php:98
+msgid "Show snippet descriptions on admin pages."
+msgstr "Visa beskrivningen på kodsnutten på admin-sidorna."
+
+#: php/settings/settings-fields.php:96
+msgid "Enable Snippet Descriptions"
+msgstr "Aktivera beskrivning för kodsnutt"
+
+#: php/settings/settings-fields.php:93
+msgid "Show snippet tags on admin pages."
+msgstr "Visa etiketter för kodsnuttar på admin-sidorna."
+
+#: php/settings/settings-fields.php:91
+msgid "Enable Snippet Tags"
+msgstr "Aktivera etiketter för kodsnuttar"
+
+#: php/settings/settings-fields.php:88
+msgid "Make the 'Save and Activate' button the default action when saving a snippet."
+msgstr "Låt knappen ”Spara och aktivera” vara standardåtgärden när du sparar en kodsnutt."
+
+#: php/settings/settings-fields.php:86
+msgid "Activate by Default"
+msgstr "Aktivera som standard"
+
+#: php/class-list-table.php:1301
+msgid "Clear Filters"
+msgstr "Rensa filter"
+
+#: php/class-list-table.php:1268
+msgid "Search results"
+msgstr "Sökresultat"
+
+#: php/class-list-table.php:654
+msgid "Clear List"
+msgstr "Rensa lista"
+
+#: php/class-list-table.php:646
+msgid "Filter"
+msgstr "Filtrera"
+
+#: php/class-list-table.php:631
+msgid "Show all tags"
+msgstr "Visa alla etiketter"
+
+#. translators: %s: total number of recently activated snippets.
+#: php/class-list-table.php:554
+msgid "Recently Active <span class=\"count\">(%s)</span>"
+msgid_plural "Recently Active <span class=\"count\">(%s)</span>"
+msgstr[0] "Nyligen aktivt <span class=\"count\">(%s)</span>"
+msgstr[1] "Nyligen aktiva <span class=\"count\">(%s)</span>"
+
+#. translators: %s: total number of inactive snippets.
+#: php/class-list-table.php:546
+msgid "Inactive <span class=\"count\">(%s)</span>"
+msgid_plural "Inactive <span class=\"count\">(%s)</span>"
+msgstr[0] "Inaktiv <span class=\"count\">(%s)</span>"
+msgstr[1] "Inaktiva <span class=\"count\">(%s)</span>"
+
+#. translators: %s: total number of active snippets.
+#: php/class-list-table.php:538
+msgid "Active <span class=\"count\">(%s)</span>"
+msgid_plural "Active <span class=\"count\">(%s)</span>"
+msgstr[0] "Aktiv <span class=\"count\">(%s)</span>"
+msgstr[1] "Aktiva <span class=\"count\">(%s)</span>"
+
+#. translators: %s: total number of snippets.
+#: php/class-list-table.php:530
+msgid "All <span class=\"count\">(%s)</span>"
+msgid_plural "All <span class=\"count\">(%s)</span>"
+msgstr[0] "Alla <span class=\"count\">(%s)</span>"
+msgstr[1] "Alla <span class=\"count\">(%s)</span>"
+
+#: php/class-list-table.php:443
+msgid "ID"
+msgstr "ID"
+
+#: php/class-list-table.php:437 dist/edit.js:2
+msgid "Name"
+msgstr "Namn"
+
+#: php/class-list-table.php:365
+msgid "Shared on Network"
+msgstr "Delat på nätverk"
+
+#: php/class-list-table.php:277
+msgid "'Cancel' to stop, 'OK' to delete."
+msgstr "”Avbryt” för att stoppa, ”OK” för att ta bort."
+
+#: php/class-list-table.php:276
+msgid "You are about to permanently delete the selected item."
+msgstr "Du är på väg att permanent ta bort det valda objektet."
+
+#: php/class-list-table.php:271 php/class-list-table.php:491 dist/edit.js:2
+msgid "Delete"
+msgstr "Ta bort"
+
+#: php/class-list-table.php:262 php/class-list-table.php:490 dist/edit.js:2
+msgid "Export"
+msgstr "Exportera"
+
+#: php/class-list-table.php:260
+msgid "Edit"
+msgstr "Redigera"
+
+#: php/class-list-table.php:321 php/class-list-table.php:486 dist/manage.js:2
+msgid "Activate"
+msgstr "Aktivera"
+
+#: php/class-list-table.php:320 php/class-list-table.php:486
+msgid "Network Activate"
+msgstr "Aktivera för nätverk"
+
+#: php/class-list-table.php:321 php/class-list-table.php:487 dist/manage.js:2
+msgid "Deactivate"
+msgstr "Inaktivera"
+
+#: php/class-list-table.php:320 php/class-list-table.php:487
+msgid "Network Deactivate"
+msgstr "Inaktivera för nätverk"
+
+#: php/class-list-table.php:90
+msgid "Snippets per page"
+msgstr "Kodsnuttar per sida"
+
+#. translators: %s: URL to Manage Snippets admin menu
+#: php/class-contextual-help.php:201
+msgid "You can save your snippets to a code snippets export file using the <a href=\"%s\">Manage Snippets</a> page."
+msgstr "Du kan spara dina kodsnuttar till en exportfil på sidan <a href=\"%s\">Hantera kodsnuttar</a>."
+
+#: php/class-contextual-help.php:199
+msgid "Exporting"
+msgstr "Exporterar"
+
+#. translators: %s: URL to Snippets admin menu
+#: php/class-contextual-help.php:194
+msgid "Imported snippets will be added to the database along with your existing snippets. Regardless of whether the snippets were active on the previous site, imported snippets are always inactive until activated using the <a href=\"%s\">Manage Snippets</a> page."
+msgstr "Importerade kodsnuttar kommer läggas till i databasen tillsammans med befintliga kodsnuttar. Oavsett om kodsnuttarna var aktiva eller inte på föregående webbplats kommer de alltid att importeras som inaktiva tills du själv aktiverar dem på sidan <a href=\"%s\">Hantera kodsnuttar</a>."
+
+#: php/class-contextual-help.php:192
+msgid "You can load your snippets from a code snippets export file using this page."
+msgstr "På denna sidan kan du ladda dina kodsnuttar från en exportfil."
+
+#: php/class-contextual-help.php:191
+msgid "Importing"
+msgstr "Importerar"
+
+#: php/class-contextual-help.php:170
+msgid "You need to fill out the name and code fields for your snippet to be added. While the description field will add more information about how your snippet works, what is does and where you found it, it is completely optional."
+msgstr "Du måste fylla i namnet och kodfältet för att en kodsnutt ska kunna sparas. I beskrivningsfältet kan du ger mer information om hur kodsnutten fungerar och vad den gör, men det är helt frivilligt."
+
+#: php/class-contextual-help.php:168
+msgid "Adding Snippets"
+msgstr "Lägger till kodsnutt"
+
+#: php/class-contextual-help.php:143
+msgid "Be sure to check your snippets for errors before you activate them, as a faulty snippet could bring your whole blog down. If your site starts doing strange things, deactivate all your snippets and activate them one at a time."
+msgstr "Försäkra dig om att dina kodsnuttar inte innehåller några fel innan du aktiverar dem eftersom en felaktig kodsnutt kan få din webbplatsen att sluta fungera. Om din webbplats börjar bete sig konstigt, så inaktivera alla dina kodsnuttar och återaktivera dem sedan ett i taget."
+
+#: php/class-contextual-help.php:141
+msgid "Safe Mode"
+msgstr "Säkert läge"
+
+#: php/class-contextual-help.php:134 php/class-contextual-help.php:157
+#: php/class-contextual-help.php:184
+msgid "Overview"
+msgstr "Översikt"
+
+#: php/class-contextual-help.php:72
+msgid "Plugin Website"
+msgstr "Tilläggets webbplats"
+
+#: php/class-contextual-help.php:71
+msgid "Support Forum"
+msgstr "Supportforum"
+
+#: php/class-contextual-help.php:70
+msgid "FAQ"
+msgstr "Vanliga frågor"
+
+#: php/class-contextual-help.php:69
+msgid "About Plugin"
+msgstr "Om tillägget"
+
+#: php/class-contextual-help.php:81
+msgid "For more information:"
+msgstr "För mer information:"
+
+#: php/class-admin.php:300
+msgid "Dismiss"
+msgstr "Avfärda"
+
+#: php/class-admin.php:278
+msgid "Take the survey now"
+msgstr "Svara på enkäten nu"
+
+#: php/class-admin.php:279
+msgid "<strong>Have feedback on Code Snippets?</strong> Please take the time to answer a short survey on how you use this plugin and what you'd like to see changed or added in the future."
+msgstr "<strong>Har du något att säga om Code Snippets/Kodsnuttar?</strong> Ägna några minuter åt att besvara en kort enkät om hur du använder tillägget och vilka ytterligare funktioner eller ändringar du skulle vilja se i framtiden."
+
+#: php/admin-menus/class-welcome-menu.php:64
+msgid "Support"
+msgstr "Support"
+
+#: php/class-admin.php:119
+msgid "Manage your existing snippets"
+msgstr "Hantera dina befintliga kodsnuttar"
+
+#: php/admin-menus/class-settings-menu.php:110 php/class-admin.php:114
+msgid "Settings"
+msgstr "Inställningar"
+
+#: php/admin-menus/class-settings-menu.php:30
+msgid "Snippets Settings"
+msgstr "Inställningar för kodsnuttar"
+
+#: php/admin-menus/class-settings-menu.php:29
+msgctxt "menu label"
+msgid "Settings"
+msgstr "Inställningar"
+
+#: php/views/partials/list-table-notices.php:56
+msgid "Selected snippets <strong>deleted</strong>."
+msgstr "De markerade kodsnuttarna <strong>har tagits bort</strong>."
+
+#: php/views/partials/list-table-notices.php:55
+msgid "Snippet <strong>deleted</strong>."
+msgstr "Kodsnutt <strong>borttagen</strong>."
+
+#: php/views/partials/list-table-notices.php:54
+msgid "Selected snippets <strong>deactivated</strong>."
+msgstr "Valda kodsnuttar <strong>inaktiverade</strong>."
+
+#: php/views/partials/list-table-notices.php:53
+msgid "Snippet <strong>deactivated</strong>."
+msgstr "Kodsnutt <strong>inaktiverad</strong>."
+
+#: php/views/partials/list-table-notices.php:52
+msgid "Selected snippets <strong>activated</strong>."
+msgstr "Valda kodsnuttar <strong>aktiverade</strong>."
+
+#: php/views/partials/list-table-notices.php:51
+msgid "Snippet <strong>activated</strong>."
+msgstr "Kodsnutt <strong>aktiverad</strong>."
+
+#: php/admin-menus/class-manage-menu.php:64
+msgctxt "top-level menu label"
+msgid "Snippets"
+msgstr "Kodsnuttar"
+
+#: php/admin-menus/class-manage-menu.php:37
+#: php/admin-menus/class-manage-menu.php:63
+#: php/admin-menus/class-manage-menu.php:154 php/class-admin.php:86
+#: php/class-admin.php:120 php/views/manage.php:46
+msgid "Snippets"
+msgstr "Kodsnuttar"
+
+#: php/admin-menus/class-manage-menu.php:36
+msgctxt "menu label"
+msgid "All Snippets"
+msgstr "Alla kodsnuttar"
+
+#: php/admin-menus/class-import-menu.php:127
+msgid "An error occurred when processing the import files."
+msgstr "Ett fel uppstod vid bearbetningen av importfilerna."
+
+#: php/admin-menus/class-import-menu.php:115
+msgid "Import snippets from a code snippets export file"
+msgstr "Importera kodsnuttar från en exportfil"
+
+#. Plugin Name of the plugin
+#: code-snippets.php php/admin-menus/class-import-menu.php:114
+msgid "Code Snippets"
+msgstr "Code Snippets"
+
+#: php/admin-menus/class-import-menu.php:20 php/views/import.php:28
+msgid "Import Snippets"
+msgstr "Importera kodsnuttar"
+
+#: php/admin-menus/class-import-menu.php:19
+msgctxt "menu label"
+msgid "Import"
+msgstr "Importera"
+
+#: php/class-list-table.php:440
+msgid "Tags"
+msgstr "Etiketter"
+
+#: php/class-list-table.php:439 dist/edit.js:2
+msgid "Description"
+msgstr "Beskrivning"
+
+#: php/admin-menus/class-edit-menu.php:69
+msgctxt "menu label"
+msgid "Add New"
+msgstr "Lägg till ny"
+
+#: php/admin-menus/class-edit-menu.php:39 dist/edit.js:2
+msgid "Edit Snippet"
+msgstr "Redigera kodsnutt"
+
+#: php/admin-menus/class-admin-menu.php:131
+msgid "You are not authorized to access this page."
+msgstr "Du har inte behörighet att visa denna sida."

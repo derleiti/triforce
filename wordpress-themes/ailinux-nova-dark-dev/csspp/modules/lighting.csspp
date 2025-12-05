@@ -1,0 +1,349 @@
+/**
+ * CSS++ Module: Lighting
+ *
+ * Regelt Licht, Schatten, Reflexionen, Lichtquellen
+ *
+ * @version 0.1.0
+ * @module lighting
+ */
+
+/* ============================================
+   LIGHT INTENSITY
+   ============================================ */
+
+/**
+ * light-intensity: <value> | ambient(<value>) | directional(<angle>, <value>)
+ *
+ * Definiert die Beleuchtungsstärke eines Elements
+ *
+ * Werte:
+ * - 0.0 (dunkel) bis 1.0 (maximal)
+ * - ambient(0.5) – Umgebungslicht
+ * - directional(45deg, 0.8) – Gerichtetes Licht
+ *
+ * Beeinflusst Schatten, Reflexionen, Material-Appearance
+ */
+
+.lit-card {
+  light-intensity: 0.7;
+}
+
+.ambient-scene {
+  light-intensity: ambient(0.4);
+}
+
+.spotlight-element {
+  light-intensity: directional(135deg, 0.9);
+}
+
+
+/* ============================================
+   SHADOW TYPES
+   ============================================ */
+
+/**
+ * shadow-type: <type> | contact | soft | hard | volumetric
+ *
+ * Definiert Schattenart und -qualität
+ *
+ * Werte:
+ * - none – Kein Schatten
+ * - hard – Scharfkantig (performance)
+ * - soft – Weiche Kanten (standard)
+ * - contact – Kontaktschatten (nah am Element)
+ * - volumetric – 3D-Schatten mit Tiefe
+ *
+ * Interagiert mit depth aus geometry.csspp
+ */
+
+.card-soft-shadow {
+  shadow-type: soft;
+  depth: 0.2rem; /* Automatische Schattenberechnung */
+}
+
+.contact-shadow {
+  shadow-type: contact;
+  /* Schatten nur direkt unter Element */
+}
+
+.floating-ui {
+  shadow-type: volumetric;
+  depth: 1rem;
+  /* Schatten wird mit Tiefe skaliert */
+}
+
+
+/* ============================================
+   SHADOW CUSTOMIZATION
+   ============================================ */
+
+/**
+ * shadow-blur: <length>
+ * shadow-spread: <length>
+ * shadow-color: <color>
+ * shadow-offset: <x> <y>
+ *
+ * Feinsteuerung der Schatten
+ */
+
+.custom-shadow {
+  shadow-type: soft;
+  shadow-blur: 1rem;
+  shadow-spread: 0.2rem;
+  shadow-color: rgba(0, 0, 0, 0.3);
+  shadow-offset: 0 0.5rem;
+}
+
+
+/* ============================================
+   REFLECTIVITY
+   ============================================ */
+
+/**
+ * reflectivity: <material> | <value>
+ *
+ * Definiert Reflexionsverhalten der Oberfläche
+ *
+ * Werte:
+ * - 0.0 (matt) bis 1.0 (spiegelnd)
+ * - glass(0.4) – Glas mit Transparenz
+ * - chrome – Vollständige Spiegelung
+ * - brushed-metal(0.6) – Metallisch mit Roughness
+ * - water(ripple: true) – Wasser mit Animation
+ *
+ * Kombiniert mit texture.csspp für PBR-Materialien
+ */
+
+.glossy-button {
+  reflectivity: 0.8;
+  material: plastic; /* Referenz zu texture.csspp */
+}
+
+.glass-panel {
+  reflectivity: glass(0.5);
+  transparency: 0.3;
+}
+
+.chrome-icon {
+  reflectivity: chrome;
+  /* Compiler generiert gradient-based reflection */
+}
+
+.metal-surface {
+  reflectivity: brushed-metal(0.6);
+  roughness: 0.3; /* Aus texture.csspp */
+}
+
+
+/* ============================================
+   LIGHT SOURCES
+   ============================================ */
+
+/**
+ * light-source: point(<x> <y> <z>) | spot(<x> <y> <angle>) | area(<rect>)
+ *
+ * Definiert virtuelle Lichtquellen für Szene
+ *
+ * Werte:
+ * - point(50% 50% 5rem) – Punktlicht
+ * - spot(50% 0 45deg) – Spotlight von oben
+ * - area(0 0 100% 10%) – Flächenlicht (wie Softbox)
+ */
+
+.scene-with-light {
+  light-source: point(50% 50% 10rem);
+  light-intensity: 0.8;
+}
+
+.spotlight-hero {
+  light-source: spot(50% 0 30deg);
+  /* Dramatische Beleuchtung von oben */
+}
+
+
+/* ============================================
+   LIGHT RESPONSE
+   ============================================ */
+
+/**
+ * light-response: static | reflective | emissive | reactive
+ *
+ * Definiert, wie Element auf Licht reagiert
+ *
+ * Werte:
+ * - static – Keine Lichtberechnung (flat)
+ * - reflective – Spiegelt Umgebungslicht
+ * - emissive – Selbstleuchtend
+ * - reactive – Reagiert auf Cursor-Nähe (für Interactive Lighting)
+ */
+
+.flat-element {
+  light-response: static;
+}
+
+.shiny-card {
+  light-response: reflective;
+  reflectivity: 0.6;
+}
+
+.neon-button {
+  light-response: emissive;
+  glow-color: #00ffff;
+  glow-intensity: 0.8;
+}
+
+.interactive-surface {
+  light-response: reactive;
+  /* Leuchtet auf bei Cursor-Nähe */
+}
+
+
+/* ============================================
+   GLOW & EMISSION
+   ============================================ */
+
+/**
+ * glow-color: <color>
+ * glow-intensity: <value>
+ * glow-radius: <length>
+ *
+ * Selbstleuchtende Effekte
+ */
+
+.glowing-text {
+  glow-color: #ff00ff;
+  glow-intensity: 0.6;
+  glow-radius: 1rem;
+  /* Compiler generiert text-shadow + box-shadow */
+}
+
+.neon-sign {
+  light-response: emissive;
+  glow-color: #00ff00;
+  glow-intensity: 1.0;
+  glow-radius: 2rem;
+  animation: neon-flicker 2s infinite;
+}
+
+
+/* ============================================
+   AMBIENT OCCLUSION
+   ============================================ */
+
+/**
+ * ambient-occlusion: <value> | <radius>
+ *
+ * Simuliert subtilen Schattenwurf in Ecken/Kanten
+ *
+ * Werte:
+ * - 0.0 (aus) bis 1.0 (stark)
+ * - auto – Compiler berechnet basierend auf Geometrie
+ */
+
+.card-with-ao {
+  ambient-occlusion: 0.3;
+  /* Dunkle Kanten für mehr Tiefe */
+}
+
+.container-ao {
+  ambient-occlusion: auto;
+  /* Automatische Berechnung für Child-Elemente */
+}
+
+
+/* ============================================
+   LIGHT ANIMATION
+   ============================================ */
+
+/**
+ * Licht kann animiert werden
+ */
+
+@keyframes light-pulse {
+  0%, 100% { light-intensity: 0.5; }
+  50% { light-intensity: 1.0; }
+}
+
+.pulsing-light {
+  animation: light-pulse 2s ease-in-out infinite;
+}
+
+
+/* ============================================
+   COMPILER TRANSFORMATIONS
+   ============================================ */
+
+/**
+ * Der Compiler transformiert Lighting-Properties:
+ *
+ * shadow-type: soft       → box-shadow: 0 4px 12px rgba(...)
+ * reflectivity: 0.8       → background: linear-gradient(135deg, ...)
+ * glow-color: #ff00ff     → box-shadow: 0 0 20px #ff00ff
+ * light-response: emissive → filter: brightness(1.2) + glow
+ *
+ * Bei depth: 3d werden echte Lichtberechnungen exportiert (JSON-IR)
+ */
+
+
+/* ============================================
+   THEME INTEGRATION
+   ============================================ */
+
+/**
+ * Globale Licht-Settings aus theme.csspp
+ */
+
+:root {
+  --global-light-intensity: 0.7;
+  --global-shadow-type: soft;
+  --ambient-light: 0.3;
+}
+
+.auto-lit {
+  light-intensity: var(--global-light-intensity);
+  shadow-type: var(--global-shadow-type);
+}
+
+
+/* ============================================
+   ADVANCED: PBR LIGHTING
+   ============================================ */
+
+/**
+ * pbr-mode: enabled | metallic-roughness | specular-glossiness
+ *
+ * Aktiviert Physically Based Rendering
+ *
+ * Nur bei depth: 3d und WebGL-Rendering
+ */
+
+.pbr-material {
+  depth: 3d;
+  pbr-mode: metallic-roughness;
+  metallic: 0.8;
+  roughness: 0.2;
+  reflectivity: chrome;
+  /* Export als glTF/PBR-Material in JSON-IR */
+}
+
+
+/* ============================================
+   INTERACTIVE LIGHTING
+   ============================================ */
+
+/**
+ * cursor-light: enabled | <radius>
+ *
+ * Cursor fungiert als Lichtquelle
+ */
+
+.interactive-scene {
+  cursor-light: 10rem;
+  /* Spotlight folgt Cursor mit 10rem Radius */
+}
+
+.cursor-glow {
+  cursor-light: enabled;
+  cursor-light-color: #4466ff;
+  cursor-light-intensity: 0.5;
+}

@@ -1,0 +1,255 @@
+:root {
+  --content-max: 68ch; /* etwas schmaler = leichter lesbar */
+  --leading: 1.7;
+  --para-gap: 0.9rem;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: var(--bg-0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--bg-0);
+  color: var(--text);
+  font-size: 18px;
+  line-height: var(--leading);
+  min-height: 100vh;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+html.no-js {
+  scroll-behavior: auto;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0 0 var(--space-6);
+  line-height: 1.25;
+  font-weight: 600;
+  color: var(--text);
+}
+
+h1 {
+  font-size: 2.2rem;
+}
+
+h2 {
+  font-size: 1.8rem;
+}
+
+h3 {
+  font-size: 1.4rem;
+}
+
+p {
+  margin: 0 0 1rem;
+  max-width: var(--content-max);
+}
+
+a {
+  color: var(--accent-active);
+  text-decoration: none;
+  transition: color var(--transition-fast), opacity var(--transition-fast);
+}
+
+a:hover,
+a:focus-visible {
+  opacity: 0.85;
+}
+
+img,
+video,
+iframe {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-lg);
+}
+
+pre,
+code,
+kbd,
+samp {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+  border-radius: 0.6rem;
+  border: 1px solid transparent;
+}
+
+html[data-theme='dark'] pre,
+html[data-theme='dark'] code,
+html[data-theme='dark'] kbd,
+html[data-theme='dark'] samp {
+  background: #000000;
+  color: #e6edf3;
+  border-color: #243146;
+}
+
+html[data-theme='light'] pre,
+html[data-theme='light'] code,
+html[data-theme='light'] kbd,
+html[data-theme='light'] samp {
+  background: #f6f8fb;
+  color: #111111;
+  border-color: #e3e8f1;
+}
+
+pre {
+  padding: 1rem 1.2rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-x: auto;
+}
+
+code,
+kbd,
+samp {
+  padding: 0.15em 0.35em;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+}
+
+button,
+.btn,
+input[type='submit'] {
+  cursor: pointer;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1.4rem;
+  background: var(--accent-active);
+  color: #fff;
+  font-weight: 600;
+  transition: transform var(--transition-base), box-shadow var(--transition-base), background var(--transition-base);
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+}
+
+button:hover,
+.btn:hover,
+button:focus-visible,
+.btn:focus-visible,
+input[type='submit']:hover,
+input[type='submit']:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+button:focus-visible,
+.btn:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  z-index: 1000;
+}
+
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+  width: auto;
+  height: auto;
+  padding: 0.75rem 1rem;
+  background: var(--accent-active);
+  color: #fff;
+  border-radius: var(--radius-md);
+}
+
+.screen-reader-text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--container-pad-mobile);
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding-inline: var(--container-pad-tablet);
+  }
+}
+
+@media (min-width: 1280px) {
+  .container {
+    padding-inline: var(--container-pad-desktop);
+  }
+}
+
+.site-main {
+  display: block;
+}
+
+.single-post__content,
+.page-container .single-content {
+  max-width: var(--content-max);
+  margin-inline: auto;
+}
+
+.single-post__content p,
+.single-post__content ul,
+.single-post__content ol,
+.single-post__content blockquote {
+  margin-block: var(--para-gap);
+}
+
+/* Angenehmer Linkstil im Fließtext */
+.single-post__content a {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+.single-post__content a:hover,
+.single-post__content a:focus-visible {
+  text-decoration-thickness: 2px;
+}
+
+/* Sanfte Silbentrennung für lange Zeilen */
+.single-post__content,
+.post-grid,
+.widget {
+  hyphens: auto;
+  overflow-wrap: anywhere;
+}

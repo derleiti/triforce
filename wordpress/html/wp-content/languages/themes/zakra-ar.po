@@ -1,0 +1,931 @@
+# Translation of Themes - Zakra in Arabic
+# This file is distributed under the same license as the Themes - Zakra package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2021-10-16 23:02:20+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=(n == 0) ? 0 : ((n == 1) ? 1 : ((n == 2) ? 2 : ((n % 100 >= 3 && n % 100 <= 10) ? 3 : ((n % 100 >= 11 && n % 100 <= 99) ? 4 : 5))));\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: ar\n"
+"Project-Id-Version: Themes - Zakra\n"
+
+#. Theme Name of the theme
+#: style.css inc/admin/views/header.php:22 inc/helper/utils.php:288
+#: inc/helper/utils.php:331 assets/build/dashboard.js:1
+#, gp-priority: high
+msgid "Zakra"
+msgstr "زكرا (Zakra)"
+
+#: inc/customizer/panels-sections/panels-sections.php:354
+msgid "View Pro Version"
+msgstr "عرض النسخة الاحترافية"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:229
+msgid "Disable"
+msgstr "تعطيل"
+
+#: inc/customizer/options/additional/additional.php:13
+#: inc/customizer/options/content/blog.php:212
+#: inc/customizer/options/footer/footer-column.php:14
+#: inc/customizer/options/footer/footer-column.php:223
+#: inc/customizer/options/footer/scroll-to-top.php:12
+#: inc/customizer/options/global/builder.php:13
+#: inc/customizer/options/header-builder/logo.php:66
+#: inc/customizer/options/header/breadcrumb.php:19
+#: inc/customizer/options/header/header-button.php:20
+#: inc/customizer/options/header/header-search.php:14
+#: inc/customizer/options/header/page-header.php:11
+#: inc/customizer/options/header/primary-menu.php:19
+#: inc/customizer/options/header/site-identity.php:66
+#: inc/customizer/options/header/top-bar.php:20
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:225
+msgid "Enable"
+msgstr "تفعيل"
+
+#: inc/customizer/options/content/blog-meta.php:8
+#: inc/customizer/panels-sections/panels-sections.php:151
+msgid "Meta"
+msgstr "منوعات"
+
+#: inc/admin/class-zakra-theme-review-notice.php:130
+#: inc/admin/class-zakra-upgrade-notice.php:100
+msgid "Maybe later"
+msgstr "ربما لاحقًا"
+
+#: inc/customizer/panels-sections/panels-sections.php:106
+#: inc/customizer/panels-sections/panels-sections.php:231
+msgid "Header Button"
+msgstr "زر الترويسة "
+
+#: inc/customizer/options/header-builder/header-button.php:28
+#: inc/customizer/options/header/header-button.php:47
+msgid "Open link in a new tab"
+msgstr "افتح الرابط في علامة تبويب جديدة"
+
+#: inc/customizer/options/woocommerce/woocommerce.php:79
+#: inc/customizer/options/woocommerce/woocommerce.php:87
+msgid "Single Product"
+msgstr "Single Product"
+
+#: inc/customizer/options/woocommerce/woocommerce.php:58
+#: inc/customizer/options/woocommerce/woocommerce.php:66
+msgid "WooCommerce"
+msgstr "WooCommerce"
+
+#: inc/core/class-zakra-widgets.php:99
+msgid "WooCommerce Right Sidebar"
+msgstr "الشريط الجانبي الأيمن لWooCommerce"
+
+#: inc/core/class-zakra-widgets.php:98
+msgid "WooCommerce Left Sidebar"
+msgstr "الشريط الجانبي الأيسر لWooCommerce "
+
+#: inc/customizer/options/header-builder/logo.php:143
+#: inc/customizer/options/header/site-identity.php:143
+msgid "Tagline"
+msgstr "سطر الوصف"
+
+#: inc/customizer/options/header-builder/logo.php:59
+#: inc/customizer/options/header/site-identity.php:59
+msgid "Site Title"
+msgstr "عنوان الموقع"
+
+#: inc/admin/class-zakra-admin.php:69
+msgid "Processing..."
+msgstr "جاري المعالجة..."
+
+#. Template Name of the theme
+msgid "Page Builder"
+msgstr "منشئ الصفحات"
+
+#: comments.php:66
+msgid "Comments are closed."
+msgstr "التعليقات مغلقة."
+
+#. translators: %s: Name of current post. Only visible to screen readers
+#: template-parts/content-page.php:52
+msgid "Edit <span class=\"screen-reader-text\">%s</span>"
+msgstr "تحرير <span class=\"screen-reader-text\">%s</span>"
+
+#: template-parts/content-none.php:15
+msgid "Nothing Found"
+msgstr "لم نجد شيئا"
+
+#: inc/hooks/content.php:21
+msgid "Read More"
+msgstr "اقرأ المزيد"
+
+#: template-parts/entry/entry-content.php:41
+#: template-parts/entry/entry-summary.php:39
+msgid "Pages:"
+msgstr "الصفحات:"
+
+#: inc/template-functions.php:230 inc/template-functions.php:272
+#: inc/template-tags.php:53
+msgid "Oops! That page can&rsquo;t be found."
+msgstr "عفوا! لا&rsquo; يمكن العثور على تلك الصفحة."
+
+#: inc/template-functions.php:234
+msgid "Search Results"
+msgstr "نتائج البحث"
+
+#: inc/template-functions.php:227 inc/template-tags.php:50
+msgid "Page Not Found"
+msgstr "الصفحة غير موجودة"
+
+#. translators: 1: list of tags.
+#: inc/template-tags.php:238
+msgid "Tagged %1$s"
+msgstr "ذو علامة %1$s"
+
+#. translators: used between list items, there is a space after the comma
+#: inc/template-tags.php:243
+msgctxt "list item separator"
+msgid ", "
+msgstr "،"
+
+#. translators: %s: post title
+#: inc/template-tags.php:213
+msgid "No Comments<span class=\"screen-reader-text\"> on %s</span>"
+msgstr "لا تعليقات<span class=\"screen-reader-text\"> على %s</span>"
+
+#. translators: 1: list of categories.
+#: inc/template-tags.php:183
+msgid "Posted in %1$s"
+msgstr "نشر في %1$s"
+
+#. translators: used between list items, there is a space after the comma
+#: inc/template-tags.php:188
+msgid ", "
+msgstr "،"
+
+#. translators: %s: post author.
+#: inc/template-tags.php:162
+msgctxt "post author"
+msgid "By %s"
+msgstr "بواسطة %s"
+
+#. translators: %s: post date.
+#: inc/template-tags.php:126
+msgctxt "post date"
+msgid "Posted on %s"
+msgstr "نشر على %s"
+
+#: template-parts/footer/scroll-to-top.php:20
+#: template-parts/footer/scroll-to-top.php:25
+msgid "Scroll to top"
+msgstr "تمرير للأعلى"
+
+#: template-parts/hooks/header/header.php:69
+msgid "Skip to content"
+msgstr "تخطى إلى المحتوى"
+
+#: inc/customizer/options/footer-builder/copyright.php:131
+#: inc/customizer/options/footer-builder/footer-menu-2.php:95
+#: inc/customizer/options/footer-builder/footer-menu.php:95
+#: inc/customizer/options/footer-builder/html-1.php:93
+#: inc/customizer/options/footer-builder/html-2.php:93
+#: inc/customizer/options/footer-builder/socials.php:48
+#: inc/customizer/options/footer-builder/widget-1.php:134
+#: inc/customizer/options/footer-builder/widget-2.php:134
+#: inc/customizer/options/footer-builder/widget-3.php:134
+#: inc/customizer/options/footer-builder/widget-4.php:134
+#: inc/customizer/options/footer-builder/widget-5.php:134
+#: inc/customizer/options/footer-builder/widget-6.php:134
+msgid "Left"
+msgstr "اليسار"
+
+#: inc/customizer/options/header-builder/header-builder.php:243
+msgid "Bottom"
+msgstr "السفلي"
+
+#: inc/customizer/options/footer-builder/copyright.php:133
+#: inc/customizer/options/footer-builder/footer-menu-2.php:97
+#: inc/customizer/options/footer-builder/footer-menu.php:97
+#: inc/customizer/options/footer-builder/html-1.php:95
+#: inc/customizer/options/footer-builder/html-2.php:95
+#: inc/customizer/options/footer-builder/socials.php:50
+#: inc/customizer/options/footer-builder/widget-1.php:136
+#: inc/customizer/options/footer-builder/widget-2.php:136
+#: inc/customizer/options/footer-builder/widget-3.php:136
+#: inc/customizer/options/footer-builder/widget-4.php:136
+#: inc/customizer/options/footer-builder/widget-5.php:136
+#: inc/customizer/options/footer-builder/widget-6.php:136
+#: inc/customizer/build/customind.js:1
+#: inc/customizer/customind/build/customind.js:1
+msgid "Right"
+msgstr "اليمين"
+
+#: inc/customizer/options/footer-builder/main-area.php:163
+#: inc/customizer/options/footer/footer-bar.php:130
+#: inc/customizer/options/footer/footer-bar.php:213
+#: inc/customizer/options/footer/footer-column.php:208
+#: inc/customizer/options/header/top-bar.php:93
+#: inc/customizer/options/header/top-bar.php:158
+msgid "Widget"
+msgstr "ودجت"
+
+#: inc/customizer/options/footer/footer-bar.php:128
+#: inc/customizer/options/footer/footer-bar.php:211
+#: inc/customizer/options/header/top-bar.php:91
+#: inc/customizer/options/header/top-bar.php:156
+msgid "Text/HTML"
+msgstr "نص / HTML "
+
+#: inc/customizer/options/header-builder/primary-menu.php:39
+#: inc/customizer/options/header/main-header.php:132
+#: inc/customizer/options/header/primary-menu.php:44
+msgid "Border Bottom"
+msgstr "الحد السفلي"
+
+#: inc/customizer/options/global/sidebar.php:108
+msgid "Page"
+msgstr "صفحة"
+
+#: inc/customizer/options/footer-builder/bottom-area.php:127
+#: inc/customizer/options/footer-builder/main-area.php:151
+#: inc/customizer/options/footer-builder/top-area.php:127
+#: inc/customizer/options/header-builder/bottom-area.php:115
+#: inc/customizer/options/header-builder/header-builder.php:315
+#: inc/customizer/options/header-builder/header-button.php:147
+#: inc/customizer/options/header-builder/main-area.php:115
+#: inc/customizer/options/header-builder/top-area.php:100
+msgid "Border Color"
+msgstr "لون الحد"
+
+#: inc/customizer/options/global/typography.php:38
+#: inc/customizer/options/global/typography.php:80
+msgid "Body"
+msgstr "الجسد"
+
+#: inc/customizer/options/content/blog.php:113
+#: inc/customizer/options/footer-builder/bottom-area.php:57
+#: inc/customizer/options/footer-builder/copyright.php:34
+#: inc/customizer/options/footer-builder/html-1.php:19
+#: inc/customizer/options/footer-builder/html-2.php:19
+#: inc/customizer/options/footer-builder/main-area.php:57
+#: inc/customizer/options/footer-builder/top-area.php:57
+#: inc/customizer/options/footer/footer-bar.php:100
+#: inc/customizer/options/footer/footer-bar.php:270
+#: inc/customizer/options/footer/footer-bar.php:290
+#: inc/customizer/options/footer/footer-column.php:131
+#: inc/customizer/options/footer/footer-column.php:153
+#: inc/customizer/options/footer/footer-column.php:178
+#: inc/customizer/options/footer/footer-column.php:233
+#: inc/customizer/options/footer/scroll-to-top.php:56
+#: inc/customizer/options/global/button.php:19
+#: inc/customizer/options/header-builder/bottom-area.php:45
+#: inc/customizer/options/header-builder/cart.php:14
+#: inc/customizer/options/header-builder/header-button.php:34
+#: inc/customizer/options/header-builder/html-1.php:19
+#: inc/customizer/options/header-builder/html-2.php:19
+#: inc/customizer/options/header-builder/logo.php:74
+#: inc/customizer/options/header-builder/logo.php:157
+#: inc/customizer/options/header-builder/main-area.php:45
+#: inc/customizer/options/header-builder/search.php:21
+#: inc/customizer/options/header-builder/top-area.php:47
+#: inc/customizer/options/header/breadcrumb.php:79
+#: inc/customizer/options/header/breadcrumb.php:103
+#: inc/customizer/options/header/breadcrumb.php:128
+#: inc/customizer/options/header/header-button.php:71
+#: inc/customizer/options/header/main-header.php:155
+#: inc/customizer/options/header/page-header.php:149
+#: inc/customizer/options/header/primary-menu.php:73
+#: inc/customizer/options/header/site-identity.php:74
+#: inc/customizer/options/header/site-identity.php:157
+#: inc/customizer/options/header/top-bar.php:45
+msgid "Color"
+msgstr "اللون"
+
+#: inc/customizer/options/footer/footer-bar.php:77
+#: inc/customizer/options/footer/footer-column.php:101
+msgid "Border Top"
+msgstr "الحد الأعلى"
+
+#: inc/customizer/options/content/blog.php:183
+#: inc/customizer/options/content/blog.php:195
+msgid "Excerpt"
+msgstr "المقتطف"
+
+#: inc/customizer/options/footer-builder/main-area.php:65
+msgid "Link Color"
+msgstr "لون الرابط"
+
+#: inc/customizer/options/footer-builder/html-1.php:50
+#: inc/customizer/options/footer-builder/html-2.php:50
+#: inc/customizer/options/header-builder/html-1.php:50
+#: inc/customizer/options/header-builder/html-2.php:50
+#: inc/customizer/build/customind.js:1
+#: inc/customizer/customind/build/customind.js:1
+msgid "Font Size"
+msgstr "حجم الخط"
+
+#: inc/customizer/options/header-builder/search.php:28
+msgid "Text Color"
+msgstr "لون النص"
+
+#: inc/customizer/options/header/page-header.php:141
+msgid "Div"
+msgstr "Div"
+
+#: inc/customizer/options/header/page-header.php:140
+msgid "Paragraph"
+msgstr "الفقرة"
+
+#: inc/customizer/options/header/page-header.php:139
+msgid "Span"
+msgstr "تمديد (Span)"
+
+#: inc/customizer/options/header/page-header.php:138
+msgid "Heading 6"
+msgstr "العنوان 6"
+
+#: inc/customizer/options/header/page-header.php:137
+msgid "Heading 5"
+msgstr "العنوان 5"
+
+#: inc/customizer/options/content/blog.php:223
+#: inc/customizer/options/footer-builder/copyright.php:127
+#: inc/customizer/options/footer-builder/footer-menu-2.php:92
+#: inc/customizer/options/footer-builder/footer-menu.php:92
+#: inc/customizer/options/footer-builder/html-1.php:89
+#: inc/customizer/options/footer-builder/html-2.php:89
+#: inc/customizer/options/footer-builder/socials.php:44
+#: inc/customizer/options/footer-builder/widget-1.php:130
+#: inc/customizer/options/footer-builder/widget-2.php:130
+#: inc/customizer/options/footer-builder/widget-3.php:130
+#: inc/customizer/options/footer-builder/widget-4.php:130
+#: inc/customizer/options/footer-builder/widget-5.php:130
+#: inc/customizer/options/footer-builder/widget-6.php:130
+msgid "Alignment"
+msgstr "المحاذاة"
+
+#: inc/customizer/options/header/page-header.php:136
+msgid "Heading 4"
+msgstr "العنوان 4"
+
+#: inc/customizer/options/header/page-header.php:135
+msgid "Heading 3"
+msgstr "العنوان 3"
+
+#: inc/customizer/options/header/page-header.php:134
+msgid "Heading 2"
+msgstr "العنوان 2"
+
+#: inc/customizer/options/header/page-header.php:133
+msgid "Heading 1"
+msgstr "العنوان 1"
+
+#: inc/customizer/options/global/content-area.php:8
+#: inc/customizer/options/header/page-header.php:121
+#: inc/customizer/panels-sections/panels-sections.php:51
+msgid "Content Area"
+msgstr "منطقة المحتوى"
+
+#: inc/customizer/options/content/blog.php:88
+#: inc/customizer/options/content/single-post.php:52
+msgid "Tags"
+msgstr "الوسوم"
+
+#: inc/customizer/options/content/blog.php:87
+#: inc/customizer/options/content/single-post.php:51
+msgid "Date"
+msgstr "التاريخ"
+
+#: inc/customizer/options/content/blog.php:86
+#: inc/customizer/options/content/single-post.php:50
+msgid "Author"
+msgstr "المؤلف"
+
+#: inc/customizer/options/content/blog.php:85
+#: inc/customizer/options/content/single-post.php:49
+msgid "Categories"
+msgstr "التصنيفات"
+
+#: inc/customizer/options/content/blog.php:84
+#: inc/customizer/options/content/single-post.php:48
+msgid "Comments"
+msgstr "التعليقات"
+
+#: inc/customizer/options/content/blog.php:68
+#: inc/customizer/options/content/single-post.php:22
+#: inc/customizer/panels-sections/panels-sections.php:17
+msgid "Content"
+msgstr "المحتوى"
+
+#: inc/customizer/options/content/blog.php:67
+#: inc/customizer/options/content/single-post.php:21
+msgid "Meta Tags"
+msgstr "العلامات الوصفية"
+
+#: inc/customizer/options/content/blog.php:66
+#: inc/customizer/options/content/single-post.php:20
+#: inc/customizer/options/footer/footer-column.php:216
+msgid "Title"
+msgstr "العنوان"
+
+#: inc/customizer/options/content/blog.php:65
+#: inc/customizer/options/content/single-post.php:19
+msgid "Featured Image"
+msgstr "الصورة المميزة"
+
+#: inc/customizer/options/content/blog.php:63
+#: inc/customizer/options/content/blog.php:82
+#: inc/customizer/options/content/single-post.php:17
+#: inc/customizer/options/content/single-post.php:46
+msgid "Drag & Drop items to re-arrange the order"
+msgstr "سحب وإسقاط العناصر لإعادة ترتيب الترتيب"
+
+#: inc/customizer/panels-sections/panels-sections.php:171
+msgid "Scroll to Top"
+msgstr "تمرير للأعلى"
+
+#: inc/customizer/panels-sections/panels-sections.php:21
+msgid "Footer"
+msgstr "التذييل"
+
+#: inc/customizer/options/content/blog.php:205
+#: inc/customizer/options/global/button.php:6
+#: inc/customizer/options/header-builder/header-builder.php:92
+#: inc/customizer/panels-sections/panels-sections.php:66
+msgid "Button"
+msgstr "الزر"
+
+#: inc/customizer/options/header/breadcrumb.php:8
+#: template-parts/page-header/page-header.php:92
+msgid "Breadcrumbs"
+msgstr "العناوين (Breadcrumbs)"
+
+#: inc/customizer/options/content/blog.php:8
+#: inc/customizer/options/header/page-header.php:109
+msgid "Page Title"
+msgstr "عنوان الصفحة"
+
+#: inc/core/class-zakra-after-setup-theme.php:102
+#: inc/customizer/options/header-builder/header-builder.php:87
+#: inc/customizer/options/header-builder/mobile-menu.php:11
+#: inc/customizer/options/header/primary-menu.php:292
+#: inc/customizer/panels-sections/panels-sections.php:211
+#: assets/build/dashboard.js:1
+msgid "Mobile Menu"
+msgstr "قائمة المحمول"
+
+#: inc/customizer/options/footer/footer-bar.php:129
+#: inc/customizer/options/footer/footer-bar.php:212
+#: inc/customizer/options/header/top-bar.php:92
+#: inc/customizer/options/header/top-bar.php:157
+msgid "Menu"
+msgstr "القائمة"
+
+#: inc/admin/views/free-vs-pro.php:201 inc/admin/views/header.php:78
+msgid "Pro"
+msgstr "احترافي"
+
+#: inc/admin/class-zakra-demo-import-migration-notice.php:80
+#: inc/admin/class-zakra-notice.php:58 inc/admin/class-zakra-notice.php:77
+#: inc/admin/class-zakra-pro-minimum-version-notice.php:80
+#: inc/admin/class-zakra-theme-review-notice.php:157
+#: inc/admin/class-zakra-theme-review-notice.php:175
+#: inc/admin/class-zakra-welcome-notice.php:195
+#: inc/migration/class-zakra-migration.php:2170
+msgid "Action failed. Please refresh the page and retry."
+msgstr "فشل الإجراء. يرجى تحديث الصفحة و المحاولة من جديد."
+
+#: inc/customizer/options/footer-builder/bottom-area.php:73
+#: inc/customizer/options/footer-builder/main-area.php:97
+#: inc/customizer/options/footer-builder/top-area.php:73
+#: inc/customizer/options/footer/footer-bar.php:64
+#: inc/customizer/options/footer/footer-column.php:83
+#: inc/customizer/options/footer/scroll-to-top.php:20
+#: inc/customizer/options/global/button.php:41
+#: inc/customizer/options/global/container.php:68
+#: inc/customizer/options/header-builder/bottom-area.php:61
+#: inc/customizer/options/header-builder/header-builder.php:293
+#: inc/customizer/options/header-builder/header-button.php:55
+#: inc/customizer/options/header-builder/main-area.php:61
+#: inc/customizer/options/header-builder/offset-area.php:14
+#: inc/customizer/options/header-builder/search.php:42
+#: inc/customizer/options/header-builder/top-area.php:64
+#: inc/customizer/options/header/header-button.php:93
+#: inc/customizer/options/header/main-header.php:121
+#: inc/customizer/options/header/page-header.php:77
+#: inc/customizer/options/header/top-bar.php:65
+msgid "Background"
+msgstr "الخلفية"
+
+#: inc/admin/views/help.php:43 assets/build/dashboard.js:1
+msgid "Support"
+msgstr "الدعم"
+
+#. Translators: Weekly archive title. %s is the week date format.
+#: inc/class-breadcrumb-trail.php:281
+msgid "Week %s"
+msgstr "أسبوع %s"
+
+#. Translators: Minute archive title. %s is the minute time format.
+#: inc/class-breadcrumb-trail.php:279
+msgid "Minute %s"
+msgstr "دقيقة %s"
+
+#. Translators: %s is the page number.
+#: inc/class-breadcrumb-trail.php:277
+msgid "Comment Page %s"
+msgstr "صفحة التعليقات %s"
+
+#. Translators: %s is the page number.
+#: inc/class-breadcrumb-trail.php:275
+msgid "Page %s"
+msgstr "صفحة %s"
+
+#. Translators: %s is the search query.
+#: inc/class-breadcrumb-trail.php:273
+msgid "Search results for: %s"
+msgstr "نتائج البحث عن: %s"
+
+#: inc/class-breadcrumb-trail.php:271
+msgid "Archives"
+msgstr "أرشيفات "
+
+#: inc/class-breadcrumb-trail.php:270
+msgid "404 Not Found"
+msgstr "404 غير موجود"
+
+#: inc/class-breadcrumb-trail.php:269
+msgid "Home"
+msgstr "الصفحة الرئيسية"
+
+#: inc/class-breadcrumb-trail.php:268
+msgctxt "breadcrumbs aria label"
+msgid "Breadcrumbs"
+msgstr "العناوين (Breadcrumbs)"
+
+#: inc/class-breadcrumb-trail.php:267
+msgid "Browse:"
+msgstr "استعراض:"
+
+#: inc/meta-boxes/class-zakra-meta-box.php:198
+msgid "Page Settings"
+msgstr "إعدادات الصفحة"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:413
+#: assets/build/meta.js:1
+msgid "Enable Page Header"
+msgstr "فعّل ترويسة الصفحة"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:393
+msgid "Right Border"
+msgstr "الحد الأيمن"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:385
+msgid "Left Border"
+msgstr "الحد الأيسر"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:377
+msgid "Underline Border"
+msgstr "تسطير الحد"
+
+#: inc/customizer/options/footer/footer-bar.php:127
+#: inc/customizer/options/footer/footer-bar.php:210
+#: inc/customizer/options/header/top-bar.php:90
+#: inc/customizer/options/header/top-bar.php:155 inc/helper/utils.php:438
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:369
+msgid "None"
+msgstr "لا شيء"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:364
+#: assets/build/meta.js:1
+msgid "Active Menu Item Style"
+msgstr "القائمة النشطة لنمط العنصر"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:354
+#: assets/build/meta.js:1
+msgid "Menu Item Active Color"
+msgstr "اللون النشط لعنصر القائمة"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:344
+#: assets/build/meta.js:1
+msgid "Menu Item Hover Color"
+msgstr "لون المرور فوق عنصر القائمة "
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:332
+#: assets/build/meta.js:1
+msgid "Menu Item Color"
+msgstr "لون عنصر القائمة "
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:261
+msgid "Remove Logo"
+msgstr "إزالة الشعار"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:257
+msgid "Upload Logo"
+msgstr "رفع الشعار"
+
+#: inc/customizer/options/header-builder/header-builder.php:82
+#: inc/customizer/options/header-builder/logo.php:22
+#: inc/customizer/options/header/site-identity.php:22
+#: inc/customizer/panels-sections/panels-sections.php:186
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:244
+#: assets/build/meta.js:1
+msgid "Logo"
+msgstr "الشعار"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:216
+#: assets/build/meta.js:1
+msgid "Enable Transparent Header"
+msgstr "فعّل ترويسة شفافة"
+
+#: inc/customizer/options/footer/footer-bar.php:23
+#: inc/customizer/options/footer/footer-bar.php:50
+#: inc/customizer/options/footer/footer-column.php:66
+#: inc/customizer/options/global/container.php:42
+#: inc/customizer/options/global/content-area.php:47
+#: inc/customizer/options/header/breadcrumb.php:32
+#: inc/customizer/options/header/header-button.php:63
+#: inc/customizer/options/header/main-header.php:106
+#: inc/customizer/options/header/page-header.php:61
+#: inc/customizer/options/header/primary-menu.php:144
+#: inc/customizer/options/header/top-bar.php:37
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:276
+#: assets/build/meta.js:1 inc/customizer/build/customind.js:1
+#: inc/customizer/customind/build/customind.js:1
+msgid "Style"
+msgstr "النمط "
+
+#: inc/customizer/options/global/sidebar.php:75
+#: inc/customizer/options/woocommerce/woocommerce.php:45
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:186
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:221
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:368
+#: assets/build/meta.js:1 inc/customizer/build/customind.js:1
+#: inc/customizer/customind/build/customind.js:1
+msgid "Default"
+msgstr "افتراضي"
+
+#: inc/customizer/options/global/sidebar.php:38
+#: inc/customizer/panels-sections/panels-sections.php:56
+#: inc/customizer/panels-sections/panels-sections.php:156
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:180
+#: assets/build/dashboard.js:1 assets/build/meta.js:1
+msgid "Sidebar"
+msgstr "الشريط الجانبي"
+
+#: inc/customizer/options/content/blog-meta.php:16
+#: inc/customizer/options/global/container.php:19
+#: inc/customizer/options/global/content-area.php:22
+#: inc/customizer/options/global/sidebar.php:67
+#: inc/customizer/options/header/main-header.php:17
+#: inc/customizer/options/header/page-header.php:19
+#: inc/customizer/options/woocommerce/woocommerce.php:37
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:118
+#: assets/build/meta.js:1
+msgid "Layout"
+msgstr "التخطيط"
+
+#: inc/customizer/options/header/page-header.php:5
+#: inc/customizer/options/header/page-header.php:120
+#: inc/customizer/panels-sections/panels-sections.php:116
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:94
+msgid "Page Header"
+msgstr "ترويسة الصفحة"
+
+#: inc/core/class-zakra-after-setup-theme.php:96
+#: inc/customizer/options/header-builder/header-builder.php:16
+#: inc/customizer/options/header-builder/primary-menu.php:11
+#: inc/customizer/options/header/primary-menu.php:8
+#: inc/customizer/panels-sections/panels-sections.php:96
+#: inc/customizer/panels-sections/panels-sections.php:191
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:89
+#: template-parts/header-builder-elements/toggle-button.php:35
+#: template-parts/header/primary-menu/mobile-toggle.php:32
+#: assets/build/dashboard.js:1
+msgid "Primary Menu"
+msgstr "القائمة الأساسية"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:84
+msgid "Header"
+msgstr "ترويسة"
+
+#: inc/customizer/options/footer/footer-bar.php:16
+#: inc/customizer/options/global/button.php:13
+#: inc/customizer/options/global/container.php:13
+#: inc/customizer/options/global/content-area.php:16
+#: inc/customizer/options/header/breadcrumb.php:15
+#: inc/customizer/options/header/header-button.php:15
+#: inc/customizer/options/header/primary-menu.php:15
+#: inc/customizer/options/header/top-bar.php:15
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:79
+msgid "General"
+msgstr "عام"
+
+#: inc/compatibility/woocommerce/class-zakra-woocommerce.php:219
+msgid "View your shopping cart"
+msgstr "عرض سلة التسوق الخاصة بك"
+
+#. translators: %s: search query.
+#: inc/template-tags.php:41
+msgid "Search Results for: %s"
+msgstr "نتائج البحث عن: %s"
+
+#: inc/core/class-zakra-widgets.php:65
+msgid "Add widgets here."
+msgstr "أضف ودجات هنا."
+
+#: inc/core/class-zakra-widgets.php:91
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:192
+#: assets/build/meta.js:1
+msgid "Footer Four"
+msgstr "التذييل أربعة"
+
+#: inc/core/class-zakra-widgets.php:90
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:191
+#: assets/build/meta.js:1
+msgid "Footer Three"
+msgstr "التذييل ثلاثة"
+
+#: inc/core/class-zakra-widgets.php:89
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:190
+#: assets/build/meta.js:1
+msgid "Footer Two"
+msgstr "التذييل إثنان"
+
+#: inc/core/class-zakra-widgets.php:88
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:189
+#: assets/build/meta.js:1
+msgid "Footer One"
+msgstr "التذييل واحد"
+
+#: inc/core/class-zakra-widgets.php:85
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:188
+#: assets/build/meta.js:1
+msgid "Sidebar Left"
+msgstr "الشريط الجانبي الأيسر"
+
+#: inc/core/class-zakra-widgets.php:84
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:187
+#: assets/build/meta.js:1
+msgid "Sidebar Right"
+msgstr "الشريط الجانبي الأيمن"
+
+#: inc/customizer/options/global/colors.php:107
+msgid "Primary"
+msgstr "الأساسي"
+
+#: inc/customizer/options/footer-builder/main-area.php:197
+#: inc/customizer/options/footer/footer-column.php:282
+#: inc/customizer/options/header-builder/primary-menu.php:60
+#: inc/customizer/options/header-builder/secondary-menu.php:41
+#: inc/customizer/options/header-builder/tertiary-menu.php:42
+msgid "Border Bottom Color"
+msgstr "لون الحد السفلي"
+
+#. translators: 1: comment count number, 2: title.
+#: comments.php:41
+msgctxt "comments title"
+msgid "%1$s thought on &ldquo;%2$s&rdquo;"
+msgid_plural "%1$s thoughts on &ldquo;%2$s&rdquo;"
+msgstr[0] "%1$s فكرة بشأن &ldquo;%2$s&rdquo;"
+msgstr[1] "%1$s أفكار بشأن &ldquo;%2$s&rdquo;"
+msgstr[2] "%1$s فكرتين بشأن &ldquo;%2$s&rdquo;"
+msgstr[3] "%1$s أفكار بشأن &ldquo;%2$s&rdquo;"
+msgstr[4] "%1$s أفكار بشأن &ldquo;%2$s&rdquo;"
+msgstr[5] "%1$s أفكار بشأن &ldquo;%2$s&rdquo;"
+
+#: inc/class-breadcrumb-trail.php:790
+msgctxt "weekly archives date format"
+msgid "W"
+msgstr "أ"
+
+#: inc/class-breadcrumb-trail.php:763 inc/class-breadcrumb-trail.php:1203
+msgctxt "daily archives date format"
+msgid "j"
+msgstr "ي"
+
+#: inc/class-breadcrumb-trail.php:762 inc/class-breadcrumb-trail.php:828
+#: inc/class-breadcrumb-trail.php:1201
+msgctxt "monthly archives date format"
+msgid "F"
+msgstr "ش"
+
+#: inc/class-breadcrumb-trail.php:761 inc/class-breadcrumb-trail.php:789
+#: inc/class-breadcrumb-trail.php:827 inc/class-breadcrumb-trail.php:853
+#: inc/class-breadcrumb-trail.php:1199
+msgctxt "yearly archives date format"
+msgid "Y"
+msgstr "س"
+
+#: inc/class-breadcrumb-trail.php:745
+msgctxt "hour archives time format"
+msgid "g a"
+msgstr "س أ"
+
+#: inc/class-breadcrumb-trail.php:728
+msgctxt "minute archives time format"
+msgid "i"
+msgstr "د"
+
+#. translators: 1: title.
+#: comments.php:35
+msgid "One thought on &ldquo;%1$s&rdquo;"
+msgstr "تعليق واحد على &ldquo;%1$s&rdquo;"
+
+#. translators: %s: Name of current post. Only visible to screen readers
+#: template-parts/entry/entry-content.php:24
+#: template-parts/entry/entry-summary.php:25
+msgid "Continue reading<span class=\"screen-reader-text\"> \"%s\"</span>"
+msgstr "متابعة قراءة<span class=\"screen-reader-text\"> \"%s\"</span>"
+
+#: inc/class-breadcrumb-trail.php:711
+msgctxt "minute and hour archives time format"
+msgid "g:i a"
+msgstr "g:i a"
+
+#: inc/customizer/options/header/page-header.php:130
+msgid "Markup"
+msgstr "الترميز"
+
+#: inc/customizer/options/footer-builder/bottom-area.php:87
+#: inc/customizer/options/footer-builder/main-area.php:111
+#: inc/customizer/options/footer-builder/top-area.php:87
+#: inc/customizer/options/global/button.php:113
+#: inc/customizer/options/global/content-area.php:56
+#: inc/customizer/options/header-builder/bottom-area.php:75
+#: inc/customizer/options/header-builder/header-button.php:123
+#: inc/customizer/options/header-builder/main-area.php:75
+#: inc/customizer/options/header-builder/top-area.php:77
+#: inc/customizer/options/header/header-button.php:122
+#: inc/customizer/options/header/page-header.php:93
+msgid "Padding"
+msgstr "الهوامش الداخلية"
+
+#: inc/customizer/options/content/blog-sidebar.php:54
+#: inc/customizer/options/content/blog-sidebar.php:114
+#: inc/customizer/options/content/blog.php:172
+#: inc/customizer/options/footer-builder/copyright.php:100
+#: inc/customizer/options/footer-builder/footer-menu-2.php:80
+#: inc/customizer/options/footer-builder/footer-menu.php:80
+#: inc/customizer/options/global/button.php:99
+#: inc/customizer/options/header-builder/header-button.php:111
+#: inc/customizer/options/header-builder/logo.php:129
+#: inc/customizer/options/header-builder/logo.php:204
+#: inc/customizer/options/header-builder/mobile-menu.php:54
+#: inc/customizer/options/header-builder/primary-menu.php:181
+#: inc/customizer/options/header-builder/primary-menu.php:233
+#: inc/customizer/options/header-builder/quaternary-menu.php:94
+#: inc/customizer/options/header-builder/secondary-menu.php:129
+#: inc/customizer/options/header-builder/secondary-menu.php:180
+#: inc/customizer/options/header-builder/tertiary-menu.php:130
+#: inc/customizer/options/header-builder/tertiary-menu.php:181
+#: inc/customizer/options/header/breadcrumb.php:59
+#: inc/customizer/options/header/page-header.php:198
+#: inc/customizer/options/header/primary-menu.php:221
+#: inc/customizer/options/header/primary-menu.php:275
+#: inc/customizer/options/header/primary-menu.php:334
+#: inc/customizer/options/header/site-identity.php:129
+#: inc/customizer/options/header/site-identity.php:204
+#: inc/customizer/panels-sections/panels-sections.php:61
+msgid "Typography"
+msgstr "أنواع الخطوط"
+
+#: template-parts/content-none.php:55
+msgid "It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps searching can help."
+msgstr "يبدو أننا لا نستطيع العثور على ما تبحث عنه. ربما قد يساعدك البحث."
+
+#: inc/customizer/options/global/sidebar.php:97
+#: inc/customizer/panels-sections/panels-sections.php:146
+#: assets/build/dashboard.js:1
+msgid "Single Post"
+msgstr "مقالة منفردة"
+
+#: inc/admin/class-zakra-notice.php:62 inc/admin/class-zakra-notice.php:81
+#: inc/admin/class-zakra-welcome-notice.php:199
+msgid "Cheatin&#8217; huh?"
+msgstr "تتحايل، هاه؟"
+
+#. translators: 1: link to WP admin new post page.
+#: template-parts/content-none.php:35
+msgid "Ready to publish your first post? <a href=\"%1$s\">Get started here</a>."
+msgstr "هل أنت مستعدّ لنشر مقالتك الأولى؟ <a href=\"%1$s\">ابدأ من هنا</a>."
+
+#: inc/customizer/options/global/typography.php:119
+msgid "Heading"
+msgstr "عنوان"
+
+#. Theme URI of the theme
+#: style.css
+#, gp-priority: low
+msgid "https://zakratheme.com/"
+msgstr "https://zakratheme.com/"
+
+#. Author URI of the theme
+#: style.css
+#, gp-priority: low
+msgid "https://themegrill.com"
+msgstr "https://themegrill.com"
+
+#. Author of the theme
+#: style.css
+#, gp-priority: low
+msgid "ThemeGrill"
+msgstr "ثيم جرل(ThemeGrill)"

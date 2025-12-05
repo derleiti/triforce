@@ -1,0 +1,63 @@
+# Translation of Plugins - Instant Back/Forward - Stable (latest release) in Turkish
+# This file is distributed under the same license as the Plugins - Instant Back/Forward - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-08-28 10:42:35+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: tr\n"
+"Project-Id-Version: Plugins - Instant Back/Forward - Stable (latest release)\n"
+
+#: includes/bfcache-invalidation.php:36
+msgid "Prevented infinite reload."
+msgstr "Sonsuz yeniden yükleme engellendi."
+
+#: includes/bfcache-invalidation.php:35
+msgid "Reasons page navigation not restored from bfcache:"
+msgstr "Sayfa dolaşımının bfcache’den geri yüklenmemesinin nedenleri:"
+
+#: includes/bfcache-invalidation.php:34
+msgid "Page invalidated from cache via pageshow event handler."
+msgstr "Sayfa, pageshow olay işleyicisi aracılığıyla önbellekten geçersiz kılındı."
+
+#: includes/bfcache-invalidation.php:33
+msgid "Cached page is stale. Reloading..."
+msgstr "Önbellekteki sayfa eski. Yeniden yükleniyor…"
+
+#: includes/bfcache-invalidation.php:32
+msgid "Page restored from bfcache."
+msgstr "Sayfa bfcache’den geri yüklendi."
+
+#: includes/bfcache-opt-in.php:154
+msgid "OK"
+msgstr "TAMAM"
+
+#: includes/bfcache-opt-in.php:152
+msgid "When you opt to “Remember Me”, WordPress will tell your browser to save the state of pages when you navigate away from them. This allows them to be restored instantly when you use the back and forward buttons in your browser."
+msgstr "\"Beni Hatırla\"yı seçtiğinizde, WordPress tarayıcınıza sayfaların durumunu siz onlardan ayrıldığınızda kaydetmesini söyler. Böylece, tarayıcınızın geri ve ileri düğmelerini kullandığınızda sayfalar anında geri yüklenebilir."
+
+#: includes/bfcache-opt-in.php:151
+msgid "New: Instant Back/Forward Navigation"
+msgstr "Yeni: Anında Geri/İleri Dolaşım"
+
+#: includes/bfcache-opt-in.php:145
+msgid "New feature"
+msgstr "Yeni özellik"
+
+#. Author URI of the plugin
+#: nocache-bfcache.php
+msgid "https://weston.ruter.net/"
+msgstr "https://weston.ruter.net/"
+
+#. Description of the plugin
+#: nocache-bfcache.php
+msgid "Enables back/forward cache (bfcache) for instant history navigations even when \"nocache\" headers are sent, such as when a user is logged in. <strong>To see the effect, you must log out and log back in again, ensuring \"Remember Me\" is checked.</strong>"
+msgstr "Oturum açmış bir kullanıcı olduğunuzda bile, ‘nocache’ başlıkları gönderildiğinde anında geçmiş dolaşımı için geri/ileri önbelleğini (bfcache) etkinleştirir. <strong>Etkiyi görmek için oturumu kapatıp tekrar giriş yapmalı ve ‘Beni Hatırla’ seçeneğinin işaretli olduğundan emin olmalısınız.</strong>"
+
+#. Plugin URI of the plugin
+#: nocache-bfcache.php
+msgid "https://github.com/westonruter/nocache-bfcache"
+msgstr "https://github.com/westonruter/nocache-bfcache"

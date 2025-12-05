@@ -1,0 +1,1780 @@
+# Translation of Themes - Twenty Twenty-Four in Welsh
+# This file is distributed under the same license as the Themes - Twenty Twenty-Four package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2024-11-22 10:59:21+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n==1) ? 0 : (n==2) ? 1 : (n != 8 && n != 11) ? 2 : 3;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: cy_GB\n"
+"Project-Id-Version: Themes - Twenty Twenty-Four\n"
+
+#. Description of the theme
+#: style.css
+#, gp-priority: high
+msgid "Twenty Twenty-Four is designed to be flexible, versatile and applicable to any website. Its collection of templates and patterns tailor to different needs, such as presenting a business, blogging and writing or showcasing work. A multitude of possibilities open up with just a few adjustments to color and typography. Twenty Twenty-Four comes with style variations and full page designs to help speed up the site building process, is fully compatible with the site editor, and takes advantage of new design tools introduced in WordPress 6.4."
+msgstr "Mae Twenty Twenty-Four wedi'i gynllunio i fod yn hyblyg, amryddawn ac yn berthnasol i unrhyw wefan. Mae ei gasgliad o dempledi a phatrymau wedi'u teilwra i wahanol anghenion, megis cyflwyno busnes, blogio ac ysgrifennu neu arddangos gwaith. Mae llu o bosibiliadau yn agor gyda dim ond ychydig o addasiadau i liw a theipograffeg. Daw Twenty Twenty-Four gydag amrywiadau arddull a dyluniadau tudalen lawn i helpu i gyflymu'r broses adeiladu gwefan, mae'n gwbl gydnaws â golygydd y wefan, ac yn manteisio ar offer dylunio newydd a gyflwynwyd yn WordPress 6.4."
+
+#. Theme Name of the theme
+#: style.css
+#, gp-priority: high
+msgid "Twenty Twenty-Four"
+msgstr "Twenty Twenty-Four"
+
+#: patterns/text-centered-statement.php
+msgctxt "Pattern description"
+msgid "A centered text statement with a large amount of padding on all sides."
+msgstr "Datganiad testun canolog gyda llawer o badin ar bob ochr."
+
+#: patterns/hidden-posts-heading.php
+msgctxt "Pattern title"
+msgid "Posts heading"
+msgstr "Pennyn cofnodion"
+
+#: patterns/text-title-left-image-right.php
+msgctxt "Pattern description"
+msgid "A title, a paragraph and a CTA button on the left with an image on the right."
+msgstr "Teitl, paragraff a botwm CTA ar y chwith gyda delwedd ar y dde."
+
+#: patterns/text-project-details.php
+msgctxt "Pattern description"
+msgid "A text-only section for project details."
+msgstr "Adran testun yn unig ar gyfer manylion project."
+
+#: patterns/text-feature-grid-3-col.php
+msgctxt "Pattern description"
+msgid "A feature grid of 2 rows and 3 columns with headings and text."
+msgstr "Grid nodwedd o 2 res a 3 cholofn gyda phenawdau a thestun."
+
+#: patterns/text-faq.php:35
+msgctxt "Question in the FAQ pattern"
+msgid "Who is behind Études?"
+msgstr "Pwy sydd tu ôl i Études?"
+
+#: patterns/text-faq.php
+msgctxt "Pattern description"
+msgid "A FAQ section with a large FAQ heading and a group of questions and answers."
+msgstr "Adran cwestiynau cyffredin gyda phennawd Cwestiynau Cyffredin mawr a grŵp o gwestiynau ac atebion."
+
+#: patterns/text-centered-statement-small.php
+msgctxt "Pattern description"
+msgid "A centered italic text statement with compact padding."
+msgstr "Datganiad testun italig gyda phadin cryno."
+
+#: patterns/text-alternating-images.php
+msgctxt "Pattern description"
+msgid "A text section, then a two-column section with text in one column and an image in the other."
+msgstr "Adran destun, yna adran dwy golofn gyda thestun mewn un golofn a delwedd mewn un arall."
+
+#: patterns/testimonial-centered.php
+msgctxt "Pattern description"
+msgid "A centered testimonial section with an avatar, name, and job title."
+msgstr "Adran tysteb ganolog gydag afatar, enw, a theitl swydd."
+
+#: patterns/team-4-col.php
+msgctxt "Pattern description"
+msgid "A team section, with a heading, a paragraph, and 4 columns for team members."
+msgstr "Adran tîm, gyda phennawd, paragraff, a 4 colofn ar gyfer aelodau'r tîm."
+
+#: patterns/posts-list.php
+msgctxt "Pattern description"
+msgid "A list of posts without images, 1 column."
+msgstr "Rhestr o gofnodion heb ddelweddau, 1 golofn."
+
+#: patterns/posts-images-only-offset-4-col.php
+msgctxt "Pattern description"
+msgid "A list of posts with featured images only, 4 columns."
+msgstr "Rhestr o gofnodion gyda delweddau nodwedd yn unig, 4 colofn."
+
+#: patterns/posts-images-only-3-col.php
+msgctxt "Pattern description"
+msgid "A list of posts with featured images only, 3 columns."
+msgstr "Rhestr o gofnodion gyda delweddau nodwedd yn unig, 3 colofn."
+
+#: patterns/posts-grid-2-col.php
+msgctxt "Pattern description"
+msgid "A grid of posts featuring the first post, 2 columns."
+msgstr "Grid o gofnodion yn dangos y cofnod cyntaf, 2 golofn"
+
+#: patterns/posts-3-col.php
+msgctxt "Pattern description"
+msgid "A list of posts, 3 columns."
+msgstr "Rhestr o gofnodion, 3 colofn"
+
+#: patterns/posts-1-col.php
+msgctxt "Pattern description"
+msgid "A list of posts, 1 column."
+msgstr "Rhestr o gofnodion, 1 golofn"
+
+#: patterns/page-portfolio-overview.php
+msgctxt "Pattern description"
+msgid "A full portfolio page with a section for project description, project details, a full screen image, and a gallery section with two images."
+msgstr "Tudalen portffolio llawn gydag adran ar gyfer disgrifiad o'r project, manylion y project, delwedd sgrin lawn, ac adran oriel gyda dwy ddelwedd."
+
+#: patterns/page-newsletter-landing.php
+msgctxt "Pattern description"
+msgid "A block with a newsletter subscription CTA for a landing page."
+msgstr "Bloc gyda thanysgrifiad cylchlythyr CTA ar gyfer tudalen lanio."
+
+#: patterns/page-home-portfolio.php
+msgctxt "Pattern description"
+msgid "A portfolio home page with a description and a 4-column post section with only feature images."
+msgstr "Tudalen gartref portffolio gyda disgrifiad ac adran post 4 colofn gyda delweddau nodwedd yn unig."
+
+#: patterns/page-home-portfolio-gallery.php
+msgctxt "Pattern description"
+msgid "A portfolio home page that features a gallery."
+msgstr "Tudalen gartref portffolio sy'n cynnwys oriel."
+
+#: patterns/page-home-business.php
+msgctxt "Pattern description"
+msgid "A business home page with a hero section, a text section, a services section, a team section, a clients section, a FAQ section, and a CTA section."
+msgstr "Tudalen gartref busnes gydag adran arwr, adran destun, adran gwasanaethau, adran tîm, adran cleientiaid, adran Cwestiynau Cyffredin, ac adran CTA."
+
+#: patterns/page-home-blogging.php
+msgctxt "Pattern description"
+msgid "A blogging home page with a hero section, a text section, a blog section, and a CTA section."
+msgstr "Tudalen gartref blogio gydag adran arwr, adran destun, adran blog, ac adran CTA."
+
+#: patterns/page-about-business.php
+msgctxt "Pattern description"
+msgid "A business about page with a hero section, a text section, a services section, a team section, a clients section, a FAQ section, and a CTA section."
+msgstr "Tudalen busnes am gydag adran arwr, adran destun, adran gwasanaethau, adran tîm, adran cleientiaid, adran Cwestiynau Cyffredin, ac adran CTA."
+
+#: patterns/gallery-project-layout.php
+msgctxt "Pattern description"
+msgid "A gallery section with a project layout with 2 images."
+msgstr "Adran oriel gyda chynllun prosiect gyda 2 ddelwedd."
+
+#: patterns/gallery-offset-images-grid-4-col.php
+msgctxt "Pattern description"
+msgid "A gallery section with 4 columns and offset images."
+msgstr "Adran oriel gyda 4 colofn a delweddau gwrthbwyso."
+
+#: patterns/gallery-offset-images-grid-3-col.php
+msgctxt "Pattern description"
+msgid "A gallery section with 3 columns and offset images."
+msgstr "Adran oriel gyda 3 colofn a delweddau gwrthbwyso."
+
+#: patterns/gallery-offset-images-grid-2-col.php
+msgctxt "Pattern description"
+msgid "A gallery section with 2 columns and offset images."
+msgstr "Adran oriel gyda 2 golofn a delweddau gwrthbwyso."
+
+#: patterns/gallery-full-screen-image.php
+msgctxt "Pattern description"
+msgid "A cover image section that covers the entire width."
+msgstr "Adran delwedd clawr sy'n cwmpasu'r lled cyfan."
+
+#: patterns/footer.php
+msgctxt "Pattern description"
+msgid "A footer section with a colophon and 4 columns."
+msgstr "Adran troedyn gyda cholofon a 4 colofn."
+
+#: patterns/footer-colophon-3-col.php
+msgctxt "Pattern description"
+msgid "A footer section with a colophon and 3 columns."
+msgstr "Adran troedyn gyda cholofon a 3 cholofn."
+
+#: patterns/footer-centered-logo-nav.php
+msgctxt "Pattern description"
+msgid "A footer section with a centered logo, navigation, and WordPress credits."
+msgstr "Adran troedyn gyda logo wedi'i ganoli, llywio, a chredydau WordPress."
+
+#: patterns/cta-subscribe-centered.php
+msgctxt "Pattern description"
+msgid "Subscribers CTA section with a title, a paragraph and a CTA button."
+msgstr "Adran CTA tanysgrifwyr gyda theitl, paragraff a botwm CTA."
+
+#: patterns/cta-services-image-left.php
+msgctxt "Pattern description"
+msgid "An image, title, paragraph and a CTA button to describe services."
+msgstr "Delwedd, teitl, paragraff a botwm CTA i ddisgrifio gwasanaethau."
+
+#: patterns/cta-rsvp.php patterns/page-rsvp-landing.php
+msgctxt "Pattern description"
+msgid "A large RSVP heading sideways, a description, and a CTA button."
+msgstr "Pennawd RSVP mawr i'r ochr, disgrifiad, a botwm CTA."
+
+#: patterns/cta-pricing.php
+msgctxt "Pattern description"
+msgid "A pricing section with a title, a paragraph and three pricing levels."
+msgstr "Adran brisio gyda theitl, paragraff a thair lefel prisio."
+
+#: patterns/cta-content-image-on-right.php
+msgctxt "Pattern description"
+msgid "A title, paragraph, two CTA buttons, and an image for a general CTA section."
+msgstr "Teitl, paragraff, dau fotwm CTA, a delwedd ar gyfer adran CTA gyffredinol."
+
+#: patterns/banner-project-description.php
+msgctxt "Pattern description"
+msgid "Project description section with title, paragraph, and an image."
+msgstr "Adran disgrifiad project gyda theitl, paragraff, a delwedd."
+
+#: patterns/banner-hero.php
+msgctxt "Pattern description"
+msgid "A hero section with a title, a paragraph, a CTA button, and an image."
+msgstr "Adran arwr gyda theitl, paragraff, botwm CTA, a delwedd."
+
+#: patterns/footer.php:96
+msgid "Twitter/X"
+msgstr "Twitter/X"
+
+#: patterns/footer.php:74
+msgid "Contact Us"
+msgstr "Cysylltu â Ni"
+
+#: patterns/footer.php:73
+msgid "Terms and Conditions"
+msgstr "Telerau ac Amodau"
+
+#: patterns/footer.php:72
+msgid "Privacy Policy"
+msgstr "Polisi Preifatrwydd"
+
+#: patterns/footer.php:51
+msgid "Careers"
+msgstr "Gyrfaoedd"
+
+#: patterns/footer.php:50
+msgid "History"
+msgstr "Hanes"
+
+#: patterns/footer.php:49
+msgid "Team"
+msgstr "Tîm"
+
+#: patterns/posts-list.php
+msgctxt "Pattern title"
+msgid "List of posts without images, 1 column"
+msgstr "Rhestr o gofnodion gyda delweddau, 1 colofn"
+
+#: patterns/hidden-portfolio-hero.php:16
+msgid "I’m <em>Leia Acosta</em>, a passionate photographer who finds inspiration in capturing the fleeting beauty of life."
+msgstr "Fi yw <em>Leia Acosta</em>, ffotograffydd brwd, yn cael fy ysbrydoli wrth gipio harddwch diflanedig bywyd."
+
+#: functions.php:200
+msgid "A collection of full page layouts."
+msgstr "Casgliad o gynlluniau tudalennau llawn."
+
+#: functions.php:199
+msgctxt "Block pattern category"
+msgid "Pages"
+msgstr "Tudalennau"
+
+#: theme.json
+msgctxt "Custom template name"
+msgid "Single with Sidebar"
+msgstr "Sengl gyda Bar Ochr"
+
+#: theme.json
+msgctxt "Custom template name"
+msgid "Page with Wide Image"
+msgstr "Tudalen gyda Delwedd Lydan"
+
+#: theme.json
+msgctxt "Custom template name"
+msgid "Page with Sidebar"
+msgstr "Tudalen gyda Bar Ochr"
+
+#: theme.json
+msgctxt "Custom template name"
+msgid "Page No Title"
+msgstr "Tudalen Heb Teitl"
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Post Meta"
+msgstr "Meta Cofnod"
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Sidebar"
+msgstr "Bar Ochr"
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Footer"
+msgstr "Troedyn"
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Header"
+msgstr "Pennyn"
+
+#: theme.json
+msgctxt "Space size name"
+msgid "6"
+msgstr "6"
+
+#: theme.json
+msgctxt "Space size name"
+msgid "5"
+msgstr "5"
+
+#: theme.json
+msgctxt "Space size name"
+msgid "4"
+msgstr "4"
+
+#: theme.json
+msgctxt "Space size name"
+msgid "3"
+msgstr "3"
+
+#: theme.json
+msgctxt "Space size name"
+msgid "2"
+msgstr "2"
+
+#: theme.json
+msgctxt "Space size name"
+msgid "1"
+msgstr "1"
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Vertical hard pewter to white"
+msgstr "Piwter caled fertigol i wyn"
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Vertical hard mint to white"
+msgstr "Mintys caled fertigol i wyn"
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Vertical hard sage to white"
+msgstr "Saets caled fertigol i wyn"
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Vertical hard rust to white"
+msgstr "Rhwd caled fertigol i wyn"
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Vertical hard sandstone to white"
+msgstr "Tywodfaen caled fertigol i wyn"
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Vertical hard beige to white"
+msgstr "Llwydfelyn caled fertigol i wyn"
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Vertical soft pewter to white"
+msgstr "Piwter meddal fertigol i wyn"
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Vertical soft mint to white"
+msgstr "Mintys meddal fertigol i wyn"
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Vertical soft sage to white"
+msgstr "Saets meddal fertigol i wyn"
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Vertical soft rust to white"
+msgstr "Rhwd meddal fertigol i wyn"
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Vertical soft sandstone to white"
+msgstr "Tywodfaen meddal fertigol i wyn"
+
+#: theme.json
+msgctxt "Gradient name"
+msgid "Vertical soft beige to white"
+msgstr "Llwydfelyn meddal fertigol i wyn"
+
+#: theme.json
+msgctxt "Duotone name"
+msgid "Black and pastel blue"
+msgstr "Du a glas pastel"
+
+#: theme.json
+msgctxt "Duotone name"
+msgid "Black and sage"
+msgstr "Du a saets"
+
+#: theme.json
+msgctxt "Duotone name"
+msgid "Black and rust"
+msgstr "Du a rhwd"
+
+#: theme.json
+msgctxt "Duotone name"
+msgid "Black and sandstone"
+msgstr "Du a thywodfaen"
+
+#: theme.json
+msgctxt "Duotone name"
+msgid "Black and white"
+msgstr "Du a Gwyn"
+
+#: styles/rust.json
+msgctxt "Color name"
+msgid "Base / 2"
+msgstr "Sylfaen / 2"
+
+#: styles/rust.json
+msgctxt "Gradient name"
+msgid "Vertical hard rust to beige"
+msgstr "Rhwd caled fertigol i llwydfelyn"
+
+#: styles/rust.json
+msgctxt "Gradient name"
+msgid "Vertical rust to beige"
+msgstr "Rhwd fertigol i llwydfelyn"
+
+#: styles/rust.json
+msgctxt "Gradient name"
+msgid "Vertical hard transparent rust to beige"
+msgstr "Rhwd fertigol caled tryloyw i llwydfelyn"
+
+#: styles/rust.json
+msgctxt "Gradient name"
+msgid "Vertical transparent rust to beige"
+msgstr "Rhwd tryloyw fertigol i llwydfelyn"
+
+#: styles/rust.json
+msgctxt "Duotone name"
+msgid "Dark rust to beige"
+msgstr "Rhwd tywyll i llwydfelyn"
+
+#: styles/rust.json
+msgctxt "Style variation name"
+msgid "Rust"
+msgstr "Rhwd"
+
+#: styles/onyx.json theme.json
+msgctxt "Color name"
+msgid "Accent / Five"
+msgstr "Acen / Pump"
+
+#: styles/onyx.json theme.json
+msgctxt "Color name"
+msgid "Accent / Four"
+msgstr "Acen / Pedwar"
+
+#: styles/onyx.json theme.json
+msgctxt "Color name"
+msgid "Accent / Three"
+msgstr "Acen / Tri"
+
+#: styles/onyx.json theme.json
+msgctxt "Color name"
+msgid "Accent / Two"
+msgstr "Acen / Dau"
+
+#: styles/onyx.json theme.json
+msgctxt "Color name"
+msgid "Accent"
+msgstr "Acen"
+
+#: styles/onyx.json
+msgctxt "Gradient name"
+msgid "Vertical hard pewter to dark gray"
+msgstr "Piwter caled fertigol i lwyd tywyll"
+
+#: styles/onyx.json
+msgctxt "Gradient name"
+msgid "Vertical hard steel to dark gray"
+msgstr "Dur caled fertigol i lwyd tywyll"
+
+#: styles/onyx.json
+msgctxt "Gradient name"
+msgid "Vertical hard olive to dark gray"
+msgstr "Olewydd caled fertigol i lwyd tywyll"
+
+#: styles/onyx.json
+msgctxt "Gradient name"
+msgid "Vertical hard cinnamon to dark gray"
+msgstr "Sinamon caled fertigol i lwyd tywyll"
+
+#: styles/onyx.json
+msgctxt "Gradient name"
+msgid "Vertical hard walnut to dark gray"
+msgstr "Collen Ffrengig caled fertigol i lwyd tywyll"
+
+#: styles/onyx.json
+msgctxt "Gradient name"
+msgid "Vertical hard beige to dark gray"
+msgstr "Llwydfelyn caled fertigol i lwyd tywyll"
+
+#: styles/onyx.json
+msgctxt "Gradient name"
+msgid "Vertical soft pewter to dark gray"
+msgstr "Piwter meddal fertigol i lwyd tywyll"
+
+#: styles/onyx.json
+msgctxt "Gradient name"
+msgid "Vertical soft steel to dark gray"
+msgstr "Dur meddal fertigol i lwyd tywyll"
+
+#: styles/onyx.json
+msgctxt "Gradient name"
+msgid "Vertical soft olive to dark gray"
+msgstr "Olewydd meddal fertigol i lwyd tywyll"
+
+#: styles/onyx.json
+msgctxt "Gradient name"
+msgid "Vertical soft cinnamon to dark gray"
+msgstr "Sinamon meddal fertigol i lwyd tywyll"
+
+#: styles/onyx.json
+msgctxt "Gradient name"
+msgid "Vertical soft walnut to dark gray"
+msgstr "Collen Ffrengig meddal fertigol i lwyd tywyll"
+
+#: styles/onyx.json
+msgctxt "Gradient name"
+msgid "Vertical soft driftwood to dark gray"
+msgstr "Broc môr meddal fertigol i lwyd tywyll"
+
+#: styles/onyx.json
+msgctxt "Duotone name"
+msgid "Dark gray and steel"
+msgstr "Llwyd tywyll a dur"
+
+#: styles/onyx.json
+msgctxt "Duotone name"
+msgid "Dark gray and olive"
+msgstr "Llwyd tywyll ac olewydd"
+
+#: styles/onyx.json
+msgctxt "Duotone name"
+msgid "Dark gray and cinnamon"
+msgstr "Llwyd tywyll a sinamon"
+
+#: styles/onyx.json
+msgctxt "Duotone name"
+msgid "Dark gray and walnut"
+msgstr "Llwyd tywyll a chollen Ffrengig"
+
+#: styles/onyx.json
+msgctxt "Duotone name"
+msgid "Dark gray and white"
+msgstr "Llwyd tywyll a gwyn"
+
+#: styles/onyx.json
+msgctxt "Style variation name"
+msgid "Onyx"
+msgstr "Onics"
+
+#: styles/mint.json
+msgctxt "Style variation name"
+msgid "Mint"
+msgstr "Mintys"
+
+#: styles/maelstrom.json
+msgctxt "Color name"
+msgid "Contrast / 3"
+msgstr "Cyferbyniad / 3"
+
+#: styles/maelstrom.json
+msgctxt "Style variation name"
+msgid "Maelstrom"
+msgstr "Maelstrom"
+
+#: styles/ice.json
+msgctxt "Gradient name"
+msgid "Vertical hard ink to ocean"
+msgstr "Inc caled fertigol i'r cefnfor"
+
+#: styles/ice.json
+msgctxt "Gradient name"
+msgid "Vertical hard ocean to slate"
+msgstr "Cefnfor caled fertigol i lechen"
+
+#: styles/ice.json
+msgctxt "Gradient name"
+msgid "Vertical hard ink to ice"
+msgstr "Inc caled fertigol i rhew"
+
+#: styles/ice.json
+msgctxt "Gradient name"
+msgid "Vertical hard ocean to ice"
+msgstr "Cefnfor caled fertigol i iâ"
+
+#: styles/ice.json
+msgctxt "Gradient name"
+msgid "Vertical hard slate to ice"
+msgstr "Llechen galed fertigol i iâ"
+
+#: styles/ice.json
+msgctxt "Gradient name"
+msgid "Vertical hard ice to azure"
+msgstr "Rhew caled fertigol i asur"
+
+#: styles/ice.json
+msgctxt "Gradient name"
+msgid "Vertical ink to ocean"
+msgstr "Inc fertigol i cefnfor"
+
+#: styles/ice.json
+msgctxt "Gradient name"
+msgid "Vertical ocean to slate"
+msgstr "Cefnfor fertigol i lechen"
+
+#: styles/ice.json
+msgctxt "Gradient name"
+msgid "Vertical ink to ice"
+msgstr "Inc fertigol i rew"
+
+#: styles/ice.json
+msgctxt "Gradient name"
+msgid "Vertical ocean to ice"
+msgstr "Cefnfor fertigol i rew"
+
+#: styles/ice.json
+msgctxt "Gradient name"
+msgid "Vertical slate to ice"
+msgstr "Llechen fertigol i rew"
+
+#: styles/ice.json
+msgctxt "Gradient name"
+msgid "Vertical azure to ice"
+msgstr "Asur fertigol i rew"
+
+#: styles/ice.json
+msgctxt "Style variation name"
+msgid "Ice"
+msgstr "Rhew"
+
+#: styles/fossil.json styles/ice.json styles/maelstrom.json theme.json
+msgctxt "Font size name"
+msgid "Extra Extra Large"
+msgstr "Mawr Iawn Iawn"
+
+#: styles/fossil.json styles/ice.json styles/maelstrom.json theme.json
+msgctxt "Font size name"
+msgid "Extra Large"
+msgstr "Mawr Iawn"
+
+#: styles/fossil.json styles/ice.json styles/maelstrom.json theme.json
+msgctxt "Font size name"
+msgid "Large"
+msgstr "Mawr"
+
+#: styles/fossil.json styles/ice.json styles/maelstrom.json theme.json
+msgctxt "Font size name"
+msgid "Medium"
+msgstr "Canolig"
+
+#: styles/fossil.json styles/ice.json styles/maelstrom.json theme.json
+msgctxt "Font size name"
+msgid "Small"
+msgstr "Bach"
+
+#: styles/fossil.json styles/maelstrom.json theme.json
+msgctxt "Font family name"
+msgid "Cardo"
+msgstr "Cardo"
+
+#: styles/fossil.json styles/ice.json theme.json
+msgctxt "Font family name"
+msgid "Inter"
+msgstr "Inter"
+
+#: styles/fossil.json styles/ice.json styles/mint.json styles/onyx.json
+#: theme.json
+msgctxt "Color name"
+msgid "Contrast / Three"
+msgstr "Cyferbyniad / Tri"
+
+#: styles/fossil.json styles/ice.json styles/mint.json styles/onyx.json
+#: theme.json
+msgctxt "Color name"
+msgid "Contrast / Two"
+msgstr "Cyferbyniad / Dau"
+
+#: styles/fossil.json
+msgctxt "Style variation name"
+msgid "Fossil"
+msgstr "Ffosil"
+
+#: styles/ember.json styles/fossil.json styles/ice.json styles/maelstrom.json
+#: styles/mint.json theme.json
+msgctxt "Font family name"
+msgid "System Serif"
+msgstr "Serif System"
+
+#: styles/ember.json styles/fossil.json styles/ice.json styles/maelstrom.json
+#: styles/mint.json theme.json
+msgctxt "Font family name"
+msgid "System Sans-serif"
+msgstr "Sans-serif System"
+
+#: styles/ember.json styles/ice.json styles/maelstrom.json styles/mint.json
+msgctxt "Font family name"
+msgid "Jost"
+msgstr "Jost"
+
+#: styles/ember.json styles/mint.json
+msgctxt "Font family name"
+msgid "Instrument Sans"
+msgstr "Sans Offeryn"
+
+#: styles/ember.json styles/fossil.json styles/ice.json styles/maelstrom.json
+#: styles/mint.json styles/onyx.json theme.json
+msgctxt "Color name"
+msgid "Base / Two"
+msgstr "Sylfaen / Dau"
+
+#: styles/ember.json styles/fossil.json styles/ice.json styles/maelstrom.json
+#: styles/mint.json styles/onyx.json styles/rust.json theme.json
+msgctxt "Color name"
+msgid "Contrast"
+msgstr "Cyferbyniad"
+
+#: styles/ember.json styles/maelstrom.json
+msgctxt "Color name"
+msgid "Contrast / 2"
+msgstr "Cyferbyniad / 2"
+
+#: styles/ember.json styles/fossil.json styles/ice.json styles/maelstrom.json
+#: styles/mint.json styles/onyx.json styles/rust.json theme.json
+msgctxt "Color name"
+msgid "Base"
+msgstr "Sail"
+
+#: styles/ember.json styles/fossil.json
+msgctxt "Gradient name"
+msgid "Vertical hard ebony to sable"
+msgstr "Eboni caled fertigol i sabl"
+
+#: styles/ember.json styles/fossil.json
+msgctxt "Gradient name"
+msgid "Vertical hard sable to taupe"
+msgstr "Sabl caled fertigol i llwydfrown"
+
+#: styles/ember.json styles/fossil.json
+msgctxt "Gradient name"
+msgid "Vertical hard ebony to beige"
+msgstr "Eboni caled fertigol i llwydfelyn"
+
+#: styles/ember.json styles/fossil.json
+msgctxt "Gradient name"
+msgid "Vertical hard sable to beige"
+msgstr "Sabl caled fertigol i llwydfelyn"
+
+#: styles/ember.json styles/fossil.json
+msgctxt "Gradient name"
+msgid "Vertical hard taupe to beige"
+msgstr "Llwydfrown caled fertigol i llwydfelyn"
+
+#: styles/ember.json styles/fossil.json
+msgctxt "Gradient name"
+msgid "Vertical hard beige to linen"
+msgstr "Llwydfelyn caled fertigol i liain"
+
+#: styles/ember.json styles/fossil.json
+msgctxt "Gradient name"
+msgid "Vertical ebony to sable"
+msgstr "Eboni fertigol i sabl"
+
+#: styles/ember.json styles/fossil.json
+msgctxt "Gradient name"
+msgid "Vertical ebony to beige"
+msgstr "Eboni fertigol i llwydfelyn"
+
+#: styles/ember.json styles/fossil.json
+msgctxt "Gradient name"
+msgid "Vertical sable to beige"
+msgstr "Sabl fertigol i llwydfelyn"
+
+#: styles/ember.json styles/fossil.json
+msgctxt "Gradient name"
+msgid "Vertical taupe to beige"
+msgstr "Llwydfrown fertigol i llwydfelyn"
+
+#: styles/ember.json styles/fossil.json
+msgctxt "Gradient name"
+msgid "Vertical linen to beige"
+msgstr "Lliain fertigol i llwydfelyn"
+
+#: styles/ember.json
+msgctxt "Duotone name"
+msgid "Orange and white"
+msgstr "Oren a gwyn"
+
+#: styles/ember.json
+msgctxt "Style variation name"
+msgid "Ember"
+msgstr "Marworyn"
+
+#: patterns/text-title-left-image-right.php:35
+msgctxt "Call to Action button text"
+msgid "About us"
+msgstr "Amdanom ni"
+
+#: patterns/text-title-left-image-right.php:28
+msgctxt "Description for the About pattern"
+msgid "Leaving an indelible mark on the landscape of tomorrow."
+msgstr "Gadael marc annileadwy ar dirwedd yfory."
+
+#: patterns/text-title-left-image-right.php:21
+msgctxt "Headline for the About pattern"
+msgid "Études offers comprehensive consulting, management, design, and research solutions. Every architectural endeavor is an opportunity to shape the future."
+msgstr "Mae Études yn cynnig atebion ymgynghori, rheoli, dylunio ac ymchwil cynhwysfawr. Mae pob ymdrech bensaernïol yn gyfle i lunio'r dyfodol."
+
+#: patterns/text-title-left-image-right.php
+msgctxt "Pattern title"
+msgid "Title text and button on left with image on right"
+msgstr "Testun teitl a botwm ar y chwith gyda delwedd ar y dde"
+
+#: patterns/text-project-details.php:35 patterns/text-project-details.php:43
+msgctxt "Descriptive text for the feature area"
+msgid "The revitalized Art Gallery is set to redefine the cultural landscape of Toronto, serving as a nexus of artistic expression, community engagement, and architectural marvel. The expansion and renovation project pay homage to the Art Gallery's rich history while embracing the future, ensuring that the gallery remains a beacon of inspiration."
+msgstr "Mae'r Oriel Gelf ar ei newydd wedd ar fin ailddiffinio tirwedd ddiwylliannol Toronto, gan wasanaethu fel cysylltiad rhwng mynegiant artistig, ymgysylltu â'r gymuned, a rhyfeddod pensaernïol. Mae’r project ehangu ac adnewyddu yn talu teyrnged i hanes cyfoethog yr Oriel Gelf tra’n cofleidio’r dyfodol, gan sicrhau bod yr oriel yn parhau i fod yn ffagl o ysbrydoliaeth."
+
+#: patterns/text-project-details.php:27
+msgctxt "Descriptive title for the feature area"
+msgid "With meticulous attention to detail and a commitment to excellence, we create spaces that inspire, elevate, and enrich the lives of those who inhabit them."
+msgstr "Gyda sylw manwl i fanylion ac ymrwymiad i ragoriaeth, rydym yn creu gofodau sy'n ysbrydoli, dyrchafu a chyfoethogi bywydau'r rhai sy'n byw ynddynt."
+
+#: patterns/text-project-details.php:18
+msgctxt "Title text for the feature area"
+msgid "The revitalized art gallery is set to redefine cultural landscape."
+msgstr "Mae'r oriel gelf wedi'i hadfywio ar fin ailddiffinio tirwedd ddiwylliannol."
+
+#: patterns/text-project-details.php
+msgctxt "Pattern title"
+msgid "Project details"
+msgstr "Manylion y project"
+
+#: patterns/text-feature-grid-3-col.php:112
+msgctxt "Sample content"
+msgid "Experience the fusion of imagination and expertise with Études Architectural Solutions."
+msgstr "Profwch gyfuniad dychymyg ac arbenigedd gydag Études Architectural Solutions."
+
+#: patterns/text-feature-grid-3-col.php:108
+msgctxt "Sample heading"
+msgid "Architectural Solutions"
+msgstr "Architectural Solutions"
+
+#: patterns/text-feature-grid-3-col.php:96
+msgctxt "Sample feature heading"
+msgid "Project Management"
+msgstr "Rheoli Project"
+
+#: patterns/text-feature-grid-3-col.php:84
+msgctxt "Sample feature heading"
+msgid "Consulting"
+msgstr "Ymgynghori"
+
+#: patterns/text-feature-grid-3-col.php:63
+msgctxt "Sample feature heading"
+msgid "App Access"
+msgstr "Mynediad i Ap"
+
+#: patterns/text-feature-grid-3-col.php:51
+msgctxt "Sample feature heading"
+msgid "Continuous Support"
+msgstr "Cefnogaeth Barhaus"
+
+#: patterns/text-feature-grid-3-col.php:43
+#: patterns/text-feature-grid-3-col.php:55
+#: patterns/text-feature-grid-3-col.php:67
+#: patterns/text-feature-grid-3-col.php:88
+#: patterns/text-feature-grid-3-col.php:100
+msgctxt "Sample feature content"
+msgid "Experience the fusion of imagination and expertise with Études Architectural Solutions."
+msgstr "Profwch gyfuniad dychymyg ac arbenigedd gydag Études Architectural Solutions."
+
+#: patterns/text-feature-grid-3-col.php:39
+msgctxt "Sample feature heading"
+msgid "Renovation and restoration"
+msgstr "Adnewyddu ac adfer"
+
+#: patterns/text-feature-grid-3-col.php:24
+msgctxt "Sub-heading of the features"
+msgid "Our comprehensive suite of professional services caters to a diverse clientele, ranging from homeowners to commercial developers."
+msgstr "Mae ein cyfres gynhwysfawr o wasanaethau proffesiynol yn darparu ar gyfer cwsmeriaid amrywiol, yn amrywio o berchnogion tai i ddatblygwyr masnachol."
+
+#: patterns/text-feature-grid-3-col.php:16
+msgctxt "Heading of the features"
+msgid "A passion for creating spaces"
+msgstr "Angerdd am greu gofodau"
+
+#: patterns/text-feature-grid-3-col.php
+msgctxt "Pattern title"
+msgid "Feature grid, 3 columns"
+msgstr "Grid nodwedd, 3 colofn"
+
+#: patterns/text-faq.php:57
+msgctxt "Question in the FAQ pattern"
+msgid "Can I apply to be a part of the team or work as a contractor?"
+msgstr "A gaf fi wneud cais i fod yn rhan o'r tîm neu weithio fel contractwr?"
+
+#: patterns/text-faq.php:46
+msgctxt "Question in the FAQ pattern"
+msgid "I'd like to get to meet fellow architects, how can I do that?"
+msgstr "Hoffwn i gwrdd â chyd-benseiri, sut ga i wneud hynny?"
+
+#: patterns/text-faq.php:27 patterns/text-faq.php:38 patterns/text-faq.php:49
+#: patterns/text-faq.php:60
+msgctxt "Answer in the FAQ pattern"
+msgid "Études offers comprehensive consulting, management, design, and research solutions. Our vision is to be at the forefront of architectural innovation, fostering a global community of architects and enthusiasts united by a passion for creating spaces. Every architectural endeavor is an opportunity to shape the future."
+msgstr "Mae Études yn cynnig atebion ymgynghori, rheoli, dylunio ac ymchwil cynhwysfawr. Ein gweledigaeth yw bod ar flaen y gad o ran arloesi pensaernïol, gan feithrin cymuned fyd-eang o benseiri a selogion sydd wedi’u huno gan angerdd dros greu gofodau. Mae pob ymdrech bensaernïol yn gyfle i lunio'r dyfodol."
+
+#: patterns/text-faq.php:24
+msgctxt "Question in the FAQ pattern"
+msgid "What is your process working in smaller projects?"
+msgstr "Beth yw eich proses yn gweithio mewn projectau llai?"
+
+#: patterns/text-faq.php:15
+msgctxt "Heading of the FAQs"
+msgid "FAQs"
+msgstr "Cwestiynau Cyffredin"
+
+#: patterns/text-faq.php:12
+msgctxt "Name of the FAQ pattern"
+msgid "FAQs"
+msgstr "Cwestiynau Cyffredi"
+
+#: patterns/text-faq.php
+msgctxt "Pattern title"
+msgid "FAQ"
+msgstr "Cwestiynau Cyffredin"
+
+#: patterns/text-centered-statement.php:21
+msgid "<em>Études</em> is not confined to the past—we are passionate about the cutting edge designs shaping our world today."
+msgstr "Nid yw <em>Études</em> wedi'i gyfyngu i'r gorffennol—rydym yn angerddol am y cynlluniau blaengar sy'n siapio ein byd heddiw."
+
+#: patterns/text-centered-statement.php
+msgctxt "Pattern title"
+msgid "Centered statement"
+msgstr "Datganiad wedi'i ganoli"
+
+#. Translators: About text placeholder
+#: patterns/text-centered-statement-small.php:23
+msgid "I write about finance, management and economy, my book “%1$s” is out now."
+msgstr "Rwy'n ysgrifennu am gyllid, rheolaeth a'r economi, mae fy llyfr “%1$s” allan nawr."
+
+#. Translators: About link placeholder
+#: patterns/text-centered-statement-small.php:20
+msgid "Money Studies"
+msgstr "Astudiaethau Ariannol"
+
+#: patterns/text-centered-statement-small.php
+msgctxt "Pattern title"
+msgid "Centered statement, small"
+msgstr "Datganiad canolog, bach"
+
+#: patterns/text-alternating-images.php:105
+msgctxt "Sample list item"
+msgid "Exclusive access to design insights."
+msgstr "Mynediad unigryw i fewnwelediadau dylunio."
+
+#: patterns/text-alternating-images.php:101
+msgctxt "Sample list item"
+msgid "Case studies that celebrate architecture."
+msgstr "Astudiaethau achos sy'n dathlu pensaernïaeth."
+
+#: patterns/text-alternating-images.php:97
+msgctxt "Sample list item"
+msgid "A world of thought-provoking articles."
+msgstr "Byd o erthyglau sy'n procio'r meddwl."
+
+#: patterns/text-alternating-images.php:91
+msgctxt "Sample heading"
+msgid "Études Newsletter"
+msgstr "Cylchlythyr Études"
+
+#: patterns/text-alternating-images.php:82
+msgid "Windows of a building in Nuremberg, Germany"
+msgstr "Ffenestri adeilad yn Nuremberg, yr Almaen"
+
+#: patterns/text-alternating-images.php:64
+msgid "Tourist taking photo of a building"
+msgstr "Twristiaid yn tynnu llun o adeilad"
+
+#: patterns/text-alternating-images.php:37
+msgctxt "Sample list heading"
+msgid "Études Architect App"
+msgstr "Ap Pensaer Études"
+
+#: patterns/text-alternating-images.php:23
+msgctxt "Sample subheading content"
+msgid "Our comprehensive suite of professional services caters to a diverse clientele, ranging from homeowners to commercial developers."
+msgstr "Mae ein cyfres gynhwysfawr o wasanaethau proffesiynol yn darparu ar gyfer cwsmeriaid amrywiol, yn amrywio o berchnogion tai i ddatblygwyr masnachol."
+
+#: patterns/text-alternating-images.php:19
+msgctxt "Sample heading content"
+msgid "An array of resources"
+msgstr "Amrywiaeth o adnoddau"
+
+#: patterns/text-alternating-images.php
+msgctxt "Pattern title"
+msgid "Text with alternating images"
+msgstr "Testun gyda delweddau bob yn ail"
+
+#: patterns/testimonial-centered.php:39
+msgctxt "Designation of Person Provided Testimonial"
+msgid "CEO, Greenprint"
+msgstr "Prif Swyddog Gweithredol, Greenprint"
+
+#: patterns/testimonial-centered.php:35
+msgctxt "Name of Person Provided the Testimonial"
+msgid "Annie Steiner"
+msgstr "Annie Steiner"
+
+#: patterns/testimonial-centered.php:26
+msgctxt "Name of testimonial citation group"
+msgid "Testimonial source"
+msgstr "Ffynhonnell tysteb"
+
+#: patterns/testimonial-centered.php:18
+msgctxt "Testimonial Text or Review Text Got From the Person"
+msgid "“Études has saved us thousands of hours of work and has unlocked insights we never thought possible.”"
+msgstr "“Mae Études wedi arbed miloedd o oriau o waith i ni ac wedi datgloi mewnwelediadau nad oedden ni erioed wedi meddwl oedd yn bosibl.”"
+
+#: patterns/testimonial-centered.php:12
+msgctxt "Name of testimonial pattern"
+msgid "Testimonial"
+msgstr "Tysteb"
+
+#: patterns/testimonial-centered.php
+msgctxt "Pattern title"
+msgid "Centered testimonial"
+msgstr "Tysteb canolog"
+
+#: patterns/template-single-portfolio.php
+msgctxt "Pattern title"
+msgid "Portfolio single post template"
+msgstr "Templed cofnod sengl portffolio"
+
+#: patterns/template-search-blogging.php
+msgctxt "Pattern title"
+msgid "Blogging search template"
+msgstr "Templed chwilio blogio"
+
+#: patterns/template-search-portfolio.php
+msgctxt "Pattern title"
+msgid "Portfolio search template"
+msgstr "Templed chwilio portffolio"
+
+#: patterns/template-index-portfolio.php
+msgctxt "Pattern title"
+msgid "Portfolio index template"
+msgstr "Templed mynegai portffolio"
+
+#: patterns/template-index-blogging.php
+msgctxt "Pattern title"
+msgid "Blogging index template"
+msgstr "Templed mynegai blogio"
+
+#: patterns/template-home-portfolio.php
+msgctxt "Pattern title"
+msgid "Portfolio home template with post featured images"
+msgstr "Templed cartref portffolio gyda delweddau cofnod dan sylw"
+
+#: patterns/template-home-business.php
+msgctxt "Pattern title"
+msgid "Business home template"
+msgstr "Templed cartref busnes"
+
+#: patterns/template-home-blogging.php
+msgctxt "Pattern title"
+msgid "Blogging home template"
+msgstr "Templed blogio cartref"
+
+#: patterns/template-archive-portfolio.php
+msgctxt "Pattern title"
+msgid "Portfolio archive template"
+msgstr "Templed archif portffolio"
+
+#: patterns/template-archive-blogging.php
+msgctxt "Pattern title"
+msgid "Blogging archive template"
+msgstr "Templed archif blogio"
+
+#: patterns/team-4-col.php:121
+msgctxt "Sample role of a team member"
+msgid "Project Manager"
+msgstr "Rheolwr Project"
+
+#: patterns/team-4-col.php:116
+msgctxt "Sample name of a team member"
+msgid "Ivan Lawrence"
+msgstr "Ivan Lawrence"
+
+#: patterns/team-4-col.php:97
+msgctxt "Sample role of a team member"
+msgid "Architect"
+msgstr "Pensaer"
+
+#: patterns/team-4-col.php:92
+msgctxt "Sample name of a team member"
+msgid "Helga Steiner"
+msgstr "Helga Steiner"
+
+#: patterns/team-4-col.php:73
+msgctxt "Sample role of a team member"
+msgid "Engineering Manager"
+msgstr "Rheolwr Peirianneg"
+
+#: patterns/team-4-col.php:68
+msgctxt "Sample name of a team member"
+msgid "Rhye Moore"
+msgstr "Rhye Moore"
+
+#: patterns/team-4-col.php:49
+msgctxt "Sample role of a team member"
+msgid "Founder, CEO & Architect"
+msgstr "Sylfaenydd, Prif Swyddog Gweithredol a Phensaer"
+
+#: patterns/team-4-col.php:44
+msgctxt "Sample name of a team member"
+msgid "Francesca Piovani"
+msgstr "Francesca Piovani"
+
+#: patterns/team-4-col.php:20
+msgctxt "Sample descriptive text of the team pattern"
+msgid "Our comprehensive suite of professionals caters to a diverse team, ranging from seasoned architects to renowned engineers."
+msgstr "Mae ein cyfres gynhwysfawr o weithwyr proffesiynol yn darparu ar gyfer tîm amrywiol, yn amrywio o benseiri profiadol i beirianwyr enwog."
+
+#: patterns/team-4-col.php:16
+msgctxt "Sample heading for the team pattern"
+msgid "Meet our team"
+msgstr "Cwrdd â'n tîm"
+
+#: patterns/team-4-col.php:11
+msgctxt "Name of team pattern"
+msgid "Team members"
+msgstr "Aelodau'r tîm"
+
+#: patterns/team-4-col.php
+msgctxt "Pattern title"
+msgid "Team members, 4 columns"
+msgstr "Aelodau'r tîm, 4 colofn"
+
+#: patterns/posts-images-only-offset-4-col.php
+msgctxt "Pattern title"
+msgid "Offset posts with featured images only, 4 columns"
+msgstr "Cofnod atred gyda delweddau nodwedd yn unig, 4 colofn"
+
+#: patterns/posts-images-only-3-col.php
+msgctxt "Pattern title"
+msgid "Posts with featured images only, 3 columns"
+msgstr "Cofnodion gyda delweddau nodwedd yn unig, 3 colofn"
+
+#: patterns/posts-grid-2-col.php:14 patterns/posts-list.php:14
+#: patterns/template-index-blogging.php:16
+msgid "Watch, Read, Listen"
+msgstr "Gwylio, Darllen, Gwrando"
+
+#: patterns/posts-grid-2-col.php
+msgctxt "Pattern title"
+msgid "Grid of posts featuring the first post, 2 columns"
+msgstr "Grid o gofnodion yn dangos y cofnod cyntaf, 2 golofn"
+
+#: patterns/posts-3-col.php
+msgctxt "Pattern title"
+msgid "List of posts, 3 columns"
+msgstr "Rhestr o gofnodion, 3 colofn"
+
+#: patterns/posts-1-col.php
+msgctxt "Pattern title"
+msgid "List of posts, 1 column"
+msgstr "Rhestr o gofnodion, 1 golofn"
+
+#: patterns/page-rsvp-landing.php:49
+msgid "Green staircase at Western University, London, Canada"
+msgstr "Grisiau gwyrdd ym Western University, London, Canada"
+
+#: patterns/page-rsvp-landing.php:14
+msgctxt "Name of RSVP landing page pattern"
+msgid "RSVP Landing Page"
+msgstr "Tudalen Derbyn RSVP"
+
+#: patterns/page-rsvp-landing.php
+msgctxt "Pattern title"
+msgid "RSVP landing"
+msgstr "Derbyn yr RSVP"
+
+#: patterns/page-portfolio-overview.php
+msgctxt "Pattern title"
+msgid "Portfolio project overview"
+msgstr "Trosolwg project portffolio"
+
+#: patterns/page-newsletter-landing.php:40
+msgctxt "Sample content for newsletter subscribe button"
+msgid "Sign up"
+msgstr "Cofrestru"
+
+#: patterns/page-newsletter-landing.php:29
+msgctxt "sample content for newsletter subscription"
+msgid "Subscribe to the newsletter and stay connected with our community"
+msgstr "Tanysgrifiwch i'r cylchlythyr a chadwch mewn cysylltiad â'n cymuned"
+
+#: patterns/page-newsletter-landing.php
+msgctxt "Pattern title"
+msgid "Newsletter landing"
+msgstr "Derbyn y cylchlythyr"
+
+#: patterns/page-home-portfolio.php
+msgctxt "Pattern title"
+msgid "Portfolio home with post featured images"
+msgstr "Cartref y portffolio gyda delweddau cofnod wedi'u cynnwys"
+
+#: patterns/page-home-portfolio-gallery.php
+msgctxt "Pattern title"
+msgid "Portfolio home image gallery"
+msgstr "Oriel luniau cartref y portffolio"
+
+#: patterns/page-home-business.php
+msgctxt "Pattern title"
+msgid "Business home"
+msgstr "Cartref busnes"
+
+#: patterns/page-home-blogging.php
+msgctxt "Pattern title"
+msgid "Blogging home"
+msgstr "Cartref blogio"
+
+#: patterns/page-about-business.php
+msgctxt "Pattern title"
+msgid "About"
+msgstr "Ynghylch"
+
+#: patterns/hidden-sidebar.php:75
+msgctxt "search form placeholder"
+msgid "Search..."
+msgstr "Chwilio..."
+
+#: patterns/hidden-sidebar.php:72
+msgid "Search the website"
+msgstr "Chwiliwch y wefan"
+
+#: patterns/hidden-sidebar.php:60
+msgid "Financial apps for families"
+msgstr "Apiau ariannol i deuluoedd"
+
+#: patterns/hidden-sidebar.php:59
+msgid "Latest inflation report"
+msgstr "Adroddiad chwyddiant diweddaraf"
+
+#: patterns/hidden-sidebar.php:53
+msgid "Links I found useful and wanted to share."
+msgstr "Dolenni roedd yn ddefnyddiol i mi ac roeddwn i eisiau eu rhannu."
+
+#: patterns/hidden-sidebar.php:49
+msgid "Useful Links"
+msgstr "Dolenni Defnyddiol"
+
+#: patterns/hidden-sidebar.php:33
+msgid "Popular Categories"
+msgstr "Categorïau Poblogaidd"
+
+#: patterns/hidden-sidebar.php:17
+msgid "About the author"
+msgstr "Am yr awdur"
+
+#: patterns/hidden-sidebar.php
+msgctxt "Pattern title"
+msgid "Sidebar"
+msgstr "Bar Ochr"
+
+#: patterns/hidden-search.php:9
+msgctxt "search button text"
+msgid "Search"
+msgstr "Chwilio"
+
+#: patterns/hidden-search.php:9 patterns/hidden-sidebar.php:75
+msgctxt "search form label"
+msgid "Search"
+msgstr "Chwilio"
+
+#: patterns/hidden-search.php
+msgctxt "Pattern title"
+msgid "Search"
+msgstr "Chwilio"
+
+#: patterns/hidden-post-navigation.php:12
+msgctxt "Label before the title of the next post. There is a space after the colon."
+msgid "Next: "
+msgstr "Nesaf: "
+
+#: patterns/hidden-post-navigation.php:11
+msgctxt "Label before the title of the previous post. There is a space after the colon."
+msgid "Previous: "
+msgstr "Blaenorol: "
+
+#: patterns/hidden-post-navigation.php:9 patterns/hidden-post-navigation.php:10
+#: patterns/hidden-posts-heading.php:10
+#: patterns/template-index-portfolio.php:16
+msgid "Posts"
+msgstr "Cofnodion"
+
+#: patterns/hidden-post-navigation.php
+msgctxt "Pattern title"
+msgid "Post navigation"
+msgstr "Llywio cofnod"
+
+#: patterns/hidden-post-meta.php:25
+msgctxt "Prefix for the post category block: in category name"
+msgid "in "
+msgstr "yn "
+
+#: patterns/hidden-post-meta.php:20
+msgctxt "Prefix for the post author block: By author name"
+msgid "by"
+msgstr "gan"
+
+#: patterns/hidden-post-meta.php
+msgctxt "Pattern title"
+msgid "Post meta"
+msgstr "Meta cofnod"
+
+#: patterns/hidden-portfolio-hero.php
+msgctxt "Pattern title"
+msgid "Portfolio hero"
+msgstr "Arwr portffolio"
+
+#: patterns/hidden-no-results.php:9
+msgctxt "Message explaining that there are no results returned from a search"
+msgid "No posts were found."
+msgstr "Heb ganfod unrhyw gofnodion."
+
+#: patterns/hidden-no-results.php
+msgctxt "Pattern title"
+msgid "No results"
+msgstr "Dim canlyniadau"
+
+#: patterns/hidden-comments.php:12
+msgid "Comments"
+msgstr "Nodiadau"
+
+#: patterns/hidden-comments.php
+msgctxt "Pattern title"
+msgid "Comments"
+msgstr "Nodiadau"
+
+#: patterns/hidden-404.php:13
+msgctxt "Message to convey that a webpage could not be found"
+msgid "The page you are looking for does not exist, or it has been moved. Please try searching using the form below."
+msgstr "Nid yw'r dudalen rydych yn chwilio amdani yn bodoli, neu mae wedi'i symud. Ceisiwch chwilio gan ddefnyddio'r ffurflen isod."
+
+#: patterns/hidden-404.php:10
+msgctxt "Heading for a webpage that is not found"
+msgid "Page Not Found"
+msgstr "Heb Ganfod y Dudalen"
+
+#: patterns/hidden-404.php
+msgctxt "Pattern title"
+msgid "404"
+msgstr "404"
+
+#: patterns/gallery-project-layout.php:54
+msgid "Art Gallery of Ontario, Toronto, Canada"
+msgstr "Oriel Gelf Ontario, Toronto, Canada"
+
+#: patterns/gallery-project-layout.php:49
+msgctxt "Sample text for the feature area"
+msgid "2. Case studies that celebrate the artistry can fuel curiosity and ignite inspiration."
+msgstr "2. Gall astudiaethau achos sy'n dathlu'r grefft danio chwilfrydedd a thanio ysbrydoliaeth."
+
+#: patterns/gallery-project-layout.php:38
+msgctxt "Sample text for the feature area"
+msgid "Our comprehensive suite of professional services caters to a diverse clientele, ranging from homeowners to commercial developers. With a commitment to innovation and sustainability, Études is the bridge that transforms architectural dreams into remarkable built realities."
+msgstr "Mae ein cyfres gynhwysfawr o wasanaethau proffesiynol yn darparu ar gyfer cwsmeriaid amrywiol, yn amrywio o berchnogion tai i ddatblygwyr masnachol. Gydag ymrwymiad i arloesi a chynaliadwyedd, Études yw'r bont sy'n trawsnewid breuddwydion pensaernïol yn realiti adeiledig rhyfeddol."
+
+#: patterns/gallery-project-layout.php:26
+msgctxt "Sample text for the feature area"
+msgid "1. Through Études, we aspire to redefine architectural boundaries and usher in a new era of design excellence that leaves an indelible mark on the built environment."
+msgstr "1. Trwy Études, ein nod yw ailddiffinio ffiniau pensaernïol a chyflwyno cyfnod newydd o ragoriaeth dylunio sy'n gadael marc annileadwy ar yr amgylchedd adeiledig."
+
+#: patterns/gallery-project-layout.php:21
+msgid "An empty staircase under an angular roof in Darling Harbour, Sydney, Australia"
+msgstr "Grisiau gwag o dan do onglog yn Harbwr Darling, Sydney, Awstralia"
+
+#: patterns/gallery-project-layout.php
+msgctxt "Pattern title"
+msgid "Project layout"
+msgstr "Cynllun y project"
+
+#: patterns/gallery-offset-images-grid-4-col.php
+msgctxt "Pattern title"
+msgid "Offset gallery, 4 columns"
+msgstr "Oriel atred, 4 colofn"
+
+#: patterns/gallery-offset-images-grid-3-col.php
+msgctxt "Pattern title"
+msgid "Offset gallery, 3 columns"
+msgstr "Oriel atred, 3 colofn"
+
+#: patterns/gallery-offset-images-grid-2-col.php
+msgctxt "Pattern title"
+msgid "Offset gallery, 2 columns"
+msgstr "Oriel atred, 2 golofn"
+
+#: patterns/gallery-full-screen-image.php
+msgctxt "Pattern title"
+msgid "Full screen image"
+msgstr "Delwedd sgrin lawn"
+
+#: patterns/footer.php:92
+msgid "Social Media"
+msgstr "Cyfryngau Cymdeithasol"
+
+#: patterns/footer.php:86
+msgid "Social"
+msgstr "Cymdeithasol"
+
+#: patterns/footer.php:64 patterns/footer.php:70
+msgid "Privacy"
+msgstr "Preifatrwydd"
+
+#: patterns/footer.php:41 patterns/footer.php:47
+msgid "About"
+msgstr "Ynghylch"
+
+#: patterns/footer.php
+msgctxt "Pattern title"
+msgid "Footer with colophon, 4 columns"
+msgstr "Troedyn gyda coloffon, 4 colofn"
+
+#: patterns/footer-colophon-3-col.php:82
+msgid "&copy;"
+msgstr "&copy;"
+
+#: patterns/footer-colophon-3-col.php:60 patterns/footer.php:94
+msgid "Facebook"
+msgstr "Facebook"
+
+#: patterns/footer-colophon-3-col.php:60 patterns/footer.php:95
+msgid "Instagram"
+msgstr "Instagram"
+
+#: patterns/footer-colophon-3-col.php:57
+msgid "Follow"
+msgstr "Dilyn"
+
+#: patterns/footer-colophon-3-col.php:42
+msgctxt "Example email in site footer"
+msgid "info@example.com"
+msgstr "info@example.com"
+
+#: patterns/footer-colophon-3-col.php:39
+msgid "Contact"
+msgstr "Cysylltu"
+
+#: patterns/footer-colophon-3-col.php:30
+msgid "Keep up, get in touch."
+msgstr "Cadwch mewn cysylltiad, cysylltwch â ni."
+
+#: patterns/footer-colophon-3-col.php
+msgctxt "Pattern title"
+msgid "Footer with colophon, 3 columns"
+msgstr "Troedyn gyda coloffon, 3 colofn"
+
+#. Translators: Designed with WordPress
+#: patterns/footer-centered-logo-nav.php:25
+#: patterns/footer-colophon-3-col.php:94 patterns/footer.php:120
+msgid "Designed with %1$s"
+msgstr "Wedi'i ddylunio gyda %1$s"
+
+#: patterns/footer-centered-logo-nav.php
+msgctxt "Pattern title"
+msgid "Footer with centered logo and navigation"
+msgstr "Troedyn gyda logo wedi'i ganoli a llywio"
+
+#: patterns/cta-subscribe-centered.php:31
+msgctxt "Sample text for Sign Up Button"
+msgid "Sign up"
+msgstr "Cofrestru"
+
+#: patterns/cta-subscribe-centered.php:24
+msgctxt "Sample text for Subscriber Description"
+msgid "Stay in the loop with everything you need to know."
+msgstr "Cadwch mewn cysylltiad gyda phopeth sydd angen i chi ei wybod."
+
+#: patterns/cta-subscribe-centered.php:20
+msgctxt "Sample text for Subscriber Heading with numbers"
+msgid "Join 900+ subscribers"
+msgstr "Ymunwch â 900+ o danysgrifwyr"
+
+#: patterns/cta-subscribe-centered.php
+msgctxt "Pattern title"
+msgid "Centered call to action"
+msgstr "Galwad i weithredu wedi'i ganoli"
+
+#: patterns/cta-services-image-left.php:39
+msgctxt "Sample button text to view the services"
+msgid "Our services"
+msgstr "Ein gwasanaethau"
+
+#: patterns/cta-services-image-left.php:32
+msgctxt "Sample description of the services pattern"
+msgid "Experience the fusion of imagination and expertise with Études—the catalyst for architectural transformations that enrich the world around us."
+msgstr "Profwch gyfuniad dychymyg ac arbenigedd gydag Études - y catalydd ar gyfer trawsnewidiadau pensaernïol sy'n cyfoethogi'r byd o'n cwmpas."
+
+#: patterns/cta-services-image-left.php:28
+msgctxt "Sample heading of the services pattern"
+msgid "Guiding your business through the project"
+msgstr "Yn arwain eich busnes drwy'r project"
+
+#: patterns/cta-services-image-left.php
+msgctxt "Pattern title"
+msgid "Services call to action with image on left"
+msgstr "Galwad i weithredu gwasanaethau gyda delwedd ar y chwith"
+
+#: patterns/cta-rsvp.php:50 patterns/text-title-left-image-right.php:51
+msgid "A ramp along a curved wall in the Kiasma Museu, Helsinki, Finland"
+msgstr "Ramp ar hyd wal grwm yn y Kiasma Museu, Helsinki, y Ffindir"
+
+#: patterns/cta-rsvp.php:34 patterns/page-rsvp-landing.php:34
+msgctxt "Call to action button text for the reservation button"
+msgid "Reserve your spot"
+msgstr "Archebwch eich lle"
+
+#: patterns/cta-rsvp.php:27 patterns/page-rsvp-landing.php:28
+msgctxt "RSVP call to action description"
+msgid "Experience the fusion of imagination and expertise with Études Arch Summit, February 2025."
+msgstr "Profwch gyfuniad dychymyg ac arbenigedd gydag Études Arch Summit, Chwefror 2025."
+
+#: patterns/cta-rsvp.php:21 patterns/page-rsvp-landing.php:23
+msgctxt "Initials for ´please respond´"
+msgid "RSVP"
+msgstr "RSVP"
+
+#: patterns/cta-rsvp.php:11
+msgctxt "Name of RSVP pattern"
+msgid "RSVP"
+msgstr "RSVP"
+
+#: patterns/cta-rsvp.php
+msgctxt "Pattern title"
+msgid "RSVP"
+msgstr "RSVP"
+
+#: patterns/cta-pricing.php:203
+msgctxt "Button text for the third pricing level"
+msgid "Subscribe"
+msgstr "Tanysgrifio"
+
+#: patterns/cta-pricing.php:189
+msgctxt "Feature for pricing level"
+msgid "Exclusive access to the <em>Études</em> app for iOS and Android"
+msgstr "Mynediad unigryw i ap <em>Études</em> ar gyfer iOS ac Android"
+
+#: patterns/cta-pricing.php:173
+msgctxt "Feature for pricing level"
+msgid "Exclusive, unlimited access to <em>Études Articles</em>."
+msgstr "Mynediad unigryw, diderfyn i <em>Études Articles</em> ."
+
+#: patterns/cta-pricing.php:162
+msgctxt "Sample price for the third pricing level"
+msgid "$28"
+msgstr "$28"
+
+#: patterns/cta-pricing.php:157
+msgctxt "Sample heading for the third pricing level"
+msgid "Expert"
+msgstr "Arbenigwr"
+
+#: patterns/cta-pricing.php:145
+msgctxt "Button text for the second pricing level"
+msgid "Subscribe"
+msgstr "Tanysgrifio"
+
+#: patterns/cta-pricing.php:115
+msgctxt "Feature for pricing level"
+msgid "Access to 20 exclusive <em>Études Articles</em> per month."
+msgstr "Mynediad i 20 <em>o Erthyglau Études</em> unigryw y mis."
+
+#: patterns/cta-pricing.php:104
+msgctxt "Sample price for the second pricing level"
+msgid "$12"
+msgstr "$12"
+
+#: patterns/cta-pricing.php:99
+msgctxt "Sample heading for the second pricing level"
+msgid "Connoisseur"
+msgstr "Connoisseur"
+
+#: patterns/cta-pricing.php:87
+msgctxt "Button text for the first pricing level"
+msgid "Subscribe"
+msgstr "Tanysgrifio"
+
+#: patterns/cta-pricing.php:72 patterns/cta-pricing.php:131
+msgctxt "Feature for pricing level"
+msgid "Exclusive access to the <em>Études</em> app for iOS and Android."
+msgstr "Mynediad unigryw i ap <em>Études</em> ar gyfer iOS ac Android."
+
+#: patterns/cta-pricing.php:62 patterns/cta-pricing.php:123
+#: patterns/cta-pricing.php:181
+msgctxt "Feature for pricing level"
+msgid "Weekly print edition."
+msgstr "Argraffiad wythnosol."
+
+#: patterns/cta-pricing.php:53
+msgctxt "Feature for pricing level"
+msgid "Access to 5 exclusive <em>Études Articles</em> per month."
+msgstr "Mynediad i 5 <em>Erthygl Études</em> unigryw y mis."
+
+#: patterns/cta-pricing.php:42
+msgctxt "Sample price for the first pricing level"
+msgid "$0"
+msgstr "$0"
+
+#: patterns/cta-pricing.php:37
+msgctxt "Sample heading for the first pricing level"
+msgid "Free"
+msgstr "Am Ddim"
+
+#: patterns/cta-pricing.php:22
+msgctxt "Sample description for a pricing table"
+msgid "We offer flexible options, which you can adapt to the different needs of each project."
+msgstr "Rydym yn cynnig opsiynau hyblyg, y gallwch eu haddasu i wahanol anghenion pob project."
+
+#: patterns/cta-pricing.php:18
+msgctxt "Sample heading for pricing pattern"
+msgid "Our Services"
+msgstr "Ein Gwasanaethau"
+
+#: patterns/cta-pricing.php:11
+msgctxt "Name for the pricing pattern"
+msgid "Pricing Table"
+msgstr "Tabl Prisiau"
+
+#: patterns/cta-pricing.php
+msgctxt "Pattern title"
+msgid "Pricing"
+msgstr "Prisio"
+
+#: patterns/cta-content-image-on-right.php:59
+#: patterns/cta-services-image-left.php:19
+msgid "White abstract geometric artwork from Dresden, Germany"
+msgstr "Gwaith celf geometrig haniaethol gwyn o Dresden, yr Almaen"
+
+#: patterns/cta-content-image-on-right.php:47
+msgctxt "Button text of this section"
+msgid "How it works"
+msgstr "Sut mae'n gweithio"
+
+#: patterns/cta-content-image-on-right.php:41
+msgctxt "Button text of this section"
+msgid "Download app"
+msgstr "Llwytho'r ap i lawr"
+
+#: patterns/cta-content-image-on-right.php:32
+#: patterns/text-alternating-images.php:52
+msgctxt "Sample list item"
+msgid "Experience the world of architecture."
+msgstr "Profwch fyd pensaernïaeth."
+
+#: patterns/cta-content-image-on-right.php:28
+#: patterns/text-alternating-images.php:48
+msgctxt "Sample list item"
+msgid "Showcase your projects."
+msgstr "Arddangos eich projectau."
+
+#: patterns/cta-content-image-on-right.php:24
+#: patterns/text-alternating-images.php:44
+msgctxt "Sample list item"
+msgid "Collaborate with fellow architects."
+msgstr "Cydweithio â chyd-benseiri."
+
+#: patterns/cta-content-image-on-right.php:18
+msgctxt "Sample heading"
+msgid "Enhance your architectural journey with the Études Architect app."
+msgstr "Gwellwch eich taith bensaernïol gydag ap Études Architect."
+
+#: patterns/cta-content-image-on-right.php
+msgctxt "Pattern title"
+msgid "Call to action with image on right"
+msgstr "Galwad i weithredu gyda delwedd ar y dde"
+
+#: patterns/banner-project-description.php:41
+msgid "Hyatt Regency San Francisco, San Francisco, United States"
+msgstr "Hyatt Regency San Francisco, San Francisco, Unol Daleithiau America"
+
+#: patterns/banner-project-description.php:26
+msgctxt "Sample descriptive text for a project or post."
+msgid "This transformative project seeks to enhance the gallery's infrastructure, accessibility, and exhibition spaces while preserving its rich cultural heritage."
+msgstr "Mae'r prosiect trawsnewidiol hwn yn ceisio gwella seilwaith, hygyrchedd a mannau arddangos yr oriel tra'n cadw ei threftadaeth ddiwylliannol gyfoethog."
+
+#: patterns/banner-project-description.php:17
+msgctxt "Sample title for a project or post"
+msgid "Art Gallery — Overview"
+msgstr "Oriel Gelf — Trosolwg"
+
+#: patterns/banner-project-description.php
+msgctxt "Pattern title"
+msgid "Project description"
+msgstr "Disgrifiad o'r project"
+
+#: patterns/banner-hero.php:52
+msgid "Building exterior in Toronto, Canada"
+msgstr "Adeilad allanol yn Toronto, Canada"
+
+#: patterns/banner-hero.php:37
+msgctxt "Button text of the hero section"
+msgid "About us"
+msgstr "Amdanom ni"
+
+#: patterns/banner-hero.php:26
+msgctxt "Content of the hero section"
+msgid "Études is a pioneering firm that seamlessly merges creativity and functionality to redefine architectural excellence."
+msgstr "Mae Études yn gwmni arloesol sy'n uno creadigrwydd ac ymarferoldeb yn ddi-dor i ailddiffinio rhagoriaeth bensaernïol."
+
+#: patterns/banner-hero.php:18
+msgctxt "Heading of the hero section"
+msgid "A commitment to innovation and sustainability"
+msgstr "Ymrwymiad i arloesi a chynaliadwyedd"
+
+#: patterns/banner-hero.php
+msgctxt "Pattern title"
+msgid "Hero"
+msgstr "Arwr"
+
+#: functions.php:111
+msgid "With asterisk"
+msgstr "Gyda serennig"
+
+#: functions.php:93
+msgid "With arrow"
+msgstr "Gyda saeth"
+
+#: functions.php:74
+msgid "Checkmark"
+msgstr "Marc ticio"
+
+#: functions.php:51
+msgid "Pill"
+msgstr "Pilsen"
+
+#: functions.php:28
+msgid "Arrow icon"
+msgstr "Eicon saeth"
+
+#. Author URI of the theme
+#. Translators: WordPress link.
+#: style.css patterns/footer-centered-logo-nav.php:22
+#: patterns/footer-colophon-3-col.php:91 patterns/footer.php:117
+msgid "https://wordpress.org"
+msgstr "https://wordpress.org"
+
+#. Author of the theme
+#: style.css
+#, gp-priority: low
+msgid "the WordPress team"
+msgstr "Tîm WordPress"
+
+#. Theme URI of the theme
+#: style.css
+#, gp-priority: low
+msgid "https://wordpress.org/themes/twentytwentyfour/"
+msgstr "https://wordpress.org/themes/twentytwentyfour"

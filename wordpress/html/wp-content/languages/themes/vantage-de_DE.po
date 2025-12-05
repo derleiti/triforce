@@ -1,0 +1,2427 @@
+# Translation of Themes - Vantage in German
+# This file is distributed under the same license as the Themes - Vantage package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-09-23 11:01:20+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: de\n"
+"Project-Id-Version: Themes - Vantage\n"
+
+#. Description of the theme
+#: style.css
+#, gp-priority: high
+msgid "Vantage is a flexible multipurpose theme. Its strength lies in its tight integration with some powerful plugins like Page Builder for responsive page layouts, Smart Slider 3 for big beautiful sliders and WooCommerce to help you sell online. Vantage is fully responsive and retina ready. Use it to start a business site, portfolio or online store. We offer free support on our <a href=\"https://siteorigin.com/thread/\">forum</a> (https://siteorigin.com/thread/)."
+msgstr "Vantage ist ein flexibles Mehrzweck-Theme. Seine Stärke liegt in einer engen Integration mit einigen leistungsstarken Plugins wie Page Builder für responsive Seitenlayouts, Smart Slider 3 für große, schöne Slider und WooCommerce, um dir beim Online-Verkauf zu helfen. Vantage ist vollständig responsiv und retina-fähig. Verwende es, um eine Unternehmens-Website, ein Portfolio oder einen Online-Shop zu erstellen. Wir bieten kostenlose Unterstützung in unserem <a href=\"https://siteorigin.com/thread/\">Forum</a> (https://siteorigin.com/thread/)."
+
+#. Theme Name of the theme
+#: style.css
+#, gp-priority: high
+msgid "Vantage"
+msgstr "Vantage"
+
+#: inc/widgets.php:383
+msgid "X (Twitter)"
+msgstr "X (Twitter)"
+
+#: inc/settings.php:362
+msgid "Display a mini cart in the main menu."
+msgstr "Einen Mini-Warenkorb im Hauptmenü anzeigen."
+
+#: inc/settings.php:361
+msgid "Mini Cart in Menu"
+msgstr "Mini-Warenkorb im Menü"
+
+#: inc/settings.php:26
+msgid "WooCommerce"
+msgstr "WooCommerce"
+
+#: functions.php:254
+msgid "View Cart"
+msgstr "Warenkorb anzeigen"
+
+#: functions.php:250 functions.php:252
+msgid "View shopping cart"
+msgstr "Warenkorb anzeigen"
+
+#: inc/settings.php:230
+msgid " Display the archive page title prefix, e.g., Category Archives."
+msgstr " Das Titelpräfix der Archivseite anzeigen, z.&nbsp;B. Kategorie-Archive."
+
+#: inc/settings.php:229
+msgid "Blog Archive Title Prefix"
+msgstr "Titelpräfix des Blog-Archivs"
+
+#: inc/template-tags.php:396
+msgid "Author Archive:"
+msgstr "Autoren-Archiv:"
+
+#: inc/template-tags.php:392
+msgid "Tag Archives:"
+msgstr "Schlagwort-Archive:"
+
+#: inc/settings.php:349
+msgid "Remove the theme attribution link from your footer."
+msgstr "Entferne den Link im Footer, der die Theme-Attribution an SiteOrigin enthält."
+
+#: inc/template-tags.php:754
+msgid "No related posts."
+msgstr "Keine ähnlichen Beiträge."
+
+#: inc/settings.php:297
+msgid "Display related posts on single post pages."
+msgstr "Ähnliche Beiträge den auf Einzel-Beitragsseiten anzeigen."
+
+#: inc/settings.php:295 inc/template-tags.php:737
+msgid "Related Posts"
+msgstr "Ähnliche Beiträge"
+
+#: inc/customizer.php:134
+msgid "Sidebar Content Size"
+msgstr "Größe des Seitenleisten-Inhalts"
+
+#: inc/settings.php:120
+msgid "Choose the layout to be used on the search results page."
+msgstr "Wähle das Layout, das auf der Seite mit den Suchergebnissen verwendet wird."
+
+#: inc/settings.php:118
+msgid "Search Results Layout"
+msgstr "Layout der Suchergebnisse"
+
+#: inc/customizer.php:89
+msgid "Site Tagline Color"
+msgstr "Farbe des Website-Untertitels"
+
+#: header.php:30
+msgid "Skip to content"
+msgstr "Zum Inhalt springen"
+
+#: inc/customizer.php:149
+msgid "Meta Text Link Color"
+msgstr "Textlink-Farbe Metadaten"
+
+#: inc/customizer.php:142
+msgid "Meta Text Color"
+msgstr "Textfarbe Metadaten"
+
+#: inc/settings.php:72
+msgid "Display the website tagline below the logo or site title."
+msgstr "Titel oder Untertitel der Website unter dem Logo anzeigen."
+
+#: inc/settings.php:71
+msgid "Tagline"
+msgstr "Untertitel"
+
+#: parts/menu.php:60
+msgid "Open the search"
+msgstr "Suche öffnen"
+
+#. translators: 1: plugin name(s).
+#: inc/class-tgm-plugin-activation.php:378
+msgid "The following recommended plugin is currently inactive: %1$s."
+msgid_plural "The following recommended plugins are currently inactive: %1$s."
+msgstr[0] "Das folgende empfohlene Plugin ist derzeit nicht aktiv: %1$s."
+msgstr[1] "Die folgenden empfohlenen Plugins sind derzeit nicht aktiv: %1$s."
+
+#. translators: 1: plugin name(s).
+#: inc/class-tgm-plugin-activation.php:372
+msgid "The following required plugin is currently inactive: %1$s."
+msgid_plural "The following required plugins are currently inactive: %1$s."
+msgstr[0] "Das folgende erforderliche Plugin ist derzeit nicht aktiv: %1$s."
+msgstr[1] "Die folgenden erforderlichen Plugins sind derzeit nicht aktiv: %1$s."
+
+#. translators: 1: plugin name(s).
+#: inc/class-tgm-plugin-activation.php:366
+msgid "There is an update available for: %1$s."
+msgid_plural "There are updates available for the following plugins: %1$s."
+msgstr[0] "Es ist eine Aktualisierung verfügbar für: %1$s."
+msgstr[1] "Es sind Aktualisierungen für die folgenden Plugins verfügbar: %1$s."
+
+#. translators: 1: plugin name(s).
+#: inc/class-tgm-plugin-activation.php:360
+msgid "The following plugin needs to be updated to its latest version to ensure maximum compatibility with this theme: %1$s."
+msgid_plural "The following plugins need to be updated to their latest version to ensure maximum compatibility with this theme: %1$s."
+msgstr[0] "Das folgende Plugin muss auf die neueste Version aktualisiert werden, um die größtmögliche Kompatibilität mit diesem Theme zu gewährleisten: %1$s."
+msgstr[1] "Die folgenden Plugins müssen auf die neueste Version aktualisiert werden, um die größtmögliche Kompatibilität mit diesem Theme zu gewährleisten: %1$s."
+
+#. translators: 1: plugin name(s).
+#: inc/class-tgm-plugin-activation.php:354
+msgid "This theme recommends the following plugin: %1$s."
+msgid_plural "This theme recommends the following plugins: %1$s."
+msgstr[0] "Dieses Theme empfiehlt das folgende Plugin: %1$s."
+msgstr[1] "Dieses Theme empfiehlt die folgenden Plugins: %1$s."
+
+#. translators: 1: plugin name(s).
+#: inc/class-tgm-plugin-activation.php:348
+msgid "This theme requires the following plugin: %1$s."
+msgid_plural "This theme requires the following plugins: %1$s."
+msgstr[0] "Dieses Theme erfordert folgendes Plugin: %1$s."
+msgstr[1] "Dieses Theme erfordert die folgenden Plugins: %1$s."
+
+#: inc/settings.php:345
+msgid "Display the Privacy Policy page link in the footer."
+msgstr "Datenschutzlink in der Fußzeile anzeigen."
+
+#: inc/settings.php:344
+msgid "Privacy Policy Link"
+msgstr "Datenschutz-Link"
+
+#: searchform.php:12
+msgid "Search for:"
+msgstr "Suche nach:"
+
+#: inc/sliders.php:156
+msgid "Display Page Slider"
+msgstr "Seiten-Slider anzeigen"
+
+#: inc/sliders.php:122
+msgid "Page Slider"
+msgstr "Seiten-Slider"
+
+#: inc/sliders/sliders.php:29
+msgid "Smart Slider: "
+msgstr "Smart Slider:"
+
+#: inc/template-tags.php:28
+msgid "View posts by "
+msgstr "Beiträge anzeigen von "
+
+#: inc/settings.php:194
+msgid "Search Icon"
+msgstr "Such-Icon"
+
+#: inc/settings.php:189
+msgid "Mobile Menu Close Icon"
+msgstr "Schließen-Icon des mobilen Menüs"
+
+#: inc/settings.php:184
+msgid "Mobile Menu Icon"
+msgstr "Icon des mobilen Menüs"
+
+#: inc/settings.php:22
+msgid "Icons"
+msgstr "Icons"
+
+#: inc/customizer.php:541
+msgid " Masthead Widget Titles"
+msgstr "Titelkopf Widget-Titel"
+
+#: inc/settings.php:322
+msgid "The number of columns to display when the grid archive layout is set."
+msgstr "Die Anzahl der Spalten, die angezeigt werden sollen, wenn das Archiv auf Rasterlayout gesetzt ist."
+
+#: inc/settings.php:321
+msgid "Grid Archive Column Count"
+msgstr "Spaltenanzahl Grid-Layout f. Archive"
+
+#: inc/settings.php:315
+msgid "The number of columns to display when the circle icon archive layout is set."
+msgstr "Die Anzahl der anzuzeigenden Spalten, wenn das Kreissymbol-Archivlayout festgelegt ist."
+
+#: inc/settings.php:314
+msgid "Circle Icon Archive Column Count"
+msgstr "Spaltenanzahl des Kreis-Icon-Archivs"
+
+#: inc/settings.php:311
+msgid "The link displayed when post content is split using the \"more\" quicktag or when the read more button is enabled."
+msgstr "Der Link, der angezeigt wird, wenn der Beitrags-Inhalt mit dem „mehr“-Quicktag geteilt wird oder wenn der Weiterlesen-Button aktiviert ist."
+
+#: inc/settings.php:307
+msgid "Show read more button when Post Excerpt is chosen."
+msgstr "Weiterlesen-Button anzeigen, wenn die Länge des Textauszugs gewählt wurde."
+
+#: inc/settings.php:305
+msgid "Read More Button"
+msgstr "Weiterlesen-Button"
+
+#: inc/settings.php:242
+msgid "If no manual post excerpt is added one will be generated. How many words should it be? Only applicable if Post Excerpt has been selected from the Post Content setting."
+msgstr "Wenn kein manueller Textauszug hinzugefügt wird, dann wird einer generiert. Wie viele Worte sollen es sein? Nur verfügbar, wenn Textauszug aus Beitrag in den Einstellungen gewählt wurde."
+
+#: inc/settings.php:241
+msgid "Excerpt Length"
+msgstr "Länge des Textauszugs"
+
+#: inc/customizer.php:532
+msgid "Checkout Button Border Color"
+msgstr "Rahmenfarbe Bezahlen-Button"
+
+#: inc/customizer.php:525
+msgid "Checkout Button Color"
+msgstr "Farbe des Bezahlen-Buttons"
+
+#: inc/customizer.php:519
+msgid "Checkout Button Background Color"
+msgstr "HG-Farbe Bezahlen-Button"
+
+#: inc/customizer.php:513
+msgid "Button Shadow"
+msgstr "Button-Schatten"
+
+#: inc/customizer.php:507
+msgid "Button Text Shadow"
+msgstr "Button-Textschatten"
+
+#: inc/customizer.php:501
+msgid "Button Border Color"
+msgstr "Button-Rahmenfarbe"
+
+#: inc/customizer.php:494
+msgid "Button Color"
+msgstr "Button-Farbe"
+
+#: inc/customizer.php:488
+msgid "Button Background Color"
+msgstr "Button-Hintergrundfarbe"
+
+#: inc/customizer.php:24
+msgid "Buttons"
+msgstr "Buttons"
+
+#: functions.php:362
+msgid "Replaces the logo and header widget area."
+msgstr "Ersetzt den Logo- und Header-Widget-Bereich."
+
+#: functions.php:360
+msgid "Masthead"
+msgstr "Ein Titelkopf"
+
+#: functions.php:352
+msgid "Displays to the right of the logo."
+msgstr "Wird rechts neben dem Logo angezeigt."
+
+#: functions.php:342
+msgid "Displays below the content area."
+msgstr "Wird unterhalb des Inhaltsbereichs angezeigt."
+
+#: functions.php:331
+msgid "Displays on WooCommerce pages."
+msgstr "Wird auf WooCommerce-Seiten angezeigt."
+
+#: functions.php:320
+msgid "Displays to the right or left of the content area."
+msgstr "Wird rechts oder links neben dem Inhaltsbereich angezeigt."
+
+#: inc/settings.php:62
+msgid "Only applicable if a Logo Image has been set."
+msgstr "Nur verfügbar, wenn ein Logo-Bild festgelegt wurde."
+
+#: inc/settings.php:61
+msgid "Display Site Title Alongside Logo"
+msgstr "Website-Titel zusammen mit dem Logo anzeigen."
+
+#: inc/settings/settings.php:457 inc/settings/settings.php:475
+msgid "SiteOrigin Premium"
+msgstr "SiteOrigin Premium"
+
+#: inc/settings/inc/control/premium.php:24
+msgid "Find Out More"
+msgstr "Mehr erfahren"
+
+#: inc/settings/inc/control/premium.php:15
+msgid "SiteOrigin Premium adds powerful features to %s. They'll save you time and make your site more professional."
+msgstr "SiteOrigin Premium fügt %s leistungsstarke Funktionen hinzu. Diese werden dir Zeit sparen und deine Website um einiges professioneller machen."
+
+#: inc/settings.php:348
+msgid "SiteOrigin Attribution"
+msgstr "SiteOrigin-Attribution"
+
+#: inc/settings.php:76
+msgid "Text that appears to the right of your logo. It will be hidden if widgets are placed in the header."
+msgstr "Text, der rechts von deinem Logo erscheint. Wird ausgeblendet, wenn Widgets im Header platziert werden."
+
+#: inc/settings/inc/about_page.php:164
+msgid "Write a Review"
+msgstr "Schreibe eine Rezension"
+
+#: inc/customizer.php:209
+msgid "Content Heading 6 Size"
+msgstr "Inhaltsüberschrift 6 - Größe"
+
+#: inc/customizer.php:201
+msgid "Content Heading 5 Size"
+msgstr "Inhaltsüberschrift 5 - Größe"
+
+#: inc/customizer.php:193
+msgid "Content Heading 4 Size"
+msgstr "Inhaltsüberschrift 4 - Größe"
+
+#: inc/customizer.php:185
+msgid "Content Heading 3 Size"
+msgstr "Inhaltsüberschrift 3 - Größe"
+
+#: inc/customizer.php:177
+msgid "Content Heading 2 Size"
+msgstr "Inhaltsüberschrift 2 - Größe"
+
+#: inc/customizer.php:169
+msgid "Content Heading 1 Size"
+msgstr "Inhaltsüberschrift 1 - Größe"
+
+#: inc/customizer.php:68
+msgid "Menu Font"
+msgstr "Menü-Schrift"
+
+#: inc/template-tags.php:38
+msgid "Add author biographical info."
+msgstr "Biografische Informationen zum Autor hinzufügen."
+
+#: inc/widgets.php:408
+msgid "Phone"
+msgstr "Telefon"
+
+#: inc/widgets.php:407
+msgid "Email"
+msgstr "E-Mail"
+
+#: inc/widgets.php:405
+msgid "VK"
+msgstr "VK"
+
+#: inc/widgets.php:404
+msgid "StumbleUpon"
+msgstr "StumbleUpon"
+
+#: inc/widgets.php:403
+msgid "SoundCloud"
+msgstr "SoundCloud"
+
+#: inc/widgets.php:402
+msgid "Mixcloud"
+msgstr "Mixcloud"
+
+#: inc/widgets.php:401
+msgid "Codepen"
+msgstr "CodePen"
+
+#: inc/widgets.php:400
+msgid "Bitbucket"
+msgstr "Bitbucket"
+
+#: inc/widgets.php:399
+msgid "GitHub"
+msgstr "GitHub"
+
+#: inc/widgets.php:398
+msgid "WordPress"
+msgstr "WordPress"
+
+#: inc/widgets.php:397
+msgid "Tumblr"
+msgstr "Tumblr"
+
+#: inc/widgets.php:395
+msgid "Vimeo"
+msgstr "Vimeo"
+
+#: inc/widgets.php:394
+msgid "YouTube"
+msgstr "YouTube"
+
+#: inc/widgets.php:393
+msgid "Skype"
+msgstr "Skype"
+
+#: inc/widgets.php:392
+msgid "Pinterest"
+msgstr "Pinterest"
+
+#: inc/widgets.php:391
+msgid "Instagram"
+msgstr "Instagram"
+
+#: inc/widgets.php:390
+msgid "500px"
+msgstr "500px"
+
+#: inc/widgets.php:389
+msgid "Flickr"
+msgstr "Flickr"
+
+#: inc/widgets.php:388
+msgid "DeviantArt"
+msgstr "DeviantArt"
+
+#: inc/widgets.php:387
+msgid "Behance"
+msgstr "Behance"
+
+#: inc/widgets.php:386
+msgid "Dribbble"
+msgstr "Dribbble"
+
+#: inc/widgets.php:385
+msgid "LinkedIn"
+msgstr "LinkedIn"
+
+#: inc/widgets.php:290
+msgid "Open link in a new tab"
+msgstr "Link in neuem Tab öffnen"
+
+#: inc/widgets.php:198
+msgid "Title Color"
+msgstr "Titelfarbe"
+
+#: inc/settings.php:674
+msgid "Vantage is a flexible multipurpose theme. Its strength lies in its tight integration with some powerful plugins like Page Builder for responsive page layouts, Meta Slider for big beautiful sliders and WooCommerce to help you sell online. Vantage is fully responsive and retina ready. Use it to start a business site, portfolio or online store."
+msgstr "Vantage ist ein flexibles Mehrzweck-Theme. Seine Stärke liegt in einer engen Integration mit einigen leistungsstarken Plugins wie Page Builder für responsive Seitenlayouts, Meta Slider für große, schöne Slider und WooCommerce, um dir beim Online-Verkauf zu helfen. Vantage ist vollständig responsiv und retina-fähig. Verwende es, um eine Unternehmens-Website, ein Portfolio oder einen Online-Shop zu erstellen."
+
+#: inc/settings.php:640
+msgid "To use these page settings, please use the <strong>Default</strong> template selected under <strong>Page Attributes</strong>"
+msgstr "Um diese Seiteneinstellungen zu verwenden, nutze bitte das <strong>Standard</strong>-Template, das unter den <strong>Seitenattributen</strong> ausgewählt wird."
+
+#: inc/settings.php:586
+msgid "Hide the footer widgets on this page."
+msgstr "Footer-Widgets auf dieser Seite verbergen."
+
+#: inc/settings.php:584
+msgid "Hide Footer Widgets"
+msgstr "Footer-Widgets verbergen"
+
+#: inc/settings.php:579
+msgid "Hide the masthead on this page."
+msgstr "Den Titelkopf auf dieser Seite verbergen."
+
+#: inc/settings.php:578 inc/settings.php:585
+msgid "hide"
+msgstr "Ausblenden"
+
+#: inc/settings.php:577
+msgid "Hide Masthead"
+msgstr "Titelkopf verbergen"
+
+#: inc/settings.php:572
+msgid "Include the margin above your footer."
+msgstr "Füge einen Außenabstand über dem Footer ein."
+
+#: inc/settings.php:570
+msgid "Footer Top Margin"
+msgstr "Abstand oben am Footer"
+
+#: inc/settings.php:565
+msgid "Include the margin below the masthead (top area) of your site."
+msgstr "Füge einen Außenabstand unterhalb des Titelkopfes (oberer Bereich) deiner Website hinzu."
+
+#: inc/settings.php:564 inc/settings.php:571
+msgid "enable"
+msgstr "aktivieren"
+
+#: inc/settings.php:563
+msgid "Masthead Bottom Margin"
+msgstr "Abstand unten am Titelkopf"
+
+#: inc/settings.php:558
+msgid "Display the page title on this page."
+msgstr "Seitentitel auf dieser Seite anzeigen."
+
+#: inc/settings.php:556
+msgid "Page Title"
+msgstr "Seitentitel"
+
+#: inc/settings.php:550
+msgid "Display the page featured image on this page."
+msgstr "Beitragsbild auf dieser Seite anzeigen."
+
+#: inc/settings.php:549 inc/settings.php:557
+msgid "display"
+msgstr "anzeigen"
+
+#: inc/settings.php:548
+msgid "Page Featured Image"
+msgstr "Seiten-Beitragsbild"
+
+#: inc/settings.php:541
+msgid "Full Width, With Sidebar"
+msgstr "Volle Breite, mit Seitenleiste"
+
+#: inc/settings.php:539
+msgid "No Sidebar"
+msgstr "Keine Seitenleiste"
+
+#: inc/settings.php:536
+msgid "Page Layout"
+msgstr "Seiten-Layout"
+
+#: inc/settings.php:504
+msgid "Vantage Premium Upgrade"
+msgstr "Vantage Premium Upgrade"
+
+#: inc/settings.php:496
+msgid "Premium Only"
+msgstr "Nur in Premium-Version"
+
+#: inc/settings.php:495
+msgid "Settings for your theme"
+msgstr "Einstellungen für dein Theme"
+
+#: inc/settings.php:301
+msgid "Text displayed as a label next to the post author's comments."
+msgstr "Text, der als Label neben den Kommentaren des Beitragsautors angezeigt wird."
+
+#: inc/settings.php:300
+msgid "Post Author's Comments"
+msgstr "Kommentare des Autors"
+
+#: inc/settings.php:176
+msgid "Breadcrumbs"
+msgstr "Brotkrümelnavigation"
+
+#: inc/settings.php:143
+msgid "Mobile Menu Search"
+msgstr "Suche im Mobile-Menü"
+
+#: inc/settings.php:139
+msgid "Mobile Menu Text"
+msgstr "Text für Mobile-Menü"
+
+#: inc/settings.php:136
+msgid "The resolution when the menu collapses into a mobile navigation menu. Value is in pixels."
+msgstr "Die Auflösung, wann das Menü zum Mobile-Menü einklappen soll. Wert in Pixel angeben."
+
+#: inc/settings.php:135
+msgid "Mobile Menu Collapse"
+msgstr "Einklappen des Mobile-Menü"
+
+#: inc/settings/settings.php:446
+msgid "Change settings for your theme."
+msgstr "Einstellungen für dein Theme ändern."
+
+#: inc/settings.php:521 inc/settings/inc/page_settings_customizer.php:85
+msgid "Taxonomy"
+msgstr "Taxonomie"
+
+#: inc/settings.php:518 inc/settings/inc/page_settings_customizer.php:49
+msgid "Not Found"
+msgstr "Nicht gefunden"
+
+#: inc/settings.php:519 inc/settings/inc/page_settings_customizer.php:48
+msgid "Author Archives"
+msgstr "Autoren-Archive"
+
+#: inc/settings.php:517 inc/settings/inc/page_settings_customizer.php:47
+msgid "Date Archives"
+msgstr "Datums-Archive"
+
+#: inc/settings.php:516 inc/settings/inc/page_settings_customizer.php:46
+msgid "Search Results"
+msgstr "Suchergebnisse"
+
+#: inc/settings.php:515 inc/settings/inc/page_settings_customizer.php:45
+msgid "Blog Page"
+msgstr "Blogseite"
+
+#: inc/settings.php:512 inc/settings/inc/page_settings_customizer.php:37
+msgid "Change layouts for various pages on your site."
+msgstr "Wechsle das Layout für mehrere Seiten deiner Website."
+
+#: inc/settings.php:511 inc/settings/inc/page_settings_customizer.php:36
+msgid "Page Template Settings"
+msgstr "Seiten-Template Einstellungen"
+
+#: inc/settings.php:508 inc/settings/inc/page_settings.php:199
+msgid "Page settings"
+msgstr "Seiteneinstellungen"
+
+#: inc/settings/inc/control/widget.php:64
+msgid "Edit Widget"
+msgstr "Widget bearbeiten"
+
+#: inc/settings/inc/control/widget.php:31
+msgid "<a href=\"%s\">Install</a> the Widgets Bundle now."
+msgstr "<a href=\"%s\">Installiere jetzt</a> das Widgets-Bundle."
+
+#: inc/settings/inc/control/widget.php:29
+msgid "This field requires the Widgets Bundle plugin."
+msgstr "Dieses Feld erfordert das Widgets-Bundlge-Plugin."
+
+#: inc/settings/inc/control/teaser.php:38
+msgid "Available in Premium"
+msgstr "Verfügbar in der Premium-Version"
+
+#: inc/settings.php:501 inc/settings/inc/control/font.php:75
+msgid "Subset"
+msgstr "Unter-Teilsatz"
+
+#: inc/settings.php:500 inc/settings/inc/control/font.php:70
+msgid "Variant"
+msgstr "Variante"
+
+#: inc/settings/inc/about_page.php:277
+msgid "Proudly Created By"
+msgstr "Stolz kreiert von"
+
+#: inc/settings/inc/about_page.php:247
+msgid "If you like %s, please share it!"
+msgstr "Wenn dir %s gefällt, dann teile das bitte mit anderen!"
+
+#: inc/settings/inc/about_page.php:233
+msgid "Watch The Video"
+msgstr "Video anschauen"
+
+#: inc/settings/inc/about_page.php:173
+msgid "Upgrade to Premium"
+msgstr "Upgrade auf Premium"
+
+#: inc/settings/inc/about_page.php:155
+msgid "Documentation"
+msgstr "Dokumentation (engl.)"
+
+#: inc/settings/inc/about_page.php:146
+msgid "Get Updates"
+msgstr "Neuigkeiten erfahren (engl.)"
+
+#: inc/settings/inc/about_page.php:137
+msgid "Take a Tour"
+msgstr "Starte eine Tour"
+
+#: inc/settings/inc/about_page.php:94
+msgid "Free #WordPress Theme from @SiteOrigin"
+msgstr "Kostenloses #WordPress Theme von @SiteOrigin"
+
+#: inc/settings/inc/about_page.php:56 inc/settings/inc/about_page.php:57
+#: inc/settings/inc/about_page.php:112
+msgid "About %s"
+msgstr "Über %s"
+
+#: inc/settings/inc/about_page.php:44
+msgid "Learn About %s"
+msgstr "Lerne mehr über %s"
+
+#: inc/settings/inc/about_page.php:35
+msgid "You can learn more about it %1$shere%2$s, or head straight to the %3$scustomizer%4$s to start setting it up."
+msgstr "Du kannst %1$shier%2$s mehr über das Theme erfahren, oder direkt zum %3$sCustomizer%4$s gehen, um mit deiner Anpassung loszulegen."
+
+#: inc/settings/inc/about_page.php:32
+msgid "Thanks for choosing %s!"
+msgstr "Danke, dass du dich für %s entschieden hast!"
+
+#: inc/panels-lite/panels-lite.php:28
+msgid "This theme supports Page Builder to create beautifully proportioned column based content."
+msgstr "Dieses Theme unterstützt Page Builder, um schön proportionierte spaltenbasierte Inhalte zu erstellen."
+
+#: inc/panels-lite/panels-lite.php:25
+msgid "Off"
+msgstr "Aus"
+
+#: inc/panels-lite/panels-lite.php:24
+msgid "On"
+msgstr "Ein"
+
+#: inc/mobilenav/mobilenav.php:19 inc/mobilenav/mobilenav.php:80
+msgid "Back"
+msgstr "Zurück"
+
+#: inc/legacy.php:20
+msgid "Navigate to <strong>Appearance > Customize > Theme Settings</strong> to access theme settings."
+msgstr "Gehe auf <strong>Design > Customizer > Theme-Einstellungen</strong>, um Zugang zu den Einstellungen zu haben."
+
+#: inc/legacy.php:19
+msgid "Our theme settings now take advantage of the WordPress customizer."
+msgstr "Unsere Theme-Einstellungen nutzen jetzt die Vorteile des WordPress-Customizers."
+
+#: inc/legacy.php:17
+msgid "Vantage Settings Have Moved"
+msgstr "Die Vantage-Einstellungen sind umgezogen."
+
+#: inc/customizer.php:710
+msgid "Sidebar Position"
+msgstr "Seitenleisten-Position"
+
+#: inc/customizer.php:701
+msgid "Scroll to Top Background"
+msgstr "HG-Farbe für Nach-oben-scrollen"
+
+#: inc/customizer.php:694
+msgid "Scroll to Top Color "
+msgstr "Schriftfarbe für Nach-oben-scrollen"
+
+#: inc/customizer.php:687
+msgid "Site Info Link"
+msgstr "Site-Info Link"
+
+#: inc/customizer.php:680
+msgid "Site Info Text"
+msgstr "Site-Info Text"
+
+#: inc/customizer.php:673
+msgid "Link Hover Color"
+msgstr "Link Hover-Farbe"
+
+#: inc/customizer.php:666
+msgid "Link Color"
+msgstr "Linkfarbe"
+
+#: inc/customizer.php:653
+msgid "Widget Titles"
+msgstr "Widget-Titel"
+
+#: inc/customizer.php:640
+msgid "Footer Background Image Layout"
+msgstr "Footer-Hintergrundbild-Layout"
+
+#: inc/customizer.php:633
+msgid "Footer Background Image"
+msgstr "Footer-Hintergrundbild"
+
+#: inc/customizer.php:626
+msgid "Footer Background"
+msgstr "Footer-Hintergrund"
+
+#: inc/customizer.php:618
+msgid "Image Shadow and Rounding"
+msgstr "Bild-Schatten und Rundung"
+
+#: inc/customizer.php:605
+msgid "Page Background Image Layout"
+msgstr "Seiten-Hintergrundbild-Layout"
+
+#: inc/customizer.php:598
+msgid "Page Background Image"
+msgstr "Seiten-Hintergrundbild"
+
+#: inc/customizer.php:591
+msgid "Page Background"
+msgstr "Seiten-Hintergrund"
+
+#: inc/customizer.php:585 inc/customizer.php:612 inc/customizer.php:647
+msgid "Cover"
+msgstr "Ausfüllen"
+
+#: inc/customizer.php:584 inc/customizer.php:611 inc/customizer.php:646
+msgid "Tile"
+msgstr "Kacheln"
+
+#: inc/customizer.php:582 inc/customizer.php:609 inc/customizer.php:644
+#: inc/settings.php:538
+msgid "Default"
+msgstr "Standard"
+
+#: inc/customizer.php:578
+msgid "Masthead Background Image Layout"
+msgstr "Layout Titelkopf-Hintergrundbild"
+
+#: inc/customizer.php:571
+msgid "Masthead Background Image"
+msgstr "Hintergrundbild für Titelkopf"
+
+#: inc/customizer.php:564
+msgid "Masthead Background"
+msgstr "Hintergrund des Titelkopfs"
+
+#: inc/customizer.php:555
+msgid "Circle Icon Widget Icon"
+msgstr "Icon im Kreis-Icon Widget"
+
+#: inc/customizer.php:548
+msgid "Circle Icon Widget Background"
+msgstr "Hintergrund des Kreis-Icon Widgets"
+
+#: inc/customizer.php:479
+msgid "Menu Border"
+msgstr "Menü-Rahmen"
+
+#: inc/customizer.php:472
+msgid "Menu Background"
+msgstr "Menü-Hintergrund"
+
+#: inc/customizer.php:465
+msgid "Menu Text"
+msgstr "Menü-Text"
+
+#: inc/customizer.php:458
+msgid "Search Background"
+msgstr "Hintergrund der Suchleiste"
+
+#: inc/customizer.php:451
+msgid "Title Background"
+msgstr "Hintergrund des Titels"
+
+#: inc/customizer.php:444
+msgid "Title Text"
+msgstr "Text des Titels"
+
+#: inc/customizer.php:427
+msgid "Header Widget Menu Border Color"
+msgstr "Menü-Rahmenfarbe des Header Widgets"
+
+#: inc/customizer.php:419
+msgid "Menu Font Size"
+msgstr "Schriftgröße im Menü"
+
+#: inc/customizer.php:411
+msgid "Menu Item Horizontal Padding (px)"
+msgstr "Horizontaler Abstand der Menü-Elemente (px)"
+
+#: inc/customizer.php:402
+msgid "Menu Item Vertical Padding (px)"
+msgstr "Vertikaler Abstand der Menü-Elemente (px)"
+
+#: inc/customizer.php:395
+msgid "Search Input Text"
+msgstr "Text der Suchleiste"
+
+#: inc/customizer.php:388
+msgid "Search Input Background"
+msgstr "Hintergrundfarbe der Suchleiste"
+
+#: inc/customizer.php:380
+msgid "Search Icon Hover Color"
+msgstr "Such-Icon Hover-Farbe"
+
+#: inc/customizer.php:373
+msgid "Search Icon Color"
+msgstr "Such-Icon-Farbe"
+
+#: inc/customizer.php:366
+msgid "Search Icon Background"
+msgstr "Hintergrund des Such-Icons"
+
+#: inc/customizer.php:358
+msgid "Current Page Text"
+msgstr "Text bei aktueller Seite"
+
+#: inc/customizer.php:350
+msgid "Current Page Background"
+msgstr "Hintergrund bei aktueller Seite"
+
+#: inc/customizer.php:342
+msgid "Icon Hover Color"
+msgstr "Icon-Farbe bei Mauszeigerkontakt"
+
+#: inc/customizer.php:335 inc/widgets.php:231
+msgid "Icon Color"
+msgstr "Icon-Farbe"
+
+#: inc/customizer.php:327
+msgid "Second Level Hover Text"
+msgstr "Hover-Text in sekundärer Ebene"
+
+#: inc/customizer.php:319
+msgid "Second Level Hover"
+msgstr "Hover in sekundärer Ebene"
+
+#: inc/customizer.php:311
+msgid "Hover Text"
+msgstr "Hover Text"
+
+#: inc/customizer.php:303
+msgid "Hover Background"
+msgstr "Hintergrund bei Mauszeigerkontakt"
+
+#: inc/customizer.php:296
+msgid "Second Level Text"
+msgstr "Sekundärer Text"
+
+#: inc/customizer.php:289
+msgid "Second Level Background"
+msgstr "Sekundärer Hintergrund"
+
+#: inc/customizer.php:282 inc/widgets.php:210
+msgid "Text Color"
+msgstr "Textfarbe"
+
+#: inc/customizer.php:275 inc/customizer.php:437
+msgid "Background"
+msgstr "Hintergrund"
+
+#: inc/customizer.php:269 inc/customizer.php:583 inc/customizer.php:610
+#: inc/customizer.php:645
+msgid "Center"
+msgstr "Zentriert"
+
+#: inc/customizer.php:264
+msgid "Menu Alignment"
+msgstr "Menü-Ausrichtung"
+
+#: inc/customizer.php:255
+msgid "Add Link Underline on Hover"
+msgstr "Link-Unterstreichung bei Hover hinzufügen"
+
+#: inc/customizer.php:247
+msgid "Content Link Hover Color"
+msgstr "Link-Hover-Farbe im Inhalt"
+
+#: inc/customizer.php:241
+msgid "Remove Link Underline"
+msgstr "Link-Unterstreichung entfernen"
+
+#: inc/customizer.php:233
+msgid "Content Link Color"
+msgstr "Inhalts-Link-Farbe"
+
+#: inc/customizer.php:227
+msgid "Center Logo"
+msgstr "Logo in die Mitte"
+
+#: inc/customizer.php:219
+msgid "Header Padding"
+msgstr "Innenabstand im Header"
+
+#: inc/customizer.php:163
+msgid "Content Heading Color"
+msgstr "Farbe der Inhaltsüberschrift"
+
+#: inc/customizer.php:156
+msgid "Content Color"
+msgstr "Farbe des Inhalts"
+
+#: inc/customizer.php:126
+msgid "Content Size"
+msgstr "Größe des Inhalts"
+
+#: inc/customizer.php:119
+msgid "Page Title Color"
+msgstr "Farbe des Seitentitels"
+
+#: inc/customizer.php:111
+msgid "Page Title Size"
+msgstr "Größe des Seitentitels"
+
+#: inc/customizer.php:104
+msgid "Header Text Color"
+msgstr "Header-Textfarbe"
+
+#: inc/customizer.php:96
+msgid "Header Text Size"
+msgstr "Textgröße im Header"
+
+#: inc/customizer.php:82
+msgid "Site Title Color"
+msgstr "Farbe des Website-Titels"
+
+#: inc/customizer.php:75
+msgid "Site Title Size"
+msgstr "Größe des Website-Titels"
+
+#: inc/customizer.php:62
+msgid "Heading Font"
+msgstr "Schrift für Überschriften"
+
+#: inc/customizer.php:56
+msgid "Site Title Font"
+msgstr "Schrift des Website-Titels"
+
+#: inc/customizer.php:50
+msgid "Body Font"
+msgstr "Body-Schrift"
+
+#: inc/customizer.php:32
+msgid "Page"
+msgstr "Seite"
+
+#: inc/customizer.php:28
+msgid "Widgets"
+msgstr "Widgets"
+
+#: inc/customizer.php:20 inc/settings.php:131
+msgid "Mobile Menu"
+msgstr "Mobile-Menü"
+
+#: inc/customizer.php:16 inc/mobilenav/mobilenav.php:18
+#: inc/mobilenav/mobilenav.php:79
+msgid "Menu"
+msgstr "Menü"
+
+#: inc/customizer.php:8
+msgid "Fonts"
+msgstr "Schriften"
+
+#: inc/customizer/customizer.php:671
+msgid "Reset Customizations"
+msgstr "Anpassungen zurücksetzen"
+
+#: inc/customizer/customizer.php:670
+msgid "Are you sure you want to reset your theme customizations?"
+msgstr "Bist du sicher, dass du deine individuellen Theme Anpassungen zurücksetzen willst?"
+
+#: inc/customizer/customizer.php:446
+msgid "Theme Specific Customizations For %s."
+msgstr "Theme spezifische Anpassungen für %s."
+
+#: inc/customizer/customizer.php:445
+msgid "Theme Design"
+msgstr "Theme-Design"
+
+#. translators: 1: plugin name, 2: action number 3: total number of actions.
+#: inc/class-tgm-plugin-activation.php:3669
+msgid "Installing Plugin %1$s (%2$d/%3$d)"
+msgstr "Installation des Plugins %1$s (%2$d/%3$d)"
+
+#: inc/class-tgm-plugin-activation.php:3667
+msgid "All installations have been completed."
+msgstr "Alle Installationen wurden abgeschlossen."
+
+#. translators: 1: plugin name.
+#: inc/class-tgm-plugin-activation.php:3666
+msgid "%1$s installed successfully."
+msgstr "%1$s wurde erfolgreich installiert."
+
+#: inc/class-tgm-plugin-activation.php:3664
+msgid "The installation process is starting. This process may take a while on some hosts, so please be patient."
+msgstr "Der Installationsprozess wird gestartet. Dieser Vorgang kann bei einigen Hosts eine Weile dauern, bitte habe etwas Geduld."
+
+#. translators: 1: plugin name, 2: action number 3: total number of actions.
+#: inc/class-tgm-plugin-activation.php:3661
+msgid "Installing and Activating Plugin %1$s (%2$d/%3$d)"
+msgstr "Installation und Aktivierung des Plugins %1$s (%2$d/%3$d)"
+
+#: inc/class-tgm-plugin-activation.php:3659
+msgid "All installations and activations have been completed."
+msgstr "Alle Installationen und Aktivierungen wurden erfolgreich abgeschlossen."
+
+#: inc/class-tgm-plugin-activation.php:3674
+msgid "Hide Details"
+msgstr "Details ausblenden"
+
+#: inc/class-tgm-plugin-activation.php:3674
+msgid "Show Details"
+msgstr "Details anzeigen"
+
+#. translators: 1: plugin name.
+#: inc/class-tgm-plugin-activation.php:3658
+msgid "%1$s installed and activated successfully."
+msgstr "%1$s wurde erfolgreich installiert und aktiviert."
+
+#: inc/class-tgm-plugin-activation.php:3656
+msgid "The installation and activation process is starting. This process may take a while on some hosts, so please be patient."
+msgstr "Der Installations- und Aktivierungsprozess wird gestartet. Dieser Vorgang kann bei einigen Hosts eine Weile dauern, bitte habe etwas Geduld."
+
+#. translators: 1: plugin name.
+#: inc/class-tgm-plugin-activation.php:3652
+msgid "The installation of %1$s failed."
+msgstr "Die Installation von %1$s ist gescheitert."
+
+#. translators: 1: plugin name, 2: error message.
+#: inc/class-tgm-plugin-activation.php:3650
+msgid "An error occurred while installing %1$s: <strong>%2$s</strong>."
+msgstr "Bei der Installation von %1$s ist ein Fehler aufgetreten: <strong>%2$s</strong>."
+
+#. translators: 1: plugin name, 2: action number 3: total number of actions.
+#: inc/class-tgm-plugin-activation.php:3647
+msgid "Updating Plugin %1$s (%2$d/%3$d)"
+msgstr "Aktualisierung des Plugins %1$s (%2$d/%3$d)"
+
+#: inc/class-tgm-plugin-activation.php:3302
+msgid "Plugin activation failed."
+msgstr "Die Aktivierung des Plugins ist fehlgeschlagen."
+
+#: inc/class-tgm-plugin-activation.php:3077
+msgid "No plugins are available to be activated at this time."
+msgstr "Derzeit stehen keine Plugins zur Aktivierung zur Verfügung."
+
+#: inc/class-tgm-plugin-activation.php:3051
+msgid "No plugins were selected to be activated. No action taken."
+msgstr "Es wurden keine Plugins zum Aktivieren ausgewählt. Es wurde keine Aktion ausgeführt."
+
+#: inc/class-tgm-plugin-activation.php:2944
+msgid "No plugins are available to be updated at this time."
+msgstr "Derzeit stehen keine Plugins zur Aktualisierung zur Verfügung."
+
+#: inc/class-tgm-plugin-activation.php:2942
+msgid "No plugins are available to be installed at this time."
+msgstr "Derzeit stehen keine Plugins zur Installation zur Verfügung."
+
+#: inc/class-tgm-plugin-activation.php:2901
+msgid "No plugins were selected to be updated. No action taken."
+msgstr "Es wurden keine Plugins zur Aktualisierung ausgewählt. Es wurde keine Aktion ausgeführt."
+
+#: inc/class-tgm-plugin-activation.php:2899
+msgid "No plugins were selected to be installed. No action taken."
+msgstr "Es wurden keine Plugins zum Installieren ausgewählt. Es wurde keine Aktion ausgeführt."
+
+#: inc/class-tgm-plugin-activation.php:2868
+msgid "Activate"
+msgstr "Aktivieren"
+
+#: inc/class-tgm-plugin-activation.php:2865
+msgid "Update"
+msgstr "Aktualisieren"
+
+#: inc/class-tgm-plugin-activation.php:2826
+msgid "Upgrade message from the plugin author:"
+msgstr "Upgrade-Nachricht vom Plugin-Autor:"
+
+#. translators: %2$s: plugin name in screen reader markup
+#: inc/class-tgm-plugin-activation.php:2754
+msgid "Activate %2$s"
+msgstr "%2$s aktivieren"
+
+#. translators: %2$s: plugin name in screen reader markup
+#: inc/class-tgm-plugin-activation.php:2748
+msgid "Update %2$s"
+msgstr "%2$s aktualisieren"
+
+#. translators: %2$s: plugin name in screen reader markup
+#: inc/class-tgm-plugin-activation.php:2743
+msgid "Install %2$s"
+msgstr "%2$s installieren"
+
+#: inc/class-tgm-plugin-activation.php:2694
+msgid "Status"
+msgstr "Status"
+
+#: inc/class-tgm-plugin-activation.php:2693
+msgid "Version"
+msgstr "Version"
+
+#: inc/class-tgm-plugin-activation.php:2689 inc/settings.php:520
+#: inc/settings/inc/page_settings_customizer.php:71
+msgid "Type"
+msgstr "Typ"
+
+#: inc/class-tgm-plugin-activation.php:2688
+msgid "Source"
+msgstr "Quelle"
+
+#: inc/class-tgm-plugin-activation.php:2687
+msgid "Plugin"
+msgstr "Plugin"
+
+#: inc/class-tgm-plugin-activation.php:2673
+msgid "No plugins to install, update or activate."
+msgstr "Keine Plugins zu installieren, aktualisieren oder aktivieren."
+
+#: inc/class-tgm-plugin-activation.php:2650
+msgid "Available version:"
+msgstr "Verfügbare Version:"
+
+#: inc/class-tgm-plugin-activation.php:2638
+msgid "Minimum required version:"
+msgstr "Erforderliche Mindestversion:"
+
+#: inc/class-tgm-plugin-activation.php:2630
+msgid "Installed version:"
+msgstr "Installierte Version:"
+
+#: inc/class-tgm-plugin-activation.php:2622
+msgctxt "as in: \"version nr unknown\""
+msgid "unknown"
+msgstr "unbekannt"
+
+#. translators: 1: number of plugins.
+#: inc/class-tgm-plugin-activation.php:2540
+msgid "To Activate <span class=\"count\">(%s)</span>"
+msgid_plural "To Activate <span class=\"count\">(%s)</span>"
+msgstr[0] "Zu aktivieren <span class=\"count\">(%s)</span>"
+msgstr[1] "Zu aktivieren <span class=\"count\">(%s)</span>"
+
+#. translators: 1: number of plugins.
+#: inc/class-tgm-plugin-activation.php:2536
+msgid "Update Available <span class=\"count\">(%s)</span>"
+msgid_plural "Update Available <span class=\"count\">(%s)</span>"
+msgstr[0] "Aktualisierung verfügbar <span class=\"count\">(%s)</span>"
+msgstr[1] "Aktualisierung verfügbar <span class=\"count\">(%s)</span>"
+
+#. translators: 1: number of plugins.
+#: inc/class-tgm-plugin-activation.php:2532
+msgid "To Install <span class=\"count\">(%s)</span>"
+msgid_plural "To Install <span class=\"count\">(%s)</span>"
+msgstr[0] "Zu installieren <span class=\"count\">(%s)</span>"
+msgstr[1] "Zu installieren <span class=\"count\">(%s)</span>"
+
+#. translators: 1: number of plugins.
+#: inc/class-tgm-plugin-activation.php:2528
+msgctxt "plugins"
+msgid "All <span class=\"count\">(%s)</span>"
+msgid_plural "All <span class=\"count\">(%s)</span>"
+msgstr[0] "Alle <span class=\"count\">(%s)</span>"
+msgstr[1] "Alle <span class=\"count\">(%s)</span>"
+
+#. translators: 1: install status, 2: update status
+#: inc/class-tgm-plugin-activation.php:2482
+msgctxt "Install/Update Status"
+msgid "%1$s, %2$s"
+msgstr "%1$s, %2$s"
+
+#: inc/class-tgm-plugin-activation.php:2473
+msgid "Update recommended"
+msgstr "Aktualisierung empfohlen"
+
+#: inc/class-tgm-plugin-activation.php:2470
+msgid "Requires Update"
+msgstr "Aktualisierung erforderlich"
+
+#: inc/class-tgm-plugin-activation.php:2467
+msgid "Required Update not Available"
+msgstr "Erforderliche Aktualisierung ist nicht verfügbar"
+
+#: inc/class-tgm-plugin-activation.php:2461
+msgid "Active"
+msgstr "Aktiv"
+
+#: inc/class-tgm-plugin-activation.php:2459
+msgid "Installed But Not Activated"
+msgstr "Installiert, aber nicht aktiviert"
+
+#: inc/class-tgm-plugin-activation.php:2455
+msgid "Not Installed"
+msgstr "Nicht installiert"
+
+#: inc/class-tgm-plugin-activation.php:2438
+msgid "Pre-Packaged"
+msgstr "Vorgepackt"
+
+#: inc/class-tgm-plugin-activation.php:2435
+msgid "External Source"
+msgstr "Externe Quelle"
+
+#: inc/class-tgm-plugin-activation.php:2432
+msgid "WordPress Repository"
+msgstr "WordPress-Repository"
+
+#: inc/class-tgm-plugin-activation.php:2416
+msgid "Recommended"
+msgstr "Empfohlen"
+
+#: inc/class-tgm-plugin-activation.php:2413
+msgid "Required"
+msgstr "Erforderlich"
+
+#. translators: %s: version number
+#: inc/class-tgm-plugin-activation.php:2104
+msgid "TGMPA v%s"
+msgstr "TGMPA v%s"
+
+#: inc/class-tgm-plugin-activation.php:1235
+#: inc/class-tgm-plugin-activation.php:3091
+msgctxt "plugin A *and* plugin B"
+msgid "and"
+msgstr "und"
+
+#: inc/class-tgm-plugin-activation.php:1044
+msgid "The remote plugin package consists of more than one file, but the files are not packaged in a folder."
+msgstr "Das bereitgestellte Plugin-Paket besteht aus mehr als einer Datei, aber die Dateien sind nicht in einen Ordner gepackt."
+
+#: inc/class-tgm-plugin-activation.php:1034
+#: inc/class-tgm-plugin-activation.php:1044
+msgid "Please contact the plugin provider and ask them to package their plugin according to the WordPress guidelines."
+msgstr "Bitte kontaktiere den Plugin-Anbieter und bitte ihn darum, das Plugin den WordPress-Richtlinien entsprechend bereitzustellen."
+
+#: inc/class-tgm-plugin-activation.php:1034
+msgid "The remote plugin package does not contain a folder with the desired slug and renaming did not work."
+msgstr "Das Plugin-Installationspaket enthält keinen Ordner mit dem gewünschten Namen und das Umbenennen funktioniert nicht."
+
+#: inc/class-tgm-plugin-activation.php:617
+msgid "Update Required"
+msgstr "Aktualisierung erforderlich"
+
+#: inc/class-tgm-plugin-activation.php:616
+msgid "This plugin needs to be updated to be compatible with your theme."
+msgstr "Dieses Plugin muss aktualisiert werden, damit es mit deinem Theme kompatibel ist."
+
+#: inc/class-tgm-plugin-activation.php:410
+msgid "Please contact the administrator of this site for help."
+msgstr "Bitte kontaktiere den Administrator dieser Website, um Hilfe zu erhalten."
+
+#: inc/class-tgm-plugin-activation.php:409
+msgid "There are one or more required or recommended plugins to install, update or activate."
+msgstr "Mindestens ein erforderliches oder empfohlenes Plugin muss noch installiert, aktualisiert oder aktiviert werden."
+
+#: inc/class-tgm-plugin-activation.php:408
+msgid "Dismiss this notice"
+msgstr "Diesen Hinweis verwerfen"
+
+#. translators: 1: dashboard link.
+#: inc/class-tgm-plugin-activation.php:407
+msgid "All plugins installed and activated successfully. %1$s"
+msgstr "Alle Plugins erfolgreich installiert und aktiviert. %1$s"
+
+#. translators: 1: plugin name.
+#: inc/class-tgm-plugin-activation.php:405
+msgid "Plugin not activated. A higher version of %s is needed for this theme. Please update the plugin."
+msgstr "Plugin nicht aktiviert. Eine neuere Version von %s wird für dieses Theme benötigt. Bitte aktualisiere das Plugin."
+
+#. translators: 1: plugin name.
+#: inc/class-tgm-plugin-activation.php:403
+msgid "No action taken. Plugin %1$s was already active."
+msgstr "Keine Aktion ausgeführt. Plugin %1$s war bereits aktiv."
+
+#: inc/class-tgm-plugin-activation.php:401
+#: inc/class-tgm-plugin-activation.php:3095
+msgid "The following plugin was activated successfully:"
+msgid_plural "The following plugins were activated successfully:"
+msgstr[0] "Das folgende Plugin wurde erfolgreich aktiviert:"
+msgstr[1] "Die folgenden Plugins wurden erfolgreich aktiviert:"
+
+#: inc/class-tgm-plugin-activation.php:400
+#: inc/class-tgm-plugin-activation.php:3303
+msgid "Plugin activated successfully."
+msgstr "Das Plugin wurde erfolgreich aktiviert."
+
+#: inc/class-tgm-plugin-activation.php:399
+msgid "Return to the Dashboard"
+msgstr "Zurück zum Dashboard"
+
+#: inc/class-tgm-plugin-activation.php:398
+msgid "Return to Required Plugins Installer"
+msgstr "Zurück zur Installation der erforderlichen Plugins"
+
+#: inc/class-tgm-plugin-activation.php:393
+msgid "Begin activating plugin"
+msgid_plural "Begin activating plugins"
+msgstr[0] "Mit dem Aktivieren des Plugins beginnen"
+msgstr[1] "Mit dem Aktivieren der Plugins beginnen"
+
+#: inc/class-tgm-plugin-activation.php:388
+msgid "Begin updating plugin"
+msgid_plural "Begin updating plugins"
+msgstr[0] "Mit der Aktualisierung des Plugins beginnen"
+msgstr[1] "Mit der Aktualisierung der Plugins beginnen"
+
+#: inc/class-tgm-plugin-activation.php:383
+msgid "Begin installing plugin"
+msgid_plural "Begin installing plugins"
+msgstr[0] "Mit der Installation des Plugins beginnen"
+msgstr[1] "Mit der Installation der Plugins beginnen"
+
+#: inc/class-tgm-plugin-activation.php:346
+msgid "Something went wrong with the plugin API."
+msgstr "Etwas hat nicht funktioniert mit der Plugin-API."
+
+#. translators: %s: plugin name.
+#: inc/class-tgm-plugin-activation.php:345
+msgid "Updating Plugin: %s"
+msgstr "Aktualisiere Plugin: %s"
+
+#. translators: %s: plugin name.
+#: inc/class-tgm-plugin-activation.php:343
+msgid "Installing Plugin: %s"
+msgstr "Plugin wird installiert: %s"
+
+#: inc/class-tgm-plugin-activation.php:341
+msgid "Install Plugins"
+msgstr "Plugins installieren"
+
+#: inc/class-tgm-plugin-activation.php:340
+msgid "Install Required Plugins"
+msgstr "Erforderliche Plugins installieren"
+
+#: functions.php:776
+msgid "SiteOrigin CSS"
+msgstr "SiteOrigin CSS"
+
+#: functions.php:771
+msgid "SiteOrigin Widgets Bundle"
+msgstr "SiteOrigin Widgets-Bundle"
+
+#: fontawesome/icon-sections.php:8
+msgid "Gender Icons"
+msgstr "Icons für Gender-Spezifizierung"
+
+#: fontawesome/icon-sections.php:7
+msgid "Transportation Icons"
+msgstr "Transport-Icons"
+
+#: fontawesome/icon-sections.php:6
+msgid "Hand Icons"
+msgstr "Hand-Icons"
+
+#: fontawesome/icon-sections.php:5
+msgid "Accessibility Icons"
+msgstr "Accessibility-Icons"
+
+#: admin/about/page-support.php:4
+msgid "You can also read through the %sVantage documentation%s to get to know it even faster."
+msgstr "Du kannst dir auch die %sVantage-Dokumentation%s (auf Englisch) durchlesen, um es schneller zu erlernen."
+
+#: admin/about/page-support.php:3
+msgid "As a Vantage user, you'll get fast, friendly support on our own %ssupport forums%s."
+msgstr "Als Vantage-Benutzer bekommst du schnellen, freundlichen Support über unsere eigenen %sSupport-Foren%s."
+
+#: admin/about/page-support.php:1
+msgid "Lightning Fast Support"
+msgstr "Blitzschneller Support"
+
+#: admin/about/page-page-builder.php:4
+msgid "This powerful plugin gives you full drag and drop capabilities right inside Vantage."
+msgstr "Dieses mächtige Plugin gibt dir vollständige Drag-and-Drop-Funktionen direkt innerhalb von Vantage."
+
+#: admin/about/page-page-builder.php:3
+msgid "Vantage integrates, beautifully, with our %sfree Page Builder%s plugin."
+msgstr "Vantage integriert sich hervorragend in unser %skostenloses Page Builder%s-Plugin."
+
+#: admin/about/page-page-builder.php:1
+msgid "Enhanced by Page Builder"
+msgstr "Verbessert durch Page Builder"
+
+#: admin/about/page-mature.php:5
+msgid "Vantage is only getting better from here."
+msgstr "Vantage wird mit der Zeit immer besser."
+
+#: admin/about/page-mature.php:4
+msgid "We'll continue evolving it over the years."
+msgstr "Wir werden es im Laufe der Jahre weiterentwickeln."
+
+#: admin/about/page-mature.php:3
+msgid "Vantage has been around for a while now, and in that time we've been able to refine it into a rock solid WordPress theme."
+msgstr "Vantage gibt’s schon eine ganze Weile, und in dieser Zeit haben wir es geschafft, es zu einem grundsoliden WordPress-Theme weiterzuentwickeln."
+
+#: admin/about/page-mature.php:1
+msgid "Stable and Mature"
+msgstr "Stabil und ausgereift"
+
+#: admin/about/page-github.php:5
+msgid "You can watch what's happening with its development and even make contributions yourself."
+msgstr "Du kannst die Entwicklung mitverfolgen und sogar selbst dazu beitragen."
+
+#: admin/about/page-github.php:4
+msgid "Vantage is actively %sdeveloped on Github%s."
+msgstr "Vantage wird aktiv %sauf GitHub entwickelt%s."
+
+#: admin/about/page-github.php:1
+msgid "Developed on Github"
+msgstr "Entwickelt auf GitHub"
+
+#: admin/about/page-free.php:4
+msgid "We'll continue developing and enhancing it for years to come."
+msgstr "Wir werden es in den kommenden Jahren weiter entwickeln und verbessern."
+
+#: admin/about/page-free.php:3
+msgid "Vantage is a completely free WordPress theme."
+msgstr "Vantage ist ein komplett kostenloses WordPress-Theme."
+
+#: admin/about/page-free.php:1
+msgid "Forever Free"
+msgstr "Unbegrenzt kostenlose Nutzung"
+
+#: inc/template-tags.php:235
+msgid "<span class=\"byline\"> by %s</span>"
+msgstr "﻿<span class=\"byline\"> von %s</span>"
+
+#: inc/template-tags.php:234
+msgid "Posted on %s"
+msgstr "Veröffentlicht am %s"
+
+#: content.php:53 inc/settings.php:430 inc/template-tags.php:539
+#: loops/loop-circleicon.php:25 loops/loop-grid.php:27
+msgid "Continue reading"
+msgstr "Weiterlesen"
+
+#: inc/settings.php:310
+msgid "Read More Text"
+msgstr "Weiterlesen-Text"
+
+#: inc/settings.php:287
+msgid "Show the post tags below the single post."
+msgstr "Beitrags-Schlagwörter unter den Einzelbeiträgen anzeigen."
+
+#: inc/settings.php:285
+msgid "Post Tags"
+msgstr "Beitrags-Schlagwörter"
+
+#: inc/settings.php:282
+msgid "Show the post categories below the single post."
+msgstr "Beitrags-Kategorien unter dem Einzelbeitrag anzeigen."
+
+#: inc/settings.php:280
+msgid "Post Categories"
+msgstr "Beitragskategorien"
+
+#: inc/settings.php:277
+msgid "Show the number of comments under the post title."
+msgstr "Anzahl der Kommentare unter dem Beitragstitel anzeigen."
+
+#: inc/settings.php:275
+msgid "Post Comment Count"
+msgstr "Kommentarzähler"
+
+#: inc/settings.php:272
+msgid "Show the post author under the post title."
+msgstr "Autor des Beitrags unter dem Beitragstitel anzeigen."
+
+#: inc/settings.php:267
+msgid "Show the post date under the post title."
+msgstr "Datum des Beitrags unter dem Beitragstitel anzeigen."
+
+#: inc/settings.php:262
+msgid "Show the post metadata under the post title."
+msgstr "Beitrags-Metadaten unter dem Beitragstitel anzeigen."
+
+#: inc/settings.php:252
+msgid "Size of the featured image in the blog post archives when using default blog layout."
+msgstr "Größe des Beitragsbildes in den Blog-Archiven, wenn das Standard-Blog-Layout verwendet wird."
+
+#: inc/settings.php:226
+msgid "Choose the layout to be used on blog and archive pages."
+msgstr "Wähle ein Layout für die Blog- und Archivseiten."
+
+#: inc/settings.php:144
+msgid "Enable search in the mobile menu."
+msgstr "Suche im Mobile-Menü aktivieren."
+
+#: inc/settings.php:124
+msgid "Force Page Builder rows with styles to be full width. Only necessary for legacy reasons."
+msgstr "Erzwinge, dass Page-Builder-Zeilen mit Styles, in voller Breite sind. Nur aus Legacy-Gründen erforderlich."
+
+#: inc/settings.php:123
+msgid "Force Page Builder Styles Full Width"
+msgstr "Page Builder Styles auf volle Breite"
+
+#: functions.php:329
+msgid "Shop"
+msgstr "Shop"
+
+#. Template Name of the theme
+msgid "Full Width Page"
+msgstr "Seite in voller Breite"
+
+#. Template Name of the theme
+msgid "Full Width Page, No Title"
+msgstr "Volle Breite / Kein Titel"
+
+#. Template Name of the theme
+msgid "Page Builder Home"
+msgstr "Page Builder Home"
+
+#: slider/demo.php:6 slider/demo.php:9 slider/demo.php:14 slider/demo.php:16
+msgid "Demo Slide"
+msgstr "Demo-Slide"
+
+#: inc/mobilenav/mobilenav.php:28 searchform.php:13
+msgid "Search"
+msgstr "Suchen"
+
+#: search.php:18
+msgid "Search Results for: %s"
+msgstr "Suchergebnisse für: %s"
+
+#: parts/footer-vertical.php:31 parts/footer.php:31
+msgid "A <a href=\"%s\">SiteOrigin</a> Theme"
+msgstr "Ein Theme von <a href=\"%s\">SiteOrigin</a>"
+
+#: no-results.php:32
+msgid "It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps searching can help."
+msgstr "Es sieht so aus, als ob wir nicht das finden konnten, wonach du gesucht hast. Möglicherweise hilft die Suchfunktion."
+
+#: no-results.php:27
+msgid "Sorry, but nothing matched your search terms. Please try again with some different keywords."
+msgstr "Schade, aber zu deinen Suchbegriffen wurde nichts Passendes gefunden. Bitte versuche es mit anderen Suchbegriffen nochmal."
+
+#: no-results.php:23
+msgid "Ready to publish your first post? <a href=\"%1$s\">Get started here</a>."
+msgstr "Bereit, deinen ersten Beitrag zu veröffentlichen? <a href=\"%1$s\">Starte hier</a>."
+
+#: no-results.php:16
+msgid "Nothing Found"
+msgstr "Nichts gefunden"
+
+#: inc/widgets.php:626 loops/loop-carousel.php:37
+msgid "Post "
+msgstr "Beitrag "
+
+#: inc/widgets.php:537
+msgid "Previous"
+msgstr "Vorheriger"
+
+#: inc/widgets.php:536
+msgid "Next"
+msgstr "Nächster"
+
+#: inc/widgets.php:497
+msgid "Open in New Window"
+msgstr "In neuem Fenster öffnen"
+
+#: inc/widgets.php:406
+msgid "RSS"
+msgstr "RSS"
+
+#: inc/widgets.php:384
+msgid "Google Plus"
+msgstr "Google Plus"
+
+#: inc/widgets.php:382
+msgid "Facebook"
+msgstr "Facebook"
+
+#: inc/widgets.php:377
+msgid "Add nice little icons that link out to your social media profiles."
+msgstr "Fügt kleine Icons hinzu, die auf Social-Media-Profile verlinken."
+
+#: inc/widgets.php:375
+msgid "Vantage Social Media"
+msgstr "Vantage Social Media"
+
+#: inc/widgets.php:353
+msgid "Sub Headline"
+msgstr "Unterüberschrift"
+
+#: inc/widgets.php:346
+msgid "Headline"
+msgstr "Schlagzeile"
+
+#: inc/widgets.php:316
+msgid "A lovely big headline."
+msgstr "Eine große, schöne Überschrift."
+
+#: inc/widgets.php:315
+msgid "Vantage Headline"
+msgstr "Vantage Schlagzeile"
+
+#: inc/widgets.php:283
+msgid "Link title and icon to \"More URL\""
+msgstr "Titel und Icon auf „mehr“-URL verlinken."
+
+#: inc/widgets.php:275
+msgid "More URL"
+msgstr "„mehr“-URL"
+
+#: inc/widgets.php:268
+msgid "More Text"
+msgstr "„mehr“-Text"
+
+#: inc/widgets.php:261 inc/widgets.php:396 inc/widgets.php:459
+msgid "Medium"
+msgstr "Mittelgroß"
+
+#: inc/widgets.php:260 inc/widgets.php:460
+msgid "Small"
+msgstr "Klein"
+
+#: inc/widgets.php:257 inc/widgets.php:473
+msgid "Icon Size"
+msgstr "Icon-Größe"
+
+#: inc/customizer.php:268 inc/customizer.php:715 inc/widgets.php:251
+msgid "Right"
+msgstr "Rechts"
+
+#: inc/customizer.php:267 inc/customizer.php:714 inc/widgets.php:250
+msgid "Left"
+msgstr "Links"
+
+#: inc/widgets.php:249
+msgid "Bottom"
+msgstr "Unten"
+
+#: inc/widgets.php:248
+msgid "Top"
+msgstr "Oben"
+
+#: inc/widgets.php:246
+msgid "Icon Position"
+msgstr "Icon-Position"
+
+#: inc/widgets.php:241
+msgid "Circle Background Image URL"
+msgstr "URL für Kreis-Hintergrundbild"
+
+#: inc/widgets.php:236
+msgid "Icon Background Color"
+msgstr "Icon-Hintergrundfarbe"
+
+#: inc/widgets.php:216
+msgid "Icon"
+msgstr "Icon"
+
+#: inc/customizer.php:660 inc/widgets.php:204
+msgid "Text"
+msgstr "Text"
+
+#: inc/widgets.php:192 inc/widgets.php:466
+msgid "Title"
+msgstr "Titel"
+
+#: inc/widgets.php:138
+msgid "More Info"
+msgstr "Weitere Informationen"
+
+#: inc/widgets.php:15
+msgid "An icon in a circle with some text beneath it"
+msgstr "Ein Icon in einem Kreis mit etwas Text darunter"
+
+#: inc/template-tags.php:451
+msgid "Posted in %1$s."
+msgstr "Veröffentlicht in %1$s."
+
+#: inc/template-tags.php:449
+msgid "Posted in %1$s and tagged %2$s."
+msgstr "Veröffentlicht in %1$s und verschlagwortet mit %2$s."
+
+#: inc/template-tags.php:442
+msgid "<strong>Tagged</strong> %2$s."
+msgstr "<strong>Verschlagwortet mit</strong> %2$s."
+
+#. translators: used between list items, there is a space after the comma
+#: inc/template-tags.php:434 inc/template-tags.php:437
+msgid ", "
+msgstr ", "
+
+#: inc/template-tags.php:419
+msgid "Archives"
+msgstr "Archive"
+
+#: inc/template-tags.php:417
+msgid "%s %s"
+msgstr "%s %s"
+
+#: inc/template-tags.php:406
+msgid "Yearly Archives:"
+msgstr "Jahresarchive:"
+
+#: inc/template-tags.php:403
+msgid "Monthly Archives:"
+msgstr "Monatsarchive:"
+
+#: inc/template-tags.php:400
+msgid "Daily Archives:"
+msgstr "Tagesarchive:"
+
+#: inc/template-tags.php:389
+msgid "Category Archives:"
+msgstr "Kategorie-Archive:"
+
+#: inc/template-tags.php:284
+msgid "%s Logo"
+msgstr "%s Logo"
+
+#: inc/template-tags.php:221
+msgid "View all posts by %s"
+msgstr "Alle Beiträge von %s anzeigen"
+
+#: inc/template-tags.php:188
+msgid "Your comment is awaiting moderation."
+msgstr "Dein Kommentar wartet auf Freischaltung."
+
+#. translators: 1: date, 2: time
+#: inc/template-tags.php:176
+msgid "%1$s at %2$s"
+msgstr "%1$s um %2$s Uhr"
+
+#: inc/template-tags.php:152
+msgid "(Edit)"
+msgstr "[Bearbeiten]"
+
+#: inc/template-tags.php:152
+msgid "Pingback:"
+msgstr "Pingback:"
+
+#: inc/template-tags.php:97
+msgctxt "Next post link"
+msgid "&rarr;"
+msgstr "&rarr;"
+
+#: inc/template-tags.php:96
+msgctxt "Previous post link"
+msgid "&larr;"
+msgstr "&larr;"
+
+#: inc/template-tags.php:91
+msgid "Post navigation"
+msgstr "Beitragsnavigation"
+
+#: inc/settings.php:383
+msgid "Call me! Maybe?"
+msgstr "Ruf mich an! Vielleicht?"
+
+#: inc/settings.php:354
+msgid "Enqueue JavaScript files in the footer, if possible."
+msgstr "Wenn möglich, dann sollen JavaScript-Dateien im Footer eingebunden werden."
+
+#: inc/settings.php:353
+msgid "Enqueue JavaScript in Footer"
+msgstr "Einbinden der JavaScripts im Footer"
+
+#: inc/settings.php:340
+msgid "Text displayed in your footer. {site-title}, {copyright} and {year} will be replaced with your website title, a copyright symbol and the current year."
+msgstr "Text, der im Footer angezeigt wird. {site-title}, {copyright} und {year} werden ersetzt durch den Website-Titel, ein Copyright-Symbol und das aktuelle Jahr."
+
+#: inc/settings.php:339
+msgid "Site Information Text"
+msgstr "Website-Informations-Text"
+
+#: inc/settings.php:332
+msgid "Keep your conversations flowing with ajax comments."
+msgstr "Halte deine Diskussionen mit Ajax-Kommentaren am Laufen."
+
+#: inc/settings.php:331
+msgid "Ajax Comments"
+msgstr "Ajax-Kommentare"
+
+#: inc/settings.php:292
+msgid "Show an author box below each blog post."
+msgstr "Eine Autoren-Box unter jedem Beitrag anzeigen."
+
+#: inc/settings.php:290
+msgid "Author Box"
+msgstr "Autor-Box"
+
+#: inc/settings.php:249
+msgid "Small Icon"
+msgstr "Kleines Icon"
+
+#: inc/settings.php:248 inc/widgets.php:262 inc/widgets.php:458
+msgid "Large"
+msgstr "Groß"
+
+#: inc/settings.php:246
+msgid "Featured Image Type"
+msgstr "Typ des Beitragsbildes"
+
+#: inc/settings.php:257
+msgid "Show the featured image on a post single page."
+msgstr "Das Beitragsbild auf einzelner Beitragsseite anzeigen."
+
+#: inc/settings.php:255
+msgid "Featured Image"
+msgstr "Beitragsbild"
+
+#: inc/settings.php:265
+msgid "Post Date"
+msgstr "Veröffentlichungsdatum"
+
+#: inc/settings.php:270
+msgid "Post Author"
+msgstr "Beitrags-Autor"
+
+#: inc/settings.php:256 inc/settings.php:261 inc/settings.php:266
+#: inc/settings.php:271 inc/settings.php:276 inc/settings.php:281
+#: inc/settings.php:286 inc/settings.php:291 inc/settings.php:296
+#: inc/settings.php:306
+msgid "Display"
+msgstr "Anzeige"
+
+#: inc/settings.php:260
+msgid "Post Metadata"
+msgstr "Beitrags-Metadaten"
+
+#: inc/settings.php:238
+msgid "Choose how to display posts on post archive when using default blog layout."
+msgstr "Wähle, wie Beiträge oder Archive dargestellt werden, wenn das Standard-Blog-Layout genutzt wird."
+
+#: inc/settings.php:236
+msgid "Post Excerpt"
+msgstr "Beitrags-Textauszug"
+
+#: inc/settings.php:235
+msgid "Full Post"
+msgstr "Voller Beitrag"
+
+#: inc/settings.php:233
+msgid "Post Content"
+msgstr "Beitragsinhalt"
+
+#: inc/settings.php:224
+msgid "Blog Archive Layout"
+msgstr "Layout der Blog-Archive"
+
+#: inc/settings.php:218
+msgid "Stretch the home page slider to the width of the screen if using the full width layout."
+msgstr "Den Slider auf der Startseite auf die gesamte Breite ausdehnen, wenn das Layout für die volle Breite gewählt wurde."
+
+#: inc/settings.php:217
+msgid "Stretch"
+msgstr "Dehnen"
+
+#: inc/settings.php:216
+msgid "Stretch Home Slider"
+msgstr "Stretch Home Slider"
+
+#: inc/settings.php:205
+msgid "This theme supports Smart Slider 3. <a href=\"%s\">Install it</a> for free to create beautiful responsive sliders - <a href=\"%s\" target=\"_blank\">More Info</a>"
+msgstr "Diese Theme unterstützt Smart Slider 3. <a href=\"%s\">Installiere es jetzt</a> kostenlos, um schöne responsive Slider zu erstellen - <a href=\"%s\" target=\"_blank\">Mehr Infos</a>"
+
+#: inc/settings.php:211
+msgid "Home Page Slider"
+msgstr "Startseiten-Slider"
+
+#: inc/settings.php:168
+msgid "Enables Sticky Menu and Scroll To Top for mobile devices."
+msgstr "Akiviert ein fixiertes Menü und Nach-oben-scrollen für Mobile Geräte."
+
+#: inc/settings.php:167
+msgid "Mobile Navigation"
+msgstr "Mobile-Navigation"
+
+#: inc/settings.php:164
+msgid "Display home icon for home page menu links."
+msgstr "Ein Home-Icon als Link für die Startseite im Menü anzeigen."
+
+#: inc/settings.php:163
+msgid "Home Page Icon"
+msgstr "Startenseiten-(Home)-Icon"
+
+#: inc/settings.php:160
+msgid "Display next/previous post navigation."
+msgstr "Navigation für Beiträge 'Vorheriger'/'Nächster' anzeigen."
+
+#: inc/settings.php:159
+msgid "Post Navigation"
+msgstr "Beitragsnavigation"
+
+#: inc/settings.php:156
+msgid "Display a scroll-to-top button when a user scrolls down."
+msgstr "Einen Button zum Nach-oben-scrollen anzeigen, wenn ein Benutzer nach unten gescrollt hat."
+
+#: inc/settings.php:155
+msgid "Display Scroll To Top"
+msgstr "Nach-oben-scrollen anzeigen"
+
+#: inc/settings.php:152
+msgid "Display a search in the main menu."
+msgstr "Eine Suche im Hauptmenü anzeigen."
+
+#: inc/settings.php:151
+msgid "Search in Menu"
+msgstr "Suche im Menü"
+
+#: inc/settings.php:148
+msgid "Sticks the menu to the top of the screen when a user scrolls down."
+msgstr "Das Menü bleibt am Bildschirm oben fixiert, wenn der Benutzer nach unten scrollt."
+
+#: inc/settings.php:147
+msgid "Sticky Menu"
+msgstr "Fixiertes Menü"
+
+#: inc/settings.php:140
+msgid "The button used for the mobile menu."
+msgstr "Der Button, der für das Mobile-Menü verwendet wird."
+
+#: inc/settings.php:132
+msgid "Use a special mobile menu for small screen devices."
+msgstr "Verwende ein spezielles Mobile-Menü für Geräte mit kleinem Bildschirm."
+
+#: inc/settings.php:115
+msgid "Change which footer area layout you're using."
+msgstr "Ändere das Layout des Footer-Bereiches."
+
+#: inc/settings.php:113
+msgid "Footer Layout"
+msgstr "Footer Layout"
+
+#: inc/settings.php:110
+msgid "Choose how the masthead menu is displayed."
+msgstr "Wähle, wie das Titelkopf-Menü angezeigt wird."
+
+#: inc/settings.php:108
+msgid "Masthead Menu"
+msgstr "Titelkopf-Menü"
+
+#: inc/settings.php:105
+msgid "Change which header area layout you're using."
+msgstr "Ändere das Layout des Header-Bereiches."
+
+#: inc/settings.php:103
+msgid "Masthead Layout"
+msgstr "Layout des Titelkopfes"
+
+#: inc/settings.php:100
+msgid "Change the width of the bounding box."
+msgstr "Ändere die Weite der Umrandung."
+
+#: inc/settings.php:98 inc/settings.php:540
+msgid "Full Width"
+msgstr "Volle Breite"
+
+#: inc/settings.php:97
+msgid "Boxed"
+msgstr "In einer Box"
+
+#: inc/settings.php:95
+msgid "Layout Bound"
+msgstr "Layout-Abgrenzung"
+
+#: inc/settings.php:92
+msgid "Include FitVids.js fluid embedded video layouts."
+msgstr "Füge FitVids.js für (fluid embedded) Video-Layouts ein."
+
+#: inc/settings.php:91
+msgid "Enable FitVids.js"
+msgstr "FitVids.js aktivieren"
+
+#: inc/settings.php:88
+msgid "Scale your layout for small screen devices."
+msgstr "Skaliere dein Layout für kleine Bildschirmgeräte."
+
+#: inc/settings.php:87
+msgid "Responsive Layout"
+msgstr "Responsives Layout"
+
+#: inc/settings.php:81
+msgid "If enabled, header widgets won't overlap main logo image."
+msgstr "Wenn aktiviert, dann wird eine Überlappung der Kopfzeilen-Widgets mit dem Logo-Bild verhindert."
+
+#: inc/settings.php:80
+msgid "No Widget Overlay"
+msgstr "Kein Widget Overlay"
+
+#: inc/settings.php:75
+msgid "Header Text"
+msgstr "Header-Text"
+
+#: inc/settings.php:68
+msgid "A double sized version of your logo for retina displays. Must be used in addition to standard logo."
+msgstr "Eine doppelt so große Version deines Logos für Retina-Displays. Muss zusätzlich zum Standardlogo verwendet werden."
+
+#: inc/settings.php:65
+msgid "Retina Logo"
+msgstr "Retina-Logo"
+
+#: inc/settings.php:58
+msgid "When using the \"logo in menu\" masthead layout, constrain the logo size to fit the menu height."
+msgstr "Wenn du das \"Logo im Menü\"-Titelkopf-Layout verwendest, beschränke die Größe des Logos auf die Höhe des Menüs."
+
+#: inc/settings.php:57
+msgid "Yes"
+msgstr "Ja"
+
+#: inc/settings.php:56
+msgid "Constrain Logo Height"
+msgstr "Logo-Höhe begrenzen"
+
+#: inc/settings.php:34
+msgid "Your own custom logo."
+msgstr "Dein eigenes, individuelles Logo."
+
+#: inc/settings.php:33 inc/settings.php:67 inc/settings.php:186
+#: inc/settings.php:191 inc/settings.php:196
+msgid "Set Logo"
+msgstr "Logo festlegen"
+
+#: inc/settings.php:32 inc/settings.php:66 inc/settings.php:185
+#: inc/settings.php:190 inc/settings.php:195
+msgid "Choose Image"
+msgstr "Bild wählen"
+
+#: inc/settings.php:31
+msgid "Logo Image"
+msgstr "Logo-Bild"
+
+#: inc/customizer.php:12 inc/settings.php:25
+msgid "General"
+msgstr "Allgemein"
+
+#: inc/settings.php:24
+msgid "Social"
+msgstr "Social Media"
+
+#: inc/settings.php:23
+msgid "Blog"
+msgstr "Blog"
+
+#: inc/settings.php:21
+msgid "Navigation"
+msgstr "Navigation"
+
+#: inc/settings.php:20
+msgid "Home"
+msgstr "Startseite"
+
+#: inc/settings.php:19
+msgid "Layout"
+msgstr "Layout"
+
+#: inc/settings.php:18
+msgid "Logo"
+msgstr "Logo"
+
+#: inc/panels.php:172
+msgid "Vantage Widgets"
+msgstr "Vantage Widgets"
+
+#: inc/panels.php:304
+msgid "No Bottom Margin"
+msgstr "Kein unterer Abstand"
+
+#: inc/panels.php:297
+msgid "Repeat Background Image"
+msgstr "Hintergrundbild wiederholen"
+
+#: inc/panels.php:290
+msgid "Background Image URL"
+msgstr "Hintergrundbild-URL"
+
+#: inc/panels.php:283
+msgid "Background Color"
+msgstr "Hintergrundfarbe"
+
+#: inc/panels.php:276
+msgid "Bottom Border Color"
+msgstr "Rahmenfarbe unten"
+
+#: inc/panels.php:269
+msgid "Top Border Color"
+msgstr "Rahmenfarbe oben"
+
+#: inc/panels.php:223
+msgid "Wide Grey"
+msgstr "Weites Grau"
+
+#: inc/panels.php:94
+msgid "There are a lot of widgets bundled with Page Builder. You can use them to bring your pages to life."
+msgstr "Es gibt viele Widgets, die mit Page Builder gebündelt sind. Du kannst sie verwenden, um deine Seiten zum Strahlen zu bringen."
+
+#: inc/panels.php:77
+msgid "Latest Posts"
+msgstr "Neueste Beiträge"
+
+#: inc/panels.php:68
+msgid "You can customize it and put it where ever you want"
+msgstr "Du kannst es anpassen und überall ablegen, wo du willst."
+
+#: inc/panels.php:67
+msgid "This Is A Headline Widget"
+msgstr "Dies ist ein Widget für Schlagzeilen"
+
+#: inc/panels.php:56
+msgid "Test Button"
+msgstr "Test-Button"
+
+#: inc/panels.php:52
+msgid "Building your pages using a drag and drop page builder is a great experience that will save you time. Time is valuable. Don't waste it."
+msgstr "Das Erstellen deiner Seiten mit einem Drag-and-drop-Page-Builder ist eine großartige Erfahrung, die dir Zeit sparen wird. Zeit ist kostbar. Vergeude sie nicht."
+
+#: inc/panels.php:51
+msgid "Saves You Time"
+msgstr "Spart dir Zeit"
+
+#: inc/panels.php:40
+msgid "Example Button"
+msgstr "Beispiel-Button"
+
+#: inc/panels.php:36
+msgid "This widget uses FontAwesome - giving you hundreds of icons. Or you could disable the icon and use your own image image. Great for testimonials."
+msgstr "Dieses Widget nutzt FontAwesome - wodurch dir Hunderte von Icons zur Verfügung stehen. Oder du deaktivierst das Icon und verwendest ein eigenes Bild. Hervorragend für Empfehlungen/Referenzen."
+
+#: inc/panels.php:35
+msgid "Loads of Icons"
+msgstr "Jede Menge Icons"
+
+#: inc/panels.php:24
+msgid "Start Editing"
+msgstr "Starte mit dem Bearbeiten"
+
+#: inc/panels.php:20
+msgid "You can edit this home page using our free, drag and drop Page Builder, or simply disable it to fall back to a standard blog. It's a powerful page building experience."
+msgstr "Du kannst diese Startseite mit unserem kostenlosen Page Builder per Drag-and-drop bearbeiten oder diesen einfach deaktivieren, um auf einen Standard-Blog zurückgesetzt zu werden. Er bittet eine großartige, leistungsstarke Erfahrung für den Aufbau von Seiten."
+
+#: inc/panels.php:19
+msgid "Editable Home Page"
+msgstr "Editierbare Startseite"
+
+#: inc/panels.php:15
+msgid "Default Home"
+msgstr "Standard-Startseite"
+
+#: functions.php:766
+msgid "SiteOrigin Page Builder"
+msgstr "SiteOrigin Page Builder"
+
+#: inc/class-tgm-plugin-activation.php:2859
+msgid "Install"
+msgstr "Installieren"
+
+#: inc/panels-lite/panels-lite.php:22
+msgid "Home Page"
+msgstr "Startseite"
+
+#: inc/panels-lite/panels-lite.php:21
+msgid "Custom Home Page Builder"
+msgstr "Eigener Page Builder"
+
+#: inc/panels-lite/panels-lite.php:20
+msgid "Page Builder"
+msgstr "Page-Builder"
+
+#: inc/panels-lite/panels-lite.php:23
+msgid "Install Page Builder Plugin"
+msgstr "Page-Builder-Plugin installieren"
+
+#: inc/sliders.php:166
+msgid "Stretch Page Meta Slider"
+msgstr "Page-Meta-Slider ausdehnen"
+
+#: inc/sliders.php:43
+msgid "Vantage (Flex)"
+msgstr "Vantage (Flex)"
+
+#: inc/menu.php:41
+msgid "Menu Icon"
+msgstr "Menü-Icon"
+
+#: inc/gallery.php:132
+msgid "Slider"
+msgstr "Slider"
+
+#: image.php:30
+msgid "Next &rarr;"
+msgstr "Nächster &rarr;"
+
+#: image.php:29
+msgid "&larr; Previous"
+msgstr "&larr; Vorheriger"
+
+#: functions.php:545
+msgid "Back To Top"
+msgstr "Zurück nach oben"
+
+#: functions.php:350
+msgid "Header"
+msgstr "Header"
+
+#: functions.php:340 inc/customizer.php:40
+msgid "Footer"
+msgstr "Footer"
+
+#: functions.php:318 inc/customizer.php:36
+msgid "Sidebar"
+msgstr "Seitenleiste"
+
+#: functions.php:63
+msgid "Primary Menu"
+msgstr "Primäres Menü"
+
+#: fontawesome/icon-sections.php:19
+msgid "Medical Icons"
+msgstr "Medizinische Icons"
+
+#: fontawesome/icon-sections.php:18
+msgid "Brand Icons"
+msgstr "Marken (Brand) Icons"
+
+#: fontawesome/icon-sections.php:17
+msgid "Video Player Icons"
+msgstr "Icons für die Wiedergabe von Videos"
+
+#: fontawesome/icon-sections.php:16
+msgid "Directional Icons"
+msgstr "Icons für Richtungen"
+
+#: fontawesome/icon-sections.php:15
+msgid "Text Editor Icons"
+msgstr "Icons für Text-Editor"
+
+#: fontawesome/icon-sections.php:14
+msgid "Currency Icons"
+msgstr "Icons für Währungen"
+
+#: fontawesome/icon-sections.php:13
+msgid "Chart Icons"
+msgstr "Icons für Diagramme"
+
+#: fontawesome/icon-sections.php:12
+msgid "Payment Icons"
+msgstr "Icons für Bezahlung"
+
+#: fontawesome/icon-sections.php:11
+msgid "Form Control Icons"
+msgstr "Form-Control-Icons"
+
+#: fontawesome/icon-sections.php:10
+msgid "Spinner Icons"
+msgstr "Icons für Wartezustand"
+
+#: fontawesome/icon-sections.php:9
+msgid "File Type Icons"
+msgstr "Icons für Dateitypen"
+
+#: fontawesome/icon-sections.php:4
+msgid "Web Application Icons"
+msgstr "Icons für Web Applikationen"
+
+#: inc/sliders/sliders.php:20
+msgid "MetaSlider: "
+msgstr "MetaSlider: "
+
+#: inc/template-tags.php:183
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#: inc/legacy.php:5 inc/legacy.php:6 inc/settings.php:494
+#: inc/settings/settings.php:445
+msgid "Theme Settings"
+msgstr "Theme-Einstellungen"
+
+#: inc/mobilenav/mobilenav.php:20 inc/mobilenav/mobilenav.php:81
+#: inc/settings.php:505 inc/settings/inc/control/widget.php:52
+#: inc/settings/inc/control/widget.php:57
+msgid "Close"
+msgstr "Schließen"
+
+#: inc/plugin-activation/plugin-activation.php:82
+msgid "Installing %s"
+msgstr "Installiere %s"
+
+#: inc/plugin-activation/plugin-activation.php:10
+#: inc/plugin-activation/plugin-activation.php:11
+msgid "Install Theme Plugin"
+msgstr "Installiere Theme-Plugin"
+
+#: inc/sliders/sliders.php:10
+msgid "Demo Slider"
+msgstr "Slider-Demo"
+
+#: inc/customizer.php:713 inc/menu.php:62 inc/settings.php:250
+#: inc/sliders/sliders.php:7 inc/widgets.php:219
+msgid "None"
+msgstr "Keines"
+
+#: content-gallery.php:51 content-image.php:42 content-video.php:59
+#: content.php:30
+msgid "Permalink to %s"
+msgstr "Permalink zu %s"
+
+#: content-gallery.php:65 content-image.php:56 content-page.php:30
+#: content-single.php:39 content-video.php:74 content.php:55
+#: templates/template-full-notitle.php:27
+msgid "Pages:"
+msgstr "Seiten:"
+
+#: templates/template-full-notitle.php:26
+msgid "Continue reading <span class=\"meta-nav\">&rarr;</span>"
+msgstr "Weiterlesen <span class=\"meta-nav\">&rarr;</span>"
+
+#: comments.php:60
+msgid "Comments are closed."
+msgstr "Die Kommentare sind geschlossen."
+
+#: comments.php:37 comments.php:49
+msgid "Newer Comments &rarr;"
+msgstr "Neuere Kommentare &rarr;"
+
+#: comments.php:36 comments.php:48
+msgid "&larr; Older Comments"
+msgstr "&larr; Ältere Kommentare"
+
+#: comments.php:28
+msgctxt "comments title"
+msgid "One Comment"
+msgid_plural "%1$s Comments"
+msgstr[0] "Ein Kommentar"
+msgstr[1] "%1$s Kommentare"
+
+#: 404.php:41
+msgid "Try looking in the monthly archives."
+msgstr "Versuche es mit einem Blick in die monatlichen Archive."
+
+#: 404.php:34
+msgid "Most Used Categories"
+msgstr "Meistgenutzte Kategorien"
+
+#: 404.php:27
+msgid "It looks like nothing was found at this location. Maybe try one of the links below or a search?"
+msgstr "Es sieht so aus, als ob wir nicht das finden konnten, wonach du gesucht hast. Möglicherweise hilft dir die Suchfunktion?"
+
+#: 404.php:22
+msgid "That page can't be found."
+msgstr "Diese Seite konnte nicht gefunden werden."
+
+#. Author URI of the theme
+#: style.css
+#, gp-priority: low
+msgid "https://siteorigin.com/"
+msgstr "https://siteorigin.com/"
+
+#. Author of the theme
+#: style.css
+#, gp-priority: low
+msgid "SiteOrigin"
+msgstr "SiteOrigin"
+
+#. Theme URI of the theme
+#: style.css
+#, gp-priority: low
+msgid "https://siteorigin.com/theme/vantage/"
+msgstr "https://siteorigin.com/theme/vantage/"

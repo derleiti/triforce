@@ -1,0 +1,120 @@
+// AILinux Dark Theme (CSS++ v1.0)
+// A production-ready dark theme with neon accents and volumetric depth.
+
+// --- CORE SURFACES ---
+
+@material card {
+    geometry: rounded(16);
+    lighting: soft(0.2);
+    volumetrics: fabric(0.03);
+    theme: surface;
+    animation: fade-in(300ms);
+    padding: 24px;
+}
+
+@material panel {
+    geometry: rounded(8);
+    lighting: soft(0.1);
+    volumetrics: fabric(0.02);
+    theme: surface-alt;
+    padding: 16px;
+}
+
+@material modal {
+    geometry: rounded(24);
+    lighting: soft(0.5);
+    volumetrics: fabric(0.05);
+    theme: surface;
+    animation: fade-in(200ms);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+// --- ACTIONS & INTERACTION ---
+
+@material button-primary {
+    geometry: pill(999);
+    lighting: hover-glow(0.4);
+    theme: primary;
+    padding: 12px 24px;
+    cursor: pointer;
+    font-weight: 600;
+    text-align: center;
+}
+
+@material button-ghost {
+    geometry: rounded(8);
+    theme: transparent;
+    lighting: hover-glow(0.1);
+    padding: 8px 16px;
+    cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+// --- INPUTS ---
+
+@material input {
+    geometry: rounded(8);
+    lighting: hard(0.5);
+    theme: background;
+    padding: 12px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+// --- NAVIGATION ---
+
+@material navbar {
+    geometry: rounded(0);
+    lighting: soft(0.1);
+    volumetrics: glass(10);
+    theme: background-transparent;
+    layout: row(16);
+    padding: 16px 32px;
+    width: 100%;
+}
+
+@material nav-item {
+    geometry: rounded(4);
+    theme: text-subtle;
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+// --- AI CHAT ELEMENTS ---
+
+@material chat-bubble-user {
+    geometry: rounded(16);
+    theme: primary-dim;
+    padding: 12px 18px;
+    max-width: 80%;
+}
+
+@material chat-bubble-ai {
+    geometry: rounded(16);
+    volumetrics: glass(12);
+    lighting: hover-glow(0.2);
+    theme: surface-glass;
+    animation: fade-in(400ms);
+    padding: 12px 18px;
+    border: 1px solid rgba(255,255,255,0.1);
+    max-width: 80%;
+}
+
+@material ai-indicator {
+    geometry: circle(12);
+    theme: accent;
+    animation: pulse(2000ms);
+    width: 12px;
+    height: 12px;
+}
+
+// --- UTILITIES ---
+
+@material container {
+    layout: grid(300);
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+@material stack {
+    layout: stack(16);
+}

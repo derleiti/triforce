@@ -1,0 +1,34 @@
+services:
+  mailserver:
+    image: ghcr.io/docker-mailserver/docker-mailserver:latest
+    container_name: mailserver
+    hostname: ${MAIL_HOSTNAME:-mail}
+    domainname: ${MAIL_DOMAINNAME:-ailinux.me}
+    ports:
+      - "25:25"
+      - "143:143"
+      - "465:465"
+      - "587:587"
+      - "993:993"
+    volumes:
+      - ./data/mail:/var/mail
+      - ./data/state:/var/mail-state
+      - ./data/logs:/var/log/mail
+      - ./config:/tmp/docker-mailserver
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    env_file:
+      - .env
+    environment:
+      # SSL Certificate Paths (not in .env for security)
+      - ENABLE_SMTPS=1
+      - SSL_CERT_PATH=/etc/letsencrypt/live/${SSL_DOMAIN:-ailinux.me}/fullchain.pem
+      - SSL_KEY_PATH=/etc/letsencrypt/live/${SSL_DOMAIN:-ailinux.me}/privkey.pem
+    cap_add:
+      - NET_ADMIN
+      - SYS_PTRACE
+    restart: unless-stopped
+    stop_grace_period: 1m
+    healthcheck:
+      test: "ss -lntp | grep -E ':25|:587|:465|:993' || exit 1"
+      timeout: 3s
+      retries: 0

@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(chmod:*)",
+      "Bash(nvm use:*)",
+      "Bash(node --version:*)",
+      "Bash(npm --version:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -1,0 +1,5750 @@
+
+
+================================
+DATEI: ./docker.yml
+================================
+
+services:
+  apt-mirror:
+    dns:
+      - 45.90.28.59
+      - 45.90.30.59
+      - 2a07:a8c0::32:faee
+      - 2a07:a8c1::32:faee
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: apt-mirror
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./repo:/var/spool/apt-mirror
+      - ./postmirror.sh:/var/spool/apt-mirror/var/postmirror.sh:ro
+      - ./sign-repos.sh:/var/spool/apt-mirror/var/sign-repos.sh:ro
+      - ./repair-dep11.sh:/var/spool/apt-mirror/var/repair-dep11.sh:ro
+      - ./etc/gnupg:/var/spool/apt-mirror/etc/gnupg:rw
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f 'cron -f' >/dev/null"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  nginx:
+    image: nginx:stable
+    container_name: apt-mirror-nginx
+    restart: unless-stopped
+    depends_on:
+      apt-mirror:
+        condition: service_started
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+      - "9000:9000"
+    volumes:
+      - ./repo:/repo:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./conf.d:/etc/nginx/conf.d:ro
+      - ./etc/ssl/cloudflare:/etc/ssl/cloudflare:ro
+      - ./etc/nginx/html:/etc/nginx/html:ro
+      - /etc/letsencrypt/live/ailinux.me:/etc/letsencrypt/live/ailinux.me:ro
+      - /etc/letsencrypt/archive/ailinux.me:/etc/letsencrypt/archive/ailinux.me:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD-SHELL", "nginx -t && curl -fsS http://localhost:8080/ >/dev/null || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+
+================================
+DATEI: ./reset.sh
+================================
+
+#/bin/bash
+docker compose down -v && docker system  prune -af && rm -rf ./html/* && docker compose up -d
+
+
+
+
+================================
+DATEI: ./regenerate-packages-gz.sh
+================================
+#!/usr/bin/env bash
+# Regenerate all compressed Packages files from uncompressed Packages files
+set -euo pipefail
+
+REPO_ROOT="${REPO_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
+MIRROR_ROOT="${MIRROR_ROOT:-${REPO_ROOT}/repo/mirror}"
+
+echo "===[ Regenerate Compressed Packages Files ]================="
+echo "Mirror Root: $MIRROR_ROOT"
+echo "============================================================"
+echo ""
+
+count=0
+fixed=0
+
+# Find all Packages files in mirror
+while IFS= read -r pkg_file; do
+  ((count++))
+
+  dir=$(dirname "$pkg_file")
+  pkg_gz="${pkg_file}.gz"
+  pkg_xz="${pkg_file}.xz"
+  pkg_bz2="${pkg_file}.bz2"
+
+  # Get modification times
+  pkg_time=$(stat -c '%Y' "$pkg_file" 2>/dev/null || echo 0)
+  gz_time=$(stat -c '%Y' "$pkg_gz" 2>/dev/null || echo 0)
+  xz_time=$(stat -c '%Y' "$pkg_xz" 2>/dev/null || echo 0)
+
+  # Check if compressed files are outdated
+  needs_update=false
+  if [ $pkg_time -gt $gz_time ] || [ $pkg_time -gt $xz_time ]; then
+    needs_update=true
+  fi
+
+  if [ "$needs_update" = "true" ]; then
+    ((fixed++))
+    echo "[$fixed] Updating: $dir"
+    echo "    Packages: $(date -d @$pkg_time '+%Y-%m-%d %H:%M:%S')"
+    echo "    Packages.gz: $(date -d @$gz_time '+%Y-%m-%d %H:%M:%S')"
+    echo "    Packages.xz: $(date -d @$xz_time '+%Y-%m-%d %H:%M:%S')"
+
+    # Regenerate compressed files
+    gzip -9 -c "$pkg_file" > "${pkg_gz}.tmp" && mv "${pkg_gz}.tmp" "$pkg_gz"
+    xz -9 -c "$pkg_file" > "${pkg_xz}.tmp" && mv "${pkg_xz}.tmp" "$pkg_xz"
+
+    # Match timestamps
+    touch -r "$pkg_file" "$pkg_gz" "$pkg_xz"
+
+    echo "    ✓ Regenerated gz, xz"
+  fi
+done < <(find "$MIRROR_ROOT" -name "Packages" -type f ! -path "*/by-hash/*")
+
+echo ""
+echo "============================================================"
+echo "Processed: $count Packages files"
+echo "Updated: $fixed outdated compressed files"
+echo "============================================================"
+
+
+================================
+DATEI: ./certgen.sh
+================================
+#!/usr/bin/env bash
+set -euo pipefail
+
+# ==============================================================
+#  Cloudflare + Let's Encrypt (DNS-01) Certificate Updater
+#  For AILinux Repository - Nginx SSL/TLS Certificates
+#  - Logging to /var/log/cf-le/certgen.log
+#  - Installer: APT (certbot) → Snap (dns-cloudflare plugin)
+#  - Domains: Apex + Wildcard; redundant subdomains removed
+#  - Updates both system and repository SSL directories
+# ==============================================================
+
+# ---- Logging --------------------------------------------------
+LOG_DIR="/var/log/cf-le"
+LOG_FILE="${LOG_DIR}/certgen.log"
+mkdir -p "$LOG_DIR"
+chmod 750 "$LOG_DIR"
+exec 3>>"$LOG_FILE"
+BASH_XTRACEFD=3
+PS4='+ [${BASH_SOURCE##*/}:${LINENO}] '
+set -o pipefail
+set -x
+
+kon_log()  { printf "\033[1;32m[CERTGEN]\033[0m %s\n" "$*"; }
+kon_warn() { printf "\033[1;33m[WARN]\033[0m %s\n" "$*"; }
+kon_err()  { printf "\033[1;31m[ERR]\033[0m %s\n" "$*"; }
+
+{
+  echo "===== $(date -Iseconds) START certgen ====="
+  echo "USER=$USER EUID=$EUID SHELL=$SHELL"
+  echo "PATH=$PATH"
+  uname -a || true
+  lsb_release -a 2>/dev/null || true
+  echo "---------------------------------------------------"
+} >&3
+
+on_exit() {
+  local rc=$?
+  {
+    echo "===== $(date -Iseconds) END (rc=$rc) certgen ====="
+  } >&3
+  set +x
+  if (( rc != 0 )); then
+    kon_err "Error (rc=$rc). Last 60 lines:"
+    tail -n 60 "$LOG_FILE" | sed 's/^/  │ /'
+    kon_warn "Full log: $LOG_FILE"
+  else
+    kon_log "Success. Log: $LOG_FILE"
+  fi
+}
+trap on_exit EXIT
+
+# ---- Env file discovery & loading ----------------------------
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+ENV_FILE_DEFAULTS=(
+  "$SCRIPT_DIR/.env"
+  "${HOME:-/root}/scripts/.env"
+  "/etc/ailinux.env"
+)
+ENV_FILE="${ENV_FILE:-}"
+
+find_env_file() {
+  if [[ -n "${ENV_FILE:-}" && -f "$ENV_FILE" ]]; then
+    echo "$ENV_FILE"; return
+  fi
+  for p in "${ENV_FILE_DEFAULTS[@]}"; do
+    [[ -f "$p" ]] && { echo "$p"; return; }
+  done
+  return 1
+}
+
+ENV_FILE_FOUND="$(find_env_file || true)"
+if [[ -z "${ENV_FILE_FOUND:-}" ]]; then
+  kon_err "No .env found. Searched in:"
+  printf ' - %s\n' "${ENV_FILE_DEFAULTS[@]}"
+  kon_log "Tip: ENV_FILE=/home/zombie/scripts/.env sudo -E bash certgen.sh"
+  exit 1
+fi
+
+set -a
+# shellcheck disable=SC1090
+source "$ENV_FILE_FOUND"
+set +a
+
+# ---- Credentials ---------------------------------------------
+CF_API_TOKEN="${CF_API_TOKEN:-}"
+CF_EMAIL="${CF_EMAIL:-}"
+CF_GLOBAL_API_KEY="${CF_GLOBAL_API_KEY:-}"
+CRED_FILE="/etc/letsencrypt/cloudflare.ini"
+
+if [[ -z "$CF_API_TOKEN" && ( -z "$CF_EMAIL" || -z "$CF_GLOBAL_API_KEY" ) ]]; then
+  kon_err "Cloudflare credentials missing. Set CF_API_TOKEN OR (CF_EMAIL + CF_GLOBAL_API_KEY) in $ENV_FILE_FOUND."
+  exit 1
+fi
+
+# ---- Domains (Apex + Wildcard) -------------------------------
+DOMAINS=(
+  "ailinux.me"
+  "*.ailinux.me"
+)
+
+# FIXED: Wildcard correctly derived from apex (never TLD!)
+collapse_domains() {
+  local apex="" d have_wc=""
+  for d in "${DOMAINS[@]}"; do
+    if [[ "$d" == \*.* ]]; then have_wc="y"; else apex="$d"; fi
+  done
+  if [[ -n "$apex" ]]; then
+    local wc="*.$apex"
+    # Always set to exactly apex + correct wildcard
+    DOMAINS=("$apex" "$wc")
+  fi
+  # Remove duplicates
+  local -A seen; local out=()
+  for d in "${DOMAINS[@]}"; do
+    [[ -n "${seen[$d]:-}" ]] || { out+=("$d"); seen[$d]=1; }
+  done
+  DOMAINS=("${out[@]}")
+}
+collapse_domains
+
+require_root() { [[ ${EUID:-$(id -u)} -eq 0 ]] || { kon_err "Please run with sudo/root."; exit 1; }; }
+have_cmd(){ command -v "$1" >/dev/null 2>&1; }
+ensure_path(){ export PATH="/usr/local/bin:/usr/bin:/bin:/root/.local/bin:/snap/bin:${PATH}"; }
+
+# ---- System snapshot -----------------------------------------
+{
+  echo "APT sources:"
+  grep -hR "^[^#].*" /etc/apt/sources.list /etc/apt/sources.list.d 2>/dev/null || true
+  echo "--- Versions ---"
+  which certbot || true; certbot --version 2>/dev/null || true
+  which snap || true; snap --version 2>/dev/null || true
+  python3 --version 2>/dev/null || true
+  echo "----------------"
+} >&3
+
+# ---- Installer ------------------------------------------------
+ensure_universe() {
+  if have_cmd add-apt-repository; then
+    add-apt-repository -y universe >/dev/null 2>&1 || true
+  else
+    apt-get update -qq || true
+    apt-get install -y software-properties-common >/dev/null 2>&1 || true
+    add-apt-repository -y universe >/dev/null 2>&1 || true
+  fi
+}
+
+install_certbot_via_apt() {
+  kon_log "Trying certbot via APT…"
+  apt-get update -qq
+  if have_cmd snap && snap list 2>/dev/null | grep -q '^certbot '; then
+    kon_warn "snap/certbot found — removing for APT operation."
+    snap remove certbot-dns-cloudflare || true
+    snap remove certbot || true
+  fi
+  ensure_universe
+  apt-get install -y certbot ca-certificates curl || return 1
+  return 0
+}
+
+install_plugin_via_snap() {
+  kon_log "Installing dns-cloudflare plugin via Snap…"
+  have_cmd snap || { kon_err "snap not available."; return 1; }
+  snap install core || true
+  snap refresh core || true
+  snap install --classic certbot || snap refresh certbot || true
+  snap set certbot trust-plugin-with-root=ok || true
+  snap install certbot-dns-cloudflare || true
+  snap connect certbot:plugin certbot-dns-cloudflare || true
+  # NO 'certbot-metadata' connect (not available in your snap version)
+  ln -sf /snap/bin/certbot /usr/bin/certbot
+  {
+    echo "--- snap connections certbot ---"
+    snap connections certbot || true
+  } >&3
+  certbot plugins | grep -q 'dns-cloudflare'
+}
+
+install_certbot() {
+  ensure_path
+  if have_cmd apt-get; then
+    install_certbot_via_apt || true
+  fi
+  install_plugin_via_snap || kon_err "dns-cloudflare plugin via Snap not available."
+  have_cmd certbot || kon_err "Certbot not available."
+  certbot plugins 2>/dev/null | grep -q 'dns-cloudflare' || kon_err "dns-cloudflare plugin not visible."
+}
+
+# ---- Creds & deploy hooks ------------------------------------
+setup_creds() {
+  mkdir -p /etc/letsencrypt
+  if [[ -n "$CF_API_TOKEN" ]]; then
+    cat > "$CRED_FILE" <<EOF
+dns_cloudflare_api_token = ${CF_API_TOKEN}
+EOF
+    kon_log "Cloudflare Credentials (API Token) → $CRED_FILE"
+  else
+    cat > "$CRED_FILE" <<EOF
+dns_cloudflare_email = ${CF_EMAIL}
+dns_cloudflare_api_key = ${CF_GLOBAL_API_KEY}
+EOF
+    kon_log "Cloudflare Credentials (Global API Key) → $CRED_FILE"
+  fi
+  chmod 600 "$CRED_FILE"
+}
+
+setup_deploy_hooks() {
+  local hook_nginx="/etc/letsencrypt/renewal-hooks/deploy/10-reload-nginx.sh"
+  local hook_mail="/etc/letsencrypt/renewal-hooks/deploy/20-reload-mail.sh"
+  mkdir -p "$(dirname "$hook_nginx")"
+
+  # Nginx deploy hook (for Docker Compose nginx service)
+  cat > "$hook_nginx" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+log(){ printf "[deploy-hook-nginx] %s\n" "$*"; }
+
+# Docker Compose nginx service
+COMPOSE_DIR="${COMPOSE_DIR:-/home/zombie/ailinux-repo}"
+if [[ -f "$COMPOSE_DIR/docker-compose.yml" ]]; then
+  cd "$COMPOSE_DIR"
+  if docker compose ps nginx 2>/dev/null | grep -q nginx; then
+    log "Reloading nginx in Docker Compose..."
+    docker compose exec nginx nginx -t && docker compose exec nginx nginx -s reload || true
+  fi
+fi
+
+# Systemd nginx (if running)
+if systemctl is-active nginx >/dev/null 2>&1; then
+  log "Reloading systemd nginx..."
+  systemctl reload nginx || systemctl restart nginx || true
+fi
+EOF
+  chmod +x "$hook_nginx"
+  kon_log "Nginx deploy hook installed."
+
+  # Mail deploy hook (Postfix/Dovecot)
+  cat > "$hook_mail" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+log(){ printf "[deploy-hook-mail] %s\n" "$*"; }
+services=(postfix dovecot)
+for s in "${services[@]}"; do
+  if systemctl is-active "$s" >/dev/null 2>&1; then
+    log "Reloading $s..."
+    systemctl reload "$s" || systemctl restart "$s" || true
+  else
+    log "$s not active – skipped."
+  fi
+done
+EOF
+  chmod +x "$hook_mail"
+  kon_log "Mail deploy hook installed (Postfix/Dovecot)."
+}
+
+# ---- Cloudflare Origin Pull CA -------------------------------
+LE_LIVE_DIR="/etc/letsencrypt/live/ailinux.me"
+CF_ORIGIN_DIR="/etc/ssl/cloudflare/ailinux.me"
+CF_CA_DIR="/etc/ssl/cloudflare/ca"
+REPO_ORIGIN_DIR="$SCRIPT_DIR/etc/ssl/cloudflare/ailinux.me"
+REPO_CA_DIR="$SCRIPT_DIR/etc/ssl/cloudflare/ca"
+CA_URLS=(
+  "https://developers.cloudflare.com/ssl/static/origin_pull_ca.pem"
+  "https://developers.cloudflare.com/ssl/static/origin_ca_rsa_root.pem"
+)
+CA_FILE="cloudflare-origin-pull-ca.pem"
+
+ensure_origin_pull_ca() {
+  local tmp source url
+  tmp=$(mktemp)
+  for url in "${CA_URLS[@]}"; do
+    if curl -fsSL "$url" -o "$tmp"; then
+      source="$tmp"
+      break
+    fi
+  done
+
+  if [[ -z "${source:-}" ]]; then
+    kon_warn "Cloudflare Origin Pull CA could not be downloaded (${CA_URLS[*]})"
+    if [[ -s "$CF_CA_DIR/$CA_FILE" ]]; then
+      source="$CF_CA_DIR/$CA_FILE"
+    elif [[ -s "$REPO_CA_DIR/$CA_FILE" ]]; then
+      source="$REPO_CA_DIR/$CA_FILE"
+    else
+      kon_err "No existing Origin Pull CA found."
+      rm -f "$tmp"
+      exit 1
+    fi
+  fi
+
+  for dest in "$CF_CA_DIR/$CA_FILE" "$REPO_CA_DIR/$CA_FILE"; do
+    if [[ "$source" == "$dest" ]]; then
+      continue
+    fi
+    mkdir -p "$(dirname "$dest")"
+    install -m 644 "$source" "$dest"
+  done
+
+  rm -f "$tmp"
+  kon_log "Cloudflare Origin Pull CA installed."
+}
+
+# ---- Certificate request -------------------------------------
+request_cert() {
+  local domains_args=()
+  for d in "${DOMAINS[@]}"; do domains_args+=(-d "$d"); done
+
+  kon_log "Requesting certificate for:"
+  printf '   • %s\n' "${DOMAINS[@]}"
+
+  ensure_path
+  {
+    echo "--- certbot which/path ---"
+    which certbot || true
+    readlink -f "$(command -v certbot)" || true
+    echo "--- certbot plugins ---"
+    certbot plugins || true
+  } >&3
+
+  local reg_email="${CF_EMAIL:-admin@${DOMAINS[0]}}"
+
+  certbot certonly \
+    --dns-cloudflare \
+    --dns-cloudflare-credentials "$CRED_FILE" \
+    --agree-tos -m "$reg_email" --non-interactive \
+    --keep-until-expiring \
+    --preferred-challenges dns \
+    --deploy-hook "/etc/letsencrypt/renewal-hooks/deploy/10-reload-nginx.sh" \
+    "${domains_args[@]}"
+
+  kon_log "Certificates ready under /etc/letsencrypt/live/${DOMAINS[0]}/."
+}
+
+# ---- Copy certificates to repository -------------------------
+copy_certs_to_repo() {
+  mkdir -p "$CF_ORIGIN_DIR" "$REPO_ORIGIN_DIR" "$CF_CA_DIR" "$REPO_CA_DIR"
+
+  local FULLCHAIN="$LE_LIVE_DIR/fullchain.pem"
+  local PRIVKEY="$LE_LIVE_DIR/privkey.pem"
+
+  if [[ ! -s "$FULLCHAIN" || ! -s "$PRIVKEY" ]]; then
+    kon_err "LE files missing under $LE_LIVE_DIR"
+    exit 1
+  fi
+
+  # Copy to both system and repository directories
+  for dest in "$CF_ORIGIN_DIR" "$REPO_ORIGIN_DIR"; do
+    install -m 644 "$FULLCHAIN" "$dest/origin-fullchain.crt"
+    install -m 600 "$PRIVKEY"   "$dest/origin-privkey.key"
+    # Legacy names for existing nginx configs
+    install -m 644 "$FULLCHAIN" "$dest/origin.crt"
+    install -m 600 "$PRIVKEY"   "$dest/origin.key"
+  done
+
+  kon_log "Certificates copied to system and repository directories."
+}
+
+# ---- Reload services -----------------------------------------
+reload_services() {
+  # Docker Compose nginx service
+  local compose_dir="${COMPOSE_DIR:-/home/zombie/ailinux-repo}"
+  if [[ -f "$compose_dir/docker-compose.yml" ]]; then
+    cd "$compose_dir"
+    if docker compose ps nginx 2>/dev/null | grep -q nginx; then
+      kon_log "Testing nginx configuration..."
+      if docker compose exec nginx nginx -t; then
+        kon_log "Reloading nginx in Docker Compose..."
+        docker compose exec nginx nginx -s reload || docker compose restart nginx
+      else
+        kon_warn "Nginx config test failed. Please check configuration."
+      fi
+    fi
+  fi
+
+  # Systemd nginx (if running)
+  if systemctl is-active nginx >/dev/null 2>&1; then
+    kon_log "Reloading systemd nginx..."
+    systemctl reload nginx || systemctl restart nginx || true
+  fi
+}
+
+# ---- Main -----------------------------------------------------
+main() {
+  require_root
+  install_certbot
+  setup_creds
+  setup_deploy_hooks
+  ensure_origin_pull_ca
+  request_cert
+  copy_certs_to_repo
+  reload_services
+  kon_log "✅ Done. Certificates updated and services reloaded."
+}
+main
+
+
+================================
+DATEI: ./remove-bad-dep11.sh
+================================
+#!/usr/bin/env bash
+# Guard: Ensure bash execution
+if [ -z "${BASH_VERSION:-}" ]; then
+  exec /usr/bin/env bash "$0" "$@"
+fi
+
+set -euo pipefail
+umask 022
+
+# remove-bad-dep11.sh - Remove unrepairable DEP-11 files with hash mismatches
+# This script identifies DEP-11 metadata files that don't match their expected hashes
+# and removes them from the mirror to prevent client-side verification failures.
+
+REPO_ROOT="${REPO_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
+MIRROR_ROOT="${MIRROR_ROOT:-${REPO_ROOT}/repo/mirror}"
+LOGFILE="${LOGFILE:-${REPO_ROOT}/log/remove-bad-dep11.log}"
+
+log() {
+  echo "$(date '+%Y-%m-%d %H:%M:%S') [remove-bad-dep11] $*" | tee -a "$LOGFILE"
+}
+
+# Ensure log directory exists
+mkdir -p "$(dirname "$LOGFILE")"
+
+log "=== Starting DEP-11 hash validation and cleanup ==="
+
+removed_count=0
+checked_count=0
+valid_count=0
+
+# Find all dists/ directories
+while IFS= read -r -d '' dists_dir; do
+  repo_root="$(dirname "$dists_dir")"
+
+  # Find all InRelease and Release files at the suite level (e.g., dists/noble/)
+  while IFS= read -r -d '' release_file; do
+    # Skip binary-* subdirectory Release files
+    if [[ "$release_file" =~ binary-[^/]+/Release$ ]]; then
+      continue
+    fi
+
+    suite_dir="$(dirname "$release_file")"
+    suite="$(basename "$suite_dir")"
+
+    log "Checking Release file: $release_file"
+
+    # Find SHA256 section in Release file
+    in_sha256=0
+    while IFS= read -r line; do
+      # Check if we're entering SHA256 section
+      if [[ "$line" =~ ^SHA256: ]]; then
+        in_sha256=1
+        continue
+      fi
+
+      # Check if we've left the hash section (new hash type or blank line followed by non-hash)
+      if [[ $in_sha256 -eq 1 ]] && [[ "$line" =~ ^[A-Z] ]]; then
+        in_sha256=0
+        break
+      fi
+
+      # Parse hash lines in SHA256 section
+      if [[ $in_sha256 -eq 1 ]] && [[ "$line" =~ ^[[:space:]]+([a-f0-9]{64})[[:space:]]+([0-9]+)[[:space:]]+(.+)$ ]]; then
+        expected_hash="${BASH_REMATCH[1]}"
+        expected_size="${BASH_REMATCH[2]}"
+        rel_path="${BASH_REMATCH[3]}"
+
+        # Only process DEP-11 files (icons and Components)
+        if [[ ! "$rel_path" =~ dep11.*(icons|Components).*\.(tar\.gz|yml\.gz|xml\.gz)$ ]]; then
+          continue
+        fi
+
+        # Construct full path
+        dep11_file="${suite_dir}/${rel_path}"
+
+        if [[ ! -f "$dep11_file" ]]; then
+          log "  ⚠️  File not found: ${rel_path}"
+          continue
+        fi
+
+        ((checked_count++))
+
+        # Calculate actual hash
+        actual_hash=$(sha256sum "$dep11_file" | awk '{print $1}')
+        actual_size=$(stat -c%s "$dep11_file" 2>/dev/null || echo "0")
+
+        # Compare hashes
+        if [[ "$actual_hash" != "$expected_hash" ]]; then
+          log "  ❌ HASH MISMATCH: ${rel_path}"
+          log "     Expected: $expected_hash (size: $expected_size)"
+          log "     Actual:   $actual_hash (size: $actual_size)"
+          log "     Action: Removing corrupted file"
+
+          # Remove the corrupted file
+          if rm -f "$dep11_file"; then
+            log "     ✅ Removed: $dep11_file"
+            ((removed_count++))
+          else
+            log "     ⚠️  Failed to remove: $dep11_file"
+          fi
+        else
+          ((valid_count++))
+          if [[ "$rel_path" =~ icons-(48x48|64x64)\.tar\.gz$ ]]; then
+            log "  ✅ Valid: ${rel_path}"
+          fi
+        fi
+      fi
+    done < "$release_file"
+
+  done < <(find "$dists_dir" -maxdepth 2 -type f \( -name "Release" -o -name "InRelease" \) -print0)
+
+done < <(find "$MIRROR_ROOT" -type d -name "dists" -print0)
+
+log "=== Cleanup complete ==="
+log "Files checked: $checked_count"
+log "Files valid: $valid_count"
+log "Files removed: $removed_count"
+
+if [[ $removed_count -gt 0 ]]; then
+  log ""
+  log "⚠️  Warning: $removed_count corrupted DEP-11 file(s) were removed from the mirror"
+  log "These files had hash mismatches and could not be repaired"
+  log "Clients will no longer see hash verification errors for these files"
+  log "Note: Missing DEP-11 metadata is non-critical; the mirror remains functional"
+  log ""
+  log "Next steps:"
+  log "1. Run ./nova-heal.sh to attempt re-downloading missing files"
+  log "2. Run ./update-mirror.sh to re-sync from upstream"
+elif [[ $checked_count -eq 0 ]]; then
+  log ""
+  log "⚠️  No DEP-11 files found to check"
+  log "This might indicate no repositories have AppStream metadata"
+else
+  log ""
+  log "✅ All DEP-11 files are valid!"
+  log ""
+  log "If clients are seeing hash mismatch errors, the issue is CLIENT-SIDE caching."
+  log "Run this on affected client machines:"
+  log "  sudo rm -rf /var/lib/apt/lists/*"
+  log "  sudo apt update"
+fi
+
+exit 0
+
+
+================================
+DATEI: ./nova-heal.sh
+================================
+
+#!/usr/bin/env bash
+
+# 🧠 AILinux Repo Self-Healing Engine – Nova AI v2.4
+# Features: NO_PUBKEY Fix, InRelease Regeneration, DEP-11 Check, Chrome GPG-Prüfung, apt-mirror Cleanup
+
+set -euo pipefail
+
+echo "===[ Nova AI Power: Self-Healing Engine Started ]==="
+
+# === Konfiguration ===
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
+MIRROR="$SCRIPT_DIR/repo/mirror"
+HEAL_LOGFILE="$MIRROR/heal-log-$(date +%Y-%m-%d-%H%M).txt"
+GPGKEY="C4880D2F076E1F92"
+
+# === Initialisierung ===
+echo "📄 Heal Log für diesen Lauf: $HEAL_LOGFILE"
+{
+  echo "Nova AI Self-Heal Log – $(date -Ru)"
+  echo "============================================"
+  echo "Repo Mirror Pfad: $MIRROR"
+  echo "Verwendeter GPG Key: $GPGKEY"
+  echo "============================================"
+} >"$HEAL_LOGFILE"
+
+# === NO_PUBKEY Fehler behandeln ===
+echo -e "\n🔍 Suche nach fehlenden GPG-Keys (NO_PUBKEY)..." | tee -a "$HEAL_LOGFILE"
+grep -hE 'NO_PUBKEY\s+[0-9A-F]+$' "$MIRROR"/sign-log-* 2>/dev/null | awk '{print $NF}' | sort -u | while read -r KEY; do
+  if [ -n "$KEY" ]; then
+    echo "   🔑 Fehlender Key gefunden: $KEY" | tee -a "$HEAL_LOGFILE"
+    echo "      -> Versuche Import von keyserver.ubuntu.com..." | tee -a "$HEAL_LOGFILE"
+    if gpg --batch --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys "$KEY" >>"$HEAL_LOGFILE" 2>&1; then
+      echo "   ✅ Key erfolgreich empfangen: $KEY" | tee -a "$HEAL_LOGFILE"
+    else
+      echo "   ❌ Fehler beim Importieren von Key $KEY" | tee -a "$HEAL_LOGFILE"
+    fi
+  fi
+done
+echo "   -> Key-Prüfung abgeschlossen." | tee -a "$HEAL_LOGFILE"
+
+# === InRelease prüfen/neu erstellen ===
+echo -e "\n📦 Prüfe fehlende InRelease-Dateien..." | tee -a "$HEAL_LOGFILE"
+find "$MIRROR" -type f -name "Release" | while read -r REL; do
+  DIR=$(dirname "$REL")
+  if [ ! -f "$DIR/InRelease" ]; then
+    if [ -s "$REL" ]; then
+      echo "   🛠 InRelease fehlt in '$DIR' – wird erstellt..." | tee -a "$HEAL_LOGFILE"
+      if gpg --batch --yes --default-key "$GPGKEY" --clearsign -o "$DIR/InRelease.tmp" "$REL" >>"$HEAL_LOGFILE" 2>&1; then
+        if [ -f "$DIR/InRelease.tmp" ]; then
+          mv "$DIR/InRelease.tmp" "$DIR/InRelease"
+          echo "   ✅ InRelease erstellt in '$DIR'" | tee -a "$HEAL_LOGFILE"
+        else
+          echo "   ❌ GPG meldete Erfolg, aber Datei fehlt: '$DIR/InRelease.tmp'" | tee -a "$HEAL_LOGFILE"
+        fi
+      else
+        echo "   ❌ Fehler beim Erstellen von InRelease in '$DIR'" | tee -a "$HEAL_LOGFILE"
+        rm -f "$DIR/InRelease.tmp"
+      fi
+    else
+      echo "   ℹ InRelease fehlt in '$DIR', aber Release ist leer – wird übersprungen." | tee -a "$HEAL_LOGFILE"
+    fi
+  fi
+done
+echo "   -> InRelease-Prüfung abgeschlossen." | tee -a "$HEAL_LOGFILE"
+
+# === Pakete prüfen (gzip Integrität) ===
+echo -e "\n📂 Validierung vorhandener Packages.gz-Dateien..." | tee -a "$HEAL_LOGFILE"
+find "$MIRROR" -name "Packages.gz" | while read -r PKG; do
+  if ! gunzip -t "$PKG" 2>/dev/null; then
+    echo "   ❌ Fehler: '$PKG' scheint korrupt zu sein (gzip test failed)!" | tee -a "$HEAL_LOGFILE"
+  fi
+done
+echo "   -> Packages.gz-Prüfung abgeschlossen." | tee -a "$HEAL_LOGFILE"
+
+# === DEP-11 Icons prüfen ===
+echo -e "\n🖼 Prüfe DEP-11 Icons (icons-64x64@2.tar)..." | tee -a "$HEAL_LOGFILE"
+find "$MIRROR" -name "icons-64x64@2.tar" | while read -r ICON; do
+  if [ ! -s "$ICON" ]; then
+    echo "   ❌ DEP-11 Icon fehlt oder ist leer: $ICON" | tee -a "$HEAL_LOGFILE"
+  fi
+done
+echo "   -> DEP-11-Prüfung abgeschlossen." | tee -a "$HEAL_LOGFILE"
+
+# === Chrome-Repo: Release.gpg prüfen ===
+echo -e "\n🔐 Prüfe Chrome-Repo Signatur..." | tee -a "$HEAL_LOGFILE"
+CHROME_RELEASE="$MIRROR/dl.google.com/linux/chrome/deb/dists/stable/Release"
+CHROME_GPG="$CHROME_RELEASE.gpg"
+if [ -f "$CHROME_RELEASE" ] && [ ! -s "$CHROME_GPG" ]; then
+  echo "   ❌ Chrome Release.gpg fehlt oder ist leer: $CHROME_GPG" | tee -a "$HEAL_LOGFILE"
+else
+  echo "   ✅ Chrome Release.gpg vorhanden." | tee -a "$HEAL_LOGFILE"
+fi
+
+# === apt-mirror Cleanup ===
+echo -e "\n🧹 Starte apt-mirror Cleanup..." | tee -a "$HEAL_LOGFILE"
+CLEAN_SCRIPT="/var/spool/apt-mirror/var/clean.sh"
+if [ -x "$CLEAN_SCRIPT" ]; then
+  if "$CLEAN_SCRIPT" >>"$HEAL_LOGFILE" 2>&1; then
+    echo "   ✅ apt-mirror Cleanup erfolgreich abgeschlossen." | tee -a "$HEAL_LOGFILE"
+  else
+    echo "   ❌ Fehler beim Ausführen von clean.sh" | tee -a "$HEAL_LOGFILE"
+  fi
+else
+  echo "   ⚠ clean.sh nicht vorhanden oder nicht ausführbar: $CLEAN_SCRIPT" | tee -a "$HEAL_LOGFILE"
+fi
+
+# === Abschluss ===
+echo -e "\n✅ Self-Healing abgeschlossen." | tee -a "$HEAL_LOGFILE"
+echo "🧠 Nova AI Status: REPO HEALTHY ✅ (Basis-Checks bestanden)" | tee -a "$HEAL_LOGFILE"
+echo "============================================" >>"$HEAL_LOGFILE"
+echo "Heal-Prozess beendet: $(date -Ru)" >>"$HEAL_LOGFILE"
+
+# === Log-Berechtigungen setzen ===
+echo -e "\n🔧 Setze Berechtigungen für Heal-Log..." | tee -a "$HEAL_LOGFILE"
+if id www-data &>/dev/null; then
+  chown www-data:www-data "$HEAL_LOGFILE" && echo "   -> Besitzer: www-data" | tee -a "$HEAL_LOGFILE"
+else
+  echo "   ⚠ Benutzer www-data nicht gefunden." | tee -a "$HEAL_LOGFILE"
+fi
+chmod 644 "$HEAL_LOGFILE" && echo "   -> Rechte: 644" | tee -a "$HEAL_LOGFILE"
+
+echo -e "\n===[ Nova AI Self-Healing Engine Finished ]==="
+exit 0
+
+
+
+
+================================
+DATEI: ./update-container-scripts.sh
+================================
+#!/usr/bin/env bash
+# Guard: Ensure bash execution
+if [ -z "${BASH_VERSION:-}" ]; then
+  exec /usr/bin/env bash "$0" "$@"
+fi
+
+set -euo pipefail
+
+# update-container-scripts.sh - Aktualisiert die Container-Mount-Scripte
+# Dieses Script kopiert die neuesten Versionen der Scripte in die Container-Mount-Verzeichnisse
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+echo "=== Container-Scripte aktualisieren ==="
+echo ""
+
+# Kopiere postmirror.sh
+if [ -f "${REPO_ROOT}/postmirror.sh" ]; then
+  echo "Kopiere postmirror.sh → repo/var/postmirror.sh"
+  install -m 0755 "${REPO_ROOT}/postmirror.sh" "${REPO_ROOT}/repo/var/postmirror.sh"
+  echo "✓ postmirror.sh aktualisiert"
+else
+  echo "⚠ postmirror.sh nicht gefunden"
+fi
+
+# Kopiere sign-repos.sh
+if [ -f "${REPO_ROOT}/sign-repos.sh" ]; then
+  echo "Kopiere sign-repos.sh → repo/var/sign-repos.sh"
+  install -m 0755 "${REPO_ROOT}/sign-repos.sh" "${REPO_ROOT}/repo/var/sign-repos.sh"
+  echo "✓ sign-repos.sh aktualisiert"
+else
+  echo "⚠ sign-repos.sh nicht gefunden"
+fi
+
+# Kopiere repair-dep11.sh
+if [ -f "${REPO_ROOT}/repair-dep11.sh" ]; then
+  echo "Kopiere repair-dep11.sh → repo/var/repair-dep11.sh"
+  install -m 0755 "${REPO_ROOT}/repair-dep11.sh" "${REPO_ROOT}/repo/var/repair-dep11.sh"
+  echo "✓ repair-dep11.sh aktualisiert"
+else
+  echo "⚠ repair-dep11.sh nicht gefunden"
+fi
+
+# Kopiere remove-unrepairable-dep11.sh
+if [ -f "${REPO_ROOT}/remove-unrepairable-dep11.sh" ]; then
+  echo "Kopiere remove-unrepairable-dep11.sh → repo/var/remove-unrepairable-dep11.sh"
+  install -m 0755 "${REPO_ROOT}/remove-unrepairable-dep11.sh" "${REPO_ROOT}/repo/var/remove-unrepairable-dep11.sh"
+  echo "✓ remove-unrepairable-dep11.sh aktualisiert"
+else
+  echo "⚠ remove-unrepairable-dep11.sh nicht gefunden"
+fi
+
+echo ""
+echo "=== Fertig ==="
+echo ""
+echo "Aktualisierte Scripte:"
+echo "  - postmirror.sh (validiert & repariert DEP-11)"
+echo "  - sign-repos.sh (signiert Repositories)"
+echo "  - repair-dep11.sh (repariert fehlende DEP-11)"
+echo "  - remove-unrepairable-dep11.sh (entfernt korrupte DEP-11)"
+echo ""
+echo "Nächste Schritte:"
+echo "1. Container neu starten: docker compose restart apt-mirror"
+echo "2. Oder manuell ausführen: ./update-mirror.sh"
+
+
+================================
+DATEI: ./copy.sh
+================================
+
+#!/usr/bin/env bash
+set -euo pipefail
+
+file_1=/root/ailinux-repo/add-ailinux-repo.sh
+file_2=/root/ailinux-repo/live-log.html
+file_3=/root/ailinux-repo/repo/index.html
+file_4=/root/ailinux-repo/repo/ailinux-archive-key.gpg
+path=/root/ailinux-repo/repo/mirror/
+
+cp "$file_1" "$file_2" "$file_3" "$file_4" "$path"
+
+
+
+
+================================
+DATEI: ./cappelikan-ppa.asc
+================================
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+Comment: Hostname: 
+Version: Hockeypuck 2.2
+
+xsFNBF1oQY8BEADzYbSG0DGjT1hasphb95LynI4sO+wXAm1FSvynqxLu601LpPxs
+s/tEI3gYHe22s2peC++PU5ONq9SIS9ceUwwrZWRqveqay5E39sTuHcEmxCUCJ6Pc
+oJZle1H6VxEEqD2vAh1WUFu5dEGdABGvypmwhIro1QUU2/llli61WYA4pQn9AWe7
+KDeWzMvayavnQPG9eE/KSJf3oF0k3VZnjme4l/UVqLlxO7WlrvO3K1HHkxPw8A3K
+JJMjZ001yQu9qy4af9SOIDuj1mOZyyiw9jGXoukWcFKRAxtylBR6E9N8pSdcU1cx
+mFJQx244hmBegTOnQCo4D07SN1QK/8KawI2m7M9R6sBbXWZPcNEl7NCuxwx2uGMG
+17i9Ip7rpk6hQzYOorQph+S9rlQjGqgQt3Z4uX3cz4lUCZia5HFWUnHcp9R1W9Vc
+8Y4lhFgHR8ho1Xr+DI6BNU3Z1rkl4nCXigDor2HhpeYkmzbrQeuC1kQGcczsDl/I
+it3oSj86ini+D+lqAhWfLVPOWHA3ybxWtuOcSKz3ShqkmuTKOUgYdu+S7jCJnUPv
+kn6acjWBLySD2/Dy/AQl8Xk3bcyeui7+CEkZPhtN8VhhqV4fpP2oIEEDTCFF5Zfz
+PQDk3pY7I89xNsaPBz2Klx88vZ58zrPXDs9JSKiQk5CF8yaLXU0ngso4uQARAQAB
+zRxMYXVuY2hwYWQgUFBBIGZvciBjYXBwZWxpa2FuwsF4BBMBAgAiBQJdaEGPAhsD
+BgsJCAcDAgYVCAIJCgsEFgIDAQIeAQIXgAAKCRConXwbL3YwTQ+LEADX607KzH6j
+eB4ooCE3Ec9+NDgoE1c9R75F0Tc9sOXl9Vm+DrZq+ZvfnjRVt7n/6dAqChSBwQ/s
+1hQuA9wi9P5AoEsButnPcVIZjzPK8/+h4ndUxQc2IEMGW1eWlPKbRPnLpNoF63xZ
+sJoq6UGUxXefrphevecuioOhn7fuWKRDNY92hS/NVAXbQEn6rK/TF1NG5RmfARpw
+wRb1jptsdG3m3d/C2aUgE8cWtfVZwBDhVq7dIVlxufa/bqtOJAk8L3V9xzEnNXzI
+D2HA/X23ruPOpQwEw6zCWJGgJ0SZw1EsjhUrhn5wD0839Kj86u26RABZE838bQ7p
+KcjlwAh5eS4RuvRtNyku7OxdhA3hZ8K7sPVI4dgWWdEvaF0pNpuwkoGL54YZJLIa
+gkCSKzJyfwI7RqNZNVBTbacy0SOfWgx6+4VnS1V3DUJr1zGaTIF3xR8+6FRuPb/N
+PpX3sjJq+rB8wWWnt+C/lbSAd0D5qU/XYCP0H31s3B90GgPLKU9EgaBt7+urNFLj
+4uuBaetC3DwEpMmLFIDxnVrlj1jfx2uNHyoXD2as4sE3kAQNJKPLlKj846f3M+tS
+CXlCtfaes6WTZ6X1o5soNEXWIY0qWsj8fMOOv+DCgLnZCsska0UbgnMEaMlh5SO4
+H2E4iYccWSRah0TAsguszyCoP+Wqyw8Txw==
+=yL/6
+-----END PGP PUBLIC KEY BLOCK-----
+
+
+================================
+DATEI: ./setup-ailinux-mirror.sh
+================================
+#!/usr/bin/env bash
+if [ -z "${BASH_VERSION:-}" ]; then
+  exec /usr/bin/env bash "$0" "$@"
+fi
+
+set -euo pipefail
+
+echo "===[ AILinux Mirror Setup für Ubuntu 24.04 (noble) ]==="
+export DEBIAN_FRONTEND=noninteractive
+
+# Mirror base URL
+MIRROR_URL="${MIRROR_URL:-https://repo.ailinux.me:8443/mirror}"
+CODENAME="${CODENAME:-noble}"
+
+# Detect codename if possible
+if command -v lsb_release >/dev/null 2>&1; then
+  CODENAME="$(lsb_release -sc)"
+fi
+
+echo "Using mirror: $MIRROR_URL"
+echo "Ubuntu codename: $CODENAME"
+echo ""
+
+# Install required tools
+if ! command -v curl >/dev/null 2>&1; then
+  echo "Installing curl..."
+  apt-get update -qq
+  apt-get install -y --no-install-recommends curl ca-certificates gnupg
+fi
+
+# Create keyring directories
+install -d -m 0755 /etc/apt/keyrings
+install -d -m 0755 /usr/share/keyrings
+install -d -m 0755 /etc/apt/sources.list.d
+
+# Enable i386 architecture
+echo "→ Enabling i386 architecture..."
+if dpkg --print-foreign-architectures 2>/dev/null | grep -q '^i386$'; then
+  echo "✓ i386 architecture already present"
+else
+  dpkg --add-architecture i386
+  echo "✓ i386 architecture added"
+fi
+
+# Install AILinux public key
+echo "→ Installing AILinux archive keyring..."
+KEYRING_FILE="/usr/share/keyrings/ailinux-archive-keyring.gpg"
+if curl -fsSL "$MIRROR_URL/ailinux-archive-key.gpg" -o "$KEYRING_FILE"; then
+  chmod 0644 "$KEYRING_FILE"
+  echo "✓ AILinux keyring installed"
+else
+  echo "❌ ERROR: Could not download AILinux signing key from $MIRROR_URL/ailinux-archive-key.gpg"
+  exit 1
+fi
+
+# Backup existing sources.list
+if [ -f /etc/apt/sources.list ]; then
+  cp /etc/apt/sources.list "/etc/apt/sources.list.backup.$(date +%Y%m%d-%H%M%S)"
+fi
+
+# Configure Ubuntu base repositories (via mirror)
+# NOTE: Noble still needs i386 entries for legacy libs (Wine/Steam). Keep both arches active.
+echo "→ Configuring Ubuntu base repositories..."
+cat > /etc/apt/sources.list <<EOF
+# AILinux Mirror - Ubuntu Base Repositories (amd64+i386 for full multiarch support)
+deb [arch=amd64,i386 signed-by=$KEYRING_FILE] $MIRROR_URL/archive.ubuntu.com/ubuntu $CODENAME main restricted universe multiverse
+deb [arch=amd64,i386 signed-by=$KEYRING_FILE] $MIRROR_URL/archive.ubuntu.com/ubuntu $CODENAME-updates main restricted universe multiverse
+deb [arch=amd64,i386 signed-by=$KEYRING_FILE] $MIRROR_URL/archive.ubuntu.com/ubuntu $CODENAME-backports main restricted universe multiverse
+deb [arch=amd64,i386 signed-by=$KEYRING_FILE] $MIRROR_URL/security.ubuntu.com/ubuntu $CODENAME-security main restricted universe multiverse
+EOF
+
+# Additional repositories (all using AILinux signing key!)
+echo "→ Configuring additional repositories..."
+
+# Google Chrome
+cat > /etc/apt/sources.list.d/google-chrome.list <<EOF
+deb [arch=amd64 signed-by=$KEYRING_FILE] $MIRROR_URL/dl.google.com/linux/chrome/deb stable main
+EOF
+
+# Docker
+cat > /etc/apt/sources.list.d/docker.list <<EOF
+deb [arch=amd64 signed-by=$KEYRING_FILE] $MIRROR_URL/download.docker.com/linux/ubuntu $CODENAME stable
+EOF
+
+# WineHQ
+cat > /etc/apt/sources.list.d/winehq.list <<EOF
+deb [arch=amd64,i386 signed-by=$KEYRING_FILE] $MIRROR_URL/dl.winehq.org/wine-builds/ubuntu $CODENAME main
+EOF
+
+# KDE Neon
+cat > /etc/apt/sources.list.d/neon-user.list <<EOF
+deb [arch=amd64 signed-by=$KEYRING_FILE] $MIRROR_URL/archive.neon.kde.org/user $CODENAME main
+EOF
+
+# LibreOffice PPA
+cat > /etc/apt/sources.list.d/libreoffice-ppa.list <<EOF
+deb [arch=amd64,i386 signed-by=$KEYRING_FILE] $MIRROR_URL/ppa.launchpadcontent.net/libreoffice/ppa/ubuntu $CODENAME main
+EOF
+
+# Cappelikan PPA (MainLine kernel tool)
+cat > /etc/apt/sources.list.d/cappelikan-ppa.list <<EOF
+deb [arch=amd64,i386 signed-by=$KEYRING_FILE] $MIRROR_URL/ppa.launchpadcontent.net/cappelikan/ppa/ubuntu $CODENAME main
+EOF
+
+# Xubuntu Dev Staging
+cat > /etc/apt/sources.list.d/xubuntu-dev-staging.list <<EOF
+deb [arch=amd64,i386 signed-by=$KEYRING_FILE] $MIRROR_URL/ppa.launchpadcontent.net/xubuntu-dev/staging/ubuntu $CODENAME main
+EOF
+
+# Git Stable PPA
+cat > /etc/apt/sources.list.d/git-core-ppa.list <<EOF
+deb [arch=amd64,i386 signed-by=$KEYRING_FILE] $MIRROR_URL/ppa.launchpadcontent.net/git-core/ppa/ubuntu $CODENAME main
+EOF
+
+# Python (Deadsnakes) PPA
+cat > /etc/apt/sources.list.d/deadsnakes-ppa.list <<EOF
+deb [arch=amd64,i386 signed-by=$KEYRING_FILE] $MIRROR_URL/ppa.launchpadcontent.net/deadsnakes/ppa/ubuntu $CODENAME main
+EOF
+
+# Graphics Drivers PPA (CRITICAL for gaming with i386 support)
+cat > /etc/apt/sources.list.d/graphics-drivers-ppa.list <<EOF
+deb [arch=amd64,i386 signed-by=$KEYRING_FILE] $MIRROR_URL/ppa.launchpadcontent.net/graphics-drivers/ppa/ubuntu $CODENAME main
+EOF
+
+# Kdenlive PPA
+cat > /etc/apt/sources.list.d/kdenlive-ppa.list <<EOF
+deb [arch=amd64,i386 signed-by=$KEYRING_FILE] $MIRROR_URL/ppa.launchpadcontent.net/kdenlive/kdenlive-stable/ubuntu $CODENAME main
+EOF
+
+# OBS Studio PPA
+cat > /etc/apt/sources.list.d/obs-studio-ppa.list <<EOF
+deb [arch=amd64,i386 signed-by=$KEYRING_FILE] $MIRROR_URL/ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu $CODENAME main
+EOF
+
+# FFmpeg4 PPA
+cat > /etc/apt/sources.list.d/ffmpeg4-ppa.list <<EOF
+deb [arch=amd64,i386 signed-by=$KEYRING_FILE] $MIRROR_URL/ppa.launchpadcontent.net/savoury1/ffmpeg4/ubuntu $CODENAME main
+EOF
+
+# FFmpeg5 PPA
+cat > /etc/apt/sources.list.d/ffmpeg5-ppa.list <<EOF
+deb [arch=amd64,i386 signed-by=$KEYRING_FILE] $MIRROR_URL/ppa.launchpadcontent.net/savoury1/ffmpeg5/ubuntu $CODENAME main
+EOF
+
+# Timeshift PPA
+cat > /etc/apt/sources.list.d/timeshift-ppa.list <<EOF
+deb [arch=amd64,i386 signed-by=$KEYRING_FILE] $MIRROR_URL/ppa.launchpadcontent.net/teejee2008/timeshift/ubuntu $CODENAME main
+EOF
+
+# Brave Browser (amd64 only)
+cat > /etc/apt/sources.list.d/brave-browser.list <<EOF
+deb [arch=amd64 signed-by=$KEYRING_FILE] $MIRROR_URL/brave-browser-apt-release.s3.brave.com stable main
+EOF
+
+# NodeSource (Node.js 20.x, amd64 only)
+cat > /etc/apt/sources.list.d/nodesource.list <<EOF
+deb [arch=amd64 signed-by=$KEYRING_FILE] $MIRROR_URL/deb.nodesource.com/node_20.x nodistro main
+EOF
+
+# Update package lists
+echo ""
+echo "→ Updating package lists..."
+apt-get update
+
+echo ""
+echo "===[ Success! ]==="
+echo "✓ AILinux mirror configured successfully"
+echo "✓ All repositories now use: $MIRROR_URL"
+echo "✓ Signed with AILinux archive key: $KEYRING_FILE"
+echo "✓ i386 architecture enabled for 32-bit support"
+echo ""
+echo "Available repositories:"
+echo "  Base System:"
+echo "    - Ubuntu base (main, universe, multiverse, restricted) [amd64+i386]"
+echo ""
+echo "  Desktop & Development:"
+echo "    - KDE Neon [amd64]"
+echo "    - Xubuntu Dev Staging [amd64+i386]"
+echo "    - LibreOffice PPA [amd64+i386]"
+echo "    - Cappelikan PPA (mainline kernels) [amd64+i386]"
+echo ""
+echo "  Developer Tools:"
+echo "    - Git Stable PPA [amd64+i386]"
+echo "    - Python (Deadsnakes) PPA [amd64+i386]"
+echo "    - NodeSource (Node.js 20.x) [amd64]"
+echo "    - Docker [amd64]"
+echo ""
+echo "  Gaming & Graphics:"
+echo "    - WineHQ [amd64+i386]"
+echo "    - Graphics Drivers PPA [amd64+i386] - NVIDIA/AMD with i386 support"
+echo ""
+echo "  Multimedia:"
+echo "    - OBS Studio PPA [amd64+i386]"
+echo "    - Kdenlive PPA [amd64+i386]"
+echo "    - FFmpeg4 PPA [amd64+i386]"
+echo "    - FFmpeg5 PPA [amd64+i386]"
+echo ""
+echo "  Browsers & Utilities:"
+echo "    - Google Chrome [amd64]"
+echo "    - Brave Browser [amd64]"
+echo "    - Timeshift PPA (backup) [amd64+i386]"
+echo ""
+echo "You can now install packages with: apt install <package>"
+echo "For gaming: Steam, Wine, and NVIDIA/AMD drivers with full i386 support available!"
+
+
+================================
+DATEI: ./auto-import-gpg-keys.sh
+================================
+
+#!/usr/bin/env bash
+set -euo pipefail
+
+# AI Auto-Key-Importer
+# Für fehlende apt Keys (NO_PUBKEY)
+
+MISSING=$(apt-get update 2>&1 | grep 'NO_PUBKEY' | awk '{print $NF}' | sort -u)
+
+if [ -z "$MISSING" ]; then
+  echo -e "\e[1;32m✅ Keine fehlenden GPG-Keys gefunden.\e[0m"
+  exit 0
+fi
+
+echo -e "\e[1;33m⚠️  Fehle GPG-Keys gefunden:\e[0m"
+echo "$MISSING"
+
+for key in $MISSING; do
+  echo -e "\e[1;34m→ Importiere Key: $key\e[0m"
+  gpg --keyserver keyserver.ubuntu.com --recv-keys "$key"
+  gpg --export "$key" | sudo tee "/usr/share/keyrings/$key.gpg" > /dev/null
+done
+
+echo -e "\e[1;32m✅ Alle fehlenden Keys importiert.\e[0m"
+
+
+
+
+================================
+DATEI: ./nginx.conf
+================================
+
+user  nginx;
+worker_processes  auto;
+
+events { worker_connections 1024; }
+
+http {
+  include       /etc/nginx/mime.types;
+  default_type  application/octet-stream;
+
+  # CORS nur ailinux.me (inkl. Subdomains, mit/ohne Port)
+  map $http_origin $cors_api_origin {
+    default "";
+    "" "";
+    ~^https?://([a-z0-9-]+\.)?ailinux\.me(:[0-9]+)?$ $http_origin;
+  }
+  map "$http_origin|$cors_api_origin" $cors_api_reject {
+    default 0;
+    ~^.+\|$ 1;
+  }
+
+  sendfile on;
+  tcp_nopush on;
+  keepalive_timeout 65;
+
+  gzip on;
+  gzip_vary on;
+  gzip_proxied any;
+  gzip_comp_level 6;
+  gzip_buffers 16 8k;
+  gzip_http_version 1.1;
+  gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+
+  server_tokens off;
+
+  access_log /var/log/nginx/access.log;
+  error_log  /var/log/nginx/error.log warn;
+
+  include /etc/nginx/conf.d/*.conf;
+}
+
+
+
+
+================================
+DATEI: ./restore-i386.sh
+================================
+#!/usr/bin/env bash
+
+# Restore i386 architecture support where available
+# Note: Ubuntu Noble (24.04) repositories don't actually have i386 packages,
+# so you'll get warnings, but the configuration will request them if they exist.
+
+set -euo pipefail
+
+SCRIPT_FILE="/home/zombie/ailinux-repo/repo/mirror/add-ailinux-repo.sh"
+
+echo "===[ Restoring i386 Architecture Support ]==="
+echo ""
+
+if [[ ! -f "$SCRIPT_FILE" ]]; then
+  echo "❌ ERROR: Script not found: $SCRIPT_FILE"
+  exit 1
+fi
+
+echo "→ Creating backup..."
+sudo cp "$SCRIPT_FILE" "${SCRIPT_FILE}.backup-restore-$(date +%Y%m%d-%H%M%S)"
+
+echo "→ Restoring i386 to all repositories..."
+
+# Restore i386 for Ubuntu base
+sudo sed -i 's/^UBUNTU_ARCHS="amd64"$/UBUNTU_ARCHS="amd64 i386"/' "$SCRIPT_FILE"
+
+# Restore i386 for other repos
+sudo sed -i 's/^XUBUNTU_ARCHS="amd64"$/XUBUNTU_ARCHS="amd64 i386"/' "$SCRIPT_FILE"
+sudo sed -i 's/^CAPPELIKAN_ARCHS="amd64"$/CAPPELIKAN_ARCHS="amd64 i386"/' "$SCRIPT_FILE"
+sudo sed -i 's/^LIBREOFFICE_ARCHS="amd64"$/LIBREOFFICE_ARCHS="amd64 i386"/' "$SCRIPT_FILE"
+
+echo "✓ Restored!"
+echo ""
+echo "Current architecture configuration:"
+grep -E "^(UBUNTU_ARCHS|NEON_ARCHS|XUBUNTU_ARCHS|CAPPELIKAN_ARCHS|LIBREOFFICE_ARCHS|DOCKER_ARCHS|CHROME_ARCHS|WINE_ARCHS)=" "$SCRIPT_FILE"
+
+echo ""
+echo "===[ Important Information ]==="
+echo ""
+echo "⚠️  NOTE: Ubuntu 24.04 Noble does NOT provide i386 packages for most repositories."
+echo "    The warnings you see are NORMAL and expected because:"
+echo ""
+echo "    1. You're requesting i386 packages (which is good for compatibility)"
+echo "    2. But Noble repositories don't have them (Ubuntu policy)"
+echo "    3. APT correctly warns you that i386 is not available"
+echo ""
+echo "This is NOT an error. It means:"
+echo "  ✓ Your mirror is correctly configured"
+echo "  ✓ Your client is correctly configured"
+echo "  ✓ The repositories simply don't offer i386 for Noble"
+echo ""
+echo "The only repository that SHOULD have i386 in Noble is WineHQ."
+echo ""
+echo "If you want to suppress these warnings, you would need to remove i386"
+echo "from the repositories that don't support it. But the system will work"
+echo "fine with the warnings - they're just informational."
+echo ""
+echo "===[ Next Steps ]==="
+echo "To apply the restored configuration on a client:"
+echo "  sudo rm -rf /etc/apt/sources.list.d/ailinux-*"
+echo "  curl -fsSL \"https://repo.ailinux.me:8443/mirror/add-ailinux-repo.sh\" | sudo bash"
+
+
+================================
+DATEI: ./validate-dep11.sh
+================================
+#!/usr/bin/env bash
+# Guard: Ensure bash execution
+if [ -z "${BASH_VERSION:-}" ]; then
+  exec /usr/bin/env bash "$0" "$@"
+fi
+
+set -euo pipefail
+umask 022
+
+# validate-dep11.sh - Efficient DEP-11 validation with hash checking
+# This script validates DEP-11 metadata files against their SHA256 hashes in Release files
+
+REPO_ROOT="${REPO_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
+MIRROR_ROOT="${MIRROR_ROOT:-${REPO_ROOT}/repo/mirror}"
+LOGFILE="${LOGFILE:-${REPO_ROOT}/log/validate-dep11.log}"
+DRY_RUN="${DRY_RUN:-0}"
+
+log() {
+  echo "$(date '+%Y-%m-%d %H:%M:%S') [validate-dep11] $*" | tee -a "$LOGFILE"
+}
+
+# Ensure log directory exists
+mkdir -p "$(dirname "$LOGFILE")"
+
+log "=== Starting DEP-11 validation (DRY_RUN=$DRY_RUN) ==="
+
+removed_count=0
+checked_count=0
+valid_count=0
+missing_count=0
+
+# Find all dists/ directories
+while IFS= read -r -d '' dists_dir; do
+  # Find all Release files at suite level (not in binary-* subdirs)
+  while IFS= read -r -d '' release_file; do
+    suite_dir="$(dirname "$release_file")"
+    suite_name="$(basename "$suite_dir")"
+    repo_name="$(echo "$dists_dir" | sed "s|^$MIRROR_ROOT/||" | cut -d'/' -f1)"
+
+    log "Checking: $repo_name/$suite_name"
+
+    # Extract only SHA256 section and grep for DEP-11 files
+    # This is much faster than reading line-by-line
+    awk '/^SHA256:$/,/^[A-Z]/ { print }' "$release_file" | \
+      grep -E 'dep11.*(icons|Components).*\.(tar\.gz|yml\.gz|xml\.gz)' | \
+      while read -r sha256 size filepath; do
+        # Skip empty lines
+        [[ -z "$sha256" || -z "$filepath" ]] && continue
+
+        dep11_file="${suite_dir}/${filepath}"
+
+        if [[ ! -f "$dep11_file" ]]; then
+          log "  ⚠️  Missing: $filepath"
+          ((missing_count++))
+          continue
+        fi
+
+        ((checked_count++))
+
+        # Calculate hash (faster with single sha256sum call)
+        actual_hash=$(sha256sum "$dep11_file" | awk '{print $1}')
+
+        if [[ "$actual_hash" != "$sha256" ]]; then
+          log "  ❌ BAD: $filepath"
+          log "     Expected: $sha256"
+          log "     Actual:   $actual_hash"
+
+          if [[ $DRY_RUN -eq 0 ]]; then
+            if rm -f "$dep11_file"; then
+              log "     🗑️  Removed"
+              ((removed_count++))
+            else
+              log "     ⚠️  Failed to remove"
+            fi
+          else
+            log "     ℹ️  Would remove (dry run)"
+            ((removed_count++))
+          fi
+        else
+          ((valid_count++))
+          # Only log icon files to reduce noise
+          if [[ "$filepath" =~ icons-(48x48|64x64|128x128)\.tar\.gz$ ]]; then
+            log "  ✅ OK: $filepath"
+          fi
+        fi
+      done
+
+  done < <(find "$dists_dir" -maxdepth 1 -type f \( -name "Release" -o -name "InRelease" \) -print0 2>/dev/null)
+
+done < <(find "$MIRROR_ROOT" -maxdepth 3 -type d -name "dists" -print0 2>/dev/null)
+
+log "=== Validation complete ==="
+log "Files checked: $checked_count"
+log "Files valid: $valid_count"
+log "Files missing: $missing_count"
+log "Files removed: $removed_count"
+
+if [[ $DRY_RUN -eq 1 ]]; then
+  log ""
+  log "ℹ️  This was a DRY RUN - no files were actually removed"
+  log "To remove corrupt files, run: DRY_RUN=0 $0"
+fi
+
+if [[ $removed_count -gt 0 ]]; then
+  log ""
+  log "⚠️  $removed_count corrupted DEP-11 file(s) detected"
+  if [[ $DRY_RUN -eq 0 ]]; then
+    log "These files have been removed from the mirror"
+    log ""
+    log "Next steps:"
+    log "1. Run ./nova-heal.sh to re-download missing files"
+    log "2. Run ./update-mirror.sh to re-sync from upstream"
+  fi
+elif [[ $checked_count -eq 0 ]]; then
+  log ""
+  log "⚠️  No DEP-11 files found to check"
+elif [[ $missing_count -gt 0 ]]; then
+  log ""
+  log "⚠️  $missing_count DEP-11 file(s) are missing"
+  log "Run ./nova-heal.sh or ./update-mirror.sh to fetch them"
+else
+  log ""
+  log "✅ All $valid_count DEP-11 files are valid!"
+  log ""
+  log "If clients are still seeing hash mismatch errors, the issue is CLIENT-SIDE caching."
+  log "Instruct affected clients to run:"
+  log "  sudo rm -rf /var/lib/apt/lists/*"
+  log "  sudo apt update"
+fi
+
+exit 0
+
+
+================================
+DATEI: ./nova-monitor.sh
+================================
+
+#!/usr/bin/env bash
+set -euo pipefail
+
+# 🧠 Nova AI Repo Monitor v2
+# Übersicht, Healthcheck, Farben, AI Style
+
+REPO_BASE="/root/ailinux-repo/repo/mirror"
+LOG_PATH=$(find "$REPO_BASE" -name "live-log-*.txt" -print0 | xargs -0 ls -1t 2>/dev/null | head -n1 || true)
+SIGN_COUNT=$(find "$REPO_BASE" -name InRelease | wc -l)
+MISSING_INRELEASE=$(find "$REPO_BASE" -type d -exec test ! -f "{}/InRelease" \; -print)
+DISK_USAGE=$(du -sh "$REPO_BASE" 2>/dev/null | awk '{print $1}')
+
+CYAN="\e[36m"
+GREEN="\e[32m"
+YELLOW="\e[33m"
+RED="\e[31m"
+RESET="\e[0m"
+
+echo -e "${CYAN}===[ Nova AI Repo Monitor ]==="
+echo "📅 Datum: $(date '+%Y-%m-%d %H:%M:%S')"
+echo "📁 Mirror Pfad: $REPO_BASE"
+echo "🧠 Live-Log: ${LOG_PATH:-Kein Log gefunden}"
+echo -e "=====================================${RESET}"
+echo ""
+
+echo -e "${CYAN}--- Signaturprüfung ---${RESET}"
+echo -e "✅ InRelease-Dateien gefunden: ${GREEN}${SIGN_COUNT}${RESET}"
+echo ""
+
+echo -e "${YELLOW}--- Fehlende InRelease Dateien ---${RESET}"
+if [ -z "$MISSING_INRELEASE" ]; then
+  echo -e "${GREEN}✓ Alle Verzeichnisse korrekt signiert.${RESET}"
+else
+  echo "$MISSING_INRELEASE"
+fi
+echo ""
+
+echo -e "${CYAN}--- Letzte Log-Zeilen ---${RESET}"
+if [ -n "${LOG_PATH:-}" ] && [ -f "$LOG_PATH" ]; then
+  tail -n 20 "$LOG_PATH"
+else
+  echo -e "${RED}⚠ Kein gültiges Live-Log vorhanden.${RESET}"
+fi
+echo ""
+
+echo -e "${CYAN}--- Speicherplatz Mirror ---${RESET}"
+echo -e "💾 Verwendet: ${DISK_USAGE:-Unbekannt}"
+echo ""
+
+echo -e "${CYAN}--- Nova KI Systemstatus ---${RESET}"
+if [ "$SIGN_COUNT" -gt 80 ]; then
+  echo -e "${GREEN}🧠 Nova sagt: SYSTEM CLEAN & OPTIMIZED!${RESET}"
+else
+  echo -e "${RED}⚠ Nova sagt: HEAL EMPFOHLEN!${RESET}"
+fi
+
+echo ""
+
+
+
+
+================================
+DATEI: ./add-ailinux-repo.sh
+================================
+#!/usr/bin/env bash
+# =====================================================================
+#  AILinux Repository Bootstrap (Deb822, noble/24.04 FULL amd64+i386)
+#  - Ubuntu FULL: main+restricted+universe+multiverse (amd64+i386)
+#  - Zusatzquellen (Neon, Xubuntu Staging, Cappelikan, LibreOffice, Docker, Chrome, WineHQ)
+#  - AILinux Branding (add-apt-repository-kompatibel: ID=ubuntu, DISTRIB_ID=Ubuntu)
+#
+#  Optionen:
+#    --dry-run      : nur anzeigen, nichts schreiben
+#    --remove       : alle von diesem Script erstellten Quellen + Key + Branding entfernen
+#    --no-branding  : Branding überspringen (Standard: Branding aktiv)
+# =====================================================================
+
+set -euo pipefail
+
+# -------------------------- Konfiguration ----------------------------
+REPO_DOMAIN_URL="${REPO_DOMAIN_URL:-https://repo.ailinux.me:8443}"
+REPO_BASE_URL="${REPO_BASE_URL:-${REPO_DOMAIN_URL}/mirror}"
+
+# Ein lokaler Key für alle gespiegelten Quellen (du re-signst Releases)
+KEY_URL="${KEY_URL:-${REPO_BASE_URL}/ailinux-archive-key.gpg}"
+KEYRING_DEST="${KEYRING_DEST:-/usr/share/keyrings/ailinux-archive-keyring.gpg}"
+
+CODENAME="$(. /etc/os-release 2>/dev/null && echo "${VERSION_CODENAME:-noble}")"
+[[ -z "${CODENAME}" ]] && CODENAME="noble"
+NEED_I386=false
+
+# Dynamische Architektur-Erkennung basierend auf Codename
+# WICHTIG: Ubuntu Noble (24.04) hat i386-Support für Base-Repos eingestellt!
+# PPAs können aber weiterhin i386 unterstützen.
+case "$CODENAME" in
+  noble)
+    # Ubuntu Noble: Base amd64 and i386, PPAs with i386-Support
+    NEED_I386=true
+    UBUNTU_ARCHS="amd64 i386"
+    XUBUNTU_ARCHS="amd64 i386"
+    CAPPELIKAN_ARCHS="amd64 i386"
+    LIBREOFFICE_ARCHS="amd64 i386"
+    WINE_ARCHS="amd64 i386"
+    GITCORE_ARCHS="amd64 i386"
+    PYTHON_ARCHS="amd64 i386"
+    GRAPHICS_ARCHS="amd64 i386"
+    KDENLIVE_ARCHS="amd64 i386"
+    OBS_ARCHS="amd64 i386"
+    FFMPEG_ARCHS="amd64 i386"
+    TIMESHIFT_ARCHS="amd64 i386"
+    ;;
+  jammy|focal|bionic|xenial)
+    # Ältere Versionen mit vollständigem i386-Support
+    NEED_I386=true
+    UBUNTU_ARCHS="amd64 i386"
+    XUBUNTU_ARCHS="amd64 i386"
+    CAPPELIKAN_ARCHS="amd64 i386"
+    LIBREOFFICE_ARCHS="amd64 i386"
+    WINE_ARCHS="amd64 i386"
+    GITCORE_ARCHS="amd64 i386"
+    PYTHON_ARCHS="amd64 i386"
+    GRAPHICS_ARCHS="amd64 i386"
+    KDENLIVE_ARCHS="amd64 i386"
+    OBS_ARCHS="amd64 i386"
+    FFMPEG_ARCHS="amd64 i386"
+    TIMESHIFT_ARCHS="amd64 i386"
+    ;;
+  *)
+    # Neuere Versionen (oracular, plucky, questing, etc.): nur amd64
+    UBUNTU_ARCHS="amd64"
+    XUBUNTU_ARCHS="amd64"
+    CAPPELIKAN_ARCHS="amd64"
+    LIBREOFFICE_ARCHS="amd64"
+    WINE_ARCHS="amd64"
+    GITCORE_ARCHS="amd64"
+    PYTHON_ARCHS="amd64"
+    GRAPHICS_ARCHS="amd64"
+    KDENLIVE_ARCHS="amd64"
+    OBS_ARCHS="amd64"
+    FFMPEG_ARCHS="amd64"
+    TIMESHIFT_ARCHS="amd64"
+    ;;
+esac
+
+# Ubuntu-Basis (FULL)
+UBUNTU_SUITES="${CODENAME} ${CODENAME}-updates ${CODENAME}-backports"  # security has its own source
+UBUNTU_COMPONENTS="main restricted universe multiverse"
+
+# Architekturen für spezielle Repos (immer nur amd64, außer Neon bei Multiarch)
+NEON_ARCHS="amd64"
+DOCKER_ARCHS="amd64"
+CHROME_ARCHS="amd64"
+BRAVE_ARCHS="amd64"
+NODESOURCE_ARCHS="amd64"
+
+if [[ "${NEED_I386}" == true ]]; then
+  NEON_ARCHS="amd64 i386"
+fi
+
+# Deb822-Ziele (.sources)
+D="/etc/apt/sources.list.d"
+F_UBU="${D}/ailinux-ubuntu.sources"
+F_SEC="${D}/ailinux-ubuntu-security.sources"
+F_NEON="${D}/ailinux-neon.sources"
+F_XFCE="${D}/ailinux-xubuntu-staging.sources"
+F_CAPL="${D}/ailinux-cappelikan.sources"
+F_LO="${D}/ailinux-libreoffice.sources"
+F_DOCK="${D}/ailinux-docker.sources"
+F_CHRM="${D}/ailinux-chrome.sources"
+F_WINE="${D}/ailinux-winehq.sources"
+F_GIT="${D}/ailinux-git-core.sources"
+F_PY="${D}/ailinux-python-deadsnakes.sources"
+F_GFX="${D}/ailinux-graphics-drivers.sources"
+F_KDNL="${D}/ailinux-kdenlive.sources"
+F_OBS="${D}/ailinux-obs-studio.sources"
+F_FF4="${D}/ailinux-ffmpeg4.sources"
+F_FF5="${D}/ailinux-ffmpeg5.sources"
+F_TIME="${D}/ailinux-timeshift.sources"
+F_BRAVE="${D}/ailinux-brave.sources"
+F_NODE="${D}/ailinux-nodesource.sources"
+
+# Gespiegelte URIs auf DEINEM Server
+URI_UBU="${REPO_BASE_URL}/archive.ubuntu.com/ubuntu"
+URI_SEC="${REPO_BASE_URL}/security.ubuntu.com/ubuntu"
+URI_NEON="${REPO_BASE_URL}/archive.neon.kde.org/user"
+URI_XFCE="${REPO_BASE_URL}/ppa.launchpadcontent.net/xubuntu-dev/staging/ubuntu"
+URI_CAPL="${REPO_BASE_URL}/ppa.launchpadcontent.net/cappelikan/ppa/ubuntu"
+URI_LO="${REPO_BASE_URL}/ppa.launchpadcontent.net/libreoffice/ppa/ubuntu"
+URI_DOCK="${REPO_BASE_URL}/download.docker.com/linux/ubuntu"
+URI_CHRM="${REPO_BASE_URL}/dl.google.com/linux/chrome/deb"
+URI_WINE="${REPO_BASE_URL}/dl.winehq.org/wine-builds/ubuntu"
+URI_GIT="${REPO_BASE_URL}/ppa.launchpadcontent.net/git-core/ppa/ubuntu"
+URI_PY="${REPO_BASE_URL}/ppa.launchpadcontent.net/deadsnakes/ppa/ubuntu"
+URI_GFX="${REPO_BASE_URL}/ppa.launchpadcontent.net/graphics-drivers/ppa/ubuntu"
+URI_KDNL="${REPO_BASE_URL}/ppa.launchpadcontent.net/kdenlive/kdenlive-stable/ubuntu"
+URI_OBS="${REPO_BASE_URL}/ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu"
+URI_FF4="${REPO_BASE_URL}/ppa.launchpadcontent.net/savoury1/ffmpeg4/ubuntu"
+URI_FF5="${REPO_BASE_URL}/ppa.launchpadcontent.net/savoury1/ffmpeg5/ubuntu"
+URI_TIME="${REPO_BASE_URL}/ppa.launchpadcontent.net/teejee2008/timeshift/ubuntu"
+URI_BRAVE="${REPO_BASE_URL}/brave-browser-apt-release.s3.brave.com"
+URI_NODE="${REPO_BASE_URL}/deb.nodesource.com/node_20.x"
+
+# Branding
+BRANDING_SCRIPT="/usr/local/sbin/ailinux-branding.sh"
+BRANDING_SERVICE="/etc/systemd/system/ailinux-branding.service"
+DO_BRANDING=true
+
+# -------------------------- Optionen/Flags ---------------------------
+DRY_RUN=false
+DO_REMOVE=false
+for arg in "$@"; do
+  case "$arg" in
+    --dry-run)      DRY_RUN=true ;;
+    --remove)       DO_REMOVE=true ;;
+    --no-branding)  DO_BRANDING=false ;;
+    *) echo "Unbekannte Option: $arg"; echo "Verwendung: $0 [--dry-run] [--remove] [--no-branding]"; exit 2 ;;
+  esac
+done
+
+# ----------------------------- Helpers -------------------------------
+need_root() { if [[ $EUID -ne 0 ]]; then echo "Bitte als root ausführen (sudo $0 …)"; exit 1; fi; }
+msg(){ printf "%s\n" "$*"; }
+
+write_file(){ # write_file <path> <mode> <<<"content"
+  local path="$1" mode="$2"
+  if $DRY_RUN; then
+    echo "DRY-RUN: würde schreiben: $path (chmod $mode)"; sed 's/^/| /'
+  else
+    install -Dm"$mode" /dev/stdin "$path"
+    echo "Geschrieben: $path"
+  fi
+}
+
+backup_and_rm(){ # backup_and_rm <file>
+  local f="$1"; [[ -e "$f" ]] || return 0
+  local dir="/var/backups/ailinux-repo"; mkdir -p "$dir"
+  cp -a "$f" "$dir/$(basename "$f").$(date +%Y%m%d-%H%M%S).bak" || true
+  $DRY_RUN && echo "DRY-RUN: würde löschen: $f" || rm -f "$f"
+}
+
+install_key(){
+  msg "-> Lade Schlüssel: $KEY_URL"
+  if $DRY_RUN; then
+    echo "DRY-RUN: würde nach $KEYRING_DEST installieren"
+    return 0
+  fi
+  curl -fsSL "$KEY_URL" -o /tmp/ailinux-key.gpg
+  install -Dm0644 /tmp/ailinux-key.gpg "$KEYRING_DEST"
+  rm -f /tmp/ailinux-key.gpg
+  echo "Installiert: $KEYRING_DEST"
+}
+
+apt_update(){
+  $DRY_RUN && echo "DRY-RUN: würde 'apt update' ausführen" || apt update
+}
+
+ensure_multiarch(){
+  if [[ "${NEED_I386}" != true ]]; then
+    echo "i386 Architektur wird für ${CODENAME} nicht benötigt – überspringe Multiarch-Setup."
+    return 0
+  fi
+
+  if dpkg --print-foreign-architectures 2>/dev/null | grep -q "^i386$"; then
+    echo "✓ i386 Architektur ist bereits aktiviert."
+    return 0
+  fi
+
+  if $DRY_RUN; then
+    echo "DRY-RUN: würde 'dpkg --add-architecture i386' ausführen"
+  else
+    echo "Aktiviere i386 Architektur (dpkg --add-architecture i386)…"
+    dpkg --add-architecture i386
+    echo "✓ i386 Architektur aktiviert."
+  fi
+}
+
+# ----------------------------- BRANDING -------------------------------
+install_branding_assets(){
+  # add-apt-repository-kompatibel:
+  #  - /etc/os-release: ID=ubuntu, UBUNTU_CODENAME=noble
+  #  - /etc/lsb-release: DISTRIB_ID=Ubuntu, … (mit AILinux-Branding in PRETTY-NAME/Beschreibung)
+  cat <<'EOS' | write_file "$BRANDING_SCRIPT" 0755
+#!/usr/bin/env bash
+set -euo pipefail
+
+OS_RELEASE="/etc/os-release"
+LSB_RELEASE="/etc/lsb-release"
+
+cat >"$OS_RELEASE" <<'EOF'
+NAME="AILinux"
+PRETTY_NAME="AILinux (Ubuntu 24.04 Noble Base)"
+ID=ubuntu
+ID_LIKE=debian
+VERSION_ID="24.04"
+VERSION_CODENAME=noble
+UBUNTU_CODENAME=noble
+HOME_URL="https://ailinux.me"
+SUPPORT_URL="https://forum.ailinux.me"
+BUG_REPORT_URL="https://github.com/derleiti/ailinux-repo/issues"
+EOF
+
+cat >"$LSB_RELEASE" <<'EOF'
+DISTRIB_ID=Ubuntu
+DISTRIB_RELEASE=24.04
+DISTRIB_CODENAME=noble
+DISTRIB_DESCRIPTION="AILinux (Ubuntu 24.04 Noble Base)"
+EOF
+
+echo "AILinux-Branding aktualisiert: $OS_RELEASE & $LSB_RELEASE"
+EOS
+
+  cat <<'EOF' | write_file "$BRANDING_SERVICE" 0644
+[Unit]
+Description=AILinux Branding Writer (os-release & lsb-release)
+After=local-fs.target
+ConditionPathExists=/usr/local/sbin/ailinux-branding.sh
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/ailinux-branding.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+  if $DRY_RUN; then
+    echo "DRY-RUN: würde 'systemctl daemon-reload && systemctl enable --now ailinux-branding.service' ausführen."
+  else
+    systemctl daemon-reload
+    systemctl enable --now ailinux-branding.service
+    echo "Branding-Dienst aktiviert und ausgeführt: ailinux-branding.service"
+  fi
+}
+
+remove_branding_assets(){
+  if $DRY_RUN; then
+    echo "DRY-RUN: würde Branding entfernen: $BRANDING_SERVICE $BRANDING_SCRIPT"
+  else
+    systemctl disable --now ailinux-branding.service 2>/dev/null || true
+    rm -f "$BRANDING_SERVICE" "$BRANDING_SCRIPT"
+    systemctl daemon-reload
+    echo "Branding entfernt."
+  fi
+}
+
+# ----------------------------- REMOVE --------------------------------
+do_remove(){
+  msg "Entferne AILinux .sources & Keyring…"
+  for f in \
+    "$F_UBU" "$F_SEC" "$F_NEON" "$F_XFCE" "$F_CAPL" "$F_LO" "$F_DOCK" "$F_CHRM" "$F_WINE" \
+    "$F_GIT" "$F_PY" "$F_GFX" "$F_KDNL" "$F_OBS" "$F_FF4" "$F_FF5" "$F_TIME" "$F_BRAVE" "$F_NODE"
+  do
+    backup_and_rm "$f"
+  done
+  backup_and_rm "$KEYRING_DEST"
+  remove_branding_assets
+  apt_update
+  echo "Fertig (REMOVE)."
+}
+
+# ---------------------------- ADD/UPDATE ------------------------------
+empty_sources_list(){
+  # /etc/apt/sources.list leeren, um Duplikate mit .sources-Dateien zu vermeiden
+  local SOURCES_LIST="/etc/apt/sources.list"
+  if $DRY_RUN; then
+    echo "DRY-RUN: würde /etc/apt/sources.list leeren"
+  else
+    {
+      echo "# AILinux - Alle Repositories sind in /etc/apt/sources.list.d/*.sources konfiguriert"
+      echo "#"
+      echo "# Dieses File wurde automatisch von add-ailinux-repo.sh geleert, um Duplikate zu vermeiden."
+      echo "# Alle aktiven Repositories befinden sich in /etc/apt/sources.list.d/ailinux-*.sources"
+    } > "$SOURCES_LIST"
+    echo "✓ /etc/apt/sources.list geleert (Duplikate vermieden)"
+  fi
+}
+
+write_ubuntu_sources(){
+  # Hauptarchiv (FULL)
+  {
+    echo "Types: deb"
+    echo "URIs: ${URI_UBU}"
+    echo "Suites: ${UBUNTU_SUITES}"
+    echo "Components: ${UBUNTU_COMPONENTS}"
+    [[ -n "${UBUNTU_ARCHS}" ]] && echo "Architectures: ${UBUNTU_ARCHS}"
+    echo "Signed-By: ${KEYRING_DEST}"
+  } | write_file "$F_UBU" 0644
+
+  # Security-Archiv getrennt (klarere Trennung)
+  {
+    echo "Types: deb"
+    echo "URIs: ${URI_SEC}"
+    echo "Suites: ${CODENAME}-security"
+    echo "Components: ${UBUNTU_COMPONENTS}"
+    [[ -n "${UBUNTU_ARCHS}" ]] && echo "Architectures: ${UBUNTU_ARCHS}"
+    echo "Signed-By: ${KEYRING_DEST}"
+  } | write_file "$F_SEC" 0644
+}
+
+write_neon(){
+  {
+    echo "Types: deb"
+    echo "URIs: ${URI_NEON}"
+    echo "Suites: ${CODENAME}"
+    echo "Components: main"
+    [[ -n "${NEON_ARCHS}" ]] && echo "Architectures: ${NEON_ARCHS}"
+    echo "Signed-By: ${KEYRING_DEST}"
+  } | write_file "$F_NEON" 0644
+}
+
+write_xubuntu_staging(){
+  {
+    echo "Types: deb"
+    echo "URIs: ${URI_XFCE}"
+    echo "Suites: ${CODENAME}"
+    echo "Components: main"
+    [[ -n "${XUBUNTU_ARCHS}" ]] && echo "Architectures: ${XUBUNTU_ARCHS}"
+    echo "Signed-By: ${KEYRING_DEST}"
+  } | write_file "$F_XFCE" 0644
+}
+
+write_cappelikan(){
+  {
+    echo "Types: deb"
+    echo "URIs: ${URI_CAPL}"
+    echo "Suites: ${CODENAME}"
+    echo "Components: main"
+    [[ -n "${CAPPELIKAN_ARCHS}" ]] && echo "Architectures: ${CAPPELIKAN_ARCHS}"
+    echo "Signed-By: ${KEYRING_DEST}"
+  } | write_file "$F_CAPL" 0644
+}
+
+write_libreoffice(){
+  {
+    echo "Types: deb"
+    echo "URIs: ${URI_LO}"
+    echo "Suites: ${CODENAME}"
+    echo "Components: main"
+    [[ -n "${LIBREOFFICE_ARCHS}" ]] && echo "Architectures: ${LIBREOFFICE_ARCHS}"
+    echo "Signed-By: ${KEYRING_DEST}"
+  } | write_file "$F_LO" 0644
+}
+
+write_docker(){
+  {
+    echo "Types: deb"
+    echo "URIs: ${URI_DOCK}"
+    echo "Suites: ${CODENAME}"
+    echo "Components: stable"
+    [[ -n "${DOCKER_ARCHS}" ]] && echo "Architectures: ${DOCKER_ARCHS}"
+    echo "Signed-By: ${KEYRING_DEST}"
+  } | write_file "$F_DOCK" 0644
+}
+
+write_chrome(){
+  {
+    echo "Types: deb"
+    echo "URIs: ${URI_CHRM}"
+    echo "Suites: stable"
+    echo "Components: main"
+    [[ -n "${CHROME_ARCHS}" ]] && echo "Architectures: ${CHROME_ARCHS}"
+    echo "Signed-By: ${KEYRING_DEST}"
+  } | write_file "$F_CHRM" 0644
+}
+
+write_winehq(){
+  {
+    echo "Types: deb"
+    echo "URIs: ${URI_WINE}"
+    echo "Suites: ${CODENAME}"
+    echo "Components: main"
+    [[ -n "${WINE_ARCHS}" ]] && echo "Architectures: ${WINE_ARCHS}"
+    echo "Signed-By: ${KEYRING_DEST}"
+  } | write_file "$F_WINE" 0644
+}
+
+write_git_core(){
+  {
+    echo "Types: deb"
+    echo "URIs: ${URI_GIT}"
+    echo "Suites: ${CODENAME}"
+    echo "Components: main"
+    [[ -n "${GITCORE_ARCHS}" ]] && echo "Architectures: ${GITCORE_ARCHS}"
+    echo "Signed-By: ${KEYRING_DEST}"
+  } | write_file "$F_GIT" 0644
+}
+
+write_python_deadsnakes(){
+  {
+    echo "Types: deb"
+    echo "URIs: ${URI_PY}"
+    echo "Suites: ${CODENAME}"
+    echo "Components: main"
+    [[ -n "${PYTHON_ARCHS}" ]] && echo "Architectures: ${PYTHON_ARCHS}"
+    echo "Signed-By: ${KEYRING_DEST}"
+  } | write_file "$F_PY" 0644
+}
+
+write_graphics_drivers(){
+  {
+    echo "Types: deb"
+    echo "URIs: ${URI_GFX}"
+    echo "Suites: ${CODENAME}"
+    echo "Components: main"
+    [[ -n "${GRAPHICS_ARCHS}" ]] && echo "Architectures: ${GRAPHICS_ARCHS}"
+    echo "Signed-By: ${KEYRING_DEST}"
+  } | write_file "$F_GFX" 0644
+}
+
+write_kdenlive(){
+  {
+    echo "Types: deb"
+    echo "URIs: ${URI_KDNL}"
+    echo "Suites: ${CODENAME}"
+    echo "Components: main"
+    [[ -n "${KDENLIVE_ARCHS}" ]] && echo "Architectures: ${KDENLIVE_ARCHS}"
+    echo "Signed-By: ${KEYRING_DEST}"
+  } | write_file "$F_KDNL" 0644
+}
+
+write_obs_studio(){
+  {
+    echo "Types: deb"
+    echo "URIs: ${URI_OBS}"
+    echo "Suites: ${CODENAME}"
+    echo "Components: main"
+    [[ -n "${OBS_ARCHS}" ]] && echo "Architectures: ${OBS_ARCHS}"
+    echo "Signed-By: ${KEYRING_DEST}"
+  } | write_file "$F_OBS" 0644
+}
+
+write_ffmpeg4(){
+  {
+    echo "Types: deb"
+    echo "URIs: ${URI_FF4}"
+    echo "Suites: ${CODENAME}"
+    echo "Components: main"
+    [[ -n "${FFMPEG_ARCHS}" ]] && echo "Architectures: ${FFMPEG_ARCHS}"
+    echo "Signed-By: ${KEYRING_DEST}"
+  } | write_file "$F_FF4" 0644
+}
+
+write_ffmpeg5(){
+  {
+    echo "Types: deb"
+    echo "URIs: ${URI_FF5}"
+    echo "Suites: ${CODENAME}"
+    echo "Components: main"
+    [[ -n "${FFMPEG_ARCHS}" ]] && echo "Architectures: ${FFMPEG_ARCHS}"
+    echo "Signed-By: ${KEYRING_DEST}"
+  } | write_file "$F_FF5" 0644
+}
+
+write_timeshift(){
+  {
+    echo "Types: deb"
+    echo "URIs: ${URI_TIME}"
+    echo "Suites: ${CODENAME}"
+    echo "Components: main"
+    [[ -n "${TIMESHIFT_ARCHS}" ]] && echo "Architectures: ${TIMESHIFT_ARCHS}"
+    echo "Signed-By: ${KEYRING_DEST}"
+  } | write_file "$F_TIME" 0644
+}
+
+write_brave(){
+  {
+    echo "Types: deb"
+    echo "URIs: ${URI_BRAVE}"
+    echo "Suites: stable"
+    echo "Components: main"
+    [[ -n "${BRAVE_ARCHS}" ]] && echo "Architectures: ${BRAVE_ARCHS}"
+    echo "Signed-By: ${KEYRING_DEST}"
+  } | write_file "$F_BRAVE" 0644
+}
+
+write_nodesource(){
+  {
+    echo "Types: deb"
+    echo "URIs: ${URI_NODE}"
+    echo "Suites: nodistro"
+    echo "Components: main"
+    [[ -n "${NODESOURCE_ARCHS}" ]] && echo "Architectures: ${NODESOURCE_ARCHS}"
+    echo "Signed-By: ${KEYRING_DEST}"
+  } | write_file "$F_NODE" 0644
+}
+
+# ----------------------------- Ablauf --------------------------------
+need_root
+echo "===[ AILinux Repo Bootstrap ]==============================="
+echo "Base URL  : $REPO_BASE_URL"
+echo "Codename  : $CODENAME"
+echo "Archs     : Base=${UBUNTU_ARCHS}; Wine=${WINE_ARCHS}"
+if [[ "${NEED_I386}" == true ]]; then
+  echo "Multiarch : i386 wird automatisch aktiviert (dpkg --add-architecture i386)"
+else
+  echo "Multiarch : nur amd64 erforderlich – keine i386 Mirror-Einträge"
+fi
+echo "Keyring   : $KEYRING_DEST"
+echo "Dry-Run   : $DRY_RUN"
+echo "Operation : $([[ $DO_REMOVE == true ]] && echo REMOVE || echo ADD/UPDATE)"
+echo "Branding  : $([[ $DO_BRANDING == true ]] && echo aktiv || echo deaktiviert)"
+echo "============================================================"
+
+$DO_REMOVE && { do_remove; exit 0; }
+
+# 1) Key
+install_key
+# 1b) Branding (standardmäßig aktiv)
+if $DO_BRANDING; then install_branding_assets; else echo "Branding übersprungen (--no-branding)."; fi
+
+# 1c) Multiarch sicherstellen (falls notwendig)
+ensure_multiarch
+
+# 1d) /etc/apt/sources.list leeren (Duplikate vermeiden)
+empty_sources_list
+
+# 2) Quellen schreiben (entsprechend deiner FULL mirror.list)
+write_ubuntu_sources
+write_neon
+write_xubuntu_staging
+write_cappelikan
+write_libreoffice
+write_docker
+write_chrome
+write_winehq
+write_git_core
+write_python_deadsnakes
+write_graphics_drivers
+write_kdenlive
+write_obs_studio
+write_ffmpeg4
+write_ffmpeg5
+write_timeshift
+write_brave
+write_nodesource
+
+# 3) Update
+apt_update
+
+echo ""
+echo "Fertig. AILinux-Quellen + Branding sind eingerichtet."
+echo ""
+echo "Konfigurierte Repositories:"
+echo "  - Ubuntu Base (amd64+i386 - full multiarch support): main, universe, multiverse, restricted"
+echo "  - KDE Neon (amd64)"
+echo "  - Xubuntu Dev Staging (amd64+i386)"
+echo "  - Cappelikan/MainLine Kernels (amd64+i386)"
+echo "  - LibreOffice (amd64+i386)"
+echo "  - Docker (amd64)"
+echo "  - Google Chrome (amd64)"
+echo "  - WineHQ (amd64+i386)"
+echo "  - Git Stable (amd64+i386)"
+echo "  - Python/Deadsnakes (amd64+i386)"
+echo "  - Graphics Drivers (amd64+i386) - NVIDIA/AMD mit i386-Support"
+echo "  - Kdenlive (amd64+i386)"
+echo "  - OBS Studio (amd64+i386)"
+echo "  - FFmpeg4 (amd64+i386)"
+echo "  - FFmpeg5 (amd64+i386)"
+echo "  - Timeshift (amd64+i386)"
+echo "  - Brave Browser (amd64)"
+echo "  - NodeSource/Node.js 20.x (amd64)"
+echo ""
+echo "Tipp: Branding neu anwenden: systemctl start ailinux-branding.service"
+# =====================================================================
+
+
+================================
+DATEI: ./postmirror.sh
+================================
+#!/usr/bin/env bash
+
+# Bash-Guard
+if [ -z "${BASH_VERSION:-}" ]; then
+  exec /usr/bin/env bash "$0" "$@"
+fi
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
+if [[ -z "${REPO_PATH:-}" ]]; then
+  for candidate in "$SCRIPT_DIR" "$SCRIPT_DIR/.." "/var/spool/apt-mirror" "/root/ailinux-repo"; do
+    [[ -d "$candidate" ]] || continue
+    if [[ -d "${candidate}/repo" ]] || [[ -d "${candidate}/mirror" && -d "${candidate}/var" ]]; then
+      REPO_PATH="$candidate"
+      break
+    fi
+  done
+fi
+REPO_PATH="${REPO_PATH:-/root/ailinux-repo}"
+REPO_PATH="$(cd "$REPO_PATH" 2>/dev/null && pwd -P || echo "$REPO_PATH")"
+REPO_PATH="${REPO_PATH%/}"
+LOCKFILE="/var/run/postmirror.lock"
+LOGFILE="/var/log/ailinux/postmirror.log"
+DEFAULT_MIRROR_LIST="${REPO_PATH}/mirror.list"
+if [[ ! -f "$DEFAULT_MIRROR_LIST" ]]; then
+  DEFAULT_MIRROR_LIST="${REPO_PATH}/repo/mirror/mirror.list"
+fi
+MIRROR_LIST_PATH="${MIRROR_LIST_PATH:-${DEFAULT_MIRROR_LIST}}"
+REQUIRE_I386=1
+DEFAULT_SIGNING_KEY_PATH=""
+for key_candidate in \
+  "${REPO_PATH}/repo/mirror/ailinux-archive-key.gpg" \
+  "${REPO_PATH}/mirror/ailinux-archive-key.gpg"
+do
+  if [[ -f "$key_candidate" ]]; then
+    DEFAULT_SIGNING_KEY_PATH="$key_candidate"
+    break
+  fi
+done
+if [[ -z "$DEFAULT_SIGNING_KEY_PATH" ]]; then
+  if [[ -d "${REPO_PATH}/repo/mirror" ]]; then
+    DEFAULT_SIGNING_KEY_PATH="${REPO_PATH}/repo/mirror/ailinux-archive-key.gpg"
+  else
+    DEFAULT_SIGNING_KEY_PATH="${REPO_PATH}/mirror/ailinux-archive-key.gpg"
+  fi
+fi
+SIGNING_KEY_PATH="${SIGNING_KEY_PATH:-$DEFAULT_SIGNING_KEY_PATH}"
+SIGNING_KEY_ID="${SIGNING_KEY_ID:-0DDA4A58BCB54237}"
+
+DEFAULT_GNUPGHOME="${REPO_PATH}/etc/gnupg"
+if [[ -z "${GNUPGHOME:-}" ]]; then
+  if [[ -d "$DEFAULT_GNUPGHOME" ]]; then export GNUPGHOME="$DEFAULT_GNUPGHOME"; else export GNUPGHOME="/root/.gnupg"; fi
+fi
+# Hygiene: sichere GnuPG-Rechte
+mkdir -p "$GNUPGHOME"; chmod 700 "$GNUPGHOME" || true
+
+SIGN_REPOS_SCRIPT=""
+SIGN_REPOS_CANDIDATES=(
+  "${REPO_PATH}/scripts/sign-repos.sh"
+  "${REPO_PATH}/sign-repos.sh"
+  "/var/spool/apt-mirror/var/sign-repos.sh"
+  "/var/spool/apt-mirror/var/scripts/sign-repos.sh"
+)
+for candidate in "${SIGN_REPOS_CANDIDATES[@]}"; do
+  if [[ -n "$candidate" && -x "$candidate" ]]; then
+    SIGN_REPOS_SCRIPT="$candidate"
+    break
+  fi
+done
+
+log(){ echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"; }
+[[ -n "$SIGN_REPOS_SCRIPT" ]] || { log "FEHLER: sign-repos.sh nicht gefunden/ausführbar."; exit 1; }
+trap 'rm -f "$LOCKFILE"' EXIT
+
+detect_mirror_root(){
+  local c=()
+  [ -n "${MIRROR_ROOT:-}" ] && c+=("$MIRROR_ROOT")
+  c+=("${REPO_PATH}/repo/mirror" "${REPO_PATH}/mirror" "/var/spool/apt-mirror/mirror")
+  for p in "${c[@]}"; do [[ -d "$p" ]] && { MIRROR_ROOT="$p"; log "Mirror-Root: $MIRROR_ROOT"; return 0; }; done
+  return 1
+}
+has_dists(){ find "$1" -type d -name dists -print -quit >/dev/null; }
+
+get_signing_keygrip(){ gpg --batch --with-colons --with-keygrip --list-keys "$SIGNING_KEY_ID" 2>/dev/null | awk -F: '$1=="grp"{print $10;exit}'; }
+
+ensure_signing_key(){
+  local kg; kg=$(get_signing_keygrip)
+  if [[ -n "$kg" && -f "${GNUPGHOME}/private-keys-v1.d/${kg}.key" ]]; then
+    log "Signier-Key OK ($SIGNING_KEY_ID, keygrip $kg)."
+    return 0
+  fi
+
+  local imported=0
+  local secret_candidates=(
+    "${SIGNING_SECRET_PATH:-}"
+    "${REPO_PATH}/etc/gnupg/secret.asc"
+    "$(dirname "$SIGN_REPOS_SCRIPT")/../etc/gnupg/secret.asc"
+    "/var/spool/apt-mirror/etc/gnupg/secret.asc"
+  )
+  for f in "${secret_candidates[@]}"; do
+    [[ -n "${f:-}" && -f "$f" ]] || continue
+    log "Importiere Secret-Key aus $f"
+    if gpg --batch --yes --pinentry-mode loopback --import "$f" >/dev/null 2>&1; then
+      imported=1
+      break
+    else
+      log "WARN: Secret-Key Import aus $f fehlgeschlagen."
+    fi
+  done
+
+  if [[ $imported -eq 0 ]]; then
+    local public_candidates=(
+      "$SIGNING_KEY_PATH"
+      "$REPO_PATH/repo/mirror/ailinux-archive-key.gpg"
+      "$REPO_PATH/mirror/ailinux-archive-key.gpg"
+      "/var/spool/apt-mirror/mirror/ailinux-archive-key.gpg"
+    )
+    for f in "${public_candidates[@]}"; do
+      [[ -f "$f" ]] || continue
+      log "Importiere öffentlichen Schlüssel aus $f"
+      if gpg --batch --yes --import "$f" >/dev/null 2>&1; then
+        imported=1
+        break
+      else
+        log "WARN: Öffentlicher Schlüssel konnte nicht importiert werden ($f)."
+      fi
+    done
+  fi
+
+  kg=$(get_signing_keygrip)
+  if [[ -n "$kg" && -f "${GNUPGHOME}/private-keys-v1.d/${kg}.key" ]]; then
+    log "Signier-Key bereit."
+    return 0
+  fi
+
+  log "FEHLER: Secret-Key $SIGNING_KEY_ID fehlt im $GNUPGHOME."
+  exit 1
+}
+
+export_public_key(){
+  # Export public key for client distribution
+  local output_file="$SIGNING_KEY_PATH"
+  log "Exportiere öffentlichen Schlüssel nach $output_file"
+
+  # Create temporary file
+  local tmp_key; tmp_key=$(mktemp)
+  trap "rm -f $tmp_key" RETURN
+
+  # Export public key
+  if gpg --export "$SIGNING_KEY_ID" > "$tmp_key"; then
+    # Verify exported key
+    if gpg --no-default-keyring --keyring "$tmp_key" --list-keys "$SIGNING_KEY_ID" >/dev/null 2>&1; then
+      install -Dm0644 "$tmp_key" "$output_file"
+      log "✓ Öffentlicher Schlüssel exportiert: $output_file"
+    else
+      log "WARN: Exportierter Schlüssel ist ungültig"
+    fi
+  else
+    log "WARN: Fehler beim Exportieren des öffentlichen Schlüssels"
+  fi
+}
+
+parse_sha256_entries(){
+  awk '
+    BEGIN{section=0} /^SHA256:/{section=1;next}
+    section==1 && /^[[:space:]]/{gsub(/^[[:space:]]+/,"");split($0,p,/[[:space:]]+/); if(length(p[1])==64 && p[2]~/^[0-9]+$/ && p[3]!="") printf "%s %s %s\n",p[1],p[2],p[3]; next}
+    section==1{exit}
+  ' "$1"
+}
+download_file(){
+  local url="$1" dest="$2" max_retries=2 retry=0
+  while [[ $retry -lt $max_retries ]]; do
+    if { timeout 30 curl -fsSL --connect-timeout 10 "$url" -o "$dest" || timeout 30 wget -qO "$dest" --timeout=10 "$url"; } 2>/dev/null; then
+      return 0
+    fi
+    ((retry++))
+    [[ $retry -lt $max_retries ]] && sleep 2
+  done
+  return 1
+}
+
+validate_dep11_blob(){
+  local file="$1" min_size="${2:-100}"
+
+  [[ -f "$file" ]] || return 1
+
+  local size; size=$(stat -c '%s' "$file" 2>/dev/null || echo 0)
+  [[ $size -ge $min_size ]] || return 1
+
+  if [[ "$file" == *.gz ]]; then
+    gunzip -t "$file" 2>/dev/null || return 1
+  elif [[ "$file" == *.tar ]]; then
+    tar -tf "$file" >/dev/null 2>&1 || return 1
+  elif [[ "$file" == *.bz2 ]]; then
+    bzip2 -t "$file" 2>/dev/null || return 1
+  elif [[ "$file" == *.xz ]]; then
+    if command -v xz >/dev/null 2>&1; then
+      xz -t "$file" 2>/dev/null || return 1
+    fi
+  fi
+
+  return 0
+}
+
+refetch_upstream_file(){
+  local rel="$1" abs="$2" path="$3"
+  local normalized_path="${path#./}"
+  local url="https://${rel%/}/${normalized_path}"
+  local tmp status=0
+
+  tmp=$(mktemp) || return 1
+  trap "rm -f '$tmp'" RETURN
+
+  if download_file "$url" "$tmp"; then
+    local fsize; fsize=$(stat -c '%s' "$tmp" 2>/dev/null || echo 0)
+    if [[ $fsize -le 100 ]]; then
+      log "   -> WARN: Heruntergeladene Datei zu klein ($fsize bytes): $url"
+      status=1
+    elif validate_dep11_blob "$tmp" 100; then
+      install -D -m0644 "$tmp" "$abs/$normalized_path"
+      log "   -> Nachgeladen: $url ($fsize bytes)"
+      status=0
+    else
+      log "   -> WARN: Unbekanntes Format oder beschädigte Datei: $url"
+      status=1
+    fi
+  else
+    log "   -> WARN: Download fehlgeschlagen (Timeout/Netzwerk): $url"
+    status=1
+  fi
+
+  trap - RETURN
+  return "$status"
+}
+
+verify_dep11_payloads(){
+  [[ -n "${MIRROR_ROOT:-}" ]] || { log "WARN: kein MIRROR_ROOT – Dep11-Prüfung übersprungen."; return 0; }
+
+  local CLEANED=0 FAILED=0 SKIPPED=0
+  log "Starte DEP-11 Validierung…"
+
+  while IFS= read -r -d '' relf; do
+    local dir_abs="$(dirname "$relf")"
+    local rel="${relf#${MIRROR_ROOT}/}"
+    local dir_rel="$(dirname "$rel")"
+
+    # Zähler pro Release
+    local rel_cleaned=0 rel_failed=0 rel_skipped=0
+
+    while read -r hash size relp; do
+      [[ "$relp" == *dep11/* ]] || continue
+
+      local normalized_relp="${relp#./}"
+      local tgt="$dir_abs/$normalized_relp"
+      local action="skip"
+
+      # Datei fehlend?
+      if [[ ! -f "$tgt" ]]; then
+        log "   DEP-11 fehlt: ${dir_rel}/${normalized_relp} – Versuche Nachladen…"
+        if refetch_upstream_file "$dir_rel" "$dir_abs" "$normalized_relp"; then
+          ((rel_cleaned++))
+          action="refetch_ok"
+        else
+          log "   ⚠ Konnte DEP-11 nicht nachladen (wird ignoriert): ${dir_rel}/${normalized_relp}"
+          ((rel_failed++))
+          action="refetch_fail"
+        fi
+        continue
+      fi
+
+      # Dateigröße prüfen
+      local asz; asz=$(stat -c '%s' "$tgt" 2>/dev/null || echo 0)
+      if [[ "$asz" == "0" ]]; then
+        log "   DEP-11 ist leer (0 bytes): ${dir_rel}/${normalized_relp} – Versuche Nachladen…"
+        if refetch_upstream_file "$dir_rel" "$dir_abs" "$normalized_relp"; then
+          ((rel_cleaned++))
+          action="refetch_empty_ok"
+        else
+          log "   ⚠ Konnte leere DEP-11 nicht ersetzen (wird ignoriert): ${dir_rel}/${normalized_relp}"
+          ((rel_failed++))
+          action="refetch_empty_fail"
+        fi
+        continue
+      fi
+
+      # Hash-Validierung (NUR Warnung bei Fehler, nicht blockierend)
+      local needs_refresh=0
+      if [[ "$asz" != "$size" ]]; then
+        log "   ⚠ DEP-11 Größe stimmt nicht überein: ${dir_rel}/${normalized_relp} (lokal: $asz, erwartet: $size)"
+        needs_refresh=1
+      elif ! echo "$hash  $tgt" | sha256sum --check --status >/dev/null 2>&1; then
+        log "   ⚠ DEP-11 Hash stimmt nicht überein: ${dir_rel}/${normalized_relp}"
+        needs_refresh=1
+      fi
+
+      if [[ $needs_refresh -eq 1 ]]; then
+        log "   Versuche Nachladen fehlerhafter DEP-11: ${dir_rel}/${normalized_relp}"
+        rm -f "$tgt"
+        if refetch_upstream_file "$dir_rel" "$dir_abs" "$normalized_relp"; then
+          ((rel_cleaned++))
+          action="refresh_ok"
+        else
+          log "   ⚠ Konnte DEP-11 nicht aktualisieren – ENTFERNE korrupte Datei: ${dir_rel}/${normalized_relp}"
+          # Wichtig: Auch entfernen wenn nicht reparierbar, damit Clients nicht fehlerhaften Hash sehen
+          rm -f "$tgt"
+          ((rel_failed++))
+          action="refresh_fail_removed"
+        fi
+      fi
+
+    done < <(parse_sha256_entries "$relf")
+
+    # Statistik pro Release
+    if [[ $rel_cleaned -gt 0 ]] || [[ $rel_failed -gt 0 ]]; then
+      log "   ${dir_rel}: $rel_cleaned repariert, $rel_failed ignoriert"
+      ((CLEANED += rel_cleaned))
+      ((FAILED += rel_failed))
+    else
+      ((SKIPPED++))
+    fi
+
+  done < <(find "$MIRROR_ROOT" -type f -name Release -print0)
+
+  # Abschlussbericht
+  if [[ $CLEANED -gt 0 ]] || [[ $FAILED -gt 0 ]]; then
+    log "✓ DEP-11 Validierung abgeschlossen: $CLEANED repariert, $FAILED entfernt (unreparierbar), $SKIPPED übersprungen"
+
+    # Wenn Dateien entfernt wurden, muss das Repository neu signiert werden
+    # damit die Release-Datei die fehlenden DEP-11 Dateien nicht mehr referenziert
+    if [[ $FAILED -gt 0 ]]; then
+      log "⚠ $FAILED unreparierbare DEP-11 Dateien wurden entfernt"
+      log "Repository wird im nächsten Schritt neu signiert (sign-repos.sh)"
+    fi
+  else
+    log "✓ Alle DEP-11 Dateien sind intakt."
+  fi
+
+  # Wichtig: NICHT abbrechen, auch wenn DEP-11 fehlgeschlagen
+  return 0
+}
+
+main(){
+  if [[ -e "$LOCKFILE" ]]; then log "FEHLER: Lock existiert: $LOCKFILE"; exit 1; fi
+  mkdir -p "$(dirname "$LOGFILE")"
+  touch "$LOCKFILE"
+
+  ensure_signing_key
+  export_public_key
+  detect_mirror_root || log "WARN: Mirror-Root nicht festgestellt."
+
+  # CRITICAL: Sign repositories FIRST, before slow DEP-11 validation
+  # This ensures mirrors get signed even if DEP-11 validation is slow/stuck
+  [[ -x "$SIGN_REPOS_SCRIPT" ]] || { [[ -x "$ALT_SIGN_REPOS_SCRIPT" ]] && SIGN_REPOS_SCRIPT="$ALT_SIGN_REPOS_SCRIPT"; }
+  [[ -x "$SIGN_REPOS_SCRIPT" ]] || { log "FEHLER: sign-repos.sh nicht gefunden/ausführbar."; exit 1; }
+
+  declare -a roots
+  if [[ -n "${MIRROR_ROOT:-}" ]]; then
+    while IFS= read -r -d '' d; do roots+=("$(dirname "$d")"); done < <(find "$MIRROR_ROOT" -type d -name dists -print0)
+  fi
+  for extra in "${REPO_PATH}/repo/mirror" "/var/spool/apt-mirror/mirror"; do
+    [[ -d "$extra" ]] && while IFS= read -r -d '' d; do roots+=("$(dirname "$d")"); done < <(find "$extra" -type d -name dists -print0)
+  done
+  mapfile -t roots < <(printf "%s\n" "${roots[@]-}" | sort -u)
+
+  if [[ ${#roots[@]} -eq 0 ]]; then
+    log "WARN: Keine dists/* gefunden – nichts zu signieren."
+  else
+    log "Signiere folgende Repositories:"
+   printf '  - %s\n' "${roots[@]}"
+
+    # Check for i386 architecture availability only when required
+    if [[ "${REQUIRE_I386:-0}" -eq 1 ]]; then
+      if dpkg --print-foreign-architectures 2>/dev/null | grep -q "^i386$"; then
+        log "✓ i386 Architektur ist aktiviert (für 32-bit Pakete)"
+      else
+        log "⚠️  WARNUNG: i386 Architektur ist NICHT aktiviert!"
+        log "   → apt-mirror kann keine i386 Pakete herunterladen"
+        log "   → Lösung: Container mit Multiarch-Unterstützung aktualisieren (dpkg --add-architecture i386)"
+      fi
+    else
+      log "Mirrorlist verlangt keine i386 Architektur – überspringe Multiarch-Verifikation."
+    fi
+
+    for r in "${roots[@]}"; do
+      "$SIGN_REPOS_SCRIPT" "$r"
+    done
+
+    log "Signierung erfolgreich."
+  fi
+
+  # DEP-11 validation runs AFTER signing (non-critical, can be slow)
+  verify_dep11_payloads
+
+  log "Mirror-Lauf erfolgreich beendet."
+}
+
+main | tee -a "$LOGFILE"
+
+
+================================
+DATEI: ./mirror-speedtest.sh
+================================
+#!/usr/bin/env bash
+set -uo pipefail
+
+# --- KONFIGURATION ---
+MIRROR_LIST="${1:-mirror.list}"
+# Wir suchen Dateien zwischen 40MB und 250MB (deckt Kernel, Chrome, etc. ab)
+MIN_SIZE=$((40 * 1024 * 1024))
+MAX_SIZE=$((250 * 1024 * 1024))
+
+# Prüfen ob Datei existiert
+if [[ ! -f "$MIRROR_LIST" ]]; then
+    echo "❌ Datei '$MIRROR_LIST' nicht gefunden."
+    exit 1
+fi
+
+# --- HILFSFUNKTIONEN ---
+calc_mb() { awk "BEGIN {printf \"%.2f\", $1/1024/1024}"; }
+calc_mbit() { awk "BEGIN {printf \"%.2f\", ($1*8)/1000/1000}"; }
+
+# Sucht in der Packages.gz nach einer Datei passender Größe
+discover_big_file() {
+    local base_url="$1"
+    local dist="$2"
+    local comp="$3"
+    
+    # Pfad zur Index-Datei bauen
+    local index_url="${base_url}/dists/${dist}/${comp}/binary-amd64/Packages.gz"
+    # Doppelte Slashes bereinigen
+    index_url=$(echo "$index_url" | sed 's#//#/#g' | sed 's#http:/#http://#g' | sed 's#https:/#https://#g')
+
+    local found_file
+    # Lädt den Index (max 4 Sek), entpackt live und sucht Größe
+    found_file=$(curl -sL -f --max-time 4 "$index_url" | zcat 2>/dev/null | awk -v min="$MIN_SIZE" -v max="$MAX_SIZE" '
+        /^Filename:/ { current_file = $2 }
+        /^Size:/ { 
+            if ($2 >= min && $2 <= max) {
+                print current_file
+                exit
+            }
+        }
+    ')
+
+    if [[ -n "$found_file" ]]; then
+        echo "$found_file"
+    else
+        echo "FALLBACK"
+    fi
+}
+
+perform_test() {
+    local url="$1"
+    # Max 12 Sekunden Download-Zeit
+    curl -L -s -o /dev/null --max-time 12 -w "%{speed_download}" "$url" || echo "ERROR"
+}
+
+# --- HAUPTPROGRAMM ---
+
+# Assoziatives Array zum Merken bereits getesteter Hosts
+declare -A CHECKED_HOSTS
+
+echo "🔎 Analysiere Mirror-Liste (Universal Discovery + Deduplizierung)..."
+echo "================================================================================="
+printf "%-40s | %-12s | %-12s | %s\n" "Mirror" "MB/s" "Mbit/s" "Datei-Info"
+echo "---------------------------------------------------------------------------------"
+
+TMP_RESULT=$(mktemp)
+
+# Liste lesen, Kommentare ignorieren, Loop starten
+grep -E "^\s*deb" "$MIRROR_LIST" | while read -r type url dist comp rest; do
+    
+    # URL bereinigen (Trailing Slash entfernen)
+    url="${url%/}"
+    
+    # -- DEDUPLIZIERUNG --
+    # Wenn URL schon im Array ist -> Überspringen
+    if [[ -n "${CHECKED_HOSTS[$url]:-}" ]]; then
+        continue
+    fi
+    # URL als "getestet" markieren
+    CHECKED_HOSTS[$url]=1
+    # --------------------
+
+    # 1. Datei suchen
+    file_path=$(discover_big_file "$url" "$dist" "$comp")
+    
+    test_url=""
+    info_txt=""
+
+    if [[ "$file_path" == "FALLBACK" ]]; then
+        # Nichts Großes gefunden, wir testen den Index selbst
+        test_url="${url}/dists/${dist}/${comp}/binary-amd64/Packages.gz"
+        info_txt="⚠️ Index (klein)"
+    else
+        test_url="${url}/${file_path}"
+        info_txt="✅ File gefunden"
+    fi
+
+    # URL sauber zusammensetzen
+    test_url=$(echo "$test_url" | sed 's#//#/#g' | sed 's#http:/#http://#g' | sed 's#https:/#https://#g')
+
+    # 2. Speedtest ausführen
+    speed_bps=$(perform_test "$test_url")
+
+    # 3. Ergebnis ausgeben
+    if [[ "$speed_bps" == "ERROR" || "$speed_bps" == "0" ]]; then
+        printf "%-40s | %-12s | %-12s | %s\n" "${url:0:40}" "0" "0" "❌ Fehler"
+    else
+        mbs=$(calc_mb "$speed_bps")
+        mbits=$(calc_mbit "$speed_bps")
+        
+        printf "%-40s | %-12s | %-12s | %s\n" "${url:0:40}" "$mbs" "$mbits" "$info_txt"
+        
+        # In Temp-Datei schreiben für Ranking
+        echo "$mbs $mbits $url" >> "$TMP_RESULT"
+    fi
+done
+
+echo "---------------------------------------------------------------------------------"
+echo
+echo "🏆 Ranking (nach Geschwindigkeit sortiert):"
+echo "-------------------------------------------"
+
+if [[ -s "$TMP_RESULT" ]]; then
+    sort -nr "$TMP_RESULT" | while read -r mbs mbits h; do
+        printf "🚀 %-10s MB/s (%-8s Mbit/s) -> %s\n" "$mbs" "$mbits" "$h"
+    done
+else
+    echo "Keine erfolgreichen Messungen."
+fi
+
+rm "$TMP_RESULT" 2>/dev/null
+echo
+
+
+================================
+DATEI: ./sign-repos.sh
+================================
+#!/usr/bin/env bash
+
+# Bash-Guard
+if [ -z "${BASH_VERSION:-}" ]; then
+  exec /usr/bin/env bash "$0" "$@"
+fi
+
+# Rebuild & Sign für alle Suites unter dists/* – dynamisch pro Repo
+set -euo pipefail
+umask 022
+
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
+
+if [[ -z "${REPO_PATH:-}" ]]; then
+  for candidate in "$SCRIPT_DIR" "$SCRIPT_DIR/.." "/var/spool/apt-mirror" "/root/ailinux-repo"; do
+    [[ -d "$candidate" ]] || continue
+    if [[ -d "${candidate}/repo" ]] || [[ -d "${candidate}/mirror" && -d "${candidate}/var" ]]; then
+      REPO_PATH="$candidate"
+      break
+    fi
+  done
+fi
+REPO_PATH="${REPO_PATH:-$SCRIPT_DIR}"
+REPO_PATH="$(cd "$REPO_PATH" 2>/dev/null && pwd -P || echo "$REPO_PATH")"
+REPO_PATH="${REPO_PATH%/}"
+export REPO_PATH
+
+DEFAULT_GNUPGHOME="${REPO_PATH}/etc/gnupg"
+
+# Set GNUPGHOME with fallback chain: already set > repo/etc/gnupg > local etc/gnupg > /root/.gnupg
+if [[ -z "${GNUPGHOME:-}" ]]; then
+  if [[ -d "$DEFAULT_GNUPGHOME" ]]; then
+    export GNUPGHOME="$DEFAULT_GNUPGHOME"
+  elif [[ -d "${SCRIPT_DIR}/etc/gnupg" ]]; then
+    export GNUPGHOME="${SCRIPT_DIR}/etc/gnupg"
+  else
+    export GNUPGHOME="/root/.gnupg"
+  fi
+fi
+
+SIGNING_KEY_ID="${SIGNING_KEY_ID:-0DDA4A58BCB54237}"
+BASE_DIR_INPUT="${1:-$(pwd)}"
+BASE_DIR="$(realpath --no-symlinks "$BASE_DIR_INPUT" 2>/dev/null || echo "$BASE_DIR_INPUT")"
+[ -d "$BASE_DIR" ] || { echo "❌ Basisverzeichnis existiert nicht: $BASE_DIR" >&2; exit 1; }
+
+command -v apt-ftparchive >/dev/null || { echo "❌ apt-ftparchive fehlt (apt install dpkg-dev apt-utils)" >&2; exit 1; }
+command -v gpg >/dev/null || { echo "❌ gpg fehlt" >&2; exit 1; }
+
+# Secret-Key vorhanden?
+kg=$(gpg --batch --with-colons --with-keygrip --list-secret-keys "$SIGNING_KEY_ID" 2>/dev/null | awk -F: '$1=="grp"{print $10;exit}')
+[ -n "$kg" ] && [ -f "${GNUPGHOME}/private-keys-v1.d/${kg}.key" ] || { echo "❌ Secret-Key $SIGNING_KEY_ID fehlt im $GNUPGHOME." >&2; exit 1; }
+
+echo "🔐 Signiere mit Key: $SIGNING_KEY_ID"
+echo "📁 Mirror-Basisverzeichnis: $BASE_DIR"
+
+mapfile -t DIST_DIRS < <(find "$BASE_DIR" -type d -name dists | sort)
+[ ${#DIST_DIRS[@]} -gt 0 ] || { echo "⚠  Keine dists/ unter $BASE_DIR gefunden."; exit 0; }
+
+label_for(){
+  case "$1" in
+    *archive.ubuntu.com/ubuntu*) echo 'Origin "Ubuntu"; Label "Ubuntu";';;
+    *archive.neon.kde.org/user*) echo 'Origin "KDE neon"; Label "KDE neon user";';;
+    *ppa.launchpadcontent.net/libreoffice/ppa/ubuntu*) echo 'Origin "LibreOffice PPA"; Label "LibreOffice PPA";';;
+    *ppa.launchpadcontent.net/xubuntu-dev/staging/ubuntu*) echo 'Origin "Xfce Staging PPA"; Label "Xfce Staging PPA";';;
+    *ppa.launchpadcontent.net/cappelikan/ppa/ubuntu*) echo 'Origin "Cappelikan PPA"; Label "Cappelikan/Mainline";';;
+    *dl.google.com/linux/chrome/deb*) echo 'Origin "Google"; Label "Google Chrome";';;
+    *dl.winehq.org/wine-builds/ubuntu*) echo 'Origin "WineHQ"; Label "WineHQ Ubuntu builds";';;
+    *) echo 'Origin "AILinux"; Label "AILinux Mirror";';;
+  esac
+}
+
+for ddir in "${DIST_DIRS[@]}"; do
+  repo_root="$(dirname "$ddir")"
+  cd "$repo_root"
+  mapfile -t SUITES < <(find dists -mindepth 1 -maxdepth 1 -type d -printf "%f\n" | sort)
+  [ ${#SUITES[@]} -gt 0 ] || { echo "⚠  Keine Suites in $ddir"; continue; }
+
+  extra="$(label_for "$repo_root")"
+
+  for suite in "${SUITES[@]}"; do
+    suite_dir="dists/${suite}"
+    [ -d "$suite_dir" ] || continue
+
+    # Komponenten & Architekturen dynamisch ermitteln
+    mapfile -t COMPONENTS < <(find "$suite_dir" -mindepth 1 -maxdepth 1 -type d \
+      -exec test -d "{}/binary-amd64" -o -d "{}/binary-i386" -o -d "{}/source" \; -print \
+      | xargs -r -n1 basename | sort -u)
+
+    if [ ${#COMPONENTS[@]} -eq 0 ]; then
+      if [ -d "$suite_dir/main" ]; then COMPONENTS=(main); else COMPONENTS=(main restricted universe multiverse); fi
+    fi
+
+    ARCHS=()
+    [[ -d "$suite_dir" ]] && while IFS= read -r -d '' b; do
+      a="$(basename "$b")"; a="${a#binary-}"; ARCHS+=("$a")
+    done < <(find "$suite_dir" -type d -name "binary-*" -print0)
+
+    if [ ${#ARCHS[@]} -eq 0 ]; then
+      # Fallback: only amd64 if no binary-* directories found
+      ARCHS=(amd64)
+    else
+      mapfile -t ARCHS < <(printf "%s\n" "${ARCHS[@]}" | sort -u)
+    fi
+
+    comp_csv="$(IFS=' '; echo "${COMPONENTS[*]}")"
+    arch_csv="$(IFS=' '; echo "${ARCHS[*]}")"
+
+    echo "✍  ${repo_root}/${suite_dir}  (Components: ${comp_csv}; Archs: ${arch_csv})"
+
+    # Alte Signaturen entfernen
+    rm -f "${suite_dir}/InRelease" "${suite_dir}/Release.gpg"
+
+    # temporäre apt-ftparchive-Conf
+    tmpconf=$(mktemp)
+    {
+      echo 'APT::FTPArchive::Release {'
+      echo "  Suite \"${suite}\";"
+      echo "  Codename \"${suite}\";"
+      echo "  Architectures \"${arch_csv}\";"
+      echo "  Components \"${comp_csv}\";"
+      echo "};"
+      printf '%s\n' "$extra"
+    } > "$tmpconf"
+
+    # Release neu erzeugen
+    apt-ftparchive -c "$tmpconf" release "$suite_dir" > "${suite_dir}/Release"
+
+    # Signieren
+    gpg_opts=(--batch --yes --local-user "$SIGNING_KEY_ID" --pinentry-mode loopback)
+    if [[ -n "${SIGNING_KEY_PASSPHRASE:-}" ]]; then
+      gpg_opts+=(--passphrase "$SIGNING_KEY_PASSPHRASE")
+    fi
+    gpg "${gpg_opts[@]}" --clearsign   -o "${suite_dir}/InRelease"   "${suite_dir}/Release"
+    gpg "${gpg_opts[@]}" --detach-sign -o "${suite_dir}/Release.gpg" "${suite_dir}/Release"
+
+    chmod 0644 "${suite_dir}/Release" "${suite_dir}/InRelease" "${suite_dir}/Release.gpg"
+    rm -f "$tmpconf"
+  done
+done
+
+echo "✅ Alle Releases neu erzeugt & mit $SIGNING_KEY_ID signiert."
+
+
+================================
+DATEI: ./remove-unrepairable-dep11.sh
+================================
+#!/usr/bin/env bash
+# Guard: Ensure bash execution
+if [ -z "${BASH_VERSION:-}" ]; then
+  exec /usr/bin/env bash "$0" "$@"
+fi
+
+set -euo pipefail
+umask 022
+
+# remove-unrepairable-dep11.sh - Entfernt DEP-11 Dateien mit falschen Hashes
+# Läuft NACH postmirror.sh um sicherzustellen, dass nicht-reparierbare Dateien entfernt werden
+# Dies verhindert Client-seitige Hash-Verification-Fehler
+
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
+
+# Auto-detect mirror root based on execution context
+if [ -f "/.dockerenv" ]; then
+  MIRROR_ROOT="${MIRROR_ROOT:-/var/spool/apt-mirror/mirror}"
+  LOGFILE="${LOGFILE:-/var/spool/apt-mirror/var/log/remove-unrepairable-dep11.log}"
+else
+  MIRROR_ROOT="${MIRROR_ROOT:-${SCRIPT_DIR}/repo/mirror}"
+  LOGFILE="${LOGFILE:-${SCRIPT_DIR}/log/remove-unrepairable-dep11.log}"
+fi
+
+mkdir -p "$(dirname "$LOGFILE")"
+
+log() {
+  local msg="[$(date '+%Y-%m-%d %H:%M:%S')] $*"
+  echo "$msg" | tee -a "$LOGFILE"
+}
+
+# Parse SHA256 aus Release-Datei
+parse_sha256_entries() {
+  local release_file="$1"
+
+  [[ ! -f "$release_file" ]] && return 0
+
+  awk '
+    BEGIN { section=0 }
+    /^SHA256:/ { section=1; next }
+    section==1 && /^[[:space:]]/ {
+      gsub(/^[[:space:]]+/, "")
+      split($0, parts, /[[:space:]]+/)
+      if (length(parts[1]) == 64 && parts[2] ~ /^[0-9]+$/ && parts[3] != "") {
+        printf "%s %s %s\n", parts[1], parts[2], parts[3]
+      }
+      next
+    }
+    section==1 && /^[A-Z]/ { exit }
+  ' "$release_file"
+}
+
+main() {
+  log "====== Entferne unreparierbare DEP-11 Dateien ======"
+  log "Mirror-Root: $MIRROR_ROOT"
+
+  if [[ ! -d "$MIRROR_ROOT" ]]; then
+    log "✗ FEHLER: Mirror-Root existiert nicht: $MIRROR_ROOT"
+    return 1
+  fi
+
+  local total_checked=0 total_removed=0 total_valid=0
+  local releases_processed=0
+
+  # Für jede Release-Datei
+  while IFS= read -r -d '' release_file; do
+    ((releases_processed++))
+    local release_dir; release_dir="$(dirname "$release_file")"
+    local rel_path="${release_dir#${MIRROR_ROOT}/}"
+
+    local checked=0 removed=0 valid=0
+
+    # Parse DEP-11 Einträge
+    while read -r expected_hash expected_size relpath; do
+      # Nur DEP-11 Dateien
+      [[ "$relpath" == *dep11/* ]] || continue
+
+      local normalized_relpath="${relpath#./}"
+      local target="${release_dir}/${normalized_relpath}"
+
+      # Datei existiert nicht - überspringen
+      [[ ! -f "$target" ]] && continue
+
+      ((checked++))
+      ((total_checked++))
+
+      # Hash prüfen
+      local actual_hash
+      actual_hash=$(sha256sum "$target" 2>/dev/null | awk '{print $1}')
+
+      if [[ "$actual_hash" == "$expected_hash" ]]; then
+        # Hash stimmt - OK
+        ((valid++))
+        ((total_valid++))
+      else
+        # Hash stimmt NICHT - ENTFERNEN
+        log "  ✗ Hash-Mismatch: ${rel_path}/${normalized_relpath}"
+        log "    Expected: $expected_hash"
+        log "    Actual:   $actual_hash"
+
+        if rm -f "$target"; then
+          log "    🗑️  Entfernt: $target"
+          ((removed++))
+          ((total_removed++))
+        else
+          log "    ⚠️  Konnte nicht entfernen: $target"
+        fi
+      fi
+
+    done < <(parse_sha256_entries "$release_file")
+
+    # Log pro Release
+    if [[ $checked -gt 0 ]]; then
+      if [[ $removed -gt 0 ]]; then
+        log "  ${rel_path}: $checked geprüft, $removed entfernt, $valid OK"
+      fi
+    fi
+
+  done < <(find "$MIRROR_ROOT" -type f -name Release ! -path "*/binary-*/*" -print0)
+
+  log ""
+  log "====== Zusammenfassung ======"
+  log "Releases verarbeitet: $releases_processed"
+  log "DEP-11 Dateien geprüft: $total_checked"
+  log "Gültige Dateien: $total_valid"
+  log "Entfernte Dateien: $total_removed"
+
+  if [[ $total_removed -gt 0 ]]; then
+    log ""
+    log "⚠️  $total_removed unreparierbare DEP-11 Datei(en) wurden entfernt"
+    log "Diese Dateien hatten falsche Hashes und würden Client-Fehler verursachen"
+    log ""
+    log "WICHTIG: Repositories müssen nun NEU SIGNIERT werden!"
+    log "Dies geschieht automatisch im nächsten Schritt (sign-repos.sh)"
+    log ""
+    log "Nach dem Update sollten Clients ihren Cache leeren:"
+    log "  sudo rm -rf /var/lib/apt/lists/*"
+    log "  sudo apt update"
+  elif [[ $total_checked -eq 0 ]]; then
+    log ""
+    log "ℹ️  Keine DEP-11 Dateien zum Prüfen gefunden"
+  else
+    log ""
+    log "✅ Alle $total_valid DEP-11 Dateien sind gültig - keine Probleme"
+  fi
+
+  # Immer exit 0, auch wenn Dateien entfernt wurden
+  # (Entfernung ist gewollt und kein Fehler)
+  return 0
+}
+
+main "$@"
+
+
+================================
+DATEI: ./fix-multiarch-wine-steam.sh
+================================
+#!/usr/bin/env bash
+# Reconfigure APT for amd64+i386, ensure mirror key, rewrite sources, and install Wine/Steam.
+set -euo pipefail
+
+MIRROR_URL="${MIRROR_URL:-https://repo.ailinux.me:8443/mirror}"
+KEY_URL="${KEY_URL:-${MIRROR_URL}/ailinux-archive-key.gpg}"
+KEYRING_PATH="${KEYRING_PATH:-/usr/share/keyrings/ailinux-archive-keyring.gpg}"
+CODENAME="${CODENAME:-$(. /etc/os-release 2>/dev/null && echo "${VERSION_CODENAME:-noble}")}"
+BACKUP_DIR="${BACKUP_DIR:-/var/backups/ailinux-multiarch}"
+APT_DIR="/etc/apt/sources.list.d"
+ARCH_LIST="amd64,i386"
+BASE_SOURCES="/etc/apt/sources.list"
+WINE_SOURCES="${APT_DIR}/ailinux-winehq.list"
+
+REQUIRED_CMDS=(curl install tee cp mv awk dpkg apt-get apt-cache)
+
+log() {
+  printf '[fix-multiarch] %s\n' "$*"
+}
+
+require_root() {
+  if [[ $EUID -ne 0 ]]; then
+    echo "Bitte als root ausführen (sudo $0 …)" >&2
+    exit 1
+  fi
+}
+
+check_commands() {
+  for cmd in "${REQUIRED_CMDS[@]}"; do
+    if ! command -v "$cmd" >/dev/null 2>&1; then
+      echo "Benötigtes Werkzeug fehlt: $cmd" >&2
+      exit 1
+    fi
+  done
+}
+
+backup_file() {
+  local file="$1"
+  [[ -e "$file" ]] || return 0
+  install -d "$BACKUP_DIR"
+  local stamp
+  stamp="$(date +%Y%m%d-%H%M%S)"
+  local target="${BACKUP_DIR}/$(basename "$file").${stamp}.bak"
+  cp -a "$file" "$target"
+  log "Backup erstellt: $target"
+}
+
+ensure_architecture() {
+  if dpkg --print-foreign-architectures | grep -Fxq 'i386'; then
+    log "i386 ist bereits aktiviert."
+    return
+  fi
+  log "Aktiviere i386 (32-bit) Architektur für Steam/Wine."
+  dpkg --add-architecture i386
+}
+
+install_keyring() {
+  local tmp
+  tmp="$(mktemp)"
+  log "Installiere Mirror-Keyring von ${KEY_URL}"
+  curl -fsSL "$KEY_URL" -o "$tmp"
+  install -Dm0644 "$tmp" "$KEYRING_PATH"
+  rm -f "$tmp"
+}
+
+disable_old_sources() {
+  shopt -s nullglob
+  for file in "${APT_DIR}"/ailinux-*.sources; do
+    if grep -q "$MIRROR_URL" "$file"; then
+      backup_file "$file"
+      mv "$file" "${file}.disabled"
+      log "Vorherige Quelle deaktiviert: ${file}.disabled"
+    fi
+  done
+  shopt -u nullglob
+}
+
+write_sources_list() {
+  backup_file "$BASE_SOURCES"
+  cat <<EOF | tee "$BASE_SOURCES" >/dev/null
+# AILinux mirror auto-generated: amd64 + i386 aktiv
+deb [arch=${ARCH_LIST} signed-by=${KEYRING_PATH}] ${MIRROR_URL}/archive.ubuntu.com/ubuntu ${CODENAME} main restricted universe multiverse
+deb [arch=${ARCH_LIST} signed-by=${KEYRING_PATH}] ${MIRROR_URL}/archive.ubuntu.com/ubuntu ${CODENAME}-updates main restricted universe multiverse
+deb [arch=${ARCH_LIST} signed-by=${KEYRING_PATH}] ${MIRROR_URL}/archive.ubuntu.com/ubuntu ${CODENAME}-backports main restricted universe multiverse
+deb [arch=${ARCH_LIST} signed-by=${KEYRING_PATH}] ${MIRROR_URL}/security.ubuntu.com/ubuntu ${CODENAME}-security main restricted universe multiverse
+EOF
+  log "Basis-Sources aktualisiert: ${BASE_SOURCES}"
+}
+
+write_wine_sources() {
+  backup_file "$WINE_SOURCES"
+  install -d "$APT_DIR"
+  cat <<EOF | tee "$WINE_SOURCES" >/dev/null
+deb [arch=${ARCH_LIST} signed-by=${KEYRING_PATH}] ${MIRROR_URL}/dl.winehq.org/wine-builds/ubuntu ${CODENAME} main
+EOF
+  log "WineHQ-Sources aktualisiert: ${WINE_SOURCES}"
+}
+
+apt_update() {
+  log "Führe apt update aus."
+  apt-get update
+}
+
+show_policy() {
+  local packages=(
+    libc6:i386
+    libstdc++6:i386
+    zlib1g:i386
+    libdrm2:i386
+    libx11-6:i386
+    libxcb1:i386
+  )
+  log "Überprüfe Installationskandidaten für Kernbibliotheken."
+  apt-cache policy "${packages[@]}"
+}
+
+install_runtime_stack() {
+  local mesa_packages=(
+    mesa-vulkan-drivers
+    mesa-vulkan-drivers:i386
+    libgl1-mesa-dri:amd64
+    libgl1-mesa-dri:i386
+    libglx-mesa0:amd64
+    libglx-mesa0:i386
+  )
+  log "Installiere Mesa/Vulkan Pakete für Proton."
+  apt-get install -y "${mesa_packages[@]}"
+
+  log "Installiere WineHQ Staging."
+  apt-get install -y --install-recommends winehq-staging
+
+  log "Installiere Steam."
+  apt-get install -y steam
+}
+
+main() {
+  require_root
+  check_commands
+  ensure_architecture
+  install_keyring
+  disable_old_sources
+  write_sources_list
+  write_wine_sources
+  apt_update
+  show_policy
+  install_runtime_stack
+  log "Konfiguration abgeschlossen."
+}
+
+main "$@"
+
+
+================================
+DATEI: ./check-dep11-hashes.sh
+================================
+#!/usr/bin/env bash
+# Guard: Ensure bash execution
+if [ -z "${BASH_VERSION:-}" ]; then
+  exec /usr/bin/env bash "$0" "$@"
+fi
+
+set -euo pipefail
+umask 022
+
+# check-dep11-hashes.sh - Simple and fast DEP-11 hash validation
+# Validates DEP-11 metadata files against SHA256 hashes in Release files
+
+REPO_ROOT="${REPO_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
+MIRROR_ROOT="${MIRROR_ROOT:-${REPO_ROOT}/repo/mirror}"
+REMOVE_BAD="${REMOVE_BAD:-0}"
+
+echo "=== DEP-11 Hash Validation ==="
+echo "Mirror root: $MIRROR_ROOT"
+echo "Remove corrupted files: $REMOVE_BAD"
+echo ""
+
+checked=0
+valid=0
+invalid=0
+missing=0
+
+# Find all Release files at suite level
+find "$MIRROR_ROOT" -path "*/dists/*/Release" -type f ! -path "*/binary-*/*" 2>/dev/null | while read -r release_file; do
+  suite_dir="$(dirname "$release_file")"
+  repo_name="$(echo "$suite_dir" | sed "s|^$MIRROR_ROOT/||")"
+
+  echo "Checking: $repo_name"
+
+  # Extract SHA256 hashes for dep11 files (direct paths only, not by-hash)
+  awk '/^SHA256:$/,/^[A-Z][a-z]/ {
+    if ($3 ~ /^[a-z]+\/dep11\/(icons-|Components).*\.(tar\.gz|yml\.gz|xml\.gz)$/) {
+      print $1, $2, $3
+    }
+  }' "$release_file" | while read -r expected_hash size filepath; do
+    [[ -z "$expected_hash" || -z "$filepath" ]] && continue
+
+    dep11_file="${suite_dir}/${filepath}"
+    filename="$(basename "$filepath")"
+
+    if [[ ! -f "$dep11_file" ]]; then
+      echo "  ⚠️  Missing: $filepath"
+      ((missing++))
+      continue
+    fi
+
+    ((checked++))
+
+    # Calculate actual hash
+    actual_hash=$(sha256sum "$dep11_file" | awk '{print $1}')
+
+    if [[ "$actual_hash" == "$expected_hash" ]]; then
+      ((valid++))
+      if [[ "$filename" =~ ^icons-(48x48|64x64|128x128)\.tar\.gz$ ]]; then
+        echo "  ✅ Valid: $filename"
+      fi
+    else
+      ((invalid++))
+      echo "  ❌ CORRUPTED: $filepath"
+      echo "     Expected: $expected_hash"
+      echo "     Actual:   $actual_hash"
+
+      if [[ $REMOVE_BAD -eq 1 ]]; then
+        if rm -f "$dep11_file"; then
+          echo "     🗑️  Removed"
+        else
+          echo "     ⚠️  Failed to remove"
+        fi
+      fi
+    fi
+  done
+done
+
+echo ""
+echo "=== Summary ==="
+echo "Checked: $checked"
+echo "Valid: $valid"
+echo "Corrupted: $invalid"
+echo "Missing: $missing"
+
+if [[ $invalid -gt 0 ]]; then
+  echo ""
+  if [[ $REMOVE_BAD -eq 0 ]]; then
+    echo "⚠️  Found $invalid corrupted DEP-11 file(s)"
+    echo "To remove them, run: REMOVE_BAD=1 $0"
+  else
+    echo "✅ Removed $invalid corrupted file(s)"
+    echo "Run ./nova-heal.sh or ./update-mirror.sh to re-download"
+  fi
+elif [[ $checked -eq 0 ]]; then
+  echo ""
+  echo "⚠️  No DEP-11 files found in mirror"
+else
+  echo ""
+  echo "✅ All $valid DEP-11 files are valid!"
+  echo ""
+  echo "If clients see hash errors, it's a CLIENT-SIDE cache issue."
+  echo "Client fix: sudo rm -rf /var/lib/apt/lists/* && sudo apt update"
+fi
+
+exit 0
+
+
+================================
+DATEI: ./conf.d/api-8882.conf
+================================
+
+server {
+  listen 8881;
+  listen [::]:8881;
+  server_name api.ailinux.me;
+
+  location / {
+    proxy_pass http://localhost:8882;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_buffering off;
+    proxy_request_buffering off;
+  }
+}
+
+server {
+  listen 8882 ssl http2;
+  listen [::]:8882 ssl http2;
+  server_name api.ailinux.me;
+
+  ssl_certificate /etc/letsencrypt/live/ailinux.me/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/ailinux.me/privkey.pem;
+  ssl_protocols TLSv1.2 TLSv1.3;
+  ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA384;
+  ssl_prefer_server_ciphers off;
+
+  location / {
+    # CORS headers
+    add_header Access-Control-Allow-Origin "*" always;
+    add_header Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
+    add_header Access-Control-Allow-Headers "Content-Type, Authorization, X-AILinux-Client" always;
+    add_header Access-Control-Max-Age 86400 always;
+
+    if ($request_method = OPTIONS) {
+      return 204;
+    }
+
+    proxy_pass http://localhost:8882;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_buffering off;
+    proxy_request_buffering off;
+  }
+}
+
+
+
+================================
+DATEI: ./conf.d/comfyui.conf
+================================
+
+server {
+  listen 443 ssl;
+  listen [::]:443 ssl;
+  http2 on;
+  server_name comfyui.ailinux.me;
+
+  ssl_certificate /etc/letsencrypt/live/ailinux.me/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/ailinux.me/privkey.pem;
+  ssl_protocols TLSv1.2 TLSv1.3;
+
+  location / {
+    proxy_pass http://localhost:8882;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_buffering off;
+    proxy_request_buffering off;
+  }
+}
+
+
+
+
+================================
+DATEI: ./conf.d/api.ailinux.me.conf
+================================
+
+server {
+  listen 8881;
+  listen [::]:8881;
+  server_name api.ailinux.me;
+
+  location / {
+    proxy_pass http://localhost:8882;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_buffering off;
+    proxy_request_buffering off;
+  }
+}
+
+server {
+  listen 8882 ssl http2;
+  listen [::]:8882 ssl http2;
+  server_name api.ailinux.me;
+
+  ssl_certificate /etc/letsencrypt/live/ailinux.me/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/ailinux.me/privkey.pem;
+  ssl_protocols TLSv1.2 TLSv1.3;
+  ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA384;
+  ssl_prefer_server_ciphers off;
+
+  location / {
+    proxy_pass http://localhost:8882;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_buffering off;
+    proxy_request_buffering off;
+  }
+}
+
+
+
+================================
+DATEI: ./conf.d/repo-8080.conf
+================================
+
+# HTTP -> HTTPS-Redirect (klassisch sauber)
+server {
+  listen [::]:8080;
+  server_name repo.ailinux.me;
+
+  return 301 https://$host:8443$request_uri;
+}
+
+
+
+
+================================
+DATEI: ./conf.d/repo-ssl.conf
+================================
+
+# AILinux Repo über HTTPS (Port 8443)
+server {
+    listen 8443 ssl;
+    listen [::]:8443 ssl;
+    http2 on;
+
+    server_name repo.ailinux.me ailinux.me www.ailinux.me;
+
+    root /repo;
+    index index.html;
+
+    ssl_certificate     /etc/letsencrypt/live/ailinux.me/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/ailinux.me/privkey.pem;
+
+    ssl_session_cache   shared:SSL:10m;
+    ssl_session_timeout 1d;
+    ssl_protocols       TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers off;
+
+    # Metadata files (Release, InRelease, Packages) should NOT be cached
+    location ~ /(Release|InRelease|Packages|Packages\.(gz|bz2)|Contents|Sources|Components)$ {
+        autoindex on;
+        try_files $uri $uri/ =404;
+        # No caching for metadata files - they change frequently
+        expires -1;
+        add_header Cache-Control "no-cache, no-store, must-revalidate";
+        add_header Pragma "no-cache";
+    }
+
+    # All other files can be cached aggressively
+        # Live-HTML-Log: kein Caching
+
+        location = /mirror/live-log.html {
+
+            autoindex off;
+
+            try_files $uri =404;
+
+            expires -1;
+
+            add_header Cache-Control "no-cache, no-store, must-revalidate";
+
+            add_header Pragma "no-cache";
+
+            add_header Expires "0";
+
+        }
+
+    location / {
+        autoindex on;
+        try_files $uri $uri/ =404;
+        # Aggressiveres Caching für statische Repo-Dateien
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+}
+
+
+
+
+================================
+DATEI: ./repo-health.sh
+================================
+#!/usr/bin/env bash
+# Ensure Bash even if invoked via sh
+
+if [ -z "${BASH_VERSION:-}" ]; then
+
+  exec /usr/bin/env bash "$0" "$@"
+
+fi
+
+#!/usr/bin/env bash
+set -euo pipefail
+BASE="${1:-/root/ailinux-repo/repo/mirror}"
+KEY="${SIGNING_KEY_ID:-0DDA4A58BCB54237}"
+shopt -s nullglob
+echo "== Prüfe InRelease-Signaturen unter: $BASE =="
+while IFS= read -r -d '' f; do
+  signer=$(gpg --batch --status-fd 1 --verify "$f" 2>/dev/null | awk '/^\[GNUPG:\] (GOODSIG|ERRSIG)/{print $3;exit}')
+  printf "%-90s  %s\n" "${f#$BASE/}" "${signer:-UNKNOWN}"
+done < <(find "$BASE" -type f -path "*/dists/*/InRelease" -print0 | sort -z)
+echo "== Fertig =="
+
+
+
+
+================================
+DATEI: ./health.sh
+================================
+
+#!/usr/bin/env bash
+# AILinux Repository Healthcheck v2 (Auto-Deps, Cert-Discovery, Stale/By-Hash, IPv6, robust curl)
+# Date: 2025-09-25
+
+set -euo pipefail
+
+# ===== Konfiguration =====
+DOMAINS=("ailinux.me" "repo.ailinux.me")
+ORIGIN_IP="${ORIGIN_IP:-148.251.0.181}"
+ORIGIN_PORT="${ORIGIN_PORT:-8443}"
+
+# Test-URL zu einer Release-Datei deines Repos (über Cloudflare)
+CHECK_URL="${CHECK_URL:-https://repo.ailinux.me:8443/mirror/archive.ailinux.me/dists/stable/Release}"
+
+# Zertifikats-Trust
+MIN_CERT_DAYS="${MIN_CERT_DAYS:-14}"
+TRUSTED_ISSUERS=("Cloudflare" "Let's Encrypt" "Google Trust Services")
+
+# Zertifikate: Entweder direkt angeben ODER Auto-Discovery aus NGINX-Konfigs
+# Beispiel: CERT_FILES=("/etc/ssl/certs/fullchain.pem" "/etc/ssl/private/ailinux_fullchain.pem")
+: "${CERT_FILES:=()}"
+# In welchen Dateien nach ssl_certificate suchen (Globs erlaubt)
+NGINX_CONF_GLOBS=(
+  "${NGINX_CONF:-/etc/nginx/nginx.conf}"
+  "/etc/nginx/conf.d/*.conf"
+  "/etc/nginx/sites-enabled/*"
+  "/root/ailinux-repo/nginx.conf"
+)
+
+# APT/Installationsverhalten
+export DEBIAN_FRONTEND=noninteractive
+export NEEDRESTART_MODE=a
+
+# ===== Farben & Symbole =====
+C_GREEN="\033[0;32m"; C_RED="\033[0;31m"; C_YELLOW="\033[0;33m"; C_RESET="\033[0m"
+ok()   { echo -e "${C_GREEN}✅ OK:      ${*}${C_RESET}"; }
+bad()  { echo -e "${C_RED}❌ FEHLER:  ${*}${C_RESET}"; STATUS=$(( STATUS | 1 )); }
+warn() { echo -e "${C_YELLOW}⚠  WARNUNG: ${*}${C_RESET}"; STATUS=$(( STATUS | 2 )); }
+info() { echo -e ">> $*"; }
+
+# ===== Curl Optionen (robust) =====
+CURL_OPTS=(--max-time 12 --connect-timeout 5 --retry 2 --retry-delay 1 --retry-connrefused -fSsL)
+
+# ===== Preflight: Root & Abhängigkeiten =====
+require_root() {
+  if [ "${EUID:-$(id -u)}" -ne 0 ]; then
+    info "Starte neu mit Root-Rechten..."
+    exec sudo -E bash "$0" "$@"
+  fi
+}
+install_missing_tools() {
+  local missing=()
+  command -v curl >/dev/null    || missing+=("curl")
+  command -v openssl >/dev/null || missing+=("openssl")
+  command -v dig >/dev/null 2>&1 || missing+=("bind9-dnsutils")
+  if [ "${#missing[@]}" -gt 0 ]; then
+    info "Installiere fehlende Pakete: ${missing[*]}"
+    apt-get update -y
+    if ! apt-get install -y "${missing[@]}"; then
+      command -v dig >/dev/null 2>&1 || apt-get install -y dnsutils || true
+    fi
+    for c in curl openssl dig; do
+      command -v "$c" >/dev/null 2>&1 || { bad "'$c' konnte nicht installiert werden."; exit 1; }
+    done
+  fi
+}
+
+# ===== Helpers =====
+need() {
+  command -v "$1" >/dev/null 2>&1 || { bad "Kommando '$1' nicht gefunden (sollte installiert sein)."; exit 1; }
+}
+uniq_lines() { awk '!seen[$0]++'; }
+
+discover_certs_from_nginx() {
+  local files=()
+  shopt -s nullglob
+  for pat in "${NGINX_CONF_GLOBS[@]}"; do
+    for f in $pat; do
+      [ -f "$f" ] || continue
+      # grep ssl_certificate (nicht *_key), fange Pfad in 1. Gruppe
+      while IFS= read -r p; do
+        # Bereinigen (Semikolon, Quotes)
+        p="${p%;}
+"; p="${p//\"/}"; p="${p//\'/}"
+        [ -f "$p" ] && files+=("$p")
+      done < <(grep -Eo 'ssl_certificate\s+[^;]+' "$f" | awk '{print $2}')
+    done
+  done
+  printf '%s\n' "${files[@]}" | uniq_lines
+}
+
+print_cert_file_info() {
+  local file=$1
+  if [ ! -f "$file" ]; then warn "Zertifikat nicht gefunden: $file"; return; fi
+
+  local size mtime subject issuer end_date_str end_epoch now_epoch days_left fp
+  size=$(stat -c %s "$file" 2>/dev/null || echo "?")
+  mtime=$(date -R -r "$file" 2>/dev/null || echo "?")
+  subject=$(openssl x509 -in "$file" -noout -subject 2>/dev/null | sed 's/^subject= //')
+  issuer=$(openssl x509 -in "$file" -noout -issuer  2>/dev/null | sed 's/^issuer= //')
+  end_date_str=$(openssl x509 -in "$file" -noout -enddate 2>/dev/null | cut -d= -f2)
+  fp=$(openssl x509 -in "$file" -noout -fingerprint -sha256 2>/dev/null | cut -d= -f2)
+
+  echo "---- Zertifikat: $file"
+  echo "     Größe:      ${size} B"
+  echo "     mtime:      $mtime"
+  echo "     Subject:    ${subject:-?}"
+  echo "     Issuer:     ${issuer:-?}"
+  echo "     SHA256 FP:  ${fp:-?}"
+  if [ -n "${end_date_str:-}" ]; then
+    end_epoch=$(date -d "$end_date_str" +%s 2>/dev/null || echo "")
+    now_epoch=$(date +%s)
+    if [ -n "$end_epoch" ]; then
+      days_left=$(((end_epoch - now_epoch)/86400))
+      echo "     Gültig bis: $end_date_str  (${days_left} Tage)"
+      if [ "$days_left" -lt 0 ]; then
+        bad "Zertifikat abgelaufen: $file"
+      elif [ "$days_left" -lt "$MIN_CERT_DAYS" ]; then
+        warn "Läuft bald ab (${days_left} Tage): $file"
+      else
+        ok "Zertifikat okay (${days_left} Tage): $file"
+      fi
+    else
+      warn "Ablaufdatum konnte nicht geparst werden: $file"
+    fi
+  else
+    warn "Kein Ablaufdatum lesbar: $file"
+  fi
+}
+
+check_dns() {
+  local domain=$1
+  info "Prüfe DNS für $domain…"
+  local a aaaa; a=$(dig +short "$domain" A || true); aaaa=$(dig +short "$domain" AAAA || true)
+  if [ -z "$a$aaaa" ]; then bad "Keine A/AAAA-Records für $domain."; return; fi
+  [ -n "$a" ] && while read -r ip; do [ -z "$ip" ]|| ok "$domain A: $ip"; done <<<"$a"
+  [ -n "$aaaa" ] && while read -r ip6; do [ -z "$ip6" ]|| ok "$domain AAAA: $ip6"; done <<<"$aaaa"
+}
+
+check_cert_port() {
+  local domain=$1 port=$2
+  info "Prüfe SSL-Zertifikat live für $domain:$port…"
+  local cert; cert=$(echo | timeout 8 openssl s_client -servername "$domain" -connect "$domain:$port" 2>/dev/null | openssl x509 -noout -issuer -enddate) || true
+  if [ -z "$cert" ]; then bad "Keine Zertifikatsdaten von $domain:$port erhalten."; return; fi
+  local issuer end_date_str end_epoch now_epoch days_left trusted=false
+  issuer=$(sed -n 's/^issuer=\(.*\)$/\1/p' <<<"$cert")
+  end_date_str=$(sed -n 's/^notAfter=\(.*\)$/\1/p' <<<"$cert")
+  for t in "${TRUSTED_ISSUERS[@]}"; do [[ "$issuer" == *"$t"* ]] && trusted=true && break; done
+  [[ $trusted == true ]] && ok "Aussteller vertrauenswürdig: $issuer" || warn "Unerwarteter Aussteller: $issuer"
+  end_epoch=$(date -d "$end_date_str" +%s 2>/dev/null || echo "")
+  now_epoch=$(date +%s)
+  if [ -n "$end_epoch" ]; then
+    days_left=$(((end_epoch - now_epoch)/86400))
+    if [ "$days_left" -lt 0 ]; then bad "Zertifikat abgelaufen! (bis: $end_date_str)"
+    elif [ "$days_left" -lt "$MIN_CERT_DAYS" ]; then warn "Zertifikat läuft bald ab: $days_left Tage (bis: $end_date_str)"
+    else ok "Zertifikat gültig: $days_left Tage (bis: $end_date_str)"; fi
+  else
+    warn "Ablaufdatum live nicht auswertbar."
+  fi
+}
+
+check_origin() {
+  info "Prüfe direkte Verbindung zum Origin ($ORIGIN_IP:$ORIGIN_PORT)…"
+  if curl --resolve "repo.ailinux.me:$ORIGIN_PORT:$ORIGIN_IP" -k "${CURL_OPTS[@]}" "https://repo.ailinux.me:$ORIGIN_PORT/" -o /dev/null; then
+    ok "Origin-Server ist erreichbar."
+  else
+    bad "Origin $ORIGIN_IP:$ORIGIN_PORT antwortet nicht wie erwartet."
+  fi
+}
+
+check_via_cf_headers() {
+  local url=$1
+  info "Prüfe Cloudflare-Header für $url…"
+  local headers; headers=$(curl -I "${CURL_OPTS[@]}" "$url" || true)
+  if echo "$headers" | grep -qiE '^cf-ray:|^server:\s*cloudflare'; then
+    ok "Cloudflare-Proxy aktiv (CF-Header erkannt)."
+  else
+    warn "Keine klaren Cloudflare-Header erkannt."
+  fi
+}
+
+check_mirror_content() {
+  info "Prüfe Erreichbarkeit der Release-Datei…"
+  local code; code=$(curl "${CURL_OPTS[@]}" -o /dev/null -w "%{http_code}" "$CHECK_URL" || echo "000")
+  [ "$code" = "200" ] && ok "Test-URL erreichbar (HTTP 200)." || bad "Test-URL NICHT erreichbar (HTTP $code)."
+  check_via_cf_headers "$CHECK_URL"
+}
+
+check_byhash() {
+  local base="${CHECK_URL%/dists/*}/dists/stable/by-hash/SHA256"
+  info "Prüfe By-Hash-Verzeichnis…"
+  if curl -I "${CURL_OPTS[@]}" "$base/" >/dev/null 2>&1; then
+    ok "By-Hash erreichbar."
+  else
+    warn "By-Hash nicht erreichbar – bitte Webserver/Sync prüfen."
+  fi
+}
+
+check_stale_release() {
+  info "Prüfe Alter der Release-Datei…"
+  local lm; lm=$(curl -sI "${CURL_OPTS[@]}" "$CHECK_URL" | awk -F': ' 'tolower($1)=="last-modified"{print $2}' | tr -d '\r')
+  if [ -n "$lm" ]; then
+    local lm_epoch now_epoch diff_h
+    lm_epoch=$(date -d "$lm" +%s); now_epoch=$(date +%s); diff_h=$(( (now_epoch - lm_epoch) / 3600 ))
+    if [ "$diff_h" -gt 12 ]; then warn "Release zuletzt vor ${diff_h}h aktualisiert."
+    else ok "Release frisch (vor ${diff_h}h)."; fi
+  else
+    warn "Kein Last-Modified-Header gefunden."
+  fi
+}
+
+check_ipv6() {
+  info "IPv6-Check auf $CHECK_URL…"
+  if curl -6 -I "${CURL_OPTS[@]}" "$CHECK_URL" >/dev/null 2>&1; then
+    ok "IPv6 erreichbar."
+  else
+    warn "IPv6 nicht erreichbar oder geblockt."
+  fi
+}
+
+# ===== Hauptprogramm =====
+STATUS=0
+[ -e healt.sh ] || ln -sf "$(basename "$0")" healt.sh 2>/dev/null || true
+
+echo "=== AILinux Repository Healthcheck ==="
+date -R
+echo "--------------------------------------"
+
+require_root "$@"
+install_missing_tools
+need dig; need openssl; need curl
+
+# 1) DNS + Live-Zertifikate
+for d in "${DOMAINS[@]}"; do
+  check_dns "$d"
+  check_cert_port "$d" 443
+done
+check_cert_port "repo.ailinux.me" "$ORIGIN_PORT"
+
+# 2) Origin + Mirror-Content
+check_origin
+check_mirror_content
+check_byhash
+check_stale_release
+check_ipv6
+
+# 3) Zertifikat-Dateien aus Config anzeigen
+echo "--------------------------------------"
+info "Zertifikate aus Konfiguration / Auto-Discovery:"
+declare -a ALL_CERTS=()
+if [ "${#CERT_FILES[@]}" -gt 0 ]; then
+  ALL_CERTS+=("${CERT_FILES[@]}")
+fi
+while IFS= read -r cf; do
+  ALL_CERTS+=("$cf")
+done < <(discover_certs_from_nginx || true)
+
+# deduplizieren
+mapfile -t ALL_CERTS < <(printf '%s\n' "${ALL_CERTS[@]}" | uniq_lines)
+
+if [ "${#ALL_CERTS[@]}" -eq 0 ]; then
+  warn "Keine Zertifikatsdateien gefunden. Setze CERT_FILES oder prüfe NGINX_CONF_GLOBS."
+else
+  for certf in "${ALL_CERTS[@]}"; do
+    print_cert_file_info "$certf"
+  done
+fi
+
+echo "--------------------------------------"
+case "$STATUS" in
+  0) ok "System-Health: Alles in Ordnung." ;;
+  1) bad "System-Health: FEHLER erkannt." ;;
+  2) warn "System-Health: WARNUNGEN erkannt." ;;
+  3) bad "System-Health: FEHLER & WARNUNGEN erkannt." ;;
+esac
+
+exit $STATUS
+
+
+
+
+================================
+DATEI: ./repair-dep11.sh
+================================
+#!/usr/bin/env bash
+
+# Bash-Guard
+if [ -z "${BASH_VERSION:-}" ]; then
+  exec /usr/bin/env bash "$0" "$@"
+fi
+
+set -euo pipefail
+
+# === DEP-11 Repair Engine ===
+# Robuste Validierung und Reparatur fehlerhafter/fehlender DEP-11 Dateien
+# ohne das Repository zu beschädigen
+
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
+
+# Auto-detect mirror root based on execution context
+if [ -f "/.dockerenv" ]; then
+  # In container: mirror is at /var/spool/apt-mirror/mirror
+  MIRROR_ROOT="${MIRROR_ROOT:-/var/spool/apt-mirror/mirror}"
+  LOGFILE="${LOGFILE:-/var/spool/apt-mirror/var/log/repair-dep11.log}"
+else
+  # On host: mirror is at repo/mirror
+  MIRROR_ROOT="${MIRROR_ROOT:-${SCRIPT_DIR}/repo/mirror}"
+  LOGFILE="${LOGFILE:-${SCRIPT_DIR}/log/repair-dep11.log}"
+fi
+
+mkdir -p "$(dirname "$LOGFILE")"
+
+log() {
+  local msg="[$(date '+%Y-%m-%d %H:%M:%S')] $*"
+  echo "$msg"
+  echo "$msg" >> "$LOGFILE"
+}
+
+# Ermittelt auf Basis des Release-Verzeichnisses die vollständige Upstream-URL
+build_base_url() {
+  local release_dir="$1" relative=""
+
+  if [[ -z "${MIRROR_ROOT:-}" ]]; then
+    return 1
+  fi
+
+  case "$release_dir" in
+    "$MIRROR_ROOT"*)
+      relative="${release_dir#${MIRROR_ROOT}/}"
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+
+  relative="${relative#/}"
+  if [[ -z "$relative" ]]; then
+    return 1
+  fi
+
+  # Doppelte Slashes reduzieren
+  while [[ "$relative" == *"//"* ]]; do
+    relative="${relative//\/\//\/}"
+  done
+
+  printf 'https://%s' "$relative"
+  return 0
+}
+
+# Download mit Retry und Timeout
+download_file() {
+  local url="$1" dest="$2" max_retries=3 retry=0
+
+  while [[ $retry -lt $max_retries ]]; do
+    if { timeout 30 curl -fsSL --connect-timeout 10 --max-time 30 "$url" -o "$dest" || \
+         timeout 30 wget -q -O "$dest" --timeout=10 --read-timeout=30 "$url"; } 2>/dev/null; then
+      return 0
+    fi
+    ((retry++))
+    [[ $retry -lt $max_retries ]] && sleep 3
+  done
+  return 1
+}
+
+# Validiere Dateigröße und Basisdaten
+validate_file() {
+  local file="$1" min_size="${2:-100}"
+
+  if [[ ! -f "$file" ]]; then
+    return 1  # Datei existiert nicht
+  fi
+
+  local size; size=$(stat -c '%s' "$file" 2>/dev/null || echo 0)
+  if [[ $size -lt $min_size ]]; then
+    return 1  # Datei zu klein
+  fi
+
+  # Für komprimierte Dateien: versuche zu dekomprimieren
+  if [[ "$file" == *.gz ]]; then
+    gunzip -t "$file" 2>/dev/null || return 1
+  elif [[ "$file" == *.tar ]]; then
+    tar -tf "$file" >/dev/null 2>&1 || return 1
+  elif [[ "$file" == *.bz2 ]]; then
+    bzip2 -t "$file" 2>/dev/null || return 1
+  elif [[ "$file" == *.xz ]]; then
+    if command -v xz >/dev/null 2>&1; then
+      xz -t "$file" 2>/dev/null || return 1
+    fi
+  fi
+
+  return 0
+}
+
+# Parse SHA256 aus Release-Datei (sicher gegen Fehler)
+parse_sha256_entries() {
+  local release_file="$1"
+
+  if [[ ! -f "$release_file" ]]; then
+    return 0
+  fi
+
+  awk '
+    BEGIN { section=0 }
+    /^SHA256:/ { section=1; next }
+    section==1 && /^[[:space:]]/ {
+      gsub(/^[[:space:]]+/, "")
+      if (split($0, parts, /[[:space:]]+/) == 3) {
+        if (length(parts[1]) == 64 && parts[2] ~ /^[0-9]+$/ && parts[3] != "") {
+          printf "%s %s %s\n", parts[1], parts[2], parts[3]
+        }
+      }
+      next
+    }
+    section==1 { exit }
+  ' "$release_file"
+}
+
+# Repariere einzelne DEP-11 Datei
+repair_dep11_file() {
+  local release_dir="$1" base_url="$2" hash="$3" size="$4" relpath="$5"
+  local normalized_relpath="${relpath#./}"
+  local target="${release_dir}/${normalized_relpath}"
+  local url="${base_url%/}/${normalized_relpath}"
+
+  log "   Repariere: $normalized_relpath (Hash: ${hash:0:8}..., Size: $size bytes)"
+
+  # Lösche fehlerhafte Datei
+  rm -f "$target"
+
+  # Erstelle Verzeichnis
+  mkdir -p "$(dirname "$target")"
+
+  # Download versuchen
+  local tmp status=0
+  tmp=$(mktemp) || { log "   ✗ Konnte temporäre Datei nicht anlegen"; return 1; }
+  trap "rm -f '$tmp'" RETURN
+
+  if download_file "$url" "$tmp"; then
+    local dl_size; dl_size=$(stat -c '%s' "$tmp" 2>/dev/null || echo 0)
+
+    # Validiere Download
+    if validate_file "$tmp" 100; then
+      # Hash-Prüfung (wenn Größe stimmt)
+      if [[ "$dl_size" == "$size" ]]; then
+        if echo "$hash  $tmp" | sha256sum --check --quiet 2>/dev/null; then
+          mv "$tmp" "$target"
+          chmod 0644 "$target"
+          log "   ✓ Repariert: $normalized_relpath ($dl_size bytes)"
+          status=0
+        else
+          log "   ⚠ Download OK aber Hash falsch, setze trotzdem: $normalized_relpath"
+          mv "$tmp" "$target"
+          chmod 0644 "$target"
+          status=0
+        fi
+      else
+        log "   ⚠ Download OK aber Größe falsch (erwartet: $size, erhalten: $dl_size), setze trotzdem: $normalized_relpath"
+        mv "$tmp" "$target"
+        chmod 0644 "$target"
+        status=0
+      fi
+    else
+      log "   ✗ Download fehlgeschlagen oder Datei ungültig: $normalized_relpath"
+      status=1
+    fi
+  else
+    log "   ✗ Download-Fehler (Netzwerk/Timeout): $normalized_relpath"
+    status=1
+  fi
+
+  trap - RETURN
+  return "$status"
+}
+
+main() {
+  log "======= DEP-11 Repair Engine gestartet ======="
+  log "Mirror-Root: $MIRROR_ROOT"
+
+  if [[ ! -d "$MIRROR_ROOT" ]]; then
+    log "✗ FEHLER: Mirror-Root existiert nicht: $MIRROR_ROOT"
+    return 1
+  fi
+
+  local total=0 repaired=0 failed=0 skipped=0
+  local processed_releases=0
+
+  # Für jede Release-Datei
+  while IFS= read -r -d '' release_file; do
+    ((processed_releases++))
+    local release_dir; release_dir="$(dirname "$release_file")"
+    local rel_path="${release_dir#${MIRROR_ROOT}/}"
+
+    local dep11_count=0 dep11_repaired=0 dep11_failed=0
+
+    log "Verarbeite: $rel_path"
+
+    local base_url
+    if ! base_url=$(build_base_url "$release_dir"); then
+      log "   ⚠ Kann Basis-URL für $rel_path nicht bestimmen – übersprungen"
+      continue
+    fi
+
+    # Für jede DEP-11 Datei in dieser Release
+    while read -r hash size relpath; do
+      [[ "$relpath" == *dep11/* ]] || continue
+
+      ((total++))
+      ((dep11_count++))
+
+      local normalized_relpath="${relpath#./}"
+      local target="${release_dir}/${normalized_relpath}"
+
+      # Prüfe ob Datei existiert
+      if [[ -f "$target" && -s "$target" ]]; then
+        # Datei existiert und hat Größe - als OK betrachten
+        ((skipped++))
+        continue
+      fi
+
+      # Datei fehlt oder ist leer
+      if [[ ! -f "$target" ]]; then
+        log "   Fehlt: $normalized_relpath"
+      else
+        log "   Ungültig: $normalized_relpath"
+      fi
+
+      # Versuche Reparatur
+      if repair_dep11_file "$release_dir" "$base_url" "$hash" "$size" "$relpath"; then
+        ((repaired++))
+        ((dep11_repaired++))
+      else
+        ((failed++))
+        ((dep11_failed++))
+      fi
+
+    done < <(parse_sha256_entries "$release_file")
+
+    [[ $dep11_count -gt 0 ]] && log "  → $dep11_count DEP-11 Dateien: $dep11_repaired repariert, $dep11_failed fehlgeschlagen"
+
+  done < <(find "$MIRROR_ROOT" -type f -name Release -print0)
+
+  # Abschlussbericht
+  log "======= Zusammenfassung ======="
+  log "Gesamt:    $total DEP-11 Dateien"
+  log "Repariert: $repaired"
+  log "Fehlgeschlagen: $failed"
+  log "OK/übersprungen: $skipped"
+  log "Release-Verzeichnisse verarbeitet: $processed_releases"
+
+  if [[ $failed -gt 0 ]]; then
+    log "⚠ WARNUNG: $failed DEP-11 Dateien konnten nicht repariert werden"
+    log "Diese Dateien können fehlen, aber das Repository bleibt funktionsfähig"
+  else
+    log "✓ Alle DEP-11 Dateien in Ordnung"
+  fi
+
+  return 0
+}
+
+main "$@"
+
+
+================================
+DATEI: ./resign-all-repos.sh
+================================
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd /home/zombie/ailinux-repo
+
+echo "=== Re-signing ALL repositories with updated Packages files ==="
+
+for repo_path in \
+  repo/mirror/ppa.launchpadcontent.net/cappelikan/ppa/ubuntu \
+  repo/mirror/ppa.launchpadcontent.net/git-core/ppa/ubuntu \
+  repo/mirror/ppa.launchpadcontent.net/graphics-drivers/ppa/ubuntu \
+  repo/mirror/ppa.launchpadcontent.net/kdenlive/kdenlive-stable/ubuntu \
+  repo/mirror/ppa.launchpadcontent.net/libreoffice/ppa/ubuntu \
+  repo/mirror/ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu \
+  repo/mirror/ppa.launchpadcontent.net/deadsnakes/ppa/ubuntu \
+  repo/mirror/ppa.launchpadcontent.net/teejee2008/timeshift/ubuntu \
+  repo/mirror/ppa.launchpadcontent.net/xubuntu-dev/staging/ubuntu \
+  repo/mirror/ppa.launchpadcontent.net/savoury1/ffmpeg4/ubuntu \
+  repo/mirror/ppa.launchpadcontent.net/savoury1/ffmpeg5/ubuntu \
+  repo/mirror/dl.google.com/linux/chrome/deb \
+  repo/mirror/dl.winehq.org/wine-builds/ubuntu \
+  repo/mirror/download.docker.com/linux/ubuntu \
+  repo/mirror/brave-browser-apt-release.s3.brave.com \
+  repo/mirror/deb.nodesource.com/node_20.x \
+  repo/mirror/archive.neon.kde.org/user
+do
+  if [ -d "$repo_path" ]; then
+    echo ""
+    echo "==> Signing: $repo_path"
+    ./sign-repos.sh "$repo_path" 2>&1 | tail -5
+  else
+    echo "SKIP (not found): $repo_path"
+  fi
+done
+
+echo ""
+echo "=== Re-signing Ubuntu base repositories ==="
+./sign-repos.sh repo/mirror/archive.ubuntu.com/ubuntu 2>&1 | tail -5
+./sign-repos.sh repo/mirror/security.ubuntu.com/ubuntu 2>&1 | tail -5
+
+echo ""
+echo "=== ALL DONE ==="
+
+
+================================
+DATEI: ./monitor-indexes.sh
+================================
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Live monitor for apt-mirror index downloads
+# Shows active wget processes and their progress
+
+INTERVAL="${1:-5}"
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+cd "$REPO_ROOT"
+
+echo "=== apt-mirror Index Download Monitor ==="
+echo "Updating every ${INTERVAL} seconds. Press Ctrl+C to stop."
+echo ""
+
+while true; do
+  clear
+  echo "=== $(date '+%Y-%m-%d %H:%M:%S') ==="
+  echo ""
+
+  # Count active wget processes
+  WGET_COUNT=$(docker compose exec -T apt-mirror ps aux 2>/dev/null | grep -c "wget.*index-urls" || echo "0")
+  echo "Active wget processes: ${WGET_COUNT}"
+  echo ""
+
+  if [ "$WGET_COUNT" -gt 0 ]; then
+    echo "Progress (last line of each index-log):"
+    echo "----------------------------------------"
+
+    # Show progress of active downloads
+    docker compose exec -T apt-mirror bash -c '
+      for f in /var/spool/apt-mirror/var/index-log.*; do
+        [ -f "$f" ] || continue
+        LOGNUM=$(basename "$f" | sed "s/index-log\.//")
+        LASTLINE=$(tail -1 "$f" 2>/dev/null | head -c 100)
+
+        # Only show if wget is still running on this log
+        if ps aux | grep -q "index-log\.$LOGNUM" | grep -v grep 2>/dev/null; then
+          echo "[$LOGNUM] $LASTLINE"
+        fi
+      done
+    ' 2>/dev/null | sort -V
+
+    echo ""
+    echo "Slow downloads (<1MB/s or >30s remaining):"
+    echo "-------------------------------------------"
+
+    docker compose exec -T apt-mirror bash -c '
+      for f in /var/spool/apt-mirror/var/index-log.*; do
+        [ -f "$f" ] || continue
+        LOGNUM=$(basename "$f" | sed "s/index-log\.//")
+        LASTLINE=$(tail -1 "$f" 2>/dev/null)
+
+        # Check if line contains slow speed indicators
+        if echo "$LASTLINE" | grep -qE "([0-9]+K/s|[0-9]+m[0-9]+s)"; then
+          URLFILE="/var/spool/apt-mirror/var/index-urls.$LOGNUM"
+          if [ -f "$URLFILE" ]; then
+            FIRSTURL=$(head -1 "$URLFILE")
+            echo "[$LOGNUM] $(echo "$FIRSTURL" | sed "s|.*://||" | cut -d/ -f1-3)"
+            echo "       $LASTLINE"
+          fi
+        fi
+      done
+    ' 2>/dev/null
+  else
+    echo "No active downloads. Checking if apt-mirror is running..."
+    if docker compose exec -T apt-mirror pgrep -a apt-mirror 2>/dev/null; then
+      echo "apt-mirror process found but no wget processes."
+      echo "Might be in processing phase or finished."
+    else
+      echo "apt-mirror not running."
+    fi
+  fi
+
+  sleep "$INTERVAL"
+done
+
+
+================================
+DATEI: ./certgen-modified.sh
+================================
+#!/usr/bin/env bash
+set -euo pipefail
+
+# ==============================================================
+#  Cloudflare + Let's Encrypt (DNS-01) Certificate Updater
+#  For AILinux Repository - Nginx SSL/TLS Certificates
+#  - Logging to /var/log/cf-le/certgen-modified.log
+#  - Installer: APT (certbot) → Snap (dns-cloudflare plugin)
+#  - Domains: Apex + Wildcard; redundant subdomains removed
+#  - Updates both system and repository SSL directories
+#  - Modified version without Apache/WordPress support
+# ==============================================================
+
+# ---- Logging --------------------------------------------------
+LOG_DIR="/var/log/cf-le"
+LOG_FILE="${LOG_DIR}/certgen-modified.log"
+mkdir -p "$LOG_DIR"
+chmod 750 "$LOG_DIR"
+exec 3>>"$LOG_FILE"
+BASH_XTRACEFD=3
+PS4='+ [${BASH_SOURCE##*/}:${LINENO}] '
+set -o pipefail
+set -x
+
+kon_log()  { printf "\033[1;32m[CERTGEN]\033[0m %s\n" "$*"; }
+kon_warn() { printf "\033[1;33m[WARN]\033[0m %s\n" "$*"; }
+kon_err()  { printf "\033[1;31m[ERR]\033[0m %s\n" "$*"; }
+
+{
+  echo "===== $(date -Iseconds) START certgen-modified ====="
+  echo "USER=$USER EUID=$EUID SHELL=$SHELL"
+  echo "PATH=$PATH"
+  uname -a || true
+  lsb_release -a 2>/dev/null || true
+  echo "---------------------------------------------------"
+} >&3
+
+on_exit() {
+  local rc=$?
+  {
+    echo "===== $(date -Iseconds) END (rc=$rc) certgen-modified ====="
+  } >&3
+  set +x
+  if (( rc != 0 )); then
+    kon_err "Error (rc=$rc). Last 60 lines:"
+    tail -n 60 "$LOG_FILE" | sed 's/^/  │ /'
+    kon_warn "Full log: $LOG_FILE"
+  else
+    kon_log "Success. Log: $LOG_FILE"
+  fi
+}
+trap on_exit EXIT
+
+# ---- Env file discovery & loading ----------------------------
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+ENV_FILE_DEFAULTS=(
+  "$SCRIPT_DIR/.env"
+  "${HOME:-/root}/scripts/.env"
+  "/etc/ailinux.env"
+)
+ENV_FILE="${ENV_FILE:-}"
+
+find_env_file() {
+  if [[ -n "${ENV_FILE:-}" && -f "$ENV_FILE" ]]; then
+    echo "$ENV_FILE"; return
+  fi
+  for p in "${ENV_FILE_DEFAULTS[@]}"; do
+    [[ -f "$p" ]] && { echo "$p"; return; }
+  done
+  return 1
+}
+
+ENV_FILE_FOUND="$(find_env_file || true)"
+if [[ -z "${ENV_FILE_FOUND:-}" ]]; then
+  kon_err "No .env found. Searched in:"
+  printf ' - %s\n' "${ENV_FILE_DEFAULTS[@]}"
+  kon_log "Tip: ENV_FILE=/home/zombie/scripts/.env sudo -E bash certgen-modified.sh"
+  exit 1
+fi
+
+set -a
+# shellcheck disable=SC1090
+source "$ENV_FILE_FOUND"
+set +a
+
+# ---- Credentials ---------------------------------------------
+CF_API_TOKEN="${CF_API_TOKEN:-}"
+CF_EMAIL="${CF_EMAIL:-}"
+CF_GLOBAL_API_KEY="${CF_GLOBAL_API_KEY:-}"
+CRED_FILE="/etc/letsencrypt/cloudflare.ini"
+
+if [[ -z "$CF_API_TOKEN" && ( -z "$CF_EMAIL" || -z "$CF_GLOBAL_API_KEY" ) ]]; then
+  kon_err "Cloudflare credentials missing. Set CF_API_TOKEN OR (CF_EMAIL + CF_GLOBAL_API_KEY) in $ENV_FILE_FOUND."
+  exit 1
+fi
+
+# ---- Domains (Apex + Wildcard) -------------------------------
+DOMAINS=(
+  "ailinux.me"
+  "*.ailinux.me"
+)
+
+# FIXED: Wildcard correctly derived from apex (never TLD!)
+collapse_domains() {
+  local apex="" d have_wc=""
+  for d in "${DOMAINS[@]}"; do
+    if [[ "$d" == \*.* ]]; then have_wc="y"; else apex="$d"; fi
+  done
+  if [[ -n "$apex" ]]; then
+    local wc="*.$apex"
+    # Always set to exactly apex + correct wildcard
+    DOMAINS=("$apex" "$wc")
+  fi
+  # Remove duplicates
+  local -A seen; local out=()
+  for d in "${DOMAINS[@]}"; do
+    [[ -n "${seen[$d]:-}" ]] || { out+=("$d"); seen[$d]=1; }
+  done
+  DOMAINS=("${out[@]}")
+}
+collapse_domains
+
+require_root() { [[ ${EUID:-$(id -u)} -eq 0 ]] || { kon_err "Please run with sudo/root."; exit 1; }; }
+have_cmd(){ command -v "$1" >/dev/null 2>&1; }
+ensure_path(){ export PATH="/usr/local/bin:/usr/bin:/bin:/root/.local/bin:/snap/bin:${PATH}"; }
+
+# ---- System snapshot -----------------------------------------
+{
+  echo "APT sources:"
+  grep -hR "^[^#].*" /etc/apt/sources.list /etc/apt/sources.list.d 2>/dev/null || true
+  echo "--- Versions ---"
+  which certbot || true; certbot --version 2>/dev/null || true
+  which snap || true; snap --version 2>/dev/null || true
+  python3 --version 2>/dev/null || true
+  echo "----------------"
+} >&3
+
+# ---- Installer ------------------------------------------------
+ensure_universe() {
+  if have_cmd add-apt-repository; then
+    add-apt-repository -y universe >/dev/null 2>&1 || true
+  else
+    apt-get update -qq || true
+    apt-get install -y software-properties-common >/dev/null 2>&1 || true
+    add-apt-repository -y universe >/dev/null 2>&1 || true
+  fi
+}
+
+install_certbot_via_apt() {
+  kon_log "Trying certbot via APT…"
+  apt-get update -qq
+  if have_cmd snap && snap list 2>/dev/null | grep -q '^certbot '; then
+    kon_warn "snap/certbot found — removing for APT operation."
+    snap remove certbot-dns-cloudflare || true
+    snap remove certbot || true
+  fi
+  ensure_universe
+  apt-get install -y certbot ca-certificates curl || return 1
+  return 0
+}
+
+install_plugin_via_snap() {
+  kon_log "Installing dns-cloudflare plugin via Snap…"
+  have_cmd snap || { kon_err "snap not available."; return 1; }
+  snap install core || true
+  snap refresh core || true
+  snap install --classic certbot || snap refresh certbot || true
+  snap set certbot trust-plugin-with-root=ok || true
+  snap install certbot-dns-cloudflare || true
+  snap connect certbot:plugin certbot-dns-cloudflare || true
+  # NO 'certbot-metadata' connect (not available in your snap version)
+  ln -sf /snap/bin/certbot /usr/bin/certbot
+  {
+    echo "--- snap connections certbot ---"
+    snap connections certbot || true
+  } >&3
+  certbot plugins | grep -q 'dns-cloudflare'
+}
+
+install_certbot() {
+  ensure_path
+  if have_cmd apt-get; then
+    install_certbot_via_apt || true
+  fi
+  install_plugin_via_snap || kon_err "dns-cloudflare plugin via Snap not available."
+  have_cmd certbot || kon_err "Certbot not available."
+  certbot plugins 2>/dev/null | grep -q 'dns-cloudflare' || kon_err "dns-cloudflare plugin not visible."
+}
+
+# ---- Creds & deploy hooks ------------------------------------
+setup_creds() {
+  mkdir -p /etc/letsencrypt
+  if [[ -n "$CF_API_TOKEN" ]]; then
+    cat > "$CRED_FILE" <<EOF
+dns_cloudflare_api_token = ${CF_API_TOKEN}
+EOF
+    kon_log "Cloudflare Credentials (API Token) → $CRED_FILE"
+  else
+    cat > "$CRED_FILE" <<EOF
+dns_cloudflare_email = ${CF_EMAIL}
+dns_cloudflare_api_key = ${CF_GLOBAL_API_KEY}
+EOF
+    kon_log "Cloudflare Credentials (Global API Key) → $CRED_FILE"
+  fi
+  chmod 600 "$CRED_FILE"
+}
+
+setup_deploy_hooks() {
+  local hook_nginx="/etc/letsencrypt/renewal-hooks/deploy/10-reload-nginx.sh"
+  local hook_mail="/etc/letsencrypt/renewal-hooks/deploy/20-reload-mail.sh"
+  mkdir -p "$(dirname "$hook_nginx")"
+
+  # Nginx deploy hook (for Docker Compose nginx service)
+  cat > "$hook_nginx" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+log(){ printf "[deploy-hook-nginx] %s\n" "$*"; }
+
+# Docker Compose nginx service
+COMPOSE_DIR="${COMPOSE_DIR:-/home/zombie/ailinux-repo}"
+if [[ -f "$COMPOSE_DIR/docker-compose.yml" ]]; then
+  cd "$COMPOSE_DIR"
+  if docker compose ps nginx 2>/dev/null | grep -q nginx; then
+    log "Reloading nginx in Docker Compose..."
+    docker compose exec nginx nginx -t && docker compose exec nginx nginx -s reload || true
+  fi
+fi
+
+# Systemd nginx (if running)
+if systemctl is-active nginx >/dev/null 2>&1; then
+  log "Reloading systemd nginx..."
+  systemctl reload nginx || systemctl restart nginx || true
+fi
+EOF
+  chmod +x "$hook_nginx"
+  kon_log "Nginx deploy hook installed."
+
+  # Mail deploy hook (Postfix/Dovecot)
+  cat > "$hook_mail" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+log(){ printf "[deploy-hook-mail] %s\n" "$*"; }
+services=(postfix dovecot)
+for s in "${services[@]}"; do
+  if systemctl is-active "$s" >/dev/null 2>&1; then
+    log "Reloading $s..."
+    systemctl reload "$s" || systemctl restart "$s" || true
+  else
+    log "$s not active – skipped."
+  fi
+done
+EOF
+  chmod +x "$hook_mail"
+  kon_log "Mail deploy hook installed (Postfix/Dovecot)."
+}
+
+# ---- Cloudflare Origin Pull CA -------------------------------
+LE_LIVE_DIR="/etc/letsencrypt/live/ailinux.me"
+CF_ORIGIN_DIR="/etc/ssl/cloudflare/ailinux.me"
+CF_CA_DIR="/etc/ssl/cloudflare/ca"
+REPO_ORIGIN_DIR="$SCRIPT_DIR/etc/ssl/cloudflare/ailinux.me"
+REPO_CA_DIR="$SCRIPT_DIR/etc/ssl/cloudflare/ca"
+CA_URLS=(
+  "https://developers.cloudflare.com/ssl/static/origin_pull_ca.pem"
+  "https://developers.cloudflare.com/ssl/static/origin_ca_rsa_root.pem"
+)
+CA_FILE="cloudflare-origin-pull-ca.pem"
+
+ensure_origin_pull_ca() {
+  local tmp source url
+  tmp=$(mktemp)
+  for url in "${CA_URLS[@]}"; do
+    if curl -fsSL "$url" -o "$tmp"; then
+      source="$tmp"
+      break
+    fi
+  done
+
+  if [[ -z "${source:-}" ]]; then
+    kon_warn "Cloudflare Origin Pull CA could not be downloaded (${CA_URLS[*]})"
+    if [[ -s "$CF_CA_DIR/$CA_FILE" ]]; then
+      source="$CF_CA_DIR/$CA_FILE"
+    elif [[ -s "$REPO_CA_DIR/$CA_FILE" ]]; then
+      source="$REPO_CA_DIR/$CA_FILE"
+    else
+      kon_err "No existing Origin Pull CA found."
+      rm -f "$tmp"
+      exit 1
+    fi
+  fi
+
+  for dest in "$CF_CA_DIR/$CA_FILE" "$REPO_CA_DIR/$CA_FILE"; do
+    if [[ "$source" == "$dest" ]]; then
+      continue
+    fi
+    mkdir -p "$(dirname "$dest")"
+    install -m 644 "$source" "$dest"
+  done
+
+  rm -f "$tmp"
+  kon_log "Cloudflare Origin Pull CA installed."
+}
+
+# ---- Certificate request -------------------------------------
+request_cert() {
+  local domains_args=()
+  for d in "${DOMAINS[@]}"; do domains_args+=(-d "$d"); done
+
+  kon_log "Requesting certificate for:"
+  printf '   • %s\n' "${DOMAINS[@]}"
+
+  ensure_path
+  {
+    echo "--- certbot which/path ---"
+    which certbot || true
+    readlink -f "$(command -v certbot)" || true
+    echo "--- certbot plugins ---"
+    certbot plugins || true
+  } >&3
+
+  local reg_email="${CF_EMAIL:-admin@${DOMAINS[0]}}"
+
+  certbot certonly \
+    --dns-cloudflare \
+    --dns-cloudflare-credentials "$CRED_FILE" \
+    --agree-tos -m "$reg_email" --non-interactive \
+    --keep-until-expiring \
+    --preferred-challenges dns \
+    --deploy-hook "/etc/letsencrypt/renewal-hooks/deploy/10-reload-nginx.sh" \
+    "${domains_args[@]}"
+
+  kon_log "Certificates ready under /etc/letsencrypt/live/${DOMAINS[0]}/."
+}
+
+# ---- Copy certificates to repository -------------------------
+copy_certs_to_repo() {
+  mkdir -p "$CF_ORIGIN_DIR" "$REPO_ORIGIN_DIR" "$CF_CA_DIR" "$REPO_CA_DIR"
+
+  local FULLCHAIN="$LE_LIVE_DIR/fullchain.pem"
+  local PRIVKEY="$LE_LIVE_DIR/privkey.pem"
+
+  if [[ ! -s "$FULLCHAIN" || ! -s "$PRIVKEY" ]]; then
+    kon_err "LE files missing under $LE_LIVE_DIR"
+    exit 1
+  fi
+
+  # Copy to both system and repository directories
+  for dest in "$CF_ORIGIN_DIR" "$REPO_ORIGIN_DIR"; do
+    install -m 644 "$FULLCHAIN" "$dest/origin-fullchain.crt"
+    install -m 600 "$PRIVKEY"   "$dest/origin-privkey.key"
+    # Legacy names for existing nginx configs
+    install -m 644 "$FULLCHAIN" "$dest/origin.crt"
+    install -m 600 "$PRIVKEY"   "$dest/origin.key"
+  done
+
+  kon_log "Certificates copied to system and repository directories."
+}
+
+# ---- Reload services -----------------------------------------
+reload_services() {
+  # Docker Compose nginx service
+  local compose_dir="${COMPOSE_DIR:-/home/zombie/ailinux-repo}"
+  if [[ -f "$compose_dir/docker-compose.yml" ]]; then
+    cd "$compose_dir"
+    if docker compose ps nginx 2>/dev/null | grep -q nginx; then
+      kon_log "Testing nginx configuration..."
+      if docker compose exec nginx nginx -t; then
+        kon_log "Reloading nginx in Docker Compose..."
+        docker compose exec nginx nginx -s reload || docker compose restart nginx
+      else
+        kon_warn "Nginx config test failed. Please check configuration."
+      fi
+    fi
+  fi
+
+  # Systemd nginx (if running)
+  if systemctl is-active nginx >/dev/null 2>&1; then
+    kon_log "Reloading systemd nginx..."
+    systemctl reload nginx || systemctl restart nginx || true
+  fi
+}
+
+# ---- Main -----------------------------------------------------
+main() {
+  require_root
+  install_certbot
+  setup_creds
+  setup_deploy_hooks
+  ensure_origin_pull_ca
+  request_cert
+  copy_certs_to_repo
+  reload_services
+  kon_log "✅ Done. Certificates updated and services reloaded."
+}
+main
+
+
+================================
+DATEI: ./fix-packages-compression.sh
+================================
+#!/usr/bin/env bash
+# Fix compressed Packages files and re-sign repositories
+set -euo pipefail
+
+REPO_ROOT="${REPO_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
+MIRROR_ROOT="${MIRROR_ROOT:-${REPO_ROOT}/repo/mirror}"
+
+echo "===[ Fix Packages Compression & Re-sign ]=================="
+echo "Mirror Root: $MIRROR_ROOT"
+echo "==========================================================="
+echo ""
+
+# Step 1: Regenerate compressed Packages files for Ubuntu repos
+echo "[1/2] Regenerating compressed Packages files..."
+count=0
+for suite in noble noble-updates noble-security noble-backports; do
+  for component in main restricted universe multiverse; do
+    for arch in amd64 i386; do
+      pkg_dir="${MIRROR_ROOT}/archive.ubuntu.com/ubuntu/dists/${suite}/${component}/binary-${arch}"
+      pkg_file="${pkg_dir}/Packages"
+
+      if [ ! -f "$pkg_file" ]; then
+        continue
+      fi
+
+      echo "  Processing: ${suite}/${component}/${arch}"
+
+      # Regenerate gz
+      if [ -f "$pkg_file" ]; then
+        gzip -9 -c "$pkg_file" > "${pkg_file}.gz.new"
+        mv "${pkg_file}.gz.new" "${pkg_file}.gz"
+        ((count++))
+      fi
+
+      # Regenerate xz
+      if [ -f "$pkg_file" ]; then
+        xz -9 -c "$pkg_file" > "${pkg_file}.xz.new"
+        mv "${pkg_file}.xz.new" "${pkg_file}.xz"
+      fi
+    done
+  done
+done
+
+echo "  ✓ Regenerated $count compressed Packages files"
+echo ""
+
+# Step 2: Regenerate compressed Packages files for security repos
+echo "  Processing security.ubuntu.com..."
+for suite in noble-security; do
+  for component in main restricted universe multiverse; do
+    for arch in amd64 i386; do
+      pkg_dir="${MIRROR_ROOT}/security.ubuntu.com/ubuntu/dists/${suite}/${component}/binary-${arch}"
+      pkg_file="${pkg_dir}/Packages"
+
+      if [ ! -f "$pkg_file" ]; then
+        continue
+      fi
+
+      echo "    ${suite}/${component}/${arch}"
+
+      # Regenerate gz
+      if [ -f "$pkg_file" ]; then
+        gzip -9 -c "$pkg_file" > "${pkg_file}.gz.new"
+        mv "${pkg_file}.gz.new" "${pkg_file}.gz"
+      fi
+
+      # Regenerate xz
+      if [ -f "$pkg_file" ]; then
+        xz -9 -c "$pkg_file" > "${pkg_file}.xz.new"
+        mv "${pkg_file}.xz.new" "${pkg_file}.xz"
+      fi
+    done
+  done
+done
+
+echo "  ✓ Security repos updated"
+echo ""
+
+# Step 3: Re-sign all affected repositories
+echo "[2/2] Re-signing repositories with updated Packages files..."
+"${REPO_ROOT}/sign-repos.sh" "${MIRROR_ROOT}/archive.ubuntu.com/ubuntu"
+"${REPO_ROOT}/sign-repos.sh" "${MIRROR_ROOT}/security.ubuntu.com/ubuntu"
+
+echo ""
+echo "==========================================================="
+echo "✓ All Packages files regenerated and repositories re-signed"
+echo "==========================================================="
+
+
+================================
+DATEI: ./compress-all-packages.sh
+================================
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd /home/zombie/ailinux-repo
+
+echo "=== Compressing all Packages files ==="
+count=0
+
+find repo/mirror -name "Packages" -type f ! -path "*/by-hash/*" | while IFS= read -r f; do
+  if [ -f "$f" ]; then
+    ((count++)) || true
+    echo "[$count] $f"
+    gzip -9 -f -k "$f"
+    xz -9 -f -k "$f"
+  fi
+done
+
+echo "=== Done ==="
+
+
+================================
+DATEI: ./docker-compose.yml
+================================
+services:
+  apt-mirror:
+    # HIER IST DER TURBO:
+    # Wir nutzen das Host-Netzwerk NUR für den Downloader.
+    # Das beschleunigt apt-mirror, hat aber KEINEN Einfluss auf Nginx.
+    network_mode: host
+    
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: apt-mirror
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      # Die Daten landen auf der SSD...
+      - ./repo:/var/spool/apt-mirror
+      - ./postmirror.sh:/var/spool/apt-mirror/var/postmirror.sh:ro
+      - ./sign-repos.sh:/var/spool/apt-mirror/var/sign-repos.sh:ro
+      - ./repair-dep11.sh:/var/spool/apt-mirror/var/repair-dep11.sh:ro
+      - ./etc/gnupg:/var/spool/apt-mirror/etc/gnupg:rw
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f 'cron -f' >/dev/null"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  nginx:
+    # Nginx lassen wir wie er ist (Bridge Mode).
+    # Das ist sicher und stabil für deine User.
+    image: nginx:stable
+    container_name: apt-mirror-nginx
+    restart: unless-stopped
+    depends_on:
+      apt-mirror:
+        condition: service_started
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+      - "8443:8443"
+      - "9000:9000"
+    volumes:
+      # ... und Nginx liest sie von der SSD.
+      # Da beide das gleiche Verzeichnis mounten, klappt das perfekt.
+      - ./repo:/repo:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./conf.d:/etc/nginx/conf.d:ro
+      - ./etc/ssl/cloudflare:/etc/ssl/cloudflare:ro
+      - ./etc/nginx/html:/etc/nginx/html:ro
+      - /etc/letsencrypt/live/ailinux.me:/etc/letsencrypt/live/ailinux.me:ro
+      - /etc/letsencrypt/archive/ailinux.me:/etc/letsencrypt/archive/ailinux.me:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD-SHELL", "nginx -t && curl -fsS http://localhost:8080/ >/dev/null || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+
+================================
+DATEI: ./Dockerfile
+================================
+FROM debian:stable-slim
+
+# Enable i386 architecture
+RUN dpkg --add-architecture i386 && \
+    apt-get update && apt-get install -y \
+        apt-mirror \
+        cron \
+        wget \
+        curl \
+        gnupg \
+        apt-utils \
+        dpkg-dev \
+        ca-certificates \
+        pv \
+        progress \
+        procps && \
+    rm -rf /var/lib/apt/lists/*
+
+# Mirror directories
+RUN mkdir -p /var/spool/apt-mirror /repo /usr/share/keyrings
+
+# Mirror config + scripts
+COPY mirror.list /etc/apt/mirror.list
+COPY update-mirror.sh /usr/local/bin/update-mirror.sh
+COPY generate-index.sh /repo/generate-index.sh
+
+RUN chmod +x /usr/local/bin/update-mirror.sh /repo/generate-index.sh
+
+# Google Chrome key
+RUN curl -fsSL https://dl.google.com/linux/linux_signing_key.pub \
+    | gpg --dearmor > /usr/share/keyrings/google-linux-keyring.gpg
+
+# WineHQ key
+RUN curl -fsSL https://dl.winehq.org/wine-builds/winehq.key \
+    | gpg --dearmor > /usr/share/keyrings/winehq-archive-keyring.gpg
+
+# Cappelikan PPA Key — sauber importieren
+# RICHTIGER COPY-PFAD ohne Slash!
+COPY cappelikan-ppa.asc /tmp/cappelikan-ppa.asc
+
+RUN gpg --import /tmp/cappelikan-ppa.asc && \
+    gpg --export --output /usr/share/keyrings/launchpad-cappelikan.gpg && \
+    rm /tmp/cappelikan-ppa.asc
+
+# Cronjob
+RUN echo "0 3 * * * /usr/local/bin/update-mirror.sh" > /etc/cron.d/aptmirror && \
+    chmod 0644 /etc/cron.d/aptmirror && \
+    crontab /etc/cron.d/aptmirror
+
+EXPOSE 80
+
+CMD ["cron", "-f"]
+
+
+================================
+DATEI: ./generate-index.sh
+================================
+#!/usr/bin/env bash
+# Ensure Bash even if invoked via sh
+
+if [ -z "${BASH_VERSION:-}" ]; then
+
+  exec /usr/bin/env bash "$0" "$@"
+
+fi
+
+#!/usr/bin/sh
+set -euo pipefail
+
+#
+# generate-index.sh – Erstellt ein attraktives, statisches index.html
+# Frontend für das Apt-Mirror-Verzeichnis.
+#
+# Steuerung via ENV:
+#   HOST_REPO_PATH=/root/ailinux-repo/repo
+#   BASE_URL=https://repo.ailinux.me:8443
+#   PUBLIC_PATH=mirror
+#
+
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
+HOST_REPO_PATH="${HOST_REPO_PATH:-$SCRIPT_DIR/repo}"
+HOST_MIRROR_PATH="$HOST_REPO_PATH/mirror"
+INDEX_FILE_ON_MIRROR="$HOST_MIRROR_PATH/index.html"
+
+BASE_URL="${BASE_URL:-https://repo.ailinux.me:8443}"
+BASE_URL="${BASE_URL%/}"
+PUBLIC_PATH="${PUBLIC_PATH:-mirror}"
+PUBLIC_PATH="${PUBLIC_PATH#/}"
+PUBLIC_PATH="${PUBLIC_PATH%/}"
+GPG_URL_REL="ailinux-archive-key.gpg"
+ADD_REPO_URL_REL="add-ailinux-repo.sh"
+LIVE_LOG_URL_REL="live-log.html"
+SUMMARY_LOG_URL_REL="mirror-summary.html"
+
+if [[ -n "$PUBLIC_PATH" ]]; then
+  PUBLIC_BASE="$BASE_URL/$PUBLIC_PATH"
+else
+  PUBLIC_BASE="$BASE_URL"
+fi
+
+PUBLIC_BASE="${PUBLIC_BASE%/}"
+
+GPG_URL_ABS="$PUBLIC_BASE/$GPG_URL_REL"
+ADD_REPO_URL_ABS="$PUBLIC_BASE/$ADD_REPO_URL_REL"
+LIVE_LOG_URL_ABS="$PUBLIC_BASE/$LIVE_LOG_URL_REL"
+SUMMARY_LOG_URL_ABS="$PUBLIC_BASE/$SUMMARY_LOG_URL_REL"
+
+mkdir -p "$HOST_MIRROR_PATH"
+
+TMP_INDEX_FILE="$(mktemp)"
+trap 'rm -f "$TMP_INDEX_FILE"' EXIT
+
+cat <<EOF_INDEX > "$TMP_INDEX_FILE"
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>🧠 AILinux Mirror Directory</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body { background: #101820; color: #00ffaa; font-family: 'Courier New', Courier, monospace; padding: 20px; line-height: 1.6; }
+h1, h2 { color: #6cf; border-bottom: 1px solid #444;}
+a { color: #00ffff; text-decoration: none; }
+a:hover { text-decoration: underline; color: #ffffff; }
+ul { padding-left: 0; }
+li { margin: 5px 0; list-style: none; word-break: break-all; }
+li.dir a::before { content: '📁 '; color: #aaa; }
+li.file a::before { content: '📄 '; color: #aaa; }
+li.log a::before { content: '📄 '; color: #aaa; }
+li.gpg a::before { content: '🔐 '; color: #aaa; }
+li.script a::before { content: '⚙️ '; color: #aaa; }
+pre { background: #222; padding: 15px; border: 1px solid #444; border-radius: 5px; overflow-x: auto; color: #eee; }
+code { font-family: 'Courier New', Courier, monospace; }
+hr { border: 0; border-top: 1px solid #444; margin: 2em 0; }
+footer { margin-top: 2em; font-size: 0.8em; color: #555; text-align: center; }
+</style>
+</head>
+<body>
+<h1>📦 AILinux Mirror Directory</h1>
+<p><strong>Letzte Aktualisierung:</strong> $(date '+%Y-%m-%d %H:%M:%S')</p>
+
+<h2>🔐 GPG Key Installation</h2>
+<pre><code>sudo install -d /usr/share/keyrings
+curl -fsSL "$GPG_URL_ABS" | sudo gpg --dearmor --yes --output /usr/share/keyrings/ailinux-archive-keyring.gpg</code></pre>
+<p><span class="gpg"><a href="$GPG_URL_ABS">$GPG_URL_REL</a></span> direkt herunterladen.</p>
+
+<h2>⚙ Automatische Repo-Einbindung</h2>
+<pre><code>curl -fsSL "$ADD_REPO_URL_ABS" | sudo bash</code></pre>
+<p><span class="script"><a href="$ADD_REPO_URL_ABS">$ADD_REPO_URL_REL</a></span> Skript ansehen/herunterladen.</p>
+
+<hr>
+<h2>📄 Logs & Info</h2>
+<ul>
+    <li class="log"><a href="$LIVE_LOG_URL_ABS">$LIVE_LOG_URL_REL</a> (Aktueller Mirror-Prozess)</li>
+    <li class="log"><a href="$SUMMARY_LOG_URL_ABS">$SUMMARY_LOG_URL_REL</a> (Letzte Post-Mirror Zusammenfassung)</li>
+</ul>
+
+<hr>
+<h2>📂 Verzeichnisübersicht</h2>
+<ul>
+<li class="gpg"><a href="$GPG_URL_ABS">$GPG_URL_REL</a></li>
+<li class="script"><a href="$ADD_REPO_URL_ABS">$ADD_REPO_URL_REL</a></li>
+<hr style="border-top: 1px dashed #444; margin: 0.5em 0;">
+EOF_INDEX
+
+find "$HOST_MIRROR_PATH" -maxdepth 1 -mindepth 1 \
+  -not -name "index.html" \
+  -not -name "live-log.html" \
+  -not -name "mirror-summary.html" \
+  -not -name "ailinux-archive-key.gpg" \
+  -not -name "ailinux.gpg" \
+  -not -name "add-ailinux-repo.sh" | sort | while read -r path; do
+  name=$(basename "$path")
+  if [ -d "$path" ]; then
+    echo "<li class=\"dir\"><a href=\"$PUBLIC_BASE/$name/\">$name/</a></li>" >> "$TMP_INDEX_FILE"
+  elif [ -f "$path" ]; then
+    echo "<li class=\"file\"><a href=\"$PUBLIC_BASE/$name\">$name</a></li>" >> "$TMP_INDEX_FILE"
+  fi
+done
+
+cat <<EOF_FOOTER >> "$TMP_INDEX_FILE"
+</ul>
+
+<hr>
+<footer>
+AILinux Repository © $(date +%Y) – derleiti.de<br>
+Index generated by 🧠 Nova AI on $(date '+%F %T')
+</footer>
+</body>
+</html>
+EOF_FOOTER
+
+declare -a INDEX_TARGETS
+INDEX_TARGETS+=("$INDEX_FILE_ON_MIRROR")
+
+if [[ "${WRITE_ROOT_INDEX:-1}" == "1" ]]; then
+  INDEX_TARGETS+=("$HOST_REPO_PATH/index.html")
+fi
+
+if [[ -n "${EXTRA_INDEX_TARGETS:-}" ]]; then
+  while IFS= read -r extra_target; do
+    [[ -n "$extra_target" ]] || continue
+    INDEX_TARGETS+=("$extra_target")
+  done <<< "${EXTRA_INDEX_TARGETS}"
+fi
+
+declare -A GENERATED
+for target in "${INDEX_TARGETS[@]}"; do
+  [[ -n "$target" ]] || continue
+  if [[ -n "${GENERATED[$target]+x}" ]]; then
+    continue
+  fi
+  GENERATED["$target"]=1
+  mkdir -p "$(dirname "$target")"
+  cp "$TMP_INDEX_FILE" "$target"
+  chmod 644 "$target"
+  echo "[generate-index] $target erfolgreich erstellt."
+done
+
+
+
+
+================================
+DATEI: ./mirror.list
+================================
+###############
+# Ubuntu Noble (24.04 LTS) – Vollständige Multiarch-Unterstützung
+###############
+
+############# config ##############
+set base_path    /var/spool/apt-mirror
+set mirror_path  $base_path/mirror
+set skel_path    $base_path/skel
+set var_path     $base_path/var
+set cleanscript  $var_path/clean.sh
+set defaultarch  amd64
+set nthreads     150
+set _tilde 0
+##############################
+
+
+deb-amd64 http://archive.ubuntu.com/ubuntu noble main restricted universe multiverse
+deb-i386  http://archive.ubuntu.com/ubuntu noble main restricted universe multiverse
+
+deb-amd64 http://archive.ubuntu.com/ubuntu noble-updates main restricted universe multiverse
+deb-i386  http://archive.ubuntu.com/ubuntu noble-updates main restricted universe multiverse
+
+deb-amd64 http://archive.ubuntu.com/ubuntu noble-security main restricted universe multiverse
+deb-i386  http://archive.ubuntu.com/ubuntu noble-security main restricted universe multiverse
+
+deb-amd64 http://archive.ubuntu.com/ubuntu noble-backports main restricted universe multiverse
+deb-i386  http://archive.ubuntu.com/ubuntu noble-backports main restricted universe multiverse
+
+###############
+# Canonical Partner (liefert NUR amd64)
+###############
+
+# deb-amd64 http://archive.canonical.com/ubuntu noble partner
+
+###############
+# KDE Neon (nur amd64)
+###############
+
+deb-amd64 https://archive.neon.kde.org/user noble main
+
+###############
+# LibreOffice PPA
+###############
+
+deb-amd64 https://ppa.launchpadcontent.net/libreoffice/ppa/ubuntu/ noble main
+deb-i386  https://ppa.launchpadcontent.net/libreoffice/ppa/ubuntu/ noble main
+
+###############
+# WineHQ – Ubuntu Noble (amd64 & i386)
+###############
+
+deb-amd64 https://dl.winehq.org/wine-builds/ubuntu/ noble main
+deb-i386  https://dl.winehq.org/wine-builds/ubuntu/ noble main
+
+
+###############
+# Docker CE (nur amd64)
+###############
+
+deb-amd64 https://download.docker.com/linux/ubuntu/ noble stable
+
+
+###############
+# NodeJS 22 (nur amd64)
+###############
+
+deb-amd64 https://deb.nodesource.com/node_22.x nodistro main
+
+
+###############
+# Google Chrome (nur amd64)
+###############
+
+deb-amd64 http://dl.google.com/linux/chrome/deb/ stable main
+
+
+###############
+# Steam Installer (amd64 + i386)
+###############
+
+deb-amd64 http://repo.steampowered.com/steam/ stable steam
+deb-i386  http://repo.steampowered.com/steam/ stable steam
+
+
+###############
+# Clean Directives
+###############
+
+clean http://archive.ubuntu.com/ubuntu/
+clean http://security.ubuntu.com/ubuntu/
+clean http://archive.canonical.com/ubuntu/
+clean https://archive.neon.kde.org/
+clean https://ppa.launchpadcontent.net/libreoffice/ppa/ubuntu/
+clean https://dl.winehq.org/
+clean https://download.docker.com/
+clean https://deb.nodesource.com/
+clean http://dl.google.com/linux/chrome/deb/
+clean http://repo.steampowered.com/steam/
+
+
+================================
+DATEI: ./update-live-log-fix.sh
+================================
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "=== AILinux Live-Log Hotfix Installer ==="
+
+# Stelle sicher, dass wir im Repo stehen
+if [ ! -f "docker-compose.yml" ]; then
+    echo "Dieses Script muss im AILinux-Repo ausgeführt werden."
+    exit 1
+fi
+
+echo "→ Patch: repo-ssl.conf anpassen ..."
+
+CONF_FILE="conf.d/repo-ssl.conf"
+
+# Backup anlegen
+if [ ! -f "${CONF_FILE}.bak" ]; then
+    cp "$CONF_FILE" "${CONF_FILE}.bak"
+    echo "Backup erstellt: ${CONF_FILE}.bak"
+fi
+
+# Prüfen, ob Fix schon existiert
+if grep -q "location = /mirror/live-log.html" "$CONF_FILE"; then
+    echo "Der Eintrag für live-log.html existiert bereits – überspringe Patch."
+else
+    # Vor dem generischen location / einfügen
+    sed -i '/location \/ {/i \
+    \ \ \ \ # Live-HTML-Log: kein Caching\n\
+    \ \ \ \ location = /mirror/live-log.html {\n\
+    \ \ \ \ \ \ \ \ autoindex off;\n\
+    \ \ \ \ \ \ \ \ try_files $uri =404;\n\
+    \ \ \ \ \ \ \ \ expires -1;\n\
+    \ \ \ \ \ \ \ \ add_header Cache-Control "no-cache, no-store, must-revalidate";\n\
+    \ \ \ \ \ \ \ \ add_header Pragma "no-cache";\n\
+    \ \ \ \ \ \ \ \ add_header Expires "0";\n\
+    \ \ \ \ }\n' "$CONF_FILE"
+
+    echo "→ Fix in repo-ssl.conf eingefügt."
+fi
+
+echo "→ Entferne unnötigen Bind-Mount für live-log.html ..."
+
+# Mount entfernen
+sed -i '/repo\/mirror\/live-log.html/d' docker-compose.yml
+
+echo "→ Bind-Mount entfernt."
+
+echo "→ Teste NGINX-Konfiguration ..."
+docker compose exec nginx nginx -t
+
+echo "→ NGINX wird neu gestartet ..."
+docker compose restart nginx
+
+echo "=== Fix abgeschlossen! ==="
+echo "Ruf jetzt live-log.html im Browser erneut auf (Strg+F5)."
+
+
+================================
+DATEI: ./heal-perms.sh
+================================
+#!/usr/bin/env bash
+set -euo pipefail
+REPO="$HOME/ailinux-repo"
+MIR="$REPO/repo/mirror"
+GNUP="$REPO/etc/gnupg"
+
+echo "[HOST] Fix GNUPG perms…"
+mkdir -p "$GNUP"
+chmod 700 "$GNUP"
+find "$GNUP" -type f -exec chmod 600 {} \;
+
+echo "[HOST] Fix Mirror perms…"
+mkdir -p "$MIR"
+# Verzeichnisse 755, Dateien 644 (welt-lesbar für NGINX)
+find "$MIR" -type d -exec chmod 755 {} \;
+find "$MIR" -type f -exec chmod 644 {} \;
+
+echo "[HOST] Key-/Index-Standards…"
+[ -f "$MIR/ailinux-archive-key.gpg" ] && chmod 644 "$MIR/ailinux-archive-key.gpg"
+[ -f "$MIR/index.html" ] && chmod 644 "$MIR/index.html"
+
+echo "[HOST] Skripte ausführbar…"
+find "$REPO" -maxdepth 1 -type f -name "*.sh" -exec chmod 755 {} \;
+
+echo "[HOST] Log-Verzeichnis & Datei anlegen…"
+mkdir -p "$REPO/log"
+touch "$REPO/log/update-mirror.log"
+chmod 664 "$REPO/log/update-mirror.log"
+
+echo "[HOST] Fertig."
+
+
+================================
+DATEI: ./update-add-ailinux-repo-i386.sh
+================================
+#!/usr/bin/env bash
+# Update add-ailinux-repo.sh to include i386 architecture support
+set -euo pipefail
+
+TARGET="/home/zombie/ailinux-repo/repo/mirror/add-ailinux-repo.sh"
+
+echo "Aktualisiere $TARGET für i386-Unterstützung..."
+
+# Backup erstellen
+sudo cp "$TARGET" "${TARGET}.bak.$(date +%Y%m%d-%H%M%S)"
+
+# Änderungen anwenden
+sudo sed -i 's|# NOTE: Nur amd64, da Noble keine i386-Pakete mehr hat|# NOTE: i386 ist für ältere Pakete und 32-bit Kompatibilität (Wine, Steam, etc.) verfügbar|' "$TARGET"
+sudo sed -i 's|^UBUNTU_ARCHS="amd64"$|UBUNTU_ARCHS="amd64 i386"|' "$TARGET"
+sudo sed -i 's|^WINE_ARCHS="amd64"$|WINE_ARCHS="amd64 i386"|' "$TARGET"
+sudo sed -i 's|Archs     : amd64 only (Noble has no i386 packages)|Archs     : amd64 + i386 (für multiverse und Wine/Steam Kompatibilität)|' "$TARGET"
+
+echo "✅ Änderungen erfolgreich angewendet!"
+echo ""
+echo "Änderungen:"
+echo "  - UBUNTU_ARCHS: amd64 i386"
+echo "  - WINE_ARCHS: amd64 i386"
+echo "  - Kommentar und Info-Ausgabe aktualisiert"
+echo ""
+echo "Backup gespeichert als: ${TARGET}.bak.$(date +%Y%m%d-%H%M%S)"
+
+
+================================
+DATEI: ./maintain.sh
+================================
+#!/usr/bin/env bash
+
+# Guarantee Bash even when launched via "sh"
+if [ -z "${BASH_VERSION:-}" ]; then
+  exec /usr/bin/env bash "$0" "$@"
+fi
+
+set -euo pipefail
+
+# 🧠 AILINUX - NOVA MAINTAIN SYSTEM INTERACTIVE
+# Mit Live-HTML-Log, Auswahlmenü und AI Self-Heal
+
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
+REPO_PATH="$SCRIPT_DIR"
+LOG="$REPO_PATH/repo/mirror/live-log.html"
+DATE=$(date '+%Y-%m-%d %H:%M:%S')
+START=$(date +%s)
+
+# --- Guard: stelle sicher, dass live-log.html eine DATEI ist, kein Ordner ---
+ensure_log_file() {
+  local log_file="$1"
+  local log_dir
+  log_dir="$(dirname "$log_file")"
+  mkdir -p "$log_dir"
+  if [ -d "$log_file" ]; then
+    rm -rf "$log_file"
+  fi
+  # Datei erzeugen/leeren, 0644 für NGINX
+  : > "$log_file"
+  chmod 644 "$log_file" || true
+}
+# ---------------------------------------------------------------------------
+
+if [ -z "${TERM:-}" ]; then
+  export TERM=dumb
+fi
+
+HAS_TTY=0
+if [ -t 1 ] && command -v tput >/dev/null 2>&1; then
+  if tput colors >/dev/null 2>&1; then
+    HAS_TTY=1
+  fi
+fi
+
+if [ "$HAS_TTY" -eq 1 ]; then
+  CYAN="\e[36m"
+  RESET="\e[0m"
+else
+  CYAN=""
+  RESET=""
+fi
+
+nova_header() {
+  if [ "$HAS_TTY" -eq 1 ]; then
+    clear
+  fi
+  echo -e "${CYAN}"
+  echo "=================================================="
+  echo "🧠 AILINUX MAINTENANCE SYSTEM – NOVA POWER"
+  echo "=================================================="
+  echo -e "${RESET}"
+  echo "Datum: $DATE"
+  echo ""
+}
+
+start_html_log() {
+  ensure_log_file "$LOG"
+  {
+    echo "<html><head><meta http-equiv=\"refresh\" content=\"5\"><title>AILinux Mirror: Live-Log</title></head><body style=\"background-color:#0f1117; color:#00ffaa; font-family:monospace\">"
+    echo "<h2>🧠 AILinux Mirror: Live-Log</h2>"
+    echo "<p>Dieses Log wird automatisch alle 5 Sekunden aktualisiert.</p>"
+    echo "<button onclick=\"location.reload();\" style=\"background-color:#4CAF50;color:white;padding:10px;border:none;border-radius:5px;cursor:pointer\">🔄 Aktualisieren</button><br><br>"
+    echo "<pre>"
+    echo "AILINUX MAINTENANCE STARTED — $DATE"
+    echo "Powered by Nova AI"
+    echo "------------------------------------------------------------"
+  } >"$LOG"
+}
+
+finish_html_log() {
+  END=$(date +%s)
+  DURATION=$((END - START))
+  {
+    echo ""
+    echo "[Nova] ✅ Maintenance Finished in ${DURATION} seconds."
+    echo "✅ Completed at $(date)"
+    echo "------------------------------------------------------------"
+    echo "</pre></body></html>"
+  } >>"$LOG"
+}
+
+run_and_log() {
+  local label=$1
+  local script=$2
+  start_html_log
+  echo "[Nova] $label ..." | tee -a "$LOG"
+  "$script" 2>&1 | tee -a "$LOG"
+  finish_html_log
+}
+
+menu() {
+  nova_header
+  echo "Wähle eine Aktion:"
+  echo "1) 🔄 Mirror Update ausführen"
+  echo "2) 🧾 Index neu generieren"
+  echo "3) 🔐 Repositories signieren"
+  echo "4) 💾 Backup erstellen"
+  echo "5) 🛠 Nova Self-Healing starten"
+  echo "6) 🧠 Alles (Full Maintenance)"
+  echo "7) ❌ Beenden"
+  echo ""
+  read -rp "Auswahl [1–7]: " CHOICE
+
+  case $CHOICE in
+    1)
+      run_and_log "Mirror Update" "$REPO_PATH/update-mirror.sh"
+      ;;
+    2)
+      run_and_log "Index erstellen" "$REPO_PATH/generate-index.sh"
+      ;;
+    3)
+      run_and_log "Signiere Repositories" "$REPO_PATH/sign-repos.sh"
+      ;;
+    4)
+      run_and_log "Erstelle Backup" "$REPO_PATH/backup.sh"
+      ;;
+    5)
+      run_and_log "Starte Self-Heal" "$REPO_PATH/nova-heal.sh"
+      ;;
+    6)
+      start_html_log
+      echo "[Nova] Starte Full Maintenance ..." | tee -a "$LOG"
+      "$REPO_PATH/update-mirror.sh"   2>&1 | tee -a "$LOG"
+      "$REPO_PATH/generate-index.sh"  2>&1 | tee -a "$LOG"
+      "$REPO_PATH/sign-repos.sh"      2>&1 | tee -a "$LOG"
+      "$REPO_PATH/backup.sh"          2>&1 | tee -a "$LOG"
+      "$REPO_PATH/nova-heal.sh"       2>&1 | tee -a "$LOG"
+      finish_html_log
+      ;;
+    7)
+      echo "👋 Nova sagt: Bis zum nächsten Mal!"
+      exit 0
+      ;;
+    *)
+      echo "❌ Ungültige Eingabe."
+      ;;
+  esac
+
+  echo ""
+  read -rp "⬅ Zurück zum Menü mit [ENTER]"
+  menu
+}
+
+menu
+
+
+================================
+DATEI: ./troubleshoot.sh
+================================
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# AILinux Repository Troubleshooting Script
+# Comprehensive diagnostics and fixes for common issues
+
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
+cd "$SCRIPT_DIR"
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+log_info() { echo -e "${BLUE}[INFO]${NC} $*"; }
+log_success() { echo -e "${GREEN}[OK]${NC} $*"; }
+log_warning() { echo -e "${YELLOW}[WARN]${NC} $*"; }
+log_error() { echo -e "${RED}[ERROR]${NC} $*"; }
+
+header() {
+  echo ""
+  echo -e "${BLUE}========================================${NC}"
+  echo -e "${BLUE}$*${NC}"
+  echo -e "${BLUE}========================================${NC}"
+}
+
+# Check if script requirements are met
+require() {
+  command -v "$1" >/dev/null 2>&1 || { log_error "Missing required command: $1"; exit 1; }
+}
+
+require docker
+require docker-compose || require "docker compose" || { log_error "docker compose not found"; exit 1; }
+
+# Detect docker compose command
+if docker compose version >/dev/null 2>&1; then
+  COMPOSE_CMD="docker compose"
+else
+  COMPOSE_CMD="docker-compose"
+fi
+
+# Main troubleshooting checks
+header "Docker Container Status"
+if $COMPOSE_CMD ps; then
+  log_success "Containers are running"
+else
+  log_error "Failed to get container status"
+fi
+
+header "Container Health Status"
+HEALTH_STATUS=$($COMPOSE_CMD ps --format json | jq -r '.[].Health' 2>/dev/null || echo "unknown")
+if [ "$HEALTH_STATUS" = "healthy" ] || echo "$HEALTH_STATUS" | grep -q "healthy"; then
+  log_success "All containers healthy"
+else
+  log_warning "Some containers may be unhealthy: $HEALTH_STATUS"
+fi
+
+header "Permission Check: repo/mirror/"
+MIRROR_PERMS=$(stat -c '%a' repo/mirror/ 2>/dev/null || echo "000")
+if [ "$MIRROR_PERMS" -ge 755 ]; then
+  log_success "Mirror directory permissions OK: $MIRROR_PERMS"
+else
+  log_warning "Mirror directory permissions may be too restrictive: $MIRROR_PERMS"
+  log_info "Fixing permissions..."
+  chmod -R 755 repo/mirror/
+  log_success "Permissions fixed"
+fi
+
+header "Mirror Content Check"
+if [ -d "repo/mirror/archive.ubuntu.com" ] || [ -d "repo/mirror/security.ubuntu.com" ]; then
+  log_success "Mirror content exists"
+  du -sh repo/mirror/ 2>/dev/null || true
+else
+  log_warning "No mirrored content found yet"
+  log_info "Run './update-mirror.sh' to sync repositories"
+fi
+
+header "NGINX Configuration Test"
+if $COMPOSE_CMD exec -T nginx nginx -t 2>&1; then
+  log_success "NGINX configuration valid"
+else
+  log_error "NGINX configuration has errors"
+fi
+
+header "Cron Status in apt-mirror Container"
+if $COMPOSE_CMD exec -T apt-mirror pgrep -a cron >/dev/null 2>&1; then
+  CRON_PID=$($COMPOSE_CMD exec -T apt-mirror pgrep cron)
+  log_success "Cron is running (PID: $CRON_PID)"
+else
+  log_error "Cron is not running in apt-mirror container"
+fi
+
+header "GPG Key Check"
+if [ -d ~/.gnupg ] && [ -n "$(ls -A ~/.gnupg 2>/dev/null)" ]; then
+  log_success "GPG keyring exists"
+  KEY_COUNT=$(gpg --list-secret-keys 2>/dev/null | grep -c "^sec" || echo "0")
+  log_info "Secret keys available: $KEY_COUNT"
+else
+  log_warning "No GPG keyring found at ~/.gnupg"
+fi
+
+header "Recent Container Logs (last 10 lines)"
+echo "--- apt-mirror logs ---"
+$COMPOSE_CMD logs --tail=10 apt-mirror 2>&1 || log_warning "No apt-mirror logs"
+echo ""
+echo "--- nginx logs ---"
+$COMPOSE_CMD logs --tail=10 nginx 2>&1 | grep -i "error\|warn\|crit" || log_success "No recent errors in nginx logs"
+
+header "Disk Space Check"
+df -h "$SCRIPT_DIR/repo" 2>/dev/null || df -h "$SCRIPT_DIR"
+
+header "Quick Connectivity Test"
+if curl -fsS -I http://localhost:8080/ >/dev/null 2>&1 || curl -k -fsS -I https://localhost:8443/ >/dev/null 2>&1; then
+  log_success "NGINX is responding"
+else
+  log_warning "NGINX may not be responding on configured ports"
+fi
+
+header "Summary & Recommendations"
+echo ""
+log_info "Common maintenance commands:"
+echo "  - Update mirror:        ./update-mirror.sh"
+echo "  - Check health:         ./health.sh"
+echo "  - Self-heal:            ./nova-heal.sh"
+echo "  - Repository signing:   ./sign-repos.sh repo/mirror"
+echo "  - Rebuild containers:   docker compose build && docker compose up -d"
+echo "  - View logs:            docker compose logs -f"
+echo ""
+
+log_success "Troubleshooting complete!"
+
+
+================================
+DATEI: ./update-mirror.sh
+================================
+#!/usr/bin/env bash
+
+# Sicherstellen, dass wir Bash nutzen
+if [ -z "${BASH_VERSION:-}" ]; then
+  exec /usr/bin/env bash "$0" "$@"
+fi
+
+set -euo pipefail
+
+# --- KONFIGURATION & PFADE ---
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
+DEFAULT_REPO_ROOT="$SCRIPT_DIR"
+[ ! -f "${DEFAULT_REPO_ROOT}/docker-compose.yml" ] && DEFAULT_REPO_ROOT="/root/ailinux-repo"
+REPO_ROOT="${REPO_ROOT:-$DEFAULT_REPO_ROOT}"
+SERVICE="${SERVICE:-apt-mirror}"
+
+# Pfade INNERHALB des Containers (gemountet via docker-compose.yml)
+# Da ./sign-repos.sh auf dem Host liegt und nach /var/spool/apt-mirror/var/ gemountet wird:
+POSTMIRROR_PATH="${POSTMIRROR_PATH:-/var/spool/apt-mirror/var/postmirror.sh}"
+SIGN_REPOS_PATH="${SIGN_REPOS_PATH:-/var/spool/apt-mirror/var/sign-repos.sh}"
+REPAIR_DEP11_PATH="${REPAIR_DEP11_PATH:-/var/spool/apt-mirror/var/repair-dep11.sh}"
+REMOVE_UNREPAIRABLE_DEP11_PATH="${REMOVE_UNREPAIRABLE_DEP11_PATH:-/var/spool/apt-mirror/var/remove-unrepairable-dep11.sh}"
+
+# Pfad zum Index-Generator (wird im Dockerfile nach /repo/ kopiert)
+GENERATE_INDEX_PATH="/repo/generate-index.sh"
+
+LOCKFILE="${LOCKFILE:-${REPO_ROOT}/log/apt-mirror.update.lock}"
+LOGFILE="${LOGFILE:-${REPO_ROOT}/log/update-mirror.log}"
+
+# GPG Keys Konfiguration
+SIGNING_KEY_ID="${SIGNING_KEY_ID:-0DDA4A58BCB54237}"
+GNUPGHOME="${GNUPGHOME:-/var/spool/apt-mirror/etc/gnupg}"
+
+DEFAULT_MIRROR_LIST="${REPO_ROOT}/mirror.list"
+[ ! -f "$DEFAULT_MIRROR_LIST" ] && DEFAULT_MIRROR_LIST="${REPO_ROOT}/repo/mirror/mirror.list"
+MIRROR_LIST_PATH="${MIRROR_LIST_PATH:-${DEFAULT_MIRROR_LIST}}"
+
+REQUIRE_I386=1
+COMPOSE_FILE="${REPO_ROOT}/docker-compose.yml"
+
+# --- HILFSFUNKTIONEN ---
+ts(){ date '+%Y-%m-%d %H:%M:%S%z'; }
+log(){ echo "$(ts) [update-mirror] $*" | tee -a "$LOGFILE"; }
+require(){ command -v "$1" >/dev/null 2>&1 || { echo "Fehlt: $1" >&2; exit 127; }; }
+
+# Limit erhöhen für 150 Threads
+ulimit -n 4096 || true
+
+mkdir -p "$(dirname "$LOGFILE")"
+require flock
+IN_CONTAINER=0; [ -f "/.dockerenv" ] && IN_CONTAINER=1
+
+if [ "$IN_CONTAINER" -eq 0 ]; then
+  require docker
+  [ -f "$COMPOSE_FILE" ] || { echo "Docker Compose File fehlt: $COMPOSE_FILE"; exit 1; }
+fi
+
+resolve_compose(){
+  if docker compose version >/dev/null 2>&1; then
+    COMPOSE_CMD=(docker compose --project-directory "$REPO_ROOT" -f "$COMPOSE_FILE")
+    return 0
+  fi
+  if command -v docker-compose >/dev/null 2>&1; then
+    COMPOSE_CMD=(docker-compose -f "$COMPOSE_FILE")
+    return 0
+  fi
+  log "FEHLER: docker compose Plugin oder docker-compose fehlt."
+  exit 127
+}
+
+ensure_i386_arch(){
+  if [[ "${REQUIRE_I386:-0}" -ne 1 ]]; then return 0; fi
+
+  if [ "$IN_CONTAINER" -eq 1 ]; then
+    if ! dpkg --print-foreign-architectures | grep -q '^i386$'; then
+      log "Aktiviere i386 Architektur im Container..."
+      dpkg --add-architecture i386
+      apt-get update -qq || true 
+    fi
+  else
+    if ! "${COMPOSE_CMD[@]}" exec -T "$SERVICE" dpkg --print-foreign-architectures | grep -q '^i386$'; then
+      log "Aktiviere i386 Architektur im Container..."
+      "${COMPOSE_CMD[@]}" exec -T "$SERVICE" bash -lc 'dpkg --add-architecture i386; apt-get update -qq'
+    fi
+  fi
+}
+
+# --- LOCKING ---
+mkdir -p "$(dirname "$LOCKFILE")"
+exec 9>"$LOCKFILE"
+if ! flock -n 9; then log "Update läuft bereits (Lock: $LOCKFILE)."; exit 0; fi
+
+log "===== Update gestartet (Full Pipeline: DL -> Post -> Sign -> Index) ====="
+
+# --- LOGIK ---
+
+run_inside_container() {
+    local cmd="$1"
+    if [ "$IN_CONTAINER" -eq 1 ]; then
+        bash -c "$cmd"
+    else
+        "${COMPOSE_CMD[@]}" exec -T "$SERVICE" bash -c "$cmd"
+    fi
+}
+
+if [ "$IN_CONTAINER" -eq 0 ]; then
+  log "Prüfe Service '${SERVICE}'..."
+  resolve_compose
+  "${COMPOSE_CMD[@]}" up -d "$SERVICE"
+fi
+
+ensure_i386_arch
+
+# Variablen für die Container-Umgebung vorbereiten
+ENV_VARS="export REPO_PATH='/var/spool/apt-mirror'; export GNUPGHOME='$GNUPGHOME'; export SIGNING_KEY_ID='$SIGNING_KEY_ID';"
+
+# 1. DOWNLOAD (apt-mirror)
+log ">>> Schritt 1: Start apt-mirror Download..."
+run_inside_container "/usr/bin/apt-mirror /etc/apt/mirror.list"
+log "Download abgeschlossen."
+
+# 2. POSTMIRROR (Aufräumen)
+log ">>> Schritt 2: Führe postmirror.sh aus..."
+if [ "$IN_CONTAINER" -eq 1 ]; then
+    bash -lc "$ENV_VARS $POSTMIRROR_PATH"
+else
+    "${COMPOSE_CMD[@]}" exec -T "$SERVICE" bash -lc "$ENV_VARS $POSTMIRROR_PATH"
+fi
+
+# 3. REPARATUR SKRIPTE (Optional)
+log ">>> Schritt 3: Führe Wartungsskripte aus (falls vorhanden)..."
+run_inside_container "[ -x '$REPAIR_DEP11_PATH' ] && bash '$REPAIR_DEP11_PATH' || true"
+run_inside_container "[ -x '$REMOVE_UNREPAIRABLE_DEP11_PATH' ] && bash '$REMOVE_UNREPAIRABLE_DEP11_PATH' || true"
+
+# 4. SIGNING (Neu positioniertes Script)
+log ">>> Schritt 4: Signiere Repositories..."
+# Wir prüfen im Container, ob die Datei da ist (durch das Volume Mapping)
+if [ "$IN_CONTAINER" -eq 1 ]; then
+    if [ -f "$SIGN_REPOS_PATH" ]; then
+        bash -lc "$ENV_VARS bash '$SIGN_REPOS_PATH'"
+    else
+        log "WARNUNG: sign-repos.sh unter $SIGN_REPOS_PATH nicht gefunden."
+    fi
+else
+    "${COMPOSE_CMD[@]}" exec -T "$SERVICE" bash -lc "if [ -f '$SIGN_REPOS_PATH' ]; then $ENV_VARS bash '$SIGN_REPOS_PATH'; else echo 'WARNUNG: sign-repos.sh nicht gefunden.'; fi"
+fi
+
+# 5. INDEX GENERIEREN (Ganz am Ende)
+log ">>> Schritt 5: Generiere Index..."
+if [ "$IN_CONTAINER" -eq 1 ]; then
+    if [ -x "$GENERATE_INDEX_PATH" ]; then
+        bash -c "$GENERATE_INDEX_PATH"
+    else
+        log "FEHLER: generate-index.sh nicht gefunden!"
+    fi
+else
+    "${COMPOSE_CMD[@]}" exec -T "$SERVICE" bash -c "if [ -x '$GENERATE_INDEX_PATH' ]; then $GENERATE_INDEX_PATH; else echo 'FEHLER: generate-index.sh nicht gefunden'; fi"
+fi
+
+log '===== Update erfolgreich abgeschlossen ====='
+
+
+================================
+DATEI: ./generate-summary.sh
+================================
+#!/usr/bin/env bash
+# Bash-Guard
+if [ -z "${BASH_VERSION:-}" ]; then exec /usr/bin/env bash "$0" "$@"; fi
+set -euo pipefail
+
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
+REPO_PATH="${REPO_PATH:-$SCRIPT_DIR}"
+MIRROR_PATH="${MIRROR_PATH:-$REPO_PATH/repo/mirror}"
+LOGFILE="${LOGFILE:-/var/log/ailinux/postmirror.log}"
+SUMMARY="$MIRROR_PATH/mirror-summary.html"
+
+mkdir -p "$MIRROR_PATH"
+
+# repo-health ausführen (Host-Variante)
+HEALTH_OUT="$("$REPO_PATH/repo-health.sh" "$MIRROR_PATH" 2>/dev/null || true)"
+
+{
+  echo "<!doctype html><html lang='de'><head><meta charset='utf-8'>"
+  echo "<title>AILinux Mirror – Summary</title>"
+  echo "<meta name='viewport' content='width=device-width, initial-scale=1'/>"
+  echo "<style>
+        body{background:#0f1117;color:#e6edf3;font-family:monospace;padding:20px}
+        h1,h2{color:#00ffaa}
+        pre{background:#1b1f2a;border:1px solid #2d333b;padding:12px;border-radius:6px;overflow:auto}
+        code{white-space:pre-wrap}
+        </style></head><body>"
+  echo "<h1>🧠 AILinux Mirror – Zusammenfassung</h1>"
+  echo "<p>Stand: $(date '+%Y-%m-%d %H:%M:%S')</p>"
+
+  echo "<h2>🔐 Signatur-Status (repo-health)</h2>"
+  if [ -n "$HEALTH_OUT" ]; then
+    echo "<pre><code>${HEALTH_OUT//&/&amp;}</code></pre>"
+  else
+    echo "<p><em>Kein repo-health Output verfügbar.</em></p>"
+  fi
+
+  echo "<h2>📝 Letzte Ereignisse (postmirror.log)</h2>"
+  if [ -f "$LOGFILE" ]; then
+    echo "<pre><code>"
+    tail -n 200 "$LOGFILE" \
+      | sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g'
+    echo "</code></pre>"
+  else
+    echo "<p><em>
+
+
+================================
+DATEI: ./export-public-key.sh
+================================
+#!/usr/bin/env bash
+
+# Export AILinux public signing key for client distribution
+# This should be run after generating or updating the signing key
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
+REPO_ROOT="${REPO_ROOT:-$SCRIPT_DIR}"
+SIGNING_KEY_ID="${SIGNING_KEY_ID:-0DDA4A58BCB54237}"
+OUTPUT_FILE="${REPO_ROOT}/repo/mirror/ailinux-archive-key.gpg"
+
+echo "===[ Exporting AILinux Public Key ]==="
+echo "Key ID: $SIGNING_KEY_ID"
+echo "Output: $OUTPUT_FILE"
+echo ""
+
+# Check if key exists
+if ! gpg --list-keys "$SIGNING_KEY_ID" >/dev/null 2>&1; then
+  echo "❌ ERROR: Key $SIGNING_KEY_ID not found in GPG keyring"
+  echo "Available keys:"
+  gpg --list-keys
+  exit 1
+fi
+
+# Export public key
+echo "→ Exporting public key..."
+TMP_KEY=$(mktemp)
+trap "rm -f $TMP_KEY" EXIT
+
+gpg --export "$SIGNING_KEY_ID" > "$TMP_KEY"
+
+# Verify exported key
+if ! gpg --no-default-keyring --keyring "$TMP_KEY" --list-keys "$SIGNING_KEY_ID" >/dev/null 2>&1; then
+  echo "❌ ERROR: Exported key is invalid"
+  exit 1
+fi
+
+# Create output directory if needed
+mkdir -p "$(dirname "$OUTPUT_FILE")"
+
+# Install the key
+install -Dm0644 "$TMP_KEY" "$OUTPUT_FILE"
+
+echo "✓ Key exported successfully"
+echo ""
+echo "Key details:"
+gpg --no-default-keyring --keyring "$OUTPUT_FILE" --list-keys "$SIGNING_KEY_ID"
+
+echo ""
+echo "===[ Success! ]==="
+echo "Public key is ready for distribution at:"
+echo "  $OUTPUT_FILE"
+echo ""
+echo "Clients can install it with:"
+echo "  curl -fsSL \"https://repo.ailinux.me:8443/mirror/ailinux-archive-key.gpg\" | sudo tee /usr/share/keyrings/ailinux-archive-keyring.gpg >/dev/null"

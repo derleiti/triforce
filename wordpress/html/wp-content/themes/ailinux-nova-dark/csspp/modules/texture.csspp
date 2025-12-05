@@ -1,0 +1,649 @@
+/**
+ * CSS++ Module: Texture
+ *
+ * Materialien, Oberflächen, Stoffarten, PBR-Properties
+ *
+ * @version 0.1.0
+ * @module texture
+ */
+
+/* ============================================
+   MATERIAL DEFINITIONS
+   ============================================ */
+
+/**
+ * material: <preset> | <custom>(<params>)
+ *
+ * Vordefinierte oder Custom-Materialien
+ *
+ * Presets:
+ * - metal, wood, plastic, glass, paper, cloth, stone, leather
+ *
+ * Custom:
+ * - brushed-metal(<color>, roughness: <value>)
+ * - cloth(<type>, color: <color>)
+ * - glass(<transparency>)
+ */
+
+.metal-button {
+  material: brushed-metal(#888888, roughness: 0.3);
+}
+
+.wood-panel {
+  material: wood(oak, grain: visible);
+}
+
+.glass-surface {
+  material: glass(0.5);
+  /* 50% transparent */
+}
+
+.cloth-texture {
+  material: cloth(linen, color: #f0f0f0);
+}
+
+
+/* ============================================
+   TEXTURE PROPERTY
+   ============================================ */
+
+/**
+ * texture: <image> | <procedural>
+ *
+ * Textur als Bild oder prozedural generiert
+ *
+ * Images:
+ * - url("path/to/texture.png")
+ * - builtin(<name>) – Eingebaute Texturen
+ *
+ * Procedural:
+ * - noise(<scale>) – Perlin Noise
+ * - checkerboard(<size>) – Schachbrett
+ * - stripes(<width>, <angle>) – Streifen
+ * - dots(<size>, <spacing>) – Punkte
+ */
+
+.noise-background {
+  texture: noise(0.5);
+  texture-color: #333333;
+}
+
+.checkered-surface {
+  texture: checkerboard(2rem);
+  texture-colors: #ffffff #000000;
+}
+
+.striped-element {
+  texture: stripes(0.5rem, 45deg);
+}
+
+
+/* ============================================
+   ROUGHNESS & SMOOTHNESS
+   ============================================ */
+
+/**
+ * roughness: <value>
+ *
+ * Oberflächenrauheit
+ *
+ * Werte:
+ * - 0.0 (perfekt glatt, spiegelnd)
+ * - 1.0 (sehr rau, matt)
+ *
+ * Beeinflusst Reflexionen und Licht-Response
+ */
+
+.smooth-surface {
+  roughness: 0.1;
+  reflectivity: 0.8; /* Aus lighting.csspp */
+}
+
+.rough-surface {
+  roughness: 0.9;
+  reflectivity: 0.2;
+}
+
+
+/* ============================================
+   METALLIC PROPERTY
+   ============================================ */
+
+/**
+ * metallic: <value>
+ *
+ * Metallischer Charakter
+ *
+ * Werte:
+ * - 0.0 (nicht-metallisch / dielectric)
+ * - 1.0 (vollständig metallisch)
+ *
+ * Teil des PBR Metallic-Roughness Workflows
+ */
+
+.metallic-button {
+  metallic: 1.0;
+  roughness: 0.3;
+  base-color: #888888;
+}
+
+.plastic-button {
+  metallic: 0.0;
+  roughness: 0.5;
+  base-color: #4466ff;
+}
+
+
+/* ============================================
+   TRANSPARENCY & OPACITY
+   ============================================ */
+
+/**
+ * transparency: <value> | <type>(<value>)
+ *
+ * Durchsichtigkeit
+ *
+ * Types:
+ * - uniform(<value>) – Gleichmäßig
+ * - gradient(<direction>) – Verlauf
+ * - frosted(<blur>) – Milchglas-Effekt
+ */
+
+.glass-panel {
+  transparency: uniform(0.3);
+}
+
+.frosted-glass {
+  transparency: frosted(10px);
+  /* Backdrop-Blur */
+}
+
+.gradient-fade {
+  transparency: gradient(to bottom);
+}
+
+
+/* ============================================
+   BUMP & NORMAL MAPPING
+   ============================================ */
+
+/**
+ * bump-map: url(<file>) | procedural(<type>)
+ * normal-map: url(<file>)
+ * bump-strength: <value>
+ *
+ * Oberflächendetails ohne Geometrie
+ */
+
+.bumpy-surface {
+  bump-map: procedural(noise);
+  bump-strength: 0.5;
+}
+
+.detailed-material {
+  normal-map: url("textures/stone-normal.png");
+}
+
+
+/* ============================================
+   PATTERN SYSTEM
+   ============================================ */
+
+/**
+ * pattern: <type>(<params>)
+ *
+ * Repeating-Patterns
+ *
+ * Types:
+ * - weave(<size>) – Gewebe-Muster
+ * - grid(<spacing>) – Raster
+ * - hexagon(<size>) – Hexagon-Tiles
+ * - brick(<width>, <height>) – Ziegelmauer
+ */
+
+.woven-cloth {
+  pattern: weave(2x2);
+  texture-color: #f5f5f5;
+}
+
+.grid-background {
+  pattern: grid(1rem);
+  pattern-color: rgba(255, 255, 255, 0.1);
+}
+
+.hex-tiles {
+  pattern: hexagon(3rem);
+}
+
+
+/* ============================================
+   FABRIC MATERIALS
+   ============================================ */
+
+/**
+ * fabric: <type>(<params>)
+ *
+ * Spezialisierte Stoff-Texturen
+ *
+ * Types:
+ * - linen, cotton, silk, wool, denim, leather, suede
+ */
+
+.linen-surface {
+  fabric: linen(natural, weave: visible);
+  roughness: 0.7;
+}
+
+.silk-element {
+  fabric: silk(white, shine: 0.6);
+  roughness: 0.2;
+}
+
+.leather-button {
+  fabric: leather(brown, age: worn);
+  roughness: 0.5;
+}
+
+
+/* ============================================
+   METAL TYPES
+   ============================================ */
+
+/**
+ * metal: <type>(<params>)
+ *
+ * Metallische Materialien
+ *
+ * Types:
+ * - aluminum, steel, copper, brass, gold, silver, chrome, iron
+ */
+
+.aluminum-panel {
+  metal: aluminum(brushed, roughness: 0.4);
+}
+
+.gold-accent {
+  metal: gold(polished, purity: 18k);
+  reflectivity: 0.9;
+}
+
+.rusted-iron {
+  metal: iron(rusted, oxidation: 0.6);
+  roughness: 0.8;
+}
+
+
+/* ============================================
+   STONE & CONCRETE
+   ============================================ */
+
+/**
+ * stone: <type>
+ * concrete: <finish>
+ */
+
+.marble-surface {
+  stone: marble(white, veins: visible);
+  roughness: 0.3;
+}
+
+.concrete-panel {
+  concrete: raw(weathered);
+  roughness: 0.9;
+  texture: noise(0.3);
+}
+
+
+/* ============================================
+   WOOD TYPES
+   ============================================ */
+
+/**
+ * wood: <type>(<params>)
+ *
+ * Types:
+ * - oak, pine, walnut, mahogany, birch
+ */
+
+.oak-panel {
+  wood: oak(stained, finish: matte);
+  roughness: 0.6;
+}
+
+.polished-walnut {
+  wood: walnut(polished);
+  roughness: 0.2;
+  reflectivity: 0.5;
+}
+
+
+/* ============================================
+   PAPER MATERIALS
+   ============================================ */
+
+/**
+ * paper: <type>(<params>)
+ *
+ * Types:
+ * - plain, textured, cardboard, parchment
+ */
+
+.paper-card {
+  paper: textured(white, roughness: 0.8);
+}
+
+.parchment-scroll {
+  paper: parchment(aged, yellowing: 0.5);
+}
+
+
+/* ============================================
+   PLASTIC TYPES
+   ============================================ */
+
+/**
+ * plastic: <type>(<params>)
+ *
+ * Types:
+ * - matte, glossy, transparent
+ */
+
+.glossy-plastic {
+  plastic: glossy(#4466ff);
+  roughness: 0.1;
+  reflectivity: 0.7;
+}
+
+.matte-plastic {
+  plastic: matte(#333333);
+  roughness: 0.9;
+}
+
+
+/* ============================================
+   TEXTURE SCALING
+   ============================================ */
+
+/**
+ * texture-scale: <value>
+ * texture-repeat: repeat | no-repeat | <x> <y>
+ */
+
+.large-texture {
+  texture: noise(0.5);
+  texture-scale: 2;
+  /* Textur 2x größer */
+}
+
+.tiled-texture {
+  texture: url("tile.png");
+  texture-repeat: repeat;
+}
+
+
+/* ============================================
+   TEXTURE ANIMATION
+   ============================================ */
+
+/**
+ * texture-animation: <type>
+ *
+ * Types:
+ * - scroll(<direction>, <speed>)
+ * - pulse(<frequency>)
+ * - shimmer(<speed>)
+ */
+
+.animated-texture {
+  texture: stripes(0.5rem, 45deg);
+  texture-animation: scroll(right, slow);
+}
+
+.shimmering-fabric {
+  fabric: silk(gold);
+  texture-animation: shimmer(2s);
+}
+
+
+/* ============================================
+   WEATHERING & AGING
+   ============================================ */
+
+/**
+ * weathering: <value>
+ * oxidation: <value>
+ * wear: <intensity>
+ *
+ * Alterung von Materialien
+ */
+
+.aged-metal {
+  metal: iron;
+  weathering: 0.7;
+  oxidation: 0.5;
+}
+
+.worn-leather {
+  fabric: leather(brown);
+  wear: 0.6;
+  /* Abgenutzte Bereiche */
+}
+
+
+/* ============================================
+   SUBSURFACE SCATTERING
+   ============================================ */
+
+/**
+ * subsurface: <value> | <color>(<depth>)
+ *
+ * Lichtstreuung unter Oberfläche (für organische Materialien)
+ */
+
+.wax-candle {
+  subsurface: 0.4;
+  subsurface-color: #fff5e6;
+}
+
+.marble-translucent {
+  stone: marble;
+  subsurface: white(0.2);
+}
+
+
+/* ============================================
+   ANISOTROPY
+   ============================================ */
+
+/**
+ * anisotropy: <direction> <intensity>
+ *
+ * Richtungsabhängige Reflexion (z.B. gebürstetes Metall)
+ */
+
+.brushed-metal {
+  metal: aluminum;
+  anisotropy: horizontal 0.8;
+  /* Reflexion folgt horizontalen Linien */
+}
+
+
+/* ============================================
+   CLEARCOAT
+   ============================================ */
+
+/**
+ * clearcoat: <intensity>
+ * clearcoat-roughness: <value>
+ *
+ * Zusätzliche glänzende Schicht (z.B. Autolack)
+ */
+
+.car-paint {
+  base-color: #ff0000;
+  metallic: 0.8;
+  clearcoat: 1.0;
+  clearcoat-roughness: 0.1;
+}
+
+
+/* ============================================
+   TEXTURE BLENDING
+   ============================================ */
+
+/**
+ * texture-blend: <texture1> <mode> <texture2>
+ *
+ * Mehrere Texturen kombinieren
+ *
+ * Modes: multiply, add, overlay, screen
+ */
+
+.complex-surface {
+  texture-blend: noise(0.3) multiply stripes(1rem);
+}
+
+
+/* ============================================
+   DISPLACEMENT MAPPING
+   ============================================ */
+
+/**
+ * displacement: <map> <strength>
+ *
+ * Echte Geometrie-Verformung (nur bei depth: 3d)
+ */
+
+.displaced-surface {
+  depth: 3d;
+  displacement: url("heightmap.png") 0.5rem;
+}
+
+
+/* ============================================
+   TEXTURE DATABASE
+   ============================================ */
+
+/**
+ * @texture <name> { ... }
+ *
+ * Custom Texture-Definitionen
+ */
+
+@texture vintage-paper {
+  paper: plain(#f5e6d3);
+  weathering: 0.4;
+  texture: noise(0.2);
+  bump-map: procedural(noise);
+}
+
+.old-document {
+  texture: vintage-paper;
+}
+
+
+/* ============================================
+   MATERIAL PRESETS
+   ============================================ */
+
+/**
+ * @material <name> { ... }
+ *
+ * Vollständige Material-Definition
+ */
+
+@material chrome-metal {
+  metal: chrome;
+  metallic: 1.0;
+  roughness: 0.05;
+  reflectivity: 0.95;
+  base-color: #d0d0d0;
+}
+
+.chrome-icon {
+  material: chrome-metal;
+}
+
+
+/* ============================================
+   RESPONSIVE TEXTURES
+   ============================================ */
+
+/**
+ * Texturen können medienabhängig angepasst werden
+ */
+
+@media (max-width: 768px) {
+  .textured-background {
+    texture-scale: 0.5;
+    /* Kleinere Texturen auf Mobile */
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    texture-animation: none;
+  }
+}
+
+
+/* ============================================
+   COMPILER TRANSFORMATIONS
+   ============================================ */
+
+/**
+ * Der Compiler transformiert Texture-Properties:
+ *
+ * material: brushed-metal  → background + box-shadow + gradient
+ * roughness: 0.5           → CSS filter + opacity adjustments
+ * texture: noise(0.3)      → SVG filter oder background-image
+ * bump-map: procedural     → box-shadow inset für Fake-3D
+ *
+ * Bei depth: 3d:
+ * - Echte PBR-Materialien als JSON-IR
+ * - Texture-Maps als Asset-Files (.png/.jpg)
+ * - WebGL-Shader-Parameter
+ *
+ * Output:
+ * - CSS: Approximation mit Gradients/Shadows
+ * - JSON-IR: PBR-Properties für 3D-Rendering
+ * - Assets: Texture-Files
+ */
+
+
+/* ============================================
+   THEME INTEGRATION
+   ============================================ */
+
+/**
+ * Texturen können in Themes definiert werden
+ */
+
+@theme vintage-industrial {
+  --default-material: rusted-metal;
+  --surface-texture: concrete(rough);
+  --accent-material: brass(aged);
+}
+
+.themed-element {
+  material: var(--default-material);
+}
+
+
+/* ============================================
+   PERFORMANCE MODES
+   ============================================ */
+
+/**
+ * texture-quality: low | medium | high | ultra
+ */
+
+:root[data-performance="low"] {
+  texture-quality: low;
+  /* Simplified materials, no bump maps */
+}
+
+:root[data-performance="ultra"] {
+  texture-quality: ultra;
+  /* Full PBR, displacement, subsurface scattering */
+}

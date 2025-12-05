@@ -1,0 +1,136 @@
+// AILinux Full Theme Override (v1.2)
+// Extended with glassmorphism, unified buttons, and enhanced menu styling.
+
+@material body {
+    selector: "body";
+    theme: background;
+    lighting: ambient(0.1);
+}
+
+@material header {
+    selector: ".site-header";
+    // geometry removed to prevent overflow:hidden clipping the dropdowns
+    border-radius: 0;
+    volumetrics: glass(12);
+    lighting: soft(0.1);
+    theme: surface-glass;
+    // border-bottom: 1px solid rgba(255,255,255,0.05);
+    z-index: 1000;
+    position: relative;
+}
+
+// --- MENUS & NAVIGATION ---
+
+@material menu-panel {
+    selector: ".site-nav .sub-menu, .dropdown-menu, .menu-item .sub-menu, .site-nav .nav-more .more-menu";
+    geometry: rounded(16);
+    volumetrics: glass(12);
+    lighting: soft(0.2);
+    theme: surface-glass;
+    padding: 12px;
+    margin-top: 8px;
+    border: 1px solid rgba(255,255,255,0.1);
+    min-width: 200px;
+    opacity: 0; /* Managed by JS/Hover usually, but good base */
+    animation: fade-in(200ms);
+}
+
+@material menu-item {
+    selector: ".site-nav .sub-menu li a, .dropdown-menu li a, .site-nav .nav-more .more-menu a";
+    lighting: hover-glow(0.3);
+    theme: surface-alt;
+    padding: 8px 14px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    margin-bottom: 4px;
+    display: block;
+    text-decoration: none;
+}
+
+@material navigation-link {
+    selector: ".site-nav .menu > li > a";
+    lighting: hover-glow(0.1);
+    theme: transparent;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+@material navigation-more {
+    selector: ".site-nav .nav-more button";
+    theme: transparent;
+    lighting: hover-glow(0.1);
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: none;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+// --- UI COMPONENTS ---
+
+@material button-primary {
+    selector: ".btn, .button, button[type='submit'], .wp-block-button__link, .ai-btn, .theme-toggle, .mobile-menu-toggle";
+    geometry: pill(999);
+    lighting: hover-glow(0.5);
+    theme: primary;
+    padding: 10px 24px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    line-height: 1.2;
+}
+
+@material ai-panel {
+    selector: ".ai-panel__inner";
+    geometry: rounded(16);
+    volumetrics: fabric(0.04);
+    lighting: hard(0.5);
+    theme: surface;
+    // border: 1px solid rgba(255,255,255,0.1);
+    animation: slide-up(300ms);
+    max-width: 600px;
+    width: 90%;
+}
+
+@material card {
+    selector: ".post, .card, .hentry, .page-content";
+    geometry: rounded(12);
+    lighting: soft(0.1);
+    volumetrics: fabric(0.02);
+    theme: surface-alt;
+    padding: 24px;
+    margin-bottom: 32px;
+    // border: 1px solid rgba(255,255,255,0.03);
+}
+
+@material input {
+    selector: "input[type='text'], input[type='email'], textarea, select";
+    geometry: rounded(6);
+    lighting: hard(0.2);
+    theme: background;
+    padding: 12px;
+    // border: 1px solid rgba(255,255,255,0.1);
+    width: 100%;
+    max-width: 100%;
+    font-family: inherit;
+}
+
+@material footer {
+    selector: ".site-footer";
+    volumetrics: fabric(0.05);
+    theme: surface;
+    padding: 48px 0;
+    margin-top: 64px;
+}

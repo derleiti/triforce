@@ -1,0 +1,226 @@
+/**
+ * CSS++ Module: Geometry
+ *
+ * Regelt Pixel-Geometrie, Formen, 2D- und 3D-Primitive, Kurven
+ *
+ * @version 0.1.0
+ * @module geometry
+ */
+
+/* ============================================
+   SHAPE DEFINITIONS
+   ============================================ */
+
+/**
+ * shape: <primitive> | polygon(<sides>) | path(<svg-path>)
+ *
+ * Definiert die geometrische Form eines Elements
+ *
+ * Werte:
+ * - circle, square, triangle
+ * - polygon(3..12) – Regelmäßige Vielecke
+ * - rounded-rect(<radius>) – Abgerundetes Rechteck
+ * - path(<svg-path>) – Custom SVG-Pfad
+ *
+ * Beispiele:
+ */
+
+.shape-circle {
+  shape: circle;
+}
+
+.shape-hexagon {
+  shape: polygon(6);
+}
+
+.shape-rounded {
+  shape: rounded-rect(0.5rem);
+}
+
+.shape-custom {
+  shape: path("M10 10 L20 20 L10 30 Z");
+}
+
+
+/* ============================================
+   PIXEL-GRID SYSTEM
+   ============================================ */
+
+/**
+ * pixel-grid: <columns>x<rows> | <size>
+ *
+ * Aktiviert rasterbasiertes Layout (wie NES-Sprites)
+ *
+ * Werte:
+ * - 8x8, 16x16, 32x32 – Explizites Raster
+ * - 4 (shorthand für 4x4)
+ *
+ * Snap-Modus für pixelgenaue Positionierung
+ */
+
+.pixel-art-icon {
+  pixel-grid: 16x16;
+  shape: square;
+  image-rendering: pixelated;
+}
+
+.retro-button {
+  pixel-grid: 8;
+  border: 1px solid #000;
+}
+
+
+/* ============================================
+   DEPTH & 3D-PROMOTION
+   ============================================ */
+
+/**
+ * depth: <length> | 3d
+ *
+ * Fügt Z-Achsen-Tiefe hinzu (Pseudo-3D oder echtes 3D)
+ *
+ * Werte:
+ * - 0.1rem..5rem – Relative Tiefe
+ * - 3d – Aktiviert CSS 3D-Transforms
+ *
+ * Interagiert mit lighting.csspp für realistische Schatten
+ */
+
+.card-elevated {
+  depth: 0.3rem;
+  /* Compiler generiert box-shadow basierend auf depth */
+}
+
+.cube-3d {
+  depth: 3d;
+  shape: cube;
+  /* Compiler generiert transform: rotateX() rotateY() */
+}
+
+
+/* ============================================
+   CURVE & SPLINE SYSTEM
+   ============================================ */
+
+/**
+ * curve: bezier(<points>) | catmull-rom(<points>)
+ *
+ * Definiert Kurven für Animationspfade oder Border-Shapes
+ *
+ * Werte:
+ * - bezier(x1 y1, x2 y2, x3 y3, x4 y4)
+ * - catmull-rom(p1, p2, p3, p4) – Glatte Kurve durch Punkte
+ */
+
+.animated-path {
+  curve: bezier(0 0, 0.5 1, 1 0.5, 1 1);
+  animation: follow-curve 2s ease-in-out;
+}
+
+
+/* ============================================
+   BORDER GEOMETRY
+   ============================================ */
+
+/**
+ * border-shape: <primitive>
+ *
+ * Definiert Border-Form unabhängig vom Element-Shape
+ *
+ * Beispiel: Runder Button mit hexagonalem Border
+ */
+
+.button-hex-border {
+  shape: circle;
+  border-shape: polygon(6);
+  border-width: 2px;
+  border-color: #4466ff;
+}
+
+
+/* ============================================
+   COMPILER HINTS
+   ============================================ */
+
+/**
+ * Der Compiler transformiert diese Properties:
+ *
+ * shape: circle          → border-radius: 50%
+ * shape: polygon(6)      → clip-path: polygon(...)
+ * pixel-grid: 16x16      → width: 16px; height: 16px; + snap-logic
+ * depth: 0.3rem          → box-shadow: 0 <depth> <blur> rgba(...)
+ * depth: 3d              → transform-style: preserve-3d
+ *
+ * Texture- und Lighting-Bindings werden in JSON-IR exportiert
+ */
+
+
+/* ============================================
+   RESPONSIVE GEOMETRY
+   ============================================ */
+
+/**
+ * Geometrie kann responsive angepasst werden
+ */
+
+@media (max-width: 768px) {
+  .shape-hexagon {
+    shape: circle; /* Vereinfachung auf Mobile */
+  }
+
+  .pixel-art-icon {
+    pixel-grid: 8x8; /* Kleineres Raster */
+  }
+}
+
+
+/* ============================================
+   ADVANCED: MESH GENERATION
+   ============================================ */
+
+/**
+ * mesh: <type>(<detail>)
+ *
+ * Generiert 3D-Mesh für WebGL-Rendering
+ *
+ * Werte:
+ * - sphere(32) – Sphere mit 32 Segmenten
+ * - torus(16, 8) – Torus (major, minor segments)
+ * - plane(10x10) – Subdivided Plane
+ *
+ * Nur aktiv wenn depth: 3d gesetzt
+ */
+
+.webgl-sphere {
+  depth: 3d;
+  mesh: sphere(32);
+  material: chrome; /* Referenz zu texture.csspp */
+}
+
+
+/* ============================================
+   GEOMETRY DATABASE
+   ============================================ */
+
+/**
+ * Vordefinierte Shapes können in einer DB registriert werden:
+ *
+ * @geometry logo-shape {
+ *   path: "M10 10 L50 10 L30 50 Z";
+ *   scale: 1;
+ *   origin: center;
+ * }
+ *
+ * Verwendung:
+ * .logo { shape: logo-shape; }
+ */
+
+@geometry arrow-right {
+  path: "M0 0 L10 5 L0 10 Z";
+  origin: center;
+}
+
+.nav-arrow {
+  shape: arrow-right;
+  fill: currentColor;
+}

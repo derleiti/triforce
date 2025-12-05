@@ -1,0 +1,56 @@
+<?php return array(
+    'root' => array(
+        'name' => 'codeinwp/feedzy-rss-feeds-pro',
+        'pretty_version' => 'v3.1.0',
+        'version' => '3.1.0.0',
+        'reference' => 'b99e07dcc8f4a7e64de481f04d1fc481afd07eb5',
+        'type' => 'wordpress-plugin',
+        'install_path' => __DIR__ . '/../../',
+        'aliases' => array(),
+        'dev' => false,
+    ),
+    'versions' => array(
+        'bjoernffm/spintax' => array(
+            'pretty_version' => 'v1.1.0',
+            'version' => '1.1.0.0',
+            'reference' => '30914dbc0f98949f3c905d27dfb96d8d744b356d',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../bjoernffm/spintax',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'codeinwp/feedzy-rss-feeds-pro' => array(
+            'pretty_version' => 'v3.1.0',
+            'version' => '3.1.0.0',
+            'reference' => 'b99e07dcc8f4a7e64de481f04d1fc481afd07eb5',
+            'type' => 'wordpress-plugin',
+            'install_path' => __DIR__ . '/../../',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'codeinwp/themeisle-sdk' => array(
+            'pretty_version' => '3.3.48',
+            'version' => '3.3.48.0',
+            'reference' => '0727d2cf2fc9bfb81b42968aeaf2bf4e340f021e',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../codeinwp/themeisle-sdk',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'guzzlehttp/guzzle' => array(
+            'dev_requirement' => false,
+            'replaced' => array(
+                0 => '*',
+            ),
+        ),
+        'thewirecutter/paapi5-php-sdk' => array(
+            'pretty_version' => '1.1.1',
+            'version' => '1.1.1.0',
+            'reference' => '4f5cc6b9ff4cb6d54005c83ca14077cb53706513',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../thewirecutter/paapi5-php-sdk',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+    ),
+);

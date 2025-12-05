@@ -1,0 +1,2367 @@
+# Translation of Plugins - Optimole – Optimize Images | Convert WebP &amp; AVIF | CDN &amp; Lazy Load | Image Optimization - Stable (latest release) in German
+# This file is distributed under the same license as the Plugins - Optimole – Optimize Images | Convert WebP &amp; AVIF | CDN &amp; Lazy Load | Image Optimization - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-11-08 16:39:01+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/4.0.3\n"
+"Language: de\n"
+"Project-Id-Version: Plugins - Optimole – Optimize Images | Convert WebP &amp; AVIF | CDN &amp; Lazy Load | Image Optimization - Stable (latest release)\n"
+
+#: inc/admin.php:1676
+msgid "path"
+msgstr "Pfad"
+
+#: inc/admin.php:1675
+msgid "word"
+msgstr "Wort"
+
+#: inc/media_rename/attachment_edit.php:46
+#: inc/media_rename/attachment_edit.php:47
+#: inc/media_rename/attachment_edit.php:117
+msgid "Replace or Rename"
+msgstr "Ersetzen oder umbenennen"
+
+#. translators: 1 is plugin name, 2 is the settings path link
+#: inc/conflicts/wprocket.php:27
+msgid "WP Rocket has <strong>Lazy loading for images</strong> enabled. Optimole already provides its own lazy loading mechanism, which may conflict with WP Rocket's. To continue using Optimole's lazy loading feature, please disable lazy loading in WP Rocket via %1$s."
+msgstr "Bei WP Rocket ist <strong>Lazy Loading für Bilder</strong> aktiviert. Optimole bietet bereits einen eigenen Lazy-Loading-Mechanismus, der mit dem von WP Rocket in Konflikt geraten kann. Um Optimoles Lazy-Loading-Funktion weiterhin zu nutzen, deaktiviere bitte Lazy Loading in WP Rocket unter %1$s."
+
+#. translators: 1 is the settings path link
+#: inc/conflicts/smush.php:28
+msgid "WP Smush has <strong>Lazy loading</strong> enabled. Optimole already provides its own lazy loading mechanism, which may conflict with Smush's. To continue using Optimole's lazy loading feature, please disable lazy loading in %1$s."
+msgstr "Bei WP Smush ist <strong>Lazy Loading</strong> aktiviert. Optimole bietet bereits einen eigenen Lazy-Loading-Mechanismus, der mit dem von Smush in Konflikt geraten kann. Um Optimoles Lazy-Loading-Funktion weiterhin nutzen zu können, deaktiviere bitte Lazy Loading unter %1$s."
+
+#. translators: 1 is the settings path link
+#: inc/conflicts/perfmatters.php:28
+msgid "Perfmatters has <strong>Lazy loading</strong> enabled. Optimole already provides its own lazy loading mechanism, which may conflict with Perfmatters'. To continue using Optimole's lazy loading feature, please disable lazy loading in %1$s."
+msgstr "Bei Perfmatters ist <strong>Lazy Loading</strong> aktiviert. Optimole bietet bereits einen eigenen Lazy-Loading-Mechanismus, der mit dem von Perfmatters in Konflikt geraten kann. Um Optimoles Lazy-Loading-Funktion weiterhin nutzen zu können, deaktiviere bitte Lazy Loading unter %1$s."
+
+#. translators: 1 is the settings path link
+#: inc/conflicts/litespeed.php:28
+msgid "LiteSpeed Cache has <strong>Lazy Loading</strong> enabled. Optimole already provides its own lazy loading mechanism, which may conflict with LiteSpeed Cache's. To continue using Optimole's lazy loading feature, please disable lazy loading in %1$s."
+msgstr "Bei LiteSpeed Cache ist <strong>Lazy Loading</strong> aktiviert. Optimole bietet bereits einen eigenen Lazy-Loading-Mechanismus, der mit dem von LiteSpeed Cache in Konflikt geraten kann. Um Optimoles Lazy-Loading-Funktion weiterhin nutzen zu können, deaktiviere bitte Lazy Loading unter %1$s."
+
+#. translators: 1 is the settings path link
+#: inc/conflicts/autoptimize.php:28
+msgid "Autoptimize has <strong>Lazy loading</strong> enabled. Optimole already provides its own lazy loading mechanism, which may conflict with Autoptimize's. To continue using Optimole's lazy loading feature, please disable lazy loading in %1$s."
+msgstr "Bei Autoptimize ist <strong>Lazy Loading</strong> aktiviert. Optimole bietet bereits einen eigenen Lazy-Loading-Mechanismus, der mit dem von Autoptimize in Konflikt geraten kann. Um Optimoles Lazy-Loading-Funktion weiterhin nutzen zu können, deaktiviere bitte Lazy Loading unter %1$s."
+
+#. translators: %s is the date of the renewal.
+#: inc/admin.php:2326
+msgid "Renews %s"
+msgstr "Erneuert %s"
+
+#: inc/admin.php:2323
+msgid "Enable Native Lazy Load"
+msgstr "Natives Lazy Loading aktivieren"
+
+#: inc/admin.php:2322
+msgid "Disable Image Scaling"
+msgstr "Bildskalierung deaktivieren"
+
+#: inc/admin.php:2321
+msgid "Disable Lazy Load & Scaling"
+msgstr "Lazy Loading und Skalierung deaktivieren"
+
+#. translators: %s is the email main subject.
+#: inc/admin.php:2320
+msgid "[Lazy Load Issue] %s"
+msgstr "[Lazy-Loading-Problem] %s"
+
+#: inc/admin.php:2310
+msgid "Manage"
+msgstr "Verwalten"
+
+#: inc/admin.php:2309
+msgid "Enable"
+msgstr "Aktivieren"
+
+#: inc/admin.php:2308
+msgid "Disable"
+msgstr "Deaktivieren"
+
+#: inc/admin.php:2215
+msgid "Keep enabled and get help"
+msgstr "Aktiviert lassen und Hilfe holen"
+
+#: inc/admin.php:2214
+msgid "Continue with disabling"
+msgstr "Weiter mit der Deaktivierung"
+
+#: inc/admin.php:2213
+msgid "Disabling Image Scaling may significantly impact your site's loading speed and Core Web Vitals scores."
+msgstr "Die Deaktivierung der Bildskalierung kann sich erheblich auf die Ladegeschwindigkeit deiner Website und die Core-Web-Vitals-Werte auswirken."
+
+#: inc/admin.php:2212
+msgid "Disabling Lazy Load may significantly impact your site's loading speed and Core Web Vitals scores."
+msgstr "Die Deaktivierung von Lazy Loading kann erhebliche Auswirkungen auf die Ladegeschwindigkeit deiner Website und die Core-Web-Vitals-Werte haben."
+
+#: inc/admin.php:2211
+msgid "Performance Impact Alert"
+msgstr "Warnung vor Leistungsbeeinträchtigungen"
+
+#. translators: %1$s is the starting bold tag, %2$s is the ending bold tag.
+#: inc/admin.php:2210
+msgid "Native browser loading works with viewport detection, but it does not support smart image scaling. It can offer better cross-browser compatibility. Still, we do %1$snot recommend%2$s it for most sites due to fewer controls and features compared to Smart Loading."
+msgstr "Das native Laden im Browser funktioniert mit Viewport-Erkennung, unterstützt jedoch keine intelligente Bildskalierung. Es bietet eine bessere Cross-Browser-Kompatibilität. Dennoch wird es für die meisten Websites %1$snicht empfohlen%2$s, da es im Vergleich zum intelligenten Laden weniger Steuerungsmöglichkeiten und Funktionen bietet."
+
+#. translators: %1$s is the starting bold tag, %2$s is the ending bold tag.
+#: inc/admin.php:2208
+msgid "When %1$sskip above the fold%2$s and %1$sskip first images%2$s are both enabled: the skip rule applies on a user's first page view. On subsequent views, once viewport data exists, the skip rule is ignored in favor of the viewport data."
+msgstr "Wenn sowohl %1$sBilder im initial sichtbaren Bereich überspringen%2$s als auch %1$sErste Bilder überspringen%2$s aktiviert ist: Die Überspringen-Regel gilt für den ersten Seitenaufrufe eines Benutzers. Bei nachfolgenden Aufrufen wird die Überspringen-Regel zugunsten der Viewport-Daten ignoriert, sobald Viewport-Daten vorhanden sind."
+
+#. translators: This option is discouraged from being used.
+#: inc/admin.php:2206
+msgid "Not recommended"
+msgstr "Nicht empfohlen"
+
+#. translators: mark that the options are aplied globally.
+#: inc/admin.php:2204
+msgid "Global"
+msgstr "Global"
+
+#: inc/admin.php:2202
+msgid "Extended Features"
+msgstr "Erweiterte Funktionen"
+
+#: inc/admin.php:2201
+msgid "Visual Settings"
+msgstr "Visuelle Einstellungen"
+
+#: inc/admin.php:2200
+msgid "Offloading images is a PRO feature. Please upgrade your plan to enable image transfer to Optimole Cloud."
+msgstr "Das Auslagern von Bildern ist eine PRO-Funktion. Bitte führe ein Upgrade deines Tarifs durch, um die Übertragung von Bildern in die Optimole Cloud zu ermöglichen."
+
+#: inc/admin.php:2199
+msgid "We've changed how plans work. Users on the Optimole Free plan cannot offload new images. Existing images that are already offloaded will remain offloaded."
+msgstr "Wir haben die Funktionsweise der Tarife geändert. Benutzer von Optimoles kostenlosem Tarif können keine neuen Bilder hochladen. Bestehende Bilder, die bereits hochgeladen wurden, bleiben weiterhin hochgeladen."
+
+#: inc/admin.php:2198
+msgid "Plan Update"
+msgstr "Tarif-Update"
+
+#: inc/admin.php:2124
+msgid "Extend CSS Background Images"
+msgstr "CSS-Hintergrundbilder erweitern"
+
+#. translators: it uses the browser's built-in lazy loading feature without any
+#. additional scripts.
+#: inc/admin.php:2122
+msgid "Lightweight"
+msgstr "Leichtgewichtig"
+
+#. translators: it can handle many images without slowing down the site.
+#: inc/admin.php:2120
+msgid "Auto Scaling"
+msgstr "Automatische Skalierung"
+
+#. translators: set the colors for the placeholder image.
+#: inc/admin.php:2118
+msgid "Placeholders"
+msgstr "Platzhalter"
+
+#. translators: viewport is the visible area of a web page on a display device.
+#: inc/admin.php:2116
+msgid "Viewport detection"
+msgstr "Viewport-Erkennung"
+
+#: inc/admin.php:2114
+msgid "Uses the browser's built-in lazy loading feature"
+msgstr "Verwendet die integrierte Lazy-Loading-Funktion des Browsers"
+
+#: inc/admin.php:2113
+msgid "JavaScript-driven with advanced controls"
+msgstr "JavaScript-gesteuert mit erweiterten Steuerelementen"
+
+#: inc/admin.php:2112
+msgid "Smart Loading"
+msgstr "Intelligentes Laden"
+
+#: inc/admin.php:2111
+msgid "If everything is covered out of the box, leave this empty."
+msgstr "Wenn alles bereits abgedeckt ist, lass dieses Feld leer."
+
+#. translators: %s is the example selector list.
+#: inc/admin.php:2110
+msgid "Example: %s"
+msgstr "Beispiel: %s"
+
+#: inc/admin.php:2108
+msgid "Optional selectors to extend coverage (one per line or comma-separated)"
+msgstr "Optionale Selektoren zur Erweiterung der Abdeckung (einer pro Zeile oder kommagetrennt)"
+
+#: inc/admin.php:2104
+msgid "Native Browser Loading"
+msgstr "Natives Laden des Browsers"
+
+#: inc/admin.php:2103
+msgid "Smart Image Scaling"
+msgstr "Intelligente Bildskalierung"
+
+#: inc/admin.php:2102
+msgid "Enable Lazy Loading & Scaling"
+msgstr "Lazy Loading und Skalierung aktivieren"
+
+#: inc/admin.php:2081
+msgid "Uses the browser's built-in lazy loading feature. Enabling this will disable the auto scale."
+msgstr "Verwendet die integrierte Lazy-Loading-Funktion des Browsers. Wenn du diese aktivierst, wird die automatische Skalierung deaktiviert."
+
+#: inc/admin.php:2077
+msgid "Automatically resize the images based on device and viewport"
+msgstr "Automatische Größenanpassung der Bilder basierend auf Gerät und Viewport"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2075
+msgid "Images load only when they're about to enter the viewport. %1$sLearn more%2$s"
+msgstr "Die Bilder werden nur geladen, wenn sie kurz davor sind, in den Viewport zu gelangen. %1$sMehr erfahren%2$s"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:1980
+msgid "Optimizes images for Retina (high-DPI) screens for sharper results. Always enabled for images under 150px wide. %1$sLearn more%2$s"
+msgstr "Optimiert Bilder für Retina-Bildschirme (hohe DPI) für schärfere Ergebnisse. Immer aktiviert für Bilder unter 150 px Breite. %1$sMehr erfahren%2$s"
+
+#: inc/admin.php:1963
+msgid "Enable generic placeholder color"
+msgstr "Generische Platzhalterfarbe aktivieren"
+
+#: inc/admin.php:1959
+msgid "Skip images above the fold"
+msgstr "Bilder im initial sichtbaren Bereich überspringen"
+
+#: inc/admin.php:1950
+msgid "Loading Method"
+msgstr "Lademethode"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:1945
+msgid "Enable this to use a generic transparent placeholder instead of the blurry images during lazy loading. %1$sLearn more%2$s"
+msgstr "Aktiviere dies, um einen generischen transparenten Platzhalter anstelle der verschwommenen Bilder beim Lazy Loading zu verwenden. %1$sMehr erfahren%2$s"
+
+#. translators: %s is the name of the html tag (e.g: <noscript> );
+#: inc/admin.php:1931
+msgid "Enable %s fallback"
+msgstr "Fallback für %s aktivieren"
+
+#: inc/admin.php:1923
+msgid "Video & iframes"
+msgstr "Video und iframes"
+
+#: inc/admin.php:1922
+msgid "Lazy load embedded videos and iframe content"
+msgstr "Eingebettete Videos und Iframe-Inhalte verzögert laden"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:1917
+msgid "Apply lazy loading to CSS background images. The toggle below enables it globally. The selector list is optional and only needed to extend coverage if certain elements are missed. %1$sLearn more%2$s"
+msgstr "Wende Lazy Loading auf CSS-Hintergrundbilder an. Der Umschalter unten aktiviert es global. Die Selektorliste ist optional und wird nur benötigt, um die Abdeckung zu erweitern, wenn bestimmte Elemente nicht berücksichtigt werden. %1$sMehr erfahren%2$s"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:1879
+msgid "When enabled, Optimole chooses the best format for your images, balancing quality with speed. It tries options like AVIF and WebP to keep visuals sharp and pages fast, though uncached images may take a bit longer to process. %1$sLearn more%2$s."
+msgstr "Wenn diese Funktion aktiviert ist, wählt Optimole das beste Format für deine Bilder aus und sorgt für einen Ausgleich zwischen Qualität und Geschwindigkeit. Es werden Optionen wie AVIF und WebP ausprobiert, um die Bilder scharf und die Seiten schnell zu machen, obwohl die Verarbeitung von nicht im Cache befindlichen Bildern etwas länger dauern kann. %1$sMehr erfahren%2$s."
+
+#: inc/admin.php:1867
+msgid "Create rule-based targeting by filename, page URL, class, and more."
+msgstr "Erstelle ein regelbasiertes Targeting nach Dateiname, Seiten-URL, Klasse und mehr."
+
+#: inc/admin.php:1866
+msgid "Set different watermarks for different image sizes."
+msgstr "Leg verschiedene Wasserzeichen für unterschiedliche Bildgrößen fest."
+
+#: inc/admin.php:1865
+msgid "Choose from multiple watermark positions and set opacity."
+msgstr "Wähle aus mehreren Wasserzeichen-Positionen und stelle die Deckkraft ein."
+
+#: inc/admin.php:1864
+msgid "Watermark rules and exclusions are fully managed in your Optimole Dashboard."
+msgstr "Die Regeln und Ausnahmen für Wasserzeichen werden vollständig in deinem Optimole-Dashboard verwaltet."
+
+#: inc/admin.php:1863
+msgid "Open Optimole Dashboard"
+msgstr "Optimole-Dashboard öffnen"
+
+#: inc/admin.php:1862
+msgid "Learn more"
+msgstr "Mehr erfahren"
+
+#: inc/admin.php:1861
+msgid "Watermarks"
+msgstr "Wasserzeichen"
+
+#: inc/admin.php:1860
+msgid "Protect your brand by adding a watermark to your images. Configure placement, opacity, and rules directly in your Optimole Dashboard."
+msgstr "Schütze deine Marke, indem du deinen Bildern ein Wasserzeichen hinzufügst. Konfiguriere die Platzierung, die Deckkraft und die Regeln direkt in deinem Optimole-Dashboard."
+
+#: inc/admin.php:1846
+msgid "Manage image offloading"
+msgstr "Auslagerung der Bilder verwalten"
+
+#: inc/admin.php:1845
+msgid "Adjust Compression"
+msgstr "Komprimierung anpassen"
+
+#: inc/admin.php:1844
+msgid "View Analytics"
+msgstr "Analysen anzeigen"
+
+#. translators: is used as singular when the number of images is 1 for a unit
+#. label.
+#: inc/admin.php:1841
+msgid "image"
+msgstr "Bild"
+
+#: inc/admin.php:1839
+msgid "Offloaded to cloud"
+msgstr "In die Cloud ausgelagert"
+
+#: inc/admin.php:1838
+msgid "Offloaded images"
+msgstr "Ausgelagerte Bilder"
+
+#. translators: 1 is the day when the visits reset, for example 1st of each
+#. month
+#: inc/admin.php:1713
+msgid "Each visitor to your site is counted as a unique daily user, regardless of their actions or return visits on the same day. Your visit count resets on %s."
+msgstr "Jeder Besucher deiner Website wird als einmaliger Benutzer pro Tag gezählt, unabhängig davon, was er tut oder ob er am selben Tag wiederkommt. Deine Anzahl an Besuchen wird am %s zurückgesetzt."
+
+#: inc/admin.php:1711
+msgid "What are visits?"
+msgstr "Was sind Besuche?"
+
+#: inc/admin.php:1670
+msgid "See what you'll get"
+msgstr "Schau, was du bekommst"
+
+#: inc/video_player.php:290
+msgid "Controls color"
+msgstr "Farben der Steuerung"
+
+#: inc/video_player.php:289
+msgid "Save"
+msgstr "Speichern"
+
+#. translators: %s is 'Optimole Dashboard'.
+#: inc/video_player.php:287
+msgid "Optimole Dashboard"
+msgstr "Optimole-Dashboard"
+
+#. translators: %s is 'Optimole Dashboard'.
+#: inc/video_player.php:287
+msgid "Invalid URL. Please enter a valid video URL from %s"
+msgstr "Ungültige URL. Bitte gib eine gültige Video-URL im %s ein"
+
+#: inc/video_player.php:285
+msgid "Hide Video Controls Bar"
+msgstr "Video-Steuerungsleiste ausblenden"
+
+#: inc/video_player.php:284
+msgid "Loop Video"
+msgstr "Video wiederholen"
+
+#: inc/video_player.php:283
+msgid "Change URL"
+msgstr "URL ändern"
+
+#: inc/video_player.php:282
+msgid "Enter the URL of the video you want to display."
+msgstr "Gib die URL des Videos ein, das du anzeigen möchtest."
+
+#: inc/video_player.php:281
+msgid "Video URL"
+msgstr "Video-URL"
+
+#: inc/video_player.php:280
+msgid "Aspect Ratio"
+msgstr "Seitenverhältnis"
+
+#: inc/video_player.php:278 inc/video_player.php:279
+msgid "Optimole Video"
+msgstr "Optimole-Video"
+
+#: inc/video_player.php:264
+msgid "Exit Fullscreen"
+msgstr "Vollbildmodus beenden"
+
+#: inc/video_player.php:263
+msgid "Fullscreen"
+msgstr "Vollbild"
+
+#: inc/video_player.php:262
+msgid "Unmute"
+msgstr "Stumm aus"
+
+#: inc/video_player.php:261
+msgid "Mute"
+msgstr "Stumm"
+
+#: inc/video_player.php:260
+msgid "Pause"
+msgstr "Pause"
+
+#: inc/video_player.php:259
+msgid "Play"
+msgstr "Wiedergeben"
+
+#: inc/media_rename/attachment_replace.php:83
+msgid "Could not move file."
+msgstr "Die Datei konnte nicht verschoben werden."
+
+#: inc/media_rename/attachment_replace.php:77
+msgid "The uploaded file type does not match the original file type."
+msgstr "Der hochgeladene Dateityp stimmt nicht mit dem ursprünglichen Dateityp überein."
+
+#: inc/media_rename/attachment_replace.php:70
+msgid "Original file does not exist."
+msgstr "Die Originaldatei existiert nicht."
+
+#: inc/media_rename/attachment_replace.php:63
+msgid "Error uploading file."
+msgstr "Fehler beim Hochladen der Datei."
+
+#: inc/media_rename/attachment_rename.php:70
+#: inc/media_rename/attachment_rename.php:76
+#: inc/media_rename/attachment_rename.php:97
+#: inc/media_rename/attachment_rename.php:120
+msgid "Error renaming file."
+msgstr "Fehler beim Umbenennen der Datei."
+
+#: inc/media_rename/attachment_edit.php:350
+msgid "File replaced successfully"
+msgstr "Die Datei wurde erfolgreich ersetzt"
+
+#: inc/media_rename/attachment_edit.php:339
+msgid "No file uploaded"
+msgstr "Es wurde keine Datei hochgeladen"
+
+#: inc/media_rename/attachment_edit.php:335
+msgid "You are not allowed to replace this file"
+msgstr "Du bist nicht berechtigt, diese Datei zu ersetzen"
+
+#. translators: %s is the 'Optimole'.
+#: inc/media_rename/attachment_edit.php:253
+msgid "Powered by %s"
+msgstr "Powered by %s"
+
+#: inc/media_rename/attachment_edit.php:251
+msgid "Optimole logo"
+msgstr "Optimole-Logo"
+
+#: inc/media_rename/attachment_edit.php:233
+msgid "This will replace the current file with the new one. This action cannot be undone."
+msgstr "Dadurch wird die aktuelle Datei durch die neue ersetzt. Diese Aktion kann nicht rückgängig gemacht werden."
+
+#: inc/media_rename/attachment_edit.php:223
+msgid "Click to select a file or drag & drop here"
+msgstr "Klicke hier, um eine Datei auszuwählen oder ziehe sie per Drag-and-drop hierher"
+
+#: inc/media_rename/attachment_edit.php:200
+msgid "Rename"
+msgstr "Umbenennen"
+
+#: inc/media_rename/attachment_edit.php:160
+#: inc/media_rename/attachment_edit.php:230
+msgid "Replace file"
+msgstr "Datei ersetzen"
+
+#: inc/media_rename/attachment_edit.php:154
+msgid "Rename attached file"
+msgstr "Angehängte Datei umbenennen"
+
+#: inc/media_rename/attachment_edit.php:97
+msgid "Error replacing file"
+msgstr "Fehler beim Ersetzen der Datei"
+
+#. translators: %s is the max file size in MB.
+#: inc/media_rename/attachment_edit.php:82
+msgid "File size is too large. Max file size is %sMB"
+msgstr "Die Dateigröße ist zu groß. Die maximale Dateigröße ist %s MB"
+
+#: inc/dashboard_widget.php:109
+msgid "View all stats"
+msgstr "Alle Statistiken anzeigen"
+
+#: inc/dashboard_widget.php:38
+msgid "Image Optimization Stats"
+msgstr "Bildoptimierungs-Statistiken"
+
+#. translators: 1 is the opening anchor tag, 2 is the closing anchor tag
+#: inc/admin.php:2314
+msgid "%1$sView all optimization tips%2$s"
+msgstr "%1$sAlle Optimierungs-Tipps anzeigen%2$s"
+
+#: inc/admin.php:2307
+msgid "All images are perfectly sized for devices"
+msgstr "Alle Bilder haben die perfekte Größe für die Geräte"
+
+#: inc/admin.php:2306
+msgid "Image Scalling"
+msgstr "Bildskalierung"
+
+#: inc/admin.php:2305
+msgid "Images load as visitors scroll"
+msgstr "Die Bilder werden geladen, wenn Besucher scrollen"
+
+#: inc/admin.php:2304
+msgid "Smart Lazy-Loading"
+msgstr "Intelligentes Lazy Loading"
+
+#: inc/admin.php:2303
+msgid "All images are optimized automatically"
+msgstr "Alle Bilder werden automatisch optimiert"
+
+#: inc/admin.php:2302
+msgid "Image Handling"
+msgstr "Bildverarbeitung"
+
+#: inc/admin.php:2301
+msgid "Optimization Status"
+msgstr "Optimierungs-Status"
+
+#: inc/admin.php:2197
+msgid "No, keep images on my website"
+msgstr "Nein, die Bilder sollen auf meiner Website bleiben"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2196
+msgid "Yes, Transfer to Optimole Cloud"
+msgstr "Ja, in die Optimole Cloud übertragen"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2195
+msgid "Based on this trend, you are likely to exceed your free quota before the month ends. To avoid any disruption in service, we strongly recommend %1$supgrading%2$s your plan or waiting until your traffic stabilizes before offloading your images. Do you still wish to proceed?"
+msgstr "Aufgrund dieses Trends wirst du dein kostenloses Kontingent wahrscheinlich noch vor Monatsende überschreiten. Um Unterbrechungen des Dienstes zu vermeiden, empfehlen wir dir dringend, deinen Tarif %1$supzugraden%2$s oder zu warten, bis sich dein Datenverkehr stabilisiert hat, bevor du deine Bilder auslagerst. Möchtest du trotzdem fortfahren?"
+
+#: inc/admin.php:2194
+msgid "Your site has already reached over 50% of your monthly visits limit within just two weeks."
+msgstr "Deine Website hat bereits innerhalb von nur zwei Wochen über 50 % deines monatlichen Besuchslimits erreicht."
+
+#: inc/admin.php:2192
+msgid "Go to Cloud Library"
+msgstr "Weiter zur Cloud-Bibliothek"
+
+#: inc/admin.php:2037
+msgid "Don't optimize and don't lazy-load images if"
+msgstr "Nicht optimieren und keine Bilder verzögert nachladen, wenn"
+
+#: inc/admin.php:1998
+msgid "Right"
+msgstr "Rechts"
+
+#: inc/admin.php:1997
+msgid "Left"
+msgstr "Links"
+
+#: inc/admin.php:1996
+msgid "Badge Position"
+msgstr "Badge-Position"
+
+#: inc/admin.php:1995
+msgid "Show only Optimole icon"
+msgstr "Nur das Optimole-Icon anzeigen"
+
+#: inc/admin.php:1994
+msgid "Badge settings"
+msgstr "Badge-Einstellungen"
+
+#: inc/admin.php:1962
+msgid "Indicate how many images at the top of each page should bypass lazy loading, ensuring they're instantly visible."
+msgstr "Gib an, wie viele Bilder oben auf jeder Seite das verzögerte Laden umgehen sollen, damit sie sofort sichtbar sind."
+
+#: inc/admin.php:1961
+msgid "Skip lazy loading for first images"
+msgstr "Lazy Loading für die ersten Bilder überspringen"
+
+#: inc/admin.php:1960
+msgid "Automatically detects and immediately loads images visible in the initial viewport. Detection is done with a lightweight client-side script that identifies what's visible on each user's screen. All other images will lazy load."
+msgstr "Erkennt automatisch Bilder, die im initialen Viewport sichtbar sind, und lädt sie sofort. Die Erkennung erfolgt mit einem leichtgewichtigen clientseitigen Skript, das erkennt, was auf dem Bildschirm des jeweiligen Benutzers sichtbar ist. Alle anderen Bilder werden verzögert geladen."
+
+#: inc/admin.php:1958
+msgid "All images will use lazy loading regardless of position."
+msgstr "Alle Bilder werden unabhängig von ihrer Position mit Lazy Loading geladen."
+
+#: inc/admin.php:1957
+msgid "Lazy Load All Images"
+msgstr "Alle Bilder verzögert laden"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:1953
+msgid "Choose how Optimole will handle lazy loading for images on your website. %1$sLearn more%2$s"
+msgstr "Leg fest, wie Optimole das verzögerte Laden von Bildern auf deiner Website handhaben soll. %1$sMehr erfahren%2$s"
+
+#: inc/admin.php:1874
+msgid "Customize each setting individually for complete control over image compression."
+msgstr "Du kannst jede Einstellung individuell anpassen und hast so die volle Kontrolle über die Bildkomprimierung."
+
+#: inc/admin.php:1873
+msgid "Delivers high-quality images by applying lossless or near-lossless optimization. Ensures images retain their sharpness and details while still benefiting from moderate file size reduction."
+msgstr "Liefert hochwertige Bilder durch verlustfreie oder nahezu verlustfreie Optimierung. Die Bilder behalten ihre Schärfe und Details und profitieren gleichzeitig von einer moderaten Reduzierung der Dateigröße."
+
+#: inc/admin.php:1872
+msgid "Prioritizes faster loading and smaller image sizes by applying a balanced level of lossy compression. This setting reduces file size significantly without severely degrading visual quality."
+msgstr "Legt den Schwerpunkt auf schnelleres Laden und kleinere Bildgrößen, indem eine ausgewogene verlustbehaftete Komprimierung angewendet wird. Diese Einstellung reduziert die Dateigröße erheblich, ohne die visuelle Qualität stark zu beeinträchtigen."
+
+#: inc/admin.php:1871
+msgid "Custom"
+msgstr "Individuell"
+
+#: inc/admin.php:1870
+msgid "Quality Optimized"
+msgstr "Qualitätsoptimiert"
+
+#: inc/admin.php:1869
+msgid "Speed Optimized"
+msgstr "Geschwindigkeitsoptimiert"
+
+#: inc/admin.php:1868
+msgid "Compression Mode"
+msgstr "Komprimierungsmodus"
+
+#: inc/admin.php:1857
+msgid "Configure settings"
+msgstr "Einstellungen konfigurieren"
+
+#: inc/admin.php:1856
+msgid "Advanced Settings"
+msgstr "Erweiterte Einstellungen"
+
+#: inc/admin.php:1855
+msgid "Free up space on your server"
+msgstr "Gib Platz auf deinem Server frei"
+
+#: inc/admin.php:1854
+msgid "Enable Offload Images"
+msgstr "Auslagerung der Bilder aktivieren"
+
+#: inc/admin.php:1853
+msgid "Clear cache"
+msgstr "Cache leeren"
+
+#: inc/admin.php:1852
+msgid "Clear Cached Images"
+msgstr "Zwischengespeicherte Bilder löschen"
+
+#: inc/admin.php:1850
+msgid "Run speed test"
+msgstr "Geschwindigkeitstest durchführen"
+
+#: inc/admin.php:1849
+msgid "Test Your Site Speed"
+msgstr "Teste deine Website-Geschwindigkeit"
+
+#: inc/admin.php:1837
+msgid "This month"
+msgstr "Diesen Monat"
+
+#: inc/admin.php:1836
+msgid "CDN Traffic"
+msgstr "CDN-Traffic"
+
+#: inc/admin.php:1835
+msgid "Average Reduction"
+msgstr "Durchschnittliche Reduzierung"
+
+#: inc/admin.php:1834
+msgid "Average Compression"
+msgstr "Durchschnittliche Komprimierung"
+
+#: inc/admin.php:1833
+msgid "Latest 10 images"
+msgstr "Neueste 10 Bilder"
+
+#. translators: 1 is the starting bold tag, 2 is the ending bold tag
+#: inc/admin.php:1750
+msgid "%1$sAdaptive optimization%2$s that perfectly sizes images for every visitor's device and connection speed."
+msgstr "%1$sAdaptive Optimierung%2$s, die die Größe der Bilder perfekt an das Gerät und die Verbindungsgeschwindigkeit jedes Besuchers anpasst."
+
+#. translators: 1 is the starting bold tag, 2 is the ending bold tag
+#: inc/admin.php:1741
+msgid "%1$sInstant global delivery%2$s with CloudFront CDN - your images load 2-3x faster worldwide from 450+ locations."
+msgstr "%1$sSofortige globale Bereitstellung%2$s mit CloudFront CDN – Deine Bilder werden weltweit von über 450 Standorten 2–3x schneller geladen."
+
+#. translators: 1 is the starting bold tag, 2 is the ending bold tag, 3 is the
+#. starting bold tag, 4 is the limit number, 5 is ending bold tag, 6 is the
+#. starting anchor tag for the docs link on how we count visits, 7 is the
+#. ending anchor tag.
+#: inc/admin.php:1726
+msgid "%1$sOptimize unlimited images%2$s for up to %3$s monthly %4$svisitors%5$s - completely FREE."
+msgstr "%1$sOptimiere unbegrenzt viele Bilder%2$s für bis zu %3$s monatliche %4$sBesucher%5$s – komplett KOSTENLOS."
+
+#. translators: 1 is the link to optimole.com
+#: inc/admin.php:1721
+msgid "Connect to Optimole's powerful image optimization service with a free API key from %s."
+msgstr "Verbinde dich mit dem leistungsstarken Bildoptimierungsdienst von Optimole mit einem kostenlosen API-Schlüssel von %s."
+
+#: inc/admin.php:1710
+msgid "Monthly visits:"
+msgstr "Monatliche Besuche:"
+
+#: inc/admin.php:1686
+msgid "Secure connection - your data is protected"
+msgstr "Sichere Verbindung – deine Daten sind geschützt"
+
+#: inc/admin.php:1669
+msgid "Setup is instant - just click connect"
+msgstr "Die Einrichtung erfolgt sofort – einfach auf Verbinden klicken"
+
+#: inc/admin.php:1668
+msgid "TRUSTED BY 200,000+ HAPPY USERS"
+msgstr "ÜBER 200.000 ZUFRIEDENE NUTZER VERTRAUEN UNS"
+
+#: inc/admin.php:1667
+msgid "Stop sacrificing image quality for page speed. Optimole delivers both."
+msgstr "Opfere nicht länger die Bildqualität für die Seitengeschwindigkeit. Optimole bietet beides."
+
+#: inc/admin.php:1666
+msgid "Supercharge Your WordPress Images in 60 Seconds"
+msgstr "Optimiere deine WordPress-Bilder in 60 Sekunden"
+
+#: inc/admin.php:1655
+msgid "Quick Actions"
+msgstr "Schnellaktionen"
+
+#: inc/admin.php:1654
+msgid "Optimole is handling all your images in real-time with our CloudFront CDN (450+ locations worldwide)"
+msgstr "Optimole verarbeitet alle deine Bilder in Echtzeit mit unserem CloudFront CDN (450+ Standorte weltweit)"
+
+#: inc/admin.php:1653
+msgid "All images are automatically optimized!"
+msgstr "Alle Bilder werden automatisch optimiert!"
+
+#: inc/admin.php:1652
+msgid "Image Optimization Overview"
+msgstr "Bildoptimierungs-Übersicht"
+
+#: inc/admin.php:1509
+msgid "Something went wrong. Please refresh the page and try again."
+msgstr "Etwas ist schiefgelaufen. Bitte aktualisiere die Seite und versuche es erneut."
+
+#: inc/admin.php:1508
+msgid "Super Page Cache is active!"
+msgstr "Super Page Cache ist aktiv!"
+
+#: inc/admin.php:1507
+msgid "Activating Super Page Cache..."
+msgstr "Aktivieren von Super Page Cache …"
+
+#: inc/admin.php:1506
+msgid "Installing Super Page Cache..."
+msgstr "Installieren von Super Page Cache …"
+
+#: inc/admin.php:1505
+msgid "Activate Super Page Cache"
+msgstr "Super Page Cache aktivieren"
+
+#: inc/admin.php:1504
+msgid "Get Super Page Cache"
+msgstr "Super Page Cache holen"
+
+#: inc/admin.php:1502
+msgid "Lightning Speed Disk Caching"
+msgstr "Blitzschnelles Festplatten-Caching"
+
+#: inc/admin.php:1501
+msgid "Works with Optimole optimization"
+msgstr "Arbeitet mit Optimole-Optimierung"
+
+#: inc/admin.php:1500
+msgid "Edge Caching (with Cloudflare free plan)"
+msgstr "Edge Caching (mit kostenlosem Cloudflare-Tarif)"
+
+#: inc/admin.php:1498
+msgid "Improve your Core Web Vitals with our recommended caching solution"
+msgstr "Verbessere deine Core Web Vitals mit unserer empfohlenen Caching-Lösung"
+
+#: inc/admin.php:1497
+msgid "Pair Optimole with Super Page Cache"
+msgstr "Optimole mit Super Page Cache kombinieren"
+
+#: inc/admin.php:1496
+msgid "Dismiss"
+msgstr "Ausblenden"
+
+#: inc/admin.php:1622
+msgid "Claim now"
+msgstr "Jetzt einlösen"
+
+#: inc/admin.php:1606 inc/admin.php:1619
+msgid "25% discount"
+msgstr "25 % Rabatt"
+
+#. translators: %1$s is the promo code, %2$s is the discount amount ('25% off')
+#: inc/admin.php:1617
+msgid "Use coupon code %1$s for an instant %2$s on Optimole yearly plans"
+msgstr "Verwende den Gutscheincode %1$s und erhalte sofort %2$s auf Optimole-Jahrestarife"
+
+#. translators: private sale
+#: inc/admin.php:1628
+msgid "private sale"
+msgstr "Privatverkauf"
+
+#. translators: private sale
+#: inc/admin.php:1628
+msgid "Black Friday %s"
+msgstr "%s am Black Friday"
+
+#. translators: number of days left
+#: inc/admin.php:1626
+msgid "Hurry up! only %s left"
+msgstr "Beeil dich! Nur noch %s übrig"
+
+#. translators: %1$s is the promo code, %2$s is the discount amount ('25 off')
+#: inc/admin.php:1604
+msgid "Use code %1$s for %2$s on yearly plans."
+msgstr "Verwende den Code %1$s für %2$s auf Jahrestarife."
+
+#: inc/admin.php:1598
+msgid "Private Sale"
+msgstr "Privatverkauf"
+
+#. translators: 1 - opening paragraph tag, 2 - PHP Version, 3 - opening bold
+#. tag, 4 - closing bold tag, 5 - opening bold tag, 6 - closing bold tag, 7 -
+#. opening anchor tag, 8 - closing anchor tag, 9 - closing paragraph tag
+#: optimole-wp.php:62
+msgid "%1$s You're using a PHP version lower than %2$s! %3$sOptimole%4$s requires at least %5$sPHP %2$s%6$s to function properly. Plugin has been deactivated. %7$sLearn more here%8$s. %9$s"
+msgstr "%1$s Du verwendest eine PHP-Version niedriger als %2$s! %3$sOptimole%4$s benötigt mindestens %5$sPHP %2$s%6$s, um richtig zu funktionieren. Das Plugin wurde deaktiviert. %7$sHier erfährst du mehr%8$s. %9$s"
+
+#: inc/settings.php:805
+msgid "Can not get new token from Optimole service"
+msgstr "Es kann kein neues Token vom Optimole-Dienst erhalten werden"
+
+#. translators: 1 start anchor tag to register page, 2 is ending anchor tag.
+#: inc/rest.php:504
+msgid "Error: This site has been previously registered. You can login to your account from %1$shere%2$s"
+msgstr "Fehler: Diese Website wurde bereits registriert. Du kannst dich %1$shier%2$s in deinem Konto anmelden"
+
+#: inc/rest.php:492
+msgid "Error: This email is already registered. Please choose another one."
+msgstr "Fehler: Diese E-Mail-Adresse ist bereits registriert. Bitte wähle eine andere."
+
+#: inc/rest.php:482
+msgid "Error creating account."
+msgstr "Fehler beim Erstellen des Kontos."
+
+#: inc/media_offload.php:1067
+msgid "Push Image to Optimole"
+msgstr "Bild zu Optimole verschieben"
+
+#: inc/media_offload.php:772 inc/media_offload.php:774
+#: inc/media_offload.php:1068
+msgid "Restore image to media library"
+msgstr "Bild in der Mediathek wiederherstellen"
+
+#: inc/media_offload.php:768 inc/media_offload.php:770
+msgid "Offload to Optimole"
+msgstr "Zu Optimole übertragen"
+
+#: inc/manager.php:197
+msgid "Optimized by Optimole"
+msgstr "Optimiert durch Optimole"
+
+#: inc/logger.php:225
+msgid "Invalid log type"
+msgstr "Ungültiger Protokoll-Typ"
+
+#: inc/logger.php:220
+msgid "Security check failed"
+msgstr "Die Sicherheitsprüfung ist fehlgeschlagen"
+
+#: inc/dam.php:436
+msgid "Loading"
+msgstr "Wird geladen"
+
+#. translators: 1 is new line tag, 2 is the starting anchor tag, 3 is the
+#. ending anchor tag and 4 is the domain name of Optimole
+#: inc/conflicts/w3_total_cache_cdn.php:27
+msgid "It seems your are using W3 Total Cache. %1$s If you are using the CSS or JavaScript minify/combine option from  %2$sW3 Total Cache -> Performance -> Minify page %3$s %1$s add this line: %4$s to Include external files/libraries and check Use regular expressions for file matching checkbox."
+msgstr "Es scheint, dass du W3 Total Cache verwendest. %1$s Wenn du die Option zum Minimieren/Kombinieren von CSS oder JavaScript unter %2$sW3 Total Cache -> Leistung -> Seite minimieren %3$s %1$s nutzt, füge diese Zeile „%4$s“ bei „Externe Dateien/Bibliotheken einbeziehen“ hinzu und setze ein Häkchen bei „Reguläre Ausdrücke für den Abgleich von Dateien verwenden“."
+
+#. translators: 1 is the start of the bold tag, 2 is ending bold tag, 3 is new
+#. line tag, 4 is anchor tag start, 5 is ending anchor tag, 6 is start of bold
+#. tag, 7 is ending bold tag
+#: inc/conflicts/jetpack_photon.php:26
+msgid "It seems your are using %1$sJetpack%2$s with site accelerator option enabled for images. %3$s To avoid any possible conflicts with Optimole replacement mechanism, you can go to %4$sJetpack -> Perfomance%5$s and turn off the site accelerator option for %6$simages%7$s"
+msgstr "Es scheint, als würdest du %1$sJetpack%2$s mit aktivierter Website-Beschleuniger-Option für Bilder verwenden. %3$s Um mögliche Konflikte mit dem Optimole-Ersatzmechanismus zu vermeiden, kannst du unter %4$sJetpack -> Leistung%5$s die Option Website-Beschleuniger für %6$sBilder%7$s deaktivieren"
+
+#. translators: 1 is the start of the bold tag, 2 is ending bold tag, 3 is new
+#. line tag, 4 is anchor tag start, 5 is ending anchor tag
+#: inc/conflicts/divi.php:26
+msgid "It seems your are using %1$sDivi%2$s right now. %3$s In order for Optimole to replace the images in your Divi pages, you will need to go to %4$sDivi -> Theme Options -> Builder -> Advanced -> Static CSS File Generations%5$s and click on Clear for the images to be processed. "
+msgstr "Es scheint, als würdest du derzeit %1$sDivi%2$s verwenden. %3$s Damit Optimole die Bilder in deinen Divi-Seiten ersetzen kann, musst du zu %4$sDivi -> Theme-Optionen -> Builder -> Fortgeschritten -> Erzeugung der statischen CSS-Datei%5$s gehen und auf Leeren klicken, damit die Bilder verarbeitet werden. "
+
+#: inc/cli/cli_setting.php:122
+msgid "No setting to update"
+msgstr "Keine Einstellung zu aktualisieren"
+
+#: inc/cli/cli_setting.php:43 inc/rest.php:391 inc/rest.php:429
+msgid "Can not connect to Optimole service"
+msgstr "Es kann keine Verbindung zum Optimole-Dienst hergestellt werden"
+
+#. translators: errors details
+#. translators: Error details
+#: inc/cli/cli_setting.php:40 inc/rest.php:389 inc/rest.php:427
+#: inc/settings.php:802
+msgid ". ERROR details: %s"
+msgstr ". FEHLER-Details: %s"
+
+#: inc/cli/cli_media.php:69
+msgid "Progress bar"
+msgstr "Fortschrittsbalken"
+
+#: inc/cli/cli_media.php:47
+msgid "You need to have the offload_media option enabled in order to use this command"
+msgstr "Du musst die Option offload_media aktiviert haben, um diesen Befehl verwenden zu können"
+
+#: inc/cli/cli_media.php:43
+msgid "You have reached the maximum offloading limit of images. To increase the offload limit and for more information, contact our support."
+msgstr "Du hast das maximale Übertragungs-Limit für Bilder erreicht. Um das Übertragungs-Limit zu erhöhen und weitere Informationen zu erhalten, kontaktiere unseren Support."
+
+#: inc/cli/cli_media.php:41
+msgid "All images have been uploaded to your media library"
+msgstr "Alle Bilder wurden in deine Mediathek hochgeladen"
+
+#: inc/cli/cli_media.php:40
+msgid "Moving all images back to your media library"
+msgstr "Verschieben aller Bilder zurück in deine Mediathek"
+
+#: inc/cli/cli_media.php:37
+msgid "All images have been uploaded to Optimole Cloud"
+msgstr "Alle Bilder wurden in die Optimole Cloud hochgeladen"
+
+#: inc/cli/cli_media.php:36
+msgid "Moving all images to Optimole Cloud"
+msgstr "Alle Bilder in die Optimole Cloud verschieben"
+
+#: inc/api.php:451 inc/api.php:463 inc/lazyload_replacer.php:638
+#: inc/lazyload_replacer.php:651 inc/main.php:264 inc/main.php:274
+#: inc/manager.php:835 inc/manager.php:848 inc/tag_replacer.php:970
+#: inc/tag_replacer.php:983 inc/url_replacer.php:338 inc/url_replacer.php:351
+msgid "Cheatin&#8217; huh?"
+msgstr "Schummeln, was?"
+
+#. translators: 1 start of the italic tag, 2 is the end of italic tag,  3 is
+#. starting anchor tag, 4 is the ending anchor tag.
+#: inc/api.php:195
+msgid "It seems Optimole is having trouble reaching your website. This issue often occurs if your website is private, local, or protected by a firewall. But don't stress – it's an easy fix! Ensure your website is live and accessible to the public. If a firewall is in place, just tweak the settings to allow the %1$sOptimole(1.0)%2$s user agent access to your website. %3$sLearn More%4$s"
+msgstr "Es scheint, dass Optimole Probleme hat, deine Website zu erreichen. Dieses Problem tritt häufig auf, wenn deine Website privat, lokal oder durch eine Firewall geschützt ist. Aber kein Stress – es ist ganz einfach zu beheben! Stelle sicher, dass deine Website aktiv und öffentlich zugänglich ist. Wenn du eine Firewall hast, ändere einfach die Einstellungen so, dass der %1$sOptimole(1.0)%2$s User Agent auf deine Website zugreifen kann. %3$sMehr erfahren%4$s"
+
+#: inc/api.php:140
+msgid "You can clear cache only once per 5 minutes."
+msgstr "Du kannst den Cache nur einmal alle 5 Minuten löschen."
+
+#. translators: 1 is code to disable cron, 2 value of the constant
+#: inc/admin.php:2299
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#. translators: 1 is code to disable cron, 2 value of the constant
+#: inc/admin.php:2298
+msgid "It seems that you have the %1$s constant defined as %2$s. The offloading process uses cron events to offload the images in the background. Please remove the constant from your wp-config.php file in order for the offloading process to work."
+msgstr "Es scheint, dass du die Konstante %1$s als %2$s definiert hast. Der Übertragungs-Prozess verwendet Cron-Ereignisse, um die Bilder im Hintergrund zu übertragen. Bitte entferne die Konstante aus deiner wp-config.php-Datei, damit der Übertragungs-Prozess funktioniert."
+
+#: inc/admin.php:2296
+msgid "Close"
+msgstr "Schließen"
+
+#: inc/admin.php:2293
+msgid "❤️❤️❤️ Our moles just nailed it, this one is <strong>{ratio}</strong> smaller."
+msgstr "❤️❤️❤️ Unsere Maulwürfe haben es geschafft, dieses ist <strong>{ratio}</strong> kleiner."
+
+#: inc/admin.php:2292
+msgid "🤓 We are on the right track, <strong>{ratio}</strong> squeezed."
+msgstr "🤓 Wir sind auf dem richtigen Weg, <strong>{ratio}</strong> zusammengedrückt."
+
+#: inc/admin.php:2291
+msgid "😬 Not that much, just <strong>{ratio}</strong> smaller."
+msgstr "😬 Nicht so viel, nur <strong>{ratio}</strong> kleiner."
+
+#: inc/admin.php:2290
+msgid "🙉 We couldn't do better, this image is already optimized at maximum."
+msgstr "🙉 Wir konnten es nicht besser machen, dieses Bild ist bereits maximal optimiert."
+
+#: inc/admin.php:2289
+msgid "optimized images"
+msgstr "optimierte Bilder"
+
+#: inc/admin.php:2288
+msgid "smaller"
+msgstr "kleiner"
+
+#: inc/admin.php:2287
+msgid "Saved"
+msgstr "Gespeichert"
+
+#: inc/admin.php:2286
+msgid "Last"
+msgstr "Zuletzt"
+
+#: inc/admin.php:2285
+msgid "Loading your optimized images..."
+msgstr "Laden deiner optimierten Bilder …"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2284
+msgid "Optimization"
+msgstr "Optimierung"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2283
+msgid "We are currently optimizing your images. Meanwhile you can visit your %1$shomepage%2$s and check how our plugin performs."
+msgstr "Wir sind gerade dabei, deine Bilder zu optimieren. In der Zwischenzeit kannst du deine %1$sHomepage%2$s besuchen und prüfen, wie unser Plugin funktioniert."
+
+#: inc/admin.php:2278
+msgid "A value between 0 and 300 for the scale of the watermark (100 is the original size and 300 is 3x the size) relative to the resulting image size. If set to 0 it will default to the original size."
+msgstr "Ein Wert zwischen 0 und 300 für die Skalierung des Wasserzeichens (100 ist die Originalgröße und 300 ist die dreifache Größe) im Verhältnis zur resultierenden Bildgröße. Bei einem Wert von 0 wird standardmäßig die Originalgröße verwendet."
+
+#: inc/admin.php:2277
+msgid "Watermark scale"
+msgstr "Wasserzeichen-Maßstab"
+
+#: inc/admin.php:2276
+msgid "Scale"
+msgstr "Skalieren"
+
+#: inc/admin.php:2275
+msgid "Offset the watermark from set position on X and Y axis. Values can be positive or negative."
+msgstr "Versetzt das Wasserzeichen von der eingestellten Position auf der X- und Y-Achse. Die Werte können positiv oder negativ sein."
+
+#: inc/admin.php:2274
+msgid "Watermark offset"
+msgstr "Wasserzeichen-Versatz"
+
+#: inc/admin.php:2273
+msgid "Offset Y"
+msgstr "Versatz Y"
+
+#: inc/admin.php:2272
+msgid "Offset X"
+msgstr "Versatz X"
+
+#: inc/admin.php:2271
+msgid "South-East"
+msgstr "Südost"
+
+#: inc/admin.php:2270
+msgid "South"
+msgstr "Süd"
+
+#: inc/admin.php:2269
+msgid "South-West"
+msgstr "Südwest"
+
+#: inc/admin.php:2268
+msgid "East"
+msgstr "Ost"
+
+#: inc/admin.php:2267
+msgid "Center"
+msgstr "Zentriert"
+
+#: inc/admin.php:2266
+msgid "West"
+msgstr "West"
+
+#: inc/admin.php:2265
+msgid "North-East"
+msgstr "Nordost"
+
+#: inc/admin.php:2264
+msgid "North"
+msgstr "Nord"
+
+#: inc/admin.php:2263
+msgid "North-West"
+msgstr "Nordwest"
+
+#: inc/admin.php:2262
+msgid "The place relative to the image where the watermark should be placed."
+msgstr "Die Stelle, relativ zum Bild, an der das Wasserzeichen platziert werden soll."
+
+#: inc/admin.php:2261
+msgid "Watermark position"
+msgstr "Wasserzeichen-Position"
+
+#: inc/admin.php:2260
+msgid "A value between 0 and 100 for the opacity level. If set to 0 it will disable the watermark."
+msgstr "Ein Wert zwischen 0 und 100 für die Deckkraftstufe. Bei einem Wert von 0 wird das Wasserzeichen deaktiviert."
+
+#: inc/admin.php:2259
+msgid "Watermark opacity"
+msgstr "Wasserzeichen-Deckkraft"
+
+#: inc/admin.php:2258
+msgid "Opacity"
+msgstr "Deckkraft"
+
+#: inc/admin.php:2257
+msgid "The active watermark to use from the list of uploaded watermarks."
+msgstr "Das aktive Wasserzeichen, das aus der Liste der hochgeladenen Wasserzeichen verwendet werden soll."
+
+#: inc/admin.php:2256
+msgid "Active watermark"
+msgstr "Aktives Wasserzeichen"
+
+#: inc/admin.php:2255
+msgid "Add new watermark"
+msgstr "Neues Wasserzeichen hinzufügen"
+
+#: inc/admin.php:2254
+msgid "Upload"
+msgstr "Hochladen"
+
+#: inc/admin.php:2253
+msgid "Action"
+msgstr "Aktion"
+
+#: inc/admin.php:2252
+msgid "Type"
+msgstr "Typ"
+
+#: inc/admin.php:2251
+msgid "Name"
+msgstr "Name"
+
+#: inc/admin.php:2250
+msgid "ID"
+msgstr "ID"
+
+#: inc/admin.php:2249
+msgid "No images available for watermark. Please upload one."
+msgstr "Es sind keine Bilder für Wasserzeichen verfügbar. Bitte lade eines hoch."
+
+#: inc/admin.php:2248
+msgid "Watermarks position settings"
+msgstr "Einstellungen für die Position des Wasserzeichens"
+
+#: inc/admin.php:2247
+msgid "Possible watermarks"
+msgstr "Mögliche Wasserzeichen"
+
+#: inc/admin.php:2246
+msgid "You are allowed to save maximum 5 images."
+msgstr "Du darfst maximal 5 Bilder speichern."
+
+#: inc/admin.php:2245
+msgid "Removing watermark resource ..."
+msgstr "Entfernen der Wasserzeichen-Ressource …"
+
+#: inc/admin.php:2244 inc/admin.php:2282
+msgid "Image"
+msgstr "Bild"
+
+#: inc/admin.php:2241
+msgid "Custom Integration"
+msgstr "Individuelle Integration"
+
+#: inc/admin.php:2240
+msgid "Exclude from Optimizing or Lazy Loading"
+msgstr "Vom Optimieren oder Lazy Loading ausschließen"
+
+#: inc/admin.php:2239
+msgid "Cloud Library Browsing"
+msgstr "Cloud-Bibliothek durchstöbern"
+
+#: inc/admin.php:2238
+msgid "API"
+msgstr "API"
+
+#: inc/admin.php:2237
+msgid "Adding Watermarks to your images"
+msgstr "Hinzufügen von Wasserzeichen zu deinen Bildern"
+
+#: inc/admin.php:2236
+msgid "How Optimole can serve WebP images"
+msgstr "So liefert Optimole WebP-Bilder aus"
+
+#: inc/admin.php:2235
+msgid "Getting Started With Optimole"
+msgstr "Erste Schritte mit Optimole"
+
+#: inc/admin.php:2234
+msgid "Image Processing"
+msgstr "Bildverarbeitung"
+
+#: inc/admin.php:2233
+msgid "Visits based plan"
+msgstr "Auf Besuchen basierender Tarif"
+
+#: inc/admin.php:2232
+msgid "What happens if I exceed plan limits?"
+msgstr "Was passiert, wenn ich das Limit des Tarifs überschreite?"
+
+#: inc/admin.php:2231
+msgid "How Optimole counts the visitors?"
+msgstr "Wie zählt Optimole die Besucher?"
+
+#: inc/admin.php:2230
+msgid "Account"
+msgstr "Konto"
+
+#: inc/admin.php:2229
+msgid "View Changelog"
+msgstr "Änderungsprotokoll anzeigen"
+
+#: inc/admin.php:2228
+msgid "Check our changelog to see latest fixes and features implemented."
+msgstr "In unserem Änderungsprotokoll findest du die neuesten Fehlerbehebungen und implementierten Funktionen."
+
+#: inc/admin.php:2227
+msgid "Changelog"
+msgstr "Änderungsprotokoll"
+
+#: inc/admin.php:2226
+msgid "Submit a Feature Request"
+msgstr "Eine Funktionsanfrage einreichen"
+
+#: inc/admin.php:2225
+msgid "Help us improve Optimole by sharing feedback and ideas for new features."
+msgstr "Hilf uns, Optimole zu verbessern, indem du uns dein Feedback und deine Ideen für neue Funktionen mitteilst."
+
+#: inc/admin.php:2224
+msgid "Have a feature request?"
+msgstr "Hast du eine Funktionsanfrage?"
+
+#: inc/admin.php:2223
+msgid "Contact Support"
+msgstr "Support kontaktieren"
+
+#: inc/admin.php:2222
+msgid "Need help or got a question? Submit a ticket and we'll get back to you."
+msgstr "Du brauchst Hilfe oder hast eine Frage? Reiche ein Ticket ein und wir melden uns bei dir."
+
+#: inc/admin.php:2221
+msgid "Get Support"
+msgstr "Support anfordern"
+
+#: inc/admin.php:2220
+msgid "Docs Page"
+msgstr "Dokumentationen-Seite"
+
+#: inc/admin.php:2219
+msgid "Documentation"
+msgstr "Dokumentation"
+
+#: inc/admin.php:2218
+msgid "Help and Support"
+msgstr "Hilfe und Support"
+
+#: inc/admin.php:2191
+msgid "Cancel the transfer from Optimole"
+msgstr "Die Übertragung von Optimole abbrechen"
+
+#: inc/admin.php:2190
+msgid "Canceling will halt the ongoing process, and any remaining images will stay in the Optimole Cloud. To transfer images to the Optimole Cloud, use the Offloading option."
+msgstr "Wenn du den Vorgang abbrichst, wird der laufende Prozess gestoppt und alle verbleibenden Bilder bleiben in der Optimole Cloud. Um Bilder in die Optimole Cloud zu übertragen, verwende die Option Übertragung."
+
+#: inc/admin.php:2188
+msgid "Transfer back from Optimole"
+msgstr "Von Optimole zurückübertragen"
+
+#: inc/admin.php:2187
+msgid "This process will transfer back all images from Optimole to your website and may take a while, depending on the number of images."
+msgstr "Dieser Vorgang überträgt alle Bilder von Optimole zurück auf deine Website und kann je nach Anzahl der Bilder eine Weile dauern."
+
+#: inc/admin.php:2186
+msgid "Transfer back all images to your site"
+msgstr "Alle Bilder auf deine Website zurückübertragen"
+
+#: inc/admin.php:2185
+msgid "Cancel the transfer to Optimole"
+msgstr "Die Übertragung an Optimole abbrechen"
+
+#: inc/admin.php:2184
+msgid "This will halt the ongoing process. To retrieve images transferred from the Optimole Cloud, use the Rollback option."
+msgstr "Dadurch wird der laufende Prozess angehalten. Um die von der Optimole Cloud übertragenen Bilder zurückzuholen, verwende die Zurückholen-Option."
+
+#: inc/admin.php:2183 inc/admin.php:2189
+msgid "Are you sure?"
+msgstr "Bist du dir sicher?"
+
+#: inc/admin.php:2182
+msgid "Transfer to Optimole Cloud"
+msgstr "Übertragung in die Optimole Cloud"
+
+#: inc/admin.php:2181
+msgid "This process will transfer and store your images in Optimole Cloud and may take a while, depending on the number of images."
+msgstr "Dieser Vorgang überträgt und speichert deine Bilder in der Optimole Cloud und kann je nach Anzahl der Bilder eine Weile dauern."
+
+#: inc/admin.php:2180
+msgid "Transfer your images to Optimole"
+msgstr "Deine Bilder zu Optimole übertragen"
+
+#: inc/admin.php:2179
+msgid "Error clearing cache. Please reload the page and try again."
+msgstr "Fehler beim Löschen des Caches. Bitte lade die Seite neu und versuche es erneut."
+
+#: inc/admin.php:2178
+msgid "Cache cleared"
+msgstr "Der Cache wurde geleert"
+
+#: inc/admin.php:2177
+msgid "Error saving settings. Please reload the page and try again."
+msgstr "Es gab einen Fehler beim Speichern der Einstellungen. Bitte lade die Seite neu und versuche es erneut."
+
+#: inc/admin.php:2176
+msgid "Settings saved"
+msgstr "Einstellungen gesichert"
+
+#: inc/admin.php:2175 inc/media_rename/attachment_edit.php:231
+msgid "Clear"
+msgstr "Leeren"
+
+#: inc/admin.php:2174
+msgid "Placeholder Color"
+msgstr "Platzhalter-Farbe"
+
+#: inc/admin.php:2173
+msgid "Do not restore images after disabling"
+msgstr "Bilder nach der Deaktivierung nicht wiederherstellen"
+
+#: inc/admin.php:2172
+msgid "Restore images after disabling"
+msgstr "Bilder nach der Deaktivierung wiederherstellen"
+
+#. translators: Current limit of offloaded images
+#: inc/admin.php:2171
+msgid "Please select one ..."
+msgstr "Bitte wähle eine ..."
+
+#. translators: Current limit of offloaded images
+#: inc/admin.php:2170
+msgid "You have reached the maximum offloading limit of %s images. To increase the offload limit and for more information, contact our support."
+msgstr "Du hast das maximale Übertragungs-Limit von %s Bildern erreicht. Um das Übertragungs-Limit zu erhöhen und weitere Informationen zu erhalten, kontaktiere unseren Support."
+
+#: inc/admin.php:2169
+msgid "Images are stored only in Optimole Cloud, allowing you to save space on your server. When enabled, any new images you upload in the Media Library will be automatically transferred to Optimole Cloud."
+msgstr "Die Bilder werden ausschließlich in der Optimole Cloud gespeichert, damit du Platz auf deinem Server sparen kannst. Wenn diese Funktion aktiviert ist, werden alle neuen Bilder, die du in der Mediathek hochlädst, automatisch in die Optimole Cloud übertragen."
+
+#: inc/admin.php:2168
+msgid "Optimole Cloud only"
+msgstr "Nur Optimole Cloud"
+
+#: inc/admin.php:2167
+msgid "Images are stored in both the local WordPress media library and Optimole Cloud."
+msgstr "Die Bilder werden sowohl in der lokalen WordPress-Mediathek als auch in der Optimole Cloud gespeichert."
+
+#: inc/admin.php:2166
+msgid "Optimole Cloud and your website"
+msgstr "Optimole Cloud und deine Website"
+
+#. translators: 1 is the starting bold tag, 2 is the ending bold tag
+#: inc/admin.php:2165
+msgid "Where your images are stored"
+msgstr "Wo deine Bilder gespeichert werden"
+
+#. translators: 1 is the starting bold tag, 2 is the ending bold tag
+#: inc/admin.php:2164
+msgid "%s Your images have been restored to your website."
+msgstr "%s Deine Bilder wurden auf deiner Website wiederhergestellt."
+
+#. translators: 1 is the starting bold tag, 2 is the ending bold tag
+#: inc/admin.php:2163 inc/admin.php:2164
+msgid "Transfer Complete."
+msgstr "Die Übertragung ist abgeschlossen."
+
+#. translators: 1 is the starting bold tag, 2 is the ending bold tag
+#: inc/admin.php:2163
+msgid "%s Your images are now stored in Optimole Cloud."
+msgstr "%s Deine Bilder sind jetzt in der Optimole Cloud gespeichert."
+
+#: inc/admin.php:2162
+msgid "Please disable those plugins temporarily in order for Optimole to rollback the images to your site."
+msgstr "Bitte deaktiviere diese Plugins vorübergehend, damit Optimole die Bilder auf deine Website zurückholen kann."
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2161
+msgid "We have detected the following plugins that conflict with the offload features:"
+msgstr "Wir haben die folgenden Plugins entdeckt, die mit den Übertragungs-Funktionen in Konflikt stehen:"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2160
+msgid "You are not required to use the offload functionality for the plugin to work, use it if you want to save on hosting space. %1$s More details%2$s"
+msgstr "Du musst die Übertragungs-Funktion nicht nutzen, damit das Plugin funktioniert. Nutze sie, wenn du Speicherplatz sparen willst. %1$s Mehr Details%2$s"
+
+#: inc/admin.php:2159
+msgid "If you turn off this option, you will not be able to see the images in the Media Library without restoring the images first. Do you want to restore the images to your site upon turning off the option?"
+msgstr "Wenn du diese Option deaktivierst, kannst du die Bilder in der Mediathek nicht mehr sehen, ohne sie vorher wiederherzustellen. Willst du die Bilder auf deiner Website wiederherstellen, wenn du die Option deaktivierst?"
+
+#: inc/admin.php:2158
+msgid "Important! Please read carefully"
+msgstr "Wichtig! Bitte sorgfältig lesen"
+
+#: inc/admin.php:2157
+msgid "You can try again to offload the rest of the images to Optimole."
+msgstr "Du kannst erneut versuchen, die restlichen Bilder auf Optimole zu übertragen."
+
+#: inc/admin.php:2156
+msgid "The selected images have been restored to your server, you can check them"
+msgstr "Die ausgewählten Bilder wurden auf deinem Server wiederhergestellt, du kannst sie überprüfen"
+
+#: inc/admin.php:2155
+msgid "The selected images have been offloaded to our servers, you can check them"
+msgstr "Die ausgewählten Bilder wurden auf unsere Server übertragen, du kannst sie überprüfen"
+
+#: inc/admin.php:2154
+msgid "An unexpected error occured while offloading all existing images from your site to Optimole"
+msgstr "Ein unerwarteter Fehler ist beim Auslagern aller vorhandenen Bilder von deiner Website zu Optimole aufgetreten"
+
+#: inc/admin.php:2153
+msgid "Remove notice"
+msgstr "Hinweis entfernen"
+
+#: inc/admin.php:2152
+msgid "You can try again to pull back the rest of the images."
+msgstr "Du kannst erneut versuchen, die restlichen Bilder zurückzuholen."
+
+#: inc/admin.php:2151
+msgid "An unexpected error occured while pulling the offloaded back to your site"
+msgstr "Ein unerwarteter Fehler ist aufgetreten, während die übertragenen Daten auf deine Website zurückgeholt wurden"
+
+#: inc/admin.php:2150
+msgid "Moving images into your media library..."
+msgstr "Verschieben der Bilder in deine Mediathek …"
+
+#: inc/admin.php:2149
+msgid "View Full Logs"
+msgstr "Vollständige Protokolle anzeigen"
+
+#: inc/admin.php:2148
+msgid "Hide Logs"
+msgstr "Protokolle ausblenden"
+
+#: inc/admin.php:2147
+msgid "Show Logs"
+msgstr "Protokolle anzeigen"
+
+#: inc/admin.php:2146
+msgid "Stop"
+msgstr "Stopp"
+
+#: inc/admin.php:2145
+msgid "minutes"
+msgstr "Minuten"
+
+#: inc/admin.php:2144
+msgid "Active Lazy-loading Exclusions"
+msgstr "Aktive Lazy-Loading-Ausschlüsse"
+
+#: inc/admin.php:2143
+msgid "Active Optimizing Exclusions"
+msgstr "Aktive Optimierungsausschlüsse"
+
+#: inc/admin.php:2142
+msgid "We are currently processing your images in the background. Leaving the page won't stop the process."
+msgstr "Wir verarbeiten deine Bilder gerade im Hintergrund. Wenn du die Seite verlässt, wird der Prozess nicht unterbrochen."
+
+#: inc/admin.php:2141
+msgid "We are currently calculating the estimated time for this job..."
+msgstr "Wir berechnen gerade die geschätzte Zeit für diese Aufgabe ..."
+
+#: inc/admin.php:2140
+msgid "Estimated time remaining"
+msgstr "Geschätzte verbleibende Zeit"
+
+#: inc/admin.php:2139
+msgid "Moving your images to Optimole..."
+msgstr "Verschieben deiner Bilder zu Optimole ..."
+
+#: inc/admin.php:2138
+msgid "Rollback images"
+msgstr "Bilder zurückholen"
+
+#: inc/admin.php:2137
+msgid "Sync images"
+msgstr "Bilder synchronisieren"
+
+#: inc/admin.php:2136
+msgid "Pull all the offloaded images to Optimole Cloud back to your server."
+msgstr "Hol alle in die Optimole Cloud ausgelagerten Bilder zurück auf deinen Server."
+
+#: inc/admin.php:2135
+msgid "Right now all the new images uploaded to your site are moved automatically to Optimole Cloud. In order to offload the existing ones, please click Sync images and wait for the process to finish. You can rollback anytime."
+msgstr "Im Moment werden alle neuen Bilder, die du auf deine Website hochlädst, automatisch in die Optimole Cloud verschoben. Um die vorhandenen Bilder zu übertragen, klicke bitte auf Bilder synchronisieren und warte, bis der Vorgang abgeschlossen ist. Du kannst den Vorgang jederzeit rückgängig machen."
+
+#: inc/admin.php:2134
+msgid "Restore Offloaded Images"
+msgstr "Übertragene Bilder wiederherstellen"
+
+#: inc/admin.php:2133
+msgid "Offload Existing Images"
+msgstr "Vorhandene Bilder übertragen"
+
+#: inc/admin.php:2132
+msgid "Once Optimole will serve your JS files, it will also minify the files and serve them via CDN."
+msgstr "Sobald Optimole deine JS-Dateien bereitstellt, wird es die Dateien auch minimieren und sie über das CDN bereitstellen."
+
+#: inc/admin.php:2131
+msgid "Minify JS files"
+msgstr "JS-Dateien minimieren"
+
+#: inc/admin.php:2130
+msgid "Once Optimole will serve your CSS files, it will also minify the files and serve them via CDN."
+msgstr "Sobald Optimole deine CSS-Dateien bereitstellt, werden die Dateien auch minimiert und über das CDN ausgeliefert."
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2129
+msgid "Minify CSS files"
+msgstr "CSS-Dateien minimieren"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2128
+msgid "When enabled, Optimole will optimize your CSS and JS files and, if they contain images, the images as well, then deliver them via the CDN for faster webpage loading. %1$sLearn more%2$s"
+msgstr "Wenn diese Funktion aktiviert ist, optimiert Optimole deine CSS- und JS-Dateien und, wenn sie Bilder enthalten, auch die Bilder und liefert sie dann über das CDN aus, damit die Webseiten schneller geladen werden. %1$sMehr erfahren%2$s"
+
+#: inc/admin.php:2127
+msgid "Serve CSS & JS Through Optimole"
+msgstr "CSS und JS über Optimole bereitstellen"
+
+#: inc/admin.php:2126
+msgid "crop"
+msgstr "Zuschneiden"
+
+#: inc/admin.php:2125
+msgid "Width"
+msgstr "Breite"
+
+#: inc/admin.php:2107
+msgid "View sample image"
+msgstr "Beispielbild ansehen"
+
+#: inc/admin.php:2106
+msgid "Off"
+msgstr "Aus"
+
+#: inc/admin.php:2105
+msgid "On"
+msgstr "Ein"
+
+#: inc/admin.php:2101
+msgid "Admin bar status"
+msgstr "Status der Adminleiste"
+
+#: inc/admin.php:2100
+msgid "Browse images only from the specified websites. Otherwise, images from all websites will appear in the library."
+msgstr "Nur Bilder von den angegebenen Websites durchsuchen. Andernfalls werden die Bilder von allen Websites in der Bibliothek angezeigt."
+
+#: inc/admin.php:2099
+msgid "Show images only from these sites:"
+msgstr "Nur Bilder von diesen Websites anzeigen:"
+
+#: inc/admin.php:2098
+msgid "Select a website"
+msgstr "Wähle eine Website aus"
+
+#: inc/admin.php:2097
+msgid "View images from all sites"
+msgstr "Bilder von allen Websites anzeigen"
+
+#: inc/admin.php:2096
+msgid "Currently viewing images from all sites"
+msgstr "Derzeit werden Bilder von allen Websites angezeigt"
+
+#: inc/admin.php:2095
+msgid "Site:"
+msgstr "Website:"
+
+#: inc/admin.php:2094
+msgid "CURRENTLY SHOWING IMAGES FROM"
+msgstr "ZEIGT DERZEIT BILDER VON"
+
+#: inc/admin.php:2093
+msgid "Show"
+msgstr "Anzeigen"
+
+#: inc/admin.php:2092 inc/admin.php:2279
+msgid "Save changes"
+msgstr "Änderungen speichern"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2091
+msgid "Loading a sample image."
+msgstr "Laden eines Beispielbildes."
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2090
+msgid "When enabled, Optimole will manage, optimize, and serve all the images on your website. If disabled, optimization, lazy loading, and other features will no longer be available. %1$sLearn more%2$s"
+msgstr "Wenn diese Funktion aktiviert ist, verwaltet, optimiert und liefert Optimole alle Bilder auf deiner Website. Wenn du sie deaktivierst, stehen die Optimierung, das Lazy Loading und andere Funktionen nicht mehr zur Verfügung. %1$sMehr erfahren%2$s"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2089
+msgid "Removes extra information from images, including EXIF and IPTC data (like camera settings and copyright info). This makes the pictures lighter and helps your website load faster. %1$sLearn more%2$s"
+msgstr "Entfernt zusätzliche Informationen aus Bildern, einschließlich EXIF- und IPTC-Daten (wie Kameraeinstellungen und Copyright-Informationen). Das macht die Bilddateien kleiner und hilft deiner Website, schneller zu laden. %1$sMehr erfahren%2$s"
+
+#: inc/admin.php:2088
+msgid "Strip Image Metadata"
+msgstr "Bild-Metadaten entfernen"
+
+#: inc/admin.php:2087
+msgid "Auto Quality Powered by ML(Machine Learning)"
+msgstr "Automatische Qualität dank ML (Machine Learning)"
+
+#: inc/admin.php:2086
+msgid "See one sample image which will help you choose the right quality of the compression."
+msgstr "Schau dir ein Beispielbild an, das dir hilft, die richtige Qualität der Komprimierung zu wählen."
+
+#: inc/admin.php:2085
+msgid "Selected value"
+msgstr "Ausgewählter Wert"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2084
+msgid "Lower image quality might boost your loading speed by lowering the size. However, the low image quality may negatively impact the visual appearance of the images. Try experimenting with the setting, then click the View sample image link to see what option works best for you."
+msgstr "Eine niedrigere Bildqualität kann die Ladegeschwindigkeit verbessern, indem die Größe verringert wird. Allerdings kann sich die niedrige Bildqualität negativ auf das Erscheinungsbild der Bilder auswirken. Experimentiere mit den Einstellungen und klicke dann auf den Link Beispielbild anzeigen, um zu sehen, welche Option für dich am besten funktioniert."
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2083
+msgid "Optimole ML algorithms will predict the optimal image quality to get the smallest possible size with minimum perceived quality losses. When disabled, you can control the quality manually. %1$sLearn more%2$s"
+msgstr "Die ML-Algorithmen von Optimole sagen die optimale Bildqualität voraus, um die kleinstmögliche Größe mit minimalen Qualitätsverlusten zu erreichen. Wenn diese Funktion deaktiviert ist, kannst du die Qualität manuell steuern. %1$sMehr erfahren%2$s"
+
+#: inc/admin.php:2082
+msgid "Option saved."
+msgstr "Option gespeichert."
+
+#: inc/admin.php:2080
+msgid "You dont have any images in your Media Library. Add one and check how the Optimole will perform."
+msgstr "Du hast keine Bilder in deiner Mediathek. Füge eines hinzu und prüfe, wie Optimole funktioniert."
+
+#: inc/admin.php:2079
+msgid "Medium"
+msgstr "Mittel"
+
+#: inc/admin.php:2078
+msgid "Low"
+msgstr "Niedrig"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2076
+msgid "The filter should be at least 3 characters long."
+msgstr "Der Filter sollte mindestens 3 Zeichen lang sein."
+
+#: inc/admin.php:2074
+msgid "Optimized"
+msgstr "Optimiert"
+
+#: inc/admin.php:2073
+msgid "Original"
+msgstr "Original"
+
+#: inc/admin.php:2072
+msgid "High"
+msgstr "Hoch"
+
+#: inc/admin.php:2071
+msgid "Hide"
+msgstr "Ausblenden"
+
+#: inc/admin.php:2070
+msgid " here."
+msgstr " hier."
+
+#: inc/admin.php:2069
+msgid "Add New Image Crop Size"
+msgstr "Neue Zuschneide-Größe für Bilder hinzufügen"
+
+#: inc/admin.php:2068
+msgid "Add size"
+msgstr "Größe hinzufügen"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2067
+msgid "Height"
+msgstr "Höhe"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2066
+msgid "Enable this to automatically convert GIF images to Video files (MP4 and WebM). %1$sLearn more%2$s"
+msgstr "Aktiviere diese Funktion, um GIF-Bilder automatisch in Videodateien (MP4 und WebM) zu konvertieren. %1$sMehr erfahren%2$s"
+
+#: inc/admin.php:2065
+msgid "For homepage use `home` keyword."
+msgstr "Verwende für die Homepage das Schlüsselwort `home`."
+
+#: inc/admin.php:2064
+msgid "Page URL"
+msgstr "Seiten-URL"
+
+#: inc/admin.php:2063
+msgid "is"
+msgstr "ist"
+
+#: inc/admin.php:2062
+msgid "matches"
+msgstr "entspricht"
+
+#: inc/admin.php:2061
+msgid "contains"
+msgstr "enthält"
+
+#: inc/admin.php:2060
+msgid "Image filename"
+msgstr "Bild-Dateiname"
+
+#: inc/admin.php:2059
+msgid "Image extension"
+msgstr "Bild-Erweiterung"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2058
+msgid "Image class"
+msgstr "Bild-Klasse"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2057
+msgid "Indicate how many images at the top of each page should bypass lazy loading, ensuring they’re instantly visible. Enter 0 to not exclude any images from the lazy loading process. %1$sLearn more%2$s"
+msgstr "Gib an, wie viele Bilder oben auf jeder Seite das Lazy Loading ignorieren sollen, damit sie sofort sichtbar sind. Gib 0 ein, um keine Bilder vom Lazy-Loading-Prozess auszuschließen. %1$sMehr erfahren%2$s"
+
+#: inc/admin.php:2056
+msgid "Bypass Lazy Load for First Images"
+msgstr "Lazy Loading für die ersten Bilder ignorieren"
+
+#. translators: is used as plural when the number of images is more than 1 for
+#. a unit label.
+#: inc/admin.php:1843 inc/admin.php:2055
+msgid "images"
+msgstr "Bilder"
+
+#: inc/admin.php:2054
+msgid "Exclude first"
+msgstr "Erste ausschließen"
+
+#. translators: 1 is the starting bold tag, 2 is the ending bold tag
+#: inc/admin.php:2050
+msgid "%1$sPage url%2$s matches"
+msgstr "%1$sSeiten-URL%2$s entspricht"
+
+#: inc/admin.php:2048
+msgid "cropped"
+msgstr "zugeschnitten"
+
+#. translators: 1 is the starting bold tag, 2 is the ending bold tag
+#: inc/admin.php:2044
+msgid "%1$sName: %2$s"
+msgstr "%1$sName: %2$s"
+
+#. translators: 1 is the starting bold tag, 2 is the ending bold tag
+#: inc/admin.php:2039
+msgid "%1$sPage url%2$s contains"
+msgstr "%1$sSeiten-URL%2$s enthält"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2033
+msgid "Define exceptions, in case you don't want the lazy-load to be active on certain images. %1$sLearn more%2$s"
+msgstr "Definiere Ausnahmen, falls du nicht möchtest, dass Lazy Loading für bestimmte Bilder aktiv ist. %1$sMehr erfahren%2$s"
+
+#: inc/admin.php:2030
+msgid "Don't lazy-load images if"
+msgstr "Bilder nicht verzögert laden, wenn"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2026
+msgid "Here you can define exceptions, in case you don't want some images to be optimised. %1$sLearn more%2$s"
+msgstr "Hier kannst du Ausnahmen definieren, falls du nicht möchtest, dass bestimmte Bilder optimiert werden. %1$sMehr erfahren%2$s"
+
+#. translators: 1 is the starting bold tag, 2 is the ending bold tag
+#: inc/admin.php:2020
+msgid "%1$sImage filename%2$s contains"
+msgstr "%1$sBilddateiname%2$s enthält"
+
+#. translators: 1 is the starting bold tag, 2 is the ending bold tag
+#: inc/admin.php:2015
+msgid "%1$sImage extension%2$s is"
+msgstr "%1$sBild-Erweiterung%2$s ist"
+
+#. translators: 1 is the starting bold tag, 2 is the ending bold tag
+#: inc/admin.php:2009
+msgid "%1$sImage tag%2$s contains class"
+msgstr "%1$sBild-Tag%2$s enthält Klasse"
+
+#: inc/admin.php:2006
+msgid "Enabled"
+msgstr "Aktiviert"
+
+#: inc/admin.php:2005
+msgid "Your cropped image sizes"
+msgstr "Deine zugeschnittenen Bildgrößen"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2001
+msgid "Get 20.000 more visits for free by enabling the Optimole badge on your websites. %1$sLearn more%2$s"
+msgstr "Erhalte 20.000 mehr kostenlose Besuche, indem du das Optimole-Badge auf deinen Websites aktivierst. %1$sMehr erfahren%2$s"
+
+#: inc/admin.php:1993
+msgid "Enable Optimole Badge"
+msgstr "Optimole-Badge aktivieren"
+
+#: inc/admin.php:1992
+msgid "When you enable this feature to define a max width or height for image resizing, please note that DPR (retina) images will be disabled. This is done to ensure consistency in image dimensions across your website. Although this may result in slightly lower image quality for high-resolution displays, it will help maintain uniform image sizes, improving your website's overall layout and potentially boosting performance."
+msgstr "Wenn du diese Funktion aktivierst, um eine maximale Breite oder Höhe für die Größenänderung von Bildern festzulegen, beachte bitte, dass DPR-Bilder (Retina) deaktiviert werden. Dies geschieht, um die Konsistenz der Bildgrößen auf deiner gesamten Website zu gewährleisten. Dies kann zwar zu einer etwas schlechteren Bildqualität bei hochauflösenden Bildschirmen führen, trägt aber dazu bei, einheitliche Bildgrößen beizubehalten, das Gesamtlayout deiner Website zu verbessern und möglicherweise die Leistung zu steigern."
+
+#: inc/admin.php:1991
+msgid "Limit Image Sizes"
+msgstr "Bildgrößen begrenzen"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:1987
+msgid "Define the max width or height limits for images on your website. Larger images will be automatically adjusted to fit within these parameters while preserving their original aspect ratio. %1$sLearn more%2$s"
+msgstr "Leg die maximalen Breiten- oder Höhengrenzen für Bilder auf deiner Website fest. Größere Bilder werden automatisch an diese Parameter angepasst, wobei ihr ursprüngliches Seitenverhältnis beibehalten wird. %1$sMehr erfahren%2$s"
+
+#: inc/admin.php:1984
+msgid "Retina Quality"
+msgstr "Retina-Qualität"
+
+#: inc/admin.php:1977
+msgid "Smart Cropping"
+msgstr "Intelligentes Zuschneiden"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:1973
+msgid "When enabled, Optimole automatically detects the most interesting or important part of your images. When pictures are resized or cropped, this feature ensures the focus stays on the most interesting part of the picture. %1$sLearn more%2$s"
+msgstr "Wenn diese Funktion aktiviert ist, erkennt Optimole automatisch den interessantesten oder wichtigsten Teil deines Bildes. Wenn Bilder in der Größe verändert oder beschnitten werden, sorgt diese Funktion dafür, dass der Fokus auf dem interessantesten Teil des Bildes bleibt. %1$sMehr erfahren%2$s"
+
+#: inc/admin.php:1970
+msgid "Network-based Optimizations"
+msgstr "Netzwerkbasierte Optimierungen"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:1966
+msgid "When enabled, Optimole will automatically reduce the image quality when it detects a slower network, making your images load faster on low-speed internet connections. %1$sLearn more%2$s"
+msgstr "Wenn diese Funktion aktiviert ist, reduziert Optimole automatisch die Bildqualität, wenn es ein langsameres Netzwerk erkennt, sodass deine Bilder bei langsamen Internetverbindungen schneller geladen werden. %1$sMehr erfahren%2$s"
+
+#: inc/admin.php:1942
+msgid "Enable Optimole Image Handling"
+msgstr "Optimole-Bildbearbeitung aktivieren"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:1938
+msgid "Enable this setting to access all your Optimole images, including those from other websites connected to your Optimole account, directly on this site. They will be available for browsing in the Cloud Library tab. %1$sLearn more%2$s"
+msgstr "Aktiviere diese Einstellung, um auf alle deine Optimole-Bilder, einschließlich derer von anderen Websites, die mit deinem Optimole-Konto verbunden sind, direkt auf dieser Website zuzugreifen. Sie können dann im Tab Cloud-Bibliothek durchsucht werden. %1$sMehr erfahren%2$s"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:1935
+msgid "Unified Image Access"
+msgstr "Vereinheitlichter Bildzugriff"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:1934
+msgid "Free up space on your server by transferring your images to Optimole Cloud; you can transfer them back anytime. Once moved, the images will still be visible in the Media Library and can be used as before. %1$sLearn more%2$s"
+msgstr "Gib Speicherplatz auf deinem Server frei, indem du deine Bilder in die Optimole Cloud überträgst; du kannst sie jederzeit wieder zurückübertragen. Nach dem Verschieben sind die Bilder weiterhin in der Mediathek sichtbar und können wie zuvor verwendet werden. %1$sMehr erfahren%2$s"
+
+#: inc/admin.php:1933
+msgid "Store Your Images in Optimole Cloud"
+msgstr "Speichere deine Bilder in der Optimole Cloud"
+
+#: inc/admin.php:1932
+msgid "GIF to Video Conversion"
+msgstr "GIF-zu-Video-Konvertierung"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:1926
+msgid "Enables fallback images for browsers that can't handle JavaScript-based lazy loading or related features. Disabling it may resolve conflicts with other plugins or configurations and decrease HTML page size. %1$sLearn more%2$s"
+msgstr "Aktiviert Fallback-Bilder für Browser, die das JavaScript-basierte Lazy Loading oder ähnliche Funktionen nicht unterstützen können. Die Deaktivierung kann Konflikte mit anderen Plugins oder Konfigurationen lösen und die Größe der HTML-Seite verringern. %1$sMehr erfahren%2$s"
+
+#: inc/admin.php:1921
+msgid "CSS Background Lazy Load"
+msgstr "Lazy Loading des CSS-Hintergrunds"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:1911
+msgid "Enable this to automatically convert images to the AVIF format on browsers that support it. This format provides quality images with reduced file sizes, and faster webpage loading. %1$sLearn more%2$s"
+msgstr "Aktiviere diese Option, um Bilder in Browsern, die dieses Format unterstützen, automatisch in das AVIF-Format zu konvertieren. Dieses Format bietet qualitativ hochwertige Bilder mit geringerer Dateigröße und schnellerem Laden von Webseiten. %1$sMehr erfahren%2$s"
+
+#: inc/admin.php:1908
+msgid "AVIF Image Support"
+msgstr "AVIF-Bildunterstützung"
+
+#: inc/admin.php:1907
+msgid "Disabled"
+msgstr "Deaktiviert"
+
+#: inc/admin.php:1906
+msgid "All done, Optimole is currently optimizing your site."
+msgstr "Alles erledigt, Optimole optimiert gerade deine Website."
+
+#: inc/admin.php:1905
+msgid "Inspecting the images from your site."
+msgstr "Untersuchung der Bilder von deiner Website."
+
+#: inc/admin.php:1904
+msgid "Checking for possible conflicts."
+msgstr "Überprüfung auf mögliche Konflikte."
+
+#: inc/admin.php:1903
+msgid "Connecting your site to the Optimole service."
+msgstr "Verbindung deiner Website mit dem Optimole-Dienst."
+
+#: inc/admin.php:1902
+msgid "Clear cached CSS & JS"
+msgstr "Zwischengespeichertes CSS und JS löschen"
+
+#: inc/admin.php:1901
+msgid "Clear cached images"
+msgstr "Zwischengespeicherte Bilder löschen"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:1897
+msgid "Use this option if you notice images are not cropped correctly after using Optimole. Add the affected image sizes here to automatically adjust and correct their cropping for optimal display. %1$sLearn more%2$s"
+msgstr "Verwende diese Option, wenn du feststellst, dass die Bilder nach der Verwendung von Optimole nicht richtig zugeschnitten werden. Füge die betroffenen Bildgrößen hier hinzu, um den Zuschnitt für eine optimale Anzeige automatisch anzupassen und zu korrigieren. %1$sMehr erfahren%2$s"
+
+#: inc/admin.php:1894
+msgid "Clearing cached resources will re-optimize the images and might affect the site performance for a few minutes."
+msgstr "Wenn du die zwischengespeicherten Ressourcen löschst, werden die Bilder neu optimiert, was die Leistung der Website für ein paar Minuten beeinträchtigen kann."
+
+#: inc/admin.php:1893
+msgid "Clear Cached Resources"
+msgstr "Zwischengespeicherte Ressourcen löschen"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:1889
+msgid "Clears all Optimole’s cached resources (images, JS, CSS). Useful if you made changes to your images and don't see those applying on your site. %1$sLearn more%2$s"
+msgstr "Löscht alle zwischengespeicherten Ressourcen von Optimole (Bilder, JS, CSS). Das ist nützlich, wenn du Änderungen an deinen Bildern vorgenommen hast und feststellst, dass diese auf deiner Website nicht angewendet werden. %1$sMehr erfahren%2$s"
+
+#: inc/admin.php:1886 inc/video_player.php:288
+msgid "Auto"
+msgstr "Automatisch"
+
+#: inc/admin.php:1885
+msgid "Show in the WordPress admin bar the available quota from Optimole service."
+msgstr "In der WordPress-Adminleiste das verfügbare Kontingent des Optimole-Dienstes anzeigen."
+
+#: inc/admin.php:1884
+msgid "Add site"
+msgstr "Website hinzufügen"
+
+#: inc/admin.php:1883
+msgid "Add filter"
+msgstr "Filter hinzufügen"
+
+#: inc/admin.php:1876
+msgid "Automatic Best Image Format Selection"
+msgstr "Automatische Auswahl des besten Bildformats"
+
+#: inc/dashboard_widget.php:107
+msgid "Traffic"
+msgstr "Verkehr"
+
+#: inc/dashboard_widget.php:108
+msgid "During last month"
+msgstr "Während des letzten Monats"
+
+#: inc/dashboard_widget.php:106
+msgid "Average compression"
+msgstr "Durchschnittliche Komprimierung"
+
+#: inc/admin.php:1832
+msgid "Saved File Size"
+msgstr "Gespeicherte Dateigröße"
+
+#: inc/admin.php:1831
+msgid "Since plugin activation"
+msgstr "Seit der Plugin-Aktivierung"
+
+#: inc/admin.php:1830
+msgid "Images optimized"
+msgstr "Bilder optimiert"
+
+#: inc/admin.php:1827
+msgid "Fully compatible with Optimole."
+msgstr "Vollständig kompatibel mit Optimole."
+
+#: inc/admin.php:1826
+msgid "Lots of customizations options."
+msgstr "Jede Menge Anpassungsoptionen."
+
+#: inc/admin.php:1825
+msgid "AMP/Mobile ready."
+msgstr "Vorbereitet für AMP/Mobilgeräte."
+
+#: inc/admin.php:1824
+msgid "100+ Starter Sites available."
+msgstr "Es sind über 100 Starter-Websites verfügbar."
+
+#: inc/admin.php:1823
+msgid "Lightweight, 25kB in page-weight."
+msgstr "Leichtgewichtig, 25 KB Seitengröße."
+
+#: inc/admin.php:1822
+msgid "Fast, perfomance built-in WordPress theme."
+msgstr "Schnelles, leistungsfähiges WordPress-Theme."
+
+#: inc/admin.php:1818
+msgid "View plans"
+msgstr "Tarife anzeigen"
+
+#: inc/admin.php:1817
+msgid "Site audit"
+msgstr "Website-Audit"
+
+#: inc/admin.php:1816
+msgid "Custom domain"
+msgstr "Eigene Domain"
+
+#: inc/admin.php:1815
+msgid "Extend visits limit"
+msgstr "Besuchslimit erhöhen"
+
+#: inc/admin.php:1814
+msgid "Priority & Live Chat support"
+msgstr "Priorität und Live-Chat-Unterstützung"
+
+#: inc/admin.php:1813
+msgid "Upgrade to Optimole Pro"
+msgstr "Upgrade auf Optimole Pro"
+
+#: inc/admin.php:1812 inc/dashboard_widget.php:111
+msgid "Upgrade"
+msgstr "Upgrade"
+
+#: inc/admin.php:1809
+msgid "No conflicts found. We are all peachy now. 🍑"
+msgstr "Es wurden keine Konflikte gefunden. Alles ist glatt wie ein Pfirsich. 🍑"
+
+#: inc/admin.php:1808
+msgid "I've done this."
+msgstr "Ich habe das getan."
+
+#: inc/admin.php:1807
+msgid "Details"
+msgstr "Details"
+
+#: inc/admin.php:1806
+msgid "We might have some possible conflicts with the plugins that you use. In order to benefit from Optimole's full potential you will need to address this issues."
+msgstr "Möglicherweise gibt es Konflikte mit den von dir verwendeten Plugins. Damit du das volle Potenzial von Optimole nutzen kannst, musst du diese Probleme angehen."
+
+#: inc/admin.php:1804
+msgid "Possible Issues"
+msgstr "Mögliche Probleme"
+
+#: inc/admin.php:1796 inc/admin.php:1803
+msgid "Watermark"
+msgstr "Wasserzeichen"
+
+#: inc/admin.php:1802
+msgid "Lazyload"
+msgstr "Lazyload"
+
+#: inc/admin.php:1801
+msgid "General"
+msgstr "Allgemein"
+
+#: inc/admin.php:1800
+msgid "Advanced"
+msgstr "Erweitert"
+
+#: inc/admin.php:1799
+msgid "Compression"
+msgstr "Komprimierung"
+
+#: inc/admin.php:1798
+msgid "Resize"
+msgstr "Größe ändern"
+
+#: inc/admin.php:1797
+msgid "Exclusions"
+msgstr "Ausschlüsse"
+
+#: inc/admin.php:1795
+msgid "Help"
+msgstr "Hilfe"
+
+#: inc/admin.php:1793
+msgid "Dashboard"
+msgstr "Dashboard"
+
+#. translators: 1 is starting anchor tag to terms, 2 is starting anchor tag to
+#. privacy link and 3 is ending anchor tag.
+#: inc/admin.php:1788
+msgid "By signing up, you agree to our  %1$sTerms of Service %3$s and %2$sPrivacy Policy %3$s."
+msgstr "Wenn du dich anmeldest, stimmst du unseren %1$sNutzungsbedingungen %3$s und unserer %2$sDatenschutzerklärung %3$s zu."
+
+#. translators: 1 anchor tag to pricing, 2 is the ending endin anchor tag, 3 is
+#. the bold tag start, 4 ending bold tag, 5 new line tag
+#: inc/admin.php:1779
+msgid "%3$sYour account has been disabled due to exceeding quota.%4$s All images are being redirected to the original unoptimized URL. %5$sPlease %1$supgrade%2$s to re-activate the account."
+msgstr "%3$sDein Konto wurde wegen Überschreitung des Kontingents deaktiviert.%4$sAlle Bilder werden auf die ursprüngliche, nicht optimierte URL umgeleitet. %5$sBitte %1$sführe ein Upgrade durch%2$s, um dein Konto zu reaktivieren."
+
+#: inc/admin.php:1772
+msgid ""
+"It seems there is an issue with your WordPress configuration and the core REST API functionality is not available. This is crucial as Optimole relies on this functionality in order to work.<br/>\n"
+"The root cause might be either a security plugin which blocks this feature or some faulty server configuration which constrain this WordPress feature.You can try to disable any of the security plugins that you use in order to see if the issue persists or ask the hosting company to further investigate."
+msgstr ""
+"Es scheint ein Problem mit deiner WordPress-Konfiguration zu geben und die REST-API-Kernfunktionalität ist nicht verfügbar. Dies ist sehr wichtig, da Optimole auf diese Funktion angewiesen ist, um zu funktionieren.<br/>\n"
+"Die Ursache könnte entweder ein Sicherheitsplugin sein, das diese Funktion blockiert, oder eine fehlerhafte Serverkonfiguration, die diese WordPress-Funktion einschränkt. Du kannst versuchen, die Sicherheitsplugins, die du verwendest, zu deaktivieren, um zu sehen, ob das Problem weiterhin besteht, oder den Hosting-Anbieter bitten, das Problem zu untersuchen."
+
+#. translators: 1 starting bold tag, 2 is the ending bold tag
+#: inc/admin.php:1767
+msgid "%1$sImage optimisation is currently running.%2$s <br/> Your visitors will now view the best image for their device automatically, all served from the Optimole Cloud Service on the fly. You might see for the very first image request being redirected to the original URL while we do the optimization in the background. You can relax, we'll take it from here."
+msgstr "%1$sDie Bildoptimierung läuft gerade.%2$s <br/> Deine Besucher sehen jetzt automatisch das beste Bild für ihr Gerät, das vom Optimole-Cloud-Dienst direkt ausgeliefert wird. Es kann sein, dass die erste Bildanfrage auf die ursprüngliche URL umgeleitet wird, während wir die Optimierung im Hintergrund durchführen. Du kannst dich entspannen, wir übernehmen den Rest."
+
+#: inc/admin.php:1763
+msgid "Sit tight while we connect you to the Dashboard"
+msgstr "Warte ab, während wir dich mit dem Dashboard verbinden"
+
+#: inc/admin.php:1762
+msgid "Connecting to Optimole"
+msgstr "Verbindung zu Optimole"
+
+#. translators: 1 is the number of users using Optimole
+#: inc/admin.php:1759
+msgid "Trusted by more than %1$s happy users"
+msgstr "Mit dem Vertrauen von mehr als %1$s zufriedenen Benutzern"
+
+#. translators: 1 is the starting anchor tag for the docs link, 2 is the ending
+#. anchor tag.
+#: inc/admin.php:1735
+msgid "Need help? %1$sGetting Started with Optimole%2$s"
+msgstr "Brauchst du Hilfe? %1$sErste Schritte mit Optimole%2$s"
+
+#: inc/admin.php:1718
+msgid "Access our Premium Support"
+msgstr "Zugang zum Premium-Support"
+
+#: inc/admin.php:1717
+msgid "We sent you the API Key in the email. Add it below to connect to Optimole."
+msgstr "Wir haben dir den API-Schlüssel in der E-Mail geschickt. Füge ihn unten hinzu, um dich mit Optimole zu verbinden."
+
+#: inc/admin.php:1716
+msgid "Existing user?"
+msgstr "Bestehender Benutzer?"
+
+#: inc/admin.php:1715
+msgid "IMAGES DOMAIN"
+msgstr "BILDER-DOMAIN"
+
+#: inc/admin.php:1714
+msgid "LOGGED IN AS"
+msgstr "ANGEMELDET ALS"
+
+#: inc/dashboard_widget.php:110
+msgid "Monthly visits quota"
+msgstr "Monatliches Besuchskontingent"
+
+#: inc/admin.php:1709
+msgid "Monthly Usage"
+msgstr "Monatliche Nutzung"
+
+#: inc/admin.php:1708
+msgid "NOT CONNECTED"
+msgstr "NICHT VERBUNDEN"
+
+#: inc/admin.php:1707
+msgid "CONNECTING"
+msgstr "WIRD VERBUNDEN"
+
+#: inc/admin.php:1706
+msgid "CONNECTED"
+msgstr "VERBUNDEN"
+
+#: inc/admin.php:1705
+msgid "Please use a valid email address."
+msgstr "Bitte verwende eine gültige E-Mail-Adresse."
+
+#. translators: 1 is starting anchor tag, 2 is ending anchor tag
+#: inc/admin.php:1704
+msgid "Error registering account. You can try again %1$shere%2$s"
+msgstr "Fehler bei der Registrierung des Kontos. Du kannst es %1$shier%2$s erneut versuchen"
+
+#: inc/admin.php:1702
+msgid "Go to previous step"
+msgstr "Zum vorherigen Schritt"
+
+#: inc/admin.php:1701
+msgid "Register account"
+msgstr "Konto registrieren"
+
+#: inc/admin.php:1700
+msgid "I already have an API key."
+msgstr "Ich habe bereits einen API-Schlüssel."
+
+#. translators: 1 is the opening anchor tag, 2 is the closing anchor tag
+#: inc/admin.php:1696
+msgid "Copy the API Key you have received via email or you can get it from %1$s Optimole dashboard%2$s. If your account has multiple domains select the one you want to use. <br/>"
+msgstr "Kopiere den API-Schlüssel, den du per E-Mail erhalten hast, oder rufe ihn im %1$s Optimole-Dashboard%2$s ab. Wenn dein Konto mehrere Domains hat, wähle diejenige aus, die du verwenden möchtest. <br/>"
+
+#. translators: 1 is the opening anchor tag, 2 is the closing anchor tag
+#: inc/admin.php:1690
+msgid "Get it from the %1$s Optimole Dashboard%2$s."
+msgstr "Du erhältst es über das %1$s Optimole-Dashboard%2$s."
+
+#: inc/admin.php:1687
+msgid "Enter your API key."
+msgstr "Gib deinen API-Schlüssel ein."
+
+#: inc/admin.php:1685
+msgid "Create & connect your account"
+msgstr "Erstelle und verbinde dein Konto"
+
+#: inc/admin.php:1684
+msgid "Connect your account"
+msgstr "Verbinde dein Konto"
+
+#: inc/admin.php:1683
+msgid "Your email address"
+msgstr "Deine E-Mail-Adresse"
+
+#: inc/admin.php:1678
+msgid ""
+"Please note that disconnecting your site from the Optimole API will impact your website performance.\n"
+"If you still want to disconnect click the button below."
+msgstr ""
+"Bitte beachte, dass das Trennen deiner Website von der Optimole-API die Leistung deiner Website beeinträchtigen wird.\n"
+"Wenn du die Verbindung trotzdem trennen möchtest, klicke auf den Button unten."
+
+#: inc/admin.php:1677
+msgid "You are about to disconnect from the Optimole API"
+msgstr "Du bist dabei, die Verbindung mit der Optimole-API zu trennen"
+
+#: inc/admin.php:1674
+msgid "Image Storage"
+msgstr "Bildspeicher"
+
+#: inc/admin.php:1673 inc/dam.php:399 inc/dam.php:400
+msgid "Cloud Library"
+msgstr "Cloud-Bibliothek"
+
+#: inc/admin.php:1672
+msgid "Ok, keep me connected"
+msgstr "Ok, halte die Verbindung"
+
+#: inc/admin.php:1671
+msgid "Invalid API Key"
+msgstr "Ungültiger API-Schlüssel"
+
+#: inc/admin.php:1665
+msgid "API Key"
+msgstr "API-Schlüssel"
+
+#: inc/admin.php:1664
+msgid "UPDATING STATS"
+msgstr "STATISTIKEN AKTUALISIEREN"
+
+#: inc/admin.php:1663
+msgid "Refresh Stats"
+msgstr "Statistiken aktualisieren"
+
+#: inc/admin.php:1662
+msgid "LOOKING FOR YOUR API KEY?"
+msgstr "DU SUCHST NACH DEINEM API-SCHLÜSSEL?"
+
+#: inc/admin.php:1661
+msgid "Your API Key"
+msgstr "Dein API-Schlüssel"
+
+#: inc/admin.php:1660
+msgid "Add your API Key"
+msgstr "Füge deinen API-Schlüssel hinzu"
+
+#: inc/admin.php:1659
+msgid "your domain"
+msgstr "deine Domain"
+
+#: inc/admin.php:1658
+msgid "Select"
+msgstr "Auswählen"
+
+#: inc/admin.php:1657
+msgid "Disconnect"
+msgstr "Verbindung trennen"
+
+#: inc/admin.php:1656
+msgid "Connect to Optimole"
+msgstr "Mit Optimole verbinden"
+
+#: inc/admin.php:1651
+msgid "Image optimization service"
+msgstr "Dienst zur Bildoptimierung"
+
+#: inc/admin.php:1650
+msgid "Test Optimole"
+msgstr "Optimole testen"
+
+#: inc/admin.php:1649
+msgid "Privacy"
+msgstr "Datenschutz"
+
+#: inc/admin.php:1648
+msgid "Terms"
+msgstr "Bedingungen"
+
+#: inc/admin.php:926
+msgid "Dismiss this notice."
+msgstr "Diesen Hinweis verwerfen"
+
+#: inc/admin.php:919
+msgid "Manage Plugins"
+msgstr "Plugins verwalten"
+
+#. translators: 1 - plugin name, 2 - opening bold tag, 3 - closing bold tag
+#: inc/admin.php:910
+msgid "We noticed multiple image optimization plugins active on your site, which may cause issues in Optimole. We recommend using only one image optimization plugin on your site for the best results. The following plugins may cause issues in Optimole: %2$s%1$s%3$s."
+msgstr "Wir haben festgestellt, dass auf deiner Website mehrere Plugins zur Bildoptimierung aktiv sind, was zu Problemen in Optimole führen kann. Wir empfehlen dir, nur ein einziges Bildoptimierungs-Plugin auf deiner Website zu verwenden, um die besten Ergebnisse zu erzielen. Die folgenden Plugins können Probleme in Optimole verursachen: %2$s%1$s%3$s."
+
+#: inc/admin.php:904
+msgid "Oops... Multiple image optimization plugins active"
+msgstr "Hoppla ... Es sind mehrere Plugins zur Bildoptimierung aktiv"
+
+#: inc/admin.php:867
+msgid "I will do it later"
+msgstr "Ich werde es später tun"
+
+#: inc/admin.php:864
+msgid "Connect to OptiMole"
+msgstr "Mit Optimole verbinden"
+
+#. translators: 1 - opening strong tag, 2 - closing strong tag, 3 - opening
+#. strong tag, 4 - closing strong tag
+#: inc/admin.php:854
+msgid "Welcome to %1$sOptimole%2$s, the easiest way to optimize your website images. Your users will enjoy a %3$sfaster%4$s website after you connect it with our service."
+msgstr "Willkommen bei %1$sOptimole%2$s, dem einfachsten Weg, die Bilder deiner Website zu optimieren. Deine Benutzer werden sich über eine %3$sschnellere%4$s Website freuen, nachdem du sie mit unserem Dienst verbunden hast."
+
+#: inc/admin.php:849
+msgid "Finish setting up!"
+msgstr "Die Einrichtung abschließen!"
+
+#: inc/admin.php:846 inc/admin.php:900
+msgid "Logo"
+msgstr "Logo"
+
+#: inc/admin.php:660
+msgid "I have already done this"
+msgstr "Ich habe dies bereits getan"
+
+#: inc/admin.php:657
+msgid "Check upgrade plans"
+msgstr "Upgrade-Tarife prüfen"
+
+#. translators: 1 - opening strong tag, 2 - visits limit, 3 - closing strong
+#. tag, 4 - opening strong tag, 5 - closing strong tag, 6 -  br tag
+#: inc/admin.php:644
+msgid "%1$sIt seems you are close to the %2$s visits limit with %3$sOptimole%4$s for this month.%5$s %6$s For a larger quota you may want to check the upgrade plans. If you exceed the quota we will need to deliver back your original, un-optimized images, which might decrease your site speed performance."
+msgstr "%1$sEs scheint, dass du das %2$sBesuchslimit mit %3$sOptimole%4$s für diesen Monat fast erreicht hast.%5$s %6$s Für ein größeres Kontingent solltest du die Upgrade-Tarife prüfen. Wenn du das Kontingent überschreitest, müssen wir deine ursprünglichen, nicht optimierten Bilder zurückliefern, was die Geschwindigkeit deiner Website verringern kann."
+
+#: inc/admin.php:586 inc/admin.php:1238 inc/admin.php:1239 inc/admin.php:1444
+#: inc/admin.php:1794
+msgid "Settings"
+msgstr "Einstellungen"
+
+#. Author URI of the plugin
+#: optimole-wp.php
+msgid "https://optimole.com"
+msgstr "https://optimole.com"
+
+#. Author of the plugin
+#: optimole-wp.php
+msgid "Optimole"
+msgstr "Optimole"
+
+#. Description of the plugin
+#: optimole-wp.php
+msgid "Complete handling of your website images."
+msgstr "Vollständige Bearbeitung der Bilder deiner Website."
+
+#. Plugin Name of the plugin
+#: optimole-wp.php
+msgid "Image optimization service by Optimole"
+msgstr "Image optimization service by Optimole"

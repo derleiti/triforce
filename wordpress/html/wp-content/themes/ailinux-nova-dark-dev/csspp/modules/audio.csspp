@@ -1,0 +1,509 @@
+/**
+ * CSS++ Module: Audio
+ *
+ * Akustische UI-Eigenschaften und Sound-Bindings
+ *
+ * @version 0.1.0
+ * @module audio
+ */
+
+/* ============================================
+   INTERACTION SOUNDS
+   ============================================ */
+
+/**
+ * hover-sfx: <sound>(<params>)
+ * click-sfx: <sound>(<params>)
+ * focus-sfx: <sound>(<params>)
+ *
+ * Sound-Effekte für UI-Interaktionen
+ *
+ * Sound Types:
+ * - chime(<pitch>, decay: <time>) – Glockenklang
+ * - click(<style>) – Klick-Sound (mechanical, soft, digital)
+ * - whoosh(<direction>) – Swoosh-Sound
+ * - pop(<intensity>) – Pop-Sound
+ * - none – Kein Sound
+ */
+
+.button {
+  hover-sfx: chime(440Hz, decay: 0.2s);
+  click-sfx: click(mechanical);
+}
+
+.soft-button {
+  hover-sfx: none;
+  click-sfx: click(soft);
+}
+
+.futuristic-button {
+  hover-sfx: whoosh(up);
+  click-sfx: pop(0.5);
+}
+
+
+/* ============================================
+   CURSOR SOUNDS
+   ============================================ */
+
+/**
+ * cursor-move-sfx: <sound> | none
+ * cursor-texture-sound: <texture>
+ *
+ * Sound beim Cursor-Bewegen über Element
+ *
+ * Sounds:
+ * - cloth-rub(<volume>) – Stoff-Reibung
+ * - paper-rustle(<volume>) – Papier-Rascheln
+ * - metal-scrape(<volume>) – Metall-Kratzen
+ * - glass-slide(<volume>) – Glas-Gleiten
+ */
+
+.cloth-surface {
+  cursor-move-sfx: cloth-rub(quiet);
+  cursor-texture: linen;
+}
+
+.paper-card {
+  cursor-move-sfx: paper-rustle(0.3);
+  texture: paper;
+}
+
+.metal-panel {
+  cursor-move-sfx: metal-scrape(0.2);
+  material: brushed-aluminum;
+}
+
+
+/* ============================================
+   TYPING SOUNDS
+   ============================================ */
+
+/**
+ * input-type-sfx: <style>(<params>)
+ *
+ * Sound beim Tippen in Inputs
+ *
+ * Styles:
+ * - typewriter(<volume>) – Mechanische Schreibmaschine
+ * - keyboard(<type>) – Keyboard-Sounds (mechanical, membrane, laptop)
+ * - silent – Kein Sound
+ */
+
+.typewriter-input {
+  input-type-sfx: typewriter(0.4);
+}
+
+.modern-input {
+  input-type-sfx: keyboard(mechanical, volume: 0.3);
+}
+
+.silent-input {
+  input-type-sfx: silent;
+}
+
+
+/* ============================================
+   TRANSITION SOUNDS
+   ============================================ */
+
+/**
+ * transition-sfx: <sound> on <trigger>
+ *
+ * Sound bei CSS-Transitions
+ *
+ * Triggers:
+ * - enter – Element erscheint
+ * - exit – Element verschwindet
+ * - expand – Element wird größer
+ * - collapse – Element wird kleiner
+ */
+
+.modal {
+  transition-sfx: whoosh(in) on enter;
+  transition-sfx: whoosh(out) on exit;
+}
+
+.accordion-panel {
+  transition-sfx: unfold on expand;
+  transition-sfx: fold on collapse;
+}
+
+
+/* ============================================
+   AMBIENT SOUNDSCAPES
+   ============================================ */
+
+/**
+ * ambient-sound: <soundscape>(<params>)
+ *
+ * Hintergrund-Atmosphäre
+ *
+ * Soundscapes:
+ * - quiet-room(<volume>) – Subtiles Raumgeräusch
+ * - outdoor(<type>) – Natur-Sounds (forest, city, beach)
+ * - mechanical(<density>) – Maschinengeräusche
+ * - synthetic(<mood>) – Elektronische Ambient-Sounds
+ */
+
+.container-ambient {
+  ambient-sound: quiet-room(0.1);
+  /* Sehr leises Atmen des Raumes */
+}
+
+.nature-scene {
+  ambient-sound: outdoor(forest, volume: 0.3);
+}
+
+.factory-theme {
+  ambient-sound: mechanical(sparse, volume: 0.2);
+}
+
+
+/* ============================================
+   SPATIAL AUDIO
+   ============================================ */
+
+/**
+ * sound-position: <x> <y> <z>
+ * sound-distance: <min> <max>
+ *
+ * 3D-Positionierung von Sounds
+ *
+ * Nur aktiv bei depth: 3d
+ */
+
+.sound-source {
+  sound-position: 50% 50% 2rem;
+  ambient-sound: water-drip(0.5);
+  sound-distance: 0 10rem;
+  /* Sound wird leiser mit Distanz */
+}
+
+
+/* ============================================
+   NOTIFICATION SOUNDS
+   ============================================ */
+
+/**
+ * notification-sfx: <sound>
+ *
+ * Sound für Notifications/Alerts
+ *
+ * Sounds:
+ * - bell(<tone>) – Glocke
+ * - beep(<frequency>) – Elektronischer Beep
+ * - chime(<harmony>) – Melodischer Klang
+ * - alert(<urgency>) – Alarm (low, medium, high)
+ */
+
+.notification {
+  notification-sfx: chime(pleasant);
+}
+
+.error-message {
+  notification-sfx: alert(high);
+}
+
+.success-message {
+  notification-sfx: bell(bright);
+}
+
+
+/* ============================================
+   SOUND SYNTHESIS PARAMETERS
+   ============================================ */
+
+/**
+ * sound-wave: <waveform>
+ * sound-frequency: <hz>
+ * sound-decay: <time>
+ * sound-attack: <time>
+ *
+ * Low-Level Audio-Synthese
+ *
+ * Waveforms: sine, square, triangle, sawtooth, noise
+ */
+
+.synth-button {
+  click-sfx: synthesized;
+  sound-wave: sine;
+  sound-frequency: 440Hz;
+  sound-decay: 0.3s;
+  sound-attack: 0.01s;
+}
+
+
+/* ============================================
+   SOUND RANDOMIZATION
+   ============================================ */
+
+/**
+ * sound-variation: <range>
+ *
+ * Zufällige Variationen für natürlicheren Klang
+ *
+ * Range: 0.0 (identisch) bis 1.0 (starke Variation)
+ */
+
+.natural-button {
+  click-sfx: click(mechanical);
+  sound-variation: 0.2;
+  /* Pitch und Timing leicht zufällig */
+}
+
+
+/* ============================================
+   SOUND LAYERING
+   ============================================ */
+
+/**
+ * Mehrere Sounds können kombiniert werden
+ */
+
+.complex-interaction {
+  hover-sfx: chime(soft), whoosh(subtle);
+  click-sfx: click(mechanical), pop(0.3);
+  /* Beide Sounds gleichzeitig */
+}
+
+
+/* ============================================
+   VOLUME CONTROL
+   ============================================ */
+
+/**
+ * sound-volume: <value> | auto
+ *
+ * Lautstärke für Element-Sounds
+ *
+ * Werte:
+ * - 0.0 (stumm) bis 1.0 (maximal)
+ * - auto – Basierend auf Element-Größe
+ */
+
+.small-button {
+  sound-volume: 0.3;
+}
+
+.large-hero {
+  sound-volume: 0.7;
+}
+
+.auto-volume {
+  sound-volume: auto;
+  /* Größere Elemente = lauter */
+}
+
+
+/* ============================================
+   SOUND MASKING
+   ============================================ */
+
+/**
+ * sound-mask: <selector>
+ *
+ * Stummschalten von Child-Elementen
+ */
+
+.silent-container {
+  sound-mask: *;
+  /* Alle Children sind stumm */
+}
+
+
+/* ============================================
+   AUDIO REACTIVITY
+   ============================================ */
+
+/**
+ * audio-react: <property> to <sound>
+ *
+ * Visuelle Reaktion auf Sound
+ *
+ * Beispiel: Pulsieren im Takt von Musik
+ */
+
+.visualizer {
+  audio-react: scale to ambient-sound;
+  /* Scale pulsiert mit Lautstärke */
+}
+
+
+/* ============================================
+   DOPPLER EFFECT
+   ============================================ */
+
+/**
+ * doppler-effect: enabled
+ *
+ * Pitch-Shift bei Bewegung (nur bei depth: 3d)
+ */
+
+.moving-sound-source {
+  depth: 3d;
+  doppler-effect: enabled;
+  /* Pitch ändert sich bei Bewegung */
+}
+
+
+/* ============================================
+   REVERB & ECHO
+   ============================================ */
+
+/**
+ * sound-reverb: <room-size> <damping>
+ * sound-echo: <delay> <feedback>
+ *
+ * Raumklang-Effekte
+ */
+
+.cathedral-button {
+  click-sfx: chime(deep);
+  sound-reverb: large 0.8;
+}
+
+.canyon-echo {
+  click-sfx: pop(0.5);
+  sound-echo: 0.5s 0.6;
+}
+
+
+/* ============================================
+   SOUND PRELOADING
+   ============================================ */
+
+/**
+ * sound-preload: auto | eager | lazy
+ *
+ * Wann Sounds geladen werden
+ */
+
+.critical-button {
+  sound-preload: eager;
+  /* Sounds sofort laden */
+}
+
+.lazy-load-sounds {
+  sound-preload: lazy;
+  /* Sounds erst bei Interaction laden */
+}
+
+
+/* ============================================
+   CONDITIONAL SOUNDS
+   ============================================ */
+
+/**
+ * Sounds können medienabhängig sein
+ */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    hover-sfx: none;
+    cursor-move-sfx: none;
+    transition-sfx: none;
+  }
+}
+
+@media (pointer: coarse) {
+  /* Touch-Geräte: Kein Cursor-Sound */
+  * {
+    cursor-move-sfx: none;
+  }
+}
+
+
+/* ============================================
+   THEME INTEGRATION
+   ============================================ */
+
+/**
+ * Sounds können in Themes definiert werden
+ */
+
+@theme mechanical-ui {
+  /* Globale Sound-Defaults */
+  --default-hover-sfx: gear(light);
+  --default-click-sfx: switch(mechanical);
+  --ambient-soundscape: mechanical(sparse, 0.1);
+}
+
+button {
+  hover-sfx: var(--default-hover-sfx);
+  click-sfx: var(--default-click-sfx);
+}
+
+
+/* ============================================
+   SOUND LIBRARY
+   ============================================ */
+
+/**
+ * @sound <name> { ... }
+ *
+ * Custom Sound-Definitionen
+ */
+
+@sound coin-drop {
+  source: url("sounds/coin.mp3");
+  volume: 0.5;
+  pitch: 440Hz;
+  variation: 0.1;
+}
+
+.button-coin {
+  click-sfx: coin-drop;
+}
+
+
+/* ============================================
+   COMPILER TRANSFORMATIONS
+   ============================================ */
+
+/**
+ * Der Compiler transformiert Audio-Properties:
+ *
+ * hover-sfx: chime(440Hz)  → Event-Listener + Web Audio API Call
+ * cursor-move-sfx: cloth   → Mousemove-Listener + Volume-by-Speed
+ * ambient-sound: quiet-room → <audio> Loop Element (low volume)
+ *
+ * Output:
+ * - CSS: Event-Hooks via data-attributes
+ * - JSON-IR: Audio-Bindings mit Sound-Files
+ * - Assets: .mp3/.ogg Sound-Dateien
+ *
+ * Runtime lädt Web Audio API für Playback
+ */
+
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
+/**
+ * sound-alternative: <text>
+ *
+ * Text-Alternative für Screen-Reader
+ */
+
+.sound-button {
+  click-sfx: chime(440Hz);
+  sound-alternative: "Pleasant chime sound";
+}
+
+
+/* ============================================
+   PERFORMANCE
+   ============================================ */
+
+/**
+ * sound-pool-size: <count>
+ *
+ * Anzahl gleichzeitiger Sound-Instanzen
+ */
+
+:root {
+  sound-pool-size: 8;
+  /* Max 8 Sounds gleichzeitig */
+}

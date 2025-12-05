@@ -1,0 +1,74 @@
+# Translation of Plugins - WP Consent API - Stable (latest release) in English (UK)
+# This file is distributed under the same license as the Plugins - WP Consent API - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2020-03-02 09:08:16+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: en_GB\n"
+"Project-Id-Version: Plugins - WP Consent API - Stable (latest release)\n"
+
+#. Description of the plugin
+#: wp-consent-api.php
+msgid "Consent Level API to read and register the current consent level for cookie management and improving compliance with privacy laws."
+msgstr "Consent Level API to read and register the current consent level for cookie management and improving compliance with privacy laws."
+
+#: site-health.php:113
+msgid "Not all plugins have declared to follow Consent API guidelines. Please contact the developer."
+msgstr "Not all plugins have declared to follow Consent API guidelines. Please contact the developer."
+
+#: site-health.php:112
+msgid "One or more plugins are not conforming to the Consent API."
+msgstr "One or more plugins are not conforming to the Consent API."
+
+#: site-health.php:104
+msgid "All plugins have declared in their code that they are following the guidelines from the WP Consent API. When used in combination with a Cookie Management plugin, this will improve compliancy for your site."
+msgstr "All plugins have declared in their code that they are following the guidelines from the WP Consent API. When used in combination with a Cookie Management plugin, this will improve compliancy for your site."
+
+#: site-health.php:99
+msgid "Compliance"
+msgstr "Compliance"
+
+#: site-health.php:96
+msgid "All plugins have declared to use the Consent API"
+msgstr "All plugins have declared to use the Consent API"
+
+#: site-health.php:69
+msgid "WP Consent API test"
+msgstr "WP Consent API test"
+
+#: wp-consent-api.php:58
+msgid "This plugin requires WordPress 5.0 or higher"
+msgstr "This plugin requires WordPress 5.0 or higher"
+
+#: wp-consent-api.php:53
+msgid "This plugin requires PHP 5.6 or higher"
+msgstr "This plugin requires PHP 5.6 or higher"
+
+#. translators: %s the name of the PHP Class used.
+#: config.php:34 cookie-info.php:56 site-health.php:51
+msgid "%s is a singleton class and you cannot create a second instance."
+msgstr "%s is a singleton class and you cannot create a second instance."
+
+#. Author URI of the plugin
+#: wp-consent-api.php
+msgid "https://github.com/rlankhorst/wp-consent-level-api"
+msgstr "https://github.com/rlankhorst/wp-consent-level-api"
+
+#. Author of the plugin
+#: wp-consent-api.php
+msgid "RogierLankhorst"
+msgstr "RogierLankhorst"
+
+#. Plugin Name of the plugin
+#: wp-consent-api.php
+msgid "WP Consent API"
+msgstr "WP Consent API"
+
+#. Plugin URI of the plugin
+#: wp-consent-api.php
+msgid "https://wordpress.org/plugins/wp-consent-api"
+msgstr "https://en-gb.wordpress.org/plugins/wp-consent-api"

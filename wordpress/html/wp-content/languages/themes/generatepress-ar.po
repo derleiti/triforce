@@ -1,0 +1,856 @@
+# Translation of Themes - GeneratePress in Arabic
+# This file is distributed under the same license as the Themes - GeneratePress package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2021-12-21 13:46:41+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=(n == 0) ? 0 : ((n == 1) ? 1 : ((n == 2) ? 2 : ((n % 100 >= 3 && n % 100 <= 10) ? 3 : ((n % 100 >= 11 && n % 100 <= 99) ? 4 : 5))));\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: ar\n"
+"Project-Id-Version: Themes - GeneratePress\n"
+
+#. Theme Name of the theme
+#: style.css inc/class-dashboard.php:59 inc/class-dashboard.php:60
+#: inc/dashboard.php:20 inc/structure/footer.php:84
+#, gp-priority: high
+msgid "GeneratePress"
+msgstr "قالب GeneratePress"
+
+#. translators: right arrow
+#: inc/structure/post-meta.php:106
+msgid "Next %s"
+msgstr "التالي %s"
+
+#. translators: left arrow
+#: inc/structure/post-meta.php:98
+msgid "%s Previous"
+msgstr "%s السابق"
+
+#: inc/general.php:118
+msgid "Close Search Bar"
+msgstr "إغلاق شريط البحث"
+
+#: inc/general.php:117 inc/structure/navigation.php:194
+#: inc/structure/navigation.php:553 inc/structure/navigation.php:594
+#: inc/structure/navigation.php:635
+msgid "Open Search Bar"
+msgstr "فتح شريط البحث"
+
+#: inc/customizer.php:1464
+msgid "Font"
+msgstr "الخط"
+
+#: inc/customizer.php:1509
+msgid "Combine CSS"
+msgstr "دمج الـ CSS"
+
+#: inc/customizer.php:1510
+msgid "Reduce the number of CSS file requests and use a lite version of our grid system."
+msgstr "قلل من عدد طلبات ملفات CSS واستخدم إصدارًا لايت من نظام شبكتنا."
+
+#: inc/customizer.php:1082 inc/customizer/fields/back-to-top.php:122
+#: inc/customizer/fields/body.php:55 inc/customizer/fields/buttons.php:123
+#: inc/customizer/fields/content.php:58 inc/customizer/fields/footer-bar.php:58
+#: inc/customizer/fields/footer-widgets.php:58
+#: inc/customizer/fields/forms.php:118 inc/customizer/fields/header.php:56
+#: inc/customizer/fields/primary-navigation.php:207
+#: inc/customizer/fields/sidebar-widgets.php:58
+#: inc/customizer/fields/top-bar.php:58
+msgid "Text"
+msgstr "النص"
+
+#: inc/customizer.php:1081
+msgid "Boxes"
+msgstr "المربعات"
+
+#: inc/customizer.php:1078
+msgid "Container Alignment"
+msgstr "محاذاة الحاويات"
+
+#: inc/customizer.php:226
+msgid "Place logo next to title"
+msgstr "وضع الشعار بجوار العنوان"
+
+#: inc/customizer.php:1460
+msgid "Icon Type"
+msgstr "نوع الأيقونة"
+
+#: inc/dashboard.php:221
+msgid "All Options"
+msgstr "جميع الخيارات"
+
+#: inc/dashboard.php:261
+msgid "Reset Settings"
+msgstr "إعادة تعيين الإعدادات"
+
+#: inc/dashboard.php:231 assets/dist/dashboard.js:1
+msgid "Start Customizing"
+msgstr "بدء التخصيص"
+
+#: inc/dashboard.php:211
+msgid "Customize Colors"
+msgstr "تخصيص الألوان"
+
+#: inc/dashboard.php:206
+msgid "Customize Fonts"
+msgstr "تخصيص الخطوط"
+
+#: inc/customizer.php:981
+msgid "Dropdown Direction"
+msgstr "اتجاه القائمة المنسدلة"
+
+#: inc/customizer.php:662
+msgid "Current"
+msgstr "الحالي"
+
+#: inc/customizer.php:194
+msgid "Logo Width"
+msgstr "عرض الشعار"
+
+#: inc/typography.php:365 assets/dist/customizer.js:1
+msgid "Heading 1 (H1)"
+msgstr "العنوان الرئيسي 1 (H1)"
+
+#: inc/typography.php:659 assets/dist/customizer.js:1
+msgid "Heading 3 (H3)"
+msgstr "العنوان 3 (H3)"
+
+#: inc/typography.php:512 assets/dist/customizer.js:1
+msgid "Heading 2 (H2)"
+msgstr "العنوان 2 (H2)"
+
+#: inc/dashboard.php:201
+msgid "Upload Logo"
+msgstr "رفع الشعار"
+
+#: inc/dashboard.php:216 assets/dist/dashboard.js:1
+msgid "Layout Options"
+msgstr "خيارات الشريط الجانبي \"الودجات\""
+
+#: inc/dashboard.php:247
+msgid "Visit documentation &rarr;"
+msgstr "قم بزيارة الوثائق"
+
+#: inc/dashboard.php:246
+msgid "Want to learn more about the theme? Check out our extensive documentation."
+msgstr "تريد معرفة المزيد عن القالب؟ تحقق من وثائقنا الشاملة."
+
+#: inc/customizer.php:669
+msgid "Navigation Left"
+msgstr "التنقل الأيسر"
+
+#: inc/customizer.php:923
+msgid "Navigation Drop Point"
+msgstr "نقطة الإسقاط للتنقل"
+
+#: inc/customizer.php:659
+msgid "Header Presets"
+msgstr "الهيدر المسبق"
+
+#: inc/customizer.php:667
+msgid "Navigation Before - Centered"
+msgstr "التنقل قبل - توسيط"
+
+#: inc/customizer.php:668
+msgid "Navigation After - Centered"
+msgstr "التنقل بعد - توسيط"
+
+#: inc/structure/navigation.php:665
+msgid "Mobile Menu"
+msgstr "قائمة الموبايل"
+
+#: inc/customizer/controls/class-typography-control.php:80
+#: assets/dist/customizer.js:3
+msgid "Variants"
+msgstr "مختلفات"
+
+#: inc/customizer.php:171
+msgid "Retina Logo"
+msgstr "شعار عالي الجودة"
+
+#: inc/customizer.php:1374
+msgid "General"
+msgstr "عام"
+
+#: inc/customizer.php:1346
+msgid "Excerpt"
+msgstr "مقتطف"
+
+#: inc/customizer.php:1342
+msgid "Content Type"
+msgstr "نوع المحتوى"
+
+#: inc/customizer.php:1393
+msgid "Load essential icons only"
+msgstr "تحميل الأيقونات الأساسية فقط"
+
+#: inc/dashboard.php:263
+msgid "Deleting your settings can not be undone."
+msgstr "لا يمكن التراجع عن حذف الإعدادات."
+
+#: inc/customizer.php:1530
+msgid "Cache CSS generated by your options to boost performance."
+msgstr "استعمال التخزين المؤقت لـ CSS المولد من قبل الخيارات الخاصة بك لتعزيز الأداء."
+
+#: inc/structure/comments.php:156
+msgid "Comment"
+msgstr "تعليق"
+
+#: inc/customizer/controls/class-typography-control.php:73
+#: assets/dist/customizer.js:3
+msgid "System fonts"
+msgstr "خطوط الكتابة للنظام"
+
+#: inc/customizer.php:1394
+msgid "Load essential Font Awesome icons instead of the full library."
+msgstr "تحميل الأيقونات الأساسية من \"Font Awesome\" بدلا من المكتبة الكاملة."
+
+#: inc/customizer.php:1362 inc/typography.php:747
+msgid "More options are available for this section in our premium version."
+msgstr "المزيد من الخيارات متاحة لهذا القسم في الإصدار الممتاز \"المدفوع\"."
+
+#: inc/dashboard.php:157
+msgid "Premium Modules"
+msgstr "الوحدات المدفوعة الثمن "
+
+#: inc/customizer.php:1529
+msgid "Cache dynamic CSS"
+msgstr "التخزين المؤقت الديناميكي لـ CSS"
+
+#: inc/meta-box.php:196
+msgid "Premium module available"
+msgstr "الوحدات المدفوعة المتاحة"
+
+#: inc/customizer.php:86
+msgid "Premium Modules Available"
+msgstr "الوحدات المدفوعة المتاحة"
+
+#: inc/customizer/controls/class-range-control.php:69
+#: assets/dist/customizer.js:1
+msgid "Desktop"
+msgstr "سطح المكتب"
+
+#: inc/customizer/controls/class-range-control.php:71
+#: assets/dist/customizer.js:1
+msgid "Mobile"
+msgstr "الهاتف المحمول"
+
+#: inc/customizer/controls/class-range-control.php:70
+#: assets/dist/customizer.js:1
+msgid "Tablet"
+msgstr "الأجهزة اللوحية"
+
+#: inc/meta-box.php:181
+msgid "Full Width"
+msgstr "عرض كامل"
+
+#: inc/customizer.php:623
+msgid "Top Bar Alignment"
+msgstr "محاذاة الشريط العلوي"
+
+#: inc/customizer.php:597
+msgid "Top Bar Inner Width"
+msgstr "العرض الداخلي للشريط العلوي"
+
+#: inc/customizer.php:571
+msgid "Top Bar Width"
+msgstr "عرض الشريط العلوي"
+
+#: inc/customizer.php:551 inc/customizer/fields/top-bar.php:16
+#: inc/general.php:167 assets/dist/customizer.js:1
+msgid "Top Bar"
+msgstr "الشريط العلوي"
+
+#: inc/class-dashboard.php:132 inc/dashboard.php:53
+msgid "Premium"
+msgstr "مدفوع الثمن"
+
+#: inc/class-dashboard.php:147 inc/dashboard.php:56
+msgid "Documentation"
+msgstr "الوثائق"
+
+#: inc/customizer/fields/footer-bar.php:16 inc/general.php:166
+#: assets/dist/customizer.js:1
+msgid "Footer Bar"
+msgstr "شريط تذييل الصفحة"
+
+#: inc/customizer.php:1283
+msgid "Footer Bar Alignment"
+msgstr "محاذاة شريط التذييل"
+
+#: inc/customizer.php:1361 inc/dashboard.php:168 inc/typography.php:746
+msgid "Learn more"
+msgstr "معرفة المزيد"
+
+#: inc/typography.php:263 inc/typography.php:444 inc/typography.php:591
+#: inc/typography.php:720
+msgid "Line height"
+msgstr "ارتفاع السطر"
+
+#: inc/customizer/controls/class-range-control.php:72 inc/dashboard.php:272
+#: assets/dist/dashboard.js:1
+msgid "Reset"
+msgstr "إستعادة"
+
+#: inc/typography.php:297
+msgid "Paragraph margin"
+msgstr "هوامش الفقرة"
+
+#: inc/customizer.php:1092 inc/meta-box.php:90
+msgid "Sidebars"
+msgstr "الاشرطة الجانبية"
+
+#: inc/customizer.php:797 inc/customizer/fields/primary-navigation.php:23
+#: assets/dist/customizer.js:1
+msgid "Primary Navigation"
+msgstr "القائمة الرئيسية"
+
+#: inc/customizer.php:1185 assets/dist/customizer.js:1
+msgid "Footer"
+msgstr "تذييل الصفحة"
+
+#: inc/customizer.php:507
+msgid "Container"
+msgstr "حاوية"
+
+#: inc/customizer.php:1309
+msgid "Back to Top Button"
+msgstr "زر العودة لأعلى الصفحة"
+
+#: inc/customizer.php:961
+msgid "Click - Arrow"
+msgstr "اضغط - السهم"
+
+#: inc/customizer.php:960
+msgid "Click - Menu Item"
+msgstr "اضغط - عنصر القائمة"
+
+#: inc/customizer.php:959
+msgid "Hover"
+msgstr "تمرير الماوس"
+
+#: inc/customizer.php:817
+msgid "Navigation Width"
+msgstr "عرض قائمة التصفح"
+
+#: inc/structure/footer.php:228
+msgid "Scroll back to top"
+msgstr "الذهاب إلى الأعلى"
+
+#: inc/customizer.php:956
+msgid "Navigation Dropdown"
+msgstr "قائمة التصفح المنسدلة"
+
+#: inc/customizer.php:1205
+msgid "Footer Width"
+msgstr "عرض تذييل الصفحة"
+
+#: inc/customizer.php:574 inc/customizer.php:600 inc/customizer.php:735
+#: inc/customizer.php:761 inc/customizer.php:820 inc/customizer.php:846
+#: inc/customizer.php:1208 inc/customizer.php:1234
+msgid "Full"
+msgstr "كامل"
+
+#: inc/customizer.php:732
+msgid "Header Width"
+msgstr "عرض الترويسة"
+
+#: inc/customizer.php:899
+msgid "Float Left"
+msgstr "تعويم إلى اليسار"
+
+#. translators: %s: Heart icon
+#: inc/dashboard.php:302
+msgctxt "made with love"
+msgid "Made with %s by Tom Usborne"
+msgstr "تم تصميمه %s بواسطة Tom Usborne"
+
+#: inc/class-dashboard.php:140 inc/dashboard.php:55
+msgid "Support"
+msgstr "الدعم الفني"
+
+#: inc/customizer/fields/content.php:147 inc/meta-box.php:189
+#: inc/meta-box.php:191
+msgid "Content Title"
+msgstr "عنوان المحتوى"
+
+#: content-404.php:51
+msgid "It looks like nothing was found at this location. Maybe try searching?"
+msgstr "يبدو أنه لم يتم العثور على شيء هنا. ربما تود أن تجرب البحث؟"
+
+#: inc/structure/search-modal.php:104 searchform.php:15
+msgctxt "placeholder"
+msgid "Search &hellip;"
+msgstr "بحث &hellip;"
+
+#: inc/structure/search-modal.php:102 searchform.php:14 searchform.php:15
+msgctxt "label"
+msgid "Search for:"
+msgstr "البحث عن:"
+
+#. translators: 1: Search query name
+#: inc/structure/archives.php:136
+msgid "Search Results for: %s"
+msgstr "نتائج البحث عن: %s"
+
+#: no-results.php:62
+msgid "It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps searching can help."
+msgstr "يبدو أنه لا يمكن إيجاد ما تبحث عنه. قد تفيدك خاصية البحث."
+
+#: no-results.php:57
+msgid "Sorry, but nothing matched your search terms. Please try again with some different keywords."
+msgstr "عذرا، لا يوجد شيء يتطابق مع كلمات البحث التي استعملتها، المرجو المحاولة من جديد باستعمال كلمات مفتاحية أخرى."
+
+#. translators: 1: Admin URL
+#: no-results.php:49
+msgid "Ready to publish your first post? <a href=\"%1$s\">Get started here</a>."
+msgstr "هل أنت على استعداد لنشر مقالتك الأولى؟ <a href=\"%1$s\">ابدأ من هنا</a>."
+
+#: no-results.php:27
+msgid "Nothing Found"
+msgstr "لم يتم العثور على شيء"
+
+#: inc/structure/post-meta.php:274
+msgid "% Comments"
+msgstr "% تعليقات"
+
+#: inc/structure/post-meta.php:274
+msgid "1 Comment"
+msgstr "تعليق واحد"
+
+#: inc/structure/post-meta.php:274
+msgid "Leave a comment"
+msgstr "أضف تعليق"
+
+#: inc/structure/post-meta.php:258
+msgctxt "Used before tag names."
+msgid "Tags"
+msgstr "الوسوم"
+
+#: inc/structure/post-meta.php:241
+msgctxt "Used before category names."
+msgid "Categories"
+msgstr "التصنيفات"
+
+#: inc/structure/post-meta.php:233 inc/structure/post-meta.php:250
+msgctxt "Used between list items, there is a space after the comma."
+msgid ", "
+msgstr ", "
+
+#: inc/structure/navigation.php:490
+msgctxt "label"
+msgid "Search"
+msgstr "البحث"
+
+#: inc/structure/post-meta.php:581
+msgid "Read more"
+msgstr "اقرأ المزيد"
+
+#. translators: 1: Author name
+#: inc/structure/post-meta.php:222
+msgid "View all posts by %s"
+msgstr "عرض جميع المواضيع التي كتبها %s"
+
+#: inc/structure/post-meta.php:301
+msgid "by"
+msgstr "بقلم"
+
+#: inc/structure/comments.php:91
+msgid "Your comment is awaiting moderation."
+msgstr "تعليقك بانتظار المراجعة."
+
+#. translators: 1: date, 2: time
+#: inc/structure/comments.php:71
+msgctxt "1: date, 2: time"
+msgid "%1$s at %2$s"
+msgstr "%1$s الساعة %2$s"
+
+#: inc/structure/comments.php:28
+msgid "Pingback:"
+msgstr "التنبيهات:"
+
+#: inc/structure/post-meta.php:85
+msgid "Newer posts"
+msgstr "مقالات أحدث"
+
+#: inc/structure/post-meta.php:76
+msgid "Older posts"
+msgstr "مقالات أقدم"
+
+#: inc/structure/post-meta.php:85
+msgid "Next"
+msgstr "التالي"
+
+#: inc/structure/post-meta.php:76
+msgid "Previous"
+msgstr "السابق"
+
+#: inc/deprecated.php:31
+msgid "Next &rarr;"
+msgstr "التالي &larr;"
+
+#: inc/deprecated.php:30
+msgid "&larr; Previous"
+msgstr "&rarr; السابق"
+
+#: inc/dashboard.php:373
+msgid "Settings removed."
+msgstr "تم إزالة الإعدادات."
+
+#: inc/dashboard.php:368
+msgid "Import successful."
+msgstr "تم الاستيراد بنجاح."
+
+#: inc/dashboard.php:363
+msgid "Settings saved."
+msgstr "تمّ حفظ الإعدادات."
+
+#: inc/meta-box.php:100 inc/meta-box.php:186
+msgid "Disable Elements"
+msgstr "تعطيل الخواص"
+
+#: inc/dashboard.php:268
+msgid "Warning: This will delete your settings."
+msgstr "تحذير: هذا سيزيل إعداداتك."
+
+#: inc/dashboard.php:93
+msgid "Customize"
+msgstr "تخصيص"
+
+#: inc/structure/search-modal.php:105 searchform.php:21 searchform.php:27
+msgctxt "submit button"
+msgid "Search"
+msgstr "بحث"
+
+#: inc/structure/header.php:379 inc/structure/header.php:380
+msgid "Skip to content"
+msgstr "انتقل إلى المحتوى"
+
+#: inc/structure/navigation.php:50 inc/structure/navigation.php:60
+#: inc/structure/navigation.php:139 inc/structure/navigation.php:155
+msgid "Menu"
+msgstr "القائمة"
+
+#: inc/meta-box.php:152
+msgid "Both Sidebars on Right"
+msgstr "كلا الشريطين الجانبين إلى اليمين"
+
+#: inc/meta-box.php:151
+msgid "Both Sidebars on Left"
+msgstr "كلا الشريطين الجانبين إلى اليسار"
+
+#: inc/meta-box.php:150
+msgid "Both Sidebars"
+msgstr "كلا الشريطين الجانبين"
+
+#: inc/meta-box.php:149
+msgid "No Sidebars"
+msgstr "بدون اشرطة جانبية"
+
+#: inc/meta-box.php:163
+msgid "0 Widgets"
+msgstr "0 ودجت"
+
+#: inc/meta-box.php:167
+msgid "4 Widgets"
+msgstr "4 ودجت"
+
+#: inc/meta-box.php:165
+msgid "2 Widgets"
+msgstr "2 ودجت"
+
+#: inc/meta-box.php:168
+msgid "5 Widgets"
+msgstr "5 ودجت"
+
+#: inc/meta-box.php:166
+msgid "3 Widgets"
+msgstr "3 ودجت"
+
+#: inc/customizer/fields/content.php:16 assets/dist/customizer.js:1
+msgid "Content"
+msgstr "المحتوى "
+
+#: inc/customizer.php:663 inc/meta-box.php:146 inc/meta-box.php:162
+#: inc/meta-box.php:180 assets/dist/customizer.js:1 assets/dist/customizer.js:3
+msgid "Default"
+msgstr "افتراضي"
+
+#: inc/customizer.php:1323
+msgid "Blog"
+msgstr "المدونة"
+
+#: inc/customizer.php:1167
+msgid "Single Post Sidebar Layout"
+msgstr "تصميم الشريط الجانبي للمنشور المفرد"
+
+#: inc/customizer.php:1117 inc/customizer.php:1145 inc/customizer.php:1173
+msgid "Sidebar / Content / Sidebar"
+msgstr "شريط جانبي / المحتوى / شريط جانبي"
+
+#: inc/customizer.php:1116 inc/customizer.php:1144 inc/customizer.php:1172
+msgid "Content (no sidebars)"
+msgstr "المحتوى (بدون اشرطة جانبية)"
+
+#: inc/customizer.php:1115 inc/customizer.php:1143 inc/customizer.php:1171
+msgid "Content / Sidebar"
+msgstr "المحتوى / شريط جانبي"
+
+#: inc/customizer.php:1254 inc/customizer/fields/footer-widgets.php:16
+#: inc/meta-box.php:95 inc/meta-box.php:159
+msgid "Footer Widgets"
+msgstr "ودجات عقب الصفحة"
+
+#: inc/customizer.php:1054
+msgid "Content Layout"
+msgstr "تخطيط المحتوى"
+
+#: inc/customizer.php:1114 inc/customizer.php:1142 inc/customizer.php:1170
+msgid "Sidebar / Content"
+msgstr "شريط جانبي / المحتوى"
+
+#: inc/customizer.php:1111 inc/meta-box.php:143
+msgid "Sidebar Layout"
+msgstr "تصميم الشريط الجانبي"
+
+#: inc/customizer.php:1058
+msgid "One Container"
+msgstr "حاوي واحد"
+
+#: inc/customizer.php:1057
+msgid "Separate Containers"
+msgstr "حاويات منفصلة"
+
+#: inc/customizer.php:1009 inc/customizer.php:1313
+msgid "Disable"
+msgstr "تعطيل"
+
+#: inc/customizer.php:867
+msgid "Navigation Alignment"
+msgstr "محاذاة القائمة"
+
+#: inc/customizer.php:902
+msgid "No Navigation"
+msgstr "بدون قائمة تصفح"
+
+#: inc/customizer.php:898
+msgid "Float Right"
+msgstr "تعويم إلى اليمين"
+
+#: inc/customizer.php:897
+msgid "Above Header"
+msgstr "فوق الترويسة"
+
+#: inc/customizer.php:896
+msgid "Below Header"
+msgstr "تحت الترويسة"
+
+#: inc/customizer.php:893
+msgid "Navigation Location"
+msgstr "موقع قائمة التصفح"
+
+#: inc/customizer.php:1005 inc/customizer/fields/primary-navigation.php:166
+msgid "Navigation Search"
+msgstr "بحث القائمة"
+
+#: inc/customizer.php:1008 inc/customizer.php:1312
+msgid "Enable"
+msgstr "تفعيل"
+
+#: inc/customizer.php:628 inc/customizer.php:787 inc/customizer.php:872
+#: inc/customizer.php:984 inc/customizer.php:1288
+msgid "Right"
+msgstr "يمين"
+
+#: inc/customizer.php:627 inc/customizer.php:786 inc/customizer.php:871
+#: inc/customizer.php:1287
+msgid "Center"
+msgstr "وسط"
+
+#: inc/customizer.php:626 inc/customizer.php:785 inc/customizer.php:870
+#: inc/customizer.php:985 inc/customizer.php:1286
+msgid "Left"
+msgstr "يسار"
+
+#: inc/customizer.php:782
+msgid "Header Alignment"
+msgstr "محاذاة الترويسة"
+
+#: inc/customizer.php:529
+msgid "Container Width"
+msgstr "عرض الحاوي"
+
+#: inc/customizer.php:499 inc/meta-box.php:62
+msgid "Layout"
+msgstr "الشكل العام"
+
+#: inc/customizer/fields/body.php:146
+msgid "Link Color Visited"
+msgstr "لون الرابط الذي تمت زيارته"
+
+#: inc/customizer.php:235
+msgid "Colors"
+msgstr "الألوان"
+
+#: inc/customizer.php:149
+msgid "Logo"
+msgstr "شعار"
+
+#: inc/customizer.php:128
+msgid "Hide site tagline"
+msgstr "اخفاء شعار الموقع النصي"
+
+#: inc/customizer.php:109
+msgid "Hide site title"
+msgstr "اخفاء اسم الموقع"
+
+#: inc/customizer/fields/body.php:16 inc/typography.php:199
+#: assets/dist/customizer.js:1
+msgid "Body"
+msgstr "جسم الموقع"
+
+#: inc/typography.php:229 inc/typography.php:403 inc/typography.php:550
+#: inc/typography.php:687 assets/dist/customizer.js:3
+msgid "Font size"
+msgstr "حجم الخط"
+
+#: inc/customizer/controls/class-typography-control.php:77
+msgid "Font weight"
+msgstr "سُمك الخط"
+
+#: inc/customizer/controls/class-typography-control.php:78
+msgid "Text transform"
+msgstr "تحويل النص"
+
+#: inc/customizer.php:314 inc/typography.php:135
+msgid "Typography"
+msgstr "شكل الخطوط"
+
+#: inc/customizer/controls/class-deprecated.php:72
+#: inc/customizer/controls/class-typography-control.php:76
+msgid "Font family"
+msgstr "عائلة الخط"
+
+#: inc/customizer/controls/class-deprecated.php:71
+#: inc/customizer/controls/class-typography-control.php:74
+msgid "Google fonts"
+msgstr "خطوط جووجل"
+
+#: inc/customizer/controls/class-deprecated.php:70
+msgid "Default fonts"
+msgstr "الخطوط الافتراضية"
+
+#: inc/customizer.php:639 inc/customizer/fields/header.php:16
+#: inc/general.php:160 assets/dist/customizer.js:1
+msgid "Header"
+msgstr "ترويسة"
+
+#: inc/customizer.php:900 inc/general.php:159 inc/meta-box.php:148
+msgid "Left Sidebar"
+msgstr "الشريط الجانبي (يسار)"
+
+#: inc/customizer.php:901 inc/general.php:158 inc/meta-box.php:147
+msgid "Right Sidebar"
+msgstr "الشريط الجانبي (يمين)"
+
+#: functions.php:58
+msgid "Primary Menu"
+msgstr "القائمة الأساسية"
+
+#: inc/general.php:165
+msgid "Footer Widget 5"
+msgstr "5 ودجت لعقب الصفحة"
+
+#: inc/general.php:164
+msgid "Footer Widget 4"
+msgstr " 4 ودجت لعقب الصفحة"
+
+#: inc/general.php:163
+msgid "Footer Widget 3"
+msgstr "3 ودجت لعقب الصفحة"
+
+#: inc/general.php:162
+msgid "Footer Widget 2"
+msgstr "2 ودجت عقب الصفحة "
+
+#: inc/general.php:161
+msgid "Footer Widget 1"
+msgstr "1 ودجت لعقب الصفحة"
+
+#: inc/structure/comments.php:28 inc/structure/comments.php:82
+msgid "Edit"
+msgstr "تحرير"
+
+#: content-link.php:84 content-page.php:77 content-single.php:77 content.php:84
+msgid "Pages:"
+msgstr "الصفحات:"
+
+#: inc/structure/comments.php:164
+msgid "Post Comment"
+msgstr "إرسال التعليق"
+
+#: inc/structure/comments.php:163
+msgid "Leave a Comment"
+msgstr "أضف تعليق"
+
+#: inc/structure/comments.php:199
+msgid "Website"
+msgstr "الموقع الإلكتروني"
+
+#: inc/structure/comments.php:191
+msgid "Email"
+msgstr "البريد الإلكتروني"
+
+#: inc/structure/comments.php:183
+msgid "Name"
+msgstr "الاسم"
+
+#: comments.php:123
+msgid "Comments are closed."
+msgstr "التعليقات مغلقة."
+
+#: comments.php:86 comments.php:113
+msgid "Newer Comments &rarr;"
+msgstr "تعليقات أحدث &larr;"
+
+#: comments.php:85 comments.php:112
+msgid "&larr; Older Comments"
+msgstr "&rarr; تعليقات أقدم"
+
+#: comments.php:84 comments.php:111
+msgid "Comment navigation"
+msgstr "تصفّح التعليقات"
+
+#. translators: 1: number of comments, 2: post title
+#: comments.php:50
+msgctxt "comments title"
+msgid "%1$s thought on &ldquo;%2$s&rdquo;"
+msgid_plural "%1$s thoughts on &ldquo;%2$s&rdquo;"
+msgstr[0] "لا توجد أراء حول &ldquo;%2$s&rdquo;"
+msgstr[1] "رأي واحد حول &ldquo;%2$s&rdquo;"
+msgstr[2] "رأيان حول &ldquo;%2$s&rdquo;"
+msgstr[3] "%1$s رأي حول &ldquo;%2$s&rdquo;"
+msgstr[4] "%1$s رأي حول &ldquo;%2$s&rdquo;"
+msgstr[5] "%1$s رأي حول &ldquo;%2$s&rdquo;"
+
+#: inc/structure/sidebars.php:77
+msgid "Archives"
+msgstr "الأرشيف"
+
+#: content-404.php:27
+msgid "Oops! That page can&rsquo;t be found."
+msgstr "عذراً! لايمكن العثور على تلك الصفحة."
+
+#. Author of the theme
+#: style.css
+#, gp-priority: low
+msgid "Tom Usborne"
+msgstr "Tom Usborne"
+
+#. Theme URI of the theme
+#: style.css
+#, gp-priority: low
+msgid "https://generatepress.com"
+msgstr "https://generatepress.com"

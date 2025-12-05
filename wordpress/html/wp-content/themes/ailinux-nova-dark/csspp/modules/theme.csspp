@@ -1,0 +1,139 @@
+/**
+ * CSS++ Module: Theme
+ *
+ * High Contrast & Accessibility Update
+ *
+ * @version 0.2.0
+ * @module theme
+ */
+
+/* ============================================
+   HIGH CONTRAST THEME DEFINITION
+   ============================================ */
+
+@theme high-contrast-dark {
+  /* Visual Foundation */
+  primary-color: #ffffff;
+  accent-color: #00e5ff; /* Bright Cyan */
+  background-base: #000000;
+  surface-color: #111111;
+
+  /* Material Style */
+  material-style: minimalist;
+  texture-preference: flat;
+
+  /* Atmospheric */
+  ambient-light: 1.0;
+  fog-density: 0.0;
+  
+  /* Behavioral */
+  animation-speed: fast;
+  transition-style: snappy;
+}
+
+@theme high-contrast-light {
+  /* Visual Foundation */
+  primary-color: #000000;
+  accent-color: #0044cc; /* Strong Blue */
+  background-base: #ffffff;
+  surface-color: #f0f0f0;
+
+  /* Material Style */
+  material-style: minimalist;
+  texture-preference: flat;
+
+  /* Atmospheric */
+  ambient-light: 1.0;
+  fog-density: 0.0;
+  
+  /* Behavioral */
+  animation-speed: fast;
+  transition-style: snappy;
+}
+
+/* ============================================
+   ROOT VARIABLES & PREFERENCES
+   ============================================ */
+
+:root {
+  /* Default to Dark Mode High Contrast */
+  --bg-0: #050508;
+  --bg-1: #0a0c10;
+  --bg-2: #151820;
+  --text: #ffffff;
+  --muted: #b0b0b0;
+  
+  /* Strong Accents */
+  --accent-blue: #00ccff;
+  --accent-green: #00ff99;
+  --accent-active: var(--accent-blue);
+
+  --line: #333333;
+  --focus: #ffcc00; /* High visibility focus */
+  
+  --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --shadow-hover: 0 8px 24px rgba(0, 204, 255, 0.25);
+  --shadow-hero: 0 0 0 0 transparent; /* Flat for clarity */
+
+  /* CSS++ Specifics */
+  ambient-light: 1.0;
+  fog-density: 0.0;
+  cursor-style: default;
+  
+  /* Readable Typography */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+html[data-theme='light'] {
+  --bg-0: #ffffff;
+  --bg-1: #f8f9fa;
+  --bg-2: #e9ecef;
+  --text: #000000;
+  --muted: #444444;
+  
+  --accent-blue: #0055ff;
+  --accent-green: #008844;
+  --accent-active: var(--accent-blue);
+
+  --line: #cccccc;
+  --focus: #ff00ff;
+  
+  --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-hover: 0 4px 16px rgba(0, 85, 255, 0.15);
+}
+
+/* ============================================
+   IMPROVED VISIBILITY OVERRIDES
+   ============================================ */
+
+/* Stronger Links */
+a {
+  text-decoration-thickness: 2px;
+}
+
+a:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* Better Code Blocks */
+pre, code {
+  background-color: #1a1a1a;
+  color: #ffcc00;
+  border: 1px solid #333;
+}
+
+html[data-theme='light'] pre, 
+html[data-theme='light'] code {
+  background-color: #f1f1f1;
+  color: #0000aa;
+  border: 1px solid #ddd;
+}
+
+/* CSS++ Effects for Buttons */
+.btn-primary {
+  shadow-type: hard;
+  glow-color: var(--accent-active);
+  reflectivity: low;
+}

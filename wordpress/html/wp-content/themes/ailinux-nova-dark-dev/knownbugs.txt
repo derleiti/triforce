@@ -1,0 +1,41 @@
+# Known Issues & External Dependencies
+
+This document lists known issues that may appear in the browser console. These are typically caused by third-party scripts, browser extensions, or network conditions, and are not bugs within the theme itself.
+
+## 1. Service Worker Cache Failure (`sw.js`) - RESOLVED
+
+- **Error**: `Uncaught (in promise) TypeError: Failed to execute 'addAll' on 'Cache': Request failed`
+- **Source**: `sw.js` (Service Worker)
+- **Cause**: A service worker, likely installed by a WordPress plugin (e.g., a PWA or offline-functionality plugin), is attempting to cache all site assets. This operation fails because other resources on the page are being blocked or are failing to load.
+- **Resolution**: This error is a symptom of other underlying issues (see below). When the other errors are resolved, this one should disappear. The theme does not register this service worker. **Fixed in v1.0.7**: Added suppression for Complianz notices that may trigger this.
+
+## 2. Assets Blocked by Client (`net::ERR_BLOCKED_BY_CLIENT`) - PARTIALLY RESOLVED
+
+- **Error**: `net::ERR_BLOCKED_BY_CLIENT`
+- **Sources**:
+     - `.../plugins/complianz-gdpr/assets/css/cookieblocker.min.css`
+     - `https://translate.google.com/...`
+     - `https://translate.googleapis.com/...`
+- **Cause**: These resources are being blocked by the user's browser, almost always due to an ad-blocker, privacy extension (like uBlock Origin, AdGuard), or a corporate firewall.
+- **Resolution**: This is a client-side issue. The user must adjust their browser extension settings to allow these scripts if they want the functionality to work. It cannot be fixed in the theme's code. **Improved in v1.0.7**: Added consent banner CSS optimizations to reduce reliance on blocked scripts.
+
+## 3. Invalid Certificate Authority (`net::ERR_CERT_AUTHORITY_INVALID`) - ONGOING
+
+- **Error**: `net::ERR_CERT_AUTHORITY_INVALID`
+- **Source**: `https://static.addtoany.com/menu/page.js`
+- **Cause**: The SSL certificate provided by the `static.addtoany.com` server is not trusted by the browser. This is a server-side configuration issue on the part of the "AddToAny" third-party service.
+- **Resolution**: This issue must be resolved by the administrators of `addtoany.com`. It is outside of our control. **Workaround**: Disable AddToAny plugin if not essential.
+
+## 4. New Pages Not Appearing in Menu After Addition
+
+- **Error**: New pages created in the WordPress editor and added to the menu do not appear on the website.
+- **Source**: WordPress menu system, possibly caching plugins (e.g., WP Rocket, W3 Total Cache).
+- **Cause**: Menu changes require saving the menu in Appearance > Menus or clearing object cache. Caching plugins may delay updates.
+- **Resolution**: **Fixed in v1.0.7**: Added a menu refresh hook in functions.php to force update on page save. If using caching, clear cache after adding pages. Go to Appearance > Menus, ensure page is checked, and save menu.
+
+## 5. WebGPU Support Limited to Modern Browsers
+
+- **Error**: WebGPU features (e.g., AI visualizations) not available or causing errors.
+- **Source**: Browser compatibility (requires Chrome 113+, Edge 113+, not supported in Firefox/Safari yet).
+- **Cause**: WebGPU is a new API; older browsers fall back to Canvas 2D.
+- **Resolution**: **Added in v1.0.7**: Graceful fallback implemented. Users on unsupported browsers see standard visualizations. Update browser for full experience.

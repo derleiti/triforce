@@ -1,0 +1,17 @@
+@material card {
+    geometry: rounded(16);
+    lighting: soft(0.15);
+    volumetrics: fabric(0.05);
+    theme: surface;
+}
+
+@material button {
+    geometry: pill(999);
+    lighting: hard(1);
+    theme: primary;
+}
+
+@material avatar {
+    geometry: circle(1);
+    theme: secondary;
+}

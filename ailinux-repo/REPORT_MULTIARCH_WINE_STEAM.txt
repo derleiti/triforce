@@ -1,0 +1,33 @@
+# Mirror Changes
+- Ensured WineHQ noble suites mirror both amd64 and i386 so staging builds stay available to clients (`repo/mirror/mirror.list`:71-73).
+- Documented post-update workflow in `README-mirror-sync.md` so every mirror.refresh runs `update-mirror.sh -> generate-index.sh -> sign-repos.sh`.
+
+# Client State
+- Architecture check:  
+  ```
+  $ dpkg --print-architecture && dpkg --print-foreign-architectures
+  amd64
+  i386
+  ```
+- Representative policy output after the adjustments:  
+  ```
+  $ apt-cache policy libc6:i386 libstdc++6:i386 zlib1g:i386 libdrm2:i386 libx11-6:i386 libxcb1:i386
+  Installationskandidat: ... aus https://repo.ailinux.me:8443/mirror/{security,archive}.ubuntu.com ...
+  ```
+- Wine & Steam currently installed and resolving from the mirror:  
+  ```
+  $ dpkg -l winehq-staging steam | grep '^ii'
+  ii  steam:i386     1:1.0.0.79~ds-2 i386  Transitional package for Steam
+  ii  winehq-staging 10.17~noble-1   amd64 WINE Is Not An Emulator - runs MS Windows programs
+  ```
+
+# New Automation
+- `fix-multiarch-wine-steam.sh` idempotently enables i386, installs the keyring, rewrites `/etc/apt/sources.list` and `winehq.list` with `arch=amd64,i386`, runs `apt-get update`, verifies core policies, and installs Mesa, WineHQ Staging, and Steam.
+
+# Root Cause Analysis
+- Previous mirror runs missed i386 lines for newer WineHQ suites, causing inconsistent availability when clients pinned those releases. The client bootstrap scripts also lacked a single-step remediation path, so machines that skipped `dpkg --add-architecture i386` or lost the keyring ended up without 32-bit candidates. The updated mirror list plus the new fixer script address both gaps.
+
+# Follow-up / Validation
+1. Run `./update-mirror.sh && ./generate-index.sh && ./sign-repos.sh` on the mirror host, then `./health.sh`.
+2. Execute `sudo ./fix-multiarch-wine-steam.sh` on affected clients; re-run `apt-cache policy` and optional `apt-get install --reinstall winehq-staging steam` to confirm clean resolution.
+3. Monitor `maintain.log` and `mirror-sign.log` for checksum or signature errors after the next sync.

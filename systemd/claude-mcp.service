@@ -1,0 +1,47 @@
+[Unit]
+Description=Claude MCP Agent - TriStar Worker (Coding, Analysis)
+Documentation=https://api.ailinux.me/docs
+After=network-online.target tristar-kernel.service
+Wants=network-online.target
+PartOf=tristar-kernel.service
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/home/zombie/ailinux-ai-server-backend
+
+# Environment
+Environment=PYTHONUNBUFFERED=1
+Environment=AGENT_ID=claude
+Environment=AGENT_ROLE=worker
+Environment=TRISTAR_API=https://api.ailinux.me/v1/tristar
+EnvironmentFile=/home/zombie/ailinux-ai-server-backend/.env
+
+# Bootstrap and System Prompt
+ExecStartPre=/bin/bash -c 'mkdir -p /var/tristar/agents/claude'
+ExecStartPre=/bin/bash -c 'cat /var/tristar/prompts/bootstrap.txt /var/tristar/prompts/claude-worker.txt > /var/tristar/agents/claude/systemprompt.txt 2>/dev/null || true'
+
+# Execute Agent
+ExecStart=/home/zombie/ailinux-ai-server-backend/.venv/bin/python -m app.agents.claude_mcp \
+    --system-prompt-file /var/tristar/agents/claude/systemprompt.txt \
+    --api-base https://api.ailinux.me/v1 \
+    --agent-id claude \
+    --role worker
+
+# Restart policy
+Restart=always
+RestartSec=15
+TimeoutStartSec=120
+TimeoutStopSec=60
+
+# Limits
+LimitNOFILE=65535
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=claude-mcp
+
+[Install]
+WantedBy=multi-user.target

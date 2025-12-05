@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker exec:*)",
+      "Bash(docker logs:*)",
+      "Bash(chmod:*)",
+      "Bash(docker restart:*)",
+      "Read(//home/zombie/wordpress/apache/**)",
+      "Bash(docker compose:*)",
+      "Bash(test:*)",
+      "Bash(docker ps:*)",
+      "Bash(docker rm:*)",
+      "Bash(curl:*)",
+      "Bash(sudo ufw:*)",
+      "Bash(ufw status:*)",
+      "Bash(docker:*)",
+      "Bash(zcat:*)",
+      "Read(//home/zombie/wordpress/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

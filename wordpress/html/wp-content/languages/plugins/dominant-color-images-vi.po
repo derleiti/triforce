@@ -1,0 +1,72 @@
+# Translation of Plugins - Image Placeholders - Stable (latest release) in Vietnamese
+# This file is distributed under the same license as the Plugins - Image Placeholders - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2024-08-11 13:43:07+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: vi_VN\n"
+"Project-Id-Version: Plugins - Image Placeholders - Stable (latest release)\n"
+
+#: helper.php:87
+msgid "No editor could be selected."
+msgstr "Không thể chọn trình chỉnh sửa nào."
+
+#. Description of the plugin
+#: load.php
+msgid "Displays placeholders based on an image's dominant color while the image is loading."
+msgstr "Hiển thị chỗ dành sẵn dựa trên màu chủ đạo của hình ảnh trong khi hình ảnh đang tải."
+
+#. Plugin Name of the plugin
+#: load.php
+msgid "Image Placeholders"
+msgstr "Image Placeholders"
+
+#: helper.php:54 helper.php:61
+msgid "Unable to load image."
+msgstr "Không thể tải hình ảnh."
+
+#. translators: %s is the error message
+#: class-dominant-color-image-editor-imagick.php:94
+msgid "Transparency detection failed: %s"
+msgstr "Phát hiện tính minh bạch không thành công: %s"
+
+#. translators: %s is the error message.
+#: class-dominant-color-image-editor-imagick.php:47
+msgid "Dominant color detection failed: %s"
+msgstr "Phát hiện màu chủ đạo không thành công: %s"
+
+#: class-dominant-color-image-editor-gd.php:72
+#: class-dominant-color-image-editor-imagick.php:62
+msgid "Transparency detection no image found."
+msgstr "Không tìm thấy hình ảnh để phát hiện tính minh bạch."
+
+#: class-dominant-color-image-editor-gd.php:36
+#: class-dominant-color-image-editor-gd.php:48
+#: class-dominant-color-image-editor-gd.php:55
+#: class-dominant-color-image-editor-imagick.php:41
+msgid "Dominant color detection failed."
+msgstr "Phát hiện màu chủ đạo không thành công."
+
+#: class-dominant-color-image-editor-gd.php:31
+#: class-dominant-color-image-editor-imagick.php:31
+msgid "Dominant color detection no image found."
+msgstr "Không tìm thấy hình ảnh để phát hiện màu chủ đạo."
+
+#. Author URI of the plugin
+#: load.php
+msgid "https://make.wordpress.org/performance/"
+msgstr "https://make.wordpress.org/performance/"
+
+#. Author of the plugin
+#: load.php
+msgid "WordPress Performance Team"
+msgstr "Nhóm Hiệu suất WordPress"
+
+#. Plugin URI of the plugin
+#: load.php
+msgid "https://github.com/WordPress/performance/tree/trunk/plugins/dominant-color-images"
+msgstr "https://github.com/WordPress/performance/tree/trunk/plugins/dominant-color-images"

@@ -1,0 +1,336 @@
+version: '3.8'
+
+services:
+  # Traefik Reverse Proxy
+  traefik:
+    image: traefik:v2.11
+    container_name: wordpress_traefik
+    command:
+      - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL:-admin@ailinux.me}"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "${PORT_HTTP:-80}:80"
+      - "${PORT_HTTPS:-443}:443"
+      - "8080:8080"  # Traefik dashboard
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik_certs:/letsencrypt
+    networks:
+      - wordpress_network
+      - flarum_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN:-ailinux.me}`)"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.tls.certresolver=letsencrypt"
+
+  # Apache Web Server (now behind Traefik)
+  apache:
+    image: ${APACHE_IMAGE:-httpd:2.4-alpine}
+    container_name: wordpress_apache
+    depends_on:
+      wordpress_fpm:
+        condition: service_healthy
+    volumes:
+      - ./apache/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro
+      - ./apache/extra:/usr/local/apache2/conf/extra:ro
+      - ./apache/snippets:/usr/local/apache2/conf/snippets:ro
+      - ./apache/vhosts:/usr/local/apache2/conf/vhosts:ro
+      - ./apache/cloudflare-allowlist.conf:/usr/local/apache2/conf/cloudflare-allowlist.conf:ro
+      - ./html:/var/www/html
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    environment:
+      TZ: ${TZ:-Europe/Berlin}
+    healthcheck:
+      test: ["CMD", "httpd", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - wordpress_network
+      - flarum_network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 128M
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wordpress.rule=Host(`${DOMAIN:-ailinux.me}`) || Host(`www.${DOMAIN:-ailinux.me}`)"
+      - "traefik.http.routers.wordpress.entrypoints=websecure"
+      - "traefik.http.routers.wordpress.tls.certresolver=letsencrypt"
+      - "traefik.http.services.wordpress.loadbalancer.server.port=80"
+      # Redirect HTTP to HTTPS
+      - "traefik.http.middlewares.wordpress-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.wordpress-http.rule=Host(`${DOMAIN:-ailinux.me}`) || Host(`www.${DOMAIN:-ailinux.me}`)"
+      - "traefik.http.routers.wordpress-http.entrypoints=web"
+      - "traefik.http.routers.wordpress-http.middlewares=wordpress-redirect"
+
+  # WordPress PHP-FPM
+  wordpress_fpm:
+    image: ${WORDPRESS_IMAGE:-wordpress:6.8.1-php8.3-fpm-alpine}
+    container_name: wordpress_fpm
+    depends_on:
+      wordpress_db:
+        condition: service_healthy
+      wordpress_redis:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "ailinux.me:172.19.0.6"
+      - "www.ailinux.me:172.19.0.6"
+    environment:
+      TZ: ${TZ:-Europe/Berlin}
+      WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST:-wordpress_db}
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME:-wordpress}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER:-wordpress}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD:?set in .env}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      WORDPRESS_REDIS_HOST: wordpress_redis
+      WORDPRESS_REDIS_PORT: 6379
+      WORDPRESS_CONFIG_EXTRA: |
+        if (!defined('WP_REDIS_HOST')) {
+          define('WP_REDIS_HOST', getenv('WORDPRESS_REDIS_HOST') ?: 'wordpress_redis');
+        }
+        if (!defined('WP_REDIS_PORT')) {
+          $$port = getenv('WORDPRESS_REDIS_PORT');
+          define('WP_REDIS_PORT', $$port !== false ? (int) $$port : 6379);
+        }
+        $$redisPassword = getenv('REDIS_PASSWORD');
+        if ($$redisPassword !== false && trim($$redisPassword) !== '' && !defined('WP_REDIS_PASSWORD')) {
+          define('WP_REDIS_PASSWORD', $$redisPassword);
+        }
+    volumes:
+      - ./html:/var/www/html
+      - ./php/custom.ini:/usr/local/etc/php/conf.d/custom.ini
+      - ./php/www.conf:/usr/local/etc/php-fpm.d/www.conf
+    healthcheck:
+      test: ["CMD-SHELL", "pidof php-fpm >/dev/null 2>&1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    networks:
+      - wordpress_network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '4.0'
+          memory: 2G
+        reservations:
+          cpus: '1.0'
+          memory: 512M
+
+  # MariaDB Database
+  wordpress_db:
+    image: ${MARIADB_IMAGE:-mariadb:11}
+    container_name: wordpress_db
+    environment:
+      TZ: ${TZ:-Europe/Berlin}
+      MYSQL_DATABASE: ${WORDPRESS_DB_NAME:-wordpress}
+      MYSQL_USER: ${WORDPRESS_DB_USER:-wordpress}
+      MYSQL_PASSWORD: ${WORDPRESS_DB_PASSWORD:?set in .env}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?set in .env}
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./mysql/custom.cnf:/etc/mysql/conf.d/custom.cnf
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=\"$MYSQL_ROOT_PASSWORD\" mariadb-admin ping -h 127.0.0.1 -uroot --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    networks:
+      - wordpress_network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # Redis Cache
+  wordpress_redis:
+    image: ${REDIS_IMAGE:-redis:alpine}
+    container_name: wordpress_redis
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+    command: ["sh", "-lc", "if [ -n \"$REDIS_PASSWORD\" ]; then exec redis-server --requirepass \"$REDIS_PASSWORD\" --maxmemory 256mb --maxmemory-policy allkeys-lru; else exec redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru; fi"]
+    healthcheck:
+      test: ["CMD-SHELL", "if [ -n \"$REDIS_PASSWORD\" ]; then redis-cli -a \"$REDIS_PASSWORD\" ping; else redis-cli ping; fi"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    networks:
+      - wordpress_network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+
+  # WordPress Backup Service
+  wordpress_backup:
+    image: mariadb:11
+    container_name: wordpress_backup
+    entrypoint: ["/bin/sh", "/run-backup.sh"]
+    environment:
+      TZ: ${TZ:-Europe/Berlin}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?set in .env}
+      WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST:-wordpress_db}
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME:-wordpress}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER:-wordpress}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD:?set in .env}
+      BACKUP_INTERVAL_SECONDS: ${BACKUP_INTERVAL_SECONDS:-86400}
+      RETENTION_DAYS: ${RETENTION_DAYS:-14}
+    volumes:
+      - ./backups:/backup
+      - ./backups/run-backup.sh:/run-backup.sh:ro
+    depends_on:
+      wordpress_db:
+        condition: service_healthy
+    networks:
+      - wordpress_network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+  # WP-CLI (on-demand only, not started by default)
+  wpcli:
+    image: ${WPCLI_IMAGE:-wordpress:cli}
+    container_name: wordpress_wpcli
+    depends_on:
+      wordpress_fpm:
+        condition: service_healthy
+      wordpress_db:
+        condition: service_healthy
+    working_dir: /var/www/html
+    user: "33:33"
+    environment:
+      TZ: ${TZ:-Europe/Berlin}
+      WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST:-wordpress_db}
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME:-wordpress}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER:-wordpress}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD:?set in .env}
+    volumes:
+      - ./html:/var/www/html
+    entrypoint: ["bash", "-lc"]
+    command: "wp --info && bash"
+    networks:
+      - wordpress_network
+    profiles:
+      - cli
+
+  # WordPress Cron Runner
+  wordpress_cron:
+    image: ${WPCLI_IMAGE:-wordpress:cli}
+    container_name: wordpress_cron
+    depends_on:
+      wordpress_fpm:
+        condition: service_healthy
+      wordpress_db:
+        condition: service_healthy
+    working_dir: /var/www/html
+    environment:
+      TZ: ${TZ:-Europe/Berlin}
+      WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST:-wordpress_db}
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME:-wordpress}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER:-wordpress}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD:?set in .env}
+    volumes:
+      - ./html:/var/www/html
+      - ./cron-runner.sh:/cron-runner.sh:ro
+    entrypoint: ["/bin/sh", "/cron-runner.sh"]
+    networks:
+      - wordpress_network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+  # FastAPI Backend (Nova AI API)
+  fastapi:
+    image: ${FASTAPI_IMAGE:-tiangolo/uvicorn-gunicorn-fastapi:python3.11-alpine3.18}
+    container_name: wordpress_fastapi
+    environment:
+      TZ: ${TZ:-Europe/Berlin}
+      MODULE_NAME: "main"
+      VARIABLE_NAME: "app"
+      PORT: 9100
+      WORKERS_PER_CORE: 2
+      MAX_WORKERS: 4
+    volumes:
+      - ./fastapi-app:/app
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9100/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    networks:
+      - wordpress_network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.fastapi.rule=Host(`api.${DOMAIN:-ailinux.me}`)"
+      - "traefik.http.routers.fastapi.entrypoints=websecure"
+      - "traefik.http.routers.fastapi.tls.certresolver=letsencrypt"
+      - "traefik.http.services.fastapi.loadbalancer.server.port=9100"
+
+networks:
+  wordpress_network:
+    name: wordpress_wordpress_network
+    driver: bridge
+  flarum_network:
+    name: flarum_network
+    external: true
+
+volumes:
+  db_data:
+    driver: local
+  traefik_certs:
+    driver: local

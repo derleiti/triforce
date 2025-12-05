@@ -1,0 +1,136 @@
+services:
+  # Apache Reverse Proxy - nutzt die WordPress Apache-Konfiguration
+  apache:
+    image: httpd:2.4-alpine
+    container_name: flarum_apache
+    depends_on:
+      flarum:
+        condition: service_healthy
+    ports:
+      - "9080:80"
+      - "9443:443"
+    volumes:
+      - ../apache/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro
+      - ../apache/cloudflare-allowlist.conf:/usr/local/apache2/conf/cloudflare-allowlist.conf:ro
+      - ../apache/vhosts:/usr/local/apache2/conf/vhosts:ro
+      - ../apache/snippets:/usr/local/apache2/conf.d/snippets:ro
+      - ../apache/extra:/usr/local/apache2/conf.d/extra:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    networks:
+      - flarum_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "httpd", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Flarum Application (mondedie/flarum ist das stabilste Community-Image)
+  flarum:
+    image: mondedie/flarum:latest
+    container_name: flarum
+    depends_on:
+      flarum_db:
+        condition: service_healthy
+    expose:
+      - "8888"
+    environment:
+      - FORUM_URL=${FLARUM_URL:-https://forum.ailinux.me}
+      - DB_HOST=flarum_db
+      - DB_PORT=3306
+      - DB_NAME=${DB_NAME:-flarum}
+      - DB_USER=${DB_USER:-flarum}
+      - DB_PASS=${DB_PASS:-flarum}
+      - DB_PASSWORD=${DB_PASS:-flarum}
+      - DB_PREFIX=${DB_PREFIX:-flarum_}
+      - DB_TIMEOUT=60
+      - UPLOAD_MAX_SIZE=50M
+      - PHP_MEMORY_LIMIT=256M
+      - OPCACHE_MEMORY_LIMIT=128
+      - LOG_TO_STDOUT=true
+      - DEBUG=false
+      - TZ=${TZ:-Europe/Berlin}
+      # Admin-Account wird beim ersten Start angelegt
+      - FLARUM_ADMIN_USER=${FLARUM_ADMIN_USER:-admin}
+      - FLARUM_ADMIN_PASS=${FLARUM_ADMIN_PASSWORD:-change-me}
+      - FLARUM_ADMIN_MAIL=${FLARUM_ADMIN_EMAIL:-admin@ailinux.me}
+      - FLARUM_TITLE=${FLARUM_TITLE:-AILinux Community Forum}
+    volumes:
+      - ./flarum/assets:/flarum/app/public/assets:rw
+      - ./flarum/extensions:/flarum/app/extensions:rw
+      - ./flarum/storage:/flarum/app/storage:rw
+      - ./flarum/nginx:/etc/nginx/flarum:ro
+    networks:
+      - flarum_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8888 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # MariaDB Database
+  flarum_db:
+    image: mariadb:11
+    container_name: flarum_db
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD:-change-me}
+      - MYSQL_DATABASE=${DB_NAME:-flarum}
+      - MYSQL_USER=${DB_USER:-flarum}
+      - MYSQL_PASSWORD=${DB_PASS:-flarum}
+      - TZ=${TZ:-Europe/Berlin}
+    volumes:
+      - flarum_db_data:/var/lib/mysql
+      - ./mysql/custom.cnf:/etc/mysql/conf.d/custom.cnf:ro
+    networks:
+      - flarum_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD:-change-me-root}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Automated Database Backup Service
+  flarum_backup:
+    image: mariadb:11
+    container_name: flarum_backup
+    depends_on:
+      flarum_db:
+        condition: service_healthy
+    environment:
+      - TZ=${TZ:-Europe/Berlin}
+    volumes:
+      - ./backups:/backups
+    networks:
+      - flarum_network
+    restart: unless-stopped
+    entrypoint: |
+      bash -c '
+        echo "🔄 Backup service started. Running daily backups at 03:00 UTC..."
+        while true; do
+          TIMESTAMP=$$(date +%Y%m%d_%H%M%S)
+          echo "📦 Starting backup at $$TIMESTAMP"
+          mariadb-dump -h flarum_db -u root -p${DB_ROOT_PASSWORD:-change-me-root} ${DB_NAME:-flarum} | gzip > /backups/flarum-$$TIMESTAMP.sql.gz
+          if [ $$? -eq 0 ]; then
+            echo "✅ Backup completed: flarum-$$TIMESTAMP.sql.gz"
+          else
+            echo "❌ Backup failed!"
+          fi
+          # Delete backups older than 30 days
+          find /backups -name "flarum-*.sql.gz" -mtime +30 -delete
+          # Sleep until next backup (24 hours)
+          sleep 86400
+        done
+      '
+
+networks:
+  flarum_network:
+    name: flarum_network
+    driver: bridge
+
+volumes:
+  flarum_db_data:
+    name: flarum_db_data

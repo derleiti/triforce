@@ -1,0 +1,47 @@
+= 1.0.7 - 2025-10-06 =
+- feat(UX): Improve readability and navigation ergonomics.
+- fix(CLS): Prevent layout shift on hero images by enforcing aspect ratio.
+- perf(fonts): Add resource hints to preconnect to Google Fonts.
+- style: Refine typography for better reading rhythm.
+- style: Make table of contents sticky for easier navigation in long posts.
+- style: Improve focus visibility on navigation elements.
+- fix(bbpress): Add a 'back to overview' link in topics.
+- chore: Remove redundant header.php file.
+
+= 1.0.6 - 2025-10-06 =
+- docs: Comprehensive documentation review and validation.
+- docs: Verify all theme documentation matches current implementation.
+- docs: Update changelog with testing and maintenance notes.
+- chore: Confirm all theme assets are properly built and deployed.
+- test: Validate theme integration with WordPress 6.8.1 and PHP 8.3.
+
+= 1.0.5 - 2025-10-05 =
+- feat(consent): Add consent banner CSS optimizations (backdrop blur, accessible styling, footer legal links).
+- feat(footer): Add automated legal links (Privacy Policy, Consent Manager, Imprint) with responsive layout.
+- fix(nav): Change overflow menu button from "Mehr v" to "Mehr ▼" (proper Unicode arrow).
+- fix(nav): Verified menu configuration - single menu correctly assigned to primary/footer locations.
+- chore: Rebuild theme assets via npm run build (dist/app.js updated).
+- docs: Update CLAUDE.md with consent management integration details.
+
+= 1.0.4 - 2025-10-05 =
+- docs: Create known-bugs.txt to document common third-party/client-side console errors.
+
+= 1.0.3 - 2025-10-05 =
+- feat: Add optional Content Security Policy (CSP) nonce support for theme scripts.
+- fix(ai): Add API health check and disable UI if the endpoint is unreachable.
+- fix(ai): Harden fetch calls with safe JSON parsing and improved error handling.
+- fix(swup): Add debounce to page:view hook to prevent rapid re-initialization.
+- chore(bbpress): Automatically disable Swup on all forum and topic links.
+
+= 1.0.2 - 2025-10-05 =
+- chore: Verified theme implementation against the canonical fix plan (GEMINI.md). Confirmed all items are addressed.
+- fix: Early Color Mode: `dist/colorMode.js` is enqueued in `<head>` with priority 1.
+- fix: Single `app.js` Enqueue: The main `dist/app.js` bundle is loaded only once.
+- fix: `NOVA_API` Localization: API endpoints and settings are correctly passed to the client via `wp_localize_script`.
+- fix: bbPress Styles: The theme correctly enqueues `css/bbpress-frontend.css` and the legacy `css/bbpress.css` has been removed.
+- fix: Vite I/O: `vite.config.js` uses the correct entry points and generates un-hashed filenames.
+
+= 1.0.1 - 2025-10-05 =
+- feat: Re-enabled Swup transitions for smooth page loads.
+- fix: Minimized FOUC by removing the 'no-js' class via javascript.
+- chore: Cleaned up bbPress styles by loading them conditionally.

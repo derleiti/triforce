@@ -1,0 +1,1257 @@
+# Translation of Themes - Sydney in Turkish
+# This file is distributed under the same license as the Themes - Sydney package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2018-08-21 14:00:09+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: tr\n"
+"Project-Id-Version: Themes - Sydney\n"
+
+#. Theme Name of the theme
+#: style.css inc/dashboard/class-dashboard.php:124
+#: inc/dashboard/class-dashboard.php:125
+#: inc/dashboard/html-notifications-sidebar.php:46 inc/extras.php:383
+#: inc/modules/hf-builder/components/footer/copyright/copyright.php:17
+#: inc/onboarding/theme-info.php:137 inc/theme-dashboard-settings.php:21
+#, gp-priority: high
+msgid "Sydney"
+msgstr "Sydney"
+
+#: inc/customizer/customizer.php:560 inc/customizer/options/hero-area.php:51
+#: inc/customizer/options/hero-area.php:74
+msgid "Video"
+msgstr "Video"
+
+#: inc/page-builder.php:65 inc/so-page-builder.php:65
+msgid "Add a value in the field to change the top/bottom row padding, otherwise 100px will be applied by default"
+msgstr "Üst/alt satır dolgusunu değiştirmek için alana bir değer girin, aksi halde varsayılan olarak 100px uygulanacaktır"
+
+#: inc/modules/hf-builder/components/footer/button/customize-options.php:179
+msgid "Colors"
+msgstr "Renkler"
+
+#: inc/customizer/options/blog-single.php:51
+#: inc/customizer/options/colors.php:561 inc/customizer/options/header.php:14
+#: inc/dashboard/html-builder.php:16
+#: inc/modules/hf-builder/components/header/header-builder/customize-options.php:88
+#: inc/theme-dashboard-settings.php:196
+msgid "Header"
+msgstr "Üst kısım"
+
+#: inc/page-builder.php:107 inc/so-page-builder.php:107
+msgid "Disable row overlay?"
+msgstr "Satır kaplaması etkisizleştirilsin mi?"
+
+#: inc/page-builder.php:113 inc/so-page-builder.php:113
+msgid "Overlay color"
+msgstr "Kaplama rengi"
+
+#: inc/page-builder.php:174 inc/so-page-builder.php:174
+msgid "Content alignment"
+msgstr "İçerik hizalama"
+
+#: inc/customizer/controls/dimensions/class_sydney_dimensions_control.php:115
+#: inc/customizer/controls/dimensions/class_sydney_dimensions_control.php:143
+#: inc/customizer/controls/dimensions/class_sydney_dimensions_control.php:170
+#: inc/customizer/options/blog-single.php:68
+#: inc/customizer/options/blog.php:245 inc/customizer/options/blog.php:629
+#: inc/customizer/options/general.php:334 inc/customizer/options/header.php:315
+#: inc/customizer/options/header.php:438 inc/customizer/options/layouts.php:137
+#: inc/customizer/options/woocommerce.php:107 inc/page-builder.php:178
+#: inc/so-page-builder.php:178
+msgid "Left"
+msgstr "Sol"
+
+#: inc/customizer/options/header.php:316
+#: inc/modules/hf-builder/components/footer/columns/customize-options.php:211
+#: inc/modules/hf-builder/components/footer/footer-builder/customize-options.php:157
+#: inc/modules/hf-builder/components/footer/row/customize-options.php:359
+#: inc/modules/hf-builder/components/header/columns/customize-options.php:217
+#: inc/modules/hf-builder/components/header/header-builder/customize-options.php:275
+#: inc/modules/hf-builder/components/header/row/customize-options.php:393
+#: inc/page-builder.php:179 inc/so-page-builder.php:179
+msgid "Center"
+msgstr "Orta"
+
+#: inc/customizer/controls/dimensions/class_sydney_dimensions_control.php:103
+#: inc/customizer/controls/dimensions/class_sydney_dimensions_control.php:131
+#: inc/customizer/controls/dimensions/class_sydney_dimensions_control.php:158
+#: inc/customizer/options/blog.php:246 inc/customizer/options/blog.php:630
+#: inc/customizer/options/general.php:335 inc/customizer/options/header.php:317
+#: inc/customizer/options/header.php:451 inc/customizer/options/layouts.php:138
+#: inc/customizer/options/woocommerce.php:111 inc/page-builder.php:180
+#: inc/so-page-builder.php:180
+msgid "Right"
+msgstr "Sağ"
+
+#: inc/page-builder.php:183 inc/so-page-builder.php:183
+msgid "This setting depends on the content, it may or may not work"
+msgstr "Bu ayar içeriğe bağlıdır, çalışabilir veya çalışmayabilir"
+
+#: inc/page-builder.php:187 inc/so-page-builder.php:187
+msgid "Widget title color"
+msgstr "Bileşen başlık rengi"
+
+#: inc/customizer/options/footer.php:288 inc/page-builder.php:194
+#: inc/so-page-builder.php:194
+msgid "Headings color"
+msgstr "Başlıkların rengi"
+
+#: inc/page-builder.php:198 inc/so-page-builder.php:198
+msgid "This applies to all headings in the widget, except the widget title"
+msgstr "Bu, bileşen başlığı dışındaki tüm başlıklara uygulanır"
+
+#: widgets/fp-services-type-a.php:42 widgets/fp-services-type-b.php:51
+msgid "Content to display:"
+msgstr "Gösterilecek içerik:"
+
+#: widgets/fp-services-type-a.php:44 widgets/fp-services-type-b.php:53
+msgid "Full content"
+msgstr "Tüm içerik"
+
+#: inc/customizer/options/blog.php:408 widgets/fp-services-type-a.php:45
+#: widgets/fp-services-type-b.php:54
+msgid "Excerpt"
+msgstr "Özet"
+
+#: inc/dashboard/html-settings-general.php:56
+#: inc/theme-dashboard-settings.php:321
+msgid "Get Sydney Pro"
+msgstr "Sydney Proyu alın"
+
+#: widgets/fp-portfolio.php:12
+msgid "Display your projects in a grid."
+msgstr "Projelerinizi bir ızgara içinde gösterin."
+
+#: widgets/fp-portfolio.php:13
+msgid "Sydney FP: Portfolio"
+msgstr "Sydney FP: Portfolyo"
+
+#: widgets/fp-portfolio.php:153
+msgid "Number of projects to show (-1 shows all of them):"
+msgstr "Gösterilecek proje sayısı (-1 hepsini gösterir):"
+
+#: widgets/fp-portfolio.php:155
+msgid "Enter the slugs (comma separated) for your categories or leave empty to show all projects."
+msgstr "Kategorileriniz için kısa adları girin (virgülle ayrılmış) veya tüm projeleri göstermek için boş bırakın."
+
+#: widgets/fp-portfolio.php:158
+msgid "Show navigation filter? (Category slugs must be specified)."
+msgstr "Gezinme süzgeci gösterilsin mi? (Kategori kısa adları belirtilmelidir)."
+
+#: widgets/fp-portfolio.php:159
+msgid "\"Show all\" text:"
+msgstr "\"Tümünü göster\" metni:"
+
+#: widgets/fp-portfolio.php:162
+msgid "Show project title?"
+msgstr "Proje başlığını gösterilsin mi?"
+
+#: widgets/fp-portfolio.php:35 widgets/fp-portfolio.php:147
+msgid "Show all"
+msgstr "Tümünü göster"
+
+#: inc/customizer/options/general.php:117
+msgid "Page wrapper - bottom padding"
+msgstr "Sayfa kapsayıcı - alt dolgu"
+
+#: widgets/fp-clients.php:35
+msgid "Open clients links in a new tab?"
+msgstr "Müşterilerin bağlantıları yeni sekmede açılsın mı?"
+
+#: inc/customizer/options/general.php:93
+msgid "Page wrapper - top padding"
+msgstr "Sayfa kapsayıcı - üst dolgu"
+
+#: inc/customizer/options/general.php:96
+msgid "Top padding for the page wrapper (the space between the header and the page title)"
+msgstr "Sayfa kapsayıcısı için üst dolgu (üst kısım ile sayfa başlığı arasındaki boşluk)"
+
+#: inc/customizer/options/general.php:120
+msgid "Bottom padding for the page wrapper (the space between the page content and the footer)"
+msgstr "Sayfa kapsayıcısı için alt dolgu (sayfa içeriği ile alt kısım arasındaki boşluk)"
+
+#: inc/dashboard/html-home.php:288 inc/onboarding/theme-info.php:40
+#: theme-dashboard/class-theme-dashboard.php:652
+msgid "Support"
+msgstr "Destek"
+
+#: widgets/fp-testimonials.php:33
+msgid "Autoplay time [ms]"
+msgstr "Otomatik oynatma süresi [ms]"
+
+#: inc/onboarding/theme-info.php:21
+msgid "Sydney Info"
+msgstr "Sydney Bilgileri"
+
+#: inc/dashboard/html-home.php:45 inc/dashboard/html-home.php:142
+#: inc/dashboard/html-home.php:275 inc/onboarding/theme-info.php:126
+#: theme-dashboard/class-theme-dashboard.php:587
+msgid "Documentation"
+msgstr "Belgelendirme"
+
+#. Template Name of the theme
+#: inc/customizer/customizer.php:205
+msgid "Full width"
+msgstr "Tam genişlik"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:175
+msgid "Front Page"
+msgstr "Ön sayfa"
+
+#: widgets/fp-testimonials.php:108
+msgid "See all our testimonials"
+msgstr "Tüm referanslarımıza bakın"
+
+#: widgets/fp-testimonials.php:20
+msgid "In order to display this widget, you must first add some testimonials from your admin area."
+msgstr "Bu bileşeni görüntülemek için öncelikle yönetici bölümünden bazı referanslar eklemeniz gerekir."
+
+#: widgets/fp-testimonials.php:25
+msgid "Number of testimonials to show (-1 shows all of them):"
+msgstr "Gösterilecek referans sayısı (-1 hepsini gösterir):"
+
+#: widgets/fp-testimonials.php:27
+msgid "The URL for your button [In case you want a button below your testimonials block]"
+msgstr "Düğmeniz için bağlantı adresi [referanslar bloğunuzun altında bir düğme isterseniz]"
+
+#: widgets/fp-testimonials.php:29
+msgid "The text for the button [Defaults to <em>See all our testimonials</em> if left empty]"
+msgstr "Düğme için metin [Boş bırakılırsa varsayılan <em>Tüm referanslarımıza bakın</em>]"
+
+#: widgets/fp-testimonials.php:31
+msgid "Enter the slug for your category or leave empty to show all testimonials."
+msgstr "Kategoriniz için kısa ad girin veya tüm referansları göstermek için boş bırakın."
+
+#: widgets/fp-testimonials.php:6
+msgid "Display your testimonials in a slider."
+msgstr "Referanslarınızı bir kaydırıcı içinde gösterin."
+
+#: widgets/fp-testimonials.php:7
+msgid "Sydney FP: Testimonials"
+msgstr "Sydney FP: Referanslar"
+
+#: widgets/video-widget.php:24
+msgid "Paste the URL of the video (only from a network that supports oEmbed, like Youtube, Vimeo etc.):"
+msgstr "Videonun bağlantı adresini yapıştırın (sadece oEmbed destekleyen, Youtube, Vimeo vb ağlardan alın):"
+
+#: widgets/video-widget.php:6
+msgid "Display a video from Youtube, Vimeo etc."
+msgstr "Youtube, Vimeo vb. bir video gösterin."
+
+#: widgets/video-widget.php:7
+msgid "Sydney: Video"
+msgstr "Sydney: Video"
+
+#: widgets/fp-social.php:65
+msgid "&mdash; Select &mdash;"
+msgstr "&mdash; Seç &mdash;"
+
+#: widgets/fp-social.php:61
+msgid "In order to display your social icons in a widget, all you need to do is go to <strong>Appearance > Menus</strong> and create a menu containing links to your social profiles, then assign that menu here. Supported networks: Facebook, Twitter, Google Plus, Instagram, Dribble, Vimeo, Linkedin, Youtube, Flickr, Pinterest, Tumblr, Foursquare, Behance."
+msgstr "Bir bileşen içinde sosyal ağ simgelerini göstermek için tüm yapmanız gereken <strong>Görünüm > Menüler</strong>'e gidip sosyal ağ profillerinize bağlantılar içeren bir menü oluşturmak ve daha sonra o menüyü buraya atamak. Desteklenen sosyal ağlar: Facebook, Twitter, Google Plus, Instagram, Dribble, Vimeo, Linkedin, Youtube, Flickr, Pinterest, Tumblr, Foursquare, Behance."
+
+#: widgets/fp-social.php:63
+msgid "Select your social menu:"
+msgstr "Sosyal ağ menünüzü seçin:"
+
+#: widgets/fp-social.php:53
+msgid "No menus have been created yet. <a href=\"%s\">Create some</a>."
+msgstr "Henüz hiç menü oluşturulmamış. <a href=\"%s\">Bir tane oluşturun</a>."
+
+#: widgets/fp-skills.php:30
+msgid "First skill name"
+msgstr "İlk beceri adı"
+
+#: widgets/fp-skills.php:35
+msgid "First skill value"
+msgstr "İlk beceri değeri"
+
+#: widgets/fp-skills.php:41
+msgid "Second skill name"
+msgstr "İkinci beceri adı"
+
+#: widgets/fp-skills.php:46
+msgid "Second skill value"
+msgstr "İkinci beceri değeri"
+
+#: widgets/fp-skills.php:52
+msgid "Third skill name"
+msgstr "Üçüncü beceri adı"
+
+#: widgets/fp-skills.php:57
+msgid "Third skill value"
+msgstr "Üçüncü beceri değeri"
+
+#: widgets/fp-skills.php:6
+msgid "Show your visitors some of your skills."
+msgstr "Ziyaretçilerinize bazı becerilerinizi gösterin."
+
+#: widgets/fp-skills.php:63
+msgid "Fourth skill name"
+msgstr "Dördüncü beceri adı"
+
+#: widgets/fp-skills.php:68
+msgid "Fourth skill value"
+msgstr "Dömrdüncü beceri değeri"
+
+#: widgets/fp-skills.php:7
+msgid "Sydney FP: Skills"
+msgstr "Sydney FP: Beceriler"
+
+#: widgets/fp-social.php:5
+msgid "Display your social profile on your front page"
+msgstr "Ön sayfanızda sosyal ağ profillerinizi gösterin."
+
+#: widgets/fp-social.php:6
+msgid "Sydney FP: Social Profile"
+msgstr "Sydney FP: Sosyal Ağ Profili"
+
+#: widgets/fp-list.php:66
+msgid "Add a bit of text here. It will be displayed."
+msgstr "Buraya bir parça metin ekleyin. Gösterilecek."
+
+#: widgets/fp-list.php:69
+msgid "Add your list items here. One item per row, start each row with <strong>^</strong>. Example: <strong>^ list item </strong>"
+msgstr "Liste ögelerinizi buradan ekleyin. Her satıra bir öge ve her satıra <strong>^</strong> ile başlayın. Örneğin: <strong>^ liste ögesi</strong>"
+
+#: widgets/fp-list.php:72
+msgid "Call to action button URL:"
+msgstr "Eylem çağrısı düğmesi bağlantı adresi:"
+
+#: widgets/fp-list.php:75
+msgid "Call to action button text:"
+msgstr "Eylem çağrısı düğmesi metni:"
+
+#: widgets/fp-services-type-a.php:11 widgets/fp-services-type-b.php:11
+msgid "Show what services you are able to provide."
+msgstr "Hangi hizmetleri verebileceğinizi gösterin."
+
+#: widgets/fp-services-type-a.php:12
+msgid "Sydney FP: Services Type A"
+msgstr "Sydney FP: A Tipi Hizmetler"
+
+#: widgets/fp-services-type-a.php:146 widgets/fp-services-type-b.php:162
+msgid "See all our services"
+msgstr "Tüm hizmetlerimize bakın"
+
+#: widgets/fp-services-type-a.php:27 widgets/fp-services-type-b.php:27
+msgid "In order to display this widget, you must first add some services from your admin area."
+msgstr "Bu bileşeni görüntülemek için öncelikle yönetici bölümünden bazı hizmetler eklemeniz gerekir."
+
+#: widgets/fp-services-type-a.php:32 widgets/fp-services-type-b.php:32
+msgid "Number of services to show (-1 shows all of them):"
+msgstr "Gösterilecek hizmet sayısı (-1 hepsini gösterir):"
+
+#: widgets/fp-services-type-a.php:34 widgets/fp-services-type-b.php:34
+msgid "The URL for your button [In case you want a button below your services block]"
+msgstr "Düğmeniz için bağlantı adresi [hizmetler bloğunuzun altında bir düğme isterseniz]"
+
+#: widgets/fp-services-type-a.php:36 widgets/fp-services-type-b.php:36
+msgid "The text for the button [Defaults to <em>See all our services</em> if left empty]"
+msgstr "Düğme için metin [Boş bırakılırsa varsayılan <em>Tüm hizmetlerimize bakın</em>]"
+
+#: widgets/fp-services-type-a.php:38 widgets/fp-services-type-b.php:38
+msgid "Enter the slug for your category or leave empty to show all services."
+msgstr "Kategoriniz için kısa ad girin veya tüm hizmetleri göstermek için boş bırakın."
+
+#: widgets/fp-services-type-a.php:41
+msgid "Display services in two columns instead of three?"
+msgstr "Hizmetler iki sütun yerine üç sütunda gösterilsin mi?"
+
+#: widgets/fp-services-type-b.php:12
+msgid "Sydney FP: Services type B"
+msgstr "Sydney FP: B Tipi Hizmetler"
+
+#: widgets/fp-services-type-b.php:41
+msgid "Number of columns:"
+msgstr "Sütun sayısı:"
+
+#: widgets/fp-list.php:63 widgets/fp-portfolio.php:151 widgets/fp-social.php:58
+msgid "Title:"
+msgstr "Başlık:"
+
+#: widgets/fp-call-to-action.php:27
+msgid "Display the button inline with the text?"
+msgstr "Düğme metinle aynı hizada gösterilsin mi?"
+
+#: widgets/fp-clients.php:111
+msgid "See all our clients"
+msgstr "Tüm müşterilerimize bakın"
+
+#: widgets/fp-clients.php:21
+msgid "In order to display this widget, you must first add some clients from your admin area. Set your client logos as featured images."
+msgstr "Bu bileşeni görüntülemek için öncelikle yönetici bölümünden bazı müşterileri eklemeniz gerekir. Müşteri logolarınızı öne çıkan görsel olarak ayarlayın."
+
+#: widgets/fp-clients.php:26
+msgid "Number of clients to show (-1 shows all of them):"
+msgstr "Gösterilecek müşteri sayısı (-1 hepsini gösterir):"
+
+#: widgets/fp-clients.php:28
+msgid "The URL for your button [In case you want a button below your clients block]"
+msgstr "Düğmeniz için bağlantı adresi [müşteriler bloğunuzun altında bir düğme isterseniz]"
+
+#: widgets/fp-clients.php:30
+msgid "The text for the button [Defaults to <em>See all our clients</em> if left empty]"
+msgstr "Düğme için metin [Boş bırakılırsa varsayılan <em>Tüm müşterilerimize bakın</em>]"
+
+#: widgets/fp-clients.php:32
+msgid "Enter the slug for your category or leave empty to show all clients."
+msgstr "Kategoriniz için kısa ad girin veya tüm müşterileri göstermek için boş bırakın."
+
+#: widgets/fp-clients.php:6
+msgid "Display your clients list."
+msgstr "Müşteriler listenizi gösterin."
+
+#: widgets/fp-clients.php:7
+msgid "Sydney FP: Clients"
+msgstr "Sydney FP: Müşteriler"
+
+#: widgets/fp-employees.php:142
+msgid "See all our employees"
+msgstr "Tüm çalışanlarımıza bakın"
+
+#: widgets/fp-employees.php:20
+msgid "In order to display this widget, you must first add some employees from the dashboard. Add as many as you want and the theme will automatically display them all."
+msgstr "Bu bileşeni görüntülemek için öncelikle başlangıç ekranından bazı çalışanlar eklemeniz gerekir. İstediğiniz kadar ekleyin ve tema otomatik olarak tümünü gösterecektir."
+
+#: widgets/fp-employees.php:25
+msgid "Number of employees to show (-1 shows all of them):"
+msgstr "Gösterilecek çalışan sayısı (-1 hepsini gösterir):"
+
+#: widgets/fp-employees.php:27
+msgid "Enter an URL here if you want to section to link somewhere."
+msgstr "Bir yere bağlantı vermek isterseniz buraya bir bağlantı adresi girin."
+
+#: widgets/fp-employees.php:29
+msgid "The text for the button [Defaults to <em>See all our employees</em> if left empty]"
+msgstr "Düğme için metin [Boş bırakılırsa varsayılan <em>Tüm çalışanlarımıza bakın</em>]"
+
+#: widgets/fp-employees.php:31
+msgid "Enter the slug for your category or leave empty to show all employees."
+msgstr "Kategoriniz için kısa ad girin veya tüm çalışanları göstermek için boş bırakın."
+
+#: widgets/fp-employees.php:34
+msgid "Center the employees? (use only if you have 1 or 2 employees)"
+msgstr "Çalışanları ortalansın mı? (1 veya 2 çalışan varsa kullanın)"
+
+#: widgets/fp-employees.php:6
+msgid "Display your team members in a stylish way."
+msgstr "Takım üyelerinizi şık bir şeklide gösterin."
+
+#: widgets/fp-employees.php:7
+msgid "Sydney FP: Employees"
+msgstr "Sydney FP: Çalışanlar"
+
+#: widgets/fp-facts.php:30
+msgid "You can find a list of the available icons "
+msgstr "Kullanılabilir simgelerin bir listesini bulabilirsiniz "
+
+#: widgets/fp-facts.php:30
+msgid "here."
+msgstr "buradan."
+
+#: widgets/fp-facts.php:35
+msgid "Usage example: <strong>fa-android</strong>"
+msgstr "Kullanım örneği: <strong>fa-android</strong>"
+
+#: widgets/fp-facts.php:45
+msgid "First fact name"
+msgstr "İlk durum adı"
+
+#: widgets/fp-facts.php:50
+msgid "First fact value"
+msgstr "İlk durum değeri"
+
+#: widgets/fp-facts.php:55
+msgid "First fact icon"
+msgstr "İlk durum simgesi"
+
+#: widgets/fp-facts.php:61
+msgid "Second fact name"
+msgstr "İkinci durum adı"
+
+#: widgets/fp-facts.php:66
+msgid "Second fact value"
+msgstr "İkinci durum değeri"
+
+#: widgets/fp-facts.php:71
+msgid "Second fact icon"
+msgstr "İkinci durum simgesi"
+
+#: widgets/fp-facts.php:7
+msgid "Show your visitors some facts about your company."
+msgstr "Şirketiniz hakkındaki bazı durumları ziyaretçilerinize gösterin."
+
+#: widgets/fp-facts.php:77
+msgid "Third fact name"
+msgstr "Üçüncü durum adı"
+
+#: widgets/fp-facts.php:82
+msgid "Third fact value"
+msgstr "Üçüncü durum değeri"
+
+#: widgets/fp-facts.php:8
+msgid "Sydney FP: Facts"
+msgstr "Sydney FP: Durumlar"
+
+#: widgets/fp-facts.php:87
+msgid "Third fact icon"
+msgstr "Üçüncü durum simgesi"
+
+#: widgets/fp-facts.php:93
+msgid "Fourth fact name"
+msgstr "Dördüncü durum adı"
+
+#: widgets/fp-facts.php:98
+msgid "Fourth fact value"
+msgstr "Dördüncü durum değeri"
+
+#: widgets/fp-facts.php:103
+msgid "Fourth fact icon"
+msgstr "Dördüncü durum simgesi"
+
+#: widgets/fp-latest-news.php:22
+msgid "Enter the slug for your category or leave empty to show posts from all categories."
+msgstr "Kategoriniz için kısa ad girin veya tüm kategorilerden yazıları göstermek için boş bırakın."
+
+#: widgets/fp-latest-news.php:25
+msgid "Add the text for the button here if you want to change the default <em>See all our news</em>"
+msgstr "Varsayılan <em>Tüm haberlerimize bakın</em> metnini değiştirmek isterseniz düğme için bir metin ekleyin"
+
+#: widgets/fp-latest-news.php:6
+msgid "Show the latest news from your blog."
+msgstr "Blogunuzdan son haberleri gösterin."
+
+#: widgets/fp-latest-news.php:7
+msgid "Sydney FP: Latest News"
+msgstr "Sydney FP: Son Haberler"
+
+#: widgets/fp-latest-news.php:50 widgets/fp-latest-news.php:52
+msgid "See all our news"
+msgstr "Tüm haberlerimize bakın"
+
+#: widgets/fp-list.php:11
+msgid "A simple list widget"
+msgstr "Basit bir listeleme bileşeni"
+
+#: widgets/fp-list.php:13
+msgid "Sydney FP: List"
+msgstr "Sydney FP: Liste"
+
+#: widgets/contact-info.php:24
+msgid "Enter your address"
+msgstr "Adresinizi girin"
+
+#: widgets/contact-info.php:27
+msgid "Enter your phone number"
+msgstr "Telefon numaranızı girin"
+
+#: widgets/contact-info.php:30
+msgid "Enter your email address"
+msgstr "E-posta adresinizi girin"
+
+#: widgets/fp-call-to-action.php:20
+msgid "Enter your call to action."
+msgstr "Eylem çağrınızı girin"
+
+#: widgets/fp-call-to-action.php:22
+msgid "Link for the button"
+msgstr "Düğme için bağlantı"
+
+#: widgets/fp-call-to-action.php:24
+msgid "Title for the button"
+msgstr "Düğme için başlık"
+
+#: widgets/fp-call-to-action.php:6
+msgid "Display a call to action block."
+msgstr "Bir eylem çağrısı bloğu gösterin."
+
+#: widgets/fp-call-to-action.php:7
+msgid "Sydney FP: Call to action"
+msgstr "Sydney FP: Eylem çağrısı"
+
+#: inc/customizer/options/woocommerce.php:293 widgets/contact-info.php:20
+#: widgets/fp-call-to-action.php:18 widgets/fp-clients.php:23
+#: widgets/fp-employees.php:22 widgets/fp-facts.php:39
+#: widgets/fp-latest-news.php:18 widgets/fp-services-type-a.php:29
+#: widgets/fp-services-type-b.php:29 widgets/fp-skills.php:24
+#: widgets/fp-testimonials.php:22 widgets/video-widget.php:20
+msgid "Title"
+msgstr "Başlık"
+
+#: widgets/contact-info.php:6
+msgid "Display your contact info"
+msgstr "İletişim bilgilerinizi gösterin"
+
+#: widgets/contact-info.php:7
+msgid "Sydney: Contact info"
+msgstr "Sydney: İletişim bilgileri"
+
+#. translators: %s is the search query
+#: inc/extras.php:1026
+msgid "Search Results for: %s"
+msgstr "Arama sonuçları: %s"
+
+#: inc/dashboard/class-dashboard.php:249 inc/dashboard/html-home.php:69
+#: inc/dashboard/html-home.php:166 inc/dashboard/html-home.php:200
+#: inc/dashboard/html-settings-performance.php:31
+#: inc/dashboard/html-starter-sites.php:31
+#: inc/onboarding/plugins/class-sydney-recommended-plugins.php:91
+#: inc/onboarding/plugins/class-sydney-recommended-plugins.php:111
+#: theme-dashboard/class-theme-dashboard.php:379
+msgid "Activate"
+msgstr "Etkinleştir"
+
+#: inc/dashboard/html-home.php:204
+msgid "Install"
+msgstr "Yükle"
+
+#: inc/customizer/options/general.php:238
+msgid "Type"
+msgstr "Tür"
+
+#: inc/customizer/controls/display-conditions/display-conditions-script-template.php:37
+#: inc/customizer/options/cpt-panels.php:54 inc/template-tags.php:241
+msgid "Archives"
+msgstr "Arşivler"
+
+#. translators: %1$s: Taxonomy singular name, %2$s: Current taxonomy term.
+#: inc/template-tags.php:239
+msgid "%1$s: %2$s"
+msgstr "%1$s: %2$s"
+
+#. translators: %s: post type archive title.
+#: inc/template-tags.php:236
+msgid "Archives: %s"
+msgstr "Arşivler: %s"
+
+#: inc/template-tags.php:233
+msgctxt "post format archive title"
+msgid "Chats"
+msgstr "Sohbetler"
+
+#: inc/template-tags.php:231
+msgctxt "post format archive title"
+msgid "Audio"
+msgstr "Ses"
+
+#: inc/template-tags.php:229
+msgctxt "post format archive title"
+msgid "Statuses"
+msgstr "Durumlar"
+
+#: inc/template-tags.php:227
+msgctxt "post format archive title"
+msgid "Links"
+msgstr "Bağlantılar"
+
+#: inc/template-tags.php:225
+msgctxt "post format archive title"
+msgid "Quotes"
+msgstr "Alıntılar"
+
+#: inc/template-tags.php:223
+msgctxt "post format archive title"
+msgid "Videos"
+msgstr "Videolar"
+
+#: inc/template-tags.php:221
+msgctxt "post format archive title"
+msgid "Images"
+msgstr "Görseller"
+
+#: inc/template-tags.php:219
+msgctxt "post format archive title"
+msgid "Galleries"
+msgstr "Galeriler"
+
+#: inc/template-tags.php:217
+msgctxt "post format archive title"
+msgid "Asides"
+msgstr "Yan sütunlar"
+
+#. translators: %s: day.
+#: inc/template-tags.php:214
+msgctxt "daily archives date format"
+msgid "F j, Y"
+msgstr "j F Y"
+
+#. translators: %s: day.
+#: inc/template-tags.php:214
+msgid "Day: %s"
+msgstr "Gün :%s"
+
+#. translators: %s: month.
+#: inc/template-tags.php:212
+msgctxt "monthly archives date format"
+msgid "F Y"
+msgstr "F Y"
+
+#. translators: %s: month.
+#: inc/template-tags.php:212
+msgid "Month: %s"
+msgstr "Ay: %s"
+
+#. translators: %s: year.
+#: inc/template-tags.php:210
+msgctxt "yearly archives date format"
+msgid "Y"
+msgstr "Y"
+
+#. translators: %s: year.
+#: inc/template-tags.php:210
+msgid "Year: %s"
+msgstr "Yıl: %s"
+
+#. translators: %s: author name.
+#: inc/template-tags.php:208
+msgid "Author: %s"
+msgstr "Yazar: %s"
+
+#. translators: %s: tag title.
+#: inc/template-tags.php:206
+msgid "Tag: %s"
+msgstr "Etiket: %s"
+
+#. translators: %s: category title.
+#: inc/template-tags.php:204
+msgid "Category: %s"
+msgstr "Kategori: %s"
+
+#. translators: used between list items, there is a space after the comma
+#: inc/template-tags.php:172
+msgid ", "
+msgstr ", "
+
+#. translators: %s: post date.
+#: inc/template-tags.php:345
+msgctxt "post date"
+msgid "Posted on %s"
+msgstr "%s tarihinde yayınlandı"
+
+#: inc/customizer/options/blog-single.php:310 inc/template-tags.php:61
+msgid "Post navigation"
+msgstr "Yazı dolaşımı"
+
+#: inc/template-tags.php:31
+msgid "Newer posts"
+msgstr "Yeni yazılar"
+
+#: inc/template-tags.php:27
+msgid "Older posts"
+msgstr "Eski yazılar"
+
+#: inc/template-tags.php:23
+msgid "Posts navigation"
+msgstr "Yazı dolaşımı"
+
+#: inc/page-builder.php:98 inc/so-page-builder.php:98
+msgid "0"
+msgstr "0"
+
+#: inc/page-builder.php:100 inc/so-page-builder.php:100
+msgid "30px"
+msgstr "30px"
+
+#: inc/page-builder.php:101 inc/so-page-builder.php:101
+msgid "45px"
+msgstr "45px"
+
+#: inc/page-builder.php:99 inc/so-page-builder.php:99
+msgid "15px"
+msgstr "15px"
+
+#: inc/page-builder.php:97 inc/so-page-builder.php:97
+msgid "Default"
+msgstr "Varsayılan"
+
+#: inc/page-builder.php:93 inc/so-page-builder.php:93
+msgid "Mobile padding"
+msgstr "Mobil dolgu"
+
+#: inc/page-builder.php:95 inc/so-page-builder.php:95
+msgid "Here you can select a top/bottom row padding for screen sizes < 1024px"
+msgstr "1024px'den küçük ekran boyutu için üst/alt satır dolgusunu buradan seçebilirsiniz"
+
+#: inc/page-builder.php:87 inc/so-page-builder.php:87
+msgid "Background image of the row."
+msgstr "Satırın arka plan görseli."
+
+#: inc/page-builder.php:80 inc/so-page-builder.php:80
+msgid "Color of the row."
+msgstr "Satırın rengi."
+
+#: inc/modules/hf-builder/components/footer/footer-builder/customize-options.php:109
+#: inc/modules/hf-builder/components/footer/row/customize-options.php:311
+#: inc/modules/hf-builder/components/header/header-builder/customize-options.php:227
+#: inc/modules/hf-builder/components/header/row/customize-options.php:345
+#: inc/page-builder.php:85 inc/so-page-builder.php:85
+msgid "Background Image"
+msgstr "Arka plan görseli"
+
+#: inc/customizer/options/header-mobile.php:485
+#: inc/customizer/options/woocommerce.php:851 inc/page-builder.php:78
+#: inc/so-page-builder.php:78
+msgid "Color"
+msgstr "Renk"
+
+#: inc/page-builder.php:44 inc/so-page-builder.php:44
+msgid "Sydney Theme Widgets"
+msgstr "Sydney Tema Bileşenleri"
+
+#: inc/page-builder.php:57 inc/so-page-builder.php:57
+msgid "Bottom Border Color"
+msgstr "Alt kenarlık rengi"
+
+#: inc/page-builder.php:63 inc/so-page-builder.php:63
+msgid "Top/bottom padding"
+msgstr "Üst/alt dolgu"
+
+#: inc/page-builder.php:70 inc/so-page-builder.php:70
+msgid "Center align the content?"
+msgstr "İçerik ortaya hizalansın mı?"
+
+#: inc/page-builder.php:72 inc/so-page-builder.php:72
+msgid "This may or may not work. It depends on the widget styles."
+msgstr "Bu çalışabilir veya çalışmayabilir, bileşen biçimlerine bağlıdır."
+
+#: inc/customizer/customizer.php:499
+msgid "Theme info"
+msgstr "Tema bilgisi"
+
+#: inc/customizer/customizer.php:561
+msgid "Nothing (only menu)"
+msgstr "Hiçbir şey (sadece menü)"
+
+#: inc/customizer/options/colors.php:581
+msgid "Menu background"
+msgstr "Menü arka planı"
+
+#: inc/customizer/options/colors.php:641
+msgid "Top level menu items"
+msgstr "En üst seviye menü elemanları"
+
+#: inc/customizer/options/colors.php:678
+msgid "Sub-menu items"
+msgstr "Alt menü elemanları"
+
+#: inc/customizer/options/colors.php:696
+msgid "Sub-menu background"
+msgstr "Alt menü arka planı"
+
+#: inc/customizer/options/colors.php:123
+msgid "Body text"
+msgstr "Gövde metni"
+
+#: inc/customizer/options/colors.php:758
+msgid "Sidebar background"
+msgstr "Kenar çubuğu arka planı"
+
+#: inc/customizer/options/colors.php:790
+msgid "Sidebar color"
+msgstr "Kenar çubuğu rengi"
+
+#: inc/customizer/options/colors.php:621
+msgid "Site description"
+msgstr "Site açıklaması"
+
+#: inc/customizer/options/colors.php:601
+msgid "Site title"
+msgstr "Site başlığı"
+
+#: inc/customizer/controls/typography/class_sydney_typography.php:85
+msgid "Font family"
+msgstr "Yazı tipi ailesi"
+
+#: inc/customizer/customizer.php:588
+msgid "Three"
+msgstr "Üç"
+
+#: inc/customizer/customizer.php:589
+msgid "Four"
+msgstr "Dört"
+
+#: inc/customizer/customizer.php:586
+msgid "One"
+msgstr "Bir"
+
+#: inc/customizer/customizer.php:587
+msgid "Two"
+msgstr "İki"
+
+#: inc/customizer/options/footer.php:29 inc/dashboard/html-builder.php:19
+#: inc/theme-dashboard-settings.php:244
+msgid "Footer"
+msgstr "Alt kısım"
+
+#: inc/customizer/options/blog-single.php:182
+#: inc/customizer/options/blog.php:468
+msgid "Meta"
+msgstr "Meta"
+
+#: inc/customizer/customizer.php:615
+msgid "Full width (no sidebar)"
+msgstr "Tam genişlik (kenar çubuğu olmadan)"
+
+#: inc/customizer/customizer.php:616
+msgid "Masonry (grid style)"
+msgstr "Yığma (ızgara biçimi)"
+
+#: inc/customizer/options/blog.php:423
+msgid "Excerpt length"
+msgstr "Özet uzunluğu"
+
+#: inc/customizer/options/blog.php:74
+msgid "Blog layout"
+msgstr "Blog yerleşimi"
+
+#: inc/customizer/customizer.php:612 inc/customizer/options/blog.php:79
+msgid "Classic"
+msgstr "Klasik"
+
+#: inc/customizer/options/header-mobile.php:76
+#: inc/customizer/options/header.php:268 inc/customizer/options/layouts.php:42
+#: inc/customizer/options/woocommerce.php:59
+#: inc/customizer/options/woocommerce.php:373
+#: inc/customizer/options/woocommerce.php:478
+#: inc/customizer/options/woocommerce.php:571
+#: inc/customizer/options/woocommerce.php:641
+#: inc/integrations/learndash/customize.php:18
+#: inc/modules/hf-builder/components/footer/button/customize-options.php:299
+#: inc/modules/hf-builder/components/footer/copyright/customize-options.php:180
+#: inc/modules/hf-builder/components/footer/html/customize-options.php:246
+#: inc/modules/hf-builder/components/footer/social/customize-options.php:163
+#: inc/modules/hf-builder/components/footer/widget-1/customize-options.php:205
+#: inc/modules/hf-builder/components/footer/widget-2/customize-options.php:205
+#: inc/modules/hf-builder/components/footer/widget-3/customize-options.php:206
+#: inc/modules/hf-builder/components/header/button/customize-options.php:416
+#: inc/modules/hf-builder/components/header/contact-info/customize-options.php:324
+#: inc/modules/hf-builder/components/header/header-builder/customize-options.php:460
+#: inc/modules/hf-builder/components/header/header-builder/customize-options.php:506
+#: inc/modules/hf-builder/components/header/html/customize-options.php:333
+#: inc/modules/hf-builder/components/header/logo/customize-options.php:261
+#: inc/modules/hf-builder/components/header/menu/customize-options.php:546
+#: inc/modules/hf-builder/components/header/mobile-hamburger/customize-options.php:151
+#: inc/modules/hf-builder/components/header/mobile-offcanvas-menu/customize-options.php:202
+#: inc/modules/hf-builder/components/header/mobile-offcanvas/customize-options.php:218
+#: inc/modules/hf-builder/components/header/search/customize-options.php:217
+#: inc/modules/hf-builder/components/header/secondary-menu/customize-options.php:347
+#: inc/modules/hf-builder/components/header/social/customize-options.php:220
+#: inc/modules/hf-builder/components/header/wc-icons/customize-options.php:263
+msgid "Layout"
+msgstr "Yerleşim"
+
+#: inc/customizer/customizer.php:429 inc/customizer/customizer.php:575
+#: inc/modules/hf-builder/components/footer/footer-builder/customize-options.php:133
+#: inc/modules/hf-builder/components/footer/row/customize-options.php:335
+#: inc/modules/hf-builder/components/header/header-builder/customize-options.php:251
+#: inc/modules/hf-builder/components/header/row/customize-options.php:369
+msgid "Contain"
+msgstr "İçine al"
+
+#: inc/customizer/customizer.php:445
+msgid "Header height [default: 300px]"
+msgstr "Üst kısım yüksekliği (varsayılan: 300px)"
+
+#: inc/customizer/customizer.php:463
+msgid "Disable the overlay?"
+msgstr "Kaplama etkisizleştirilsin mi?"
+
+#: inc/customizer/customizer.php:482
+msgid "Upload your logo"
+msgstr "Logonuzu yükleyin"
+
+#: inc/onboarding/theme-info.php:110 inc/onboarding/theme-info.php:188
+msgid "Blog options"
+msgstr "Blog seçenekleri"
+
+#: inc/customizer/customizer.php:163 inc/customizer/customizer.php:601
+msgid "Static"
+msgstr "Sabit"
+
+#: inc/customizer/customizer.php:183 inc/customizer/customizer.php:640
+#: inc/modules/hf-builder/components/footer/columns/customize-options.php:164
+#: inc/modules/hf-builder/components/header/columns/customize-options.php:168
+msgid "Inline"
+msgstr "Satır içi"
+
+#: inc/customizer/customizer.php:184 inc/customizer/customizer.php:641
+msgid "Centered (menu and site logo)"
+msgstr "Ortalanmış (menü ve site logosu)"
+
+#: inc/customizer/customizer.php:425
+msgid "Header background size"
+msgstr "Üst kısım arka plan boyutu"
+
+#: inc/customizer/customizer.php:428 inc/customizer/customizer.php:574
+#: inc/modules/hf-builder/components/footer/footer-builder/customize-options.php:132
+#: inc/modules/hf-builder/components/footer/row/customize-options.php:334
+#: inc/modules/hf-builder/components/header/header-builder/customize-options.php:250
+#: inc/modules/hf-builder/components/header/row/customize-options.php:368
+msgid "Cover"
+msgstr "Kapla"
+
+#: inc/customizer/options/hero-area.php:191
+msgid "Upload your second image for the slider"
+msgstr "Kaydırıcı için ikinci görselinizi yükleyin"
+
+#: inc/customizer/options/hero-area.php:210
+msgid "Title for the second slide"
+msgstr "İkinci slayt için başlık"
+
+#: inc/customizer/options/hero-area.php:227
+msgid "Subtitle for the second slide"
+msgstr "İkinci slayt için alt başlık"
+
+#: inc/customizer/options/hero-area.php:243
+msgid "Third slide"
+msgstr "Üçüncü slayt"
+
+#: inc/customizer/options/hero-area.php:262
+msgid "Upload your third image for the slider"
+msgstr "Kaydırıcı için üçüncü görselinizi yükleyin"
+
+#: inc/customizer/options/hero-area.php:281
+msgid "Title for the third slide"
+msgstr "Üçüncü slayt için başlık"
+
+#: inc/customizer/options/hero-area.php:298
+msgid "Subtitle for the third slide"
+msgstr "Üçüncü slayt için alt başlık"
+
+#: inc/customizer/options/hero-area.php:314
+msgid "Fourth slide"
+msgstr "Dördüncü slayt"
+
+#: inc/customizer/options/hero-area.php:333
+msgid "Upload your fourth image for the slider"
+msgstr "Kaydırıcı için dördüncü görselinizi yükleyin"
+
+#: inc/customizer/options/hero-area.php:352
+msgid "Title for the fourth slide"
+msgstr "Dördüncü slayt için başlık"
+
+#: inc/customizer/options/hero-area.php:369
+msgid "Subtitle for the fourth slide"
+msgstr "Dördüncü slayt için alt başlık"
+
+#: inc/customizer/options/hero-area.php:385
+msgid "Fifth slide"
+msgstr "Beşinci slayt"
+
+#: inc/customizer/options/hero-area.php:404
+msgid "Upload your fifth image for the slider"
+msgstr "Kaydırıcı için beşinci görselinizi yükleyin"
+
+#: inc/customizer/options/hero-area.php:423
+msgid "Title for the fifth slide"
+msgstr "Beşinci slayt için başlık"
+
+#: inc/customizer/options/hero-area.php:440
+msgid "Subtitle for the fifth slide"
+msgstr "Beşinci slayt için alt başlık"
+
+#: inc/customizer/options/hero-area.php:474
+msgid "URL for your call to action button"
+msgstr "Eylem çağrısı düğmeniz için bağlantı adresi"
+
+#: inc/customizer/options/hero-area.php:482
+msgid "Click to begin"
+msgstr "Başlamak için tıklayın"
+
+#: inc/customizer/options/hero-area.php:490
+msgid "Text for your call to action button"
+msgstr "Eylem çağrısı düğmeniz için metin"
+
+#: inc/customizer/customizer.php:180
+msgid "Menu style"
+msgstr "Menü biçimi"
+
+#: inc/customizer/customizer.php:159
+msgid "Sticky menu"
+msgstr "Yapışkan menü"
+
+#: inc/customizer/customizer.php:162 inc/customizer/customizer.php:600
+msgid "Sticky"
+msgstr "Yapışkan"
+
+#: inc/customizer/options/hero-area.php:52
+#: inc/customizer/options/hero-area.php:75
+msgid "No header (only menu)"
+msgstr "Üst kısım yok (sadece menü)"
+
+#: inc/customizer/options/hero-area.php:68
+msgid "Site header type"
+msgstr "Site üst kısım tipi"
+
+#: inc/customizer/options/hero-area.php:520
+msgid "4000"
+msgstr "4000"
+
+#: inc/customizer/options/hero-area.php:527
+msgid "Slider speed"
+msgstr "Kaydırıcı hızı"
+
+#: inc/customizer/options/hero-area.php:530
+msgid "Slider speed in miliseconds. Use 0 to disable [default: 4000]"
+msgstr "Milisaniye cinsinden kaydırıcı hızı. Devre dışı bırakmak için 0 kullanın [varsayılan: 4000]"
+
+#: inc/customizer/options/hero-area.php:101
+msgid "First slide"
+msgstr "İlk slayt"
+
+#: inc/customizer/options/hero-area.php:120
+msgid "Upload your first image for the slider"
+msgstr "Kaydırıcı için ilk görseli yükleyin"
+
+#: inc/dashboard/class-dashboard-settings.php:35
+#: inc/onboarding/theme-info.php:32 inc/theme-dashboard-settings.php:142
+msgid "Welcome to Sydney"
+msgstr "Sydney'e hoşgeldiniz"
+
+#: inc/customizer/options/hero-area.php:139
+msgid "Title for the first slide"
+msgstr "İlk slayt için başlık"
+
+#: inc/customizer/options/hero-area.php:156
+msgid "Subtitle for the first slide"
+msgstr "İlk slayt için alt başlık"
+
+#: inc/customizer/options/hero-area.php:172
+msgid "Second slide"
+msgstr "İkinci slayt"
+
+#: inc/customizer/options/hero-area.php:45
+msgid "Front page header type"
+msgstr "Ön sayfa üst kısım tipi"
+
+#: inc/customizer/options/hero-area.php:47
+msgid "Select the header type for your front page"
+msgstr "Ön sayfanız için üst kısım tipini seçin"
+
+#: inc/customizer/customizer.php:558 inc/customizer/options/hero-area.php:49
+#: inc/customizer/options/hero-area.php:72
+msgid "Full screen slider"
+msgstr "Tam genişlikte kaydırıcı"
+
+#: inc/customizer/customizer.php:559 inc/customizer/options/blog-single.php:106
+#: inc/customizer/options/hero-area.php:50
+#: inc/customizer/options/hero-area.php:73
+msgid "Image"
+msgstr "Görsel"
+
+#: inc/customizer/options/header-mobile.php:148
+msgid "Header type"
+msgstr "Üst kısım tipi"
+
+#: inc/customizer/controls/class_sydney_tab_control.php:40
+#: inc/customizer/options/colors.php:64 inc/customizer/options/general.php:14
+#: inc/customizer/options/woocommerce.php:12
+#: inc/integrations/lifter/customize.php:18
+#: inc/theme-dashboard-settings.php:171
+msgid "General"
+msgstr "Genel"
+
+#: header.php:29
+msgid "Skip to content"
+msgstr "İçeriğe atla"
+
+#: functions.php:359
+msgid "Create your menu here"
+msgstr "Menünüzü buradan oluşturun"
+
+#: functions.php:148
+msgid "Footer "
+msgstr "Alt kısım"
+
+#: functions.php:136 inc/customizer/options/blog.php:592
+#: inc/customizer/options/colors.php:730
+#: inc/customizer/options/woocommerce.php:98
+msgid "Sidebar"
+msgstr "Kenar çubuğu"
+
+#: functions.php:57 inc/modules/hf-builder/class-header-footer-builder.php:90
+#: inc/modules/hf-builder/components/header/menu/customize-options.php:22
+msgid "Primary Menu"
+msgstr "Birincil menü"
+
+#: content-page.php:33 inc/dashboard/html-builder.php:126
+#: inc/template-tags.php:164
+msgid "Edit"
+msgstr "Düzenle"
+
+#: content-page.php:26 content-search.php:32 content-single.php:45
+msgid "Pages:"
+msgstr "Sayfalar:"
+
+#: content-none.php:33
+msgid "It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps searching can help."
+msgstr "Aradığınız sayfa bulunamadı. Belki arama kutusu aradığınızı bulma konusunda yardımcı olabilir."
+
+#: content-none.php:28
+msgid "Sorry, but nothing matched your search terms. Please try again with some different keywords."
+msgstr "Üzgünüz fakat aradığınız kriterler ile örtüşen sonuç bulunamadı. Lütfen başka kriterler ile tekrar deneyin."
+
+#. translators: %1$s: URL to create a new post
+#: content-none.php:22
+msgid "Ready to publish your first post? <a href=\"%1$s\">Get started here</a>."
+msgstr "İlk yazınızı yayınlamaya hazır mısınız? <a href=\"%1$s\">Buradan başlayın</a>."
+
+#: content-none.php:13
+msgid "Nothing Found"
+msgstr "Bulunamadı"
+
+#: comments.php:66
+msgid "Comments are closed."
+msgstr "Yorumlar kapalı."
+
+#: comments.php:38 comments.php:56
+msgid "Newer Comments &rarr;"
+msgstr "Yeni yorumlar &arr;"
+
+#: comments.php:37 comments.php:55
+msgid "&larr; Older Comments"
+msgstr "&arr; Eski yorumlar"
+
+#: comments.php:36 comments.php:54
+msgid "Comment navigation"
+msgstr "Yorum dolaşımı"
+
+#. translators: 1: Number of comments, 2: Post title.
+#: comments.php:29
+msgctxt "comments title"
+msgid "One thought on &ldquo;%2$s&rdquo;"
+msgid_plural "%1$s thoughts on &ldquo;%2$s&rdquo;"
+msgstr[0] "&ldquo;%2$s&rdquo; üzerine bir yorum"
+msgstr[1] "&ldquo;%2$s&rdquo; üzerine %1$s yorum"
+
+#: inc/extras.php:773
+msgid "It looks like nothing was found at this location. Maybe try one of the links below or a search?"
+msgstr "Burada hiçbir şeyin bulunmadığı görülüyor. Belki alttaki bağlantılardan birini veya bir arama yapmayı denemelisin?"
+
+#: inc/extras.php:769
+msgid "Oops! That page can&rsquo;t be found."
+msgstr "Off! Bu sayfa bulunamadı."
+
+#. Author of the theme
+#: style.css theme-dashboard/class-theme-dashboard.php:579
+#, gp-priority: low
+msgid "aThemes"
+msgstr "aThemes"
+
+#. Theme URI of the theme
+#: style.css
+#, gp-priority: low
+msgid "https://athemes.com/theme/sydney"
+msgstr "https://athemes.com/theme/sydney"
+
+#. Author URI of the theme
+#: style.css
+#, gp-priority: low
+msgid "https://athemes.com"
+msgstr "https://athemes.com"

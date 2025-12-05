@@ -1,0 +1,2367 @@
+# Translation of Plugins - Optimole – Optimize Images | Convert WebP &amp; AVIF | CDN &amp; Lazy Load | Image Optimization - Stable (latest release) in Romanian
+# This file is distributed under the same license as the Plugins - Optimole – Optimize Images | Convert WebP &amp; AVIF | CDN &amp; Lazy Load | Image Optimization - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-12-01 19:29:51+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n == 0 || n % 100 >= 2 && n % 100 <= 19) ? 1 : 2);\n"
+"X-Generator: GlotPress/4.0.3\n"
+"Language: ro\n"
+"Project-Id-Version: Plugins - Optimole – Optimize Images | Convert WebP &amp; AVIF | CDN &amp; Lazy Load | Image Optimization - Stable (latest release)\n"
+
+#: inc/admin.php:1676
+msgid "path"
+msgstr "cale"
+
+#: inc/admin.php:1675
+msgid "word"
+msgstr "cuvânt"
+
+#: inc/media_rename/attachment_edit.php:46
+#: inc/media_rename/attachment_edit.php:47
+#: inc/media_rename/attachment_edit.php:117
+msgid "Replace or Rename"
+msgstr "Înlocuiește sau redenumește"
+
+#. translators: 1 is plugin name, 2 is the settings path link
+#: inc/conflicts/wprocket.php:27
+msgid "WP Rocket has <strong>Lazy loading for images</strong> enabled. Optimole already provides its own lazy loading mechanism, which may conflict with WP Rocket's. To continue using Optimole's lazy loading feature, please disable lazy loading in WP Rocket via %1$s."
+msgstr "WP Rocket are <strong>încărcarea lentă pentru imagini</strong> activată. Optimole oferă deja propriul său mecanism de încărcare lentă, care poate intra în conflict cu cel al WP Rocket. Pentru a continua să folosești funcționalitatea de încărcare lentă Optimole, te rog să dezactivezi încărcarea lentă în WP Rocket din %1$s."
+
+#. translators: 1 is the settings path link
+#: inc/conflicts/smush.php:28
+msgid "WP Smush has <strong>Lazy loading</strong> enabled. Optimole already provides its own lazy loading mechanism, which may conflict with Smush's. To continue using Optimole's lazy loading feature, please disable lazy loading in %1$s."
+msgstr "WP Smush are <strong>încărcarea lentă</strong> activată. Optimole oferă deja propriul său mecanism de încărcare lentă, care poate intra în conflict cu cel al Smush. Pentru a continua să folosești funcționalitatea de încărcare lentă Optimole, te rog să dezactivezi încărcarea lentă din %1$s."
+
+#. translators: 1 is the settings path link
+#: inc/conflicts/perfmatters.php:28
+msgid "Perfmatters has <strong>Lazy loading</strong> enabled. Optimole already provides its own lazy loading mechanism, which may conflict with Perfmatters'. To continue using Optimole's lazy loading feature, please disable lazy loading in %1$s."
+msgstr "Perfmatters are <strong>încărcarea lentă</strong> activată. Optimole oferă deja propriul său mecanism de încărcare lentă, care poate intra în conflict cu cel al Perfmatters. Pentru a continua să folosești funcționalitatea de încărcare lentă Optimole, te rog să dezactivezi încărcarea lentă din %1$s."
+
+#. translators: 1 is the settings path link
+#: inc/conflicts/litespeed.php:28
+msgid "LiteSpeed Cache has <strong>Lazy Loading</strong> enabled. Optimole already provides its own lazy loading mechanism, which may conflict with LiteSpeed Cache's. To continue using Optimole's lazy loading feature, please disable lazy loading in %1$s."
+msgstr "LiteSpeed Cache are <strong>încărcarea lentă</strong> activată. Optimole oferă deja propriul său mecanism de încărcare lentă, care poate intra în conflict cu cel al LiteSpeed Cache. Pentru a continua să folosești funcționalitatea de încărcare lentă Optimole, te rog să dezactivezi încărcarea lentă din %1$s."
+
+#. translators: 1 is the settings path link
+#: inc/conflicts/autoptimize.php:28
+msgid "Autoptimize has <strong>Lazy loading</strong> enabled. Optimole already provides its own lazy loading mechanism, which may conflict with Autoptimize's. To continue using Optimole's lazy loading feature, please disable lazy loading in %1$s."
+msgstr "Autoptimize are <strong>încărcarea lentă</strong> activată. Optimole oferă deja propriul său mecanism de încărcare lentă, care poate intra în conflict cu cel al Autoptimize. Pentru a continua să folosești funcționalitatea de încărcare lentă Optimole, te rog să dezactivezi încărcarea lentă din %1$s."
+
+#. translators: %s is the date of the renewal.
+#: inc/admin.php:2326
+msgid "Renews %s"
+msgstr "Se reînnoiește în %s"
+
+#: inc/admin.php:2323
+msgid "Enable Native Lazy Load"
+msgstr "Activează încărcarea lentă nativă"
+
+#: inc/admin.php:2322
+msgid "Disable Image Scaling"
+msgstr "Dezactivează redimensionarea imaginilor"
+
+#: inc/admin.php:2321
+msgid "Disable Lazy Load & Scaling"
+msgstr "Dezactivează încărcarea lentă și redimensionarea"
+
+#. translators: %s is the email main subject.
+#: inc/admin.php:2320
+msgid "[Lazy Load Issue] %s"
+msgstr "[Problemă la încărcare lentă] %s"
+
+#: inc/admin.php:2310
+msgid "Manage"
+msgstr "Administrează"
+
+#: inc/admin.php:2309
+msgid "Enable"
+msgstr "Activează"
+
+#: inc/admin.php:2308
+msgid "Disable"
+msgstr "Dezactivează"
+
+#: inc/admin.php:2215
+msgid "Keep enabled and get help"
+msgstr "Păstreaz-o activată și obține ajutor"
+
+#: inc/admin.php:2214
+msgid "Continue with disabling"
+msgstr "Continuă cu dezactivarea"
+
+#: inc/admin.php:2213
+msgid "Disabling Image Scaling may significantly impact your site's loading speed and Core Web Vitals scores."
+msgstr "Dezactivarea redimensionării imaginilor poate afecta semnificativ viteza de încărcare a site-ului tău și scorurile Core Web Vitals."
+
+#: inc/admin.php:2212
+msgid "Disabling Lazy Load may significantly impact your site's loading speed and Core Web Vitals scores."
+msgstr "Dezactivarea încărcării lente poate afecta semnificativ viteza de încărcare a site-ului tău și scorurile Core Web Vitals."
+
+#: inc/admin.php:2211
+msgid "Performance Impact Alert"
+msgstr "Alertă privind impactul asupra performanței"
+
+#. translators: %1$s is the starting bold tag, %2$s is the ending bold tag.
+#: inc/admin.php:2210
+msgid "Native browser loading works with viewport detection, but it does not support smart image scaling. It can offer better cross-browser compatibility. Still, we do %1$snot recommend%2$s it for most sites due to fewer controls and features compared to Smart Loading."
+msgstr "Încărcarea nativă din navigator funcționează cu detectarea spațiului vizual, dar nu acceptă redimensionarea inteligentă a imaginii. Aceasta poate oferi o compatibilitate mai bună între navigatoare. Cu toate acestea, %1$snu o recomandăm%2$s pentru majoritatea site-urilor din cauza numărului mai mic de controale și funcționalități în comparație cu încărcarea inteligentă."
+
+#. translators: %1$s is the starting bold tag, %2$s is the ending bold tag.
+#: inc/admin.php:2208
+msgid "When %1$sskip above the fold%2$s and %1$sskip first images%2$s are both enabled: the skip rule applies on a user's first page view. On subsequent views, once viewport data exists, the skip rule is ignored in favor of the viewport data."
+msgstr "Când %1$ssari peste imaginile deasupra pliului%2$s și %1$ssari peste primele imagini%2$s sunt ambele activate: regula de omiterea imaginilor se aplică la prima vizualizare a paginii de către utilizator. La vizualizările ulterioare, odată ce există date despre spațiul vizibil, regula de omitere este ignorată în favoarea datelor de spațiu vizibil."
+
+#. translators: This option is discouraged from being used.
+#: inc/admin.php:2206
+msgid "Not recommended"
+msgstr "Nerecomandat"
+
+#. translators: mark that the options are aplied globally.
+#: inc/admin.php:2204
+msgid "Global"
+msgstr "Globală"
+
+#: inc/admin.php:2202
+msgid "Extended Features"
+msgstr "Funcționalități extinse"
+
+#: inc/admin.php:2201
+msgid "Visual Settings"
+msgstr "Setări vizuale"
+
+#: inc/admin.php:2200
+msgid "Offloading images is a PRO feature. Please upgrade your plan to enable image transfer to Optimole Cloud."
+msgstr "Stocarea externă a imaginilor este o funcționalitate PRO. Te rugăm să-ți actualizezi planul pentru a permite transferul imaginilor către Optimole Cloud."
+
+#: inc/admin.php:2199
+msgid "We've changed how plans work. Users on the Optimole Free plan cannot offload new images. Existing images that are already offloaded will remain offloaded."
+msgstr "Am schimbat modul de funcționare al planurilor. Utilizatorii planului gratuit Optimole nu pot stoca extern imagini noi. Imaginile existente care sunt deja stocate extern vor rămâne acolo."
+
+#: inc/admin.php:2198
+msgid "Plan Update"
+msgstr "Actualizare plan"
+
+#: inc/admin.php:2124
+msgid "Extend CSS Background Images"
+msgstr "Extinde imaginile de fundal CSS"
+
+#. translators: it uses the browser's built-in lazy loading feature without any
+#. additional scripts.
+#: inc/admin.php:2122
+msgid "Lightweight"
+msgstr "Ușoară"
+
+#. translators: it can handle many images without slowing down the site.
+#: inc/admin.php:2120
+msgid "Auto Scaling"
+msgstr "Redimensionare automată"
+
+#. translators: set the colors for the placeholder image.
+#: inc/admin.php:2118
+msgid "Placeholders"
+msgstr "Substituenți"
+
+#. translators: viewport is the visible area of a web page on a display device.
+#: inc/admin.php:2116
+msgid "Viewport detection"
+msgstr "Detectare spațiu vizibil"
+
+#: inc/admin.php:2114
+msgid "Uses the browser's built-in lazy loading feature"
+msgstr "Folosește funcționalitatea de încărcare lentă nativă din navigator"
+
+#: inc/admin.php:2113
+msgid "JavaScript-driven with advanced controls"
+msgstr "Pe bază de JavaScript cu controale avansate"
+
+#: inc/admin.php:2112
+msgid "Smart Loading"
+msgstr "Încărcare inteligentă"
+
+#: inc/admin.php:2111
+msgid "If everything is covered out of the box, leave this empty."
+msgstr "Dacă totul este acoperit implicit, lasă acest câmp necompletat."
+
+#. translators: %s is the example selector list.
+#: inc/admin.php:2110
+msgid "Example: %s"
+msgstr "Exemplu: %s"
+
+#: inc/admin.php:2108
+msgid "Optional selectors to extend coverage (one per line or comma-separated)"
+msgstr "Selectori opționali pentru extinderea acoperirii (unul pe linie sau separați prin virgulă)"
+
+#: inc/admin.php:2104
+msgid "Native Browser Loading"
+msgstr "Încărcare nativă din navigator"
+
+#: inc/admin.php:2103
+msgid "Smart Image Scaling"
+msgstr "Redimensionarea inteligentă a imaginii"
+
+#: inc/admin.php:2102
+msgid "Enable Lazy Loading & Scaling"
+msgstr "Activează încărcarea lentă și redimensionarea"
+
+#: inc/admin.php:2081
+msgid "Uses the browser's built-in lazy loading feature. Enabling this will disable the auto scale."
+msgstr "Folosește funcționalitatea de încărcare lentă nativă din navigator. Activarea acesteia va dezactiva redimensionarea automată."
+
+#: inc/admin.php:2077
+msgid "Automatically resize the images based on device and viewport"
+msgstr "Redimensionează automat imaginile în funcție de dispozitiv și spațiu vizibil."
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2075
+msgid "Images load only when they're about to enter the viewport. %1$sLearn more%2$s"
+msgstr "Imaginile se încarcă doar atunci când sunt pe punctul de a intra în spațiul vizibil. %1$sAflă mai multe%2$s"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:1980
+msgid "Optimizes images for Retina (high-DPI) screens for sharper results. Always enabled for images under 150px wide. %1$sLearn more%2$s"
+msgstr "Optimizează imaginile pentru ecrane Retina (rezoluție mare) pentru rezultate mai clare. Este mereu activată pentru imagini cu o lățimea mai mică de 150 px. %1$sÎnvață mai multe%2$s"
+
+#: inc/admin.php:1963
+msgid "Enable generic placeholder color"
+msgstr "Activează culoarea generică a substituentului"
+
+#: inc/admin.php:1959
+msgid "Skip images above the fold"
+msgstr "Sari peste imaginile aflate deasupra pliului"
+
+#: inc/admin.php:1950
+msgid "Loading Method"
+msgstr "Metodă de încărcare"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:1945
+msgid "Enable this to use a generic transparent placeholder instead of the blurry images during lazy loading. %1$sLearn more%2$s"
+msgstr "Activează asta pentru a utiliza un substituent generic transparent în locul imaginilor neclare în timpul încărcării lente. %1$sAflă mai multe%2$s"
+
+#. translators: %s is the name of the html tag (e.g: <noscript> );
+#: inc/admin.php:1931
+msgid "Enable %s fallback"
+msgstr "Activează alternativa %s"
+
+#: inc/admin.php:1923
+msgid "Video & iframes"
+msgstr "Videouri și iframe-uri"
+
+#: inc/admin.php:1922
+msgid "Lazy load embedded videos and iframe content"
+msgstr "Încărcare lentă a videourilor înglobate și a conținutului iframe"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:1917
+msgid "Apply lazy loading to CSS background images. The toggle below enables it globally. The selector list is optional and only needed to extend coverage if certain elements are missed. %1$sLearn more%2$s"
+msgstr "Aplică încărcarea lentă la imaginile de fundal CSS. Comutatorul de mai jos o activează la nivel global. Lista de selectori este opțională și necesară doar pentru a extinde acoperirea în cazul în care anumite elemente sunt omise. %1$sAflă mai multe%2$s"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:1879
+msgid "When enabled, Optimole chooses the best format for your images, balancing quality with speed. It tries options like AVIF and WebP to keep visuals sharp and pages fast, though uncached images may take a bit longer to process. %1$sLearn more%2$s."
+msgstr "Atunci când este activată, Optimole alege cel mai bun format pentru imaginile tale, echilibrând calitatea cu viteza. Încearcă opțiuni precum AVIF și WebP pentru a păstra imagini clare și pagini rapide, deși procesarea imaginilor fără cache poate dura ceva mai mult. %1$sAflă mai multe%2$s."
+
+#: inc/admin.php:1867
+msgid "Create rule-based targeting by filename, page URL, class, and more."
+msgstr "Creează direcționări bazate pe reguli în funcție de numele fișierului, URL-ul paginii, clasă și multe altele."
+
+#: inc/admin.php:1866
+msgid "Set different watermarks for different image sizes."
+msgstr "Setează filigrane diferite pentru dimensiuni de imagini diferite."
+
+#: inc/admin.php:1865
+msgid "Choose from multiple watermark positions and set opacity."
+msgstr "Alege din mai multe poziții ale filigranului și setează opacitatea."
+
+#: inc/admin.php:1864
+msgid "Watermark rules and exclusions are fully managed in your Optimole Dashboard."
+msgstr "Regulile și excluderile filigranului sunt complet gestionate în panoul de control Optimole."
+
+#: inc/admin.php:1863
+msgid "Open Optimole Dashboard"
+msgstr "Deschide panoul de control Optimole"
+
+#: inc/admin.php:1862
+msgid "Learn more"
+msgstr "Află mai multe"
+
+#: inc/admin.php:1861
+msgid "Watermarks"
+msgstr "Filigrane"
+
+#: inc/admin.php:1860
+msgid "Protect your brand by adding a watermark to your images. Configure placement, opacity, and rules directly in your Optimole Dashboard."
+msgstr "Protejează-ți marca prin adăugarea unui filigran la imaginile tale. Configurează plasarea, opacitatea și regulile direct în panoul de control Optimole."
+
+#: inc/admin.php:1846
+msgid "Manage image offloading"
+msgstr "Gestionează stocarea externă a imaginilor"
+
+#: inc/admin.php:1845
+msgid "Adjust Compression"
+msgstr "Ajustează comprimarea"
+
+#: inc/admin.php:1844
+msgid "View Analytics"
+msgstr "Vezi analitice"
+
+#. translators: is used as singular when the number of images is 1 for a unit
+#. label.
+#: inc/admin.php:1841
+msgid "image"
+msgstr "imagine"
+
+#: inc/admin.php:1839
+msgid "Offloaded to cloud"
+msgstr "Stocate extern în cloud"
+
+#: inc/admin.php:1838
+msgid "Offloaded images"
+msgstr "Imagini stocate extern"
+
+#. translators: 1 is the day when the visits reset, for example 1st of each
+#. month
+#: inc/admin.php:1713
+msgid "Each visitor to your site is counted as a unique daily user, regardless of their actions or return visits on the same day. Your visit count resets on %s."
+msgstr "Fiecare vizitator al site-ului tău este numărat ca un utilizator unic zilnic, indiferent de acțiunile sale sau de vizitele repetate în aceeași zi. Numărul de vizite se resetează pe %s."
+
+#: inc/admin.php:1711
+msgid "What are visits?"
+msgstr "Ce sunt vizitele?"
+
+#: inc/admin.php:1670
+msgid "See what you'll get"
+msgstr "Vezi ce vei primi"
+
+#: inc/video_player.php:290
+msgid "Controls color"
+msgstr "Culoare comenzi"
+
+#: inc/video_player.php:289
+msgid "Save"
+msgstr "Salvează"
+
+#. translators: %s is 'Optimole Dashboard'.
+#: inc/video_player.php:287
+msgid "Optimole Dashboard"
+msgstr "Panou control Optimole"
+
+#. translators: %s is 'Optimole Dashboard'.
+#: inc/video_player.php:287
+msgid "Invalid URL. Please enter a valid video URL from %s"
+msgstr "URL nevalid. Te rog să introduci un URL valid pentru video de la %s"
+
+#: inc/video_player.php:285
+msgid "Hide Video Controls Bar"
+msgstr "Ascunde bara de controale video"
+
+#: inc/video_player.php:284
+msgid "Loop Video"
+msgstr "Redă video în buclă"
+
+#: inc/video_player.php:283
+msgid "Change URL"
+msgstr "Modifică URL-ul"
+
+#: inc/video_player.php:282
+msgid "Enter the URL of the video you want to display."
+msgstr "Introdu URL-ul videoului pe care vrei să-l afișezi."
+
+#: inc/video_player.php:281
+msgid "Video URL"
+msgstr "URL video"
+
+#: inc/video_player.php:280
+msgid "Aspect Ratio"
+msgstr "Raport aspect"
+
+#: inc/video_player.php:278 inc/video_player.php:279
+msgid "Optimole Video"
+msgstr "Video Optimole"
+
+#: inc/video_player.php:264
+msgid "Exit Fullscreen"
+msgstr "Ieși din ecranul complet"
+
+#: inc/video_player.php:263
+msgid "Fullscreen"
+msgstr "Ecran complet"
+
+#: inc/video_player.php:262
+msgid "Unmute"
+msgstr "Cu sonor"
+
+#: inc/video_player.php:261
+msgid "Mute"
+msgstr "Fără sonor"
+
+#: inc/video_player.php:260
+msgid "Pause"
+msgstr "Pauză"
+
+#: inc/video_player.php:259
+msgid "Play"
+msgstr "Redare"
+
+#: inc/media_rename/attachment_replace.php:83
+msgid "Could not move file."
+msgstr "Nu am putut să mut fișierul"
+
+#: inc/media_rename/attachment_replace.php:77
+msgid "The uploaded file type does not match the original file type."
+msgstr "Tipul de fișier încărcat nu se potrivește cu tipul de fișier original."
+
+#: inc/media_rename/attachment_replace.php:70
+msgid "Original file does not exist."
+msgstr "Fișierul original nu există."
+
+#: inc/media_rename/attachment_replace.php:63
+msgid "Error uploading file."
+msgstr "Eroare la încărcarea fișierului."
+
+#: inc/media_rename/attachment_rename.php:70
+#: inc/media_rename/attachment_rename.php:76
+#: inc/media_rename/attachment_rename.php:97
+#: inc/media_rename/attachment_rename.php:120
+msgid "Error renaming file."
+msgstr "Eroare la redenumirea fișierului."
+
+#: inc/media_rename/attachment_edit.php:350
+msgid "File replaced successfully"
+msgstr "Fișier înlocuit cu succes"
+
+#: inc/media_rename/attachment_edit.php:339
+msgid "No file uploaded"
+msgstr "Nu am încărcat niciun fișier"
+
+#: inc/media_rename/attachment_edit.php:335
+msgid "You are not allowed to replace this file"
+msgstr "Nu ai voie să înlocuiești acest fișier"
+
+#. translators: %s is the 'Optimole'.
+#: inc/media_rename/attachment_edit.php:253
+msgid "Powered by %s"
+msgstr "Propulsat de %s"
+
+#: inc/media_rename/attachment_edit.php:251
+msgid "Optimole logo"
+msgstr "Logo Optimole"
+
+#: inc/media_rename/attachment_edit.php:233
+msgid "This will replace the current file with the new one. This action cannot be undone."
+msgstr "Aceasta va înlocui fișierul curent cu cel nou. Această acțiune nu poate fi anulată."
+
+#: inc/media_rename/attachment_edit.php:223
+msgid "Click to select a file or drag & drop here"
+msgstr "Dă clic pentru a selecta un fișier sau trage și plasează aici"
+
+#: inc/media_rename/attachment_edit.php:200
+msgid "Rename"
+msgstr "Redenumește"
+
+#: inc/media_rename/attachment_edit.php:160
+#: inc/media_rename/attachment_edit.php:230
+msgid "Replace file"
+msgstr "Înlocuiește fișierul"
+
+#: inc/media_rename/attachment_edit.php:154
+msgid "Rename attached file"
+msgstr "Redenumește fișierul atașat"
+
+#: inc/media_rename/attachment_edit.php:97
+msgid "Error replacing file"
+msgstr "Eroare la înlocuirea fișierului"
+
+#. translators: %s is the max file size in MB.
+#: inc/media_rename/attachment_edit.php:82
+msgid "File size is too large. Max file size is %sMB"
+msgstr "Dimensiunea fișierului este prea mare. Dimensiunea maximă a fișierului este de %sMB"
+
+#: inc/dashboard_widget.php:109
+msgid "View all stats"
+msgstr "Vezi toate statisticile"
+
+#: inc/dashboard_widget.php:38
+msgid "Image Optimization Stats"
+msgstr "Statistici optimizare imagini"
+
+#. translators: 1 is the opening anchor tag, 2 is the closing anchor tag
+#: inc/admin.php:2314
+msgid "%1$sView all optimization tips%2$s"
+msgstr "%1$sVezi toate sfaturile de optimizare%2$s"
+
+#: inc/admin.php:2307
+msgid "All images are perfectly sized for devices"
+msgstr "Toate imaginile sunt perfect dimensionate pentru dispozitive"
+
+#: inc/admin.php:2306
+msgid "Image Scalling"
+msgstr "Scalare imagini"
+
+#: inc/admin.php:2305
+msgid "Images load as visitors scroll"
+msgstr "Imaginile se încarcă pe măsură ce vizitatorii derulează"
+
+#: inc/admin.php:2304
+msgid "Smart Lazy-Loading"
+msgstr "Încărcare lentă inteligentă"
+
+#: inc/admin.php:2303
+msgid "All images are optimized automatically"
+msgstr "Toate imaginile sunt optimizate automat"
+
+#: inc/admin.php:2302
+msgid "Image Handling"
+msgstr "Gestionare imagini"
+
+#: inc/admin.php:2301
+msgid "Optimization Status"
+msgstr "Stare optimizare"
+
+#: inc/admin.php:2197
+msgid "No, keep images on my website"
+msgstr "Nu, păstrez imaginile pe site-ul meu web"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2196
+msgid "Yes, Transfer to Optimole Cloud"
+msgstr "Da, transfer către Optimole Cloud"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2195
+msgid "Based on this trend, you are likely to exceed your free quota before the month ends. To avoid any disruption in service, we strongly recommend %1$supgrading%2$s your plan or waiting until your traffic stabilizes before offloading your images. Do you still wish to proceed?"
+msgstr "Pe baza acestei tendințe, este posibil să-ți depășești cota gratuită înainte de sfârșitul lunii. Pentru a evita orice întrerupere a serviciului, îți recomandăm insistent %1$ssă-ți actualizez%2$s planul sau să aștepți până când traficul tău se stabilizează înainte de a-ți stoca extern imaginile. Încă mai vrei să continui?"
+
+#: inc/admin.php:2194
+msgid "Your site has already reached over 50% of your monthly visits limit within just two weeks."
+msgstr "Site-ul tău a atins deja peste 50% din limita lunară de vizite în doar două săptămâni."
+
+#: inc/admin.php:2192
+msgid "Go to Cloud Library"
+msgstr "Mergi la Biblioteca Cloud"
+
+#: inc/admin.php:2037
+msgid "Don't optimize and don't lazy-load images if"
+msgstr "Nu optimiza și nu încărca lent imaginile dacă"
+
+#: inc/admin.php:1998
+msgid "Right"
+msgstr "Dreapta"
+
+#: inc/admin.php:1997
+msgid "Left"
+msgstr "Stânga"
+
+#: inc/admin.php:1996
+msgid "Badge Position"
+msgstr "Poziție insignă"
+
+#: inc/admin.php:1995
+msgid "Show only Optimole icon"
+msgstr "Arată doar iconul Optimole"
+
+#: inc/admin.php:1994
+msgid "Badge settings"
+msgstr "Setări insignă"
+
+#: inc/admin.php:1962
+msgid "Indicate how many images at the top of each page should bypass lazy loading, ensuring they're instantly visible."
+msgstr "Indică câte imagini din partea de sus a fiecărei pagini ar trebui să ocolească încărcarea lentă, asigurându-te că acestea sunt vizibile instantaneu."
+
+#: inc/admin.php:1961
+msgid "Skip lazy loading for first images"
+msgstr "Sari peste încărcarea lentă pentru primele imagini"
+
+#: inc/admin.php:1960
+msgid "Automatically detects and immediately loads images visible in the initial viewport. Detection is done with a lightweight client-side script that identifies what's visible on each user's screen. All other images will lazy load."
+msgstr "Detectează automat și încarcă imediat imaginile vizibile în spațiul vizual inițial. Detectarea se face cu un script ușor pe partea de client care identifică ceea ce este vizibil pe ecranul fiecărui utilizator. Toate celelalte imagini se vor încărca lent."
+
+#: inc/admin.php:1958
+msgid "All images will use lazy loading regardless of position."
+msgstr "Toate imaginile vor folosi încărcarea lentă, indiferent de poziție."
+
+#: inc/admin.php:1957
+msgid "Lazy Load All Images"
+msgstr "Încarcă lent toate imaginilor"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:1953
+msgid "Choose how Optimole will handle lazy loading for images on your website. %1$sLearn more%2$s"
+msgstr "Alege modul în care Optimole va gestiona încărcarea lentă pentru imaginile de pe site-ul tău web. %1$sAflă mai multe%2$s"
+
+#: inc/admin.php:1874
+msgid "Customize each setting individually for complete control over image compression."
+msgstr "Personalizează fiecare setare individual pentru un control complet asupra comprimării imaginii."
+
+#: inc/admin.php:1873
+msgid "Delivers high-quality images by applying lossless or near-lossless optimization. Ensures images retain their sharpness and details while still benefiting from moderate file size reduction."
+msgstr "Oferă imagini de înaltă calitate prin aplicarea optimizării fără pierderi sau aproape fără pierderi. Se asigură că imaginile își păstrează claritatea și detaliile, beneficiind în același timp de o reducere moderată a dimensiunii fișierului."
+
+#: inc/admin.php:1872
+msgid "Prioritizes faster loading and smaller image sizes by applying a balanced level of lossy compression. This setting reduces file size significantly without severely degrading visual quality."
+msgstr "Prioritizează încărcarea mai rapidă și dimensiunile mai mici ale imaginilor prin aplicarea unui nivel echilibrat de comprimare cu pierderi. Această setare reduce semnificativ dimensiunea fișierului fără a degrada grav calitatea vizuală."
+
+#: inc/admin.php:1871
+msgid "Custom"
+msgstr "Personalizată"
+
+#: inc/admin.php:1870
+msgid "Quality Optimized"
+msgstr "Optimizată pentru calitate"
+
+#: inc/admin.php:1869
+msgid "Speed Optimized"
+msgstr "Optimizată pentru viteză"
+
+#: inc/admin.php:1868
+msgid "Compression Mode"
+msgstr "Mod comprimare"
+
+#: inc/admin.php:1857
+msgid "Configure settings"
+msgstr "Configurează setările"
+
+#: inc/admin.php:1856
+msgid "Advanced Settings"
+msgstr "Setări avansate"
+
+#: inc/admin.php:1855
+msgid "Free up space on your server"
+msgstr "Eliberează spațiu pe serverul tău"
+
+#: inc/admin.php:1854
+msgid "Enable Offload Images"
+msgstr "Activează stocarea externă a imaginilor"
+
+#: inc/admin.php:1853
+msgid "Clear cache"
+msgstr "Șterge cache-ul"
+
+#: inc/admin.php:1852
+msgid "Clear Cached Images"
+msgstr "Șterge imaginile din cache"
+
+#: inc/admin.php:1850
+msgid "Run speed test"
+msgstr "Rulează test de viteză"
+
+#: inc/admin.php:1849
+msgid "Test Your Site Speed"
+msgstr "Testează viteza site-ului tău"
+
+#: inc/admin.php:1837
+msgid "This month"
+msgstr "Luna aceasta"
+
+#: inc/admin.php:1836
+msgid "CDN Traffic"
+msgstr "Trafic CDN"
+
+#: inc/admin.php:1835
+msgid "Average Reduction"
+msgstr "Reducere medie"
+
+#: inc/admin.php:1834
+msgid "Average Compression"
+msgstr "Comprimare medie"
+
+#: inc/admin.php:1833
+msgid "Latest 10 images"
+msgstr "Ultimele 10 imagini"
+
+#. translators: 1 is the starting bold tag, 2 is the ending bold tag
+#: inc/admin.php:1750
+msgid "%1$sAdaptive optimization%2$s that perfectly sizes images for every visitor's device and connection speed."
+msgstr "%1$sOptimizare adaptivă%2$s care dimensionează perfect imaginile pentru dispozitivul și viteza de conectare a fiecărui vizitator."
+
+#. translators: 1 is the starting bold tag, 2 is the ending bold tag
+#: inc/admin.php:1741
+msgid "%1$sInstant global delivery%2$s with CloudFront CDN - your images load 2-3x faster worldwide from 450+ locations."
+msgstr "%1$sLivrare globală instantanee%2$s cu CloudFront CDN – imaginile tale se încarcă de 2-3 ori mai rapid în întreaga lume din peste 450 de locații."
+
+#. translators: 1 is the starting bold tag, 2 is the ending bold tag, 3 is the
+#. starting bold tag, 4 is the limit number, 5 is ending bold tag, 6 is the
+#. starting anchor tag for the docs link on how we count visits, 7 is the
+#. ending anchor tag.
+#: inc/admin.php:1726
+msgid "%1$sOptimize unlimited images%2$s for up to %3$s monthly %4$svisitors%5$s - completely FREE."
+msgstr "%1$sOptimizezi imagini nelimitate%2$s pentru până la %3$s de %4$svizitatori lunari%5$s – complet GRATUIT."
+
+#. translators: 1 is the link to optimole.com
+#: inc/admin.php:1721
+msgid "Connect to Optimole's powerful image optimization service with a free API key from %s."
+msgstr "Conectează-te la serviciul puternic de optimizare a imaginilor Optimole cu o cheie API gratuită de la %s."
+
+#: inc/admin.php:1710
+msgid "Monthly visits:"
+msgstr "Vizite lunare:"
+
+#: inc/admin.php:1686
+msgid "Secure connection - your data is protected"
+msgstr "Conexiune securizată – datele tale sunt protejate"
+
+#: inc/admin.php:1669
+msgid "Setup is instant - just click connect"
+msgstr "Configurarea este instantanee – doar dă clic pe conectare"
+
+#: inc/admin.php:1668
+msgid "TRUSTED BY 200,000+ HAPPY USERS"
+msgstr "DE ÎNCREDERE PENTRU PESTE 200 000 DE UTILIZATORI MULȚUMIȚI"
+
+#: inc/admin.php:1667
+msgid "Stop sacrificing image quality for page speed. Optimole delivers both."
+msgstr "Oprește sacrificarea calității imaginii pentru viteza paginii. Optimole le livrează pe ambele."
+
+#: inc/admin.php:1666
+msgid "Supercharge Your WordPress Images in 60 Seconds"
+msgstr "Îmbunătățește-ți imaginile WordPress în 60 de secunde"
+
+#: inc/admin.php:1655
+msgid "Quick Actions"
+msgstr "Acțiuni rapide"
+
+#: inc/admin.php:1654
+msgid "Optimole is handling all your images in real-time with our CloudFront CDN (450+ locations worldwide)"
+msgstr "Optimole gestionează toate imaginile tale în timp real cu CDN-ul nostru CloudFront (peste 450 de locații în întreaga lume)"
+
+#: inc/admin.php:1653
+msgid "All images are automatically optimized!"
+msgstr "Toate imaginile sunt optimizate automat!"
+
+#: inc/admin.php:1652
+msgid "Image Optimization Overview"
+msgstr "Prezentare generală a optimizării imaginilor"
+
+#: inc/admin.php:1509
+msgid "Something went wrong. Please refresh the page and try again."
+msgstr "Ceva nu a mers bine. Te rog reîncarcă pagina și încearcă din nou."
+
+#: inc/admin.php:1508
+msgid "Super Page Cache is active!"
+msgstr "Super Page Cache este activ!"
+
+#: inc/admin.php:1507
+msgid "Activating Super Page Cache..."
+msgstr "Activez Super Page Cache..."
+
+#: inc/admin.php:1506
+msgid "Installing Super Page Cache..."
+msgstr "Instalez Super Page Cache..."
+
+#: inc/admin.php:1505
+msgid "Activate Super Page Cache"
+msgstr "Activează Super Page Cache"
+
+#: inc/admin.php:1504
+msgid "Get Super Page Cache"
+msgstr "Obține Super Page Cache"
+
+#: inc/admin.php:1502
+msgid "Lightning Speed Disk Caching"
+msgstr "Cache pe disc cu viteză fulgerătoare"
+
+#: inc/admin.php:1501
+msgid "Works with Optimole optimization"
+msgstr "Funcționează cu optimizarea Optimole"
+
+#: inc/admin.php:1500
+msgid "Edge Caching (with Cloudflare free plan)"
+msgstr "Edge Caching (cu planul gratuit Cloudflare)"
+
+#: inc/admin.php:1498
+msgid "Improve your Core Web Vitals with our recommended caching solution"
+msgstr "Îmbunătățește-ți scorul Core Web Vitals cu soluția noastră de cache recomandată"
+
+#: inc/admin.php:1497
+msgid "Pair Optimole with Super Page Cache"
+msgstr "Asociază Optimole cu Super Page Cache"
+
+#: inc/admin.php:1496
+msgid "Dismiss"
+msgstr "Respinge"
+
+#: inc/admin.php:1622
+msgid "Claim now"
+msgstr "Revendică acum"
+
+#: inc/admin.php:1606 inc/admin.php:1619
+msgid "25% discount"
+msgstr "reducere de 25%"
+
+#. translators: %1$s is the promo code, %2$s is the discount amount ('25% off')
+#: inc/admin.php:1617
+msgid "Use coupon code %1$s for an instant %2$s on Optimole yearly plans"
+msgstr "Folosește codul de cupon %1$s pentru o %2$s instantă la planurile anuale Optimole"
+
+#. translators: private sale
+#: inc/admin.php:1628
+msgid "private sale"
+msgstr "vânzări private"
+
+#. translators: private sale
+#: inc/admin.php:1628
+msgid "Black Friday %s"
+msgstr "Vinerea neagră %s"
+
+#. translators: number of days left
+#: inc/admin.php:1626
+msgid "Hurry up! only %s left"
+msgstr "Grăbește-te! Au mai rămas doar %s"
+
+#. translators: %1$s is the promo code, %2$s is the discount amount ('25 off')
+#: inc/admin.php:1604
+msgid "Use code %1$s for %2$s on yearly plans."
+msgstr "Folosește codul %1$s pentru o %2$s la planurile anuale."
+
+#: inc/admin.php:1598
+msgid "Private Sale"
+msgstr "Vânzări private"
+
+#. translators: 1 - opening paragraph tag, 2 - PHP Version, 3 - opening bold
+#. tag, 4 - closing bold tag, 5 - opening bold tag, 6 - closing bold tag, 7 -
+#. opening anchor tag, 8 - closing anchor tag, 9 - closing paragraph tag
+#: optimole-wp.php:62
+msgid "%1$s You're using a PHP version lower than %2$s! %3$sOptimole%4$s requires at least %5$sPHP %2$s%6$s to function properly. Plugin has been deactivated. %7$sLearn more here%8$s. %9$s"
+msgstr "%1$sFolosești o versiune PHP mai veche de %2$s! %3$sOptimole%4$s necesită cel puțin %5$sPHP %2$s%6$s pentru a funcționa corect. Modulul a fost dezactivat. %7$sAflă mai multe aici%8$s.%9$s"
+
+#: inc/settings.php:805
+msgid "Can not get new token from Optimole service"
+msgstr "Nu se poate obține un jeton nou de la serviciul Optimole"
+
+#. translators: 1 start anchor tag to register page, 2 is ending anchor tag.
+#: inc/rest.php:504
+msgid "Error: This site has been previously registered. You can login to your account from %1$shere%2$s"
+msgstr "Eroare: acest site a fost înregistrat anterior. Te poți conecta la contul tău de %1$saici%2$s"
+
+#: inc/rest.php:492
+msgid "Error: This email is already registered. Please choose another one."
+msgstr "Eroare: acest email este deja înregistrat. Te rog alege altul."
+
+#: inc/rest.php:482
+msgid "Error creating account."
+msgstr "Eroare la crearea contului."
+
+#: inc/media_offload.php:1067
+msgid "Push Image to Optimole"
+msgstr "Trimite imaginea la Optimole"
+
+#: inc/media_offload.php:772 inc/media_offload.php:774
+#: inc/media_offload.php:1068
+msgid "Restore image to media library"
+msgstr "Restaurează imaginea în biblioteca Media"
+
+#: inc/media_offload.php:768 inc/media_offload.php:770
+msgid "Offload to Optimole"
+msgstr "Stocare externă la Optimole"
+
+#: inc/manager.php:197
+msgid "Optimized by Optimole"
+msgstr "Optimizat de Optimole"
+
+#: inc/logger.php:225
+msgid "Invalid log type"
+msgstr "Tip de jurnal nevalid"
+
+#: inc/logger.php:220
+msgid "Security check failed"
+msgstr "Verificarea de securitate a eșuat"
+
+#: inc/dam.php:436
+msgid "Loading"
+msgstr "Încarc"
+
+#. translators: 1 is new line tag, 2 is the starting anchor tag, 3 is the
+#. ending anchor tag and 4 is the domain name of Optimole
+#: inc/conflicts/w3_total_cache_cdn.php:27
+msgid "It seems your are using W3 Total Cache. %1$s If you are using the CSS or JavaScript minify/combine option from  %2$sW3 Total Cache -> Performance -> Minify page %3$s %1$s add this line: %4$s to Include external files/libraries and check Use regular expressions for file matching checkbox."
+msgstr "Se pare că folosești W3 Total Cache. %1$s Dacă folosești opțiunea CSS sau JavaScript de minificare sau combinare din %2$sW3 Total Cache -> Performanță -> Minifică pagină %3$s %1$s adaugă această linie: %4$s pentru a include fișiere sau biblioteci externe și bifează caseta Folosește expresii regulate pentru potrivirea fișierelor."
+
+#. translators: 1 is the start of the bold tag, 2 is ending bold tag, 3 is new
+#. line tag, 4 is anchor tag start, 5 is ending anchor tag, 6 is start of bold
+#. tag, 7 is ending bold tag
+#: inc/conflicts/jetpack_photon.php:26
+msgid "It seems your are using %1$sJetpack%2$s with site accelerator option enabled for images. %3$s To avoid any possible conflicts with Optimole replacement mechanism, you can go to %4$sJetpack -> Perfomance%5$s and turn off the site accelerator option for %6$simages%7$s"
+msgstr "Se pare că folosești %1$sJetpack%2$s cu opțiunea de accelerare a site-ului activată pentru imagini. %3$s Pentru a evita orice conflict posibil cu mecanismul de înlocuire Optimole, poți merge la %4$sJetpack -> Perfomanță%5$s și dezactiva opțiunea de accelerare a site-ului pentru %6$simagini%7$s"
+
+#. translators: 1 is the start of the bold tag, 2 is ending bold tag, 3 is new
+#. line tag, 4 is anchor tag start, 5 is ending anchor tag
+#: inc/conflicts/divi.php:26
+msgid "It seems your are using %1$sDivi%2$s right now. %3$s In order for Optimole to replace the images in your Divi pages, you will need to go to %4$sDivi -> Theme Options -> Builder -> Advanced -> Static CSS File Generations%5$s and click on Clear for the images to be processed. "
+msgstr "Se pare că folosești %1$sDivi%2$s în acest moment. %3$s Pentru ca Optimole să înlocuiască imaginile din paginile tale Divi, va trebui să mergi la %4$sDivi -> Opțiuni temă -> Constructor -> Avansat -> Generări de fișiere statice CSS%5$s și să dai clic pe Șterge pentru ca imaginile să fie procesate. "
+
+#: inc/cli/cli_setting.php:122
+msgid "No setting to update"
+msgstr "Nicio setare de actualizat"
+
+#: inc/cli/cli_setting.php:43 inc/rest.php:391 inc/rest.php:429
+msgid "Can not connect to Optimole service"
+msgstr "Nu mă pot conecta la serviciul Optimole"
+
+#. translators: errors details
+#. translators: Error details
+#: inc/cli/cli_setting.php:40 inc/rest.php:389 inc/rest.php:427
+#: inc/settings.php:802
+msgid ". ERROR details: %s"
+msgstr ". Detalii eroare: %s"
+
+#: inc/cli/cli_media.php:69
+msgid "Progress bar"
+msgstr "Bară de progres"
+
+#: inc/cli/cli_media.php:47
+msgid "You need to have the offload_media option enabled in order to use this command"
+msgstr "Trebuie să ai opțiunea offload_media activată pentru a putea utiliza această comandă"
+
+#: inc/cli/cli_media.php:43
+msgid "You have reached the maximum offloading limit of images. To increase the offload limit and for more information, contact our support."
+msgstr "Ai atins limita maximă de stocare externă a imaginilor. Pentru a crește limita de stocare externă și pentru mai multe informații contactează asistența noastră."
+
+#: inc/cli/cli_media.php:41
+msgid "All images have been uploaded to your media library"
+msgstr "Toate imaginile au fost încărcate în biblioteca Media"
+
+#: inc/cli/cli_media.php:40
+msgid "Moving all images back to your media library"
+msgstr "Mut toate imaginile în biblioteca ta Media"
+
+#: inc/cli/cli_media.php:37
+msgid "All images have been uploaded to Optimole Cloud"
+msgstr "Au fost încărcate toate imaginile în Optimole Cloud"
+
+#: inc/cli/cli_media.php:36
+msgid "Moving all images to Optimole Cloud"
+msgstr "Mutarea tuturor imaginilor în Optimole Cloud"
+
+#: inc/api.php:451 inc/api.php:463 inc/lazyload_replacer.php:638
+#: inc/lazyload_replacer.php:651 inc/main.php:264 inc/main.php:274
+#: inc/manager.php:835 inc/manager.php:848 inc/tag_replacer.php:970
+#: inc/tag_replacer.php:983 inc/url_replacer.php:338 inc/url_replacer.php:351
+msgid "Cheatin&#8217; huh?"
+msgstr "Trișezi, nu-i așa?"
+
+#. translators: 1 start of the italic tag, 2 is the end of italic tag,  3 is
+#. starting anchor tag, 4 is the ending anchor tag.
+#: inc/api.php:195
+msgid "It seems Optimole is having trouble reaching your website. This issue often occurs if your website is private, local, or protected by a firewall. But don't stress – it's an easy fix! Ensure your website is live and accessible to the public. If a firewall is in place, just tweak the settings to allow the %1$sOptimole(1.0)%2$s user agent access to your website. %3$sLearn More%4$s"
+msgstr "Se pare că Optimole are probleme în a ajunge la site-ul tău web. Această problemă apare adesea dacă site-ul tău este privat, local sau protejat de un firewall. Dar nu-ți face griji – există o soluție ușoară! Asigură-te că site-ul tău este activ și accesibil publicului. Dacă există un firewall, trebuie doar să modifici setările pentru a permite accesul agentului utilizator %1$sOptimole(1.0)%2$s la site-ul tău. %3$sAflă mai multe%4$s"
+
+#: inc/api.php:140
+msgid "You can clear cache only once per 5 minutes."
+msgstr "Poți șterge cache-ul numai o dată la 5 minute."
+
+#. translators: 1 is code to disable cron, 2 value of the constant
+#: inc/admin.php:2299
+msgid "Cancel"
+msgstr "Anulează"
+
+#. translators: 1 is code to disable cron, 2 value of the constant
+#: inc/admin.php:2298
+msgid "It seems that you have the %1$s constant defined as %2$s. The offloading process uses cron events to offload the images in the background. Please remove the constant from your wp-config.php file in order for the offloading process to work."
+msgstr "Se pare că ai definit constanta %1$s ca %2$s. Procesul de stocare externă utilizează evenimentele cron pentru a stoca extern imaginile în fundal. Te rog elimină constanta din fișierul tău wp-config.php pentru ca procesul de stocare externă să funcționeze."
+
+#: inc/admin.php:2296
+msgid "Close"
+msgstr "Închide"
+
+#: inc/admin.php:2293
+msgid "❤️❤️❤️ Our moles just nailed it, this one is <strong>{ratio}</strong> smaller."
+msgstr "❤️❤️❤️ Cârtițele noastre tocmai au nimerit-o, aceasta este cu <strong>{ratio}</strong> mai mică."
+
+#: inc/admin.php:2292
+msgid "🤓 We are on the right track, <strong>{ratio}</strong> squeezed."
+msgstr "🤓 Suntem pe drumul cel bun, am stors <strong>{ratio}</strong>."
+
+#: inc/admin.php:2291
+msgid "😬 Not that much, just <strong>{ratio}</strong> smaller."
+msgstr "😬 Nu atât de mult, doar cu <strong>{ratio}</strong> mai puțin."
+
+#: inc/admin.php:2290
+msgid "🙉 We couldn't do better, this image is already optimized at maximum."
+msgstr "🙉 Nu am putut face nimic, această imagine este deja optimizată la maxim."
+
+#: inc/admin.php:2289
+msgid "optimized images"
+msgstr "imagini optimizate"
+
+#: inc/admin.php:2288
+msgid "smaller"
+msgstr "mai mic"
+
+#: inc/admin.php:2287
+msgid "Saved"
+msgstr "Salvat"
+
+#: inc/admin.php:2286
+msgid "Last"
+msgstr "Ultima"
+
+#: inc/admin.php:2285
+msgid "Loading your optimized images..."
+msgstr "Încarc imaginile optimizate..."
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2284
+msgid "Optimization"
+msgstr "Optimizare"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2283
+msgid "We are currently optimizing your images. Meanwhile you can visit your %1$shomepage%2$s and check how our plugin performs."
+msgstr "Îți optimizăm acum imaginile. Între timp, poți vizita %1$sprima pagină%2$s să verifici cum funcționează modulul nostru."
+
+#: inc/admin.php:2278
+msgid "A value between 0 and 300 for the scale of the watermark (100 is the original size and 300 is 3x the size) relative to the resulting image size. If set to 0 it will default to the original size."
+msgstr "O valoare între 0 și 300 pentru scala filigranului (100 este dimensiunea originală și 300 este de 3 ori dimensiunea) față de dimensiunea imaginii care rezultă. Dacă este setat la 0, va fi implicit dimensiunea originală."
+
+#: inc/admin.php:2277
+msgid "Watermark scale"
+msgstr "Scală filigran"
+
+#: inc/admin.php:2276
+msgid "Scale"
+msgstr "Redimensionează"
+
+#: inc/admin.php:2275
+msgid "Offset the watermark from set position on X and Y axis. Values can be positive or negative."
+msgstr "Distanțează filigranul de la poziția stabilită pe axele X și Y. Valorile pot fi pozitive sau negative."
+
+#: inc/admin.php:2274
+msgid "Watermark offset"
+msgstr "Distanțare filigran"
+
+#: inc/admin.php:2273
+msgid "Offset Y"
+msgstr "Decalaj Y"
+
+#: inc/admin.php:2272
+msgid "Offset X"
+msgstr "Decalaj X"
+
+#: inc/admin.php:2271
+msgid "South-East"
+msgstr "Sud-Est"
+
+#: inc/admin.php:2270
+msgid "South"
+msgstr "Sud"
+
+#: inc/admin.php:2269
+msgid "South-West"
+msgstr "Sud-Vest"
+
+#: inc/admin.php:2268
+msgid "East"
+msgstr "Est"
+
+#: inc/admin.php:2267
+msgid "Center"
+msgstr "Centru"
+
+#: inc/admin.php:2266
+msgid "West"
+msgstr "Vest"
+
+#: inc/admin.php:2265
+msgid "North-East"
+msgstr "Nord-Est"
+
+#: inc/admin.php:2264
+msgid "North"
+msgstr "Nord"
+
+#: inc/admin.php:2263
+msgid "North-West"
+msgstr "Nord-Vest"
+
+#: inc/admin.php:2262
+msgid "The place relative to the image where the watermark should be placed."
+msgstr "Locul în raport cu imaginea în care trebuie plasat filigranul."
+
+#: inc/admin.php:2261
+msgid "Watermark position"
+msgstr "Poziție filigran"
+
+#: inc/admin.php:2260
+msgid "A value between 0 and 100 for the opacity level. If set to 0 it will disable the watermark."
+msgstr "O valoare între 0 și 100 pentru nivelul de opacitate. Dacă este setat la 0, va dezactiva filigranul."
+
+#: inc/admin.php:2259
+msgid "Watermark opacity"
+msgstr "Opacitate filigran"
+
+#: inc/admin.php:2258
+msgid "Opacity"
+msgstr "Opacitate"
+
+#: inc/admin.php:2257
+msgid "The active watermark to use from the list of uploaded watermarks."
+msgstr "Filigranul activ de utilizat din lista de filigrane încărcate."
+
+#: inc/admin.php:2256
+msgid "Active watermark"
+msgstr "Filigran activ"
+
+#: inc/admin.php:2255
+msgid "Add new watermark"
+msgstr "Adaugă filigran nou"
+
+#: inc/admin.php:2254
+msgid "Upload"
+msgstr "Încarcă"
+
+#: inc/admin.php:2253
+msgid "Action"
+msgstr "Acțiune"
+
+#: inc/admin.php:2252
+msgid "Type"
+msgstr "Tip"
+
+#: inc/admin.php:2251
+msgid "Name"
+msgstr "Nume"
+
+#: inc/admin.php:2250
+msgid "ID"
+msgstr "ID"
+
+#: inc/admin.php:2249
+msgid "No images available for watermark. Please upload one."
+msgstr "Nicio imagine disponibilă pentru filigran. Te rog încarcă una."
+
+#: inc/admin.php:2248
+msgid "Watermarks position settings"
+msgstr "Setări poziție filigrane"
+
+#: inc/admin.php:2247
+msgid "Possible watermarks"
+msgstr "Filigrane posibile"
+
+#: inc/admin.php:2246
+msgid "You are allowed to save maximum 5 images."
+msgstr "Poți să salvezi maxim 5 imagini."
+
+#: inc/admin.php:2245
+msgid "Removing watermark resource ..."
+msgstr "Înlătur resursa filigranului..."
+
+#: inc/admin.php:2244 inc/admin.php:2282
+msgid "Image"
+msgstr "Imagine"
+
+#: inc/admin.php:2241
+msgid "Custom Integration"
+msgstr "Integrare personalizată"
+
+#: inc/admin.php:2240
+msgid "Exclude from Optimizing or Lazy Loading"
+msgstr "Exclude de la optimizare sau încărcare lentă"
+
+#: inc/admin.php:2239
+msgid "Cloud Library Browsing"
+msgstr "Răsfoire Bibliotecă Cloud"
+
+#: inc/admin.php:2238
+msgid "API"
+msgstr "API"
+
+#: inc/admin.php:2237
+msgid "Adding Watermarks to your images"
+msgstr "Adăugarea de filigrane pe imaginile tale"
+
+#: inc/admin.php:2236
+msgid "How Optimole can serve WebP images"
+msgstr "Cum poate Optimole să servească imagini WebP"
+
+#: inc/admin.php:2235
+msgid "Getting Started With Optimole"
+msgstr "Începe cu Optimole"
+
+#: inc/admin.php:2234
+msgid "Image Processing"
+msgstr "Procesare de imagini"
+
+#: inc/admin.php:2233
+msgid "Visits based plan"
+msgstr "Plan bazat pe număr de vizite"
+
+#: inc/admin.php:2232
+msgid "What happens if I exceed plan limits?"
+msgstr "Ce se întâmplă dacă depășesc limitele planului?"
+
+#: inc/admin.php:2231
+msgid "How Optimole counts the visitors?"
+msgstr "Cum numără Optimole vizitatorii?"
+
+#: inc/admin.php:2230
+msgid "Account"
+msgstr "Cont"
+
+#: inc/admin.php:2229
+msgid "View Changelog"
+msgstr "Vezi Istoric modificări"
+
+#: inc/admin.php:2228
+msgid "Check our changelog to see latest fixes and features implemented."
+msgstr "Consultă istoricul noastru de modificări pentru a vedea cele mai recente corecții și funcționalități implementate."
+
+#: inc/admin.php:2227
+msgid "Changelog"
+msgstr "Istoric modificări"
+
+#: inc/admin.php:2226
+msgid "Submit a Feature Request"
+msgstr "Trimite o cerere de funcționalitate"
+
+#: inc/admin.php:2225
+msgid "Help us improve Optimole by sharing feedback and ideas for new features."
+msgstr "Ajută-ne să îmbunătățim Optimole prin partajarea de impresii și idei pentru funcționalități noi."
+
+#: inc/admin.php:2224
+msgid "Have a feature request?"
+msgstr "Ai o cerere de funcționalitate?"
+
+#: inc/admin.php:2223
+msgid "Contact Support"
+msgstr "Contactează suportul"
+
+#: inc/admin.php:2222
+msgid "Need help or got a question? Submit a ticket and we'll get back to you."
+msgstr "Ai nevoie de ajutor sau ai o întrebare? Trimite un tichet și îți vom răspunde."
+
+#: inc/admin.php:2221
+msgid "Get Support"
+msgstr "Obține suport"
+
+#: inc/admin.php:2220
+msgid "Docs Page"
+msgstr "Pagina de documentație"
+
+#: inc/admin.php:2219
+msgid "Documentation"
+msgstr "Documentație"
+
+#: inc/admin.php:2218
+msgid "Help and Support"
+msgstr "Ajutor și suport"
+
+#: inc/admin.php:2191
+msgid "Cancel the transfer from Optimole"
+msgstr "Anulează transferul de la Optimole"
+
+#: inc/admin.php:2190
+msgid "Canceling will halt the ongoing process, and any remaining images will stay in the Optimole Cloud. To transfer images to the Optimole Cloud, use the Offloading option."
+msgstr "Anularea va opri procesul în curs, iar orice imagini rămase vor rămâne în Optimole Cloud. Pentru a transfera imagini în Optimole Cloud, folosește opțiunea Stocare externă."
+
+#: inc/admin.php:2188
+msgid "Transfer back from Optimole"
+msgstr "Transferă înapoi de la Optimole"
+
+#: inc/admin.php:2187
+msgid "This process will transfer back all images from Optimole to your website and may take a while, depending on the number of images."
+msgstr "Acest proces va transfera înapoi toate imaginile din Optimole pe site-ul tău web și poate dura ceva timp, în funcție de numărul de imagini."
+
+#: inc/admin.php:2186
+msgid "Transfer back all images to your site"
+msgstr "Transferă toate imaginile înapoi pe site-ul tău"
+
+#: inc/admin.php:2185
+msgid "Cancel the transfer to Optimole"
+msgstr "Anulează transferul către Optimole"
+
+#: inc/admin.php:2184
+msgid "This will halt the ongoing process. To retrieve images transferred from the Optimole Cloud, use the Rollback option."
+msgstr "Acest lucru va opri procesul în curs. Pentru a recupera imaginile transferate din Optimole Cloud, folosește opțiunea Restituire."
+
+#: inc/admin.php:2183 inc/admin.php:2189
+msgid "Are you sure?"
+msgstr "Sigur?"
+
+#: inc/admin.php:2182
+msgid "Transfer to Optimole Cloud"
+msgstr "Transferă către Optimole Cloud"
+
+#: inc/admin.php:2181
+msgid "This process will transfer and store your images in Optimole Cloud and may take a while, depending on the number of images."
+msgstr "Acest proces va transfera și va stoca imaginile în Optimole Cloud și poate dura ceva timp, în funcție de numărul de imagini."
+
+#: inc/admin.php:2180
+msgid "Transfer your images to Optimole"
+msgstr "Transferă-ți imaginile la Optimole"
+
+#: inc/admin.php:2179
+msgid "Error clearing cache. Please reload the page and try again."
+msgstr "Eroare la golirea memoriei cache. Te rog reîncarcă pagina și încearcă din nou."
+
+#: inc/admin.php:2178
+msgid "Cache cleared"
+msgstr "Am șters cache-ul"
+
+#: inc/admin.php:2177
+msgid "Error saving settings. Please reload the page and try again."
+msgstr "Eroare la salvarea setărilor. Te rog să reîncarci pagina și să încerci din nou."
+
+#: inc/admin.php:2176
+msgid "Settings saved"
+msgstr "Am salvat setările"
+
+#: inc/admin.php:2175 inc/media_rename/attachment_edit.php:231
+msgid "Clear"
+msgstr "Șterge"
+
+#: inc/admin.php:2174
+msgid "Placeholder Color"
+msgstr "Culoare substituent"
+
+#: inc/admin.php:2173
+msgid "Do not restore images after disabling"
+msgstr "Nu restaura imaginile după dezactivare"
+
+#: inc/admin.php:2172
+msgid "Restore images after disabling"
+msgstr "Restaurează imaginile după dezactivare"
+
+#. translators: Current limit of offloaded images
+#: inc/admin.php:2171
+msgid "Please select one ..."
+msgstr "Te rog selectează una ..."
+
+#. translators: Current limit of offloaded images
+#: inc/admin.php:2170
+msgid "You have reached the maximum offloading limit of %s images. To increase the offload limit and for more information, contact our support."
+msgstr "Ai atins limita maximă de stocare externă pentru %s de imagini. Pentru a crește limita de stocare externă și pentru mai multe informații contactează asistența noastră."
+
+#: inc/admin.php:2169
+msgid "Images are stored only in Optimole Cloud, allowing you to save space on your server. When enabled, any new images you upload in the Media Library will be automatically transferred to Optimole Cloud."
+msgstr "Imaginile sunt stocate doar în Optimole Cloud, permițându-ți să economisești spațiu pe serverul tău. Atunci când este activată, orice imagine nouă încărcată în Biblioteca media va fi transferată automat în Optimole Cloud."
+
+#: inc/admin.php:2168
+msgid "Optimole Cloud only"
+msgstr "Doar Optimole Cloud"
+
+#: inc/admin.php:2167
+msgid "Images are stored in both the local WordPress media library and Optimole Cloud."
+msgstr "Imaginile sunt stocate atât în biblioteca media locală WordPress, cât și în Optimole Cloud."
+
+#: inc/admin.php:2166
+msgid "Optimole Cloud and your website"
+msgstr "Optimole Cloud și site-ul tău web"
+
+#. translators: 1 is the starting bold tag, 2 is the ending bold tag
+#: inc/admin.php:2165
+msgid "Where your images are stored"
+msgstr "Unde sunt stocate imaginile tale"
+
+#. translators: 1 is the starting bold tag, 2 is the ending bold tag
+#: inc/admin.php:2164
+msgid "%s Your images have been restored to your website."
+msgstr "%s Imaginile tale au fost restaurate pe site-ul tău web."
+
+#. translators: 1 is the starting bold tag, 2 is the ending bold tag
+#: inc/admin.php:2163 inc/admin.php:2164
+msgid "Transfer Complete."
+msgstr "Transfer complet."
+
+#. translators: 1 is the starting bold tag, 2 is the ending bold tag
+#: inc/admin.php:2163
+msgid "%s Your images are now stored in Optimole Cloud."
+msgstr "%s Imaginile tale sunt acum stocate în Optimole Cloud."
+
+#: inc/admin.php:2162
+msgid "Please disable those plugins temporarily in order for Optimole to rollback the images to your site."
+msgstr "Te rog să dezactivezi temporar aceste module pentru ca Optimole să poată restaura imaginile pe site-ul tău."
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2161
+msgid "We have detected the following plugins that conflict with the offload features:"
+msgstr "Am detectat următoarele module care intră în conflict cu funcționalitățile de stocare externă:"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2160
+msgid "You are not required to use the offload functionality for the plugin to work, use it if you want to save on hosting space. %1$s More details%2$s"
+msgstr "Nu ai obligația să folosești funcționalitatea de stocare externă pentru ca modulul să funcționeze, folosește-o dacă vrei să economisești spațiu de găzduire. %1$sMai multe detalii%2$s"
+
+#: inc/admin.php:2159
+msgid "If you turn off this option, you will not be able to see the images in the Media Library without restoring the images first. Do you want to restore the images to your site upon turning off the option?"
+msgstr "Dacă dezactivezi această opțiune, nu vei putea vedea imaginile din Biblioteca media fără să le restaurezi mai întâi. Vrei să restaurezi imaginile pe site-ul tău după dezactivarea opțiunii?"
+
+#: inc/admin.php:2158
+msgid "Important! Please read carefully"
+msgstr "Important! Te rog citește cu atenție"
+
+#: inc/admin.php:2157
+msgid "You can try again to offload the rest of the images to Optimole."
+msgstr "Poți încerca din nou să stochezi extern restul imaginilor la Optimole."
+
+#: inc/admin.php:2156
+msgid "The selected images have been restored to your server, you can check them"
+msgstr "Imaginile selectate au fost restaurate pe serverul tău, poți să le verifici"
+
+#: inc/admin.php:2155
+msgid "The selected images have been offloaded to our servers, you can check them"
+msgstr "Imaginile selectate au fost descărcate pe serverele noastre, poți să le verifici"
+
+#: inc/admin.php:2154
+msgid "An unexpected error occured while offloading all existing images from your site to Optimole"
+msgstr "A apărut o eroare neașteptată în timpul stocării externe a tuturor imaginilor existente de pe site-ul tău către Optimole"
+
+#: inc/admin.php:2153
+msgid "Remove notice"
+msgstr "Înlătură notificarea"
+
+#: inc/admin.php:2152
+msgid "You can try again to pull back the rest of the images."
+msgstr "Poți încerca să tragi din nou restul imaginilor."
+
+#: inc/admin.php:2151
+msgid "An unexpected error occured while pulling the offloaded back to your site"
+msgstr "A apărut o eroare neașteptată în timpul transferului datelor stocate extern către site-ul tău."
+
+#: inc/admin.php:2150
+msgid "Moving images into your media library..."
+msgstr "Mut imaginile în biblioteca ta Media..."
+
+#: inc/admin.php:2149
+msgid "View Full Logs"
+msgstr "Vezi jurnalele complete"
+
+#: inc/admin.php:2148
+msgid "Hide Logs"
+msgstr "Ascunde jurnalele"
+
+#: inc/admin.php:2147
+msgid "Show Logs"
+msgstr "Arată jurnalele"
+
+#: inc/admin.php:2146
+msgid "Stop"
+msgstr "Oprește"
+
+#: inc/admin.php:2145
+msgid "minutes"
+msgstr "minute"
+
+#: inc/admin.php:2144
+msgid "Active Lazy-loading Exclusions"
+msgstr "Excluderi active la încărcare lentă"
+
+#: inc/admin.php:2143
+msgid "Active Optimizing Exclusions"
+msgstr "Excluderi active la optimizare"
+
+#: inc/admin.php:2142
+msgid "We are currently processing your images in the background. Leaving the page won't stop the process."
+msgstr "Momentan procesăm imaginile tale în fundal. Părăsirea paginii nu va opri procesul."
+
+#: inc/admin.php:2141
+msgid "We are currently calculating the estimated time for this job..."
+msgstr "Calculăm acum timpul estimat pentru această sarcină..."
+
+#: inc/admin.php:2140
+msgid "Estimated time remaining"
+msgstr "Timp rămas estimat"
+
+#: inc/admin.php:2139
+msgid "Moving your images to Optimole..."
+msgstr "Mut imaginile tale la Optimole..."
+
+#: inc/admin.php:2138
+msgid "Rollback images"
+msgstr "Restaurează imaginile"
+
+#: inc/admin.php:2137
+msgid "Sync images"
+msgstr "Sincronizează imaginile"
+
+#: inc/admin.php:2136
+msgid "Pull all the offloaded images to Optimole Cloud back to your server."
+msgstr "Trage toate imaginile stocate extern în Optimole Cloud înapoi pe serverul tău."
+
+#: inc/admin.php:2135
+msgid "Right now all the new images uploaded to your site are moved automatically to Optimole Cloud. In order to offload the existing ones, please click Sync images and wait for the process to finish. You can rollback anytime."
+msgstr "De acum, toate imaginile noi încărcate pe site-ul tău sunt mutate automat în Optimole Cloud. Pentru a le descărca pe cele existente, dă clic pe Sincronizează imaginile și așteaptă finalizarea procesului. Poți să le restaurezi oricând."
+
+#: inc/admin.php:2134
+msgid "Restore Offloaded Images"
+msgstr "Restaurează imaginile descărcate"
+
+#: inc/admin.php:2133
+msgid "Offload Existing Images"
+msgstr "Stochează extern imaginile existente"
+
+#: inc/admin.php:2132
+msgid "Once Optimole will serve your JS files, it will also minify the files and serve them via CDN."
+msgstr "Odată ce Optimole îți va servi fișierele JS, le va minifica și le va servi prin CDN."
+
+#: inc/admin.php:2131
+msgid "Minify JS files"
+msgstr "Minifică fișierele JS"
+
+#: inc/admin.php:2130
+msgid "Once Optimole will serve your CSS files, it will also minify the files and serve them via CDN."
+msgstr "Odată ce Optimole îți va servi fișierele CSS, le va minifica și le va servi prin CDN."
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2129
+msgid "Minify CSS files"
+msgstr "Minifică fișierele CSS"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2128
+msgid "When enabled, Optimole will optimize your CSS and JS files and, if they contain images, the images as well, then deliver them via the CDN for faster webpage loading. %1$sLearn more%2$s"
+msgstr "Atunci când este activată, Optimole va optimiza fișierele tale CSS și JS și, dacă acestea conțin imagini, și imaginile, apoi le va livra prin CDN pentru o încărcare mai rapidă a paginii web. %1$sAflă mai multe%2$s"
+
+#: inc/admin.php:2127
+msgid "Serve CSS & JS Through Optimole"
+msgstr "Servește CSS și JS prin Optimole"
+
+#: inc/admin.php:2126
+msgid "crop"
+msgstr "decupează"
+
+#: inc/admin.php:2125
+msgid "Width"
+msgstr "Lățime"
+
+#: inc/admin.php:2107
+msgid "View sample image"
+msgstr "Vezi imaginea exemplu"
+
+#: inc/admin.php:2106
+msgid "Off"
+msgstr "Oprită"
+
+#: inc/admin.php:2105
+msgid "On"
+msgstr "Activată"
+
+#: inc/admin.php:2101
+msgid "Admin bar status"
+msgstr "Stare bară de administrare"
+
+#: inc/admin.php:2100
+msgid "Browse images only from the specified websites. Otherwise, images from all websites will appear in the library."
+msgstr "Răsfoiește imagini numai de pe site-urile web specificate. În caz contrar, în bibliotecă vor apărea imagini de pe toate site-urile web."
+
+#: inc/admin.php:2099
+msgid "Show images only from these sites:"
+msgstr "Arată imagini numai de pe aceste site-uri:"
+
+#: inc/admin.php:2098
+msgid "Select a website"
+msgstr "Selectează un site web"
+
+#: inc/admin.php:2097
+msgid "View images from all sites"
+msgstr "Vezi imagini de pe toate site-urile"
+
+#: inc/admin.php:2096
+msgid "Currently viewing images from all sites"
+msgstr "Acum vizualizezi imagini de pe toate site-urile"
+
+#: inc/admin.php:2095
+msgid "Site:"
+msgstr "Site:"
+
+#: inc/admin.php:2094
+msgid "CURRENTLY SHOWING IMAGES FROM"
+msgstr "ACUM ARĂT IMAGINILE DIN"
+
+#: inc/admin.php:2093
+msgid "Show"
+msgstr "Arată"
+
+#: inc/admin.php:2092 inc/admin.php:2279
+msgid "Save changes"
+msgstr "Salvează modificările"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2091
+msgid "Loading a sample image."
+msgstr "Încarc o imagine de probă."
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2090
+msgid "When enabled, Optimole will manage, optimize, and serve all the images on your website. If disabled, optimization, lazy loading, and other features will no longer be available. %1$sLearn more%2$s"
+msgstr "Atunci când este activată, Optimole va gestiona, optimiza și servi toate imaginile de pe site-ul tău web. Dacă este dezactivată, optimizarea, încărcarea lentă și alte funcționalități nu vor mai fi disponibile. %1$sAflă mai multe%2$s"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2089
+msgid "Removes extra information from images, including EXIF and IPTC data (like camera settings and copyright info). This makes the pictures lighter and helps your website load faster. %1$sLearn more%2$s"
+msgstr "Înlătură informațiile suplimentare din imagini, inclusiv datele EXIF și IPTC (cum ar fi setările aparatului foto și informațiile privind drepturile de autor). Acest lucru face ca imaginile să fie mai ușoare și-ți ajută site-ul să se încarce mai repede. %1$sAflă mai multe%2$s"
+
+#: inc/admin.php:2088
+msgid "Strip Image Metadata"
+msgstr "Elimină metadatele imaginii"
+
+#: inc/admin.php:2087
+msgid "Auto Quality Powered by ML(Machine Learning)"
+msgstr "Calitate automată propulsată de ML (Machine Learning)"
+
+#: inc/admin.php:2086
+msgid "See one sample image which will help you choose the right quality of the compression."
+msgstr "Vezi o imagine de probă care te va ajuta să alegi calitatea corectă a comprimării."
+
+#: inc/admin.php:2085
+msgid "Selected value"
+msgstr "Valoare selectată"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2084
+msgid "Lower image quality might boost your loading speed by lowering the size. However, the low image quality may negatively impact the visual appearance of the images. Try experimenting with the setting, then click the View sample image link to see what option works best for you."
+msgstr "Calitatea scăzută a imaginii poate crește viteza de încărcare prin reducerea dimensiunii. Cu toate acestea, calitatea scăzută a imaginii poate avea un impact negativ asupra aspectului vizual al imaginilor. Încearcă să experimentezi cu setările, apoi dă clic pe legătura Vezi imaginea exemplu pentru a vedea ce opțiune funcționează cel mai bine pentru tine."
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2083
+msgid "Optimole ML algorithms will predict the optimal image quality to get the smallest possible size with minimum perceived quality losses. When disabled, you can control the quality manually. %1$sLearn more%2$s"
+msgstr "Algoritmii ML Optimole vor prezice calitatea optimă a imaginii pentru a obține cea mai mică dimensiune posibilă cu pierderi minime de calitate percepută. Când este dezactivată, poți controla manual calitatea. %1$sAflă mai multe%2$s"
+
+#: inc/admin.php:2082
+msgid "Option saved."
+msgstr "Am salvat opțiunea."
+
+#: inc/admin.php:2080
+msgid "You dont have any images in your Media Library. Add one and check how the Optimole will perform."
+msgstr "Nu ai nicio imagine în Biblioteca ta media. Adaugă una și verifică cum va funcționa Optimole."
+
+#: inc/admin.php:2079
+msgid "Medium"
+msgstr "Medie"
+
+#: inc/admin.php:2078
+msgid "Low"
+msgstr "Slabă"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2076
+msgid "The filter should be at least 3 characters long."
+msgstr "Filtrul trebuie să aibă o lungime de cel puțin 3 caractere."
+
+#: inc/admin.php:2074
+msgid "Optimized"
+msgstr "Optimizată"
+
+#: inc/admin.php:2073
+msgid "Original"
+msgstr "Originală"
+
+#: inc/admin.php:2072
+msgid "High"
+msgstr "Mare"
+
+#: inc/admin.php:2071
+msgid "Hide"
+msgstr "Ascunde"
+
+#: inc/admin.php:2070
+msgid " here."
+msgstr "aici."
+
+#: inc/admin.php:2069
+msgid "Add New Image Crop Size"
+msgstr "Adaugă o nouă dimensiune de tăiere a imaginilor"
+
+#: inc/admin.php:2068
+msgid "Add size"
+msgstr "Adaugă dimensiune"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2067
+msgid "Height"
+msgstr "Înălțime"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2066
+msgid "Enable this to automatically convert GIF images to Video files (MP4 and WebM). %1$sLearn more%2$s"
+msgstr "Activează asta pentru a converti automat imaginile GIF în fișiere video (MP4 și WebM). %1$sAflă mai multe%2$s"
+
+#: inc/admin.php:2065
+msgid "For homepage use `home` keyword."
+msgstr "Pentru prima pagină folosește cuvântul cheie `home`."
+
+#: inc/admin.php:2064
+msgid "Page URL"
+msgstr "URL pagină"
+
+#: inc/admin.php:2063
+msgid "is"
+msgstr "este"
+
+#: inc/admin.php:2062
+msgid "matches"
+msgstr "se potrivește"
+
+#: inc/admin.php:2061
+msgid "contains"
+msgstr "conține"
+
+#: inc/admin.php:2060
+msgid "Image filename"
+msgstr "Nume fișier imagine"
+
+#: inc/admin.php:2059
+msgid "Image extension"
+msgstr "Extensie imagine"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2058
+msgid "Image class"
+msgstr "Clasă imagine"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2057
+msgid "Indicate how many images at the top of each page should bypass lazy loading, ensuring they’re instantly visible. Enter 0 to not exclude any images from the lazy loading process. %1$sLearn more%2$s"
+msgstr "Indică câte imagini din partea de sus a fiecărei pagini ar trebui să ocolească încărcarea lentă, asigurându-se că sunt vizibile instantaneu. Introdu 0 pentru a nu exclude nicio imagine din procesul de încărcare lentă. %1$sAflă mai multe%2$s"
+
+#: inc/admin.php:2056
+msgid "Bypass Lazy Load for First Images"
+msgstr "Ocolește încărcarea lentă pentru primele imagini"
+
+#. translators: is used as plural when the number of images is more than 1 for
+#. a unit label.
+#: inc/admin.php:1843 inc/admin.php:2055
+msgid "images"
+msgstr "imagini"
+
+#: inc/admin.php:2054
+msgid "Exclude first"
+msgstr "Exclude mai întâi"
+
+#. translators: 1 is the starting bold tag, 2 is the ending bold tag
+#: inc/admin.php:2050
+msgid "%1$sPage url%2$s matches"
+msgstr "%1$sURL-ul paginii%2$s se potrivește cu"
+
+#: inc/admin.php:2048
+msgid "cropped"
+msgstr "decupată"
+
+#. translators: 1 is the starting bold tag, 2 is the ending bold tag
+#: inc/admin.php:2044
+msgid "%1$sName: %2$s"
+msgstr "%1$sNume: %2$s"
+
+#. translators: 1 is the starting bold tag, 2 is the ending bold tag
+#: inc/admin.php:2039
+msgid "%1$sPage url%2$s contains"
+msgstr "%1$sURL-ul paginii%2$s conține"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2033
+msgid "Define exceptions, in case you don't want the lazy-load to be active on certain images. %1$sLearn more%2$s"
+msgstr "Definește excepțiile, în cazul în care nu vrei ca încărcarea lentă să fie activă pe anumite imagini. %1$sAflă mai multe%2$s"
+
+#: inc/admin.php:2030
+msgid "Don't lazy-load images if"
+msgstr "Nu încărca lent imagini dacă"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2026
+msgid "Here you can define exceptions, in case you don't want some images to be optimised. %1$sLearn more%2$s"
+msgstr "Aici poți defini excepții, în cazul în care nu vrei ca anumite imagini să fie optimizate. %1$sAflă mai multe%2$s"
+
+#. translators: 1 is the starting bold tag, 2 is the ending bold tag
+#: inc/admin.php:2020
+msgid "%1$sImage filename%2$s contains"
+msgstr "%1$sNumele fișierului imagine%2$s conține"
+
+#. translators: 1 is the starting bold tag, 2 is the ending bold tag
+#: inc/admin.php:2015
+msgid "%1$sImage extension%2$s is"
+msgstr "%1$sExtensia imaginii%2$s este"
+
+#. translators: 1 is the starting bold tag, 2 is the ending bold tag
+#: inc/admin.php:2009
+msgid "%1$sImage tag%2$s contains class"
+msgstr "%1$sEticheta imaginii%2$s conține clasa"
+
+#: inc/admin.php:2006
+msgid "Enabled"
+msgstr "Activat"
+
+#: inc/admin.php:2005
+msgid "Your cropped image sizes"
+msgstr "Dimensiunile imaginii tale decupate"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:2001
+msgid "Get 20.000 more visits for free by enabling the Optimole badge on your websites. %1$sLearn more%2$s"
+msgstr "Obține gratuit încă 20 000 de vizite în plus prin activarea insignei Optimole pe site-urile tale web. %1$sAflă mai multe%2$s"
+
+#: inc/admin.php:1993
+msgid "Enable Optimole Badge"
+msgstr "Activează insigna Optimole"
+
+#: inc/admin.php:1992
+msgid "When you enable this feature to define a max width or height for image resizing, please note that DPR (retina) images will be disabled. This is done to ensure consistency in image dimensions across your website. Although this may result in slightly lower image quality for high-resolution displays, it will help maintain uniform image sizes, improving your website's overall layout and potentially boosting performance."
+msgstr "Atunci când activezi această funcționalitate pentru a defini o lățime sau înălțime maximă pentru redimensionarea imaginilor, reține că imaginile DPR (retina) vor fi dezactivate. Acest lucru se face pentru a asigura coerența dimensiunilor imaginilor pe site-ul tău web. Deși acest lucru poate duce la o calitate ușor mai scăzută a imaginii pentru ecranele de înaltă rezoluție, va ajuta la menținerea unor dimensiuni uniforme ale imaginii, îmbunătățind aranjamentul general al site-ului tău web și, eventual, sporind performanța."
+
+#: inc/admin.php:1991
+msgid "Limit Image Sizes"
+msgstr "Limitează dimensiunile imaginilor"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:1987
+msgid "Define the max width or height limits for images on your website. Larger images will be automatically adjusted to fit within these parameters while preserving their original aspect ratio. %1$sLearn more%2$s"
+msgstr "Definește limitele maxime de lățime sau înălțime pentru imaginile de pe site-ul tău web. Imaginile mai mari vor fi ajustate automat pentru a se încadra în acești parametri, păstrând în același timp raportul lor de aspect original. %1$sAflă mai multe%2$s"
+
+#: inc/admin.php:1984
+msgid "Retina Quality"
+msgstr "Calitate Retina"
+
+#: inc/admin.php:1977
+msgid "Smart Cropping"
+msgstr "Decupare inteligentă"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:1973
+msgid "When enabled, Optimole automatically detects the most interesting or important part of your images. When pictures are resized or cropped, this feature ensures the focus stays on the most interesting part of the picture. %1$sLearn more%2$s"
+msgstr "Atunci când este activată, Optimole detectează automat cea mai interesantă sau importantă parte a imaginilor tale. Atunci când imaginile sunt redimensionate sau decupate, această funcționalitate asigură că accentul rămâne pe cea mai interesantă parte a imaginii. %1$sAflă mai multe%2$s"
+
+#: inc/admin.php:1970
+msgid "Network-based Optimizations"
+msgstr "Optimizări bazate pe rețea"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:1966
+msgid "When enabled, Optimole will automatically reduce the image quality when it detects a slower network, making your images load faster on low-speed internet connections. %1$sLearn more%2$s"
+msgstr "Atunci când este activată, Optimole va reduce automat calitatea imaginii atunci când detectează o rețea mai lentă, făcând ca imaginile tale să se încarce mai rapid pe conexiunile la internet de viteză redusă. %1$sAflă mai multe%2$s"
+
+#: inc/admin.php:1942
+msgid "Enable Optimole Image Handling"
+msgstr "Activează gestionarea Optimole a imaginilor"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:1938
+msgid "Enable this setting to access all your Optimole images, including those from other websites connected to your Optimole account, directly on this site. They will be available for browsing in the Cloud Library tab. %1$sLearn more%2$s"
+msgstr "Activează această setare pentru a accesa toate imaginile Optimole, inclusiv cele de pe alte site-uri web conectate la contul Optimole, direct pe acest site. Acestea vor fi disponibile pentru răsfoire în fila Bibliotecă Cloud. %1$sAflă mai multe%2$s"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:1935
+msgid "Unified Image Access"
+msgstr "Acces unificat la imagini"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:1934
+msgid "Free up space on your server by transferring your images to Optimole Cloud; you can transfer them back anytime. Once moved, the images will still be visible in the Media Library and can be used as before. %1$sLearn more%2$s"
+msgstr "Eliberează-ți spațiul pe server transferându-ți imaginile în Optimole Cloud; le poți transfera înapoi oricând. Odată mutate, imaginile vor fi în continuare vizibile în Biblioteca media și pot fi utilizate ca înainte. %1$sAflă mai multe%2$s"
+
+#: inc/admin.php:1933
+msgid "Store Your Images in Optimole Cloud"
+msgstr "Stochează-ți imaginile în Optimole Cloud"
+
+#: inc/admin.php:1932
+msgid "GIF to Video Conversion"
+msgstr "Conversie GIF în video"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:1926
+msgid "Enables fallback images for browsers that can't handle JavaScript-based lazy loading or related features. Disabling it may resolve conflicts with other plugins or configurations and decrease HTML page size. %1$sLearn more%2$s"
+msgstr "Activează imagini alternative pentru navigatoarele care nu pot gestiona încărcarea lentă bazată pe JavaScript sau funcționalități similare. Dezactivarea acesteia poate rezolva conflicte cu alte module sau configurații și poate reduce dimensiunea paginii HTML. %1$sAflă mai multe%2$s"
+
+#: inc/admin.php:1921
+msgid "CSS Background Lazy Load"
+msgstr "Încărcare lentă a fundalului CSS"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:1911
+msgid "Enable this to automatically convert images to the AVIF format on browsers that support it. This format provides quality images with reduced file sizes, and faster webpage loading. %1$sLearn more%2$s"
+msgstr "Activează această opțiune pentru a converti automat imaginile în formatul AVIF pe navigatoarele care îl acceptă. Acest format oferă imagini de calitate cu dimensiuni reduse ale fișierelor și o încărcare mai rapidă a paginilor web. %1$sAflă mai multe%2$s"
+
+#: inc/admin.php:1908
+msgid "AVIF Image Support"
+msgstr "Suport pentru imagini AVIF"
+
+#: inc/admin.php:1907
+msgid "Disabled"
+msgstr "Dezactivat"
+
+#: inc/admin.php:1906
+msgid "All done, Optimole is currently optimizing your site."
+msgstr "Gata, în acest moment Optimole îți optimizează site-ul."
+
+#: inc/admin.php:1905
+msgid "Inspecting the images from your site."
+msgstr "Inspectez imaginile de pe site-ul tău."
+
+#: inc/admin.php:1904
+msgid "Checking for possible conflicts."
+msgstr "Verific posibilele conflicte."
+
+#: inc/admin.php:1903
+msgid "Connecting your site to the Optimole service."
+msgstr "Îți conectez site-ului la serviciul Optimole."
+
+#: inc/admin.php:1902
+msgid "Clear cached CSS & JS"
+msgstr "Șterge fișierele CSS și JS memorate în cache"
+
+#: inc/admin.php:1901
+msgid "Clear cached images"
+msgstr "Șterge imaginile din cache"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:1897
+msgid "Use this option if you notice images are not cropped correctly after using Optimole. Add the affected image sizes here to automatically adjust and correct their cropping for optimal display. %1$sLearn more%2$s"
+msgstr "Folosește această opțiune dacă observi că imaginile nu sunt decupate corect după utilizarea Optimole. Adaugă aici dimensiunile imaginii afectate pentru a ajusta și corecta automat decuparea acestora pentru o afișare optimă. %1$sAflă mai multe%2$s"
+
+#: inc/admin.php:1894
+msgid "Clearing cached resources will re-optimize the images and might affect the site performance for a few minutes."
+msgstr "Ștergerea resurselor memorate în cache va optimiza din nou imaginile și ar putea afecta performanța pe site pentru câteva minute."
+
+#: inc/admin.php:1893
+msgid "Clear Cached Resources"
+msgstr "Șterge resursele memorate în cache"
+
+#. translators: 1 is the starting anchor tag, 2 is the ending anchor tag
+#: inc/admin.php:1889
+msgid "Clears all Optimole’s cached resources (images, JS, CSS). Useful if you made changes to your images and don't see those applying on your site. %1$sLearn more%2$s"
+msgstr "Șterge toate resursele Optimole din cache (imagini, JS, CSS). Util dacă ai făcut modificări la imaginile tale și nu vezi că acestea se aplică pe site-ul tău. %1$sAflă mai multe%2$s"
+
+#: inc/admin.php:1886 inc/video_player.php:288
+msgid "Auto"
+msgstr "Automat"
+
+#: inc/admin.php:1885
+msgid "Show in the WordPress admin bar the available quota from Optimole service."
+msgstr "Arată în bara de administrare WordPress cota disponibilă de la serviciul Optimole."
+
+#: inc/admin.php:1884
+msgid "Add site"
+msgstr "Adaugă site"
+
+#: inc/admin.php:1883
+msgid "Add filter"
+msgstr "Adaugă filtru"
+
+#: inc/admin.php:1876
+msgid "Automatic Best Image Format Selection"
+msgstr "Selectarea automată a celui mai bun format de imagine"
+
+#: inc/dashboard_widget.php:107
+msgid "Traffic"
+msgstr "Trafic"
+
+#: inc/dashboard_widget.php:108
+msgid "During last month"
+msgstr "În cursul lunii trecute"
+
+#: inc/dashboard_widget.php:106
+msgid "Average compression"
+msgstr "Comprimare medie"
+
+#: inc/admin.php:1832
+msgid "Saved File Size"
+msgstr "Dimensiune fișiere salvată"
+
+#: inc/admin.php:1831
+msgid "Since plugin activation"
+msgstr "De la activarea modulului"
+
+#: inc/admin.php:1830
+msgid "Images optimized"
+msgstr "Imagini optimizate"
+
+#: inc/admin.php:1827
+msgid "Fully compatible with Optimole."
+msgstr "Pe deplin compatibil cu Optimole."
+
+#: inc/admin.php:1826
+msgid "Lots of customizations options."
+msgstr "O mulțime de opțiuni de personalizare."
+
+#: inc/admin.php:1825
+msgid "AMP/Mobile ready."
+msgstr "Pregătit pentru PAMP/mobil."
+
+#: inc/admin.php:1824
+msgid "100+ Starter Sites available."
+msgstr "Peste 100 de site-uri pentru a începe disponibile."
+
+#: inc/admin.php:1823
+msgid "Lightweight, 25kB in page-weight."
+msgstr "Ușor, 25kB în greutatea paginii."
+
+#: inc/admin.php:1822
+msgid "Fast, perfomance built-in WordPress theme."
+msgstr "Temă WordPress nativă, rapidă și performantă."
+
+#: inc/admin.php:1818
+msgid "View plans"
+msgstr "Vezi planurile"
+
+#: inc/admin.php:1817
+msgid "Site audit"
+msgstr "Audit site"
+
+#: inc/admin.php:1816
+msgid "Custom domain"
+msgstr "Domeniu personalizat"
+
+#: inc/admin.php:1815
+msgid "Extend visits limit"
+msgstr "Extinde limita de vizite"
+
+#: inc/admin.php:1814
+msgid "Priority & Live Chat support"
+msgstr "Suport și discuții live prioritare"
+
+#: inc/admin.php:1813
+msgid "Upgrade to Optimole Pro"
+msgstr "Actualizează la Optimole Pro"
+
+#: inc/admin.php:1812 inc/dashboard_widget.php:111
+msgid "Upgrade"
+msgstr "Actualizează"
+
+#: inc/admin.php:1809
+msgid "No conflicts found. We are all peachy now. 🍑"
+msgstr "Nu am găsit conflicte. Suntem cu toții în regulă acum. 🍑"
+
+#: inc/admin.php:1808
+msgid "I've done this."
+msgstr "Am făcut asta."
+
+#: inc/admin.php:1807
+msgid "Details"
+msgstr "Detalii"
+
+#: inc/admin.php:1806
+msgid "We might have some possible conflicts with the plugins that you use. In order to benefit from Optimole's full potential you will need to address this issues."
+msgstr "Am putea avea unele conflicte posibile cu modulele pe care le folosește. Pentru a beneficia de întregul potențial al Optimole, va trebui să rezolvi aceste probleme."
+
+#: inc/admin.php:1804
+msgid "Possible Issues"
+msgstr "Probleme posibile"
+
+#: inc/admin.php:1796 inc/admin.php:1803
+msgid "Watermark"
+msgstr "Filigran"
+
+#: inc/admin.php:1802
+msgid "Lazyload"
+msgstr "Încărcare lentă"
+
+#: inc/admin.php:1801
+msgid "General"
+msgstr "Generale"
+
+#: inc/admin.php:1800
+msgid "Advanced"
+msgstr "Avansat"
+
+#: inc/admin.php:1799
+msgid "Compression"
+msgstr "Comprimare"
+
+#: inc/admin.php:1798
+msgid "Resize"
+msgstr "Redimensionează"
+
+#: inc/admin.php:1797
+msgid "Exclusions"
+msgstr "Excluderi"
+
+#: inc/admin.php:1795
+msgid "Help"
+msgstr "Ajutor"
+
+#: inc/admin.php:1793
+msgid "Dashboard"
+msgstr "Panou control"
+
+#. translators: 1 is starting anchor tag to terms, 2 is starting anchor tag to
+#. privacy link and 3 is ending anchor tag.
+#: inc/admin.php:1788
+msgid "By signing up, you agree to our  %1$sTerms of Service %3$s and %2$sPrivacy Policy %3$s."
+msgstr "Prin înregistrare, ești de acord cu %1$sTermenii de utilizare ai serviciului%3$s și %2$sPolitica de confidențialitate%3$s."
+
+#. translators: 1 anchor tag to pricing, 2 is the ending endin anchor tag, 3 is
+#. the bold tag start, 4 ending bold tag, 5 new line tag
+#: inc/admin.php:1779
+msgid "%3$sYour account has been disabled due to exceeding quota.%4$s All images are being redirected to the original unoptimized URL. %5$sPlease %1$supgrade%2$s to re-activate the account."
+msgstr "%3$sContul tău a fost dezactivat din cauza depășirii cotei.%4$s Toate imaginile sunt redirecționate către URL-ul original neoptimizat. %5$sTe rog %1$ssă actualizezi%2$s pentru a reactiva contul."
+
+#: inc/admin.php:1772
+msgid ""
+"It seems there is an issue with your WordPress configuration and the core REST API functionality is not available. This is crucial as Optimole relies on this functionality in order to work.<br/>\n"
+"The root cause might be either a security plugin which blocks this feature or some faulty server configuration which constrain this WordPress feature.You can try to disable any of the security plugins that you use in order to see if the issue persists or ask the hosting company to further investigate."
+msgstr ""
+"Se pare că există o problemă cu configurația ta WordPress și funcționalitatea REST API de bază nu este disponibilă. Acest lucru este crucial, deoarece Optimole se bazează pe această funcționalitate pentru a funcționa.<br/>\n"
+"Cauza principală ar putea fi fie un modul de securitate care blochează această funcționalitate, fie o configurație defectuoasă a serverului care limitează această funcționalitate WordPress. Poți încerca să dezactivezi oricare dintre modulele de securitate pe care le folosești pentru a vedea dacă problema persistă sau să soliciți companiei de găzduire să investigheze în continuare."
+
+#. translators: 1 starting bold tag, 2 is the ending bold tag
+#: inc/admin.php:1767
+msgid "%1$sImage optimisation is currently running.%2$s <br/> Your visitors will now view the best image for their device automatically, all served from the Optimole Cloud Service on the fly. You might see for the very first image request being redirected to the original URL while we do the optimization in the background. You can relax, we'll take it from here."
+msgstr "%1$sOptimizarea imaginilor este în curs de desfășurare.%2$s <br/> Vizitatorii tăi vor vedea acum cele mai bune imagini pentru dispozitivul lor în mod automat, toate servite din Optimole Cloud Service în timp real. S-ar putea să vezi că prima cerere de imagine este redirecționată către URL-ul original în timp ce noi efectuăm optimizarea în fundal. Te poți relaxa, ne ocupăm noi de aici."
+
+#: inc/admin.php:1763
+msgid "Sit tight while we connect you to the Dashboard"
+msgstr "Așteaptă puțin cât timp ce te conectăm la Panou control"
+
+#: inc/admin.php:1762
+msgid "Connecting to Optimole"
+msgstr "Mă conectez la Optimole"
+
+#. translators: 1 is the number of users using Optimole
+#: inc/admin.php:1759
+msgid "Trusted by more than %1$s happy users"
+msgstr "De încredere pentru mai mult de %1$s de utilizatori fericiți"
+
+#. translators: 1 is the starting anchor tag for the docs link, 2 is the ending
+#. anchor tag.
+#: inc/admin.php:1735
+msgid "Need help? %1$sGetting Started with Optimole%2$s"
+msgstr "Ai nevoie de ajutor? %1$sÎncepe cu Optimole%2$s"
+
+#: inc/admin.php:1718
+msgid "Access our Premium Support"
+msgstr "Accesează suportul nostru premium"
+
+#: inc/admin.php:1717
+msgid "We sent you the API Key in the email. Add it below to connect to Optimole."
+msgstr "Ți-am trimis cheia API prin email. Adaug-o mai jos pentru a te conecta la Optimole."
+
+#: inc/admin.php:1716
+msgid "Existing user?"
+msgstr "Există utilizatorul?"
+
+#: inc/admin.php:1715
+msgid "IMAGES DOMAIN"
+msgstr "DOMENIU IMAGINI"
+
+#: inc/admin.php:1714
+msgid "LOGGED IN AS"
+msgstr "AUTENTIFICAT CA"
+
+#: inc/dashboard_widget.php:110
+msgid "Monthly visits quota"
+msgstr "Cotă lunară de vizite"
+
+#: inc/admin.php:1709
+msgid "Monthly Usage"
+msgstr "Utilizare lunară"
+
+#: inc/admin.php:1708
+msgid "NOT CONNECTED"
+msgstr "NECONECTAT"
+
+#: inc/admin.php:1707
+msgid "CONNECTING"
+msgstr "MĂ CONECTEZ"
+
+#: inc/admin.php:1706
+msgid "CONNECTED"
+msgstr "CONECTAT"
+
+#: inc/admin.php:1705
+msgid "Please use a valid email address."
+msgstr "Te rog să folosești o adresă de email validă."
+
+#. translators: 1 is starting anchor tag, 2 is ending anchor tag
+#: inc/admin.php:1704
+msgid "Error registering account. You can try again %1$shere%2$s"
+msgstr "Eroare la înregistrarea contului. Poți să încerci din nou %1$saici%2$s"
+
+#: inc/admin.php:1702
+msgid "Go to previous step"
+msgstr "Mergi la pasul anterior"
+
+#: inc/admin.php:1701
+msgid "Register account"
+msgstr "Înregistrează cont"
+
+#: inc/admin.php:1700
+msgid "I already have an API key."
+msgstr "Am deja o cheie API."
+
+#. translators: 1 is the opening anchor tag, 2 is the closing anchor tag
+#: inc/admin.php:1696
+msgid "Copy the API Key you have received via email or you can get it from %1$s Optimole dashboard%2$s. If your account has multiple domains select the one you want to use. <br/>"
+msgstr "Copiază cheia API pe care ai primit-o prin email sau pe care o poți obține din %1$sPanoul de control Optimole%2$s. Dacă contul tău are mai multe domenii, selectează-l pe cel pe care vrei să îl utilizezi. <br/>"
+
+#. translators: 1 is the opening anchor tag, 2 is the closing anchor tag
+#: inc/admin.php:1690
+msgid "Get it from the %1$s Optimole Dashboard%2$s."
+msgstr "Obține-o din %1$sPanoul de control Optimole%2$s."
+
+#: inc/admin.php:1687
+msgid "Enter your API key."
+msgstr "Introdu cheia API."
+
+#: inc/admin.php:1685
+msgid "Create & connect your account"
+msgstr "Creează-ți un cont și conectează-l"
+
+#: inc/admin.php:1684
+msgid "Connect your account"
+msgstr "Conectează-ți contul"
+
+#: inc/admin.php:1683
+msgid "Your email address"
+msgstr "Adresa ta email"
+
+#: inc/admin.php:1678
+msgid ""
+"Please note that disconnecting your site from the Optimole API will impact your website performance.\n"
+"If you still want to disconnect click the button below."
+msgstr ""
+"Te rog reține că deconectarea site-ului tău de la API-ul Optimole va afecta performanța site-ului tău.\n"
+"Dacă vrei totuși să te deconectezi, dă clic pe butonul de mai jos."
+
+#: inc/admin.php:1677
+msgid "You are about to disconnect from the Optimole API"
+msgstr "Ești pe cale să te deconectezi de la API-ul Optimole"
+
+#: inc/admin.php:1674
+msgid "Image Storage"
+msgstr "Stocare imagini"
+
+#: inc/admin.php:1673 inc/dam.php:399 inc/dam.php:400
+msgid "Cloud Library"
+msgstr "Bibliotecă Cloud"
+
+#: inc/admin.php:1672
+msgid "Ok, keep me connected"
+msgstr "Ok, ține-mă conectat"
+
+#: inc/admin.php:1671
+msgid "Invalid API Key"
+msgstr "Cheia API nu este validă"
+
+#: inc/admin.php:1665
+msgid "API Key"
+msgstr "Cheie API"
+
+#: inc/admin.php:1664
+msgid "UPDATING STATS"
+msgstr "ACTUALIZEZ STATISTICILE"
+
+#: inc/admin.php:1663
+msgid "Refresh Stats"
+msgstr "Reîmprospătează statisticile"
+
+#: inc/admin.php:1662
+msgid "LOOKING FOR YOUR API KEY?"
+msgstr "ÎȚI CAUȚI CHEIA API?"
+
+#: inc/admin.php:1661
+msgid "Your API Key"
+msgstr "Cheia ta API"
+
+#: inc/admin.php:1660
+msgid "Add your API Key"
+msgstr "Adaugă cheia ta API"
+
+#: inc/admin.php:1659
+msgid "your domain"
+msgstr "domeniul tău"
+
+#: inc/admin.php:1658
+msgid "Select"
+msgstr "Selectează"
+
+#: inc/admin.php:1657
+msgid "Disconnect"
+msgstr "Deconectează"
+
+#: inc/admin.php:1656
+msgid "Connect to Optimole"
+msgstr "Conectează-te la Optimole"
+
+#: inc/admin.php:1651
+msgid "Image optimization service"
+msgstr "Serviciu de optimizare a imaginilor"
+
+#: inc/admin.php:1650
+msgid "Test Optimole"
+msgstr "Testează Optimole"
+
+#: inc/admin.php:1649
+msgid "Privacy"
+msgstr "Confidențialitate"
+
+#: inc/admin.php:1648
+msgid "Terms"
+msgstr "Termeni"
+
+#: inc/admin.php:926
+msgid "Dismiss this notice."
+msgstr "Înlătură această notificare."
+
+#: inc/admin.php:919
+msgid "Manage Plugins"
+msgstr "Administrează modulele"
+
+#. translators: 1 - plugin name, 2 - opening bold tag, 3 - closing bold tag
+#: inc/admin.php:910
+msgid "We noticed multiple image optimization plugins active on your site, which may cause issues in Optimole. We recommend using only one image optimization plugin on your site for the best results. The following plugins may cause issues in Optimole: %2$s%1$s%3$s."
+msgstr "Am observat mai multe module de optimizare a imaginilor active pe site-ul tău, care pot cauza probleme în Optimole. Îți recomandăm să folosești un singur modul de optimizare a imaginilor pe site-ul tău pentru cele mai bune rezultate. Următoarele module pot cauza probleme în Optimole: %2$s%1$s%3$s."
+
+#: inc/admin.php:904
+msgid "Oops... Multiple image optimization plugins active"
+msgstr "Hopa! Mai multe module de optimizare a imaginilor active"
+
+#: inc/admin.php:867
+msgid "I will do it later"
+msgstr "Fac asta mai târziu"
+
+#: inc/admin.php:864
+msgid "Connect to OptiMole"
+msgstr "Conectat la Optimole"
+
+#. translators: 1 - opening strong tag, 2 - closing strong tag, 3 - opening
+#. strong tag, 4 - closing strong tag
+#: inc/admin.php:854
+msgid "Welcome to %1$sOptimole%2$s, the easiest way to optimize your website images. Your users will enjoy a %3$sfaster%4$s website after you connect it with our service."
+msgstr "Bine ai venit la %1$sOptimole%2$s, cel mai simplu mod de a optimiza imaginile site-ului tău web. Utilizatorii tăi se vor bucura de un site web %3$smai rapid%4$s după ce îl conectezi cu serviciul nostru."
+
+#: inc/admin.php:849
+msgid "Finish setting up!"
+msgstr "Finalizează inițializarea!"
+
+#: inc/admin.php:846 inc/admin.php:900
+msgid "Logo"
+msgstr "Logo"
+
+#: inc/admin.php:660
+msgid "I have already done this"
+msgstr "Am făcut deja asta"
+
+#: inc/admin.php:657
+msgid "Check upgrade plans"
+msgstr "Verifică planurile de actualizare"
+
+#. translators: 1 - opening strong tag, 2 - visits limit, 3 - closing strong
+#. tag, 4 - opening strong tag, 5 - closing strong tag, 6 -  br tag
+#: inc/admin.php:644
+msgid "%1$sIt seems you are close to the %2$s visits limit with %3$sOptimole%4$s for this month.%5$s %6$s For a larger quota you may want to check the upgrade plans. If you exceed the quota we will need to deliver back your original, un-optimized images, which might decrease your site speed performance."
+msgstr "%1$sSe pare că ești aproape de limita de %2$s de vizite cu %3$sOptimole%4$s pentru această lună.%5$s %6$s Pentru o cotă mai mare poate vrei să verifici planurile de actualizare. Dacă depășești cota, va trebui să-ți returnăm imaginile originale, neoptimizate, ceea ce ar putea reduce viteza site-ului."
+
+#: inc/admin.php:586 inc/admin.php:1238 inc/admin.php:1239 inc/admin.php:1444
+#: inc/admin.php:1794
+msgid "Settings"
+msgstr "Setări"
+
+#. Author URI of the plugin
+#: optimole-wp.php
+msgid "https://optimole.com"
+msgstr "https://optimole.com"
+
+#. Author of the plugin
+#: optimole-wp.php
+msgid "Optimole"
+msgstr "Optimole"
+
+#. Description of the plugin
+#: optimole-wp.php
+msgid "Complete handling of your website images."
+msgstr "Gestionare completă a imaginilor de pe site-ul tău."
+
+#. Plugin Name of the plugin
+#: optimole-wp.php
+msgid "Image optimization service by Optimole"
+msgstr "Serviciu de optimizare a imaginilor de la Optimole"

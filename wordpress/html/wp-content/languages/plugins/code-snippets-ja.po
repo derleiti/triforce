@@ -1,0 +1,976 @@
+# Translation of Plugins - Code Snippets - Stable (latest release) in Japanese
+# This file is distributed under the same license as the Plugins - Code Snippets - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-05-11 00:51:02+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: ja_JP\n"
+"Project-Id-Version: Plugins - Code Snippets - Stable (latest release)\n"
+
+#: php/admin-menus/class-manage-menu.php:88
+msgctxt "top-level menu label"
+msgid "Go Pro"
+msgstr "プロ版"
+
+#: php/settings/settings.php:141
+msgid "Debug"
+msgstr "デバッグ"
+
+#: php/settings/settings-fields.php:75
+msgid "Use this button to manually upgrade the Code Snippets database table. This action will only affect the snippets table and should be used only when necessary."
+msgstr "Code Snippets のデータベーステーブルを手動でアップグレードします。この操作は Code Snippets が使うテーブルにのみ影響するので、必要に応じて使用してください。"
+
+#: php/settings/settings-fields.php:74
+msgid "Upgrade Database Table"
+msgstr "アップグレード"
+
+#: php/settings/settings-fields.php:72
+msgid "Database Table Upgrade"
+msgstr "データベーステーブルのアップグレード"
+
+#: php/class-plugin.php:342
+msgid "Codevault"
+msgstr "Codevault"
+
+#: php/views/partials/cloud-search.php:26
+msgid "(Note: codevault name is case and spelling sensitive and only public snippets will be shown)"
+msgstr "(あいまい検索は行いません。大文字・小文字の違いや綴りなどにご注意ください。また、非公開のスニペットは検索対象となりません)"
+
+#: php/views/partials/cloud-search.php:23
+msgid "Use the search bar below to search cloud snippets by entering either the name of a codevault or keywords."
+msgstr "Codevault の名前またはキーワードを入力して、クラウド上のスニペットを検索できます。"
+
+#: php/cloud/class-cloud-search-list-table.php:273
+msgid "No snippets or codevault could be found with that search term. Please try again."
+msgstr "該当するスニペットや codevault は見つかりませんでした。もう一度試してみてください。"
+
+#: php/class-admin.php:391 php/views/manage.php:64
+msgid "Find more about Pro (opens in external tab)"
+msgstr "プロ版の詳細を見る (外部リンク)"
+
+#: php/views/partials/cloud-search.php:51
+msgid "Name of codevault"
+msgstr "Codevault の名前で検索"
+
+#: php/views/partials/cloud-search.php:48
+msgid "Search by keyword(s)"
+msgstr "キーワードで検索"
+
+#: php/views/partials/cloud-search.php:42
+#: php/views/partials/cloud-search.php:59
+msgid "Search Cloud"
+msgstr "スニペットの検索"
+
+#: php/class-plugin.php:344
+msgid "Bundles"
+msgstr "拡張機能"
+
+#: php/class-plugin.php:343
+msgid "Cloud Search"
+msgstr "スニペット検索"
+
+#: php/views/partials/cloud-search.php:56
+msgid "e.g. Remove unused javascript…"
+msgstr "キーワードや Codevault の名前を入力してください"
+
+#: php/settings/settings-fields.php:203
+msgid "The set of keyboard shortcuts to use in the code editor."
+msgstr "コードエディターで使用するキーボードショートカットの設定"
+
+#: php/settings/settings-fields.php:201
+msgid "Keymap"
+msgstr "キーマップ"
+
+#: php/settings/settings-fields.php:173
+msgid "Allow folding functions or other blocks into a single line."
+msgstr "コードの折りたたみを許可する"
+
+#: php/settings/settings-fields.php:171
+msgid "Code Folding"
+msgstr "コードの折りたたみ"
+
+#: php/settings/settings-fields.php:167
+msgid "Soft-wrap long lines of code instead of horizontally scrolling."
+msgstr "文字数の長い行を折り返す"
+
+#: php/settings/settings-fields.php:152 php/settings/settings-fields.php:160
+msgctxt "unit"
+msgid "spaces"
+msgstr "文字"
+
+#: php/settings/settings-fields.php:121
+msgid "Disable syntax highlighting when displaying snippet code on the front-end."
+msgstr "スニペットコードを表示するときに、シンタックスハイライターを無効にする"
+
+#: php/settings/settings-fields.php:119
+msgid "Disable Syntax Highlighter"
+msgstr "シンタックスハイライターの無効化"
+
+#: php/settings/settings-fields.php:103
+msgctxt "unit"
+msgid "rows"
+msgstr "行"
+
+#: php/settings/settings-fields.php:101
+msgid "Description Editor Height"
+msgstr "説明のエディター行の高さ"
+
+#: php/strings.php:42
+msgid "Functions (PHP)"
+msgstr "ファンクション (PHP)"
+
+#: php/strings.php:44
+msgid "Styles (CSS)"
+msgstr "スタイル (CSS)"
+
+#: php/strings.php:45
+msgid "Scripts (JS)"
+msgstr "スクリプト (JS)"
+
+#: php/views/manage.php:23
+msgid "All Snippets"
+msgstr "スニペット一覧"
+
+#: php/settings/settings-fields.php:115
+msgid "Modified (oldest first)"
+msgstr "更新日 (昇順)"
+
+#: php/settings/settings-fields.php:114
+msgid "Modified (latest first)"
+msgstr "更新日 (降順)"
+
+#: php/settings/settings-fields.php:113
+msgid "Name (Z-A)"
+msgstr "スニペット名 (降順)"
+
+#: php/settings/settings-fields.php:112
+msgid "Name (A-Z)"
+msgstr "スニペット名 (昇順)"
+
+#: php/settings/settings-fields.php:107
+msgid "Snippets List Order"
+msgstr "スニペット一覧の表示順"
+
+#: php/front-end/mce-strings.php:21
+msgid "Snippet"
+msgstr "スニペット"
+
+#: php/front-end/mce-strings.php:19
+msgid "Content Snippet"
+msgstr "コンテンツスニペット"
+
+#: php/class-upgrade.php:205
+msgid "Allow smilies"
+msgstr "絵文字を許可する"
+
+#: php/class-upgrade.php:200
+msgid "Turns off the WordPress admin bar for everyone except administrators."
+msgstr "管理者以外がサイトを閲覧したとき WordPress の管理バーを非表示にします。"
+
+#: php/class-upgrade.php:192
+msgid "Make upload filenames lowercase"
+msgstr "アップロードしたファイル名を英小文字にする"
+
+#: php/front-end/mce-strings.php:24
+msgid "Enable shortcodes"
+msgstr "ショートコードを有効化する"
+
+#: php/front-end/mce-strings.php:23
+msgid "Apply formatting"
+msgstr "コード整形を適用する"
+
+#: php/front-end/mce-strings.php:22
+msgid "Run PHP code"
+msgstr "PHP コードを実行する"
+
+#: php/front-end/mce-strings.php:20
+msgid "Insert Content Snippet"
+msgstr "コンテンツスニペットを挿入する"
+
+#: php/class-upgrade.php:198
+msgid "Disable admin bar"
+msgstr "管理バーを無効化する"
+
+#: php/class-upgrade.php:194
+msgid "Makes sure that image and file uploads have lowercase filenames."
+msgstr "画像やファイルをアップロードした時、英小文字のファイル名が使われるようにします。"
+
+#: php/class-upgrade.php:188
+msgid "This is a sample snippet. Feel free to use it, edit it, or remove it."
+msgstr "スニペットのサンプルです。そのまま使っても、編集しても、削除してもかまいません。"
+
+#: php/class-snippet.php:333
+msgid "Front-end styles"
+msgstr "フロントエンド表示時に適用"
+
+#: php/class-snippet.php:331
+msgid "Admin styles"
+msgstr "管理画面表示時に適用"
+
+#: php/class-snippet.php:329
+msgid "Footer content"
+msgstr "wp_footer の場所に挿入"
+
+#: php/class-snippet.php:327
+msgid "Head content"
+msgstr "wp_head の場所に挿入"
+
+#: php/class-snippet.php:321
+msgid "Front-end function"
+msgstr "フロントエンド表示時に適用"
+
+#: php/class-snippet.php:319
+msgid "Admin function"
+msgstr "管理画面表示時に適用"
+
+#: php/class-snippet.php:317
+msgid "Global function"
+msgstr "サイト全体に適用"
+
+#: php/class-plugin.php:341 dist/edit.js:2
+msgid "Scripts"
+msgstr "スクリプト"
+
+#: php/class-plugin.php:340 dist/edit.js:2
+msgid "Styles"
+msgstr "スタイル"
+
+#: php/class-plugin.php:339 php/class-snippet.php:325 dist/edit.js:2
+msgid "Content"
+msgstr "コンテンツ"
+
+#: php/class-list-table.php:891
+msgid "It looks like you don't have any snippets of this type."
+msgstr "スニペットが存在しないようです。"
+
+#: php/class-list-table.php:438
+msgid "Type"
+msgstr "タイプ"
+
+#: php/class-contextual-help.php:144
+msgid "If something goes wrong with a snippet, and you can't use WordPress, you can cause all snippets to stop executing by turning on <strong>safe mode</strong>."
+msgstr "スニペットの不具合で WordPress サイトが動作しなくなったときは<strong>セーフモード</strong>をオンにしてください。すべてのスニペットの実行を止めることができます。"
+
+#: php/views/manage.php:80
+msgid "Content snippets are bits of reusable PHP and HTML content that can be inserted into posts and pages."
+msgstr "コンテンツスニペットは PHP や HTML で作るちょっとしたコンテンツです。投稿や固定ページに挿入でき、再利用も可能です。"
+
+#. translators: %s: snippet title.
+#: php/class-list-table.php:1339
+msgid "%s [CLONE]"
+msgstr "%s [コピー]"
+
+#. translators: %s: formatted last modified date
+#: php/class-admin.php:200
+msgid "Last modified %s"
+msgstr "最終更新日: %s"
+
+#: php/class-admin.php:130
+msgid "Upgrade to Code Snippets Pro"
+msgstr "Code Snippets プロ版にアップグレード"
+
+#: php/admin-menus/class-manage-menu.php:94
+#: php/admin-menus/class-welcome-menu.php:82 php/class-admin.php:131
+msgid "Upgrade to Pro"
+msgstr "プロ版にアップグレード"
+
+#: php/class-admin.php:159
+msgid "Find out how to get support with Code Snippets"
+msgstr "Code Snippets のサポートに関するご案内"
+
+#. translators: %s: Update PHP URL.
+#: php/deactivation-notice.php:40
+msgid "Please <a href=\"%s\">upgrade your server to the latest version of PHP</a> to continue using Code Snippets."
+msgstr "Code Snippets を引き続き使用するには、<a href=\"%s\">お使いのサーバーの PHP を最新バージョンにアップグレード</a>してください。"
+
+#: php/views/partials/list-table.php:22
+msgid "Search Snippets"
+msgstr "スニペットを検索"
+
+#: php/settings/settings-fields.php:195
+msgid "Highlight Active Line"
+msgstr "編集行のハイライト表示"
+
+#. translators: %d: snippet ID.
+#: php/front-end/class-front-end.php:207
+msgid "Could not load snippet with an invalid ID: %d."
+msgstr "不正な ID のため、このスニペットは読み込まれませんでした。ID: %d"
+
+#: php/class-upgrade.php:213
+msgid "Shortcode for inserting the current year into a post or page.."
+msgstr "投稿や固定ページに現在の年を挿入するためのショートコードです。"
+
+#: php/class-upgrade.php:211
+msgid "Current year"
+msgstr "現在の年"
+
+#: php/class-upgrade.php:207
+msgid "Allows smiley conversion in obscure places."
+msgstr "わかりにくい箇所での絵文字変換を可能にします。"
+
+#: php/class-snippet.php:323
+msgid "Single-use function"
+msgstr "単体で適用"
+
+#: php/class-admin.php:217
+msgid "Active Snippets"
+msgstr "有効化されたスニペット"
+
+#: php/class-admin.php:113
+msgid "Change plugin settings"
+msgstr "プラグイン設定の変更"
+
+#: php/front-end/mce-strings.php:27
+msgid "Insert Snippet Source"
+msgstr "スニペットコードを挿入"
+
+#: php/front-end/mce-strings.php:26
+msgid "Snippet Source Code"
+msgstr "スニペットのソースコード"
+
+#: php/front-end/mce-strings.php:28
+msgid "Show line numbers"
+msgstr "行番号を表示"
+
+#: php/views/manage.php:75
+msgid "Function snippets are run on your site as if there were in a plugin or theme functions.php file."
+msgstr "ファンクションスニペットは WordPress サイトで実行されるコードで、プラグインやテーマ内の functions.php ファイルのようにふるまいます。"
+
+#: php/class-plugin.php:338 dist/edit.js:2
+msgid "Functions"
+msgstr "ファンクション"
+
+#: php/settings/settings-fields.php:109
+msgid "Default way to order snippets on the All Snippets admin menu."
+msgstr "スニペット一覧におけるデフォルトの表示順を指定します"
+
+#: php/settings/settings-fields.php:196
+msgid "Highlight the line that is currently being edited."
+msgstr "現在編集している行をハイライト表示する"
+
+#. translators: %s: required PHP version number.
+#: php/deactivation-notice.php:32
+msgid "Code Snippets requires PHP %s or later."
+msgstr "Code Snippets の動作には PHP %s以降が必要です。"
+
+#: php/deactivation-notice.php:50
+msgid "Another version of Code Snippets appears to be installed. Deactivating this version."
+msgstr "Code Snippets の他のバージョンがインストールされているようです。このバージョンを無効化します。"
+
+#: php/class-snippet.php:439
+msgid "Y/m/d"
+msgstr "Y/m/d"
+
+#. translators: %s: Human-readable time difference.
+#: php/class-snippet.php:437 php/cloud/class-cloud-search-list-table.php:214
+msgid "%s ago"
+msgstr "%s前"
+
+#. translators: %s: PHP identifier name
+#: php/class-validator.php:220
+msgid "Cannot redeclare %s."
+msgstr "%s は再宣言できません。"
+
+#. translators: %s: PHP interface name
+#: php/class-validator.php:216
+msgid "Cannot redeclare interface %s."
+msgstr "インターフェース %s は再宣言できません。"
+
+#. translators: %s: PHP class name
+#: php/class-validator.php:212
+msgid "Cannot redeclare class %s."
+msgstr "クラス %s は再宣言できません。"
+
+#. translators: %s: PHP function name
+#: php/class-validator.php:208
+msgid "Cannot redeclare function %s."
+msgstr "関数 %s は再宣言できません。"
+
+#. translators: 1: search query, 2: line number.
+#: php/class-list-table.php:1276
+msgid " for &ldquo;%1$s&rdquo; on line %2$d"
+msgstr " for &ldquo;%1$s&rdquo; on line %2$d"
+
+#: php/class-list-table.php:441
+msgid "Modified"
+msgstr "更新日"
+
+#: php/class-contextual-help.php:136
+msgid "Here you can manage your existing snippets and perform tasks on them such as activating, deactivating, deleting and exporting."
+msgstr "このページでは、既存スニペットの管理、有効化、無効化、削除、エクスポートなどを行うことができます。"
+
+#: php/class-contextual-help.php:160
+msgid "Here you can add a new snippet, or edit an existing one."
+msgstr "このページでは、新しいスニペットを追加したり既存のスニペットを編集したりすることができます。"
+
+#: php/class-contextual-help.php:186
+msgid "Here you can load snippets from a code snippets export file into the database alongside existing snippets."
+msgstr "このページでは Code Snippets のエクスポートファイルからデータベースにスニペットをロードし、既存のスニペットと一緒に管理することができます。"
+
+#. Plugin URI of the plugin
+#. Author URI of the plugin
+#: code-snippets.php
+msgid "https://codesnippets.pro"
+msgstr "https://codesnippets.pro"
+
+#. Author of the plugin
+#: code-snippets.php
+msgid "Code Snippets Pro"
+msgstr "Code Snippets プロ版"
+
+#: php/admin-menus/class-edit-menu.php:38
+msgctxt "menu label"
+msgid "Edit Snippet"
+msgstr "スニペットの編集"
+
+#: php/class-validator.php:195 php/class-validator.php:258
+msgid "Parse error: syntax error, unexpected end of snippet."
+msgstr "解析エラー: 構文エラー スニペットは予期せず終了しました。"
+
+#: php/class-list-table.php:883
+msgid "No snippets were found matching the current search query. Please enter a new query or use the \"Clear Filters\" button above."
+msgstr "検索ワードに一致するスニペットは見つかりませんでした。別のワードで検索するか、上の「フィルターをクリア」ボタンをクリックするかしてください。"
+
+#: php/class-contextual-help.php:125
+msgid "Snippets are similar to plugins - they both extend and expand the functionality of WordPress. Snippets are more light-weight, just a few lines of code, and do not put as much load on your server. "
+msgstr "スニペットはプラグインと同様、WordPress の機能を拡張する役割を果たします。スニペットは数行のコードでできていて、プラグインよりも軽量なため、サーバーにそれほど負荷をかけません。 "
+
+#. translators: 1: date format, 2: time format.
+#: php/class-snippet.php:447
+msgctxt "date and time format"
+msgid "%1$s at %2$s"
+msgstr "%1$s at %2$s"
+
+#: php/views/import.php:94
+msgid "Upload Files"
+msgstr "ファイルをアップロード"
+
+#: php/admin-menus/class-admin-menu.php:183
+msgctxt "snippets"
+msgid "Settings"
+msgstr "設定"
+
+#: php/admin-menus/class-admin-menu.php:174
+#: php/admin-menus/class-settings-menu.php:114
+msgctxt "snippets"
+msgid "Manage"
+msgstr "管理"
+
+#: php/class-list-table.php:442 php/settings/settings-fields.php:111
+#: dist/edit.js:2
+msgid "Priority"
+msgstr "優先順位"
+
+#: php/class-list-table.php:261 php/class-list-table.php:488
+msgid "Clone"
+msgstr "複製"
+
+#: php/admin-menus/class-manage-menu.php:155
+msgctxt "tools submenu label"
+msgid "Snippets"
+msgstr "スニペット"
+
+#: php/views/partials/list-table-notices.php:57
+msgid "Snippet <strong>cloned</strong>."
+msgstr "スニペットを<strong>複製</strong>しました。"
+
+#: php/views/partials/list-table-notices.php:58
+msgid "Selected snippets <strong>cloned</strong>."
+msgstr "選択されたスニペットを<strong>複製</strong>しました。"
+
+#: php/admin-menus/class-admin-menu.php:180
+msgctxt "snippets"
+msgid "Import"
+msgstr "インポート"
+
+#: php/class-list-table.php:889
+msgid "It looks like you don't have any snippets."
+msgstr "スニペットが存在しないようです。"
+
+#. translators: %s: tag name.
+#: php/class-list-table.php:1292
+msgid " in tag &ldquo;%s&rdquo;"
+msgstr " タグ: &ldquo;%s&rdquo;"
+
+#. translators: %s: search query.
+#: php/class-list-table.php:1285
+msgid " for &ldquo;%s&rdquo;"
+msgstr " &ldquo;%s&rdquo; で検索"
+
+#: php/cloud/list-table-shared-ops.php:105
+#: php/cloud/list-table-shared-ops.php:111
+msgid "Download"
+msgstr "ダウンロード"
+
+#: php/admin-menus/class-import-menu.php:137
+msgid "No snippets were imported."
+msgstr "スニペットはインポートされませんでした。"
+
+#: php/views/partials/list-table-notices.php:50
+msgid "Snippet <strong>executed</strong>."
+msgstr "スニペットが<strong>実行されました</strong>。"
+
+#: php/settings/settings.php:252
+msgid "All settings have been reset to their defaults."
+msgstr "すべての設定がデフォルトにリセットされました。"
+
+#: php/class-admin.php:87
+msgid "Snippets &raquo; Settings"
+msgstr "スニペット &raquo; 設定"
+
+#: php/admin-menus/class-settings-menu.php:144
+msgid "Reset to Default"
+msgstr "初期設定に戻す"
+
+#: php/class-list-table.php:302
+msgid "Run Once"
+msgstr "1回実行"
+
+#: php/views/import.php:97
+msgid "Choose one or more Code Snippets (.xml or .json) files to upload, then click \"Upload files and import\"."
+msgstr "アップロードするコードスニペット (.xmlまたは.json) ファイルを1つ以上選択し、「ファイルをアップロードしてインポート」をクリックします。"
+
+#: php/settings/settings-fields.php:137
+msgid "When the plugin is deleted from the Plugins menu, also delete all snippets and plugin settings."
+msgstr "Code Snippets プラグインをプラグインメニューから削除する時、すべてのスニペットとプラグイン設定を削除する"
+
+#: php/settings/settings-fields.php:135
+msgid "Complete Uninstall"
+msgstr "プラグイン削除時の処理"
+
+#: php/views/import.php:89
+msgid "Do not import any duplicate snippets; leave all existing snippets unchanged."
+msgstr "重複するスニペットはインポートせず、既存のスニペットはすべて変更しない。"
+
+#: php/views/import.php:82
+msgid "Replace any existing snippets with a newly imported snippet of the same name."
+msgstr "既存のスニペットを、同じ名前のスニペットで置き換える。"
+
+#: php/views/import.php:75
+msgid "Ignore any duplicate snippets: import all snippets from the file regardless and leave all existing snippets unchanged."
+msgstr "重複するスニペットを無視する: ファイルからすべてのスニペットをインポートし、既存のスニペットは変更しない。"
+
+#: php/views/import.php:68
+msgid "What should happen if an existing snippet is found with an identical name to an imported snippet?"
+msgstr "インポートされたスニペットと既存のスニペットが重複するときの処理を選んでください。"
+
+#: php/views/import.php:41
+msgid "Upload one or more Code Snippets export files and the snippets will be imported."
+msgstr "エクスポートしたスニペットファイルをアップロードすると、スニペットがインポートされます。"
+
+#: php/views/import.php:65
+msgid "Duplicate Snippets"
+msgstr "スニペットが重複したときの処理"
+
+#: php/class-list-table.php:254
+msgid "Network Only"
+msgstr "サイトネットワークのみ"
+
+#: php/class-list-table.php:252
+msgid "Network Active"
+msgstr "サイトネットワークで有効"
+
+#: php/class-list-table.php:898
+msgid "Perhaps you would like to add a new one?"
+msgstr "新しいものを追加していいですか ?"
+
+#: php/class-contextual-help.php:72
+msgid "Plugin Website"
+msgstr "プラグインのウェブサイト"
+
+#: php/admin-menus/class-admin-menu.php:177
+#: php/admin-menus/class-settings-menu.php:115 dist/edit.js:2
+msgctxt "snippet"
+msgid "Add New"
+msgstr "新規追加"
+
+#: php/admin-menus/class-settings-menu.php:220 php/settings/settings.php:330
+msgid "Settings saved."
+msgstr "設定を保存しました。"
+
+#: php/settings/settings.php:182
+msgid "Editor Preview"
+msgstr "エディタープレビュー"
+
+#: php/settings/settings.php:140
+msgid "Code Editor"
+msgstr "コードエディター"
+
+#: php/settings/settings.php:139
+msgid "General"
+msgstr "一般"
+
+#: php/settings/settings-fields.php:213
+msgid "Theme"
+msgstr "テーマ"
+
+#: php/class-contextual-help.php:199
+msgid "Exporting"
+msgstr "エクスポート中"
+
+#: php/class-contextual-help.php:191
+msgid "Importing"
+msgstr "インポート中"
+
+#: php/class-contextual-help.php:170
+msgid "You need to fill out the name and code fields for your snippet to be added. While the description field will add more information about how your snippet works, what is does and where you found it, it is completely optional."
+msgstr "あなたは、追加するスニペットの名前とコードのフィールドに必要事項を記入する必要があります。説明フィールドには、あなたのスニペットがどのように機能するかについての詳細情報を記入しますが、これは任意です。"
+
+#: php/class-contextual-help.php:168
+msgid "Adding Snippets"
+msgstr "スニペットを追加"
+
+#: php/class-contextual-help.php:143
+msgid "Be sure to check your snippets for errors before you activate them, as a faulty snippet could bring your whole blog down. If your site starts doing strange things, deactivate all your snippets and activate them one at a time."
+msgstr "サイト全体が障害のあるスニペットで停止しないように、それらを有効化する前にスニペットを確認して下さい。サイトが奇妙な動作をした場合は、すべてのスニペットを無効化し、それらを一度に1をアクティブにします。"
+
+#: php/class-contextual-help.php:141
+msgid "Safe Mode"
+msgstr "セーフモード"
+
+#: php/class-contextual-help.php:134 php/class-contextual-help.php:157
+#: php/class-contextual-help.php:184
+msgid "Overview"
+msgstr "概要"
+
+#: php/class-contextual-help.php:71
+msgid "Support Forum"
+msgstr "サポートフォーラム"
+
+#: php/class-list-table.php:1268
+msgid "Search results"
+msgstr "検索結果"
+
+#: php/class-list-table.php:443
+msgid "ID"
+msgstr "ID"
+
+#: php/class-list-table.php:437 dist/edit.js:2
+msgid "Name"
+msgstr "名前"
+
+#: php/class-list-table.php:271 php/class-list-table.php:491 dist/edit.js:2
+msgid "Delete"
+msgstr "削除"
+
+#: php/class-list-table.php:262 php/class-list-table.php:490 dist/edit.js:2
+msgid "Export"
+msgstr "エクスポート"
+
+#: php/class-list-table.php:260
+msgid "Edit"
+msgstr "編集"
+
+#: php/class-list-table.php:90
+msgid "Snippets per page"
+msgstr "1ページあたりのスニペット表示件数"
+
+#: php/admin-menus/class-welcome-menu.php:64
+msgid "Support"
+msgstr "サポート"
+
+#: php/class-admin.php:119
+msgid "Manage your existing snippets"
+msgstr "登録されているスニペットを管理"
+
+#: php/admin-menus/class-settings-menu.php:110 php/class-admin.php:114
+msgid "Settings"
+msgstr "設定"
+
+#: php/views/partials/list-table-notices.php:56
+msgid "Selected snippets <strong>deleted</strong>."
+msgstr "選択されたスニペットを <strong>削除</strong>。"
+
+#: php/views/partials/list-table-notices.php:55
+msgid "Snippet <strong>deleted</strong>."
+msgstr "スニペットを <strong>削除</strong>。"
+
+#: php/views/partials/list-table-notices.php:54
+msgid "Selected snippets <strong>deactivated</strong>."
+msgstr "選択したスニペットを <strong>停止</strong>。"
+
+#: php/views/partials/list-table-notices.php:53
+msgid "Snippet <strong>deactivated</strong>."
+msgstr "スニペットを <strong>停止</strong>。"
+
+#: php/views/partials/list-table-notices.php:52
+msgid "Selected snippets <strong>activated</strong>."
+msgstr "選択されたスニペットを <strong>有効化</strong>。"
+
+#: php/views/partials/list-table-notices.php:51
+msgid "Snippet <strong>activated</strong>."
+msgstr "スニペットを <strong>有効化</strong>。"
+
+#: php/admin-menus/class-manage-menu.php:37
+#: php/admin-menus/class-manage-menu.php:63
+#: php/admin-menus/class-manage-menu.php:154 php/class-admin.php:86
+#: php/class-admin.php:120 php/views/manage.php:46
+msgid "Snippets"
+msgstr "スニペット"
+
+#. Plugin Name of the plugin
+#: code-snippets.php php/admin-menus/class-import-menu.php:114
+msgid "Code Snippets"
+msgstr "Code Snippets"
+
+#: php/admin-menus/class-import-menu.php:20 php/views/import.php:28
+msgid "Import Snippets"
+msgstr "スニペットインポート"
+
+#: php/class-list-table.php:440
+msgid "Tags"
+msgstr "タグ"
+
+#: php/class-list-table.php:439 dist/edit.js:2
+msgid "Description"
+msgstr "説明"
+
+#: php/settings/settings-fields.php:183
+msgid "Auto Close Brackets"
+msgstr "括弧を自動的に閉じる"
+
+#: php/settings/settings-fields.php:177
+msgid "Line Numbers"
+msgstr "行番号"
+
+#: php/settings/settings-fields.php:165
+msgid "Wrap Lines"
+msgstr "行を折り返す"
+
+#: php/class-contextual-help.php:69
+msgid "About Plugin"
+msgstr "プラグインについて"
+
+#: php/admin-menus/class-settings-menu.php:30
+msgid "Snippets Settings"
+msgstr "スニペットの設定"
+
+#: php/admin-menus/class-settings-menu.php:29
+msgctxt "menu label"
+msgid "Settings"
+msgstr "設定"
+
+#: php/admin-menus/class-manage-menu.php:64
+msgctxt "top-level menu label"
+msgid "Snippets"
+msgstr "スニペット"
+
+#: php/settings/settings-fields.php:149
+msgid "Tab Size"
+msgstr "タブのサイズ"
+
+#: php/settings/settings-fields.php:143
+msgid "Indent With Tabs"
+msgstr "タブでインデント"
+
+#: php/settings/settings-fields.php:157
+msgid "Indent Unit"
+msgstr "インデントの単位"
+
+#: php/class-list-table.php:365
+msgid "Shared on Network"
+msgstr "ネットワーク上で共有"
+
+#: php/class-list-table.php:277
+msgid "'Cancel' to stop, 'OK' to delete."
+msgstr "作業をとりやめるには「キャンセル」、削除するには「OK」をクリックします。"
+
+#: php/class-list-table.php:276
+msgid "You are about to permanently delete the selected item."
+msgstr "選択したアイテムを完全に削除しようとしています。"
+
+#. translators: %s: size in bytes
+#: php/views/import.php:105
+msgid "(Maximum size: %s)"
+msgstr "(最大ファイルサイズ: %s)"
+
+#: php/views/import.php:102
+msgid "Choose files from your computer:"
+msgstr "コンピュータからファイルを選択:"
+
+#: php/class-list-table.php:631
+msgid "Show all tags"
+msgstr "すべてのタグを表示する"
+
+#: php/admin-menus/class-edit-menu.php:69
+msgctxt "menu label"
+msgid "Add New"
+msgstr "新規追加"
+
+#: php/admin-menus/class-manage-menu.php:36
+msgctxt "menu label"
+msgid "All Snippets"
+msgstr "すべてのスニペット"
+
+#. translators: %s: total number of snippets.
+#: php/class-list-table.php:530
+msgid "All <span class=\"count\">(%s)</span>"
+msgid_plural "All <span class=\"count\">(%s)</span>"
+msgstr[0] "すべて <span class=\"count\">(%s)</span>"
+
+#: php/admin-menus/class-admin-menu.php:131
+msgid "You are not authorized to access this page."
+msgstr "このページにアクセスする権限がありません。"
+
+#: php/admin-menus/class-import-menu.php:19
+msgctxt "menu label"
+msgid "Import"
+msgstr "インポート"
+
+#: php/class-admin.php:300
+msgid "Dismiss"
+msgstr "非表示"
+
+#: php/views/import.php:116
+msgid "Upload files and import"
+msgstr "ファイルをアップロードしてインポート"
+
+#: php/admin-menus/class-import-menu.php:127
+msgid "An error occurred when processing the import files."
+msgstr "インポートファイルの処理をする際にエラーが発生しました。"
+
+#: php/class-contextual-help.php:70
+msgid "FAQ"
+msgstr "FAQ"
+
+#: php/class-list-table.php:320 php/class-list-table.php:487
+msgid "Network Deactivate"
+msgstr "ネットワーク 無効"
+
+#: php/class-list-table.php:321 php/class-list-table.php:487 dist/manage.js:2
+msgid "Deactivate"
+msgstr "無効"
+
+#: php/class-list-table.php:320 php/class-list-table.php:486
+msgid "Network Activate"
+msgstr "ネットワーク 有効"
+
+#: php/class-list-table.php:321 php/class-list-table.php:486 dist/manage.js:2
+msgid "Activate"
+msgstr "有効"
+
+#. translators: %s: total number of recently activated snippets.
+#: php/class-list-table.php:554
+msgid "Recently Active <span class=\"count\">(%s)</span>"
+msgid_plural "Recently Active <span class=\"count\">(%s)</span>"
+msgstr[0] "最近まで使用 <span class=\"count\">(%s)</span>"
+
+#: php/class-list-table.php:654
+msgid "Clear List"
+msgstr "一覧をクリア"
+
+#: php/class-contextual-help.php:81
+msgid "For more information:"
+msgstr "より多くの情報:"
+
+#: php/class-list-table.php:646
+msgid "Filter"
+msgstr "検索条件"
+
+#. Description of the plugin
+#: code-snippets.php
+msgid "An easy, clean and simple way to run code snippets on your site. No need to edit to your theme's functions.php file again!"
+msgstr "サイトにコードスニペットを追加するための、簡単、クリーン、そしてシンプルな方法。もう、テーマの functions.php を編集する必要はありません !"
+
+#: php/admin-menus/class-import-menu.php:115
+msgid "Import snippets from a code snippets export file"
+msgstr "エクスポートファイルからスニペットをインポートする"
+
+#: php/admin-menus/class-edit-menu.php:39 dist/edit.js:2
+msgid "Edit Snippet"
+msgstr "スニペットの編集"
+
+#. translators: %s: URL to Manage Snippets admin menu
+#: php/class-contextual-help.php:201
+msgid "You can save your snippets to a code snippets export file using the <a href=\"%s\">Manage Snippets</a> page."
+msgstr "<a href=\"%s\">スニペット一覧</a>ページで、作成したスニペットをエクスポートすることができます。"
+
+#. translators: %s: URL to Snippets admin menu
+#: php/class-contextual-help.php:194
+msgid "Imported snippets will be added to the database along with your existing snippets. Regardless of whether the snippets were active on the previous site, imported snippets are always inactive until activated using the <a href=\"%s\">Manage Snippets</a> page."
+msgstr "インポートされたスニペットは、既存のスニペットと一緒にデータベースで管理されます。インポートされたスニペットは、以前のサイトで有効であったかどうかにかかわらず、<a href=\"%s\">スニペット一覧</a>ページで有効化するまで無効化の状態となります。"
+
+#: php/class-contextual-help.php:192
+msgid "You can load your snippets from a code snippets export file using this page."
+msgstr "このページで、Code Snippets のエクスポートファイルからスニペットを読み込むことができます。"
+
+#: php/class-list-table.php:1301
+msgid "Clear Filters"
+msgstr "検索条件を解除"
+
+#. translators: %s: total number of active snippets.
+#: php/class-list-table.php:538
+msgid "Active <span class=\"count\">(%s)</span>"
+msgid_plural "Active <span class=\"count\">(%s)</span>"
+msgstr[0] "使用中 <span class=\"count\">(%s)</span>"
+
+#. translators: %s: total number of inactive snippets.
+#: php/class-list-table.php:546
+msgid "Inactive <span class=\"count\">(%s)</span>"
+msgid_plural "Inactive <span class=\"count\">(%s)</span>"
+msgstr[0] "停止 <span class=\"count\">(%s)</span>"
+
+#: php/class-admin.php:279
+msgid "<strong>Have feedback on Code Snippets?</strong> Please take the time to answer a short survey on how you use this plugin and what you'd like to see changed or added in the future."
+msgstr "<strong>Code Snippets に関するご意見をお持ちですか ?</strong> プラグインの使用方法や、将来的に変更・追加される内容に関する簡単なアンケートへの回答をお待ちしています。"
+
+#: php/settings/settings-fields.php:88
+msgid "Make the 'Save and Activate' button the default action when saving a snippet."
+msgstr "スニペットを保存する時に、「変更を保存して有効化」ボタンをデフォルトにする"
+
+#: php/settings/settings-fields.php:151
+msgid "The width of a tab character."
+msgstr "タブの文字数を指定します。"
+
+#: php/settings/settings-fields.php:179
+msgid "Show line numbers to the left of the editor."
+msgstr "エディターの左側に行番号を表示する"
+
+#: php/settings/settings-fields.php:185
+msgid "Auto-close brackets and quotes when typed."
+msgstr "括弧や引用符が入力されたら、対応する閉じ括弧 / 閉じ引用符を自動的に入力する"
+
+#: php/settings/settings-fields.php:189
+msgid "Highlight Selection Matches"
+msgstr "選択に一致する語句をハイライト"
+
+#: php/settings/settings-fields.php:190
+msgid "Highlight all instances of a currently selected word."
+msgstr "現在選択されている語句のある箇所をすべてハイライト表示する"
+
+#: php/settings/settings-fields.php:86
+msgid "Activate by Default"
+msgstr "保存ボタンの設定"
+
+#: php/settings/settings-fields.php:91
+msgid "Enable Snippet Tags"
+msgstr "タグの有効化"
+
+#: php/settings/settings-fields.php:93
+msgid "Show snippet tags on admin pages."
+msgstr "スニペット一覧ページに、スニペットを分類するタグを表示する"
+
+#: php/settings/settings-fields.php:96
+msgid "Enable Snippet Descriptions"
+msgstr "説明の有効化"
+
+#: php/settings/settings-fields.php:98
+msgid "Show snippet descriptions on admin pages."
+msgstr "スニペット一覧ページに、スニペットの説明を表示する"
+
+#: php/settings/settings-fields.php:145
+msgid "Use hard tabs instead of spaces for indentation."
+msgstr "スペースの代わりにタブでインデントする"
+
+#: php/class-admin.php:278
+msgid "Take the survey now"
+msgstr "アンケートに回答する"
+
+#. translators: %s: link to snippets admin menu
+#: php/views/import.php:46
+msgid "Afterward, you will need to visit the <a href=\"%s\" >All Snippets</a> page to activate the imported snippets."
+msgstr "正常に処理できたら、<a href=\"%s\">すべてのスニペット</a>ページでインポートしたスニペットを有効化してください。"

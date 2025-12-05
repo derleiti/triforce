@@ -1,0 +1,1627 @@
+# Translation of Plugins - Query Monitor &#8211; The developer tools panel for WordPress - Stable (latest release) in Chinese (China)
+# This file is distributed under the same license as the Plugins - Query Monitor &#8211; The developer tools panel for WordPress - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2024-11-28 08:16:21+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: zh_CN\n"
+"Project-Id-Version: Plugins - Query Monitor &#8211; The developer tools panel for WordPress - Stable (latest release)\n"
+
+#: output/html/environment.php:281
+msgid "Basic Auth"
+msgstr "基本认证"
+
+#: output/html/assets.php:53
+msgid "Module"
+msgstr "模块"
+
+#: collectors/logger.php:173
+msgid "Assertion failed"
+msgstr "断言失败"
+
+#. translators: %s: Assertion message
+#: collectors/logger.php:169
+msgid "Assertion failed: %s"
+msgstr "断言失败: %s"
+
+#: collectors/logger.php:161
+msgid "Assertion passed"
+msgstr "断言已通过"
+
+#. translators: %s: Assertion message
+#: collectors/logger.php:157
+msgid "Assertion passed: %s"
+msgstr "断言已通过：%s"
+
+#: classes/Collector.php:124 output/html/environment.php:240
+msgid "empty string"
+msgstr "空字符串"
+
+#. translators: %s: Drop-in plugin file name
+#: classes/Component_Dropin.php:12
+msgid "Drop-in: %s"
+msgstr "强化插件：%s"
+
+#: output/html/hooks.php:36
+msgid "Hooks, Actions, & Filters"
+msgstr "钩子、操作和过滤器"
+
+#: output/html/environment.php:245
+msgid "Development Mode"
+msgstr "开发模式"
+
+#. translators: %s: Total number of Doing it Wrong occurrences
+#: output/html/doing_it_wrong.php:118
+msgctxt "Total Doing it Wrong occurrences"
+msgid "Total: %s"
+msgstr "总计：%s"
+
+#: output/html/doing_it_wrong.php:57
+msgid "No occurrences."
+msgstr "没有出现。"
+
+#. translators: %s: Total number of Doing it Wrong occurrences
+#: output/html/doing_it_wrong.php:43
+msgctxt "Doing it Wrong"
+msgid "Doing it Wrong (%s)"
+msgstr "发生错误（%s）"
+
+#: output/html/doing_it_wrong.php:41
+msgid "Doing it Wrong occurrences"
+msgstr "发生错误"
+
+#. translators: %s: Total number of Doing it Wrong occurrences
+#: output/html/doing_it_wrong.php:40
+msgctxt "Doing it Wrong"
+msgid "Total: %s"
+msgstr "总计：%s"
+
+#: output/html/doing_it_wrong.php:31
+msgid "Doing it Wrong"
+msgstr "做错了"
+
+#. translators: %s: Name of WordPress filter
+#: dispatchers/Html.php:608
+msgid "The file link format for your editor is set by the %s filter."
+msgstr "您的编辑器的文件链接格式由 %s 过滤器设置。"
+
+#. translators: 1: WordPress hook name, 2: Version number, 3: Optional message
+#. regarding the change.
+#: classes/Deprecated_Hook_Run.php:38
+msgid "Hook %1$s is deprecated since version %2$s with no alternative available. %3$s"
+msgstr "%1$s 自 %2$s 版本开始已弃用，没有替代方案。%3$s"
+
+#. translators: 1: WordPress hook name, 2: Version number, 3: Alternative hook
+#. name, 4: Optional message regarding the change.
+#: classes/Deprecated_Hook_Run.php:28
+msgid "Hook %1$s is deprecated since version %2$s! Use %3$s instead. %4$s"
+msgstr "自版本 %2$s 起，钩子 %1$s 已被弃用！请改用 %3$s。 %4$s"
+
+#. translators: 1: PHP function name, 2: Version number.
+#: classes/Deprecated_Argument_Run.php:35
+msgid "Function %1$s was called with an argument that is deprecated since version %2$s with no alternative available."
+msgstr "调用函数 %1$s 时使用的参数自版本 %2$s 起已被弃用，且没有可用的替代方案。"
+
+#. translators: 1: PHP function name, 2: Version number, 3: Optional message
+#. regarding the change.
+#: classes/Deprecated_Argument_Run.php:26
+msgid "Function %1$s was called with an argument that is deprecated since version %2$s! %3$s"
+msgstr "调用函数 %1$s 时使用的参数自版本 %2$s 起已弃用！ %3$s"
+
+#. translators: 1: PHP file name, 2: Version number, 3: Optional message
+#. regarding the change.
+#: classes/Deprecated_File_Included.php:38
+msgid "File %1$s is deprecated since version %2$s with no alternative available. %3$s"
+msgstr "%1$s 自 %2$s 版本开始已弃用，没有替代方案。%3$s"
+
+#. translators: 1: PHP file name, 2: Version number, 3: Alternative file name,
+#. 4: Optional message regarding the change.
+#: classes/Deprecated_File_Included.php:28
+msgid "File %1$s is deprecated since version %2$s! Use %3$s instead. %4$s"
+msgstr "文件 %1$s 自版本 %2$s 起已被弃用！请改用 %3$s。 %4$s"
+
+#. translators: 1: PHP class name, 2: PHP parent class name, 3: Version number,
+#. 4: __construct() method.
+#: classes/Deprecated_Constructor_Run.php:26
+msgid "The called constructor method for %1$s class in %2$s is deprecated since version %3$s! Use %4$s instead."
+msgstr "自版本 %3$s 起，%2$s 中的 %1$s 类的调用构造方法已被弃用！请改用 %4$s。"
+
+#. translators: 1: PHP class name, 2: Version number, 3: __construct() method.
+#: classes/Deprecated_Constructor_Run.php:36
+msgid "The called constructor method for %1$s class is deprecated since version %2$s! Use %3$s instead."
+msgstr "自版本 %2$s 起，%1$s 类的调用构造方法已被弃用！请改用 %3$s。"
+
+#. translators: 1: PHP function name, 2: Version number, 3: Alternative
+#. function name.
+#: classes/Deprecated_Function_Run.php:26
+msgid "Function %1$s is deprecated since version %2$s! Use %3$s instead."
+msgstr "%1$s 自版本 %2$s 起已弃用！请改用 %3$s 。"
+
+#. translators: 1: PHP function name, 2: Version number.
+#: classes/Deprecated_Function_Run.php:35
+msgid "Function %1$s is deprecated since version %2$s with no alternative available."
+msgstr "%1$s 自 %2$s 版本开始已弃用，没有替代方案。"
+
+#. translators: Developer debugging message. 1: PHP function name, 2:
+#. Explanatory message, 3: WordPress version number.
+#: classes/Doing_It_Wrong_Run.php:33
+msgid "Function %1$s was called incorrectly. %2$s %3$s"
+msgstr "函数 %1$s 调用不正确。 %2$s %3$s"
+
+#. translators: %s: Version number.
+#: classes/Doing_It_Wrong_Run.php:26
+msgid "(This message was added in version %s.)"
+msgstr "（这个消息是在 %s 版本添加的。）"
+
+#. translators: %s: Number of PHP errors
+#: output/html/php_errors.php:201
+msgctxt "PHP error count"
+msgid "Total: %s"
+msgid_plural "Total: %s"
+msgstr[0] "总计：%s"
+
+#: output/html/theme.php:84
+msgid "Block Template"
+msgstr "区块模板"
+
+#: output/html/timing.php:216
+msgid "Timings"
+msgstr "计时"
+
+#. translators: %s: Link to help article
+#: output/html/timing.php:45
+msgid "No data logged. <a href=\"%s\">Read about timing and profiling in Query Monitor</a>."
+msgstr "没有记录数据。<a href=\"%s\">阅读 Query Monitor</a>中有关计时和分析的内容。"
+
+#: output/html/multisite.php:52
+msgid "Site Switch"
+msgstr "站点切换"
+
+#: output/html/multisite.php:51
+msgid "Function"
+msgstr "函数"
+
+#: output/html/multisite.php:37
+msgid "No data logged."
+msgstr "没有记录数据。"
+
+#. translators: A closure is an anonymous PHP function
+#: classes/Util.php:421
+msgid "Unknown closure"
+msgstr "未知的关闭"
+
+#. translators: %s: Name of a multilingual plugin
+#: output/html/languages.php:62 output/html/languages.php:75
+msgid "%s Language"
+msgstr "%s 语言"
+
+#: dispatchers/Html.php:624
+msgctxt "colour scheme"
+msgid "Dark"
+msgstr "暗黑"
+
+#: dispatchers/Html.php:623
+msgctxt "colour scheme"
+msgid "Light"
+msgstr "明亮"
+
+#: dispatchers/Html.php:622
+msgctxt "colour scheme"
+msgid "Auto"
+msgstr "自动识别"
+
+#: dispatchers/Html.php:619
+msgid "Your browser color scheme is respected by default. You can override it here."
+msgstr "默认情况下，会尊重您的浏览器颜色方案。您可以在这里进行覆盖。"
+
+#: dispatchers/Html.php:617
+msgid "Appearance"
+msgstr "外观"
+
+#. translators: %s: Memory usage in megabytes with a decimal fraction. Note the
+#. space between value and unit symbol.
+#: output/headers/overview.php:40 output/html/overview.php:392
+msgid "%s MB"
+msgstr "%s MB"
+
+#: output/html/overview.php:361
+msgid "Speak to your web host about enabling an opcode cache such as OPcache."
+msgstr "与您的网络主机联系以启用 opcode 缓存（例如 OPcache）。"
+
+#: output/html/overview.php:358
+msgid "Opcode cache not in use"
+msgstr "操作码缓存未使用"
+
+#: output/html/overview.php:342
+msgid "Opcode Cache"
+msgstr "操作码缓存"
+
+#: output/html/overview.php:325
+msgid "Speak to your web host about enabling an object cache extension such as Redis or Memcached."
+msgstr "与您的网络托管服务商联系以启用对象缓存扩展（例如 Redis 或 Memcached）。"
+
+#. translators: 1: PHP extension name, 2: URL to plugin directory
+#: output/html/overview.php:308
+msgid "The %1$s object cache extension for PHP is installed but is not in use by WordPress. You should <a href=\"%2$s\" target=\"_blank\" class=\"qm-external-link\">install a %1$s plugin</a>."
+msgstr "PHP 的 %1$s 对象缓存扩展已安装，但 WordPress 未使用。您应该<a href=\"%2$s\" target=\"_blank\" class=\"qm-external-link\">安装 %1$s 插件</a>。"
+
+#: output/html/overview.php:293
+msgid "Persistent object cache plugin not in use"
+msgstr "持久对象缓存插件未使用"
+
+#: output/html/overview.php:286
+msgid "Persistent object cache plugin in use"
+msgstr "正在使用的持久对象缓存插件"
+
+#. translators: 1: Memory used in bytes, 2: Memory used in megabytes
+#: output/html/overview.php:147
+msgid "%1$s bytes (%2$s MB)"
+msgstr "%1$s 字节 (%2$s MB)"
+
+#. translators: %s: A time in seconds with a decimal fraction. No space between
+#. value and unit symbol.
+#: output/html/db_queries.php:489 output/html/overview.php:105
+#: output/html/overview.php:190 output/html/overview.php:238
+#: output/html/overview.php:387
+msgctxt "Time in seconds"
+msgid "%ss"
+msgstr "%s 秒"
+
+#. translators: %s: Total number of items in a list
+#: output/html/logger.php:75
+msgid "All (%d)"
+msgstr "全部（%d）"
+
+#: output/html/environment.php:280
+msgid "Architecture"
+msgstr "架构"
+
+#. translators: %s: Number of database queries. Note the space between value
+#. and unit symbol.
+#: output/html/db_queries.php:494 output/html/db_queries.php:508
+msgid "%s Q"
+msgid_plural "%s Q"
+msgstr[0] "%s  查询"
+
+#: output/html/assets_styles.php:38
+msgid "No CSS files were enqueued."
+msgstr "没有 CSS 文件入队。"
+
+#: output/html/assets_scripts.php:38
+msgid "No JavaScript files were enqueued."
+msgstr "没有 JavaScript 文件入队。"
+
+#: output/Html.php:324
+msgid "Non-WordPress Core"
+msgstr "非 WordPress 核心"
+
+#: dispatchers/Html.php:664
+msgid "Allow the wp-content/db.php file symlink to be put into place during activation. Set to false to prevent the symlink creation."
+msgstr "允许在激活期间放置 wp-content/db.php 文件符号链接。设置为 false 以防止创建符号链接。"
+
+#. translators: %s: Number of hooks
+#: dispatchers/Html.php:388
+msgid "Hooks in Use (%s)"
+msgstr "正在使用的钩子 （%s）"
+
+#: dispatchers/Html.php:293
+msgid "Data collection ceased"
+msgstr "数据收集已停止"
+
+#: classes/Component_Core.php:10 output/Html.php:319 output/html/hooks.php:96
+msgid "WordPress Core"
+msgstr "WordPress 核心"
+
+#: output/html/overview.php:246
+msgctxt "HTTP API calls"
+msgid "Total"
+msgstr "总计"
+
+#: output/html/block_editor.php:64
+msgid "Context"
+msgstr "上下文"
+
+#. translators: 1: Percentage of memory limit used, 2: Memory limit in
+#. megabytes
+#: output/headers/overview.php:47 output/html/overview.php:161
+msgid "%1$s%% of %2$s MB server limit"
+msgstr "%2$s kB 服务器限制的 %1$s%%"
+
+#: classes/QueryMonitor.php:84
+msgctxt "verb"
+msgid "Sponsor"
+msgstr "赞助"
+
+#. translators: %s: File name
+#: output/html/db_queries.php:194
+msgid "Extended query information such as the component and affected rows is not available. Query Monitor was unable to symlink its %s file into place."
+msgstr "扩展查询信息（例如组件和受影响的行）不可用。Query Monitor 无法将其 %s 文件符号链接到位。"
+
+#. translators: 1: File name, 2: Configuration constant name
+#: output/html/db_queries.php:191
+msgid "Extended query information such as the component and affected rows is not available. Query Monitor was prevented from symlinking its %1$s file into place by the %2$s constant."
+msgstr "扩展查询信息（例如组件和受影响的行）不可用。%2$s 常量阻止 Query Monitor 将其 %1$s 文件符号链接到位。"
+
+#. translators: %s: File name
+#: output/html/db_queries.php:188
+msgid "Extended query information such as the component and affected rows is not available. A conflicting %s file is present."
+msgstr "扩展查询信息（例如组件和受影响的行）不可用。存在冲突的 %s 文件。"
+
+#. translators: %s: Dependency name
+#: classes/Component_Altis_Vendor.php:12
+msgid "Dependency: %s"
+msgstr "依赖关系：%s"
+
+#. translators: %s: Link to help article
+#: output/html/logger.php:46
+msgid "No data logged. <a href=\"%s\">Read about logging variables in Query Monitor</a>."
+msgstr "没有数据记录。<a href=\"%s\">了解有关 Query Monitor</a>中的日志记录变量的信息。"
+
+#: output/html/environment.php:226
+msgid "Environment Type"
+msgstr "环境类型"
+
+#: dispatchers/Html.php:652
+msgid "Hide Query Monitor itself from various panels. Set to false if you want to see how Query Monitor hooks into WordPress."
+msgstr "从各种面板中隐藏查询监视器本身。如果您想查看查询监视器如何挂接到 WordPress，请设置为 false。"
+
+#: dispatchers/Html.php:264
+msgid "PHP Fatal Error"
+msgstr "PHP 致命错误"
+
+#. translators: 1: CLI command to run, 2: plugin directory name
+#: dispatchers/Html.php:211
+msgid "Asset files for Query Monitor need to be built. Run %1$s from the %2$s directory."
+msgstr "需要建立 Query Monitor 的资产文件。从 %2$s 目录运行 %1$s。"
+
+#. translators: %s: Plugin or theme name
+#: dispatchers/WP_Die.php:120
+msgid "This message was triggered by %s."
+msgstr "此消息是由 %s 触发的。"
+
+#: dispatchers/Html.php:604
+msgid "Saved! Reload to apply changes."
+msgstr "已保存！重新加载以应用更改。"
+
+#: dispatchers/Html.php:600
+msgid "Set editor cookie"
+msgstr "设置编辑器 Cookie"
+
+#: dispatchers/Html.php:576
+msgid "You can set your editor here, so that when you click on stack trace links the file opens in your editor."
+msgstr "您可以在此处设置编辑器，以便在单击堆栈跟踪链接时在编辑器中打开该文件。"
+
+#: dispatchers/Html.php:573
+msgid "Editor"
+msgstr "编辑"
+
+#. translators: %s: Number of logs that are available
+#: output/html/logger.php:219
+msgid "Logs (%s)"
+msgstr "日志（%s）"
+
+#: output/html/request.php:197
+msgid "Requested URL"
+msgstr "要求的网址"
+
+#: output/html/request.php:196
+msgid "HTTP method"
+msgstr "HTTP 方法"
+
+#: output/html/request.php:195
+msgid "Remote IP"
+msgstr "远程 IP"
+
+#: output/html/admin.php:75
+msgid "Global Variable"
+msgstr "全局变量"
+
+#: output/html/admin.php:71
+msgid "Globals"
+msgstr "全局"
+
+#: output/html/headers.php:119
+msgid "Response Headers"
+msgstr "响应标头"
+
+#: output/html/headers.php:118
+msgid "Request Headers"
+msgstr "请求标头"
+
+#: output/html/headers.php:102
+msgid "Note that header names are not case-sensitive."
+msgstr "请注意，标头名称不区分大小写。"
+
+#: output/html/headers.php:69
+msgid "Response Header Name"
+msgstr "响应标头名称"
+
+#: output/html/headers.php:54
+msgid "Request Header Name"
+msgstr "请求标头名称"
+
+#: output/html/timing.php:61
+msgid "Stopped"
+msgstr "已停止"
+
+#: output/html/timing.php:60
+msgid "Started"
+msgstr "已开始"
+
+#. translators: %s: Number of database queries
+#: output/html/db_queries.php:290
+msgctxt "Query count"
+msgid "Total: %s"
+msgid_plural "Total: %s"
+msgstr[0] "总计: %s"
+
+#: output/html/overview.php:84
+msgid "Unknown HTTP Response Code"
+msgstr "未知的 HTTP 响应状态码"
+
+#: output/html/headers.php:34 output/html/request.php:191
+msgid "Request Data"
+msgstr "请求数据"
+
+#. translators: %s: Default value for a PHP constant
+#: dispatchers/Html.php:707
+msgid "Default value: %s"
+msgstr "默认值：%s"
+
+#: output/html/theme.php:181
+msgid "Not Loaded"
+msgstr "未加载"
+
+#. translators: 1: Query Monitor, 2: Required PHP version number, 3: Current
+#. PHP version number, 4: URL of PHP update help page
+#: classes/PHP.php:32
+msgid "The %1$s plugin requires PHP version %2$s or higher. This site is running PHP version %3$s. <a href=\"%4$s\">Learn about updating PHP</a>."
+msgstr "%1$s 插件需要 PHP 版本 %2$s 或更高版本。该站点正在运行 PHP 版本 %3$s。 <a href=\"%4$s\">了解如何更新 PHP</a>。"
+
+#. translators: %s: Total number of enqueued scripts
+#: output/html/assets_scripts.php:37
+msgctxt "Enqueued scripts"
+msgid "Scripts (%s)"
+msgstr "脚本（%s）"
+
+#. translators: %s: Total number of enqueued styles
+#: output/html/assets_styles.php:37
+msgctxt "Enqueued styles"
+msgid "Styles (%s)"
+msgstr "样式（%s）"
+
+#: output/html/overview.php:331
+msgid "Object cache statistics are not available"
+msgstr "对象缓存统计信息不可用"
+
+#: output/Html.php:393
+msgid "Toggle more information"
+msgstr "切换更多信息"
+
+#: output/Html.php:380
+msgid "Sort data by this column"
+msgstr "按此列对数据排序"
+
+#: output/Html.php:177 output/html/hooks.php:59
+msgid "Callback"
+msgstr "回调"
+
+#. translators: %s: Panel name
+#: output/Html.php:167
+msgid "%s: Related Hooks with Filters or Actions Attached"
+msgstr "%s：附加了过滤器或操作的相关钩子"
+
+#: output/Html.php:147 output/html/hooks.php:62 output/html/hooks.php:160
+msgid "Filter"
+msgstr "过滤"
+
+#: output/Html.php:146
+msgid "Related Hooks with Filters Attached"
+msgstr "附有过滤器的相关钩子"
+
+#: output/Html.php:142
+msgid "Related Hooks with Actions Attached"
+msgstr "带有动作的相关钩子"
+
+#: output/html/languages.php:95
+msgid "Translation File"
+msgstr "翻译文件"
+
+#. translators: %s: Name of cache driver
+#: output/html/overview.php:349
+msgid "Opcode cache in use: %s"
+msgstr "正在使用操作码缓存：%s"
+
+#: output/html/overview.php:212
+msgctxt "database queries"
+msgid "Total"
+msgstr "合计"
+
+#: output/html/block_editor.php:206
+msgid "None (Classic block)"
+msgstr "无（经典块）"
+
+#: output/html/block_editor.php:70
+msgid "Render Time"
+msgstr "渲染时间"
+
+#: output/html/theme.php:205
+msgid "Twig Template Files"
+msgstr "Twig 模板文件"
+
+#: dispatchers/Html.php:491
+msgid "Toggle panel position"
+msgstr "切换面板位置"
+
+#. translators: %1$s: Erroneous post type name, %2$s: WordPress attachment post
+#. type name
+#: output/html/block_editor.php:172
+msgid "Referenced media is of type %1$s instead of %2$s."
+msgstr "引用的媒体类型为 %1$s 而不是 %2$s。"
+
+#: output/html/block_editor.php:164
+msgid "Referenced media does not exist."
+msgstr "引用的媒体不存在。"
+
+#. translators: %s: Total number of content blocks used
+#: output/html/block_editor.php:103
+msgctxt "Content blocks used"
+msgid "Total: %s"
+msgid_plural "Total: %s"
+msgstr[0] "总计：%s"
+
+#: classes/QueryMonitor.php:61
+msgid "Add-ons"
+msgstr "附加组件"
+
+#. translators: 1: Name of the PHP directive, 2: Value of the PHP directive
+#: output/html/overview.php:171
+msgid "No memory limit. The %1$s PHP configuration directive is set to %2$s."
+msgstr "无内存限制。 %1$s PHP 配置指令设置为 %2$s。"
+
+#. translators: 1: Name of the PHP directive, 2: Value of the PHP directive
+#: output/html/overview.php:129
+msgid "No execution time limit. The %1$s PHP configuration directive is set to %2$s."
+msgstr "无执行时间限制。 %1$s PHP 配置指令设置为 %2$s。"
+
+#: classes/Collector_Assets.php:469
+msgid "Insecure content"
+msgstr "不安全的内容"
+
+#. translators: %1$s: Erroneous post type name, %2$s: WordPress block post type
+#. name
+#: output/html/block_editor.php:141
+msgid "Referenced post is of type %1$s instead of %2$s."
+msgstr "引用的文章类型为 %1$s 而不是 %2$s。"
+
+#: output/html/block_editor.php:133
+msgid "Referenced block does not exist."
+msgstr "引用的块不存在。"
+
+#: output/html/block_editor.php:73
+msgid "Inner HTML"
+msgstr "内部 HTML"
+
+#: output/html/block_editor.php:67
+msgid "Render Callback"
+msgstr "渲染回调"
+
+#: output/html/block_editor.php:61
+msgid "Attributes"
+msgstr "属性"
+
+#: output/html/block_editor.php:60
+msgid "Block Name"
+msgstr "区块名称"
+
+#: output/html/block_editor.php:47
+msgid "This post contains no blocks."
+msgstr "这篇文章不包含任何区块。"
+
+#. translators: %s: The number of times that a template part file was included
+#. in the page
+#: output/html/theme.php:166
+msgctxt "template parts"
+msgid "Included %s time"
+msgid_plural "Included %s times"
+msgstr[0] "包含 %s 时间"
+
+#: output/html/block_editor.php:30 output/html/block_editor.php:339
+msgid "Blocks"
+msgstr "区块"
+
+#: classes/QueryMonitor.php:217
+msgctxt "Human readable label for the user capability required to view Query Monitor."
+msgid "View Query Monitor"
+msgstr "查看 Query Monitor"
+
+#: output/html/transients.php:129
+msgid "No transients set."
+msgstr "无瞬态集。"
+
+#: output/html/overview.php:62
+msgid "PHP errors were triggered during an Ajax request. See your browser developer console for details."
+msgstr "在 Ajax 请求期间触发了 PHP 错误。请查看您的浏览器开发者控制台以获取详细信息。"
+
+#: output/html/logger.php:221 output/raw/logger.php:21
+msgid "Logs"
+msgstr "日志"
+
+#: output/html/http.php:367
+msgid "No HTTP API calls."
+msgstr "没有 HTTP API 调用。"
+
+#. translators: %s: Number of HTTP API requests
+#: output/html/http.php:355
+msgctxt "HTTP API calls"
+msgid "Total: %s"
+msgid_plural "Total: %s"
+msgstr[0] "总计: %s"
+
+#: output/html/environment.php:158
+msgid "Client Version"
+msgstr "客户端版本"
+
+#: output/html/environment.php:157
+msgid "Extension"
+msgstr "扩展"
+
+#: output/html/environment.php:156
+msgid "Server Version"
+msgstr "服务器版本"
+
+#. translators: %s: Number of user capability checks
+#: output/html/caps.php:198
+msgctxt "User capability checks"
+msgid "Total: %s"
+msgid_plural "Total: %s"
+msgstr[0] "总计：%s"
+
+#: output/html/assets.php:78
+msgid "Source"
+msgstr "来源"
+
+#. translators: %s: Total number of enqueued styles
+#: output/html/assets_styles.php:34
+msgctxt "Enqueued styles"
+msgid "Total: %s"
+msgstr "总计：%s"
+
+#. translators: %s: Total number of enqueued scripts
+#: output/html/assets_scripts.php:34
+msgctxt "Enqueued scripts"
+msgid "Total: %s"
+msgstr "总计：%s"
+
+#: output/Html.php:374
+msgid "Sequence"
+msgstr "序列"
+
+#. translators: %s: Current value for a PHP constant
+#: dispatchers/Html.php:721
+msgid "Current value: %s"
+msgstr "当前值：%s"
+
+#. translators: %s: Name of the config file
+#: dispatchers/Html.php:687
+msgid "The following PHP constants can be defined in your %s file in order to control the behavior of Query Monitor:"
+msgstr "可以在 %s 文件中定义以下 PHP 常量，以控制 Query Monitor 的行为："
+
+#: dispatchers/Html.php:683
+msgid "Configuration"
+msgstr "配置"
+
+#: dispatchers/Html.php:660
+msgid "In the Hooks & Actions panel, show every hook that has an action or filter attached (instead of every action hook that fired during the request)."
+msgstr "在『钩子和动作』面板中，显示每个附加了动作或过滤器的钩子（而不是在请求期间触发的每个动作钩子）。"
+
+#: dispatchers/Html.php:656
+msgid "Don't specify jQuery as a dependency of Query Monitor. If jQuery isn't enqueued then Query Monitor will still operate, but with some reduced functionality."
+msgstr "不要将 jQuery 指定为 Query Monitor 的依赖项。如果 jQuery 未入队，那么 Query Monitor 仍将运行，但功能有所减少。"
+
+#: dispatchers/Html.php:648
+msgid "Hide WordPress core on the Hooks & Actions panel."
+msgstr "在『钩子和动作』面板上隐藏 WordPress 核心。"
+
+#: dispatchers/Html.php:644
+msgid "Enable the Capability Checks panel."
+msgstr "启用『功能检查』面板。"
+
+#: dispatchers/Html.php:640
+msgid "Disable the handling of PHP errors."
+msgstr "禁用 PHP 错误处理。"
+
+#: dispatchers/Html.php:636
+msgid "Disable Query Monitor entirely."
+msgstr "完全禁用 Query Monitor。"
+
+#: dispatchers/Html.php:632
+msgid "If an individual database query takes longer than this time to execute, it's considered \"slow\" and triggers a warning."
+msgstr "如果单个数据库查询执行的时间长于此时间，则将其视为『缓慢』并触发警告。"
+
+#: dispatchers/Html.php:567
+msgid "Authentication cookie is set"
+msgstr "设置了身份验证 Cookie"
+
+#: dispatchers/Html.php:560
+msgid "You can set an authentication cookie which allows you to view Query Monitor output when you&rsquo;re not logged in, or when you&rsquo;re logged in as a different user."
+msgstr "您可以设置身份验证 Cookie，以便在您未登录或以其他用户身份登录时查看 Query Monitor 的输出。"
+
+#: dispatchers/Html.php:498
+msgid "Query Monitor Menu"
+msgstr "Query Monitor 菜单"
+
+#: output/html/logger.php:31
+msgid "Logger"
+msgstr "记录仪"
+
+#. Description of the plugin
+#: query-monitor.php
+msgid "The developer tools panel for WordPress."
+msgstr "【查询监控器】WordPress开发人员工具面板。"
+
+#. translators: %s: Number of function timing results that are available
+#: output/html/timing.php:214
+msgid "Timings (%s)"
+msgstr "计时（%s）"
+
+#. translators: %s: Approximate memory used in kilobytes
+#: output/html/timing.php:110 output/html/timing.php:142
+msgid "~%s kB"
+msgstr "〜%s kB"
+
+#: output/html/timing.php:63
+msgid "Memory"
+msgstr "记忆"
+
+#: output/html/timing.php:59
+msgid "Tracked Function"
+msgstr "追踪功能"
+
+#: output/html/theme.php:275
+msgid "Template"
+msgstr "模版"
+
+#: output/html/request.php:163
+msgid "Current User"
+msgstr "当前用户"
+
+#. translators: used between list items, there is a space after the comma
+#: output/html/php_errors.php:296
+msgid ", "
+msgstr "，"
+
+#. translators: %s: List of PHP error types
+#. translators: %s: Number of errors
+#: output/html/php_errors.php:293 output/html/php_errors.php:343
+msgid "PHP Errors (%s)"
+msgstr "PHP 错误（%s）"
+
+#. translators: %s: Number of PHP warnings
+#: output/html/php_errors.php:246
+msgctxt "PHP error level"
+msgid "%s Warning"
+msgid_plural "%s Warnings"
+msgstr[0] "%s 警告"
+
+#. translators: %s: Number of PHP notices
+#: output/html/php_errors.php:244
+msgctxt "PHP error level"
+msgid "%s Notice"
+msgid_plural "%s Notices"
+msgstr[0] "%s 注意"
+
+#. translators: %s: Number of strict PHP errors
+#: output/html/php_errors.php:242
+msgctxt "PHP error level"
+msgid "%s Strict"
+msgid_plural "%s Stricts"
+msgstr[0] "%s 严格"
+
+#. translators: %s: Number of deprecated PHP errors
+#: output/html/php_errors.php:240
+msgctxt "PHP error level"
+msgid "%s Deprecated"
+msgid_plural "%s Deprecated"
+msgstr[0] "%s 已弃用"
+
+#: output/html/doing_it_wrong.php:69 output/html/logger.php:85
+#: output/html/php_errors.php:79
+msgid "Message"
+msgstr "信息"
+
+#: output/html/logger.php:83 output/html/php_errors.php:77
+msgid "Level"
+msgstr "级别"
+
+#: output/html/overview.php:61
+msgid "A JavaScript problem on the page is preventing Query Monitor from working correctly. jQuery may have been blocked from loading."
+msgstr "页面上的 JavaScript 问题导致查询监视器无法正常工作。 jQuery 可能已被阻止加载。"
+
+#: output/html/languages.php:96
+msgid "Size"
+msgstr "大小"
+
+#: output/html/environment.php:276 output/html/http.php:277
+msgid "IP Address"
+msgstr "IP 地址"
+
+#: output/html/http.php:276
+msgid "Response Content Type"
+msgstr "响应内容类型"
+
+#: output/html/http.php:262
+msgid "Transfer Start Time (TTFB)"
+msgstr "传输开始时间（TTFB）"
+
+#: output/html/http.php:261
+msgid "Connection Time"
+msgstr "连接时间"
+
+#: output/html/http.php:260
+msgid "DNS Resolution Time"
+msgstr "DNS 解析时间"
+
+#: output/html/http.php:69
+msgid "URL"
+msgstr "网址"
+
+#: output/html/http.php:67
+msgid "Method"
+msgstr "方法"
+
+#: output/Html.php:176 output/html/hooks.php:72
+msgid "Priority"
+msgstr "优先级"
+
+#. translators: OS stands for Operating System
+#: output/html/environment.php:279
+msgid "OS"
+msgstr "操作系统"
+
+#: output/html/db_queries.php:78
+msgid "No database queries were logged."
+msgstr "没有记录数据库查询。"
+
+#: output/html/conditionals.php:57
+msgid "False Conditionals"
+msgstr "错误条件"
+
+#: output/html/conditionals.php:44
+msgid "True Conditionals"
+msgstr "真实条件"
+
+#. translators: %s: Configuration file name.
+#: output/html/caps.php:47
+msgid "For performance reasons, this panel is not enabled by default. To enable it, add the following code to your %s file:"
+msgstr "出于性能原因，默认情况下不启用此面板。要启用它，请将以下代码添加到 %s 文件中："
+
+#: output/html/assets.php:69
+msgid "Handle"
+msgstr "处理"
+
+#: output/html/assets.php:76 output/html/environment.php:160
+#: output/html/environment.php:277
+msgid "Host"
+msgstr "主机"
+
+#: output/html/assets.php:61 output/html/assets.php:153
+msgid "Other"
+msgstr "其他"
+
+#: output/html/assets.php:52
+msgid "Missing Dependencies"
+msgstr "缺少依赖项"
+
+#: output/html/admin.php:105
+msgid "Class:"
+msgstr "类："
+
+#: output/html/admin.php:102
+msgid "List Table"
+msgstr "列表"
+
+#: dispatchers/Html.php:493
+msgid "Close Panel"
+msgstr "关闭面板"
+
+#: classes/QueryMonitor.php:60 dispatchers/Html.php:478
+#: dispatchers/Html.php:489 dispatchers/Html.php:554
+msgid "Settings"
+msgstr "设置"
+
+#: collectors/timing.php:143
+msgid "Timer not stopped"
+msgstr "计时器未停止"
+
+#: collectors/timing.php:81 collectors/timing.php:101
+msgid "Timer not started"
+msgstr "计时器未启动"
+
+#: output/html/timing.php:30
+msgid "Timing"
+msgstr "计时"
+
+#. translators: %d: Multisite network ID
+#: collectors/request.php:179
+msgid "Current Network: #%d"
+msgstr "当前网络：＃%d"
+
+#: output/html/php_errors.php:63
+msgctxt "Silenced PHP error level"
+msgid "Deprecated (Silenced)"
+msgstr "不推荐使用（已静音）"
+
+#: output/html/php_errors.php:62
+msgctxt "Silenced PHP error level"
+msgid "Strict (Silenced)"
+msgstr "严格（无声）"
+
+#: output/html/php_errors.php:61
+msgctxt "Silenced PHP error level"
+msgid "Notice (Silenced)"
+msgstr "公告（静音）"
+
+#: output/html/php_errors.php:60
+msgctxt "Silenced PHP error level"
+msgid "Warning (Silenced)"
+msgstr "警告（静音）"
+
+#. translators: A non-blocking HTTP API request
+#: output/html/http.php:57 output/html/http.php:119
+msgid "Non-blocking"
+msgstr "不阻塞"
+
+#. translators: %s: Timing lap number
+#: classes/Timer.php:91
+msgid "Lap %s"
+msgstr "圈 %s"
+
+#. translators: No user
+#: collectors/request.php:156
+msgctxt "user"
+msgid "None"
+msgstr "无"
+
+#. translators: %d: User ID
+#: collectors/request.php:151
+msgid "Current User: #%d"
+msgstr "当前用户:＃%d"
+
+#: output/html/db_queries.php:218
+msgid "Non-SELECT"
+msgstr "非选择"
+
+#: output/html/db_queries.php:97
+msgid "Error Message"
+msgstr "错误信息"
+
+#: output/html/db_queries.php:98
+msgid "Error Code"
+msgstr "错误代码"
+
+#: output/html/caps.php:209
+msgid "No capability checks were recorded."
+msgstr "没有记录功能检查。"
+
+#: output/html/caps.php:91
+msgid "Result"
+msgstr "结果"
+
+#: output/html/caps.php:87 output/html/environment.php:81
+#: output/html/environment.php:159
+msgid "User"
+msgstr "用户"
+
+#: output/html/caps.php:79
+msgid "Capability Check"
+msgstr "能力检查"
+
+#: output/html/caps.php:30
+msgid "Capability Checks"
+msgstr "能力检查"
+
+#. translators: %s: Number of transient values that were updated
+#: output/html/transients.php:148
+msgid "Transient Updates (%s)"
+msgstr "瞬时数据更新（%s）"
+
+#: output/html/transients.php:51
+msgctxt "size of transient value"
+msgid "Size"
+msgstr "大小"
+
+#: output/html/transients.php:48
+msgctxt "transient type"
+msgid "Type"
+msgstr "类型"
+
+#: output/html/transients.php:46
+msgid "Updated Transient"
+msgstr "更新瞬时数据更新"
+
+#: output/html/transients.php:146
+msgid "Transient Updates"
+msgstr "瞬时数据更新"
+
+#: output/html/request.php:107
+msgid "View Main Query"
+msgstr "查看主查询"
+
+#. translators: %s: Number of calls to the HTTP API
+#: output/html/http.php:406
+msgid "HTTP API Calls (%s)"
+msgstr "HTTP API 调用（%s）"
+
+#: output/html/http.php:72
+msgid "Status"
+msgstr "状态"
+
+#: output/html/http.php:31 output/html/http.php:404
+#: output/html/overview.php:229 output/raw/http.php:21
+msgid "HTTP API Calls"
+msgstr "HTTP API 调用"
+
+#: output/html/environment.php:126
+msgid "Extensions"
+msgstr "扩展"
+
+#: output/html/environment.php:111
+msgid "Error Reporting"
+msgstr "错误报告"
+
+#: output/html/hooks.php:33
+msgid "Hooks & Actions"
+msgstr "钩子和动作"
+
+#: output/html/db_queries.php:237 output/html/db_queries.php:423
+msgid "Main Query"
+msgstr "主查询"
+
+#. translators: 1: Cache hit rate percentage, 2: number of cache hits, 3:
+#. number of cache misses
+#: output/html/overview.php:273
+msgid "%1$s%% hit rate (%2$s hits, %3$s misses)"
+msgstr "%1$s%% 命中率（%2$s 命中，%3$s 未击中）"
+
+#: output/html/theme.php:133
+msgid "Template Hierarchy"
+msgstr "模板层次结构"
+
+#: output/html/php_errors.php:57
+msgctxt "Suppressed PHP error level"
+msgid "Deprecated (Suppressed)"
+msgstr "不推荐使用（已取消）"
+
+#: output/html/php_errors.php:56
+msgctxt "Suppressed PHP error level"
+msgid "Strict (Suppressed)"
+msgstr "严格（被抑制）"
+
+#: output/html/php_errors.php:55
+msgctxt "Suppressed PHP error level"
+msgid "Notice (Suppressed)"
+msgstr "公告（已取消）"
+
+#: output/html/php_errors.php:54
+msgctxt "Suppressed PHP error level"
+msgid "Warning (Suppressed)"
+msgstr "警告（禁止）"
+
+#: output/html/assets.php:68
+msgid "Position"
+msgstr "位置"
+
+#: output/html/assets.php:55
+msgid "Footer"
+msgstr "页脚"
+
+#: output/html/assets.php:54
+msgid "Header"
+msgstr "页头"
+
+#: output/html/assets.php:51
+msgid "Missing"
+msgstr "缺失"
+
+#: output/html/admin.php:54 output/html/admin.php:76 output/html/headers.php:85
+msgid "Value"
+msgstr "值"
+
+#: output/html/admin.php:53
+msgid "Property"
+msgstr "属性"
+
+#. translators: 1: Post type name, 2: Post ID
+#: collectors/request.php:251
+msgid "Single %1$s: #%2$d"
+msgstr "单人 %1$s：＃%2$d"
+
+#. translators: %d: Multisite site ID
+#: collectors/request.php:168
+msgid "Current Site: #%d"
+msgstr "当前站点：＃%d"
+
+#: output/html/php_errors.php:51
+msgctxt "PHP error level"
+msgid "Deprecated"
+msgstr "已弃用"
+
+#: output/html/php_errors.php:50
+msgctxt "PHP error level"
+msgid "Strict"
+msgstr "严格"
+
+#: output/html/php_errors.php:49
+msgctxt "PHP error level"
+msgid "Notice"
+msgstr "注意"
+
+#: output/html/php_errors.php:48
+msgctxt "PHP error level"
+msgid "Warning"
+msgstr "警告"
+
+#. translators: An HTTP API request was not executed. %s: Hook name
+#: output/html/http.php:103
+msgid "Request not executed due to a filter on %s"
+msgstr "由于 %s 上的过滤器，请求未执行"
+
+#. translators: Undefined PHP constant
+#: classes/Collector.php:122
+msgid "undefined"
+msgstr "未定义"
+
+#: output/html/theme.php:140
+msgid "Template Parts"
+msgstr "模板部分"
+
+#: output/html/overview.php:261 output/raw/cache.php:21
+msgid "Object Cache"
+msgstr "对象缓存"
+
+#. translators: An HTTP API request has disabled certificate verification. 1:
+#. Relevant argument name
+#: output/html/http.php:145
+msgid "Certificate verification disabled (%s)"
+msgstr "证书验证已禁用（%s）"
+
+#. translators: %s: Number of duplicate database queries
+#: output/html/db_dupes.php:154
+msgid "Duplicate Queries (%s)"
+msgstr "重复查询（%s）"
+
+#. translators: %s: Number of calls to a PHP function
+#: output/html/db_dupes.php:65
+msgid "%s call"
+msgid_plural "%s calls"
+msgstr[0] "%s 调用"
+
+#: output/html/db_dupes.php:57
+msgid "Potential Troublemakers"
+msgstr "潜在的麻烦制造者"
+
+#: output/html/db_dupes.php:55
+msgid "Components"
+msgstr "组件"
+
+#: output/html/db_dupes.php:53
+msgid "Callers"
+msgstr "来电者"
+
+#: output/html/db_dupes.php:31
+msgid "Duplicate Queries"
+msgstr "重复查询"
+
+#. translators: %s: Plugin name
+#: classes/Component_MU_Plugin.php:12 classes/Component_MU_Vendor.php:12
+msgid "MU Plugin: %s"
+msgstr "MU 插件：%s"
+
+#: output/html/php_errors.php:160
+msgid "Unknown location"
+msgstr "位置不明"
+
+#: output/html/db_callers.php:111 output/html/languages.php:137
+#: output/html/overview.php:221 output/html/overview.php:253
+#: output/html/theme.php:177
+msgid "None"
+msgstr "无"
+
+#: output/html/request.php:80
+msgid "All Matching Rewrite Rules"
+msgstr "所有匹配的重写规则"
+
+#: output/html/languages.php:151
+msgid "Not Found"
+msgstr "未找到"
+
+#: output/html/languages.php:92
+msgid "Text Domain"
+msgstr "文本域"
+
+#: output/html/environment.php:274
+msgid "Software"
+msgstr "软件"
+
+#: output/html/environment.php:150 output/html/environment.php:161
+msgid "Database"
+msgstr "数据库"
+
+#. translators: 1: Name of PHP constant, 2: Value of PHP constant
+#: output/html/db_queries.php:73
+msgid "No database queries were logged because the %1$s constant is set to %2$s."
+msgstr "因为 %1$s 常量设置为 %2$s，所以没有记录数据库查询。"
+
+#: output/html/languages.php:30
+msgid "Languages"
+msgstr "语言"
+
+#. Author of the plugin
+#: query-monitor.php
+msgid "John Blackbourn"
+msgstr "John Blackbourn"
+
+#. Plugin URI of the plugin
+#. Author URI of the plugin
+#: query-monitor.php
+msgid "https://querymonitor.com/"
+msgstr "https://querymonitor.com/"
+
+#. translators: %s: Symlink file location
+#: classes/QueryMonitor.php:185
+msgid "The symlink at %s is no longer pointing to the correct location. Please remove the symlink, then deactivate and reactivate Query Monitor."
+msgstr "%s 处的符号链接不再指向正确的位置。请删除符号链接，然后停用并重新激活 Query Monitor。"
+
+#: output/html/transients.php:50
+msgid "Expiration"
+msgstr "到期"
+
+#: output/Html.php:175 output/html/hooks.php:63 output/html/languages.php:93
+msgid "Type"
+msgstr "文章类型"
+
+#. translators: %s: Template file name
+#: output/html/theme.php:260
+msgid "Template: %s"
+msgstr "模板：%s"
+
+#: output/html/theme.php:219
+msgid "Body Classes"
+msgstr "身体类别"
+
+#: output/html/theme.php:113
+msgid "Template File"
+msgstr "模板文件"
+
+#. translators: %s: Number of additional query variables
+#: output/html/request.php:225
+msgid "Request (+%s)"
+msgstr "请求 (+%s)"
+
+#: output/html/request.php:149
+msgid "Queried Object"
+msgstr "查询对象"
+
+#: output/html/multisite.php:27 output/html/request.php:175
+msgid "Multisite"
+msgstr "多站点"
+
+#: output/html/request.php:100
+msgid "Query Vars"
+msgstr "查询变量"
+
+#: output/html/request.php:52
+msgid "Query String"
+msgstr "查询字符串"
+
+#: output/html/request.php:51
+msgid "Matched Query"
+msgstr "匹配查询"
+
+#: output/html/request.php:50
+msgid "Matched Rule"
+msgstr "匹配规则"
+
+#: output/html/php_errors.php:80
+msgid "Location"
+msgstr "位置"
+
+#: output/html/db_dupes.php:51 output/html/php_errors.php:81
+msgid "Count"
+msgstr "次数"
+
+#. translators: %s: Memory used in kilobytes
+#: output/html/http.php:226 output/html/http.php:232
+#: output/html/languages.php:145 output/html/languages.php:168
+msgid "%s kB"
+msgstr "%s kB"
+
+#: output/html/overview.php:139
+msgid "Peak Memory Usage"
+msgstr "峰值内存使用率"
+
+#: output/html/overview.php:100
+msgid "Page Generation Time"
+msgstr "页面生成时间"
+
+#. translators: 1: Percentage of time limit used, 2: Time limit in seconds
+#: output/headers/overview.php:32 output/html/overview.php:119
+msgid "%1$s%% of %2$ss limit"
+msgstr "%2$s 秒限制的 %1$s%%"
+
+#: output/html/http.php:82
+msgid "Timeout"
+msgstr "超时"
+
+#: output/html/request.php:148
+msgid "Response"
+msgstr "响应"
+
+#. translators: %s: Error message text
+#: output/html/block_editor.php:275 output/html/hooks.php:208
+msgid "Error: %s"
+msgstr "错误：%s"
+
+#. translators: %s: Action name
+#: output/html/hooks.php:152
+msgid "Warning: The %s action is extremely resource intensive. Try to avoid using it."
+msgstr "警告：%s 操作非常耗费资源。尽量避免使用它。"
+
+#: output/Html.php:143 output/html/hooks.php:55 output/html/hooks.php:61
+#: output/html/hooks.php:160
+msgid "Action"
+msgstr "操作"
+
+#: output/Html.php:174 output/html/hooks.php:69
+msgid "Hook"
+msgstr "钩子"
+
+#: output/html/environment.php:271
+msgid "Server"
+msgstr "服务器"
+
+#: classes/QueryMonitor.php:62 output/html/environment.php:56
+#: output/html/environment.php:230 output/html/environment.php:249
+msgid "Help"
+msgstr "帮助"
+
+#. translators: %s: Number of slow database queries
+#: output/html/db_queries.php:579
+msgid "Slow Queries (%s)"
+msgstr "慢查询（%s）"
+
+#. translators: %s: Number of database errors
+#: output/html/db_queries.php:565
+msgid "Database Errors (%s)"
+msgstr "数据库错误（%s）"
+
+#: output/html/db_queries.php:136 output/html/db_queries.php:265
+msgid "Rows"
+msgstr "行数"
+
+#: output/html/caps.php:93 output/html/db_callers.php:51
+#: output/html/db_queries.php:95 output/html/db_queries.php:129
+#: output/html/db_queries.php:243 output/html/doing_it_wrong.php:70
+#: output/html/http.php:74 output/html/languages.php:94
+#: output/html/logger.php:86 output/html/multisite.php:53
+#: output/html/transients.php:52
+msgid "Caller"
+msgstr "发起者"
+
+#. translators: %s: Database query time in seconds
+#: output/html/db_queries.php:121
+msgid "Slow Database Queries (above %ss)"
+msgstr "数据库慢查询（%ss 以上）"
+
+#: output/Html.php:178 output/html/caps.php:96 output/html/db_components.php:51
+#: output/html/db_queries.php:96 output/html/db_queries.php:132
+#: output/html/db_queries.php:254 output/html/doing_it_wrong.php:71
+#: output/html/hooks.php:76 output/html/http.php:79 output/html/logger.php:89
+#: output/html/multisite.php:56 output/html/php_errors.php:84
+#: output/html/timing.php:64 output/html/transients.php:53
+msgid "Component"
+msgstr "组件"
+
+#: dispatchers/WP_Die.php:127
+msgid "Call stack:"
+msgstr "调用堆栈："
+
+#: output/html/db_dupes.php:50 output/html/db_queries.php:94
+#: output/html/db_queries.php:128 output/html/db_queries.php:230
+msgid "Query"
+msgstr "查询"
+
+#: output/html/db_queries.php:90
+msgid "Database Errors"
+msgstr "数据库错误"
+
+#: output/html/db_callers.php:60 output/html/db_components.php:60
+#: output/html/db_dupes.php:52 output/html/db_queries.php:139
+#: output/html/db_queries.php:270 output/html/http.php:83
+#: output/html/timing.php:62
+msgid "Time"
+msgstr "时间"
+
+#. translators: %s: Name of missing script or style dependency
+#: output/html/assets.php:144
+msgid "%s (missing)"
+msgstr "%s（丢失）"
+
+#: output/html/request.php:65 output/html/request.php:141
+#: output/html/request.php:160 output/html/request.php:171
+#: output/html/transients.php:77
+msgid "none"
+msgstr "无"
+
+#: output/html/assets.php:85 output/html/environment.php:62
+#: output/html/environment.php:220 output/html/environment.php:275
+msgid "Version"
+msgstr "版本"
+
+#: output/html/assets.php:83
+msgid "Dependents"
+msgstr "依赖"
+
+#: output/html/assets.php:80
+msgid "Dependencies"
+msgstr "依赖关系"
+
+#: output/html/assets_styles.php:25 output/html/assets_styles.php:35
+msgid "Styles"
+msgstr "样式"
+
+#: output/html/assets_scripts.php:25 output/html/assets_scripts.php:35
+msgid "Scripts"
+msgstr "脚本"
+
+#: output/html/admin.php:112
+msgid "Column Action:"
+msgstr "列动作："
+
+#: output/html/admin.php:109
+msgid "Column Filters:"
+msgstr "列过滤器："
+
+#: output/Html.php:316
+msgctxt "\"All\" option for filters"
+msgid "All"
+msgstr "所有"
+
+#: dispatchers/Html.php:549
+msgid "Clear authentication cookie"
+msgstr "清除身份验证 Cookie"
+
+#: dispatchers/Html.php:550
+msgid "Set authentication cookie"
+msgstr "设置身份验证 Cookie"
+
+#: dispatchers/Html.php:558
+msgid "Authentication"
+msgstr "身份认证"
+
+#: dispatchers/Html.php:257
+msgid "PHP Errors in Ajax Response"
+msgstr "Ajax 响应中的 PHP 错误"
+
+#. Plugin Name of the plugin
+#: query-monitor.php classes/QueryMonitor.php:199 classes/QueryMonitor.php:232
+#: dispatchers/Html.php:147 dispatchers/Html.php:448 dispatchers/Html.php:841
+#: dispatchers/WP_Die.php:132
+msgid "Query Monitor"
+msgstr "Query Monitor"
+
+#: output/html/transients.php:30 output/raw/transients.php:21
+msgid "Transients"
+msgstr "瞬时数据"
+
+#: collectors/request.php:288
+msgid "Unknown queried object"
+msgstr "未知查询对象"
+
+#. translators: %s: Post type name
+#: collectors/request.php:281
+msgid "Post type archive: %s"
+msgstr "文章类型存档：%s"
+
+#. translators: %s: Taxonomy term name
+#: collectors/request.php:271
+msgid "Term archive: %s"
+msgstr "分类项存档：%s"
+
+#. translators: %s: Author name
+#: collectors/request.php:261
+msgid "Author archive: %s"
+msgstr "作者档案：%s"
+
+#: output/html/request.php:30 output/html/request.php:49
+#: output/html/request.php:223
+msgid "Request"
+msgstr "请求"
+
+#: output/html/php_errors.php:32 output/html/php_errors.php:304
+msgid "PHP Errors"
+msgstr "PHP 错误"
+
+#: dispatchers/Html.php:455 dispatchers/Html.php:504
+#: output/html/overview.php:30
+msgid "Overview"
+msgstr "概览"
+
+#: output/html/http.php:54
+msgid "Error"
+msgstr "错误"
+
+#. translators: An HTTP API request timed out
+#: output/html/http.php:109
+msgid "Request timed out"
+msgstr "请求超时"
+
+#: output/html/environment.php:30
+msgid "Environment"
+msgstr "环境"
+
+#: output/html/db_queries.php:38 output/html/db_queries.php:553
+#: output/html/overview.php:183 output/raw/db_queries.php:26
+msgid "Database Queries"
+msgstr "数据库查询"
+
+#: output/html/db_components.php:30 output/html/db_components.php:127
+msgid "Queries by Component"
+msgstr "组件查询"
+
+#: output/html/db_callers.php:30 output/html/db_callers.php:131
+msgid "Queries by Caller"
+msgstr "查询发起者"
+
+#: output/html/conditionals.php:31 output/html/conditionals.php:107
+#: output/raw/conditionals.php:21
+msgid "Conditionals"
+msgstr "条件"
+
+#: output/html/admin.php:30
+msgid "Admin Screen"
+msgstr "管理员画面"
+
+#. translators: A closure is an anonymous PHP function. 1: Line number, 2: File
+#. name
+#: classes/Util.php:414 output/Html.php:508
+msgid "Closure on line %1$d of %2$s"
+msgstr "%2$s 的 %1$d 行上的闭包"
+
+#: classes/Component_Unknown.php:10 output/html/db_queries.php:346
+#: output/html/db_queries.php:442 output/html/environment.php:70
+#: output/html/environment.php:77 output/html/environment.php:85
+#: output/html/environment.php:171 output/html/environment.php:293
+#: output/html/overview.php:143 output/html/php_errors.php:186
+#: output/html/request.php:153 output/html/theme.php:128
+#: output/html/theme.php:254
+msgid "Unknown"
+msgstr "未知"
+
+#: classes/Component_Template.php:10 output/html/theme.php:64
+msgid "Parent Theme"
+msgstr "父主题"
+
+#: classes/Component_Stylesheet.php:14 output/html/theme.php:31
+#: output/html/theme.php:48
+msgid "Theme"
+msgstr "主题"
+
+#: classes/Component_Stylesheet.php:11
+msgid "Child Theme"
+msgstr "子主题"
+
+#. translators: %s: Plugin name
+#: classes/Component_VIP_Plugin.php:12
+msgid "VIP Plugin: %s"
+msgstr "VIP插件：%s"
+
+#. translators: %s: Plugin name
+#: classes/Component_Plugin.php:12
+msgid "Plugin: %s"
+msgstr "插件：%s"

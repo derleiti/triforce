@@ -1,0 +1,943 @@
+# Translation of Plugins - Site Kit by Google &#8211; Analytics, Search Console, AdSense, Speed - Stable (latest release) in Chinese (China)
+# This file is distributed under the same license as the Plugins - Site Kit by Google &#8211; Analytics, Search Console, AdSense, Speed - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2023-11-05 12:04:47+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: zh_CN\n"
+"Project-Id-Version: Plugins - Site Kit by Google &#8211; Analytics, Search Console, AdSense, Speed - Stable (latest release)\n"
+
+#: includes/Core/Admin/Screens.php:478
+#: dist/assets/js/googlesitekit-ad-blocking-recovery-2c30c1ff9976655238a8.js:14
+#: dist/assets/js/googlesitekit-modules-adsense-7be3dd970adbc67b0b5b.js:43
+msgid "Ad Blocking Recovery"
+msgstr "广告拦截恢复"
+
+#: includes/Core/Modules/REST_Modules_Controller.php:360
+msgid "Module access cannot be checked."
+msgstr "无法检查模块访问。"
+
+#. translators: 1: Error message or error code. 2: Get help link.
+#: includes/Core/Authentication/Setup.php:170
+msgid "The request to the authentication proxy has failed with an error: %1$s %2$s."
+msgstr "对身份验证代理的请求失败并出现错误：%s"
+
+#. translators: 1: Plugin name. 2: Message.
+#. translators: 1: Module name, 2: Error message
+#: includes/Core/Authentication/Authentication.php:1135
+#: dist/assets/js/googlesitekit-notifications-1a6dbda4f6737b1f2e87.js:29
+msgid "%1$s: %2$s"
+msgstr "%1$s：%2$s"
+
+#: includes/Core/Modules/REST_Modules_Controller.php:701
+msgid "Module is not accessible by current user."
+msgstr "当前用户无法访问模块。"
+
+#: includes/Core/Modules/REST_Modules_Controller.php:668
+msgid "Module is not recoverable."
+msgstr "模块不可恢复。"
+
+#: includes/Core/Modules/REST_Modules_Controller.php:655
+msgid "Module is not shareable."
+msgstr "模块不可共享。"
+
+#: includes/Core/Modules/REST_Modules_Controller.php:348
+#: includes/Core/Modules/REST_Modules_Controller.php:516
+#: includes/Modules/AdSense.php:485
+msgid "Module is not connected."
+msgstr "模块未连接。"
+
+#. translators: %s: The module name
+#: includes/Core/Admin/Screens.php:390
+msgid "The %s module cannot be set up as it has not been activated yet."
+msgstr "无法设置 %s 模块，因为它尚未激活。"
+
+#. translators: %s: Get help link.
+#: includes/Core/Authentication/Setup.php:189
+msgid "The request to the authentication proxy has failed. Please, try again later. %s."
+msgstr "对身份验证代理的请求失败。请稍后再试。"
+
+#: includes/Core/Authentication/Google_Proxy.php:462
+msgid "Failed to retrieve redirect URL."
+msgstr "无法检索重定向 URL。"
+
+#: includes/Core/Authentication/Google_Proxy.php:140
+msgid "Missing site_id or site_code parameter for setup URL."
+msgstr "设置 URL 缺少 site_id 或 site_code 参数。"
+
+#: includes/Core/Authentication/Google_Proxy.php:137
+msgid "Missing code parameter for setup URL."
+msgstr "设置 URL 缺少代码参数。"
+
+#: includes/Modules/PageSpeed_Insights.php:184
+msgid "https://pagespeed.web.dev"
+msgstr "https://pagespeed.web.dev"
+
+#: includes/Core/Authentication/Setup.php:237
+msgid "Verifying site ownership requires a token and verification method."
+msgstr "验证站点所有权需要令牌和验证方法。"
+
+#: includes/Core/Authentication/Setup.php:233
+#: includes/Core/Authentication/Setup.php:290
+msgid "Invalid request."
+msgstr "无效的请求。"
+
+#. translators: %s: Current URL
+#: includes/Core/Authentication/Authentication.php:1099
+msgid "New URL: %s"
+msgstr "新网址：%s"
+
+#. translators: %s: Previous URL
+#: includes/Core/Authentication/Authentication.php:1094
+msgid "Old URL: %s"
+msgstr "旧网址：%s"
+
+#: includes/Core/Authentication/Authentication.php:1312
+msgid "The link you followed has expired."
+msgstr "您关注的链接已过期。"
+
+#: includes/Modules/Tag_Manager/Web_Tag.php:130
+msgid "End Google Tag Manager (noscript) snippet added by Site Kit"
+msgstr "结束 Site Kit 添加的 Google Tag Manager (noscript) 代码段"
+
+#: includes/Modules/Tag_Manager/Web_Tag.php:126
+msgid "Google Tag Manager (noscript) snippet added by Site Kit"
+msgstr "Site Kit 添加的 Google Tag Manager (noscript) 代码段"
+
+#: includes/Modules/Tag_Manager/Web_Tag.php:104
+msgid "End Google Tag Manager snippet added by Site Kit"
+msgstr "结束 Site Kit 添加的 Google Tag Manager 代码段"
+
+#: includes/Modules/Tag_Manager/Web_Tag.php:102
+#: includes/Modules/Tag_Manager/Web_Tag.php:173
+msgid "Google Tag Manager snippet added by Site Kit"
+msgstr "Site Kit 添加的 Google Tag Manager 代码段"
+
+#: includes/Modules/Tag_Manager/AMP_Tag.php:75
+msgid "End Google Tag Manager AMP snippet added by Site Kit"
+msgstr "结束 Site Kit 添加的 Google Tag Manager AMP 片段"
+
+#: includes/Modules/Tag_Manager/AMP_Tag.php:66
+msgid "Google Tag Manager AMP snippet added by Site Kit"
+msgstr "Site Kit 添加的 Google Tag Manager AMP 代码段"
+
+#: includes/Modules/Analytics_4/Web_Tag.php:144
+msgid "Google Analytics snippet added by Site Kit"
+msgstr "Site Kit 添加的 Google Analytics 代码段"
+
+#: includes/Modules/Analytics_4/AMP_Tag.php:132
+msgid "End Google Analytics AMP snippet added by Site Kit"
+msgstr "结束 Site Kit 添加的 Google Analytics AMP 片段"
+
+#: includes/Modules/Analytics_4/AMP_Tag.php:124
+msgid "Google Analytics AMP snippet added by Site Kit"
+msgstr "Site Kit 添加的 Google Analytics AMP 代码段"
+
+#: includes/Modules/Analytics_4.php:863
+msgid "End Google Analytics opt-out snippet added by Site Kit"
+msgstr "结束由 Site Kit 添加的 Google Analytics 选择退出片段"
+
+#: includes/Modules/Analytics_4.php:854
+msgid "Google Analytics opt-out snippet added by Site Kit"
+msgstr "Site Kit 添加的 Google Analytics 选择退出代码段"
+
+#: includes/Modules/Analytics_4.php:852
+msgid "End Google Analytics AMP opt-out snippet added by Site Kit"
+msgstr "结束 Site Kit 添加的 Google Analytics AMP 退出片段"
+
+#: includes/Modules/Analytics_4.php:850
+msgid "Google Analytics AMP opt-out snippet added by Site Kit"
+msgstr "Site Kit 添加的 Google Analytics AMP 退出片段"
+
+#: includes/Modules/AdSense/Web_Tag.php:97
+msgid "End Google AdSense snippet added by Site Kit"
+msgstr "结束 Site Kit 添加的 Google AdSense 代码段"
+
+#: includes/Modules/AdSense/Web_Tag.php:95
+msgid "Google AdSense snippet added by Site Kit"
+msgstr "Site Kit 添加的 Google AdSense 代码段"
+
+#: includes/Modules/AdSense/AMP_Tag.php:123
+#: includes/Modules/AdSense/AMP_Tag.php:143
+#: includes/Modules/AdSense/AMP_Tag.php:188
+msgid "End Google AdSense AMP snippet added by Site Kit"
+msgstr "结束由 Site Kit 添加的 Google AdSense AMP 代码段"
+
+#: includes/Modules/AdSense/AMP_Tag.php:115
+#: includes/Modules/AdSense/AMP_Tag.php:142
+#: includes/Modules/AdSense/AMP_Tag.php:184
+msgid "Google AdSense AMP snippet added by Site Kit"
+msgstr "Site Kit 添加的 Google AdSense AMP 代码段"
+
+#: includes/Core/Site_Health/Debug_Data.php:336
+msgid "Verified outside of Site Kit"
+msgstr "在 Site Kit 之外验证"
+
+#: includes/Core/Site_Health/Debug_Data.php:329
+msgid "Verified through meta tag"
+msgstr "通过元标记验证"
+
+#: includes/Core/Site_Health/Debug_Data.php:321
+msgid "Verified through file"
+msgstr "通过文件验证"
+
+#: includes/Core/Site_Health/Debug_Data.php:313
+msgid "Not verified"
+msgstr "未验证"
+
+#: includes/Core/Site_Health/Debug_Data.php:304
+msgid "Verification Status"
+msgstr "验证状态"
+
+#. translators: %s: module name
+#: includes/Core/Modules/Module.php:440
+msgid "Site Kit can’t access the relevant data from %s because you haven’t granted all permissions requested during setup."
+msgstr "Site Kit 不能够从 %s 访问相关的数据，因为你没有授权所有的权限请求，在这个步骤过程中。"
+
+#. translators: %s: List of invalid parameters.
+#: includes/Modules/Analytics_4.php:1632
+msgid "Invalid parameter(s): %s"
+msgstr "无效参数： %s"
+
+#: includes/Core/Admin/Available_Tools.php:50
+msgid "Resetting will disconnect all users and remove all Site Kit settings and data within WordPress. You and any other users who wish to use Site Kit will need to reconnect to restore access."
+msgstr "重置将断开所有用户的连接，并删除 WordPress 内的所有 Site Kit 设置和数据。您和其他希望使用 Site Kit 的用户必须重新连接才能恢复访问权限。"
+
+#: includes/Core/Authentication/Google_Proxy.php:314
+msgid "Failed to parse response."
+msgstr "解析响应失败。"
+
+#: includes/Core/Authentication/Google_Proxy.php:269
+#: includes/Core/Authentication/Google_Proxy.php:498
+msgid "OAuth credentials haven't been found."
+msgstr "没有找到 OAuth 凭据。"
+
+#: includes/Core/Site_Health/Debug_Data.php:584
+msgid "Features"
+msgstr "特性"
+
+#: includes/Core/Admin/Plugin_Row_Meta.php:51
+msgid "Support"
+msgstr "支持"
+
+#: includes/Core/Admin/Plugin_Row_Meta.php:50
+msgid "Rate Site Kit"
+msgstr "网站工具"
+
+#: includes/Core/Modules/Datapoint.php:135
+msgid "You’ll need to grant Site Kit permission to do this."
+msgstr "您需要授予Site Kit权限才能执行此操作。"
+
+#: includes/Core/Site_Health/Debug_Data.php:537
+msgid "User Capabilities"
+msgstr "用户能力"
+
+#: includes/Core/User_Input/REST_User_Input_Controller.php:145
+msgid "Missing settings data."
+msgstr "缺少设置数据"
+
+#: includes/Core/Authentication/Authentication.php:1320
+msgid "Something went wrong."
+msgstr "有一些事情不对"
+
+#: includes/Core/Authentication/Authentication.php:1260
+msgid "You have insufficient permissions to manage Site Kit permissions."
+msgstr "您没有足够的权限来管理Site Kit."
+
+#: includes/Core/Admin/Screens.php:469
+msgid "User Input"
+msgstr "用户输入"
+
+#: includes/Core/Authentication/Authentication.php:1264
+#: includes/Core/Authentication/Setup.php:149
+msgid "Site Kit is not configured to use the authentication proxy."
+msgstr "Site Kit 没有配置去使用授权代理"
+
+#: includes/Core/Authentication/Setup.php:145
+msgid "You have insufficient permissions to connect Site Kit."
+msgstr "你没有足够的权限连接Site Kit"
+
+#: includes/Core/Authentication/Authentication.php:1082
+msgid "Reconnect"
+msgstr "重新连接"
+
+#: includes/Core/Authentication/Authentication.php:1080
+#: dist/assets/js/googlesitekit-splash-e3abaa080b4064076a63.js:2
+msgid "Looks like the URL of your site has changed. In order to continue using Site Kit, you’ll need to reconnect, so that your plugin settings are updated with the new URL."
+msgstr "看起来您网站的URL已更改。 为了继续使用网站套件，您需要重新连接，以便使用新的URL更新插件设置。"
+
+#: includes/Modules/Site_Verification.php:356
+msgctxt "Service name"
+msgid "Site Verification"
+msgstr "站点验证"
+
+#: includes/Core/Modules/REST_Modules_Controller.php:168
+msgid "Owner ID."
+msgstr "拥有者ID"
+
+#: includes/Core/Modules/REST_Modules_Controller.php:173
+msgid "Owner login."
+msgstr "拥有者登录"
+
+#: includes/Core/Site_Health/Debug_Data.php:359
+msgid "Connected user count"
+msgstr "连接用户数量"
+
+#: includes/Core/Util/Entity_Factory.php:296
+msgctxt "post format archive title"
+msgid "Links"
+msgstr "链接"
+
+#: includes/Core/Util/Entity_Factory.php:293
+msgctxt "post format archive title"
+msgid "Quotes"
+msgstr "引用"
+
+#: includes/Core/Util/Entity_Factory.php:290
+msgctxt "post format archive title"
+msgid "Videos"
+msgstr "视频"
+
+#: includes/Core/Util/Entity_Factory.php:287
+msgctxt "post format archive title"
+msgid "Images"
+msgstr "图片"
+
+#: includes/Core/Util/Entity_Factory.php:284
+msgctxt "post format archive title"
+msgid "Galleries"
+msgstr "图像"
+
+#: includes/Core/Util/Entity_Factory.php:281
+msgctxt "post format archive title"
+msgid "Asides"
+msgstr "旁白"
+
+#: includes/Core/Util/Entity_Factory.php:275
+msgctxt "tag archive title prefix"
+msgid "Tag:"
+msgstr "标签:"
+
+#: includes/Core/Util/Entity_Factory.php:271
+msgctxt "category archive title prefix"
+msgid "Category:"
+msgstr "分类:"
+
+#. translators: 1: Title prefix. 2: Title.
+#: includes/Core/Util/Entity_Factory.php:499
+msgctxt "archive title"
+msgid "%1$s %2$s"
+msgstr "%1$s %2$s"
+
+#: includes/Core/Util/Entity_Factory.php:408
+msgctxt "date archive title prefix"
+msgid "Day:"
+msgstr "天:"
+
+#: includes/Core/Util/Entity_Factory.php:409
+msgctxt "daily archives date format"
+msgid "F j, Y"
+msgstr "F j, Y"
+
+#: includes/Core/Util/Entity_Factory.php:402
+msgctxt "monthly archives date format"
+msgid "F Y"
+msgstr "F Y"
+
+#: includes/Core/Util/Entity_Factory.php:299
+msgctxt "post format archive title"
+msgid "Statuses"
+msgstr "状态"
+
+#: includes/Core/Util/Entity_Factory.php:302
+msgctxt "post format archive title"
+msgid "Audio"
+msgstr "声音"
+
+#: includes/Core/Util/Entity_Factory.php:305
+msgctxt "post format archive title"
+msgid "Chats"
+msgstr "聊天"
+
+#: includes/Core/Util/Entity_Factory.php:401
+msgctxt "date archive title prefix"
+msgid "Month:"
+msgstr "月:"
+
+#: includes/Core/Util/Entity_Factory.php:396
+msgctxt "yearly archives date format"
+msgid "Y"
+msgstr "Y"
+
+#: includes/Core/Util/Entity_Factory.php:395
+msgctxt "date archive title prefix"
+msgid "Year:"
+msgstr "年:"
+
+#: includes/Core/Util/Entity_Factory.php:367
+msgctxt "post type archive title prefix"
+msgid "Archives:"
+msgstr "Archives:"
+
+#: includes/Core/Util/Entity_Factory.php:342
+msgctxt "author archive title prefix"
+msgid "Author:"
+msgstr "作者:"
+
+#. translators: %s: Taxonomy singular name.
+#: includes/Core/Util/Entity_Factory.php:314
+msgctxt "taxonomy term archive title prefix"
+msgid "%s:"
+msgstr "%s:"
+
+#: includes/Core/Authentication/Clients/OAuth_Client_Base.php:305
+msgid "Looks like the verification token for your site is missing."
+msgstr "看起来您网站的缺少验证令牌"
+
+#: includes/Core/Authentication/Clients/OAuth_Client_Base.php:303
+msgid "Looks like there is no Search Console property for your site."
+msgstr "看起来没有Search Console 属性适用于你的网站"
+
+#: includes/Core/Authentication/Clients/OAuth_Client_Base.php:301
+msgid "Looks like your site is not allowed access to Google account data and can’t display stats in the dashboard."
+msgstr "看起来您的网站不允许访问Google帐户数据，无法在仪表板中显示统计信息"
+
+#: includes/Core/Util/Entity_Factory.php:251
+msgid "Home"
+msgstr "主页"
+
+#: includes/Modules/Analytics_4.php:677
+msgid "You’ll need to grant Site Kit permission to create a new Analytics account on your behalf."
+msgstr "您需要授予Site Kit权限，以代表您创建新的Analysis帐户"
+
+#: includes/Core/Modules/Module.php:383
+msgid "Invalid datapoint request."
+msgstr "无效的数据点需求"
+
+#: includes/Modules/Tag_Manager.php:283
+msgid "Additional permissions are required to create a new Tag Manager container on your behalf."
+msgstr "需要其他权限来代表您创建新的Tag Manager 容器"
+
+#: includes/Modules/Analytics_4.php:688
+msgid "You’ll need to grant Site Kit permission to create a new Analytics property on your behalf."
+msgstr "你将需要授权Site Kit 权限用你的名义创建一个新的Analytics属性"
+
+#: includes/Core/Modules/REST_Modules_Controller.php:484
+msgid "Settings to set."
+msgstr "设置成功"
+
+#: includes/Core/Modules/REST_Modules_Controller.php:437
+#: includes/Core/Modules/REST_Modules_Controller.php:470
+msgid "Module does not support settings."
+msgstr "模块不支持设置"
+
+#: includes/Core/Util/Requires_Javascript_Trait.php:36
+msgid "The Site Kit by Google plugin requires JavaScript to be enabled in your browser."
+msgstr "该网站由谷歌工具插件需要JavaScript中启用您的浏览器。"
+
+#: includes/Core/Site_Health/Debug_Data.php:518
+msgid "Required scopes"
+msgstr "必需范围"
+
+#: includes/Core/Site_Health/Debug_Data.php:291
+msgid "Not authenticated"
+msgstr "未认证"
+
+#: includes/Core/Site_Health/Debug_Data.php:290
+msgid "Authenticated"
+msgstr "认证"
+
+#: includes/Core/Site_Health/Debug_Data.php:288
+msgid "User Status"
+msgstr "用户状态"
+
+#: includes/Core/Site_Health/Debug_Data.php:271
+#: dist/assets/js/googlesitekit-modules-adsense-7be3dd970adbc67b0b5b.js:53
+msgid "Site Status"
+msgstr "网站状态"
+
+#: includes/Core/Site_Health/Debug_Data.php:259
+#: includes/Modules/Analytics_4.php:600 includes/Modules/Analytics_4.php:613
+msgid "Not connected"
+msgstr "未连接"
+
+#. translators: used between list items, there is a space after the comma.
+#. translators: used between list items, there is a space after the comma
+#: includes/Core/Site_Health/Debug_Data.php:378
+#: includes/Core/Site_Health/Debug_Data.php:399
+#: includes/Core/Site_Health/Debug_Data.php:469
+#: includes/Modules/AdSense.php:1040 includes/Modules/AdSense.php:1084
+#: includes/Modules/Analytics_4.php:591 includes/Modules/Analytics_4.php:634
+#: includes/Modules/Analytics_4/Report/RequestHelpers.php:177
+#: includes/Modules/Analytics_4/Report/RequestHelpers.php:247
+#: includes/Modules/Analytics_4/Report/RequestHelpers.php:314
+#: dist/assets/js/googlesitekit-activation-9fae1c60f7fbf5c3ebf2.js:17
+#: dist/assets/js/googlesitekit-ad-blocking-recovery-2c30c1ff9976655238a8.js:35
+#: dist/assets/js/googlesitekit-adminbar-d186945219cb93560f5d.js:33
+#: dist/assets/js/googlesitekit-api-211dd5a5f4cec4400889.js:16
+#: dist/assets/js/googlesitekit-block-tracking-960782aae4a52e585358.js:16
+#: dist/assets/js/googlesitekit-datastore-forms-d8b11b656dbaf63ca0b2.js:16
+#: dist/assets/js/googlesitekit-datastore-site-fd8ee487dce1936d6d77.js:16
+#: dist/assets/js/googlesitekit-datastore-ui-f70bef39a30fd710c09c.js:16
+#: dist/assets/js/googlesitekit-datastore-user-5667e15dbb47dad16df5.js:16
+#: dist/assets/js/googlesitekit-entity-dashboard-948461b5b99c6d8b49f5.js:40
+#: dist/assets/js/googlesitekit-main-dashboard-a725fcbefd2a71260086.js:20
+#: dist/assets/js/googlesitekit-metric-selection-917182e3b042960cfed2.js:31
+#: dist/assets/js/googlesitekit-modules-ads-376bcc528ed64ac0302c.js:23
+#: dist/assets/js/googlesitekit-modules-adsense-7be3dd970adbc67b0b5b.js:20
+#: dist/assets/js/googlesitekit-modules-analytics-4-01b087350c9abdbbe075.js:20
+#: dist/assets/js/googlesitekit-modules-c69030e789b0d41ff748.js:17
+#: dist/assets/js/googlesitekit-modules-pagespeed-insights-3321ee5a21873d686513.js:22
+#: dist/assets/js/googlesitekit-modules-reader-revenue-manager-58e722e6c731c342356d.js:24
+#: dist/assets/js/googlesitekit-modules-search-console-79a6c932436e46c38049.js:35
+#: dist/assets/js/googlesitekit-modules-sign-in-with-google-1d35a8ab929b43958ea7.js:30
+#: dist/assets/js/googlesitekit-modules-tagmanager-214fe54794a20166bf04.js:27
+#: dist/assets/js/googlesitekit-notifications-1a6dbda4f6737b1f2e87.js:21
+#: dist/assets/js/googlesitekit-settings-2b36b453bed7cb0967c1.js:20
+#: dist/assets/js/googlesitekit-splash-e3abaa080b4064076a63.js:30
+#: dist/assets/js/googlesitekit-user-input-077ded4654be41d0bb62.js:27
+#: dist/assets/js/googlesitekit-widgets-6e28ae3fe2a03c31814e.js:20
+#: dist/assets/js/googlesitekit-wp-dashboard-1f99443cbca11efb3fe5.js:37
+msgid ", "
+msgstr "，"
+
+#: includes/Core/Site_Health/Debug_Data.php:240
+msgid "AMP Mode"
+msgstr "AMP模式"
+
+#: includes/Core/Site_Health/Debug_Data.php:235
+msgid "Primary"
+msgstr "主要"
+
+#: includes/Core/Site_Health/Debug_Data.php:183
+msgid "Reference Site URL"
+msgstr "参考站点 URL "
+
+#: includes/Core/Site_Health/Debug_Data.php:171
+msgid "Version"
+msgstr "版本"
+
+#: includes/Core/Site_Health/Debug_Data.php:258
+msgid "Connected through OAuth client credentials"
+msgstr "通过 OAuth 客户端凭据 连接"
+
+#: includes/Core/Site_Health/Debug_Data.php:257
+msgid "Connected through site credentials"
+msgstr "通过站点凭据连接"
+
+#: includes/Core/Site_Health/Debug_Data.php:236
+msgid "Secondary"
+msgstr "次要"
+
+#: includes/Core/Site_Health/Debug_Data.php:179
+msgid "WordPress Version"
+msgstr "WordPress 版本"
+
+#: includes/Core/Site_Health/Debug_Data.php:175
+msgid "PHP Version"
+msgstr "PHP 版本"
+
+#: includes/Core/Site_Health/Debug_Data.php:375
+msgid "Active Modules"
+msgstr "激活模块"
+
+#: includes/Core/Site_Health/Debug_Data.php:210
+#: includes/Core/Site_Health/Debug_Data.php:452
+#: includes/Modules/Analytics_4.php:588 includes/Modules/Analytics_4.php:631
+#: includes/Modules/Reader_Revenue_Manager/Admin_Post_List.php:118
+#: includes/Modules/Reader_Revenue_Manager/Admin_Post_List.php:141
+#: includes/Modules/Reader_Revenue_Manager/Admin_Post_List.php:159
+#: dist/assets/blocks/reader-revenue-manager/block-editor-plugin/index.js:2
+#: dist/assets/js/googlesitekit-modules-ads-376bcc528ed64ac0302c.js:5
+#: dist/assets/js/googlesitekit-modules-ads-376bcc528ed64ac0302c.js:8
+#: dist/assets/js/googlesitekit-modules-adsense-7be3dd970adbc67b0b5b.js:53
+#: dist/assets/js/googlesitekit-modules-analytics-4-01b087350c9abdbbe075.js:51
+msgid "None"
+msgstr "无"
+
+#: includes/Core/Authentication/Clients/OAuth_Client_Base.php:307
+msgid "Unable to authenticate Site Kit, as no client credentials exist."
+msgstr "不能够授权Site kit，客户凭证不存在"
+
+#: includes/Core/Admin/Dashboard.php:116
+msgid "Site Kit Summary"
+msgstr "Site Kit 小结"
+
+#: includes/Core/Notifications/Notification.php:69
+#: dist/assets/js/googlesitekit-main-dashboard-a725fcbefd2a71260086.js:45
+#: dist/assets/js/googlesitekit-notifications-1a6dbda4f6737b1f2e87.js:6
+msgid "Dismiss"
+msgstr "驳回"
+
+#: includes/Modules/Analytics_4.php:600 includes/Modules/Analytics_4.php:613
+#: dist/assets/js/googlesitekit-settings-2b36b453bed7cb0967c1.js:47
+msgid "Connected"
+msgstr "连接"
+
+#: includes/Core/Admin/Available_Tools.php:47
+#: includes/Core/Admin/Available_Tools.php:61
+#: dist/assets/js/googlesitekit-settings-2b36b453bed7cb0967c1.js:46
+#: dist/assets/js/googlesitekit-splash-e3abaa080b4064076a63.js:13
+msgid "Reset Site Kit"
+msgstr "重置Site Kit"
+
+#: includes/Modules/Tag_Manager.php:511
+#: dist/assets/js/googlesitekit-modules-tagmanager-214fe54794a20166bf04.js:28
+msgctxt "Service name"
+msgid "Tag Manager"
+msgstr "Tag Manager"
+
+#: includes/Modules/Search_Console.php:506
+#: dist/assets/js/googlesitekit-modules-search-console-79a6c932436e46c38049.js:1
+#: dist/assets/js/googlesitekit-splash-e3abaa080b4064076a63.js:15
+msgctxt "Service name"
+msgid "Search Console"
+msgstr "搜索控制台"
+
+#: includes/Modules/Analytics_4.php:1883
+#: dist/assets/js/googlesitekit-main-dashboard-a725fcbefd2a71260086.js:42
+#: dist/assets/js/googlesitekit-modules-adsense-7be3dd970adbc67b0b5b.js:53
+#: dist/assets/js/googlesitekit-modules-analytics-4-01b087350c9abdbbe075.js:38
+#: dist/assets/js/googlesitekit-modules-analytics-4-01b087350c9abdbbe075.js:58
+#: dist/assets/js/googlesitekit-modules-analytics-4-01b087350c9abdbbe075.js:70
+#: dist/assets/js/googlesitekit-modules-analytics-4-01b087350c9abdbbe075.js:75
+#: dist/assets/js/googlesitekit-modules-search-console-79a6c932436e46c38049.js:1
+#: dist/assets/js/googlesitekit-settings-2b36b453bed7cb0967c1.js:42
+#: dist/assets/js/googlesitekit-widgets-6e28ae3fe2a03c31814e.js:38
+msgctxt "Service name"
+msgid "Analytics"
+msgstr "Analytics"
+
+#: includes/Modules/AdSense.php:751
+#: dist/assets/js/googlesitekit-ad-blocking-recovery-2c30c1ff9976655238a8.js:14
+#: dist/assets/js/googlesitekit-ad-blocking-recovery-2c30c1ff9976655238a8.js:17
+#: dist/assets/js/googlesitekit-modules-adsense-7be3dd970adbc67b0b5b.js:43
+#: dist/assets/js/googlesitekit-modules-adsense-7be3dd970adbc67b0b5b.js:46
+#: dist/assets/js/googlesitekit-modules-adsense-7be3dd970adbc67b0b5b.js:49
+msgctxt "Service name"
+msgid "AdSense"
+msgstr "AdSense"
+
+#: includes/Modules/PageSpeed_Insights.php:182
+#: dist/assets/js/googlesitekit-modules-pagespeed-insights-3321ee5a21873d686513.js:2
+msgctxt "Service name"
+msgid "PageSpeed Insights"
+msgstr "PageSpeed 洞见"
+
+#. Author URI of the plugin
+#: google-site-kit.php
+msgid "https://opensource.google.com"
+msgstr "https://opensource.google.com"
+
+#. Plugin URI of the plugin
+#: google-site-kit.php
+msgid "https://sitekit.withgoogle.com"
+msgstr "https://sitekit.withgoogle.com"
+
+#: includes/Modules/Search_Console.php:509
+msgid "https://search.google.com/search-console"
+msgstr "https://search.google.com/search-console"
+
+#: includes/Modules/Search_Console.php:507
+msgid "Google Search Console and helps you understand how Google views your site and optimize its performance in search results."
+msgstr "谷歌搜索控制台并帮助你了解谷歌的观点你的网站在搜索结果和优化其性能。"
+
+#: google-site-kit.php:51 google-site-kit.php:59
+msgid "Error Activating"
+msgstr "激活错误"
+
+#. translators: %s: Missing parameter name
+#: includes/Core/Dismissals/REST_Dismissals_Controller.php:148
+#: includes/Core/Expirables/REST_Expirable_Items_Controller.php:110
+#: includes/Core/Expirables/REST_Expirable_Items_Controller.php:120
+#: includes/Core/Feature_Tours/REST_Feature_Tours_Controller.php:108
+#: includes/Core/Notifications/Notifications.php:286
+#: includes/Core/Prompts/REST_Prompts_Controller.php:109
+#: includes/Core/REST_API/Exception/Missing_Required_Param_Exception.php:46
+#: includes/Modules/AdSense.php:342 includes/Modules/AdSense.php:347
+#: includes/Modules/AdSense.php:355 includes/Modules/AdSense.php:364
+#: includes/Modules/AdSense.php:476 includes/Modules/Analytics_4.php:1214
+#: includes/Modules/Analytics_4.php:1230 includes/Modules/Analytics_4.php:1245
+#: includes/Modules/Analytics_4.php:1261 includes/Modules/Analytics_4.php:1273
+#: includes/Modules/Analytics_4.php:1303 includes/Modules/Analytics_4.php:1312
+#: includes/Modules/Analytics_4.php:1331 includes/Modules/Analytics_4.php:1340
+#: includes/Modules/Analytics_4.php:1349 includes/Modules/Analytics_4.php:1403
+#: includes/Modules/Analytics_4.php:1412 includes/Modules/Analytics_4.php:1556
+#: includes/Modules/Analytics_4.php:1606 includes/Modules/Analytics_4.php:1623
+#: includes/Modules/Analytics_4.php:1658 includes/Modules/Analytics_4.php:1669
+#: includes/Modules/Analytics_4.php:1677 includes/Modules/Analytics_4.php:1690
+#: includes/Modules/PageSpeed_Insights.php:100
+#: includes/Modules/Search_Console.php:238
+#: includes/Modules/Site_Verification.php:173
+#: includes/Modules/Tag_Manager.php:308 includes/Modules/Tag_Manager.php:316
+#: includes/Modules/Tag_Manager.php:359 includes/Modules/Tag_Manager.php:367
+msgid "Request parameter is empty: %s."
+msgstr "请求参数为空：%s。"
+
+#: includes/Modules/AdSense.php:403
+msgid "Go to AdSense"
+msgstr "去到AdSense"
+
+#: includes/Modules/AdSense.php:679
+msgid "AdSense account ID not set."
+msgstr "AdSense 账户ID没有设置"
+
+#: includes/Modules/Tag_Manager.php:513
+msgid "https://tagmanager.google.com/"
+msgstr "https://tagmanager.google.com/"
+
+#: includes/Modules/Tag_Manager.php:512
+msgid "Tag Manager creates an easy to manage way to create tags on your site without updating code"
+msgstr "Tag Manager创建一个易于管理的方式来在站点上创建标签而无需更新代码"
+
+#: includes/Modules/Site_Verification.php:359
+msgid "https://www.google.com/webmasters/verification/home"
+msgstr "https://www.google.com/webmasters/verification/home"
+
+#: includes/Modules/Site_Verification.php:357
+msgid "Google Site Verification allows you to manage ownership of your site."
+msgstr "Google Site Verification 允许你管你站点的所有权"
+
+#: includes/Modules/Site_Verification.php:180
+msgid "Unknown user."
+msgstr "未知用户"
+
+#: includes/Modules/AdSense.php:752
+msgid "Earn money by placing ads on your website. It’s free and easy."
+msgstr "通过在您的网站上放置广告来赚钱。 它是免费的，很容易。"
+
+#: includes/Core/Modules/Module.php:488
+msgid "Google client not set up correctly."
+msgstr "Google 客户没有正确的设置"
+
+#. translators: %s: module slug
+#: includes/Core/Modules/Modules.php:528 includes/Core/Modules/Modules.php:566
+#: includes/Core/Modules/Modules.php:587
+msgid "Invalid module slug %s."
+msgstr "无效的模块后缀 %s."
+
+#: includes/Core/Admin/Screen.php:129
+#: includes/Core/Site_Health/Tag_Placement.php:106
+msgid "Site Kit"
+msgstr "Site Kit"
+
+#: includes/Core/Authentication/Clients/OAuth_Client_Base.php:309
+msgid "Unable to refresh access token, as no refresh token exists."
+msgstr "不能够刷新访问token,没有刷新现有的token."
+
+#: includes/Core/Site_Health/Debug_Data.php:241
+#: includes/Core/Tags/Google_Tag_Gateway/Google_Tag_Gateway.php:152
+#: includes/Modules/AdSense.php:253 includes/Modules/AdSense.php:274
+#: includes/Modules/AdSense.php:282 includes/Modules/Analytics_4.php:582
+#: includes/Modules/Sign_In_With_Google.php:488
+#: includes/Modules/Tag_Manager.php:236
+msgid "No"
+msgstr "No"
+
+#: includes/Core/Tags/Google_Tag_Gateway/Google_Tag_Gateway.php:150
+#: includes/Modules/AdSense.php:253 includes/Modules/AdSense.php:274
+#: includes/Modules/AdSense.php:282 includes/Modules/Analytics_4.php:582
+#: includes/Modules/Sign_In_With_Google.php:488
+#: includes/Modules/Tag_Manager.php:236
+msgid "Yes"
+msgstr "Yes"
+
+#: includes/Core/Modules/REST_Modules_Controller.php:149
+msgid "List of slugs of other modules depending on the module."
+msgstr "根据模块列出其他模块的slugs."
+
+#: includes/Core/Modules/REST_Modules_Controller.php:141
+msgid "List of slugs of other modules that the module depends on."
+msgstr "模块取决于其他模块的slugs 列表"
+
+#: includes/Core/Modules/REST_Modules_Controller.php:136
+msgid "Whether the module setup has been completed."
+msgstr "模块设置是否已完成"
+
+#: includes/Core/Modules/REST_Modules_Controller.php:132
+msgid "Whether the module is active."
+msgstr "模块是否处于激活状态"
+
+#: includes/Core/Modules/REST_Modules_Controller.php:127
+msgid "Whether the module is internal, thus without any UI."
+msgstr "模块是内部的，因此没有任何UI"
+
+#: includes/Core/Modules/REST_Modules_Controller.php:121
+msgid "The module homepage."
+msgstr "模块主页"
+
+#: includes/Core/Modules/REST_Modules_Controller.php:116
+msgid "Description of the module."
+msgstr "模块的描述"
+
+#: includes/Core/Modules/REST_Modules_Controller.php:111
+msgid "Name of the module."
+msgstr "模块的名称"
+
+#: includes/Core/Util/REST_Entity_Search_Controller.php:133
+msgid "Text content to search for."
+msgstr "要搜索的文本内容"
+
+#: includes/Core/Authentication/Clients/OAuth_Client_Base.php:291
+msgid "Internal error that the Google login redirect failed."
+msgstr "Google登录重定向失败的内部错误"
+
+#: includes/Core/Authentication/Authentication.php:1144
+msgid "Click here"
+msgstr "点击这里"
+
+#: includes/Core/Authentication/Authentication.php:1137
+msgid "You need to reauthenticate your Google account."
+msgstr "你需要重新授权你的Google账户"
+
+#. translators: %s: error code from API
+#: includes/Core/Authentication/Clients/OAuth_Client_Base.php:316
+msgid "Unknown Error (code: %s)."
+msgstr "未知的错误 (代码:%s)"
+
+#: includes/Core/Authentication/Clients/OAuth_Client_Base.php:313
+msgid "Unable to receive access token because of an unsupported grant type."
+msgstr "由于授予类型不受支持，无法接收访问令牌。"
+
+#: includes/Core/Admin/Plugin_Action_Links.php:61
+#: includes/Core/Admin/Screens.php:460
+#: dist/assets/js/googlesitekit-settings-2b36b453bed7cb0967c1.js:46
+msgid "Settings"
+msgstr "设置"
+
+#: includes/Core/Admin/Screens.php:362 includes/Core/Admin/Screens.php:408
+msgid "Dashboard"
+msgstr "工具栏"
+
+#: includes/Modules/Analytics_4.php:1885
+msgid "https://analytics.google.com/analytics/web"
+msgstr "https://analytics.google.com/analytics/web"
+
+#: includes/Modules/Analytics_4.php:1884
+msgid "Get a deeper understanding of your customers. Google Analytics gives you the free tools you need to analyze data for your business in one place."
+msgstr "更深层次的理解客户。Google Analytics 会给你免费的工具来分析你的数据。"
+
+#: includes/Modules/AdSense.php:644
+msgid "Invalid date range."
+msgstr "无效的日期范围"
+
+#. translators: %s: service identifier
+#: includes/Core/Modules/Module.php:554
+msgid "Google service identified by %s does not exist."
+msgstr "%s 标识的Google服务不存在"
+
+#: includes/Core/Modules/Module.php:542 includes/Core/Modules/Module.php:546
+msgid "Google services not set up correctly."
+msgstr "Google服务未正确设置"
+
+#: includes/Core/Modules/REST_Modules_Controller.php:344
+#: includes/Core/Modules/REST_Modules_Controller.php:395
+#: includes/Core/Modules/REST_Modules_Controller.php:433
+#: includes/Core/Modules/REST_Modules_Controller.php:466
+#: includes/Core/Modules/REST_Modules_Controller.php:512
+#: includes/Core/Modules/REST_Modules_Controller.php:548
+#: includes/Core/Modules/REST_Modules_Controller.php:570
+msgid "Invalid module slug."
+msgstr "无效的模块后缀"
+
+#: includes/Core/Authentication/Clients/OAuth_Client_Base.php:299
+msgid "Unable to receive access token because of an invalid OAuth request."
+msgstr "由于OAUTH请求无效，无法接收访问令牌"
+
+#: includes/Core/Authentication/Clients/OAuth_Client_Base.php:289
+msgid "Unable to receive access token because of an unknown error."
+msgstr "由于错误而无法接收访问令牌"
+
+#: includes/Core/Authentication/Clients/OAuth_Client_Base.php:295
+msgid "Unable to receive access token because of an empty authorization code."
+msgstr "由于空授权代码无法接收访问令牌"
+
+#: includes/Core/Modules/REST_Modules_Controller.php:605
+msgid "Module data point to address."
+msgstr "模块化数据点的地址"
+
+#: includes/Core/Modules/REST_Modules_Controller.php:588
+msgid "Data to set."
+msgstr "数据用于设置"
+
+#: includes/Core/Modules/REST_Modules_Controller.php:106
+#: includes/Core/Modules/REST_Modules_Controller.php:322
+#: includes/Core/Modules/REST_Modules_Controller.php:379
+#: includes/Core/Modules/REST_Modules_Controller.php:417
+#: includes/Core/Modules/REST_Modules_Controller.php:496
+#: includes/Core/Modules/REST_Modules_Controller.php:532
+#: includes/Core/Modules/REST_Modules_Controller.php:600
+msgid "Identifier for the module."
+msgstr "用于模块化标识符"
+
+#: includes/Core/Modules/REST_Modules_Controller.php:271
+msgid "An internal error occurred while trying to activate the module."
+msgstr "尝试激活模块时发生内部错误"
+
+#. translators: %s: module name
+#: includes/Core/Modules/REST_Modules_Controller.php:267
+msgid "Module cannot be activated because of inactive dependency %s."
+msgstr "由于非活动依赖性 %s，模块无法激活"
+
+#: includes/Core/Modules/REST_Modules_Controller.php:285
+msgid "An internal error occurred while trying to deactivate the module."
+msgstr "尝试取消激活模块时发生内部错误"
+
+#. translators: %s: module name
+#: includes/Core/Modules/REST_Modules_Controller.php:280
+msgid "Module cannot be deactivated because deactivation of dependant %s failed."
+msgstr "模块无法取消激活，因为取决于依赖的%s失败"
+
+#: includes/Core/Authentication/Clients/OAuth_Client_Base.php:297
+msgid "Unable to receive access token because of an invalid authorization code or refresh token."
+msgstr "由于授权代码无效或刷新令牌，无法接收访问令牌。"
+
+#: includes/Core/Authentication/Clients/OAuth_Client_Base.php:311
+msgid "Unable to receive access token because of an unauthorized client."
+msgstr "由于未经授权的客户端无法接收访问令牌。"
+
+#: includes/Core/Authentication/Clients/OAuth_Client_Base.php:293
+msgid "Unable to receive access token because of an invalid client."
+msgstr "由于客户端无效，无法接收访问令牌。"
+
+#. Author of the plugin
+#: google-site-kit.php
+msgid "Google"
+msgstr "Google"
+
+#: includes/Core/REST_API/Exception/Invalid_Datapoint_Exception.php:38
+msgid "Invalid datapoint."
+msgstr "无效的数据点"
+
+#. translators: 1: Invalid parameter name, 2: list of valid values
+#: includes/Modules/PageSpeed_Insights.php:114
+#: includes/Modules/Tag_Manager.php:328
+msgid "Request parameter %1$s is not one of %2$s"
+msgstr "请求参数 %1$s 不是 %2$s 中的一个"
+
+#: includes/Modules/Search_Console.php:266
+msgid "Error adding the site to Search Console."
+msgstr "将站点添加到 Search Console 时出错。"
+
+#: includes/Modules/PageSpeed_Insights.php:183
+msgid "Google PageSpeed Insights gives you metrics about performance, accessibility, SEO and PWA"
+msgstr "Google PageSpeed Insights为您提供有关性能、可访问性、SEO 和 PWA的指标。"
+
+#. Plugin Name of the plugin
+#. translators: %1$s: Sign in with Google service name, %2$s: Plugin name
+#: google-site-kit.php includes/Core/Admin/Screen.php:87
+#: includes/Core/Authentication/Authentication.php:1079
+#: includes/Core/Authentication/Authentication.php:1136
+#: includes/Core/Site_Health/Debug_Data.php:124
+#: includes/Modules/Sign_In_With_Google.php:662
+msgid "Site Kit by Google"
+msgstr "Site Kit by Google"
+
+#. Description of the plugin
+#: google-site-kit.php
+msgid "Site Kit is a one-stop solution for WordPress users to use everything Google has to offer to make them successful on the web."
+msgstr "Site Kit 是一个一站式解决方案，供 WordPress 用户使用 Google 所提供的一系列服务，使其在网络上取得成功。"

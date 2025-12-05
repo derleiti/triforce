@@ -1,0 +1,1513 @@
+# Translation of Plugins - Code Snippets - Stable (latest release) in Romanian
+# This file is distributed under the same license as the Plugins - Code Snippets - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-08-29 13:37:51+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n == 0 || n % 100 >= 2 && n % 100 <= 19) ? 1 : 2);\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: ro\n"
+"Project-Id-Version: Plugins - Code Snippets - Stable (latest release)\n"
+
+#: php/views/welcome.php:44 dist/edit.js:2
+msgid "Pro"
+msgstr "Pro"
+
+#: php/views/welcome.php:43
+msgid "Core"
+msgstr "Nucleu"
+
+#: php/views/partials/list-table-notices.php:26
+msgid "Warning:"
+msgstr "Avertizare:"
+
+#: php/admin-menus/class-import-menu.php:154
+msgid "Have fun!"
+msgstr "Distrează-te!"
+
+#: php/admin-menus/class-import-menu.php:142
+msgid "Successfully imported %d snippet."
+msgid_plural "Successfully imported %d snippets."
+msgstr[0] "Am importat cu succes un fragment."
+msgstr[1] "Am importat cu succes %d fragmente."
+msgstr[2] "Am importat cu succes %d de fragmente."
+
+#: php/admin-menus/class-edit-menu.php:70
+msgid "Create New Snippet"
+msgstr "Creează fragment nou"
+
+#: php/views/partials/list-table-notices.php:59
+msgid "Synced cloud data has been <strong>successfully</strong> refreshed."
+msgstr "Datele sincronizate în cloud au fost reîmprospătate <strong>cu succes</strong>."
+
+#: php/views/partials/list-table-notices.php:34
+msgid "Help"
+msgstr "Ajutor"
+
+#: php/cloud/list-table-shared-ops.php:80
+msgid "Update Available"
+msgstr "Este disponibilă o actualizare"
+
+#: php/views/welcome.php:180
+msgid "Partner image"
+msgstr "Imagine partener"
+
+#: php/views/welcome.php:177
+msgid "Go to Partner"
+msgstr "Mergi la partener"
+
+#: php/views/welcome.php:172
+msgid "Partners and apps"
+msgstr "Parteneri și aplicații"
+
+#: php/views/welcome.php:156
+msgid "Feature image"
+msgstr "Imagine reprezentativă"
+
+#: php/views/welcome.php:148
+msgid "Helpful articles"
+msgstr "Articole utile"
+
+#: php/views/welcome.php:103
+msgid "Latest changes"
+msgstr "Ultimele modificări"
+
+#: php/views/welcome.php:100
+msgid "Read the full changelog"
+msgstr "Citește întregul istoric al modificărilor"
+
+#: php/views/welcome.php:95
+msgid "Latest news image"
+msgstr "Imagine pentru Ultimele știri"
+
+#: php/views/welcome.php:85 php/views/welcome.php:153
+msgid "Read more"
+msgstr "Citește mai mult"
+
+#: php/views/welcome.php:82
+msgid "Latest news"
+msgstr "Ultimele știri"
+
+#: php/views/welcome.php:56
+msgid "Resources and <span>What's New</span>"
+msgstr "Resurse și <span>Ce este nou</span>"
+
+#: php/views/welcome.php:54
+msgid "Code Snippets Logo"
+msgstr "Logo Code Snippets"
+
+#: php/views/welcome.php:37
+msgid "Other"
+msgstr "Altele"
+
+#: php/views/welcome.php:33
+msgid "Bug fixes"
+msgstr "Corecții de erori"
+
+#: php/views/welcome.php:29
+msgid "Improvements"
+msgstr "Îmbunătățiri"
+
+#: php/views/welcome.php:25
+msgid "New features"
+msgstr "Funcționalități noi"
+
+#: php/admin-menus/class-welcome-menu.php:74
+msgid "Discord"
+msgstr "Discord"
+
+#: php/admin-menus/class-welcome-menu.php:59
+msgid "Cloud"
+msgstr "Cloud"
+
+#: php/admin-menus/class-welcome-menu.php:29
+msgid "Welcome to Code Snippets"
+msgstr "Bine ai venit la Code Snippets"
+
+#: php/admin-menus/class-welcome-menu.php:28
+msgctxt "menu label"
+msgid "What's New"
+msgstr "Ce este nou"
+
+#: php/settings/settings.php:282
+msgid "Successfully reset snippets caches."
+msgstr "Am resetat cu succes cache-ul pentru fragmente."
+
+#: php/settings/settings-fields.php:80
+msgid "Use this button to manually clear snippets caches."
+msgstr "Folosește acest buton pentru a șterge manual cache-ul pentru fragmente."
+
+#: php/settings/settings-fields.php:78
+msgid "Reset Caches"
+msgstr "Resetează cache-ul"
+
+#: php/settings/settings.php:266
+msgid "Successfully performed database table upgrade."
+msgstr "Am executat cu succes actualizarea tabelelor din baza de date."
+
+#: php/settings/settings.php:141
+msgid "Debug"
+msgstr "Depanare"
+
+#: php/settings/settings-fields.php:75
+msgid "Use this button to manually upgrade the Code Snippets database table. This action will only affect the snippets table and should be used only when necessary."
+msgstr "Folosește acest buton pentru a actualiza manual tabelele din baza de date Code Snippets. Această acțiune va afecta numai tabelul cu fragmente de cod și ar trebui folosită numai dacă este necesară."
+
+#: php/settings/settings-fields.php:74
+msgid "Upgrade Database Table"
+msgstr "Actualizează tabelele din baza de date"
+
+#: php/settings/settings-fields.php:72
+msgid "Database Table Upgrade"
+msgstr "Actualizare tabele în baza de date"
+
+#: php/admin-menus/class-welcome-menu.php:69 php/class-admin.php:166
+msgid "Community"
+msgstr "Comunitate"
+
+#: php/class-admin.php:160
+msgid "Docs and Support"
+msgstr "Documente și suport"
+
+#: php/admin-menus/class-manage-menu.php:88
+msgctxt "top-level menu label"
+msgid "Go Pro"
+msgstr "Ia versiunea Pro"
+
+#: php/views/partials/cloud-search.php:56
+msgid "e.g. Remove unused javascript…"
+msgstr "De exemplu, înlătură JavaScript neutilizat..."
+
+#: php/views/partials/cloud-search.php:51
+msgid "Name of codevault"
+msgstr "Nume pentru seif de coduri"
+
+#: php/views/partials/cloud-search.php:48
+msgid "Search by keyword(s)"
+msgstr "Caută după cuvânt (cuvinte) cheie"
+
+#: php/views/partials/cloud-search.php:42
+#: php/views/partials/cloud-search.php:59
+msgid "Search Cloud"
+msgstr "Caută în cloud"
+
+#: php/views/partials/cloud-search.php:33
+msgid "Search cloud snippets"
+msgstr "Caută fragmente în cloud"
+
+#: php/views/partials/cloud-search.php:26
+msgid "(Note: codevault name is case and spelling sensitive and only public snippets will be shown)"
+msgstr "(Notă: numele seifului de coduri este sensibil la majuscule și ortografie și vor fi arătate numai fragmentele publice)"
+
+#: php/views/partials/cloud-search.php:23
+msgid "Use the search bar below to search cloud snippets by entering either the name of a codevault or keywords."
+msgstr "Folosește bara de căutare de mai jos pentru a căuta fragmente în cloud fie prin introducerea numelui pentru un seif de coduri, fie cu cuvinte cheie."
+
+#: php/views/manage.php:96
+msgid "Learn more about Code Snippets Cloud &rarr;"
+msgstr "Învață mai multe despre Code Snippets Cloud &rarr;"
+
+#: php/views/manage.php:95
+msgid "See all your public and private snippets that are stored in your Code Snippet Cloud codevault."
+msgstr "Vezi toate fragmentele publice și private care sunt stocate în seiful de coduri Code Snippet Cloud."
+
+#: php/views/manage.php:91
+msgid "Learn more about javascript snippets &rarr;"
+msgstr "Învață mai multe despre fragmentele pentru JavaScript &rarr;"
+
+#: php/views/manage.php:86
+msgid "Learn more about style snippets &rarr;"
+msgstr "Învață mai multe despre fragmentele pentru stil &rarr;"
+
+#: php/views/manage.php:81
+msgid "Learn more about content snippets &rarr;"
+msgstr "Învață mai multe despre fragmentele pentru conținut &rarr;"
+
+#: php/views/manage.php:76
+msgid "Learn more about function snippets &rarr;"
+msgstr "Învață mai multe despre fragmentele pentru funcții &rarr;"
+
+#: php/class-admin.php:391 php/views/manage.php:64
+msgid "Find more about Pro (opens in external tab)"
+msgstr "Află mai multe despre versiunea Pro (se deschide într-o filă externă)"
+
+#: php/views/manage.php:29
+msgid "Thank you for testing this <span class=\"highlight-yellow\">beta version of Code Snippets</span>. We would love to hear your thoughts."
+msgstr "Îți mulțumim că testezi această <span class=\"highlight-yellow\">versiune Beta pentru Code Snippets</span>. Ne-ar plăcea să auzim părerile tale."
+
+#: php/cloud/list-table-shared-ops.php:225
+msgid "Last page"
+msgstr "Ultima pagină"
+
+#: php/cloud/list-table-shared-ops.php:214
+msgid "Next page"
+msgstr "Pagina următoare"
+
+#. translators: 1: Current page, 2: Total pages.
+#: php/cloud/list-table-shared-ops.php:205
+msgctxt "paging"
+msgid "%1$s of %2$s"
+msgstr "%1$s din %2$s"
+
+#: php/cloud/list-table-shared-ops.php:189
+#: php/cloud/list-table-shared-ops.php:195
+msgid "Current page"
+msgstr "Pagina curentă"
+
+#: php/cloud/list-table-shared-ops.php:183
+msgid "Previous page"
+msgstr "Pagina anterioară"
+
+#: php/cloud/list-table-shared-ops.php:173
+msgid "First page"
+msgstr "Prima pagină"
+
+#. translators: %s: Number of items.
+#: php/cloud/list-table-shared-ops.php:140
+msgid "%s item"
+msgid_plural "%s items"
+msgstr[0] "%s element"
+msgstr[1] "%s elemente"
+msgstr[2] "%s de elemente"
+
+#: php/cloud/list-table-shared-ops.php:123
+msgid "Preview"
+msgstr "Previzualizează"
+
+#: php/cloud/list-table-shared-ops.php:86
+msgid "View"
+msgstr "Vezi"
+
+#: php/cloud/class-cloud-search-list-table.php:276
+msgid "Please enter a term to start searching code snippets in the cloud."
+msgstr "Te rog să introduci un termen pentru a începe căutarea fragmentelor de cod în cloud."
+
+#: php/cloud/class-cloud-search-list-table.php:273
+msgid "No snippets or codevault could be found with that search term. Please try again."
+msgstr "Nu am găsit niciun fragment sau seif de coduri cu acest termen de căutare. Te rog să încerci din nou."
+
+#. translators: %s: tested status.
+#: php/cloud/class-cloud-search-list-table.php:242
+msgid "Author states %s"
+msgstr "Autorul afirmă %s"
+
+#: php/cloud/class-cloud-search-list-table.php:236
+msgid "Not indicated by author"
+msgstr "Nu a fost indicat de autor"
+
+#: php/cloud/class-cloud-search-list-table.php:231
+msgid "WP Compatibility:"
+msgstr "Compatibilitate WP:"
+
+#: php/cloud/class-cloud-search-list-table.php:119
+msgid "Snippet has not undergone any review yet."
+msgstr "Fragmentul nu are nicio revizie până acum."
+
+#: php/cloud/class-cloud-search-list-table.php:117
+msgid "Snippet has been tested by our AI bot."
+msgstr "Fragmentul a fost testat de botul nostru AI."
+
+#: php/cloud/class-cloud-search-list-table.php:115
+msgid "Snippet has passed basic review."
+msgstr "Fragmentul a trecut revizia de bază."
+
+#: php/cloud/class-cloud-search-list-table.php:211
+msgid "Last Updated:"
+msgstr "Ultima actualizare:"
+
+#. translators: 1: number of votes with label, 2: number of users with label.
+#: php/cloud/class-cloud-search-list-table.php:206
+msgctxt "votes"
+msgid "%1$s by %2$s"
+msgstr "%1$s de %2$s"
+
+#. translators: 1: number of users.
+#: php/cloud/class-cloud-search-list-table.php:202
+msgid "%d user"
+msgid_plural "%d users"
+msgstr[0] "%d utilizator"
+msgstr[1] "%d utilizatori"
+msgstr[2] "%d de utilizatori"
+
+#. translators: 1: number of votes.
+#: php/cloud/class-cloud-search-list-table.php:198
+msgctxt "vote count"
+msgid "%d time"
+msgid_plural "%d times"
+msgstr[0] "o dată"
+msgstr[1] "%d ori"
+msgstr[2] "%d de ori"
+
+#: php/cloud/class-cloud-search-list-table.php:179
+msgid "Codevault:"
+msgstr "Seif de coduri:"
+
+#: php/cloud/class-cloud-search-list-table.php:146
+msgid "Preview this snippet"
+msgstr "Previzualizează acest fragment"
+
+#: php/cloud/class-cloud-api.php:509
+msgid "Snippet Code:"
+msgstr "Fragment de cod:"
+
+#: php/cloud/class-cloud-api.php:474
+msgid "Pro Verified"
+msgstr "Verificat de Pro"
+
+#: php/cloud/class-cloud-api.php:473
+msgid "AI Verified"
+msgstr "Verificat de AI"
+
+#: php/cloud/class-cloud-api.php:472
+msgid "Unverified"
+msgstr "Neverificat"
+
+#: php/cloud/class-cloud-api.php:471
+msgid "Public"
+msgstr "Public"
+
+#: php/cloud/class-cloud-api.php:470
+msgid "Private"
+msgstr "Privat"
+
+#: php/cloud/class-cloud-api.php:402
+msgid "Updated"
+msgstr "Actualizat"
+
+#: php/cloud/class-cloud-api.php:336
+msgid "Invalid action."
+msgstr "Acțiunea nu este validă."
+
+#: php/class-plugin.php:344
+msgid "Bundles"
+msgstr "Pachete"
+
+#: php/class-plugin.php:342
+msgid "Codevault"
+msgstr "Seif de coduri"
+
+#: php/class-plugin.php:343
+msgid "Cloud Search"
+msgstr "Căutare în cloud"
+
+#: php/class-admin.php:326
+msgid "AI"
+msgstr "AI"
+
+#: php/strings.php:52
+msgid "Select a snippet to display"
+msgstr "Selectează un fragment de afișat"
+
+#: php/strings.php:51
+msgid "Font Size"
+msgstr "Dimensiune font"
+
+#: php/strings.php:50
+msgid "Height"
+msgstr "Înălțime"
+
+#: php/strings.php:49
+msgid "Off"
+msgstr "Oprit"
+
+#: php/strings.php:48
+msgid "On"
+msgstr "Pornit"
+
+#: php/strings.php:46
+msgid "Highlight Lines"
+msgstr "Evidențiază liniile"
+
+#: php/strings.php:45
+msgid "Scripts (JS)"
+msgstr "Scripturi (JS)"
+
+#: php/strings.php:44
+msgid "Styles (CSS)"
+msgstr "Stiluri (CSS)"
+
+#: php/strings.php:43
+msgid "Content (Mixed)"
+msgstr "Conținut (mixt)"
+
+#: php/strings.php:42
+msgid "Functions (PHP)"
+msgstr "Funcții (PHP)"
+
+#: php/strings.php:41
+msgid "Code Snippet Source"
+msgstr "Sursă fragment de cod"
+
+#: php/strings.php:38
+msgid "Select a snippet to show"
+msgstr "Selectează un fragment de arătat"
+
+#: php/strings.php:37
+msgid "Text Color"
+msgstr "Culoare text"
+
+#: php/strings.php:36
+msgid "Justified"
+msgstr "Justificat"
+
+#: php/strings.php:35
+msgid "Right"
+msgstr "Dreapta"
+
+#: php/strings.php:34
+msgid "Center"
+msgstr "Centru"
+
+#: php/strings.php:33
+msgid "Left"
+msgstr "Stânga"
+
+#: php/strings.php:32
+msgid "Alignment"
+msgstr "Aliniere"
+
+#: php/strings.php:31
+msgid "Processing Options"
+msgstr "Opțiuni pentru procesare"
+
+#: php/strings.php:27
+msgid "JavaScript loaded just before the closing &amp;lt;/body&amp;gt; tag"
+msgstr "JavaScript încărcat chiar înainte de tagul de închidere &amp;lt;/body&amp;gt;"
+
+#: php/strings.php:26
+msgid "JavaScript loaded in the site &amp;lt;head&amp;gt; section"
+msgstr "JavaScript încărcat în secțiunea &amp;lt;head&amp;gt; a site-ului"
+
+#: php/strings.php:25
+msgid "Administration area stylesheet"
+msgstr "Foaie de stiluri pentru zona de administrare"
+
+#: php/strings.php:24
+msgid "Site front-end stylesheet"
+msgstr "Foaie de stiluri în partea din față a site-ului"
+
+#: php/strings.php:21
+msgid "View Full Script"
+msgstr "Vezi scriptul întreg"
+
+#: php/strings.php:20
+msgid "View Full Stylesheet"
+msgstr "Vezi foaia de stiluri întreagă"
+
+#: php/strings.php:17
+msgid "Minify snippet output by removing whitespace and optimizing code to reduce load times."
+msgstr "Minifică ieșirile fragmentelor prin înlăturarea spațiilor goale și optimizarea codului pentru a reduce timpii de încărcare."
+
+#: php/strings.php:16
+msgid "Minify Snippet Output"
+msgstr "Minifică ieșirile fragmentelor"
+
+#: php/strings.php:12
+msgid "Thanks"
+msgstr "Mulțumesc"
+
+#: php/strings.php:11
+msgid "Notice"
+msgstr "Notificare"
+
+#: php/strings.php:10
+msgid "Success"
+msgstr "Succes"
+
+#: php/strings.php:8
+msgid "You can now safely remove the free version of Code Snippets"
+msgstr "Acum poți să înlături în siguranță versiunea gratuită Code Snippets"
+
+#: php/snippet-ops.php:314
+msgid "Could not activate snippet."
+msgstr "Nu am putut să activez fragmentul."
+
+#: php/snippet-ops.php:302
+msgid "Could not activate snippet: code did not pass validation."
+msgstr "Nu am putut să activez fragmentul: codul nu a trecut de validare."
+
+#. translators: %d: snippet identifier.
+#: php/snippet-ops.php:297
+msgid "Could not locate snippet with ID %d."
+msgstr "Nu am putut să localizez fragmentul cu ID-ul %d."
+
+#: php/settings/settings-fields.php:208
+msgid "Sublime Text"
+msgstr "Text sublim"
+
+#: php/settings/settings-fields.php:207
+msgid "Emacs"
+msgstr "Emacs"
+
+#: php/settings/settings-fields.php:206
+msgid "Vim"
+msgstr "Vim"
+
+#: php/settings/settings-fields.php:203
+msgid "The set of keyboard shortcuts to use in the code editor."
+msgstr "Setul de scurtături tastatură de utilizat în editorul de coduri."
+
+#: php/settings/settings-fields.php:201
+msgid "Keymap"
+msgstr "Hartă taste"
+
+#: php/settings/settings-fields.php:173
+msgid "Allow folding functions or other blocks into a single line."
+msgstr "Permite plierea funcțiilor sau a altor blocuri pe o singură linie."
+
+#: php/settings/settings-fields.php:171
+msgid "Code Folding"
+msgstr "Pliere cod"
+
+#: php/settings/settings-fields.php:159
+msgid "The number of spaces to indent a block."
+msgstr "Număr de spații pentru indentarea unui bloc."
+
+#: php/settings/settings-fields.php:152 php/settings/settings-fields.php:160
+msgctxt "unit"
+msgid "spaces"
+msgstr "spații"
+
+#: php/settings/settings-fields.php:121
+msgid "Disable syntax highlighting when displaying snippet code on the front-end."
+msgstr "Dezactivează evidențierea sintaxei la afișarea fragmentului de cod în partea din față a site-ului."
+
+#: php/settings/settings-fields.php:119
+msgid "Disable Syntax Highlighter"
+msgstr "Dezactivează evidențierea sintaxei"
+
+#: php/settings/settings-fields.php:103
+msgctxt "unit"
+msgid "rows"
+msgstr "rânduri"
+
+#: php/settings/settings-fields.php:101
+msgid "Description Editor Height"
+msgstr "Înălțime Editor de descrieri"
+
+#: php/settings/editor-preview.php:75 php/settings/settings-fields.php:205
+msgid "Default"
+msgstr "Implicit"
+
+#: php/rest-api/class-snippets-rest-controller.php:544
+msgid "Date and time when the snippet was last modified, in ISO format."
+msgstr "Data și ora la care fragmentul a fost modificat ultima dată, în format ISO."
+
+#: php/rest-api/class-snippets-rest-controller.php:540
+msgid "If a network snippet, whether can be activated on discrete sites instead of network-wide."
+msgstr "Dacă un fragment la nivel de rețea poate fi activat pe site-uri individuale în loc de întreaga rețea."
+
+#: php/rest-api/class-snippets-rest-controller.php:535
+msgid "Whether the snippet is network-wide instead of site-wide."
+msgstr "Dacă fragmentul este la nivel de rețea în loc de nivel de site."
+
+#: php/rest-api/class-snippets-rest-controller.php:531
+msgid "Relative priority in which the snippet is executed."
+msgstr "Prioritatea relativă în care este executat fragmentul."
+
+#: php/rest-api/class-snippets-rest-controller.php:527
+msgid "Snippet activation status."
+msgstr "Stare activare fragment."
+
+#: php/rest-api/class-snippets-rest-controller.php:519
+msgid "Context in which the snippet is executable."
+msgstr "Contextul în care fragmentul este executabil."
+
+#: php/rest-api/class-snippets-rest-controller.php:512
+msgid "List of tag categories the snippet belongs to."
+msgstr "Listă cu categorii de etichete cărora le aparține fragmentul."
+
+#: php/rest-api/class-snippets-rest-controller.php:508
+msgid "Executable snippet code."
+msgstr "Fragment de cod executabil."
+
+#: php/rest-api/class-snippets-rest-controller.php:504
+msgid "Descriptive text associated with snippet."
+msgstr "Text descriptiv asociat cu fragmentul."
+
+#: php/rest-api/class-snippets-rest-controller.php:500
+msgid "Descriptive title for the snippet."
+msgstr "Titlu descriptiv pentru fragment."
+
+#: php/rest-api/class-snippets-rest-controller.php:495
+msgid "Unique identifier for the snippet."
+msgstr "Identificator unic pentru fragment."
+
+#: php/rest-api/class-snippets-rest-controller.php:339
+msgid "The snippet could not be deactivated."
+msgstr "Fragmentul nu a putut fi dezactivat."
+
+#: php/rest-api/class-snippets-rest-controller.php:299
+msgid "The snippet could not be deleted."
+msgstr "Fragmentul nu a putut fi șters."
+
+#: php/rest-api/class-snippets-rest-controller.php:279
+msgid "The snippet could not be updated."
+msgstr "Fragmentul nu a putut fi actualizat."
+
+#: php/rest-api/class-snippets-rest-controller.php:264
+msgid "Cannot update a snippet without a valid ID."
+msgstr "Nu pot să actualizez un fragment fără un ID valid."
+
+#: php/rest-api/class-snippets-rest-controller.php:245
+msgid "The snippet could not be created."
+msgstr "Fragmentul nu a putut fi creat."
+
+#: php/rest-api/class-snippets-rest-controller.php:221
+msgid "The snippet could not be found."
+msgstr "Fragmentul nu a putut fi găsit."
+
+#: php/views/manage.php:90
+msgid "Script snippets are loaded on the site front-end in a JavaScript file, either in the head or body sections."
+msgstr "Fragmentele de script sunt încărcate în partea din față a site-ului într-un fișier JavaScript, în secțiunile head sau body."
+
+#: php/views/manage.php:85
+msgid "Style snippets are written in CSS and loaded in the admin area or on the site front-end, just like the theme style.css."
+msgstr "Fragmentele de stil sunt scrise în CSS și încărcate în zona de administrare sau în partea din față a site-ului, la fel ca style.css pentru temă."
+
+#: php/class-list-table.php:489 dist/edit.js:2
+msgid "Export Code"
+msgstr "Exportă codul"
+
+#: php/class-admin.php:165
+msgid "Join our community on Facebook"
+msgstr "Alătură-te comunității noastre pe Facebook"
+
+#: php/admin-menus/class-edit-menu.php:115
+msgid "Loading edit page…"
+msgstr "Încarc pagina de editare..."
+
+#: php/views/partials/list-table.php:22
+msgid "Search Snippets"
+msgstr "Caută fragmente"
+
+#: php/views/manage.php:23
+msgid "All Snippets"
+msgstr "Toate fragmentele"
+
+#: php/settings/settings-fields.php:196
+msgid "Highlight the line that is currently being edited."
+msgstr "Evidențiază linia care este editată în prezent."
+
+#: php/settings/settings-fields.php:195
+msgid "Highlight Active Line"
+msgstr "Evidențiază linia activă"
+
+#: php/settings/settings-fields.php:115
+msgid "Modified (oldest first)"
+msgstr "Modificate (cele mai vechi primele)"
+
+#: php/settings/settings-fields.php:114
+msgid "Modified (latest first)"
+msgstr "Modificate (cel mai recente primele)"
+
+#: php/settings/settings-fields.php:113
+msgid "Name (Z-A)"
+msgstr "Nume (Z - A)"
+
+#: php/settings/settings-fields.php:112
+msgid "Name (A-Z)"
+msgstr "Nume (A - Z)"
+
+#: php/settings/settings-fields.php:109
+msgid "Default way to order snippets on the All Snippets admin menu."
+msgstr "Modul implicit de a ordona fragmente în meniul de administrare Toate fragmentele."
+
+#: php/settings/settings-fields.php:107
+msgid "Snippets List Order"
+msgstr "Ordinea listei de fragmente"
+
+#: php/front-end/mce-strings.php:28
+msgid "Show line numbers"
+msgstr "Afișează numărul de linii"
+
+#: php/front-end/mce-strings.php:27
+msgid "Insert Snippet Source"
+msgstr "Inseră sursă fragment"
+
+#: php/front-end/mce-strings.php:26
+msgid "Snippet Source Code"
+msgstr "Cod sursă fragment"
+
+#: php/front-end/mce-strings.php:24
+msgid "Enable shortcodes"
+msgstr "Activează scurt-codurile"
+
+#: php/front-end/mce-strings.php:23
+msgid "Apply formatting"
+msgstr "Aplică formatarea"
+
+#: php/front-end/mce-strings.php:22
+msgid "Run PHP code"
+msgstr "Rulează codul PHP"
+
+#: php/front-end/mce-strings.php:21
+msgid "Snippet"
+msgstr "Fragment"
+
+#: php/front-end/mce-strings.php:20
+msgid "Insert Content Snippet"
+msgstr "Inseră fragment pentru conținut"
+
+#: php/front-end/mce-strings.php:19
+msgid "Content Snippet"
+msgstr "Fragment pentru conținut"
+
+#. translators: 1: snippet name, 2: snippet edit link
+#: php/front-end/class-front-end.php:301
+msgid "%1$s is currently inactive. You can <a href=\"%2$s\">edit this snippet</a> to activate it and make it visible. This message will not appear in the published post."
+msgstr "În prezent, %1$s este inactiv. Poți să <a href=\"%2$s\">editezi acest fragment</a> pentru a-l activa și face vizibil. Acest mesaj nu va apărea în articolul publicat."
+
+#. translators: %d: snippet ID.
+#: php/front-end/class-front-end.php:207
+msgid "Could not load snippet with an invalid ID: %d."
+msgstr "Nu am putut încărca fragmentul cu un ID invalid: %d."
+
+#: php/class-upgrade.php:213
+msgid "Shortcode for inserting the current year into a post or page.."
+msgstr "Scurtcod pentru inserarea anului curent într-un articol sau pagină."
+
+#: php/class-upgrade.php:211
+msgid "Current year"
+msgstr "Anul curent"
+
+#: php/class-upgrade.php:207
+msgid "Allows smiley conversion in obscure places."
+msgstr "Permite conversia emoticoanelor în locuri obscure."
+
+#: php/class-upgrade.php:200
+msgid "Turns off the WordPress admin bar for everyone except administrators."
+msgstr "Dezactivează bara de administrare WordPress pentru toată lumea, cu excepția administratorilor."
+
+#: php/class-upgrade.php:198
+msgid "Disable admin bar"
+msgstr "Dezactivează bara de administrare"
+
+#: php/class-upgrade.php:194
+msgid "Makes sure that image and file uploads have lowercase filenames."
+msgstr "Se asigură că încărcările de imagini și fișiere au nume de fișiere cu litere mici."
+
+#: php/class-upgrade.php:192
+msgid "Make upload filenames lowercase"
+msgstr "Scrie cu minuscule numele fișierelor încărcate"
+
+#: php/class-upgrade.php:188
+msgid "This is a sample snippet. Feel free to use it, edit it, or remove it."
+msgstr "Acesta este un exemplu de fragment. Poți să-l folosești, să-l editezi sau să-l înlături."
+
+#: php/class-snippet.php:333
+msgid "Front-end styles"
+msgstr "Stiluri în partea din față"
+
+#: php/class-snippet.php:331
+msgid "Admin styles"
+msgstr "Stiluri de administrare"
+
+#: php/class-snippet.php:329
+msgid "Footer content"
+msgstr "Conținut subsol"
+
+#: php/class-snippet.php:327
+msgid "Head content"
+msgstr "Conținut antet"
+
+#: php/class-snippet.php:323
+msgid "Single-use function"
+msgstr "Funcție cu o singură utilizare"
+
+#: php/class-snippet.php:321
+msgid "Front-end function"
+msgstr "Funcție în partea din față"
+
+#: php/class-snippet.php:319
+msgid "Admin function"
+msgstr "Funcție pentru administrare"
+
+#: php/class-snippet.php:317
+msgid "Global function"
+msgstr "Funcție globală"
+
+#: php/class-plugin.php:341 dist/edit.js:2
+msgid "Scripts"
+msgstr "Scripturi"
+
+#: php/class-plugin.php:340 dist/edit.js:2
+msgid "Styles"
+msgstr "Stiluri"
+
+#: php/views/manage.php:80
+msgid "Content snippets are bits of reusable PHP and HTML content that can be inserted into posts and pages."
+msgstr "Fragmentele pentru conținut sunt părți de conținut PHP și HTML reutilizabile care pot fi inserate în articole și pagini."
+
+#: php/views/manage.php:75
+msgid "Function snippets are run on your site as if there were in a plugin or theme functions.php file."
+msgstr "Fragmentele pentru funcții sunt rulate pe site-ul tău ca și cum ar fi un fișier functions.php pentru module sau teme."
+
+#: php/class-plugin.php:339 php/class-snippet.php:325 dist/edit.js:2
+msgid "Content"
+msgstr "Conținut"
+
+#: php/class-plugin.php:338 dist/edit.js:2
+msgid "Functions"
+msgstr "Funcții"
+
+#. translators: %s: snippet title.
+#: php/class-list-table.php:1339
+msgid "%s [CLONE]"
+msgstr "%s [CLONĂ]"
+
+#: php/class-list-table.php:891
+msgid "It looks like you don't have any snippets of this type."
+msgstr "Se pare că nu ai niciun fragment de acest tip."
+
+#: php/class-list-table.php:438
+msgid "Type"
+msgstr "Tip"
+
+#: php/class-contextual-help.php:144
+msgid "If something goes wrong with a snippet, and you can't use WordPress, you can cause all snippets to stop executing by turning on <strong>safe mode</strong>."
+msgstr "Dacă ceva nu merge bine cu un fragment și nu poți să folosești WordPress, poți să oprești execuția tuturor fragmentelor activând <strong>Mod de siguranță</strong>."
+
+#: php/class-admin.php:217
+msgid "Active Snippets"
+msgstr "Fragmente active"
+
+#. translators: %s: formatted last modified date
+#: php/class-admin.php:200
+msgid "Last modified %s"
+msgstr "Ultima modificare pe %s"
+
+#: php/admin-menus/class-manage-menu.php:94
+#: php/admin-menus/class-welcome-menu.php:82 php/class-admin.php:131
+msgid "Upgrade to Pro"
+msgstr "Actualizează la Pro"
+
+#: php/class-admin.php:130
+msgid "Upgrade to Code Snippets Pro"
+msgstr "Actualizează la Code Snippets Pro"
+
+#: php/class-admin.php:159
+msgid "Find out how to get support with Code Snippets"
+msgstr "Află cum să beneficiezi de suport pentru Code Snippets"
+
+#: php/class-admin.php:113
+msgid "Change plugin settings"
+msgstr "Modifică setările modulului"
+
+#. translators: %s: Update PHP URL.
+#: php/deactivation-notice.php:40
+msgid "Please <a href=\"%s\">upgrade your server to the latest version of PHP</a> to continue using Code Snippets."
+msgstr "Pentru a folosi în continuare Code Snippets, te rog să <a href=\"%s\">actualizezi serverul la ultima versiune de PHP</a>."
+
+#. translators: %s: required PHP version number.
+#: php/deactivation-notice.php:32
+msgid "Code Snippets requires PHP %s or later."
+msgstr "Code Snippets are nevoie de PHP %s sau de o versiune ulterioară."
+
+#: php/deactivation-notice.php:50
+msgid "Another version of Code Snippets appears to be installed. Deactivating this version."
+msgstr "Se pare că este instalată o altă versiune a Code Snippets. Dezactivez această versiune."
+
+#. translators: %s: PHP identifier name
+#: php/class-validator.php:220
+msgid "Cannot redeclare %s."
+msgstr "Nu pot redeclara %s."
+
+#. translators: %s: PHP interface name
+#: php/class-validator.php:216
+msgid "Cannot redeclare interface %s."
+msgstr "Nu pot redeclara interfața %s."
+
+#. translators: %s: PHP class name
+#: php/class-validator.php:212
+msgid "Cannot redeclare class %s."
+msgstr "Nu poate redeclara clasa %s ."
+
+#. translators: %s: PHP function name
+#: php/class-validator.php:208
+msgid "Cannot redeclare function %s."
+msgstr "Nu pot redeclare funcția %s."
+
+#: php/class-validator.php:195 php/class-validator.php:258
+msgid "Parse error: syntax error, unexpected end of snippet."
+msgstr "Eroare de analiză: eroare de sintaxă, sfârșit neașteptat al fragmentului."
+
+#. translators: 1: search query, 2: line number.
+#: php/class-list-table.php:1276
+msgid " for &ldquo;%1$s&rdquo; on line %2$d"
+msgstr " pentru „%1$s” pe linia %2$d"
+
+#: php/class-list-table.php:883
+msgid "No snippets were found matching the current search query. Please enter a new query or use the \"Clear Filters\" button above."
+msgstr "Nu am găsit niciun fragment care să se potrivească cu interogarea curentă de căutare. Te rog să introduci o interogare nouă sau folosește butonul „Șterge filtrele” de mai sus."
+
+#: php/class-list-table.php:441
+msgid "Modified"
+msgstr "Modificată"
+
+#. translators: 1: date format, 2: time format.
+#: php/class-snippet.php:447
+msgctxt "date and time format"
+msgid "%1$s at %2$s"
+msgstr "%1$s la %2$s"
+
+#: php/class-snippet.php:439
+msgid "Y/m/d"
+msgstr "d.m.Y"
+
+#. translators: %s: Human-readable time difference.
+#: php/class-snippet.php:437 php/cloud/class-cloud-search-list-table.php:214
+msgid "%s ago"
+msgstr "acum %s"
+
+#: php/class-contextual-help.php:160
+msgid "Here you can add a new snippet, or edit an existing one."
+msgstr "Aici poți să adaugi un fragment nou sau să editezi unul existent."
+
+#: php/class-contextual-help.php:125
+msgid "Snippets are similar to plugins - they both extend and expand the functionality of WordPress. Snippets are more light-weight, just a few lines of code, and do not put as much load on your server. "
+msgstr "Fragmentele sunt similare cu modulele - ambele extind și îmbunătățesc funcționalitatea WordPress. Fragmentele au mai puțin cod (numai câteva linii de cod) și nu solicită atât de mult serverul. "
+
+#: php/admin-menus/class-edit-menu.php:38
+msgctxt "menu label"
+msgid "Edit Snippet"
+msgstr "Editează fragmentul"
+
+#. Plugin URI of the plugin
+#. Author URI of the plugin
+#: code-snippets.php
+msgid "https://codesnippets.pro"
+msgstr "https://codesnippets.pro"
+
+#. Author of the plugin
+#: code-snippets.php
+msgid "Code Snippets Pro"
+msgstr "Code Snippets Pro"
+
+#. translators: %s: tag name.
+#: php/class-list-table.php:1292
+msgid " in tag &ldquo;%s&rdquo;"
+msgstr " în tagul „%s”"
+
+#. translators: %s: search query.
+#: php/class-list-table.php:1285
+msgid " for &ldquo;%s&rdquo;"
+msgstr " pentru &bdquo;%s&rdquo;"
+
+#: php/class-list-table.php:889
+msgid "It looks like you don't have any snippets."
+msgstr "Se pare că nu ai niciun fragment."
+
+#: php/class-list-table.php:261 php/class-list-table.php:488
+msgid "Clone"
+msgstr "Clonează"
+
+#: php/admin-menus/class-admin-menu.php:180
+msgctxt "snippets"
+msgid "Import"
+msgstr "Importă"
+
+#: php/views/import.php:94
+msgid "Upload Files"
+msgstr "Încarcă fișiere"
+
+#: php/admin-menus/class-admin-menu.php:183
+msgctxt "snippets"
+msgid "Settings"
+msgstr "Setări"
+
+#: php/admin-menus/class-admin-menu.php:174
+#: php/admin-menus/class-settings-menu.php:114
+msgctxt "snippets"
+msgid "Manage"
+msgstr "Administrează"
+
+#: php/views/partials/list-table-notices.php:58
+msgid "Selected snippets <strong>cloned</strong>."
+msgstr "Fragmente selectate <strong>clonate</strong>."
+
+#: php/views/partials/list-table-notices.php:57
+msgid "Snippet <strong>cloned</strong>."
+msgstr "Fragment <strong>clonat</strong>."
+
+#: php/admin-menus/class-manage-menu.php:155
+msgctxt "tools submenu label"
+msgid "Snippets"
+msgstr "Fragmente"
+
+#: php/class-list-table.php:442 php/settings/settings-fields.php:111
+#: dist/edit.js:2
+msgid "Priority"
+msgstr "Prioritate"
+
+#: php/views/import.php:89
+msgid "Do not import any duplicate snippets; leave all existing snippets unchanged."
+msgstr "Nu importa niciun fragment duplicat; lasă toate fragmentele existente neschimbate."
+
+#: php/views/import.php:82
+msgid "Replace any existing snippets with a newly imported snippet of the same name."
+msgstr "Înlocuiește toate fragmentele existente cu fragmente noi importate cu același nume."
+
+#: php/views/import.php:75
+msgid "Ignore any duplicate snippets: import all snippets from the file regardless and leave all existing snippets unchanged."
+msgstr "Ignoră toate fragmentele duplicat: importă oricum toate fragmentele din fișier și lasă toate fragmentele existente neschimbate."
+
+#: php/views/import.php:68
+msgid "What should happen if an existing snippet is found with an identical name to an imported snippet?"
+msgstr "Ce ar trebui să se întâmple dacă se găsește un fragment existent cu un nume identic cu un fragment importat?"
+
+#: php/views/import.php:65
+msgid "Duplicate Snippets"
+msgstr "Duplică fragmente"
+
+#: php/views/import.php:97
+msgid "Choose one or more Code Snippets (.xml or .json) files to upload, then click \"Upload files and import\"."
+msgstr "Alege unul sau mai multe fișiere (.xml sau .json) Code Snippets pentru încărcare, apoi dă clic pe „Încarcă fișierele și importă”."
+
+#: php/views/import.php:41
+msgid "Upload one or more Code Snippets export files and the snippets will be imported."
+msgstr "Încarcă unul sau mai multe fișiere de export Code Snippets și fragmentele vor fi importate."
+
+#: php/settings/settings-fields.php:137
+msgid "When the plugin is deleted from the Plugins menu, also delete all snippets and plugin settings."
+msgstr "Când modulul este șters din meniul Module, sunt șterse și toate fragmentele și setările modulului."
+
+#: php/settings/settings-fields.php:135
+msgid "Complete Uninstall"
+msgstr "Finalizează dezinstalarea"
+
+#: php/cloud/list-table-shared-ops.php:105
+#: php/cloud/list-table-shared-ops.php:111
+msgid "Download"
+msgstr "Descarcă"
+
+#: php/class-list-table.php:302
+msgid "Run Once"
+msgstr "Rulează o dată"
+
+#: php/class-admin.php:87
+msgid "Snippets &raquo; Settings"
+msgstr "Fragmente &raquo; Setări"
+
+#: php/admin-menus/class-settings-menu.php:144
+msgid "Reset to Default"
+msgstr "Resetează la valorile implicite"
+
+#: php/settings/settings.php:252
+msgid "All settings have been reset to their defaults."
+msgstr "Toate setările au fost resetate la valorile lor implicite."
+
+#: php/views/partials/list-table-notices.php:50
+msgid "Snippet <strong>executed</strong>."
+msgstr "Fragment <strong>executat</strong>."
+
+#: php/admin-menus/class-import-menu.php:137
+msgid "No snippets were imported."
+msgstr "Nu am importat niciun fragment."
+
+#: php/class-list-table.php:898
+msgid "Perhaps you would like to add a new one?"
+msgstr "Poate vrei să adaugi unul nou?"
+
+#: php/class-list-table.php:254
+msgid "Network Only"
+msgstr "Numai pentru rețea"
+
+#: php/class-list-table.php:252
+msgid "Network Active"
+msgstr "Activ în rețea"
+
+#. Description of the plugin
+#: code-snippets.php
+msgid "An easy, clean and simple way to run code snippets on your site. No need to edit to your theme's functions.php file again!"
+msgstr "O modalitate ușoară, curată și simplă de a rula fragmente de cod pe site-ul tău. Nu trebuie să editezi din nou fișierul functions.php al temei!"
+
+#: php/views/import.php:116
+msgid "Upload files and import"
+msgstr "Încarcă fișiere și importă"
+
+#. translators: %s: size in bytes
+#: php/views/import.php:105
+msgid "(Maximum size: %s)"
+msgstr "(Dimensiune maximă: %s)"
+
+#: php/views/import.php:102
+msgid "Choose files from your computer:"
+msgstr "Alege fișiere din calculatorul tău:"
+
+#. translators: %s: link to snippets admin menu
+#: php/views/import.php:46
+msgid "Afterward, you will need to visit the <a href=\"%s\" >All Snippets</a> page to activate the imported snippets."
+msgstr "După aceea, trebuie să mergi la pagina <a href=\"%s\">Toate fragmentele</a> pentru a activa fragmentele importate."
+
+#: php/admin-menus/class-admin-menu.php:177
+#: php/admin-menus/class-settings-menu.php:115 dist/edit.js:2
+msgctxt "snippet"
+msgid "Add New"
+msgstr "Adaugă fragment nou"
+
+#: php/admin-menus/class-settings-menu.php:220 php/settings/settings.php:330
+msgid "Settings saved."
+msgstr "Am salvat setările."
+
+#: php/settings/settings.php:182
+msgid "Editor Preview"
+msgstr "Previzualizare editor"
+
+#: php/settings/settings.php:140
+msgid "Code Editor"
+msgstr "Editor de cod"
+
+#: php/settings/settings.php:139
+msgid "General"
+msgstr "Generale"
+
+#: php/settings/settings-fields.php:190
+msgid "Highlight all instances of a currently selected word."
+msgstr "Evidențiază toate instanțele pentru un cuvânt selectat în prezent."
+
+#: php/settings/settings-fields.php:189
+msgid "Highlight Selection Matches"
+msgstr "Evidențiază potrivirile pentru selecție"
+
+#: php/settings/settings-fields.php:185
+msgid "Auto-close brackets and quotes when typed."
+msgstr "Închide automat parantezele și ghilimelele la tastare."
+
+#: php/settings/settings-fields.php:183
+msgid "Auto Close Brackets"
+msgstr "Paranteze de închidere automate"
+
+#: php/settings/settings-fields.php:179
+msgid "Show line numbers to the left of the editor."
+msgstr "Arată numerele liniilor în partea stângă a editorului."
+
+#: php/settings/settings-fields.php:177
+msgid "Line Numbers"
+msgstr "Numere de linie"
+
+#: php/settings/settings-fields.php:157
+msgid "Indent Unit"
+msgstr "Unitate indentare"
+
+#: php/settings/settings-fields.php:151
+msgid "The width of a tab character."
+msgstr "Lățimea unui caracter tabulator."
+
+#: php/settings/settings-fields.php:149
+msgid "Tab Size"
+msgstr "Dimensiune tabulator"
+
+#: php/settings/settings-fields.php:143
+msgid "Indent With Tabs"
+msgstr "Indentare cu tabulatori"
+
+#: php/settings/settings-fields.php:213
+msgid "Theme"
+msgstr "Temă"
+
+#: php/settings/settings-fields.php:98
+msgid "Show snippet descriptions on admin pages."
+msgstr "Arată descrierile fragmentelor în paginile de administrare."
+
+#: php/settings/settings-fields.php:96
+msgid "Enable Snippet Descriptions"
+msgstr "Activează descrieri pentru fragmente"
+
+#: php/settings/settings-fields.php:93
+msgid "Show snippet tags on admin pages."
+msgstr "Arată etichetele fragmentelor în paginile de administrare."
+
+#: php/settings/settings-fields.php:91
+msgid "Enable Snippet Tags"
+msgstr "Activează etichete pentru fragmente"
+
+#: php/settings/settings-fields.php:88
+msgid "Make the 'Save and Activate' button the default action when saving a snippet."
+msgstr "Setează butonul „Salvează și activează” ca acțiune implicită la salvarea unui fragment."
+
+#: php/settings/settings-fields.php:86
+msgid "Activate by Default"
+msgstr "Activează ca implicit"
+
+#: php/class-list-table.php:1301
+msgid "Clear Filters"
+msgstr "Elimină filtrele"
+
+#: php/class-list-table.php:1268
+msgid "Search results"
+msgstr "Rezultate de căutare"
+
+#: php/class-list-table.php:654
+msgid "Clear List"
+msgstr "Golește lista"
+
+#: php/class-list-table.php:646
+msgid "Filter"
+msgstr "Filtrează"
+
+#: php/class-list-table.php:631
+msgid "Show all tags"
+msgstr "Arată toate etichetele"
+
+#. translators: %s: total number of recently activated snippets.
+#: php/class-list-table.php:554
+msgid "Recently Active <span class=\"count\">(%s)</span>"
+msgid_plural "Recently Active <span class=\"count\">(%s)</span>"
+msgstr[0] "Recent activat <span class=\"count\">(%s)</span>"
+msgstr[1] "Recent activate <span class=\"count\">(%s)</span>"
+msgstr[2] "Recent activate <span class=\"count\">(%s)</span>"
+
+#. translators: %s: total number of inactive snippets.
+#: php/class-list-table.php:546
+msgid "Inactive <span class=\"count\">(%s)</span>"
+msgid_plural "Inactive <span class=\"count\">(%s)</span>"
+msgstr[0] "Inactiv <span class=\"count\">(%s)</span>"
+msgstr[1] "Inactive <span class=\"count\">(%s)</span>"
+msgstr[2] "Inactive <span class=\"count\">(%s)</span>"
+
+#. translators: %s: total number of active snippets.
+#: php/class-list-table.php:538
+msgid "Active <span class=\"count\">(%s)</span>"
+msgid_plural "Active <span class=\"count\">(%s)</span>"
+msgstr[0] "Activ <span class=\"count\">(%s)</span>"
+msgstr[1] "Active <span class=\"count\">(%s)</span>"
+msgstr[2] "Active <span class=\"count\">(%s)</span>"
+
+#. translators: %s: total number of snippets.
+#: php/class-list-table.php:530
+msgid "All <span class=\"count\">(%s)</span>"
+msgid_plural "All <span class=\"count\">(%s)</span>"
+msgstr[0] "Total <span class=\"count\">(%s)</span>"
+msgstr[1] "Total <span class=\"count\">(%s)</span>"
+msgstr[2] "Total <span class=\"count\">(%s)</span>"
+
+#: php/class-list-table.php:443
+msgid "ID"
+msgstr "ID"
+
+#: php/class-list-table.php:437 dist/edit.js:2
+msgid "Name"
+msgstr "Nume"
+
+#: php/class-list-table.php:365
+msgid "Shared on Network"
+msgstr "Partajat în rețea"
+
+#: php/class-list-table.php:277
+msgid "'Cancel' to stop, 'OK' to delete."
+msgstr "„Anulează” pentru a opri, „OK” pentru a șterge."
+
+#: php/class-list-table.php:276
+msgid "You are about to permanently delete the selected item."
+msgstr "Ești pe cale să ștergi definitiv elementul selectat."
+
+#: php/class-list-table.php:271 php/class-list-table.php:491 dist/edit.js:2
+msgid "Delete"
+msgstr "Șterge"
+
+#: php/class-list-table.php:262 php/class-list-table.php:490 dist/edit.js:2
+msgid "Export"
+msgstr "Exportă"
+
+#: php/class-list-table.php:260
+msgid "Edit"
+msgstr "Editează"
+
+#: php/class-list-table.php:321 php/class-list-table.php:486 dist/manage.js:2
+msgid "Activate"
+msgstr "Activează"
+
+#: php/class-list-table.php:320 php/class-list-table.php:486
+msgid "Network Activate"
+msgstr "Activează în rețea"
+
+#: php/class-list-table.php:321 php/class-list-table.php:487 dist/manage.js:2
+msgid "Deactivate"
+msgstr "Dezactivează"
+
+#: php/class-list-table.php:320 php/class-list-table.php:487
+msgid "Network Deactivate"
+msgstr "Dezactivează în rețea"
+
+#: php/class-list-table.php:90
+msgid "Snippets per page"
+msgstr "Fragmente per pagină"
+
+#. translators: %s: URL to Manage Snippets admin menu
+#: php/class-contextual-help.php:201
+msgid "You can save your snippets to a code snippets export file using the <a href=\"%s\">Manage Snippets</a> page."
+msgstr "Poți să salvezi fragmentele într-un fișier de export cu fragmente de cod folosind pagina <a href=\"%s\">Administrează fragmentele</a>."
+
+#: php/class-contextual-help.php:199
+msgid "Exporting"
+msgstr "Fac exportul"
+
+#. translators: %s: URL to Snippets admin menu
+#: php/class-contextual-help.php:194
+msgid "Imported snippets will be added to the database along with your existing snippets. Regardless of whether the snippets were active on the previous site, imported snippets are always inactive until activated using the <a href=\"%s\">Manage Snippets</a> page."
+msgstr "Fragmentele importate vor fi adăugate în baza de date împreună cu fragmentele existente. Indiferent dacă fragmentele au fost active pe site-ul anterior, fragmentele importate sunt întotdeauna inactive până când sunt activate utilizând pagina <a href=\"%s\">Gestionare fragmente</a> ."
+
+#: php/class-contextual-help.php:192
+msgid "You can load your snippets from a code snippets export file using this page."
+msgstr "Poți să încarci fragmentele dintr-un fișier de export cu fragmente de cod folosind această pagină."
+
+#: php/class-contextual-help.php:191
+msgid "Importing"
+msgstr "Fac importul"
+
+#: php/class-contextual-help.php:170
+msgid "You need to fill out the name and code fields for your snippet to be added. While the description field will add more information about how your snippet works, what is does and where you found it, it is completely optional."
+msgstr "Pentru ca fragmentul să fie adăugat, trebuie să completezi câmpurile nume și cod. Câmpul descriere va adaugă mai multe informații despre cum funcționează fragmentul, ce face și unde l-ai găsit, fiind în totalitate opțional."
+
+#: php/class-contextual-help.php:168
+msgid "Adding Snippets"
+msgstr "Adaugă fragmente"
+
+#: php/class-contextual-help.php:143
+msgid "Be sure to check your snippets for errors before you activate them, as a faulty snippet could bring your whole blog down. If your site starts doing strange things, deactivate all your snippets and activate them one at a time."
+msgstr "Asigură-te că verifici fragmentele pentru erori înainte de a le activa, deoarece un fragment defectuos ți-ar putea distruge tot blogul. Dacă site-ul tău începe să funcționeze ciudat, dezactivează toate fragmentele și activează-le pe rând."
+
+#: php/class-contextual-help.php:141
+msgid "Safe Mode"
+msgstr "Mod în siguranță"
+
+#: php/class-contextual-help.php:134 php/class-contextual-help.php:157
+#: php/class-contextual-help.php:184
+msgid "Overview"
+msgstr "Prezentare generală"
+
+#: php/class-contextual-help.php:72
+msgid "Plugin Website"
+msgstr "Site web modul"
+
+#: php/class-contextual-help.php:71
+msgid "Support Forum"
+msgstr "Forum pentru suport"
+
+#: php/class-contextual-help.php:70
+msgid "FAQ"
+msgstr "Întrebări frecvente"
+
+#: php/class-contextual-help.php:69
+msgid "About Plugin"
+msgstr "Despre modul"
+
+#: php/class-contextual-help.php:81
+msgid "For more information:"
+msgstr "Pentru mai multe informații:"
+
+#: php/class-admin.php:300
+msgid "Dismiss"
+msgstr "Închide"
+
+#: php/class-admin.php:278
+msgid "Take the survey now"
+msgstr "Participă la sondaj acum"
+
+#: php/admin-menus/class-welcome-menu.php:64
+msgid "Support"
+msgstr "Suport"
+
+#: php/class-admin.php:119
+msgid "Manage your existing snippets"
+msgstr "Administrează-ți fragmentele existente"
+
+#: php/admin-menus/class-settings-menu.php:110 php/class-admin.php:114
+msgid "Settings"
+msgstr "Setări"
+
+#: php/admin-menus/class-settings-menu.php:30
+msgid "Snippets Settings"
+msgstr "Setări fragmente"
+
+#: php/admin-menus/class-settings-menu.php:29
+msgctxt "menu label"
+msgid "Settings"
+msgstr "Setări"
+
+#: php/views/partials/list-table-notices.php:56
+msgid "Selected snippets <strong>deleted</strong>."
+msgstr "Fragmentele selectate au fost <strong>șterse</strong>."
+
+#: php/views/partials/list-table-notices.php:55
+msgid "Snippet <strong>deleted</strong>."
+msgstr "Fragment <strong>șters</strong>."
+
+#: php/views/partials/list-table-notices.php:54
+msgid "Selected snippets <strong>deactivated</strong>."
+msgstr "Fragmentele selectate au fost <strong>dezactivate</strong>."
+
+#: php/views/partials/list-table-notices.php:53
+msgid "Snippet <strong>deactivated</strong>."
+msgstr "Fragment <strong>dezactivat</strong>."
+
+#: php/views/partials/list-table-notices.php:52
+msgid "Selected snippets <strong>activated</strong>."
+msgstr "Fragmentele selectate au fost <strong>activate</strong>."
+
+#: php/views/partials/list-table-notices.php:51
+msgid "Snippet <strong>activated</strong>."
+msgstr "Fragment <strong>activat</strong>."
+
+#: php/admin-menus/class-manage-menu.php:64
+msgctxt "top-level menu label"
+msgid "Snippets"
+msgstr "Fragmente"
+
+#: php/admin-menus/class-manage-menu.php:37
+#: php/admin-menus/class-manage-menu.php:63
+#: php/admin-menus/class-manage-menu.php:154 php/class-admin.php:86
+#: php/class-admin.php:120 php/views/manage.php:46
+msgid "Snippets"
+msgstr "Fragmente"
+
+#: php/admin-menus/class-manage-menu.php:36
+msgctxt "menu label"
+msgid "All Snippets"
+msgstr "Toate fragmentele"
+
+#: php/admin-menus/class-import-menu.php:127
+msgid "An error occurred when processing the import files."
+msgstr "A apărut o eroare în timpul procesării fișierelor de import."
+
+#: php/admin-menus/class-import-menu.php:115
+msgid "Import snippets from a code snippets export file"
+msgstr "Importă fragmentelor dintr-un fișier de export cu fragmente de cod"
+
+#. Plugin Name of the plugin
+#: code-snippets.php php/admin-menus/class-import-menu.php:114
+msgid "Code Snippets"
+msgstr "Fragmente de cod"
+
+#: php/admin-menus/class-import-menu.php:20 php/views/import.php:28
+msgid "Import Snippets"
+msgstr "Importă fragmente"
+
+#: php/admin-menus/class-import-menu.php:19
+msgctxt "menu label"
+msgid "Import"
+msgstr "Import"
+
+#: php/class-list-table.php:440
+msgid "Tags"
+msgstr "Etichete"
+
+#: php/class-list-table.php:439 dist/edit.js:2
+msgid "Description"
+msgstr "Descriere"
+
+#: php/admin-menus/class-edit-menu.php:69
+msgctxt "menu label"
+msgid "Add New"
+msgstr "Adaugă nou"
+
+#: php/admin-menus/class-edit-menu.php:39 dist/edit.js:2
+msgid "Edit Snippet"
+msgstr "Editează fragmentul"
+
+#: php/admin-menus/class-admin-menu.php:131
+msgid "You are not authorized to access this page."
+msgstr "Nu ești autorizat să accesezi această pagină."

@@ -1,0 +1,1277 @@
+# Translation of Plugins - Simple CAPTCHA Alternative with Cloudflare Turnstile - Stable (latest release) in Dutch
+# This file is distributed under the same license as the Plugins - Simple CAPTCHA Alternative with Cloudflare Turnstile - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-10-27 17:21:34+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/4.0.3\n"
+"Language: nl\n"
+"Project-Id-Version: Plugins - Simple CAPTCHA Alternative with Cloudflare Turnstile - Stable (latest release)\n"
+
+#: inc/admin/admin-options.php:1953
+msgid "Sponsor"
+msgstr "Sponsor"
+
+#: inc/admin/admin-options.php:1950
+msgid "Help fund ongoing development, maintenance, and support of this 100% free plugin, and be listed as a sponsor."
+msgstr "Help mee de ontwikkeling, het onderhoud en de ondersteuning van deze 100% gratis plugin te financieren en word vermeld als sponsor."
+
+#: inc/admin/admin-options.php:1949
+msgid "Sponsor:"
+msgstr "Sponsor:"
+
+#: inc/admin/admin-options.php:1939
+msgid "Consider making a small donation to the developer to help support the plugin."
+msgstr "Overweeg een kleine donatie te doen aan de ontwikkelaar om de plugin te helpen ondersteunen."
+
+#: inc/admin/admin-options.php:1931
+msgid "Review"
+msgstr "Beoordeling"
+
+#: inc/admin/admin-options.php:1927
+msgid "If you found this plugin useful, please submit a positive review on <a href=\"%s\" target=\"_blank\">WordPress.org</a>."
+msgstr "Als je deze plugin nuttig vond, geef dan een positieve beoordeling op <a href=\"%s\" target=\"_blank\">WordPress.org</a>."
+
+#: inc/admin/admin-options.php:1926
+msgid "Leave a Review:"
+msgstr "Laat een beoordeling achter:"
+
+#: inc/admin/admin-options.php:1921
+msgid "Thanks to the donors and <a href=\"%s\" target=\"_blank\">sponsors</a> that help support my free plugins to keep them 100%% free, maintained and supported."
+msgstr "Met dank aan de donateurs en <a href=\"%s\" target=\"_blank\">sponsors</a> die helpen mijn gratis plugins te ondersteunen om ze 100%% gratis te houden, te onderhouden en te ondersteunen."
+
+#: inc/admin/admin-options.php:1917
+msgid "Support The Plugin"
+msgstr "De plugin ondersteunen"
+
+#: inc/admin/admin-options.php:1892
+msgid "Help and Resources:"
+msgstr "Hulp en gegevensbronnen:"
+
+#: inc/admin/admin-options.php:1348
+msgid "If the Turnstile widget is not showing, disable <a href=\"%s\" target=\"_blank\">Element Caching</a> for the Elementor form on your page, or try switching Integration Method."
+msgstr "Als de widget Turnstile niet wordt weergegeven, schakel dan <a href=\"%s\" target=\"_blank\">Element caching</a> uit voor het formulier van Elementor op je pagina, of probeer te wisselen van integratiemethode."
+
+#: inc/admin/admin-options.php:1335
+msgid "Page IDs (comma-separated)"
+msgstr "Pagina ID's (door komma's gescheiden)"
+
+#: inc/admin/admin-options.php:1330
+msgid "Loads scripts only on the page IDs you enter below. Leave the list empty to load nowhere."
+msgstr "Laadt alleen scripts op de pagina ID's die je hieronder invult. Laat de lijst leeg om nergens te laden."
+
+#: inc/admin/admin-options.php:1327
+msgid "Loads scripts only on pages that include an Elementor Form or Login widget. Popups or global templates may not be detected."
+msgstr "Laadt alleen scripts op pagina's met een Elementor formulier of login widget. Pop-ups of globale templates worden mogelijk niet gedetecteerd."
+
+#: inc/admin/admin-options.php:1324
+msgid "Loads scripts on all Elementor pages. Use this if caching breaks the element-based method. May load scripts on pages without forms."
+msgstr "Laadt scripts op alle Elementor pagina's. Gebruik dit als caching de elementgebaseerde methode breekt. Mag scripts laden op pagina's zonder formulieren."
+
+#: inc/admin/admin-options.php:1321
+msgid "Enter specific page IDs"
+msgstr "Voer specifieke pagina ID's in"
+
+#: inc/admin/admin-options.php:1320
+msgid "Autodetect pages with forms"
+msgstr "Pagina's met formulieren autodetecteren"
+
+#: inc/admin/admin-options.php:1319
+msgid "All Elementor pages"
+msgstr "Alle Elementor pagina's"
+
+#: inc/admin/admin-options.php:1316
+msgid "Load scripts on:"
+msgstr "Laad scripts op:"
+
+#: inc/admin/admin-options.php:1305
+msgid "Instead of using this option, try disabling Element caching first."
+msgstr "Probeer in plaats van deze optie te gebruiken eerst Element caching uit te schakelen."
+
+#: inc/admin/admin-options.php:1304
+msgid "Scripts are loaded globally on all Elementor pages. This method works better with some caching but may load scripts on pages without forms."
+msgstr "Scripts worden globaal geladen op alle pagina's van Elementor. Deze methode werkt beter met caching, maar kan scripts laden op pagina's zonder formulieren."
+
+#: inc/admin/admin-options.php:1300
+msgid "(Recommended) Scripts are loaded when each form element is rendered. This is the ideal method but may not work with some caching. Have issues? Try disabling Element caching."
+msgstr "(Aanbevolen) scripts worden geladen wanneer elk formulierelement wordt gerenderd. Dit is de ideale methode, maar werkt mogelijk niet met sommige caching. Problemen? Probeer element caching uit te schakelen."
+
+#: inc/admin/admin-options.php:1294
+msgid "Load Scripts Globally"
+msgstr "Scripts globaal laden"
+
+#: inc/admin/admin-options.php:1291
+msgid "Load Scripts Via Element"
+msgstr "Scripts laden via Element"
+
+#: inc/admin/admin-options.php:1286
+msgid "Integration Method"
+msgstr "Integratiemethode"
+
+#: inc/admin/admin-options.php:446
+msgid "Adds better compatibility with popular performance/optimization plugins (e.g. WP Rocket, LiteSpeed Cache, Autoptimize, Perfmatters, SG Optimizer) to prevent their JS optimizations from breaking Turnstile. Disable only if this causes issues."
+msgstr "Voegt betere compatibiliteit toe met populaire prestatie-/optimalisatieplugins (bijv. WP Rocket, LiteSpeed Cache, Autoptimize, Perfmatters, SG Optimizer) om te voorkomen dat hun JS-optimalisaties Turnstile afbreken. Alleen uitschakelen als dit problemen veroorzaakt."
+
+#: inc/admin/admin-options.php:442
+msgid "Performance Plugin Compatibility"
+msgstr "Prestatie plugin compatibiliteit"
+
+#: inc/admin/admin-options.php:427
+msgid "Performance"
+msgstr "Prestatie"
+
+#: inc/admin/admin-options.php:387
+msgid "Custom Messages"
+msgstr "Aangepaste berichten"
+
+#: inc/admin/admin-options.php:336
+msgid "Widget Customization"
+msgstr "Widget aanpassing"
+
+#: inc/admin/admin-options.php:760
+msgid "Link by Stripe"
+msgstr "Link by Stripe"
+
+#: inc/admin/admin-options.php:755
+msgid "Google Pay"
+msgstr "Google Pay"
+
+#: inc/admin/admin-options.php:750
+msgid "Apple Pay"
+msgstr "Apple Pay"
+
+#: inc/admin/admin-options.php:744
+msgid "WooPayments Express"
+msgstr "WooPayments Express"
+
+#: inc/admin/admin-options.php:673
+msgid "Note: Currently Turnstile is not able to perform spam checks for some \"Express Checkout\" payment methods (e.g. PayPal, Google Pay, Apple Pay, Amazon Pay) and will skip them automatically."
+msgstr "Let op: momenteel kan Turnstile geen spam controles uitvoeren voor sommige \"Express afrekenen\" betaalmethoden (bijv. PayPal, Google Pay, Apple Pay, Amazon Pay) en zal deze automatisch overslaan."
+
+#: inc/admin/export-import.php:174
+msgid "Import failed: File is not a Simple Cloudflare Turnstile export."
+msgstr "Importeren mislukt: bestand is geen Simple Cloudflare Turnstile export."
+
+#: inc/admin/export-import.php:171
+msgid "Import failed: File too large."
+msgstr "Importeren mislukt: bestand te groot."
+
+#: inc/admin/export-import.php:168
+msgid "Import failed: File type must be .json."
+msgstr "Importeren mislukt: bestandstype moet .json zijn."
+
+#: inc/admin/export-import.php:165
+msgid "Import failed: Invalid JSON file."
+msgstr "Importeren mislukt: ongeldig JSON-bestand."
+
+#: inc/admin/export-import.php:162
+msgid "Import failed: File was empty."
+msgstr "Importeren mislukt: bestand was leeg."
+
+#: inc/admin/export-import.php:159
+msgid "Import failed: Upload error."
+msgstr "Importeren mislukt: uploadfout."
+
+#: inc/admin/export-import.php:156
+msgid "Import failed: No file uploaded."
+msgstr "Importeren mislukt: geen bestand geüpload."
+
+#: inc/admin/export-import.php:153
+msgid "Import failed."
+msgstr "Importeren mislukt."
+
+#: inc/admin/export-import.php:150
+msgid "Settings imported successfully. %d option(s) updated."
+msgstr "Instellingen succesvol geïmporteerd. %d optie(s) geüpdatet."
+
+#: inc/admin/export-import.php:62
+msgid "You do not have permission to import settings."
+msgstr "Je hebt geen toestemming om instellingen te importeren."
+
+#: inc/admin/export-import.php:11
+msgid "You do not have permission to export settings."
+msgstr "Je hebt geen toestemming om instellingen te exporteren."
+
+#: inc/admin/admin-options.php:1800
+msgid "Note: Site/Secret keys defined in wp-config.php will not be overwritten by import."
+msgstr "Let op: site-/geheimsleutels die zijn gedefinieerd in wp-config.php worden niet overschreven door het importeren."
+
+#: inc/admin/admin-options.php:1798
+msgid "Import JSON"
+msgstr "Importeer JSON"
+
+#: inc/admin/admin-options.php:1792
+msgid "Import Settings"
+msgstr "Importeer instellingen"
+
+#: inc/admin/admin-options.php:1787
+msgid "Download JSON"
+msgstr "Download JSON"
+
+#: inc/admin/admin-options.php:1785
+msgid "Include API keys (sensitive)"
+msgstr "Vermeld API-sleutels (gevoelig)"
+
+#: inc/admin/admin-options.php:1779
+msgid "Export Settings"
+msgstr "Instellingen exporteren"
+
+#: inc/admin/admin-options.php:1775
+msgid "Export all plugin settings to a JSON file, or import from a JSON file exported from this plugin."
+msgstr "Exporteer alle instellingen van de plugin naar een JSON bestand of importeer vanuit een JSON bestand dat vanuit deze plugin is geëxporteerd."
+
+#: inc/admin/admin-options.php:1772
+msgid "Export / Import Settings"
+msgstr "Instellingen exporteren/importeren"
+
+#: inc/admin/admin-options.php:218
+msgid "Warning: This is not required. Only do this if you are comfortable editing wp-config.php. If you define the keys here, they will override the settings above."
+msgstr "Waarschuwing: dit is niet vereist. Doe dit alleen als je comfortabel bent met het bewerken van wp-config.php. Als je de toetsen hier definieert, overschrijven ze de instellingen hierboven."
+
+#: inc/admin/admin-options.php:210
+msgid "To do this, add the following lines to your wp-config.php file before the line that says \"/* That's all, stop editing! Happy publishing. */\":"
+msgstr "Om dit te doen, voeg je de volgende regels toe aan je wp-config.php bestand voor de regel die zegt \"/* Dat is alles, stop met bewerken! Veel plezier met publiceren. */\":"
+
+#: inc/admin/admin-options.php:207
+msgid "You can optionally define your API keys in your wp-config.php file so the keys are not stored in the database."
+msgstr "Je kunt optioneel je API-sleutels definiëren in je wp-config.php bestand, zodat de sleutels niet worden opgeslagen in de database."
+
+#: inc/admin/admin-options.php:201
+msgid "Optional: Define keys in wp-config.php"
+msgstr "Optioneel: definieer sleutels in wp-config.php"
+
+#: inc/admin/admin-options.php:139
+msgid "Using keys defined in wp-config.php. Be sure to test your forms to confirm they are working."
+msgstr "Gebruik sleutels gedefinieerd in wp-config.php. Zorg ervoor dat je je formulieren test om te bevestigen dat ze werken."
+
+#. Plugin Name of the plugin
+#: simple-cloudflare-turnstile.php inc/admin/admin-options.php:81
+msgid "Simple CAPTCHA Alternative with Cloudflare Turnstile"
+msgstr "Simple CAPTCHA Alternative with Cloudflare Turnstile"
+
+#: inc/admin/admin-options.php:1698
+msgid "Turnstile is supported for WP User Manager Login, Registration and Reset Password forms. Enable for these forms in the \"Default WordPress Forms\" settings."
+msgstr "Turnstile wordt ondersteund voor WP User Manager Login, registratie en wachtwoord reset formulieren. Schakel deze formulieren in bij de \"Standaard WordPress formulieren\" instellingen."
+
+#: inc/admin/admin-options.php:1694 inc/admin/admin-options.php:1704
+msgid "WP User Manager"
+msgstr "WP User Manager"
+
+#: inc/admin/admin-options.php:1900
+msgid "Not sure how to use this plugin?"
+msgstr "Weet je niet zeker hoe je deze plugin moet gebruiken?"
+
+#: inc/admin/admin-options.php:1896
+msgid "100% free plugin by"
+msgstr "100% gratis plugin van"
+
+#: inc/admin/admin-options.php:1417
+msgid "When enabled, Turnstile will be added above the submit button, on ALL your forms created with Kadence Forms."
+msgstr "Wanneer ingeschakeld, wordt Turnstile toegevoegd boven de verzendknop, op AL je formulieren die je met Kadence formulieren hebt gemaakt."
+
+#: inc/admin/admin-options.php:1410
+msgid "Enable on all Kadence Forms"
+msgstr "Inschakelen op alle Kadence formulieren"
+
+#: inc/admin/admin-options.php:1403 inc/admin/admin-options.php:1422
+msgid "Kadence Forms"
+msgstr "Kadence formulieren"
+
+#: inc/admin/admin-options.php:1391
+msgid "When enabled, Turnstile will be added above the submit button, on ALL your forms created with MailPoet."
+msgstr "Wanneer ingeschakeld, wordt Turnstile toegevoegd boven de verzendknop, op AL je formulieren die je met MailPoet hebt gemaakt."
+
+#: inc/admin/admin-options.php:1384
+msgid "Enable on all MailPoet Forms"
+msgstr "Inschakelen op alle MailPoet formulieren"
+
+#: inc/admin/admin-options.php:1377 inc/admin/admin-options.php:1397
+msgid "MailPoet"
+msgstr "MailPoet"
+
+#: inc/admin/admin-options.php:1095
+msgid "When enabled, Turnstile will be added after the submit button, on ALL your forms created with Jetpack Forms."
+msgstr "Wanneer ingeschakeld, wordt Turnstile toegevoegd na de verzendknop, op AL je formulieren die je met Jetpack formulieren hebt gemaakt."
+
+#: inc/admin/admin-options.php:1088
+msgid "Enable on all Jetpack Forms"
+msgstr "Inschakelen op alle Jetpack formulieren"
+
+#: inc/admin/admin-options.php:1081 inc/admin/admin-options.php:1100
+msgid "Jetpack Forms"
+msgstr "Jetpack formulieren"
+
+#: inc/integrations/ecommerce/woocommerce.php:216
+msgid "Turnstile token."
+msgstr "Turnstile token."
+
+#: inc/admin/admin-options.php:351
+msgid "Compact (150px)"
+msgstr "Compact (150px)"
+
+#: inc/admin/admin-options.php:348
+msgid "Flexible (100%)"
+msgstr "Flexibel (100%)"
+
+#: inc/admin/admin-options.php:345
+msgid "Normal (300px)"
+msgstr "Normaal (300px)"
+
+#: inc/admin/admin-options.php:341
+msgid "Widget Size"
+msgstr "Widget grootte"
+
+#: inc/admin/admin-options.php:294
+msgid "Vietnamese (Vietnam)"
+msgstr "Vietnamees (Vietnam)"
+
+#: inc/admin/admin-options.php:293
+msgid "Ukrainian (Ukraine)"
+msgstr "Oekraïens (Oekraïne)"
+
+#: inc/admin/admin-options.php:292
+msgid "Turkish (Turkey)"
+msgstr "Turks (Turkije)"
+
+#: inc/admin/admin-options.php:291
+msgid "Thai (Thailand)"
+msgstr "Thais (Thailand)"
+
+#: inc/admin/admin-options.php:290
+msgid "Tagalog (Philippines)"
+msgstr "Tagalog (Filippijnen)"
+
+#: inc/admin/admin-options.php:289
+msgid "Swedish (Sweden)"
+msgstr "Zweeds (Zweden)"
+
+#: inc/admin/admin-options.php:288
+msgid "Spanish (Spain)"
+msgstr "Spaans (Spanje)"
+
+#: inc/admin/admin-options.php:287
+msgid "Slovenian (Slovenia)"
+msgstr "Sloveens (Slovenië)"
+
+#: inc/admin/admin-options.php:286
+msgid "Slovak (Slovakia)"
+msgstr "Slowaaks (Slowakije)"
+
+#: inc/admin/admin-options.php:285
+msgid "Serbian (Bosnia and Herzegovina)"
+msgstr "Servisch (Bosnië en Herzegovina)"
+
+#: inc/admin/admin-options.php:284
+msgid "Russian (Russia)"
+msgstr "Russisch (Rusland)"
+
+#: inc/admin/admin-options.php:283
+msgid "Romanian (Romania)"
+msgstr "Roemeens (Roemenië)"
+
+#: inc/admin/admin-options.php:281
+msgid "Polish (Poland)"
+msgstr "Pools (Polen)"
+
+#: inc/admin/admin-options.php:280
+msgid "Norwegian Bokmål (Norway)"
+msgstr "Noors Bokmål (Noorwegen)"
+
+#: inc/admin/admin-options.php:279
+msgid "Malay (Malaysia)"
+msgstr "Maleis (Maleisië)"
+
+#: inc/admin/admin-options.php:278
+msgid "Lithuanian (Lithuania)"
+msgstr "Litouws (Litouwen)"
+
+#: inc/admin/admin-options.php:277
+msgid "Korean (Korea)"
+msgstr "Koreaans (Korea)"
+
+#: inc/admin/admin-options.php:276
+msgid "Klingon (Qo’noS)"
+msgstr "Klingon (Qo'noS)"
+
+#: inc/admin/admin-options.php:275
+msgid "Japanese (Japan)"
+msgstr "Japans (Japan)"
+
+#: inc/admin/admin-options.php:274
+msgid "Italian (Italy)"
+msgstr "Italiaans (Italië)"
+
+#: inc/admin/admin-options.php:273
+msgid "Indonesian (Indonesia)"
+msgstr "Indonesisch (Indonesië)"
+
+#: inc/admin/admin-options.php:272
+msgid "Hungarian (Hungary)"
+msgstr "Hongaars (Hongarije)"
+
+#: inc/admin/admin-options.php:271
+msgid "Hindi (India)"
+msgstr "Hindi (India)"
+
+#: inc/admin/admin-options.php:270
+msgid "Hebrew (Israel)"
+msgstr "Hebreeuws (Israël)"
+
+#: inc/admin/admin-options.php:269
+msgid "Greek (Greece)"
+msgstr "Grieks (Griekenland)"
+
+#: inc/admin/admin-options.php:268
+msgid "German (Germany)"
+msgstr "Duits (Duitsland)"
+
+#: inc/admin/admin-options.php:267
+msgid "French (France)"
+msgstr "Frans (Frankrijk)"
+
+#: inc/admin/admin-options.php:266
+msgid "Finnish (Finland)"
+msgstr "Fins (Finland)"
+
+#: inc/admin/admin-options.php:265
+msgid "Farsi (Iran)"
+msgstr "Farsi (Iran)"
+
+#: inc/admin/admin-options.php:264
+msgid "English (United States)"
+msgstr "Engels (Verenigde Staten)"
+
+#: inc/admin/admin-options.php:263
+msgid "Dutch (Netherlands)"
+msgstr "Nederlands (Nederland)"
+
+#: inc/admin/admin-options.php:262
+msgid "Danish (Denmark)"
+msgstr "Deens (Denemarken)"
+
+#: inc/admin/admin-options.php:261
+msgid "Czech (Czech Republic)"
+msgstr "Tsjechisch (Tsjechië)"
+
+#: inc/admin/admin-options.php:260
+msgid "Croatian (Croatia)"
+msgstr "Kroatisch (Kroatië)"
+
+#: inc/admin/admin-options.php:259
+msgid "Chinese (Traditional, Taiwan)"
+msgstr "Chinees (Traditioneel, Taiwan)"
+
+#: inc/admin/admin-options.php:258
+msgid "Chinese (Simplified, China)"
+msgstr "Chinees (Vereenvoudigd, China)"
+
+#: inc/admin/admin-options.php:257
+msgid "Bulgarian (Bulgaria)"
+msgstr "Bulgaars (Bulgarije)"
+
+#: inc/admin/admin-options.php:256
+msgid "Arabic (Egypt)"
+msgstr "Arabisch (Egypte)"
+
+#: inc/admin/admin-options.php:1874
+msgid "No events logged yet."
+msgstr "Nog geen gebeurtenissen gelogd."
+
+#: inc/admin/admin-options.php:1865
+msgid " (Visitor submitted form when Turnstile was not successfully completed.)"
+msgstr " (Bezoeker diende formulier in toen Turnstile niet succesvol was afgerond)"
+
+#: inc/admin/admin-options.php:1864
+msgid "Error Codes"
+msgstr "Foutcodes"
+
+#: inc/admin/admin-options.php:1852
+msgid "URL:"
+msgstr "URL:"
+
+#: inc/admin/admin-options.php:1851
+msgid "IP:"
+msgstr "IP:"
+
+#: inc/admin/admin-options.php:1832
+msgid "Info"
+msgstr "Info"
+
+#: inc/admin/admin-options.php:1831
+msgid "Response"
+msgstr "Reactie"
+
+#: inc/admin/admin-options.php:1830 inc/admin/admin-options.php:1847
+msgid "Success"
+msgstr "Succes"
+
+#: inc/admin/admin-options.php:1829
+msgid "Date"
+msgstr "Datum"
+
+#: inc/admin/admin-options.php:1808
+msgid "Turnstile Debug Log"
+msgstr "Turnstile debug log"
+
+#: inc/admin/admin-options.php:1766
+msgid "Enable debug logging of Turnstile form submission events."
+msgstr "Debug logging van Turnstile formulier inzendingsgebeurtenissen inschakelen."
+
+#: simple-cloudflare-turnstile.php:52
+msgid "Settings"
+msgstr "Instellingen"
+
+#: inc/wordpress.php:140
+msgid "ERROR"
+msgstr "FOUT"
+
+#: inc/integrations/forms/contact-form-7.php:105
+msgid "Insert Tag"
+msgstr "Tag invoegen"
+
+#: inc/integrations/forms/contact-form-7.php:95
+msgid "cloudflare turnstile"
+msgstr "Cloudflare Turnstile"
+
+#: inc/integrations/community/buddypress.php:22
+#: inc/integrations/community/buddypress.php:25
+#: inc/integrations/ecommerce/edd.php:59 inc/integrations/ecommerce/pmp.php:62
+#: inc/integrations/membership/wp-members.php:13
+#: inc/integrations/membership/wpuf.php:59
+#: inc/integrations/membership/wpuf.php:64 inc/wordpress.php:223
+msgid "ERROR:"
+msgstr "FOUT:"
+
+#: inc/errors.php:63
+msgid "There was an error with Turnstile response. Please check your keys are correct."
+msgstr "Er is een fout opgetreden bij de Turnstile reactie. Controleer of je sleutels correct zijn."
+
+#: inc/errors.php:61
+msgid "An internal error happened while validating the response. The request can be retried."
+msgstr "Er is een interne fout opgetreden tijdens het valideren van de reactie. De aanvraag kan opnieuw worden geprobeerd."
+
+#: inc/errors.php:59
+msgid "The response parameter has already been validated before."
+msgstr "De reactie parameter is al eerder gevalideerd."
+
+#: inc/errors.php:57
+msgid "The request was rejected because it was malformed."
+msgstr "De aanvraag is afgewezen omdat het foutief was."
+
+#: inc/errors.php:55
+msgid "The response parameter is invalid or has expired."
+msgstr "De reactie parameter is ongeldig of verlopen."
+
+#: inc/errors.php:53
+msgid "The response parameter was not passed."
+msgstr "De reactie parameter is niet doorgegeven."
+
+#: inc/errors.php:51
+msgid "The secret parameter was invalid or did not exist."
+msgstr "De geheime parameter was ongeldig of bestond niet."
+
+#: inc/errors.php:49
+msgid "The secret parameter was not passed."
+msgstr "De geheime parameter is niet doorgegeven."
+
+#: inc/errors.php:36 inc/integrations/forms/kadence.php:46
+#: inc/integrations/forms/kadence.php:52
+msgid "Please verify that you are human."
+msgstr "Verifieer dat je een mens bent."
+
+#: inc/errors.php:20
+msgid "Cloudflare Turnstile is not currently showing on your forms. Please test the API response on the <a href=\"%s\">settings page</a>."
+msgstr "Cloudflare Turnstile wordt momenteel niet weergegeven op je formulieren. Controleer de API-reactie op de <a href=\"%s\">instellingen pagina</a>."
+
+#: inc/admin/admin-options.php:1909
+msgid "View on GitHub"
+msgstr "Bekijken op GitHub"
+
+#: inc/admin/admin-options.php:1907
+msgid "Translate into your language"
+msgstr "Vertaal in je taal"
+
+#: inc/admin/admin-options.php:1938
+msgid "Donate:"
+msgstr "Doneren:"
+
+#: inc/admin/admin-options.php:1904
+msgid "Create a support topic"
+msgstr "Een ondersteuningsonderwerp maken"
+
+#: inc/admin/admin-options.php:1904
+msgid "Need help? Have a suggestion?"
+msgstr "Heb je hulp nodig? Heb je een suggestie?"
+
+#: inc/admin/admin-options.php:1760
+msgid "Delete all of this plugins saved options when the plugin is deleted via plugins page."
+msgstr "Verwijder alle opgeslagen opties van deze plugin zodra die word verwijderd via de plugin pagina."
+
+#: inc/admin/admin-options.php:1743
+msgid "Simply install the plugin and new settings will appear above."
+msgstr "Installeer de plugin en er zullen nieuwe instellingen verschijnen hierboven."
+
+#: inc/admin/admin-options.php:1730
+msgid "You can also enable Turnstile on"
+msgstr "Je kunt Turnstile ook inschakelen op"
+
+#: inc/admin/admin-options.php:1727
+msgid "Other Integrations"
+msgstr "Andere integraties"
+
+#: inc/admin/admin-options.php:1710
+msgid "wpDiscuz"
+msgstr "wpDiscuz"
+
+#: inc/admin/admin-options.php:1677
+msgid "Post Forms"
+msgstr "Berichtformulieren"
+
+#: inc/admin/admin-options.php:1670
+msgid "Register Form"
+msgstr "Registratieformulier"
+
+#: inc/admin/admin-options.php:1665
+msgid "Edit via \"WordPress Reset Password\" option in the \"Default WordPress Forms\" settings."
+msgstr "Bewerk via de \"WordPress wachtwoord resetten\" optie in de \"Standaard WordPress formulieren\" instellingen."
+
+#: inc/admin/admin-options.php:1662
+msgid "Reset Password Form"
+msgstr "Wachtwoord resetten formulier"
+
+#: inc/admin/admin-options.php:1625 inc/admin/admin-options.php:1688
+msgid "WP User Frontend"
+msgstr "WP User Frontend"
+
+#: inc/admin/admin-options.php:1610
+msgid "Turnstile is supported for WP-Members Login and Registration forms. Enable for these forms in the \"Default WordPress Forms\" settings."
+msgstr "Turnstile wordt ondersteund voor WP-Members login en registratieformulieren. Schakel deze formulieren in bij de \"Standaard WordPress formulieren\" instellingen."
+
+#: inc/admin/admin-options.php:1604 inc/admin/admin-options.php:1619
+msgid "WP-Members"
+msgstr "WP-Members"
+
+#: inc/admin/admin-options.php:1588
+msgid "(Optional) One per line. For Membership products that are not on this list, no Turnstile challenge will be loaded or enforced."
+msgstr "(Optioneel) Eén per regel. Voor lidmaatschapsproducten die niet op deze lijst staan, wordt geen Turnstile challenge geladen of afgedwongen."
+
+#: inc/admin/admin-options.php:1585
+msgid "ONLY enable for these Membership IDs:"
+msgstr "ALLEEN inschakelen voor deze lidmaatschaps ID's:"
+
+#: inc/admin/admin-options.php:1576
+msgid "Limited to:"
+msgstr "Beperkt tot:"
+
+#: inc/admin/admin-options.php:1573
+msgid "Registration/Checkout Forms"
+msgstr "Registratie/Afrekenen formulieren"
+
+#: inc/admin/admin-options.php:1547 inc/admin/admin-options.php:1598
+msgid "MemberPress"
+msgstr "MemberPress"
+
+#: inc/admin/admin-options.php:1524
+msgid "UM Password Reset Form"
+msgstr "UM wachtwoord reset formulier"
+
+#: inc/admin/admin-options.php:1517
+msgid "UM Register Form"
+msgstr "UM registratieformulier"
+
+#: inc/admin/admin-options.php:1510
+msgid "UM Login Form"
+msgstr "UM login formulier"
+
+#: inc/admin/admin-options.php:1503 inc/admin/admin-options.php:1535
+msgid "Ultimate Member"
+msgstr "Ultimate Member"
+
+#: inc/admin/admin-options.php:1486
+msgid "Guest Users Only"
+msgstr "Alleen gastgebruikers"
+
+#: inc/admin/admin-options.php:1478
+msgid "Right"
+msgstr "Rechts"
+
+#: inc/admin/admin-options.php:1475
+msgid "Left"
+msgstr "Links"
+
+#: inc/admin/admin-options.php:1471
+msgid "Alignment"
+msgstr "Uitlijning"
+
+#: inc/admin/admin-options.php:1465
+msgid "bbPress Reply"
+msgstr "bbPress antwoord"
+
+#: inc/admin/admin-options.php:1458
+msgid "bbPress Create Topic"
+msgstr "bbPress onderwerp maken"
+
+#: inc/admin/admin-options.php:1451 inc/admin/admin-options.php:1497
+msgid "bbPress"
+msgstr "bbPress"
+
+#: inc/admin/admin-options.php:1435
+msgid "BuddyPress Register"
+msgstr "BuddyPress registreren"
+
+#: inc/admin/admin-options.php:1428 inc/admin/admin-options.php:1445
+msgid "BuddyPress"
+msgstr "BuddyPress"
+
+#: inc/admin/admin-options.php:1371
+msgid "Mailchimp for WordPress"
+msgstr "Mailchimp voor WordPress"
+
+#: inc/admin/admin-options.php:1365
+msgid "To add Turnstile to Mailchimp for WordPress, simply add this shortcode to any of your forms (in the form editor):"
+msgstr "Om Turnstile toe te voegen aan Mailchimp voor WordPress, voeg je eenvoudig deze shortcode toe aan elk van je formulieren (in de formulier editor):"
+
+#: inc/admin/admin-options.php:1362
+msgid "MC4WP: Mailchimp for WordPress"
+msgstr "MC4WP: Mailchimp for WordPress"
+
+#: inc/admin/admin-options.php:1276
+msgid "After Form"
+msgstr "Na het formulier"
+
+#: inc/admin/admin-options.php:1261
+msgid "When enabled, Turnstile will be added above the submit button, on ALL your forms created with Elementor Pro Forms."
+msgstr "Indien ingeschakeld, zal Turnstile worden toegevoegd boven de verzendknop, op AL je formulieren gemaakt met Elementor Pro formulieren."
+
+#: inc/admin/admin-options.php:1254
+msgid "Enable on all Elementor Forms"
+msgstr "Inschakelen op alle Elementor formulieren"
+
+#: inc/admin/admin-options.php:1247 inc/admin/admin-options.php:1356
+msgid "Elementor Forms"
+msgstr "Elementor Forms"
+
+#: inc/admin/admin-options.php:1237
+msgid "Currently Ninja Forms is not supported by this plugin."
+msgstr "Op dit moment wordt Ninja Forms niet ondersteund door deze plugin."
+
+#: inc/admin/admin-options.php:1233
+msgid "Ninja Forms"
+msgstr "Ninja Forms"
+
+#: inc/admin/admin-options.php:1223
+msgid "Click here for more information."
+msgstr "Klik hier voor meer informatie."
+
+#: inc/admin/admin-options.php:1222
+msgid "Currently WS Form is not supported by this plugin, however their plugin does have its own Turnstile addon."
+msgstr "Op dit moment wordt WS Form niet ondersteund door deze plugin, maar hun plugin heeft wel een eigen Turnstile addon."
+
+#: inc/admin/admin-options.php:1218
+msgid "WS Form"
+msgstr "WS Form"
+
+#: inc/admin/admin-options.php:1212
+msgid "Forminator"
+msgstr "Forminator"
+
+#: inc/admin/admin-options.php:1176
+msgid "When enabled, Turnstile will be added above the submit button, on ALL your forms created with Forminator Forms."
+msgstr "Indien ingeschakeld, zal Turnstile worden toegevoegd boven de verzendknop, op AL je formulieren gemaakt met Forminator Forms."
+
+#: inc/admin/admin-options.php:1169
+msgid "Enable on all Forminator Forms"
+msgstr "Inschakelen op alle Forminator formulieren"
+
+#: inc/admin/admin-options.php:1162
+msgid "Forminator Forms"
+msgstr "Forminator formulieren"
+
+#: inc/admin/admin-options.php:1156
+msgid "Formidable"
+msgstr "Formidable"
+
+#: inc/admin/admin-options.php:1120
+msgid "When enabled, Turnstile will be added above the submit button, on ALL your forms created with Formidable Forms."
+msgstr "Indien ingeschakeld, zal Turnstile worden toegevoegd boven de verzendknop, op AL je formulieren gemaakt met Formidable Forms."
+
+#: inc/admin/admin-options.php:1113
+msgid "Enable on all Formidable Forms"
+msgstr "Inschakelen op alle Formidable Forms"
+
+#: inc/admin/admin-options.php:1106
+msgid "Formidable Forms"
+msgstr "Formidable Forms"
+
+#: inc/admin/admin-options.php:1056
+msgid "When enabled, Turnstile will be added above the submit button, on ALL your forms created with Fluent Forms."
+msgstr "Als deze optie is ingeschakeld, wordt Turnstile toegevoegd boven de verzendknop, op AL je formulieren die met Fluent Forms zijn gemaakt."
+
+#: inc/admin/admin-options.php:1049
+msgid "Enable on all Fluent Forms"
+msgstr "Inschakelen op alle Fluent formulieren"
+
+#: inc/admin/admin-options.php:1042 inc/admin/admin-options.php:1075
+msgid "Fluent Forms"
+msgstr "Fluent Forms"
+
+#: inc/admin/admin-options.php:1000
+msgid "When enabled, Turnstile will be added before/after the submit button, on ALL your forms created with Gravity Forms."
+msgstr "Als deze optie is ingeschakeld, wordt Turnstile toegevoegd vóór/ná de verzendknop, op AL je formulieren die met Gravity Forms zijn gemaakt."
+
+#: inc/admin/admin-options.php:993
+msgid "Enable on all Gravity Forms"
+msgstr "Inschakelen op alle Gravity formulieren"
+
+#: inc/admin/admin-options.php:986 inc/admin/admin-options.php:1036
+msgid "Gravity Forms"
+msgstr "Gravity Forms"
+
+#: inc/admin/admin-options.php:974 inc/admin/admin-options.php:1030
+#: inc/admin/admin-options.php:1068 inc/admin/admin-options.php:1150
+#: inc/admin/admin-options.php:1206
+msgid "Separate each ID with a comma, for example: 5,10"
+msgstr "Scheid elke ID met een komma, bijvoorbeeld: 5,10"
+
+#: inc/admin/admin-options.php:973 inc/admin/admin-options.php:1029
+#: inc/admin/admin-options.php:1067 inc/admin/admin-options.php:1149
+#: inc/admin/admin-options.php:1205
+msgid "If you want to DISABLE the Turnstile widget on certain forms, enter the %s ID in this field."
+msgstr "Indien je de Turnstile widget wilt UITSCHAKELEN op bepaalde formulieren, voer dan de %s ID in in dit veld."
+
+#: inc/admin/admin-options.php:966 inc/admin/admin-options.php:1022
+#: inc/admin/admin-options.php:1060 inc/admin/admin-options.php:1142
+#: inc/admin/admin-options.php:1198
+msgid "Disabled Form IDs"
+msgstr "Uitgeschakelde formulier ID's"
+
+#: inc/admin/admin-options.php:956 inc/admin/admin-options.php:1012
+#: inc/admin/admin-options.php:1132 inc/admin/admin-options.php:1188
+#: inc/admin/admin-options.php:1273
+msgid "After Button"
+msgstr "Ná knop"
+
+#: inc/admin/admin-options.php:953 inc/admin/admin-options.php:1009
+#: inc/admin/admin-options.php:1129 inc/admin/admin-options.php:1185
+#: inc/admin/admin-options.php:1270
+msgid "Before Button"
+msgstr "Vóór knop"
+
+#: inc/admin/admin-options.php:944
+msgid "Note: WPForms has an option to configure Turnstile on its own Settings page \"CAPTCHA\" tab. You should only enable it in one place, either here -OR- in those settings."
+msgstr "Opmerking: WPForms heeft een optie om Turnstile te configureren op de eigen instellingenpagina \"CAPTCHA\" tab. Je moet het maar op één plek inschakelen, hier -OF- in die instellingen."
+
+#: inc/admin/admin-options.php:943
+msgid "When enabled, Turnstile will be added before/after the submit button, on ALL your forms created with WPForms."
+msgstr "Als deze optie is ingeschakeld, wordt Turnstile toegevoegd voor/na de verzendknop, op AL je formulieren die met WPForms zijn gemaakt."
+
+#: inc/admin/admin-options.php:936
+msgid "Enable on all WPForms"
+msgstr "Inschakelen op alle WPForms"
+
+#: inc/admin/admin-options.php:929 inc/admin/admin-options.php:980
+msgid "WPForms"
+msgstr "WPForms"
+
+#: inc/admin/admin-options.php:917
+msgid "To add Turnstile to individual Contact Form 7 forms, simply add this shortcode to any of your forms (in the form editor):"
+msgstr "Om Turnstile toe te voegen aan individuele Contact Form 7 formulieren, voeg je eenvoudigweg deze shortcode toe aan een van je formulieren (in de formulier editor):"
+
+#: inc/admin/admin-options.php:908
+msgid "Enable on all CF7 Forms"
+msgstr "Inschakelen op alle CF7 Formulieren"
+
+#: inc/admin/admin-options.php:901 inc/admin/admin-options.php:923
+msgid "Contact Form 7"
+msgstr "Contact Form 7"
+
+#: inc/admin/admin-options.php:895
+msgid "Paid Memberships PRO"
+msgstr "Paid Memberships PRO"
+
+#: inc/admin/admin-options.php:866 inc/admin/admin-options.php:874
+msgid "Currently Turnstile can not be implemented on the lost password form when PMP is installed."
+msgstr "Op dit moment kan Turnstile niet worden geïmplementeerd op het wachtwoord vergeten formulier als PMP is geïnstalleerd."
+
+#: inc/admin/admin-options.php:863
+msgid "Lost Password Form"
+msgstr "Wachtwoord vergeten formulier"
+
+#: inc/admin/admin-options.php:857 inc/admin/admin-options.php:1568
+#: inc/admin/admin-options.php:1646
+msgid "Edit via \"WordPress Login\" option in the \"Default WordPress Forms\" settings."
+msgstr "Bewerk via de \"WordPress login\" optie in de \"Standaard WordPress formulieren\" instellingen."
+
+#: inc/admin/admin-options.php:854 inc/admin/admin-options.php:1565
+#: inc/admin/admin-options.php:1643
+msgid "Login Form"
+msgstr "Login formulier"
+
+#: inc/admin/admin-options.php:830
+msgid "Checkout / Registration"
+msgstr "Afrekenen/Registratie"
+
+#: inc/admin/admin-options.php:823
+msgid "Paid Memberships Pro"
+msgstr "Paid Memberships Pro"
+
+#: inc/admin/admin-options.php:807
+msgid "EDD Register"
+msgstr "EDD registreren"
+
+#: inc/admin/admin-options.php:800
+msgid "EDD Login"
+msgstr "EDD login"
+
+#: inc/admin/admin-options.php:787
+msgid "EDD Checkout"
+msgstr "EDD afrekenen"
+
+#: inc/admin/admin-options.php:780 inc/admin/admin-options.php:817
+msgid "Easy Digital Downloads"
+msgstr "Easy Digital Downloads"
+
+#: inc/admin/admin-options.php:774
+msgid "WooCommerce"
+msgstr "WooCommerce"
+
+#: inc/admin/admin-options.php:704
+msgid "If selected below, Turnstile check will not be run for that specific payment method."
+msgstr "Indien hieronder geselecteerd, wordt er geen Turnstile controle uitgevoerd voor die specifieke betaalmethode."
+
+#: inc/admin/admin-options.php:690
+msgid "Payment Methods to Skip"
+msgstr "Betaalmethoden om over te slaan"
+
+#: inc/admin/admin-options.php:658
+msgid "WooCommerce Pay for Order"
+msgstr "WooCommerce Pay for Order"
+
+#: inc/admin/admin-options.php:650
+msgid "After Billing"
+msgstr "Na de facturering"
+
+#: inc/admin/admin-options.php:647
+msgid "Before Billing"
+msgstr "Voor de facturering"
+
+#: inc/admin/admin-options.php:644
+msgid "Before Pay Button"
+msgstr "Voor de betaal-knop"
+
+#: inc/admin/admin-options.php:641
+msgid "After Payment"
+msgstr "Na betaling"
+
+#: inc/admin/admin-options.php:638
+msgid "Before Payment"
+msgstr "Voor betaling"
+
+#: inc/admin/admin-options.php:628 inc/admin/admin-options.php:949
+#: inc/admin/admin-options.php:1005 inc/admin/admin-options.php:1125
+#: inc/admin/admin-options.php:1181 inc/admin/admin-options.php:1266
+msgid "Widget Location"
+msgstr "Widget plaatsing"
+
+#: inc/admin/admin-options.php:626 inc/admin/admin-options.php:789
+#: inc/admin/admin-options.php:832
+msgid "Guest Checkout Only"
+msgstr "Alleen gast afrekenen"
+
+#: inc/admin/admin-options.php:624
+msgid "WooCommerce Checkout"
+msgstr "WooCommerce afrekenen"
+
+#: inc/admin/admin-options.php:617
+msgid "WooCommerce Reset Password"
+msgstr "WooCommerce wachtwoord opnieuw instellen"
+
+#: inc/admin/admin-options.php:610
+msgid "WooCommerce Register"
+msgstr "WooCommerce registratie"
+
+#: inc/admin/admin-options.php:603
+msgid "WooCommerce Login"
+msgstr "WooCommerce login"
+
+#: inc/admin/admin-options.php:596
+msgid "WooCommerce Forms"
+msgstr "WooCommerce formulieren"
+
+#: inc/admin/admin-options.php:575
+msgid "Compatible with wpDiscuz!"
+msgstr "Compatibel met wpDiscuz!"
+
+#: inc/admin/admin-options.php:572
+msgid "Due to Jetpack limitations, this does NOT currently work with Jetpack comments form enabled."
+msgstr "Vanwege de Jetpack beperkingen werkt dit momenteel NIET als het Jetpack reactieformulier is ingeschakeld."
+
+#: inc/admin/admin-options.php:561
+msgid "AJAX comments form?"
+msgstr "AJAX reactieformulier?"
+
+#: inc/admin/admin-options.php:559
+msgid "Enable this if you are using an AJAX based comments form plugin or theme."
+msgstr "Schakel dit in als je een op Ajax gebaseerd reactieformulier plugin of thema gebruikt."
+
+#: inc/admin/admin-options.php:558
+msgid "WordPress Comment"
+msgstr "WordPress reactie"
+
+#: inc/admin/admin-options.php:551
+msgid "WordPress Reset Password"
+msgstr "WordPress wachtwoord opnieuw instellen"
+
+#: inc/admin/admin-options.php:531
+msgid "Enable this option to only enable on default WordPress register form at wp-login.php?action=register"
+msgstr "Schakel deze optie in om alleen het standaard WordPress registratieformulier in te schakelen bij wp-login.php?action=register"
+
+#: inc/admin/admin-options.php:530
+msgid "WordPress Register"
+msgstr "WordPress registreren"
+
+#: inc/admin/admin-options.php:512 inc/admin/admin-options.php:533
+msgid "Only enable on default wp-login.php page"
+msgstr "Alleen inschakelen op standaard wp-login.php pagina"
+
+#: inc/admin/admin-options.php:510
+msgid "Enable this option to only enable on default WordPress login form at wp-login.php"
+msgstr "Schakel deze optie in om alleen het standaard WordPress loginformulier in te schakelen bij wp-login.php"
+
+#: inc/admin/admin-options.php:509
+msgid "WordPress Login"
+msgstr "WordPress login"
+
+#: inc/admin/admin-options.php:502
+msgid "Default WordPress Forms"
+msgstr "Standaard WordPress formulieren"
+
+#: inc/admin/admin-options.php:496
+msgid "Select the dropdown for each integration, and choose when specific forms you want to enable Turnstile on."
+msgstr "Selecteer de dropdown voor elke integratie en kies bij welke specifieke formulieren je Turnstile wil inschakelen."
+
+#: inc/admin/admin-options.php:495
+msgid "Enable Turnstile on your forms:"
+msgstr "Turnstile inschakelen op je formulieren:"
+
+#: inc/admin/admin-options.php:479
+msgid "One per line.  All visitors with listed User Agents will not see the Turnstile challenge. Warning: If an attacker knows one of the whitelisted User Agents, they might be able to spoof that User Agent to bypass Turnstile."
+msgstr "Eén per regel. Alle bezoekers met vermelde user agents zullen de Turnstile challenge niet zien. Waarschuwing: als een aanvaller een van de toegestane user agents kent, kunnen ze mogelijk die user agent vervalsen om Turnstile te omzeilen."
+
+#: inc/admin/admin-options.php:476
+msgid "User Agents"
+msgstr "User agents"
+
+#: inc/admin/admin-options.php:471
+msgid "One per line. Wildcards are not supported. All visitors with listed IP addresses will not see the Turnstile challenge. Warning: If an attacker knows one of the whitelisted IP addresses, they might be able to spoof that address to bypass Turnstile."
+msgstr "Eén per regel. Wildcards worden niet ondersteund. Alle bezoekers met vermelde IP-adressen zullen de Turnstile challenge niet zien. Waarschuwing: als een aanvaller een van de toegestane IP-adressen kent, kunnen ze mogelijk dat adres spoofen om Turnstile te omzeilen."
+
+#: inc/admin/admin-options.php:468
+msgid "IP Addresses"
+msgstr "IP-adressen"
+
+#: inc/admin/admin-options.php:463
+msgid "When enabled, logged in users will not see the Turnstile challenge."
+msgstr "Als deze optie is ingeschakeld, zien ingelogde gebruikers de Turnstile uitdaging niet."
+
+#: inc/admin/admin-options.php:460
+msgid "Logged In Users"
+msgstr "Ingelogde gebruikers"
+
+#: inc/admin/admin-options.php:453
+msgid "Whitelist Settings"
+msgstr "Toegestane lijst-instellingen"
+
+#: inc/admin/admin-options.php:421
+msgid "Currently it is not possible to edit the actual \"Failure!\" message shown on the widget."
+msgstr "Momenteel is het niet mogelijk om het daadwerkelijke \"Mislukt!\" bericht te bewerken dat op de widget wordt getoond."
+
+#: inc/admin/admin-options.php:419
+msgid "This will show a message below the Turnstile widget if they receive the \"Failure!\" response. Useful to give instructions in the *very rare* case a valid user is being flagged as spam."
+msgstr "Dit toont een bericht onder de Turnstile widget als ze de \"Mislukt!\" reactie krijgen. Nuttig om instructies te geven in het *zeer zeldzame* geval dat een geldige gebruiker wordt gemarkeerd als spam."
+
+#: inc/admin/admin-options.php:417 inc/turnstile.php:113
+msgid "Failed to verify you are human. Please contact us if you are having issues."
+msgstr "Het is niet gelukt om te verifiëren of je een mens bent. Neem contact met ons op als je problemen ondervindt."
+
+#: inc/admin/admin-options.php:412
+msgid "HTML Markup Allowed."
+msgstr "HTML mark-up toegestaan."
+
+#: inc/admin/admin-options.php:403
+msgid "Extra Failure Message"
+msgstr "Extra mislukt bericht"
+
+#: inc/admin/admin-options.php:397
+msgid "Shown if the form is submitted without completing the Turnstile challenge. Leave blank to use the default message (localized):"
+msgstr "Wordt weergegeven als het formulier is verzonden zonder de Turnstile uitdaging te voltooien. Laat leeg om het standaardbericht (gelokaliseerd) te gebruiken:"
+
+#: inc/admin/admin-options.php:392
+msgid "Custom Error Message"
+msgstr "Aangepast foutbericht"
+
+#: inc/admin/admin-options.php:436
+msgid "When enabled, the javascript files loaded by the plugin will be deferred. You can disable this if it causes any issues with your other optimisations."
+msgstr "Als deze optie is ingeschakeld, worden de JavaScript bestanden die door de plugin worden geladen uitgesteld. Je kunt dit uitschakelen als het problemen veroorzaakt met je andere optimalisaties."
+
+#: inc/admin/admin-options.php:433
+msgid "Defer Scripts"
+msgstr "Scripts uitstellen"
+
+#: inc/admin/admin-options.php:329
+msgid "These settings are for more advanced customisation. If you are not sure about these, they do not need to be changed."
+msgstr "Deze instellingen zijn voor meer geavanceerde aanpassingen. Als je hier niet zeker van bent, hoef je ze niet te wijzigen."
+
+#: inc/admin/admin-options.php:325
+msgid "Advanced Settings"
+msgstr "Geavanceerde instellingen"
+
+#: inc/admin/admin-options.php:319
+msgid "When enabled, the user will not be able to click submit until the Turnstile challenge is completed."
+msgstr "Wanneer ingeschakeld, zal de gebruiker niet in staat zijn om op 'Verzenden' te klikken totdat de Turnstile uitdaging is afgerond."
+
+#: inc/admin/admin-options.php:316
+msgid "Disable Submit Button"
+msgstr "Knop indienen uitschakelen"
+
+#: inc/admin/admin-options.php:381
+msgid "Turnstile Widget is only displayed in cases where an interaction is required. This essentially makes it \"invisible\" for most valid users."
+msgstr "Turnstile widget wordt alleen weergegeven in gevallen waarin een interactie vereist is. Dit maakt het in wezen \"onzichtbaar\" voor de meeste geldige gebruikers."
+
+#: inc/admin/admin-options.php:380
+msgid "Turnstile Widget is only displayed after the challenge begins."
+msgstr "Turnstile widget wordt alleen weergegeven nadat de challenge is begonnen."
+
+#: inc/admin/admin-options.php:379
+msgid "Turnstile Widget is always displayed for all visitors."
+msgstr "Turnstile widget wordt altijd weergegeven voor alle bezoekers."
+
+#: inc/admin/admin-options.php:365
+msgid "Interaction Only"
+msgstr "Alleen interactie"
+
+#: inc/admin/admin-options.php:363
+msgid "Always"
+msgstr "Altijd"
+
+#: inc/admin/admin-options.php:358
+msgid "Appearance Mode"
+msgstr "Weergavemodus"
+
+#: inc/admin/admin-options.php:282
+msgid "Portuguese (Brazil)"
+msgstr "Portugees (Brazilië)"
+
+#: inc/admin/admin-options.php:255
+msgid "Auto Detect"
+msgstr "Automatisch detecteren"
+
+#: inc/admin/admin-options.php:250
+msgid "Language"
+msgstr "Taal"
+
+#: inc/admin/admin-options.php:243
+msgid "Auto"
+msgstr "Auto"
+
+#: inc/admin/admin-options.php:240
+msgid "Dark"
+msgstr "Donker"
+
+#: inc/admin/admin-options.php:237
+msgid "Light"
+msgstr "Licht"
+
+#: inc/admin/admin-options.php:233
+msgid "Theme"
+msgstr "Thema"
+
+#: inc/admin/admin-options.php:229
+msgid "General Settings:"
+msgstr "Algemene instellingen:"
+
+#: inc/admin/admin-options.php:135 inc/admin/admin-options.php:172
+msgid "Secret Key"
+msgstr "Geheime sleutel"
+
+#: inc/admin/admin-options.php:134 inc/admin/admin-options.php:154
+msgid "Site Key"
+msgstr "Sitesleutel"
+
+#: inc/admin/admin-options.php:129
+msgid "You can get your site key and secret key from here:"
+msgstr "Je kunt je sitesleutel en geheime sleutel hier vandaan halen:"
+
+#: inc/admin/admin-options.php:124
+msgid "Success! Turnstile is working correctly with your API keys."
+msgstr "Gelukt! Turnstile werkt correct met je API-sleutels."
+
+#: inc/admin/admin-options.php:113
+msgid "API Key Settings:"
+msgstr "API-sleutel instellingen:"
+
+#: inc/admin/admin-options.php:88
+msgid "Please submit a review"
+msgstr "Geef een beoordeling"
+
+#: inc/admin/admin-options.php:88
+msgid "Review on WordPress.org"
+msgstr "Beoordeling op WordPress.org"
+
+#: inc/admin/admin-options.php:88
+msgid "Like this plugin?"
+msgstr "Vind je deze plugin leuk?"
+
+#: inc/admin/admin-options.php:88 inc/admin/admin-options.php:1901
+msgid "View setup guide"
+msgstr "Installatiegids bekijken"
+
+#: inc/admin/admin-options.php:83
+msgid "Learn more."
+msgstr "Leer meer."
+
+#: inc/admin/admin-options.php:83
+msgid "Easily add the free CAPTCHA service called \"Cloudflare Turnstile\" to your WordPress forms to help prevent spam."
+msgstr "Voeg eenvoudig de gratis CAPTCHA dienst genaamd \"Cloudflare Turnstile\" toe aan je WordPress formulieren om spam te helpen voorkomen."
+
+#: inc/admin/admin-options.php:66
+msgid "TEST RESPONSE"
+msgstr "TESTREACTIE"
+
+#: inc/admin/admin-options.php:58
+msgid "Error message:"
+msgstr "Foutbericht:"
+
+#: inc/admin/admin-options.php:54
+msgid "Failed! There is an error with your API settings. Please check & update them."
+msgstr "Mislukt! Er is een fout opgetreden in je API-instellingen. Controleer & update ze."
+
+#: inc/admin/admin-options.php:45
+msgid "Turnstile will not be added to any forms until the test is successfully complete."
+msgstr "Turnstile wordt pas aan formulieren toegevoegd als de test succesvol is afgerond."
+
+#: inc/admin/admin-options.php:43
+msgid "API keys have been updated. Please test the Turnstile API response below."
+msgstr "De API-sleutels zijn geüpdatet. Test de Turnstile API reactie hieronder."
+
+#: inc/admin/admin-options.php:39
+msgid "Almost done..."
+msgstr "Bijna klaar…"
+
+#. Author URI of the plugin
+#: simple-cloudflare-turnstile.php
+msgid "https://www.relywp.com"
+msgstr "https://www.relywp.com"
+
+#. Author of the plugin
+#: simple-cloudflare-turnstile.php
+msgid "Elliot Sowersby, RelyWP"
+msgstr "Elliot Sowersby, RelyWP"
+
+#. Description of the plugin
+#: simple-cloudflare-turnstile.php
+msgid "Easily add Cloudflare Turnstile to your WordPress forms. The user-friendly, privacy-preserving CAPTCHA alternative."
+msgstr "Voeg eenvoudig Cloudflare Turnstile toe aan je WordPress formulieren. Het gebruiksvriendelijke, privacy-beschermende CAPTCHA alternatief."

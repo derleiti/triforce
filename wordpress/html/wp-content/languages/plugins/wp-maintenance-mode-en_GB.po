@@ -1,0 +1,719 @@
+# Translation of Plugins - LightStart &#8211; Maintenance Mode, Coming Soon and Landing Page Builder - Stable (latest release) in English (UK)
+# This file is distributed under the same license as the Plugins - LightStart &#8211; Maintenance Mode, Coming Soon and Landing Page Builder - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2023-02-24 12:23:45+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: en_GB\n"
+"Project-Id-Version: Plugins - LightStart &#8211; Maintenance Mode, Coming Soon and Landing Page Builder - Stable (latest release)\n"
+
+#: views/settings.php:846
+msgid "If you want to see the list of subscribers, go to Modules &raquo; Subscribe &raquo; Export as CSV."
+msgstr "If you want to see the list of subscribers, go to Modules &raquo; Subscribe &raquo; Export as CSV."
+
+#: views/settings.php:1073
+msgid "Choose how the link will open."
+msgstr "Choose how the link will open."
+
+#: views/settings.php:1066
+msgid "P. Policy link target"
+msgstr "P. Policy link target"
+
+#: views/settings.php:789
+msgid "Enable IP anonymization?"
+msgstr "Enable IP anonymisation?"
+
+#. translators: number of subscribers
+#: views/settings.php:588 views/settings.php:758
+msgctxt "settings page"
+msgid "You have %d subscriber"
+msgid_plural "You have %d subscribers"
+msgstr[0] "You have %d subscriber"
+msgstr[1] "You have %s subscribers"
+
+#. translators: number of subscribers
+#: includes/classes/wp-maintenance-mode-admin.php:324
+msgctxt "ajax response"
+msgid "You have %d subscriber"
+msgid_plural "You have %d subscribers"
+msgstr[0] "You have %d subscriber"
+msgstr[1] "You have %s subscribers"
+
+#: views/settings.php:1087
+msgid "Subscribe form 'tail'"
+msgstr "Subscribe form 'tail'"
+
+#: views/settings.php:1082 views/settings.php:1091
+msgid "This will be shown together with the acceptance checkbox below the form"
+msgstr "This will be shown together with the acceptance checkbox below the form"
+
+#: views/settings.php:1078
+msgid "Contact form 'tail'"
+msgstr "Contact form 'tail'"
+
+#: views/settings.php:1056
+msgid "P. Policy page link"
+msgstr "P. Policy page link"
+
+#: views/settings.php:1051
+msgid "Label the link that will be shown on frontend footer"
+msgstr "Label the link that will be shown on front end footer"
+
+#: views/settings.php:1047
+msgid "Link name"
+msgstr "Link name"
+
+#: views/settings.php:1033
+msgid "Here we added some generic texts that you may want to review, change or remove."
+msgstr "Here we added some generic texts that you may want to review, change or remove."
+
+#: views/settings.php:1032
+msgid "To make the plugin GDPR compliant, fill in the details and enable this section."
+msgstr "To make the plugin GDPR compliant, fill in the details and enable this section."
+
+#: views/settings.php:79
+msgid "GDPR"
+msgstr "GDPR"
+
+#: includes/classes/wp-maintenance-mode.php:333
+msgid "This form collects your email so that we can add you to our newsletter list. Check out our <a href=\"#\">Privacy Policy</a> page to fully understand how we protect and manage your submitted data."
+msgstr "This form collects your email so that we can add you to our newsletter list. Check out our <a href=\"#\">Privacy Policy</a> page to fully understand how we protect and manage your submitted data."
+
+#: includes/classes/wp-maintenance-mode.php:332
+msgid "This form collects your name and email so that we can reach you back. Check out our <a href=\"#\">Privacy Policy</a> page to fully understand how we protect and manage your submitted data."
+msgstr "This form collects your name and email so that we can reach you back. Check out our <a href=\"#\">Privacy Policy</a> page to fully understand how we protect and manage your submitted data."
+
+#: includes/classes/wp-maintenance-mode.php:329
+msgid "Privacy Policy"
+msgstr "Privacy Policy"
+
+#: includes/classes/wp-maintenance-mode-admin.php:1252
+msgid "No privacy features detected for your WordPress version. Update WordPress to get this field automatically filled in or type in the URL that points to your privacy policy page."
+msgstr "No privacy features detected for your WordPress version. Update WordPress to get this field automatically filled in or type in the URL that points to your privacy policy page."
+
+#: includes/classes/wp-maintenance-mode-admin.php:1239
+msgid "Your WordPress version supports Privacy settings but you haven't set any privacy policy page yet. Go to Settings ➡ Privacy to set one."
+msgstr "Your WordPress version supports Privacy settings but you haven't set any privacy policy page yet. Go to Settings ➡ Privacy to set one."
+
+#: views/settings.php:390
+msgid "This text will not be shown when the bot feature is enabled."
+msgstr "This text will not be shown when the bot feature is enabled."
+
+#: views/settings.php:1010
+msgid "Message 10"
+msgstr "Message 10"
+
+#: views/settings.php:1002
+msgid "Message 9"
+msgstr "Message 9"
+
+#: views/settings.php:994
+msgid "(click on button two)"
+msgstr "(click on button two)"
+
+#: views/settings.php:976 views/settings.php:1002 views/settings.php:1010
+msgid "(click on button one)"
+msgstr "(click on button one)"
+
+#: views/settings.php:976 views/settings.php:994
+msgid "Message 8"
+msgstr "Message 8"
+
+#: views/settings.php:969
+msgid "Edit button two"
+msgstr "Edit button two"
+
+#: views/settings.php:965
+msgid "Edit button one"
+msgstr "Edit button one"
+
+#: views/settings.php:952
+msgid "Message 7"
+msgstr "Message 7"
+
+#: views/settings.php:944
+msgid "Message 6"
+msgstr "Message 6"
+
+#: views/settings.php:936
+msgid "Message 5"
+msgstr "Message 5"
+
+#: views/settings.php:928
+msgid "Message 4"
+msgstr "Message 4"
+
+#: views/settings.php:923 views/settings.php:989
+msgid "Edit the placeholder's text"
+msgstr "Edit the placeholder's text"
+
+#: views/settings.php:918 views/settings.php:960 views/settings.php:984
+msgid "Response"
+msgstr "Response"
+
+#: views/settings.php:910
+msgid "Message 3"
+msgstr "Message 3"
+
+#: views/settings.php:902
+msgid "Message 2"
+msgstr "Message 2"
+
+#: views/settings.php:894
+msgid "Message 1"
+msgstr "Message 1"
+
+#: views/settings.php:888
+msgid "Customize Messages"
+msgstr "Customise Messages"
+
+#: views/settings.php:882
+msgid "A 512 x 512 px will work just fine."
+msgstr "A 512 x 512 px will work just fine."
+
+#: views/settings.php:869
+msgid "Upload avatar"
+msgstr "Upload avatar"
+
+#: views/settings.php:864
+msgid "This name will appear when the bot is typing."
+msgstr "This name will appear when the bot is typing."
+
+#: views/settings.php:860
+msgid "Bot Name"
+msgstr "Bot Name"
+
+#: views/settings.php:845
+msgid "It is also ok if you don't fill in all the conversation steps if you don't need to."
+msgstr "It is also OK if you don't fill in all the conversation steps if you don't need to."
+
+#: views/settings.php:844
+msgid "You may also want to use these wildcards: {bot_name} and {visitor_name} to make the conversation even more realistic."
+msgstr "You may also want to use these wildcards: {bot_name} and {visitor_name} to make the conversation even more realistic."
+
+#: views/settings.php:71
+msgid "Manage Bot"
+msgstr "Manage Bot"
+
+#: includes/classes/wp-maintenance-mode.php:804
+msgid "Please type in a valid email address."
+msgstr "Please type in a valid email address."
+
+#: includes/classes/wp-maintenance-mode.php:803
+msgid "Please type in your name."
+msgstr "Please type in your name."
+
+#: includes/classes/wp-maintenance-mode.php:324
+#: includes/classes/wp-maintenance-mode.php:807
+msgid "Type your email here…"
+msgstr "Type your email here…"
+
+#: includes/classes/wp-maintenance-mode.php:323
+msgid "Boring"
+msgstr "Boring"
+
+#: includes/classes/wp-maintenance-mode.php:322
+msgid "Tell me more"
+msgstr "Tell me more"
+
+#: includes/classes/wp-maintenance-mode.php:321
+#: includes/classes/wp-maintenance-mode.php:806
+msgid "Type your name here…"
+msgstr "Type your name here…"
+
+#: includes/classes/wp-maintenance-mode.php:318
+msgid "Have a great day!"
+msgstr "Have a great day!"
+
+#: includes/classes/wp-maintenance-mode.php:317
+msgid "Got it! Thank you and see you soon here!"
+msgstr "Got it! Thank you and see you soon here!"
+
+#: includes/classes/wp-maintenance-mode.php:316
+msgid "Sad to hear that, {visitor_name} :( See you next time…"
+msgstr "Sad to hear that, {visitor_name} :( See you next time…"
+
+#: includes/classes/wp-maintenance-mode.php:315
+msgid "Cool! Please leave your email here and I will send you a message when it's ready."
+msgstr "Cool! Please leave your email here and I will send you a message when it's ready."
+
+#: includes/classes/wp-maintenance-mode.php:314
+msgid "Would you like to be first to see it?"
+msgstr "Would you like to be first to see it?"
+
+#: includes/classes/wp-maintenance-mode.php:313
+msgid "I know, you are very excited to see it, but we need a few days to finish it."
+msgstr "I know, you are very excited to see it, but we need a few days to finish it."
+
+#: includes/classes/wp-maintenance-mode.php:311
+msgid "Nice to meet you here, {visitor_name}!"
+msgstr "Nice to meet you here, {visitor_name}!"
+
+#: includes/classes/wp-maintenance-mode.php:310
+msgid "What is your name?"
+msgstr "What is your name?"
+
+#: includes/classes/wp-maintenance-mode.php:309
+msgid "I have just a few questions."
+msgstr "I have just a few questions."
+
+#: includes/classes/wp-maintenance-mode.php:308
+msgid "Hey! My name is {bot_name}, I'm the owner of this website and I'd like to be your assistant here."
+msgstr "Hey! My name is {bot_name}, I'm the owner of this website and I'd like to be your assistant here."
+
+#: includes/classes/wp-maintenance-mode-admin.php:975
+msgid "WPMM: The file data.js could not be written, the bot will not work correctly."
+msgstr "WPMM: The file data.js could not be written, the bot will not work correctly."
+
+#: includes/classes/wp-maintenance-mode-admin.php:271
+#: includes/classes/wp-maintenance-mode-admin.php:318
+#: includes/classes/wp-maintenance-mode-admin.php:408
+#: includes/classes/wp-maintenance-mode-admin.php:641
+#: includes/classes/wp-maintenance-mode-admin.php:673
+#: includes/classes/wp-maintenance-mode-admin.php:708
+#: includes/classes/wp-maintenance-mode-admin.php:762
+#: includes/classes/wp-maintenance-mode-admin.php:782
+#: includes/classes/wp-maintenance-mode-admin.php:802
+#: includes/classes/wp-maintenance-mode-admin.php:848
+#: includes/classes/wp-maintenance-mode-admin.php:879
+#: includes/classes/wp-maintenance-mode-admin.php:905
+#: includes/classes/wp-maintenance-mode-admin.php:1123
+#: includes/classes/wp-maintenance-mode.php:1311
+#: includes/classes/wp-maintenance-mode.php:1339
+msgid "Security check."
+msgstr "Security check."
+
+#: includes/classes/wp-maintenance-mode-admin.php:266
+#: includes/classes/wp-maintenance-mode-admin.php:313
+#: includes/classes/wp-maintenance-mode-admin.php:398
+#: includes/classes/wp-maintenance-mode-admin.php:631
+#: includes/classes/wp-maintenance-mode-admin.php:668
+#: includes/classes/wp-maintenance-mode-admin.php:698
+#: includes/classes/wp-maintenance-mode-admin.php:757
+#: includes/classes/wp-maintenance-mode-admin.php:777
+#: includes/classes/wp-maintenance-mode-admin.php:797
+#: includes/classes/wp-maintenance-mode-admin.php:843
+#: includes/classes/wp-maintenance-mode-admin.php:874
+#: includes/classes/wp-maintenance-mode-admin.php:900
+#: includes/classes/wp-maintenance-mode-admin.php:1118
+msgid "The nonce field must not be empty."
+msgstr "The nonce field must not be empty."
+
+#. translators: link to plugin reviews page on wp.org
+#: includes/classes/wp-maintenance-mode-admin.php:1171
+msgid "If you like <strong>Lightstart</strong> please leave us a %s rating. A huge thank you from WP Maintenance Mode makers in advance!"
+msgstr "If you like <strong>WP Maintenance Mode</strong> please leave us a %s rating. A huge thank you from WP Maintenance Mode makers in advance!"
+
+#: views/settings.php:594 views/settings.php:764
+msgid "Empty subscribers list"
+msgstr "Empty subscribers list"
+
+#: views/settings.php:114 views/settings.php:127
+msgid "Select role(s)"
+msgstr "Select role(s)"
+
+#: views/maintenance.php:126 views/maintenance.php:190
+#: views/maintenance.php:193 views/maintenance.php:201
+#: views/maintenance.php:209
+msgid "This field is required."
+msgstr "This field is required."
+
+#: views/contact.php:103
+msgid "Content:"
+msgstr "Content:"
+
+#: views/contact.php:88
+msgid "Email:"
+msgstr "Email:"
+
+#: views/contact.php:76
+msgid "Name:"
+msgstr "Name:"
+
+#. translators: name of the blog
+#: views/contact.php:54
+msgid "You have been contacted via %s."
+msgstr "You have been contacted via %s."
+
+#: includes/classes/wp-maintenance-mode-admin.php:1115
+msgid "Notice key cannot be empty."
+msgstr "Notice key cannot be empty."
+
+#: includes/classes/wp-maintenance-mode-admin.php:414
+#: includes/classes/wp-maintenance-mode-admin.php:647
+msgid "The tab slug must exist."
+msgstr "The tab slug must exist."
+
+#: includes/classes/wp-maintenance-mode-admin.php:403
+#: includes/classes/wp-maintenance-mode-admin.php:636
+msgid "The tab slug must not be empty."
+msgstr "The tab slug must not be empty."
+
+#: includes/classes/wp-maintenance-mode-admin.php:262
+#: includes/classes/wp-maintenance-mode-admin.php:309
+#: includes/classes/wp-maintenance-mode-admin.php:393
+#: includes/classes/wp-maintenance-mode-admin.php:626
+msgid "You do not have access to this resource."
+msgstr "You do not have access to this resource."
+
+#: views/maintenance.php:190 views/sidebar.php:16
+msgid "Name"
+msgstr "Name"
+
+#: views/settings.php:170
+msgid "Notice"
+msgstr "Notice"
+
+#: views/settings.php:158
+msgid "Exclude"
+msgstr "Exclude"
+
+#: includes/classes/wp-maintenance-mode-admin.php:1297
+msgid "Settings saved."
+msgstr "Settings saved."
+
+#: views/sidebar.php:24
+msgid "Twitter"
+msgstr "Twitter"
+
+#: includes/classes/wp-maintenance-mode-admin.php:1008
+msgid "Settings"
+msgstr "Settings"
+
+#: views/settings.php:772
+msgid "Google Analytics"
+msgstr "Google Analytics"
+
+#: views/settings.php:602
+msgid "Social Networks"
+msgstr "Social Networks"
+
+#: views/settings.php:104 views/settings.php:175 views/settings.php:188
+#: views/settings.php:522 views/settings.php:566 views/settings.php:613
+#: views/settings.php:717 views/settings.php:783 views/settings.php:794
+msgid "No"
+msgstr "No"
+
+#: views/settings.php:103 views/settings.php:174 views/settings.php:187
+#: views/settings.php:521 views/settings.php:565 views/settings.php:612
+#: views/settings.php:716 views/settings.php:782 views/settings.php:793
+msgid "Yes"
+msgstr "Yes"
+
+#: views/settings.php:723
+msgid "Email address"
+msgstr "Email address"
+
+#: views/settings.php:93 views/settings.php:854 views/settings.php:1041
+msgid "Activated"
+msgstr "Activated"
+
+#: views/loginform.php:17
+msgid "Login"
+msgstr "Login"
+
+#: views/settings.php:528
+msgid "Start date"
+msgstr "Start date"
+
+#: views/sidebar.php:22
+msgid "Author"
+msgstr "Author"
+
+#: views/settings.php:51
+msgid "General"
+msgstr "General"
+
+#: views/sidebar.php:25
+msgid "GitHub"
+msgstr "GitHub"
+
+#: views/sidebar.php:23
+msgid "Website"
+msgstr "Website"
+
+#: views/settings.php:706
+msgid "Contact"
+msgstr "Contact"
+
+#: views/maintenance.php:239
+msgid "Dashboard"
+msgstr "Dashboard"
+
+#: views/network-settings.php:33 views/settings.php:90 views/settings.php:851
+#: views/settings.php:1038
+msgid "Status"
+msgstr "Status"
+
+#: includes/classes/wp-maintenance-mode.php:738
+msgid "Maintenance Mode"
+msgstr "Maintenance Mode"
+
+#: views/settings.php:546
+msgid "Color"
+msgstr "Colour"
+
+#: views/maintenance.php:193
+msgid "E-mail"
+msgstr "Email"
+
+#: views/settings.php:540
+msgid "Hours"
+msgstr "Hours"
+
+#: views/settings.php:541
+msgid "Minutes"
+msgstr "Minutes"
+
+#: views/settings.php:407
+msgid "Background"
+msgstr "Background"
+
+#: includes/classes/wp-maintenance-mode.php:808 views/maintenance.php:220
+msgid "Send"
+msgstr "Send"
+
+#: views/network-settings.php:43 views/settings.php:197 views/settings.php:498
+#: views/settings.php:823 views/settings.php:1020 views/settings.php:1098
+msgid "Save settings"
+msgstr "Save settings"
+
+#: includes/classes/wp-maintenance-mode.php:1307
+#: includes/classes/wp-maintenance-mode.php:1342 views/maintenance.php:193
+msgid "Please enter a valid email address."
+msgstr "Please enter a valid email address."
+
+#: views/settings.php:341
+msgid "Heading"
+msgstr "Heading"
+
+#: views/settings.php:593 views/settings.php:763
+msgid "Export as CSV"
+msgstr "Export as CSV"
+
+#: views/settings.php:350 views/settings.php:572
+msgid "Text"
+msgstr "Text"
+
+#: views/settings.php:64
+msgid "Modules"
+msgstr "Modules"
+
+#: views/settings.php:511
+msgid "Countdown"
+msgstr "Countdown"
+
+#: views/settings.php:58
+msgid "Design"
+msgstr "Design"
+
+#: views/sidebar.php:12
+msgid "Plugin Info"
+msgstr "Plugin Info"
+
+#: views/settings.php:812
+msgid "Tracking code"
+msgstr "Tracking code"
+
+#: views/settings.php:778
+msgid "Use Google Analytics?"
+msgstr "Use Google Analytics?"
+
+#: views/settings.php:737
+msgid "Fold - Unfold"
+msgstr "Fold - Unfold"
+
+#: views/settings.php:736
+msgid "Zoom - Zoomed"
+msgstr "Zoom - Zoomed"
+
+#: views/settings.php:735
+msgid "Move top - Move bottom"
+msgstr "Move top - Move bottom"
+
+#: views/settings.php:731
+msgid "Effects"
+msgstr "Effects"
+
+#: views/settings.php:712
+msgid "Show contact?"
+msgstr "Show contact?"
+
+#: views/settings.php:626
+msgid "Choose how the links will open."
+msgstr "Choose how the links will open."
+
+#: views/settings.php:624 views/settings.php:1071
+msgid "Same page"
+msgstr "Same page"
+
+#: views/settings.php:623 views/settings.php:1070
+msgid "New page"
+msgstr "New page"
+
+#: views/settings.php:619
+msgid "Links target?"
+msgstr "Links target?"
+
+#: views/settings.php:608
+msgid "Show social networks?"
+msgstr "Show social networks?"
+
+#: views/settings.php:561
+msgid "Show subscribe?"
+msgstr "Show subscribe?"
+
+#: views/settings.php:539
+msgid "Days"
+msgstr "Days"
+
+#: views/settings.php:536
+msgid "Countdown (remaining time)"
+msgstr "Countdown (remaining time)"
+
+#: views/settings.php:517
+msgid "Show countdown?"
+msgstr "Show countdown?"
+
+#: views/settings.php:451
+msgid "Choose background"
+msgstr "Choose background"
+
+#: views/settings.php:446
+msgid "Backgrounds should have 1920x1280 px size."
+msgstr "Backgrounds should have 1920x1280 px size."
+
+#: views/settings.php:433
+msgid "Upload background"
+msgstr "Upload background"
+
+#: views/settings.php:425
+msgid "Choose color"
+msgstr "Choose colour"
+
+#: views/settings.php:419
+msgid "Predefined background"
+msgstr "Predefined background"
+
+#: views/settings.php:418
+msgid "Uploaded background"
+msgstr "Uploaded background"
+
+#: views/settings.php:417
+msgid "Custom color"
+msgstr "Custom colour"
+
+#: views/settings.php:413
+msgid "Choose type"
+msgstr "Choose type"
+
+#: views/settings.php:333
+msgid "Title (HTML tag)"
+msgstr "Title (HTML tag)"
+
+#: views/settings.php:198 views/settings.php:499 views/settings.php:824
+#: views/settings.php:1021 views/settings.php:1099
+msgid "Reset settings"
+msgstr "Reset settings"
+
+#: views/settings.php:190
+msgid "Do you want to add a link to the dashboard on your maintenance mode page?"
+msgstr "Do you want to add a link to the dashboard on your maintenance mode page?"
+
+#: views/settings.php:183
+msgid "Dashboard link"
+msgstr "Dashboard link"
+
+#: views/settings.php:177
+msgid "Do you want to see notices when maintenance mode is activated?"
+msgstr "Do you want to see notices when maintenance mode is activated?"
+
+#: views/settings.php:149
+msgid "Redirection"
+msgstr "Redirection"
+
+#: views/settings.php:144
+msgid "The robots meta tag lets you use a granular, page-specific approach to control how an individual page should be indexed and served to users in search results."
+msgstr "The robots meta tag lets you use a granular, page-specific approach to control how an individual page should be indexed and served to users in search results."
+
+#: views/settings.php:137
+msgid "Robots Meta Tag"
+msgstr "Robots Meta Tag"
+
+#: views/settings.php:106
+msgid "Allow Search Bots to bypass maintenance mode?"
+msgstr "Allow Search Bots to bypass maintenance mode?"
+
+#: views/settings.php:99
+msgid "Bypass for Search Bots"
+msgstr "Bypass for Search Bots"
+
+#: views/settings.php:94 views/settings.php:855 views/settings.php:1042
+msgid "Deactivated"
+msgstr "Deactivated"
+
+#: views/maintenance.php:227
+msgid "Contact us"
+msgstr "Contact us"
+
+#: views/maintenance.php:201
+msgid "Your message"
+msgstr "Your message"
+
+#: views/maintenance.php:121 views/settings.php:555 views/settings.php:745
+msgid "Subscribe"
+msgstr "Subscribe"
+
+#: includes/classes/wp-maintenance-mode.php:1374
+msgid "Your email was sent to the website administrator. Thanks!"
+msgstr "Your email was sent to the website administrator. Thanks!"
+
+#: includes/classes/wp-maintenance-mode.php:1349
+msgid "Message via contact"
+msgstr "Message via contact"
+
+#: includes/classes/wp-maintenance-mode.php:1335
+msgid "All fields required."
+msgstr "All fields required."
+
+#: includes/classes/wp-maintenance-mode.php:1316
+msgid "You successfully subscribed. Thanks!"
+msgstr "You successfully subscribed. Thanks!"
+
+#. translators: plugin settings url
+#: includes/classes/wp-maintenance-mode.php:466
+msgid "WP Maintenance Mode plugin was relaunched and you MUST revise <a href=\"%s\">settings</a>."
+msgstr "WP Maintenance Mode plugin was relaunched and you MUST revise <a href=\"%s\">settings</a>."
+
+#: includes/classes/wp-maintenance-mode.php:284
+msgid "Notify me when it's ready"
+msgstr "Notify me when it's ready"
+
+#: includes/classes/wp-maintenance-mode.php:264
+msgid "<p>Sorry for the inconvenience.<br />Our website is currently undergoing scheduled maintenance.<br />Thank you for your understanding.</p>"
+msgstr "<p>Sorry for the inconvenience.<br />Our website is currently undergoing scheduled maintenance.<br />Thank you for your understanding.</p>"
+
+#. translators: plugin settings url
+#: includes/classes/wp-maintenance-mode-admin.php:1042
+msgid "The Maintenance Mode is <strong>active</strong>. Please don't forget to <a href=\"%s\">deactivate</a> as soon as you are done."
+msgstr "The Maintenance Mode is <strong>active</strong>. Please don't forget to <a href=\"%s\">deactivate</a> as soon as you are done."
+
+#: views/settings.php:581 views/settings.php:751
+msgid "Stats"
+msgstr "Stats"
+
+#: views/settings.php:124
+msgid "Frontend Role"
+msgstr "Front end Role"
+
+#: views/settings.php:111
+msgid "Backend Role"
+msgstr "Back end Role"
+
+#: views/maintenance.php:119
+msgid "your e-mail..."
+msgstr "your email..."

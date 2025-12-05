@@ -1,0 +1,21 @@
+{
+  "name": "ailinux-nova-dark",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Build pipeline for the Ailinux Nova Dark WordPress theme",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "format": "prettier --write \"{assets,dist}/**/*.{js,scss,css}\""
+  },
+  "devDependencies": {
+    "prettier": "^3.2.5",
+    "sass": "^1.75.0",
+    "vite": "^7.1.9"
+  },
+  "dependencies": {
+    "fast-cli": "^5.0.2",
+    "swup": "^4.0.0"
+  }
+}

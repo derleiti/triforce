@@ -1,0 +1,984 @@
+# Translation of Plugins - Otter Blocks &#8211; Gutenberg Blocks, Page Builder for Gutenberg Editor &amp; FSE - Stable (latest release) in Spanish (Spain)
+# This file is distributed under the same license as the Plugins - Otter Blocks &#8211; Gutenberg Blocks, Page Builder for Gutenberg Editor &amp; FSE - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-06-23 12:29:10+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: es\n"
+"Project-Id-Version: Plugins - Otter Blocks &#8211; Gutenberg Blocks, Page Builder for Gutenberg Editor &amp; FSE - Stable (latest release)\n"
+
+#: build/blocks/timeline/block.json
+msgctxt "block title"
+msgid "Timeline"
+msgstr "Cronología"
+
+#: build/blocks/timeline-item/block.json build/blocks/timeline/block.json
+msgctxt "block keyword"
+msgid "timeline"
+msgstr "cronología"
+
+#: build/blocks/timeline-item/block.json
+msgctxt "block title"
+msgid "Timeline Item"
+msgstr "Elemento de la cronología"
+
+#: build/blocks/modal/block.json
+msgctxt "block title"
+msgid "Modal"
+msgstr "Emergente"
+
+#: build/blocks/slider/block.json
+msgctxt "block title"
+msgid "Image Slider"
+msgstr "Carrusel de imágenes"
+
+#: build/blocks/modal/block.json
+msgctxt "block description"
+msgid "Display your content in beautiful Modal with many customization options. Powered by Otter."
+msgstr "Muestra tu contenido emergente de forma atractiva con numerosas opciones de personalización. Funciona con Otter."
+
+#: build/blocks/form-stripe-field/block.json
+msgctxt "block description"
+msgid "A field used for adding Stripe products to the form."
+msgstr "Un campo utilizado para añadir productos de Stripe al formulario."
+
+#: build/blocks/form-stripe-field/block.json
+msgctxt "block title"
+msgid "Stripe Field"
+msgstr "Campo de Stripe"
+
+#: build/blocks/form-hidden-field/block.json
+msgctxt "block keyword"
+msgid "hidden"
+msgstr "oculto"
+
+#: build/blocks/form-hidden-field/block.json
+msgctxt "block keyword"
+msgid "metadata"
+msgstr "metadatos"
+
+#: build/blocks/form-hidden-field/block.json
+msgctxt "block description"
+msgid "A field used for adding extra metadata to the Form via URL params."
+msgstr "Un campo utilizado para añadir metadatos adicionales al formulario mediante parámetros de la URL."
+
+#: build/blocks/form-hidden-field/block.json
+msgctxt "block title"
+msgid "Hidden Field"
+msgstr "Campo oculto"
+
+#: build/blocks/content-generator/block.json
+msgctxt "block keyword"
+msgid "ai"
+msgstr "ia"
+
+#: build/blocks/content-generator/block.json
+msgctxt "block keyword"
+msgid "generator"
+msgstr "generador"
+
+#: build/blocks/content-generator/block.json
+msgctxt "block keyword"
+msgid "content"
+msgstr "contenido"
+
+#: build/blocks/content-generator/block.json
+msgctxt "block description"
+msgid "Generate content for your block with AI."
+msgstr "Genera contenido para tu bloque con la IA."
+
+#: build/blocks/content-generator/block.json
+msgctxt "block title"
+msgid "AI Block (Beta)"
+msgstr "Bloque IA (beta)"
+
+#: build/blocks/form-multiple-choice/block.json
+msgctxt "block keyword"
+msgid "multiple"
+msgstr "múltiple"
+
+#: build/blocks/form-multiple-choice/block.json
+msgctxt "block keyword"
+msgid "checkbox"
+msgstr "casilla de verificación"
+
+#: build/blocks/form-file/block.json
+msgctxt "block keyword"
+msgid "file"
+msgstr "archivo"
+
+#: build/blocks/form-multiple-choice/block.json
+msgctxt "block description"
+msgid "Display a checkbox, select, radio."
+msgstr "Muestra una casilla de verificación, campo de selección, campo único."
+
+#: build/blocks/form-multiple-choice/block.json
+msgctxt "block title"
+msgid "Form Multiple Choice Input"
+msgstr "Formulario con varias opciones"
+
+#: build/blocks/stripe-checkout/block.json
+msgctxt "block keyword"
+msgid "payment"
+msgstr "pago"
+
+#: build/blocks/stripe-checkout/block.json
+msgctxt "block keyword"
+msgid "checkout"
+msgstr "finalizar compra"
+
+#: build/blocks/stripe-checkout/block.json
+msgctxt "block title"
+msgid "Stripe Checkout"
+msgstr "Pago de Stripe"
+
+#: build/blocks/form-nonce/block.json
+msgctxt "block title"
+msgid "CSRF Protection"
+msgstr "Protección CSRF"
+
+#: build/blocks/form-input/block.json
+msgctxt "block keyword"
+msgid "text"
+msgstr "texto"
+
+#: build/blocks/form-multiple-choice/block.json build/blocks/form/block.json
+msgctxt "block keyword"
+msgid "form"
+msgstr "formulario"
+
+#: build/blocks/advanced-heading/block.json
+msgctxt "block keyword"
+msgid "title"
+msgstr "título"
+
+#: build/blocks/advanced-columns/block.json
+msgctxt "block keyword"
+msgid "section"
+msgstr "sección"
+
+#: build/blocks/flip/block.json
+msgctxt "block keyword"
+msgid "container"
+msgstr "contenedor"
+
+#: build/blocks/posts-grid/block.json
+msgctxt "block keyword"
+msgid "posts"
+msgstr "entradas"
+
+#: build/blocks/button/block.json
+msgctxt "block title"
+msgid "Button"
+msgstr "Botón"
+
+#: inc/server/class-template-cloud-server.php:279
+msgid "Failed to sync sources"
+msgstr "Error al sincronizar fuentes"
+
+#: inc/server/class-template-cloud-server.php:268
+msgid "No sources to sync"
+msgstr "No hay fuentes que sincronizar"
+
+#: inc/server/class-template-cloud-server.php:239
+msgid "Failed to remove the source"
+msgstr "Fallo al eliminar la fuente"
+
+#: inc/server/class-template-cloud-server.php:219
+msgid "Key is missing"
+msgstr "Falta la clave"
+
+#: inc/server/class-template-cloud-server.php:191
+msgid "Failed to save the source"
+msgstr "Fallo al guardar la fuente"
+
+#: inc/server/class-template-cloud-server.php:174
+msgid "Source already exists"
+msgstr "La fuente ya existe"
+
+#: inc/server/class-template-cloud-server.php:162
+msgid "Invalid source. Please make sure you have the correct key and url."
+msgstr "Fuente no válida. Por favor, asegúrate de que tienes la clave y la URL correctas."
+
+#: inc/server/class-template-cloud-server.php:151
+msgid "Invalid request. Please provide a key and url."
+msgstr "Solicitud no válida. Por favor, proporciona una clave y una URL."
+
+#. translators: %s: source name
+#: inc/plugins/class-template-cloud.php:312
+msgid "Error with %s: No patterns found"
+msgstr "Error con %s: No se han encontrado patrones"
+
+#. translators: %s: source name
+#: inc/plugins/class-template-cloud.php:302
+msgid "Error with %s: Invalid response"
+msgstr "Error con %s: Respuesta no válida"
+
+#. translators: %s: source name
+#: inc/plugins/class-template-cloud.php:290
+msgid "Error with %s: Empty response"
+msgstr "Error con %s: Respuesta vacía"
+
+#. translators: 1: source name, 2: response code
+#: inc/plugins/class-template-cloud.php:277
+msgid "Error with %1$s: Invalid response code %2$s"
+msgstr "Error con %1$s: Código de respuesta no válido %2$s"
+
+#. translators: 1: source name, 2: error message
+#: inc/plugins/class-template-cloud.php:264
+msgid "Error with %1$s: %2$s"
+msgstr "Error con %1$s: %2$s"
+
+#. translators: %s is the URL of the site from which the email was sent.
+#: inc/integrations/class-form-email.php:290
+msgid "Location: %s"
+msgstr "Ubicación: %s"
+
+#: inc/class-blocks-animation.php:303
+msgid "Enhanced Animations"
+msgstr "Animaciones mejoradas"
+
+#: inc/integrations/class-form-email.php:291
+msgid "link"
+msgstr "enlace"
+
+#: inc/class-blocks-animation.php:302
+msgid "Add-on Blocks"
+msgstr "Bloques de extensión"
+
+#: inc/server/class-prompt-server.php:131
+#: inc/server/class-prompt-server.php:178
+msgid "API key saved."
+msgstr "Clave API guardada."
+
+#: inc/server/class-prompt-server.php:124
+msgid "API key is missing."
+msgstr "Falta la clave API."
+
+#: inc/render/class-stripe-checkout-block.php:95
+msgid "An error occurred! Could not create the request!"
+msgstr "¡Se ha producido un error! ¡No se ha podido crear la solicitud!"
+
+#: inc/render/class-stripe-checkout-block.php:65
+msgid "An error occurred! Could not retrieve the product information!"
+msgstr "¡Se ha producido un error! ¡No se ha podido recuperar la información del producto!"
+
+#: inc/render/class-sharing-icons-block.php:117 build/blocks/blocks.js:33
+msgid "Threads"
+msgstr "Threads"
+
+#: inc/render/class-sharing-icons-block.php:47
+msgid "Share on X"
+msgstr "Compartir en X"
+
+#: otter-blocks.php:58
+msgid "Otter Blocks Pro"
+msgstr "Otter Blocks Pro"
+
+#: inc/server/class-prompt-server.php:173
+msgid "An error occurred while processing the request."
+msgstr "Ha habido un error al procesar la solicitud."
+
+#: inc/patterns/hero-1.php:9 inc/patterns/hero-2.php:9 build/blocks/blocks.js:4
+msgid "Hero"
+msgstr "Sección destacada"
+
+#: inc/class-patterns.php:46
+msgid "Pages"
+msgstr "Páginas"
+
+#: inc/class-patterns.php:44
+msgid "Forms"
+msgstr "Formularios"
+
+#: inc/class-patterns.php:43 inc/patterns/features-1.php:9
+#: inc/patterns/features-2.php:9 inc/patterns/features-3.php:9
+#: inc/patterns/features-4.php:9 inc/patterns/features-5.php:9
+msgid "Features"
+msgstr "Características"
+
+#. translators: %s: Otter Blocks
+#: inc/class-blocks-animation.php:319
+msgid "Activate %s"
+msgstr "Activar %s"
+
+#. translators: %s: Otter Blocks
+#: inc/class-blocks-animation.php:321
+msgid "Install & Activate %s"
+msgstr "Instalar y activar %s"
+
+#: inc/class-blocks-animation.php:285 build/dashboard/index.js:9
+msgid "Installing"
+msgstr "Instalando"
+
+#: inc/class-blocks-animation.php:284 build/dashboard/index.js:9
+msgid "Activating"
+msgstr "Activando"
+
+#: inc/patterns/testimonials-3.php:9
+msgid "Testimonials 3"
+msgstr "Recomendaciones 3"
+
+#: inc/patterns/testimonials-2.php:9
+msgid "Testimonials 2"
+msgstr "Recomendaciones 2"
+
+#: inc/patterns/testimonials-1.php:9
+msgid "Testimonials 1"
+msgstr "Recomendaciones 1"
+
+#: inc/patterns/team-2.php:9
+msgid "Team 2"
+msgstr "Equipo 2"
+
+#: inc/patterns/team-1.php:9
+msgid "Team 1"
+msgstr "Equipo 1"
+
+#: inc/class-main.php:392
+msgid "Sorry, you are not allowed to upload files."
+msgstr "Lo siento, no tienes permisos para subir archivos."
+
+#: inc/class-main.php:401
+msgid "Sorry, this file couldn't be sanitized so for security reasons wasn't uploaded"
+msgstr "Lo siento, este archivo no se ha podido sanear, por lo que, por razones de seguridad, no se ha subido."
+
+#: inc/server/class-fse-onboarding-server.php:84
+msgid "Missing templates"
+msgstr "Faltan plantillas"
+
+#: inc/plugins/class-fse-onboarding.php:51
+#: inc/plugins/class-fse-onboarding.php:52
+msgid "Theme Setup"
+msgstr "Configuración del tema"
+
+#: inc/plugins/class-options-settings.php:763
+msgid "Enable FSE Onboarding Wizard."
+msgstr "Activa el Asistente de Incorporación FSE."
+
+#: inc/plugins/class-dashboard.php:414
+msgid "Export"
+msgstr "Exportar"
+
+#: inc/render/class-posts-grid-block.php:427 build/blocks/blocks.js:26
+msgid "Prev"
+msgstr "Ant"
+
+#: inc/plugins/class-options-settings.php:742
+msgid "The disabled blocks that will no longer be shown in Inserter."
+msgstr "Los bloques desactivados que ya no se mostrarán en el Insertor."
+
+#: inc/plugins/class-limited-offers.php:156
+msgid "Invalid nonce! Refresh the page and try again."
+msgstr "¡Nonce no válido! Recarga tu página e inténtalo de nuevo."
+
+#: inc/plugins/class-dashboard.php:730
+msgid "Unread"
+msgstr "No leído"
+
+#: inc/plugins/class-dashboard.php:729
+msgid "Read"
+msgstr "Leído"
+
+#: inc/plugins/class-dashboard.php:728 build/blocks/blocks.js:4
+msgid "All"
+msgstr "Todos"
+
+#: inc/plugins/class-dashboard.php:718 inc/plugins/class-dashboard.php:720
+msgid "Total Entries"
+msgstr "Entradas totales"
+
+#: inc/plugins/class-dashboard.php:535
+msgid "No title"
+msgstr "Sin título"
+
+#: inc/plugins/class-dashboard.php:533 inc/plugins/class-dashboard.php:741
+msgid "Submission"
+msgstr "Envío"
+
+#: inc/server/class-prompt-server.php:328
+msgid "Invalid data from central server. Please try again in"
+msgstr "Datos no válidos del servidor central. Por favor, inténtalo de nuevo en"
+
+#: inc/server/class-prompt-server.php:298
+#: inc/server/class-prompt-server.php:328
+msgid "minutes."
+msgstr "minutos."
+
+#: inc/server/class-prompt-server.php:298
+msgid "Timeout is active. Please try again in"
+msgstr "El tiempo de espera está activo. Vuelve a intentarlo en"
+
+#: inc/server/class-prompt-server.php:273
+msgid "Something went wrong when preparing the data for this feature."
+msgstr "Algo salió mal al preparar los datos para esta función."
+
+#: inc/server/class-prompt-server.php:169
+#: inc/server/class-prompt-server.php:227
+msgid "Could not parse the response from OpenAI. Try again."
+msgstr "No se ha podido analizar la respuesta de OpenAI. Vuelve a intentarlo."
+
+#: inc/plugins/class-options-settings.php:692
+msgid "Usage of Otter AI features."
+msgstr "Uso de las funciones de Otter AI."
+
+#: inc/plugins/class-options-settings.php:680
+msgid "The OpenAI API Key required for usage of Otter AI features."
+msgstr "La clave API OpenAI necesaria para utilizar las funciones de Otter AI."
+
+#: inc/plugins/class-options-settings.php:607
+msgid "Otter Registered Webhooks."
+msgstr "Webhooks registrados en Otter."
+
+#: inc/plugins/class-dashboard.php:759
+msgid "Manage all Submissions"
+msgstr "Gestionar todos los envíos"
+
+#: inc/plugins/class-dashboard.php:736
+msgid "Your submission will appear here."
+msgstr "Tu envío aparecerá aquí."
+
+#: inc/plugins/class-dashboard.php:709
+msgid "Upgrade to Otter Pro"
+msgstr "Mejora  a Otter Pro"
+
+#: inc/plugins/class-dashboard.php:708
+msgid "With Otter's powerful features, you can easily store and manage form submissions - all in one place."
+msgstr "Con las potentes funciones de Otter, puedes almacenar y gestionar fácilmente los envíos de formularios, todo en un solo lugar."
+
+#: inc/plugins/class-dashboard.php:706
+msgid "Collect your Form Submissions with Otter Blocks"
+msgstr "Recoge tus envíos de formularios con Otter Blocks"
+
+#: inc/plugins/class-dashboard.php:463
+msgid "Otter Blocks - Form Submissions"
+msgstr "Otter Blocks - Envíos de formulario"
+
+#: inc/integrations/api/form-response-data.php:397
+msgid "The payment has been processed. You will be contacted by the support team."
+msgstr "El pago ha sido procesado. El equipo de asistencia se pondrá en contacto contigo."
+
+#: inc/integrations/api/form-response-data.php:396
+msgid "The metadata submission record was not found."
+msgstr "No se ha encontrado el registro de envío de metadatos."
+
+#: inc/integrations/api/form-response-data.php:395
+msgid "The payment was not completed."
+msgstr "El pago no se completó."
+
+#: inc/integrations/api/form-response-data.php:394
+msgid "The Stripe Checkout session was not found."
+msgstr "No se ha encontrado la sesión de Stripe Checkout."
+
+#: inc/integrations/api/form-response-data.php:393
+msgid "The Stripe Checkout session could not be created."
+msgstr "No se ha podido crear la sesión de Stripe Checkout."
+
+#: inc/integrations/api/form-response-data.php:392
+msgid "The form dump data is missing."
+msgstr "Faltan los datos del volcado del formulario."
+
+#: inc/integrations/api/form-response-data.php:391
+msgid "The webhook could not be triggered."
+msgstr "No se ha podido activar el webhook."
+
+#: inc/integrations/api/form-response-data.php:390
+msgid "The request is malformed."
+msgstr "La petición está mal formada."
+
+#: inc/class-registration.php:546
+msgid "Confirming submission"
+msgstr "Confirmación de envío"
+
+#: inc/render/class-sharing-icons-block.php:109
+msgid "Comments"
+msgstr "Comentarios"
+
+#: inc/render/class-sharing-icons-block.php:102 build/blocks/blocks.js:33
+msgid "Mastodon"
+msgstr "Mastodon"
+
+#: inc/render/class-sharing-icons-block.php:95 build/blocks/blocks.js:33
+msgid "Telegram"
+msgstr "Telégram"
+
+#: inc/render/class-sharing-icons-block.php:81 build/blocks/blocks.js:33
+msgid "WhatsApp"
+msgstr "WhatsApp"
+
+#: inc/plugins/class-dashboard.php:188
+msgid "Store, manage and analyze your form submissions with ease – all in one place. With Otter powerful features, managing submissions has never been simpler."
+msgstr "Almacena, gestiona y analiza tus envíos de formularios con facilidad - todo en un solo lugar. Con las potentes características de Otter, la gestión de envíos nunca ha sido tan sencillo."
+
+#: inc/plugins/class-dashboard.php:187
+msgid "Collect Your Form Submissions"
+msgstr "Recoge tus envíos de formularios"
+
+#: inc/plugins/class-dashboard.php:410
+msgid "Form Submissions"
+msgstr "Envíos de formularios"
+
+#: inc/plugins/class-dashboard.php:79 inc/plugins/class-dashboard.php:82
+#: build/blocks/blocks.js:4
+msgid "Submissions"
+msgstr "Envíos"
+
+#: inc/server/class-form-server.php:506
+msgid "Some hook is corrupting the Form processing pipeline."
+msgstr "Algún gancho está corrompiendo la cadena de procesamiento del Formulario."
+
+#: inc/server/class-form-server.php:309 inc/server/class-form-server.php:327
+msgid "The form data class is not valid after performing provider actions! Some hook is corrupting the data."
+msgstr "¡La clase de datos del formulario no es válida después de realizar acciones del proveedor! Algún gancho está corrompiendo los datos."
+
+#: inc/render/class-form-multiple-choice.php:40
+msgid "Select option"
+msgstr "Seleccionar opción"
+
+#: inc/plugins/class-options-settings.php:469
+msgid "Form Fields used in the Form block."
+msgstr "Campos de formulario utilizados en el bloque Formulario."
+
+#: inc/plugins/class-dashboard.php:189
+msgid "Explore Otter PRO"
+msgstr "Explora Otter PRO"
+
+#: inc/integrations/class-form-email.php:250
+msgid "Warnings: "
+msgstr "Advertencias: "
+
+#: inc/integrations/class-form-email.php:226
+msgid "No warning found."
+msgstr "No se ha encontrado ninguna advertencia."
+
+#: inc/integrations/class-form-email.php:220
+msgid "Status Report "
+msgstr "Informe de estado "
+
+#: inc/integrations/class-form-email.php:218
+msgid "No error found."
+msgstr "No se ha encontrado ningún error."
+
+#: inc/integrations/class-form-email.php:153
+msgid "Files loaded to media library"
+msgstr "Archivos cargados a la biblioteca de medios"
+
+#: inc/integrations/api/form-response-data.php:389
+msgid "The file data is missing."
+msgstr "Faltan los datos del archivo."
+
+#: inc/integrations/api/form-response-data.php:388
+msgid "The email from Autoresponder could not be sent."
+msgstr "No se ha podido enviar el correo electrónico de Autoresponder."
+
+#: inc/integrations/api/form-response-data.php:387
+msgid "The email field is missing from the Form Block with Autoresponder activated."
+msgstr "Falta el campo de correo electrónico en el bloque de Formulario con la Autorespuesta activada."
+
+#: inc/integrations/api/form-response-data.php:386
+msgid "The file size exceed the limit."
+msgstr "El tamaño del archivo supera el límite."
+
+#: inc/integrations/api/form-response-data.php:385
+msgid "The number of files is too big."
+msgstr "El número de archivos es demasiado grande."
+
+#: inc/integrations/api/form-response-data.php:384
+msgid "The file type is not allowed."
+msgstr "El tipo de archivo no está permitido."
+
+#: inc/integrations/api/form-response-data.php:383
+msgid "The file type is not allowed by host provider."
+msgstr "El tipo de archivo no está permitido por el proveedor de alojamiento."
+
+#: inc/integrations/api/form-response-data.php:382
+msgid "The Otter From Block service credentials are invalid."
+msgstr "Las credenciales del servicio Otter From Block no son válidas."
+
+#: inc/integrations/api/form-response-data.php:381
+msgid "The files could not be uploaded."
+msgstr "No se han podido cargar los archivos."
+
+#: inc/integrations/api/form-response-data.php:380
+msgid "The files metadata is invalid."
+msgstr "Los metadatos del archivo no son válidos."
+
+#: inc/integrations/api/form-response-data.php:376
+msgid "The user with this email was already registered."
+msgstr "El usuario con este correo electrónico ya estaba registrado."
+
+#: inc/integrations/api/form-response-data.php:365
+msgid "The File Field is not registered. Please check the field in Editor."
+msgstr "El campo Archivo no está registrado. Comprueba el campo en el Editor."
+
+#: inc/class-registration.php:545
+msgid "Invalid files type. The submitted files could not be processed."
+msgstr "Tipo de archivos no válido. No se han podido procesar los archivos enviados."
+
+#: inc/class-registration.php:544
+msgid "File size is to big. The limit is: "
+msgstr "El tamaño del archivo es demasiado grande. El límite es: "
+
+#: inc/class-registration.php:543
+msgid "Too many files loaded. Maximum is: "
+msgstr "Se han cargado demasiados archivos. El máximo es: "
+
+#: inc/render/class-stripe-checkout-block.php:199
+msgid "Error message: "
+msgstr "Mensaje de error: "
+
+#: inc/render/class-stripe-checkout-block.php:156
+msgid "An error occurred! Could not retrieve the price of the product!"
+msgstr "¡Se ha producido un error! ¡No se ha podido recuperar el precio del producto!"
+
+#: inc/render/class-stripe-checkout-block.php:140
+msgid "An error occurred! Could not retrieve product information!"
+msgstr "¡Se ha producido un error! ¡No se ha podido recuperar la información del producto!"
+
+#: inc/integrations/api/form-response-data.php:379
+msgid "Failed to validate the data. Please wait 5 seconds and try again."
+msgstr "No se han podido validar los datos. Espera 5 segundos y vuelve a intentarlo."
+
+#: inc/plugins/class-options-settings.php:123 build/dashboard/index.js:7
+msgid "Easily differentiate between dynamic and normal text in the editor."
+msgstr "Diferencia fácilmente entre texto dinámico y normal en el editor."
+
+#: inc/integrations/api/form-response-data.php:377
+msgid "The email address is invalid."
+msgstr "La dirección de correo electrónico no es válida."
+
+#: inc/integrations/api/form-response-data.php:378
+msgid "The email was already registered."
+msgstr "El correo electrónico ya estaba registrado."
+
+#: inc/integrations/api/form-response-data.php:375
+msgid "The API key format is invalid."
+msgstr "El formato de la clave de API no es válido."
+
+#: inc/integrations/api/form-response-data.php:374
+msgid "The reCaptcha token is invalid."
+msgstr "El token del reCaptcha no es válido."
+
+#: inc/integrations/api/form-response-data.php:373
+msgid "API Key is missing."
+msgstr "Falta la clave de API."
+
+#: inc/integrations/api/form-response-data.php:372
+msgid "API Key is missing from settings."
+msgstr "La clave de API falta en los ajustes."
+
+#: inc/integrations/api/form-response-data.php:370
+msgid "Error received from service when subscribing the user."
+msgstr "Se ha recibido un error del servicio al suscribirse el usuario."
+
+#: inc/integrations/api/form-response-data.php:369
+msgid "The 3rd-party service is not registered."
+msgstr "El servicio de terceros no está registrado."
+
+#: inc/integrations/api/form-response-data.php:367
+msgid "Email could not be send. Might be an error with the service."
+msgstr "No se ha podido enviar el correo electrónico. Puede ser un error del servicio."
+
+#: inc/integrations/api/form-response-data.php:366
+msgid "Form ID is invalid."
+msgstr "La ID de formulario no es válida."
+
+#: inc/integrations/api/form-response-data.php:368
+msgid "Invalid service authentication credentials."
+msgstr "Credenciales de identificación del servicio no válidas."
+
+#: inc/integrations/api/form-response-data.php:363
+msgid "Missing email field in form."
+msgstr "Falta el campo de correo electrónico en el formulario."
+
+#: inc/integrations/api/form-response-data.php:362
+msgid "Captcha token is missing."
+msgstr "Falta el token del captcha."
+
+#: inc/integrations/api/form-response-data.php:361
+msgid "Essential data is missing: invalid Form id or protection."
+msgstr "Faltan datos esenciales: ID de formulario o protección no válidos."
+
+#: inc/server/class-stripe-server.php:76
+msgid "ID of the Product."
+msgstr "ID del producto."
+
+#: inc/render/class-stripe-checkout-block.php:181 build/blocks/blocks.js:33
+msgid "Checkout"
+msgstr "Finalizar compra"
+
+#: inc/render/class-stripe-checkout-block.php:127 build/blocks/blocks.js:33
+msgid "Your payment was unsuccessful. If you have any questions, please email orders@example.com."
+msgstr "Tu pago no se ha realizado correctamente. Si tienes alguna pregunta, envía un correo electrónico a orders@example.com."
+
+#: inc/render/class-stripe-checkout-block.php:123 build/blocks/blocks.js:33
+msgid "Your payment was successful. If you have any questions, please email orders@example.com."
+msgstr "Tu pago se ha realizado correctamente. Si tienes alguna pregunta, envía un correo electrónico a orders@example.com."
+
+#: inc/render/class-posts-grid-block.php:184
+msgid "Updated on"
+msgstr "Actualizado el"
+
+#: inc/plugins/class-options-settings.php:248
+msgid "Stripe API key for the Stripe Block."
+msgstr "Clave de API Stripe para el bloque Stripe."
+
+#: inc/render/class-posts-grid-block.php:191
+msgid "Posted on"
+msgstr "Publicado el"
+
+#: inc/patterns/gallery.php:9
+msgid "Gallery"
+msgstr "Galería"
+
+#: inc/server/class-dynamic-content-server.php:74
+msgid "Unique ID."
+msgstr "ID único."
+
+#: inc/class-pro.php:335 inc/plugins/class-limited-offers.php:215
+#: build/blocks/blocks.js:4
+msgid "Learn more"
+msgstr "Aprende más"
+
+#: inc/class-pro.php:287
+msgid "Update"
+msgstr "Actualizar"
+
+#: inc/class-main.php:587 inc/class-pro.php:423
+msgid "Get Otter Pro"
+msgstr "Obtener Otter Pro"
+
+#: inc/render/class-posts-grid-block.php:256
+msgid "Read More"
+msgstr "Leer Más"
+
+#: inc/class-blocks-animation.php:286 build/blocks/blocks.js:4
+#: build/dashboard/index.js:1
+msgid "Done"
+msgstr "Hecho"
+
+#: inc/class-registration.php:479 build/blocks/blocks.js:4
+msgid "Minutes"
+msgstr "Minutos"
+
+#: inc/class-registration.php:481 build/blocks/blocks.js:4
+msgid "Hours"
+msgstr "Horas"
+
+#: inc/class-registration.php:482 build/blocks/blocks.js:4
+msgid "Day"
+msgstr "Día"
+
+#: inc/plugins/class-dashboard.php:744 build/blocks/blocks.js:4
+msgid "Date"
+msgstr "Fecha"
+
+#: inc/class-patterns.php:40 inc/patterns/call-to-action-1.php:9
+#: inc/patterns/call-to-action-2.php:9 inc/patterns/call-to-action-3.php:9
+#: inc/patterns/call-to-action-4.php:9 inc/patterns/call-to-action-5.php:9
+#: inc/patterns/call-to-action-6.php:9 inc/patterns/call-to-action-7.php:9
+msgid "Call to Action"
+msgstr "Llamada a la acción"
+
+#: inc/plugins/class-dashboard.php:93 inc/plugins/class-dashboard.php:94
+#: build/blocks/blocks.js:1 build/dashboard/index.js:1
+msgid "Blocks"
+msgstr "Bloques"
+
+#: inc/class-patterns.php:49 build/blocks/blocks.js:36
+msgid "Testimonials"
+msgstr "Recomendaciones"
+
+#: inc/class-patterns.php:45
+msgid "Team"
+msgstr "Equipo"
+
+#: inc/render/amp/class-circle-counter-block.php:43
+#: inc/render/amp/class-circle-counter-block.php:60
+msgid "Skill"
+msgstr "Habilidad"
+
+#: inc/css/class-css-handler.php:228 inc/css/class-css-handler.php:315
+msgid "CSS updated."
+msgstr "CSS actualizado."
+
+#: inc/patterns/content-with-features.php:9
+msgid "Content with Features"
+msgstr "Contenido con características"
+
+#: inc/css/class-css-handler.php:140
+msgid "ID of the Post."
+msgstr "El ID de la entrada."
+
+#: inc/plugins/class-options-settings.php:188
+msgid "Anonymous data tracking object."
+msgstr "Objeto de seguimiento anónimo de datos."
+
+#: inc/server/class-dashboard-server.php:131
+msgid "Sorry, the filesystem isn't writeable."
+msgstr "Lo siento, no se puede escribir en el sistema de archivos."
+
+#: inc/server/class-dashboard-server.php:150
+msgid "Sorry, the directory doesn't exist."
+msgstr "Lo siento, el directorio no existe."
+
+#: inc/server/class-dashboard-server.php:166
+msgid "Styles deleted."
+msgstr "Estilos borrados."
+
+#: inc/plugins/class-options-settings.php:178 build/dashboard/index.js:7
+msgid "Become a contributor by opting in to our anonymous data tracking. We guarantee no sensitive data is collected."
+msgstr "Conviértete en colaborador apuntándote a nuestro seguimiento de datos anónimo. Garantizamos que no recogemos datos sensibles."
+
+#: inc/plugins/class-dashboard.php:71 inc/plugins/class-dashboard.php:72
+#: otter-blocks.php:82 build/blocks/blocks.js:1 build/blocks/blocks.js:4
+#: build/blocks/blocks.js:10 build/blocks/blocks.js:17
+#: build/blocks/blocks.js:20 build/blocks/blocks.js:26
+#: build/blocks/blocks.js:28 build/blocks/blocks.js:29
+#: build/blocks/blocks.js:33 build/blocks/blocks.js:36
+msgid "Settings"
+msgstr "Ajustes"
+
+#: inc/plugins/class-options-settings.php:79 build/dashboard/index.js:7
+msgid "Blocks Animation module allows to add CSS animations to each block in Block Editor."
+msgstr "El módulo Blocks Animation permite añadir animaciones CSS a cada bloque en el editor de bloques."
+
+#: inc/plugins/class-options-settings.php:68 build/dashboard/index.js:7
+msgid "Custom CSS module allows to add custom CSS to each block in Block Editor."
+msgstr "El módulo Personalizar CSS permite añadir CSS personalizado a cada bloque en el Editor de Bloques"
+
+#: inc/render/class-posts-grid-block.php:428 build/blocks/blocks.js:26
+msgid "Next"
+msgstr "Siguiente"
+
+#: inc/plugins/class-options-settings.php:46
+msgid "Redirect on new install."
+msgstr "Redireccionar en una nueva instalación."
+
+#: inc/plugins/class-options-settings.php:284
+msgid "Make Section block your default block for Pages?"
+msgstr "¿Hacer el bloque de sección tu bloque por defecto para las páginas?"
+
+#: inc/class-registration.php:126
+msgid "Otter"
+msgstr "Otter"
+
+#. Author of the plugin
+#: otter-blocks.php
+msgid "ThemeIsle"
+msgstr "ThemeIsle"
+
+#. Plugin URI of the plugin
+#: otter-blocks.php
+msgid "https://themeisle.com/plugins/otter-blocks"
+msgstr "https://themeisle.com/plugins/otter-blocks"
+
+#. Author URI of the plugin
+#: otter-blocks.php
+msgid "https://themeisle.com"
+msgstr "https://themeisle.com"
+
+#: inc/class-registration.php:1146 inc/class-registration.php:1158
+#: inc/css/class-block-frontend.php:703 inc/css/class-block-frontend.php:715
+#: inc/css/class-css-handler.php:614 inc/css/class-css-handler.php:626
+#: inc/integrations/class-form-email.php:309
+#: inc/integrations/class-form-email.php:321
+#: inc/integrations/class-form-providers.php:141
+#: inc/integrations/class-form-providers.php:153
+#: inc/plugins/class-block-conditions.php:373
+#: inc/plugins/class-block-conditions.php:385
+#: inc/plugins/class-dashboard.php:832 inc/plugins/class-dashboard.php:844
+#: inc/plugins/class-dynamic-content.php:809
+#: inc/plugins/class-dynamic-content.php:821
+#: inc/plugins/class-fse-onboarding.php:302
+#: inc/plugins/class-fse-onboarding.php:314
+#: inc/plugins/class-options-settings.php:956
+#: inc/plugins/class-options-settings.php:968
+#: inc/render/amp/class-circle-counter-block.php:103
+#: inc/render/amp/class-circle-counter-block.php:115
+#: inc/render/amp/class-lottie.block.php:85
+#: inc/render/amp/class-lottie.block.php:97
+#: inc/render/amp/class-slider-block.php:87
+#: inc/render/amp/class-slider-block.php:99
+#: inc/render/class-masonry-variant.php:105
+#: inc/render/class-masonry-variant.php:117
+#: inc/server/class-dashboard-server.php:229
+#: inc/server/class-dashboard-server.php:241
+#: inc/server/class-dynamic-content-server.php:285
+#: inc/server/class-dynamic-content-server.php:297
+#: inc/server/class-form-server.php:1153 inc/server/class-form-server.php:1165
+#: inc/server/class-fse-onboarding-server.php:128
+#: inc/server/class-fse-onboarding-server.php:140
+#: inc/server/class-prompt-server.php:470
+#: inc/server/class-prompt-server.php:482
+#: inc/server/class-stripe-server.php:157
+#: inc/server/class-stripe-server.php:169
+msgid "Cheatin&#8217; huh?"
+msgstr "Haciendo trampas ¿eh?"
+
+#. Description of the plugin
+#: otter-blocks.php
+msgid "Create beautiful and attracting posts, pages, and landing pages with Otter – Page Builder Blocks & Extensions for Gutenberg. Otter comes with dozens of Gutenberg blocks that are all you need to build beautiful pages."
+msgstr "Crea hermosas y atractivas entradas, páginas y páginas de destino con Otter – Page Builder Blocks & Extensions for Gutenberg. Otter viene con docenas de bloques para Gutenberg que son todo lo que necesitas para crear bonitas páginas."
+
+#: inc/render/class-sharing-icons-block.php:39 build/blocks/blocks.js:33
+msgid "Facebook"
+msgstr "Facebook"
+
+#: inc/class-patterns.php:38 inc/plugins/class-dashboard.php:54
+#: inc/plugins/class-dashboard.php:55 inc/plugins/class-dashboard.php:407
+#: build/dashboard/index.js:9
+msgid "Otter Blocks"
+msgstr "Otter Blocks"
+
+#: inc/plugins/class-options-settings.php:236
+msgid "Google Map API key for the Google Maps Gutenberg Block."
+msgstr "Clave API de Google Map para el bloque Gutenberg de Google Maps."
+
+#: inc/render/class-sharing-icons-block.php:74 build/blocks/blocks.js:33
+msgid "Reddit"
+msgstr "Reddit"
+
+#: inc/render/class-sharing-icons-block.php:67 build/blocks/blocks.js:33
+msgid "Tumblr"
+msgstr "Tumblr"
+
+#: inc/render/class-sharing-icons-block.php:60 build/blocks/blocks.js:33
+msgid "Pinterest"
+msgstr "Pinterest"
+
+#: inc/render/class-sharing-icons-block.php:53 build/blocks/blocks.js:33
+msgid "Linkedin"
+msgstr "LinkedIn"
+
+#: inc/render/class-posts-grid-block.php:203
+msgid "by"
+msgstr "por"
+
+#: inc/render/class-plugin-card-block.php:108
+msgid "Something went wrong"
+msgstr "Algo ha ido mal"
+
+#: inc/render/class-plugin-card-block.php:77
+msgid "version"
+msgstr "versión"
+
+#: inc/render/class-plugin-card-block.php:73
+msgid "active installs"
+msgstr "instalaciones activas"
+
+#: inc/render/class-plugin-card-block.php:87
+msgid "Download"
+msgstr "Descargar"
+
+#: inc/render/class-plugin-card-block.php:81
+msgid "tested up to"
+msgstr "probado hasta"
+
+#: inc/render/class-plugin-card-block.php:69
+msgid "Plugin Stats"
+msgstr "Estadísticas del plugin"

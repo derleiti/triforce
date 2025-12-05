@@ -1,0 +1,2960 @@
+# Translation of Themes - Neve in Arabic
+# This file is distributed under the same license as the Themes - Neve package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-02-06 10:10:56+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=(n == 0) ? 0 : ((n == 1) ? 1 : ((n == 2) ? 2 : ((n % 100 >= 3 && n % 100 <= 10) ? 3 : ((n % 100 >= 11 && n % 100 <= 99) ? 4 : 5))));\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: ar\n"
+"Project-Id-Version: Themes - Neve\n"
+
+#. Description of the theme
+#: style.css
+#, gp-priority: high
+msgid "Neve is a next-generation, ultra-fast WordPress theme designed for top performance, SEO, and Core Web Vitals. Its lightweight codebase and small size ensure minimal overhead and lightning-fast load times. Fully compatible with the block editor, popular page builders (Elementor, Bricks, Oxygen etc), and WooCommerce, it’s perfect for blogs, small businesses, agencies, portfolios, and online stores. With responsive design, multilingual translations, and easy customization options, Neve empowers you to create a future-proof, high-ranking online presence. Discover everything Neve has to offer and explore our powerful premium version at https://themeisle.com/themes/neve/."
+msgstr "Neve هو قالب ووردبريس فائق السرعة من الجيل التالي مصمم لتحقيق أعلى أداء وتحسين محركات البحث ووظائف الويب الأساسية. تضمن قاعدة الكود خفيفة الوزن وحجمها الصغير الحد الأدنى من النفقات العامة وأوقات التحميل السريعة. متوافق تمامًا مع مُحرر المكوِّنات ومنشئي الصفحات المشهورين (Elementor وBricks وOxygen وما إلى ذلك) وWooCommerce، وهو مثالي للمدونات والشركات الصغيرة والوكالات والمحافظ والمتاجر عبر الإنترنت. بفضل التصميم المستجيب والترجمات متعددة اللغات وخيارات التخصيص السهلة، يمكّنك Neve من إنشاء حضور عبر الإنترنت عالي التصنيف وبميزة الوقاية المستقبلية. اكتشف كل ما يقدمه Neve واستكشف نسختنا المتميزة القوية على https://themeisle.com/themes/neve/."
+
+#: inc/admin/dashboard/main.php:526
+msgid "Custom footer layouts"
+msgstr "تخطيطات التذييل المخصصة"
+
+#: inc/customizer/traits/features_upsell.php:80
+#: inc/customizer/traits/features_upsell.php:118
+msgid "View features comparison"
+msgstr "عرض مقارنة المميزات"
+
+#: inc/customizer/options/upsells.php:583
+msgid "More components"
+msgstr "المزيد من المكونات"
+
+#: inc/customizer/options/upsells.php:582
+msgid "Display rules"
+msgstr "عرض القواعد"
+
+#: inc/customizer/options/upsells.php:581
+msgid "Transparent header"
+msgstr "ترويسة شفافة"
+
+#: inc/customizer/options/upsells.php:580
+msgid "Sticky header"
+msgstr "ترويسة مثبتة"
+
+#: inc/customizer/options/upsells.php:574
+msgid "Extend your header capabilities with more powerful customization options."
+msgstr "قم بتوسيع صلاحيات ترويسة الصفحة لديك باستخدام خيارات التخصيص الأكثر قوة."
+
+#: inc/customizer/options/upsells.php:561
+msgid "Custom layouts"
+msgstr "التخطيطات المخصصة"
+
+#: inc/customizer/options/upsells.php:560
+msgid "Payments & social icons"
+msgstr "المدفوعات والأيقونات الاجتماعية"
+
+#: inc/customizer/options/upsells.php:559
+msgid "Divider element"
+msgstr "عنصر فاصل"
+
+#: inc/customizer/options/upsells.php:552
+msgid "Extend your footer capabilities with more powerful customization options."
+msgstr "قم بتوسيع صلاحيات التذييل لديك باستخدام خيارات التخصيص الأكثر قوة."
+
+#: inc/customizer/options/upsells.php:539
+msgid "Neve Pro Features"
+msgstr "مميزات Neve Pro"
+
+#: inc/customizer/options/upsells.php:537
+msgid "Comparison table"
+msgstr "جدول المقارنة"
+
+#: inc/customizer/options/upsells.php:536
+msgid "Variations swatches"
+msgstr "عينات ألوان الاختلافات"
+
+#: inc/customizer/options/upsells.php:535
+msgid "Wishlist"
+msgstr "قائمة الأمنيات"
+
+#: inc/customizer/options/upsells.php:534
+msgid "Quick view"
+msgstr "نظرة سريعة"
+
+#: inc/customizer/options/upsells.php:528
+msgid "Extend your WooCommerce with powerful features available in Neve Pro Business and Agency plans."
+msgstr "قم بتوسيع نطاق ووكومرس الخاص بك باستخدام الميزات القوية المتوفرة في خطط Neve Pro Business وAgency."
+
+#: inc/customizer/options/upsells.php:510
+msgid "Estimated reading time"
+msgstr "الوقت المقدر للقراءة"
+
+#: inc/customizer/options/upsells.php:509
+msgid "Author biography"
+msgstr "السيرة الذاتية للكاتب"
+
+#: inc/customizer/options/upsells.php:508
+msgid "Sharing icons"
+msgstr "أيقونات المشاركة"
+
+#: inc/customizer/options/upsells.php:507
+msgid "Related post"
+msgstr "مقالة ذات صلة"
+
+#: inc/customizer/options/upsells.php:501
+msgid "Extend your single post capabilities with more powerful customization options."
+msgstr "قم بتوسيع قدرات المقالة الفردية لديك باستخدام خيارات التخصيص الأكثر قوة."
+
+#: inc/customizer/options/upsells.php:489
+#: inc/customizer/options/upsells.php:512
+#: inc/customizer/options/upsells.php:563
+#: inc/customizer/options/upsells.php:585
+msgid "Unlock Full Potential"
+msgstr "إطلاق العنان لإمكاناتك الكاملة"
+
+#: inc/customizer/options/upsells.php:487
+msgid "Grid spacing"
+msgstr "تباعد الشبكة"
+
+#: inc/customizer/options/upsells.php:485
+msgid "Content padding"
+msgstr "الهوامش الداخلية للمحتوى"
+
+#: inc/customizer/options/upsells.php:484
+msgid "Image style"
+msgstr "نمط الصورة"
+
+#: inc/customizer/options/upsells.php:479
+#: inc/customizer/options/upsells.php:502
+#: inc/customizer/options/upsells.php:529
+#: inc/customizer/options/upsells.php:553
+#: inc/customizer/options/upsells.php:575
+msgid "Upgrade to unlock"
+msgstr "الترقية لإلغاء التأمين"
+
+#: inc/customizer/options/upsells.php:478
+msgid "Extend your blog/archive capabilities with more powerful customization options."
+msgstr "قم بتوسيع صلاحيات مدونتك/أرشيفك باستخدام خيارات التخصيص الأكثر قوة."
+
+#: inc/customizer/options/layout_single_post.php:325
+msgid "Post meta separator"
+msgstr "فاصل تعريفي للمقالة"
+
+#: inc/customizer/options/layout_sidebar.php:155
+msgid "Inner Pages"
+msgstr "الصفحات الداخلية"
+
+#: inc/customizer/options/layout_blog.php:1019
+msgid "Card Box Shadow"
+msgstr "ظل صندوق البطاقة"
+
+#: inc/customizer/options/layout_blog.php:949
+msgid "Card Background Color"
+msgstr "لون خلفية البطاقة"
+
+#: inc/customizer/options/layout_blog.php:933
+msgid "Enable Card Style"
+msgstr "تفعيل أسلوب البطاقة"
+
+#: inc/customizer/options/layout_blog.php:908
+msgid "Content Padding"
+msgstr "الهوامش الداخلية للمحتوى"
+
+#: inc/customizer/options/layout_blog.php:654
+msgid "Post Meta Order"
+msgstr "ترتيب تعريفي للمقالة"
+
+#: inc/customizer/options/layout_blog.php:458
+msgid "Author Avatar Size"
+msgstr "حجم الصورة الرمزية للكاتب"
+
+#: inc/customizer/options/layout_blog.php:449
+msgid "Show Last Updated Date"
+msgstr "إظهار تاريخ التحديث الأخير"
+
+#: inc/customizer/options/layout_blog.php:444
+msgid "Meta Separator"
+msgstr "فاصل ميتا"
+
+#: inc/customizer/options/layout_blog.php:434
+#: inc/customizer/options/layout_single_post.php:354
+msgid "Image Aspect Ratio"
+msgstr "النسبة الباعية للصورة"
+
+#: inc/customizer/options/layout_blog.php:417
+#: inc/customizer/options/layout_single_post.php:297
+msgid "Original"
+msgstr "الأصلي"
+
+#: inc/customizer/options/layout_blog.php:310
+msgid "Posts per Page"
+msgstr "المقالات في كل صفحة"
+
+#: inc/customizer/options/layout_blog.php:243
+msgid "Post Cards Layout"
+msgstr "تخطيط بطاقات المقالة"
+
+#: inc/customizer/options/layout_blog.php:172
+#: inc/customizer/options/layout_single_post.php:144
+msgid "Design"
+msgstr "تصميم"
+
+#: inc/customizer/options/base_layout_single.php:353
+msgid "Cover overlay color"
+msgstr "لون غلاف التراكب"
+
+#: inc/customizer/loader.php:313
+msgid "You do not have permission to perform this action."
+msgstr "ليس لديك الصلاحية للقيام بهذا الإجراء."
+
+#: inc/customizer/loader.php:305
+msgid "Invalid security token."
+msgstr "رمز الأمان غير صالح."
+
+#: inc/customizer/loader.php:164
+msgid "Don't worry - you can always add or remove pages later"
+msgstr "لا تقلق - يمكنك دائمًا إضافة أو إزالة الصفحات لاحقًا"
+
+#: inc/customizer/loader.php:163
+msgid "Start with a clean slate"
+msgstr "ابدأ بصفحة نظيفة"
+
+#: inc/customizer/loader.php:162
+msgid "Keep these helpful pages"
+msgstr "احتفظ بهذه الصفحات المفيدة"
+
+#: inc/customizer/loader.php:161
+msgid "We've added some starter pages to help you get going quickly."
+msgstr "لقد أضفنا بعض صفحات بدائية لمساعدتك على البدء بسرعة."
+
+#: inc/customizer/loader.php:160
+msgid "Welcome to your new site!"
+msgstr "مرحباً بكم في موقعك الجديد!"
+
+#: inc/core/admin.php:512
+msgid "Neve Theme"
+msgstr "قالب Neve"
+
+#. translators: %s: the name of the theme (Neve Theme).
+#: inc/core/admin.php:511
+msgid "Thanks for downloading %s"
+msgstr "شكرا على تنزيل %s"
+
+#: inc/core/admin.php:506
+msgid "I want to build this website from scratch"
+msgstr "أريد إنشاء هذا الموقع من الصفر"
+
+#: inc/compatibility/starter-content/theme-mods.php:556
+msgid "Green"
+msgstr "أخضر"
+
+#. translators: name of the color pallet.
+#: inc/compatibility/starter-content/theme-mods.php:539
+msgid "East Bay"
+msgstr "East Bay"
+
+#: inc/admin/hooks_upsells.php:518
+msgid "Upgrade to Neve Pro to create a Custom Layout."
+msgstr "قم بالترقية إلى Neve Pro لإنشاء تخطيط مخصص."
+
+#: inc/admin/hooks_upsells.php:510 inc/admin/hooks_upsells.php:531
+msgid "Status"
+msgstr "الحالة"
+
+#: inc/admin/hooks_upsells.php:509 inc/admin/hooks_upsells.php:530
+msgid "Location"
+msgstr "الموقع"
+
+#: inc/admin/hooks_upsells.php:508 inc/admin/hooks_upsells.php:529
+msgid "Type"
+msgstr "النوع"
+
+#: inc/admin/hooks_upsells.php:458
+msgid "See All Features"
+msgstr "شاهد كافة المميزات"
+
+#: inc/admin/hooks_upsells.php:448
+msgid "All layouts are lightweight and load only where needed"
+msgstr "جميع التصميمات خفيفة الوزن ويتم تحميلها فقط عند الحاجة"
+
+#: inc/admin/hooks_upsells.php:447
+msgid "Optimized Performance"
+msgstr "أداء محسن"
+
+#: inc/admin/hooks_upsells.php:441
+msgid "Design custom shop pages, product layouts, and checkout experiences"
+msgstr "تصميم صفحات متجر مخصصة وتخطيطات المنتجات وتجارب عملية إنهاء طلب"
+
+#: inc/admin/hooks_upsells.php:440
+msgid "WooCommerce Ready"
+msgstr "جاهز لـووكومرس"
+
+#: inc/admin/hooks_upsells.php:434
+msgid "Show different layouts based on user roles, devices, or content types"
+msgstr "عرض تخطيطات مختلفة استنادًا إلى أدوار المستخدم أو الأجهزة أو أنواع المحتوى"
+
+#: inc/admin/hooks_upsells.php:433
+msgid "Smart Display Rules"
+msgstr "قواعد العرض الذكي"
+
+#: inc/admin/hooks_upsells.php:427
+msgid "Create stunning headers, footers, and content sections with our visual drag & drop builder"
+msgstr "قم بإنشاء ترويسات وتذييلات وأقسام محتوى مذهلة باستخدام أداة السحب والإفلات المرئية الخاصة بنا"
+
+#: inc/admin/hooks_upsells.php:426
+msgid "Build Without Code"
+msgstr "إنشاء بدون كود"
+
+#: inc/admin/hooks_upsells.php:419
+msgid "Custom Layouts helps you create a unique website that stands out"
+msgstr "تساعدك التخطيطات المخصصة على إنشاء موقع ويب فريد من نوعه"
+
+#: inc/admin/hooks_upsells.php:415
+msgid "Take Your Site to the Next Level"
+msgstr "ارتقِ بموقعك إلى المستوى التالي"
+
+#: inc/admin/dashboard/main.php:1065
+msgid "Neve Logo"
+msgstr "شعار Neve"
+
+#: inc/admin/dashboard/main.php:930
+msgid "Design unique website sections without touching code. Create custom headers, footers, and content areas that match your vision."
+msgstr "قم بتصميم أقسام فريدة لموقعك الإلكتروني دون لمس الكود. قم بإنشاء ترويسات وتذييلات ومناطق محتوى مخصصة تتوافق مع رؤيتك."
+
+#: inc/admin/dashboard/main.php:923
+msgid "View Tutorial"
+msgstr "عرض البرنامج التعليمي"
+
+#: inc/admin/dashboard/main.php:916
+msgid "Add New Layout"
+msgstr "إضافة تخطيط جديد"
+
+#: inc/admin/dashboard/main.php:759
+msgid "AI chatbot for your website"
+msgstr "روبوت محادثة بالذكاء الاصطناعي لموقعك الإلكتروني"
+
+#: inc/admin/dashboard/main.php:752
+msgid "RSS feeds aggregator and content curator"
+msgstr "مجمع خلاصات RSS ومنسق المحتوى"
+
+#: inc/admin/dashboard/main.php:747
+msgid "Lightning-fast caching made simple"
+msgstr "التخزين المؤقت السريع أصبح بسيطًا"
+
+#: inc/admin/dashboard/main.php:743
+msgid "Smart image optimization and CDN"
+msgstr "تحسين الصور الذكية وشبكة CDN"
+
+#: inc/admin/dashboard/main.php:739
+msgid "Simple ecommerce solution with Stripe integration"
+msgstr "حل بسيط للتجارة الإلكترونية مع الدمج مع Stripe"
+
+#: inc/admin/dashboard/main.php:735
+msgid "Import ready-made websites with a single click"
+msgstr "استيراد المواقع الجاهزة بنقرة واحدة"
+
+#: inc/admin/dashboard/main.php:731
+msgid "Advanced blocks for modern WordPress editing"
+msgstr "مكونات متقدمة لتحرير حديث لووردبريس"
+
+#: inc/admin/dashboard/main.php:710
+msgid "Create members-only content areas. Control access by user roles, logged-in status, or custom rules."
+msgstr "إنشاء مناطق محتوى مخصصة للأعضاء فقط. التحكم في الوصول حسب أدوار المستخدم أو حالة تسجيل الدخول أو القواعد المخصصة."
+
+#: inc/admin/dashboard/main.php:709
+msgid "Content restriction"
+msgstr "تقييد المحتوى"
+
+#: inc/admin/dashboard/main.php:706
+msgid "Create unique sidebar layouts for different sections. Show relevant content based on user context."
+msgstr "إنشاء تخطيطات شريط جانبي فريدة لأقسام مختلفة. عرض المحتوى ذي الصلة بناءً على سياق المستخدم."
+
+#: inc/admin/dashboard/main.php:705
+msgid "Custom Sidebars"
+msgstr "أشرطة جانبية مخصصة"
+
+#: inc/admin/dashboard/main.php:702
+msgid "Access premium Adobe fonts directly in your theme. Add professional typography to any element."
+msgstr "يمكنك الوصول إلى خطوط Adobe المتميزة مباشرةً في قالبك. أضف أسلوب طباعة احترافي إلى أي عنصر."
+
+#: inc/admin/dashboard/main.php:701
+msgid "Typekit Fonts"
+msgstr "خطوط Typekit"
+
+#: inc/admin/dashboard/main.php:697
+msgid "Enhanced course layouts, student dashboards, and learning features for your online education platform."
+msgstr "تخطيطات الدورة التدريبية المحسنة ولوحات تحكم الطلاب ومميزات التعلم لمنصة التعليم عبر الإنترنت الخاصة بك."
+
+#: inc/admin/dashboard/main.php:688
+msgid "Create conditional headers, footers, and content blocks. Perfect for custom landing pages and marketing campaigns."
+msgstr "إنشاء ترويسات وتذييلات ومكوِّنات محتوى مشروطة. مثالي لصفحات المقصودة المخصصة والحملات التسويقية."
+
+#: inc/admin/dashboard/main.php:684
+msgid "Rebrand Neve as your own. Change theme name, author, and links to match your agency identity."
+msgstr "أعد تسمية Neve  لتصبح علامتك التجارية الخاصة. قم بتغيير اسم القالب والمؤلف والروابط لتتوافق مع هوية وكالتك."
+
+#: inc/admin/dashboard/main.php:680
+msgid "Advanced Gutenberg blocks designed specifically for Neve. Build faster with pre-styled patterns."
+msgstr "تم تصميم مكونات Gutenberg المتقدمة خصيصًا لـ Neve. يمكنك إنشاء أنماط مصممة مسبقًا بشكل أسرع."
+
+#: inc/admin/dashboard/main.php:676
+msgid "Optimize core vitals, enable lazy loading, and minify resources for lightning-fast load times."
+msgstr "قم بتحسين Core Vitals، وتفعيل Lazy Loading، وتقليل الموارد للحصول على أوقات تحميل سريعة للغاية."
+
+#: inc/admin/dashboard/main.php:675 assets/apps/dashboard/build/dashboard.js:2
+msgid "Performance"
+msgstr "الأداء"
+
+#: inc/admin/dashboard/main.php:672
+msgid "Add a customizable scroll-to-top button that appears exactly when needed. Style it to match your brand."
+msgstr "أضف زرًا قابلًا للتخصيص للانتقال إلى الأعلى يظهر بالضبط عند الحاجة إليه. قم بتصميمه ليناسب علامتك التجارية."
+
+#: inc/admin/dashboard/main.php:668
+msgid "Extend Neve's powerful features to custom post types. Create unique layouts for portfolios, testimonials, and more."
+msgstr "وسّع ميزات Neve القوية لتشمل أنواع المحتوى المخصصة. أنشئ تخطيطات فريدة لقائمة المشاريع والشهادات والمزيد."
+
+#: inc/admin/dashboard/main.php:667
+msgid "Post types enhancements"
+msgstr "أنواع محتوى التحسينات"
+
+#: inc/admin/dashboard/main.php:664
+msgid "Advanced layouts, reading time estimates, and social sharing to keep readers engaged longer."
+msgstr "تخطيطات متقدمة وتقديرات لوقت القراءة والمشاركة الاجتماعية لإبقاء القراء منخرطين لفترة أطول."
+
+#: inc/admin/dashboard/main.php:659
+msgid "Enhance your Easy Digital Downloads store with additional customization settings."
+msgstr "قم بتعزيز متجر Easy Digital Downloads الخاص بك باستخدام إعدادات التخصيص الإضافية."
+
+#: inc/admin/dashboard/main.php:658
+msgid "Easy Digital Downloads Booster"
+msgstr "Easy Digital Downloads Booster"
+
+#: inc/admin/dashboard/main.php:654
+msgid "Boost conversion rates up to 15%"
+msgstr "تعزيز معدلات التحويل حتى 15%"
+
+#: inc/admin/dashboard/main.php:653
+msgid "Transform your store with quick-view popups, wishlist features, and optimized checkout flow. Boost sales instantly."
+msgstr "حوّل متجرك باستخدام النوافذ المنبثقة للعرض السريع، ميزات قائمة الرغبات، وتدفق الدفع المحسن. زد من مبيعاتك على الفور."
+
+#: inc/admin/dashboard/main.php:649
+msgid "Create unique sticky & transparent headers that adapt to scroll. Perfect for modern, immersive websites."
+msgstr "أنشئ عناوين رئيسية فريدة و مثبّتة و شفافة وقابلة للتمرير. مثالية للمواقع الإلكترونية الحديثة والغامرة."
+
+#: inc/admin/dashboard/main.php:633
+msgid "Remove Neve branding and rebrand it as your own for client websites."
+msgstr "قم بإزالة العلامة التجارية Neve وإعادة تسميتها لتصبح خاصة بك لمواقع الويب الخاصة بالعملاء."
+
+#: inc/admin/dashboard/main.php:629
+msgid "Get fast and reliable assistance directly from our expert team."
+msgstr "احصل على مساعدة سريعة وموثوقة مباشرة من فريق الخبراء لدينا."
+
+#: inc/admin/dashboard/main.php:628
+msgid "Priority Support"
+msgstr "دعم ذو أولوية"
+
+#: inc/admin/dashboard/main.php:625
+msgid "Professional Features"
+msgstr "مميزات احترافية"
+
+#: inc/admin/dashboard/main.php:620
+msgid "Custom thank you pages & announcement bars."
+msgstr "صفحات الشكر المخصصة وأشرطة الإعلان."
+
+#: inc/admin/dashboard/main.php:619
+msgid "Sales Features"
+msgstr "مميزات المبيعات"
+
+#: inc/admin/dashboard/main.php:616
+msgid "Product comparison, advance product review & variation swatches."
+msgstr "مقارنة المنتجات، ومراجعة المنتجات مسبقًا، و تنوع عينات الألوان ."
+
+#: inc/admin/dashboard/main.php:615
+msgid "Shopping Enhancement"
+msgstr "تحسين التسوق"
+
+#: inc/admin/dashboard/main.php:612
+msgid "Quick view popup, features video & wishlist functionality."
+msgstr "نافذة منبثقة للعرض السريع، تتميز بفيديو ووظيفة قائمة الرغبات."
+
+#: inc/admin/dashboard/main.php:611
+msgid "Product Experience"
+msgstr "تجربة المنتج"
+
+#: inc/admin/dashboard/main.php:608
+msgid "Store Features"
+msgstr "مميزات المتجر"
+
+#: inc/admin/dashboard/main.php:603
+msgid "Seamlessly integrate with WPML, Weglot, and Polylang for enhanced multilingual capabilities."
+msgstr "الدمج بسلاسة مع WPML وWeglot وPolylang لتحسين إمكانيات تعدد اللغات."
+
+#: inc/admin/dashboard/main.php:602
+msgid "Multilingual Support"
+msgstr "دعم متعدد اللغات"
+
+#: inc/admin/dashboard/main.php:599
+msgid "Restrict content access by user, role, or password—ideal for membership sites."
+msgstr "تقييد الوصول إلى المحتوى حسب المستخدم أو الدور أو كلمة المرور - مثالي لمواقع العضوية."
+
+#: inc/admin/dashboard/main.php:598
+msgid "Content Restriction"
+msgstr "تقييد المحتوى"
+
+#: inc/admin/dashboard/main.php:595
+msgid "Access a growing library of beautiful, ready-to-use templates for every niche and industry."
+msgstr "يمكنك الوصول إلى مكتبة متنامية من القوالب الجميلة الجاهزة للاستخدام لكل تخصص وصناعة."
+
+#: inc/admin/dashboard/main.php:591
+msgid "Multiple layouts, reading time estimates, social sharing & related posts."
+msgstr "تخطيطات متعددة، وتقديرات وقت القراءة، والمشاركة الاجتماعية والمقالات ذات الصلة."
+
+#: inc/admin/dashboard/main.php:590
+msgid "Advanced Blog Features"
+msgstr "مميزات المدونة المتقدمة"
+
+#: inc/admin/dashboard/main.php:587
+msgid "Content & Blog Features"
+msgstr "مميزات المحتوى والمدونة"
+
+#: inc/admin/dashboard/main.php:582
+msgid "Advanced Gutenberg blocks with animations & visibility controls."
+msgstr "مكونات Gutenberg المتقدمة مع الرسوم المتحركة وعناصر التحكم في الرؤية."
+
+#: inc/admin/dashboard/main.php:578
+msgid "Add engaging elements, protect content, and create dynamic layouts with our advanced toolkit."
+msgstr "أضف عناصر جذابة، وقم بحماية المحتوى، وأنشئ تخطيطات ديناميكية باستخدام مجموعة أدواتنا المتقدمة."
+
+#: inc/admin/dashboard/main.php:577
+msgid "Elementor Add-ons"
+msgstr "المكونات الإضافية لElementor"
+
+#: inc/admin/dashboard/main.php:574
+msgid "Page Builder Features"
+msgstr "مميزات منشئ الصفحات"
+
+#: inc/admin/dashboard/main.php:569
+msgid "Add custom blocks or content using hooks for headers, footers, 404 pages, and more."
+msgstr "أضف مكونات أو محتوى مخصصًا باستخدام الخطافات للترويسات والتذييلات وصفحات 404 والمزيد."
+
+#: inc/admin/dashboard/main.php:565
+msgid "Social icons, payment icons, divider, footer copyright editor and 15+ header components."
+msgstr "أيقونات التواصل الاجتماعي، وأيقونات الدفع، والمقسم، ومحرر حقوق النشر في التذييل، وأكثر من 15 مكونًا للترويسة."
+
+#: inc/admin/dashboard/main.php:564
+msgid "Design Components"
+msgstr "مكونات التصميم"
+
+#: inc/admin/dashboard/main.php:561
+msgid "Full header settings control with sticky/transparent header, page-specific settings & mobile layouts."
+msgstr "التحكم الكامل في إعدادات الترويسة باستخدام ترويسة مثبّت/شفاف وإعدادات خاصة بالصفحة وتخطيطات الهاتف المحمول."
+
+#: inc/admin/dashboard/main.php:560
+msgid "Advanced Header Features"
+msgstr "مميزات الترويسة المتقدمة"
+
+#: inc/admin/dashboard/main.php:557
+msgid "Website Essentials"
+msgstr "أساسيات الموقع الإلكتروني"
+
+#: inc/admin/dashboard/main.php:531
+msgid "Widget areas & layout"
+msgstr "مناطق الودجت وتخطيطها"
+
+#: inc/admin/dashboard/main.php:521
+msgid "Post display & formatting"
+msgstr "عرض وتنسيق المقالة"
+
+#: inc/admin/dashboard/main.php:516
+msgid "Navigation & branding setup"
+msgstr "إعداد التنقل والعلامة التجارية"
+
+#: inc/admin/dashboard/main.php:511
+msgid "Content structure & spacing"
+msgstr "بنية المحتوى والتباعد"
+
+#: inc/admin/dashboard/main.php:506
+msgid "Typography & text styles"
+msgstr "أسلوب الطباعة و تنسيقات النص"
+
+#: inc/admin/dashboard/main.php:501
+msgid "Brand colors & site palette"
+msgstr "ألوان العلامة التجارية ولوحة ألوان الموقع"
+
+#: inc/admin/dashboard/main.php:496
+msgid "Recommended size: 200x50px"
+msgstr "الحجم الموصى به: 200x50 بكسل"
+
+#: inc/admin/dashboard/main.php:195 inc/admin/dashboard/main.php:196
+msgid "Dashboard"
+msgstr "لوحة التحكم"
+
+#: header-footer-grid/Core/Components/MenuIcon.php:545
+msgid "Dots"
+msgstr "نقاط"
+
+#: header-footer-grid/Core/Components/MenuIcon.php:544
+msgid "Donner"
+msgstr "Donner"
+
+#: header-footer-grid/Core/Builder/Header.php:531
+msgid "Button Item"
+msgstr "عنصر الزر"
+
+#: header-footer-grid/Core/Builder/Header.php:521
+msgid "Collapsed"
+msgstr "تم الطي"
+
+#: header-footer-grid/Core/Builder/Header.php:516
+msgid "Spaced"
+msgstr "متباعدة"
+
+#: header-footer-grid/Core/Builder/Header.php:511
+msgid "Centered"
+msgstr "توسيط"
+
+#: header-footer-grid/Core/Builder/Header.php:506
+msgid "Inverted"
+msgstr "مقلوب"
+
+#: header-footer-grid/Core/Builder/Header.php:501
+msgid "Classic"
+msgstr "تقليدي"
+
+#: header-footer-grid/Core/Builder/Footer.php:319
+msgid "Payment icons"
+msgstr "أيقونات الدفع"
+
+#: header-footer-grid/Core/Builder/Footer.php:315
+msgid "Contact"
+msgstr "الاتصال"
+
+#. translators: %1$s: opening anchor tag, %2$s: closing anchor tag
+#: header-footer-grid/Core/Builder/Footer.php:80
+msgid "The Neve theme free version doesn't support copyright edits. Pro unlocks this and more—%1$sexplore%2$s it when you're ready!"
+msgstr "لا تدعم النسخة المجانية من قالب Neve عمليات التحرير بموجب حقوق الطبع والنشر. يلغي Pro تأمين هذا وأكثر —%1$sاكتشف%2$s عندما تكون مستعدًا!"
+
+#: header-footer-grid/Core/Magic_Tags.php:607
+msgid "Current Single Content"
+msgstr "المحتوى الفردي الحالي"
+
+#. translators: Module name for the upsell.
+#: inc/customizer/options/upsells.php:458
+msgid "Unlock %s with the Pro version."
+msgstr "إلغاء تأمين %s باستخدام الإصدار الاحترافي."
+
+#: inc/customizer/options/base_layout_single.php:580
+#: inc/customizer/options/layout_single_post.php:550
+msgid "Custom Value"
+msgstr "قيمة مخصصة"
+
+#: inc/customizer/options/base_layout_single.php:562
+#: inc/customizer/options/layout_single_post.php:532
+msgid "Customize the default vertical spacing <ctaButton>here</ctaButton>."
+msgstr "تخصيص مسافة التباعد العمودي الافتراضي <ctaButton> هنا </ctaButton>."
+
+#: inc/customizer/options/base_layout_single.php:556
+#: inc/customizer/options/layout_single_post.php:526
+msgid "Custom"
+msgstr "مُخصص"
+
+#: inc/customizer/options/base_layout_single.php:547
+#: inc/customizer/options/layout_container.php:114
+#: inc/customizer/options/layout_single_post.php:517
+msgid "Content Vertical Spacing"
+msgstr "محتوى مسافة التباعد العمودي"
+
+#: inc/admin/hooks_upsells.php:72
+msgid "Hide Hooks"
+msgstr "إخفاء الخطاف"
+
+#: inc/admin/hooks_upsells.php:69
+msgid "Show Hooks"
+msgstr "عرض الخطاف"
+
+#: inc/customizer/options/typography.php:77
+#: inc/customizer/options/typography.php:97
+msgid "Font presets"
+msgstr "الإعدادات المسبقة للخط"
+
+#: inc/customizer/options/typography.php:73
+msgid "Choose Font family presets for your Headings and Text."
+msgstr "اختر الإعدادات المسبقة لعائلة الخطوط للعناوين والنص."
+
+#: inc/customizer/options/colors_background.php:122
+#: assets/apps/customizer-controls/build/controls.js:2
+#: assets/apps/customizer-controls/build/controls.js:4
+msgid "Custom Colors"
+msgstr "ألوان مخصصة"
+
+#: inc/compatibility/fse.php:330 inc/compatibility/fse.php:346
+msgid "Full Site Editing"
+msgstr "تحرير الموقع بالكامل"
+
+#: inc/compatibility/fse.php:46
+msgid "Front Page"
+msgstr "الصفحة الرئيسية"
+
+#: inc/views/nav_walker.php:165
+msgid "Open Submenu"
+msgstr "افتح القائمة الفرعية"
+
+#: inc/customizer/options/base_layout_single.php:527
+#: inc/customizer/options/layout_single_post.php:221
+#: assets/apps/customizer-controls/build/controls.js:5
+#: assets/apps/dashboard/build/dashboard.js:2
+msgid "Settings"
+msgstr "الإعدادات"
+
+#: inc/views/nav_walker.php:122
+msgid "Dropdown"
+msgstr "القائمة المنسدلة"
+
+#. translators: s - Discount Code
+#: inc/admin/dashboard/main.php:453
+msgid "From 3.3.0 we decided to remove the copyright component from the free version. You can continue using it if you rollback to 3.2.x or you can upgrade to pro, using a one time 50%% discount: %s"
+msgstr "بدءًا من 3.3.0 قررنا إزالة مكون حقوق النشر من النسخة المجانية. يمكنك الاستمرار في استخدامها إذا عدت إلى النسخة 3.2.x أو يمكنك الترقية إلى النسخة الاحترافية ، باستخدام خصم 50%%  لمرة واحدة:%s"
+
+#: inc/customizer/options/layout_blog.php:659
+#: inc/customizer/options/layout_single_post.php:606
+msgid "Hide on mobile"
+msgstr "إخفاء على الهاتف المحمول"
+
+#: header-footer-grid/Core/Magic_Tags.php:699
+msgid "Current Page Title"
+msgstr "عنوان الصفحة الحالية"
+
+#: header-footer-grid/Core/Components/Utility/SearchIconButton.php:190
+#: assets/apps/components/build/components.js:1
+#: assets/apps/customizer-controls/build/controls.js:1
+msgid "Custom SVG"
+msgstr "SVG مخصص"
+
+#: inc/customizer/options/layout_blog.php:395
+msgid "Sticky Post"
+msgstr "مقالة مثبتة"
+
+#: inc/customizer/options/layout_blog.php:394
+msgid "Latest Post"
+msgstr "آخر مقالة"
+
+#: inc/customizer/options/layout_blog.php:372
+msgid "Enable featured post section"
+msgstr "تفعيل قسم المقالة المميزة"
+
+#: inc/customizer/options/layout_blog.php:389
+msgid "Featured Post"
+msgstr "مقالة مميزة"
+
+#: inc/compatibility/easy_digital_downloads.php:85
+msgid "Neve Theme controls base style settings of Easy Digital Downloads. Additional settings from other extensions might appear below."
+msgstr "يتحكم قالب Neve في إعدادات النمط الأساسية ل Easy Digital Downloads التنزيلات الرقمية السهلة. قد تظهر إعدادات إضافية من ملحقات أخرى أدناه."
+
+#: inc/compatibility/easy_digital_downloads.php:84
+msgid "Controlled by Neve"
+msgstr "يتحكم فيها Neve"
+
+#: header-footer-grid/Core/Magic_Tags.php:737
+msgid "EDD Cart"
+msgstr "سلة مشتريات EDD"
+
+#: header-footer-grid/Core/Components/EddCartIcon.php:41
+msgid "Easy Digital Downloads Cart"
+msgstr "سلة مشتريات Easy Digital Downloads التنزيلات الرقمية السهلة"
+
+#: inc/admin/dashboard/main.php:679
+msgid "Block Editor Booster"
+msgstr "داعم محرر المكوّن"
+
+#: inc/admin/hooks_upsells.php:174 inc/customizer/loader.php:144
+#: inc/customizer/options/typography.php:74
+#: assets/apps/dashboard/build/dashboard.js:2
+msgid "Learn more"
+msgstr "تعرف على المزيد"
+
+#: header-footer-grid/Core/Components/Logo.php:364
+msgid "Use one logo for both modes"
+msgstr "استخدم شعارًا واحدًا لكلا الوضعين"
+
+#: inc/admin/hooks_upsells.php:455 assets/apps/dashboard/build/dashboard.js:2
+msgid "Get Neve Pro"
+msgstr "أحصل على Neve Pro"
+
+#: inc/admin/hooks_upsells.php:174 inc/customizer/options/upsells.php:404
+#: inc/customizer/options/upsells.php:436
+msgid "Neve PRO Features"
+msgstr "مميزات Neve Pro"
+
+#: inc/customizer/options/upsells.php:119
+msgid "Stepped"
+msgstr "صعد"
+
+#: inc/customizer/options/upsells.php:114
+msgid "Vertical"
+msgstr "عمودي"
+
+#: inc/customizer/options/upsells.php:110
+msgid "Standard"
+msgstr "قياسي"
+
+#: inc/customizer/options/checkout.php:85
+msgid "Checkout Style"
+msgstr "نمط الخروج"
+
+#: inc/admin/dashboard/main.php:331
+msgid "Upgrade to the Pro version and get instant access to all Premium Starter Sites — including Expert Sites — and much more."
+msgstr "قم بالترقية إلى النسخة الاحترافي واحصل على وصول فوري إلى جميع مواقع المبتدئين المتميزة - بما في ذلك مواقع الخبراء - وغير ذلك الكثير."
+
+#: inc/core/front_end.php:558
+msgid "Upgrade to Neve Pro and unlock all components, including Wish List, Breadcrumbs, Custom Layouts and many more."
+msgstr "قم بالترقية إلى Neve Pro وافتح جميع المكونات ، بما في ذلك قائمة الرغبات ومسارات التنقل والتخطيطات المخصصة وغيرها الكثير."
+
+#: header-footer-grid/Core/Builder/Footer.php:323
+#: header-footer-grid/Core/Builder/Header.php:561
+msgid "Social Icons"
+msgstr "الأيقونات الاجتماعية"
+
+#: header-footer-grid/Core/Builder/Header.php:156
+msgid "Global Header Settings"
+msgstr "الإعدادات العامة للترويسة"
+
+#: inc/compatibility/amp.php:433 inc/compatibility/fse.php:50
+#: inc/customizer/options/base_layout_single.php:84
+#: inc/customizer/options/base_layout_single.php:527
+#: inc/customizer/options/layout_single_post.php:221
+msgid "Page"
+msgstr "صفحة"
+
+#. translators: Theme Name
+#: inc/admin/troubleshoot/main.php:115
+msgid "API for %s is reachable on your site."
+msgstr "API لـ %s يمكن الوصول إليه على موقعك."
+
+#: inc/admin/troubleshoot/main.php:110
+msgid "Can not connect to API"
+msgstr "لا يمكن الاتصال بـ API"
+
+#. translators: Theme Name
+#: inc/admin/troubleshoot/main.php:102
+msgid "API for %s is reachable."
+msgstr "API لـ %s يمكن الوصول إليه."
+
+#: inc/admin/troubleshoot/main.php:51
+msgid "Customizer Custom CSS"
+msgstr "إعدادات CSS المخصصة"
+
+#: inc/admin/troubleshoot/main.php:46
+msgid "Child theme files"
+msgstr "ملفات القالب الفرعي (الإبن)"
+
+#: inc/admin/troubleshoot/main.php:42 inc/admin/troubleshoot/main.php:47
+#: inc/admin/troubleshoot/main.php:52
+msgid "No"
+msgstr "لا"
+
+#: inc/admin/troubleshoot/main.php:42 inc/compatibility/fse.php:390
+msgid "Yes"
+msgstr "نعم"
+
+#: inc/admin/troubleshoot/main.php:41 inc/admin/troubleshoot/main.php:79
+#: inc/admin/troubleshoot/main.php:93
+msgid "API connectivity"
+msgstr "حالة الاتصال بـ API"
+
+#: inc/core/front_end.php:587
+msgid "Switch Skin"
+msgstr "بدل السطح"
+
+#: inc/core/front_end.php:586
+msgid "Switching skin"
+msgstr "تبديل السطح"
+
+#: inc/core/front_end.php:585
+msgid "Neve 3.0"
+msgstr "Neve 3.0"
+
+#: inc/core/front_end.php:584
+msgid "Legacy Skin"
+msgstr "سطح قديم"
+
+#: inc/core/front_end.php:583
+msgid "Migrate Builders Data"
+msgstr "ترحيل بيانات المنشئين"
+
+#: inc/core/front_end.php:581
+msgid "Some manual adjustments may be required."
+msgstr "قد تكون هناك حاجة لبعض التعديلات اليدوية."
+
+#: inc/core/front_end.php:580
+msgid "We've created a new Header/Footer Builder experience! You can always roll back to the old builder from right here."
+msgstr "لقد أنشأنا تجربة منشئ ترويسة / تذييل جديدة! يمكنك دائمًا الرجوع إلى المنشئ القديم من هنا."
+
+#: inc/core/front_end.php:589
+msgid "Roll Back"
+msgstr "العودة إلى الحالة السابقة"
+
+#: inc/core/front_end.php:582
+msgid "Reload"
+msgstr "إعادة تحميل"
+
+#: inc/core/front_end.php:579
+msgid "Want to roll back to the old builder?"
+msgstr "هل تريد العودة إلى المنشئ القديم؟"
+
+#: inc/core/front_end.php:577
+msgid "You must save the current customizer values before running the migration."
+msgstr "يجب عليك حفظ قيم المخصّص الحالي قبل تشغيل الترحيل."
+
+#: inc/core/front_end.php:576
+msgid "Removing old data"
+msgstr "إزالة البيانات القديمة"
+
+#: inc/core/front_end.php:575
+msgid "Rolling back builder"
+msgstr "العودة إلى الحالة السابقة للمنشئ"
+
+#: inc/core/front_end.php:574
+msgid "Migrating builder data"
+msgstr "ترحيل بيانات المنشئ"
+
+#: woocommerce/product-searchform.php:22
+msgid "Search products&hellip;"
+msgstr "البحث عن المنتجات..."
+
+#: inc/customizer/options/main.php:102
+msgid "Change archive font size"
+msgstr "تغيير حجم خط الأرشيف"
+
+#: inc/customizer/options/main.php:98
+msgid "Change H1 font size"
+msgstr "تغيير حجم خط H1"
+
+#: inc/customizer/options/main.php:94
+msgid "Change headings font"
+msgstr "تغيير خط العناوين"
+
+#: inc/customizer/options/main.php:90
+msgid "Change main font"
+msgstr "تغيير الخط الرئيسي"
+
+#: inc/customizer/options/layout_single_post.php:819
+msgid "Button text"
+msgstr "نص الزر"
+
+#: inc/customizer/options/layout_single_post.php:797
+msgid "Button style"
+msgstr "نمط الزر"
+
+#: inc/customizer/options/layout_single_post.php:740
+msgid "The following magic tags are available for this field: {title} and {comments_number}. Leave this field empty for default behavior."
+msgstr "الوسوم السحرية التالية متاحة لهذا الحقل: {title} و {comments_number}. اترك هذا الحقل فارغًا للسلوك الافتراضي."
+
+#: inc/customizer/options/layout_single_post.php:739
+#: inc/customizer/options/layout_single_post.php:778
+msgid "Section title"
+msgstr "عنوان القسم"
+
+#: inc/customizer/options/layout_single_post.php:472
+msgid "Spacing between elements"
+msgstr "مسافة التباعد بين العناصر"
+
+#: inc/customizer/options/base_layout_single.php:660
+msgid "Full width"
+msgstr "كامل العرض"
+
+#: inc/customizer/options/base_layout_single.php:483
+msgid "Cover container"
+msgstr "غلاف الحاوية"
+
+#: inc/customizer/options/base_layout_single.php:650
+msgid "Luminosity"
+msgstr "الإضاءة"
+
+#: inc/customizer/options/base_layout_single.php:649
+msgid "Hue"
+msgstr "تدرج اللون"
+
+#: inc/customizer/options/base_layout_single.php:648
+msgid "Exclusion"
+msgstr "الاستثناء"
+
+#: inc/customizer/options/base_layout_single.php:647
+msgid "Difference"
+msgstr "الفرق"
+
+#: inc/customizer/options/base_layout_single.php:645
+msgid "Saturation"
+msgstr "التشبع"
+
+#: inc/customizer/options/base_layout_single.php:644
+msgid "Color Dodge"
+msgstr "انقاص كثافة اللون"
+
+#: inc/customizer/options/base_layout_single.php:643
+msgid "Lighten"
+msgstr "تفتيح"
+
+#: inc/customizer/options/base_layout_single.php:642
+msgid "Darken"
+msgstr "تعتيم"
+
+#: inc/customizer/options/base_layout_single.php:641
+#: inc/customizer/options/upsells.php:210
+msgid "Overlay"
+msgstr "غِشاء"
+
+#: inc/customizer/options/base_layout_single.php:640
+msgid "Screen"
+msgstr "الشاشة"
+
+#: inc/customizer/options/base_layout_single.php:639
+msgid "Multiply"
+msgstr "مضاعفة"
+
+#: inc/customizer/options/base_layout_single.php:458
+#: inc/customizer/options/layout_single_post.php:369
+msgid "Blend mode"
+msgstr "وضع المزج"
+
+#: inc/customizer/options/base_layout_single.php:439
+#: inc/customizer/options/layout_single_post.php:365
+msgid "Hide featured image"
+msgstr "إخفاء الصورة البارزة "
+
+#: inc/customizer/options/base_layout_single.php:408
+#: inc/customizer/options/layout_single_post.php:374
+msgid "Overlay opacity"
+msgstr "معدل شفافية التراكب"
+
+#: inc/customizer/options/upsells.php:486
+msgid "Overlay color"
+msgstr "الألوان المركبة"
+
+#: inc/customizer/options/layout_single_post.php:281
+msgid "Display meta before title"
+msgstr "عرض المنوعات (meta) قبل العنوان"
+
+#: inc/customizer/options/base_layout_single.php:309
+msgid "Title Position"
+msgstr "مكان العنوان"
+
+#: inc/customizer/options/base_layout_single.php:232
+msgid "Cover padding"
+msgstr "الهوامش الداخلية للغلاف"
+
+#: inc/customizer/options/base_layout_single.php:190
+msgid "Cover height"
+msgstr " ارتفاع الغلاف"
+
+#: inc/customizer/options/base_layout_single.php:172
+msgid "Cover"
+msgstr " الغلاف"
+
+#: inc/customizer/options/layout_single_post.php:236
+msgid "Submit Form Section"
+msgstr "قسم إرسال النموذج"
+
+#: inc/customizer/options/layout_single_post.php:227
+msgid "Comments Section"
+msgstr "قسم التعليقات"
+
+#: inc/customizer/options/layout_single_post.php:215
+msgid "Page Elements"
+msgstr "عناصر الصفحة"
+
+#: inc/customizer/options/base_layout_single.php:137
+#: inc/customizer/options/base_layout_single.php:163
+msgid "Header Layout"
+msgstr "تخطيط الترويسة "
+
+#: inc/customizer/options/layout_blog.php:570
+#: inc/customizer/options/layout_single_post.php:661
+msgid "Avatar Size"
+msgstr "حجم الصورة الرمزية Avatar"
+
+#: inc/customizer/options/layout_blog.php:445
+#: inc/customizer/options/layout_single_post.php:629
+msgid "For special characters make sure to use Unicode. For example > can be displayed using \\003E."
+msgstr "للأحرف الخاصة تأكد من استخدام Unicode. على سبيل المثال> يمكن عرضها باستخدام \\003E."
+
+#: inc/customizer/options/layout_single_post.php:628
+msgid "Separator"
+msgstr "الفاصل"
+
+#: inc/customizer/options/form_fields.php:55
+msgid "Customize the general design of the form elements across the site."
+msgstr "تخصيص التصميم العام لعناصر النموذج عبر الموقع."
+
+#: inc/customizer/options/buttons.php:161
+msgid "Secondary Button"
+msgstr "الزر الثانوي"
+
+#: inc/customizer/options/buttons.php:160
+msgid "Primary Button"
+msgstr "الزر الأساسي"
+
+#: inc/customizer/loader.php:141
+msgid "update"
+msgstr "تحديث"
+
+#: inc/customizer/base_customizer.php:476
+msgid "Text color"
+msgstr "لون النص"
+
+#: inc/customizer/base_customizer.php:452
+msgid "Background color"
+msgstr "لون الخلفية"
+
+#: inc/customizer/base_customizer.php:426
+msgid "Section padding"
+msgstr "الهوامش الداخلية للقسم"
+
+#: inc/customizer/base_customizer.php:357
+msgid "Boxed layout"
+msgstr "تخطيط في مربع"
+
+#. translators: %1$s - &rarr; symbol %2$s - &rarr; symbol %3$s - &rarr; symbol
+#: header-footer-grid/templates/components/component-footer-sidebar.php:36
+msgid "Appearance %1$s Customize %2$s Footer %3$s"
+msgstr "المظهر %1$s تخصيص %2$s التذييل %3$s"
+
+#. translators: %s: Link to Learn More page.
+#: header-footer-grid/Core/Components/PaletteSwitch.php:480
+msgid "Adjust default color scheme based on the user device preferences. %1$sLearn More%2$s."
+msgstr "اضبط نظام الألوان الافتراضي بناءً على تفضيلات جهاز المستخدم. %1$s تعرف على المزيد%2$s."
+
+#: header-footer-grid/Core/Components/PaletteSwitch.php:478
+msgid "Automatically adjust color scheme"
+msgstr "ضبط نظام الألوان تلقائيًا"
+
+#: header-footer-grid/Core/Components/PaletteSwitch.php:461
+msgid "Leave blank for no label ..."
+msgstr "اتركه فارغًا بدون تسمية ..."
+
+#: header-footer-grid/Core/Components/MenuIcon.php:512
+#: header-footer-grid/Core/Components/PaletteSwitch.php:458
+msgid "Label"
+msgstr "التسمية"
+
+#: header-footer-grid/Core/Components/PaletteSwitch.php:392
+#: header-footer-grid/Core/Components/PaletteSwitch.php:393
+msgid "Select icon"
+msgstr "إختر أيقونة"
+
+#: header-footer-grid/Core/Components/PaletteSwitch.php:359
+#: header-footer-grid/Core/Components/PaletteSwitch.php:360
+#: assets/apps/customizer-controls/build/controls.js:5
+msgid "Dark Palette"
+msgstr "لوحة داكنة"
+
+#. translators: %s: Link to Edit global color customizer.
+#: header-footer-grid/Core/Components/PaletteSwitch.php:346
+msgid "The base palette is used for light mode. %1$sEdit color palettes%2$s."
+msgstr "تستخدم اللوحة الأساسية في وضع فاتح. %1$sتحرير لوح الألوان%2$s."
+
+#: header-footer-grid/Core/Components/PaletteSwitch.php:344
+#: assets/apps/customizer-controls/build/controls.js:5
+msgid "Light Palette"
+msgstr "لوحة فاتحة"
+
+#: header-footer-grid/Core/Components/PaletteSwitch.php:97
+#: header-footer-grid/templates/components/component-palette-switch.php:25
+msgid "Palette Switch"
+msgstr "تبديل اللوحة"
+
+#: header-footer-grid/Core/Builder/Header.php:486
+msgid "Mobile Sidebar"
+msgstr "الشريط الجانبي للجوال"
+
+#: header-footer-grid/Core/Builder/Footer.php:280
+msgid "Footer Main"
+msgstr "التذييل الرئيسي"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:2020
+msgid "Columns Layout"
+msgstr "تخطيط الأعمدة"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:2003
+msgid "Number of Columns"
+msgstr "عدد الأعمدة"
+
+#. translators: %s - Theme name
+#: inc/admin/dashboard/main.php:337
+msgid "In order to be able to import any starter sites for %1$s you would need to have the %2$s plugin updated to the latest version."
+msgstr "لكي تتمكن من استيراد أي مواقع بداية لـ%1$s، يجب تحديث الإضافة %2$s إلى أحدث إصدار."
+
+#. translators: 1 - Theme name, 2 - Cloud Templates & Patterns Collection
+#: inc/admin/dashboard/main.php:335
+msgid "In order to be able to import any starter sites for %1$s you would need to have the %2$s plugin active."
+msgstr "لكي تتمكن من استيراد أي مواقع بداية لـ%1$s، يجب أن تكون الإضافة %2$s مُفعّلة."
+
+#: globals/utilities.php:444 header-footer-grid/Core/Builder/Footer.php:53
+#: header-footer-grid/Core/Builder/Header.php:70
+#: header-footer-grid/Core/Components/Button.php:165
+#: inc/admin/dashboard/main.php:350 inc/core/front_end.php:570
+#: inc/customizer/controls/simple_upsell.php:92
+#: inc/customizer/controls/simple_upsell_section.php:66
+#: assets/apps/customizer-controls/build/controls.js:5
+#: assets/apps/dashboard/build/dashboard.js:1
+msgid "(opens in a new tab)"
+msgstr "(يُفتح في علامة تبويب جديدة)"
+
+#: inc/customizer/options/layout_blog.php:629
+#: inc/customizer/options/layout_single_post.php:718
+msgid "Use last updated date instead of the published one"
+msgstr "استخدم تاريخ آخر تحديث بدلاً من التاريخ المنشور"
+
+#. translators: %s: commands to run the theme
+#: functions.php:64
+msgid "You appear to be running the Neve theme from source code. Please finish installation by running %s."
+msgstr "يبدو أنك تقوم بتشغيل قالب Neve من شفرة المصدر. الرجاء إنهاء التنصيب عن طريق تشغيل %s."
+
+#: inc/views/product_layout.php:68
+msgid "Out of stock"
+msgstr "غير متوفر في المخزون"
+
+#: inc/compatibility/starter-content/project-details.php:10
+msgctxt "Theme starter content"
+msgid "Project Details"
+msgstr "تفاصيل المشروع"
+
+#: inc/compatibility/starter-content/contact.php:11
+msgctxt "Theme starter content"
+msgid "Contact"
+msgstr "الاتصال"
+
+#: inc/compatibility/starter-content/portofolio.php:10
+msgctxt "Theme starter content"
+msgid "Portofolio"
+msgstr "معرض أعمال"
+
+#: inc/compatibility/elementor.php:385 inc/core/front_end.php:97
+msgid "Theme"
+msgstr "القالب"
+
+#: inc/customizer/options/form_fields.php:598
+msgid "Customize the default button styles"
+msgstr "تخصيص أنماط الزر الافتراضية"
+
+#: inc/customizer/options/form_fields.php:587
+#: inc/customizer/options/upsells.php:196
+msgid "Button Style"
+msgstr "نمط الزر"
+
+#: inc/customizer/options/form_fields.php:478
+msgid "Form Labels"
+msgstr "تسميات النموذج"
+
+#: inc/customizer/options/form_fields.php:335
+msgid "Input Text"
+msgstr "حقل إدخال نص"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:455
+#: inc/customizer/options/form_fields.php:293
+msgid "Border Color"
+msgstr "لون الحدود"
+
+#: inc/customizer/options/form_fields.php:148
+msgid "Field Background Color"
+msgstr "لون خلفية الحقل"
+
+#: inc/customizer/options/form_fields.php:96
+msgid "Field Padding"
+msgstr "الهوامش الداخلية للحقل"
+
+#: inc/customizer/options/form_fields.php:56
+#: inc/customizer/options/form_fields.php:74
+msgid "Form Fields"
+msgstr "حقول النموذج"
+
+#: inc/compatibility/starter-content/home.php:9
+msgctxt "Theme starter content"
+msgid "Home"
+msgstr "الرئيسية"
+
+#: inc/compatibility/starter-content/about.php:10
+msgctxt "Theme starter content"
+msgid "About"
+msgstr "نبذة"
+
+#: inc/compatibility/starter_content.php:213
+msgctxt "Theme starter content"
+msgid "Blog"
+msgstr "المدوّنة"
+
+#: inc/customizer/options/typography.php:246
+msgid "Learn more about fallback fonts"
+msgstr "تعرف على المزيد حول الخطوط الاحتياطية"
+
+#: inc/customizer/options/typography.php:239
+msgid "Fallback Font"
+msgstr "الخطوط الاحتياطية"
+
+#: inc/customizer/options/colors_background.php:103
+msgid "How the color system works"
+msgstr "كيف يعمل نظام الألوان"
+
+#: inc/customizer/options/colors_background.php:95
+#: assets/apps/components/build/components.js:1
+msgid "Global Colors"
+msgstr "الألوان العالمية"
+
+#: inc/compatibility/elementor.php:201 inc/core/front_end.php:134
+#: assets/apps/components/build/components.js:1
+msgid "Extra Color 2"
+msgstr "اللون الإضافي 2"
+
+#: inc/compatibility/elementor.php:200 inc/core/front_end.php:130
+#: assets/apps/components/build/components.js:1
+msgid "Extra Color 1"
+msgstr "اللون الإضافي 1"
+
+#: inc/compatibility/elementor.php:199 inc/core/front_end.php:126
+#: assets/apps/components/build/components.js:1
+msgid "Text Dark Background"
+msgstr "خلفية نص داكنة"
+
+#: inc/compatibility/elementor.php:197 inc/core/front_end.php:118
+#: assets/apps/components/build/components.js:1
+msgid "Dark Background"
+msgstr "خلفية داكنة"
+
+#: inc/compatibility/elementor.php:196 inc/core/front_end.php:114
+#: assets/apps/components/build/components.js:1
+msgid "Light Background"
+msgstr "خلفية فاتحة"
+
+#: inc/compatibility/elementor.php:195 inc/core/front_end.php:110
+#: assets/apps/components/build/components.js:1
+msgid "Site Background"
+msgstr "خلفية الموقع"
+
+#: inc/compatibility/elementor.php:194 inc/core/front_end.php:106
+#: assets/apps/components/build/components.js:1
+msgid "Secondary Accent"
+msgstr "العنصر الثانوي البارز"
+
+#: inc/compatibility/elementor.php:193 inc/core/front_end.php:102
+#: assets/apps/components/build/components.js:1
+msgid "Primary Accent"
+msgstr "العنصر الرئيسي البارز"
+
+#. translators: name of the color pallet.
+#: globals/utilities.php:471
+#: inc/compatibility/starter-content/theme-mods.php:504
+msgid "Base"
+msgstr "الأساس"
+
+#: inc/core/front_end.php:566
+msgid "Extend your header with more components and settings, build sticky/transparent headers or display them conditionally."
+msgstr "قم بتمديد الترويسة بمزيد من المكونات والإعدادات ، وقم بإنشاء ترويسات لاصقة / شفافة أو اعرضها بشكل مشروط."
+
+#. translators: %s is the header name
+#: header-footer-grid/Core/Customizer.php:288
+#: assets/apps/customizer-controls/build/fe21e704398fee9da3e4.js:5
+msgid "Click on any empty space to add components, or existing components to adjust settings."
+msgstr "انقر فوق أي مساحة فارغة لإضافة المكونات، أو انقر على المكونات الموجودة لضبط الإعدادات."
+
+#. translators: %s is the type of builder
+#: header-footer-grid/Core/Customizer.php:285
+msgid "%s Builder:"
+msgstr "%s المنشئ:"
+
+#: header-footer-grid/Core/Builder/Header.php:81
+msgid "Build your own header or choose from preset options."
+msgstr "قم بإنشاء الترويسة الخاصة بك أو اختر من بين الخيارات المحددة مسبقًا."
+
+#: inc/views/nav_walker.php:154
+#: assets/apps/customizer-controls/build/controls.js:1
+#: assets/apps/customizer-controls/build/controls.js:5
+#: assets/apps/metabox/build/index.js:1
+msgid "Toggle"
+msgstr "تبديل"
+
+#. translators: %s: Author's display name.
+#: inc/views/partials/post_meta.php:299
+msgid "Posts by %s"
+msgstr "مقالات بواسطة %s"
+
+#: inc/customizer/options/layout_blog.php:274
+msgid "Columns"
+msgstr "الأعمدة"
+
+#: inc/customizer/options/layout_blog.php:255
+#: inc/customizer/options/upsells.php:172
+msgid "Grid"
+msgstr "الشبكة"
+
+#: inc/customizer/options/layout_blog.php:251
+msgid "Covers"
+msgstr "الأغلفة"
+
+#: inc/customizer/options/layout_blog.php:247
+#: inc/customizer/options/upsells.php:176
+msgid "List"
+msgstr "قائمة"
+
+#: inc/customizer/options/buttons.php:97
+msgid "Button Text"
+msgstr "نص الزر"
+
+#: inc/compatibility/block-patterns/two-columns-image-text.php:9
+msgid "Two columns with image and text"
+msgstr "عمودان مع صورة ونص"
+
+#: inc/compatibility/block-patterns/two-columns-with-text.php:9
+msgid "Two columns with text"
+msgstr "عمودين بالنص"
+
+#: inc/compatibility/block-patterns/light-header-left-aligned-content.php:9
+msgid "Light header with left-aligned content"
+msgstr "ترويسة فاتحة بمحتوى بمحاذاة إلى اليسار"
+
+#: inc/compatibility/block-patterns/gallery-title-buttons.php:9
+msgid "Gallery with title and button"
+msgstr "معرض مع العنوان والزر"
+
+#: inc/compatibility/block-patterns/testimonials-columns.php:9
+msgid "Testimonial columns"
+msgstr "أعمدة الشهادة"
+
+#: inc/compatibility/block-patterns/two-columns-centered-content.php:9
+msgid "Two columns with centered content"
+msgstr "عمودين مع محتوى في الوسط"
+
+#: inc/compatibility/block-patterns/three-columns-images-text.php:9
+msgid "Three columns with images and text"
+msgstr "ثلاثة أعمدة بالصور والنص"
+
+#: inc/compatibility/block-patterns/three-columns-images-texts-content.php:9
+msgid "Three columns with images, content and buttons"
+msgstr "ثلاثة أعمدة بالصور والمحتوى والأزرار"
+
+#: inc/compatibility/block-patterns/dark-header-centered-content.php:9
+msgid "Dark header with centered content"
+msgstr "ترويسة داكنة مع محتوى في الوسط"
+
+#: inc/compatibility/block-patterns/gallery-grid-buttons.php:9
+msgid "Gallery grid with buttons"
+msgstr "معرض الشبكة مع الأزرار"
+
+#: inc/compatibility/block-patterns/four-columns-team-members.php:9
+msgid "Four columns with team members"
+msgstr "أربعة أعمدة مع أعضاء الفريق"
+
+#: inc/customizer/options/base_layout_single.php:264
+msgid "Title Alignment"
+msgstr "محاذاة العنوان"
+
+#: inc/core/front_end.php:557
+msgid "Page Title"
+msgstr "عنوان الصفحة"
+
+#: inc/core/front_end.php:556
+msgid "Page Layout"
+msgstr "تخطيط الصفحة"
+
+#: header-footer-grid/Core/Components/Nav.php:429
+msgid "Expand first level of dropdowns when menu is in mobile menu content."
+msgstr "قم بتوسيع المستوى الأول من القوائم المنسدلة عندما تكون القائمة في محتوى قائمة الجوال."
+
+#: header-footer-grid/Core/Components/MenuIcon.php:496
+msgid "Mobile Menu Options"
+msgstr "خيارات قائمة الجوال"
+
+#: header-footer-grid/Core/Components/MenuIcon.php:492
+msgid "Show Mobile Menu"
+msgstr "عرض قائمة الجوال"
+
+#: header-footer-grid/Core/Components/Nav.php:394
+#: header-footer-grid/Core/Components/NavFooter.php:190
+#: header-footer-grid/Core/Components/SecondNav.php:274
+msgid "Items Min Height (px)"
+msgstr "الحد الأدنى للارتفاع العناصر (بكسل)"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:1934
+msgid "Sidebar Width"
+msgstr "عرض الشريط الجانبي"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:1919
+msgid "Slide Down"
+msgstr "إزاحة لأسفل"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:1918
+msgid "Full Canvas"
+msgstr "لوحة كاملة"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:1917
+msgid "Pull from Right"
+msgstr "اسحب من اليمين"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:1916
+msgid "Pull from Left"
+msgstr "اسحب من اليسار"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:1915
+msgid "Slide from Right"
+msgstr "إزاحة من اليمين"
+
+#: inc/admin/metabox/manager.php:198
+msgid "or"
+msgstr "أو"
+
+#. translators: %1$s - Keyboard shortcut.   %2&s - svg icon
+#: inc/admin/metabox/manager.php:191
+msgid "Click the %1$s icon in the top bar or use the keyboard shortcut ( %2$s ) to customise the layout settings for this page"
+msgstr "انقر فوق أيقونة %1$s في الشريط العلوي أو استخدم اختصار لوحة المفاتيح ( %2$s ) لتخصيص إعدادات التخطيط لهذه الصفحة"
+
+#: inc/admin/metabox/manager.php:187
+msgid "Page Settings are now accessible from the top bar"
+msgstr "يمكن الآن الوصول إلى إعدادات الصفحة من الشريط العلوي"
+
+#: header-footer-grid/Core/Magic_Tags.php:631
+msgid "Comments meta"
+msgstr "تعليقات الوصف التعريفي meta"
+
+#: header-footer-grid/Core/Magic_Tags.php:627
+msgid "Category meta"
+msgstr "تصنيف الوصف التعريفي meta"
+
+#: header-footer-grid/Core/Magic_Tags.php:623
+msgid "Date meta"
+msgstr "تاريخ الوصف التعريفي meta"
+
+#: header-footer-grid/Core/Magic_Tags.php:619
+msgid "Author meta"
+msgstr "الوصف التعريفي meta للمؤلف"
+
+#: header-footer-grid/Core/Magic_Tags.php:615
+msgid "Current Post Meta"
+msgstr "الوصف التعريفي meta للمقالة الحالية"
+
+#: inc/admin/dashboard/main.php:1069 assets/apps/dashboard/build/dashboard.js:2
+msgid "Free"
+msgstr "مجاني"
+
+#: inc/core/front_end.php:555
+msgid "All items are already selected."
+msgstr "تم تحديد جميع العناصر بالفعل."
+
+#: inc/core/front_end.php:554
+msgid "Add items by clicking the ones below."
+msgstr "أضف عناصر بالضغط على العناصر أدناه."
+
+#: inc/core/front_end.php:553
+msgid "Add item"
+msgstr "إضافة عنصر"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:2056
+msgid "Vertical Alignment"
+msgstr "محاذاة عمودية"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:2038
+#: inc/customizer/options/base_layout_single.php:318
+msgid "Middle"
+msgstr "منتصف"
+
+#: inc/customizer/options/typography.php:475
+msgid "Comments reply title"
+msgstr "عنوان الرد على التعليقات"
+
+#: inc/customizer/options/typography.php:453
+#: inc/customizer/options/typography.php:468
+msgid "Post meta"
+msgstr "ميتا المقالة"
+
+#: inc/customizer/options/typography.php:446
+msgid "Post excerpt"
+msgstr "مقتطف المقالة"
+
+#: inc/customizer/options/typography.php:438
+#: inc/customizer/options/typography.php:460
+msgid "Post title"
+msgstr "عنوان المقالة"
+
+#: inc/customizer/loader.php:165 inc/customizer/loader.php:325
+#: assets/apps/dashboard/build/dashboard.js:4
+msgid "An error occurred. Please reload the page and try again."
+msgstr "حدث خطأ. يرجى إعادة تحميل الصفحة والمحاولة مرة أخرى."
+
+#: header-footer-grid/Core/Components/Search.php:80
+#: header-footer-grid/Core/Components/SearchResponsive.php:251
+msgid "Height"
+msgstr "الارتفاع"
+
+#: header-footer-grid/Core/Builder/Header.php:526
+#: header-footer-grid/Core/Components/SearchResponsive.php:234
+msgid "Search Field"
+msgstr "البحث في الحقل"
+
+#: header-footer-grid/Core/Components/MenuIcon.php:536
+#: header-footer-grid/Core/Components/MenuIcon.php:537
+#: header-footer-grid/Core/Components/SearchResponsive.php:129
+#: header-footer-grid/Core/Components/Utility/SearchIconButton.php:143
+#: header-footer-grid/Core/Components/Utility/SearchIconButton.php:170
+msgid "Icon"
+msgstr "الأيقونة"
+
+#: header-footer-grid/Core/Components/SearchResponsive.php:113
+msgid "Float Above Header"
+msgstr "تعويم فوق الترويسة"
+
+#: header-footer-grid/Core/Components/SearchResponsive.php:112
+msgid "Minimal"
+msgstr "الحد الأدنى"
+
+#: header-footer-grid/Core/Components/SearchResponsive.php:111
+msgid "Canvas"
+msgstr "اللوحة"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:1909
+#: header-footer-grid/Core/Components/SearchResponsive.php:107
+msgid "Open Behaviour"
+msgstr "افتح السلوك"
+
+#: inc/core/front_end.php:588
+msgid "Dismiss"
+msgstr "تجاهل"
+
+#: inc/core/front_end.php:578
+msgid "Something went wrong. Please reload the page and try again."
+msgstr "حدث خطأ ما. يرجى إعادة تحميل الصفحة ثم حاول مرة أخرى."
+
+#: inc/admin/dashboard/main.php:594 inc/admin/dashboard/main.php:734
+#: inc/core/admin.php:543 assets/apps/dashboard/build/dashboard.js:2
+msgid "Starter Sites"
+msgstr "المواقع البادئة"
+
+#: globals/utilities.php:441 inc/customizer/options/upsells.php:437
+#: assets/apps/customizer-controls/build/controls.js:5
+msgid "Learn More"
+msgstr "تعلم المزيد"
+
+#: inc/admin/dashboard/main.php:99 inc/admin/dashboard/main.php:458
+#: assets/apps/dashboard/build/dashboard.js:2
+msgid "Upgrade"
+msgstr "ترقية"
+
+#. translators: 1 - Theme Name (Neve), 2 - Plugin Name (Neve Pro)
+#: inc/admin/dashboard/main.php:465
+msgid "We recommend that both %1$s and %2$s are updated to the latest version to ensure optimal intercompatibility."
+msgstr "نوصى بتحديث كل من%1$s و %2$s إلى أحدث إصدار لضمان التوافق التام."
+
+#. translators: s - Pro plugin name (Neve Pro)
+#: inc/admin/dashboard/main.php:434
+msgid "New plugin update for %1$s! Please update to %2$s."
+msgstr "تحديث جديد لإضافة %1$s! يرجى التحديث إلى%2$s."
+
+#: inc/admin/dashboard/main.php:422 inc/admin/dashboard/main.php:443
+msgid "Update Now"
+msgstr "تحديث الآن"
+
+#. translators: s - theme name (Neve).
+#: inc/admin/dashboard/main.php:417
+msgid "New theme update for %1$s! Please update to %2$s."
+msgstr "تحديث جديد لقالب %1$s!  يرجى التحديث إلى%2$s."
+
+#. translators: store name (Themeisle)
+#: inc/admin/dashboard/main.php:349
+msgid "Enter your license from %1$s purchase history in order to get plugin updates"
+msgstr "أدخل ترخيصك من محفوظات شراء %1$s للحصول على تحديثات الإضافة"
+
+#. translators: %s - "Neve Pro Addon"
+#: inc/admin/dashboard/main.php:345
+msgid "Please update %s to the latest version and then refresh this page to have access to the options."
+msgstr "يرجى تحديث %s إلى أحدث إصدار ثم قم بتحديث هذه الصفحة للوصول إلى الخيارات"
+
+#. translators: %s - "Neve Pro Addon"
+#: inc/admin/dashboard/main.php:343
+msgid "%s license"
+msgstr "ترخيص %s"
+
+#. translators: %s - Theme name
+#: inc/admin/dashboard/main.php:174 inc/admin/dashboard/main.php:176
+#: inc/core/front_end.php:573 assets/apps/metabox/build/index.js:2
+msgid "%s Options"
+msgstr "الخيارات %s"
+
+#: inc/admin/dashboard/main.php:1149
+msgid "Neve Pro"
+msgstr "Neve Pro"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:413
+#: header-footer-grid/Core/Components/Search.php:208
+#: header-footer-grid/Core/Components/SearchResponsive.php:377
+#: inc/customizer/options/form_fields.php:193
+#: assets/apps/components/build/components.js:1
+msgid "Border Width"
+msgstr "عرض الإطار"
+
+#: header-footer-grid/Core/Components/Search.php:271
+#: header-footer-grid/Core/Components/SearchResponsive.php:440
+#: inc/customizer/options/form_fields.php:240
+#: inc/customizer/options/layout_blog.php:869
+#: assets/apps/components/build/components.js:1
+msgid "Border Radius"
+msgstr "زوايا الحدود"
+
+#: inc/customizer/options/layout_container.php:68
+msgid "Container width"
+msgstr "عرض الحاوية"
+
+#: header-footer-grid/Core/Components/Logo.php:433
+msgid "Logo max width"
+msgstr "أقصى عرض الشعار"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:368
+msgid "Row height"
+msgstr "ارتفاع الصف"
+
+#: header-footer-grid/Core/Magic_Tags.php:728
+#: header-footer-grid/Core/Magic_Tags.php:752
+msgid "Currency Symbol"
+msgstr "رمز العملة"
+
+#: header-footer-grid/Core/Magic_Tags.php:724
+#: header-footer-grid/Core/Magic_Tags.php:748
+msgid "Currency Name"
+msgstr "اسم العملة"
+
+#: header-footer-grid/Core/Magic_Tags.php:720
+#: header-footer-grid/Core/Magic_Tags.php:744
+msgid "Total"
+msgstr "المجموع"
+
+#: header-footer-grid/Core/Magic_Tags.php:716
+#: header-footer-grid/Core/Magic_Tags.php:740
+msgid "Total + Currency Symbol"
+msgstr "المجموع + رمز العملة"
+
+#: header-footer-grid/Core/Components/Logo.php:468
+msgid "Disable Homepage Link"
+msgstr "تعطيل رابط الصفحة الرئيسية"
+
+#: header-footer-grid/Core/Magic_Tags.php:682
+msgid "User Email"
+msgstr "البريد الإلكتروني للمستخدم"
+
+#: header-footer-grid/Core/Magic_Tags.php:678
+msgid "Display Name"
+msgstr "الاسم المعروض"
+
+#: header-footer-grid/Core/Magic_Tags.php:674
+msgid "User Nice Name"
+msgstr "الاسم اللطيف للمستخدم"
+
+#: header-footer-grid/Core/Magic_Tags.php:671
+msgid "Current User"
+msgstr "المستخدم الحالي"
+
+#: header-footer-grid/Core/Components/Nav.php:363
+#: header-footer-grid/Core/Components/NavFooter.php:159
+#: header-footer-grid/Core/Components/SecondNav.php:243
+msgid "Items Spacing (px)"
+msgstr "تباعد العناصر (بكسل)"
+
+#: header-footer-grid/Core/Components/Nav.php:184
+#: header-footer-grid/Core/Components/Nav.php:281
+#: header-footer-grid/Core/Components/NavFooter.php:68
+#: header-footer-grid/Core/Components/SecondNav.php:102
+#: header-footer-grid/Core/Components/SecondNav.php:199
+msgid "Hover Skin Mode"
+msgstr "وضع نمط الحوم "
+
+#: header-footer-grid/Core/Components/Abstract_Component.php:943
+msgid "Justify"
+msgstr "محاذاة بالتساوي"
+
+#: header-footer-grid/Core/Builder/Header.php:125
+#: header-footer-grid/Core/Builder/Header.php:135
+msgid "Header Presets"
+msgstr "إعدادات جاهزة للترويسة "
+
+#: inc/views/pluggable/pagination.php:273 inc/views/template_parts.php:539
+msgid "Pages:"
+msgstr "الصفحات:"
+
+#: inc/customizer/defaults/utils.php:85
+msgid "edit"
+msgstr "تحرير"
+
+#. translators: %s is edit page link
+#: inc/customizer/defaults/utils.php:81
+msgid "Note: It seems that the shop page has an individual sidebar layout already set. To be able to control the layout from here, %s your page and set the sidebar to \"Inherit\"."
+msgstr "ملاحظة: يبدو أن صفحة المتجر بها شريط جانبي فردي معين بالفعل. لتتمكن من التحكم في التخطيط من هنا ،%s صفحتك وتعيين الشريط الجانبي على \"توريث\"."
+
+#. translators: %s is the header name
+#: header-footer-grid/Core/Customizer.php:277
+msgid "You are customizing the %s Header"
+msgstr "أنت تقوم بتخصيص الترويسة %s "
+
+#: header-footer-grid/Core/Magic_Tags.php:776
+msgid "Checkout URL"
+msgstr "رابط إتمام الطلب"
+
+#: header-footer-grid/Core/Magic_Tags.php:772
+msgid "Cart URL"
+msgstr "رابط السلة"
+
+#: header-footer-grid/Core/Magic_Tags.php:768
+msgid "Product Title"
+msgstr "عنوان المنتج"
+
+#: header-footer-grid/Core/Magic_Tags.php:764
+#: assets/apps/customizer-controls/build/controls.js:1
+msgid "Product Price"
+msgstr "سعر المنتج"
+
+#: header-footer-grid/Core/Magic_Tags.php:761
+msgid "WooCommerce"
+msgstr "ووكومرس"
+
+#: header-footer-grid/Core/Magic_Tags.php:707
+msgid "Current Year"
+msgstr "السنة الحالية"
+
+#: header-footer-grid/Core/Magic_Tags.php:703
+msgid "Home URL"
+msgstr "رابط الرئيسية"
+
+#: header-footer-grid/Core/Magic_Tags.php:695
+msgid "Site Tagline"
+msgstr "سطر وصف الموقع"
+
+#: header-footer-grid/Core/Components/Logo.php:483
+#: header-footer-grid/Core/Magic_Tags.php:691
+msgid "Site Title"
+msgstr "عنوان الموقع"
+
+#: header-footer-grid/Core/Builder/Header.php:256
+#: header-footer-grid/Core/Magic_Tags.php:688
+#: inc/customizer/options/main.php:56 inc/customizer/options/typography.php:93
+msgid "Global"
+msgstr "الشامل"
+
+#: header-footer-grid/Core/Magic_Tags.php:665
+msgid "Author URL"
+msgstr "رابط المؤلف"
+
+#: header-footer-grid/Core/Magic_Tags.php:661
+msgid "Author Name"
+msgstr "اسم المؤلف"
+
+#: header-footer-grid/Core/Magic_Tags.php:657
+msgid "Author Bio"
+msgstr "السيرة الذاتية للمؤلف"
+
+#: header-footer-grid/Core/Magic_Tags.php:648
+msgid "Archive URL"
+msgstr "رابط الأرشيف"
+
+#: header-footer-grid/Core/Magic_Tags.php:644
+msgid "Archive Title"
+msgstr "عنوان الأرشيف"
+
+#: header-footer-grid/Core/Magic_Tags.php:640
+msgid "Archive Description"
+msgstr "وصف الأرشيف"
+
+#: header-footer-grid/Core/Magic_Tags.php:637 inc/compatibility/fse.php:47
+msgid "Archive"
+msgstr "الأرشيف"
+
+#: header-footer-grid/Core/Magic_Tags.php:611
+msgid "Current Single URL"
+msgstr "عنوان الرابط الفردي الحالي"
+
+#: header-footer-grid/Core/Magic_Tags.php:603
+msgid "Current Single Excerpt"
+msgstr "المقتطف الفردي الحالي"
+
+#: header-footer-grid/Core/Magic_Tags.php:599
+msgid "Current Single Title"
+msgstr "العنوان الفردي الحالي"
+
+#: header-footer-grid/Core/Magic_Tags.php:596
+msgid "Single"
+msgstr "الفردي"
+
+#: inc/customizer/options/base_layout_single.php:552
+#: inc/customizer/options/layout_single_post.php:522
+#: assets/apps/customizer-controls/build/7e5613fb2e01e74b5136.js:1
+#: assets/apps/metabox/build/index.js:1
+msgid "Inherit"
+msgstr "توريث"
+
+#: header-footer-grid/Core/Components/Logo.php:383
+msgid "Display"
+msgstr "عرض"
+
+#: header-footer-grid/Core/Components/CartIcon.php:146
+#: header-footer-grid/Core/Components/EddCartIcon.php:63
+#: header-footer-grid/Core/Components/MenuIcon.php:564
+#: header-footer-grid/Core/Components/PaletteSwitch.php:423
+#: header-footer-grid/Core/Components/SearchResponsive.php:148
+msgid "Icon Size"
+msgstr "حجم الأيقونة"
+
+#: header-footer-grid/Core/Components/Search.php:341
+#: header-footer-grid/Core/Components/SearchResponsive.php:510
+#: assets/apps/components/build/components.js:1
+msgid "Text and Border"
+msgstr "النص والإطار"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:546
+#: header-footer-grid/Core/Builder/Header.php:219
+#: assets/apps/components/build/components.js:1
+#: assets/apps/customizer-controls/build/controls.js:1
+msgid "Background"
+msgstr "الخلفية"
+
+#: inc/customizer/options/base_layout_single.php:168
+#: inc/customizer/options/base_layout_single.php:638
+#: assets/apps/components/build/components.js:1
+msgid "Normal"
+msgstr "عادي"
+
+#: header-footer-grid/Core/Components/Utility/SearchIconButton.php:134
+#: header-footer-grid/Core/Components/Utility/SearchIconButton.php:247
+#: inc/customizer/options/buttons.php:195
+msgid "Button Appearance"
+msgstr "مظهر الزر"
+
+#: header-footer-grid/Core/Components/Button.php:181
+#: header-footer-grid/Core/Components/MenuIcon.php:633
+msgid "Appearance"
+msgstr "المظهر"
+
+#: header-footer-grid/Core/Components/MenuIcon.php:466
+msgid "Menu label"
+msgstr "تسمية القائمة"
+
+#: header-footer-grid/Core/Components/CustomHtml.php:148
+msgid "Arbitrary HTML code. It supports also shortcodes."
+msgstr "كود HTML عشوائي. وهو يدعم أيضا أكواد مختصرة."
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:1857
+#: header-footer-grid/Core/Components/Abstract_Component.php:960
+#: inc/customizer/options/upsells.php:354
+msgid "Alignment"
+msgstr "محاذاة"
+
+#: header-footer-grid/templates/rows.php:78
+msgid "Hide"
+msgstr "إخفاء"
+
+#: header-footer-grid/templates/rows.php:77
+msgid "Show"
+msgstr "عرض"
+
+#: header-footer-grid/templates/rows.php:74
+msgid "Mobile menu content"
+msgstr "محتوى القائمة على المحمول"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:246
+#: header-footer-grid/Core/Builder/Footer.php:106
+#: assets/apps/components/build/components.js:1
+#: assets/apps/customizer-controls/build/fe21e704398fee9da3e4.js:5
+msgid "Mobile"
+msgstr "الهاتف المحمول"
+
+#: inc/customizer/options/typography.php:149
+msgid "Body"
+msgstr "الجسم"
+
+#: header-footer-grid/Core/Customizer.php:342
+msgid "Search Components"
+msgstr "مكونات البحث"
+
+#: header-footer-grid/Core/Components/Logo.php:81
+msgid "Display your company logo here or simply use words to describe your business."
+msgstr "اعرض شعار شركتك هنا أو استخدم ببساطة كلمات لوصف عملك."
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:1842
+#: header-footer-grid/Core/Components/Abstract_Component.php:933
+#: inc/customizer/options/base_layout_single.php:623
+#: inc/customizer/options/upsells.php:363
+msgid "Center"
+msgstr "وسط"
+
+#: header-footer-grid/Core/Builder/Footer.php:98
+msgid "Change Footer Color"
+msgstr "تغيير لون تذييل الصفحة"
+
+#: header-footer-grid/Core/Builder/Footer.php:64
+#: header-footer-grid/Core/Builder/Footer.php:172
+msgid "Change Copyright"
+msgstr "تغيير حقوق النشر"
+
+#: header-footer-grid/Core/Builder/Header.php:92
+msgid "Change Menu"
+msgstr "تغيير القائمة"
+
+#: header-footer-grid/Core/Builder/Header.php:88
+msgid "Change Header Color"
+msgstr "تغيير لون الترويسة "
+
+#: header-footer-grid/Core/Builder/Header.php:84
+#: assets/apps/customizer-controls/build/controls.js:5
+msgid "Change Logo"
+msgstr "تغيير الشعار"
+
+#. translators: 1: builder, 2: builder symbol
+#: header-footer-grid/Core/Builder/Footer.php:91
+msgid "Welcome to the %1$s builder! Click the %2$s button to add a new component or follow the Quick Links."
+msgstr "مرحبًا بك في منشئ %1$s! انقر فوق الزر %2$s لإضافة مكون جديد أو اتبع الروابط السريعة."
+
+#: inc/compatibility/pwa.php:63
+msgid "Oops! Something went wrong."
+msgstr "عفواً! حدث خطأ."
+
+#: inc/compatibility/pwa.php:50
+msgid "Oops! It looks like you&#8217;re offline."
+msgstr "عفوا! يبدو أنك غير متصل."
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:245
+#: header-footer-grid/Core/Builder/Footer.php:105
+#: assets/apps/components/build/components.js:1
+#: assets/apps/customizer-controls/build/fe21e704398fee9da3e4.js:5
+msgid "Desktop"
+msgstr "سطح المكتب"
+
+#: inc/admin/dashboard/main.php:696
+msgid "LifterLMS Booster"
+msgstr "LifterLMS Booster"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:484
+msgid "Row Background"
+msgstr "خلفية الصف"
+
+#. translators: %s link to documentation
+#: header-footer-grid/Core/Builder/Footer.php:47
+#: header-footer-grid/Core/Builder/Header.php:64
+msgid "Design your %1$s by dragging, dropping and resizing all the elements in real-time. %2$s."
+msgstr "صمم  %1$s الخاص بك عن طريق سحب وإسقاط وتغيير حجم جميع العناصر في الوقت الحقيقي. %2$s."
+
+#: inc/views/partials/post_meta.php:292
+msgid "by"
+msgstr "بواسطة"
+
+#: inc/customizer/options/layout_blog.php:453
+#: inc/customizer/options/layout_blog.php:554
+#: inc/customizer/options/layout_single_post.php:644
+msgid "Show Author Avatar"
+msgstr "عرض الصورة الرمزية Avatar للكاتب"
+
+#. translators: Module name for the upsell.
+#: inc/admin/dashboard/main.php:671 inc/customizer/options/upsells.php:417
+#: inc/customizer/options/upsells.php:458
+msgid "Scroll To Top"
+msgstr "التمرير إلى الأعلى"
+
+#: inc/admin/dashboard/main.php:632 inc/admin/dashboard/main.php:683
+#: assets/apps/dashboard/build/dashboard.js:2
+msgid "White Label"
+msgstr "البطاقة البيضاء"
+
+#: header-footer-grid/Core/Builder/Footer.php:70
+#: inc/admin/dashboard/main.php:526 inc/admin/dashboard/main.php:1069
+#: inc/customizer/controls/upsell_control.php:95
+#: inc/customizer/options/upsells.php:418
+#: assets/apps/customizer-controls/build/fe21e704398fee9da3e4.js:1
+#: assets/apps/dashboard/build/dashboard.js:2
+msgid "PRO"
+msgstr "PRO"
+
+#: inc/admin/dashboard/main.php:692 inc/core/front_end.php:568
+msgid "Leverage the true flexibility of Elementor with powerful addons and templates that you can import with just one click."
+msgstr "استفد من المرونة الحقيقية لـ Elementor من خلال مكونات إضافية و نماذج قوية يمكنك استيرادها بنقرة واحدة فقط."
+
+#: inc/core/front_end.php:567
+msgid "Easily create custom headers and footers as well as adding your own custom code or content in any of the hooks locations."
+msgstr "يمكنك إنشاء الترويسات والتذييلات المخصصة بسهولة بالإضافة إلى إضافة الاكواد البرمجية المخصصة أو المحتوى في أي من مواقع ال hooks."
+
+#: inc/admin/dashboard/main.php:691 inc/core/front_end.php:565
+msgid "Elementor Booster"
+msgstr "Elementor Booster"
+
+#: inc/core/front_end.php:564
+msgid "Scroll to Top module"
+msgstr "التمرير إلى الوحدة الأعلى"
+
+#: inc/core/front_end.php:563
+msgid "White Label module"
+msgstr "وحدة البطاقة البيضاء"
+
+#: header-footer-grid/Core/Builder/Header.php:557
+#: inc/admin/dashboard/main.php:379 inc/admin/dashboard/main.php:568
+#: inc/admin/dashboard/main.php:687 inc/admin/dashboard/main.php:911
+#: inc/admin/hooks_upsells.php:221 inc/admin/hooks_upsells.php:222
+#: inc/core/front_end.php:562
+msgid "Custom Layouts"
+msgstr "تخطيطات مخصصة"
+
+#: inc/admin/dashboard/main.php:652 inc/core/front_end.php:561
+msgid "WooCommerce Booster"
+msgstr "Booster ووكومرس  "
+
+#: inc/admin/dashboard/main.php:663 inc/core/front_end.php:560
+msgid "Blog Booster"
+msgstr "Booster المدونة"
+
+#: inc/admin/dashboard/main.php:648 inc/core/front_end.php:559
+msgid "Header Booster"
+msgstr "Booster الترويسة"
+
+#: header-footer-grid/Core/Components/CartIcon.php:208
+#: header-footer-grid/Core/Components/EddCartIcon.php:114
+#: header-footer-grid/Core/Components/SearchResponsive.php:208
+msgid "Hover Color"
+msgstr "لون التحويم"
+
+#: header-footer-grid/Core/Components/CartIcon.php:177
+#: header-footer-grid/Core/Components/EddCartIcon.php:94
+#: header-footer-grid/Core/Components/Nav.php:281
+#: header-footer-grid/Core/Components/SearchResponsive.php:183
+#: header-footer-grid/Core/Components/SecondNav.php:199
+#: inc/customizer/options/base_layout_single.php:646
+#: inc/customizer/options/form_fields.php:357
+#: assets/apps/components/build/components.js:1
+#: assets/apps/customizer-controls/build/controls.js:5
+msgid "Color"
+msgstr "اللون"
+
+#: inc/customizer/options/base_layout_single.php:381
+msgid "Cover text color"
+msgstr "لون نص الغلاف"
+
+#: header-footer-grid/Core/Components/Search.php:310
+#: header-footer-grid/Core/Components/SearchResponsive.php:479
+msgid "Background Color"
+msgstr "لون الخلفية"
+
+#: inc/customizer/options/form_fields.php:593
+#: inc/customizer/options/layout_single_post.php:803
+msgid "Secondary"
+msgstr "الثانوي"
+
+#: inc/customizer/options/form_fields.php:592
+#: inc/customizer/options/layout_single_post.php:802
+msgid "Primary"
+msgstr "الأساسي"
+
+#: inc/customizer/options/buttons.php:44
+msgid "Buttons"
+msgstr "الأزرار"
+
+#: header-footer-grid/Core/Settings/Manager.php:210
+#: inc/customizer/options/upsells.php:304
+#: assets/apps/components/build/components.js:1
+msgid "Style"
+msgstr "النمط"
+
+#: header-footer-grid/Core/Components/SecondNav.php:231
+msgid "Select Menu"
+msgstr "تحديد القائمة"
+
+#: header-footer-grid/Core/Components/Abstract_Component.php:545
+#: header-footer-grid/Core/Components/MenuIcon.php:512
+msgid "Margin"
+msgstr "الهامش الخارجي"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:1838
+#: header-footer-grid/Core/Components/Abstract_Component.php:929
+#: inc/customizer/defaults/utils.php:32
+#: inc/customizer/options/base_layout_single.php:619
+#: inc/customizer/options/upsells.php:359
+#: inc/customizer/options/upsells.php:373
+#: assets/apps/components/build/components.js:1
+#: assets/apps/customizer-controls/build/controls.js:5
+#: assets/apps/metabox/build/index.js:1
+msgid "Left"
+msgstr "اليسار"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:2042
+#: inc/customizer/options/base_layout_single.php:322
+#: inc/customizer/options/upsells.php:205
+#: assets/apps/components/build/components.js:1
+#: assets/apps/customizer-controls/build/controls.js:5
+msgid "Bottom"
+msgstr "الأسفل"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:1846
+#: header-footer-grid/Core/Components/Abstract_Component.php:937
+#: inc/customizer/defaults/utils.php:36
+#: inc/customizer/options/base_layout_single.php:627
+#: inc/customizer/options/upsells.php:368
+#: inc/customizer/options/upsells.php:373
+#: assets/apps/components/build/components.js:1
+#: assets/apps/customizer-controls/build/controls.js:5
+#: assets/apps/metabox/build/index.js:1
+msgid "Right"
+msgstr "اليمين"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:2034
+#: inc/customizer/options/base_layout_single.php:314
+#: assets/apps/components/build/components.js:1
+#: assets/apps/customizer-controls/build/controls.js:5
+msgid "Top"
+msgstr "الأعلى"
+
+#: header-footer-grid/Core/Components/Abstract_Component.php:515
+#: inc/customizer/options/buttons.php:77
+msgid "Padding"
+msgstr "الهوامش الداخلية"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:1914
+msgid "Slide from Left"
+msgstr "إنزلاق من اليسار"
+
+#: inc/customizer/options/layout_single_product.php:125
+msgid "All"
+msgstr "الكل"
+
+#: inc/admin/hooks_upsells.php:507 inc/admin/hooks_upsells.php:528
+#: inc/customizer/options/layout_single_product.php:92
+#: assets/apps/customizer-controls/build/controls.js:1
+#: assets/apps/metabox/build/index.js:1
+msgid "Title"
+msgstr "العنوان"
+
+#: inc/customizer/options/layout_single_product.php:71
+msgid "Exclusive Products"
+msgstr "منتجات حصرية"
+
+#: inc/compatibility/lifter.php:341
+msgid "Catalog Sidebar"
+msgstr "الشريط الجانبي للكتالوج"
+
+#: header-footer-grid/Core/Builder/Footer.php:284
+#: header-footer-grid/Core/Builder/Footer.php:296
+msgid "Footer Bottom"
+msgstr "الجزء الأسفل من التذييل"
+
+#: header-footer-grid/Core/Builder/Footer.php:276
+#: header-footer-grid/Core/Builder/Footer.php:292
+msgid "Footer Top"
+msgstr "الجزء العلوي من التذييل"
+
+#: header-footer-grid/Core/Builder/Header.php:482
+msgid "Header Bottom"
+msgstr "الجزء السفلي من الترويسة"
+
+#: header-footer-grid/Core/Builder/Header.php:478
+msgid "Header Main"
+msgstr "الجزء الرئيسي من الترويسة"
+
+#: header-footer-grid/Core/Builder/Header.php:474
+msgid "Header Top"
+msgstr "الجزء العلوي من الترويسة"
+
+#. translators: %s - customizer link
+#: header-footer-grid/templates/components/component-footer-sidebar.php:31
+msgid "Replace this widget content by going to %s and add widgets into this widget area."
+msgstr "استبدل محتوى الودجت هذه بالانتقال إلى %s وإضافة الودجات إلى مساحة الودجت هذه."
+
+#: header-footer-grid/Core/Components/Nav.php:330
+msgid "Last Menu Item"
+msgstr "عنصر القائمة الأخير"
+
+#: header-footer-grid/Core/Components/Nav.php:228
+#: header-footer-grid/Core/Components/SecondNav.php:146
+msgid "Active Item Color"
+msgstr "عنصر اللون المفعل"
+
+#: header-footer-grid/Core/Components/SearchResponsive.php:42
+msgid "Search Icon"
+msgstr "أيقونة البحث"
+
+#: header-footer-grid/Core/Components/Search.php:66
+#: header-footer-grid/Core/Components/SearchResponsive.php:92
+msgid "Placeholder"
+msgstr "عنصر نائب Placeholder"
+
+#: header-footer-grid/Core/Components/Search.php:65
+#: header-footer-grid/Core/Components/Search.php:452
+#: header-footer-grid/Core/Components/SearchResponsive.php:91
+#: header-footer-grid/Core/Components/SearchResponsive.php:633
+#: searchform.php:10 searchform.php:37
+msgid "Search for..."
+msgstr "البحث عن..."
+
+#: header-footer-grid/Core/Components/Search.php:42
+msgid "Search Form"
+msgstr "استمارة البحث"
+
+#: header-footer-grid/Core/Components/Nav.php:253
+#: header-footer-grid/Core/Components/NavFooter.php:112
+#: header-footer-grid/Core/Components/SecondNav.php:167
+msgid "Items Hover Color"
+msgstr "لون المرور فوق العناصر "
+
+#: header-footer-grid/Core/Components/Nav.php:203
+#: header-footer-grid/Core/Components/NavFooter.php:86
+#: header-footer-grid/Core/Components/SecondNav.php:120
+msgid "Items Color"
+msgstr "لون العناصر "
+
+#: header-footer-grid/Core/Components/SecondNav.php:42
+#: header-footer-grid/Core/Components/SecondNav.php:225
+#: header-footer-grid/templates/components/component-nav-secondary.php:27
+#: inc/core/front_end.php:79
+msgid "Secondary Menu"
+msgstr "القائمة الثانوية"
+
+#: header-footer-grid/Core/Components/CartIcon.php:45
+msgid "Cart Icon"
+msgstr "أيقونة السلة"
+
+#: header-footer-grid/Core/Components/Button.php:135
+msgid "Link"
+msgstr "الرابط"
+
+#: header-footer-grid/Core/Components/Button.php:81
+#: header-footer-grid/Core/Components/Button.php:150
+#: header-footer-grid/Core/Components/Utility/SearchIconButton.php:143
+#: header-footer-grid/Core/Components/Utility/SearchIconButton.php:147
+#: inc/customizer/options/form_fields.php:567
+#: assets/apps/components/build/components.js:1
+msgid "Button"
+msgstr "الزر"
+
+#: header-footer-grid/Core/Components/Logo.php:403
+msgid "Show Site Tagline"
+msgstr "إظهار سطر وصف الموقع"
+
+#: header-footer-grid/Core/Components/Logo.php:418
+msgid "Show Site Title"
+msgstr "إظهار عنوان الموقع"
+
+#: header-footer-grid/Core/Components/Logo.php:80
+msgid "Logo & Site Identity"
+msgstr "شعار وهوية الموقع"
+
+#: header-footer-grid/Core/Components/MenuIcon.php:113
+msgid "Menu Icon"
+msgstr "أيقونة القائمة"
+
+#: header-footer-grid/Core/Builder/Header.php:553
+#: header-footer-grid/Core/Components/CustomHtml.php:35
+#: header-footer-grid/Core/Components/CustomHtml.php:147
+msgid "HTML"
+msgstr "HTML"
+
+#: globals/utilities.php:486
+#: inc/compatibility/starter-content/theme-mods.php:521
+msgid "Dark Mode"
+msgstr "الوضع الداكن"
+
+#: inc/views/pluggable/pagination.php:295
+msgid "next"
+msgstr "التالي"
+
+#: inc/views/pluggable/pagination.php:290
+msgid "previous"
+msgstr "السابق"
+
+#: inc/customizer/options/layout_single_post.php:388
+msgid "Post navigation"
+msgstr "تصفّح المقالات"
+
+#. translators: %s - post type
+#: inc/admin/metabox/manager.php:131 inc/admin/metabox/manager.php:148
+msgid "%s Settings"
+msgstr "%s  الإعدادات"
+
+#. translators: %s: number of comments
+#: inc/views/partials/post_meta.php:402
+msgid "%s Comment"
+msgid_plural "%s Comments"
+msgstr[0] "%s تعليق"
+msgstr[1] "%s تعليق"
+msgstr[2] "%s تعليقين"
+msgstr[3] "%s تعليقات"
+msgstr[4] "%s تعليقات"
+msgstr[5] "%s تعليقات"
+
+#: functions.php:40
+msgid "upgrading PHP to the latest version"
+msgstr "ترقية PHP إلى أحدث نسخة"
+
+#. Template Name of the theme
+msgid "Page Builder Full Width (Neve)"
+msgstr "مُنشئ الصفحة كامل العرض نيفي (Neve)"
+
+#. Theme Name of the theme
+#. translators: Theme Name
+#: style.css inc/admin/dashboard/main.php:1068
+#: inc/admin/dashboard/main.php:1140 inc/admin/troubleshoot/main.php:38
+#: inc/admin/troubleshoot/main.php:79 inc/admin/troubleshoot/main.php:93
+#: inc/admin/troubleshoot/main.php:96 inc/admin/troubleshoot/main.php:102
+#: inc/admin/troubleshoot/main.php:115 inc/customizer/options/main.php:117
+#: assets/apps/metabox/build/index.js:2
+msgid "Neve"
+msgstr "نيفي (Neve)"
+
+#: inc/core/front_end.php:569 inc/customizer/options/upsells.php:459
+msgid "Get the PRO version!"
+msgstr "احصل على النسخة PRO!"
+
+#: inc/views/content_404.php:37
+msgid "It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps searching can help."
+msgstr "يبدو أننا لا نستطيع العثور على ما تبحث عنه. ربما قد يساعدك البحث."
+
+#: inc/views/content_none.php:79
+msgid "Sorry, but nothing matched your search terms. Please try again with some different keywords."
+msgstr "عذرًا، لا يوجد شيء يتطابق مع كلمات البحث التي استعملتها، الرجاء المحاولة من جديد باستعمال كلمات مفتاحية أخرى."
+
+#: inc/views/content_none.php:61
+msgid "Get started here"
+msgstr "ابدأ هنا"
+
+#. translators: %s is Link to new post
+#: inc/views/content_none.php:56
+msgid "Ready to publish your first post? %s."
+msgstr "هل أنت جاهز لنشر مقالتك الأولى؟ %s."
+
+#: inc/views/template_parts.php:470
+msgid "Read More"
+msgstr "اقرأ المزيد"
+
+#: inc/customizer/options/layout_single_post.php:384
+#: inc/customizer/options/upsells.php:282 inc/views/partials/post_meta.php:416
+#: assets/apps/metabox/build/index.js:1
+msgid "Tags"
+msgstr "الوسوم"
+
+#. translators: number of comments
+#: inc/views/partials/comments.php:280
+msgctxt "comments title"
+msgid "%1$s thought on &ldquo;%2$s&rdquo;"
+msgid_plural "%1$s thoughts on &ldquo;%2$s&rdquo;"
+msgstr[0] "%1$s فكرة بشأن &ldquo;%2$s&rdquo;"
+msgstr[1] "%1$s أفكار بشأن &ldquo;%2$s&rdquo;"
+msgstr[2] "%1$s فكرتين بشأن &ldquo;%2$s&rdquo;"
+msgstr[3] "%1$s أفكار بشأن &ldquo;%2$s&rdquo;"
+msgstr[4] "%1$s أفكار بشأن &ldquo;%2$s&rdquo;"
+msgstr[5] "%1$s أفكار بشأن &ldquo;%2$s&rdquo;"
+
+#: inc/views/partials/comments.php:219
+msgid "Comment awaiting moderation."
+msgstr "التعليق في انتظار الإشراف."
+
+#: inc/views/partials/comments.php:252
+msgid "Reply"
+msgstr "الرد"
+
+#. translators: 1: date, 2: time
+#: inc/views/partials/comments.php:206
+msgid "%1$s at %2$s"
+msgstr "%1$s الساعة %2$s"
+
+#: inc/views/partials/comments.php:181 inc/views/partials/comments.php:246
+#: assets/apps/components/build/components.js:1
+msgid "Edit"
+msgstr "تحرير"
+
+#: inc/views/partials/comments.php:179
+msgid "Pingback:"
+msgstr "تنبيه Pingback:"
+
+#: inc/views/partials/comments.php:142
+msgid "Next"
+msgstr "التالي"
+
+#: inc/views/partials/comments.php:139
+msgid "Previous"
+msgstr "السابق"
+
+#: inc/views/partials/comments.php:134
+msgid "Comments Navigation"
+msgstr "تنقل التعليقات"
+
+#: inc/views/partials/comments.php:87
+msgid "Comments are closed."
+msgstr "التعليقات مغلقة."
+
+#. translators: search result
+#: inc/views/page_header.php:85
+msgid "Search Results for: %s"
+msgstr "نتائج البحث عن: %s"
+
+#: header-footer-grid/templates/components/component-menu-icon.php:31
+#: header-footer-grid/templates/components/component-menu-icon.php:35
+#: header-footer-grid/templates/components/component-menu-icon.php:66
+#: header-footer-grid/templates/row-wrapper-mobile.php:45
+#: header-footer-grid/templates/row-wrapper-mobile.php:46
+#: header-footer-grid/templates/row-wrapper-mobile.php:75
+msgid "Navigation Menu"
+msgstr "قائمة التنقل"
+
+#: header-footer-grid/Core/Customizer.php:297
+#: header-footer-grid/templates/components/component-cart-icon.php:27
+#: header-footer-grid/templates/components/component-search-responsive.php:47
+#: inc/admin/hooks_upsells.php:410 inc/views/header.php:141
+#: inc/views/layouts/layout_sidebar.php:189
+msgid "Close"
+msgstr "إغلاق"
+
+#: header-footer-grid/Core/Components/Logo.php:483
+#: header-footer-grid/Core/Components/Search.php:130
+#: header-footer-grid/Core/Components/SearchResponsive.php:301
+#: assets/apps/customizer-controls/build/controls.js:1
+msgid "Font Size"
+msgstr "حجم الخط"
+
+#: inc/customizer/options/typography.php:105
+msgid "Headings"
+msgstr "العناوين"
+
+#: header-footer-grid/Core/Builder/Header.php:195
+#: header-footer-grid/Core/Settings/Manager.php:202
+#: inc/customizer/options/buttons.php:57
+#: inc/customizer/options/checkout.php:105
+#: inc/customizer/options/layout_blog.php:168
+#: inc/customizer/options/layout_single_post.php:140
+#: inc/customizer/options/typography.php:101
+#: assets/apps/dashboard/build/dashboard.js:2
+msgid "General"
+msgstr "عام"
+
+#: header-footer-grid/Core/Components/Abstract_Component.php:791
+#: inc/customizer/options/main.php:64 inc/customizer/options/typography.php:439
+#: inc/customizer/options/typography.php:461
+msgid "Typography"
+msgstr "أنواع الخطوط"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:679
+#: header-footer-grid/Core/Builder/Header.php:57 inc/compatibility/fse.php:413
+msgid "Header"
+msgstr "الترويسة"
+
+#: inc/customizer/options/layout_single_post.php:454
+msgid "Elements Order"
+msgstr "ترتيب العناصر"
+
+#: inc/customizer/options/layout_blog.php:220
+#: inc/customizer/options/layout_sidebar.php:233
+#: inc/customizer/options/layout_single_post.php:193
+msgid "Content Width (%)"
+msgstr "عرض المحتوى (%)"
+
+#: inc/customizer/options/layout_blog.php:199
+#: inc/customizer/options/layout_sidebar.php:209
+#: inc/customizer/options/layout_single_post.php:172
+msgid "Sidebar Layout"
+msgstr "تخطيط الشريط الجانبي"
+
+#: inc/customizer/options/layout_sidebar.php:48
+#: inc/customizer/options/layout_single_product.php:52
+msgid "Single Product"
+msgstr "منتج واحد"
+
+#: inc/customizer/options/layout_sidebar.php:47
+msgid "Shop / Archive"
+msgstr "المتجر / الأرشيف"
+
+#: inc/compatibility/fse.php:51
+#: inc/customizer/options/base_layout_single.php:83
+msgid "Single Post"
+msgstr "مقالة منفردة"
+
+#: header-footer-grid/Core/Builder/Header.php:238
+#: inc/customizer/options/layout_sidebar.php:136
+msgid "Enable Advanced Options"
+msgstr "تفعيل الخيارات المتقدمة"
+
+#: inc/customizer/options/layout_sidebar.php:112
+msgid "Sitewide Content Width (%)"
+msgstr "عرض المحتوى على مستوى الموقع (%)"
+
+#: inc/customizer/options/layout_sidebar.php:93
+msgid "Sitewide Sidebar Layout"
+msgstr "تخطيط الشريط الجانبي على مستوى الموقع"
+
+#: globals/utilities.php:233 header-footer-grid/Core/Components/Nav.php:304
+#: header-footer-grid/Core/Components/Utility/SearchIconButton.php:95
+#: inc/compatibility/fse.php:49 searchform.php:19 searchform.php:41
+#: assets/apps/customizer-controls/build/7e5613fb2e01e74b5136.js:1
+#: assets/apps/customizer-controls/build/c8e135098e958bb39090.js:1
+#: assets/apps/customizer-controls/build/controls.js:5
+msgid "Search"
+msgstr "البحث"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:763
+msgid "Section Content"
+msgstr "محتوى القسم"
+
+#. translators: %1$s is Theme Name ( Neve ), %2$s is WordPress
+#: header-footer-grid/Core/Builder/Footer.php:336
+msgid "%1$s | Powered by %2$s"
+msgstr "%1$s | مشغل بواسطة %2$s"
+
+#: header-footer-grid/Core/Builder/Footer.php:189
+#: header-footer-grid/Core/Components/Button.php:151
+#: header-footer-grid/Core/Components/Utility/SearchIconButton.php:147
+#: header-footer-grid/Core/Components/Utility/SearchIconButton.php:229
+#: assets/apps/components/build/components.js:1
+msgid "Text"
+msgstr "النص"
+
+#: inc/customizer/options/layout_single_product.php:124
+#: inc/customizer/options/upsells.php:201
+#: assets/apps/customizer-controls/build/controls.js:1
+#: assets/apps/metabox/build/index.js:1
+msgid "None"
+msgstr "لا شيء"
+
+#: inc/customizer/options/layout_single_post.php:380
+#: inc/customizer/options/upsells.php:332 assets/apps/metabox/build/index.js:1
+msgid "Content"
+msgstr "المحتوى"
+
+#: header-footer-grid/Core/Builder/Footer.php:39 inc/compatibility/fse.php:436
+msgid "Footer"
+msgstr "التذييل"
+
+#: inc/customizer/options/layout_container.php:168
+msgid "Single Product Container Style"
+msgstr "نمط الحاوية لمنتج واحد"
+
+#: inc/customizer/options/layout_container.php:164
+msgid "Shop / Archive Container Style"
+msgstr "نمط الحاوية للمتجر / الأرشيف"
+
+#: inc/customizer/options/layout_container.php:154
+msgid "Single Post Container Style"
+msgstr "نمط الحاوية لمقالة واحدة"
+
+#: inc/customizer/options/layout_container.php:150
+msgid "Blog / Archive Container Style"
+msgstr "نمط الحاوية للمدونة / الأرشيف"
+
+#: inc/customizer/options/layout_container.php:146
+msgid "Default Container Style"
+msgstr "نمط الحاوية الافتراضي"
+
+#: inc/customizer/options/layout_single_post.php:601
+msgid "Meta Order"
+msgstr "ترتيب التعريف"
+
+#: globals/utilities.php:714
+#: inc/compatibility/starter-content/theme-mods.php:802
+#: inc/customizer/options/layout_blog.php:668
+#: inc/customizer/options/layout_single_post.php:392
+#: inc/customizer/options/layout_single_post.php:587
+#: inc/views/partials/post_meta.php:237 assets/apps/metabox/build/index.js:1
+msgid "Comments"
+msgstr "التعليقات"
+
+#: globals/utilities.php:713 inc/admin/hooks_upsells.php:511
+#: inc/admin/hooks_upsells.php:532
+#: inc/compatibility/starter-content/theme-mods.php:802
+#: inc/customizer/options/layout_blog.php:667
+#: inc/customizer/options/layout_single_post.php:586
+#: inc/views/partials/post_meta.php:236
+msgid "Date"
+msgstr "التاريخ"
+
+#: globals/utilities.php:712
+#: inc/compatibility/starter-content/theme-mods.php:802
+#: inc/customizer/options/layout_blog.php:666
+#: inc/customizer/options/layout_single_post.php:585
+#: inc/customizer/options/layout_single_product.php:107
+#: inc/customizer/options/upsells.php:228 inc/views/partials/post_meta.php:235
+msgid "Category"
+msgstr "التصنيف"
+
+#: globals/utilities.php:711 header-footer-grid/Core/Magic_Tags.php:654
+#: inc/compatibility/starter-content/theme-mods.php:802
+#: inc/customizer/options/layout_blog.php:665
+#: inc/customizer/options/layout_single_post.php:584
+#: inc/views/partials/post_meta.php:234
+msgid "Author"
+msgstr "المؤلف"
+
+#: inc/customizer/options/layout_blog.php:487
+msgid "Post Content Order"
+msgstr "ترتيب محتوى المقالة"
+
+#: inc/customizer/options/layout_blog.php:463
+msgid "Excerpt"
+msgstr "المقتطف"
+
+#: inc/customizer/options/layout_blog.php:441
+#: inc/customizer/options/layout_single_post.php:309
+msgid "Title & Meta"
+msgstr "العنوان و التعريف"
+
+#: inc/customizer/options/layout_blog.php:431
+#: inc/customizer/options/layout_single_post.php:346
+msgid "Thumbnail"
+msgstr "الصورة المصغرة"
+
+#: inc/customizer/options/layout_blog.php:466
+msgid "Excerpt Length"
+msgstr "طول المقتطف"
+
+#: inc/customizer/options/layout_blog.php:353
+msgid "Enable Masonry"
+msgstr "تفعيل تخطيط البناء الحجري"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:345
+#: header-footer-grid/Core/Settings/Manager.php:206
+#: inc/customizer/options/upsells.php:144
+#: inc/customizer/options/upsells.php:167
+#: inc/customizer/options/upsells.php:250 assets/apps/metabox/build/index.js:1
+msgid "Layout"
+msgstr "التخطيط"
+
+#: inc/compatibility/fse.php:45 inc/customizer/options/main.php:60
+#: inc/customizer/options/typography.php:109
+msgid "Blog"
+msgstr "المدونة"
+
+#: inc/customizer/options/layout_blog.php:152
+msgid "Blog / Archive"
+msgstr "المدونة / الأرشيف"
+
+#: inc/customizer/options/colors_background.php:46
+msgid "Colors & Background"
+msgstr "الألوان و الخلفية"
+
+#. translators: %s is the header name
+#: header-footer-grid/Core/Components/MenuIcon.php:543
+#: header-footer-grid/Core/Customizer.php:277
+#: assets/apps/customizer-controls/build/7e5613fb2e01e74b5136.js:1
+#: assets/apps/metabox/build/index.js:1
+msgid "Default"
+msgstr "افتراضي"
+
+#: header-footer-grid/Core/Components/FooterWidgetFour.php:32
+#: inc/core/front_end.php:527
+msgid "Footer Four"
+msgstr "التذييل أربعة"
+
+#: header-footer-grid/Core/Components/FooterWidgetThree.php:31
+#: inc/core/front_end.php:526
+msgid "Footer Three"
+msgstr "التذييل ثلاثة"
+
+#: header-footer-grid/Core/Components/FooterWidgetTwo.php:32
+#: inc/core/front_end.php:525
+msgid "Footer Two"
+msgstr "التذييل إثنان"
+
+#: header-footer-grid/Core/Components/FooterWidgetOne.php:31
+#: inc/core/front_end.php:524
+msgid "Footer One"
+msgstr "التذييل واحد"
+
+#: inc/core/front_end.php:518
+msgid "Shop Sidebar"
+msgstr "الشريط الجانبي للمتجر"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:517
+#: header-footer-grid/Core/Components/CustomHtml.php:171
+#: header-footer-grid/Core/Components/Logo.php:526
+#: inc/compatibility/elementor.php:198 inc/core/front_end.php:122
+#: inc/customizer/options/layout_blog.php:841
+#: inc/customizer/options/layout_blog.php:985
+#: assets/apps/components/build/components.js:1
+msgid "Text Color"
+msgstr "لون النص"
+
+#. translators: %s - Theme name
+#: inc/admin/dashboard/main.php:333
+msgid "With %s, you can choose from multiple unique demos, specially designed for you, that can be installed with a single click. You just need to choose your favorite, and we will take care of everything else."
+msgstr "مع  %s، يمكنك الاختيار من بين العديد من العروض التوضيحية الفريدة المصممة خصيصًا لك، والتي يمكن تنصيبها بنقرة واحدة. أنت فقط بحاجة إلى اختيار التصميم الذي تفضله، وسنتولى العناية بكل شيء آخر."
+
+#: header-footer-grid/Core/Components/NavFooter.php:41
+#: header-footer-grid/Core/Components/NavFooter.php:146
+#: header-footer-grid/templates/components/component-nav-footer.php:25
+#: inc/core/front_end.php:78
+msgid "Footer Menu"
+msgstr "قائمة التذييل"
+
+#: header-footer-grid/Core/Components/Nav.php:45
+#: header-footer-grid/Core/Components/Nav.php:348
+#: header-footer-grid/templates/components/component-nav.php:31
+#: inc/core/front_end.php:77
+msgid "Primary Menu"
+msgstr "القائمة الأساسية"
+
+#: inc/admin/dashboard/main.php:530
+#: inc/customizer/options/layout_sidebar.php:74
+msgid "Content / Sidebar"
+msgstr "المحتوى / الشريط الجانبي"
+
+#: inc/admin/dashboard/main.php:525
+msgid "Footer Options"
+msgstr "خيارات التذييل"
+
+#: inc/admin/dashboard/main.php:520
+msgid "Blog Layouts"
+msgstr "تخطيطات المدونة"
+
+#: inc/admin/dashboard/main.php:515
+msgid "Header Options"
+msgstr "خيارات الترويسة"
+
+#: inc/admin/dashboard/main.php:510
+msgid "Layout Options"
+msgstr "خيارات التخطيط"
+
+#: inc/admin/dashboard/main.php:505
+msgid "Customize Fonts"
+msgstr "تخصيص الخطوط"
+
+#: inc/admin/dashboard/main.php:500
+msgid "Set Colors"
+msgstr "تعيين الألوان"
+
+#: inc/admin/dashboard/main.php:495
+#: assets/apps/customizer-controls/build/controls.js:5
+msgid "Upload Logo"
+msgstr "رفع الشعار"
+
+#: inc/admin/dashboard/main.php:1082 assets/apps/dashboard/build/dashboard.js:2
+msgid "Changelog"
+msgstr "سجلّ التغييرات"
+
+#: header-footer-grid/Core/Builder/Footer.php:54
+#: header-footer-grid/Core/Builder/Header.php:71
+msgid "Read full documentation"
+msgstr "اقرأ الوثائق كاملة"
+
+#. translators: %s - Theme name
+#: inc/admin/dashboard/main.php:341
+msgid "Need more details? Please check our full documentation for detailed information on how to use %s."
+msgstr "بحاجة الى تفاصيل أكثر؟ يُرجى مراجعة وثائق المساعدة الكاملة للحصول على معلومات مفصلة حول كيفية استخدام %s."
+
+#. translators: %s - Theme name
+#: inc/admin/dashboard/main.php:339
+msgid "We want to make sure you have the best experience using %1$s, and that is why we have gathered all the necessary information here for you. We hope you will enjoy using %1$s as much as we enjoy creating great products."
+msgstr "نريد أن نتأكد من حصولك على أفضل تجربة عندما تستخدم %1$s، لهذا السبب جمعنا لك كل المعلومات الضرورية هنا. نحن نتمنى أن تستمتع باستخدام %1$s بقدر ما نتمتع نحن بإنشاء منتجات رائعة."
+
+#: inc/admin/dashboard/main.php:1077
+#: assets/apps/customizer-controls/build/controls.js:5
+#: assets/apps/dashboard/build/dashboard.js:2
+msgid "Documentation"
+msgstr "الوثائق"
+
+#. translators: %s - Theme name
+#: inc/admin/dashboard/main.php:330
+msgid "%s now comes with a sites library with various designs to pick from. Visit our collection of demos that are constantly being added."
+msgstr "الآن يأتي %s مع مكتبة المواقع ذات تصميمات مختلفة للاختيار من بينها. قم بزيارة مجموعتنا من العروض التوضيحية التي يتم إضافتها باستمرار."
+
+#: header-footer-grid/Core/Components/Nav.php:309
+#: header-footer-grid/Core/Magic_Tags.php:713
+#: header-footer-grid/templates/components/component-cart-icon.php:51
+#: header-footer-grid/templates/components/component-edd-cart-icon.php:32
+#: inc/views/header.php:180
+msgid "Cart"
+msgstr "السلة "
+
+#: inc/core/front_end.php:571
+msgid "Filter"
+msgstr "تصفية "
+
+#: inc/admin/metabox/main.php:61 inc/core/front_end.php:517
+#: assets/apps/metabox/build/index.js:1
+msgid "Sidebar"
+msgstr "الشريط الجانبي"
+
+#: inc/admin/metabox/main.php:59
+msgid "No Sidebar"
+msgstr "بدون الشريط الجانبي"
+
+#: inc/admin/metabox/main.php:58
+msgid "Right Sidebar"
+msgstr "الشريط الجانبي الأيمن"
+
+#: inc/admin/metabox/main.php:57
+msgid "Left Sidebar"
+msgstr "الشريط الجانبي (يسار)"
+
+#: inc/admin/metabox/main.php:43 inc/customizer/options/layout_container.php:48
+#: assets/apps/metabox/build/index.js:1
+msgid "Container"
+msgstr "حاوية"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:350
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:351
+#: inc/admin/metabox/main.php:41 inc/customizer/defaults/utils.php:28
+#: inc/customizer/options/layout_container.php:199
+#: assets/apps/metabox/build/index.js:1
+msgid "Full Width"
+msgstr "كامل العرض"
+
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:350
+#: header-footer-grid/Core/Builder/Abstract_Builder.php:352
+#: inc/admin/metabox/main.php:40
+#: inc/customizer/options/base_layout_single.php:659
+#: inc/customizer/options/layout_container.php:198
+#: assets/apps/metabox/build/index.js:1
+msgid "Contained"
+msgstr "محتواة"
+
+#: inc/admin/metabox/main.php:39 inc/admin/metabox/main.php:56
+msgid "Customizer Setting"
+msgstr "إعداد المخصص"
+
+#: inc/admin/metabox/main.php:93 assets/apps/metabox/build/index.js:1
+msgid "Disable Footer"
+msgstr "تعطيل التذييل"
+
+#: inc/admin/metabox/main.php:87
+msgid "Disable Featured Image"
+msgstr "تعطيل الصورة المميزة"
+
+#: inc/admin/metabox/main.php:81 inc/customizer/options/layout_blog.php:330
+#: inc/customizer/options/layout_single_page.php:48
+#: assets/apps/metabox/build/index.js:1
+msgid "Disable Title"
+msgstr "تعطيل العنوان"
+
+#: inc/admin/metabox/main.php:76 assets/apps/metabox/build/index.js:1
+msgid "Disable Header"
+msgstr "تعطيل الترويسة"
+
+#: inc/admin/metabox/main.php:75
+#: assets/apps/customizer-controls/build/fe21e704398fee9da3e4.js:1
+msgid "Components"
+msgstr "المكونات"
+
+#: inc/admin/metabox/main.php:137
+msgid "Enable Individual Content Width"
+msgstr "فعّل عرض المحتوى الفردي"
+
+#: inc/admin/metabox/main.php:136
+msgid "Content Width"
+msgstr "عرض المحتوى"
+
+#: header.php:80 inc/compatibility/fse.php:191
+msgid "Skip to content"
+msgstr "تخطى إلى المحتوى"
+
+#. translators: %s message to upgrade PHP to the latest version
+#: functions.php:36
+msgid "Hey, we've noticed that you're running an outdated version of PHP which is no longer supported. Make sure your site is fast and secure, by %1$s. Neve's minimal requirement is PHP%2$s."
+msgstr "مرحبًا، لاحظنا أنك تستخدم نسخة قديمة من بي إتش بي (PHP) وهي لم  تعد مدعومة. تأكد من أن موقعك سريع وآمن بحلول %1$s. الحد الأدنى لمتطلبات Neve هو بي إتش بي (PHP) %2$s."
+
+#. Author URI of the theme
+#: style.css
+#, gp-priority: low
+msgid "https://themeisle.com"
+msgstr "https://themeisle.com"
+
+#. Author of the theme
+#: style.css
+#, gp-priority: low
+msgid "ThemeIsle"
+msgstr "قالب الجزيرة (ThemeIsle)"
+
+#. Theme URI of the theme
+#: style.css
+#, gp-priority: low
+msgid "https://themeisle.com/themes/neve/"
+msgstr "https://themeisle.com/themes/neve/"

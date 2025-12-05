@@ -1,0 +1,35 @@
+User-agent: *
+Disallow: /wp-admin/
+Disallow: /wp-includes/
+Disallow: /cgi-bin/
+Disallow: /tmp/
+Disallow: /private/
+Disallow: /mirror/archive.ubuntu.com/ubuntu/pool/
+
+Allow: /wp-admin/admin-ajax.php
+Allow: /wp-content/uploads/
+Allow: /wp-content/cache/
+
+# Sitemap für SEO
+Sitemap: https://ailinux.me/sitemap_index.xml
+
+# Crawler-Freundlichkeit
+User-agent: Googlebot
+Crawl-delay: 2
+
+User-agent: Bingbot
+Crawl-delay: 5
+
+User-agent: PetalBot
+Disallow: /mirror/
+Disallow: /repo/
+Crawl-delay: 10
+
+User-agent: Yandex
+Crawl-delay: 5
+
+User-agent: AhrefsBot
+Disallow: /  # Blockiert, weil sehr aggressiv
+
+User-agent: SemrushBot
+Disallow: /  # Ebenfalls blockieren

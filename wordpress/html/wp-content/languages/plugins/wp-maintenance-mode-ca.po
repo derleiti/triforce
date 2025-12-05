@@ -1,0 +1,719 @@
+# Translation of Plugins - LightStart &#8211; Maintenance Mode, Coming Soon and Landing Page Builder - Stable (latest release) in Catalan
+# This file is distributed under the same license as the Plugins - LightStart &#8211; Maintenance Mode, Coming Soon and Landing Page Builder - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2024-01-08 16:30:14+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: ca\n"
+"Project-Id-Version: Plugins - LightStart &#8211; Maintenance Mode, Coming Soon and Landing Page Builder - Stable (latest release)\n"
+
+#: views/settings.php:846
+msgid "If you want to see the list of subscribers, go to Modules &raquo; Subscribe &raquo; Export as CSV."
+msgstr "Si voleu veure la llista de subscriptors, aneu a Mòduls &raquo; Subscriure's &raquo; Exporta com a CSV."
+
+#: views/settings.php:1047
+msgid "Link name"
+msgstr "Nom de l'enllaç"
+
+#: includes/classes/wp-maintenance-mode.php:329
+msgid "Privacy Policy"
+msgstr "Política de privadesa "
+
+#: views/settings.php:1010
+msgid "Message 10"
+msgstr "Missatge 10"
+
+#: views/settings.php:1002
+msgid "Message 9"
+msgstr "Missatge 9"
+
+#: views/settings.php:994
+msgid "(click on button two)"
+msgstr "(fes clic al segon botó)"
+
+#: views/settings.php:976 views/settings.php:1002 views/settings.php:1010
+msgid "(click on button one)"
+msgstr "(fes clic al primer botó)"
+
+#: views/settings.php:976 views/settings.php:994
+msgid "Message 8"
+msgstr "Missatge 8"
+
+#: views/settings.php:1087
+msgid "Subscribe form 'tail'"
+msgstr "Formulari de subscripció 'tail'"
+
+#: views/settings.php:1078
+msgid "Contact form 'tail'"
+msgstr "Formulari de contacte 'tail'"
+
+#: views/settings.php:1051
+msgid "Label the link that will be shown on frontend footer"
+msgstr "Etiqueteu l'enllaç que es mostrarà al peu de pàgina de la pàgina principal"
+
+#: views/settings.php:1033
+msgid "Here we added some generic texts that you may want to review, change or remove."
+msgstr "Aquí hem afegit alguns textos genèrics que és possible que vulgueu revisar, canviar o eliminar."
+
+#: views/settings.php:969
+msgid "Edit button two"
+msgstr "Edita el segon botó"
+
+#: views/settings.php:965
+msgid "Edit button one"
+msgstr "Edita el primer botó"
+
+#: views/settings.php:952
+msgid "Message 7"
+msgstr "Missatge 7"
+
+#: views/settings.php:944
+msgid "Message 6"
+msgstr "Missatge 6"
+
+#: views/settings.php:936
+msgid "Message 5"
+msgstr "Missatge 5"
+
+#: views/settings.php:928
+msgid "Message 4"
+msgstr "Missatge 4"
+
+#: views/settings.php:918 views/settings.php:960 views/settings.php:984
+msgid "Response"
+msgstr "Resposta"
+
+#: views/settings.php:910
+msgid "Message 3"
+msgstr "Missatge 3"
+
+#: views/settings.php:902
+msgid "Message 2"
+msgstr "Missatge 2"
+
+#: views/settings.php:894
+msgid "Message 1"
+msgstr "Missatge 1"
+
+#: views/settings.php:882
+msgid "A 512 x 512 px will work just fine."
+msgstr "Un format de 512 x 512 px funcionarà bé."
+
+#: views/settings.php:869
+msgid "Upload avatar"
+msgstr "Penja un avatar"
+
+#: views/settings.php:864
+msgid "This name will appear when the bot is typing."
+msgstr "Aquest nom apareixerà quan el bot està escrivint."
+
+#: includes/classes/wp-maintenance-mode.php:323
+msgid "Boring"
+msgstr "Avorrit"
+
+#: includes/classes/wp-maintenance-mode.php:322
+msgid "Tell me more"
+msgstr "Explica'm més"
+
+#: includes/classes/wp-maintenance-mode.php:314
+msgid "Would you like to be first to see it?"
+msgstr "Voleu ser el primer a veure-ho?"
+
+#: includes/classes/wp-maintenance-mode.php:313
+msgid "I know, you are very excited to see it, but we need a few days to finish it."
+msgstr "Ho sé, us fa molta il·lusió veure-la, però necessitem uns dies per acabar-la."
+
+#: includes/classes/wp-maintenance-mode.php:309
+msgid "I have just a few questions."
+msgstr "Només tinc algunes preguntes."
+
+#: includes/classes/wp-maintenance-mode.php:308
+msgid "Hey! My name is {bot_name}, I'm the owner of this website and I'd like to be your assistant here."
+msgstr "Ei! El meu nom és {bot_name}, sóc el propietari d’aquest lloc web i m’agradaria ser el vostre assistent aquí."
+
+#. translators: number of subscribers
+#: views/settings.php:588 views/settings.php:758
+msgctxt "settings page"
+msgid "You have %d subscriber"
+msgid_plural "You have %d subscribers"
+msgstr[0] "Tens %d subscriptor"
+msgstr[1] "Tens %s subscriptors"
+
+#: views/settings.php:390
+msgid "This text will not be shown when the bot feature is enabled."
+msgstr "Aquest text no es mostrarà quan la funció bot estigui activada."
+
+#: views/settings.php:79
+msgid "GDPR"
+msgstr "RGPD"
+
+#: views/settings.php:71
+msgid "Manage Bot"
+msgstr "Gestiona el bot"
+
+#. translators: number of subscribers
+#: includes/classes/wp-maintenance-mode-admin.php:324
+msgctxt "ajax response"
+msgid "You have %d subscriber"
+msgid_plural "You have %d subscribers"
+msgstr[0] "Tens %d subscriptor"
+msgstr[1] "Tens %s subscriptors"
+
+#: includes/classes/wp-maintenance-mode.php:333
+msgid "This form collects your email so that we can add you to our newsletter list. Check out our <a href=\"#\">Privacy Policy</a> page to fully understand how we protect and manage your submitted data."
+msgstr "Aquest formulari recull el vostre correu electrònic perquè puguem afegir-lo a la nostra llista de butlletins. Consulteu la nostra pàgina de <a href=\"#\">Política de privadesa</a> per entendre completament com protegim i gestionem les vostres dades enviades."
+
+#: includes/classes/wp-maintenance-mode.php:332
+msgid "This form collects your name and email so that we can reach you back. Check out our <a href=\"#\">Privacy Policy</a> page to fully understand how we protect and manage your submitted data."
+msgstr "Aquest formulari recull el vostre nom i correu electrònic perquè puguem contactar amb vosaltres. Consulteu la nostra pàgina de <a href=\"#\">Política de privadesa</a> per entendre completament com protegim i gestionem les vostres dades enviades."
+
+#: views/settings.php:1082 views/settings.php:1091
+msgid "This will be shown together with the acceptance checkbox below the form"
+msgstr "Es mostrarà juntament amb la casella de selecció d'acceptació que hi ha a la part inferior del formulari"
+
+#: views/settings.php:1073
+msgid "Choose how the link will open."
+msgstr "Tria com s'obrirà l'enllaç."
+
+#: views/settings.php:1056
+msgid "P. Policy page link"
+msgstr "Enllaç a la política de privadesa"
+
+#: views/settings.php:1066
+msgid "P. Policy link target"
+msgstr "Enllaç que dirigeix a la política de privadesa"
+
+#: views/settings.php:1032
+msgid "To make the plugin GDPR compliant, fill in the details and enable this section."
+msgstr "Per fer compatible l'extensió amb el RGDP, empleneu les dades i activeu aquesta secció."
+
+#: views/settings.php:923 views/settings.php:989
+msgid "Edit the placeholder's text"
+msgstr "Edita el text del marcador de posició"
+
+#: views/settings.php:888
+msgid "Customize Messages"
+msgstr "Personalitza els missatges"
+
+#: views/settings.php:860
+msgid "Bot Name"
+msgstr "Nom del bot"
+
+#: views/settings.php:845
+msgid "It is also ok if you don't fill in all the conversation steps if you don't need to."
+msgstr "També està bé si no empleneu tots els passos de la conversa si no ho necessiteu."
+
+#: includes/classes/wp-maintenance-mode.php:324
+#: includes/classes/wp-maintenance-mode.php:807
+msgid "Type your email here…"
+msgstr "Teclegeu l'adreça de correu electrònic aquí..."
+
+#: includes/classes/wp-maintenance-mode.php:321
+#: includes/classes/wp-maintenance-mode.php:806
+msgid "Type your name here…"
+msgstr "Teclegeu el nom aquí..."
+
+#: includes/classes/wp-maintenance-mode.php:318
+msgid "Have a great day!"
+msgstr "Que tingueu un bon dia!"
+
+#: includes/classes/wp-maintenance-mode.php:317
+msgid "Got it! Thank you and see you soon here!"
+msgstr "Ja està! Gràcies i fins aviat!"
+
+#: includes/classes/wp-maintenance-mode.php:315
+msgid "Cool! Please leave your email here and I will send you a message when it's ready."
+msgstr "Guai! Deixeu el vostre correu electrònic aquí i us enviaré un missatge quan estigui a punt."
+
+#: includes/classes/wp-maintenance-mode.php:311
+msgid "Nice to meet you here, {visitor_name}!"
+msgstr "Encantat de conèixer-vos aquí, {visitor_name}."
+
+#: includes/classes/wp-maintenance-mode.php:316
+msgid "Sad to hear that, {visitor_name} :( See you next time…"
+msgstr "És trist escoltar això, {visitor_name} :( Ens veiem la pròxima vegada..."
+
+#: includes/classes/wp-maintenance-mode.php:310
+msgid "What is your name?"
+msgstr "Quin és el vostre nom?"
+
+#: views/settings.php:789
+msgid "Enable IP anonymization?"
+msgstr "Voleu activar l'anonimització d'IP?"
+
+#: includes/classes/wp-maintenance-mode.php:804
+msgid "Please type in a valid email address."
+msgstr "Introdueix una adreça de correu electrònic vàlida."
+
+#: includes/classes/wp-maintenance-mode.php:803
+msgid "Please type in your name."
+msgstr "Escriu el nom."
+
+#: includes/classes/wp-maintenance-mode-admin.php:1252
+msgid "No privacy features detected for your WordPress version. Update WordPress to get this field automatically filled in or type in the URL that points to your privacy policy page."
+msgstr "No s'ha detectat cap funció de privadesa per a la versió del WordPress. Actualitzeu el WordPress per omplir aquest camp automàticament o escriviu l’URL que apunta a la vostra pàgina de política de privadesa."
+
+#: includes/classes/wp-maintenance-mode-admin.php:1239
+msgid "Your WordPress version supports Privacy settings but you haven't set any privacy policy page yet. Go to Settings ➡ Privacy to set one."
+msgstr "La versió del WordPress admet la configuració de privadesa, però encara no heu definit cap pàgina de política de privadesa. Aneu a Opcions ➡ Privadesa per definir-ne una."
+
+#: includes/classes/wp-maintenance-mode-admin.php:975
+msgid "WPMM: The file data.js could not be written, the bot will not work correctly."
+msgstr "WPMM: no s'ha pogut escriure el fitxer data.js, el bot no funcionarà correctament."
+
+#: views/settings.php:844
+msgid "You may also want to use these wildcards: {bot_name} and {visitor_name} to make the conversation even more realistic."
+msgstr "És possible que també vulgueu utilitzar aquests comodins: {bot_name} i {visitor_name} per a fer la conversa encara més realista."
+
+#: includes/classes/wp-maintenance-mode-admin.php:271
+#: includes/classes/wp-maintenance-mode-admin.php:318
+#: includes/classes/wp-maintenance-mode-admin.php:408
+#: includes/classes/wp-maintenance-mode-admin.php:641
+#: includes/classes/wp-maintenance-mode-admin.php:673
+#: includes/classes/wp-maintenance-mode-admin.php:708
+#: includes/classes/wp-maintenance-mode-admin.php:762
+#: includes/classes/wp-maintenance-mode-admin.php:782
+#: includes/classes/wp-maintenance-mode-admin.php:802
+#: includes/classes/wp-maintenance-mode-admin.php:848
+#: includes/classes/wp-maintenance-mode-admin.php:879
+#: includes/classes/wp-maintenance-mode-admin.php:905
+#: includes/classes/wp-maintenance-mode-admin.php:1123
+#: includes/classes/wp-maintenance-mode.php:1311
+#: includes/classes/wp-maintenance-mode.php:1339
+msgid "Security check."
+msgstr "Revisió de seguretat."
+
+#: includes/classes/wp-maintenance-mode-admin.php:266
+#: includes/classes/wp-maintenance-mode-admin.php:313
+#: includes/classes/wp-maintenance-mode-admin.php:398
+#: includes/classes/wp-maintenance-mode-admin.php:631
+#: includes/classes/wp-maintenance-mode-admin.php:668
+#: includes/classes/wp-maintenance-mode-admin.php:698
+#: includes/classes/wp-maintenance-mode-admin.php:757
+#: includes/classes/wp-maintenance-mode-admin.php:777
+#: includes/classes/wp-maintenance-mode-admin.php:797
+#: includes/classes/wp-maintenance-mode-admin.php:843
+#: includes/classes/wp-maintenance-mode-admin.php:874
+#: includes/classes/wp-maintenance-mode-admin.php:900
+#: includes/classes/wp-maintenance-mode-admin.php:1118
+msgid "The nonce field must not be empty."
+msgstr "El camp nonce no pot estar buit."
+
+#. translators: link to plugin reviews page on wp.org
+#: includes/classes/wp-maintenance-mode-admin.php:1171
+msgid "If you like <strong>Lightstart</strong> please leave us a %s rating. A huge thank you from WP Maintenance Mode makers in advance!"
+msgstr "Si us agrada el <strong>WP Maintenance Mode</strong>, deixeu-nos una valoració %s. Moltes gràcies per part dels creadors de WP Maintenance Mode."
+
+#: views/contact.php:88
+msgid "Email:"
+msgstr "Correu electrònic:"
+
+#: views/contact.php:76
+msgid "Name:"
+msgstr "Nom:"
+
+#. translators: name of the blog
+#: views/contact.php:54
+msgid "You have been contacted via %s."
+msgstr "Heu sigut contactats mitjançant %s."
+
+#: includes/classes/wp-maintenance-mode-admin.php:1115
+msgid "Notice key cannot be empty."
+msgstr "La clau d’avís no pot estar buida."
+
+#: includes/classes/wp-maintenance-mode-admin.php:262
+#: includes/classes/wp-maintenance-mode-admin.php:309
+#: includes/classes/wp-maintenance-mode-admin.php:393
+#: includes/classes/wp-maintenance-mode-admin.php:626
+msgid "You do not have access to this resource."
+msgstr "No teniu accés a aquest recurs."
+
+#: views/settings.php:594 views/settings.php:764
+msgid "Empty subscribers list"
+msgstr "Llista de subscriptors buida"
+
+#: views/settings.php:114 views/settings.php:127
+msgid "Select role(s)"
+msgstr "Selecciona els rols"
+
+#: views/maintenance.php:126 views/maintenance.php:190
+#: views/maintenance.php:193 views/maintenance.php:201
+#: views/maintenance.php:209
+msgid "This field is required."
+msgstr "Aquest camp és obligatori."
+
+#: views/contact.php:103
+msgid "Content:"
+msgstr "Contingut:"
+
+#: includes/classes/wp-maintenance-mode-admin.php:414
+#: includes/classes/wp-maintenance-mode-admin.php:647
+msgid "The tab slug must exist."
+msgstr "La pestanya d'àlies ha d'existir."
+
+#: includes/classes/wp-maintenance-mode-admin.php:403
+#: includes/classes/wp-maintenance-mode-admin.php:636
+msgid "The tab slug must not be empty."
+msgstr "La pestanya d'àlies no pot estar buida."
+
+#: views/settings.php:103 views/settings.php:174 views/settings.php:187
+#: views/settings.php:521 views/settings.php:565 views/settings.php:612
+#: views/settings.php:716 views/settings.php:782 views/settings.php:793
+msgid "Yes"
+msgstr "Sí"
+
+#: views/settings.php:104 views/settings.php:175 views/settings.php:188
+#: views/settings.php:522 views/settings.php:566 views/settings.php:613
+#: views/settings.php:717 views/settings.php:783 views/settings.php:794
+msgid "No"
+msgstr "No"
+
+#: includes/classes/wp-maintenance-mode-admin.php:1008
+msgid "Settings"
+msgstr "Configuració"
+
+#: includes/classes/wp-maintenance-mode-admin.php:1297
+msgid "Settings saved."
+msgstr "S'ha desat la configuració."
+
+#: views/settings.php:772
+msgid "Google Analytics"
+msgstr "Google Analytics"
+
+#: views/sidebar.php:24
+msgid "Twitter"
+msgstr "Twitter"
+
+#: views/sidebar.php:22
+msgid "Author"
+msgstr "Autor"
+
+#: views/maintenance.php:121 views/settings.php:555 views/settings.php:745
+msgid "Subscribe"
+msgstr "Subscriu-me"
+
+#: views/maintenance.php:239
+msgid "Dashboard"
+msgstr "Tauler"
+
+#: views/settings.php:51
+msgid "General"
+msgstr "General"
+
+#: views/settings.php:539
+msgid "Days"
+msgstr "Dies"
+
+#: views/settings.php:541
+msgid "Minutes"
+msgstr "Minuts"
+
+#: views/sidebar.php:25
+msgid "GitHub"
+msgstr "GitHub"
+
+#: views/sidebar.php:12
+msgid "Plugin Info"
+msgstr "Informació de l'extensió"
+
+#: views/settings.php:812
+msgid "Tracking code"
+msgstr "Codi de seguiment"
+
+#: views/settings.php:778
+msgid "Use Google Analytics?"
+msgstr "Voleu utilitzar Google Analytics?"
+
+#: views/settings.php:546
+msgid "Color"
+msgstr "Color"
+
+#: views/settings.php:540
+msgid "Hours"
+msgstr "Hores"
+
+#: views/settings.php:536
+msgid "Countdown (remaining time)"
+msgstr "Compte enrere (temps restant)"
+
+#: views/settings.php:528
+msgid "Start date"
+msgstr "Data d'inici"
+
+#: views/settings.php:517
+msgid "Show countdown?"
+msgstr "Vols mostrar el compte enrere?"
+
+#: views/settings.php:511
+msgid "Countdown"
+msgstr "Compte enrere"
+
+#: views/settings.php:446
+msgid "Backgrounds should have 1920x1280 px size."
+msgstr "Els fons han de tenir una mida de 1920x1280 px."
+
+#: views/settings.php:419
+msgid "Predefined background"
+msgstr "Fons predefinit"
+
+#: views/settings.php:417
+msgid "Custom color"
+msgstr "Color personalitzat"
+
+#: views/settings.php:106
+msgid "Allow Search Bots to bypass maintenance mode?"
+msgstr "Vols permetre que els robots de cerca ometin el mode de manteniment?"
+
+#: views/settings.php:99
+msgid "Bypass for Search Bots"
+msgstr "Ignora els robots de cerca"
+
+#: views/settings.php:94 views/settings.php:855 views/settings.php:1042
+msgid "Deactivated"
+msgstr "Desactivat"
+
+#: views/settings.php:93 views/settings.php:854 views/settings.php:1041
+msgid "Activated"
+msgstr "Activat"
+
+#: views/network-settings.php:33 views/settings.php:90 views/settings.php:851
+#: views/settings.php:1038
+msgid "Status"
+msgstr "Estat"
+
+#: views/settings.php:64
+msgid "Modules"
+msgstr "Mòduls"
+
+#: views/settings.php:58
+msgid "Design"
+msgstr "Disseny"
+
+#: includes/classes/wp-maintenance-mode.php:808 views/maintenance.php:220
+msgid "Send"
+msgstr "Envia"
+
+#: views/maintenance.php:193
+msgid "E-mail"
+msgstr "Correu electrònic"
+
+#: views/maintenance.php:190 views/sidebar.php:16
+msgid "Name"
+msgstr "Nom"
+
+#: views/maintenance.php:119
+msgid "your e-mail..."
+msgstr "el teu correu electrònic..."
+
+#: views/settings.php:731
+msgid "Effects"
+msgstr "Efectes"
+
+#: views/settings.php:723
+msgid "Email address"
+msgstr "Adreça de correu electrònic"
+
+#: views/settings.php:712
+msgid "Show contact?"
+msgstr "Vols mostrar la informació de contacte?"
+
+#: views/settings.php:706
+msgid "Contact"
+msgstr "Informació de contacte"
+
+#: views/settings.php:624 views/settings.php:1071
+msgid "Same page"
+msgstr "La mateixa pàgina"
+
+#: views/settings.php:619
+msgid "Links target?"
+msgstr "Enllaços de destinació?"
+
+#: views/settings.php:608
+msgid "Show social networks?"
+msgstr "Vols mostrar les xarxes socials?"
+
+#: views/settings.php:602
+msgid "Social Networks"
+msgstr "Xarxes socials"
+
+#: views/settings.php:593 views/settings.php:763
+msgid "Export as CSV"
+msgstr "Exporta com a CSV"
+
+#: views/settings.php:581 views/settings.php:751
+msgid "Stats"
+msgstr "Estadístiques"
+
+#: views/loginform.php:17
+msgid "Login"
+msgstr "Inicia sessió"
+
+#: includes/classes/wp-maintenance-mode.php:1335
+msgid "All fields required."
+msgstr "Tots els camps són obligatoris."
+
+#: includes/classes/wp-maintenance-mode.php:738
+msgid "Maintenance Mode"
+msgstr "Mode de manteniment"
+
+#. translators: plugin settings url
+#: includes/classes/wp-maintenance-mode.php:466
+msgid "WP Maintenance Mode plugin was relaunched and you MUST revise <a href=\"%s\">settings</a>."
+msgstr "S'ha tornat a llançar l'extensió de WP Maintenance Mode i heu de revisar la <a href=\"%s\">configuració</a>."
+
+#: includes/classes/wp-maintenance-mode.php:284
+msgid "Notify me when it's ready"
+msgstr "Avisa'm quan estigui a punt"
+
+#: includes/classes/wp-maintenance-mode.php:264
+msgid "<p>Sorry for the inconvenience.<br />Our website is currently undergoing scheduled maintenance.<br />Thank you for your understanding.</p>"
+msgstr "<p>Disculpeu les molèsties.<br /> El nostre lloc web està actualment en procés de manteniment programat.<br />Gràcies per la vostra comprensió.</p>"
+
+#. translators: plugin settings url
+#: includes/classes/wp-maintenance-mode-admin.php:1042
+msgid "The Maintenance Mode is <strong>active</strong>. Please don't forget to <a href=\"%s\">deactivate</a> as soon as you are done."
+msgstr "El mode de manteniment està <strong>actiu</strong>. No oblideu <a href=\"%s\">desactivar-lo</a> tan aviat com hàgiu acabat."
+
+#: views/settings.php:407
+msgid "Background"
+msgstr "Fons"
+
+#: views/settings.php:350 views/settings.php:572
+msgid "Text"
+msgstr "Text"
+
+#: views/settings.php:341
+msgid "Heading"
+msgstr "Capçalera"
+
+#: views/settings.php:333
+msgid "Title (HTML tag)"
+msgstr "Títol (etiqueta HTML)"
+
+#: views/settings.php:198 views/settings.php:499 views/settings.php:824
+#: views/settings.php:1021 views/settings.php:1099
+msgid "Reset settings"
+msgstr "Restableix la configuració"
+
+#: views/network-settings.php:43 views/settings.php:197 views/settings.php:498
+#: views/settings.php:823 views/settings.php:1020 views/settings.php:1098
+msgid "Save settings"
+msgstr "Desa la configuració"
+
+#: views/settings.php:190
+msgid "Do you want to add a link to the dashboard on your maintenance mode page?"
+msgstr "Voleu afegir un enllaç al tauler de la pàgina del mode de manteniment?"
+
+#: views/settings.php:183
+msgid "Dashboard link"
+msgstr "Enllaç al tauler d'administració"
+
+#: views/settings.php:177
+msgid "Do you want to see notices when maintenance mode is activated?"
+msgstr "Voleu veure avisos quan s’activa el mode de manteniment?"
+
+#: views/settings.php:170
+msgid "Notice"
+msgstr "Avís"
+
+#: views/settings.php:158
+msgid "Exclude"
+msgstr "Exclou"
+
+#: views/settings.php:149
+msgid "Redirection"
+msgstr "Redirecció"
+
+#: views/settings.php:144
+msgid "The robots meta tag lets you use a granular, page-specific approach to control how an individual page should be indexed and served to users in search results."
+msgstr "La metaetiqueta de robots us permet utilitzar un enfocament granular i específic de la pàgina per controlar com s’hauria d’indexar i publicar una pàgina individual als usuaris als resultats de cerca."
+
+#: views/settings.php:137
+msgid "Robots Meta Tag"
+msgstr "Metaetiqueta de robots"
+
+#: views/settings.php:737
+msgid "Fold - Unfold"
+msgstr "Plega - Desplega"
+
+#: views/settings.php:451
+msgid "Choose background"
+msgstr "Tria el fons"
+
+#: views/settings.php:433
+msgid "Upload background"
+msgstr "Penja la imatge de fons"
+
+#: views/settings.php:425
+msgid "Choose color"
+msgstr "Tria el color"
+
+#: views/settings.php:418
+msgid "Uploaded background"
+msgstr "S'ha penjat el fons"
+
+#: views/settings.php:413
+msgid "Choose type"
+msgstr "Tria el tipus"
+
+#: views/settings.php:124
+msgid "Frontend Role"
+msgstr "Rol de la part pública"
+
+#: views/settings.php:111
+msgid "Backend Role"
+msgstr "Rol de la part privada"
+
+#: views/maintenance.php:201
+msgid "Your message"
+msgstr "El missatge"
+
+#: views/settings.php:735
+msgid "Move top - Move bottom"
+msgstr "Mou cap amunt - mou cap avall"
+
+#: views/settings.php:736
+msgid "Zoom - Zoomed"
+msgstr "Amplia - Ampliat"
+
+#: views/settings.php:626
+msgid "Choose how the links will open."
+msgstr "Tria com s’obriran els enllaços."
+
+#: views/settings.php:623 views/settings.php:1070
+msgid "New page"
+msgstr "Pàgina nova"
+
+#: views/settings.php:561
+msgid "Show subscribe?"
+msgstr "Mostra la subscripció?"
+
+#: includes/classes/wp-maintenance-mode.php:1374
+msgid "Your email was sent to the website administrator. Thanks!"
+msgstr "El correu electrònic s'ha enviat a l'administrador del lloc web. Gràcies!"
+
+#: includes/classes/wp-maintenance-mode.php:1349
+msgid "Message via contact"
+msgstr "Missatge mitjançant el contacte"
+
+#: includes/classes/wp-maintenance-mode.php:1316
+msgid "You successfully subscribed. Thanks!"
+msgstr "Us heu subscrit correctament. Gràcies!"
+
+#: includes/classes/wp-maintenance-mode.php:1307
+#: includes/classes/wp-maintenance-mode.php:1342 views/maintenance.php:193
+msgid "Please enter a valid email address."
+msgstr "Introdueix una adreça de correu electrònic vàlida."
+
+#: views/sidebar.php:23
+msgid "Website"
+msgstr "Lloc web"
+
+#: views/maintenance.php:227
+msgid "Contact us"
+msgstr "Contacteu-nos"

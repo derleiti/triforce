@@ -1,0 +1,123 @@
+body {
+    background-color: var(--theme-background, var(--background, #1a1a1a)); color: var(--text-on-background, var(--text-main, #fff)); --theme-glow: var(--background);
+    --lighting-ambient: 0.1; /* CSS++ Ambient Light */
+}
+.site-header {
+    border-radius: 0;
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); background: rgba(20, 20, 30, 0.6); border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 4px 20px rgba(0,0,0, 0.1); transition: box-shadow 0.3s ease;
+    background-color: var(--theme-surface-glass, var(--surface-glass, #1a1a1a)); color: var(--text-on-surface-glass, var(--text-main, #fff)); --theme-glow: var(--surface-glass);
+    z-index: 1000;
+    position: relative;
+}
+.site-nav .sub-menu, .dropdown-menu, .menu-item .sub-menu, .site-nav .nav-more .more-menu {
+    border-radius: 16px; overflow: hidden;
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); background: rgba(20, 20, 30, 0.6); border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 4px 20px rgba(0,0,0, 0.2); transition: box-shadow 0.3s ease;
+    background-color: var(--theme-surface-glass, var(--surface-glass, #1a1a1a)); color: var(--text-on-surface-glass, var(--text-main, #fff)); --theme-glow: var(--surface-glass);
+    padding: 12px;
+    margin-top: 8px;
+    border: 1px solid rgba ( 255, 255, 255, 0.1 );
+    min-width: 200px;
+    opacity: 0;
+    animation: csspp-fade-in 200ms ease-out forwards;
+}
+.site-nav .sub-menu li a, .dropdown-menu li a, .site-nav .nav-more .more-menu a {
+    transition: all 0.3s ease; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    background-color: var(--theme-surface-alt, var(--surface-alt, #1a1a1a)); color: var(--text-on-surface-alt, var(--text-main, #fff)); --theme-glow: var(--surface-alt);
+    padding: 8px 14px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    margin-bottom: 4px;
+    display: block;
+    text-decoration: none;
+}
+.site-nav .menu > li > a {
+    transition: all 0.3s ease; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    background-color: var(--theme-transparent, var(--transparent, #1a1a1a)); color: var(--text-on-transparent, var(--text-main, #fff)); --theme-glow: var(--transparent);
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    font-weight: 500;
+}
+.site-nav .nav-more button {
+    background-color: var(--theme-transparent, var(--transparent, #1a1a1a)); color: var(--text-on-transparent, var(--text-main, #fff)); --theme-glow: var(--transparent);
+    transition: all 0.3s ease; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: none;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    font-family: inherit;
+    font-size: inherit;
+}
+.btn, .button, button[type='submit'], .wp-block-button__link, .ai-btn, .theme-toggle, .mobile-menu-toggle {
+    border-radius: 9999px;
+    transition: all 0.3s ease; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    background-color: var(--theme-primary, var(--primary, #1a1a1a)); color: var(--text-on-primary, var(--text-main, #fff)); --theme-glow: var(--primary);
+    padding: 10px 24px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    line-height: 1.2;
+}
+.ai-panel__inner {
+    border-radius: 16px; overflow: hidden;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    box-shadow: 2px 2px 0px rgba(0,0,0, 1); border: 1px solid #000;
+    background-color: var(--theme-surface, var(--surface, #1a1a1a)); color: var(--text-on-surface, var(--text-main, #fff)); --theme-glow: var(--surface);
+    animation: csspp-slide-up 300ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    max-width: 600px;
+    width: 90%;
+}
+.post, .card, .hentry, .page-content {
+    border-radius: 12px; overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0, 0.1); transition: box-shadow 0.3s ease;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.02'/%3E%3C/svg%3E");
+    background-color: var(--theme-surface-alt, var(--surface-alt, #1a1a1a)); color: var(--text-on-surface-alt, var(--text-main, #fff)); --theme-glow: var(--surface-alt);
+    padding: 24px;
+    margin-bottom: 32px;
+}
+input[type='text'], input[type='email'], textarea, select {
+    border-radius: 6px; overflow: hidden;
+    box-shadow: 0.8px 0.8px 0px rgba(0,0,0, 1); border: 1px solid #000;
+    background-color: var(--theme-background, var(--background, #1a1a1a)); color: var(--text-on-background, var(--text-main, #fff)); --theme-glow: var(--background);
+    padding: 12px;
+    width: 100%;
+    max-width: 100%;
+    font-family: inherit;
+}
+.site-footer {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+    background-color: var(--theme-surface, var(--surface, #1a1a1a)); color: var(--text-on-surface, var(--text-main, #fff)); --theme-glow: var(--surface);
+    padding: 48px 0;
+    margin-top: 64px;
+}
+
+/* --- Runtime Generated Rules --- */
+@keyframes csspp-fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.site-nav .sub-menu li a, .dropdown-menu li a, .site-nav .nav-more .more-menu a:hover { 
+    box-shadow: 0 0 18px 3px var(--theme-glow, rgba(255,255,255,0.2)); 
+    transform: translateY(-1px);
+}
+.site-nav .menu > li > a:hover { 
+    box-shadow: 0 0 6px 1px var(--theme-glow, rgba(255,255,255,0.2)); 
+    transform: translateY(-1px);
+}
+.site-nav .nav-more button:hover { 
+    box-shadow: 0 0 6px 1px var(--theme-glow, rgba(255,255,255,0.2)); 
+    transform: translateY(-1px);
+}
+.btn, .button, button[type='submit'], .wp-block-button__link, .ai-btn, .theme-toggle, .mobile-menu-toggle:hover { 
+    box-shadow: 0 0 30px 5px var(--theme-glow, rgba(255,255,255,0.2)); 
+    transform: translateY(-1px);
+}
+@keyframes csspp-slide-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }

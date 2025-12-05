@@ -1,0 +1,150 @@
+# Translation of Plugins - Modern Image Formats - Stable (latest release) in German
+# This file is distributed under the same license as the Plugins - Modern Image Formats - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-01-27 23:38:54+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: de\n"
+"Project-Id-Version: Plugins - Modern Image Formats - Stable (latest release)\n"
+
+#: settings.php:224 settings.php:311
+msgid "This setting requires fallback image output to be enabled."
+msgstr "Diese Einstellung erfordert die Aktivierung der Fallback-Bildausgabe."
+
+#: settings.php:199
+msgid "Also generate fallback images in the original upload format"
+msgstr "Fallback-Bilder auch im ursprünglichen Upload-Format erzeugen"
+
+#: settings.php:106
+msgid "Output fallback images"
+msgstr "Fallback-Bilder ausgeben"
+
+#: settings.php:345
+msgid "Picture elements will only be used when fallback images are available. So this will only apply to  images you have uploaded while the \"Also generate fallback images\" setting was enabled."
+msgstr "Picture-Elemente werden nur verwendet, wenn Fallback-Bilder verfügbar sind. Das gilt also nur für Bilder, die du hochgeladen hast, während die Einstellung „Fallback-Bilder erzeugen“ aktiviert war."
+
+#: settings.php:79
+msgctxt "settings page section name"
+msgid "Modern Image Formats"
+msgstr "Modern Image Formats"
+
+#: settings.php:343
+msgid "The picture element serves a modern image format with a fallback to the original upload format. Warning: Make sure you test your theme and plugins for compatibility. In particular, CSS selectors will not match images when using the child combinator (e.g. figure > img)."
+msgstr "Das Picture-Element liefert ein modernes Bildformat mit einem Fallback zum ursprünglichen Upload-Format. Warnung: Teste unbedingt dein Theme und deine Plugins auf Kompatibilität. Insbesondere CSS-Selektoren funktionieren nicht, wenn der Kind-Kombinator verwendet wird (z. B. figure > img)."
+
+#: settings.php:341
+msgid "(experimental)"
+msgstr "(experimentell)"
+
+#: settings.php:339
+msgid "Use <picture> Element"
+msgstr "Das Element <picture> verwenden"
+
+#: settings.php:201
+msgid "Enabling fallback image output can improve compatibility, but will increase the filesystem storage use of your images."
+msgstr "Die Aktivierung der Fallback-Bildausgabe kann die Kompatibilität verbessern, aber den Speicherplatzbedarf deiner Bilder erhöhen."
+
+#: settings.php:184
+msgid "WebP support can only be enabled by your hosting provider, so contact them for more information."
+msgstr "WebP-Unterstützung kann nur von deinem Hosting-Anbieter aktiviert werden. Wende dich für weitere Informationen an diesen."
+
+#: settings.php:183
+msgid "WebP support is not available."
+msgstr "WebP-Unterstützung ist nicht verfügbar."
+
+#: settings.php:177
+msgid "AVIF support can only be enabled by your hosting provider, so contact them for more information."
+msgstr "AVIF-Unterstützung kann nur von deinem Hosting-Anbieter aktiviert werden. Wende dich für weitere Informationen an diesen."
+
+#: settings.php:176
+msgid "AVIF support is not available."
+msgstr "AVIF-Unterstützung ist nicht verfügbar."
+
+#: settings.php:172
+msgid "Select the format to use when generating new images from uploaded images."
+msgstr "Wähle das Format, das beim Erstellen neuer Bilder aus hochgeladenen Bildern verwendet werden soll."
+
+#: settings.php:170
+msgid "Generate images in this format"
+msgstr "Bilder in diesem Format erzeugen"
+
+#: settings.php:167
+msgid "AVIF"
+msgstr "AVIF"
+
+#: settings.php:166
+msgid "WebP"
+msgstr "WebP"
+
+#: settings.php:152
+msgid "WebP or AVIF support can only be enabled by your hosting provider, so contact them for more information."
+msgstr "WebP- oder AVIF-Unterstützung kann nur von deinem Hosting-Anbieter aktiviert werden. Wende dich für weitere Informationen an diesen."
+
+#: settings.php:151
+msgid "Modern image support is not available."
+msgstr "Unterstützung für moderne Bildformate ist nicht verfügbar."
+
+#: settings.php:126
+msgid "Picture element"
+msgstr "Bildelement"
+
+#: settings.php:91
+msgid "Image output format"
+msgstr "Format für die Bildausgabe"
+
+#: settings.php:402
+msgid "Settings"
+msgstr "Einstellungen"
+
+#. Description of the plugin
+#: load.php
+msgid "Converts images to more modern formats such as WebP or AVIF during upload."
+msgstr "Konvertiert Bilder während des Uploads in modernere Formate wie WebP oder AVIF."
+
+#. Plugin Name of the plugin
+#: load.php
+msgid "Modern Image Formats"
+msgstr "Modern Image Formats"
+
+#: helper.php:222
+msgid "The image does not have a valid metadata."
+msgstr "Das Bild hat keine gültigen Metadaten."
+
+#: helper.php:189
+msgid "The file key is not present on the image data"
+msgstr "Der Dateischlüssel ist in den Bilddaten nicht vorhanden"
+
+#: helper.php:161
+msgid "At least one of the dimensions must be a positive number."
+msgstr "Mindestens eine der Dimensionen muss eine positive Zahl sein."
+
+#: helper.php:149
+msgid "The original image file does not exists, subsizes are created out of the original image."
+msgstr "Die ursprüngliche Bilddatei ist nicht vorhanden. Untergrößen werden aus dem Originalbild erstellt."
+
+#: helper.php:144
+msgid "The provided mime type is not supported."
+msgstr "Der bereitgestellte Mime-Typ wird nicht unterstützt."
+
+#: helper.php:140
+msgid "The provided mime type is not allowed."
+msgstr "Der bereitgestellte Mime-Typ ist nicht zulässig."
+
+#. Author URI of the plugin
+#: load.php
+msgid "https://make.wordpress.org/performance/"
+msgstr "https://make.wordpress.org/performance/"
+
+#. Author of the plugin
+#: load.php
+msgid "WordPress Performance Team"
+msgstr "Das WordPress-Performance-Team"
+
+#. Plugin URI of the plugin
+#: load.php
+msgid "https://github.com/WordPress/performance/tree/trunk/plugins/webp-uploads"
+msgstr "https://github.com/WordPress/performance/tree/trunk/plugins/webp-uploads"

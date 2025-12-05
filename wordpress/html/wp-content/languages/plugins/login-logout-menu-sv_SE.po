@@ -1,0 +1,139 @@
+# Translation of Plugins - Login Logout Menu - Stable (latest release) in Swedish
+# This file is distributed under the same license as the Plugins - Login Logout Menu - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2024-09-10 10:36:49+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: sv_SE\n"
+"Project-Id-Version: Plugins - Login Logout Menu - Stable (latest release)\n"
+
+#. Translators: 1 is the opening tag for the plugin support forum link, 2 is
+#. the opening tag for the contact us page link, 3 is the closing tag for both
+#. links.
+#: login-logout-menu.php:257
+msgid "Do you have more questions? For further plugin support, feel free to visit our %1$s plugin support forum%3$s or %2$s contact us page%3$s."
+msgstr "Har du fler frågor? Om du behöver mer support för tillägget är du välkommen att besöka %1$stilläggets supportforum%3$s eller %2$svår kontaktsida%3$s."
+
+#. Translators: %1$s is the placeholder that will be replaced with the text
+#. '%avatar%'.
+#: login-logout-menu.php:250
+msgid "%1$s This placeholder displays the logged-in user's avatar (profile picture) in the menu item. It only works with user or profile menu items."
+msgstr "%1$s Denna platshållare visar den inloggade användarens profilbild (avatar) i menyobjektet. Detta fungerar endast med menyobjekten Användare eller Profil."
+
+#: login-logout-menu.php:240
+msgid "Displaying User Avatars in Menu"
+msgstr "Visar profilbilder i menyn"
+
+#. Translators: %1$s is the placeholder that will be replaced with the text
+#. '%current-page%'.
+#: login-logout-menu.php:237
+msgid "%1$s This placeholder will automatically update with the URL of the page the user is currently on (Redirected to the current visited page). It’s useful when you want them to stay on the same page after logging in, logging out, or registering without redirecting them elsewhere."
+msgstr "%1$s Denna platshållare kommer automatiskt att uppdatera URL:en till den sida användaren just nu befinner sig (omdirigering till den besökta sidan). Det är användbart om du vill att användaren ska stanna kvar på samma sida efter inloggning, utloggning eller registrering och inte hamna på någon annan sida."
+
+#: login-logout-menu.php:227
+msgid "Redirecting Users to the Current Page"
+msgstr "Omdirigering av användare till nuvarande sida"
+
+#. Translators: %1$s is the placeholder that will be replaced with the code
+#. snippet '<code>#loginpress-login#blog</code>'.
+#: login-logout-menu.php:223
+msgid "For example, %1$s will redirect the user to the blog page after login."
+msgstr "Exempelvis kommer %1$s att omdirigera användaren till bloggsidan efter inloggning."
+
+#. Translators: %1$s is the placeholder that will be replaced with the text
+#. 'YOUR-SLUG-HERE:'.
+#: login-logout-menu.php:217
+msgid "%1$s This relative link after the placeholder tells the plugin where to redirect the user after they log in, log out, or register, based on where the link is placed."
+msgstr "%1$s Denna relativa länk efter platsmarkören berättar för tillägget vart du vill omdirigera användaren efter inloggning, utloggning eller registrering, beroende på var länken är placerad."
+
+#. Translators: %1$s is the placeholder that will be replaced with the text
+#. '<code>#loginpress-login#YOUR-SLUG-HERE</code>'.
+#. Translators: %1$s is the placeholder that will be replaced with the code
+#. snippet '<code>#loginpress-login#%current-page%</code>'.
+#. Translators: %1$s is the placeholder that will be replaced with the code
+#. snippet  '<code>#loginpress-user#%avatar%</code>'.
+#: login-logout-menu.php:211 login-logout-menu.php:231
+#: login-logout-menu.php:244
+msgid "Syntax: %1$s"
+msgstr "Syntax: %1$s"
+
+#: login-logout-menu.php:207
+msgid "Redirecting Users After Login/Logout/Register"
+msgstr "Omdirigering av användaren efter inloggning/utloggning/registrering"
+
+#. Author URI of the plugin
+#: login-logout-menu.php
+msgid "https://WPBrigade.com/?utm_source=login-logout-menu"
+msgstr "https://WPBrigade.com/?utm_source=login-logout-menu"
+
+#. Plugin URI of the plugin
+#: login-logout-menu.php
+msgid "https://loginpress.pro/?utm_source=login-logout-menu&utm_medium=plugin-inside&utm_campaign=pro-upgrade&utm_content=plugin_uri"
+msgstr "https://loginpress.pro/?utm_source=login-logout-menu&utm_medium=plugin-inside&utm_campaign=pro-upgrade&utm_content=plugin_uri"
+
+#: classes/shortcodes.php:271
+msgid "Edit Profile"
+msgstr "Redigera profil"
+
+#: classes/shortcodes.php:200
+msgid "Reset Password"
+msgstr "Återställ lösenord"
+
+#: classes/shortcodes.php:58 classes/shortcodes.php:132
+msgid "Log out"
+msgstr "Logga ut"
+
+#: classes/shortcodes.php:57 classes/shortcodes.php:96
+msgid "Log in"
+msgstr "Logga in"
+
+#: login-logout-menu.php:148
+msgid "%1$s Settings %2$s"
+msgstr "%1$s inställningar %2$s"
+
+#: login-logout-menu.php:169
+msgid "User"
+msgstr "Användare"
+
+#. Author of the plugin
+#: login-logout-menu.php
+msgid "WPBrigade"
+msgstr "WPBrigade"
+
+#. Description of the plugin
+#: login-logout-menu.php
+msgid "Login Logout Menu is a handy plugin which allows you to add login, logout, register and profile menu items in your selected menu."
+msgstr "Login Logout Menu är ett bekvämt tillägg som låter dig lägga till menyobjekt för inloggning, utloggning och registrering, samt menyobjekt för användarprofiler i valfri meny."
+
+#: login-logout-menu.php:263
+msgid "Add to Menu"
+msgstr "Lägg till i meny"
+
+#: login-logout-menu.php:205
+msgid "Help"
+msgstr "Hjälp"
+
+#: login-logout-menu.php:168
+msgid "Profile"
+msgstr "Profil"
+
+#: classes/shortcodes.php:166 login-logout-menu.php:167
+msgid "Register"
+msgstr "Registrera"
+
+#: login-logout-menu.php:165 login-logout-menu.php:166
+msgid "Log Out"
+msgstr "Logga ut"
+
+#: login-logout-menu.php:164 login-logout-menu.php:166
+msgid "Log In"
+msgstr "Logga in"
+
+#. Plugin Name of the plugin
+#: login-logout-menu.php login-logout-menu.php:130
+msgid "Login Logout Menu"
+msgstr "Login Logout Menu"

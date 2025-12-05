@@ -1,0 +1,2380 @@
+# Translation of Themes - Zakra in Dutch
+# This file is distributed under the same license as the Themes - Zakra package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-08-16 09:12:36+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: nl\n"
+"Project-Id-Version: Themes - Zakra\n"
+
+#. Description of the theme
+#: style.css
+#, gp-priority: high
+msgid "Zakra is a powerful and versatile multipurpose theme that makes it easy to create beautiful and professional websites. With over free 40 pre-designed starter demo sites to choose from, you can quickly build a unique and functional site that fits your specific needs. Whether you're launching a blog, news site, e-commerce store, showcasing your portfolio, building a business site, LMS, or niche-specific site (such as a cafe, spa, charity, yoga studio, wedding venue, dental practice, photography, restaurant, or educational institution), Zakra has everything you need to succeed. The theme integrates seamlessly with popular page builders like Elementor, Brizy, BlockArt, and the Gutenberg editor, giving you complete freedom to create any layout you can imagine. Importantly, Zakra is optimized for speed, features a mobile-first responsive design, is built with block-based technology, and is optimized for search engines. It is also compatible with a wide range of popular WordPress plugins, allowing you to extend its functionality as needed. Build your next project with Zakra today and see the difference for yourself. Check out all the starter sites at https://zakratheme.com/demos!"
+msgstr "Zakra is een krachtig en veelzijdig multifunctioneel thema waarmee je eenvoudig mooie en professionele sites kunt maken. Met meer dan 40 gratis vooraf ontworpen demo sites om uit te kiezen, kun je snel een unieke en functionele site bouwen die past bij je specifieke behoeften. Of je nu een blog, nieuwssite, eCommerce winkel, portfolio wilt lanceren, een bedrijfssite, LMS of een nichespecifieke site (zoals een café, spa, liefdadigheidsinstelling, yogastudio, trouwlocatie, tandartspraktijk, fotografie, restaurant of onderwijsinstelling) bouwt, Zakra heeft alles wat je nodig hebt om succesvol te zijn. Het thema integreert naadloos met populaire paginabouwers zoals Elementor, Brizy, BlockArt en de Gutenberg editor, waardoor je volledige vrijheid hebt om elke lay-out te creëren die je maar kunt bedenken. Belangrijk is dat Zakra geoptimaliseerd is voor snelheid, een mobielvriendelijk responsive ontwerp heeft, is gebouwd met blokgebaseerde technologie en geoptimaliseerd is voor zoekmachines. Het is ook compatibel met een breed scala aan populaire WordPress plugins, zodat je de functionaliteit kunt uitbreiden zoals je dat nodig hebt. Bouw vandaag nog je volgende project met Zakra en ervaar zelf het verschil. Bekijk alle startsites op https://zakratheme.com/demos!"
+
+#. Theme Name of the theme
+#: style.css inc/admin/views/header.php:22 inc/helper/utils.php:288
+#: inc/helper/utils.php:331 assets/build/dashboard.js:1
+#, gp-priority: high
+msgid "Zakra"
+msgstr "Zakra"
+
+#: inc/admin/class-zakra-welcome-notice.php:225
+msgid "You do not have permission to perform this action."
+msgstr "Je hebt geen toestemming om deze actie uit te voeren."
+
+#. Translators: 1: Panel Title.
+#: functions.php:173
+msgid "Customizing ▶ %s"
+msgstr "Aanpassen ▶ %s"
+
+#: inc/customizer/options/additional/additional.php:30
+msgid "Demo migrated"
+msgstr "Demo gemigreerd"
+
+#: inc/customizer/options/additional/additional.php:23
+msgid "Demo Migrated"
+msgstr "Demo gemigreerd"
+
+#: inc/admin/class-zakra-dashboard.php:98
+#: inc/admin/class-zakra-dashboard.php:99
+msgid "Demo Importer"
+msgstr "Demo importeerfunctie"
+
+#: inc/admin/class-zakra-changelog-controller.php:105
+msgid "You are not allowed to access this resource."
+msgstr "Je hebt geen toestemming om deze gegevensbron te gebruiken."
+
+#: inc/admin/views/header.php:56 assets/build/dashboard.js:1
+msgid "Free vs Pro"
+msgstr "Gratis vs pro"
+
+#: inc/customizer/options/footer-builder/copyright.php:132
+#: inc/customizer/options/footer-builder/footer-menu-2.php:96
+#: inc/customizer/options/footer-builder/footer-menu.php:96
+#: inc/customizer/options/footer-builder/html-1.php:94
+#: inc/customizer/options/footer-builder/html-2.php:94
+#: inc/customizer/options/footer-builder/socials.php:49
+#: inc/customizer/options/footer-builder/widget-1.php:135
+#: inc/customizer/options/footer-builder/widget-2.php:135
+#: inc/customizer/options/footer-builder/widget-3.php:135
+#: inc/customizer/options/footer-builder/widget-4.php:135
+#: inc/customizer/options/footer-builder/widget-5.php:135
+#: inc/customizer/options/footer-builder/widget-6.php:135
+msgid "Center"
+msgstr "Midden"
+
+#: inc/customizer/options/footer-builder/bottom-area.php:150
+#: inc/customizer/options/footer-builder/main-area.php:221
+#: inc/customizer/options/footer-builder/top-area.php:151
+msgid "Inline"
+msgstr "In lijn"
+
+#: inc/customizer/options/footer-builder/bottom-area.php:149
+#: inc/customizer/options/footer-builder/main-area.php:220
+#: inc/customizer/options/footer-builder/top-area.php:150
+msgid "Stack"
+msgstr "Stack"
+
+#: inc/customizer/options/footer-builder/bottom-area.php:145
+#: inc/customizer/options/footer-builder/main-area.php:216
+#: inc/customizer/options/footer-builder/top-area.php:146
+msgid " Layout"
+msgstr " Lay-out"
+
+#: inc/customizer/options/footer-builder/bottom-area.php:140
+#: inc/customizer/options/footer-builder/main-area.php:211
+#: inc/customizer/options/footer-builder/top-area.php:141
+msgid "Inner Elements"
+msgstr "Binnenste elementen"
+
+#: inc/customizer/panels-sections/panels-sections.php:25
+#: inc/customizer/panels-sections/panels-sections.php:86
+msgid "Footer Builder"
+msgstr "Footer bouwer"
+
+#: inc/customizer/panels-sections/panels-sections.php:13
+#: inc/customizer/panels-sections/panels-sections.php:81
+msgid "Header Builder"
+msgstr "Header bouwer"
+
+#: inc/customizer/options/header/primary-menu.php:96
+msgid "Active Style"
+msgstr "Actieve stijl"
+
+#: inc/customizer/options/header/main-header.php:174
+msgid "Header Search Navigation"
+msgstr "Navigatie zoeken in headers"
+
+#: inc/customizer/options/header-builder/primary-menu.php:18
+#: inc/customizer/options/header-builder/secondary-menu.php:17
+msgid "Select Menu Navigation"
+msgstr "Selecteer menu navigatie"
+
+#: inc/customizer/options/header-builder/header-button.php:157
+msgid "Border Radius"
+msgstr "Randradius"
+
+#: inc/customizer/options/header-builder/header-builder.php:280
+msgid "Global Header"
+msgstr "Globale header"
+
+#: inc/customizer/options/header-builder/header-builder.php:266
+#: inc/customizer/options/header-builder/offset-area.php:6
+#: inc/customizer/panels-sections/panels-sections.php:226
+msgid "Offset Area"
+msgstr "Offset gebied"
+
+#: inc/customizer/options/header-builder/header-builder.php:236
+msgid "Main right"
+msgstr "Hoofd rechts"
+
+#: inc/customizer/options/header-builder/header-builder.php:231
+msgid "Main center"
+msgstr "Hoofd midden"
+
+#: inc/customizer/options/header-builder/header-builder.php:226
+msgid "Builder area middle left"
+msgstr "Bouwer gebied midden links"
+
+#: inc/customizer/options/header-builder/header-builder.php:221
+msgid "Builder Main area"
+msgstr "Bouwer hoofd gebied"
+
+#: inc/customizer/options/header-builder/header-builder.php:214
+msgid "Builder area top right"
+msgstr "Bouwer gebied bovenkant rechts"
+
+#: inc/customizer/options/header-builder/header-builder.php:209
+msgid "Builder area top middle"
+msgstr "Bouwer gebied bovenkant midden"
+
+#: inc/customizer/options/header-builder/header-builder.php:204
+msgid "Builder area top left"
+msgstr "Bouwer gebied bovenkant links"
+
+#: inc/customizer/options/header-builder/header-builder.php:199
+msgid "Builder area top"
+msgstr "Bouwer gebied bovenkant"
+
+#: inc/customizer/options/header-builder/header-builder.php:137
+msgid "Builder Component"
+msgstr "Bouwer component"
+
+#: inc/customizer/options/header-builder/header-builder.php:119
+#: inc/customizer/panels-sections/panels-sections.php:296
+msgid "Toggle Button"
+msgstr "Toggle knop"
+
+#: inc/customizer/options/header-builder/header-builder.php:31
+#: inc/customizer/options/header-builder/quaternary-menu.php:11
+#: inc/customizer/panels-sections/panels-sections.php:206
+msgid "Quaternary Menu"
+msgstr "Kwartair menu"
+
+#: inc/customizer/options/header-builder/header-builder.php:26
+#: inc/customizer/options/header-builder/tertiary-menu.php:11
+#: inc/customizer/panels-sections/panels-sections.php:201
+msgid "Tertiary Menu"
+msgstr "Tertiair menu"
+
+#: inc/customizer/options/header-builder/header-builder.php:11
+msgid "Site Title & Logo"
+msgstr "Site titel & logo"
+
+#: inc/customizer/options/header-builder/cart.php:6
+#: inc/customizer/options/header-builder/header-builder.php:73
+#: inc/customizer/options/header-builder/header-builder.php:124
+#: inc/customizer/panels-sections/panels-sections.php:291
+msgid "Cart"
+msgstr "Winkelwagen"
+
+#: inc/customizer/options/global/container.php:98
+msgid "Outside Background"
+msgstr "Achtergrond buiten"
+
+#: inc/customizer/options/global/container.php:83
+msgid "Inside Background"
+msgstr "Achtergrond binnen"
+
+#: inc/customizer/options/global/colors.php:8
+#: inc/customizer/options/global/colors.php:13
+msgid "Customized Color palette"
+msgstr "Aangepast kleurenpalet"
+
+#: inc/customizer/options/footer/scroll-to-top.php:6
+msgid "Scroll To Top"
+msgstr "Scrol naar boven"
+
+#: inc/customizer/options/footer/footer-bar.php:248
+#: inc/customizer/options/header/top-bar.php:190
+msgid "Column 2 Widget Navigation"
+msgstr "Kolom 2 widget navigatie"
+
+#: inc/customizer/options/footer/footer-bar.php:181
+#: inc/customizer/options/header/top-bar.php:124
+msgid "Column 1 Widget Navigation"
+msgstr "Kolom 1 widget navigatie"
+
+#: inc/customizer/options/footer/footer-bar.php:122
+#: inc/customizer/options/footer/footer-bar.php:205
+#: inc/customizer/options/header/top-bar.php:87
+#: inc/customizer/options/header/top-bar.php:152
+msgid "Content Type"
+msgstr "Contenttype"
+
+#: inc/customizer/options/footer-builder/widget-1.php:119
+#: inc/customizer/options/footer-builder/widget-2.php:119
+#: inc/customizer/options/footer-builder/widget-3.php:119
+#: inc/customizer/options/footer-builder/widget-4.php:119
+#: inc/customizer/options/footer-builder/widget-5.php:119
+#: inc/customizer/options/footer-builder/widget-6.php:119
+#: inc/customizer/options/header-builder/widget-1.php:119
+#: inc/customizer/options/header-builder/widget-2.php:119
+msgid "Content Typography"
+msgstr "Inhoud typografie"
+
+#: inc/customizer/options/footer-builder/widget-1.php:78
+#: inc/customizer/options/footer-builder/widget-2.php:78
+#: inc/customizer/options/footer-builder/widget-3.php:78
+#: inc/customizer/options/footer-builder/widget-4.php:78
+#: inc/customizer/options/footer-builder/widget-5.php:78
+#: inc/customizer/options/footer-builder/widget-6.php:78
+#: inc/customizer/options/header-builder/widget-1.php:78
+#: inc/customizer/options/header-builder/widget-2.php:78
+msgid "Content Color"
+msgstr "Inhoud kleur"
+
+#: inc/customizer/options/footer-builder/widget-1.php:55
+#: inc/customizer/options/footer-builder/widget-2.php:55
+#: inc/customizer/options/footer-builder/widget-3.php:55
+#: inc/customizer/options/footer-builder/widget-4.php:55
+#: inc/customizer/options/footer-builder/widget-5.php:55
+#: inc/customizer/options/footer-builder/widget-6.php:55
+#: inc/customizer/options/header-builder/widget-1.php:55
+#: inc/customizer/options/header-builder/widget-2.php:55
+msgid "Title Typography"
+msgstr "Titel typografie"
+
+#: inc/customizer/options/footer-builder/top-area.php:5
+#: inc/customizer/options/header-builder/top-area.php:7
+#: inc/customizer/panels-sections/panels-sections.php:301
+#: inc/customizer/panels-sections/panels-sections.php:316
+msgid "Top Area"
+msgstr "Bovenkant gebied"
+
+#: inc/customizer/options/footer-builder/socials.php:6
+#: inc/customizer/options/footer-builder/socials.php:13
+#: inc/customizer/options/header-builder/header-builder.php:68
+#: inc/customizer/options/header-builder/socials.php:6
+#: inc/customizer/options/header-builder/socials.php:13
+msgid "Social"
+msgstr "Sociaal"
+
+#: inc/customizer/options/footer-builder/main-area.php:180
+msgid "Widget Item List"
+msgstr "Widget item lijst"
+
+#: inc/customizer/options/footer-builder/main-area.php:168
+#: inc/customizer/options/footer-builder/widget-1.php:14
+#: inc/customizer/options/footer-builder/widget-2.php:14
+#: inc/customizer/options/footer-builder/widget-3.php:14
+#: inc/customizer/options/footer-builder/widget-4.php:14
+#: inc/customizer/options/footer-builder/widget-5.php:14
+#: inc/customizer/options/footer-builder/widget-6.php:14
+#: inc/customizer/options/header-builder/widget-1.php:14
+#: inc/customizer/options/header-builder/widget-2.php:14
+msgid "Title Color"
+msgstr "Titel kleur"
+
+#: inc/customizer/options/footer-builder/main-area.php:5
+#: inc/customizer/options/header-builder/main-area.php:5
+#: inc/customizer/panels-sections/panels-sections.php:306
+#: inc/customizer/panels-sections/panels-sections.php:321
+msgid "Main Area"
+msgstr "Hoofd gebied"
+
+#: inc/customizer/options/footer-builder/html-2.php:14
+#: inc/customizer/options/header-builder/html-2.php:14
+msgid "Text/HTML for HTML 2"
+msgstr "Tekst/HTML voor HTML 2"
+
+#: inc/customizer/options/footer-builder/html-1.php:14
+#: inc/customizer/options/header-builder/html-1.php:14
+msgid "Text/HTML for HTML 1"
+msgstr "Tekst/HTML voor HTML 1"
+
+#: inc/customizer/options/footer-builder/footer-menu-2.php:19
+#: inc/customizer/options/footer-builder/footer-menu.php:19
+#: inc/customizer/options/header-builder/quaternary-menu.php:19
+#: inc/customizer/options/header-builder/tertiary-menu.php:19
+msgid "Select a Menu"
+msgstr "Selecteer een menu"
+
+#: inc/customizer/options/footer-builder/footer-menu-2.php:11
+#: inc/customizer/options/footer-builder/footer-menu.php:11
+msgid "Footer Menu"
+msgstr "Footer menu"
+
+#: inc/customizer/options/footer-builder/footer-builder.php:85
+#: inc/customizer/options/global/builder.php:6
+#: inc/customizer/panels-sections/panels-sections.php:36
+msgid "Builder"
+msgstr "Bouwer"
+
+#: inc/customizer/options/footer-builder/footer-builder.php:66
+#: inc/customizer/panels-sections/panels-sections.php:126
+#: inc/customizer/panels-sections/panels-sections.php:131
+msgid "Socials"
+msgstr "Socials"
+
+#: inc/customizer/options/footer-builder/footer-builder.php:61
+#: inc/customizer/panels-sections/panels-sections.php:221
+msgid "Menu 2"
+msgstr "Menu 2"
+
+#: inc/customizer/options/footer-builder/footer-builder.php:56
+#: inc/customizer/panels-sections/panels-sections.php:216
+msgid "Menu 1"
+msgstr "Menu 1"
+
+#: inc/customizer/options/footer-builder/footer-builder.php:50
+#: inc/customizer/options/footer-builder/widget-6.php:6
+#: inc/customizer/panels-sections/panels-sections.php:286
+msgid "Widget 6"
+msgstr "Widget 6"
+
+#: inc/customizer/options/footer-builder/footer-builder.php:44
+#: inc/customizer/options/footer-builder/widget-5.php:6
+#: inc/customizer/panels-sections/panels-sections.php:281
+msgid "Widget 5"
+msgstr "Widget 5"
+
+#: inc/customizer/options/footer-builder/footer-builder.php:38
+#: inc/customizer/options/footer-builder/widget-4.php:6
+#: inc/customizer/panels-sections/panels-sections.php:276
+msgid "Widget 4"
+msgstr "Widget 4"
+
+#: inc/customizer/options/footer-builder/footer-builder.php:32
+#: inc/customizer/options/footer-builder/widget-3.php:6
+#: inc/customizer/panels-sections/panels-sections.php:271
+msgid "Widget 3"
+msgstr "Widget 3"
+
+#: inc/customizer/options/footer-builder/footer-builder.php:26
+#: inc/customizer/options/footer-builder/widget-2.php:6
+#: inc/customizer/options/header-builder/header-builder.php:62
+#: inc/customizer/options/header-builder/header-builder.php:113
+#: inc/customizer/options/header-builder/widget-2.php:6
+#: inc/customizer/panels-sections/panels-sections.php:256
+#: inc/customizer/panels-sections/panels-sections.php:266
+msgid "Widget 2"
+msgstr "Widget 2"
+
+#: inc/customizer/options/footer-builder/footer-builder.php:20
+#: inc/customizer/options/footer-builder/widget-1.php:6
+#: inc/customizer/options/header-builder/header-builder.php:56
+#: inc/customizer/options/header-builder/header-builder.php:107
+#: inc/customizer/options/header-builder/widget-1.php:6
+#: inc/customizer/panels-sections/panels-sections.php:251
+#: inc/customizer/panels-sections/panels-sections.php:261
+msgid "Widget 1"
+msgstr "Widget 1"
+
+#: inc/customizer/options/footer-builder/footer-builder.php:15
+#: inc/customizer/options/footer-builder/html-2.php:6
+#: inc/customizer/options/header-builder/header-builder.php:51
+#: inc/customizer/options/header-builder/header-builder.php:102
+#: inc/customizer/options/header-builder/html-2.php:6
+#: inc/customizer/panels-sections/panels-sections.php:246
+#: inc/customizer/panels-sections/panels-sections.php:336
+msgid "HTML 2"
+msgstr "HTML2"
+
+#: inc/customizer/options/footer-builder/footer-builder.php:10
+#: inc/customizer/options/footer-builder/html-1.php:6
+#: inc/customizer/options/header-builder/header-builder.php:46
+#: inc/customizer/options/header-builder/header-builder.php:97
+#: inc/customizer/options/header-builder/html-1.php:6
+#: inc/customizer/panels-sections/panels-sections.php:241
+#: inc/customizer/panels-sections/panels-sections.php:331
+msgid "HTML 1"
+msgstr "HTML 1"
+
+#: inc/customizer/options/footer-builder/copyright.php:6
+#: inc/customizer/options/footer-builder/footer-builder.php:71
+#: inc/customizer/panels-sections/panels-sections.php:136
+msgid "Copyright"
+msgstr "Copyright"
+
+#: inc/customizer/options/footer-builder/bottom-area.php:119
+#: inc/customizer/options/footer-builder/main-area.php:143
+#: inc/customizer/options/footer-builder/top-area.php:119
+#: inc/customizer/options/header-builder/bottom-area.php:107
+#: inc/customizer/options/header-builder/header-builder.php:306
+#: inc/customizer/options/header-builder/header-button.php:138
+#: inc/customizer/options/header-builder/main-area.php:107
+#: inc/customizer/options/header-builder/top-area.php:92
+msgid "Border Width"
+msgstr "Rand breedte"
+
+#: inc/customizer/options/footer-builder/bottom-area.php:103
+#: inc/customizer/options/footer-builder/main-area.php:127
+#: inc/customizer/options/footer-builder/top-area.php:103
+#: inc/customizer/options/header-builder/bottom-area.php:91
+#: inc/customizer/options/header-builder/main-area.php:91
+msgid "Margin"
+msgstr "Marge"
+
+#: inc/customizer/options/footer-builder/bottom-area.php:45
+#: inc/customizer/options/footer-builder/main-area.php:45
+#: inc/customizer/options/footer-builder/top-area.php:45
+#: inc/customizer/options/header-builder/bottom-area.php:33
+#: inc/customizer/options/header-builder/logo.php:42
+#: inc/customizer/options/header-builder/main-area.php:33
+#: inc/customizer/options/header-builder/top-area.php:35
+#: inc/customizer/options/header/site-identity.php:42
+msgid "Height"
+msgstr "Hoogte"
+
+#: inc/customizer/options/footer-builder/bottom-area.php:5
+#: inc/customizer/options/header-builder/bottom-area.php:5
+#: inc/customizer/panels-sections/panels-sections.php:311
+#: inc/customizer/panels-sections/panels-sections.php:326
+msgid "Bottom Area"
+msgstr "Onderkant gebied"
+
+#: inc/customizer/options/content/blog.php:53
+msgid "Elements"
+msgstr "Elementen"
+
+#: inc/customizer/options/content/blog.php:15
+msgid "Page Title Position Navigation"
+msgstr "Pagina titel positie navigatie"
+
+#: inc/core/class-zakra-widgets.php:93
+msgid "Footer Six"
+msgstr "Footer zes"
+
+#: inc/core/class-zakra-widgets.php:92
+msgid "Footer Five"
+msgstr "Footer vijf"
+
+#: inc/core/class-zakra-after-setup-theme.php:101
+#: inc/customizer/options/header-builder/header-builder.php:21
+#: inc/customizer/options/header-builder/secondary-menu.php:11
+#: inc/customizer/panels-sections/panels-sections.php:196
+msgid "Secondary Menu"
+msgstr "Secundair menu"
+
+#: inc/admin/class-zakra-welcome-notice.php:303
+msgid "Plugin installation failed."
+msgstr "Plugin installatie mislukt."
+
+#: inc/admin/class-zakra-welcome-notice.php:178
+msgid "Clicking this button will install and activate the ThemeGrill Demo Importer and BlockArt Blocks plugins allowing you to import the theme demos."
+msgstr "Door op deze knop te klikken, worden de ThemeGrill Demo Importer en BlockArt Blocks plugins geïnstalleerd en geactiveerd, waardoor je de thema demo's kunt importeren."
+
+#: inc/customizer/options/global/typography.php:8
+#: inc/customizer/options/global/typography.php:15
+msgid "Root Font Size"
+msgstr "Lettertypegrootte van de root"
+
+#: inc/customizer/options/header-builder/search.php:12
+#: inc/customizer/options/header/header-search.php:20
+msgid "Product Search"
+msgstr "Product zoeken"
+
+#: inc/customizer/options/content/blog.php:43
+msgid "Modified Date"
+msgstr "Wijzigingsdatum"
+
+#: inc/customizer/options/content/blog.php:42
+msgid "Published Date"
+msgstr "Publicatiedatum"
+
+#: inc/customizer/options/content/blog.php:28
+#: inc/customizer/options/content/blog.php:37
+msgid "Post Date Type"
+msgstr "Bericht datum type"
+
+#: inc/admin/views/help.php:199 inc/admin/views/products.php:141
+#: assets/build/dashboard.js:1
+msgid "Activate"
+msgstr "Activeren"
+
+#: inc/admin/views/products.php:63 assets/build/dashboard.js:1
+msgid "Plugins"
+msgstr "Plugins"
+
+#: inc/admin/views/products.php:56 inc/admin/views/products.php:132
+msgid "Live demo"
+msgstr "Live demo"
+
+#: inc/admin/views/products.php:20
+msgid "Themes"
+msgstr "Thema's"
+
+#: inc/admin/views/header.php:86 assets/build/dashboard.js:1
+msgid "Upgrade to Pro"
+msgstr "Upgraden naar Pro"
+
+#: inc/admin/views/header.php:71 assets/build/dashboard.js:1
+msgid "Core"
+msgstr "Core"
+
+#. translators: %s: Theme Name.
+#: inc/admin/views/help.php:104
+msgid "Sharing your review is a valuable way to help us enhance your experience."
+msgstr "Het delen van je beoordeling is een waardevolle manier om ons te helpen je ervaring te verbeteren."
+
+#: inc/admin/views/help.php:76 assets/build/dashboard.js:1
+msgid "Visit us on YouTube"
+msgstr "Bezoek ons op YouTube"
+
+#: inc/admin/views/help.php:75 assets/build/dashboard.js:1
+msgid "Visit our YouTube channel for videos about tutorials, updates, and news on our products!"
+msgstr "Bezoek ons YouTube kanaal voor video's over handleidingen, updates en nieuws over onze producten!"
+
+#: inc/admin/views/help.php:74 assets/build/dashboard.js:1
+msgid "Youtube Community"
+msgstr "YouTube community"
+
+#: inc/admin/views/help.php:71
+msgid "youtube"
+msgstr "youTube"
+
+#: inc/admin/views/help.php:66 assets/build/dashboard.js:1
+msgid "Join us on Twitter"
+msgstr "Volg ons op Twitter"
+
+#: inc/admin/views/help.php:65 assets/build/dashboard.js:1
+msgid "Follow us on Twitter and stay in the loop for the latest news and updates on our products!"
+msgstr "Volg ons op Twitter en blijf op de hoogte van het laatste nieuws en updates over onze producten!"
+
+#: inc/admin/views/help.php:61
+msgid "x"
+msgstr "x"
+
+#: inc/admin/views/help.php:56 assets/build/dashboard.js:1
+msgid "Join us on Facebook"
+msgstr "Word lid op Facebook"
+
+#: inc/admin/views/help.php:55
+msgid "Join our Facebook community to connect with fellow users for the latest news, updates, and discussions."
+msgstr "Word lid van onze Facebook community en maak verbinding met andere gebruikers voor het laatste nieuws, updates en discussies."
+
+#: inc/admin/views/help.php:54 assets/build/dashboard.js:1
+msgid "Facebook Community"
+msgstr "Facebook community"
+
+#: inc/admin/views/help.php:51
+msgid "facebook"
+msgstr "facebook"
+
+#: inc/admin/views/help.php:48 assets/build/dashboard.js:1
+msgid "Join Our Community"
+msgstr "Word lid van onze community"
+
+#: inc/admin/views/help.php:37 assets/build/dashboard.js:1
+msgid "View Now"
+msgstr "Nu bekijken"
+
+#: inc/admin/views/help.php:36 assets/build/dashboard.js:1
+msgid "Please check out basic documentation for detailed information on how to use Zakra."
+msgstr "Raadpleeg de basisdocumentatie voor gedetailleerde informatie over het gebruik van Zakra."
+
+#: inc/admin/views/help.php:35 assets/build/dashboard.js:1
+msgid "Need Some Help?"
+msgstr "Kunnen we een handje helpen?"
+
+#: inc/admin/views/free-vs-pro.php:282 assets/build/dashboard.js:1
+msgid "Get Zakra Pro Now"
+msgstr "Verkrijg nu Zakra Pro"
+
+#. translators: %s: HTML br tag
+#: inc/admin/views/free-vs-pro.php:277
+msgid "Access all premium extensions, features, and upcoming updates right away by %s upgrading to the Pro version."
+msgstr "Krijg meteen toegang tot alle premium extensies, functies en komende updates door %s te upgraden naar de Pro versie."
+
+#: inc/admin/views/help.php:202 inc/admin/views/products.php:146
+#: assets/build/dashboard.js:1
+msgid "Install"
+msgstr "Installeer"
+
+#: inc/admin/views/help.php:143 assets/build/dashboard.js:1
+msgid "Useful Plugins"
+msgstr "Handige plugins"
+
+#: inc/admin/views/help.php:44 assets/build/dashboard.js:1
+msgid "We would be happy to guide you through any issues and queries you have regarding Zakra!"
+msgstr "We helpen je graag met alle problemen en vragen die je hebt over Zakra!"
+
+#: inc/admin/views/help.php:138 assets/build/dashboard.js:1
+msgid "Request a Feature"
+msgstr "Vraag een functie aan"
+
+#. translators: %s: Theme Name.
+#: inc/admin/views/help.php:133 assets/build/dashboard.js:1
+msgid "Please take a moment to suggest any features that could enhance our product."
+msgstr "Neem even de tijd om suggesties te doen voor functies die ons product zouden kunnen verbeteren."
+
+#: inc/admin/views/help.php:126 assets/build/dashboard.js:1
+msgid "Feature Request"
+msgstr "Functie verzoek"
+
+#: inc/admin/views/help.php:110 assets/build/dashboard.js:1
+msgid "Submit a Review"
+msgstr "Verzend een beoordeling"
+
+#: inc/admin/views/help.php:98 assets/build/dashboard.js:1
+msgid "Based on 1430+ Reviews"
+msgstr "Gebaseerd op 1430+ beoordelingen"
+
+#: inc/admin/views/help.php:89 assets/build/dashboard.js:1
+msgid "Leave us a Review"
+msgstr "Laat een beoordeling achter"
+
+#: inc/admin/views/free-vs-pro.php:272 assets/build/dashboard.js:1
+msgid "Upgrade Now"
+msgstr "Upgrade nu"
+
+#: inc/admin/views/free-vs-pro.php:200 assets/build/dashboard.js:1
+msgid "Free"
+msgstr "Gratis"
+
+#: inc/admin/views/changelog.php:45
+msgid "No changelog data available"
+msgstr "Geen wijzigingslog gegevens beschikbaar"
+
+#: inc/admin/class-zakra-welcome-notice.php:110
+msgid "Clicking this button will install and activate the ThemeGrill Demo Importer plugin allowing you to import the theme’s demos."
+msgstr "Als je op deze knop klikt, wordt de ThemeGrill demo importeerfunctie plugin geïnstalleerd en geactiveerd, zodat je de demo's van het thema kunt importeren."
+
+#. translators: 1: welcome page link starting html tag, 2: welcome page link
+#. ending html tag.
+#: inc/admin/class-zakra-welcome-notice.php:103
+#: inc/admin/class-zakra-welcome-notice.php:171
+msgid "Welcome! Thank you for choosing Zakra! Let’s get you started right away with our visually appealing and attractive demos."
+msgstr "Welkom! Bedankt dat je voor Zakra kiest! Laten we je meteen aan het werk zetten met onze visueel aantrekkelijke en aantrekkelijke demo's."
+
+#: inc/admin/class-zakra-welcome-notice.php:95
+#: inc/admin/class-zakra-welcome-notice.php:163
+msgid "Start Building with Zakra!"
+msgstr "Begin met bouwen met Zakra!"
+
+#. translators: %s: welcome page link starting username
+#: inc/admin/class-zakra-welcome-notice.php:87
+#: inc/admin/class-zakra-welcome-notice.php:155
+msgid "Welcome %s!"
+msgstr "Welkom %s!"
+
+#: inc/admin/views/header.php:62 assets/build/dashboard.js:1
+msgid "Help"
+msgstr "Hulp"
+
+#: inc/admin/views/header.php:50 assets/build/dashboard.js:1
+msgid "Products"
+msgstr "Producten"
+
+#: inc/admin/views/header.php:36 inc/admin/views/header.php:43
+#: assets/build/dashboard.js:1
+msgid "Starter Templates"
+msgstr "Starter templates"
+
+#: inc/admin/views/header.php:29 assets/build/dashboard.js:1
+msgid "Dashboard"
+msgstr "Dashboard"
+
+#: inc/admin/class-zakra-changelog-controller.php:162
+msgid "Failed to read changelog."
+msgstr "Mislukt om de changelog te lezen."
+
+#: inc/admin/class-zakra-changelog-controller.php:88
+#: inc/admin/class-zakra-changelog-controller.php:156
+msgid "Changelog not found."
+msgstr "Changelog niet gevonden."
+
+#: inc/admin/class-zakra-changelog-controller.php:152
+msgid "Could not access filesystem."
+msgstr "Kan geen toegang krijgen tot het bestandssysteem."
+
+#. Translators: 1. Label for Contact Page or Right sidebar area, 2. Opening of
+#. the link for widgets.php WordPress section, 3. Closing of the link for
+#. widgets.php WordPress section
+#: sidebar.php:47
+msgid "This is an example widget to show how the %s Sidebar looks by default. You can add custom widgets from the %swidgets screen%s in the admin. If custom widgets is added than this will be replaced by those widgets."
+msgstr "Dit is een voorbeeld widget om te laten zien hoe de %s zijbalk er standaard uitziet. Je kunt aangepaste widgets toevoegen via het scherm %swidgets%s in de beheer. Als je aangepaste widgets toevoegt, wordt deze vervangen door die widgets."
+
+#: sidebar.php:44 sidebar.php:49
+msgid "Example Widget"
+msgstr "Voorbeeld widget"
+
+#: inc/customizer/options/additional/additional.php:6
+msgid "Load Google fonts locally"
+msgstr "Lokaal Google Fonts laden"
+
+#: inc/customizer/panels-sections/panels-sections.php:176
+msgid "Optimization"
+msgstr "Optimalisatie"
+
+#: inc/customizer/panels-sections/panels-sections.php:29
+msgid "Additional"
+msgstr "Extra"
+
+#: template-parts/header-builder-elements/toggle-button.php:72
+#: template-parts/header/primary-menu/mobile-toggle.php:57
+msgid "Close Button"
+msgstr "Sluit knop"
+
+#: template-parts/content-none.php:48
+msgid "We couldnt find any results for your search. Use more generic words or double check your spelling."
+msgstr "We konden geen resultaten vinden voor je zoekopdracht. Gebruik meer algemene woorden of controleer je spelling."
+
+#: template-parts/content-none.php:25
+msgid "No Results Found"
+msgstr "Geen resultaten gevonden"
+
+#: searchform.php:38
+msgctxt "submit button"
+msgid "Search"
+msgstr "Zoeken"
+
+#: searchform.php:30
+msgctxt "placeholder"
+msgid "Type & hit Enter &hellip;"
+msgstr "Typ & druk op Enter &hellip;"
+
+#: searchform.php:26 searchform.php:33
+msgctxt "label"
+msgid "Search for:"
+msgstr "Zoek naar:"
+
+#: inc/customizer/options/header-builder/logo.php:14
+#: inc/customizer/options/header/site-identity.php:14
+msgid "Site Logo"
+msgstr "Site Logo"
+
+#: inc/customizer/options/header-builder/primary-menu.php:192
+#: inc/customizer/options/header-builder/secondary-menu.php:139
+#: inc/customizer/options/header-builder/tertiary-menu.php:140
+#: inc/customizer/options/header/primary-menu.php:234
+msgid "Sub Menu"
+msgstr "Submenu"
+
+#: inc/customizer/options/header-builder/primary-menu.php:72
+#: inc/customizer/options/header-builder/secondary-menu.php:53
+#: inc/customizer/options/header-builder/tertiary-menu.php:54
+#: inc/customizer/options/header/primary-menu.php:88
+msgid "Main Menu"
+msgstr "Hoofdmenu"
+
+#: inc/customizer/options/header-builder/primary-menu.php:26
+#: inc/customizer/options/header/primary-menu.php:25
+msgid "Priority plus navigation"
+msgstr "Prioriteit plus navigatie"
+
+#: inc/customizer/options/header/main-header.php:167
+msgid "Components"
+msgstr "Componenten"
+
+#: inc/customizer/options/header/main-header.php:24
+msgid "Layout 2"
+msgstr "Lay-out 2"
+
+#: inc/customizer/options/header/main-header.php:23
+msgid "Layout 1"
+msgstr "Lay-out 1"
+
+#: inc/customizer/options/header-builder/header-builder.php:36
+#: inc/customizer/options/header-builder/header-button.php:6
+#: inc/customizer/options/header/header-button.php:8
+msgid "Button 1"
+msgstr "Knop 1"
+
+#: inc/customizer/options/global/typography.php:89
+msgid "Headings"
+msgstr "Kopteksten"
+
+#: inc/customizer/options/global/sidebar.php:119
+msgid "Others"
+msgstr "Andere"
+
+#: inc/customizer/options/global/sidebar.php:86
+msgid "Archive"
+msgstr "Archief"
+
+#: inc/customizer/options/global/colors.php:114
+msgid "Base"
+msgstr "Basis"
+
+#: inc/customizer/options/global/colors.php:101
+msgid "Theme Colors"
+msgstr "Thema kleuren"
+
+#: inc/customizer/options/global/button.php:132
+#: inc/customizer/options/header/header-button.php:154
+msgid "Radius"
+msgstr "Radius"
+
+#: inc/customizer/options/footer-builder/main-area.php:190
+#: inc/customizer/options/footer/footer-column.php:266
+#: inc/customizer/options/header-builder/primary-menu.php:48
+#: inc/customizer/options/header-builder/secondary-menu.php:29
+#: inc/customizer/options/header-builder/tertiary-menu.php:30
+msgid "Border Bottom Width"
+msgstr "Breedte rand onder"
+
+#: inc/customizer/options/footer/footer-column.php:23
+#: inc/customizer/options/header-builder/primary-menu.php:80
+#: inc/customizer/options/header/main-header.php:35
+#: inc/customizer/options/header/main-header.php:72
+msgid "Advanced Style"
+msgstr "Geavanceerde stijl"
+
+#: inc/customizer/options/footer/footer-bar.php:263
+msgid "Footer Content"
+msgstr "Footer inhoud"
+
+#: inc/customizer/options/footer/footer-bar.php:237
+#: inc/customizer/options/header/top-bar.php:180
+msgid "Select a Menu for Column 2"
+msgstr "Selecteer een menu voor kolom 2"
+
+#: inc/customizer/options/footer/footer-bar.php:220
+#: inc/customizer/options/header/top-bar.php:169
+msgid "Text/HTML for Column 2"
+msgstr "Tekst/HTML voor kolom 2"
+
+#: inc/customizer/options/footer/footer-bar.php:170
+#: inc/customizer/options/header/top-bar.php:114
+msgid "Select a Menu for Column 1"
+msgstr "Selecteer een menu voor kolom 1"
+
+#: inc/customizer/options/footer-builder/copyright.php:21
+#: inc/customizer/options/footer/footer-bar.php:144
+#: inc/customizer/options/header/top-bar.php:103
+msgid "Text/HTML for Column 1"
+msgstr "Tekst/HTML voor kolom 1"
+
+#: inc/customizer/options/footer/footer-bar.php:87
+#: inc/customizer/options/global/container.php:51
+#: inc/customizer/options/global/sidebar.php:44
+#: inc/customizer/options/header/main-header.php:143
+#: inc/customizer/options/header/primary-menu.php:57
+msgid "Width"
+msgstr "Breedte"
+
+#: inc/customizer/options/content/blog.php:192
+#: inc/customizer/build/customind.js:4
+#: inc/customizer/customind/build/customind.js:4
+msgid "Type"
+msgstr "Type"
+
+#: inc/customizer/options/content/blog.php:105
+msgid "Post title"
+msgstr "Berichttitel"
+
+#: inc/customizer/options/content/blog.php:80
+#: inc/customizer/options/content/single-post.php:37
+#: inc/customizer/options/content/single-post.php:44
+msgid "Meta Elements"
+msgstr "Meta elementen"
+
+#: inc/customizer/options/content/blog.php:61
+#: inc/customizer/options/content/single-post.php:8
+#: inc/customizer/options/content/single-post.php:15
+msgid "Post Elements"
+msgstr "Berichtelementen"
+
+#: inc/customizer/options/footer/footer-bar.php:8
+#: inc/customizer/panels-sections/panels-sections.php:166
+#: assets/build/dashboard.js:1
+msgid "Footer Bar"
+msgstr "Footer balk"
+
+#: inc/customizer/options/footer/footer-column.php:8
+#: inc/customizer/panels-sections/panels-sections.php:161
+#: assets/build/dashboard.js:1
+msgid "Footer Column"
+msgstr "Footer kolom"
+
+#: inc/customizer/panels-sections/panels-sections.php:141
+#: assets/build/dashboard.js:1
+msgid "Blog"
+msgstr "Blog"
+
+#: inc/customizer/panels-sections/panels-sections.php:121
+msgid "Breadcrumb"
+msgstr "Kruimelpad"
+
+#: inc/customizer/panels-sections/panels-sections.php:101
+msgid "Header Search"
+msgstr "Header zoeken"
+
+#: inc/customizer/options/header/main-header.php:8
+#: inc/customizer/panels-sections/panels-sections.php:91
+#: assets/build/dashboard.js:1
+msgid "Main Header"
+msgstr "Hoofd header"
+
+#: inc/customizer/options/header/top-bar.php:7
+#: inc/customizer/panels-sections/panels-sections.php:71
+#: assets/build/dashboard.js:1
+msgid "Top Bar"
+msgstr "Bovenste balk"
+
+#: inc/customizer/panels-sections/panels-sections.php:9
+msgid "Header & Navigation"
+msgstr "Header & navigatie"
+
+#: inc/core/class-zakra-widgets.php:87
+#: inc/customizer/options/footer/footer-bar.php:196
+#: inc/customizer/options/header/top-bar.php:144
+msgid "Column 2"
+msgstr "Kolom 2"
+
+#: inc/core/class-zakra-widgets.php:86
+#: inc/customizer/options/footer/footer-bar.php:113
+#: inc/customizer/options/header/top-bar.php:79
+msgid "Column 1"
+msgstr "Kolom 1"
+
+#: inc/admin/class-zakra-welcome-notice.php:51
+msgid "FAQ"
+msgstr "FAQ"
+
+#: inc/admin/class-zakra-welcome-notice.php:39
+msgid "Learn about Zakra 3.0"
+msgstr "Leer meer over Zakra 3.0"
+
+#: inc/admin/class-zakra-demo-import-migration-notice.php:66
+#: inc/admin/class-zakra-welcome-notice.php:45 inc/admin/views/help.php:45
+#: assets/build/dashboard.js:1
+msgid "Contact Support"
+msgstr "Neem contact op met ondersteuning"
+
+#: inc/admin/class-zakra-demo-import-migration-notice.php:63
+msgid "Fix Migration Issue"
+msgstr "Oplossing van migratieproblemen"
+
+#: inc/admin/class-zakra-demo-import-migration-notice.php:55
+msgid "It seems you've either imported Zakra demos recently or updated Zakra to 3.0 version. After these actions, if you've seen any design issues in your site, please try clicking the button below:"
+msgstr "Het lijkt erop dat je onlangs Zakra demo's hebt geïmporteerd of Zakra hebt geüpdatet naar versie 3.0. Na deze acties, als je ontwerpproblemen op je site hebt gezien, probeer dan op de onderstaande knop te klikken:"
+
+#: 404.php:42
+msgid "Go Back"
+msgstr "Ga terug"
+
+#: 404.php:35
+msgid "We’re sorry, the page you requested could not be found. Please go back to the homepage"
+msgstr "De door je aangevraagde pagina kon niet worden gevonden. Ga terug naar de homepage"
+
+#: 404.php:30
+msgid "Oops! Page Not Found"
+msgstr "Pagina niet gevonden"
+
+#: inc/customizer/options/header-builder/header-builder.php:258
+msgid "Bottom right"
+msgstr "Rechtsonder"
+
+#: inc/customizer/options/header-builder/header-builder.php:248
+msgid "Bottom left"
+msgstr "Linksonder"
+
+#: inc/customizer/options/header-builder/header-builder.php:253
+msgid "Bottom center"
+msgstr "Middenonder"
+
+#. translators: %1$s: Author prefix, %2$s: Author.
+#. translators: %1$s: Day prefix, %2$s: Day.
+#. translators: %1$s: Month prefix, %2$s: Month.
+#. translators: %1$s: Year prefix, %2$s: Year.
+#: inc/template-functions.php:186 inc/template-functions.php:202
+#: inc/template-functions.php:208 inc/template-functions.php:214
+#: inc/template-tags.php:68 inc/template-tags.php:84 inc/template-tags.php:90
+#: inc/template-tags.php:96
+msgid "%1$s %2$s"
+msgstr "%1$s %2$s"
+
+#: inc/customizer/panels-sections/panels-sections.php:342
+msgid "Leave a Review on .org"
+msgstr "Geef een beoordeling op .org"
+
+#: sidebar.php:36
+msgid "Click here to add widgets for this area"
+msgstr "Klik hier om widgets voor dit gebied toe te voegen"
+
+#: inc/compatibility/jetpack/class-zakra-jetpack.php:149
+msgid "Load More"
+msgstr "Meer laden"
+
+#. Translators: %1$s Zakra Pro link, %2$s Zakra Pro update link, %3$s Zakra Pro
+#. update link opening, %4$s Zakra Pro update link closing, %5$s Opening strong
+#. tag, %5$s Closing strong tag
+#: inc/admin/class-zakra-pro-minimum-version-notice.php:59
+msgid "Please update the %1$s plugin to latest version i.e %5$s3.1.0%6$s for %2$s to work properly. %5$s%3$sClick here to update Zakra Pro Plugin%4$s%6$s"
+msgstr "Update de %1$s plugin naar de laatste versie, d.w.z. %5$s3.1.0%6$s om %2$s goed te laten werken. %5$s%3$sKlik hier om Zakra Pro plugin te updaten%4$s%6$s"
+
+#: functions.php:174
+msgid "Customizing"
+msgstr "Aan het aanpassen"
+
+#: inc/customizer/options/header-builder/logo.php:33
+#: inc/customizer/options/header/site-identity.php:33
+msgid "Upload 2X times the size of your current logo. Eg: If your current logo size is 120*60 then upload 240*120 sized logo."
+msgstr "Upload 2X de grootte van je huidige logo. Bv: als je huidige logo formaat 120*60 is, upload dan een 240*120 formaat logo."
+
+#: inc/customizer/options/header-builder/primary-menu.php:132
+#: inc/customizer/options/header-builder/quaternary-menu.php:45
+#: inc/customizer/options/header-builder/secondary-menu.php:80
+#: inc/customizer/options/header-builder/tertiary-menu.php:81
+#: inc/customizer/options/header/primary-menu.php:172
+msgid "Active"
+msgstr "Actief"
+
+#: inc/customizer/options/global/typography.php:390
+msgid "H6"
+msgstr "H6"
+
+#: inc/customizer/options/global/typography.php:346
+msgid "H5"
+msgstr "H5"
+
+#: inc/customizer/options/global/typography.php:302
+msgid "H4"
+msgstr "H4"
+
+#: inc/customizer/options/global/typography.php:258
+msgid "H3"
+msgstr "H3"
+
+#: inc/customizer/options/global/typography.php:215
+msgid "H2"
+msgstr "H2"
+
+#: inc/customizer/options/global/typography.php:171
+msgid "H1"
+msgstr "H1"
+
+#: inc/customizer/options/global/container.php:28
+#: inc/customizer/options/global/content-area.php:31
+msgid "Boxed"
+msgstr "Boxed"
+
+#: inc/customizer/options/global/container.php:24
+#: inc/customizer/options/global/content-area.php:27
+msgid "Wide"
+msgstr "Breed"
+
+#: inc/customizer/options/footer/scroll-to-top.php:49
+msgid "Icon"
+msgstr "Icoon"
+
+#: inc/customizer/options/footer/footer-column.php:254
+msgid "Widget List Item"
+msgstr "Widget link item"
+
+#: inc/customizer/options/content/blog-sidebar.php:68
+msgid "Widget Content"
+msgstr "Widget inhoud"
+
+#: inc/customizer/options/content/blog-sidebar.php:8
+msgid "Widget Title"
+msgstr "Widget titel"
+
+#: inc/customizer/options/content/blog.php:128
+#: inc/customizer/options/footer-builder/copyright.php:57
+#: inc/customizer/options/footer-builder/footer-menu-2.php:38
+#: inc/customizer/options/footer-builder/footer-menu.php:38
+#: inc/customizer/options/footer-builder/html-1.php:42
+#: inc/customizer/options/footer-builder/html-2.php:42
+#: inc/customizer/options/footer-builder/main-area.php:80
+#: inc/customizer/options/footer/footer-bar.php:303
+#: inc/customizer/options/footer/footer-column.php:191
+#: inc/customizer/options/footer/scroll-to-top.php:34
+#: inc/customizer/options/footer/scroll-to-top.php:70
+#: inc/customizer/options/global/button.php:33
+#: inc/customizer/options/global/button.php:55
+#: inc/customizer/options/global/colors.php:158
+#: inc/customizer/options/header-builder/header-button.php:47
+#: inc/customizer/options/header-builder/header-button.php:68
+#: inc/customizer/options/header-builder/html-1.php:42
+#: inc/customizer/options/header-builder/html-2.php:42
+#: inc/customizer/options/header-builder/primary-menu.php:125
+#: inc/customizer/options/header-builder/quaternary-menu.php:38
+#: inc/customizer/options/header-builder/secondary-menu.php:73
+#: inc/customizer/options/header-builder/tertiary-menu.php:74
+#: inc/customizer/options/header/breadcrumb.php:142
+#: inc/customizer/options/header/header-button.php:83
+#: inc/customizer/options/header/header-button.php:105
+#: inc/customizer/options/header/primary-menu.php:165
+msgid "Hover"
+msgstr "Hoveren"
+
+#: inc/customizer/options/content/blog.php:121
+#: inc/customizer/options/footer-builder/copyright.php:50
+#: inc/customizer/options/footer-builder/footer-menu-2.php:31
+#: inc/customizer/options/footer-builder/footer-menu.php:31
+#: inc/customizer/options/footer-builder/html-1.php:35
+#: inc/customizer/options/footer-builder/html-2.php:35
+#: inc/customizer/options/footer-builder/main-area.php:73
+#: inc/customizer/options/footer/footer-bar.php:296
+#: inc/customizer/options/footer/footer-column.php:184
+#: inc/customizer/options/footer/scroll-to-top.php:27
+#: inc/customizer/options/footer/scroll-to-top.php:63
+#: inc/customizer/options/global/button.php:26
+#: inc/customizer/options/global/button.php:48
+#: inc/customizer/options/global/colors.php:151
+#: inc/customizer/options/header-builder/header-button.php:40
+#: inc/customizer/options/header-builder/header-button.php:61
+#: inc/customizer/options/header-builder/html-1.php:35
+#: inc/customizer/options/header-builder/html-2.php:35
+#: inc/customizer/options/header-builder/logo.php:82
+#: inc/customizer/options/header-builder/primary-menu.php:118
+#: inc/customizer/options/header-builder/quaternary-menu.php:31
+#: inc/customizer/options/header-builder/secondary-menu.php:66
+#: inc/customizer/options/header-builder/tertiary-menu.php:67
+#: inc/customizer/options/header/breadcrumb.php:135
+#: inc/customizer/options/header/header-button.php:77
+#: inc/customizer/options/header/header-button.php:99
+#: inc/customizer/options/header/primary-menu.php:158
+#: inc/customizer/options/header/site-identity.php:82
+msgid "Normal"
+msgstr "Normaal"
+
+#: inc/customizer/options/footer-builder/widget-1.php:66
+#: inc/customizer/options/footer-builder/widget-2.php:66
+#: inc/customizer/options/footer-builder/widget-3.php:66
+#: inc/customizer/options/footer-builder/widget-4.php:66
+#: inc/customizer/options/footer-builder/widget-5.php:66
+#: inc/customizer/options/footer-builder/widget-6.php:66
+#: inc/customizer/options/footer/footer-bar.php:282
+#: inc/customizer/options/footer/footer-column.php:171
+#: inc/customizer/options/header-builder/header-button.php:19
+#: inc/customizer/options/header-builder/widget-1.php:66
+#: inc/customizer/options/header-builder/widget-2.php:66
+#: inc/customizer/options/header/breadcrumb.php:121
+#: inc/customizer/options/header/header-button.php:35
+msgid "Link"
+msgstr "Link"
+
+#: inc/customizer/options/header/breadcrumb.php:97
+msgid "Separator"
+msgstr "Scheidingsteken"
+
+#: inc/customizer/options/footer/footer-column.php:147
+#: inc/customizer/options/header-builder/header-button.php:13
+#: inc/customizer/options/header/breadcrumb.php:73
+#: inc/customizer/options/header/header-button.php:26
+msgid "Text"
+msgstr "Tekst"
+
+#: inc/customizer/override-defaults.php:71
+msgid "Header Video URL"
+msgstr "Header video URL"
+
+#: inc/admin/class-zakra-theme-review-notice.php:135
+msgid "I have a query"
+msgstr "Ik heb een vraag"
+
+#: inc/admin/class-zakra-theme-review-notice.php:120
+msgid "Sure, I'd love to!"
+msgstr "Zeker, doe ik graag!"
+
+#. translators: %s: Smiley icon
+#: inc/admin/class-zakra-theme-review-notice.php:111
+msgid "Basically, it would encourage us to release updates regularly with new features & bug fixes so that you can keep on using the theme without any issues and also to provide free support like we have been doing. %s"
+msgstr "In principe, zou het ons aanmoedigen om regelmatig updates uit te brengen met nieuwe functies en bug fixes, zodat je het thema kunt blijven gebruiken zonder enige problemen en ook om gratis ondersteuning te bieden zoals we al hebben gedaan. %s"
+
+#: inc/admin/class-zakra-theme-review-notice.php:105
+msgid "What benefit would you have?"
+msgstr "Welk voordeel zou je hebben?"
+
+#. translators: %1$s: Opening of strong tag, %2$s: Theme's Name, %3$s: Closing
+#. of strong tag
+#: inc/admin/class-zakra-theme-review-notice.php:97
+msgid "Hope you are having a nice experience with %1$s %2$s %3$s theme. Please provide this theme a nice review."
+msgstr "Ik hoop dat je een leuke ervaring hebt met %1$s %2$s %3$s thema. Geef dit thema een mooie beoordeling."
+
+#. translators: %s: Smile icon
+#: inc/admin/class-zakra-theme-review-notice.php:88
+msgid "The above word is just to draw your attention. %s"
+msgstr "Het bovenstaande woord is alleen om je aandacht te trekken. %s"
+
+#: inc/admin/class-zakra-theme-review-notice.php:80
+msgid "Zakra Logo"
+msgstr "Zakra logo"
+
+#: inc/customizer/options/footer-builder/copyright.php:23
+#: inc/customizer/options/footer/footer-bar.php:146
+msgid "Docs Link"
+msgstr "Docs link"
+
+#. translators: 1: Current Year, 2: Site Name, 3: Theme Link, 4: WordPress
+#. Link.
+#: inc/customizer/options/footer-builder/copyright.php:14
+#: inc/customizer/options/footer/footer-bar.php:137 inc/helper/utils.php:274
+#: inc/helper/utils.php:320
+msgid "Copyright &copy; %1$s %2$s. Powered by %3$s and %4$s."
+msgstr "Copyright &copy; %1$s %2$s. Aangedreven door %3$s en %4$s."
+
+#: inc/helper/utils.php:294 inc/helper/utils.php:337
+msgid "WordPress"
+msgstr "WordPress"
+
+#: inc/customizer/options/header-builder/header-builder.php:41
+#: inc/customizer/options/header-builder/search.php:6
+#: inc/customizer/options/header/header-search.php:8
+#: inc/customizer/panels-sections/panels-sections.php:236
+#: inc/customizer/build/customind.js:1
+#: inc/customizer/customind/build/customind.js:1
+msgid "Search"
+msgstr "Zoeken"
+
+#: inc/customizer/options/header-builder/header-button.php:23
+#: inc/customizer/options/header/header-button.php:39
+msgid "https://example.com"
+msgstr "https://example.com"
+
+#: inc/customizer/options/global/button.php:127
+#: inc/customizer/options/global/colors.php:122
+#: inc/customizer/options/header/header-button.php:141
+msgid "Border"
+msgstr "Rand"
+
+#: inc/customizer/options/footer/footer-column.php:115
+#: inc/customizer/build/customind.js:1
+#: inc/customizer/customind/build/customind.js:1
+msgid "Size"
+msgstr "Grootte"
+
+#: inc/customizer/options/header/page-header.php:117
+msgid "Position"
+msgstr "Positie"
+
+#: inc/customizer/options/content/blog.php:196
+msgid "Full Content"
+msgstr "Volledige inhoud"
+
+#: inc/customizer/options/header/header-media.php:8
+#: inc/customizer/panels-sections/panels-sections.php:111
+msgid "Header Media"
+msgstr "Header media"
+
+#: inc/customizer/options/footer-builder/copyright.php:42
+#: inc/customizer/options/footer-builder/html-1.php:27
+#: inc/customizer/options/footer-builder/html-2.php:27
+#: inc/customizer/options/global/colors.php:136
+#: inc/customizer/options/global/colors.php:143
+#: inc/customizer/options/header-builder/html-1.php:27
+#: inc/customizer/options/header-builder/html-2.php:27
+msgid "Links"
+msgstr "Links"
+
+#: inc/customizer/panels-sections/panels-sections.php:181
+msgid "Sidebar Layout"
+msgstr "Zijbalk lay-out"
+
+#: inc/customizer/panels-sections/panels-sections.php:41
+msgid "Colors"
+msgstr "Kleuren"
+
+#: inc/customizer/options/footer-builder/bottom-area.php:28
+#: inc/customizer/options/footer-builder/main-area.php:28
+#: inc/customizer/options/footer-builder/top-area.php:28
+#: inc/customizer/options/global/container.php:6
+#: inc/customizer/options/header-builder/bottom-area.php:16
+#: inc/customizer/options/header-builder/main-area.php:16
+#: inc/customizer/options/header-builder/top-area.php:18
+#: inc/customizer/panels-sections/panels-sections.php:46
+msgid "Container"
+msgstr "Container"
+
+#: inc/customizer/panels-sections/panels-sections.php:5
+msgid "Global"
+msgstr "Globaal"
+
+#: inc/admin/views/help.php:64 assets/build/dashboard.js:1
+msgid "X Community"
+msgstr "X community"
+
+#: inc/admin/class-zakra-welcome-notice.php:39 inc/admin/views/products.php:55
+#: inc/admin/views/products.php:131
+msgid "Learn More"
+msgstr "Lees verder"
+
+#: inc/customizer/options/header-builder/logo.php:31
+#: inc/customizer/options/header/site-identity.php:31
+msgid "Retina Logo"
+msgstr "Retina logo"
+
+#: inc/customizer/options/additional/additional.php:43
+#: inc/customizer/options/content/blog-meta.php:40
+#: inc/customizer/options/content/blog-sidebar.php:127
+#: inc/customizer/options/content/blog.php:261
+#: inc/customizer/options/content/single-post.php:72
+#: inc/customizer/options/footer-builder/copyright.php:145
+#: inc/customizer/options/footer-builder/footer-menu-2.php:109
+#: inc/customizer/options/footer-builder/footer-menu.php:109
+#: inc/customizer/options/footer-builder/html-1.php:107
+#: inc/customizer/options/footer-builder/html-2.php:107
+#: inc/customizer/options/footer-builder/socials.php:62
+#: inc/customizer/options/footer-builder/widget-1.php:148
+#: inc/customizer/options/footer-builder/widget-2.php:148
+#: inc/customizer/options/footer-builder/widget-3.php:148
+#: inc/customizer/options/footer-builder/widget-4.php:148
+#: inc/customizer/options/footer-builder/widget-5.php:148
+#: inc/customizer/options/footer-builder/widget-6.php:148
+#: inc/customizer/options/footer/footer-bar.php:318
+#: inc/customizer/options/footer/footer-column.php:304
+#: inc/customizer/options/footer/scroll-to-top.php:90
+#: inc/customizer/options/global/button.php:158
+#: inc/customizer/options/global/colors.php:176
+#: inc/customizer/options/global/container.php:112
+#: inc/customizer/options/global/content-area.php:77
+#: inc/customizer/options/global/sidebar.php:137
+#: inc/customizer/options/global/typography.php:404
+#: inc/customizer/options/header-builder/bottom-area.php:130
+#: inc/customizer/options/header-builder/cart.php:26
+#: inc/customizer/options/header-builder/header-button.php:177
+#: inc/customizer/options/header-builder/html-1.php:90
+#: inc/customizer/options/header-builder/html-2.php:90
+#: inc/customizer/options/header-builder/logo.php:221
+#: inc/customizer/options/header-builder/main-area.php:130
+#: inc/customizer/options/header-builder/mobile-menu.php:68
+#: inc/customizer/options/header-builder/offset-area.php:27
+#: inc/customizer/options/header-builder/primary-menu.php:248
+#: inc/customizer/options/header-builder/quaternary-menu.php:107
+#: inc/customizer/options/header-builder/search.php:58
+#: inc/customizer/options/header-builder/secondary-menu.php:194
+#: inc/customizer/options/header-builder/socials.php:45
+#: inc/customizer/options/header-builder/tertiary-menu.php:195
+#: inc/customizer/options/header-builder/toggle-button.php:8
+#: inc/customizer/options/header-builder/top-area.php:116
+#: inc/customizer/options/header-builder/widget-1.php:131
+#: inc/customizer/options/header-builder/widget-2.php:131
+#: inc/customizer/options/header/breadcrumb.php:160
+#: inc/customizer/options/header/header-button.php:178
+#: inc/customizer/options/header/header-media.php:18
+#: inc/customizer/options/header/header-search.php:35
+#: inc/customizer/options/header/main-header.php:190
+#: inc/customizer/options/header/page-header.php:217
+#: inc/customizer/options/header/primary-menu.php:354
+#: inc/customizer/options/header/site-identity.php:222
+#: inc/customizer/options/header/top-bar.php:215
+#: inc/customizer/options/woocommerce/woocommerce.php:103
+msgid "Unlock more features available in Pro version."
+msgstr "Ontgrendel meer beschikbare functies in de Pro versie."
+
+#: inc/customizer/options/additional/additional.php:44
+#: inc/customizer/options/content/blog-meta.php:41
+#: inc/customizer/options/content/blog-sidebar.php:128
+#: inc/customizer/options/content/blog.php:262
+#: inc/customizer/options/content/single-post.php:73
+#: inc/customizer/options/footer-builder/copyright.php:146
+#: inc/customizer/options/footer-builder/footer-menu-2.php:110
+#: inc/customizer/options/footer-builder/footer-menu.php:110
+#: inc/customizer/options/footer-builder/html-1.php:108
+#: inc/customizer/options/footer-builder/html-2.php:108
+#: inc/customizer/options/footer-builder/socials.php:63
+#: inc/customizer/options/footer-builder/widget-1.php:149
+#: inc/customizer/options/footer-builder/widget-2.php:149
+#: inc/customizer/options/footer-builder/widget-3.php:149
+#: inc/customizer/options/footer-builder/widget-4.php:149
+#: inc/customizer/options/footer-builder/widget-5.php:149
+#: inc/customizer/options/footer-builder/widget-6.php:149
+#: inc/customizer/options/footer/footer-bar.php:319
+#: inc/customizer/options/footer/footer-column.php:305
+#: inc/customizer/options/footer/scroll-to-top.php:91
+#: inc/customizer/options/global/button.php:159
+#: inc/customizer/options/global/colors.php:177
+#: inc/customizer/options/global/container.php:113
+#: inc/customizer/options/global/content-area.php:78
+#: inc/customizer/options/global/sidebar.php:138
+#: inc/customizer/options/global/typography.php:405
+#: inc/customizer/options/header-builder/bottom-area.php:131
+#: inc/customizer/options/header-builder/cart.php:27
+#: inc/customizer/options/header-builder/header-button.php:178
+#: inc/customizer/options/header-builder/html-1.php:91
+#: inc/customizer/options/header-builder/html-2.php:91
+#: inc/customizer/options/header-builder/logo.php:222
+#: inc/customizer/options/header-builder/main-area.php:131
+#: inc/customizer/options/header-builder/mobile-menu.php:69
+#: inc/customizer/options/header-builder/offset-area.php:28
+#: inc/customizer/options/header-builder/primary-menu.php:249
+#: inc/customizer/options/header-builder/quaternary-menu.php:108
+#: inc/customizer/options/header-builder/search.php:56
+#: inc/customizer/options/header-builder/secondary-menu.php:195
+#: inc/customizer/options/header-builder/socials.php:46
+#: inc/customizer/options/header-builder/tertiary-menu.php:196
+#: inc/customizer/options/header-builder/toggle-button.php:9
+#: inc/customizer/options/header-builder/top-area.php:117
+#: inc/customizer/options/header-builder/widget-1.php:132
+#: inc/customizer/options/header-builder/widget-2.php:132
+#: inc/customizer/options/header/breadcrumb.php:161
+#: inc/customizer/options/header/header-button.php:179
+#: inc/customizer/options/header/header-media.php:19
+#: inc/customizer/options/header/header-search.php:36
+#: inc/customizer/options/header/main-header.php:191
+#: inc/customizer/options/header/page-header.php:218
+#: inc/customizer/options/header/primary-menu.php:355
+#: inc/customizer/options/header/site-identity.php:223
+#: inc/customizer/options/header/top-bar.php:216
+#: inc/customizer/options/woocommerce/woocommerce.php:104
+#: assets/build/dashboard.js:1
+msgid "Learn more"
+msgstr "Lees meer"
+
+#: inc/admin/class-zakra-upgrade-notice.php:105
+msgid "Got pre sales queries?"
+msgstr "Heb je pre-sales vragen?"
+
+#: inc/admin/class-zakra-upgrade-notice.php:95
+msgid "Upgrade to pro"
+msgstr "Upgrade naar pro"
+
+#. Translators: %1$s current user display name., %2$s this theme name., %3$s
+#. discount coupon code., %4$s discount percentage.
+#: inc/admin/class-zakra-upgrade-notice.php:80
+msgid "Howdy, %1$s! You've been using %2$s theme for a while now, and we hope you're happy with it. To access more premium features you can always upgrade to pro. All contents and settings will remain as it is after upgrading to pro, you basically start from where you left. Also, you can use the coupon code %3$s to get %4$s discount on Zakra Pro Plan (limited time offer) while making the purchase. Enjoy! "
+msgstr "Hallo, %1$s! Je hebt het %2$s thema al een tijd in gebruik, en we hopen dat je er blij mee bent. Om meer premium functies tot je beschikking te hebben kun je altijd upgraden naar pro. Alle inhoud en instellingen zullen blijven zoals ze zijn na het updaten naar pro, je start in principe waar je gebleven bent. Ook kun je de waardebon code gebruiken %3$s om de korting %4$s te krijgen (beperkt geldig) als je de plugin gaat kopen. Veel plezier! "
+
+#: inc/admin/class-zakra-welcome-notice.php:33
+msgid "Get started"
+msgstr "Aan de slag"
+
+#: inc/customizer/panels-sections/panels-sections.php:354
+msgid "View Pro Version"
+msgstr "Bekijk PRO versie"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:229
+msgid "Disable"
+msgstr "Uitschakelen"
+
+#: inc/customizer/options/additional/additional.php:13
+#: inc/customizer/options/content/blog.php:212
+#: inc/customizer/options/footer/footer-column.php:14
+#: inc/customizer/options/footer/footer-column.php:223
+#: inc/customizer/options/footer/scroll-to-top.php:12
+#: inc/customizer/options/global/builder.php:13
+#: inc/customizer/options/header-builder/logo.php:66
+#: inc/customizer/options/header/breadcrumb.php:19
+#: inc/customizer/options/header/header-button.php:20
+#: inc/customizer/options/header/header-search.php:14
+#: inc/customizer/options/header/page-header.php:11
+#: inc/customizer/options/header/primary-menu.php:19
+#: inc/customizer/options/header/site-identity.php:66
+#: inc/customizer/options/header/top-bar.php:20
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:225
+msgid "Enable"
+msgstr "Inschakelen"
+
+#: inc/customizer/options/content/blog-meta.php:8
+#: inc/customizer/panels-sections/panels-sections.php:151
+msgid "Meta"
+msgstr "Meta"
+
+#: inc/admin/class-zakra-theme-review-notice.php:125
+msgid "I already did!"
+msgstr "Heb ik al gedaan!"
+
+#: inc/admin/class-zakra-theme-review-notice.php:130
+#: inc/admin/class-zakra-upgrade-notice.php:100
+msgid "Maybe later"
+msgstr "Misschien later"
+
+#: inc/customizer/panels-sections/panels-sections.php:106
+#: inc/customizer/panels-sections/panels-sections.php:231
+msgid "Header Button"
+msgstr "Header Knop"
+
+#: inc/customizer/options/header-builder/header-button.php:28
+#: inc/customizer/options/header/header-button.php:47
+msgid "Open link in a new tab"
+msgstr "Open link in een nieuwe tab"
+
+#: inc/customizer/options/woocommerce/woocommerce.php:79
+#: inc/customizer/options/woocommerce/woocommerce.php:87
+msgid "Single Product"
+msgstr "Enkel product"
+
+#: inc/customizer/options/woocommerce/woocommerce.php:58
+#: inc/customizer/options/woocommerce/woocommerce.php:66
+msgid "WooCommerce"
+msgstr "WooCommerce"
+
+#: inc/core/class-zakra-widgets.php:99
+msgid "WooCommerce Right Sidebar"
+msgstr "WooCommerce rechter zijbalk"
+
+#: inc/core/class-zakra-widgets.php:98
+msgid "WooCommerce Left Sidebar"
+msgstr "WooCommerce linker zijbalk"
+
+#: inc/customizer/options/header-builder/logo.php:143
+#: inc/customizer/options/header/site-identity.php:143
+msgid "Tagline"
+msgstr "Slogan"
+
+#: inc/customizer/options/header-builder/logo.php:59
+#: inc/customizer/options/header/site-identity.php:59
+msgid "Site Title"
+msgstr "Sitetitel"
+
+#: inc/customizer/options/header-builder/logo.php:8
+#: inc/customizer/options/header/site-identity.php:8
+#: inc/customizer/panels-sections/panels-sections.php:76
+#: assets/build/dashboard.js:1
+msgid "Site Identity"
+msgstr "Site identiteit"
+
+#: inc/admin/class-zakra-admin.php:69
+msgid "Processing..."
+msgstr "Bezig met verwerken..."
+
+#. Template Name of the theme
+msgid "Page Builder"
+msgstr "Paginabouwer"
+
+#: comments.php:66
+msgid "Comments are closed."
+msgstr "Reacties zijn gesloten."
+
+#. translators: 1: comment count number, 2: title.
+#: comments.php:41
+msgctxt "comments title"
+msgid "%1$s thought on &ldquo;%2$s&rdquo;"
+msgid_plural "%1$s thoughts on &ldquo;%2$s&rdquo;"
+msgstr[0] "%1$s gedachte over &ldquo;%2$s&rdquo;"
+msgstr[1] "%1$s gedachten over &ldquo;%2$s&rdquo;"
+
+#. translators: 1: title.
+#: comments.php:35
+msgid "One thought on &ldquo;%1$s&rdquo;"
+msgstr "Eén gedachte over &ldquo;%1$s&rdquo;"
+
+#. translators: %s: Name of current post. Only visible to screen readers
+#: template-parts/content-page.php:52
+msgid "Edit <span class=\"screen-reader-text\">%s</span>"
+msgstr "<span class=\"screen-reader-text\">%s</span> bewerken"
+
+#: template-parts/content-none.php:55
+msgid "It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps searching can help."
+msgstr "Het lijkt erop dat we niet kunnen vinden waar je naar zoekt. Misschien kun je er naar zoeken."
+
+#. translators: 1: link to WP admin new post page.
+#: template-parts/content-none.php:35
+msgid "Ready to publish your first post? <a href=\"%1$s\">Get started here</a>."
+msgstr "Klaar om je eerste bericht te publiceren? <a href=\"%1$s\">Ga hier aan de slag</a>."
+
+#: template-parts/content-none.php:15
+msgid "Nothing Found"
+msgstr "Niets gevonden"
+
+#: inc/hooks/content.php:21
+msgid "Read More"
+msgstr "Lees verder"
+
+#: template-parts/entry/entry-content.php:41
+#: template-parts/entry/entry-summary.php:39
+msgid "Pages:"
+msgstr "Pagina's:"
+
+#. translators: %s: Name of current post. Only visible to screen readers
+#: template-parts/entry/entry-content.php:24
+#: template-parts/entry/entry-summary.php:25
+msgid "Continue reading<span class=\"screen-reader-text\"> \"%s\"</span>"
+msgstr "Lees verder <span class=\"screen-reader-text\">\"%s\"</span>"
+
+#: inc/template-functions.php:230 inc/template-functions.php:272
+#: inc/template-tags.php:53
+msgid "Oops! That page can&rsquo;t be found."
+msgstr "Die pagina kan niet worden gevonden."
+
+#: inc/template-functions.php:234
+msgid "Search Results"
+msgstr "Zoekresultaten"
+
+#: inc/template-functions.php:227 inc/template-tags.php:50
+msgid "Page Not Found"
+msgstr "Pagina niet gevonden"
+
+#. translators: 1: list of tags.
+#: inc/template-tags.php:238
+msgid "Tagged %1$s"
+msgstr "Getagd %1$s"
+
+#. translators: used between list items, there is a space after the comma
+#: inc/template-tags.php:243
+msgctxt "list item separator"
+msgid ", "
+msgstr ", "
+
+#. translators: %s: post title
+#: inc/template-tags.php:213
+msgid "No Comments<span class=\"screen-reader-text\"> on %s</span>"
+msgstr "Geen reacties<span class=\"screen-reader-text\"> op %s</span>"
+
+#. translators: 1: list of categories.
+#: inc/template-tags.php:183
+msgid "Posted in %1$s"
+msgstr "Geplaatst in %1$s"
+
+#. translators: used between list items, there is a space after the comma
+#: inc/template-tags.php:188
+msgid ", "
+msgstr ", "
+
+#. translators: %s: post author.
+#: inc/template-tags.php:162
+msgctxt "post author"
+msgid "By %s"
+msgstr "Door %s"
+
+#. translators: %s: post date.
+#: inc/template-tags.php:126
+msgctxt "post date"
+msgid "Posted on %s"
+msgstr "Geplaatst op %s"
+
+#: template-parts/footer/scroll-to-top.php:20
+#: template-parts/footer/scroll-to-top.php:25
+msgid "Scroll to top"
+msgstr "Schuiven naar boven"
+
+#: template-parts/hooks/header/header.php:69
+msgid "Skip to content"
+msgstr "Ga naar de inhoud"
+
+#: inc/customizer/options/footer-builder/copyright.php:131
+#: inc/customizer/options/footer-builder/footer-menu-2.php:95
+#: inc/customizer/options/footer-builder/footer-menu.php:95
+#: inc/customizer/options/footer-builder/html-1.php:93
+#: inc/customizer/options/footer-builder/html-2.php:93
+#: inc/customizer/options/footer-builder/socials.php:48
+#: inc/customizer/options/footer-builder/widget-1.php:134
+#: inc/customizer/options/footer-builder/widget-2.php:134
+#: inc/customizer/options/footer-builder/widget-3.php:134
+#: inc/customizer/options/footer-builder/widget-4.php:134
+#: inc/customizer/options/footer-builder/widget-5.php:134
+#: inc/customizer/options/footer-builder/widget-6.php:134
+msgid "Left"
+msgstr "Links"
+
+#: inc/customizer/options/header-builder/header-builder.php:243
+msgid "Bottom"
+msgstr "Onderkant"
+
+#: inc/customizer/options/footer-builder/copyright.php:133
+#: inc/customizer/options/footer-builder/footer-menu-2.php:97
+#: inc/customizer/options/footer-builder/footer-menu.php:97
+#: inc/customizer/options/footer-builder/html-1.php:95
+#: inc/customizer/options/footer-builder/html-2.php:95
+#: inc/customizer/options/footer-builder/socials.php:50
+#: inc/customizer/options/footer-builder/widget-1.php:136
+#: inc/customizer/options/footer-builder/widget-2.php:136
+#: inc/customizer/options/footer-builder/widget-3.php:136
+#: inc/customizer/options/footer-builder/widget-4.php:136
+#: inc/customizer/options/footer-builder/widget-5.php:136
+#: inc/customizer/options/footer-builder/widget-6.php:136
+#: inc/customizer/build/customind.js:1
+#: inc/customizer/customind/build/customind.js:1
+msgid "Right"
+msgstr "Rechts"
+
+#: inc/customizer/options/footer-builder/main-area.php:163
+#: inc/customizer/options/footer/footer-bar.php:130
+#: inc/customizer/options/footer/footer-bar.php:213
+#: inc/customizer/options/footer/footer-column.php:208
+#: inc/customizer/options/header/top-bar.php:93
+#: inc/customizer/options/header/top-bar.php:158
+msgid "Widget"
+msgstr "Widget"
+
+#: inc/customizer/options/footer/footer-bar.php:128
+#: inc/customizer/options/footer/footer-bar.php:211
+#: inc/customizer/options/header/top-bar.php:91
+#: inc/customizer/options/header/top-bar.php:156
+msgid "Text/HTML"
+msgstr "Tekst/HTML"
+
+#: inc/customizer/options/footer-builder/main-area.php:197
+#: inc/customizer/options/footer/footer-column.php:282
+#: inc/customizer/options/header-builder/primary-menu.php:60
+#: inc/customizer/options/header-builder/secondary-menu.php:41
+#: inc/customizer/options/header-builder/tertiary-menu.php:42
+msgid "Border Bottom Color"
+msgstr "Onderrand kleur"
+
+#: inc/customizer/options/header-builder/primary-menu.php:39
+#: inc/customizer/options/header/main-header.php:132
+#: inc/customizer/options/header/primary-menu.php:44
+msgid "Border Bottom"
+msgstr "Onderrand"
+
+#: inc/customizer/options/global/sidebar.php:108
+msgid "Page"
+msgstr "Pagina"
+
+#: inc/customizer/options/footer-builder/bottom-area.php:127
+#: inc/customizer/options/footer-builder/main-area.php:151
+#: inc/customizer/options/footer-builder/top-area.php:127
+#: inc/customizer/options/header-builder/bottom-area.php:115
+#: inc/customizer/options/header-builder/header-builder.php:315
+#: inc/customizer/options/header-builder/header-button.php:147
+#: inc/customizer/options/header-builder/main-area.php:115
+#: inc/customizer/options/header-builder/top-area.php:100
+msgid "Border Color"
+msgstr "Randkleur"
+
+#: inc/customizer/options/global/typography.php:119
+msgid "Heading"
+msgstr "Koptekst"
+
+#: inc/customizer/options/global/typography.php:38
+#: inc/customizer/options/global/typography.php:80
+msgid "Body"
+msgstr "Body"
+
+#: inc/customizer/options/content/blog.php:113
+#: inc/customizer/options/footer-builder/bottom-area.php:57
+#: inc/customizer/options/footer-builder/copyright.php:34
+#: inc/customizer/options/footer-builder/html-1.php:19
+#: inc/customizer/options/footer-builder/html-2.php:19
+#: inc/customizer/options/footer-builder/main-area.php:57
+#: inc/customizer/options/footer-builder/top-area.php:57
+#: inc/customizer/options/footer/footer-bar.php:100
+#: inc/customizer/options/footer/footer-bar.php:270
+#: inc/customizer/options/footer/footer-bar.php:290
+#: inc/customizer/options/footer/footer-column.php:131
+#: inc/customizer/options/footer/footer-column.php:153
+#: inc/customizer/options/footer/footer-column.php:178
+#: inc/customizer/options/footer/footer-column.php:233
+#: inc/customizer/options/footer/scroll-to-top.php:56
+#: inc/customizer/options/global/button.php:19
+#: inc/customizer/options/header-builder/bottom-area.php:45
+#: inc/customizer/options/header-builder/cart.php:14
+#: inc/customizer/options/header-builder/header-button.php:34
+#: inc/customizer/options/header-builder/html-1.php:19
+#: inc/customizer/options/header-builder/html-2.php:19
+#: inc/customizer/options/header-builder/logo.php:74
+#: inc/customizer/options/header-builder/logo.php:157
+#: inc/customizer/options/header-builder/main-area.php:45
+#: inc/customizer/options/header-builder/search.php:21
+#: inc/customizer/options/header-builder/top-area.php:47
+#: inc/customizer/options/header/breadcrumb.php:79
+#: inc/customizer/options/header/breadcrumb.php:103
+#: inc/customizer/options/header/breadcrumb.php:128
+#: inc/customizer/options/header/header-button.php:71
+#: inc/customizer/options/header/main-header.php:155
+#: inc/customizer/options/header/page-header.php:149
+#: inc/customizer/options/header/primary-menu.php:73
+#: inc/customizer/options/header/site-identity.php:74
+#: inc/customizer/options/header/site-identity.php:157
+#: inc/customizer/options/header/top-bar.php:45
+msgid "Color"
+msgstr "Kleur"
+
+#: inc/customizer/options/footer/footer-bar.php:77
+#: inc/customizer/options/footer/footer-column.php:101
+msgid "Border Top"
+msgstr "Bovenrand"
+
+#: inc/customizer/options/content/blog.php:183
+#: inc/customizer/options/content/blog.php:195
+msgid "Excerpt"
+msgstr "Samenvatting"
+
+#: inc/customizer/options/footer-builder/main-area.php:65
+msgid "Link Color"
+msgstr "Linkkleur"
+
+#: inc/customizer/options/footer-builder/bottom-area.php:87
+#: inc/customizer/options/footer-builder/main-area.php:111
+#: inc/customizer/options/footer-builder/top-area.php:87
+#: inc/customizer/options/global/button.php:113
+#: inc/customizer/options/global/content-area.php:56
+#: inc/customizer/options/header-builder/bottom-area.php:75
+#: inc/customizer/options/header-builder/header-button.php:123
+#: inc/customizer/options/header-builder/main-area.php:75
+#: inc/customizer/options/header-builder/top-area.php:77
+#: inc/customizer/options/header/header-button.php:122
+#: inc/customizer/options/header/page-header.php:93
+msgid "Padding"
+msgstr "Padding"
+
+#: inc/customizer/options/content/blog.php:223
+#: inc/customizer/options/footer-builder/copyright.php:127
+#: inc/customizer/options/footer-builder/footer-menu-2.php:92
+#: inc/customizer/options/footer-builder/footer-menu.php:92
+#: inc/customizer/options/footer-builder/html-1.php:89
+#: inc/customizer/options/footer-builder/html-2.php:89
+#: inc/customizer/options/footer-builder/socials.php:44
+#: inc/customizer/options/footer-builder/widget-1.php:130
+#: inc/customizer/options/footer-builder/widget-2.php:130
+#: inc/customizer/options/footer-builder/widget-3.php:130
+#: inc/customizer/options/footer-builder/widget-4.php:130
+#: inc/customizer/options/footer-builder/widget-5.php:130
+#: inc/customizer/options/footer-builder/widget-6.php:130
+msgid "Alignment"
+msgstr "Uitlijning"
+
+#: inc/customizer/options/footer-builder/html-1.php:50
+#: inc/customizer/options/footer-builder/html-2.php:50
+#: inc/customizer/options/header-builder/html-1.php:50
+#: inc/customizer/options/header-builder/html-2.php:50
+#: inc/customizer/build/customind.js:1
+#: inc/customizer/customind/build/customind.js:1
+msgid "Font Size"
+msgstr "Lettertype grootte"
+
+#: inc/customizer/options/header-builder/search.php:28
+msgid "Text Color"
+msgstr "Tekstkleur"
+
+#: inc/customizer/options/header/page-header.php:141
+msgid "Div"
+msgstr "Div"
+
+#: inc/customizer/options/header/page-header.php:140
+msgid "Paragraph"
+msgstr "Paragraaf"
+
+#: inc/customizer/options/header/page-header.php:139
+msgid "Span"
+msgstr "Span"
+
+#: inc/customizer/options/header/page-header.php:138
+msgid "Heading 6"
+msgstr "Koptekst 6"
+
+#: inc/customizer/options/header/page-header.php:137
+msgid "Heading 5"
+msgstr "Koptekst 5"
+
+#: inc/customizer/options/header/page-header.php:136
+msgid "Heading 4"
+msgstr "Koptekst 4"
+
+#: inc/customizer/options/header/page-header.php:135
+msgid "Heading 3"
+msgstr "Koptekst 3"
+
+#: inc/customizer/options/header/page-header.php:134
+msgid "Heading 2"
+msgstr "Koptekst 2"
+
+#: inc/customizer/options/header/page-header.php:133
+msgid "Heading 1"
+msgstr "Koptekst 1"
+
+#: inc/customizer/options/header/page-header.php:130
+msgid "Markup"
+msgstr "Opmaak"
+
+#: inc/customizer/options/global/content-area.php:8
+#: inc/customizer/options/header/page-header.php:121
+#: inc/customizer/panels-sections/panels-sections.php:51
+msgid "Content Area"
+msgstr "Inhoudgebied"
+
+#: inc/customizer/options/content/blog.php:88
+#: inc/customizer/options/content/single-post.php:52
+msgid "Tags"
+msgstr "Tags"
+
+#: inc/customizer/options/content/blog.php:87
+#: inc/customizer/options/content/single-post.php:51
+msgid "Date"
+msgstr "Datum"
+
+#: inc/customizer/options/content/blog.php:86
+#: inc/customizer/options/content/single-post.php:50
+msgid "Author"
+msgstr "Auteur"
+
+#: inc/customizer/options/content/blog.php:85
+#: inc/customizer/options/content/single-post.php:49
+msgid "Categories"
+msgstr "Categorieën"
+
+#: inc/customizer/options/content/blog.php:84
+#: inc/customizer/options/content/single-post.php:48
+msgid "Comments"
+msgstr "Reacties"
+
+#: inc/customizer/options/content/blog.php:68
+#: inc/customizer/options/content/single-post.php:22
+#: inc/customizer/panels-sections/panels-sections.php:17
+msgid "Content"
+msgstr "Inhoud"
+
+#: inc/customizer/options/content/blog.php:67
+#: inc/customizer/options/content/single-post.php:21
+msgid "Meta Tags"
+msgstr "Meta tags"
+
+#: inc/customizer/options/content/blog.php:66
+#: inc/customizer/options/content/single-post.php:20
+#: inc/customizer/options/footer/footer-column.php:216
+msgid "Title"
+msgstr "Titel"
+
+#: inc/customizer/options/content/blog.php:65
+#: inc/customizer/options/content/single-post.php:19
+msgid "Featured Image"
+msgstr "Uitgelichte afbeelding"
+
+#: inc/customizer/options/content/blog.php:63
+#: inc/customizer/options/content/blog.php:82
+#: inc/customizer/options/content/single-post.php:17
+#: inc/customizer/options/content/single-post.php:46
+msgid "Drag & Drop items to re-arrange the order"
+msgstr "Items verslepen om de volgorde te wijzigen"
+
+#: inc/customizer/panels-sections/panels-sections.php:171
+msgid "Scroll to Top"
+msgstr "Naar boven schuiven"
+
+#: inc/customizer/panels-sections/panels-sections.php:21
+msgid "Footer"
+msgstr "Footer"
+
+#: inc/customizer/options/content/blog-sidebar.php:54
+#: inc/customizer/options/content/blog-sidebar.php:114
+#: inc/customizer/options/content/blog.php:172
+#: inc/customizer/options/footer-builder/copyright.php:100
+#: inc/customizer/options/footer-builder/footer-menu-2.php:80
+#: inc/customizer/options/footer-builder/footer-menu.php:80
+#: inc/customizer/options/global/button.php:99
+#: inc/customizer/options/header-builder/header-button.php:111
+#: inc/customizer/options/header-builder/logo.php:129
+#: inc/customizer/options/header-builder/logo.php:204
+#: inc/customizer/options/header-builder/mobile-menu.php:54
+#: inc/customizer/options/header-builder/primary-menu.php:181
+#: inc/customizer/options/header-builder/primary-menu.php:233
+#: inc/customizer/options/header-builder/quaternary-menu.php:94
+#: inc/customizer/options/header-builder/secondary-menu.php:129
+#: inc/customizer/options/header-builder/secondary-menu.php:180
+#: inc/customizer/options/header-builder/tertiary-menu.php:130
+#: inc/customizer/options/header-builder/tertiary-menu.php:181
+#: inc/customizer/options/header/breadcrumb.php:59
+#: inc/customizer/options/header/page-header.php:198
+#: inc/customizer/options/header/primary-menu.php:221
+#: inc/customizer/options/header/primary-menu.php:275
+#: inc/customizer/options/header/primary-menu.php:334
+#: inc/customizer/options/header/site-identity.php:129
+#: inc/customizer/options/header/site-identity.php:204
+#: inc/customizer/panels-sections/panels-sections.php:61
+msgid "Typography"
+msgstr "Typografie"
+
+#: inc/customizer/options/content/blog.php:205
+#: inc/customizer/options/global/button.php:6
+#: inc/customizer/options/header-builder/header-builder.php:92
+#: inc/customizer/panels-sections/panels-sections.php:66
+msgid "Button"
+msgstr "Knop"
+
+#: inc/customizer/options/footer-builder/bottom-area.php:73
+#: inc/customizer/options/footer-builder/main-area.php:97
+#: inc/customizer/options/footer-builder/top-area.php:73
+#: inc/customizer/options/footer/footer-bar.php:64
+#: inc/customizer/options/footer/footer-column.php:83
+#: inc/customizer/options/footer/scroll-to-top.php:20
+#: inc/customizer/options/global/button.php:41
+#: inc/customizer/options/global/container.php:68
+#: inc/customizer/options/header-builder/bottom-area.php:61
+#: inc/customizer/options/header-builder/header-builder.php:293
+#: inc/customizer/options/header-builder/header-button.php:55
+#: inc/customizer/options/header-builder/main-area.php:61
+#: inc/customizer/options/header-builder/offset-area.php:14
+#: inc/customizer/options/header-builder/search.php:42
+#: inc/customizer/options/header-builder/top-area.php:64
+#: inc/customizer/options/header/header-button.php:93
+#: inc/customizer/options/header/main-header.php:121
+#: inc/customizer/options/header/page-header.php:77
+#: inc/customizer/options/header/top-bar.php:65
+msgid "Background"
+msgstr "Achtergrond"
+
+#: inc/customizer/options/header/breadcrumb.php:8
+#: template-parts/page-header/page-header.php:92
+msgid "Breadcrumbs"
+msgstr "Kruimelpad"
+
+#: inc/customizer/options/content/blog.php:8
+#: inc/customizer/options/header/page-header.php:109
+msgid "Page Title"
+msgstr "Paginatitel"
+
+#: inc/customizer/options/global/sidebar.php:97
+#: inc/customizer/panels-sections/panels-sections.php:146
+#: assets/build/dashboard.js:1
+msgid "Single Post"
+msgstr "Enkel bericht"
+
+#: inc/core/class-zakra-after-setup-theme.php:102
+#: inc/customizer/options/header-builder/header-builder.php:87
+#: inc/customizer/options/header-builder/mobile-menu.php:11
+#: inc/customizer/options/header/primary-menu.php:292
+#: inc/customizer/panels-sections/panels-sections.php:211
+#: assets/build/dashboard.js:1
+msgid "Mobile Menu"
+msgstr "Mobiel menu"
+
+#: inc/customizer/options/footer/footer-bar.php:129
+#: inc/customizer/options/footer/footer-bar.php:212
+#: inc/customizer/options/header/top-bar.php:92
+#: inc/customizer/options/header/top-bar.php:157
+msgid "Menu"
+msgstr "Menu"
+
+#: inc/admin/views/free-vs-pro.php:201 inc/admin/views/header.php:78
+msgid "Pro"
+msgstr "Pro"
+
+#: inc/admin/views/help.php:197 inc/admin/views/products.php:137
+#: assets/build/dashboard.js:1
+msgid "Activated"
+msgstr "Geactiveerd"
+
+#: inc/admin/class-zakra-notice.php:62 inc/admin/class-zakra-notice.php:81
+#: inc/admin/class-zakra-welcome-notice.php:199
+msgid "Cheatin&#8217; huh?"
+msgstr "Valsspelen, hé?"
+
+#: inc/admin/class-zakra-demo-import-migration-notice.php:80
+#: inc/admin/class-zakra-notice.php:58 inc/admin/class-zakra-notice.php:77
+#: inc/admin/class-zakra-pro-minimum-version-notice.php:80
+#: inc/admin/class-zakra-theme-review-notice.php:157
+#: inc/admin/class-zakra-theme-review-notice.php:175
+#: inc/admin/class-zakra-welcome-notice.php:195
+#: inc/migration/class-zakra-migration.php:2170
+msgid "Action failed. Please refresh the page and retry."
+msgstr "Actie mislukt. Vernieuw de pagina en probeer nogmaals."
+
+#: inc/admin/views/help.php:43 assets/build/dashboard.js:1
+msgid "Support"
+msgstr "Ondersteuning"
+
+#: inc/class-breadcrumb-trail.php:790
+msgctxt "weekly archives date format"
+msgid "W"
+msgstr "W"
+
+#: inc/class-breadcrumb-trail.php:763 inc/class-breadcrumb-trail.php:1203
+msgctxt "daily archives date format"
+msgid "j"
+msgstr "j"
+
+#: inc/class-breadcrumb-trail.php:762 inc/class-breadcrumb-trail.php:828
+#: inc/class-breadcrumb-trail.php:1201
+msgctxt "monthly archives date format"
+msgid "F"
+msgstr "F"
+
+#: inc/class-breadcrumb-trail.php:761 inc/class-breadcrumb-trail.php:789
+#: inc/class-breadcrumb-trail.php:827 inc/class-breadcrumb-trail.php:853
+#: inc/class-breadcrumb-trail.php:1199
+msgctxt "yearly archives date format"
+msgid "Y"
+msgstr "Y"
+
+#: inc/class-breadcrumb-trail.php:745
+msgctxt "hour archives time format"
+msgid "g a"
+msgstr "H"
+
+#: inc/class-breadcrumb-trail.php:728
+msgctxt "minute archives time format"
+msgid "i"
+msgstr "i"
+
+#: inc/class-breadcrumb-trail.php:711
+msgctxt "minute and hour archives time format"
+msgid "g:i a"
+msgstr "H:i"
+
+#. Translators: Weekly archive title. %s is the week date format.
+#: inc/class-breadcrumb-trail.php:281
+msgid "Week %s"
+msgstr "Week %s"
+
+#. Translators: Minute archive title. %s is the minute time format.
+#: inc/class-breadcrumb-trail.php:279
+msgid "Minute %s"
+msgstr "Minuut %s"
+
+#. Translators: %s is the page number.
+#: inc/class-breadcrumb-trail.php:277
+msgid "Comment Page %s"
+msgstr "Reactiepagina %s"
+
+#. Translators: %s is the page number.
+#: inc/class-breadcrumb-trail.php:275
+msgid "Page %s"
+msgstr "Pagina %s"
+
+#. Translators: %s is the search query.
+#: inc/class-breadcrumb-trail.php:273
+msgid "Search results for: %s"
+msgstr "Zoekresultaten voor: %s"
+
+#: inc/class-breadcrumb-trail.php:271
+msgid "Archives"
+msgstr "Archief"
+
+#: inc/class-breadcrumb-trail.php:270
+msgid "404 Not Found"
+msgstr "404 niet gevonden"
+
+#: inc/class-breadcrumb-trail.php:269
+msgid "Home"
+msgstr "Home"
+
+#: inc/class-breadcrumb-trail.php:268
+msgctxt "breadcrumbs aria label"
+msgid "Breadcrumbs"
+msgstr "Kruimelpad"
+
+#: inc/class-breadcrumb-trail.php:267
+msgid "Browse:"
+msgstr "Bekijken:"
+
+#: inc/meta-boxes/class-zakra-meta-box.php:198
+msgid "Page Settings"
+msgstr "Pagina instellingen"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:413
+#: assets/build/meta.js:1
+msgid "Enable Page Header"
+msgstr "Pagina-header inschakelen"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:393
+msgid "Right Border"
+msgstr "Rechter rand"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:385
+msgid "Left Border"
+msgstr "Linker rand"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:377
+msgid "Underline Border"
+msgstr "Rand onderstreept"
+
+#: inc/customizer/options/footer/footer-bar.php:127
+#: inc/customizer/options/footer/footer-bar.php:210
+#: inc/customizer/options/header/top-bar.php:90
+#: inc/customizer/options/header/top-bar.php:155 inc/helper/utils.php:438
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:369
+msgid "None"
+msgstr "Geen"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:364
+#: assets/build/meta.js:1
+msgid "Active Menu Item Style"
+msgstr "Opmaak menu-item (active)"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:354
+#: assets/build/meta.js:1
+msgid "Menu Item Active Color"
+msgstr "Kleur menu-item (active)"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:344
+#: assets/build/meta.js:1
+msgid "Menu Item Hover Color"
+msgstr "Kleur menu-item (hover)"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:332
+#: assets/build/meta.js:1
+msgid "Menu Item Color"
+msgstr "Kleur menu-item"
+
+#: inc/customizer/options/footer/footer-bar.php:23
+#: inc/customizer/options/footer/footer-bar.php:50
+#: inc/customizer/options/footer/footer-column.php:66
+#: inc/customizer/options/global/container.php:42
+#: inc/customizer/options/global/content-area.php:47
+#: inc/customizer/options/header/breadcrumb.php:32
+#: inc/customizer/options/header/header-button.php:63
+#: inc/customizer/options/header/main-header.php:106
+#: inc/customizer/options/header/page-header.php:61
+#: inc/customizer/options/header/primary-menu.php:144
+#: inc/customizer/options/header/top-bar.php:37
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:276
+#: assets/build/meta.js:1 inc/customizer/build/customind.js:1
+#: inc/customizer/customind/build/customind.js:1
+msgid "Style"
+msgstr "Stijl"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:261
+msgid "Remove Logo"
+msgstr "Logo verwijderen"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:257
+msgid "Upload Logo"
+msgstr "Logo uploaden"
+
+#: inc/customizer/options/header-builder/header-builder.php:82
+#: inc/customizer/options/header-builder/logo.php:22
+#: inc/customizer/options/header/site-identity.php:22
+#: inc/customizer/panels-sections/panels-sections.php:186
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:244
+#: assets/build/meta.js:1
+msgid "Logo"
+msgstr "Logo"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:216
+#: assets/build/meta.js:1
+msgid "Enable Transparent Header"
+msgstr "Transparante header inschakelen"
+
+#: inc/customizer/options/global/sidebar.php:75
+#: inc/customizer/options/woocommerce/woocommerce.php:45
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:186
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:221
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:368
+#: assets/build/meta.js:1 inc/customizer/build/customind.js:1
+#: inc/customizer/customind/build/customind.js:1
+msgid "Default"
+msgstr "Standaard"
+
+#: inc/customizer/options/global/sidebar.php:38
+#: inc/customizer/panels-sections/panels-sections.php:56
+#: inc/customizer/panels-sections/panels-sections.php:156
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:180
+#: assets/build/dashboard.js:1 assets/build/meta.js:1
+msgid "Sidebar"
+msgstr "Zijbalk"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:170
+#: assets/build/meta.js:1
+msgid "Remove content padding"
+msgstr "Verwijder inhoud padding"
+
+#: inc/customizer/options/content/blog-meta.php:16
+#: inc/customizer/options/global/container.php:19
+#: inc/customizer/options/global/content-area.php:22
+#: inc/customizer/options/global/sidebar.php:67
+#: inc/customizer/options/header/main-header.php:17
+#: inc/customizer/options/header/page-header.php:19
+#: inc/customizer/options/woocommerce/woocommerce.php:37
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:118
+#: assets/build/meta.js:1
+msgid "Layout"
+msgstr "Lay-out"
+
+#: inc/customizer/options/header/page-header.php:5
+#: inc/customizer/options/header/page-header.php:120
+#: inc/customizer/panels-sections/panels-sections.php:116
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:94
+msgid "Page Header"
+msgstr "Pagina header"
+
+#: inc/core/class-zakra-after-setup-theme.php:96
+#: inc/customizer/options/header-builder/header-builder.php:16
+#: inc/customizer/options/header-builder/primary-menu.php:11
+#: inc/customizer/options/header/primary-menu.php:8
+#: inc/customizer/panels-sections/panels-sections.php:96
+#: inc/customizer/panels-sections/panels-sections.php:191
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:89
+#: template-parts/header-builder-elements/toggle-button.php:35
+#: template-parts/header/primary-menu/mobile-toggle.php:32
+#: assets/build/dashboard.js:1
+msgid "Primary Menu"
+msgstr "Hoofdmenu"
+
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:84
+msgid "Header"
+msgstr "Header"
+
+#: inc/customizer/options/footer/footer-bar.php:16
+#: inc/customizer/options/global/button.php:13
+#: inc/customizer/options/global/container.php:13
+#: inc/customizer/options/global/content-area.php:16
+#: inc/customizer/options/header/breadcrumb.php:15
+#: inc/customizer/options/header/header-button.php:15
+#: inc/customizer/options/header/primary-menu.php:15
+#: inc/customizer/options/header/top-bar.php:15
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:79
+msgid "General"
+msgstr "Algemeen"
+
+#: inc/compatibility/woocommerce/class-zakra-woocommerce.php:219
+msgid "View your shopping cart"
+msgstr "Bekijk je winkelmand"
+
+#. translators: %s: search query.
+#: inc/template-tags.php:41
+msgid "Search Results for: %s"
+msgstr "Zoekresultaten voor: %s"
+
+#: inc/core/class-zakra-widgets.php:65
+msgid "Add widgets here."
+msgstr "Widgets hier toevoegen."
+
+#: inc/core/class-zakra-widgets.php:91
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:192
+#: assets/build/meta.js:1
+msgid "Footer Four"
+msgstr "Footer vier"
+
+#: inc/core/class-zakra-widgets.php:90
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:191
+#: assets/build/meta.js:1
+msgid "Footer Three"
+msgstr "Footer drie"
+
+#: inc/core/class-zakra-widgets.php:89
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:190
+#: assets/build/meta.js:1
+msgid "Footer Two"
+msgstr "Footer twee"
+
+#: inc/core/class-zakra-widgets.php:88
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:189
+#: assets/build/meta.js:1
+msgid "Footer One"
+msgstr "Footer één"
+
+#: inc/core/class-zakra-widgets.php:85
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:188
+#: assets/build/meta.js:1
+msgid "Sidebar Left"
+msgstr "Zijbalk links"
+
+#: inc/core/class-zakra-widgets.php:84
+#: inc/meta-boxes/class-zakra-meta-box-page-settings.php:187
+#: assets/build/meta.js:1
+msgid "Sidebar Right"
+msgstr "Zijbalk rechts"
+
+#: inc/customizer/options/global/colors.php:107
+msgid "Primary"
+msgstr "Primair"
+
+#. Theme URI of the theme
+#: style.css
+#, gp-priority: low
+msgid "https://zakratheme.com/"
+msgstr "https://zakratheme.com/"
+
+#. Author URI of the theme
+#: style.css
+#, gp-priority: low
+msgid "https://themegrill.com"
+msgstr "https://themegrill.com"
+
+#. Author of the theme
+#: style.css
+#, gp-priority: low
+msgid "ThemeGrill"
+msgstr "ThemeGrill"

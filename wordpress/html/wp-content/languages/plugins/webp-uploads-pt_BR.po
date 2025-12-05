@@ -1,0 +1,162 @@
+# Translation of Plugins - Modern Image Formats - Stable (latest release) in Portuguese (Brazil)
+# This file is distributed under the same license as the Plugins - Modern Image Formats - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-03-03 15:07:17+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: pt_BR\n"
+"Project-Id-Version: Plugins - Modern Image Formats - Stable (latest release)\n"
+
+#: settings.php:255
+msgid "Enabling this option will generate all fallback image sizes including custom sizes. Note: uses even more storage space."
+msgstr "Ativar esta opção irá gerar imagens de contingência para todos os tamanhos, incluindo tamanhos personalizados. Observação: usa ainda mais espaço de armazenamento."
+
+#: settings.php:252
+msgid "Generate all fallback image sizes including custom sizes"
+msgstr "Gerar imagens de contingência em todos os tamanhos incluindo tamanhos personalizados"
+
+#: settings.php:116
+msgid "Generate all fallback image sizes"
+msgstr "Gerar imagens de contingência em todos os tamanhos"
+
+#: settings.php:224 settings.php:311
+msgid "This setting requires fallback image output to be enabled."
+msgstr "Esta configuração requer que a entrega de imagens de contingência esteja ativada."
+
+#: settings.php:199
+msgid "Also generate fallback images in the original upload format"
+msgstr "Também gera imagens de contingência no formato original do envio"
+
+#: settings.php:106
+msgid "Output fallback images"
+msgstr "Gerar imagens de reserva"
+
+#: settings.php:345
+msgid "Picture elements will only be used when fallback images are available. So this will only apply to  images you have uploaded while the \"Also generate fallback images\" setting was enabled."
+msgstr "Os elementos PICTURE só serão usados ​​quando imagens de reserva estiverem disponíveis. Sendo assim, isso só se aplicará a imagens que você enviou depois da configuração \"Também gerar imagens de reserva\" estar ativada."
+
+#: settings.php:79
+msgctxt "settings page section name"
+msgid "Modern Image Formats"
+msgstr "Modern Image Formats"
+
+#: settings.php:343
+msgid "The picture element serves a modern image format with a fallback to the original upload format. Warning: Make sure you test your theme and plugins for compatibility. In particular, CSS selectors will not match images when using the child combinator (e.g. figure > img)."
+msgstr "O elemento picture serve um formato de imagem moderno com uma imagem de reserva para o formato original. Aviso: certifique-se de testar a compatibilidade de seu tema e plugins. Em particular, seletores CSS não corresponderão a imagens ao usar o seletor de filhos (por exemplo, figure > img)."
+
+#: settings.php:341
+msgid "(experimental)"
+msgstr "(experimental)"
+
+#: settings.php:339
+msgid "Use <picture> Element"
+msgstr "Usar elemento <picture>"
+
+#: settings.php:201
+msgid "Enabling fallback image output can improve compatibility, but will increase the filesystem storage use of your images."
+msgstr "Ativar as imagens de contingência pode melhorar a compatibilidade, mas aumentará o uso do armazenamento pelas suas imagens."
+
+#: settings.php:184
+msgid "WebP support can only be enabled by your hosting provider, so contact them for more information."
+msgstr "O suporte ao WebP só pode ser disponibilizado pela sua hospedagem. Entre em contato com seu provedor para obter mais informações."
+
+#: settings.php:183
+msgid "WebP support is not available."
+msgstr "O suporte ao WebP não está disponível."
+
+#: settings.php:177
+msgid "AVIF support can only be enabled by your hosting provider, so contact them for more information."
+msgstr "O suporte ao AVIF só pode ser disponibilizado pela sua hospedagem. Entre em contato com seu provedor para obter mais informações."
+
+#: settings.php:176
+msgid "AVIF support is not available."
+msgstr "O suporte ao AVIF não está disponível."
+
+#: settings.php:172
+msgid "Select the format to use when generating new images from uploaded images."
+msgstr "Selecione o formato a ser usado ao gerar novas imagens a partir de imagens já enviadas."
+
+#: settings.php:170
+msgid "Generate images in this format"
+msgstr "Gerar imagens neste formato"
+
+#: settings.php:167
+msgid "AVIF"
+msgstr "AVIF"
+
+#: settings.php:166
+msgid "WebP"
+msgstr "WebP"
+
+#: settings.php:152
+msgid "WebP or AVIF support can only be enabled by your hosting provider, so contact them for more information."
+msgstr "O suporte ao WebP e AVIF só pode ser ativado pela sua hospedagem. Entre em contato com seu provedor para obter mais informações."
+
+#: settings.php:151
+msgid "Modern image support is not available."
+msgstr "Suporte a formatos modernos de imagem não está disponível."
+
+#: settings.php:126
+msgid "Picture element"
+msgstr "Elementos PICTURE"
+
+#: settings.php:91
+msgid "Image output format"
+msgstr "Formato das imagens geradas"
+
+#: settings.php:402
+msgid "Settings"
+msgstr "Configurações"
+
+#. Description of the plugin
+#: load.php
+msgid "Converts images to more modern formats such as WebP or AVIF during upload."
+msgstr "Converte imagens para formatos mais modernos, como WebP ou AVIF, durante o envio."
+
+#. Plugin Name of the plugin
+#: load.php
+msgid "Modern Image Formats"
+msgstr "Modern Image Formats"
+
+#: helper.php:222
+msgid "The image does not have a valid metadata."
+msgstr "A imagem não possui metadados válidos."
+
+#: helper.php:189
+msgid "The file key is not present on the image data"
+msgstr "A chave de arquivo não está presente nos dados da imagem"
+
+#: helper.php:161
+msgid "At least one of the dimensions must be a positive number."
+msgstr "Ao menos uma das dimensões deve ser um número positivo."
+
+#: helper.php:149
+msgid "The original image file does not exists, subsizes are created out of the original image."
+msgstr "O arquivo de imagem original não existe, os tamanhos menores são criados a partir da imagem original."
+
+#: helper.php:144
+msgid "The provided mime type is not supported."
+msgstr "O tipo mime fornecido não é suportado."
+
+#: helper.php:140
+msgid "The provided mime type is not allowed."
+msgstr "O tipo mime fornecido não é permitido."
+
+#. Author URI of the plugin
+#: load.php
+msgid "https://make.wordpress.org/performance/"
+msgstr "https://make.wordpress.org/performance/"
+
+#. Author of the plugin
+#: load.php
+msgid "WordPress Performance Team"
+msgstr "Equipe de desempenho do WordPress"
+
+#. Plugin URI of the plugin
+#: load.php
+msgid "https://github.com/WordPress/performance/tree/trunk/plugins/webp-uploads"
+msgstr "https://github.com/WordPress/performance/tree/trunk/modules/images/webp-uploads"

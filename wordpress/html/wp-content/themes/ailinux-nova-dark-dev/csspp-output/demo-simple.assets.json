@@ -1,0 +1,20 @@
+{
+  "version": "0.1.0",
+  "timestamp": "2025-11-25T13:38:43.044Z",
+  "assets": {
+    "textures": {},
+    "audio": {
+      "/**\n * CSS++ Simple Demo\n *\n * Zeigt die wichtigsten Features ohne Komplexität\n */\n\n/* Imported: modules/geometry */\n/* Imported: modules/lighting */\n/* Imported: modules/audio */\n\n/* ============================================\n   BEISPIEL 1: Einfacher Button mit Glow\n   ============================================ */\n\n.demo-button": {
+        "/* Audio (wird zu JSON exportiert) */\n  hover-sfx": "chime(440Hz)",
+        "click-sfx": "click(mechanical)"
+      }
+    },
+    "materials": {},
+    "geometries": {}
+  },
+  "metadata": {
+    "rules": 5,
+    "errors": 0,
+    "warnings": 0
+  }
+}

@@ -1,0 +1,82 @@
+# Translation of Plugins - Embed Optimizer - Stable (latest release) in Portuguese (Portugal)
+# This file is distributed under the same license as the Plugins - Embed Optimizer - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-03-06 00:48:43+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: pt\n"
+"Project-Id-Version: Plugins - Embed Optimizer - Stable (latest release)\n"
+
+#. translators: %s is the minified asset path
+#: hooks.php:457
+msgid "Minified asset has not been built: %s"
+msgstr "O recurso minificado não foi compilado: %s"
+
+#. Description of the plugin
+#: load.php
+msgid "Optimizes the performance of embeds through lazy-loading, preconnecting, and reserving space to reduce layout shifts."
+msgstr "Optimiza o desempenho das incorporações através de carregamento diferido, ligação prévia, e reserva de espaço para reduzir mudanças de layout."
+
+#: hooks.php:57
+msgid "The Embed Optimizer plugin requires a newer version of the Optimization Detective plugin. Please update your plugins."
+msgstr "O plugin Embed Optimizer requer uma versão mais recente do plugin Optimization Detective. Por favor, actualize os seus plugins."
+
+#: hooks.php:410
+msgid "This plugin is strongly recommended to be active by <strong>Embed Optimizer</strong>."
+msgstr "É altamente recomendado pelo <strong>Embed Optimizer</strong> que este plugin esteja activo."
+
+#: hooks.php:406
+msgid "Recommended by:"
+msgstr "Recomendado por:"
+
+#: hooks.php:392
+msgid "This plugin performs best when <a>Optimization Detective</a> is also installed and active."
+msgstr "Este plugin tem o melhor desempenho quando o <a>Optimization Detective</a> também está instalado e activo."
+
+#: hooks.php:380
+msgid "https://wordpress.org/plugins/"
+msgstr "https://pt.wordpress.org/plugins/"
+
+#. translators: %s: Plugin name.
+#: hooks.php:379
+msgid "Visit plugin site for %s"
+msgstr "Visite o site do plugin %s"
+
+#. translators: %s: Plugin name and version.
+#: hooks.php:375
+msgid "More information about %s"
+msgstr "Mais informações sobre o %s"
+
+#. translators: %s is bookmark name
+#: hooks.php:273 hooks.php:300
+msgid "Embed Optimizer unable to seek to %s bookmark."
+msgstr "O Embed Optimizer não conseguiu procurar o marcador %s."
+
+#. translators: %s is bookmark name
+#: hooks.php:244 hooks.php:256
+msgid "Embed Optimizer unable to set %s bookmark."
+msgstr "O Embed Optimizer não conseguiu definir o marcador %s."
+
+#. Author URI of the plugin
+#: load.php
+msgid "https://make.wordpress.org/performance/"
+msgstr "https://make.wordpress.org/performance/"
+
+#. Author of the plugin
+#: load.php
+msgid "WordPress Performance Team"
+msgstr "WordPress Performance Team"
+
+#. Plugin URI of the plugin
+#: load.php
+msgid "https://github.com/WordPress/performance/tree/trunk/plugins/embed-optimizer"
+msgstr "https://github.com/WordPress/performance/tree/trunk/plugins/embed-optimizer"
+
+#. Plugin Name of the plugin
+#: load.php
+msgid "Embed Optimizer"
+msgstr "Embed Optimizer"

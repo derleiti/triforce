@@ -1,0 +1,47 @@
+[Unit]
+Description=Qwen MCP Agent - TriStar Worker (Multilingual, Vision)
+Documentation=https://api.ailinux.me/docs
+After=network-online.target tristar-kernel.service
+Wants=network-online.target
+PartOf=tristar-kernel.service
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/home/zombie/ailinux-ai-server-backend
+
+# Environment
+Environment=PYTHONUNBUFFERED=1
+Environment=AGENT_ID=qwen
+Environment=AGENT_ROLE=worker
+Environment=TRISTAR_API=https://api.ailinux.me/v1/tristar
+EnvironmentFile=/home/zombie/ailinux-ai-server-backend/.env
+
+# Bootstrap and System Prompt
+ExecStartPre=/bin/bash -c 'mkdir -p /var/tristar/agents/qwen'
+ExecStartPre=/bin/bash -c 'cat /var/tristar/prompts/bootstrap.txt /var/tristar/prompts/qwen-worker.txt > /var/tristar/agents/qwen/systemprompt.txt 2>/dev/null || true'
+
+# Execute Agent
+ExecStart=/home/zombie/ailinux-ai-server-backend/.venv/bin/python -m app.agents.qwen_mcp \
+    --system-prompt-file /var/tristar/agents/qwen/systemprompt.txt \
+    --api-base https://api.ailinux.me/v1 \
+    --agent-id qwen \
+    --role worker
+
+# Restart policy
+Restart=always
+RestartSec=15
+TimeoutStartSec=120
+TimeoutStopSec=60
+
+# Limits
+LimitNOFILE=65535
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=qwen-mcp
+
+[Install]
+WantedBy=multi-user.target

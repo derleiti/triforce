@@ -1,0 +1,42 @@
+# Translation of Plugins - Web Worker Offloading - Stable (latest release) in Portuguese (Brazil)
+# This file is distributed under the same license as the Plugins - Web Worker Offloading - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-02-26 21:12:22+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: pt_BR\n"
+"Project-Id-Version: Plugins - Web Worker Offloading - Stable (latest release)\n"
+
+#. Description of the plugin
+#: load.php
+msgid "Offloads select JavaScript execution to a Web Worker to reduce work on the main thread and improve the Interaction to Next Paint (INP) metric."
+msgstr "Descarrega a execução do JavaScript selecionado para um Web Worker a fim de reduzir a carga na execução principal e melhorar a métrica Interaction to Next Paint (INP)."
+
+#. translators: 1: File path. 2: CLI command.
+#: load.php:37
+msgid "Unable to load %1$s. Please make sure you have run %2$s."
+msgstr "Não foi possível carregar %1$s. Certifique-se de ter executado %2$s."
+
+#. Author URI of the plugin
+#: load.php
+msgid "https://make.wordpress.org/performance/"
+msgstr "https://make.wordpress.org/performance/"
+
+#. Author of the plugin
+#: load.php
+msgid "WordPress Performance Team"
+msgstr "Equipe de desempenho do WordPress"
+
+#. Plugin URI of the plugin
+#: load.php
+msgid "https://github.com/WordPress/performance/issues/176"
+msgstr "https://github.com/WordPress/performance/issues/176"
+
+#. Plugin Name of the plugin
+#: load.php
+msgid "Web Worker Offloading"
+msgstr "Web Worker Offloading"

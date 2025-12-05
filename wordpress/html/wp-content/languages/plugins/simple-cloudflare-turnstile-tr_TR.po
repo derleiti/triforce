@@ -1,0 +1,1277 @@
+# Translation of Plugins - Simple CAPTCHA Alternative with Cloudflare Turnstile - Stable (latest release) in Turkish
+# This file is distributed under the same license as the Plugins - Simple CAPTCHA Alternative with Cloudflare Turnstile - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-11-25 21:25:39+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: GlotPress/4.0.3\n"
+"Language: tr\n"
+"Project-Id-Version: Plugins - Simple CAPTCHA Alternative with Cloudflare Turnstile - Stable (latest release)\n"
+
+#: inc/admin/admin-options.php:1953
+msgid "Sponsor"
+msgstr "Sponsor"
+
+#: inc/admin/admin-options.php:1950
+msgid "Help fund ongoing development, maintenance, and support of this 100% free plugin, and be listed as a sponsor."
+msgstr "Bu %100 ücretsiz eklentinin sürekli geliştirilmesi, bakımı ve desteğine katkıda bulunun ve sponsor olarak listelenin."
+
+#: inc/admin/admin-options.php:1949
+msgid "Sponsor:"
+msgstr "Sponsor:"
+
+#: inc/admin/admin-options.php:1939
+msgid "Consider making a small donation to the developer to help support the plugin."
+msgstr "Eklentiyi desteklemek için geliştiriciye küçük bir bağış yapmayı düşünün."
+
+#: inc/admin/admin-options.php:1931
+msgid "Review"
+msgstr "Değerlendirme"
+
+#: inc/admin/admin-options.php:1927
+msgid "If you found this plugin useful, please submit a positive review on <a href=\"%s\" target=\"_blank\">WordPress.org</a>."
+msgstr "Bu eklentiyi faydalı bulduysanız, lütfen <a href=\"%s\" target=\"_blank\">WordPress.org</a> adresinde olumlu bir yorum yazın."
+
+#: inc/admin/admin-options.php:1926
+msgid "Leave a Review:"
+msgstr "Görüşünüzü Paylaşın"
+
+#: inc/admin/admin-options.php:1921
+msgid "Thanks to the donors and <a href=\"%s\" target=\"_blank\">sponsors</a> that help support my free plugins to keep them 100%% free, maintained and supported."
+msgstr "Ücretsiz eklentilerimin 100%% ücretsiz kalmasını, bakımının yapılmasını ve desteklenmesini sağlayan bağışçılara ve <a href=\"%s\" target=\"_blank\">sponsorlara</a> teşekkür ederim."
+
+#: inc/admin/admin-options.php:1917
+msgid "Support The Plugin"
+msgstr "Eklentiyi Destekleyin"
+
+#: inc/admin/admin-options.php:1892
+msgid "Help and Resources:"
+msgstr "Yardım ve Kaynaklar:"
+
+#: inc/admin/admin-options.php:1348
+msgid "If the Turnstile widget is not showing, disable <a href=\"%s\" target=\"_blank\">Element Caching</a> for the Elementor form on your page, or try switching Integration Method."
+msgstr "Turnstile widget'ı görünmüyorsa, sayfanızdaki Elementor formu için <a href=\"%s\" target=\"_blank\">Element Önbellekleme</a> özelliğini devre dışı bırakın veya Entegrasyon Yöntemini değiştirmeyi deneyin."
+
+#: inc/admin/admin-options.php:1335
+msgid "Page IDs (comma-separated)"
+msgstr "Sayfa kimlikleri (virgülle ayrılmış)"
+
+#: inc/admin/admin-options.php:1330
+msgid "Loads scripts only on the page IDs you enter below. Leave the list empty to load nowhere."
+msgstr "Yalnızca aşağıda girdiğiniz sayfa kimliklerine komut dosyalarını yükler. Hiçbir yere yüklemek istemiyorsanız listeyi boş bırakın."
+
+#: inc/admin/admin-options.php:1327
+msgid "Loads scripts only on pages that include an Elementor Form or Login widget. Popups or global templates may not be detected."
+msgstr "Yalnızca Elementor Form veya Login widget'ı içeren sayfalara komut dosyalarını yükler. Pop-up'lar veya genel şablonlar algılanmayabilir."
+
+#: inc/admin/admin-options.php:1324
+msgid "Loads scripts on all Elementor pages. Use this if caching breaks the element-based method. May load scripts on pages without forms."
+msgstr "Tüm Elementor sayfalarında komut dosyalarını yükler. Önbellekleme, öğe tabanlı yöntemi bozuyorsa bunu kullanın. Form içermeyen sayfalarda komut dosyalarını yükleyebilir."
+
+#: inc/admin/admin-options.php:1321
+msgid "Enter specific page IDs"
+msgstr "Belirli sayfa kimliklerini girin"
+
+#: inc/admin/admin-options.php:1320
+msgid "Autodetect pages with forms"
+msgstr "Form içeren sayfaları otomatik olarak algıla"
+
+#: inc/admin/admin-options.php:1319
+msgid "All Elementor pages"
+msgstr "Tüm Elementor sayfaları"
+
+#: inc/admin/admin-options.php:1316
+msgid "Load scripts on:"
+msgstr "Komut dosyalarını yükle:"
+
+#: inc/admin/admin-options.php:1305
+msgid "Instead of using this option, try disabling Element caching first."
+msgstr "Bu seçeneği kullanmak yerine, önce Element önbelleğini devre dışı bırakmayı deneyin."
+
+#: inc/admin/admin-options.php:1304
+msgid "Scripts are loaded globally on all Elementor pages. This method works better with some caching but may load scripts on pages without forms."
+msgstr "Komut dosyaları tüm Elementor sayfalarında global olarak yüklenir. Bu yöntem bazı önbellekleme işlemlerinde daha iyi sonuç verir, ancak form içermeyen sayfalara da komut dosyaları yükleyebilir."
+
+#: inc/admin/admin-options.php:1300
+msgid "(Recommended) Scripts are loaded when each form element is rendered. This is the ideal method but may not work with some caching. Have issues? Try disabling Element caching."
+msgstr "(Önerilen) Komut dosyaları, her form öğesi görüntülendiğinde yüklenir. Bu ideal yöntemdir, ancak bazı önbellekleme durumlarında çalışmayabilir. Sorun mu yaşıyorsunuz? Öğe önbelleklemeyi devre dışı bırakmayı deneyin."
+
+#: inc/admin/admin-options.php:1294
+msgid "Load Scripts Globally"
+msgstr "Komut Dosyalarını Global Olarak Yükle"
+
+#: inc/admin/admin-options.php:1291
+msgid "Load Scripts Via Element"
+msgstr "Öğeler Aracılığıyla Komut Dosyalarını Yükle"
+
+#: inc/admin/admin-options.php:1286
+msgid "Integration Method"
+msgstr "Entegrasyon Yöntemi"
+
+#: inc/admin/admin-options.php:446
+msgid "Adds better compatibility with popular performance/optimization plugins (e.g. WP Rocket, LiteSpeed Cache, Autoptimize, Perfmatters, SG Optimizer) to prevent their JS optimizations from breaking Turnstile. Disable only if this causes issues."
+msgstr "Popüler performans/optimizasyon eklentileriyle (ör. WP Rocket, LiteSpeed Cache, Autoptimize, Perfmatters, SG Optimizer) daha iyi uyumluluk sağlar ve bu eklentilerin JS optimizasyonlarının Turnstile'ı bozmasını önler. Yalnızca sorunlara neden olması durumunda devre dışı bırakın."
+
+#: inc/admin/admin-options.php:442
+msgid "Performance Plugin Compatibility"
+msgstr "Performans Eklentisi Uyumluluğu"
+
+#: inc/admin/admin-options.php:427
+msgid "Performance"
+msgstr "Performans"
+
+#: inc/admin/admin-options.php:387
+msgid "Custom Messages"
+msgstr "Özel Mesajlar"
+
+#: inc/admin/admin-options.php:336
+msgid "Widget Customization"
+msgstr "Widget Özelleştirme"
+
+#: inc/admin/admin-options.php:760
+msgid "Link by Stripe"
+msgstr "Link by Stripe"
+
+#: inc/admin/admin-options.php:755
+msgid "Google Pay"
+msgstr "Google Pay"
+
+#: inc/admin/admin-options.php:750
+msgid "Apple Pay"
+msgstr "Apple Pay"
+
+#: inc/admin/admin-options.php:744
+msgid "WooPayments Express"
+msgstr "WooPayments Express"
+
+#: inc/admin/admin-options.php:673
+msgid "Note: Currently Turnstile is not able to perform spam checks for some \"Express Checkout\" payment methods (e.g. PayPal, Google Pay, Apple Pay, Amazon Pay) and will skip them automatically."
+msgstr "Not: Şu anda Turnstile, bazı \"Hızlı Ödeme\" ödeme yöntemleri (ör. PayPal, Google Pay, Apple Pay, Amazon Pay) için spam kontrolü yapamıyor ve bunları otomatik olarak atlayacaktır."
+
+#: inc/admin/export-import.php:174
+msgid "Import failed: File is not a Simple Cloudflare Turnstile export."
+msgstr "İçe aktarma başarısız: Dosya, basit bir Cloudflare Turnstile dışa aktarımı değildir."
+
+#: inc/admin/export-import.php:171
+msgid "Import failed: File too large."
+msgstr "İçe aktarma başarısız: Dosya çok büyük."
+
+#: inc/admin/export-import.php:168
+msgid "Import failed: File type must be .json."
+msgstr "İçe aktarma başarısız: Dosya türü .json olmalıdır."
+
+#: inc/admin/export-import.php:165
+msgid "Import failed: Invalid JSON file."
+msgstr "İçe aktarma başarısız: Geçersiz JSON dosyası."
+
+#: inc/admin/export-import.php:162
+msgid "Import failed: File was empty."
+msgstr "İçe aktarma başarısız: Dosya boştu."
+
+#: inc/admin/export-import.php:159
+msgid "Import failed: Upload error."
+msgstr "İçe aktarma başarısız: Yükleme hatası."
+
+#: inc/admin/export-import.php:156
+msgid "Import failed: No file uploaded."
+msgstr "İçe aktarma başarısız: Dosya yüklenmedi."
+
+#: inc/admin/export-import.php:153
+msgid "Import failed."
+msgstr "İçe aktarma başarısız oldu."
+
+#: inc/admin/export-import.php:150
+msgid "Settings imported successfully. %d option(s) updated."
+msgstr "Ayarlar başarıyla içe aktarıldı. %d seçenek güncellendi."
+
+#: inc/admin/export-import.php:62
+msgid "You do not have permission to import settings."
+msgstr "Ayarları içe aktarma izniniz yok."
+
+#: inc/admin/export-import.php:11
+msgid "You do not have permission to export settings."
+msgstr "Ayarları dışa aktarma izniniz yok."
+
+#: inc/admin/admin-options.php:1800
+msgid "Note: Site/Secret keys defined in wp-config.php will not be overwritten by import."
+msgstr "Not: wp-config.php dosyasında tanımlanan Site/Gizli anahtarlar içe aktarma işlemi sırasında üzerine yazılmayacaktır."
+
+#: inc/admin/admin-options.php:1798
+msgid "Import JSON"
+msgstr "JSON'u içe aktar"
+
+#: inc/admin/admin-options.php:1792
+msgid "Import Settings"
+msgstr "Ayarları İçe Aktar"
+
+#: inc/admin/admin-options.php:1787
+msgid "Download JSON"
+msgstr "JSON'u indir"
+
+#: inc/admin/admin-options.php:1785
+msgid "Include API keys (sensitive)"
+msgstr "API anahtarlarını dahil et (hassas)"
+
+#: inc/admin/admin-options.php:1779
+msgid "Export Settings"
+msgstr "Ayarları Dışarı Aktar"
+
+#: inc/admin/admin-options.php:1775
+msgid "Export all plugin settings to a JSON file, or import from a JSON file exported from this plugin."
+msgstr "Tüm eklenti ayarlarını bir JSON dosyasına aktarın veya bu eklentiden aktarılan bir JSON dosyasından içe aktarın."
+
+#: inc/admin/admin-options.php:1772
+msgid "Export / Import Settings"
+msgstr "Ayarları dışarı / içeri aktar"
+
+#: inc/admin/admin-options.php:218
+msgid "Warning: This is not required. Only do this if you are comfortable editing wp-config.php. If you define the keys here, they will override the settings above."
+msgstr "Uyarı: Bu işlem zorunlu değildir. Yalnızca wp-config.php dosyasını düzenlemeye alışkınsanız bu işlemi gerçekleştirin. Burada anahtarları tanımlarsanız, yukarıdaki ayarlar geçersiz hale gelir."
+
+#: inc/admin/admin-options.php:210
+msgid "To do this, add the following lines to your wp-config.php file before the line that says \"/* That's all, stop editing! Happy publishing. */\":"
+msgstr "Bunu yapmak için, wp-config.php dosyanıza \"/* Hepsi bu kadar, düzenlemeyi bırakın! İyi yayınlamalar. */\" satırından önce aşağıdaki satırları ekleyin:"
+
+#: inc/admin/admin-options.php:207
+msgid "You can optionally define your API keys in your wp-config.php file so the keys are not stored in the database."
+msgstr "İsteğe bağlı olarak API anahtarlarınızı wp-config.php dosyanızda tanımlayabilirsiniz, böylece anahtarlar veritabanında saklanmaz."
+
+#: inc/admin/admin-options.php:201
+msgid "Optional: Define keys in wp-config.php"
+msgstr "İsteğe bağlı: wp-config.php dosyasında anahtarları tanımlayın"
+
+#: inc/admin/admin-options.php:139
+msgid "Using keys defined in wp-config.php. Be sure to test your forms to confirm they are working."
+msgstr "Wp-config.php dosyasında tanımlanan anahtarları kullanın. Formlarınızın çalıştığından emin olmak için mutlaka test edin."
+
+#. Plugin Name of the plugin
+#: simple-cloudflare-turnstile.php inc/admin/admin-options.php:81
+msgid "Simple CAPTCHA Alternative with Cloudflare Turnstile"
+msgstr "Cloudflare Turnstile ile Basit CAPTCHA Alternatifi"
+
+#: inc/admin/admin-options.php:1698
+msgid "Turnstile is supported for WP User Manager Login, Registration and Reset Password forms. Enable for these forms in the \"Default WordPress Forms\" settings."
+msgstr "Turnstile, WP Kullanıcı Yöneticisi Giriş, Kayıt ve Şifre Sıfırlama formları için desteklenmektedir. \"Varsayılan WordPress Formları\" ayarlarında bu formlar için etkinleştirin."
+
+#: inc/admin/admin-options.php:1694 inc/admin/admin-options.php:1704
+msgid "WP User Manager"
+msgstr "WP User Manager"
+
+#: inc/admin/admin-options.php:1900
+msgid "Not sure how to use this plugin?"
+msgstr "Bu eklentiyi nasıl kullanacağınızı bilmiyor musunuz?"
+
+#: inc/admin/admin-options.php:1896
+msgid "100% free plugin by"
+msgstr "%100 ücretsiz eklenti"
+
+#: inc/admin/admin-options.php:1417
+msgid "When enabled, Turnstile will be added above the submit button, on ALL your forms created with Kadence Forms."
+msgstr "Etkinleştirildiğinde Turnstile, Kadence Forms ile oluşturulan TÜM formlarınızda gönder düğmesinin üzerine eklenecektir."
+
+#: inc/admin/admin-options.php:1410
+msgid "Enable on all Kadence Forms"
+msgstr "Tüm Kadence Formlarında Etkinleştir"
+
+#: inc/admin/admin-options.php:1403 inc/admin/admin-options.php:1422
+msgid "Kadence Forms"
+msgstr "Kadence Forms"
+
+#: inc/admin/admin-options.php:1391
+msgid "When enabled, Turnstile will be added above the submit button, on ALL your forms created with MailPoet."
+msgstr "Etkinleştirildiğinde Turnstile, MailPoet ile oluşturulan TÜM formlarınızda gönder düğmesinin üzerine eklenecektir."
+
+#: inc/admin/admin-options.php:1384
+msgid "Enable on all MailPoet Forms"
+msgstr "Tüm MailPoet Formlarında Etkinleştir"
+
+#: inc/admin/admin-options.php:1377 inc/admin/admin-options.php:1397
+msgid "MailPoet"
+msgstr "MailPoet"
+
+#: inc/admin/admin-options.php:1095
+msgid "When enabled, Turnstile will be added after the submit button, on ALL your forms created with Jetpack Forms."
+msgstr "Etkinleştirildiğinde, Turnstile, Jetpack Forms ile oluşturulan TÜM formlarınızda gönder düğmesinden sonra eklenecektir."
+
+#: inc/admin/admin-options.php:1088
+msgid "Enable on all Jetpack Forms"
+msgstr "Tüm Jetpack Formlarında Etkinleştir"
+
+#: inc/admin/admin-options.php:1081 inc/admin/admin-options.php:1100
+msgid "Jetpack Forms"
+msgstr "Jetpack Forms"
+
+#: inc/integrations/ecommerce/woocommerce.php:216
+msgid "Turnstile token."
+msgstr "Turnstile token."
+
+#: inc/admin/admin-options.php:351
+msgid "Compact (150px)"
+msgstr "Kompakt (150 px)"
+
+#: inc/admin/admin-options.php:348
+msgid "Flexible (100%)"
+msgstr "Esnek (%100)"
+
+#: inc/admin/admin-options.php:345
+msgid "Normal (300px)"
+msgstr "Normal (300px)"
+
+#: inc/admin/admin-options.php:341
+msgid "Widget Size"
+msgstr "Widget Boyutu"
+
+#: inc/admin/admin-options.php:294
+msgid "Vietnamese (Vietnam)"
+msgstr "Vietnamca (Vietnam)"
+
+#: inc/admin/admin-options.php:293
+msgid "Ukrainian (Ukraine)"
+msgstr "Ukraynaca (Ukrayna)"
+
+#: inc/admin/admin-options.php:292
+msgid "Turkish (Turkey)"
+msgstr "Türkçe (Türkiye)"
+
+#: inc/admin/admin-options.php:291
+msgid "Thai (Thailand)"
+msgstr "Thai (Tayland)"
+
+#: inc/admin/admin-options.php:290
+msgid "Tagalog (Philippines)"
+msgstr "Tagalog (Filipinler)"
+
+#: inc/admin/admin-options.php:289
+msgid "Swedish (Sweden)"
+msgstr "İsveççe (İsveç)"
+
+#: inc/admin/admin-options.php:288
+msgid "Spanish (Spain)"
+msgstr "İspanyolca (İspanya)"
+
+#: inc/admin/admin-options.php:287
+msgid "Slovenian (Slovenia)"
+msgstr "Slovence (Slovenya)"
+
+#: inc/admin/admin-options.php:286
+msgid "Slovak (Slovakia)"
+msgstr "Slovakça (Slovakya)"
+
+#: inc/admin/admin-options.php:285
+msgid "Serbian (Bosnia and Herzegovina)"
+msgstr "Sırpça (Bosna Hersek)"
+
+#: inc/admin/admin-options.php:284
+msgid "Russian (Russia)"
+msgstr "Rusça (Rusya)"
+
+#: inc/admin/admin-options.php:283
+msgid "Romanian (Romania)"
+msgstr "Romence (Romanya)"
+
+#: inc/admin/admin-options.php:281
+msgid "Polish (Poland)"
+msgstr "Lehçe (Polonya)"
+
+#: inc/admin/admin-options.php:280
+msgid "Norwegian Bokmål (Norway)"
+msgstr "Norveççe Bokmål (Norveç)"
+
+#: inc/admin/admin-options.php:279
+msgid "Malay (Malaysia)"
+msgstr "Malayca (Malezya)"
+
+#: inc/admin/admin-options.php:278
+msgid "Lithuanian (Lithuania)"
+msgstr "Litvanyalı (Litvanya)"
+
+#: inc/admin/admin-options.php:277
+msgid "Korean (Korea)"
+msgstr "Korece (Kore)"
+
+#: inc/admin/admin-options.php:276
+msgid "Klingon (Qo’noS)"
+msgstr "Klingon (Qo'noS)"
+
+#: inc/admin/admin-options.php:275
+msgid "Japanese (Japan)"
+msgstr "Japonca (Japonya)"
+
+#: inc/admin/admin-options.php:274
+msgid "Italian (Italy)"
+msgstr "İtalyanca (İtalya)"
+
+#: inc/admin/admin-options.php:273
+msgid "Indonesian (Indonesia)"
+msgstr "Endonezce (Endonezya)"
+
+#: inc/admin/admin-options.php:272
+msgid "Hungarian (Hungary)"
+msgstr "Macarca (Macaristan)"
+
+#: inc/admin/admin-options.php:271
+msgid "Hindi (India)"
+msgstr "Hintçe (Hindistan)"
+
+#: inc/admin/admin-options.php:270
+msgid "Hebrew (Israel)"
+msgstr "İbranice (İsrail)"
+
+#: inc/admin/admin-options.php:269
+msgid "Greek (Greece)"
+msgstr "Yunanca (Yunanistan)"
+
+#: inc/admin/admin-options.php:268
+msgid "German (Germany)"
+msgstr "Almanca (Almanya)"
+
+#: inc/admin/admin-options.php:267
+msgid "French (France)"
+msgstr "Fransızca (Fransa)"
+
+#: inc/admin/admin-options.php:266
+msgid "Finnish (Finland)"
+msgstr "Fince (Finlandiya)"
+
+#: inc/admin/admin-options.php:265
+msgid "Farsi (Iran)"
+msgstr "Farsça (İran)"
+
+#: inc/admin/admin-options.php:264
+msgid "English (United States)"
+msgstr "İngilizce (Amerika Birleşik Devletleri)"
+
+#: inc/admin/admin-options.php:263
+msgid "Dutch (Netherlands)"
+msgstr "Felemenkçe (Hollanda)"
+
+#: inc/admin/admin-options.php:262
+msgid "Danish (Denmark)"
+msgstr "Danca (Danimarka)"
+
+#: inc/admin/admin-options.php:261
+msgid "Czech (Czech Republic)"
+msgstr "Çek Cumhuriyeti"
+
+#: inc/admin/admin-options.php:260
+msgid "Croatian (Croatia)"
+msgstr "Hırvatça (Hırvatistan)"
+
+#: inc/admin/admin-options.php:259
+msgid "Chinese (Traditional, Taiwan)"
+msgstr "Çince (Geleneksel, Tayvan)"
+
+#: inc/admin/admin-options.php:258
+msgid "Chinese (Simplified, China)"
+msgstr "Çince (Basitleştirilmiş, Çin)"
+
+#: inc/admin/admin-options.php:257
+msgid "Bulgarian (Bulgaria)"
+msgstr "Bulgarca (Bulgaristan)"
+
+#: inc/admin/admin-options.php:256
+msgid "Arabic (Egypt)"
+msgstr "Arapça (Mısır)"
+
+#: inc/admin/admin-options.php:1874
+msgid "No events logged yet."
+msgstr "Henüz kaydedilen bir olay yok."
+
+#: inc/admin/admin-options.php:1865
+msgid " (Visitor submitted form when Turnstile was not successfully completed.)"
+msgstr " (Turnstile başarıyla tamamlanmadığında ziyaretçi form gönderilir.)"
+
+#: inc/admin/admin-options.php:1864
+msgid "Error Codes"
+msgstr "Hata Kodları"
+
+#: inc/admin/admin-options.php:1852
+msgid "URL:"
+msgstr "URL:"
+
+#: inc/admin/admin-options.php:1851
+msgid "IP:"
+msgstr "IP:"
+
+#: inc/admin/admin-options.php:1832
+msgid "Info"
+msgstr "Bilgi"
+
+#: inc/admin/admin-options.php:1831
+msgid "Response"
+msgstr "Yanıt"
+
+#: inc/admin/admin-options.php:1830 inc/admin/admin-options.php:1847
+msgid "Success"
+msgstr "Başarılı"
+
+#: inc/admin/admin-options.php:1829
+msgid "Date"
+msgstr "Tarih"
+
+#: inc/admin/admin-options.php:1808
+msgid "Turnstile Debug Log"
+msgstr "Turnstile Hata Ayıklama Günlüğü"
+
+#: inc/admin/admin-options.php:1766
+msgid "Enable debug logging of Turnstile form submission events."
+msgstr "Turnstile formu için hata ayıklama günlüğünü etkinleştirin."
+
+#: simple-cloudflare-turnstile.php:52
+msgid "Settings"
+msgstr "Ayarlar"
+
+#: inc/wordpress.php:140
+msgid "ERROR"
+msgstr "HATA"
+
+#: inc/integrations/forms/contact-form-7.php:105
+msgid "Insert Tag"
+msgstr "Etiket ekle"
+
+#: inc/integrations/forms/contact-form-7.php:95
+msgid "cloudflare turnstile"
+msgstr "cloudflare turnstile"
+
+#: inc/integrations/community/buddypress.php:22
+#: inc/integrations/community/buddypress.php:25
+#: inc/integrations/ecommerce/edd.php:59 inc/integrations/ecommerce/pmp.php:62
+#: inc/integrations/membership/wp-members.php:13
+#: inc/integrations/membership/wpuf.php:59
+#: inc/integrations/membership/wpuf.php:64 inc/wordpress.php:223
+msgid "ERROR:"
+msgstr "HATA:"
+
+#: inc/errors.php:63
+msgid "There was an error with Turnstile response. Please check your keys are correct."
+msgstr "Turnstile yanıtında bir hata oluştu. Lütfen anahtarlarınızın doğru olup olmadığını kontrol edin."
+
+#: inc/errors.php:61
+msgid "An internal error happened while validating the response. The request can be retried."
+msgstr "Yanıt doğrulanırken dahili bir hata meydana geldi. İstek tekrar denenebilir."
+
+#: inc/errors.php:59
+msgid "The response parameter has already been validated before."
+msgstr "Yanıt parametresi daha önce zaten doğrulandı."
+
+#: inc/errors.php:57
+msgid "The request was rejected because it was malformed."
+msgstr "İstek, hatalı biçimlendirilmiş olduğundan reddedildi."
+
+#: inc/errors.php:55
+msgid "The response parameter is invalid or has expired."
+msgstr "Yanıt parametresi geçersiz ya da süresi doldu."
+
+#: inc/errors.php:53
+msgid "The response parameter was not passed."
+msgstr "Yanıt parametresi iletilemedi."
+
+#: inc/errors.php:51
+msgid "The secret parameter was invalid or did not exist."
+msgstr "Gizli parametre geçersiz veya hatalı"
+
+#: inc/errors.php:49
+msgid "The secret parameter was not passed."
+msgstr "Gizli anahtar parametresi iletilemedi."
+
+#: inc/errors.php:36 inc/integrations/forms/kadence.php:46
+#: inc/integrations/forms/kadence.php:52
+msgid "Please verify that you are human."
+msgstr "Lütfen insan olduğunuzu doğrulayın."
+
+#: inc/errors.php:20
+msgid "Cloudflare Turnstile is not currently showing on your forms. Please test the API response on the <a href=\"%s\">settings page</a>."
+msgstr "Cloudflare Turnstile şu anda formlarınızda gösterilmiyor. Lütfen API yanıtını <a href=\"%s\">ayarlar sayfasında</a> test edin."
+
+#: inc/admin/admin-options.php:1909
+msgid "View on GitHub"
+msgstr "GitHub'da görüntüle"
+
+#: inc/admin/admin-options.php:1907
+msgid "Translate into your language"
+msgstr "Kendi dilinize çevirin"
+
+#: inc/admin/admin-options.php:1938
+msgid "Donate:"
+msgstr "Bağış yapın:"
+
+#: inc/admin/admin-options.php:1904
+msgid "Create a support topic"
+msgstr "Yeni bir destek konusu oluşturun."
+
+#: inc/admin/admin-options.php:1904
+msgid "Need help? Have a suggestion?"
+msgstr "Yardıma mı ihtiyacınız var? Bir önerin var mı?"
+
+#: inc/admin/admin-options.php:1760
+msgid "Delete all of this plugins saved options when the plugin is deleted via plugins page."
+msgstr "Eklenti silindiğinde kaydedilen tüm Turnstile eklenti seçeneklerini'de silin."
+
+#: inc/admin/admin-options.php:1743
+msgid "Simply install the plugin and new settings will appear above."
+msgstr "Eklentiyi kurmanız yeterlidir; yeni ayarlar yukarıda görünecektir."
+
+#: inc/admin/admin-options.php:1730
+msgid "You can also enable Turnstile on"
+msgstr "Ayrıca Turnstile'yi şuradan da etkinleştirebilirsiniz"
+
+#: inc/admin/admin-options.php:1727
+msgid "Other Integrations"
+msgstr "Diğer Entegrasyonlar"
+
+#: inc/admin/admin-options.php:1710
+msgid "wpDiscuz"
+msgstr "wpDiscuz"
+
+#: inc/admin/admin-options.php:1677
+msgid "Post Forms"
+msgstr "Post Formları"
+
+#: inc/admin/admin-options.php:1670
+msgid "Register Form"
+msgstr "Üyelik Kayıt Formu"
+
+#: inc/admin/admin-options.php:1665
+msgid "Edit via \"WordPress Reset Password\" option in the \"Default WordPress Forms\" settings."
+msgstr "\"Varsayılan WordPress Formları\" ayarlarındaki \"WordPress Parola Sıfırlama\" seçeneği ile düzenleyin."
+
+#: inc/admin/admin-options.php:1662
+msgid "Reset Password Form"
+msgstr "Şifre Sıfırlama Formu"
+
+#: inc/admin/admin-options.php:1625 inc/admin/admin-options.php:1688
+msgid "WP User Frontend"
+msgstr "WP User Frontend"
+
+#: inc/admin/admin-options.php:1610
+msgid "Turnstile is supported for WP-Members Login and Registration forms. Enable for these forms in the \"Default WordPress Forms\" settings."
+msgstr "Turnstile, WP-Members Giriş ve Kayıt formları için desteklenmektedir. \"Varsayılan WordPress Formları\" ayarlarında bu formlar için etkinleştirin."
+
+#: inc/admin/admin-options.php:1604 inc/admin/admin-options.php:1619
+msgid "WP-Members"
+msgstr "WP-Members"
+
+#: inc/admin/admin-options.php:1588
+msgid "(Optional) One per line. For Membership products that are not on this list, no Turnstile challenge will be loaded or enforced."
+msgstr "(İsteğe bağlı) Satır başına bir tane. Bu listede yer almayan Membership ürünleri için Turnstile challenge yüklenmeyecek veya uygulanmayacaktır."
+
+#: inc/admin/admin-options.php:1585
+msgid "ONLY enable for these Membership IDs:"
+msgstr "SADECE Üyelik Kimlikleri için etkinleştirin:"
+
+#: inc/admin/admin-options.php:1576
+msgid "Limited to:"
+msgstr "Sınırlı:"
+
+#: inc/admin/admin-options.php:1573
+msgid "Registration/Checkout Forms"
+msgstr "Kayıt ve Giriş Formları"
+
+#: inc/admin/admin-options.php:1547 inc/admin/admin-options.php:1598
+msgid "MemberPress"
+msgstr "MemberPress"
+
+#: inc/admin/admin-options.php:1524
+msgid "UM Password Reset Form"
+msgstr "UM Şifre Sıfırlama Formu"
+
+#: inc/admin/admin-options.php:1517
+msgid "UM Register Form"
+msgstr "UM Kayıt Formu"
+
+#: inc/admin/admin-options.php:1510
+msgid "UM Login Form"
+msgstr "UM Kullanıcı giriş formu"
+
+#: inc/admin/admin-options.php:1503 inc/admin/admin-options.php:1535
+msgid "Ultimate Member"
+msgstr "Ultimate Member"
+
+#: inc/admin/admin-options.php:1486
+msgid "Guest Users Only"
+msgstr "Yalnızca Konuk Kullanıcılar"
+
+#: inc/admin/admin-options.php:1478
+msgid "Right"
+msgstr "Sağ"
+
+#: inc/admin/admin-options.php:1475
+msgid "Left"
+msgstr "Sol"
+
+#: inc/admin/admin-options.php:1471
+msgid "Alignment"
+msgstr "Hizala"
+
+#: inc/admin/admin-options.php:1465
+msgid "bbPress Reply"
+msgstr "bbPress Yanıtları"
+
+#: inc/admin/admin-options.php:1458
+msgid "bbPress Create Topic"
+msgstr "bbPress konu oluştur"
+
+#: inc/admin/admin-options.php:1451 inc/admin/admin-options.php:1497
+msgid "bbPress"
+msgstr "bbPress"
+
+#: inc/admin/admin-options.php:1435
+msgid "BuddyPress Register"
+msgstr "BuddyPress Kayıt"
+
+#: inc/admin/admin-options.php:1428 inc/admin/admin-options.php:1445
+msgid "BuddyPress"
+msgstr "BuddyPress"
+
+#: inc/admin/admin-options.php:1371
+msgid "Mailchimp for WordPress"
+msgstr "WordPress İçin MailChimp"
+
+#: inc/admin/admin-options.php:1365
+msgid "To add Turnstile to Mailchimp for WordPress, simply add this shortcode to any of your forms (in the form editor):"
+msgstr "Turnstile'yı WordPress için Mailchimp'e eklemek için, bu kısa kodu formlarınızdan herhangi birine eklemeniz yeterlidir (form düzenleyicide):"
+
+#: inc/admin/admin-options.php:1362
+msgid "MC4WP: Mailchimp for WordPress"
+msgstr "MC4WP: WordPress için Mailchimp"
+
+#: inc/admin/admin-options.php:1276
+msgid "After Form"
+msgstr "Formdan Sonra"
+
+#: inc/admin/admin-options.php:1261
+msgid "When enabled, Turnstile will be added above the submit button, on ALL your forms created with Elementor Pro Forms."
+msgstr "Etkinleştirildiğinde, Elementor Pro Forms ile oluşturulan TÜM formlarınızda, gönder tuşunun üzerine Turnstile eklenecektir."
+
+#: inc/admin/admin-options.php:1254
+msgid "Enable on all Elementor Forms"
+msgstr "Tüm Elementor Formlarında etkinleştir"
+
+#: inc/admin/admin-options.php:1247 inc/admin/admin-options.php:1356
+msgid "Elementor Forms"
+msgstr "Elementor Forms"
+
+#: inc/admin/admin-options.php:1237
+msgid "Currently Ninja Forms is not supported by this plugin."
+msgstr "Şu anda Ninja Forms bu eklenti tarafından desteklenmemektedir."
+
+#: inc/admin/admin-options.php:1233
+msgid "Ninja Forms"
+msgstr "Ninja Forms"
+
+#: inc/admin/admin-options.php:1223
+msgid "Click here for more information."
+msgstr "Daha fazla bilgi için buraya tıklayın."
+
+#: inc/admin/admin-options.php:1222
+msgid "Currently WS Form is not supported by this plugin, however their plugin does have its own Turnstile addon."
+msgstr "Şu anda WS Form bu eklenti tarafından desteklenmiyor, ancak eklentilerinin kendi Turnstile eklentisi var."
+
+#: inc/admin/admin-options.php:1218
+msgid "WS Form"
+msgstr "WS Form"
+
+#: inc/admin/admin-options.php:1212
+msgid "Forminator"
+msgstr "Forminator"
+
+#: inc/admin/admin-options.php:1176
+msgid "When enabled, Turnstile will be added above the submit button, on ALL your forms created with Forminator Forms."
+msgstr "Etkinleştirildiğinde Turnstile, Forminator Forms ile oluşturulan TÜM formlarınızda gönder düğmesinin üzerine eklenecektir."
+
+#: inc/admin/admin-options.php:1169
+msgid "Enable on all Forminator Forms"
+msgstr "Tüm Forminator Formlarında etkinleştir"
+
+#: inc/admin/admin-options.php:1162
+msgid "Forminator Forms"
+msgstr "Forminator Forms"
+
+#: inc/admin/admin-options.php:1156
+msgid "Formidable"
+msgstr "Formidable"
+
+#: inc/admin/admin-options.php:1120
+msgid "When enabled, Turnstile will be added above the submit button, on ALL your forms created with Formidable Forms."
+msgstr "Etkinleştirildiğinde, Formidable Forms ile oluşturulan TÜM formlarınızda, gönder tuşunun üzerine Turnstile eklenecektir."
+
+#: inc/admin/admin-options.php:1113
+msgid "Enable on all Formidable Forms"
+msgstr "Tüm Formidable Formlarında etkinleştir"
+
+#: inc/admin/admin-options.php:1106
+msgid "Formidable Forms"
+msgstr "Formidable Forms"
+
+#: inc/admin/admin-options.php:1056
+msgid "When enabled, Turnstile will be added above the submit button, on ALL your forms created with Fluent Forms."
+msgstr "Etkinleştirildiğinde, Fluent Forms ile oluşturulan TÜM formlarınızda, gönder tuşunun üzerine Turnstile eklenecektir."
+
+#: inc/admin/admin-options.php:1049
+msgid "Enable on all Fluent Forms"
+msgstr "Tüm Fluent Formlarda etkinleştir"
+
+#: inc/admin/admin-options.php:1042 inc/admin/admin-options.php:1075
+msgid "Fluent Forms"
+msgstr "Fluent Forms"
+
+#: inc/admin/admin-options.php:1000
+msgid "When enabled, Turnstile will be added before/after the submit button, on ALL your forms created with Gravity Forms."
+msgstr "Etkinleştirildiğinde, Gravity Forms ile oluşturulan TÜM formlarınızda, gönder tuşunun üzerine Turnstile eklenecektir."
+
+#: inc/admin/admin-options.php:993
+msgid "Enable on all Gravity Forms"
+msgstr "Tüm Gravity Form'larında etkinleştir"
+
+#: inc/admin/admin-options.php:986 inc/admin/admin-options.php:1036
+msgid "Gravity Forms"
+msgstr "Gravity Forms"
+
+#: inc/admin/admin-options.php:974 inc/admin/admin-options.php:1030
+#: inc/admin/admin-options.php:1068 inc/admin/admin-options.php:1150
+#: inc/admin/admin-options.php:1206
+msgid "Separate each ID with a comma, for example: 5,10"
+msgstr "Her ID'yi virgülle ayırın, örneğin: 5,10"
+
+#: inc/admin/admin-options.php:973 inc/admin/admin-options.php:1029
+#: inc/admin/admin-options.php:1067 inc/admin/admin-options.php:1149
+#: inc/admin/admin-options.php:1205
+msgid "If you want to DISABLE the Turnstile widget on certain forms, enter the %s ID in this field."
+msgstr "Turnstile widget'ını belirli formlarda DEVRE DIŞI BIRAKMAK istiyorsanız, bu alana %s ID'sini girin."
+
+#: inc/admin/admin-options.php:966 inc/admin/admin-options.php:1022
+#: inc/admin/admin-options.php:1060 inc/admin/admin-options.php:1142
+#: inc/admin/admin-options.php:1198
+msgid "Disabled Form IDs"
+msgstr "Devre Dışı Bırakılan Form ID'leri"
+
+#: inc/admin/admin-options.php:956 inc/admin/admin-options.php:1012
+#: inc/admin/admin-options.php:1132 inc/admin/admin-options.php:1188
+#: inc/admin/admin-options.php:1273
+msgid "After Button"
+msgstr "Tuştan Sonra"
+
+#: inc/admin/admin-options.php:953 inc/admin/admin-options.php:1009
+#: inc/admin/admin-options.php:1129 inc/admin/admin-options.php:1185
+#: inc/admin/admin-options.php:1270
+msgid "Before Button"
+msgstr "Tuştan Önce"
+
+#: inc/admin/admin-options.php:944
+msgid "Note: WPForms has an option to configure Turnstile on its own Settings page \"CAPTCHA\" tab. You should only enable it in one place, either here -OR- in those settings."
+msgstr "Not: WPForms'un kendi Ayarlar sayfası \"CAPTCHA\" sekmesinde Turnstile'yi yapılandırmak için bir seçeneği vardır. Yalnızca tek bir yerde etkinleştirmelisiniz, ya burada ya da bu ayarlarda."
+
+#: inc/admin/admin-options.php:943
+msgid "When enabled, Turnstile will be added before/after the submit button, on ALL your forms created with WPForms."
+msgstr "Etkinleştirildiğinde, Turnstile, WPForms ile oluşturulan TÜM formlarınızda gönder tuşunun üzerine eklenecektir."
+
+#: inc/admin/admin-options.php:936
+msgid "Enable on all WPForms"
+msgstr "Tüm WPForm'larda etkinleştir"
+
+#: inc/admin/admin-options.php:929 inc/admin/admin-options.php:980
+msgid "WPForms"
+msgstr "WPForms"
+
+#: inc/admin/admin-options.php:917
+msgid "To add Turnstile to individual Contact Form 7 forms, simply add this shortcode to any of your forms (in the form editor):"
+msgstr "Turnstile'yi bireysel Contact Form 7 formlarına eklemek için, bu kısa kodu formlarınızdan herhangi birine eklemeniz yeterlidir (form düzenleyicide):"
+
+#: inc/admin/admin-options.php:908
+msgid "Enable on all CF7 Forms"
+msgstr "Tüm CF7'larda etkinleştir"
+
+#: inc/admin/admin-options.php:901 inc/admin/admin-options.php:923
+msgid "Contact Form 7"
+msgstr "Contact Form 7"
+
+#: inc/admin/admin-options.php:895
+msgid "Paid Memberships PRO"
+msgstr "Paid Memberships PRO"
+
+#: inc/admin/admin-options.php:866 inc/admin/admin-options.php:874
+msgid "Currently Turnstile can not be implemented on the lost password form when PMP is installed."
+msgstr "Şu anda PMP kurulu olduğunda, kayıp parola formunda Turnstile uygulanamaz."
+
+#: inc/admin/admin-options.php:863
+msgid "Lost Password Form"
+msgstr "Kayıp Parola Formu"
+
+#: inc/admin/admin-options.php:857 inc/admin/admin-options.php:1568
+#: inc/admin/admin-options.php:1646
+msgid "Edit via \"WordPress Login\" option in the \"Default WordPress Forms\" settings."
+msgstr "\"Varsayılan WordPress Formları\" ayarlarındaki \"WordPress Oturum Açma\" seçeneği aracılığıyla düzenleyin."
+
+#: inc/admin/admin-options.php:854 inc/admin/admin-options.php:1565
+#: inc/admin/admin-options.php:1643
+msgid "Login Form"
+msgstr "Giriş formu"
+
+#: inc/admin/admin-options.php:830
+msgid "Checkout / Registration"
+msgstr "Ödeme / Kayıt"
+
+#: inc/admin/admin-options.php:823
+msgid "Paid Memberships Pro"
+msgstr "Paid Memberships Pro"
+
+#: inc/admin/admin-options.php:807
+msgid "EDD Register"
+msgstr "EDD Kayıt"
+
+#: inc/admin/admin-options.php:800
+msgid "EDD Login"
+msgstr "EDD Giriş"
+
+#: inc/admin/admin-options.php:787
+msgid "EDD Checkout"
+msgstr "EDD Ödeme"
+
+#: inc/admin/admin-options.php:780 inc/admin/admin-options.php:817
+msgid "Easy Digital Downloads"
+msgstr "Easy Digital Downloads"
+
+#: inc/admin/admin-options.php:774
+msgid "WooCommerce"
+msgstr "WooCommerce"
+
+#: inc/admin/admin-options.php:704
+msgid "If selected below, Turnstile check will not be run for that specific payment method."
+msgstr "Eğer seçilirse, Turnstile kontrolü söz konusu ödeme yöntemi için çalıştırılmayacaktır."
+
+#: inc/admin/admin-options.php:690
+msgid "Payment Methods to Skip"
+msgstr "Atlanacak Ödeme Yöntemleri"
+
+#: inc/admin/admin-options.php:658
+msgid "WooCommerce Pay for Order"
+msgstr "WooCommerce Sipariş için Ödeme"
+
+#: inc/admin/admin-options.php:650
+msgid "After Billing"
+msgstr "Faturalandırmadan Sonra"
+
+#: inc/admin/admin-options.php:647
+msgid "Before Billing"
+msgstr "Faturalandırmadan Önce"
+
+#: inc/admin/admin-options.php:644
+msgid "Before Pay Button"
+msgstr "Ödeme Tuşundan Önce"
+
+#: inc/admin/admin-options.php:641
+msgid "After Payment"
+msgstr "Ödemeden sonra"
+
+#: inc/admin/admin-options.php:638
+msgid "Before Payment"
+msgstr "Ödemeden Önce"
+
+#: inc/admin/admin-options.php:628 inc/admin/admin-options.php:949
+#: inc/admin/admin-options.php:1005 inc/admin/admin-options.php:1125
+#: inc/admin/admin-options.php:1181 inc/admin/admin-options.php:1266
+msgid "Widget Location"
+msgstr "Widget Konumu"
+
+#: inc/admin/admin-options.php:626 inc/admin/admin-options.php:789
+#: inc/admin/admin-options.php:832
+msgid "Guest Checkout Only"
+msgstr "Yalnızca Misafir Ödemeler"
+
+#: inc/admin/admin-options.php:624
+msgid "WooCommerce Checkout"
+msgstr "WooCommerce Ödeme Sayfası"
+
+#: inc/admin/admin-options.php:617
+msgid "WooCommerce Reset Password"
+msgstr "WooCommerce Şifre Sıfırla"
+
+#: inc/admin/admin-options.php:610
+msgid "WooCommerce Register"
+msgstr "WooCommerce Kayıt"
+
+#: inc/admin/admin-options.php:603
+msgid "WooCommerce Login"
+msgstr "WooCommerce Giriş"
+
+#: inc/admin/admin-options.php:596
+msgid "WooCommerce Forms"
+msgstr "WooCommerce Formları"
+
+#: inc/admin/admin-options.php:575
+msgid "Compatible with wpDiscuz!"
+msgstr "wpDiscuz ile uyumlu!"
+
+#: inc/admin/admin-options.php:572
+msgid "Due to Jetpack limitations, this does NOT currently work with Jetpack comments form enabled."
+msgstr "Jetpack sınırlandırmaları nedeniyle, eklenti Jetpack yorum alanları etkinken ÇALIŞMAZ."
+
+#: inc/admin/admin-options.php:561
+msgid "AJAX comments form?"
+msgstr "AJAX yorum formu?"
+
+#: inc/admin/admin-options.php:559
+msgid "Enable this if you are using an AJAX based comments form plugin or theme."
+msgstr "AJAX tabanlı bir yorum formu eklentisi veya teması kullanıyorsanız bunu etkinleştirin."
+
+#: inc/admin/admin-options.php:558
+msgid "WordPress Comment"
+msgstr "WordPress Yorumları"
+
+#: inc/admin/admin-options.php:551
+msgid "WordPress Reset Password"
+msgstr "WordPress Şifre Sıfırlama"
+
+#: inc/admin/admin-options.php:531
+msgid "Enable this option to only enable on default WordPress register form at wp-login.php?action=register"
+msgstr "Bu seçeneği yalnızca wp-login.php?action=register adresindeki varsayılan WordPress kayıt formunda etkinleştirmek için etkinleştirin"
+
+#: inc/admin/admin-options.php:530
+msgid "WordPress Register"
+msgstr "WordPress Kayıt"
+
+#: inc/admin/admin-options.php:512 inc/admin/admin-options.php:533
+msgid "Only enable on default wp-login.php page"
+msgstr "Yalnızca varsayılan wp-login.php sayfasında etkinleştirin"
+
+#: inc/admin/admin-options.php:510
+msgid "Enable this option to only enable on default WordPress login form at wp-login.php"
+msgstr "Bu seçeneği yalnızca wp-login.php adresindeki varsayılan WordPress giriş formunda etkinleştirmek için etkinleştirin"
+
+#: inc/admin/admin-options.php:509
+msgid "WordPress Login"
+msgstr "WordPress Giriş"
+
+#: inc/admin/admin-options.php:502
+msgid "Default WordPress Forms"
+msgstr "Varsayılan WordPress Formları"
+
+#: inc/admin/admin-options.php:496
+msgid "Select the dropdown for each integration, and choose when specific forms you want to enable Turnstile on."
+msgstr "Her entegrasyon için açılır menüyü seçin ve Turnstile'yı etkinleştirmek istediğiniz belirli formları seçin."
+
+#: inc/admin/admin-options.php:495
+msgid "Enable Turnstile on your forms:"
+msgstr "Formlarınızda Turnstile'yi etkinleştirin:"
+
+#: inc/admin/admin-options.php:479
+msgid "One per line.  All visitors with listed User Agents will not see the Turnstile challenge. Warning: If an attacker knows one of the whitelisted User Agents, they might be able to spoof that User Agent to bypass Turnstile."
+msgstr "Satır başına bir tane.  Listelenen User Agent'a sahip tüm ziyaretçiler Turnstile challenge'ı görmeyecektir. Uyarı: Bir saldırgan beyaz listedeki User Agent'ı birini biliyorsa, Turnstile'yi atlamak için bu User Agent'ı taklit edebilir."
+
+#: inc/admin/admin-options.php:476
+msgid "User Agents"
+msgstr "User Agent"
+
+#: inc/admin/admin-options.php:471
+msgid "One per line. Wildcards are not supported. All visitors with listed IP addresses will not see the Turnstile challenge. Warning: If an attacker knows one of the whitelisted IP addresses, they might be able to spoof that address to bypass Turnstile."
+msgstr "Satır başına bir tane. Joker karakterler desteklenmez. Listelenen IP adreslerine sahip tüm ziyaretçiler Turnstile challenge'ı görmeyecektir. Uyarı: Bir saldırgan beyaz listedeki IP adreslerinden birini biliyorsa, Turnstile 'yi atlamak için bu adresi taklit edebilir."
+
+#: inc/admin/admin-options.php:468
+msgid "IP Addresses"
+msgstr "IP Adresleri"
+
+#: inc/admin/admin-options.php:463
+msgid "When enabled, logged in users will not see the Turnstile challenge."
+msgstr "Etkinleştirildiğinde, oturum açan kullanıcılar Turnstile challenge görmeyecektir."
+
+#: inc/admin/admin-options.php:460
+msgid "Logged In Users"
+msgstr "Oturum açmış kullanıcılar"
+
+#: inc/admin/admin-options.php:453
+msgid "Whitelist Settings"
+msgstr "Beyaz Liste Ayarları"
+
+#: inc/admin/admin-options.php:421
+msgid "Currently it is not possible to edit the actual \"Failure!\" message shown on the widget."
+msgstr "Şu anda widget üzerinde gösterilen gerçek \"Başarısız!\" mesajını düzenlemek mümkün değildir."
+
+#: inc/admin/admin-options.php:419
+msgid "This will show a message below the Turnstile widget if they receive the \"Failure!\" response. Useful to give instructions in the *very rare* case a valid user is being flagged as spam."
+msgstr "Bu, \"Başarısız!\" yanıtı alırlarsa Turnstile widget'ının altında bir mesaj gösterecektir. Geçerli bir kullanıcının spam olarak işaretlendiği *çok nadir* durumlarda talimat vermek için kullanışlıdır."
+
+#: inc/admin/admin-options.php:417 inc/turnstile.php:113
+msgid "Failed to verify you are human. Please contact us if you are having issues."
+msgstr "İnsan olduğunuz doğrulanamadı. Sorun yaşıyorsanız lütfen bizimle iletişime geçin."
+
+#: inc/admin/admin-options.php:412
+msgid "HTML Markup Allowed."
+msgstr "HTML İşaretlemesine İzin Verildi."
+
+#: inc/admin/admin-options.php:403
+msgid "Extra Failure Message"
+msgstr "Ekstra Hata Mesajı"
+
+#: inc/admin/admin-options.php:397
+msgid "Shown if the form is submitted without completing the Turnstile challenge. Leave blank to use the default message (localized):"
+msgstr "Turnstile tamamlanmadan form gönderilirse gösterilir. Varsayılan mesajı (yerelleştirilmiş) kullanmak için boş bırakın:"
+
+#: inc/admin/admin-options.php:392
+msgid "Custom Error Message"
+msgstr "Özel Hata Mesajı"
+
+#: inc/admin/admin-options.php:436
+msgid "When enabled, the javascript files loaded by the plugin will be deferred. You can disable this if it causes any issues with your other optimisations."
+msgstr "Etkinleştirildiğinde, eklenti tarafından yüklenen javascript dosyaları ertelenecektir. Diğer optimizasyonlarınızla ilgili herhangi bir soruna neden oluyorsa bunu devre dışı bırakabilirsiniz."
+
+#: inc/admin/admin-options.php:433
+msgid "Defer Scripts"
+msgstr "Komut Dosyalarını Ertele"
+
+#: inc/admin/admin-options.php:329
+msgid "These settings are for more advanced customisation. If you are not sure about these, they do not need to be changed."
+msgstr "Bu ayarlar daha gelişmiş özelleştirme içindir. Bunlardan emin değilseniz, değiştirilmelerine gerek yoktur."
+
+#: inc/admin/admin-options.php:325
+msgid "Advanced Settings"
+msgstr "Gelişmiş Ayarlar"
+
+#: inc/admin/admin-options.php:319
+msgid "When enabled, the user will not be able to click submit until the Turnstile challenge is completed."
+msgstr "Etkinleştirildiğinde, kullanıcı \"Turnstile challenge\" tamamlanana kadar gönder'e tıklayamayacak."
+
+#: inc/admin/admin-options.php:316
+msgid "Disable Submit Button"
+msgstr "Gönder Tuşunu Devre Dışı Bırak"
+
+#: inc/admin/admin-options.php:381
+msgid "Turnstile Widget is only displayed in cases where an interaction is required. This essentially makes it \"invisible\" for most valid users."
+msgstr "Turnstile Widget'ı yalnızca bir etkileşimin gerekli olduğu durumlarda görüntülenir. Bu da onu çoğu geçerli kullanıcı için \"görünmez\" hale getirir."
+
+#: inc/admin/admin-options.php:380
+msgid "Turnstile Widget is only displayed after the challenge begins."
+msgstr "Turnstile Widget'ı yalnızca süreç başladıktan sonra görüntülensin."
+
+#: inc/admin/admin-options.php:379
+msgid "Turnstile Widget is always displayed for all visitors."
+msgstr "Turnstile Widget'ı tüm ziyaretçiler için her zaman görüntülensin."
+
+#: inc/admin/admin-options.php:365
+msgid "Interaction Only"
+msgstr "Sadece etkileşim"
+
+#: inc/admin/admin-options.php:363
+msgid "Always"
+msgstr "Her zaman"
+
+#: inc/admin/admin-options.php:358
+msgid "Appearance Mode"
+msgstr "Görünüm Modu"
+
+#: inc/admin/admin-options.php:282
+msgid "Portuguese (Brazil)"
+msgstr "Portekizce (Brezilya)"
+
+#: inc/admin/admin-options.php:255
+msgid "Auto Detect"
+msgstr "Otomatik Algılama"
+
+#: inc/admin/admin-options.php:250
+msgid "Language"
+msgstr "Dil"
+
+#: inc/admin/admin-options.php:243
+msgid "Auto"
+msgstr "Otomatik"
+
+#: inc/admin/admin-options.php:240
+msgid "Dark"
+msgstr "Koyu"
+
+#: inc/admin/admin-options.php:237
+msgid "Light"
+msgstr "Açık"
+
+#: inc/admin/admin-options.php:233
+msgid "Theme"
+msgstr "Tema"
+
+#: inc/admin/admin-options.php:229
+msgid "General Settings:"
+msgstr "Genel Ayarlar:"
+
+#: inc/admin/admin-options.php:135 inc/admin/admin-options.php:172
+msgid "Secret Key"
+msgstr "Gizli Anahtar"
+
+#: inc/admin/admin-options.php:134 inc/admin/admin-options.php:154
+msgid "Site Key"
+msgstr "Site anahtarı"
+
+#: inc/admin/admin-options.php:129
+msgid "You can get your site key and secret key from here:"
+msgstr "Site anahtarınızı ve gizli anahtarınızı buradan alabilirsiniz:"
+
+#: inc/admin/admin-options.php:124
+msgid "Success! Turnstile is working correctly with your API keys."
+msgstr "Başarılı! Turnstile, API anahtarlarınızla doğru şekilde çalışıyor."
+
+#: inc/admin/admin-options.php:113
+msgid "API Key Settings:"
+msgstr "API Anahtar Ayarları:"
+
+#: inc/admin/admin-options.php:88
+msgid "Please submit a review"
+msgstr "Lütfen bir inceleme gönderin"
+
+#: inc/admin/admin-options.php:88
+msgid "Review on WordPress.org"
+msgstr "WordPress.org'da bu eklenti için puan verin"
+
+#: inc/admin/admin-options.php:88
+msgid "Like this plugin?"
+msgstr "Bu eklentiyi beğendiniz mi?"
+
+#: inc/admin/admin-options.php:88 inc/admin/admin-options.php:1901
+msgid "View setup guide"
+msgstr "Kılavuzu görüntüle"
+
+#: inc/admin/admin-options.php:83
+msgid "Learn more."
+msgstr "Daha fazla bilgi edinin."
+
+#: inc/admin/admin-options.php:83
+msgid "Easily add the free CAPTCHA service called \"Cloudflare Turnstile\" to your WordPress forms to help prevent spam."
+msgstr "Spam'i önlemeye yardımcı olmak için WordPress formlarınıza \"Cloudflare Turnstile\" adlı ücretsiz CAPTCHA hizmetini kolayca ekleyin."
+
+#: inc/admin/admin-options.php:66
+msgid "TEST RESPONSE"
+msgstr "TEST API YANITI"
+
+#: inc/admin/admin-options.php:58
+msgid "Error message:"
+msgstr "Hata mesajı:"
+
+#: inc/admin/admin-options.php:54
+msgid "Failed! There is an error with your API settings. Please check & update them."
+msgstr "Başarısız! API ayarlarınız ile ilgili bir hata var. Lütfen kontrol edin ve güncelleyin."
+
+#: inc/admin/admin-options.php:45
+msgid "Turnstile will not be added to any forms until the test is successfully complete."
+msgstr "Turnstile, test başarıyla tamamlanana kadar hiçbir forma eklenmeyecektir."
+
+#: inc/admin/admin-options.php:43
+msgid "API keys have been updated. Please test the Turnstile API response below."
+msgstr "API anahtarları güncellendi. Lütfen aşağıdaki Turnstile API yanıtını test edin."
+
+#: inc/admin/admin-options.php:39
+msgid "Almost done..."
+msgstr "Neredeyse bitti…"
+
+#. Author URI of the plugin
+#: simple-cloudflare-turnstile.php
+msgid "https://www.relywp.com"
+msgstr "https://www.relywp.com"
+
+#. Author of the plugin
+#: simple-cloudflare-turnstile.php
+msgid "Elliot Sowersby, RelyWP"
+msgstr "Elliot Sowersby, RelyWP"
+
+#. Description of the plugin
+#: simple-cloudflare-turnstile.php
+msgid "Easily add Cloudflare Turnstile to your WordPress forms. The user-friendly, privacy-preserving CAPTCHA alternative."
+msgstr "WordPress ve WooCommerce formlarınıza \"Cloudflare Turnstile\"yi kolayca ekleyin. Kullanıcı dostu, gizliliği koruyan CAPTCHA alternatifi."

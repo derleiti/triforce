@@ -1,0 +1,1256 @@
+# Translation of Themes - Shapely in Swedish
+# This file is distributed under the same license as the Themes - Shapely package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-04-17 14:06:47+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: sv_SE\n"
+"Project-Id-Version: Themes - Shapely\n"
+
+#. Theme Name of the theme
+#: style.css
+#, gp-priority: high
+msgid "Shapely"
+msgstr "Shapely"
+
+#: inc/extras.php:478
+msgctxt "submit button"
+msgid "Search"
+msgstr "Sök"
+
+#: inc/extras.php:476
+msgctxt "placeholder"
+msgid "Search &hellip;"
+msgstr "Sök …"
+
+#. translators: %s: Name of current post
+#: inc/extras.php:418
+msgid "Continue reading %s"
+msgstr "Fortsätt läsa %s"
+
+#: inc/class-shapely-notify-system.php:172
+msgid "Activate: Kali Forms"
+msgstr "Aktivera: Kaliforms"
+
+#: inc/class-shapely-notify-system.php:167
+#: inc/class-shapely-notify-system.php:175
+msgid "Install: Kali Forms"
+msgstr "Installera: Kaliforms"
+
+#: inc/class-shapely.php:174
+msgid "Kali Forms"
+msgstr "Kali Forms"
+
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-section-repeater.php:613
+msgid "Sections"
+msgstr "Sektioner"
+
+#: inc/libraries/epsilon-framework/classes/class-epsilon-customizer.php:479
+msgid "Customize"
+msgstr "Anpassa"
+
+#. Translators: %s is the plugin name
+#: inc/libraries/epsilon-framework/classes/backend/class-epsilon-notify-system.php:127
+msgid "Activate: %s"
+msgstr "Aktivera: %s"
+
+#. Translators: %s is the plugin name.
+#: inc/libraries/epsilon-framework/classes/backend/class-epsilon-notify-system.php:121
+msgid "Install: %s"
+msgstr "Installera: %s"
+
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-section-repeater.php:614
+msgid "Integrations"
+msgstr "Integrationer"
+
+#. Translators: %s is the plugin name.
+#: inc/libraries/epsilon-framework/classes/backend/class-epsilon-notify-system.php:123
+msgid "Please install %s in order to create the demo content."
+msgstr "Installera %s för att skapa demoinnehållet."
+
+#. Translators: %s is the plugin name
+#: inc/libraries/epsilon-framework/classes/backend/class-epsilon-notify-system.php:129
+msgid "Please activate %s in order to create the demo content."
+msgstr "Aktivera %s för att skapa demoinnehållet."
+
+#: inc/customizer.php:474 inc/customizer.php:483
+msgid "Transparent header"
+msgstr "Genomskinligt sidhuvud"
+
+#: inc/customizer.php:541 inc/customizer.php:551
+msgid "Sticky header"
+msgstr "Klistrat sidhuvud"
+
+#: inc/customizer.php:504 inc/customizer.php:521
+msgid "Increase the header background opacity"
+msgstr "Öka sidhuvudets bakgrundsopaciteten"
+
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-section-repeater.php:350
+msgid "Top Left"
+msgstr "Toppen vänster"
+
+#: inc/customizer.php:475 inc/customizer.php:484
+msgid "Toggling this to ON will make the header have a transparent background"
+msgstr "Växlar man detta till PÅ kommer sidhuvudet att ha en genomskinlig bakgrund"
+
+#: inc/libraries/welcome-screen/sections/recommended-plugins.php:25
+msgid "Recommended"
+msgstr "Rekommenderad"
+
+#: inc/libraries/welcome-screen/class-epsilon-welcome-screen.php:611
+msgid "Deactivate now"
+msgstr "Inaktivera nu"
+
+#: inc/libraries/welcome-screen/class-epsilon-welcome-screen.php:605
+msgid "Activate now"
+msgstr "Aktivera nu"
+
+#: inc/libraries/welcome-screen/class-epsilon-welcome-screen.php:584
+msgid "Install and Activate"
+msgstr "Installera och aktivera"
+
+#: inc/libraries/welcome-screen/class-epsilon-welcome-screen.php:539
+msgid "Registration"
+msgstr "Registrering"
+
+#: page-templates/template-widget.php:19
+msgid "This is the %s sidebar, add some widgets to it to change it."
+msgstr "Detta är %s sidopanel, lägg till några widgetar till det för att ändra det."
+
+#. Translators: Welcome Screen Title.
+#: inc/libraries/welcome-screen/class-epsilon-welcome-screen.php:440
+msgid "Welcome to %1$s - v"
+msgstr "Välkommen till %1$s - v"
+
+#. Translators: Menu Title
+#: inc/libraries/welcome-screen/class-epsilon-welcome-screen.php:406
+msgid "About %1$s"
+msgstr "Om %1$s"
+
+#: inc/libraries/welcome-screen/class-epsilon-welcome-screen.php:320
+msgid "Activating"
+msgstr "Aktivering"
+
+#: inc/libraries/epsilon-framework/customizer/sections/class-epsilon-section-doubled.php:64
+msgid "Help"
+msgstr "Hjälp"
+
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-section-repeater.php:355
+msgid "Right"
+msgstr "Höger"
+
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-section-repeater.php:353
+msgid "Left"
+msgstr "Vänster"
+
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-section-repeater.php:354
+msgid "Center"
+msgstr "Centrerat"
+
+#: inc/libraries/epsilon-framework/classes/output/class-epsilon-repeater-templates.php:87
+msgid "Layout"
+msgstr "Layout"
+
+#: inc/libraries/epsilon-framework/classes/output/class-epsilon-repeater-templates.php:84
+msgid "Styles"
+msgstr "Stilar"
+
+#: inc/libraries/epsilon-framework/classes/output/class-epsilon-repeater-templates.php:81
+msgid "Fields"
+msgstr "Fält"
+
+#: inc/class-shapely.php:203
+msgid "Demo Content"
+msgstr "Demoinnehåll"
+
+#: inc/class-shapely.php:195
+msgid "Plugins"
+msgstr "Tillägg"
+
+#: inc/class-shapely.php:184
+msgid "Advanced"
+msgstr "Avancerad"
+
+#: inc/class-shapely.php:173
+msgid "Jetpack"
+msgstr "Jetpack"
+
+#: inc/class-shapely.php:113
+msgid " is social :"
+msgstr "är social:"
+
+#: inc/class-shapely.php:134 inc/class-shapely.php:181
+#: inc/class-shapely.php:183
+msgid "Import Demo Content"
+msgstr "Importera demoinnehåll"
+
+#: inc/class-shapely-builder.php:91
+msgid "Page: %s"
+msgstr "Sida: %s"
+
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-section-repeater.php:315
+msgid "Background Color"
+msgstr "Bakgrundsfärg"
+
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-section-repeater.php:329
+msgid "Background Image"
+msgstr "Bakgrundsbild"
+
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-section-repeater.php:507
+msgid "Column Group"
+msgstr "Kolumngrupp"
+
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-section-repeater.php:430
+msgid "Vertical Alignment"
+msgstr "Vertikal justering"
+
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-section-repeater.php:403
+msgid "Alignment"
+msgstr "Justering"
+
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-section-repeater.php:373
+msgid "Cover"
+msgstr "Täck"
+
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-section-repeater.php:367
+msgid "Background Size"
+msgstr "Bakgrundsstorlek"
+
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-section-repeater.php:358
+msgid "Bottom Right"
+msgstr "Botten höger"
+
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-section-repeater.php:357
+msgid "Bottom"
+msgstr "Botten"
+
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-section-repeater.php:356
+msgid "Bottom Left"
+msgstr "Botten vänster"
+
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-section-repeater.php:351
+msgid "Top"
+msgstr "Toppen"
+
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-section-repeater.php:352
+msgid "Top Right"
+msgstr "Toppen höger"
+
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-section-repeater.php:344
+msgid "Background Position"
+msgstr "Position för bakgrund"
+
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-section-repeater.php:375
+msgid "Initial"
+msgstr "Ursprunglig"
+
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-section-repeater.php:484
+msgid "Column Spacing"
+msgstr "Kolumnavstånd"
+
+#: inc/libraries/epsilon-framework/customizer/sections/class-epsilon-section-doubled.php:51
+msgid "Press return or enter to open this section"
+msgstr "Tryck retur eller enter för att öppna denna sektion"
+
+#: inc/class-shapely.php:167
+msgid "Set Static FrontPage"
+msgstr "Ställ in statisk startsida"
+
+#: inc/class-shapely.php:168
+msgid "Import HomePage Widgets"
+msgstr "Importera widgetar på startsida"
+
+#: inc/class-shapely-builder.php:93
+msgid "This widgets will appear in %s page"
+msgstr "Denna widget kommer visas på sida %s"
+
+#: inc/class-shapely.php:172
+msgid "Shapely Companion"
+msgstr "Shapely Companion"
+
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-section-repeater.php:374
+msgid "Contain"
+msgstr "Innesluten"
+
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-section-repeater.php:457
+msgid "Column Stretch"
+msgstr "Kolumnsträckning"
+
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-section-repeater.php:606
+msgid "Clear Results"
+msgstr "Rensa resultat"
+
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-section-repeater.php:596
+msgid "Add a Section"
+msgstr "Lägg till en sektion"
+
+#. Translators: Section limit
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-repeater.php:290
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-section-repeater.php:591
+msgid "sections"
+msgstr "sektioner"
+
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-layouts.php:201
+msgid "Edit column size"
+msgstr "Redigera kolumnstorlek"
+
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-image.php:122
+msgid "Default"
+msgstr "Standard"
+
+#: inc/libraries/epsilon-framework/classes/output/class-epsilon-repeater-templates.php:57
+#: inc/libraries/epsilon-framework/classes/output/class-epsilon-repeater-templates.php:129
+#: inc/libraries/epsilon-framework/customizer/sections/class-epsilon-section-doubled.php:56
+msgid "Close"
+msgstr "Stäng"
+
+#: inc/libraries/epsilon-framework/classes/output/class-epsilon-repeater-templates.php:288
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-image.php:126
+msgid "Select File"
+msgstr "Välj fil"
+
+#: inc/libraries/epsilon-framework/classes/output/class-epsilon-repeater-templates.php:278
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-image.php:112
+msgid "Recommended resolution:"
+msgstr "Rekommenderad upplösning:"
+
+#: inc/libraries/epsilon-framework/classes/class-epsilon-ajax-controller.php:71
+#: inc/libraries/welcome-screen/class-epsilon-welcome-screen.php:235
+msgid "Class does not exist"
+msgstr "Klass finns inte"
+
+#: inc/libraries/epsilon-framework/classes/class-epsilon-ajax-controller.php:34
+#: inc/libraries/epsilon-framework/classes/class-epsilon-ajax-controller.php:58
+#: inc/libraries/welcome-screen/class-epsilon-welcome-screen.php:189
+#: inc/libraries/welcome-screen/class-epsilon-welcome-screen.php:213
+msgid "Not allowed"
+msgstr "Inte tillåtet"
+
+#: inc/libraries/epsilon-framework/class-epsilon-framework.php:259
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-repeater.php:242
+msgid "Row"
+msgstr "Rad"
+
+#: inc/libraries/epsilon-framework/class-epsilon-framework.php:258
+#: inc/libraries/epsilon-framework/classes/output/class-epsilon-repeater-templates.php:276
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-image.php:110
+msgid "Upload image"
+msgstr "Ladda upp bild"
+
+#: inc/libraries/epsilon-framework/class-epsilon-framework.php:257
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-repeater.php:101
+msgid "Add"
+msgstr "Lägg till"
+
+#: inc/libraries/epsilon-framework/class-epsilon-framework.php:256
+#: inc/libraries/epsilon-framework/classes/output/class-epsilon-repeater-templates.php:56
+#: inc/libraries/epsilon-framework/classes/output/class-epsilon-repeater-templates.php:128
+#: inc/libraries/epsilon-framework/classes/output/class-epsilon-repeater-templates.php:284
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-image.php:118
+msgid "Remove"
+msgstr "Ta bort"
+
+#: inc/customizer.php:1037
+msgid "Grid"
+msgstr "Rutnät"
+
+#: inc/customizer.php:1051
+msgid "Projects Template"
+msgstr "Projektmall"
+
+#: inc/customizer.php:1180
+msgid "Show the project type"
+msgstr "Visa projekttypen"
+
+#: inc/customizer.php:1032
+msgid "Choose how you want to display projects"
+msgstr "Välj hur du vill visa projekt"
+
+#: inc/customizer.php:1031
+msgid "Projects Layout"
+msgstr "Projektlayout"
+
+#: inc/customizer.php:1150
+msgid "Show title above project"
+msgstr "Visa rubrik ovan projekt"
+
+#: inc/customizer.php:945
+msgid "Projects Settings"
+msgstr "Projektinställningar"
+
+#: inc/class-shapely-related-posts.php:199
+msgid "Related projects"
+msgstr "Relaterade projekt"
+
+#: inc/custom-controls/class-shapely-logo-dimensions.php:42
+msgid "Logo Width:"
+msgstr "Bredd på logga:"
+
+#: inc/custom-controls/class-shapely-logo-dimensions.php:46
+msgid "Logo Height:"
+msgstr "Höjd på logga:"
+
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-section-repeater.php:608
+msgid "The search results will be updated as you type."
+msgstr "Sökresultaten kommer uppdateras när du skriver."
+
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-section-repeater.php:603
+msgid "Search sections &hellip;"
+msgstr "Söksektioner &hellip;"
+
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-typography.php:323
+msgid "Letter Spacing"
+msgstr "Teckenavstånd"
+
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-section-repeater.php:250
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-upsell.php:70
+msgid "See what's in the PRO version"
+msgstr "Se vad som finns i PRO-versionen"
+
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-section-repeater.php:602
+msgid "Search sections"
+msgstr "Söksektioner"
+
+#: inc/libraries/epsilon-framework/classes/output/class-epsilon-repeater-templates.php:377
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-color-picker.php:82
+msgid "(clear)"
+msgstr "(rensa)"
+
+#. Translators: Section limit
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-repeater.php:290
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-section-repeater.php:590
+msgid "Limit: "
+msgstr "Gräns:"
+
+#: inc/libraries/epsilon-framework/classes/backend/class-epsilon-content-backup.php:221
+msgid "This page contains the content created by the customizer."
+msgstr "Denna sida innehåller innehållet som skapats av anpassaren."
+
+#: inc/libraries/epsilon-framework/classes/output/class-epsilon-color-coded-categories.php:112
+msgid "This color will affect category related elements such as links, titles, etc. (defined by your theme)"
+msgstr "Denna färg kommer att påverka kategorirelaterade element som länkar, rubriker etc. (definierad av ditt tema)"
+
+#: inc/customizer.php:1208 inc/customizer.php:1260
+msgid "Related Projects Area"
+msgstr "Relaterade projektområden"
+
+#: inc/customizer.php:1181
+msgid "This will show/hide the type of project"
+msgstr "Detta kommer visa/dölja typen av projekt"
+
+#: inc/customizer.php:1161
+msgid "This will show/hide the date when project was published"
+msgstr "Detta kommer visa/dölja datum när projektet publicerades"
+
+#: inc/customizer.php:1151
+msgid "This will show/hide the project title above project content"
+msgstr "Detta kommer visa/dölja projektets rubrik ovan projektinnehåll"
+
+#: inc/customizer.php:1209 inc/customizer.php:1261
+msgid "This will enable/disable the related projects"
+msgstr "Detta kommer att aktivera/inaktivera relaterade projekt"
+
+#: inc/customizer.php:1301
+msgid "Set the default template for single project"
+msgstr "Ställ in standardmallen för enskilt projekt"
+
+#: inc/customizer.php:1300
+msgid "Single Project Template"
+msgstr "Enslild projektmall"
+
+#: inc/customizer.php:1171
+msgid "This will show/hide the author who written the project under the project title"
+msgstr "Detta kommer att visa/dölja författaren som skrev projektet under projektets rubrik"
+
+#: inc/customizer.php:1052
+msgid "Choose the template for your projects archive page"
+msgstr "Välj mall för din projektarkivsida"
+
+#: inc/customizer.php:1036
+msgid "Masonry"
+msgstr "Mosaik"
+
+#: inc/customizer.php:978 inc/customizer.php:987
+msgid "Show/hide the title from the Portfolio Archive Page"
+msgstr "Visa/dölj rubriken från portföljens arkivsida"
+
+#: inc/customizer.php:977 inc/customizer.php:986
+msgid "Show Portfolio Archive Title"
+msgstr "Visa portföljarkivets rubrik"
+
+#: inc/customizer.php:394 inc/customizer.php:403
+msgid "Mobile Menu on Desktop"
+msgstr "Mobilmeny på stationär dator"
+
+#: inc/customizer.php:1217 inc/customizer.php:1268
+msgid "Project Author Area"
+msgstr "Område för projektförfattare"
+
+#: inc/customizer.php:946
+msgid "Panel to update projects related options"
+msgstr "Panel för att uppdatera projektrelaterade alternativ"
+
+#: inc/customizer.php:952
+msgid "Projects Page Settings"
+msgstr "Inställningar för projektsidor"
+
+#: inc/customizer.php:1191 inc/customizer.php:1245
+msgid "This will transform your first letter from a project into uppercase"
+msgstr "Detta kommer att omvandla din första bokstav från ett projekt till en stor bokstav"
+
+#: inc/customizer.php:1226 inc/customizer.php:1276
+msgid "Project Author Left Side"
+msgstr "Projektförfattare vänster sida"
+
+#: inc/customizer.php:1227 inc/customizer.php:1277
+msgid "This will move the author box from the bottom of the project on top on the left side"
+msgstr "Detta flyttar författarrutan från botten på projektet till toppen på vänster sida"
+
+#: inc/customizer.php:960
+msgid "Project Single Settings"
+msgstr "Inställningar för enskilt projekt"
+
+#: inc/customizer.php:395 inc/customizer.php:404
+msgid "Always the menu will be like the mobile menu"
+msgstr "Menyn kommer alltid att vara som mobilmenyn"
+
+#: inc/customizer.php:1200 inc/customizer.php:1253
+msgid "This will show/hide tags from the end of project"
+msgstr "Detta kommer visa/dölja etiketter från slutet av projekt."
+
+#. Translators: Notice
+#: inc/libraries/welcome-screen/class-epsilon-welcome-screen.php:380
+msgid "Welcome! Thank you for choosing %3$s! To fully take advantage of the best our theme can offer please make sure you visit our %1$swelcome page%2$s."
+msgstr "Välkommen! Tack för att du valde %3$s! För att fullt ut utnyttja det bästa som vårt tema kan erbjuda, se till att du besöker vår %1$svälkomstsida%2$s."
+
+#: inc/customizer.php:696 inc/customizer.php:1170
+msgid "Show the author"
+msgstr "Visa författaren"
+
+#: inc/customizer.php:686 inc/customizer.php:1160
+msgid "Show the date"
+msgstr "Visa datumet"
+
+#: inc/customizer.php:706
+msgid "Show the category"
+msgstr "Visa kategorin"
+
+#. Translators: Notice URL
+#: inc/libraries/welcome-screen/class-epsilon-welcome-screen.php:387
+msgid "Get started with %1$s"
+msgstr "Kom igång med %1$s"
+
+#. Translators: Notice Title
+#: inc/libraries/welcome-screen/class-epsilon-welcome-screen.php:376
+msgid "Welcome to %1$s"
+msgstr "Välkommen till %1$s"
+
+#: inc/customizer.php:676
+msgid "Show title above post"
+msgstr "Visa rubrik över inlägg"
+
+#: inc/customizer.php:687
+msgid "This will show/hide the date when post was published"
+msgstr "Detta kommer att visa/dölja det datum då inlägget publicerades"
+
+#: inc/customizer.php:707
+msgid "This will show/hide the categories of post"
+msgstr "Detta kommer att visa/dölja kategorierna av inlägg"
+
+#: inc/customizer.php:666 inc/customizer.php:1140
+msgid "Show title in header"
+msgstr "Visa rubrik i sidhuvud"
+
+#: inc/customizer.php:697
+msgid "This will show/hide the author who written the post under the post title"
+msgstr "Detta kommer att visa/dölja författaren som skrev inlägget under inläggsrubriken"
+
+#: inc/customizer.php:677
+msgid "This will show/hide the post title above post content"
+msgstr "Detta visar/döljer inläggsrubriken ovan inläggsinnehållet"
+
+#: inc/customizer.php:112
+msgid "Panel to update Blog related options"
+msgstr "Panel för att uppdatera bloggrelaterade alternativ"
+
+#: inc/customizer.php:176
+msgid "Blog Index Settings"
+msgstr "Inställningar för bloggindex"
+
+#: inc/customizer.php:236
+msgid "Blog Single Settings"
+msgstr "Inställningar för enskild blogg"
+
+#: inc/class-shapely-notify-system.php:223
+msgid "Please activate Kali Forms. Note that you won't be able to use Contact widget without it."
+msgstr "Aktivera Kali Forms. Observera att du inte kommer att kunna använda kontaktwidget utan den."
+
+#: inc/class-shapely-notify-system.php:218
+#: inc/class-shapely-notify-system.php:226
+msgid "Please install Kali Forms. Note that you won't be able to use Contact widget without it."
+msgstr "Installera Kali Forms. Observera att du inte kommer att kunna använda kontaktwidget utan den."
+
+#: inc/libraries/epsilon-framework/customizer/sections/class-epsilon-section-recommended-actions.php:116
+msgid "Twitter"
+msgstr "Twitter"
+
+#: inc/libraries/epsilon-framework/customizer/sections/class-epsilon-section-recommended-actions.php:114
+msgid "Facebook"
+msgstr "Facebook"
+
+#: inc/libraries/epsilon-framework/customizer/sections/class-epsilon-section-recommended-actions.php:287
+#: inc/libraries/epsilon-framework/customizer/sections/class-epsilon-section-recommended-actions.php:353
+msgid "Update"
+msgstr "Uppdatera"
+
+#: inc/customizer.php:89
+msgid "Learn more"
+msgstr "Lär dig mer"
+
+#: inc/class-shapely.php:114
+msgid "Recomended Plugins :"
+msgstr "Rekommenderade tillägg:"
+
+#: inc/class-shapely.php:112
+msgid "Recomended Actions"
+msgstr "Rekommenderade åtgärder"
+
+#: inc/customizer.php:323 inc/customizer.php:333
+msgid "Show Blog Title"
+msgstr "Visa bloggrubrik"
+
+#: inc/customizer.php:761 inc/customizer.php:810 inc/customizer.php:1235
+#: inc/customizer.php:1284
+msgid "Show Author Email"
+msgstr "Visa författarens e-post"
+
+#: inc/libraries/epsilon-framework/customizer/sections/class-epsilon-section-recommended-actions.php:118
+msgid "Review this theme on w.org"
+msgstr "Recensera detta tema på w.org"
+
+#: inc/customizer.php:893 inc/customizer.php:902
+msgid "Show Category on Posts"
+msgstr "Visa kategori på inlägg"
+
+#: inc/customizer.php:870
+msgid "Choose the template for your posts page"
+msgstr "Välj mallen för din inläggssida"
+
+#: inc/customizer.php:849
+msgid "Choose how you want to display posts in grid"
+msgstr "Välj hur du vill visa inlägg i rutnät"
+
+#: inc/customizer.php:827
+msgid "Set the default template for single posts"
+msgstr "Ange standardmall för enskilda inlägg"
+
+#: inc/customizer.php:735 inc/customizer.php:787
+msgid "This will enable/disable the related posts"
+msgstr "Detta aktiverar/inaktiverar relaterade inlägg"
+
+#: inc/customizer.php:726 inc/customizer.php:779
+msgid "This will show/hide tags from the end of post"
+msgstr "Detta kommer att visa/dölja etiketter från slutet av inlägget"
+
+#: inc/customizer.php:717 inc/customizer.php:771
+msgid "This will transform your first letter from a post into uppercase"
+msgstr "Detta kommer att omvandla din första bokstav från ett inlägg till stor bokstav"
+
+#: inc/customizer.php:324 inc/customizer.php:334
+msgid "Show/hide the title from the Blog Page"
+msgstr "Visa/dölj rubriken från bloggsidan"
+
+#. translators: number of comments
+#: comments.php:34
+msgctxt "comments title"
+msgid "%1$s COMMENT"
+msgid_plural "%1$s COMMENTS"
+msgstr[0] "%1$s KOMMENTAR"
+msgstr[1] "%1$s KOMMENTARER"
+
+#: inc/customizer.php:1017
+msgid "Add a description on the Portfolio Archive Page."
+msgstr "Lägg till en beskrivning på portföljens arkivsida."
+
+#: inc/customizer.php:1002
+msgid "Add a title on the Portfolio Archive Page."
+msgstr "Lägg till en rubrik på portföljens arkivsida."
+
+#: inc/customizer.php:101
+msgid "Theme Options"
+msgstr "Alternativ för tema"
+
+#: inc/customizer.php:88
+msgid "Theme documentation"
+msgstr "Temadokumentation"
+
+#: inc/customizer.php:894 inc/customizer.php:903
+msgid "Show/hide posts' categories from the Category Page"
+msgstr "Visa/dölj inläggskategori från kategorinsidan"
+
+#: inc/customizer.php:744 inc/customizer.php:795 inc/customizer.php:1218
+#: inc/customizer.php:1269
+msgid "This will show/hide the author box"
+msgstr "Detta kommer visa/dölja författarruta"
+
+#: inc/customizer.php:762 inc/customizer.php:811 inc/customizer.php:1236
+#: inc/customizer.php:1285
+msgid "This will show/hide the author's email from the author box"
+msgstr "Detta kommer visa/dölja författarens e-post från författarrutan"
+
+#: inc/customizer.php:826
+msgid "Single Post Template"
+msgstr "Enskild inläggsmall"
+
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-typography.php:314
+msgid "Line Height"
+msgstr "Radhöjd"
+
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-typography.php:272
+msgid "Theme default"
+msgstr "Temastandard"
+
+#: functions.php:220
+msgid "Shop Sidebar"
+msgstr "Sidopanel för butik"
+
+#: inc/customizer.php:753 inc/customizer.php:803
+msgid "This will move the author box from the bottom of the post on top on the left side"
+msgstr "Detta kommer att flytta författarutan från botten av inlägget till toppen på vänster sida"
+
+#: inc/customizer.php:421
+msgid "The title of the call to action section from footer"
+msgstr "Rubriken på sektionen för uppmaning till åtgärd från sidfoten"
+
+#: inc/customizer.php:436
+msgid "The label of the call to action section's button from the footer"
+msgstr "Etiketten på sektionsknappen för uppmaning till åtgärd från sidfoten"
+
+#: inc/libraries/epsilon-framework/customizer/controls/class-epsilon-control-typography.php:305
+msgid "Font Size"
+msgstr "Textstorlek"
+
+#. Template Name of the theme
+msgid "Home Page"
+msgstr "Startsida"
+
+#: search.php:25
+msgid "Search Results for: %s"
+msgstr "Sökresultat för: %s"
+
+#: inc/template-tags.php:182
+msgid "View all posts in %s"
+msgstr "Visa alla inlägg i %s"
+
+#. translators: %s: Name of current post
+#: inc/template-tags.php:114 template-parts/content-page.php:52
+msgid "Edit %s"
+msgstr "Redigera %s"
+
+#: inc/template-tags.php:107
+msgid "1 Comment"
+msgstr "1 kommentar"
+
+#: inc/template-tags.php:107
+msgid "Leave a comment"
+msgstr "Lämna en kommentar"
+
+#: inc/template-tags.php:94
+msgid "Posted in %1$s"
+msgstr "Publicerad i %1$s"
+
+#. translators: used between list items, there is a space after the comma
+#: inc/template-tags.php:92 inc/template-tags.php:98
+msgid ", "
+msgstr ", "
+
+#: inc/template-tags.php:76
+msgid "by"
+msgstr "av"
+
+#: inc/class-wp-bootstrap-navwalker.php:218
+msgid "Add a menu"
+msgstr "Lägg till en meny"
+
+#: inc/extras.php:851
+#: inc/libraries/welcome-screen/class-epsilon-welcome-screen.php:811
+msgid "Blog"
+msgstr "Blogg"
+
+#: inc/extras.php:691
+msgctxt "noun"
+msgid "Comment"
+msgstr "Kommentar"
+
+#: inc/extras.php:690
+msgid "Leave Comment"
+msgstr "Lämna kommentar"
+
+#: inc/extras.php:685
+msgid "Email Address"
+msgstr "E-postadress"
+
+#: inc/extras.php:684
+msgid "Your Name"
+msgstr "Ditt namn"
+
+#: inc/extras.php:647
+msgid "Your comment is awaiting moderation."
+msgstr "Din kommentar inväntar granskning."
+
+#: inc/extras.php:632
+msgid "Edit"
+msgstr "Redigera"
+
+#: inc/extras.php:853
+msgid "Search"
+msgstr "Sök"
+
+#: inc/extras.php:80
+msgid "Password:"
+msgstr "Lösenord:"
+
+#: inc/extras.php:79
+msgid "This post is password protected. To view it please enter your password below:"
+msgstr "Det här inlägget är lösenordsskyddat. För att se det måste du ange ditt lösenordet nedan."
+
+#: inc/extras.php:60
+msgid "Untitled"
+msgstr "Namnlöst"
+
+#: inc/customizer.php:869
+msgid "Blog Template"
+msgstr "Bloggmall"
+
+#: inc/customizer.php:855
+msgid "Large Images"
+msgstr "Stora bilder"
+
+#: inc/customizer.php:854
+msgid "Large Image and Grid"
+msgstr "Stor bild och rutnät"
+
+#: inc/customizer.php:853
+msgid "Grid only"
+msgstr "Endast rutnät"
+
+#: inc/customizer.php:848
+msgid "Blog Layout"
+msgstr "Layout för blogg"
+
+#: inc/customizer.php:752 inc/customizer.php:802
+msgid "Post Author Left Side"
+msgstr "Inläggsförfattare vänster sida"
+
+#: inc/customizer.php:571
+msgid "Footer"
+msgstr "Sidfot"
+
+#: inc/customizer.php:435
+msgid "Text for Footer Callout Button"
+msgstr "Text för sidfotens utropsknapp"
+
+#: inc/customizer.php:378
+msgid "Heading for the Blog page"
+msgstr "Rubrik för bloggsida"
+
+#: inc/customizer.php:306
+msgid "Main Options"
+msgstr "Huvudalternativ"
+
+#: inc/customizer.php:281
+msgid "Button Color"
+msgstr "Knappfärg"
+
+#: inc/customizer.php:251
+msgid "Link Color"
+msgstr "Länkfärg"
+
+#: inc/customizer.php:111
+msgid "Blog Settings"
+msgstr "Blogginställningar"
+
+#: inc/customizer.php:102
+msgid "Panel to update shapely theme options"
+msgstr "Panel för att uppdatera Shapely temaalternativ"
+
+#: inc/libraries/welcome-screen/class-epsilon-welcome-screen.php:533
+msgid "Support"
+msgstr "Support"
+
+#: inc/libraries/welcome-screen/class-epsilon-welcome-screen.php:527
+msgid "Recommended Plugins"
+msgstr "Rekommenderade tillägg"
+
+#: inc/libraries/welcome-screen/class-epsilon-welcome-screen.php:521
+msgid "Recommended Actions"
+msgstr "Rekommenderade åtgärder"
+
+#: inc/libraries/welcome-screen/class-epsilon-welcome-screen.php:515
+msgid "Getting Started"
+msgstr "Komma igång"
+
+#: inc/libraries/welcome-screen/sections/support.php:17
+msgid "See our full documentation"
+msgstr "Se vår fullständig dokumentation"
+
+#: inc/libraries/welcome-screen/sections/support.php:14
+msgid "This is the place to go to reference different aspects of the theme. Our online documentation is an incredible resource for learning the ins and outs of using shapely."
+msgstr "Hit går du för att lära dig om olika aspekter av temat. Vår online-dokumentation är en otrolig resurs för att lära sig att använda Shapely."
+
+#: inc/libraries/welcome-screen/sections/getting-started.php:35
+msgid "Step 3 - Customize everything"
+msgstr "Steg 3 - Anpassa allt"
+
+#: inc/libraries/welcome-screen/sections/getting-started.php:30
+msgid "Full documentation"
+msgstr "Full dokumentation"
+
+#: inc/libraries/welcome-screen/sections/getting-started.php:28
+msgid "Even if you're a long-time WordPress user, we still believe you should give our documentation a very quick Read."
+msgstr "Även om du är en långtida Wordpress-användare, tror vi ändå att du bör ge vår dokumentation en snabbtitt."
+
+#: inc/libraries/welcome-screen/sections/getting-started.php:27
+msgid "Step 2 - Check our documentation"
+msgstr "Steg 2 - Kolla vår dokumentation"
+
+#: inc/libraries/welcome-screen/sections/getting-started.php:15
+msgid "No recommended actions left to perform"
+msgstr "Inga rekommenderade åtgärder kvar att utföra"
+
+#: inc/libraries/epsilon-framework/customizer/sections/class-epsilon-section-recommended-actions.php:283
+#: inc/libraries/epsilon-framework/customizer/sections/class-epsilon-section-recommended-actions.php:349
+msgid "Activate"
+msgstr "Aktivera"
+
+#: inc/libraries/epsilon-framework/customizer/sections/class-epsilon-section-recommended-actions.php:279
+#: inc/libraries/epsilon-framework/customizer/sections/class-epsilon-section-recommended-actions.php:345
+msgid "Install"
+msgstr "Installera"
+
+#: inc/class-shapely-notify-system.php:158
+msgid "Activate: Jetpack by WordPress"
+msgstr "Aktivera: Jetpack av Wordpress"
+
+#: inc/class-shapely-notify-system.php:153
+#: inc/class-shapely-notify-system.php:161
+msgid "Install: Jetpack by WordPress"
+msgstr "Installera: Jetpack av Wordpress"
+
+#: inc/class-shapely-notify-system.php:144
+msgid "Activate: Yoast SEO Plugin"
+msgstr "Aktivera: Yoast SEO-tillägget"
+
+#: inc/class-shapely-notify-system.php:139
+#: inc/class-shapely-notify-system.php:147
+msgid "Install: Yoast SEO Plugin"
+msgstr "Installera: Yoast SEO-tillägget"
+
+#: functions.php:194
+#: inc/libraries/welcome-screen/class-epsilon-welcome-screen.php:798
+msgid "Homepage"
+msgstr "Startsida"
+
+#: functions.php:106
+msgid "Primary"
+msgstr "Primär"
+
+#: comments.php:53 comments.php:81
+msgid "Newer Comments"
+msgstr "Nyare kommentarer"
+
+#: comments.php:52 comments.php:80
+msgid "Older Comments"
+msgstr "Äldre kommentarer"
+
+#: comments.php:49 comments.php:77
+msgid "Comment navigation"
+msgstr "Kommentarsnavigation"
+
+#. translators: %s: post title
+#: comments.php:30
+msgctxt "comments title"
+msgid "1 COMMENT"
+msgstr "1 KOMMENTAR"
+
+#: inc/template-tags.php:107
+msgid "% Comments"
+msgstr "% kommentarer"
+
+#: template-parts/content-attachment.php:37
+#: template-parts/content-grid-small.php:89
+#: template-parts/content-grid-wide.php:91 template-parts/content-page.php:22
+#: template-parts/content-portfolio.php:88
+#: template-parts/content-portfolio.php:102 template-parts/content.php:103
+#: template-parts/content.php:117
+msgid "Pages:"
+msgstr "Sidor:"
+
+#: inc/extras.php:83
+msgid "Submit"
+msgstr "Skicka"
+
+#: inc/customizer.php:1383
+msgid "Right Sidebar"
+msgstr "Höger sidopanel"
+
+#: inc/class-shapely-related-posts.php:201
+msgid "Related articles "
+msgstr "Relaterade artiklar"
+
+#: inc/customizer.php:420
+msgid "Text for Footer Callout"
+msgstr "Text för sidfotens utrop"
+
+#: inc/customizer.php:1016
+msgid "Portfolio Archive Description"
+msgstr "Portföljarkivbeskrivning"
+
+#: inc/libraries/welcome-screen/sections/recommended-plugins.php:33
+msgid "Version:"
+msgstr "Version:"
+
+#: inc/libraries/welcome-screen/sections/getting-started.php:37
+msgid "Go to Customizer"
+msgstr "Gå till anpassare"
+
+#: inc/libraries/welcome-screen/sections/support.php:12
+msgid "Documentation"
+msgstr "Dokumentation"
+
+#: functions.php:183
+msgid "Sidebar"
+msgstr "Sidopanel"
+
+#: comments.php:95
+msgid "Comments are closed."
+msgstr "Kommentarer är stängda."
+
+#: functions.php:206
+msgid "Footer Widget %s"
+msgstr "Sidfotswidget %s"
+
+#: inc/class-shapely-notify-system.php:185
+#: inc/class-shapely-notify-system.php:193
+msgid "Please install Shapely Companion plugin."
+msgstr "Installera tillägget Shapely Companion."
+
+#: inc/class-shapely-notify-system.php:190
+msgid "Please activate Shapely Companion plugin."
+msgstr "Aktivera tillägget Shapely Companion."
+
+#: inc/class-shapely-notify-system.php:130
+msgid "Activate: Shapely Companion Plugin"
+msgstr "Aktivera: Tillägg Shapely Companion"
+
+#: inc/class-shapely-notify-system.php:125
+#: inc/class-shapely-notify-system.php:133
+msgid "Install: Shapely Companion Plugin"
+msgstr "Installera: Tillägg Shapely Companion"
+
+#: inc/libraries/welcome-screen/sections/getting-started.php:11
+msgid "Step 1 - Implement recommended actions"
+msgstr "Steg 1 – Implementera rekommenderade åtgärder"
+
+#: inc/libraries/welcome-screen/class-epsilon-welcome-screen.php:318
+#: inc/libraries/welcome-screen/class-epsilon-welcome-screen.php:322
+#: inc/libraries/welcome-screen/sections/recommended-actions.php:88
+msgid "Hooray! There are no required actions for you right now."
+msgstr "Hurra! Det finns inga obligatoriska åtgärder för dig just nu."
+
+#: inc/customizer.php:734 inc/customizer.php:786
+msgid "Related Posts Area"
+msgstr "Relaterade inläggsområde"
+
+#: inc/customizer.php:353 inc/customizer.php:361
+msgid "Title in Blog Post"
+msgstr "Rubrik i blogginlägg"
+
+#: header.php:72
+msgid "Site Search"
+msgstr "Webbplatssök"
+
+#: functions.php:207
+msgid "Used for footer widget area"
+msgstr "Används för sidfotens widgetområde"
+
+#: inc/libraries/welcome-screen/sections/getting-started.php:36
+msgid "Using the WordPress Customizer you can easily customize every aspect of the theme."
+msgstr "Med WordPress-anpassaren kan du enkelt anpassa alla aspekter av temat."
+
+#: inc/libraries/welcome-screen/sections/support.php:3
+#: inc/libraries/welcome-screen/sections/support.php:7
+msgid "Contact Support"
+msgstr "Kontakta support"
+
+#: template-parts/content-grid-small.php:77
+#: template-parts/content-grid-wide.php:79
+msgid "Read more %s <span class=\"meta-nav\">&rarr;</span>"
+msgstr "Läs mer %s <span class=\"meta-nav\">&rarr;</span>"
+
+#: inc/extras.php:686
+msgid "Your Website (optional)"
+msgstr "Din webbplats (valfritt)"
+
+#: inc/class-shapely-notify-system.php:237
+msgid "Please activate Yoast SEO plugin."
+msgstr "Aktivera tillägget Yoast SEO."
+
+#: inc/class-shapely-notify-system.php:232
+#: inc/class-shapely-notify-system.php:240
+msgid "Please install Yoast SEO plugin."
+msgstr "Installera tillägget Yoast SEO."
+
+#: inc/libraries/epsilon-framework/customizer/sections/class-epsilon-section-recommended-actions.php:291
+#: inc/libraries/epsilon-framework/customizer/sections/class-epsilon-section-recommended-actions.php:357
+msgid "Deactivate"
+msgstr "Inaktivera"
+
+#: template-parts/content-none.php:43
+msgid "It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps searching can help."
+msgstr "Det verkar inte som om vi kan hitta det du letar efter. Kanske kan en sökning hjälpa."
+
+#: inc/template-tags.php:101
+msgid "Tagged %1$s"
+msgstr "Märkt %1$s"
+
+#: inc/extras.php:856
+msgid "Portfolio"
+msgstr "Portfölj"
+
+#: inc/customizer.php:252 inc/customizer.php:267 inc/customizer.php:282
+#: inc/customizer.php:297
+msgid "Default used if no color is selected"
+msgstr "Standard används om ingen färg är vald"
+
+#: inc/libraries/welcome-screen/sections/getting-started.php:19
+msgid "Check recommended actions"
+msgstr "Kontrollera rekommenderade åtgärder"
+
+#: header.php:51
+msgid "Skip to content"
+msgstr "Hoppa till innehåll"
+
+#: functions.php:107
+msgid "Social Menu"
+msgstr "Social meny"
+
+#: 404.php:21
+msgid "It looks like nothing was found at this location. Maybe try one of the links below or a search?"
+msgstr "Det verkar som om inget hittades på denna plats. Kanske prova någon av länkarna nedan eller en sökning?"
+
+#. Template Name of the theme
+#: inc/customizer.php:831 inc/customizer.php:874 inc/customizer.php:1056
+#: inc/customizer.php:1305 inc/customizer.php:1385
+msgid "Full Width"
+msgstr "Full bredd"
+
+#: inc/customizer.php:587
+msgid "Copyright Text"
+msgstr "Upphovsrättstext"
+
+#: inc/customizer.php:743 inc/customizer.php:794
+msgid "Post Author Area"
+msgstr "Område för inläggsförfattare"
+
+#: inc/customizer.php:296
+msgid "Button Hover Color"
+msgstr "Hovringsfärg på knapp"
+
+#: inc/customizer.php:266
+msgid "Link Hover Color"
+msgstr "Hovringsfärg på länk"
+
+#: inc/customizer.php:1001
+msgid "Portfolio Archive Title"
+msgstr "Arkivrubrik för portfölj"
+
+#: inc/customizer.php:449
+msgid "CFA Button Link"
+msgstr "CFA knapplänk"
+
+#: template-parts/content-none.php:36
+msgid "Sorry, but nothing matched your search terms. Please try again with some different keywords."
+msgstr "Inget matchade dina söktermer. Försök igen med några andra nyckelord."
+
+#: template-parts/content-none.php:30
+msgid "Ready to publish your first post? <a href=\"%1$s\">Get started here</a>."
+msgstr "Redo att publicera ditt första inlägg? <a href=\"%1$s\">Kom igång här</a>."
+
+#: template-parts/content-none.php:14
+msgid "Nothing Found"
+msgstr "Inget hittat"
+
+#. Template Name of the theme
+#: inc/customizer.php:834 inc/customizer.php:877 inc/customizer.php:1059
+#: inc/customizer.php:1308
+msgid "Sidebar Right"
+msgstr "Sidopanel höger"
+
+#. Template Name of the theme
+#: inc/customizer.php:833 inc/customizer.php:876 inc/customizer.php:1058
+#: inc/customizer.php:1307
+msgid "Sidebar Left"
+msgstr "Sidopanel vänster"
+
+#. Template Name of the theme
+#: inc/customizer.php:832 inc/customizer.php:875 inc/customizer.php:1057
+#: inc/customizer.php:1306 inc/customizer.php:1384
+msgid "No Sidebar"
+msgstr "Ingen sidopanel"
+
+#: inc/customizer.php:1382
+msgid "Left Sidebar"
+msgstr "Vänster sidopanel"
+
+#: 404.php:17
+msgid "Oops! That page can&rsquo;t be found."
+msgstr "Hoppsan! Den sidan kan inte hittas."
+
+#: inc/libraries/welcome-screen/sections/support.php:5
+msgid "We offer excellent support through our advanced ticketing system. Make sure to register your purchase before contacting support!"
+msgstr "Vi erbjuder utmärkt support genom vårt avancerade ärendesystem. Se till att registrera ditt köp innan du kontaktar support!"
+
+#: inc/libraries/welcome-screen/sections/getting-started.php:12
+msgid "We've compiled a list of steps for you, to take make sure the experience you'll have using one of our products is very easy to follow."
+msgstr "Vi har sammanställt en lista med steg åt dig, för att se till att din upplevelse när du använder någon av våra produkter är väldigt lätt att följa."
+
+#: inc/class-shapely-notify-system.php:208
+msgid "Please activate Jetpack by WordPress. Note that you won't be able to use the Testimonials and Portfolio widgets without it."
+msgstr "Aktivera Jetpack av WordPress. Observera att du inte kommer att kunna använda widgetarna ”Omdöme” och ”Portfölj” utan det."
+
+#: inc/class-shapely-notify-system.php:203
+#: inc/class-shapely-notify-system.php:211
+msgid "Please install Jetpack by WordPress. Note that you won't be able to use the Testimonials and Portfolio widgets without it."
+msgstr "Installera Jetpack av WordPress. Observera att du inte kommer att kunna använda widgetarna ”Omdömen” och ”Portfölj” utan det."
+
+#: inc/extras.php:129
+msgid "Theme by %1$s Powered by %2$s"
+msgstr "Tema av %1$s drivs med %2$s"
+
+#. translators: 1: date, 2: time
+#: inc/extras.php:628
+msgid "%1$s at %2$s"
+msgstr "%1$s kl. %2$s"
+
+#. Author URI of the theme
+#: style.css
+#, gp-priority: low
+msgid "https://colorlib.com"
+msgstr "https://colorlib.com"
+
+#. Author of the theme
+#: style.css
+#, gp-priority: low
+msgid "Colorlib"
+msgstr "Colorlib"
+
+#. Theme URI of the theme
+#: style.css
+#, gp-priority: low
+msgid "https://colorlib.com/wp/themes/shapely/"
+msgstr "https://colorlib.com/wp/themes/shapely/"

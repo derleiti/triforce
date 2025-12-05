@@ -1,0 +1,95 @@
+# Translation of Plugins - Speculative Loading - Stable (latest release) in French (France)
+# This file is distributed under the same license as the Plugins - Speculative Loading - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-05-15 18:38:38+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: fr\n"
+"Project-Id-Version: Plugins - Speculative Loading - Stable (latest release)\n"
+
+#. Description of the plugin
+#: load.php
+msgid "Enables browsers to speculatively prerender or prefetch pages to achieve near-instant loads based on user interaction."
+msgstr "Permet aux navigateurs de préafficher ou de prérécupérer des pages de manière spéculative pour obtenir des chargements quasi instantanés en fonction de l’interaction de l’internaute."
+
+#: settings.php:383
+msgid "Settings"
+msgstr "Réglages"
+
+#. Plugin Name of the plugin
+#: load.php settings.php:210
+msgid "Speculative Loading"
+msgstr "Speculative Loading"
+
+#: settings.php:231
+msgid "Eagerness"
+msgstr "Empressement"
+
+#: settings.php:70
+msgid "Prerendering will lead to faster load times than prefetching. However, in case of interactive content, prefetching may be a safer choice."
+msgstr "Le prérendu entraînera des temps de chargement plus rapides que le préchargement. Cependant, dans le cas d’un contenu interactif, le préchargement peut être un choix plus sûr."
+
+#: settings.php:227
+msgid "Speculation Mode"
+msgstr "Mode de spéculation"
+
+#: settings.php:214
+msgid "This section allows you to control how URLs that your users navigate to are speculatively loaded to improve performance."
+msgstr "Cette section vous permet de contrôler la façon dont les URL vers lesquelles vos utilisateurs accèdent sont chargées de manière spéculative afin d’améliorer les performances."
+
+#: settings.php:71
+msgid "The eagerness setting defines the heuristics based on which the loading is triggered. \"Eager\" will have the minimum delay to start speculative loads, \"Conservative\" increases the chance that only URLs the user actually navigates to are loaded."
+msgstr "Le réglage d’empressement définit l’heuristique sur la base de laquelle le chargement est déclenché. « Eager » aura le délai minimum pour démarrer les chargements spéculatifs, « Conservative » augmente les chances que seules les URL vers lesquelles l’utilisateur navigue réellement soient chargées."
+
+#: settings.php:170
+msgid "Configuration for the Speculation Rules API."
+msgstr "Configuration des règles de l’API de spéculation."
+
+#: settings.php:40
+msgctxt "setting label"
+msgid "Eager (on slightest suggestion)"
+msgstr "Eager (à la moindre suggestion)"
+
+#: settings.php:39
+msgctxt "setting label"
+msgid "Moderate (typically on hover)"
+msgstr "Modérée (généralement au survol)"
+
+#: settings.php:38
+msgctxt "setting label"
+msgid "Conservative (typically on click)"
+msgstr "Conservateur (généralement au clic)"
+
+#: settings.php:25
+msgctxt "setting label"
+msgid "Prerender"
+msgstr "Prérendu"
+
+#: settings.php:24
+msgctxt "setting label"
+msgid "Prefetch"
+msgstr "Préchargement"
+
+#. translators: %s: context string
+#: class-plsr-url-pattern-prefixer.php:74
+msgid "Invalid context %s."
+msgstr "Contexte non valide %s."
+
+#. Author URI of the plugin
+#: load.php
+msgid "https://make.wordpress.org/performance/"
+msgstr "https://make.wordpress.org/performance/"
+
+#. Author of the plugin
+#: load.php
+msgid "WordPress Performance Team"
+msgstr "L’équipe de performance WordPress"
+
+#. Plugin URI of the plugin
+#: load.php
+msgid "https://github.com/WordPress/performance/tree/trunk/plugins/speculation-rules"
+msgstr "https://github.com/WordPress/performance/tree/trunk/plugins/speculation-rules"

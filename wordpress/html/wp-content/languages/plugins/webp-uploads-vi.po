@@ -1,0 +1,162 @@
+# Translation of Plugins - Modern Image Formats - Stable (latest release) in Vietnamese
+# This file is distributed under the same license as the Plugins - Modern Image Formats - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-01-05 22:40:38+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: vi_VN\n"
+"Project-Id-Version: Plugins - Modern Image Formats - Stable (latest release)\n"
+
+#: settings.php:255
+msgid "Enabling this option will generate all fallback image sizes including custom sizes. Note: uses even more storage space."
+msgstr "Bật tùy chọn này sẽ tạo tất cả các kích thước hình ảnh dự phòng bao gồm cả kích thước tùy chỉnh. Lưu ý: sử dụng nhiều dung lượng lưu trữ hơn."
+
+#: settings.php:252
+msgid "Generate all fallback image sizes including custom sizes"
+msgstr "Tạo tất cả các kích thước hình ảnh dự phòng bao gồm cả kích thước tùy chỉnh"
+
+#: settings.php:116
+msgid "Generate all fallback image sizes"
+msgstr "Tạo tất cả các kích thước hình ảnh dự phòng"
+
+#: settings.php:224 settings.php:311
+msgid "This setting requires fallback image output to be enabled."
+msgstr "Cài đặt này yêu cầu bật đầu ra hình ảnh dự phòng."
+
+#: settings.php:199
+msgid "Also generate fallback images in the original upload format"
+msgstr "Đồng thời tạo hình ảnh dự phòng ở định dạng tải lên ban đầu"
+
+#: settings.php:106
+msgid "Output fallback images"
+msgstr "Xuất hình ảnh dự phòng"
+
+#: settings.php:345
+msgid "Picture elements will only be used when fallback images are available. So this will only apply to  images you have uploaded while the \"Also generate fallback images\" setting was enabled."
+msgstr "Các phần tử picture sẽ chỉ được sử dụng khi có sẵn hình ảnh dự phòng. Vì vậy, điều này sẽ chỉ áp dụng cho các hình ảnh bạn đã tải lên khi cài đặt \"Đồng thời tạo hình ảnh dự phòng\" được bật."
+
+#: settings.php:79
+msgctxt "settings page section name"
+msgid "Modern Image Formats"
+msgstr "Modern Image Formats"
+
+#: settings.php:343
+msgid "The picture element serves a modern image format with a fallback to the original upload format. Warning: Make sure you test your theme and plugins for compatibility. In particular, CSS selectors will not match images when using the child combinator (e.g. figure > img)."
+msgstr "Phần tử picture cung cấp định dạng hình ảnh hiện đại với dự phòng cho định dạng tải lên ban đầu. Cảnh báo: Đảm bảo bạn kiểm tra chủ đề và plugin của mình để tương thích. Đặc biệt, bộ chọn CSS sẽ không khớp với hình ảnh khi sử dụng bộ kết hợp con (ví dụ: figure > img)."
+
+#: settings.php:341
+msgid "(experimental)"
+msgstr "(thử nghiệm)"
+
+#: settings.php:339
+msgid "Use <picture> Element"
+msgstr "Sử dụng thẻ <picture>"
+
+#: settings.php:201
+msgid "Enabling fallback image output can improve compatibility, but will increase the filesystem storage use of your images."
+msgstr "Bật đầu ra hình ảnh dự phòng có thể cải thiện khả năng tương thích, nhưng sẽ tăng mức sử dụng dung lượng lưu trữ tệp hệ thống của hình ảnh của bạn."
+
+#: settings.php:184
+msgid "WebP support can only be enabled by your hosting provider, so contact them for more information."
+msgstr "Hỗ trợ WebP chỉ có thể được bật bởi nhà cung cấp dịch vụ lưu trữ của bạn, vì vậy hãy liên hệ với họ để biết thêm thông tin."
+
+#: settings.php:183
+msgid "WebP support is not available."
+msgstr "Không hỗ trợ WebP."
+
+#: settings.php:177
+msgid "AVIF support can only be enabled by your hosting provider, so contact them for more information."
+msgstr "Hỗ trợ AVIF chỉ có thể được bật bởi nhà cung cấp dịch vụ lưu trữ của bạn, vì vậy hãy liên hệ với họ để biết thêm thông tin."
+
+#: settings.php:176
+msgid "AVIF support is not available."
+msgstr "Không hỗ trợ AVIF."
+
+#: settings.php:172
+msgid "Select the format to use when generating new images from uploaded images."
+msgstr "Chọn định dạng để sử dụng khi tạo hình ảnh mới từ hình ảnh đã tải lên."
+
+#: settings.php:170
+msgid "Generate images in this format"
+msgstr "Tạo hình ảnh ở định dạng này"
+
+#: settings.php:167
+msgid "AVIF"
+msgstr "AVIF"
+
+#: settings.php:166
+msgid "WebP"
+msgstr "WebP"
+
+#: settings.php:152
+msgid "WebP or AVIF support can only be enabled by your hosting provider, so contact them for more information."
+msgstr "Hỗ trợ WebP hoặc AVIF chỉ có thể được bật bởi nhà cung cấp dịch vụ lưu trữ của bạn, vì vậy hãy liên hệ với họ để biết thêm thông tin."
+
+#: settings.php:151
+msgid "Modern image support is not available."
+msgstr "Không hỗ trợ hình ảnh hiện đại."
+
+#: settings.php:126
+msgid "Picture element"
+msgstr "Thẻ Picture"
+
+#: settings.php:91
+msgid "Image output format"
+msgstr "Định dạng xuất hình ảnh"
+
+#: settings.php:402
+msgid "Settings"
+msgstr "Cài đặt"
+
+#. Description of the plugin
+#: load.php
+msgid "Converts images to more modern formats such as WebP or AVIF during upload."
+msgstr "Chuyển đổi hình ảnh sang các định dạng hiện đại hơn như WebP hoặc AVIF trong quá trình tải lên."
+
+#. Plugin Name of the plugin
+#: load.php
+msgid "Modern Image Formats"
+msgstr "Modern Image Formats"
+
+#: helper.php:222
+msgid "The image does not have a valid metadata."
+msgstr "Hình ảnh không có siêu dữ liệu hợp lệ."
+
+#: helper.php:189
+msgid "The file key is not present on the image data"
+msgstr "Khóa tệp không có trong dữ liệu hình ảnh"
+
+#: helper.php:161
+msgid "At least one of the dimensions must be a positive number."
+msgstr "Ít nhất một trong các kích thước phải là một số dương."
+
+#: helper.php:149
+msgid "The original image file does not exists, subsizes are created out of the original image."
+msgstr "Tệp hình ảnh gốc không tồn tại, các kích thước phụ được tạo ra từ hình ảnh gốc."
+
+#: helper.php:144
+msgid "The provided mime type is not supported."
+msgstr "Không hỗ trợ loại mime được cung cấp."
+
+#: helper.php:140
+msgid "The provided mime type is not allowed."
+msgstr "Không cho phép loại mime được cung cấp."
+
+#. Author URI of the plugin
+#: load.php
+msgid "https://make.wordpress.org/performance/"
+msgstr "https://make.wordpress.org/performance/"
+
+#. Author of the plugin
+#: load.php
+msgid "WordPress Performance Team"
+msgstr "Nhóm Hiệu suất WordPress"
+
+#. Plugin URI of the plugin
+#: load.php
+msgid "https://github.com/WordPress/performance/tree/trunk/plugins/webp-uploads"
+msgstr "https://github.com/WordPress/performance/tree/trunk/plugins/webp-uploads"

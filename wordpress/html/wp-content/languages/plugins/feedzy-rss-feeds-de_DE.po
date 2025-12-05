@@ -1,0 +1,4220 @@
+# Translation of Plugins - RSS Aggregator by Feedzy – Feed to Post, Autoblogging, News &amp; YouTube Video Feeds Aggregator - Stable (latest release) in German
+# This file is distributed under the same license as the Plugins - RSS Aggregator by Feedzy – Feed to Post, Autoblogging, News &amp; YouTube Video Feeds Aggregator - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-11-04 09:54:41+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/4.0.3\n"
+"Language: de\n"
+"Project-Id-Version: Plugins - RSS Aggregator by Feedzy – Feed to Post, Autoblogging, News &amp; YouTube Video Feeds Aggregator - Stable (latest release)\n"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:515
+msgid "Your current plan supports only one import setup. Upgrade to unlock unlimited import configurations and make the most of Feedzy's powerful features!"
+msgstr "Dein aktueller Tarif unterstützt nur eine Importkonfiguration. Mit einem Upgrade kannst du unbegrenzte Importkonfigurationen freischalten und die leistungsstarken Funktionen von Feedzy optimal nutzen!"
+
+#: includes/views/misc-view.php:63
+msgid "Specify a custom User-Agent string for feed requests. Some feed providers block automated requests. If you're experiencing issues accessing a feed, try setting this to a common browser string like \"Mozilla/5.0\". In most cases, you can leave this field empty."
+msgstr "Gib einen individuellen User-Agent-String für Feed-Abfragen an. Einige Feed-Anbieter blockieren automatische Abfragen. Wenn du Probleme hast, auf einen Feed zuzugreifen, kannst du hier einen gängigen Browser-String wie „Mozilla/5.0“ angeben. In den meisten Fällen kannst du dieses Feld leer lassen."
+
+#: includes/views/import-metabox-edit.php:904
+msgid "Oldest items first"
+msgstr "Älteste Einträge zuerst"
+
+#: includes/views/import-metabox-edit.php:903
+msgid "Latest items first"
+msgstr "Neueste Einträge zuerst"
+
+#: includes/views/import-metabox-edit.php:902
+msgid "Original feed order"
+msgstr "Ursprüngliche Feed-Reihenfolge"
+
+#: includes/views/import-metabox-edit.php:892
+msgid "Feed Order"
+msgstr "Feed-Reihenfolge"
+
+#: includes/views/import-metabox-edit.php:885
+msgid "Enable this to automatically remove all HTML tags from feed content upon import. This can help ensure clean, plain-text output and is especially useful for feeds that contain unexpected or unsafe markup."
+msgstr "Aktiviere diese Option, um beim Import automatisch alle HTML-Tags aus dem Feed-Inhalt zu entfernen. Dies kann dazu beitragen, eine saubere Ausgabe im Klartext zu gewährleisten und ist besonders nützlich für Feeds, die unerwartete oder unsichere Markups enthalten."
+
+#: includes/views/import-metabox-edit.php:881
+msgid "Remove HTML tags from improted content"
+msgstr "HTML-Tags aus importierten Inhalten entfernen"
+
+#: includes/views/import-metabox-edit.php:873
+msgid "Strip HTML Tags"
+msgstr "HTML-Tags entfernen"
+
+#: includes/views/import-metabox-edit.php:820
+msgid "Helpful for setting a fallback image for feed items without an image during the import process."
+msgstr "Hilfreich, um während des Importvorgangs ein Fallback-Bild für Feed-Einträge ohne Bild festzulegen."
+
+#: includes/views/import-metabox-edit.php:761
+msgid "Use a specific image just for this feed."
+msgstr "Verwende ein spezifisches Bild nur für diesen Feed."
+
+#: includes/views/import-metabox-edit.php:757
+msgid "Add custom fallback image"
+msgstr "Individuelles Fallback-Bild hinzufügen"
+
+#: includes/views/import-metabox-edit.php:740
+msgid "Feedzy Settings"
+msgstr "Feedzy-Einstellungen"
+
+#. translators: %s is replaced with a link to the Feedzy Settings page
+#: includes/views/import-metabox-edit.php:739
+msgid "You can update the general fallback image in %s."
+msgstr "Du kannst das allgemeine Fallback-Bild unter %s aktualisieren."
+
+#: includes/views/import-metabox-edit.php:727
+msgid "No general fallback image set. "
+msgstr "Es wurde kein allgemeines Fallback-Bild festgelegt. "
+
+#: includes/views/import-metabox-edit.php:718
+msgid "General fallback image not found (may have been deleted)"
+msgstr "Das allgemeine Fallback-Bild wurde nicht gefunden (möglicherweise wurde es gelöscht)"
+
+#: includes/views/import-metabox-edit.php:701
+msgid "Updates automatically when the general fallback image changes."
+msgstr "Wird automatisch aktualisiert, wenn sich das allgemeine Fallback-Bild ändert."
+
+#: includes/views/import-metabox-edit.php:697
+msgid "Use general setting"
+msgstr "Allgemeine Einstellung verwenden"
+
+#: includes/views/import-metabox-edit.php:680
+msgid "Which fallback featured image should be used for this feed?"
+msgstr "Welches Fallback-Beitragsbild soll für diesen Feed verwendet werden?"
+
+#: includes/views/import-metabox-edit.php:657
+msgid "externally created)"
+msgstr "extern erstellt)"
+
+#: includes/views/import-metabox-edit.php:636
+msgid "Import schedule"
+msgstr "Import-Zeitplan"
+
+#: includes/views/import-metabox-edit.php:624
+msgid "Set the number of feed items to import per run."
+msgstr "Lege die Anzahl der Feeds fest, die pro Durchlauf importiert werden sollen."
+
+#: includes/views/import-metabox-edit.php:621
+msgid "Number of items to import"
+msgstr "Anzahl der zu importierenden Einträge"
+
+#: includes/views/import-metabox-edit.php:617
+msgid "Items"
+msgstr "Einträge"
+
+#: includes/views/import-metabox-edit.php:275
+msgid "Tip: Click the settings icon to add actions to this field."
+msgstr "Tipp: Klicke auf das Einstellungen-Icon, um Aktionen zu diesem Feld hinzuzufügen."
+
+#. translators: %1$s: magic tag, %2$s: opening anchor tag, %3$s: closing anchor
+#. tag.
+#: includes/views/import-metabox-edit.php:206
+msgid "Auto-assign by title keywords: %1$s %2$s Configure %3$s"
+msgstr "Automatische Zuweisung nach Titel-Schlüsselwörtern: %1$s %2$s Konfigurieren %3$s"
+
+#. translators: %1$s: magic tag, %2$s: opening anchor tag, %3$s: closing anchor
+#. tag.
+#: includes/views/import-metabox-edit.php:192
+msgid "Auto-create categories from source: %1$s %2$s Learn More %3$s"
+msgstr "Automatisches Erstellen von Kategorien aus der Quelle: %1$s %2$s Mehr erfahren %3$s"
+
+#: includes/views/import-metabox-edit.php:183
+msgid "If you don't select at least one taxonomy, posts will be assigned to Uncategorized by default."
+msgstr "Wenn du nicht mindestens eine Taxonomie auswählst, werden die Beiträge standardmäßig der Kategorie Allgemein zugeordnet."
+
+#: includes/views/amazon-product-advertising-view.php:2
+#: includes/views/openai-view.php:2 includes/views/openrouter-view.php:2
+#: includes/views/spinnerchief-view.php:2 includes/views/wordai-view.php:2
+msgid "Your current plan does not include support for this feature."
+msgstr "Dein aktueller Tarif beinhaltet keine Unterstützung für diese Funktion."
+
+#: includes/layouts/setup-wizard.php:233
+msgid "Posts will not be imported if their title includes these keywords."
+msgstr "Beiträge werden nicht importiert, wenn ihr Titel diese Schlüsselwörter enthält."
+
+#: includes/layouts/setup-wizard.php:228
+msgid "Exclude posts with title not containing"
+msgstr "Beiträge ausschließen, deren Titel nicht enthält"
+
+#: includes/layouts/setup-wizard.php:220
+msgid "Optional. Used as fallback for imported posts without images."
+msgstr "Optional. Wird als Fallback für importierte Beiträge ohne Bilder verwendet."
+
+#: includes/layouts/settings.php:429
+msgid "View proxy setup guide"
+msgstr "Anleitung für die Proxy-Einrichtung anzeigen"
+
+#: includes/layouts/settings.php:427
+msgid "Use a proxy to bypass firewalls, geographic restrictions, or IP blocks from feed sources. This ensures you can reliably access restricted RSS feeds."
+msgstr "Verwende einen Proxy, um Firewalls, geografische Beschränkungen oder IP-Sperren von Feed-Quellen zu umgehen. So kannst du zuverlässig auf eingeschränkte RSS-Feeds zugreifen."
+
+#: includes/layouts/settings.php:424
+msgid "Proxy Configuration"
+msgstr "Proxy-Konfiguration"
+
+#: includes/layouts/settings.php:372
+msgid "Email Reporting Frequency"
+msgstr "Häufigkeit der E-Mail-Berichte"
+
+#: includes/layouts/settings.php:358
+msgid "Email address"
+msgstr "E-Mail-Adresse"
+
+#: includes/layouts/settings.php:351
+msgid "Enable email alerts for feed errors."
+msgstr "Aktiviere E-Mail-Warnmeldungen bei Feed-Fehler."
+
+#: includes/layouts/settings.php:347
+msgid "Report errors via email"
+msgstr "Fehler per E-Mail melden"
+
+#: includes/layouts/settings.php:278
+msgid "Logging Level"
+msgstr "Protokollierungsstufe"
+
+#. translators: (externally created) is used to indicate that the schedule is
+#. created by another plugin or manually.
+#: includes/layouts/settings.php:259
+msgid "externally created"
+msgstr "extern erstellt"
+
+#: includes/layouts/settings.php:232
+msgid "Default Importing Schedule"
+msgstr "Standard-Zeitplan für den Import"
+
+#: includes/layouts/settings.php:154
+msgid "Choose a default image to display when RSS feeds don't include images."
+msgstr "Wähle ein Standardbild, das angezeigt wird, wenn RSS-Feeds keine Bilder enthalten."
+
+#: includes/layouts/settings.php:153
+msgid "Fallback Featured Image Settings"
+msgstr "Fallback-Beitragsbild-Einstellungen"
+
+#: includes/layouts/settings.php:99
+msgid "Schedules"
+msgstr "Zeitpläne"
+
+#: includes/layouts/feedzy-tutorial.php:81 includes/layouts/settings.php:91
+msgid "Logs"
+msgstr "Protokolle"
+
+#: includes/layouts/feedzy-support.php:41
+msgid "License"
+msgstr "Lizenz"
+
+#: includes/layouts/feedzy-subscribe-notice.php:54
+msgid "Help improve Feedzy with anonymous usage insights"
+msgstr "Hilf dabei, Feedzy mit anonymen Nutzungsdaten zu verbessern"
+
+#: includes/layouts/feedzy-subscribe-notice.php:51
+msgid "Get tips, updates & unlock exclusive guides"
+msgstr "Erhalte Tipps, Updates und schalte exklusive Anleitungen frei"
+
+#. translators: %s is the number of users.
+#: includes/layouts/feedzy-subscribe-notice.php:30
+msgid "Join %s+ users aggregating RSS feeds effortlessly"
+msgstr "Schließe dich mehr als %s Benutzern an, die mühelos RSS-Feeds aggregieren"
+
+#: includes/layouts/feedzy-subscribe-notice.php:15
+msgid "Dismiss this notice"
+msgstr "Diesen Hinweis ausblenden"
+
+#: includes/layouts/feedzy-schedules.php:94
+msgid "Interval"
+msgstr "Intervall"
+
+#. translators: %s is the number of custom schedules.
+#: includes/layouts/feedzy-schedules.php:86
+msgid "%s items"
+msgstr "%s Einträge"
+
+#: includes/layouts/feedzy-schedules.php:50
+#: includes/layouts/feedzy-schedules.php:93
+msgid "Internal Name"
+msgstr "Interner Name"
+
+#: includes/layouts/feedzy-schedules.php:37
+#: includes/layouts/feedzy-schedules.php:95
+msgid "Display Name"
+msgstr "Anzeigename"
+
+#: includes/layouts/feedzy-schedules.php:23
+msgid "Interval (seconds)"
+msgstr "Intervall (Sekunden)"
+
+#: includes/layouts/feedzy-schedules.php:14
+#: includes/layouts/feedzy-schedules.php:66
+msgid "Add Cron Schedule"
+msgstr "Cron-Zeitplan hinzufügen"
+
+#: includes/layouts/feedzy-logs-viewer.php:72
+msgid "No logs found."
+msgstr "Es wurden keine Protokolle gefunden."
+
+#: includes/layouts/feedzy-logs-viewer.php:68
+msgid "An error occurred while fetching logs."
+msgstr "Beim Abrufen der Protokolle ist ein Fehler aufgetreten."
+
+#: includes/layouts/feedzy-logs-viewer.php:44
+msgid "All"
+msgstr "Alle"
+
+#: includes/layouts/feedzy-logs-viewer.php:29
+msgid "Recent Logs"
+msgstr "Neueste Protokolle"
+
+#: includes/layouts/feedzy-logs-viewer.php:15 includes/layouts/settings.php:291
+msgid "Error"
+msgstr "Fehler"
+
+#: includes/layouts/feedzy-logs-viewer.php:14 includes/layouts/settings.php:297
+msgid "Warning"
+msgstr "Warnung"
+
+#: includes/layouts/feedzy-logs-viewer.php:13 includes/layouts/settings.php:303
+msgid "Info"
+msgstr "Info"
+
+#: includes/layouts/feedzy-logs-viewer.php:12 includes/layouts/settings.php:309
+msgid "Debug"
+msgstr "Debug"
+
+#: includes/layouts/feedzy-email-report.php:106
+msgid "See all the logs"
+msgstr "Alle Protokolle anzeigen"
+
+#: includes/layouts/feedzy-email-report.php:95
+msgid "Context:"
+msgstr "Kontext:"
+
+#: includes/layouts/feedzy-email-report.php:83
+msgid "No recent error entries found."
+msgstr "Es wurden keine aktuellen Fehlereinträge gefunden."
+
+#: includes/layouts/feedzy-email-report.php:80
+msgid "Recent Log Entries"
+msgstr "Neueste Protokoll-Einträge"
+
+#. translators: %1$s is the error count, %2$s is the date since errors are
+#. counted.
+#: includes/layouts/feedzy-email-report.php:71
+msgid "Errors logged: %1$s (since %2$s)"
+msgstr "Erfasste Fehler: %1$s (seit %2$s)"
+
+#: includes/layouts/feedzy-email-report.php:66
+msgid "Error Statistics"
+msgstr "Fehlerstatistik"
+
+#. translators: %s is the generated date.
+#: includes/layouts/feedzy-email-report.php:56
+msgid "Generated on %s"
+msgstr "Erzeugt am %s"
+
+#. translators: %s is the site name.
+#: includes/layouts/feedzy-email-report.php:50
+msgid "Feedzy RSS Feeds Log Report for %s"
+msgstr "Protokollbericht von Feedzy RSS Feeds für %s"
+
+#: includes/feedzy-rss-feeds-activator.php:77
+msgid "News sites"
+msgstr "News-Websites"
+
+#. translators: %s is the post title.
+#: includes/admin/feedzy-rss-feeds-import.php:3068
+msgid "Could not set the thumbnail for: %s"
+msgstr "Das Vorschaubild kann nicht festgelegt werden für: %s"
+
+#. translators: %s is the image source URL.
+#: includes/admin/feedzy-rss-feeds-import.php:3037
+msgid "Cannot upload the image to Media Library: %s"
+msgstr "Das Bild kann nicht in die Mediathek hochgeladen werden: %s"
+
+#. translators: %s the name of the post.
+#: includes/admin/feedzy-rss-feeds-import.php:3018
+msgid "Could not rename temporary file for: %s"
+msgstr "Die temporäre Datei konnte nicht umbenannt werden für: %s"
+
+#. translators: %s is the image source URL.
+#: includes/admin/feedzy-rss-feeds-import.php:2982
+msgid "Unable to download image: %s"
+msgstr "Das Bild kann nicht heruntergeladen werden: %s"
+
+#. translators: %s is the invalid image URL.
+#: includes/admin/feedzy-rss-feeds-import.php:2951
+msgid "Invalid image URL: %s"
+msgstr "Ungültige Bild-URL: %s"
+
+#. translators: %1$s is the item URL, %2$s is the error message.
+#: includes/admin/feedzy-rss-feeds-import.php:2612
+msgid "Error fetching image from Graby for item \"%1$s\": %2$s"
+msgstr "Fehler beim Abrufen des Bildes von Graby für den Eintrag „%1$s“: %2$s"
+
+#. translators: %1$s is the item URL, %2$s is the error message.
+#: includes/admin/feedzy-rss-feeds-import.php:2405
+msgid "Could not save the \"%1$s\" as post: %2$s"
+msgstr "„%1$s“ konnte nicht als Beitrag gespeichert werden: %2$s"
+
+#. translators: %s is the error message.
+#: includes/admin/feedzy-rss-feeds-import.php:1788
+msgid "Error when fetching the feed items: %s"
+msgstr "Fehler beim Abrufen der Feed-Einträge: %s"
+
+#. translators: %1$s is the import job title, %2$s is the error message.
+#: includes/admin/feedzy-rss-feeds-import.php:1577
+msgid "Error when running \"%1$s\": %2$s"
+msgstr "Fehler beim Ausführen von „%1$s“: %2$s"
+
+#: includes/admin/feedzy-rss-feeds-import.php:528
+#: includes/admin/feedzy-rss-feeds-import.php:529
+msgid "PRO"
+msgstr "PRO"
+
+#: includes/admin/feedzy-rss-feeds-import.php:524
+#: includes/admin/feedzy-rss-feeds-import.php:529
+msgid "Auto Categories by keyword"
+msgstr "Automatische Kategorien nach Schlüsselwort"
+
+#: includes/admin/feedzy-rss-feeds-import.php:205
+msgid "Error validating feed URL."
+msgstr "Fehler bei der Validierung der Feed-URL."
+
+#: includes/admin/feedzy-rss-feeds-import.php:204
+msgid "Invalid feed URL."
+msgstr "Ungültige Feed-URL."
+
+#: includes/admin/feedzy-rss-feeds-import.php:191
+msgid "See more details"
+msgstr "Mehr Details anzeigen"
+
+#. translators: %s is the error message
+#: includes/admin/feedzy-rss-feeds-admin.php:3171
+msgid "An error occurred: %s"
+msgstr "Ein Fehler ist aufgetreten: %s"
+
+#. translators: %s is the error message
+#: includes/admin/feedzy-rss-feeds-admin.php:3157
+msgid "Error reading feed: %s"
+msgstr "Fehler beim Lesen des Feeds: %s"
+
+#. translators: %d is the number of items found in the feed
+#: includes/admin/feedzy-rss-feeds-admin.php:3140
+msgid "%d item found"
+msgid_plural "%d items found"
+msgstr[0] "%d Eintrag gefunden"
+msgstr[1] "%d Einträge gefunden"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:3130
+msgid "Feed is empty"
+msgstr "Der Feed ist leer"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:3107
+msgid "Invalid feed object returned"
+msgstr "Es wurde ein ungültiges Feed-Objekt zurückgegeben"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:3095
+#: includes/admin/feedzy-rss-feeds-admin.php:3121
+msgid "Error fetching feed: "
+msgstr "Fehler beim Abrufen des Feeds: "
+
+#: includes/admin/feedzy-rss-feeds-admin.php:3084
+msgid "Invalid URL format"
+msgstr "Ungültiges URL-Format"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:3072
+msgid "No valid URLs provided."
+msgstr "Es wurden keine gültigen URLs angegeben."
+
+#: includes/admin/feedzy-rss-feeds-admin.php:3065
+msgid "Feed URL cannot be empty."
+msgstr "Die Feed-URL darf nicht leer sein."
+
+#: includes/admin/feedzy-rss-feeds-admin.php:3059
+msgid "Security check failed."
+msgstr "Der Sicherheits-Check ist fehlgeschlagen."
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2396 build/block/index.js:13
+#: build/loop/index.js:1 js/FeedzyLoop/placeholder.js:86
+msgid "Validation failed"
+msgstr "Die Validierung ist fehlgeschlagen"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2011
+msgid "Remove image"
+msgstr "Bild entfernen"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1876
+msgid "No feeds provided for validation."
+msgstr "Es wurden keine Feeds zur Validierung bereitgestellt."
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1267
+#: includes/admin/feedzy-rss-feeds-admin.php:1268
+#: includes/layouts/header.php:13
+msgid "Dashboard"
+msgstr "Dashboard"
+
+#. translators: %s is the time difference.
+#: includes/admin/feedzy-rss-feeds-admin.php:1054
+msgid "%s ago"
+msgstr "vor %s"
+
+#. translators: %1$s the number of maximum displayed items, %2$s is the total
+#. number of items available in the feed.
+#: includes/admin/feedzy-rss-feeds-admin.php:1007
+msgid "Latest %1$s feed items out of %2$s available from"
+msgstr "Letzte %1$s Feed-Einträge von %2$s verfügbar am"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:981
+msgid "No feeds available for preview."
+msgstr "Es sind keine Feeds für die Vorschau verfügbar."
+
+#: includes/admin/feedzy-rss-feeds-admin.php:962
+msgid "Validate & Remove Invalid Feeds"
+msgstr "Ungültige Feeds validieren und entfernen"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:908
+msgid "Feed Preview"
+msgstr "Feed-Vorschau"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:633
+msgid "Save time by reusing your import setups"
+msgstr "Spare Zeit durch die Wiederverwendung deines Import-Setups"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:630
+msgid "Unlock Upload & Export with Feedzy PRO"
+msgstr "Upload und Export mit Feedzy PRO freischalten"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:594
+msgid "Duplicate your imports with one click"
+msgstr "Dupliziere deine Importe mit einem Klick"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:591
+msgid "Unlock Cloning with Feedzy PRO"
+msgstr "Klonen mit Feedzy PRO freischalten"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:530
+#: includes/admin/feedzy-rss-feeds-admin.php:614
+#: includes/admin/feedzy-rss-feeds-admin.php:653 build/conditions/index.js:4
+#: build/loop/index.js:4
+msgid "30-day money-back guarantee. No questions asked."
+msgstr "30-tägige Geld-zurück-Garantie. Es werden keine Fragen gestellt."
+
+#. translators: %1$s is the number of imports used, %2$s is the total number of
+#. imports allowed.
+#: includes/admin/feedzy-rss-feeds-admin.php:508 build/conditions/index.js:4
+#: build/loop/index.js:4
+msgid "%1$s/%2$s used"
+msgstr "%1$s/%2$s verwendet"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:504
+msgid "Import limit reached"
+msgstr "Die Importgrenze wurde erreicht"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:154
+msgid "An error occurred while checking the license. Please try again."
+msgstr "Bei der Überprüfung der Lizenz ist ein Fehler aufgetreten. Bitte versuche es erneut."
+
+#: includes/admin/feedzy-rss-feeds-admin.php:153
+msgid "Check License"
+msgstr "Lizenz prüfen"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:152
+msgid "License Key"
+msgstr "Lizenzschlüssel"
+
+#. translators: %1$s is the feed URL, %2$s is the error message.
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:929
+msgid "Error while parsing feed URL \"%1$s\": %2$s"
+msgstr "Fehler beim Parsen der Feed-URL „%1$s“: %2$s"
+
+#: includes/layouts/setup-wizard.php:239
+msgid "Create a draft import"
+msgstr "Einen Import-Entwurf erstellen"
+
+#: includes/layouts/setup-wizard.php:190
+msgid "Post status"
+msgstr "Beitragsstatus"
+
+#: includes/layouts/setup-wizard.php:177
+msgid "Import as"
+msgstr "Importieren als"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2268
+msgid "Redirecting to import feed"
+msgstr "Weiterleitung zum Import-Feed"
+
+#: includes/layouts/setup-wizard.php:421
+msgid "Skip for now"
+msgstr "Vorläufig überspringen"
+
+#: includes/layouts/setup-wizard.php:420
+msgid "Complete Setup & Start Using Feedzy"
+msgstr "Einrichtung abschließen und Feedzy verwenden"
+
+#: includes/layouts/setup-wizard.php:406
+msgid "Your privacy matters: We only collect anonymous plugin usage data. No sensitive information is shared with third parties."
+msgstr "Deine Privatsphäre ist uns wichtig: Wir sammeln nur anonyme Plugin-Nutzungsdaten. Es werden keine sensiblen Informationen an Dritte weitergegeben."
+
+#: includes/layouts/setup-wizard.php:398
+msgid "Get priority notification about new features"
+msgstr "Erhalte vorrangige Benachrichtigungen über neue Funktionen"
+
+#: includes/layouts/setup-wizard.php:392
+msgid "Help improve Feedzy by sharing anonymous usage data"
+msgstr "Hilf mit, Feedzy zu verbessern, indem du anonyme Nutzungsdaten teilst"
+
+#: includes/layouts/setup-wizard.php:386
+msgid "Receive product updates, tutorials, and exclusive offers"
+msgstr "Erhalte Produktaktualisierungen, Tutorials und exklusive Angebote"
+
+#. translators: %1$s - HTML tag, %2$s - discount, %3$s - HTML tag, %4$s -
+#. product name.
+#: includes/admin/feedzy-rss-feeds-admin.php:3026
+msgid "Get %1$sup to %2$s off%3$s when you upgrade your %4$s plan or renew early."
+msgstr "Erhalte %1$sbis zu %2$s Rabatt%3$s, wenn du deinen %4$s-Tarif aktualisierst oder vorzeitig verlängerst."
+
+#. translators: %1$s - HTML tag, %2$s - discount, %3$s - HTML tag, %4$s -
+#. product name.
+#: includes/admin/feedzy-rss-feeds-admin.php:3018
+msgid "Our biggest sale of the year: %1$sup to %2$s OFF%3$s on %4$s. Don't miss this limited-time offer."
+msgstr "Unser größter Ausverkauf des Jahres: %1$sbis zu %2$s RABATT%3$s auf %4$s. Verpasse nicht dieses zeitlich begrenzte Angebot."
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2760
+msgid "Choose Language"
+msgstr "Sprache auswählen"
+
+#: includes/layouts/settings.php:465
+msgid "Add the port number"
+msgstr "Portnummer hinzufügen"
+
+#. translators: %s: the value to introduce.
+#: includes/layouts/settings.php:457 includes/layouts/settings.php:470
+msgid "Example: %s"
+msgstr "Beispiel: %s"
+
+#: includes/layouts/settings.php:452
+msgid "Enter the IP address or Domain name of the proxy server"
+msgstr "Gib die IP-Adresse oder den Domainnamen des Proxyservers ein"
+
+#: includes/layouts/settings.php:445
+msgid "Enter the password for the authorized user"
+msgstr "Gib das Passwort für den autorisierten Benutzer ein"
+
+#: includes/layouts/settings.php:438
+msgid "Enter the authorized username"
+msgstr "Gib den autorisierten Benutzernamen ein"
+
+#: includes/views/misc-view.php:58
+msgid "Add the user agent string"
+msgstr "User Agent hinzufügen"
+
+#. translators: this sentence is wrapped with a link tag.
+#: includes/elementor/widgets/register-widget.php:474
+#: includes/elementor/widgets/register-widget.php:491
+msgid "View documentation here."
+msgstr "Hier kannst du die Dokumentation aufrufen."
+
+#: includes/elementor/widgets/register-widget.php:471
+msgid "You can add multiple tags at once, by separating them with commas."
+msgstr "Du kannst mehrere Schlagwörter auf einmal hinzufügen, indem du sie durch Kommas trennst."
+
+#: includes/elementor/widgets/register-widget.php:256
+msgid "To"
+msgstr "An"
+
+#. translators: %s is the default value.
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:181
+msgid "default: %s"
+msgstr "Standard: %s"
+
+#. translators: %s is the list of examples.
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:150
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:179
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:330
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:337
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:344
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:367
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:460
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:526
+#: includes/elementor/widgets/register-widget.php:483 build/block/index.js:7
+#: build/block/index.js:10 build/block/index.js:13 build/loop/index.js:7
+#: js/FeedzyLoop/controls.js:315
+msgid "eg: %s"
+msgstr "z. B.: %s"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:931
+msgid "View more details"
+msgstr "Weitere Details anzeigen"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:929
+msgid "Elementor Templates support"
+msgstr "Unterstützung für Elementor-Templates"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:928
+msgid "Translate content"
+msgstr "Inhalt übersetzen"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:927
+msgid "Paraphrase content"
+msgstr "Inhalt paraphrasieren"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:926
+msgid "Full Text Import"
+msgstr "Volltext-Import"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:925
+msgid "Auto add referral parameters to links"
+msgstr "Automatisches Hinzufügen von Referral-Parametern zu Links"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:923
+msgid "Get access to more features."
+msgstr "Erhalte Zugang zu weiteren Funktionen."
+
+#: feedzy-rss-feed.php:321
+msgid "Rate Us"
+msgstr "Bewerte uns"
+
+#: feedzy-rss-feed.php:320
+msgid "Suggest a Feature"
+msgstr "Eine Funktion vorschlagen"
+
+#: feedzy-rss-feed.php:318
+msgid "Run Setup Wizard"
+msgstr "Einrichtungs-Assistent ausführen"
+
+#: feedzy-rss-feed.php:317
+msgid "Get Support"
+msgstr "Support erhalten"
+
+#: feedzy-rss-feed.php:313
+msgid "Close Toggle Help Widget"
+msgstr "Hilfe-Widget-Umschalter schließen"
+
+#: feedzy-rss-feed.php:312
+msgid "How can we help you?"
+msgstr "Wie können wir dir helfen?"
+
+#. translators: %s: Product name
+#: feedzy-rss-feed.php:311
+msgid "Thank you for using %s"
+msgstr "Danke, dass du %s verwendest"
+
+#. translators: %s: Product name
+#: feedzy-rss-feed.php:308
+msgid "Toggle Help Widget for %s"
+msgstr "Hilfe-Widget für %s öffnen/schließen"
+
+#: feedzy-rss-feed.php:224
+msgid "No, thanks."
+msgstr "Nein, danke."
+
+#: feedzy-rss-feed.php:218
+msgid "Upgrade Now!"
+msgstr "Jetzt upgraden!"
+
+#: build/loop/block.json js/FeedzyLoop/block.json
+msgctxt "block description"
+msgid "Display curated RSS content in a dynamic, customizable loop directly in the Block Editor—no coding required."
+msgstr "Zeige kuratierte RSS-Inhalte in einer dynamischen, anpassbaren Schleife direkt im Block-Editor an – ganz ohne Programmieraufwand."
+
+#: build/loop/block.json js/FeedzyLoop/block.json
+msgctxt "block keyword"
+msgid "feedzy"
+msgstr "Feedzy"
+
+#: build/loop/block.json js/FeedzyLoop/block.json
+msgctxt "block keyword"
+msgid "feed"
+msgstr "Feed"
+
+#: build/loop/block.json js/FeedzyLoop/block.json
+msgctxt "block keyword"
+msgid "rss"
+msgstr "RSS"
+
+#: build/loop/block.json js/FeedzyLoop/block.json
+msgctxt "block title"
+msgid "Feedzy Loop"
+msgstr "Feedzy Loop"
+
+#: includes/layouts/setup-wizard.php:159 includes/layouts/setup-wizard.php:243
+#: build/onboarding/index.js:1
+msgid "Skip"
+msgstr "Überspringen"
+
+#. translators: this followed by sentence: View documentation here.
+#: includes/elementor/widgets/register-widget.php:487
+msgid "You can find more info about available meta field values here."
+msgstr "Weitere Informationen zu den verfügbaren Metafeldwerten findest du hier."
+
+#: build/block/index.js:1 build/loop/index.js:4
+#: js/FeedzyLoop/components/FallbackImageLoader.jsx:90
+msgid "Upload Image"
+msgstr "Bild hochladen"
+
+#: build/block/index.js:1 build/loop/index.js:4
+#: js/FeedzyLoop/components/FallbackImageLoader.jsx:74
+msgid "Remove Image"
+msgstr "Bild entfernen"
+
+#: includes/views/import-metabox-edit.php:606 build/block/index.js:1
+msgid "Advanced"
+msgstr "Erweitert"
+
+#: includes/views/wordai-view.php:26
+msgid "WordAI API key"
+msgstr "WordAI-API-Schlüssel"
+
+#: includes/views/wordai-view.php:23
+msgid "The WordAi account API key:"
+msgstr "Der API-Schlüssel des WordAi-Kontos:"
+
+#: includes/views/wordai-view.php:20
+msgid "WordAi Email"
+msgstr "WordAi-E-Mail-Adresse"
+
+#: includes/views/wordai-view.php:19
+msgid "The WordAi account email:"
+msgstr "Die WordAi-Konto-E-Mail-Adresse:"
+
+#: includes/views/spinnerchief-view.php:21
+msgid "SpinnerChief API Key"
+msgstr "SpinnerChief-API-Schlüssel"
+
+#: includes/views/spinnerchief-view.php:18
+msgid "SpinnerChief API key"
+msgstr "SpinnerChief-API-Schlüssel"
+
+#. translators: %1$s: openrouter pricing url, %2$s: link text.
+#: includes/views/openrouter-view.php:32
+msgid "OpenRouter API models <a href=\"%1$s\" target=\"_blank\">%2$s</a>"
+msgstr "OpenRouter-API-Modelle <a href=\"%1$s\" target=\"_blank\">%2$s</a>"
+
+#: includes/views/openrouter-view.php:28
+msgid "The OpenRouter model:"
+msgstr "Das OpenRouter-Modell:"
+
+#. translators: %1$s: openrouter key document url, %2$s: link text.
+#: includes/views/openrouter-view.php:22
+msgid "OpenRouter API keys"
+msgstr "OpenRouter-API-Schlüssel"
+
+#. translators: %1$s: openrouter key document url, %2$s: link text.
+#: includes/views/openrouter-view.php:22
+msgid "Get your OpenRouter API key from <a href=\"%1$s\" target=\"_blank\">%2$s</a>"
+msgstr "Hol dir deinen OpenRouter-API-Schlüssel unter <a href=\"%1$s\" target=\"_blank\">%2$s</a>"
+
+#: includes/views/openrouter-view.php:18
+msgid "The OpenRouter account API key:"
+msgstr "Der API-Schlüssel für das OpenRouter-Konto:"
+
+#: includes/views/openai-view.php:43 includes/views/openrouter-view.php:37
+msgid "Model"
+msgstr "Modell"
+
+#. translators: %1$s: openrouter pricing url, %2$s: link text.
+#: includes/views/openai-view.php:36 includes/views/openrouter-view.php:32
+msgid "Pricing"
+msgstr "Preisgestaltung"
+
+#. translators: %1$s: OpenAI pricing url, %2$s: link text.
+#: includes/views/openai-view.php:34
+msgid "OpenAI API models <a href=\"%1$s\" target=\"_blank\">%2$s</a>"
+msgstr "OpenAI-API-Modelle <a href=\"%1$s\" target=\"_blank\">%2$s</a>"
+
+#: includes/views/openai-view.php:28
+msgid "The OpenAI model:"
+msgstr "Das OpenAI-Modell:"
+
+#: includes/views/openai-view.php:25 includes/views/openrouter-view.php:25
+msgid "API key"
+msgstr "API-Schlüssel"
+
+#. translators: %1$s: OpenAI key document url, %2$s: link text.
+#: includes/views/openai-view.php:22
+msgid "OpenAI API keys"
+msgstr "OpenAI-API-Schlüssel"
+
+#. translators: %1$s: OpenAI key document url, %2$s: link text.
+#: includes/views/openai-view.php:22
+msgid "Get your OpenAI API key from <a href=\"%1$s\" target=\"_blank\">%2$s</a>"
+msgstr "Hol dir deinen OpenAI-API-Schlüssel unter <a href=\"%1$s\" target=\"_blank\">%2$s</a>"
+
+#: includes/views/openai-view.php:18
+msgid "The OpenAI account API key:"
+msgstr "Der API-Schlüssel des OpenAI-Kontos:"
+
+#: includes/views/misc-view.php:46
+msgid "This setting controls whether there are featured images available in the RSS XML Feed of your own website."
+msgstr "Diese Einstellung steuert, ob Beitragsbilder im RSS-XML-Feed deiner eigenen Website verfügbar sind."
+
+#: includes/views/misc-view.php:44
+msgid "Do NOT add the featured image to the website's RSS feed."
+msgstr "Das Beitragsbild NICHT zum RSS-Feed der Website hinzufügen."
+
+#: includes/views/misc-view.php:17
+msgid "Add canonical URL to imported posts from RSS feeds."
+msgstr "Importierten Beiträgen aus RSS-Feeds eine kanonische URL hinzufügen."
+
+#: includes/views/import-metabox-edit.php:1025
+msgid "Loading..."
+msgstr "Wird geladen …"
+
+#: includes/layouts/settings.php:285
+#: includes/views/import-metabox-edit.php:1021
+msgid "None"
+msgstr "Keine"
+
+#: includes/views/import-metabox-edit.php:1011
+msgid "Save & Activate importing"
+msgstr "Import speichern und aktivieren"
+
+#: includes/views/import-metabox-edit.php:1006
+#: includes/views/import-metabox-edit.php:1010
+msgid "Save"
+msgstr "Speichern"
+
+#: includes/layouts/setup-wizard.php:144
+#: includes/views/import-metabox-edit.php:1001
+msgid "Preview Import"
+msgstr "Import-Voransicht"
+
+#: includes/views/import-metabox-edit.php:1000
+msgid "Click to see what items will be imported from the source, according to the filters specified"
+msgstr "Klicke hier, um zu sehen, welche Einträge aus der Quelle importiert werden, entsprechend den angegebenen Filtern"
+
+#: includes/views/import-metabox-edit.php:995
+msgid "Clone Import"
+msgstr "Import klonen"
+
+#: includes/views/import-metabox-edit.php:969
+msgid "Help us improve Feedzy"
+msgstr "Hilf uns, Feedzy zu verbessern"
+
+#: includes/views/import-metabox-edit.php:957
+msgid "Select the language the content will have when it will be imported."
+msgstr "Wähle die Sprache aus, die der Inhalt haben soll, wenn er importiert wird."
+
+#: includes/views/import-metabox-edit.php:934
+msgid "Content Language after import"
+msgstr "Sprache des Inhalts nach dem Import"
+
+#: includes/views/import-metabox-edit.php:927
+msgid "This feature is only for Pro users."
+msgstr "Diese Funktion ist nur für Pro-Nutzer."
+
+#: includes/views/import-metabox-edit.php:924
+msgid "Assign Language"
+msgstr "Sprache zuweisen"
+
+#: includes/views/import-metabox-edit.php:914
+msgid "How often Feedzy will run the import."
+msgstr "Wie oft Feedzy den Import ausführen soll."
+
+#: includes/layouts/setup-wizard.php:208
+#: includes/views/import-metabox-edit.php:674
+msgid "Fallback Image"
+msgstr "Fallback-Bild"
+
+#: includes/views/import-metabox-edit.php:865
+msgid "Define a custom duplication key for identifying unique feed items when importing content. By default, items are considered unique based on their title and URL. Enter one or multiple magic tags."
+msgstr "Definiere einen individuellen Duplikationsschlüssel zur Identifizierung eindeutiger Feed-Einträge beim Importieren von Inhalten. Standardmäßig werden die Einträge anhand ihres Titels und ihrer URL als eindeutig betrachtet. Gib einen oder mehrere magische Tags ein."
+
+#: includes/views/import-metabox-edit.php:862
+msgid "Set a custom duplication key to identify unique feed items"
+msgstr "Lege einen individuellen Duplikationsschlüssel fest, um eindeutige Feed-Einträge zu identifizieren"
+
+#: includes/views/import-metabox-edit.php:858
+msgid "Duplication Key"
+msgstr "Duplikationsschlüssel"
+
+#: includes/views/import-metabox-edit.php:851
+msgid "Documentation."
+msgstr "Dokumentation."
+
+#: includes/views/import-metabox-edit.php:850
+msgid "To understand how duplicates will be removed, check out our"
+msgstr "Um zu verstehen, wie Duplikate entfernt werden, lies unsere"
+
+#: includes/views/import-metabox-edit.php:845
+msgid "Remove Duplicate Items"
+msgstr "Doppelte Einträge entfernen"
+
+#: includes/views/import-metabox-edit.php:832
+msgid "Remove Duplicates"
+msgstr "Duplikate entfernen"
+
+#: includes/views/import-metabox-edit.php:595
+msgid "General feed settings"
+msgstr "Allgemeine Feed-Einstellungen"
+
+#: includes/views/import-metabox-edit.php:594
+msgid "Step 4"
+msgstr "Schritt 4"
+
+#. translators: %1$s: opening anchor tag, %2$s: closing anchor tag.
+#: includes/views/import-metabox-edit.php:576 includes/views/misc-view.php:24
+msgid "Check the %1$s Documentation %2$s for more details."
+msgstr "In der %1$s Dokumentation %2$s findest du weitere Informationen."
+
+#: includes/views/import-metabox-edit.php:567
+msgid "Add Custom Field"
+msgstr "Individuelles Feld hinzufügen"
+
+#: includes/views/import-metabox-edit.php:551 build/conditions/index.js:1
+#: build/loop/index.js:1
+msgid "Value"
+msgstr "Wert"
+
+#: includes/views/import-metabox-edit.php:544
+msgid "Key Name"
+msgstr "Schlüsselname"
+
+#: includes/views/import-metabox-edit.php:513
+msgid "Add magic tags to extract custom elements from your feed. This will work only for single-feeds, not feed groups."
+msgstr "Füge magische Tags hinzu, um individuelle Einträge aus deinem Feed zu extrahieren. Dies funktioniert nur für einzelne Feeds, nicht für Feed-Gruppen."
+
+#: includes/views/import-metabox-edit.php:488
+#: includes/views/import-metabox-edit.php:497
+msgid "Post Excerpt"
+msgstr "Beitrags-Textauszug"
+
+#: includes/views/import-metabox-edit.php:478
+msgid "The source author will appear in Archive Pages"
+msgstr "Der Autor der Quelle wird in den Archivseiten angezeigt"
+
+#: includes/views/import-metabox-edit.php:474
+msgid "Save it in Frontend"
+msgstr "Im Frontend speichern"
+
+#: includes/views/import-metabox-edit.php:464
+msgid "The source author will appear in the Dashboard"
+msgstr "Der Autor der Quelle wird im Dashboard angezeigt"
+
+#: includes/views/import-metabox-edit.php:460
+msgid "Save it in Backend"
+msgstr "Im Backend speichern"
+
+#: includes/views/import-metabox-edit.php:451
+msgid "Select the author to assign to the imported posts. By default, this will be set to your current account. Note that this choice is independent of the options below, which control how the source author details are displayed."
+msgstr "Wähle den Autor aus, der den importierten Beiträgen zugewiesen werden soll. In der Standardeinstellung ist dies dein aktuelles Konto. Beachte, dass diese Auswahl unabhängig von den folgenden Optionen ist, die festlegen, wie die Autorendetails der Quelle angezeigt werden."
+
+#: includes/views/import-metabox-edit.php:433
+msgid "Post Author"
+msgstr "Beitragsautor"
+
+#: includes/views/import-metabox-edit.php:425
+msgid "This will use the external featured image of the imported article and won't save the image to the Media Library on your website."
+msgstr "Dabei wird das externe Beitragsbild des importierten Eintrags verwendet. Das Bild wird nicht in der Mediathek deiner Website gespeichert."
+
+#: includes/views/import-metabox-edit.php:421
+msgid "Use external image URL, Ignore feature post thumbnail"
+msgstr "Externe Bild-URL verwenden, Vorschaubild des Beitrags ignorieren"
+
+#: includes/views/import-metabox-edit.php:413
+msgid "External image"
+msgstr "Externes Bild"
+
+#: includes/views/import-metabox-edit.php:399
+msgid "You can use the magic tags, URL, or leave it empty."
+msgstr "Du kannst die magischen Tags oder die URL verwenden oder sie leer lassen."
+
+#: includes/views/import-metabox-edit.php:383
+msgid "Add a tag for the featured image"
+msgstr "Füge einen Tag für das angezeigte Bild hinzu"
+
+#: includes/views/import-metabox-edit.php:375 build/block/index.js:1
+#: build/loop/index.js:4 js/FeedzyLoop/components/FallbackImageLoader.jsx:56
+msgid "Featured image"
+msgstr "Beitragsbild"
+
+#. translators: %1$s: opening anchor tag, %2$s: closing anchor tag.
+#: includes/views/import-metabox-edit.php:362
+msgid "Add more advanced tags, like item price, rating and many more, by %1$s upgrading to Feedzy Pro %2$s"
+msgstr "Füge erweiterte Tags hinzu, wie z. B. Artikelpreis, Bewertung und vieles mehr, indem du ein Upgrade auf %1$s auf Feedzy Pro %2$s durchführst"
+
+#: includes/views/import-metabox-edit.php:350
+msgid "You can add more tags and other things that will be added in the Single Post layout. This field is mandatory."
+msgstr "Du kannst weitere Tags und andere Dinge hinzufügen, die im Einzelbeitrags-Layout hinzugefügt werden. Dies ist ein Pflichtfeld."
+
+#: includes/views/import-metabox-edit.php:324 build/block/index.js:1
+msgid "Content"
+msgstr "Inhalt"
+
+#: includes/views/import-metabox-edit.php:312
+msgid "Leave blank, if unsure."
+msgstr "Lass es leer, wenn du unsicher bist."
+
+#: includes/views/import-metabox-edit.php:270
+msgid "You can add multiple items. Keep in mind that this field is mandatory - without it, a post will not be created."
+msgstr "Du kannst mehrere Einträge hinzufügen. Denke daran, dass dieses Feld obligatorisch ist – ohne es wird kein Beitrag erstellt."
+
+#: includes/views/import-metabox-edit.php:238
+msgid "Choose Published if you want to publish your posts right away, or you can use Draft if you want to draft your posts and publish them after reviewing them manually."
+msgstr "Wähle „Veröffentlicht“, wenn du deine Beiträge sofort veröffentlichen möchtest, oder wähle „Entwurf“, wenn du deine Beiträge erst als Entwurf speichern und nach einer manuellen Überprüfung veröffentlichen möchtest."
+
+#: includes/views/import-metabox-edit.php:220
+msgid "Post Status"
+msgstr "Beitragsstatus"
+
+#: includes/views/import-metabox-edit.php:173
+msgid "Post Taxonomy"
+msgstr "Beitrags-Taxonomie"
+
+#: includes/views/import-metabox-edit.php:150
+msgid "Post Type"
+msgstr "Inhaltstyp"
+
+#: includes/views/import-metabox-edit.php:141
+msgid "Advanced Options"
+msgstr "Erweiterte Optionen"
+
+#: includes/views/import-metabox-edit.php:130
+msgid "Map content"
+msgstr "Inhalt zuweisen"
+
+#: includes/views/import-metabox-edit.php:129
+msgid "Step 3"
+msgstr "Schritt 3"
+
+#: includes/views/import-metabox-edit.php:113
+msgid "Filters"
+msgstr "Filter"
+
+#: includes/views/import-metabox-edit.php:112
+msgid "Step 2"
+msgstr "Schritt 2"
+
+#: includes/views/import-metabox-edit.php:101
+msgid "How do I find an RSS feed URL?"
+msgstr "Wie finde ich die URL eines RSS-Feeds?"
+
+#: includes/views/import-metabox-edit.php:88
+msgid "Add a Group"
+msgstr "Neue Gruppe hinzufügen"
+
+#: includes/views/import-metabox-edit.php:87
+msgid "You don&#8217;t have any groups, yet."
+msgstr "Du hast noch keine Gruppen."
+
+#: includes/views/import-metabox-edit.php:73
+msgid "Use Feed Group"
+msgstr "Feed-Gruppe verwenden"
+
+#: includes/views/import-metabox-edit.php:64
+msgid "You can add multiple sources at once, by separating them with commas. Make sure to use the validate button. Invalid feeds may not import anything."
+msgstr "Du kannst mehrere Quellen auf einmal hinzufügen, indem du sie mit Kommas trennst. Achte darauf, dass du den Button „Validieren“ verwendest. Ungültige Feeds werden möglicherweise nicht importiert."
+
+#: includes/views/import-metabox-edit.php:56
+msgid "Validate Feed"
+msgstr "Validieren des Feeds"
+
+#: includes/views/import-metabox-edit.php:49
+msgid "Paste your feed URL and click the plus icon to add it in the list"
+msgstr "Füge die URL deines Feeds ein und klicke auf das Plus-Symbol, um ihn in die Liste aufzunehmen"
+
+#: includes/views/import-metabox-edit.php:48
+msgid "Make sure you validate the feed by using the validate button on the right"
+msgstr "Vergewissere dich, dass du den Feed mit dem Button „Validieren“ auf der rechten Seite bestätigst"
+
+#: includes/views/import-metabox-edit.php:32
+msgid "RSS Feed sources "
+msgstr "RSS-Feed-Quellen "
+
+#: includes/views/import-metabox-edit.php:24
+msgid "Sources configuration"
+msgstr "Konfiguration der Quellen"
+
+#: includes/views/import-metabox-edit.php:23
+msgid "Step 1"
+msgstr "Schritt 1"
+
+#: includes/views/amazon-product-advertising-view.php:71
+#: includes/views/openai-view.php:44 includes/views/openrouter-view.php:38
+#: includes/views/spinnerchief-view.php:22 includes/views/wordai-view.php:27
+msgid "API Status: Invalid | Last check: Never"
+msgstr "API-Status: ungültig | Letzte Prüfung: nie"
+
+#: includes/views/amazon-product-advertising-view.php:70
+msgid "Partner Tag (store/tracking id)"
+msgstr "Partner-Tag (Store/Tracking-ID)"
+
+#: includes/views/amazon-product-advertising-view.php:67
+msgid "Partner Tag (store/tracking id):"
+msgstr "Partner-Tag (Store/Tracking-ID):"
+
+#: includes/views/amazon-product-advertising-view.php:59
+msgid "Region:"
+msgstr "Bundesland:"
+
+#: includes/views/amazon-product-advertising-view.php:51
+msgid "Host:"
+msgstr "Host:"
+
+#: includes/views/amazon-product-advertising-view.php:44
+msgid "Secret key"
+msgstr "Geheimer Schlüssel"
+
+#: includes/views/amazon-product-advertising-view.php:43
+msgid "Secret key:"
+msgstr "Geheimer Schlüssel:"
+
+#: includes/views/amazon-product-advertising-view.php:38
+msgid "Access Key"
+msgstr "Zugangsschlüssel"
+
+#: includes/views/amazon-product-advertising-view.php:37
+msgid "Access Key:"
+msgstr "Zugangsschlüssel:"
+
+#. translators: %1$s to available amazon domain, %2$s example URL with ASIN,
+#. %3$s list of available Amazon domains.
+#: includes/views/amazon-product-advertising-view.php:26
+msgid "Please use this URL structure %1$s or %2$s while getting Amazon product information. <br> Here are the available Amazon domains: %3$s"
+msgstr "Bitte verwende diese URL-Struktur %1$s oder %2$s, wenn du Amazon-Produktinformationen abrufst. <br> Hier sind die verfügbaren Amazon-Domains: %3$s"
+
+#. translators: %1$s: opening anchor tag, %2$s: closing anchor tag.
+#: includes/views/amazon-product-advertising-view.php:13
+#: includes/views/openai-view.php:12 includes/views/openrouter-view.php:12
+#: includes/views/spinnerchief-view.php:12 includes/views/wordai-view.php:12
+msgid "Unlock more powerful features, by %1$s upgrading to Feedzy Pro %2$s"
+msgstr "Schalte mehr leistungsstarke Funktionen frei, indem du ein %1$s Upgrade auf Feedzy Pro %2$s durchführst"
+
+#: includes/util/feedzy-rss-feeds-conditions.php:100
+msgid "Matches Regular Expression"
+msgstr "Entspricht regulärem Ausdruck"
+
+#: includes/util/feedzy-rss-feeds-conditions.php:99
+msgid "Less Than or Equals"
+msgstr "Kleiner als oder gleich"
+
+#: includes/util/feedzy-rss-feeds-conditions.php:98
+msgid "Less Than"
+msgstr "Weniger als"
+
+#: includes/util/feedzy-rss-feeds-conditions.php:97
+msgid "Greater Than or Equals"
+msgstr "Größer als oder gleich"
+
+#: includes/util/feedzy-rss-feeds-conditions.php:96
+msgid "Greater Than"
+msgstr "Größer als"
+
+#: includes/util/feedzy-rss-feeds-conditions.php:95
+msgid "Not Contains"
+msgstr "Enthält nicht"
+
+#: includes/util/feedzy-rss-feeds-conditions.php:94
+msgid "Contains"
+msgstr "Enthält"
+
+#: includes/util/feedzy-rss-feeds-conditions.php:93
+msgid "Is Empty"
+msgstr "Ist leer"
+
+#: includes/util/feedzy-rss-feeds-conditions.php:92
+msgid "Not Equals"
+msgstr "Ungleich"
+
+#: includes/util/feedzy-rss-feeds-conditions.php:91
+msgid "Equals"
+msgstr "Ist gleich"
+
+#: includes/util/feedzy-rss-feeds-conditions.php:90
+msgid "Has Any Value"
+msgstr "Hat beliebigen Wert"
+
+#: includes/layouts/setup-wizard.php:379
+msgid "Let us know your email so that we can send you product updates, helpful tutorials, exclusive offers and more useful stuff."
+msgstr "Verrate uns deine E-Mail-Adresse, damit wir dir Produkt-Updates, hilfreiche Anleitungen, exklusive Angebote und weitere nützliche Dinge schicken können."
+
+#: includes/layouts/setup-wizard.php:371
+msgid "Updates, tutorials, special offers & more"
+msgstr "Updates, Tutorials, Sonderangebote und mehr"
+
+#: includes/layouts/setup-wizard.php:359
+msgid "Skip Improvement"
+msgstr "Verbesserung überspringen"
+
+#: includes/layouts/setup-wizard.php:358
+msgid "Improve now"
+msgstr "Jetzt verbessern"
+
+#. translators: %1$s is the percentage improvement, %2$s and %3$s are HTML tags
+#. for the link to the Optimole website.
+#: includes/layouts/setup-wizard.php:341
+msgid "Improve your website speed and images by %1$s with %2$s Optimole %3$s"
+msgstr "Verbessere deine Website-Geschwindigkeit und Bilder um %1$s mit %2$s Optimole %3$s"
+
+#: includes/layouts/setup-wizard.php:334
+msgid "Boost your website speed"
+msgstr "Verbessere die Geschwindigkeit deiner Website"
+
+#: includes/layouts/setup-wizard.php:322
+msgid "Optimise and speed up your site with our trusted addon - It’s Free"
+msgstr "Optimiere und beschleunige deine Website mit unserem bewährten Add-on – es ist kostenlos"
+
+#: includes/layouts/setup-wizard.php:320
+msgid "Enable performance features for your website."
+msgstr "Aktiviere Leistungsfunktionen für deine Website."
+
+#: includes/layouts/setup-wizard.php:303
+msgid "Extra Features"
+msgstr "Zusätzliche Funktionen"
+
+#: includes/layouts/setup-wizard.php:285
+msgid "No other parameters specified beside the source"
+msgstr "Keine weiteren Parameter neben der Quelle angegeben"
+
+#: includes/layouts/setup-wizard.php:282
+msgid "click to copy"
+msgstr "Klicken zum Kopieren"
+
+#: includes/layouts/setup-wizard.php:279
+msgid "Basic Shortcode"
+msgstr "Einfacher Shortcode"
+
+#: includes/layouts/setup-wizard.php:272
+msgid "Add basic short code in a draft page"
+msgstr "Grundlegenden Shortcode in eine Entwurfsseite einfügen"
+
+#: includes/layouts/setup-wizard.php:267
+msgid "We will automatically create a draft page with Feedzy shortcodes for preview"
+msgstr "Wir erstellen automatisch eine Entwurfsseite mit Feedzy-Shortcodes für die Vorschau"
+
+#: includes/layouts/setup-wizard.php:266
+msgid "Create a draft page"
+msgstr "Eine Entwurfsseite erstellen"
+
+#: includes/layouts/setup-wizard.php:254
+msgid "Feed preview and shortcode"
+msgstr "Feed-Vorschau und Shortcode"
+
+#: includes/layouts/setup-wizard.php:182
+msgid "Page"
+msgstr "Seite"
+
+#: includes/layouts/setup-wizard.php:181
+msgid "Post"
+msgstr "Beitrag"
+
+#: includes/layouts/setup-wizard.php:170
+msgid "Import RSS feed content as"
+msgstr "RSS-Feed-Inhalt importieren als"
+
+#: includes/layouts/setup-wizard.php:152
+msgid "Save and Continue"
+msgstr "Speichern und fortfahren"
+
+#: includes/layouts/setup-wizard.php:150
+msgid "Create draft page"
+msgstr "Entwurfsseite erstellen"
+
+#. translators: %1$s and %2$s are HTML tags for the link to the demo URL.
+#: includes/layouts/setup-wizard.php:131
+msgid "No Feed URL? %1$s Click here %2$s to use demo URL"
+msgstr "Keine Feed-URL? %1$s Klicke hier %2$s, um die Demo-URL zu verwenden"
+
+#: includes/layouts/setup-wizard.php:122
+msgid "Paste RSS feed URL here"
+msgstr "Füge hier die URL des RSS-Feeds ein"
+
+#: includes/layouts/setup-wizard.php:111
+msgid "Feed Source URL"
+msgstr "Quell-URL des Feeds"
+
+#: includes/layouts/setup-wizard.php:108
+msgid "Add RSS feed URL"
+msgstr "RSS-Feed-URL hinzufügen"
+
+#: includes/layouts/feedzy-subscribe-notice.php:63
+#: includes/layouts/setup-wizard.php:98
+msgid "Get Started"
+msgstr "Erste Schritte"
+
+#: includes/layouts/setup-wizard.php:91
+msgid "Display RSS feed using block editor"
+msgstr "RSS-Feed mit dem Block-Editor anzeigen"
+
+#: includes/layouts/setup-wizard.php:89
+msgid "Display RSS feed using elementor"
+msgstr "RSS-Feed mit Elementor anzeigen"
+
+#: includes/layouts/setup-wizard.php:82
+msgid "Display RSS feeds using shortcodes"
+msgstr "RSS-Feeds mit Shortcodes anzeigen"
+
+#: includes/layouts/setup-wizard.php:78
+msgid "Importing RSS feeds to your website content"
+msgstr "Importieren von RSS-Feeds in den Inhalt deiner Website"
+
+#: includes/layouts/setup-wizard.php:70
+msgid "How would you like to integrate Feedzy into your website?"
+msgstr "Wie möchtest du Feedzy in deine Website integrieren?"
+
+#: includes/layouts/setup-wizard.php:38
+msgid "Go to dashboard"
+msgstr "Zum Dashboard"
+
+#: includes/layouts/settings.php:508
+msgid "Save Settings"
+msgstr "Einstellungen speichern"
+
+#: includes/layouts/settings.php:464
+msgid "Port"
+msgstr "Port"
+
+#: includes/layouts/settings.php:451
+msgid "Host"
+msgstr "Host"
+
+#: includes/layouts/settings.php:444
+msgid "Password"
+msgstr "Passwort"
+
+#: includes/layouts/settings.php:437
+msgid "Username"
+msgstr "Benutzername"
+
+#: includes/views/misc-view.php:52
+msgid "User Agent"
+msgstr "User Agent"
+
+#: includes/layouts/settings.php:413
+msgid "Send data about plugin settings to measure the usage of the features. The data is private and not shared with third-party entities. Only plugin data is collected without sensitive information."
+msgstr "Daten über Plugin-Einstellungen senden, um die Nutzung der Funktionen zu messen. Die Daten sind privat und werden nicht an Dritte weitergegeben. Es werden nur Plugin-Daten ohne sensible Informationen gesammelt."
+
+#: includes/layouts/settings.php:410
+msgid "Enable Telemetry"
+msgstr "Telemetrie einschalten"
+
+#: includes/views/import-metabox-edit.php:632
+msgid "Schedule"
+msgstr "Zeitplan"
+
+#: includes/views/import-metabox-edit.php:530
+#: includes/views/import-metabox-edit.php:928
+msgid "Learn More"
+msgstr "Mehr erfahren"
+
+#: includes/views/misc-view.php:92
+msgid "Helpful if you want to delete attached featured image when posts are automatically deleted."
+msgstr "Hilfreich, wenn du angehängte Bilder löschen möchtest, wenn Beiträge automatisch gelöscht werden."
+
+#: includes/views/misc-view.php:89
+msgid "Delete attached featured image"
+msgstr "Angefügtes Bild löschen"
+
+#: includes/views/misc-view.php:82
+msgid "Helpful if you want to remove stale or old items automatically. If you choose 0, it will be considered the individual import setting."
+msgstr "Hilfreich, wenn du veraltete oder alte Einträge automatisch entfernen möchtest. Wenn du 0 wählst, gilt dies als individuelle Importeinstellung."
+
+#: includes/views/misc-view.php:80
+msgid "Delete the posts created from all feeds, after a number of days"
+msgstr "Löschen der Beiträge nach einer bestimmten Anzahl von Tagen, die aus allen Feeds erstellt wurden"
+
+#. translators: %s is a placeholder for the auto categories tag, like
+#. [#auto_categories].
+#: includes/layouts/settings.php:220
+msgid "Automatically assign categories to your posts based on their titles. You need to add %s tag to the category field of your import to support this feature."
+msgstr "Weise deinen Beiträgen automatisch Kategorien zu, die auf ihren Titeln basieren. Um diese Funktion zu unterstützen, musst du den Tag %s in das Kategoriefeld deines Imports einfügen."
+
+#: includes/layouts/settings.php:214
+msgid "Add New"
+msgstr "Neu hinzufügen"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:234
+#: includes/layouts/feedzy-schedules.php:120 includes/layouts/settings.php:206
+#: includes/layouts/settings.php:327 build/conditions/index.js:1
+#: build/loop/index.js:1
+msgid "Delete"
+msgstr "Löschen"
+
+#: includes/layouts/settings.php:194
+msgid "Select a category"
+msgstr "Wähle eine Kategorie"
+
+#: includes/layouts/settings.php:190
+msgid "Values separated by commas"
+msgstr "Werte durch Kommas getrennt"
+
+#: includes/layouts/settings.php:184
+msgid "Auto Categories Mapping"
+msgstr "Automatische Kategorienzuordnung"
+
+#: includes/layouts/settings.php:178
+msgid "This setting will be used to inherit the current theme style instead of the default style. If disabled, it will be considered the individual widget/block/shortcode setting."
+msgstr "Diese Einstellung wird verwendet, um den aktuellen Theme-Stil anstelle des Standardstils zu übernehmen. Wenn deaktiviert, wird die individuelle Widget-/Block-/Shortcode-Einstellung berücksichtigt."
+
+#: includes/layouts/settings.php:166 includes/layouts/setup-wizard.php:217
+#: includes/views/import-metabox-edit.php:808
+msgid "Remove"
+msgstr "Entfernen"
+
+#: includes/layouts/settings.php:83
+msgid "Proxy"
+msgstr "Proxy"
+
+#: includes/layouts/settings.php:75 includes/views/import-metabox-edit.php:138
+#: includes/views/import-metabox-edit.php:603 build/block/index.js:1
+msgid "General"
+msgstr "Allgemein"
+
+#: includes/layouts/integration.php:91 includes/layouts/settings.php:525
+msgid "Need help?"
+msgstr "Benötigst du Hilfe?"
+
+#: includes/layouts/integration.php:80
+msgid "Validate & Save"
+msgstr "Prüfen und speichern"
+
+#: includes/layouts/feedzy-tutorial.php:187
+msgid "Filter feed items, and Display or Exclude items if the title or content contains specific keyword(s)."
+msgstr "Filtere Feed-Einträge und steuere die Anzeige von Einträgen, wenn der Titel oder der Inhalt bestimmte Schlüsselwörter enthält."
+
+#: includes/layouts/feedzy-tutorial.php:186
+msgid "Keyword Filtering"
+msgstr "Schlüsselwort-Filterung"
+
+#: includes/layouts/feedzy-tutorial.php:178
+msgid "Advanced Elementor template builder integration to build content areas directly from feeds."
+msgstr "Verwende die erweiterte Elementor-Template-Builder-Integration zur Erstellung von Inhaltsbereichen direkt aus Feeds."
+
+#: includes/layouts/feedzy-tutorial.php:177
+msgid "Enhanced Elementor support"
+msgstr "Verbesserte Elementor-Unterstützung"
+
+#: includes/layouts/feedzy-tutorial.php:167
+msgid "The Spintax service is very useful for blogs, as it is easily configurable and a time saver."
+msgstr "Der Spintax-Dienst ist für Blogs sehr nützlich, da er leicht konfigurierbar ist und viel Zeit spart."
+
+#: includes/layouts/feedzy-tutorial.php:166
+msgid "Spintax Text"
+msgstr "Spintax-Text"
+
+#: includes/layouts/feedzy-tutorial.php:156
+msgid "Automatically paraphrase or translate content on import."
+msgstr "Schreibe Inhalte beim Import automatisch um oder übersetze sie."
+
+#: includes/layouts/feedzy-tutorial.php:155
+msgid "Paraphrase & Translate Content"
+msgstr "Umschreiben und Übersetzen von Inhalten"
+
+#: includes/layouts/feedzy-tutorial.php:145
+msgid "Get full content of posts/articles from your RSS feeds."
+msgstr "Erhalte den vollständigen Inhalt von Beiträgen/Artikeln aus deinen RSS-Feeds."
+
+#: includes/layouts/feedzy-tutorial.php:144
+msgid "Full text import"
+msgstr "Volltext-Import"
+
+#: includes/layouts/feedzy-tutorial.php:134
+msgid "Automatically add referral parameters, and Feedzy will automatically configure affiliate links for each item in the feed."
+msgstr "Füge automatisch Referral-Parameter hinzu und Feedzy konfiguriert automatisch Affiliate-Links für jeden Eintrag im Feed."
+
+#: includes/layouts/feedzy-tutorial.php:133
+msgid "Referral Links"
+msgstr "Referral-Links"
+
+#: includes/layouts/feedzy-tutorial.php:123
+msgid "Feedzy is compatible with most popular page builders, so you can easily configure your feed imports directly in Elementor & Gutenberg."
+msgstr "Feedzy ist mit den meisten gängigen Page-Buildern kompatibel, sodass du deine Feed-Importe direkt in Elementor und Gutenberg konfigurieren kannst."
+
+#: includes/layouts/feedzy-tutorial.php:122
+msgid "Pagebuilders integration"
+msgstr "Integration von Pagebuildern"
+
+#. translators: %s: [feedzy-rss]
+#: includes/layouts/feedzy-tutorial.php:108
+msgid "Display feed items using %s shortcode. The advantage of this approach is that it can be used with any WordPress theme or page builder."
+msgstr "Zeige Feed-Einträge mit dem Shortcode %s an. Der Vorteil dieser Methode ist, dass sie mit jedem WordPress-Theme oder Page-Builder funktioniert."
+
+#: includes/layouts/feedzy-tutorial.php:96
+msgid "Organize feeds in Categories"
+msgstr "Organisieren von Feeds in Kategorien"
+
+#: includes/layouts/feedzy-tutorial.php:95
+msgid "Customizing Feedzy"
+msgstr "Feedzy anpassen"
+
+#: includes/layouts/feedzy-tutorial.php:94
+msgid "Troubleshooting Guide"
+msgstr "Leitfaden zur Fehlerbehebung"
+
+#: includes/layouts/feedzy-tutorial.php:91
+msgid "Feedzy Widget"
+msgstr "Feedzy-Widget"
+
+#: includes/layouts/feedzy-tutorial.php:90
+msgid "How to use Feed to post"
+msgstr "So wird Feed zu Beitrag verwendet"
+
+#: includes/layouts/feedzy-tutorial.php:89
+msgid "General Guide"
+msgstr "Allgemeiner Leitfaden"
+
+#: includes/layouts/feedzy-tutorial.php:85
+msgid "New here? Learn how to use Feedzy by following our tips and tricks:"
+msgstr "Bist du neu hier? Lerne, wie du Feedzy nutzen kannst, indem du unseren Tipps und Tricks folgst:"
+
+#: includes/layouts/feedzy-tutorial.php:59
+msgid "Quick Links"
+msgstr "Quick-Links"
+
+#: includes/layouts/feedzy-tutorial.php:51
+msgid "Import your first feed"
+msgstr "Importiere deinen ersten Feed"
+
+#: includes/layouts/feedzy-tutorial.php:46
+msgid "Translate content automatically on import."
+msgstr "Inhalte automatisch beim Import übersetzen."
+
+#: includes/layouts/feedzy-tutorial.php:45
+msgid "Pagebuilders integration."
+msgstr "Integration von Page-Buildern."
+
+#: includes/layouts/feedzy-tutorial.php:44
+msgid "Automatically add referral links."
+msgstr "Automatisch Referral-Links hinzufügen."
+
+#: includes/layouts/feedzy-tutorial.php:43
+msgid "Paraphrase content before import."
+msgstr "Den Inhalt vor dem Import paraphrasieren."
+
+#: includes/layouts/feedzy-tutorial.php:42
+msgid "Get full content from your RSS feeds."
+msgstr "Den kompletten Inhalt deiner RSS-Feeds erhalten."
+
+#: includes/layouts/feedzy-tutorial.php:41
+msgid "Display or Import content from RSS feeds."
+msgstr "Inhalte aus RSS-Feeds anzeigen oder importieren."
+
+#: includes/layouts/feedzy-tutorial.php:38
+msgid "Collect the Best Content, Automatically Add It to Your WordPress Site. Grow your site with features like:"
+msgstr "Sammle die besten Inhalte und füge sie automatisch zu deiner WordPress-Website hinzu. Erweitere deine Website mit Funktionen wie:"
+
+#: includes/layouts/feedzy-subscribe-notice.php:21
+#: includes/layouts/feedzy-tutorial.php:35 build/onboarding/index.js:1
+msgid "Welcome to Feedzy!"
+msgstr "Willkommen bei Feedzy!"
+
+#: includes/layouts/feedzy-support.php:127
+msgid "Contact Support"
+msgstr "Support kontaktieren"
+
+#: includes/layouts/feedzy-support.php:124
+msgid "If you didn't found an answer in our Knowledge Base, our dedicated support team standby to help you."
+msgstr "Wenn du in unserer Wissensdatenbank keine Antwort gefunden hast, hilft dir unser engagiertes Support-Team gerne weiter."
+
+#: includes/layouts/feedzy-support.php:119
+msgid "Community Forum"
+msgstr "Community-Forum"
+
+#. Translators: %1$s is the opening anchor tag for the upsell link, %2$s is the
+#. closing anchor tag.
+#: includes/layouts/feedzy-support.php:110
+msgid "If you did not found an answer in our Knowledge Base, you can always ask for help from our community based forum or %1$s get dedicated support with our premium plans. %2$s"
+msgstr "Wenn du keine Antwort in unserer Wissensdatenbank gefunden hast, kannst du jederzeit in unserem Community-basierten Forum um Hilfe bitten oder %1$s mit unseren Premium-Tarifen speziellen Support erhalten. %2$s"
+
+#: includes/layouts/feedzy-support.php:100
+msgid "Need help with Feedzy?"
+msgstr "Brauchst du Hilfe mit Feedzy?"
+
+#: includes/layouts/feedzy-support.php:46
+msgid "Help us improve!"
+msgstr "Hilf uns, besser zu werden!"
+
+#: includes/layouts/feedzy-support.php:35
+msgid "Free vs Pro"
+msgstr "Kostenlos vs. Pro"
+
+#: feedzy-rss-feed.php:316 includes/layouts/feedzy-support.php:30
+msgid "Documentation"
+msgstr "Dokumentation"
+
+#: includes/layouts/feedzy-support.php:26
+msgid "Getting Started"
+msgstr "Erste Schritte"
+
+#: includes/layouts/feedzy-pro.php:188 includes/layouts/feedzy-tutorial.php:199
+msgid "View all Premium features"
+msgstr "Alle Premium-Funktionen anzeigen"
+
+#: includes/layouts/feedzy-pro.php:173
+msgid "Paraphrase or translate content before import using the built-in service, no separate subscription required."
+msgstr "Paraphrasiere oder übersetze Inhalte vor dem Import mit dem integrierten Dienst, ohne dass ein separates Abonnement erforderlich ist."
+
+#: includes/layouts/feedzy-pro.php:170
+msgid "Access to Translation and Paraphrasing service"
+msgstr "Zugang zum Übersetzungs- und Paraphrasierungsdienst"
+
+#. translators: %1$s: WordAi, %2$s: SpinnerChief
+#: includes/layouts/feedzy-pro.php:155
+msgid "%1$s and %2$s can be used to rephrase RSS feeds when they are imported as posts in WordPress."
+msgstr "%1$s und %2$s können verwendet werden, um RSS-Feeds umzuformulieren, wenn sie als Beiträge in WordPress importiert werden."
+
+#: includes/layouts/feedzy-pro.php:149 includes/layouts/feedzy-pro.php:170
+msgid "Agency plan"
+msgstr "Agentur-Tarif"
+
+#. translators: %s: WordAI & SpinnerChief
+#: includes/layouts/feedzy-pro.php:147
+msgid "WordAI & SpinnerChief"
+msgstr "WordAI und SpinnerChief"
+
+#. translators: %s: WordAI & SpinnerChief
+#: includes/layouts/feedzy-pro.php:147
+msgid "%s integration"
+msgstr "%s-Integration"
+
+#. translators: %s: OpenAI (ChatGPT) or OpenRouter
+#: includes/layouts/feedzy-pro.php:130
+msgid "OpenAI (ChatGPT) or OpenRouter"
+msgstr "OpenAI (ChatGPT) oder OpenRouter"
+
+#. translators: %s: OpenAI (ChatGPT) or OpenRouter
+#: includes/layouts/feedzy-pro.php:130
+msgid "Using the %s integration, paraphrase, summarize, generate missing featured images, or apply your custom prompt to the imported content."
+msgstr "Mit der Integration von %s kannst du den importierten Inhalt umschreiben, zusammenfassen, fehlende Bilder generieren oder deine individuellen Prompts auf den importierten Inhalt anwenden."
+
+#: includes/layouts/feedzy-pro.php:123
+msgid "AI Support"
+msgstr "KI-Unterstützung"
+
+#: includes/layouts/feedzy-pro.php:109
+msgid "Create customizable fields and fetch custom values from the feed such as date updated, rating, etc."
+msgstr "Erstelle anpassbare Felder und rufe individuelle Werte aus dem Feed ab, z. B. Aktualisierungsdatum, Bewertung etc."
+
+#: includes/layouts/feedzy-pro.php:105
+#: includes/views/import-metabox-edit.php:526
+msgid "Custom Fields"
+msgstr "Individuelle Felder"
+
+#: includes/layouts/feedzy-pro.php:92
+msgid "During the import, Feedzy will visit URLs of all items and parse the content directly from the website, importing ALL the content from a item , compared to #item_content tag which only imports the post excerpts."
+msgstr "Während des Imports besucht Feedzy die URLs aller Einträge und analysiert den Inhalt direkt auf der Website. Dabei werden ALLE Inhalte eines Eintrags importiert, im Gegensatz zum Tag #item_content, das nur die Textauszüge der Beiträge importiert."
+
+#: includes/layouts/feedzy-pro.php:89 includes/layouts/feedzy-pro.php:106
+#: includes/layouts/feedzy-pro.php:125
+msgid "Developer & Agency plans"
+msgstr "Entwickler- und Agentur-Tarife"
+
+#: includes/layouts/feedzy-pro.php:88
+msgid "Importing the full-text content"
+msgstr "Volltext-Inhalte importieren"
+
+#: includes/layouts/feedzy-pro.php:74
+msgid "Add referral parameters, and Feedzy will automatically configure affiliate links for each item in the feed. You can even import prices from product sources to create extra value for your readers."
+msgstr "Füge Referral-Parameter hinzu und Feedzy konfiguriert automatisch Affiliate-Links für jeden Eintrag im Feed. Du kannst sogar Preise aus Produktquellen importieren, um deinen Lesern einen zusätzlichen Mehrwert zu bieten."
+
+#: includes/layouts/feedzy-pro.php:71
+msgid "Referral/Affiliate links"
+msgstr "Referral-/Affiliate-Links"
+
+#: includes/layouts/feedzy-pro.php:57
+msgid "Choose the best template for each feed, such as standard grid layout, blog layout, online shop layout, or audio playback (soundcloud) layout."
+msgstr "Wähle das beste Template für jeden Feed, z. B. das Standard-Raster-Layout, das Blog-Layout, das Online-Shop-Layout oder das Layout für die Audiowiedergabe (Soundcloud)."
+
+#: includes/layouts/feedzy-pro.php:54
+msgid "Multiple feed templates"
+msgstr "Mehrere Feed-Templates"
+
+#: includes/layouts/feedzy-pro.php:41
+msgid "With robust filtering options, you can include items matching any condition, filter by fields like title, description, or custom fields, and use operators like contains, equals, or regex for precise control."
+msgstr "Mit den robusten Filteroptionen kannst du Einträge einbeziehen, die einer beliebigen Bedingung entsprechen, nach Feldern wie Titel, Beschreibung oder individuellen Feldern filtern und Operatoren wie enthält, ist gleich oder regex für eine präzise Steuerung verwenden."
+
+#: includes/layouts/feedzy-pro.php:39
+msgid "Advanced Filtering"
+msgstr "Erweiterte Filterung"
+
+#: includes/layouts/feedzy-pro.php:27
+msgid "Filter and display RSS feeds items directly with your favourite page builders."
+msgstr "Filtere und zeige RSS-Feeds direkt mit deinen bevorzugten Page-Buildern an."
+
+#: includes/layouts/feedzy-pro.php:26
+msgid "Pagebuilder integration"
+msgstr "Page-Builder-Integration"
+
+#: includes/layouts/feedzy-pro.php:15
+msgid "Create unlimited import routines for your RSS feeds and let them run on autopilot."
+msgstr "Erstelle unbegrenzte Importroutinen für deine RSS-Feeds und lass sie auf Autopilot laufen."
+
+#: includes/layouts/feedzy-pro.php:14
+msgid "Import content from RSS feeds"
+msgstr "Inhalte aus RSS-Feeds importieren"
+
+#: includes/layouts/feedzy-pro.php:8
+msgid "Pro"
+msgstr "Pro"
+
+#: includes/layouts/feedzy-pro.php:7 includes/layouts/setup-wizard.php:273
+#: includes/layouts/setup-wizard.php:334
+msgid "Free"
+msgstr "Kostenlos"
+
+#: includes/layouts/feedzy-improve.php:18
+msgid "Take the Survey"
+msgstr "An der Umfrage teilnehmen"
+
+#: includes/layouts/feedzy-improve.php:13
+msgid "If your feedback is especially helpful and we choose to do an interview with you to discuss your suggestions, you will even gain a yearly membership for free for your trouble."
+msgstr "Wenn dein Feedback besonders hilfreich ist und wir uns entscheiden, ein Interview mit dir zu führen, um deine Vorschläge zu besprechen, bekommst du für deine Mühe sogar eine kostenlose Jahresmitgliedschaft."
+
+#: includes/layouts/feedzy-improve.php:11
+msgid "We're always looking for suggestions to further improve Feedzy."
+msgstr "Wir sind immer auf der Suche nach Vorschlägen, wie wir Feedzy weiter verbessern können."
+
+#: includes/layouts/feedzy-improve.php:8
+msgid "Answer a few questions to help us improve Feedzy"
+msgstr "Beantworte ein paar Fragen, damit wir Feedzy verbessern können"
+
+#: includes/layouts/feedzy-documentation.php:97
+msgid "Open Feedzy Documentation page"
+msgstr "Seite der Feedzy-Dokumentation öffnen"
+
+#: includes/layouts/feedzy-documentation.php:88
+msgid "Learn some of the most popular hooks you can use with the Feedzy plugin."
+msgstr "Lerne einige der beliebtesten Hooks kennen, die du mit dem Feedzy-Plugin verwenden kannst."
+
+#: includes/layouts/feedzy-documentation.php:87
+msgid "In Feedzy how do I..."
+msgstr "So kann man in Feedzy …"
+
+#: includes/layouts/feedzy-documentation.php:74
+msgid "Learn how to check if a RSS feed is valid or not in Feedzy."
+msgstr "Lerne, wie du in Feedzy überprüfen kannst, ob ein RSS-Feed gültig ist oder nicht."
+
+#: includes/layouts/feedzy-documentation.php:73
+msgid "How to validate a RSS feed"
+msgstr "So validiert man einen RSS-Feed"
+
+#. translators: %1$s and %2$s are the service names (WordAi and SpinnerChief)
+#: includes/layouts/feedzy-documentation.php:58
+msgid "Learn how to use %1$s and %2$s to rephrase RSS feeds content."
+msgstr "Lerne, wie du mit %1$s und %2$s den Inhalt von RSS-Feeds umformulieren kannst."
+
+#: includes/layouts/feedzy-documentation.php:53
+msgid "Rephrase Feeds content"
+msgstr "Umformulieren von Feed-Inhalten"
+
+#. translators: %s is the shortcode [feedzy-rss]
+#: includes/layouts/feedzy-documentation.php:38
+msgid "Learn how to display feed items using the %s shortcode in a few easy steps."
+msgstr "Lerne, wie du mit dem Shortcode %s in wenigen einfachen Schritten Feed-Einträge anzeigen kannst."
+
+#: includes/layouts/feedzy-documentation.php:34
+#: includes/layouts/feedzy-tutorial.php:103
+msgid "Shortcode"
+msgstr "Shortcode"
+
+#: includes/layouts/feedzy-documentation.php:21
+msgid "Learn how to convert feed items into Posts, Pages, or any custom post type."
+msgstr "Lerne, wie du Feed-Einträge in Beiträge, Seiten oder andere individuelle Inhaltstypen umwandelst."
+
+#: includes/layouts/feedzy-documentation.php:20
+msgid "Feed to Post"
+msgstr "Feed zu Beitrag"
+
+#. translators: 1: date, 2: time
+#: includes/gutenberg/feedzy-rss-feeds-loop-block.php:263
+msgid "%1$s at %2$s"
+msgstr "%1$s um %2$s Uhr"
+
+#: includes/gutenberg/feedzy-rss-feeds-loop-block.php:186
+msgid "No items to display."
+msgstr "Keine Einträge zum Anzeigen."
+
+#: includes/gutenberg/feedzy-rss-feeds-loop-block.php:180
+msgid "An error occurred while fetching the feed."
+msgstr "Beim Abrufen des Feeds ist ein Fehler aufgetreten."
+
+#: includes/gutenberg/feedzy-rss-feeds-loop-block.php:119
+msgid "No feeds to display"
+msgstr "Keine Feeds zum Anzeigen"
+
+#: includes/gutenberg/feedzy-rss-feeds-gutenberg-block.php:341
+msgid "Invalid Feed URL"
+msgstr "Ungültige Feed-URL"
+
+#: includes/feedzy-rss-feeds-limited-offers.php:158
+msgid "Invalid nonce! Refresh the page and try again."
+msgstr "Ungültige Nonce! Aktualisiere die Seite und versuche es erneut."
+
+#: includes/feedzy-rss-feeds-feed-tweaks.php:605
+#: includes/feedzy-rss-feeds-feed-tweaks.php:609
+msgid "Days"
+msgstr "Tage"
+
+#: includes/feedzy-rss-feeds-feed-tweaks.php:601
+msgid "Day"
+msgstr "Tag"
+
+#: includes/feedzy-rss-feeds-feed-tweaks.php:593
+#: includes/feedzy-rss-feeds-feed-tweaks.php:597
+msgid "Hours"
+msgstr "Stunden"
+
+#: includes/feedzy-rss-feeds-feed-tweaks.php:589
+msgid "Hour"
+msgstr "Stunde"
+
+#. Translators: %d represents the number of days.
+#: includes/feedzy-rss-feeds-feed-tweaks.php:569
+#: includes/feedzy-rss-feeds-feed-tweaks.php:574
+msgid "%d Days"
+msgstr "%d Tage"
+
+#. Translators: %d represents the number of one day.
+#: includes/feedzy-rss-feeds-feed-tweaks.php:564
+msgid "%d Day"
+msgstr "%d Tag"
+
+#. Translators: %d represents the number of hours.
+#: includes/feedzy-rss-feeds-feed-tweaks.php:554
+#: includes/feedzy-rss-feeds-feed-tweaks.php:559
+msgid "%d Hours"
+msgstr "%d Stunden"
+
+#. Translators: %d represents the number of one hour.
+#: includes/feedzy-rss-feeds-feed-tweaks.php:549
+msgid "%d Hour"
+msgstr "%d Stunde"
+
+#. translators: %1$s: opening anchor tag, %2$s: closing anchor tag.
+#: includes/elementor/widgets/register-widget.php:575
+msgid "Unlock this feature and more advanced options with %1$s Feedzy Pro %1$s."
+msgstr "Schalte diese Funktion und weitere erweiterte Optionen mit %1$s Feedzy Pro %1$s frei."
+
+#: includes/elementor/widgets/register-widget.php:568
+msgid "Add your referral parameters"
+msgstr "Füge deine Referral-Parameter hinzu"
+
+#: includes/elementor/widgets/register-widget.php:561 build/block/index.js:10
+#: build/loop/index.js:4 js/FeedzyLoop/controls.js:285
+msgid "Referral URL"
+msgstr "Referral-URL"
+
+#: includes/elementor/widgets/register-widget.php:552
+msgid "Enabling this won't slow down the page."
+msgstr "Wenn du dies aktivierst, wird die Seite nicht verlangsamt."
+
+#: includes/elementor/widgets/register-widget.php:545
+msgid "Lazy load the feed"
+msgstr "Den Feed verzögert laden"
+
+#: includes/elementor/widgets/register-widget.php:533
+msgid "Ignore the first N items of the feed"
+msgstr "Ignoriert die ersten n Einträge des Feeds"
+
+#: includes/elementor/widgets/register-widget.php:527
+msgid "When using multiple sources this will append the item source to the author tag (required)."
+msgstr "Wenn du mehrere Quellen verwendest, wird die Quelle des Eintrags an das Autoren-Tag angehängt (erforderlich)."
+
+#: includes/elementor/widgets/register-widget.php:520
+msgid "Show item source"
+msgstr "Quelle des Eintrags anzeigen"
+
+#. translators: %1$s: opening anchor tag, %2$s: closing anchor tag.
+#: includes/elementor/widgets/register-widget.php:507
+msgid "Learn more about this feature in %1$s Feedzy docs %2$s ."
+msgstr "Erfahre mehr über diese Funktion in der %1$s Feedzy-Dokumentation %2$s."
+
+#: includes/elementor/widgets/register-widget.php:498
+msgid "Display price if available"
+msgstr "Preis anzeigen, falls verfügbar"
+
+#: includes/elementor/widgets/register-widget.php:481
+msgid "When using multiple sources, should we display additional meta fields?"
+msgstr "Sollen bei der Verwendung mehrerer Quellen zusätzliche Meta-Felder angezeigt werden?"
+
+#: includes/elementor/widgets/register-widget.php:468
+msgid "Display additional meta fields (author, date, time or categories)"
+msgstr "Zusätzliche Metafelder anzeigen (Autor, Datum, Zeit oder Kategorien)"
+
+#: includes/elementor/widgets/register-widget.php:457
+msgid "Hide items Meta"
+msgstr "Eintrags-Meta ausblenden"
+
+#: includes/elementor/widgets/register-widget.php:451 build/block/index.js:1
+msgid "Feed Items Custom Options"
+msgstr "Individuelle Optionen für Feed-Einträge"
+
+#: includes/elementor/widgets/register-widget.php:412 build/block/index.js:1
+msgid "Columns"
+msgstr "Spalten"
+
+#: includes/elementor/widgets/register-widget.php:405 build/block/index.js:1
+msgid "Feed Layout"
+msgstr "Feed-Layout"
+
+#: includes/elementor/widgets/register-widget.php:381
+msgid "Eg. 250"
+msgstr "Z. B. 250"
+
+#: includes/elementor/widgets/register-widget.php:378
+msgid "Thumbnails dimensions"
+msgstr "Abmessungen der Vorschaubilder"
+
+#: includes/elementor/widgets/register-widget.php:368
+msgid "Choose the Fallback Image"
+msgstr "Wähle das Fallback-Bild aus"
+
+#: includes/elementor/widgets/register-widget.php:354
+msgid "Display first image, when available"
+msgstr "Erstes Bild anzeigen, wenn verfügbar"
+
+#: includes/elementor/widgets/register-widget.php:347
+msgid "Item Thumbnail Options"
+msgstr "Optionen für Vorschaubild von Einträgen"
+
+#: includes/elementor/widgets/register-widget.php:334
+msgid "Max Description length (in characters)"
+msgstr "Maximale Länge der Beschreibung (in Zeichen)"
+
+#: includes/elementor/widgets/register-widget.php:322
+msgid "Display item Description"
+msgstr "Beschreibung des Eintrags anzeigen"
+
+#: includes/elementor/widgets/register-widget.php:312
+msgid "Max Title length (in characters)"
+msgstr "Maximale Titellänge (in Zeichen)"
+
+#: includes/elementor/widgets/register-widget.php:300 build/block/index.js:1
+msgid "Display item Title"
+msgstr "Titel des Eintrags anzeigen"
+
+#: includes/elementor/widgets/register-widget.php:289
+msgid "Add ”nofollow” tag to links"
+msgstr "Hinzufügen des „nofollow“-Tags zu Links"
+
+#: includes/elementor/widgets/register-widget.php:274
+msgid "Links behavior (opened in the same window or a new tab)"
+msgstr "Verhalten von Links (im selben Fenster oder in einem neuen Tab öffnen)"
+
+#: includes/elementor/widgets/register-widget.php:246
+msgid "Filter items by time range, from:"
+msgstr "Einträge nach Zeitraum filtern, von:"
+
+#: includes/elementor/widgets/register-widget.php:220
+msgid "Exclude items if"
+msgstr "Einträge ausschließen, wenn"
+
+#: includes/elementor/widgets/register-widget.php:213
+#: includes/elementor/widgets/register-widget.php:238
+msgid "You can add multiple keywords at once by separating them with comma (,) or use the plus sign (+) to bind multiple keywords."
+msgstr "Du kannst mehrere Schlüsselwörter auf einmal hinzufügen, indem du sie mit einem Komma (,) trennst oder das Pluszeichen (+) verwendest, um mehrere Schlüsselwörter zu verbinden."
+
+#: includes/elementor/widgets/register-widget.php:211
+#: includes/elementor/widgets/register-widget.php:236
+msgid "Contains:"
+msgstr "Enthält:"
+
+#: includes/elementor/widgets/register-widget.php:196
+msgid "Display items if"
+msgstr "Einträge anzeigen, wenn"
+
+#: includes/elementor/widgets/register-widget.php:189 build/block/index.js:1
+#: build/loop/index.js:4 js/FeedzyLoop/controls.js:242
+msgid "Filter items"
+msgstr "Einträge filtern"
+
+#: includes/elementor/widgets/register-widget.php:146
+msgid "For how long we will cache the feed results"
+msgstr "Wie lange die Feed-Ergebnisse zwischengespeichert werden"
+
+#: includes/elementor/widgets/register-widget.php:130
+msgid "Order items by"
+msgstr "Einträge sortieren nach"
+
+#: includes/elementor/widgets/register-widget.php:119
+msgid "Number of items to display"
+msgstr "Anzahl der anzuzeigenden Einträge"
+
+#. translators: %1$s: opening anchor tag, %2$s: closing anchor tag.
+#: includes/elementor/widgets/register-widget.php:109
+msgid "You can add multiple sources at once, by separating them with commas. %1$s Click here %2$s to check if the feed is valid. Invalid feeds may not import anything."
+msgstr "Du kannst mehrere Quellen auf einmal hinzufügen, indem du sie mit Kommas trennst. %1$s Klicke hier %2$s, um zu prüfen, ob der Feed gültig ist. Ungültige Feeds werden möglicherweise nicht importiert."
+
+#: includes/elementor/widgets/register-widget.php:105
+msgid "RSS Feed source"
+msgstr "RSS-Feed-Quelle"
+
+#: includes/elementor/widgets/register-widget.php:59
+msgid "Add your title, that will be added in page"
+msgstr "Füge deinen Titel hinzu, der in die Seite eingefügt wird"
+
+#: includes/elementor/widgets/register-widget.php:56
+msgid "Section Title"
+msgstr "Abschnittstitel"
+
+#: includes/elementor/widgets/register-widget.php:50
+msgid "General Settings"
+msgstr "Allgemeine Einstellungen"
+
+#: includes/elementor/controls/template-layout.php:64
+msgid "Unlock this feature with Feedzy Pro"
+msgstr "Schalte diese Funktion mit Feedzy Pro frei"
+
+#. translators: %1$s: opening anchor tag, %2$s: closing anchor tag.
+#: includes/elementor/controls/template-layout.php:52
+msgid "Create Reusable Elementor Templates with Feedzy's Dynamic Tags Using Feedzy Pro. %1$sLearn more%2$s"
+msgstr "Erstelle wiederverwendbare Elementor-Templates mit Feedzys dynamischen Tags mit Feedzy Pro. %1$sMehr erfahren%2$s"
+
+#: includes/elementor/controls/template-layout.php:44
+msgid "Open Feedzy docs"
+msgstr "Feedzy-Dokumentation öffnen"
+
+#: includes/elementor/controls/template-layout.php:43
+#: includes/feedzy-rss-feeds-limited-offers.php:228
+#: includes/layouts/feedzy-documentation.php:23
+#: includes/layouts/feedzy-documentation.php:42
+#: includes/layouts/feedzy-documentation.php:62
+#: includes/layouts/feedzy-documentation.php:76
+#: includes/layouts/feedzy-documentation.php:90
+#: includes/layouts/feedzy-tutorial.php:115
+#: includes/layouts/feedzy-tutorial.php:126
+#: includes/layouts/feedzy-tutorial.php:137
+#: includes/layouts/feedzy-tutorial.php:148
+#: includes/layouts/feedzy-tutorial.php:159
+#: includes/layouts/feedzy-tutorial.php:170
+#: includes/layouts/feedzy-tutorial.php:180
+#: includes/layouts/feedzy-tutorial.php:190
+msgid "Learn more"
+msgstr "Mehr erfahren"
+
+#: includes/elementor/controls/template-layout.php:41
+msgid "With Feedzy Pro you get more features, like Custom Templates, Magic Tags, Keywords filters and much more."
+msgstr "Mit Feedzy Pro bekommst du mehr Funktionen, wie z. B. individuelle Templates, Magic Tags, Schlüsselwortfilter und vieles mehr."
+
+#: includes/elementor/controls/template-layout.php:40
+msgid "Discover Feedzy Pro"
+msgstr "Feedzy Pro entdecken"
+
+#: includes/admin/feedzy-rss-feeds-ui.php:251
+msgid "Add a name for your import"
+msgstr "Füge einen Namen für deinen Import hinzu"
+
+#: includes/admin/feedzy-rss-feeds-ui.php:250
+msgid "Import Name"
+msgstr "Name des Imports"
+
+#. translators: %1$s: opening anchor tag, %2$s: closing anchor tag.
+#: includes/admin/feedzy-rss-feeds-ui.php:241
+msgid "Unlock more powerful features, by %1$s upgrading to Feedzy Pro %2$s and get 50%% off."
+msgstr "Schalte noch leistungsfähigere Funktionen frei, indem du %1$s ein Upgrade auf Feedzy Pro %2$s durchführst und 50%% Rabatt erhältst."
+
+#: includes/admin/feedzy-rss-feeds-ui.php:239
+#: includes/views/amazon-product-advertising-view.php:2
+#: includes/views/openai-view.php:2 includes/views/openrouter-view.php:2
+#: includes/views/spinnerchief-view.php:2 includes/views/wordai-view.php:2
+msgid "You are using Feedzy Lite."
+msgstr "Du verwendest Feedzy Lite."
+
+#: includes/admin/feedzy-rss-feeds-ui.php:199
+msgid "Edit Import"
+msgstr "Import bearbeiten"
+
+#. translators: 1: <a> tag opening, 2: </a> tag closing.
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:534
+msgid "Provide mapping for custom feed elements as per %1$s this document here %2$s. This will only work for single feeds, not comma-separated feeds."
+msgstr "Erstelle eine Zuordnung für individuelle Feed-Elemente gemäß %1$s diesem Dokument hier %2$s. Dies funktioniert nur für einzelne Feeds, nicht für kommagetrennte Feeds."
+
+#. translators: 1: <a> tag opening, 2: </a> tag closing.
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:514
+msgid "Referral URL parameters as per %1$s this document here %2$s"
+msgstr "Referral-URL-Parameter gemäß %1$s diesem Dokument hier %2$s"
+
+#. translators: 1: <br/> tag, 2: <a> tag opening, 3: </a> tag closing.
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:492
+msgid "Should we display the price from the feed if it is available? %1$s You can read about how to extract price from a custom tag %2$s here %3$s"
+msgstr "Soll der Preis aus dem Feed angezeigt werden, wenn er verfügbar ist? %1$s %2$sHier%3$s erfährst du, wie du den Preis aus einem individuellen Tag extrahierst"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:478
+#: includes/elementor/widgets/register-widget.php:394
+msgid "Ignore and show the default image instead"
+msgstr "Ignorieren und stattdessen das Standardbild anzeigen"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:474
+#: includes/elementor/widgets/register-widget.php:393
+msgid "Force HTTPS (please verify that the images exist on HTTPS)"
+msgstr "HTTPS erzwingen (bitte überprüfe, ob die Bilder auf HTTPS existieren)"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:470
+#: includes/elementor/widgets/register-widget.php:392
+msgid "Show with HTTP link"
+msgstr "Mit HTTP-Link anzeigen"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:465
+#: includes/elementor/widgets/register-widget.php:388
+msgid "How should we treat HTTP images?"
+msgstr "Wie sollen HTTP-Bilder behandelt werden?"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:449 build/block/index.js:1
+#: build/loop/index.js:4 js/FeedzyLoop/components/FallbackImageLoader.jsx:18
+#: js/FeedzyLoop/controls.js:231
+msgid "Fallback image if no image is found."
+msgstr "Fallback-Bild, wenn kein Bild gefunden wird."
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:439
+#: includes/elementor/widgets/register-widget.php:359 build/block/index.js:1
+#: build/loop/index.js:4 js/FeedzyLoop/controls.js:201
+msgid "Yes (with a fallback image)"
+msgstr "Ja (mit einem Fallback-Bild)"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:435
+#: includes/elementor/widgets/register-widget.php:358 build/block/index.js:1
+#: build/loop/index.js:4 js/FeedzyLoop/controls.js:194
+msgid "Yes (without a fallback image)"
+msgstr "Ja (ohne Fallback-Bild)"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:405
+msgid "Select a specific item if you want to exclude a keyword filter."
+msgstr "Wähle einen bestimmten Eintrag aus, wenn du einen Schlüsselwort-Filter ausschließen möchtest."
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:399
+msgid "(eg: politics, gossip + stock etc.)"
+msgstr "(z. B.: Politik, Gerüchte + Aktien etc.)"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:398
+msgid "Exclude items if selected field contains specific keyword(s) (Use comma(,) and plus(+) keyword)."
+msgstr "Schließt Einträge aus, wenn das ausgewählte Feld ein oder mehrere bestimmte Schlüsselwörter enthält (Komma(,) und Plus(+) Schlüsselwort verwenden)."
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:392
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:419
+#: includes/elementor/widgets/register-widget.php:201
+#: includes/elementor/widgets/register-widget.php:225 build/block/index.js:1
+#: build/conditions/index.js:1 build/loop/index.js:1
+msgid "Description"
+msgstr "Beschreibung"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:388
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:415
+#: includes/elementor/widgets/register-widget.php:202
+#: includes/elementor/widgets/register-widget.php:226 build/block/index.js:1
+#: build/conditions/index.js:1 build/loop/index.js:1
+msgid "Author"
+msgstr "Autor"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:384
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:411
+#: includes/elementor/widgets/register-widget.php:200
+#: includes/elementor/widgets/register-widget.php:224 build/block/index.js:1
+#: build/conditions/index.js:1 build/loop/index.js:1
+msgid "Title"
+msgstr "Titel"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:378
+msgid "Select a specific item if you want to include a keyword filter."
+msgstr "Wähle einen bestimmten Eintrag aus, wenn du einen Schlüsselwort-Filter einfügen möchtest."
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:372
+msgid "(eg: news, stock + market etc.)"
+msgstr "(z. .: Nachrichten, Börse + Markt etc.)"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:371
+msgid "Only display item if selected field contains specific keyword(s) (Use comma(,) and plus(+) keyword)."
+msgstr "Nur anzeigen, wenn das ausgewählte Feld bestimmte Schlüsselwörter enthält (Komma(,) und Plus(+) Schlüsselwort verwenden)."
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:328
+msgid "Trim the title of the item after X characters. A value of 0 will remove the title."
+msgstr "Den Titel des Eintrags nach X Zeichen kürzen. Bei einem Wert von 0 wird der Titel entfernt."
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:313
+#: build/action-popup/index.js:4 build/block/index.js:10
+msgid "Make this link a \"nofollow\" link?"
+msgstr "Diesen Link zu einem „nofollow“-Link machen?"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:272
+#: includes/elementor/widgets/register-widget.php:179 build/block/index.js:13
+msgid "Dry run tags"
+msgstr "Tags für den Probelauf"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:257
+#: includes/elementor/widgets/register-widget.php:166 build/block/index.js:13
+msgid "Dry run?"
+msgstr "Probelauf?"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:252
+#: includes/elementor/widgets/register-widget.php:87 build/block/index.js:13
+msgid "Wrap custom class"
+msgstr "Individuelle Klasse umschließen"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:237
+#: includes/elementor/widgets/register-widget.php:80 build/block/index.js:1
+msgid "If disabled, it will be considered the global setting."
+msgstr "Wenn deaktiviert, gilt die globale Einstellung."
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:236
+#: includes/elementor/widgets/register-widget.php:74
+#: includes/layouts/settings.php:175
+msgid "Disable default style"
+msgstr "Standardstil deaktivieren"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:221
+msgid "Lazy load the feed (without slowing down the page)"
+msgstr "Verzögertes Laden des Feeds (ohne die Seite zu verlangsamen)"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:215
+#: includes/elementor/widgets/register-widget.php:157 build/block/index.js:13
+msgid "Message to show when feed is empty"
+msgstr "Nachricht, die angezeigt wird, wenn der Feed leer ist"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:209
+#: includes/elementor/widgets/register-widget.php:138 build/block/index.js:1
+#: build/loop/index.js:7 js/FeedzyLoop/controls.js:357
+msgid "Title Ascending"
+msgstr "Titel aufsteigend"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:205
+#: includes/elementor/widgets/register-widget.php:137 build/block/index.js:1
+#: build/loop/index.js:7 js/FeedzyLoop/controls.js:353
+msgid "Title Descending"
+msgstr "Titel absteigend"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:201
+#: includes/elementor/widgets/register-widget.php:136 build/block/index.js:1
+#: build/loop/index.js:7 js/FeedzyLoop/controls.js:349
+msgid "Date Ascending"
+msgstr "Datum aufsteigend"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:197
+#: includes/elementor/widgets/register-widget.php:135 build/block/index.js:1
+#: build/loop/index.js:7 js/FeedzyLoop/controls.js:345
+msgid "Date Descending"
+msgstr "Datum absteigend"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:188
+msgid "Sorting order."
+msgstr "Sortierreihenfolge."
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:176
+msgid "For how long we will cache the feed results."
+msgstr "Wie lange die Feed-Ergebnisse zwischengespeichert werden."
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:156
+msgid "(eg: 5, if you want to start from the 6th item.)"
+msgstr "(z. B.: 5, wenn du mit dem 6. Eintrag beginnen möchtest.)"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:155
+msgid "Ignore the first N items of the feed."
+msgstr "Ignoriert die ersten n Einträge des Feeds."
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:141
+msgid "Invalid feeds will NOT display items."
+msgstr "Ungültige Feeds werden KEINE Einträge anzeigen."
+
+#. translators: 1: <a> tag opening, 2: </a> tag closing.
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:137
+msgid "Click %1$s here %2$s to check if feed is valid."
+msgstr "%1$s Hier %2$s klicken, um zu prüfen, ob der Feed gültig ist."
+
+#. translators: 1: <code> tag for source, 2: closing </code> tag.
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:123
+msgid "When using multiple sources, should we display additional meta fields? %1$s source %2$s (feed title)."
+msgstr "Sollen bei der Verwendung mehrerer Quellen zusätzliche Meta-Felder angezeigt werden? %1$s Quelle %2$s (Feed-Titel)."
+
+#. translators: 1: <code> tag for author, 2: closing </code> tag, 3: <code> tag
+#. for date, 4: closing </code> tag, 5: <code> tag for time, 6: closing </code>
+#. tag, 7: <code> tag for categories, 8: closing </code> tag, 9: <a> tag for
+#. documentation link, 10: closing </a> tag.
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:107
+msgid "Should we display additional meta fields out of %1$s author%2$s, %3$s date%4$s, %5$s time %6$s and %7$s categories %8$s? (comma-separated list). View documentation %9$s here %10$s."
+msgstr "Sollen zusätzliche Meta-Felder anhand von %1$s Autor%2$s, %3$s Datum%4$s, %5$s Zeit %6$s und %7$s Kategorien %8$s angezeigt werden? (kommagetrennte Liste). %9$s Hier %10$s die Dokumentation anzeigen."
+
+#. translators: 1: <code> tag for author, 2: closing </code> tag, 3: <code> tag
+#. for date, 4: closing </code> tag, 5: <code> tag for time, 6: closing </code>
+#. tag, 7: <a> tag for documentation link, 8: closing </a> tag.
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:94
+msgid "Should we display additional meta fields out of %1$s author %2$s, %3$s date %4$s and %5$s time %6$s? (comma-separated list, in order of display). View documentation %7$s here %8$s."
+msgstr "Sollen zusätzliche Meta-Felder anhand von %1$s Autor %2$s, %3$s Datum %4$s und %5$s Zeit %6$s angezeigt werden? (kommagetrennte Liste, in der Reihenfolge der Anzeige). %7$s Hier %8$s die Dokumentation anzeigen."
+
+#: includes/admin/feedzy-rss-feeds-import.php:4179
+msgid "Import"
+msgstr "Importieren"
+
+#: includes/admin/feedzy-rss-feeds-import.php:4176
+msgid "Choose the import job .json file to import."
+msgstr "Wähle die zu importierende Import-Job-Datei (.json) aus."
+
+#: includes/admin/feedzy-rss-feeds-admin.php:638
+msgid "Upload/export of import configuration is not available on your plan. Please upgrade to the Pro plan to unlock all these features."
+msgstr "Leider ist der Upload/Export der Importkonfiguration in deinem Tarif nicht verfügbar. Bitte wechsle zum Pro-Tarif, um diese Funktionen freizuschalten."
+
+#: includes/admin/feedzy-rss-feeds-import.php:4024
+msgid "Duplicate import job created"
+msgstr "Duplizierter Importauftrag erstellt"
+
+#: includes/admin/feedzy-rss-feeds-import.php:4005
+msgid "Post creation failed, could not find original post."
+msgstr "Die Beitragserstellung ist fehlgeschlagen, der ursprüngliche Beitrag konnte nicht gefunden werden."
+
+#: includes/admin/feedzy-rss-feeds-import.php:3944
+msgid "No post to duplicate has been provided!"
+msgstr "Es wurde kein Beitrag zum Duplizieren bereitgestellt!"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3918
+msgid "🚫 Translated Description"
+msgstr "🚫 Übersetzte Beschreibung"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3917
+msgid "🚫 Translated Content"
+msgstr "🚫 Übersetzter Inhalt"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3916
+msgid "🚫 Translated Title"
+msgstr "🚫 Übersetzter Titel"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3896
+msgid "No matches found"
+msgstr "Keine Treffer gefunden"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3666
+msgid "Imported by Feedzy from"
+msgstr "Importiert von Feedzy von"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3659
+#: includes/layouts/feedzy-logs-viewer.php:35
+msgid "Export"
+msgstr "Exportieren"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3638
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3625
+#: includes/admin/feedzy-rss-feeds-import.php:3631
+msgid "Clone"
+msgstr "Klonen"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3607
+msgid "Purge &amp; Reset"
+msgstr "Bereinigen und zurücksetzen"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3514
+msgid "🚫 Item Full Content"
+msgstr "🚫 Vollständiger Inhalt des Eintrags"
+
+#: includes/admin/feedzy-rss-feeds-import.php:523
+#: includes/admin/feedzy-rss-feeds-import.php:528
+#: includes/admin/feedzy-rss-feeds-import.php:3509
+msgid "Item Categories"
+msgstr "Kategorien des Eintrags"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3508
+msgid "Item URL"
+msgstr "ULR des Eintrags"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3507
+#: includes/admin/feedzy-rss-feeds-import.php:3529
+msgid "Item Image"
+msgstr "Eintrags-Bild"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3506
+#: includes/admin/feedzy-rss-feeds-import.php:3913
+msgid "Item Description"
+msgstr "Beschreibung des Eintrags"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3505
+#: includes/admin/feedzy-rss-feeds-import.php:3912
+msgid "Item Content"
+msgstr "Inhalt des Eintrags"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3489
+#: includes/views/import-metabox-edit.php:287
+#: includes/views/import-metabox-edit.php:296
+msgid "Post Date"
+msgstr "Veröffentlichungsdatum"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3488
+msgid "Item Date"
+msgstr "Datum des Eintrags"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3472
+#: includes/admin/feedzy-rss-feeds-import.php:3510
+msgid "Item Source"
+msgstr "Quelle des Eintrags"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3471
+msgid "Item Date (feed timezone)"
+msgstr "Datum des Eintrags (Feed-Zeitzone)"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3470
+msgid "Item Date (local timezone)"
+msgstr "Datum des Eintrags (lokale Zeitzone)"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3469
+msgid "Item Date (UTC/GMT)"
+msgstr "Datum des Eintrags (UTC/GMT)"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3468
+msgid "Item Author"
+msgstr "Autor des Eintrags"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3467
+#: includes/admin/feedzy-rss-feeds-import.php:3911
+msgid "Item Title"
+msgstr "Titel des Eintrags"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3449
+msgid "Upgrade your license to use this tag"
+msgstr "Erweitere deine Lizenz, um diesen Tag zu verwenden"
+
+#. translators: %1$s: WordAi, %2$s: SpinnerChief
+#: includes/admin/feedzy-rss-feeds-import.php:3336
+#: includes/layouts/feedzy-pro.php:155
+msgid "WordAi"
+msgstr "WordAi"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3335
+msgid "Amazon Product Advertising"
+msgstr "Amazon-Produktwerbung"
+
+#. translators: %1$s: WordAi, %2$s: SpinnerChief
+#: includes/admin/feedzy-rss-feeds-import.php:3334
+#: includes/layouts/feedzy-pro.php:155
+msgid "SpinnerChief"
+msgstr "SpinnerChief"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3327
+#: includes/admin/feedzy-rss-feeds-import.php:3332
+#: build/action-popup/index.js:1
+msgid "OpenRouter"
+msgstr "OpenRouter"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3326
+#: includes/admin/feedzy-rss-feeds-import.php:3330
+#: build/action-popup/index.js:1
+msgid "OpenAI"
+msgstr "OpenAI"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3309
+msgid "Miscellaneous"
+msgstr "Sonstiges"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3178
+msgid "Successfully imported."
+msgstr "Erfolgreich importiert."
+
+#: includes/admin/feedzy-rss-feeds-import.php:3173
+msgid "Unable to register cron job. Your feeds might not get updated"
+msgstr "Der Cron-Job kann nicht registriert werden. Deine Feeds werden möglicherweise nicht aktualisiert"
+
+#: includes/admin/feedzy-rss-feeds-import.php:3169
+msgid "WP Cron is disabled. Your feeds would not get updated. Please contact your hosting provider or system administrator"
+msgstr "WP Cron ist deaktiviert. Deine Feeds werden dann nicht aktualisiert. Bitte kontaktiere deinen Hosting-Anbieter oder Systemadministrator"
+
+#. translators: %1$d is the number of items without images, %2$d is the total
+#. number of items imported.
+#: includes/admin/feedzy-rss-feeds-import.php:2727
+msgid "Unable to find an image for %1$d out of %2$d items imported"
+msgstr "Für %1$d von %2$d importierten Einträgen konnte kein Bild gefunden werden"
+
+#: includes/admin/feedzy-rss-feeds-import.php:2307
+msgid "Title or Content is empty."
+msgstr "Titel oder Inhalt ist leer."
+
+#. translators: %s: Error message for empty full content.
+#: includes/admin/feedzy-rss-feeds-import.php:2139
+#: includes/admin/feedzy-rss-feeds-import.php:2146
+msgid "Full content is empty. Error: %s"
+msgstr "Der gesamte Inhalt ist leer. Fehler: %s"
+
+#: includes/admin/feedzy-rss-feeds-import.php:2135
+msgid "Unknown"
+msgstr "Unbekannt"
+
+#: includes/admin/feedzy-rss-feeds-import.php:1995
+msgid "Read More"
+msgstr "Weiterlesen"
+
+#: includes/admin/feedzy-rss-feeds-import.php:1821
+msgid "Title & Content are both empty."
+msgstr "Titel und Inhalt sind beide leer."
+
+#. translators: %1$s and %2$s are opening and closing bold tags respectively.
+#: includes/admin/feedzy-rss-feeds-import.php:1464
+msgid "%1$sSource invalid%2$s: One or more feeds may be misbehaving. Check each feed individually as mentioned above to weed out the problematic feed."
+msgstr "%1$sQuelle ungültig%2$s: Einer oder mehrere Feeds verhalten sich möglicherweise fehlerhaft. Überprüfe jeden Feed einzeln wie oben beschrieben, um den problematischen Feed auszusortieren."
+
+#. translators: %1$s and %2$s are opening and closing bold tags respectively.
+#: includes/admin/feedzy-rss-feeds-import.php:1456
+msgid "For %1$smultiple feeds%2$s (comma-separated or in a Feedzy Category), this could be because of the following reasons:"
+msgstr "Bei %1$smehreren Feeds%2$s (kommagetrennt oder in einer Feedzy-Kategorie) kann dies folgende Gründe haben:"
+
+#. translators: %1$s and %2$s are opening and closing bold tags respectively.
+#: includes/admin/feedzy-rss-feeds-import.php:1448
+msgid "%1$sSource inaccessible from server%2$s: Check that your source is accessible from the server (not the browser). It could be an intermittent issue."
+msgstr "%1$sQuelle vom Server nicht erreichbar%2$s: Überprüfe, ob deine Quelle vom Server aus zugänglich ist (nicht vom Browser). Es könnte sich um ein vorübergehendes Problem handeln."
+
+#. translators: %1$s and %2$s are opening and closing bold tags respectively.
+#: includes/admin/feedzy-rss-feeds-import.php:1440
+msgid "%1$sSource unavailable%2$s: Copy the source and paste it on the browser to check that it is available. It could be an intermittent issue."
+msgstr "%1$sQuelle nicht verfügbar%2$s: Kopiere die Quelle und füge sie in den Browser ein, um zu prüfen, ob sie verfügbar ist. Es könnte sich um ein vorübergehendes Problem handeln."
+
+#. translators: %1$s and %2$s are opening and closing bold tags respectively.
+#: includes/admin/feedzy-rss-feeds-import.php:1432
+msgid "%1$sSource invalid%2$s: Check that your source is valid by clicking the validate button adjacent to the source box."
+msgstr "%1$sQuelle ungültig%2$s: Überprüfe, ob deine Quelle gültig ist, indem du auf den Button „Validieren“ neben dem Quellenfeld klickst."
+
+#. translators: %1$s and %2$s are opening and closing bold tags respectively.
+#: includes/admin/feedzy-rss-feeds-import.php:1424
+msgid "For %1$ssingle feeds%2$s, this could be because of the following reasons:"
+msgstr "Bei %1$seinzelnen Feeds%2$s kann das folgende Gründe haben:"
+
+#: includes/admin/feedzy-rss-feeds-import.php:1392
+msgid "Refresh this page for the updated status"
+msgstr "Aktualisiere diese Seite für den aktuellen Status"
+
+#: includes/admin/feedzy-rss-feeds-import.php:1391
+msgid "Nothing imported!"
+msgstr "Nichts importiert!"
+
+#: includes/admin/feedzy-rss-feeds-import.php:1391
+msgid "Successfully run!"
+msgstr "Erfolgreich durchgeführt!"
+
+#: includes/admin/feedzy-rss-feeds-import.php:1293
+msgid "You do not have permission to do this."
+msgstr "Du hast keine Berechtigung, dies zu tun."
+
+#: includes/admin/feedzy-rss-feeds-import.php:1111
+msgid "Status"
+msgstr "Status"
+
+#: includes/admin/feedzy-rss-feeds-import.php:1110
+msgid "Cumulative"
+msgstr "Kumuliert"
+
+#: includes/admin/feedzy-rss-feeds-import.php:1109
+msgid "Imported"
+msgstr "Importiert"
+
+#: includes/admin/feedzy-rss-feeds-import.php:1108
+msgid "Duplicates"
+msgstr "Duplikate"
+
+#: includes/admin/feedzy-rss-feeds-import.php:1107
+msgid "Found"
+msgstr "Gefunden"
+
+#: includes/admin/feedzy-rss-feeds-import.php:1104
+msgid "View the errors"
+msgstr "Die Fehler anzeigen"
+
+#: includes/admin/feedzy-rss-feeds-import.php:1098
+msgid "Items that were imported across all runs"
+msgstr "Einträge, die über alle Durchgänge hinweg importiert wurden"
+
+#: includes/admin/feedzy-rss-feeds-import.php:1091
+msgid "Items that were imported"
+msgstr "Einträge, die importiert wurden"
+
+#: includes/admin/feedzy-rss-feeds-import.php:1083
+msgid "Items that were discarded as duplicates"
+msgstr "Einträge, die als Duplikate aussortiert wurden"
+
+#: includes/admin/feedzy-rss-feeds-import.php:1077
+msgid "Items that were found in the feed"
+msgstr "Einträge, die im Feed gefunden wurden"
+
+#: includes/admin/feedzy-rss-feeds-import.php:1046
+msgid "Errors"
+msgstr "Fehler"
+
+#: includes/admin/feedzy-rss-feeds-import.php:1036
+msgid "Duplicates found"
+msgstr "Duplikate gefunden"
+
+#: includes/admin/feedzy-rss-feeds-import.php:1027
+msgid "Items found"
+msgstr "Einträge gefunden"
+
+#: includes/admin/feedzy-rss-feeds-import.php:956
+msgid "in-progress"
+msgstr "in Bearbeitung"
+
+#. translators: %1$d: number of hours, %2$d: number of minutes.
+#: includes/admin/feedzy-rss-feeds-import.php:934
+msgid "Ran %1$d hours %2$d minutes ago"
+msgstr "Lief vor %1$d Stunden und %2$d Minuten"
+
+#: includes/admin/feedzy-rss-feeds-import.php:926
+msgid "Never Run"
+msgstr "Nie ausgeführt"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1205
+#: includes/admin/feedzy-rss-feeds-admin.php:1212
+#: includes/admin/feedzy-rss-feeds-import.php:900
+msgid "Click to view"
+msgstr "Zum Anzeigen klicken"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1193
+#: includes/admin/feedzy-rss-feeds-import.php:893
+msgid "No Source Configured"
+msgstr "Keine Quelle konfiguriert"
+
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:1094
+#: includes/admin/feedzy-rss-feeds-import.php:888
+msgid "Amazon Product Advertising API"
+msgstr "Amazon Product Advertising API"
+
+#: includes/admin/feedzy-rss-feeds-import.php:825
+#: includes/admin/feedzy-rss-feeds-import.php:829
+msgid "Last Run Status"
+msgstr "Status des letzten Durchlaufs"
+
+#: includes/admin/feedzy-rss-feeds-import.php:818
+#: includes/admin/feedzy-rss-feeds-import.php:822
+msgid "Next Run"
+msgstr "Nächster Durchlauf"
+
+#: includes/admin/feedzy-rss-feeds-import.php:811
+#: includes/admin/feedzy-rss-feeds-import.php:815
+msgid "Current Status"
+msgstr "Aktueller Status"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1144
+#: includes/admin/feedzy-rss-feeds-import.php:803
+#: includes/admin/feedzy-rss-feeds-import.php:808
+msgid "Source"
+msgstr "Quelle"
+
+#: includes/admin/feedzy-rss-feeds-import.php:802
+msgid "Import Title"
+msgstr "Titel des Imports"
+
+#: includes/admin/feedzy-rss-feeds-import.php:411
+msgid "Feed Import Options"
+msgstr "Optionen für Feedimport"
+
+#: includes/admin/feedzy-rss-feeds-import.php:384
+msgid "Show intro message for Feedzy action popup."
+msgstr "Intro-Nachricht für Feedzy-Aktions-Pop-up anzeigen."
+
+#: includes/admin/feedzy-rss-feeds-import.php:373
+msgid "Show tour for Feedzy."
+msgstr "Tour für Feedzy anzeigen."
+
+#: includes/admin/feedzy-rss-feeds-import.php:344
+msgid "No imports in the trash"
+msgstr "Keine Importe im Papierkorb"
+
+#: includes/admin/feedzy-rss-feeds-import.php:343
+msgid "No imports found"
+msgstr "Es wurden keine Importe gefunden"
+
+#: includes/admin/feedzy-rss-feeds-import.php:342
+msgid "Search Imports"
+msgstr "Importe durchsuchen"
+
+#: includes/admin/feedzy-rss-feeds-import.php:341
+msgid "View Import"
+msgstr "Import anzeigen"
+
+#: includes/admin/feedzy-rss-feeds-import.php:340
+msgid "New Import Post"
+msgstr "Neuer Importbeitrag"
+
+#: includes/admin/feedzy-rss-feeds-import.php:337
+#: includes/admin/feedzy-rss-feeds-import.php:338
+#: includes/admin/feedzy-rss-feeds-ui.php:199
+msgid "New Import"
+msgstr "Neuer Import"
+
+#: includes/admin/feedzy-rss-feeds-import.php:336
+msgid "Import Post"
+msgstr "Beitrag importieren"
+
+#: includes/admin/feedzy-rss-feeds-import.php:335
+#: includes/layouts/feedzy-tutorial.php:74
+msgid "Import Posts"
+msgstr "Importbeiträge"
+
+#: includes/admin/feedzy-rss-feeds-import.php:200
+msgid "Upload Import"
+msgstr "Import hochladen"
+
+#. translators: %d select images count.
+#: includes/admin/feedzy-rss-feeds-import.php:195
+msgid "(%d) images selected"
+msgstr "(%d) Bilder ausgewählt"
+
+#: includes/admin/feedzy-rss-feeds-import.php:193
+msgid "Removed all error logs."
+msgstr "Alle Fehlerprotokolle wurden entfernt."
+
+#: includes/admin/feedzy-rss-feeds-import.php:192
+msgid "Ok"
+msgstr "OK"
+
+#: includes/admin/feedzy-rss-feeds-import.php:190
+msgid "Clear Log"
+msgstr "Protokoll leeren"
+
+#: includes/admin/feedzy-rss-feeds-import.php:189
+msgid "We display up to 100 users. If the desired username isn’t listed, type the exact existing username manually to save it."
+msgstr "Wir zeigen bis zu 100 Benutzer an. Wenn der gewünschte Benutzername nicht aufgelistet ist, gib den exakten Benutzernamen manuell ein, um ihn zu speichern."
+
+#: includes/admin/feedzy-rss-feeds-import.php:184
+msgid "Would you also like to delete all the imported posts for this import job?"
+msgstr "Möchtest du auch alle importierten Beiträge für diesen Importauftrag löschen?"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2016
+#: includes/admin/feedzy-rss-feeds-import.php:183
+msgid "Importable Items"
+msgstr "Importierbare Einträge"
+
+#: includes/admin/feedzy-rss-feeds-import.php:181
+msgid "Please note that if some of these items have already have been imported in previous runs with the same filters, they may be shown here but will not be imported again."
+msgstr "Bitte beachte, dass einige dieser Einträge bereits in früheren Durchläufen mit denselben Filtern importiert wurden. Sie werden hier zwar angezeigt, aber nicht erneut importiert."
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2014
+#: includes/admin/feedzy-rss-feeds-import.php:180
+msgid "Processing the source and loading the items that will be imported when it runs"
+msgstr "Verarbeiten der Quelle und Laden der Einträge, die beim Ausführen importiert werden sollen"
+
+#: includes/admin/feedzy-rss-feeds-import.php:179
+#: includes/admin/feedzy-rss-feeds-import.php:944
+msgid "Run Now"
+msgstr "Jetzt ausführen"
+
+#: includes/admin/feedzy-rss-feeds-import.php:178
+msgid "Importing"
+msgstr "Importieren"
+
+#: includes/admin/feedzy-rss-feeds-import.php:109
+msgid "upgrading to Feedzy Pro"
+msgstr "ein Upgrade auf Feedzy Pro durchführst"
+
+#: includes/admin/feedzy-rss-feeds-import.php:109
+msgid "Buy Now"
+msgstr "Jetzt kaufen"
+
+#: includes/admin/feedzy-rss-feeds-import.php:108
+msgid "This feature is available in the Pro version.  Unlock more features, by"
+msgstr "Diese Funktion ist in der Pro-Version verfügbar. Schalte mehr Funktionen frei, indem du"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2964
+msgid "Zulu"
+msgstr "Zulu"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2963
+msgid "Standard Malay"
+msgstr "Standard-Malaysisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2962
+msgid "Chinese Traditional"
+msgstr "Chinesisch Traditionell"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2961
+msgid "Chinese Simplified"
+msgstr "Chinesisch (vereinfacht)"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2960
+msgid "Yue Chinese"
+msgstr "Yue-Chinesisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2959
+msgid "Yoruba"
+msgstr "Yoruba"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2958
+msgid "Eastern Yiddish"
+msgstr "Ostjiddisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2957
+msgid "Xhosa"
+msgstr "Xhosa"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2956
+msgid "Wolof"
+msgstr "Wolof"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2955
+msgid "Waray"
+msgstr "Waray-Waray"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2954
+msgid "Vietnamese"
+msgstr "Vietnamesisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2953
+msgid "Venetian"
+msgstr "Venetisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2952
+msgid "Northern Uzbek"
+msgstr "Nord-Usbekisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2951
+msgid "Urdu"
+msgstr "Urdu"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2950
+msgid "Umbundu"
+msgstr "Umbundu"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2949
+msgid "Ukrainian"
+msgstr "Ukrainisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2948
+msgid "Uyghur"
+msgstr "Uigurisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2947
+msgid "Central Atlas Tamazight"
+msgstr "Zentralatlas-Tamazight"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2946
+msgid "Twi"
+msgstr "Twi"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2945
+msgid "Turkish"
+msgstr "Türkisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2944
+msgid "Tumbuka"
+msgstr "Tumbuka"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2943
+msgid "Turkmen"
+msgstr "Turkmenisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2942
+msgid "Tsonga"
+msgstr "Tsonga"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2941
+msgid "Tswana"
+msgstr "Tswana"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2940
+msgid "Tok Pisin"
+msgstr "Tok Pisin"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2939
+msgid "Tamasheq Tfng"
+msgstr "Tamasheq (Tifinagh-Schrift)"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2938
+msgid "Tamasheq Latn"
+msgstr "Tamasheq (lateinische Schrift)"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2937
+msgid "Tigrinya"
+msgstr "Tigrinya"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2936
+msgid "Thai"
+msgstr "Thai"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2935
+msgid "Tagalog"
+msgstr "Tagalog"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2934
+msgid "Tajik"
+msgstr "Tadschikisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2933
+msgid "Telugu"
+msgstr "Telugu"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2932
+msgid "Tatar"
+msgstr "Tatarisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2931
+msgid "Tamil"
+msgstr "Tamil"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2930
+msgid "Silesian"
+msgstr "Schlesisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2929
+msgid "Swahili"
+msgstr "Suaheli"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2928
+msgid "Swedish"
+msgstr "Schwedisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2927
+msgid "Sundanese"
+msgstr "Sundanesisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2926
+msgid "Swati"
+msgstr "Swati"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2925
+msgid "Serbian"
+msgstr "Serbisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2924
+msgid "Sardinian"
+msgstr "Sardinisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2923
+msgid "Tosk Albanian"
+msgstr "Toskisch-Albanisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2922
+msgid "Spanish"
+msgstr "Spanisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2921
+msgid "Southern"
+msgstr "Südprovinz"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2920
+msgid "Somali"
+msgstr "Somali"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2919
+msgid "Sindhi"
+msgstr "Sindhi"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2918
+msgid "Shona"
+msgstr "Shona"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2917
+msgid "Samoan"
+msgstr "Samoanisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2916
+msgid "Slovenian"
+msgstr "Slowenisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2915
+msgid "Slovak"
+msgstr "Slowakisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2914
+msgid "Sinhala"
+msgstr "Singhalesisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2913
+msgid "Shan"
+msgstr "Shan"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2912
+msgid "Sicilian"
+msgstr "Sizilianisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2911
+msgid "Santali"
+msgstr "Santali"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2910
+msgid "Sanskrit"
+msgstr "Sanskrit"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2909
+msgid "Sango"
+msgstr "Sango"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2908
+msgid "Russian"
+msgstr "Russisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2907
+msgid "Rundi"
+msgstr "Rundi"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2906
+msgid "Romanian"
+msgstr "Rumänisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2905
+msgid "Ayacucho Quechua"
+msgstr "Ayacucho-Quechua"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2904
+msgid "Southern Pashto"
+msgstr "Südliches Pashto"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2903
+msgid "Dari"
+msgstr "Dari"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2902
+msgid "Portuguese"
+msgstr "Portugiesisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2901
+msgid "Polish"
+msgstr "Polnisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2900
+msgid "Western Persian"
+msgstr "Westpersisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2899
+msgid "Papiamento"
+msgstr "Papiamento"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2898
+msgid "Eastern Panjabi"
+msgstr "Ost-Panjabi"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2897
+msgid "Pangasinan"
+msgstr "Pangasinan"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2896
+msgid "Odia"
+msgstr "Odia"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2895
+msgid "West Central Oromo"
+msgstr "West-Zentral-Oromo"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2894
+msgid "Occitan"
+msgstr "Okzitanisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2893
+msgid "Nyanja"
+msgstr "Nyanja"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2892
+msgid "Nuer"
+msgstr "Nuer"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2891
+msgid "Northern Sotho"
+msgstr "Nord-Sotho"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2890
+msgid "Nepali"
+msgstr "Nepali"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2889
+msgid "Norwegian Bokmål"
+msgstr "Norwegisch Bokmål"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2888
+msgid "Norwegian Nynorsk"
+msgstr "Norwegisch Nynorsk"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2887
+msgid "Dutch"
+msgstr "Niederländisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2886
+msgid "Burmese"
+msgstr "Birmanisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2885
+msgid "Maori"
+msgstr "Maori"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2884
+msgid "Mossi"
+msgstr "Mossi"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2883
+msgid "Halh Mongolian"
+msgstr "Halb-Mongolisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2882
+msgid "Meitei"
+msgstr "Meitei"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2881
+msgid "Maltese"
+msgstr "Maltesisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2880
+msgid "Plateau Malagasy"
+msgstr "Plateau Malagasy"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2879
+msgid "Macedonian"
+msgstr "Mazedonisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2878
+msgid "Minangkabau Latn"
+msgstr "Minangkabau (lateinische Schrift)"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2877
+msgid "Minangkabau Arab"
+msgstr "Minangkabau (arabische Schrift)"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2876
+msgid "Marathi"
+msgstr "Marathi"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2875
+msgid "Malayalam"
+msgstr "Malayalam"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2874
+msgid "Maithili"
+msgstr "Maithili"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2873
+msgid "Magahi"
+msgstr "Magahi"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2872
+msgid "Standard Latvian"
+msgstr "Lettisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2871
+msgid "Mizo"
+msgstr "Mizo"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2870
+msgid "Luo"
+msgstr "Luo"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2869
+msgid "Ganda"
+msgstr "Ganda"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2868
+msgid "Luba-Kasai"
+msgstr "Luba-Kasai"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2867
+msgid "Luxembourgish"
+msgstr "Luxemburgisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2866
+msgid "Latgalian"
+msgstr "Lettgallisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2865
+msgid "Lombard"
+msgstr "Lombardisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2864
+msgid "Lithuanian"
+msgstr "Litauisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2863
+msgid "Lingala"
+msgstr "Lingala"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2862
+msgid "Limburgish"
+msgstr "Limburgisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2861
+msgid "Ligurian"
+msgstr "Ligurisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2860
+msgid "Lao"
+msgstr "Laotisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2859
+msgid "Korean"
+msgstr "Koreanisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2858
+msgid "Kikongo"
+msgstr "Kikongo"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2857
+msgid "Northern Kurdish"
+msgstr "Nordkurdisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2856
+msgid "Kimbundu"
+msgstr "Kimbundu"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2855
+msgid "Kyrgyz"
+msgstr "Kirgisisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2854
+msgid "Kinyarwanda"
+msgstr "Kinyaruanda"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2853
+msgid "Kikuyu"
+msgstr "Kikuyu"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2852
+msgid "Khmer"
+msgstr "Khmer"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2851
+msgid "Kabuverdianu"
+msgstr "Kapverdisches Kreol"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2850
+msgid "Kabiyè"
+msgstr "Kabiyè"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2849
+msgid "Kazakh"
+msgstr "Kasachisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2848
+msgid "Central Kanuri _Latn"
+msgstr "Kanuri (lateinische Schrift)"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2847
+msgid "Central Kanuri Arab"
+msgstr "Kanuri (arabische Schrift)"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2846
+msgid "Georgian"
+msgstr "Georgisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2845
+msgid "Kashmiri Devanagari"
+msgstr "Kashmiri Devanagari"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2844
+msgid "Kashmiri Arab"
+msgstr "Kashmiri (arabische Schrift)"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2843
+msgid "Kannada"
+msgstr "Kannada"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2842
+msgid "Kamba"
+msgstr "Kamba"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2841
+msgid "Jingpho"
+msgstr "Jingpo"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2840
+msgid "Kabyle"
+msgstr "Kabylisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2839
+msgid "Japanese"
+msgstr "Japanisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2838
+msgid "Javanese"
+msgstr "Javanisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2837
+msgid "Italian"
+msgstr "Italienisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2836
+msgid "Icelandic"
+msgstr "Isländisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2835
+msgid "Indonesian"
+msgstr "Indonesisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2834
+msgid "Ilocano"
+msgstr "Ilocano"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2833
+msgid "Igbo"
+msgstr "Igbo"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2832
+msgid "Armenian"
+msgstr "Armenisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2831
+msgid "Hungarian"
+msgstr "Ungarisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2830
+msgid "Croatian"
+msgstr "Kroatisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2829
+msgid "Chhattisgarhi"
+msgstr "Chhattisgarhi"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2828
+msgid "Hindi"
+msgstr "Hindi"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2827
+msgid "Hebrew"
+msgstr "Hebräisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2826
+msgid "Hausa"
+msgstr "Hausa"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2825
+msgid "Haitian Creole"
+msgstr "Haitianisch-Kreolisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2824
+msgid "Gujarati"
+msgstr "Gujarati"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2823
+msgid "Guarani"
+msgstr "Guaraní"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2822
+msgid "Galician"
+msgstr "Galicisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2821
+msgid "Irish"
+msgstr "Irisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2820
+msgid "Scottish Gaelic"
+msgstr "Schottisch-Gälisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2819
+msgid "Nigerian Fulfulde"
+msgstr "Nigerianisches Fulfulde"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2818
+msgid "Friulian"
+msgstr "Friaulisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2817
+msgid "French"
+msgstr "Französisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2816
+msgid "Fon"
+msgstr "Fon"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2815
+msgid "Finnish"
+msgstr "Finnisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2814
+msgid "Fijian"
+msgstr "Fidschi"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2813
+msgid "Faroese"
+msgstr "Färöisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2812
+msgid "Ewe"
+msgstr "Ewe"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2811
+msgid "Basque"
+msgstr "Baskisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2810
+msgid "Estonian"
+msgstr "Estnisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2809
+msgid "Esperanto"
+msgstr "Esperanto"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2808
+msgid "Greek"
+msgstr "Griechisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2807
+msgid "Dzongkha"
+msgstr "Dzongkha"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2806
+msgid "Dyula"
+msgstr "Dyula"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2805
+msgid "Southwestern Dinka"
+msgstr "Südwestliches Dinka"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2804
+msgid "German"
+msgstr "Deutsch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2803
+msgid "Danish"
+msgstr "Dänisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2802
+msgid "Welsh"
+msgstr "Walisisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2801
+msgid "Crimean Tatar"
+msgstr "Krimtatarisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2800
+msgid "Central Kurdish"
+msgstr "Zentral-Kurdisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2799
+msgid "Chokwe"
+msgstr "Chokwe"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2798
+msgid "Czech"
+msgstr "Tschechisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2797
+msgid "Cebuano"
+msgstr "Cebuano"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2796
+msgid "Catalan"
+msgstr "Katalanisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2795
+msgid "Bulgarian"
+msgstr "Bulgarisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2794
+msgid "Buginese Latn"
+msgstr "Buginisch (lateinische Schrift)"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2793
+msgid "Bosnian"
+msgstr "Bosnisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2792
+msgid "Standard Tibetan"
+msgstr "Standard-Tibetisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2791
+msgid "Banjar Latn"
+msgstr "Banjarisch (lateinische Schrift)"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2790
+msgid "Banjar Arab"
+msgstr "Banjarisch (arabische Schrift)"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2789
+msgid "Bhojpuri"
+msgstr "Bhojpuri"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2788
+msgid "Bengali"
+msgstr "Bengali"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2787
+msgid "Bemba"
+msgstr "Bemba"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2786
+msgid "Belarusian"
+msgstr "Belarussisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2785
+msgid "Balinese"
+msgstr "Balinesisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2784
+msgid "Bambara"
+msgstr "Bambara"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2783
+msgid "Bashkir"
+msgstr "Baschkirisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2782
+msgid "North Azerbaijani"
+msgstr "Nord-Aserbaidschanisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2781
+msgid "South Azerbaijani"
+msgstr "Süd-Aserbaidschanisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2780
+msgid "Central Aymara"
+msgstr "Zentral-Aymara"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2779
+msgid "Awadhi"
+msgstr "Awadhi"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2778
+msgid "Asturian"
+msgstr "Asturisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2777
+msgid "Assamese"
+msgstr "Assamesisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2776
+msgid "Egyptian Arabic"
+msgstr "Ägyptisch-Arabisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2775
+msgid "Moroccan Arabic"
+msgstr "Marokkanisch-Arabisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2774
+msgid "Najdi Arabic"
+msgstr "Najdi Arabisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2773
+msgid "Modern Standard Arabic (Romanized)"
+msgstr "Modernes Standardarabisch (romanisiert)"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2772
+msgid "Modern Standard Arabic"
+msgstr "Modernes Hocharabisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2771
+msgid "North Levantine Arabic"
+msgstr "Nord-Levantinisches Arabisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2770
+msgid "Amharic"
+msgstr "Amharisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2769
+msgid "Akan"
+msgstr "Akan"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2768
+msgid "South Levantine Arabic"
+msgstr "Süd-Levantinisches Arabisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2767
+msgid "Afrikaans"
+msgstr "Afrikaans"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2766
+msgid "Tunisian Arabic"
+msgstr "Tunesisch-Arabisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2765
+msgid "Ta’izzi-Adeni Arabic"
+msgstr "Taʿizzi-Adeni-Arabisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2764
+msgid "Mesopotamian Arabic"
+msgstr "Mesopotamisches Arabisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2763
+msgid "Acehnese Latin"
+msgstr "Acehnesisch (lateinische Schrift)"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2762
+msgid "Acehnese Arab"
+msgstr "Acehnesisch (arabische Schrift)"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2761
+msgid "English"
+msgstr "Englisch"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2468
+msgid "Feedzy Demo Page"
+msgstr "Feedzy-Demoseite"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2276
+#: includes/admin/feedzy-rss-feeds-admin.php:2320
+msgid "Redirecting to draft page"
+msgstr "Weiterleitung zur Entwurfsseite"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2257
+#: includes/admin/feedzy-rss-feeds-admin.php:2287
+#: includes/admin/feedzy-rss-feeds-admin.php:2300
+msgid "Redirecting to Feedzy dashboard"
+msgstr "Weiterleitung zum Feedzy-Dashboard"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2199
+msgid "Unable to connect to the filesystem. Please confirm your credentials."
+msgstr "Es ist nicht möglich, eine Verbindung mit dem Dateisystem herzustellen. Bitte überprüfe deine Anmeldedaten."
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2140
+msgid "Sorry, you are not allowed to install plugins on this site."
+msgstr "Du bist leider nicht berechtigt, Plugins auf dieser Website zu installieren."
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2131
+msgid "No plugin specified."
+msgstr "Es wurde kein Plugin angegeben."
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2004
+msgid "Do not create"
+msgstr "Nicht erstellen"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2003
+#: includes/layouts/setup-wizard.php:291
+msgid "Create Page"
+msgstr "Seite erstellen"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2001 build/onboarding/index.js:1
+msgid "Back"
+msgstr "Zurück"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:2000
+msgid "Next Step"
+msgstr "Nächster Schritt"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1998
+msgid "Please enter a valid email address."
+msgstr "Bitte gib eine gültige E-Mail-Adresse ein."
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1997
+msgid "This field is required."
+msgstr "Dies ist ein Pflichtfeld."
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1841
+msgid "Empty URL"
+msgstr "Leere URL"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1820
+msgid "Please enter a valid feed URL to import the author"
+msgstr "Bitte gib eine gültige Feed-URL ein, um den Autor zu importieren"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1816
+msgid "This source has invalid or unreachable by WordPress SimplePie URLs. Please correct/remove the following"
+msgstr "Diese Quelle hat ungültige oder für WordPress SimplePie nicht erreichbare URLs. Bitte korrigiere/entferne die folgenden"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1807
+msgid "We found the following invalid or unreachable by WordPress SimplePie URLs that we have removed from the list"
+msgstr "Wir haben die folgenden ungültigen oder von WordPress SimplePie nicht erreichbaren URLs gefunden, die wir aus der Liste entfernt haben"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1377
+#: includes/admin/feedzy-rss-feeds-admin.php:1395
+msgid "Your settings were saved."
+msgstr "Deine Einstellungen wurden gespeichert."
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1332
+msgid "RSS to Social"
+msgstr "RSS to Social"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1302
+#: includes/admin/feedzy-rss-feeds-admin.php:1303
+#: includes/admin/feedzy-rss-feeds-import.php:4061
+msgid "Setup Wizard"
+msgstr "Einrichtungsassistent"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1289
+#: includes/admin/feedzy-rss-feeds-admin.php:1290
+#: includes/layouts/feedzy-support.php:58 includes/layouts/header.php:15
+msgid "Integration"
+msgstr "Integration"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1263
+msgid "Feedzy"
+msgstr "Feedzy"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1242
+msgid "Upgrade your license"
+msgstr "Upgrade deiner Lizenz"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1240
+#: includes/admin/feedzy-rss-feeds-admin.php:1242
+msgid "More Features"
+msgstr "Mehr Funktionen"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1188
+msgid "Click to remove invalid URLs from this category"
+msgstr "Klicken, um ungültige URLs aus dieser Kategorie zu entfernen"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1182
+#: includes/admin/feedzy-rss-feeds-import.php:907
+msgid "Undefined"
+msgstr "Nicht definiert"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1137
+#: includes/admin/feedzy-rss-feeds-admin.php:1141
+#: includes/layouts/feedzy-schedules.php:96
+msgid "Actions"
+msgstr "Aktionen"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1130
+#: includes/admin/feedzy-rss-feeds-admin.php:1134
+msgid "Slug"
+msgstr "Titelform"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1129
+msgid "Group Title"
+msgstr "Gruppentitel"
+
+#. translators: %1$s and %2$s are placeholders for HTML anchor tags.
+#: includes/admin/feedzy-rss-feeds-admin.php:953
+msgid "Please be aware that multiple feeds, when mashed together, may sometimes not work as expected as explained %1$s here %2$s."
+msgstr "Bitte beachte, dass mehrere Feeds, wenn sie miteinander kombiniert werden, manchmal nicht wie erwartet funktionieren, wie %1$s hier %2$s erklärt wird."
+
+#: includes/admin/feedzy-rss-feeds-admin.php:894
+msgid "Extend Feedzy"
+msgstr "Feedzy erweitern"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:882
+msgid "Group Feeds"
+msgstr "Feeds gruppieren"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:822
+msgid "No groups in the trash"
+msgstr "Keine Gruppen im Papierkorb"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:821
+msgid "No groups found"
+msgstr "Keine Gruppen gefunden"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:820
+msgid "Search Group"
+msgstr "Gruppe durchsuchen"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:819
+msgid "View Group"
+msgstr "Gruppe anzeigen"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:818
+msgid "New Feed Group"
+msgstr "Neue Feed-Gruppe"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:817
+msgid "Edit Group"
+msgstr "Gruppe bearbeiten"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:815
+#: includes/admin/feedzy-rss-feeds-admin.php:816
+msgid "Add Group"
+msgstr "Gruppe hinzufügen"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:814
+#: includes/admin/feedzy-rss-feeds-import.php:890
+#: includes/admin/feedzy-rss-feeds-import.php:895
+msgid "Feed Group"
+msgstr "Feed-Gruppe"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:813
+msgid "Feed Groups"
+msgstr "Feed-Gruppen"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:599
+msgid "Cloning import setups are not available on your plan. Upgrade to the Pro plan to unlock this feature and streamline your import setup process."
+msgstr "Es tut uns leid, aber das Klonen von Import-Setups ist in deinem Tarif nicht verfügbar. Mit einem Upgrade auf den Pro-Tarif kannst du diese Funktion freischalten und deinen Import-Einrichtungsprozess optimieren."
+
+#: includes/admin/feedzy-rss-feeds-admin.php:577
+msgid "Activate License"
+msgstr "Lizenz aktivieren"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:569
+msgid "Renew License"
+msgstr "Lizenz verlängern"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:558
+msgid "In order to edit premium import setups, benefit from updates and support for Feedzy Premium plugin, please renew your license code or activate it."
+msgstr "Um Premium-Import-Setups zu bearbeiten, von Updates und Support für der Feedzy Premium Plugin zu profitieren, verlängere bitte deinen Lizenzcode oder aktiviere ihn."
+
+#: includes/admin/feedzy-rss-feeds-admin.php:553
+msgid "Alert!"
+msgstr "Benachrichtigung!"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:525
+#: includes/admin/feedzy-rss-feeds-admin.php:609
+#: includes/admin/feedzy-rss-feeds-admin.php:648 build/conditions/index.js:4
+#: build/loop/index.js:4
+msgid "Upgrade to PRO"
+msgstr "Auf PRO upgraden"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:501
+msgid "Upgrade to Use Unlimited Imports"
+msgstr "Upgrade durchführen, um unbegrenzte Importe zu nutzen"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:496
+#: includes/admin/feedzy-rss-feeds-admin.php:549
+#: includes/admin/feedzy-rss-feeds-admin.php:587
+#: includes/admin/feedzy-rss-feeds-admin.php:625 build/conditions/index.js:1
+#: build/loop/index.js:1
+msgid "Dismiss this dialog"
+msgstr "Diesen Dialog verwerfen"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:392
+#: includes/admin/feedzy-rss-feeds-admin.php:1278
+#: includes/admin/feedzy-rss-feeds-admin.php:1279
+#: includes/layouts/feedzy-support.php:51
+#: includes/layouts/feedzy-tutorial.php:67 includes/layouts/header.php:11
+#: build/loop/index.js:4 js/FeedzyLoop/controls.js:116
+msgid "Settings"
+msgstr "Einstellungen"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:233
+#: includes/admin/feedzy-rss-feeds-admin.php:2010
+#: includes/admin/feedzy-rss-feeds-import.php:188
+#: includes/layouts/settings.php:158 includes/views/import-metabox-edit.php:782
+msgid "Replace image"
+msgstr "Bild ersetzen"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:232
+#: includes/admin/feedzy-rss-feeds-admin.php:2009
+#: includes/admin/feedzy-rss-feeds-import.php:187
+#: includes/layouts/settings.php:156 includes/layouts/setup-wizard.php:215
+#: includes/views/import-metabox-edit.php:771
+msgid "Choose image"
+msgstr "Bild wählen"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:231
+#: includes/admin/feedzy-rss-feeds-admin.php:2008
+#: includes/admin/feedzy-rss-feeds-import.php:186
+msgid "Set default image"
+msgstr "Standardbild festlegen"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:230
+#: includes/admin/feedzy-rss-feeds-admin.php:2007
+#: includes/admin/feedzy-rss-feeds-import.php:185
+msgid "Select image"
+msgstr "Bild auswählen"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:214
+msgid "Removed # URL(s)!"
+msgstr "# URL(s) wurde(n) entfernt!"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:213
+msgid "Validating"
+msgstr "Wird validiert"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:212
+#: includes/admin/feedzy-rss-feeds-admin.php:1188
+msgid "Validate & Clean"
+msgstr "Validieren und bereinigen"
+
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:1657
+#: includes/views/import-metabox-edit.php:333
+msgid "Post Content"
+msgstr "Beitragsinhalt"
+
+#. translators: %s: the category of the imported content.
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:1628
+#: build/block/index.js:22
+msgid "in %s"
+msgstr "in %s"
+
+#. translators: %s: the time of the imported content.
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:1620
+#: build/block/index.js:19
+msgid "at %s"
+msgstr "um %s"
+
+#. translators: %s: the date of the imported content.
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:1615
+#: build/block/index.js:16
+msgid "on %s"
+msgstr "am %s"
+
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:1519
+#: includes/views/import-metabox-edit.php:247
+#: includes/views/import-metabox-edit.php:255
+msgid "Post Title"
+msgstr "Beitragstitel"
+
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:1302
+msgid "Unable to find image"
+msgstr "Das Bild kann nicht gefunden werden"
+
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:1297
+msgid "Image"
+msgstr "Bild"
+
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:1288
+msgid "Full content extracted (is empty)"
+msgstr "Vollständiger Inhalt extrahiert (ist leer)"
+
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:1283
+msgid "Full content extracted"
+msgstr "Vollständiger Inhalt extrahiert"
+
+#. translators: %s: Error message for full content extraction.
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:1275
+msgid "Full content: %s"
+msgstr "Vollständiger Inhalt: %s"
+
+#. translators: %s: Feed URL.
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:1031
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:1051
+msgid "Feed URL: %s not valid and removed from fetch."
+msgstr "Feed-URL: %s ist nicht gültig und wurde aus dem Abruf entfernt."
+
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:653
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:216
+msgid "Feed has no items."
+msgstr "Der Feed hat keine Einträge."
+
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:453
+msgid "Loading"
+msgstr "Wird geladen"
+
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:252
+msgid "Only you are seeing this detailed error because you are the creator of this post. Other users will see the error message as below."
+msgstr "Nur du siehst diese detaillierte Fehlermeldung, weil du der Ersteller dieses Beitrags bist. Andere Benutzer sehen die Fehlermeldung wie unten."
+
+#. translators: %s: Detailed error message.
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:248
+msgid "Sorry, some part of this feed is currently unavailable or does not exist anymore. The detailed error is %s"
+msgstr "Leider ist ein Teil dieses Feeds derzeit nicht verfügbar oder existiert nicht mehr. Der detaillierte Fehler ist %s"
+
+#. translators: 1: opening <p> tag, 2: opening <b> tag, 3: closing </b> tag, 4:
+#. product name, 5: pro product name, 6: opening <a> tag with cta link, 7:
+#. closing </a> tag, 8: discount percentage
+#: feedzy-rss-feed.php:200
+msgid "%1$sYou've been using %2$s%4$s%3$s for 7 days now and we appreciate your loyalty! We also want to make sure you're getting the most out of our product. That's why we're offering you a special deal - upgrade to %2$s%5$s%3$s in the next 5 days and receive a discount of %2$sup to %8$s%%%3$s. %6$sUpgrade now%7$s and unlock all the amazing features of %2$s%5$s%3$s!"
+msgstr "%1$sDu nutzt %2$s%4$s%3$s nun schon seit 7 Tagen und wir wissen deine Treue zu schätzen! Wir möchten auch sicherstellen, dass du das Beste aus unserem Produkt herausholst. Deshalb bieten wir dir ein besonderes Angebot: Wenn du in den nächsten 5 Tagen auf %2$s%5$s%3$s umsteigst, erhältst du einen Rabatt von %2$sbis zu %8$s%%%3$s. %6$sJetzt Upgrade durchführen%7$s und alle tollen Funktionen von %2$s%5$s%3$s freischalten!"
+
+#: feedzy-rss-feed.php:167 feedzy-rss-feed.php:319
+#: includes/admin/feedzy-rss-feeds-admin.php:1240
+msgid "Upgrade to Pro"
+msgstr "Auf Pro upgraden"
+
+#. Description of the plugin
+#: feedzy-rss-feed.php
+msgid "A small and lightweight RSS aggregator plugin. Fast and very easy to use, it allows you to aggregate multiple RSS feeds into your WordPress site through fully customizable shortcodes & widgets."
+msgstr "Ein kleines und leichtgewichtiges RSS-Aggregator-Plugin. Es ist schnell und einfach zu bedienen und ermöglicht es dir, mehrere RSS-Feeds über vollständig anpassbare Shortcodes und Widgets auf deiner WordPress-Website zu aggregieren."
+
+#. Author URI of the plugin
+#: feedzy-rss-feed.php
+msgid "http://themeisle.com"
+msgstr "https://themeisle.com/de/"
+
+#. Author of the plugin
+#: feedzy-rss-feed.php
+msgid "Themeisle"
+msgstr "Themeisle"
+
+#. Plugin URI of the plugin
+#: feedzy-rss-feed.php
+msgid "https://themeisle.com/plugins/feedzy-rss-feeds/"
+msgstr "https://themeisle.com/de/plugins/feedzy-rss-feeds/"
+
+#. Plugin Name of the plugin
+#: feedzy-rss-feed.php
+msgid "Feedzy RSS Feeds Lite"
+msgstr "Feedzy RSS Feeds Lite"
+
+#: includes/admin/feedzy-wp-widget.php:81
+#: includes/elementor/widgets/register-widget.php:67
+msgid "Intro text"
+msgstr "Intro-Text"
+
+#: includes/admin/feedzy-wp-widget.php:77
+msgid "Widget Title"
+msgstr "Widget-Titel"
+
+#: includes/admin/feedzy-wp-widget.php:40
+#: includes/elementor/widgets/register-widget.php:25 build/block/index.js:13
+#: build/block/index.js:22 build/loop/index.js:1
+#: js/FeedzyLoop/placeholder.js:147
+msgid "Feedzy RSS Feeds"
+msgstr "Feedzy RSS Feeds"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:558
+#: includes/elementor/widgets/register-widget.php:435
+msgid "Style 2"
+msgstr "Stil 2"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:554
+#: includes/elementor/widgets/register-widget.php:430
+msgid "Style 1"
+msgstr "Stil 1"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:193
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:550
+#: includes/elementor/widgets/register-widget.php:134
+#: includes/elementor/widgets/register-widget.php:425
+#: build/action-popup/index.js:4 build/block/index.js:1 build/loop/index.js:1
+#: build/loop/index.js:7 js/FeedzyLoop/controls.js:341
+#: js/FeedzyLoop/variations.js:107
+msgid "Default"
+msgstr "Standard"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:544
+msgid "Template to use when displaying the feed."
+msgstr "Template, das bei der Anzeige des Feeds verwendet wird."
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:524
+msgid "How many columns we should use to display the feed items"
+msgstr "Wie viele Spalten für die Anzeige der Feeds verwendet werden sollen"
+
+#: form/form.php:45
+msgid "Premium"
+msgstr "Premium"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:487
+msgid "See more features of Feedzy RSS Feeds PRO"
+msgstr "Entdecke weitere Funktionen von Feedzy RSS Feeds PRO"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:487
+msgid "Get access to more options and customizations with full version of Feedzy RSS Feeds . Use existing templates or extend them and make them your own."
+msgstr "Mit der Vollversion von Feedzy RSS Feeds erhältst du Zugang zu weiteren Optionen und individuellen Anpassungen. Verwende vorhandene Templates oder erweitere sie und mache sie dir zu eigen."
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:486
+msgid "PRO Options"
+msgstr "PRO-Optionen"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:458
+msgid "Thumbnails dimension. Do not include \"px\". Eg: 150"
+msgstr "Größe der Vorschaubilder. Angabe ohne „px“. Beispiel: 150"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:454
+msgid "Select from Gallery"
+msgstr "Aus Galerie auswählen"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:450
+msgid "Image URL"
+msgstr "Bild-URL"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:430
+msgid "Should we display the first image of the content if it is available?"
+msgstr "Soll das erste Bild des Inhalts angezeigt werden, wenn es verfügbar ist?"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:427 build/block/index.js:1
+#: build/loop/index.js:4 js/FeedzyLoop/controls.js:182
+msgid "Item Image Options"
+msgstr "Eintrag-Bild-Optionen"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:364
+msgid "Crop description (summary) of the element after X characters."
+msgstr "Beschreibung (Zusammenfassung) des Elements nach X Zeichen abschneiden."
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:349
+msgid "Should we display a description (abstract) of the retrieved item?"
+msgstr "Soll eine Beschreibung (Zusammenfassung) des abgerufenen Eintrags angezeigt werden?"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:307
+#: includes/elementor/widgets/register-widget.php:282
+msgid "framename"
+msgstr "framename"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:303
+#: includes/elementor/widgets/register-widget.php:281
+msgid "_top"
+msgstr "_top"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:299
+msgid "_parent"
+msgstr "_parent"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:295
+#: includes/elementor/widgets/register-widget.php:280
+msgid "_self"
+msgstr "_self"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:291
+#: includes/elementor/widgets/register-widget.php:279
+msgid "_blank"
+msgstr "_blank"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:282
+msgid "Links may be opened in the same window or a new tab."
+msgstr "Links können im selben Fenster oder in einem neuen Tab geöffnet werden."
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:279
+#: includes/elementor/widgets/register-widget.php:267 build/block/index.js:1
+msgid "Item Options"
+msgstr "Eintrag-Optionen"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:170
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:230
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:246
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:266
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:318
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:358
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:443
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:506
+#: includes/elementor/widgets/register-widget.php:78
+#: includes/elementor/widgets/register-widget.php:171
+#: includes/elementor/widgets/register-widget.php:293
+#: includes/elementor/widgets/register-widget.php:304
+#: includes/elementor/widgets/register-widget.php:326
+#: includes/elementor/widgets/register-widget.php:360
+#: includes/elementor/widgets/register-widget.php:461
+#: includes/elementor/widgets/register-widget.php:502
+#: includes/elementor/widgets/register-widget.php:524
+#: includes/elementor/widgets/register-widget.php:549
+#: build/action-popup/index.js:4 build/block/index.js:1 build/block/index.js:10
+#: build/block/index.js:13 build/loop/index.js:4 js/FeedzyLoop/controls.js:208
+msgid "No"
+msgstr "Nein"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:166
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:226
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:242
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:262
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:322
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:354
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:502
+#: includes/elementor/widgets/register-widget.php:77
+#: includes/elementor/widgets/register-widget.php:170
+#: includes/elementor/widgets/register-widget.php:292
+#: includes/elementor/widgets/register-widget.php:303
+#: includes/elementor/widgets/register-widget.php:325
+#: includes/elementor/widgets/register-widget.php:460
+#: includes/elementor/widgets/register-widget.php:501
+#: includes/elementor/widgets/register-widget.php:523
+#: includes/elementor/widgets/register-widget.php:548
+#: build/action-popup/index.js:4 build/block/index.js:10
+#: build/block/index.js:13
+msgid "Yes"
+msgstr "Ja"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:287
+#: includes/elementor/widgets/register-widget.php:278
+msgid "Auto"
+msgstr "Automatisch"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:161
+msgid "Should we display the RSS title?"
+msgstr "Soll der RSS-Titel angezeigt werden?"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:148
+msgid "Number of items to display."
+msgstr "Anzahl der anzuzeigenden Einträge."
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:143
+msgid "Feed URL"
+msgstr "Feed-URL"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:134
+msgid "The feed(s) URL (comma-separated list)."
+msgstr "Die URL des/der Feeds (kommagetrennte Liste)."
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:130
+#: includes/elementor/widgets/register-widget.php:98 build/block/index.js:1
+#: build/loop/index.js:1 build/loop/index.js:4 js/FeedzyLoop/controls.js:165
+#: js/FeedzyLoop/placeholder.js:166
+msgid "Feed Source"
+msgstr "Feed-Quelle"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:58
+msgid "Get Feedzy RSS Feeds Premium"
+msgstr "Hol dir Feedzy RSS Feeds Premium"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:57
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:56
+msgid "Insert Shortcode"
+msgstr "Shortcode einfügen"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:55
+msgid "Use Image"
+msgstr "Bild verwenden"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:54
+msgid "Insert Feedzy RSS Feeds Shortcode"
+msgstr "Feedzy-RSS-Feeds-Shortcode einfügen"
+
+#: includes/admin/feedzy-rss-feeds-ui-lang.php:53
+msgid "Feedzy Lite"
+msgstr "Feedzy Lite"
+
+#: includes/admin/feedzy-rss-feeds-admin.php:1237
+msgid "Documentation and examples"
+msgstr "Dokumentation und Beispiele"
+
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:1587
+#: includes/abstract/feedzy-rss-feeds-admin-abstract.php:1593
+#: build/block/index.js:13
+msgid "by"
+msgstr "von"

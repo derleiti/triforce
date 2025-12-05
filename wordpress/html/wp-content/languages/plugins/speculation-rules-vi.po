@@ -1,0 +1,90 @@
+# Translation of Plugins - Speculative Loading - Stable (latest release) in Vietnamese
+# This file is distributed under the same license as the Plugins - Speculative Loading - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2024-07-29 11:39:52+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: GlotPress/4.0.1\n"
+"Language: vi_VN\n"
+"Project-Id-Version: Plugins - Speculative Loading - Stable (latest release)\n"
+
+#: settings.php:383
+msgid "Settings"
+msgstr "Cài đặt"
+
+#. Plugin Name of the plugin
+#: load.php settings.php:210
+msgid "Speculative Loading"
+msgstr "Speculative Loading"
+
+#: settings.php:231
+msgid "Eagerness"
+msgstr "Mức độ ưu tiên"
+
+#: settings.php:70
+msgid "Prerendering will lead to faster load times than prefetching. However, in case of interactive content, prefetching may be a safer choice."
+msgstr "Hiển thị trước sẽ giúp tải trang nhanh hơn so với tải trước. Tuy nhiên, trong trường hợp nội dung tương tác, tải trước có thể là lựa chọn an toàn hơn."
+
+#: settings.php:214
+msgid "This section allows you to control how URLs that your users navigate to are speculatively loaded to improve performance."
+msgstr "Phần này cho phép bạn kiểm soát cách các URL mà người dùng điều hướng đến được tải dự đoán để cải thiện hiệu suất."
+
+#: settings.php:71
+msgid "The eagerness setting defines the heuristics based on which the loading is triggered. \"Eager\" will have the minimum delay to start speculative loads, \"Conservative\" increases the chance that only URLs the user actually navigates to are loaded."
+msgstr "Cài đặt mức độ ưu tiên xác định phương pháp phỏng đoán dựa trên đó việc tải được kích hoạt. \"Ưu tiên\" sẽ có độ trễ tối thiểu để bắt đầu tải dự đoán, \"Thận trọng\" tăng khả năng chỉ tải các URL mà người dùng thực tế điều hướng đến."
+
+#: settings.php:40
+msgctxt "setting label"
+msgid "Eager (on slightest suggestion)"
+msgstr "Ưu tiên (theo gợi ý nhỏ nhất)"
+
+#: settings.php:39
+msgctxt "setting label"
+msgid "Moderate (typically on hover)"
+msgstr "Trung bình (thường khi di chuột)"
+
+#: settings.php:38
+msgctxt "setting label"
+msgid "Conservative (typically on click)"
+msgstr "Thận trọng (thường khi nhấp chuột)"
+
+#: settings.php:25
+msgctxt "setting label"
+msgid "Prerender"
+msgstr "Hiển thị trước"
+
+#: settings.php:24
+msgctxt "setting label"
+msgid "Prefetch"
+msgstr "Tải trước"
+
+#. translators: %s: context string
+#: class-plsr-url-pattern-prefixer.php:74
+msgid "Invalid context %s."
+msgstr "Ngữ cảnh không hợp lệ %s."
+
+#. Author URI of the plugin
+#: load.php
+msgid "https://make.wordpress.org/performance/"
+msgstr "https://make.wordpress.org/performance/"
+
+#. Plugin URI of the plugin
+#: load.php
+msgid "https://github.com/WordPress/performance/tree/trunk/plugins/speculation-rules"
+msgstr "https://github.com/WordPress/performance/tree/trunk/plugins/speculation-rules"
+
+#: settings.php:170
+msgid "Configuration for the Speculation Rules API."
+msgstr "Cấu hình cho API quy tắc Speculation."
+
+#: settings.php:227
+msgid "Speculation Mode"
+msgstr "Chế độ Speculation"
+
+#. Author of the plugin
+#: load.php
+msgid "WordPress Performance Team"
+msgstr "Nhóm hiệu suất WordPress"
