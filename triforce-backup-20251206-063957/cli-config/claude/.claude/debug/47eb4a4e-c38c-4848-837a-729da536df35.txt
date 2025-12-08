@@ -1,0 +1,51 @@
+2025-12-05T00:18:34.286Z [DEBUG] Watching for changes in setting files /home/zombie/ailinux-ai-server-backend/.claude/settings.local.json...
+2025-12-05T00:18:34.360Z [DEBUG] [LSP MANAGER] initializeLspServerManager() called
+2025-12-05T00:18:34.360Z [DEBUG] [LSP MANAGER] Created manager instance, state=pending
+2025-12-05T00:18:34.360Z [DEBUG] [LSP MANAGER] Starting async initialization (generation 1)
+2025-12-05T00:18:34.360Z [DEBUG] [LSP SERVER MANAGER] initialize() called
+2025-12-05T00:18:34.360Z [DEBUG] [LSP SERVER MANAGER] Calling getAllLspServers()
+2025-12-05T00:18:34.376Z [DEBUG] Found 0 plugins (0 enabled, 0 disabled)
+2025-12-05T00:18:34.412Z [DEBUG] Loading skills from directories: managed=/etc/claude-code/.claude/skills, user=/home/zombie/.claude/skills, project=/home/zombie/ailinux-ai-server-backend/.claude/skills
+2025-12-05T00:18:34.412Z [DEBUG] >>>>> getPluginSkills CALLED <<<<<
+2025-12-05T00:18:34.413Z [DEBUG] Passes: Using fresh cached eligibility data
+2025-12-05T00:18:34.494Z [DEBUG] installed_plugins.json doesn't exist yet at /home/zombie/.claude/plugins/installed_plugins.json, returning empty object
+2025-12-05T00:18:34.532Z [DEBUG] Creating shell snapshot for bash (/bin/bash)
+2025-12-05T00:18:34.533Z [DEBUG] Looking for shell config file: /home/zombie/.bashrc
+2025-12-05T00:18:34.533Z [DEBUG] Snapshots directory: /home/zombie/.claude/shell-snapshots
+2025-12-05T00:18:34.534Z [DEBUG] Creating snapshot at: /home/zombie/.claude/shell-snapshots/snapshot-bash-1764893914533-cxsb1s.sh
+2025-12-05T00:18:34.534Z [DEBUG] Shell binary exists: true
+2025-12-05T00:18:34.534Z [DEBUG] Execution timeout: 10000ms
+2025-12-05T00:18:34.543Z [DEBUG] Writing to temp file: /home/zombie/.claude/todos/47eb4a4e-c38c-4848-837a-729da536df35-agent-47eb4a4e-c38c-4848-837a-729da536df35.json.tmp.62378.1764893914543
+2025-12-05T00:18:34.547Z [DEBUG] Temp file written successfully, size: 2 bytes
+2025-12-05T00:18:34.547Z [DEBUG] Renaming /home/zombie/.claude/todos/47eb4a4e-c38c-4848-837a-729da536df35-agent-47eb4a4e-c38c-4848-837a-729da536df35.json.tmp.62378.1764893914543 to /home/zombie/.claude/todos/47eb4a4e-c38c-4848-837a-729da536df35-agent-47eb4a4e-c38c-4848-837a-729da536df35.json
+2025-12-05T00:18:34.547Z [DEBUG] File /home/zombie/.claude/todos/47eb4a4e-c38c-4848-837a-729da536df35-agent-47eb4a4e-c38c-4848-837a-729da536df35.json written atomically
+2025-12-05T00:18:34.560Z [DEBUG] Total LSP servers loaded: 0
+2025-12-05T00:18:34.560Z [DEBUG] getPluginSkills: Processing 0 enabled plugins
+2025-12-05T00:18:34.560Z [DEBUG] Total plugin skills loaded: 0
+2025-12-05T00:18:34.560Z [DEBUG] Total plugin commands loaded: 0
+2025-12-05T00:18:34.561Z [DEBUG] Registered 0 hooks from 0 plugins
+2025-12-05T00:18:34.592Z [DEBUG] [LSP SERVER MANAGER] getAllLspServers returned 0 server(s)
+2025-12-05T00:18:34.592Z [DEBUG] LSP manager initialized with 0 servers
+2025-12-05T00:18:34.592Z [DEBUG] Loaded 0 unique skills (managed: 0, user: 0, project: 0, duplicates removed: 0)
+2025-12-05T00:18:34.593Z [DEBUG] LSP server manager initialized successfully
+2025-12-05T00:18:34.594Z [DEBUG] LSP notification handlers registered successfully for all 0 server(s)
+2025-12-05T00:18:34.597Z [DEBUG] getSkills returning: 0 skill dir commands, 0 plugin skills
+2025-12-05T00:18:34.649Z [DEBUG] Git remote URL: null
+2025-12-05T00:18:34.649Z [DEBUG] No git remote URL found
+2025-12-05T00:18:34.649Z [DEBUG] Not in a GitHub repository, skipping path mapping update
+2025-12-05T00:18:34.651Z [DEBUG] Ripgrep first use test: PASSED (mode=builtin, path=/root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/vendor/ripgrep/x64-linux/rg)
+2025-12-05T00:18:34.672Z [DEBUG] Shell snapshot created successfully (3073 bytes)
+2025-12-05T00:18:34.738Z [DEBUG] Writing to temp file: /home/zombie/.claude.json.tmp.62378.1764893914738
+2025-12-05T00:18:34.738Z [DEBUG] Preserving file permissions: 100600
+2025-12-05T00:18:34.741Z [DEBUG] Temp file written successfully, size: 42757 bytes
+2025-12-05T00:18:34.741Z [DEBUG] Applied original permissions to temp file
+2025-12-05T00:18:34.741Z [DEBUG] Renaming /home/zombie/.claude.json.tmp.62378.1764893914738 to /home/zombie/.claude.json
+2025-12-05T00:18:34.741Z [DEBUG] File /home/zombie/.claude.json written atomically
+2025-12-05T00:18:34.745Z [DEBUG] Writing to temp file: /home/zombie/.claude.json.tmp.62378.1764893914745
+2025-12-05T00:18:34.745Z [DEBUG] Preserving file permissions: 100600
+2025-12-05T00:18:34.748Z [DEBUG] Temp file written successfully, size: 42757 bytes
+2025-12-05T00:18:34.748Z [DEBUG] Applied original permissions to temp file
+2025-12-05T00:18:34.748Z [DEBUG] Renaming /home/zombie/.claude.json.tmp.62378.1764893914745 to /home/zombie/.claude.json
+2025-12-05T00:18:34.748Z [DEBUG] File /home/zombie/.claude.json written atomically
+2025-12-05T00:19:46.749Z [DEBUG] Detected change to /home/zombie/ailinux-ai-server-backend/.claude/settings.local.json
+2025-12-05T00:23:06.621Z [DEBUG] Detected change to /home/zombie/ailinux-ai-server-backend/.claude/settings.local.json

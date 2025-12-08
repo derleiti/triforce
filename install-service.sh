@@ -23,7 +23,7 @@ systemctl daemon-reload
 
 # Enable service to start on boot
 echo "Enabling service to start on boot..."
-systemctl enable ailinux-backend.service
+systemctl enable --now ailinux-backend.service
 
 echo ""
 echo "✅ Service installed successfully!"

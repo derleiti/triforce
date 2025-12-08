@@ -1,5 +1,0 @@
-#!/bin/bash
-# Claude CLI Wrapper for TriForce/TriStar
-export HOME=/var/tristar/cli-config/claude
-export CLAUDE_CONFIG_DIR=/var/tristar/cli-config/claude
-exec /root/.npm-global/bin/claude "$@"

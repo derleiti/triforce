@@ -1,0 +1,99 @@
+{
+  "description": "MCP Server Configurations for different clients",
+  "server_url": "https://api.ailinux.me",
+  "api_key": "VilKEN5TZUfFUXBXWPt0q3rs85aNwvJLvpLxX8Zyabw",
+
+  "configurations": {
+    "cursor": {
+      "description": "Cursor AI - Legacy SSE Transport (2024-11-05)",
+      "config": {
+        "mcpServers": {
+          "ailinux": {
+            "url": "https://api.ailinux.me/v1/sse",
+            "headers": {
+              "X-MCP-Key": "VilKEN5TZUfFUXBXWPt0q3rs85aNwvJLvpLxX8Zyabw"
+            }
+          }
+        }
+      }
+    },
+
+    "chatgpt": {
+      "description": "ChatGPT Developer Mode - MCP Integration",
+      "config": {
+        "mcpServers": {
+          "ailinux": {
+            "url": "https://api.ailinux.me/v1/mcp",
+            "headers": {
+              "X-MCP-Key": "VilKEN5TZUfFUXBXWPt0q3rs85aNwvJLvpLxX8Zyabw"
+            }
+          }
+        }
+      }
+    },
+
+    "streamable_http": {
+      "description": "Streamable HTTP Transport (2025-03-26) - New Standard",
+      "config": {
+        "mcpServers": {
+          "ailinux": {
+            "url": "https://api.ailinux.me/v1/mcp",
+            "transport": "streamable-http",
+            "headers": {
+              "X-MCP-Key": "VilKEN5TZUfFUXBXWPt0q3rs85aNwvJLvpLxX8Zyabw",
+              "Accept": "application/json, text/event-stream"
+            }
+          }
+        }
+      }
+    },
+
+    "claude_desktop": {
+      "description": "Claude Desktop - SSE Transport",
+      "config": {
+        "mcpServers": {
+          "ailinux": {
+            "url": "https://api.ailinux.me/v1/mcp/sse",
+            "transport": "sse",
+            "headers": {
+              "X-MCP-Key": "VilKEN5TZUfFUXBXWPt0q3rs85aNwvJLvpLxX8Zyabw"
+            }
+          }
+        }
+      }
+    }
+  },
+
+  "endpoints": {
+    "/v1/mcp": {
+      "methods": ["GET", "POST", "DELETE"],
+      "description": "Unified MCP endpoint - supports all transports",
+      "transports": ["streamable-http", "json-rpc"]
+    },
+    "/v1/mcp/sse": {
+      "methods": ["GET"],
+      "description": "Legacy SSE endpoint for Cursor",
+      "transports": ["sse"]
+    },
+    "/v1/sse": {
+      "methods": ["GET"],
+      "description": "Alias for /v1/mcp/sse",
+      "transports": ["sse"]
+    },
+    "/v1/mcp/messages": {
+      "methods": ["POST"],
+      "description": "Legacy SSE message endpoint",
+      "transports": ["sse"]
+    },
+    "/v1/mcp/stream": {
+      "methods": ["GET"],
+      "description": "Streamable HTTP GET for server messages",
+      "transports": ["streamable-http"]
+    }
+  },
+
+  "protocol_versions": {
+    "2024-11-05": "Legacy SSE transport",
+    "2025-03-26": "Streamable HTTP transport (current)"
+  }
+}

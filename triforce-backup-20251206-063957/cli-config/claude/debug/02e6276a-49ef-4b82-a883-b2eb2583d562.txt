@@ -1,0 +1,35 @@
+2025-12-05T01:01:20.548Z [DEBUG] Watching for changes in setting files /home/zombie/ailinux-ai-server-backend/.claude/settings.local.json...
+2025-12-05T01:01:20.600Z [DEBUG] [LSP MANAGER] initializeLspServerManager() called
+2025-12-05T01:01:20.600Z [DEBUG] [LSP MANAGER] Created manager instance, state=pending
+2025-12-05T01:01:20.600Z [DEBUG] [LSP MANAGER] Starting async initialization (generation 1)
+2025-12-05T01:01:20.600Z [DEBUG] [LSP SERVER MANAGER] initialize() called
+2025-12-05T01:01:20.600Z [DEBUG] [LSP SERVER MANAGER] Calling getAllLspServers()
+2025-12-05T01:01:20.679Z [DEBUG] Found 0 plugins (0 enabled, 0 disabled)
+2025-12-05T01:01:20.726Z [DEBUG] Loading skills from directories: managed=/etc/claude-code/.claude/skills, user=/var/tristar/cli-config/claude/skills, project=/home/zombie/ailinux-ai-server-backend/.claude/skills
+2025-12-05T01:01:20.727Z [DEBUG] >>>>> getPluginSkills CALLED <<<<<
+2025-12-05T01:01:20.817Z [DEBUG] installed_plugins.json doesn't exist yet at /var/tristar/cli-config/claude/plugins/installed_plugins.json, returning empty object
+2025-12-05T01:01:20.864Z [DEBUG] Creating shell snapshot for bash (/bin/bash)
+2025-12-05T01:01:20.865Z [DEBUG] Looking for shell config file: /var/tristar/cli-config/claude/.bashrc
+2025-12-05T01:01:20.865Z [DEBUG] Shell config file not found: /var/tristar/cli-config/claude/.bashrc, creating snapshot with Claude Code defaults only
+2025-12-05T01:01:20.865Z [DEBUG] Snapshots directory: /var/tristar/cli-config/claude/shell-snapshots
+2025-12-05T01:01:20.867Z [DEBUG] Creating snapshot at: /var/tristar/cli-config/claude/shell-snapshots/snapshot-bash-1764896480865-hl4njf.sh
+2025-12-05T01:01:20.867Z [DEBUG] Shell binary exists: true
+2025-12-05T01:01:20.867Z [DEBUG] Execution timeout: 10000ms
+2025-12-05T01:01:20.879Z [DEBUG] Writing to temp file: /var/tristar/cli-config/claude/todos/02e6276a-49ef-4b82-a883-b2eb2583d562-agent-02e6276a-49ef-4b82-a883-b2eb2583d562.json.tmp.92728.1764896480879
+2025-12-05T01:01:20.886Z [DEBUG] Temp file written successfully, size: 2 bytes
+2025-12-05T01:01:20.886Z [DEBUG] Renaming /var/tristar/cli-config/claude/todos/02e6276a-49ef-4b82-a883-b2eb2583d562-agent-02e6276a-49ef-4b82-a883-b2eb2583d562.json.tmp.92728.1764896480879 to /var/tristar/cli-config/claude/todos/02e6276a-49ef-4b82-a883-b2eb2583d562-agent-02e6276a-49ef-4b82-a883-b2eb2583d562.json
+2025-12-05T01:01:20.886Z [DEBUG] File /var/tristar/cli-config/claude/todos/02e6276a-49ef-4b82-a883-b2eb2583d562-agent-02e6276a-49ef-4b82-a883-b2eb2583d562.json written atomically
+2025-12-05T01:01:20.939Z [DEBUG] Total LSP servers loaded: 0
+2025-12-05T01:01:20.940Z [DEBUG] getPluginSkills: Processing 0 enabled plugins
+2025-12-05T01:01:20.940Z [DEBUG] Total plugin skills loaded: 0
+2025-12-05T01:01:20.940Z [DEBUG] Total plugin commands loaded: 0
+2025-12-05T01:01:20.940Z [DEBUG] Registered 0 hooks from 0 plugins
+2025-12-05T01:01:20.969Z [DEBUG] [LSP SERVER MANAGER] getAllLspServers returned 0 server(s)
+2025-12-05T01:01:20.969Z [DEBUG] LSP manager initialized with 0 servers
+2025-12-05T01:01:20.969Z [DEBUG] Loaded 0 unique skills (managed: 0, user: 0, project: 0, duplicates removed: 0)
+2025-12-05T01:01:20.970Z [DEBUG] LSP server manager initialized successfully
+2025-12-05T01:01:20.971Z [DEBUG] LSP notification handlers registered successfully for all 0 server(s)
+2025-12-05T01:01:20.973Z [DEBUG] getSkills returning: 0 skill dir commands, 0 plugin skills
+2025-12-05T01:01:21.016Z [DEBUG] Getting matching hook commands for SessionEnd with query: other
+2025-12-05T01:01:21.016Z [DEBUG] Found 0 hook matchers in settings
+2025-12-05T01:01:21.016Z [DEBUG] Matched 0 unique hooks for query "other" (0 before deduplication)

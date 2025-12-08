@@ -1,0 +1,46 @@
+#!/bin/bash
+################################################################################
+# codex-triforce - OpenAI Codex CLI Wrapper für TriForce (Container Version)
+# Optimiert für Docker Sidecar mit MCP
+################################################################################
+set -euo pipefail
+
+TRIFORCE_ROOT="${TRIFORCE_ROOT:-/opt/triforce}"
+BINARY="${CODEX_BINARY:-/usr/local/bin/codex}"
+
+# Fallback: Suche in npm global
+if [[ ! -x "$BINARY" ]]; then
+  for path in /root/.npm-global/bin/codex /usr/bin/codex; do
+    [[ -x "$path" ]] && BINARY="$path" && break
+  done
+fi
+
+export HOME="${TRIFORCE_ROOT}/runtime/codex"
+export XDG_CONFIG_HOME="$HOME"
+export CODEX_HOME="$HOME/.codex"
+
+mkdir -p "$HOME" "$CODEX_HOME" 2>/dev/null || true
+
+TOKEN_FILE="${TRIFORCE_ROOT}/secrets/mcp.token"
+if [[ -f "$TOKEN_FILE" ]]; then
+  export TRIFORCE_MCP_TOKEN=$(<"$TOKEN_FILE")
+fi
+
+ARGS=("$@")
+
+IS_MCP=false
+for a in "${ARGS[@]:-}"; do
+  [[ "$a" == "mcp" ]] && IS_MCP=true && break
+done
+
+if [[ "$IS_MCP" == "false" ]]; then
+  if [[ ! " ${ARGS[*]:-} " =~ " -a " ]] && [[ ! " ${ARGS[*]:-} " =~ " --ask-for-approval " ]]; then
+    ARGS=("-a" "never" "${ARGS[@]}")
+  fi
+fi
+
+if [[ "${TRIFORCE_DEBUG:-false}" == "true" ]]; then
+  ARGS+=("--log-level" "DEBUG" "--print-logs")
+fi
+
+exec "$BINARY" "${ARGS[@]}"

@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__ailinux_code__cli-agents_list",
+      "mcp__ailinux_code__codebase_structure",
+      "mcp__ailinux_code__list_models",
+      "Bash(python3:*)",
+      "Bash(chmod:*)",
+      "Bash(opencode auth status:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -1,0 +1,103 @@
+2025-11-23T13:40:47.441Z [DEBUG] Watching for changes in setting files /home/zombie/scripts/.claude/settings.local.json...
+2025-11-23T13:40:47.506Z [DEBUG] [LSP MANAGER] initializeLspServerManager() called
+2025-11-23T13:40:47.507Z [DEBUG] [LSP MANAGER] Created manager instance, state=pending
+2025-11-23T13:40:47.507Z [DEBUG] [LSP MANAGER] Starting async initialization (generation 1)
+2025-11-23T13:40:47.507Z [DEBUG] [LSP SERVER MANAGER] initialize() called
+2025-11-23T13:40:47.508Z [DEBUG] [LSP SERVER MANAGER] Calling getAllLspServers()
+2025-11-23T13:40:47.523Z [DEBUG] Found 0 plugins (0 enabled, 0 disabled)
+2025-11-23T13:40:47.529Z [DEBUG] Applying permission update: Adding 4 allow rule(s) to destination 'localSettings': ["Bash(chmod:*)","Bash(nvm use:*)","Bash(node --version:*)","Bash(npm --version:*)"]
+2025-11-23T13:40:47.531Z [DEBUG] Total LSP servers loaded: 0
+2025-11-23T13:40:47.548Z [DEBUG] [LSP SERVER MANAGER] getAllLspServers returned 0 server(s)
+2025-11-23T13:40:47.549Z [DEBUG] LSP manager initialized with 0 servers
+2025-11-23T13:40:47.553Z [DEBUG] LSP server manager initialized successfully
+2025-11-23T13:40:47.553Z [DEBUG] LSP notification handlers registered successfully for all 0 server(s)
+2025-11-23T13:40:47.590Z [DEBUG] Loading skills from directories: managed=/etc/claude-code/.claude/skills, user=/home/zombie/.claude/skills, project=/home/zombie/scripts/.claude/skills
+2025-11-23T13:40:47.591Z [DEBUG] >>>>> getPluginSkills CALLED <<<<<
+2025-11-23T13:40:47.730Z [DEBUG] Creating shell snapshot for bash (/bin/bash)
+2025-11-23T13:40:47.731Z [DEBUG] Looking for shell config file: /home/zombie/.bashrc
+2025-11-23T13:40:47.731Z [DEBUG] Snapshots directory: /home/zombie/.claude/shell-snapshots
+2025-11-23T13:40:47.733Z [DEBUG] Creating snapshot at: /home/zombie/.claude/shell-snapshots/snapshot-bash-1763905247731-fpcc1p.sh
+2025-11-23T13:40:47.733Z [DEBUG] Shell binary exists: true
+2025-11-23T13:40:47.733Z [DEBUG] Execution timeout: 10000ms
+2025-11-23T13:40:47.744Z [DEBUG] Writing to temp file: /home/zombie/.claude/todos/75dacf58-5d60-4b06-a776-74094c4ffc09-agent-75dacf58-5d60-4b06-a776-74094c4ffc09.json.tmp.343974.1763905247744
+2025-11-23T13:40:47.750Z [DEBUG] Temp file written successfully, size: 2 bytes
+2025-11-23T13:40:47.750Z [DEBUG] Renaming /home/zombie/.claude/todos/75dacf58-5d60-4b06-a776-74094c4ffc09-agent-75dacf58-5d60-4b06-a776-74094c4ffc09.json.tmp.343974.1763905247744 to /home/zombie/.claude/todos/75dacf58-5d60-4b06-a776-74094c4ffc09-agent-75dacf58-5d60-4b06-a776-74094c4ffc09.json
+2025-11-23T13:40:47.750Z [DEBUG] File /home/zombie/.claude/todos/75dacf58-5d60-4b06-a776-74094c4ffc09-agent-75dacf58-5d60-4b06-a776-74094c4ffc09.json written atomically
+2025-11-23T13:40:47.758Z [DEBUG] getPluginSkills: Processing 0 enabled plugins
+2025-11-23T13:40:47.758Z [DEBUG] Total plugin skills loaded: 0
+2025-11-23T13:40:47.759Z [DEBUG] Total plugin commands loaded: 0
+2025-11-23T13:40:47.759Z [DEBUG] Registered 0 hooks from 0 plugins
+2025-11-23T13:40:47.781Z [DEBUG] Loaded 0 unique skills (managed: 0, user: 0, project: 0, duplicates removed: 0)
+2025-11-23T13:40:47.785Z [DEBUG] getSkills returning: 0 skill dir commands, 0 plugin skills
+2025-11-23T13:40:47.786Z [DEBUG] Total plugin agents loaded: 0
+2025-11-23T13:40:47.838Z [DEBUG] Git remote URL: null
+2025-11-23T13:40:47.838Z [DEBUG] No git remote URL found
+2025-11-23T13:40:47.838Z [DEBUG] Not in a GitHub repository, skipping path mapping update
+2025-11-23T13:40:47.842Z [DEBUG] Ripgrep first use test: PASSED (mode=builtin, path=/home/zombie/.npm-global/lib/node_modules/@anthropic-ai/claude-code/vendor/ripgrep/x64-linux/rg)
+2025-11-23T13:40:47.846Z [DEBUG] Shell snapshot created successfully (3122 bytes)
+2025-11-23T13:40:48.031Z [DEBUG] Writing to temp file: /home/zombie/.claude.json.tmp.343974.1763905248031
+2025-11-23T13:40:48.032Z [DEBUG] Preserving file permissions: 100600
+2025-11-23T13:40:48.036Z [DEBUG] Temp file written successfully, size: 41287 bytes
+2025-11-23T13:40:48.036Z [DEBUG] Applied original permissions to temp file
+2025-11-23T13:40:48.036Z [DEBUG] Renaming /home/zombie/.claude.json.tmp.343974.1763905248031 to /home/zombie/.claude.json
+2025-11-23T13:40:48.037Z [DEBUG] File /home/zombie/.claude.json written atomically
+2025-11-23T13:40:48.041Z [DEBUG] Writing to temp file: /home/zombie/.claude.json.tmp.343974.1763905248041
+2025-11-23T13:40:48.041Z [DEBUG] Preserving file permissions: 100600
+2025-11-23T13:40:48.045Z [DEBUG] Temp file written successfully, size: 41287 bytes
+2025-11-23T13:40:48.046Z [DEBUG] Applied original permissions to temp file
+2025-11-23T13:40:48.046Z [DEBUG] Renaming /home/zombie/.claude.json.tmp.343974.1763905248041 to /home/zombie/.claude.json
+2025-11-23T13:40:48.046Z [DEBUG] File /home/zombie/.claude.json written atomically
+2025-11-23T13:40:49.165Z [DEBUG] Writing to temp file: /home/zombie/.claude.json.tmp.343974.1763905249165
+2025-11-23T13:40:49.165Z [DEBUG] Preserving file permissions: 100600
+2025-11-23T13:40:49.169Z [DEBUG] Temp file written successfully, size: 41287 bytes
+2025-11-23T13:40:49.169Z [DEBUG] Applied original permissions to temp file
+2025-11-23T13:40:49.169Z [DEBUG] Renaming /home/zombie/.claude.json.tmp.343974.1763905249165 to /home/zombie/.claude.json
+2025-11-23T13:40:49.169Z [DEBUG] File /home/zombie/.claude.json written atomically
+2025-11-23T13:40:49.212Z [DEBUG] Getting matching hook commands for SessionStart with query: startup
+2025-11-23T13:40:49.212Z [DEBUG] Found 0 hook matchers in settings
+2025-11-23T13:40:49.212Z [DEBUG] Matched 0 unique hooks for query "startup" (0 before deduplication)
+2025-11-23T13:40:49.379Z [DEBUG] Writing to temp file: /home/zombie/.claude.json.tmp.343974.1763905249379
+2025-11-23T13:40:49.379Z [DEBUG] Preserving file permissions: 100600
+2025-11-23T13:40:49.383Z [DEBUG] Temp file written successfully, size: 41182 bytes
+2025-11-23T13:40:49.384Z [DEBUG] Applied original permissions to temp file
+2025-11-23T13:40:49.384Z [DEBUG] Renaming /home/zombie/.claude.json.tmp.343974.1763905249379 to /home/zombie/.claude.json
+2025-11-23T13:40:49.384Z [DEBUG] File /home/zombie/.claude.json written atomically
+2025-11-23T13:40:49.418Z [DEBUG] performStartupChecks called
+2025-11-23T13:40:49.419Z [DEBUG] Starting background plugin installations
+2025-11-23T13:40:49.420Z [DEBUG] performBackgroundPluginInstallations called
+2025-11-23T13:40:49.457Z [DEBUG] Skills and commands included in Skill tool:
+2025-11-23T13:40:49.457Z [DEBUG] Slash commands included in SlashCommand tool:
+2025-11-23T13:40:49.468Z [DEBUG] Writing to temp file: /home/zombie/.claude.json.tmp.343974.1763905249468
+2025-11-23T13:40:49.469Z [DEBUG] Preserving file permissions: 100600
+2025-11-23T13:40:49.474Z [DEBUG] Temp file written successfully, size: 41287 bytes
+2025-11-23T13:40:49.475Z [DEBUG] Applied original permissions to temp file
+2025-11-23T13:40:49.475Z [DEBUG] Renaming /home/zombie/.claude.json.tmp.343974.1763905249468 to /home/zombie/.claude.json
+2025-11-23T13:40:49.476Z [DEBUG] File /home/zombie/.claude.json written atomically
+2025-11-23T13:40:49.494Z [DEBUG] Setting installation status: 0 marketplaces, 0 installable plugins, 0 uninstallable plugins
+2025-11-23T13:40:49.536Z [DEBUG] Loaded plugins - Enabled: 0, Disabled: 0, Commands: 0, Agents: 0, Errors: 0
+2025-11-23T13:40:49.599Z [DEBUG] Getting matching hook commands for SubagentStart with query: Explore
+2025-11-23T13:40:49.599Z [DEBUG] Found 0 hook matchers in settings
+2025-11-23T13:40:49.600Z [DEBUG] Matched 0 unique hooks for query "Explore" (0 before deduplication)
+2025-11-23T13:40:49.648Z [DEBUG] Getting matching hook commands for SubagentStart with query: Plan
+2025-11-23T13:40:49.648Z [DEBUG] Found 0 hook matchers in settings
+2025-11-23T13:40:49.648Z [DEBUG] Matched 0 unique hooks for query "Plan" (0 before deduplication)
+2025-11-23T13:40:49.709Z [DEBUG] AutoUpdaterWrapper: Installation type: npm-global
+2025-11-23T13:40:49.744Z [DEBUG] Summarizing all 3 messages (~258 tokens)
+2025-11-23T13:40:49.980Z [DEBUG] Writing to temp file: /home/zombie/.claude.json.tmp.343974.1763905249980
+2025-11-23T13:40:49.980Z [DEBUG] Preserving file permissions: 100600
+2025-11-23T13:40:49.984Z [DEBUG] Temp file written successfully, size: 41287 bytes
+2025-11-23T13:40:49.984Z [DEBUG] Applied original permissions to temp file
+2025-11-23T13:40:49.984Z [DEBUG] Renaming /home/zombie/.claude.json.tmp.343974.1763905249980 to /home/zombie/.claude.json
+2025-11-23T13:40:49.984Z [DEBUG] File /home/zombie/.claude.json written atomically
+2025-11-23T13:40:50.944Z [DEBUG] Stream started - received first chunk
+2025-11-23T13:40:51.769Z [DEBUG] Getting matching hook commands for SessionEnd with query: prompt_input_exit
+2025-11-23T13:40:51.769Z [DEBUG] Found 0 hook matchers in settings
+2025-11-23T13:40:51.769Z [DEBUG] Matched 0 unique hooks for query "prompt_input_exit" (0 before deduplication)
+2025-11-23T13:40:51.771Z [DEBUG] Cleaned up session snapshot: /home/zombie/.claude/shell-snapshots/snapshot-bash-1763905247731-fpcc1p.sh
+2025-11-23T13:40:51.772Z [DEBUG] LSP server manager shut down successfully
+2025-11-23T13:40:51.777Z [DEBUG] Writing to temp file: /home/zombie/.claude.json.tmp.343974.1763905251777
+2025-11-23T13:40:51.777Z [DEBUG] Preserving file permissions: 100600
+2025-11-23T13:40:51.780Z [DEBUG] Temp file written successfully, size: 41719 bytes
+2025-11-23T13:40:51.780Z [DEBUG] Applied original permissions to temp file
+2025-11-23T13:40:51.780Z [DEBUG] Renaming /home/zombie/.claude.json.tmp.343974.1763905251777 to /home/zombie/.claude.json
+2025-11-23T13:40:51.780Z [DEBUG] File /home/zombie/.claude.json written atomically

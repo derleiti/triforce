@@ -1,0 +1,162 @@
+2025-12-04T20:45:18.257Z [DEBUG] Watching for changes in setting files /home/zombie/ailinux-ai-server-backend/.claude/settings.local.json...
+2025-12-04T20:45:18.351Z [DEBUG] [LSP MANAGER] initializeLspServerManager() called
+2025-12-04T20:45:18.351Z [DEBUG] [LSP MANAGER] Created manager instance, state=pending
+2025-12-04T20:45:18.351Z [DEBUG] [LSP MANAGER] Starting async initialization (generation 1)
+2025-12-04T20:45:18.352Z [DEBUG] [LSP SERVER MANAGER] initialize() called
+2025-12-04T20:45:18.352Z [DEBUG] [LSP SERVER MANAGER] Calling getAllLspServers()
+2025-12-04T20:45:18.368Z [DEBUG] Applying permission update: Adding 139 allow rule(s) to destination 'localSettings': ["Read(//etc/systemd/system/**)","Bash(sudo cp:*)","Bash(sudo chmod:*)","Bash(cat:*)","Bash(sudo systemctl:*)","Bash(chmod:*)","Bash(test:*)","Bash(mkdir:*)","Bash(systemctl:*)","Read(//usr/bin/**)","Bash(sudo tee:*)","Bash(redis-cli:*)","Read(//home/zombie/ailinux-repo/conf.d/**)","Bash(nginx:*)","Read(//etc/apache2/**)","Bash(ss:*)","Bash(docker ps:*)","Bash(docker exec:*)","Read(//home/zombie/**)","Bash(docker inspect:*)","Bash(docker:*)","Bash(ip:*)","Bash(awk:*)","Bash(curl:*)","Bash(python3:*)","Read(//srv/comfyui/models/**)","Read(//srv/**)","Read(//home/**)","Bash(find:*)","Bash(sudo journalctl:*)","Read(//etc/**)","Bash(sudo nginx:*)","Bash(wp cache flush:*)","Bash(sudo ls:*)","Bash(sudo find:*)","Bash(sudo grep -r \"proxy_pass.*9000\\|proxy_pass.*9100\" /etc/nginx/)","Bash(sudo grep -r \"api.ailinux.me\" /etc/nginx/)","Bash(sudo chown:*)","Bash(sudo grep -r \"proxy_buffer\" /home/zombie/ailinux-repo/conf.d/)","Bash(timeout:*)","Read(//var/**)","Bash(sudo rsync:*)","Bash(wp plugin list:*)","Read(//tmp/**)","Bash(mysql:*)","Bash(sudo mysql ailinux_wp -e \"SELECT post_title, post_content FROM wp_posts WHERE post_name=''nova-ai-konsolenspielplatz'' OR post_title LIKE ''%Konsolenspielplatz%'' LIMIT 1;\")","Bash(source:*)","Bash(playwright --version)","Read(//root/.cache/**)","Bash(sudo mysql:*)","Bash(sudo grep:*)","Bash(dig:*)","Bash(sudo certbot certificates:*)","Bash(apache2:*)","Bash(npm run build:*)","Bash(ls:*)","Bash(node -c:*)","Bash(md5sum:*)","Bash(/usr/local/bin/wp cache flush:*)","Bash(docker-compose logs:*)","Bash(sudo rm:*)","Bash(claude mcp list:*)","Bash(claude mcp add:*)","Bash(claude mcp remove:*)","Bash(MCP_DEBUG=1 claude mcp:*)","Bash(claude --mcp-debug mcp list:*)","Bash(claude:*)","mcp__ailinux_code__list_models","mcp__ailinux_code__list_specialists","mcp__ailinux_code__chat","Bash(wc:*)","Bash(grep:*)","mcp__ailinux_code__ask_specialist","Bash(docker-compose restart:*)","Bash(sudo sed:*)","Bash(sudo ln:*)","Bash(tristar --help:*)","Bash(/home/zombie/ailinux-ai-server-backend/.venv/bin/pip install:*)","Bash(tristar status:*)","Bash(tristar list:*)","Bash(tristar project list:*)","Bash(tristar chain:*)","Bash(tristar logs:*)","Bash(sudo mkdir:*)","Bash(.venv/bin/python:*)","Bash(for svc in claude-mcp cogito-mcp deepseek-mcp gemini-lead kimi-mcp mistral-mcp nova-mcp qwen-mcp)","Bash(do)","Bash(echo:*)","Bash(done)","Bash(sudo /root/.npm-global/bin/claude:*)","Bash(sudo /root/.npm-global/bin/codex:*)","Bash(sudo /root/.npm-global/bin/gemini:*)","Bash(/usr/local/bin/claude mcp:*)","Bash(/usr/local/bin/codex mcp:*)","Bash(/usr/local/bin/gemini mcp:*)","Bash(sudo -u zombie /usr/local/bin/claude:*)","Bash(1 echo \"\" echo \"MCP Connections - Codex:\" /usr/local/bin/codex mcp list 2)","Bash(1 echo \"\" echo \"MCP Connections - Gemini:\" /usr/local/bin/gemini mcp list)","Bash(jq:*)","mcp__ailinux_code__codebase_structure","mcp__ailinux_code__codebase_file","mcp__ailinux_code__tristar_memory_store","mcp__ailinux_code__tristar_models","mcp__ailinux_code__prompt_template","mcp__ailinux_code__cli-agents_list","mcp__ailinux_code__cli-agents_stats","mcp__ailinux_code__cli-agents_start","mcp__ailinux_code__cli-agents_call","mcp__ailinux_code__cli-agents_output","mcp__ailinux_code__codebase_search","mcp__ailinux_code__tristar_memory_search","Bash(sudo which:*)","Bash(gemini --help:*)","Bash(codex --help:*)","Bash(sudo cat:*)","Bash(gemini mcp list:*)","Bash(codex mcp list:*)","Bash(gemini mcp:*)","Bash(codex mcp:*)","mcp__ailinux_code__codebase_routes","mcp__ailinux_code__codebase_services","mcp__ailinux_code__web_search","WebSearch","Bash(node --version:*)","Bash(npm --version:*)","Bash(sudo npm install:*)","Bash(npx ollama-mcp --help)","Bash(npx:*)","WebFetch(domain:github.com)","Bash(.venv/bin/python3:*)","Bash(sudo pkill:*)","Bash(sudo kill:*)","Bash(pip install:*)","Bash(python bin/tristar:*)","Bash(sudo fuser:*)","Bash(python:*)","mcp__ailinux_code__tristar_prompts_get","mcp__ailinux_code__tristar_prompts_list","Bash(sudo -u zombie bash -c 'echo \"\"\"\"Was ist 2+2? Antworte nur mit der Zahl.\"\"\"\" | /usr/local/bin/claude -p --output-format text 2>&1')"]
+2025-12-04T20:45:18.386Z [DEBUG] Found 0 plugins (0 enabled, 0 disabled)
+2025-12-04T20:45:18.390Z [DEBUG] Total LSP servers loaded: 0
+2025-12-04T20:45:18.404Z [DEBUG] [LSP SERVER MANAGER] getAllLspServers returned 0 server(s)
+2025-12-04T20:45:18.404Z [DEBUG] LSP manager initialized with 0 servers
+2025-12-04T20:45:18.407Z [DEBUG] LSP server manager initialized successfully
+2025-12-04T20:45:18.408Z [DEBUG] LSP notification handlers registered successfully for all 0 server(s)
+2025-12-04T20:45:18.483Z [DEBUG] Loading skills from directories: managed=/etc/claude-code/.claude/skills, user=/home/zombie/.claude/skills, project=/home/zombie/ailinux-ai-server-backend/.claude/skills
+2025-12-04T20:45:18.484Z [DEBUG] >>>>> getPluginSkills CALLED <<<<<
+2025-12-04T20:45:18.485Z [DEBUG] Passes: No cache, fetching eligibility
+2025-12-04T20:45:18.602Z [DEBUG] installed_plugins.json doesn't exist yet at /home/zombie/.claude/plugins/installed_plugins.json, returning empty object
+2025-12-04T20:45:18.726Z [DEBUG] Creating shell snapshot for bash (/bin/bash)
+2025-12-04T20:45:18.727Z [DEBUG] Looking for shell config file: /home/zombie/.bashrc
+2025-12-04T20:45:18.727Z [DEBUG] Snapshots directory: /home/zombie/.claude/shell-snapshots
+2025-12-04T20:45:18.729Z [DEBUG] Creating snapshot at: /home/zombie/.claude/shell-snapshots/snapshot-bash-1764881118727-qeffxv.sh
+2025-12-04T20:45:18.729Z [DEBUG] Shell binary exists: true
+2025-12-04T20:45:18.729Z [DEBUG] Execution timeout: 10000ms
+2025-12-04T20:45:18.744Z [DEBUG] Writing to temp file: /home/zombie/.claude/todos/db84c9f1-1655-43e6-a4da-71c0f0d20804-agent-db84c9f1-1655-43e6-a4da-71c0f0d20804.json.tmp.989332.1764881118744
+2025-12-04T20:45:18.753Z [DEBUG] Temp file written successfully, size: 2 bytes
+2025-12-04T20:45:18.753Z [DEBUG] Renaming /home/zombie/.claude/todos/db84c9f1-1655-43e6-a4da-71c0f0d20804-agent-db84c9f1-1655-43e6-a4da-71c0f0d20804.json.tmp.989332.1764881118744 to /home/zombie/.claude/todos/db84c9f1-1655-43e6-a4da-71c0f0d20804-agent-db84c9f1-1655-43e6-a4da-71c0f0d20804.json
+2025-12-04T20:45:18.753Z [DEBUG] File /home/zombie/.claude/todos/db84c9f1-1655-43e6-a4da-71c0f0d20804-agent-db84c9f1-1655-43e6-a4da-71c0f0d20804.json written atomically
+2025-12-04T20:45:18.765Z [DEBUG] getPluginSkills: Processing 0 enabled plugins
+2025-12-04T20:45:18.765Z [DEBUG] Total plugin skills loaded: 0
+2025-12-04T20:45:18.765Z [DEBUG] Total plugin commands loaded: 0
+2025-12-04T20:45:18.765Z [DEBUG] Registered 0 hooks from 0 plugins
+2025-12-04T20:45:18.794Z [DEBUG] Loaded 0 unique skills (managed: 0, user: 0, project: 0, duplicates removed: 0)
+2025-12-04T20:45:18.809Z [DEBUG] getSkills returning: 0 skill dir commands, 0 plugin skills
+2025-12-04T20:45:18.810Z [DEBUG] Total plugin agents loaded: 0
+2025-12-04T20:45:18.815Z [DEBUG] Git remote URL: null
+2025-12-04T20:45:18.816Z [DEBUG] No git remote URL found
+2025-12-04T20:45:18.816Z [DEBUG] Not in a GitHub repository, skipping path mapping update
+2025-12-04T20:45:18.848Z [DEBUG] Ripgrep first use test: PASSED (mode=builtin, path=/root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/vendor/ripgrep/x64-linux/rg)
+2025-12-04T20:45:18.907Z [DEBUG] Shell snapshot created successfully (3075 bytes)
+2025-12-04T20:45:18.994Z [DEBUG] Writing to temp file: /home/zombie/.claude.json.tmp.989332.1764881118994
+2025-12-04T20:45:18.994Z [DEBUG] Preserving file permissions: 100600
+2025-12-04T20:45:18.999Z [DEBUG] Temp file written successfully, size: 42575 bytes
+2025-12-04T20:45:18.999Z [DEBUG] Applied original permissions to temp file
+2025-12-04T20:45:18.999Z [DEBUG] Renaming /home/zombie/.claude.json.tmp.989332.1764881118994 to /home/zombie/.claude.json
+2025-12-04T20:45:19.000Z [DEBUG] File /home/zombie/.claude.json written atomically
+2025-12-04T20:45:19.005Z [DEBUG] Writing to temp file: /home/zombie/.claude.json.tmp.989332.1764881119005
+2025-12-04T20:45:19.005Z [DEBUG] Preserving file permissions: 100600
+2025-12-04T20:45:19.010Z [DEBUG] Temp file written successfully, size: 42575 bytes
+2025-12-04T20:45:19.010Z [DEBUG] Applied original permissions to temp file
+2025-12-04T20:45:19.010Z [DEBUG] Renaming /home/zombie/.claude.json.tmp.989332.1764881119005 to /home/zombie/.claude.json
+2025-12-04T20:45:19.010Z [DEBUG] File /home/zombie/.claude.json written atomically
+2025-12-04T20:45:19.015Z [DEBUG] Writing to temp file: /home/zombie/.claude.json.tmp.989332.1764881119015
+2025-12-04T20:45:19.015Z [DEBUG] Preserving file permissions: 100600
+2025-12-04T20:45:19.018Z [DEBUG] Temp file written successfully, size: 42575 bytes
+2025-12-04T20:45:19.019Z [DEBUG] Applied original permissions to temp file
+2025-12-04T20:45:19.019Z [DEBUG] Renaming /home/zombie/.claude.json.tmp.989332.1764881119015 to /home/zombie/.claude.json
+2025-12-04T20:45:19.019Z [DEBUG] File /home/zombie/.claude.json written atomically
+2025-12-04T20:45:19.149Z [DEBUG] Writing to temp file: /home/zombie/.claude.json.tmp.989332.1764881119149
+2025-12-04T20:45:19.150Z [DEBUG] Preserving file permissions: 100600
+2025-12-04T20:45:19.154Z [DEBUG] Temp file written successfully, size: 42757 bytes
+2025-12-04T20:45:19.154Z [DEBUG] Applied original permissions to temp file
+2025-12-04T20:45:19.154Z [DEBUG] Renaming /home/zombie/.claude.json.tmp.989332.1764881119149 to /home/zombie/.claude.json
+2025-12-04T20:45:19.154Z [DEBUG] File /home/zombie/.claude.json written atomically
+2025-12-04T20:45:19.155Z [DEBUG] Passes eligibility cached for org 21ac7068-15d1-4ecc-8044-7a081f62538b: false
+2025-12-04T20:45:19.160Z [DEBUG] Passes: Using fresh cached eligibility data
+2025-12-04T20:45:19.170Z [DEBUG] MCP server "ailinux": Initializing HTTP transport to https://api.ailinux.me/mcp/
+2025-12-04T20:45:19.171Z [DEBUG] MCP server "ailinux": Node version: v22.21.0, Platform: linux
+2025-12-04T20:45:19.173Z [DEBUG] MCP server "ailinux": Environment: {"NODE_OPTIONS":"--max-old-space-size=4096","UV_THREADPOOL_SIZE":"default","HTTP_PROXY":"not set","HTTPS_PROXY":"not set","NO_PROXY":"not set"}
+2025-12-04T20:45:19.210Z [DEBUG] MCP server "ailinux": Proxy options: default
+2025-12-04T20:45:19.211Z [DEBUG] MCP server "ailinux": HTTP transport options: {"url":"https://api.ailinux.me/mcp/","headers":{"User-Agent":"claude-code/2.0.58"},"hasAuthProvider":true,"timeoutMs":60000}
+2025-12-04T20:45:19.212Z [DEBUG] MCP server "ailinux": HTTP transport created successfully
+2025-12-04T20:45:19.264Z [DEBUG] MCP server "ailinux": Client created, setting up request handler
+2025-12-04T20:45:19.265Z [DEBUG] MCP server "ailinux": Starting connection with timeout of 30000ms
+2025-12-04T20:45:19.265Z [DEBUG] MCP server "ailinux": Testing basic HTTP connectivity to https://api.ailinux.me/mcp/
+2025-12-04T20:45:19.266Z [DEBUG] MCP server "ailinux": Parsed URL: host=api.ailinux.me, port=default, protocol=https:
+2025-12-04T20:45:19.271Z [DEBUG] MCP server "ailinux": No token data found
+2025-12-04T20:45:19.328Z [DEBUG] Getting matching hook commands for SubagentStart with query: Explore
+2025-12-04T20:45:19.328Z [DEBUG] Found 0 hook matchers in settings
+2025-12-04T20:45:19.328Z [DEBUG] Matched 0 unique hooks for query "Explore" (0 before deduplication)
+2025-12-04T20:45:19.386Z [DEBUG] Getting matching hook commands for SubagentStart with query: Plan
+2025-12-04T20:45:19.386Z [DEBUG] Found 0 hook matchers in settings
+2025-12-04T20:45:19.386Z [DEBUG] Matched 0 unique hooks for query "Plan" (0 before deduplication)
+2025-12-04T20:45:19.495Z [DEBUG] MCP server "ailinux": No token data found
+2025-12-04T20:45:19.583Z [DEBUG] MCP server "ailinux": Successfully connected to http server in 413ms
+2025-12-04T20:45:19.584Z [DEBUG] MCP server "ailinux": Connection established with capabilities: {"hasTools":true,"hasPrompts":false,"hasResources":false,"serverVersion":{"name":"AILinux API","version":"2.80","description":"AILinux AI Backend v2.80 - TriStar/TriForce Multi-LLM Orchestration with CLI Agents, Codebase Access, and Self-Development capabilities","vendor":"AILinux"}}
+2025-12-04T20:45:19.587Z [DEBUG] MCP server "ailinux": No token data found
+2025-12-04T20:45:19.670Z [DEBUG] Writing to temp file: /home/zombie/.claude.json.tmp.989332.1764881119670
+2025-12-04T20:45:19.670Z [DEBUG] Preserving file permissions: 100600
+2025-12-04T20:45:19.676Z [DEBUG] Temp file written successfully, size: 42757 bytes
+2025-12-04T20:45:19.676Z [DEBUG] Applied original permissions to temp file
+2025-12-04T20:45:19.676Z [DEBUG] Renaming /home/zombie/.claude.json.tmp.989332.1764881119670 to /home/zombie/.claude.json
+2025-12-04T20:45:19.677Z [DEBUG] File /home/zombie/.claude.json written atomically
+2025-12-04T20:45:19.910Z [ERROR] Error streaming, falling back to non-streaming mode: 429 {"type":"error","error":{"type":"rate_limit_error","message":"This request would exceed your account's rate limit. Please try again later."},"request_id":"req_011CVnJNQhveowJkErKTnMyi"}
+2025-12-04T20:45:19.923Z [ERROR] Error streaming, falling back to non-streaming mode: 429 {"type":"error","error":{"type":"rate_limit_error","message":"This request would exceed your account's rate limit. Please try again later."},"request_id":"req_011CVnJNQsM7t1imWaZ8wrX5"}
+2025-12-04T20:45:20.525Z [DEBUG] Getting matching hook commands for SessionStart with query: startup
+2025-12-04T20:45:20.525Z [DEBUG] Found 0 hook matchers in settings
+2025-12-04T20:45:20.525Z [DEBUG] Matched 0 unique hooks for query "startup" (0 before deduplication)
+2025-12-04T20:45:20.560Z [DEBUG] Total plugin output styles loaded: 0
+2025-12-04T20:45:20.615Z [ERROR] Error in non-streaming fallback: 429 {"type":"error","error":{"type":"rate_limit_error","message":"This request would exceed your account's rate limit. Please try again later."},"request_id":"req_011CVnJNU5LFjzrqWdwGYn7E"}
+2025-12-04T20:45:20.617Z [ERROR] Error: Error: 429 {"type":"error","error":{"type":"rate_limit_error","message":"This request would exceed your account's rate limit. Please try again later."},"request_id":"req_011CVnJNU5LFjzrqWdwGYn7E"}
+    at o2.generate (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:459:9589)
+    at RT.makeStatusError (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:1319:2195)
+    at RT.makeRequest (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:1319:5419)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async a61.model (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:3966:10439)
+    at async a61 (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:2149:1872)
+    at async yH9 (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:3966:10593)
+    at async file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:3966:3869
+    at async jt1 (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:1471:2037)
+    at async CYA (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:3966:3839)
+2025-12-04T20:45:20.659Z [DEBUG] Getting matching hook commands for SubagentStop with query: undefined
+2025-12-04T20:45:20.659Z [DEBUG] Found 0 hook matchers in settings
+2025-12-04T20:45:20.659Z [DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+2025-12-04T20:45:20.669Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2025-12-04T20:45:20.669Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2025-12-04T20:45:20.670Z [DEBUG] Hooks: Found 0 total hooks in registry
+2025-12-04T20:45:20.670Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2025-12-04T20:45:20.674Z [DEBUG] Writing to temp file: /home/zombie/.claude.json.tmp.989332.1764881120674
+2025-12-04T20:45:20.674Z [DEBUG] Preserving file permissions: 100600
+2025-12-04T20:45:20.677Z [DEBUG] Temp file written successfully, size: 42757 bytes
+2025-12-04T20:45:20.677Z [DEBUG] Applied original permissions to temp file
+2025-12-04T20:45:20.677Z [DEBUG] Renaming /home/zombie/.claude.json.tmp.989332.1764881120674 to /home/zombie/.claude.json
+2025-12-04T20:45:20.678Z [DEBUG] File /home/zombie/.claude.json written atomically
+2025-12-04T20:45:20.682Z [DEBUG] Getting matching hook commands for UserPromptSubmit with query: undefined
+2025-12-04T20:45:20.682Z [DEBUG] Found 0 hook matchers in settings
+2025-12-04T20:45:20.682Z [DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+2025-12-04T20:45:20.705Z [DEBUG] Slash commands included in SlashCommand tool:
+2025-12-04T20:45:20.706Z [DEBUG] Skills and commands included in Skill tool:
+2025-12-04T20:45:20.742Z [ERROR] Error in non-streaming fallback: 429 {"type":"error","error":{"type":"rate_limit_error","message":"This request would exceed your account's rate limit. Please try again later."},"request_id":"req_011CVnJNU4qH2oUiM4RHVvqh"}
+2025-12-04T20:45:20.742Z [ERROR] Error: Error: 429 {"type":"error","error":{"type":"rate_limit_error","message":"This request would exceed your account's rate limit. Please try again later."},"request_id":"req_011CVnJNU4qH2oUiM4RHVvqh"}
+    at o2.generate (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:459:9589)
+    at RT.makeStatusError (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:1319:2195)
+    at RT.makeRequest (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:1319:5419)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async a61.model (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:3966:10439)
+    at async a61 (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:2149:1872)
+    at async yH9 (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:3966:10593)
+    at async file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:3966:3869
+    at async jt1 (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:1471:2037)
+    at async CYA (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:3966:3839)
+2025-12-04T20:45:20.763Z [DEBUG] Getting matching hook commands for SubagentStop with query: undefined
+2025-12-04T20:45:20.763Z [DEBUG] Found 0 hook matchers in settings
+2025-12-04T20:45:20.763Z [DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+2025-12-04T20:45:21.044Z [ERROR] Error streaming, falling back to non-streaming mode: 429 {"type":"error","error":{"type":"rate_limit_error","message":"This request would exceed your account's rate limit. Please try again later."},"request_id":"req_011CVnJNVwSvj84vBhFiTLMb"}
+2025-12-04T20:45:21.658Z [ERROR] Error in non-streaming fallback: 429 {"type":"error","error":{"type":"rate_limit_error","message":"This request would exceed your account's rate limit. Please try again later."},"request_id":"req_011CVnJNXM2vbHb3W343sSbN"}
+2025-12-04T20:45:21.659Z [ERROR] Error: Error: 429 {"type":"error","error":{"type":"rate_limit_error","message":"This request would exceed your account's rate limit. Please try again later."},"request_id":"req_011CVnJNXM2vbHb3W343sSbN"}
+    at o2.generate (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:459:9589)
+    at RT.makeStatusError (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:1319:2195)
+    at RT.makeRequest (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:1319:5419)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async a61.model (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:3966:10439)
+    at async a61 (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:2149:1872)
+    at async yH9 (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:3966:10593)
+    at async file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:3966:3869
+    at async jt1 (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:1471:2037)
+    at async CYA (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:3966:3839)
+2025-12-04T20:45:21.684Z [DEBUG] Getting matching hook commands for Stop with query: undefined
+2025-12-04T20:45:21.685Z [DEBUG] Found 0 hook matchers in settings
+2025-12-04T20:45:21.685Z [DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+2025-12-04T20:45:21.687Z [DEBUG] Getting matching hook commands for SessionEnd with query: other
+2025-12-04T20:45:21.687Z [DEBUG] Found 0 hook matchers in settings
+2025-12-04T20:45:21.687Z [DEBUG] Matched 0 unique hooks for query "other" (0 before deduplication)

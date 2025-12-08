@@ -1,0 +1,249 @@
+2025-12-05T01:42:50.915Z [DEBUG] [LSP MANAGER] initializeLspServerManager() called
+2025-12-05T01:42:50.915Z [DEBUG] [LSP MANAGER] Created manager instance, state=pending
+2025-12-05T01:42:50.915Z [DEBUG] [LSP MANAGER] Starting async initialization (generation 1)
+2025-12-05T01:42:50.916Z [DEBUG] [LSP SERVER MANAGER] initialize() called
+2025-12-05T01:42:50.916Z [DEBUG] [LSP SERVER MANAGER] Calling getAllLspServers()
+2025-12-05T01:42:50.941Z [DEBUG] Found 0 plugins (0 enabled, 0 disabled)
+2025-12-05T01:42:50.945Z [DEBUG] Total LSP servers loaded: 0
+2025-12-05T01:42:50.945Z [DEBUG] [LSP SERVER MANAGER] getAllLspServers returned 0 server(s)
+2025-12-05T01:42:50.945Z [DEBUG] LSP manager initialized with 0 servers
+2025-12-05T01:42:50.945Z [DEBUG] LSP server manager initialized successfully
+2025-12-05T01:42:50.946Z [DEBUG] LSP notification handlers registered successfully for all 0 server(s)
+2025-12-05T01:42:51.014Z [DEBUG] Loading skills from directories: managed=/etc/claude-code/.claude/skills, user=/var/tristar/cli-config/claude/.claude/skills, project=/home/zombie/.claude/skills
+2025-12-05T01:42:51.015Z [DEBUG] >>>>> getPluginSkills CALLED <<<<<
+2025-12-05T01:42:51.016Z [DEBUG] Passes: No cache, fetching eligibility
+2025-12-05T01:42:51.107Z [DEBUG] installed_plugins.json doesn't exist yet at /var/tristar/cli-config/claude/.claude/plugins/installed_plugins.json, returning empty object
+2025-12-05T01:42:51.167Z [DEBUG] Creating shell snapshot for bash (/bin/bash)
+2025-12-05T01:42:51.168Z [DEBUG] Looking for shell config file: /var/tristar/cli-config/claude/.bashrc
+2025-12-05T01:42:51.168Z [DEBUG] Shell config file not found: /var/tristar/cli-config/claude/.bashrc, creating snapshot with Claude Code defaults only
+2025-12-05T01:42:51.168Z [DEBUG] Snapshots directory: /var/tristar/cli-config/claude/.claude/shell-snapshots
+2025-12-05T01:42:51.170Z [DEBUG] Creating snapshot at: /var/tristar/cli-config/claude/.claude/shell-snapshots/snapshot-bash-1764898971168-21k5ep.sh
+2025-12-05T01:42:51.170Z [DEBUG] Shell binary exists: true
+2025-12-05T01:42:51.170Z [DEBUG] Execution timeout: 10000ms
+2025-12-05T01:42:51.183Z [DEBUG] Writing to temp file: /var/tristar/cli-config/claude/.claude/todos/0e20d4d0-1cfe-45e6-ae0d-8a3f68bf2d9e-agent-0e20d4d0-1cfe-45e6-ae0d-8a3f68bf2d9e.json.tmp.125919.1764898971183
+2025-12-05T01:42:51.188Z [DEBUG] Temp file written successfully, size: 2 bytes
+2025-12-05T01:42:51.188Z [DEBUG] Renaming /var/tristar/cli-config/claude/.claude/todos/0e20d4d0-1cfe-45e6-ae0d-8a3f68bf2d9e-agent-0e20d4d0-1cfe-45e6-ae0d-8a3f68bf2d9e.json.tmp.125919.1764898971183 to /var/tristar/cli-config/claude/.claude/todos/0e20d4d0-1cfe-45e6-ae0d-8a3f68bf2d9e-agent-0e20d4d0-1cfe-45e6-ae0d-8a3f68bf2d9e.json
+2025-12-05T01:42:51.188Z [DEBUG] File /var/tristar/cli-config/claude/.claude/todos/0e20d4d0-1cfe-45e6-ae0d-8a3f68bf2d9e-agent-0e20d4d0-1cfe-45e6-ae0d-8a3f68bf2d9e.json written atomically
+2025-12-05T01:42:51.197Z [DEBUG] getPluginSkills: Processing 0 enabled plugins
+2025-12-05T01:42:51.197Z [DEBUG] Total plugin skills loaded: 0
+2025-12-05T01:42:51.197Z [DEBUG] Total plugin commands loaded: 0
+2025-12-05T01:42:51.197Z [DEBUG] Registered 0 hooks from 0 plugins
+2025-12-05T01:42:51.237Z [DEBUG] Loaded 0 unique skills (managed: 0, user: 0, project: 0, duplicates removed: 0)
+2025-12-05T01:42:51.249Z [DEBUG] getSkills returning: 0 skill dir commands, 0 plugin skills
+2025-12-05T01:42:51.251Z [DEBUG] Total plugin agents loaded: 0
+2025-12-05T01:42:51.282Z [DEBUG] Git remote URL: null
+2025-12-05T01:42:51.282Z [DEBUG] No git remote URL found
+2025-12-05T01:42:51.282Z [DEBUG] Not in a GitHub repository, skipping path mapping update
+2025-12-05T01:42:51.284Z [DEBUG] Ripgrep first use test: PASSED (mode=builtin, path=/root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/vendor/ripgrep/x64-linux/rg)
+2025-12-05T01:42:51.290Z [DEBUG] Shell snapshot created successfully (479 bytes)
+2025-12-05T01:42:51.441Z [DEBUG] Writing to temp file: /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764898971441
+2025-12-05T01:42:51.441Z [DEBUG] Preserving file permissions: 100700
+2025-12-05T01:42:51.448Z [DEBUG] Temp file written successfully, size: 43045 bytes
+2025-12-05T01:42:51.448Z [DEBUG] Applied original permissions to temp file
+2025-12-05T01:42:51.448Z [DEBUG] Renaming /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764898971441 to /var/tristar/cli-config/claude/.claude.json
+2025-12-05T01:42:51.448Z [DEBUG] File /var/tristar/cli-config/claude/.claude.json written atomically
+2025-12-05T01:42:51.461Z [DEBUG] Writing to temp file: /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764898971461
+2025-12-05T01:42:51.461Z [DEBUG] Preserving file permissions: 100700
+2025-12-05T01:42:51.466Z [DEBUG] Temp file written successfully, size: 43045 bytes
+2025-12-05T01:42:51.467Z [DEBUG] Applied original permissions to temp file
+2025-12-05T01:42:51.467Z [DEBUG] Renaming /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764898971461 to /var/tristar/cli-config/claude/.claude.json
+2025-12-05T01:42:51.467Z [DEBUG] File /var/tristar/cli-config/claude/.claude.json written atomically
+2025-12-05T01:42:51.470Z [DEBUG] Writing to temp file: /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764898971470
+2025-12-05T01:42:51.470Z [DEBUG] Preserving file permissions: 100700
+2025-12-05T01:42:51.478Z [DEBUG] Temp file written successfully, size: 43045 bytes
+2025-12-05T01:42:51.478Z [DEBUG] Applied original permissions to temp file
+2025-12-05T01:42:51.478Z [DEBUG] Renaming /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764898971470 to /var/tristar/cli-config/claude/.claude.json
+2025-12-05T01:42:51.478Z [DEBUG] File /var/tristar/cli-config/claude/.claude.json written atomically
+2025-12-05T01:42:51.482Z [DEBUG] Writing to temp file: /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764898971482
+2025-12-05T01:42:51.482Z [DEBUG] Preserving file permissions: 100700
+2025-12-05T01:42:51.485Z [DEBUG] Temp file written successfully, size: 43045 bytes
+2025-12-05T01:42:51.485Z [DEBUG] Applied original permissions to temp file
+2025-12-05T01:42:51.485Z [DEBUG] Renaming /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764898971482 to /var/tristar/cli-config/claude/.claude.json
+2025-12-05T01:42:51.486Z [DEBUG] File /var/tristar/cli-config/claude/.claude.json written atomically
+2025-12-05T01:42:51.542Z [DEBUG] Writing to temp file: /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764898971542
+2025-12-05T01:42:51.542Z [DEBUG] Preserving file permissions: 100700
+2025-12-05T01:42:51.549Z [DEBUG] Temp file written successfully, size: 43227 bytes
+2025-12-05T01:42:51.549Z [DEBUG] Applied original permissions to temp file
+2025-12-05T01:42:51.549Z [DEBUG] Renaming /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764898971542 to /var/tristar/cli-config/claude/.claude.json
+2025-12-05T01:42:51.549Z [DEBUG] File /var/tristar/cli-config/claude/.claude.json written atomically
+2025-12-05T01:42:51.549Z [DEBUG] Passes eligibility cached for org 21ac7068-15d1-4ecc-8044-7a081f62538b: false
+2025-12-05T01:42:52.426Z [DEBUG] rg error (signal=undefined, code=ERR_CHILD_PROCESS_STDIO_MAXBUFFER, stderr: rg: /home/zombie/mailserver/data/state/lib-amavis: Permission denied (os error 13)
+rg: /home/zombie/mailserver/data/state/spool-postfix/saved: Permission denied (os error 13)
+rg: /home/zombie/mailserver/data/state/spool-postfix/incoming: Permission denied (os error 13)
+rg: /home/zombie/mailserver/data/state/spool-postfix/corrupt: Permission denied (os error 13)
+rg: /home/zombie/mailserver/data/state/spool-postfix/flush: Permission denied (os error 13)
+rg: /home/zombie/mailserver/data/state/spool-postfix/trace: Permission denied (os error 13)
+rg: /home/zombie/mailserver/data/state/spool-postfix/bounce: Permission denied (os error 13)
+rg: /home/zombie/mailserver/data/state/spool-postfix/active: Permission denied (os error 13)
+rg: /home/zombie/mailserver/data/state/spool-postfix/private: Permission denied (os error 13)
+rg: /home/zombie/mailserver/data/state/spool-postfix/public: Permission denied (os error 13)
+rg: /home/zombie/mailserver/data/state/spool-postfix/hold: Permission denied (os error 13)
+rg: /home/zombie/mailserver/data/state/spool-postfix/defer: Permission denied (os error 13)
+rg: /home/zombie/mailserver/data/state/spool-postfix/deferred: Permission denied (os error 13)
+rg: /home/zombie/mailserver/data/state/spool-postfix/maildrop: Permission denied (os error 13)
+rg: /home/zombie/wordpress/html/wp-content/themes/ailinux-nova-dark/includes: Permission denied (os error 13)
+rg: /home/zombie/mailserver/data/state/lib-spamassassin/.spamassassin: Permission denied (os error 13)
+rg: /home/zombie/mailserver/data/state/lib-spamassassin/sa-update-keys: Permission denied (os error 13)
+rg: /home/zombie/wordpress/html/wp-content/themes/ailinux-nova-dark/.claude: Permission denied (os error 13)
+), 162420 results
+2025-12-05T01:42:52.427Z [ERROR] RangeError: RangeError [ERR_CHILD_PROCESS_STDIO_MAXBUFFER]: stdout maxBuffer length exceeded
+    at Socket.onChildStdout (node:child_process:484:14)
+    at Socket.emit (node:events:519:28)
+    at Socket.emit (node:domain:489:12)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5)
+    at Pipe.onStreamRead (node:internal/stream_base_commons:189:23)
+2025-12-05T01:42:55.121Z [DEBUG] Writing to temp file: /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764898975121
+2025-12-05T01:42:55.121Z [DEBUG] Preserving file permissions: 100700
+2025-12-05T01:42:55.132Z [DEBUG] Temp file written successfully, size: 43227 bytes
+2025-12-05T01:42:55.132Z [DEBUG] Applied original permissions to temp file
+2025-12-05T01:42:55.132Z [DEBUG] Renaming /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764898975121 to /var/tristar/cli-config/claude/.claude.json
+2025-12-05T01:42:55.132Z [DEBUG] File /var/tristar/cli-config/claude/.claude.json written atomically
+2025-12-05T01:42:55.137Z [DEBUG] Writing to temp file: /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764898975137
+2025-12-05T01:42:55.137Z [DEBUG] Preserving file permissions: 100700
+2025-12-05T01:42:55.140Z [DEBUG] Temp file written successfully, size: 43227 bytes
+2025-12-05T01:42:55.140Z [DEBUG] Applied original permissions to temp file
+2025-12-05T01:42:55.140Z [DEBUG] Renaming /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764898975137 to /var/tristar/cli-config/claude/.claude.json
+2025-12-05T01:42:55.140Z [DEBUG] File /var/tristar/cli-config/claude/.claude.json written atomically
+2025-12-05T01:43:35.592Z [DEBUG] Writing to temp file: /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764899015592
+2025-12-05T01:43:35.593Z [DEBUG] Preserving file permissions: 100700
+2025-12-05T01:43:35.597Z [DEBUG] Temp file written successfully, size: 43227 bytes
+2025-12-05T01:43:35.597Z [DEBUG] Applied original permissions to temp file
+2025-12-05T01:43:35.597Z [DEBUG] Renaming /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764899015592 to /var/tristar/cli-config/claude/.claude.json
+2025-12-05T01:43:35.597Z [DEBUG] File /var/tristar/cli-config/claude/.claude.json written atomically
+2025-12-05T01:43:36.939Z [DEBUG] Telemetry flushed successfully
+2025-12-05T01:43:36.943Z [DEBUG] Writing to temp file: /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764899016943
+2025-12-05T01:43:36.943Z [DEBUG] Preserving file permissions: 100700
+2025-12-05T01:43:36.947Z [DEBUG] Temp file written successfully, size: 43227 bytes
+2025-12-05T01:43:36.947Z [DEBUG] Applied original permissions to temp file
+2025-12-05T01:43:36.947Z [DEBUG] Renaming /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764899016943 to /var/tristar/cli-config/claude/.claude.json
+2025-12-05T01:43:36.947Z [DEBUG] File /var/tristar/cli-config/claude/.claude.json written atomically
+2025-12-05T01:43:36.953Z [DEBUG] Writing to temp file: /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764899016953
+2025-12-05T01:43:36.954Z [DEBUG] Preserving file permissions: 100700
+2025-12-05T01:43:36.957Z [DEBUG] Temp file written successfully, size: 42968 bytes
+2025-12-05T01:43:36.957Z [DEBUG] Applied original permissions to temp file
+2025-12-05T01:43:36.957Z [DEBUG] Renaming /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764899016953 to /var/tristar/cli-config/claude/.claude.json
+2025-12-05T01:43:36.957Z [DEBUG] File /var/tristar/cli-config/claude/.claude.json written atomically
+2025-12-05T01:43:37.401Z [DEBUG] Writing to temp file: /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764899017401
+2025-12-05T01:43:37.401Z [DEBUG] Preserving file permissions: 100700
+2025-12-05T01:43:37.403Z [DEBUG] Temp file written successfully, size: 43227 bytes
+2025-12-05T01:43:37.404Z [DEBUG] Applied original permissions to temp file
+2025-12-05T01:43:37.404Z [DEBUG] Renaming /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764899017401 to /var/tristar/cli-config/claude/.claude.json
+2025-12-05T01:43:37.404Z [DEBUG] File /var/tristar/cli-config/claude/.claude.json written atomically
+2025-12-05T01:43:37.594Z [DEBUG] Writing to temp file: /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764899017594
+2025-12-05T01:43:37.594Z [DEBUG] Preserving file permissions: 100700
+2025-12-05T01:43:37.597Z [DEBUG] Temp file written successfully, size: 43354 bytes
+2025-12-05T01:43:37.597Z [DEBUG] Applied original permissions to temp file
+2025-12-05T01:43:37.597Z [DEBUG] Renaming /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764899017594 to /var/tristar/cli-config/claude/.claude.json
+2025-12-05T01:43:37.597Z [DEBUG] File /var/tristar/cli-config/claude/.claude.json written atomically
+2025-12-05T01:43:37.947Z [DEBUG] Writing to temp file: /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764899017947
+2025-12-05T01:43:37.947Z [DEBUG] Preserving file permissions: 100700
+2025-12-05T01:43:37.963Z [DEBUG] Temp file written successfully, size: 43415 bytes
+2025-12-05T01:43:37.964Z [DEBUG] Applied original permissions to temp file
+2025-12-05T01:43:37.964Z [DEBUG] Renaming /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764899017947 to /var/tristar/cli-config/claude/.claude.json
+2025-12-05T01:43:37.964Z [DEBUG] File /var/tristar/cli-config/claude/.claude.json written atomically
+2025-12-05T01:43:37.979Z [DEBUG] Skipping Notification:auth_success hook execution - workspace trust not accepted
+2025-12-05T01:43:38.159Z [DEBUG] Metrics opt-out API response: enabled=true, vcsLinking=false
+2025-12-05T01:43:40.882Z [DEBUG] Writing to temp file: /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764899020882
+2025-12-05T01:43:40.882Z [DEBUG] Preserving file permissions: 100700
+2025-12-05T01:43:40.886Z [DEBUG] Temp file written successfully, size: 43486 bytes
+2025-12-05T01:43:40.886Z [DEBUG] Applied original permissions to temp file
+2025-12-05T01:43:40.886Z [DEBUG] Renaming /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764899020882 to /var/tristar/cli-config/claude/.claude.json
+2025-12-05T01:43:40.886Z [DEBUG] File /var/tristar/cli-config/claude/.claude.json written atomically
+2025-12-05T01:43:42.148Z [DEBUG] Writing to temp file: /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764899022148
+2025-12-05T01:43:42.148Z [DEBUG] Preserving file permissions: 100700
+2025-12-05T01:43:42.151Z [DEBUG] Temp file written successfully, size: 43894 bytes
+2025-12-05T01:43:42.152Z [DEBUG] Applied original permissions to temp file
+2025-12-05T01:43:42.152Z [DEBUG] Renaming /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764899022148 to /var/tristar/cli-config/claude/.claude.json
+2025-12-05T01:43:42.152Z [DEBUG] File /var/tristar/cli-config/claude/.claude.json written atomically
+2025-12-05T01:43:42.900Z [DEBUG] Passes: Using fresh cached eligibility data
+2025-12-05T01:43:42.967Z [DEBUG] Writing to temp file: /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764899022967
+2025-12-05T01:43:42.967Z [DEBUG] Preserving file permissions: 100700
+2025-12-05T01:43:42.970Z [DEBUG] Temp file written successfully, size: 43914 bytes
+2025-12-05T01:43:42.971Z [DEBUG] Applied original permissions to temp file
+2025-12-05T01:43:42.971Z [DEBUG] Renaming /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764899022967 to /var/tristar/cli-config/claude/.claude.json
+2025-12-05T01:43:42.971Z [DEBUG] File /var/tristar/cli-config/claude/.claude.json written atomically
+2025-12-05T01:43:42.989Z [DEBUG] Writing to temp file: /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764899022989
+2025-12-05T01:43:42.989Z [DEBUG] Preserving file permissions: 100700
+2025-12-05T01:43:42.994Z [DEBUG] Temp file written successfully, size: 43914 bytes
+2025-12-05T01:43:42.994Z [DEBUG] Applied original permissions to temp file
+2025-12-05T01:43:42.994Z [DEBUG] Renaming /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764899022989 to /var/tristar/cli-config/claude/.claude.json
+2025-12-05T01:43:42.994Z [DEBUG] File /var/tristar/cli-config/claude/.claude.json written atomically
+2025-12-05T01:43:42.997Z [DEBUG] Getting matching hook commands for SessionStart with query: startup
+2025-12-05T01:43:42.997Z [DEBUG] Found 0 hook matchers in settings
+2025-12-05T01:43:42.997Z [DEBUG] Matched 0 unique hooks for query "startup" (0 before deduplication)
+2025-12-05T01:43:43.089Z [DEBUG] Skills and commands included in Skill tool:
+2025-12-05T01:43:43.090Z [DEBUG] Slash commands included in SlashCommand tool:
+2025-12-05T01:43:43.213Z [DEBUG] Writing to temp file: /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764899023213
+2025-12-05T01:43:43.213Z [DEBUG] Preserving file permissions: 100700
+2025-12-05T01:43:43.217Z [DEBUG] Temp file written successfully, size: 43950 bytes
+2025-12-05T01:43:43.217Z [DEBUG] Applied original permissions to temp file
+2025-12-05T01:43:43.217Z [DEBUG] Renaming /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764899023213 to /var/tristar/cli-config/claude/.claude.json
+2025-12-05T01:43:43.217Z [DEBUG] File /var/tristar/cli-config/claude/.claude.json written atomically
+2025-12-05T01:43:43.222Z [DEBUG] Writing to temp file: /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764899023222
+2025-12-05T01:43:43.222Z [DEBUG] Preserving file permissions: 100700
+2025-12-05T01:43:43.225Z [DEBUG] Temp file written successfully, size: 43950 bytes
+2025-12-05T01:43:43.225Z [DEBUG] Applied original permissions to temp file
+2025-12-05T01:43:43.225Z [DEBUG] Renaming /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764899023222 to /var/tristar/cli-config/claude/.claude.json
+2025-12-05T01:43:43.225Z [DEBUG] File /var/tristar/cli-config/claude/.claude.json written atomically
+2025-12-05T01:43:43.230Z [DEBUG] Writing to temp file: /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764899023230
+2025-12-05T01:43:43.230Z [DEBUG] Preserving file permissions: 100700
+2025-12-05T01:43:43.233Z [DEBUG] Temp file written successfully, size: 43996 bytes
+2025-12-05T01:43:43.233Z [DEBUG] Applied original permissions to temp file
+2025-12-05T01:43:43.233Z [DEBUG] Renaming /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764899023230 to /var/tristar/cli-config/claude/.claude.json
+2025-12-05T01:43:43.233Z [DEBUG] File /var/tristar/cli-config/claude/.claude.json written atomically
+2025-12-05T01:43:43.281Z [DEBUG] performStartupChecks called
+2025-12-05T01:43:43.282Z [DEBUG] Starting background plugin installations
+2025-12-05T01:43:43.282Z [DEBUG] performBackgroundPluginInstallations called
+2025-12-05T01:43:43.321Z [DEBUG] Setting installation status: 0 marketplaces, 0 installable plugins, 0 uninstallable plugins
+2025-12-05T01:43:43.342Z [DEBUG] Loaded plugins - Enabled: 0, Disabled: 0, Commands: 0, Agents: 0, Errors: 0
+2025-12-05T01:43:43.402Z [DEBUG] Getting matching hook commands for SubagentStart with query: Explore
+2025-12-05T01:43:43.402Z [DEBUG] Found 0 hook matchers in settings
+2025-12-05T01:43:43.402Z [DEBUG] Matched 0 unique hooks for query "Explore" (0 before deduplication)
+2025-12-05T01:43:43.467Z [DEBUG] Getting matching hook commands for SubagentStart with query: Plan
+2025-12-05T01:43:43.467Z [DEBUG] Found 0 hook matchers in settings
+2025-12-05T01:43:43.467Z [DEBUG] Matched 0 unique hooks for query "Plan" (0 before deduplication)
+2025-12-05T01:43:43.630Z [DEBUG] Writing to temp file: /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764899023630
+2025-12-05T01:43:43.630Z [DEBUG] Preserving file permissions: 100700
+2025-12-05T01:43:43.633Z [DEBUG] Temp file written successfully, size: 44172 bytes
+2025-12-05T01:43:43.633Z [DEBUG] Applied original permissions to temp file
+2025-12-05T01:43:43.633Z [DEBUG] Renaming /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764899023630 to /var/tristar/cli-config/claude/.claude.json
+2025-12-05T01:43:43.633Z [DEBUG] File /var/tristar/cli-config/claude/.claude.json written atomically
+2025-12-05T01:43:43.647Z [DEBUG] Writing to temp file: /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764899023647
+2025-12-05T01:43:43.648Z [DEBUG] Preserving file permissions: 100700
+2025-12-05T01:43:43.651Z [DEBUG] Temp file written successfully, size: 44172 bytes
+2025-12-05T01:43:43.651Z [DEBUG] Applied original permissions to temp file
+2025-12-05T01:43:43.651Z [DEBUG] Renaming /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764899023647 to /var/tristar/cli-config/claude/.claude.json
+2025-12-05T01:43:43.651Z [DEBUG] File /var/tristar/cli-config/claude/.claude.json written atomically
+2025-12-05T01:43:43.891Z [DEBUG] AutoUpdaterWrapper: Installation type: unknown
+2025-12-05T01:43:44.123Z [DEBUG] Stream started - received first chunk
+2025-12-05T01:43:44.606Z [DEBUG] Stream started - received first chunk
+2025-12-05T01:43:45.989Z [DEBUG] Getting matching hook commands for SubagentStop with query: undefined
+2025-12-05T01:43:45.989Z [DEBUG] Found 0 hook matchers in settings
+2025-12-05T01:43:45.989Z [DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+2025-12-05T01:43:46.821Z [DEBUG] Getting matching hook commands for SubagentStop with query: undefined
+2025-12-05T01:43:46.821Z [DEBUG] Found 0 hook matchers in settings
+2025-12-05T01:43:46.821Z [DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+2025-12-05T01:43:46.900Z [DEBUG] AutoUpdaterWrapper: Installation type: unknown
+2025-12-05T01:43:48.515Z [DEBUG] AutoUpdaterWrapper: Installation type: unknown
+2025-12-05T01:43:57.998Z [DEBUG] AutoUpdaterWrapper: Installation type: unknown
+2025-12-05T01:44:02.944Z [DEBUG] FileHistory: Added snapshot for c644e115-ff47-4e4f-9e89-c73a15f1bd8a, tracking 0 files
+2025-12-05T01:44:02.973Z [DEBUG] UserCommandMessage rendering: "model" (args: "none")
+2025-12-05T01:44:02.973Z [DEBUG] isSkillFormat: false, prefix: "/"
+2025-12-05T01:44:03.393Z [DEBUG] AutoUpdaterWrapper: Installation type: unknown
+2025-12-05T01:44:03.429Z [DEBUG] Writing to temp file: /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764899043429
+2025-12-05T01:44:03.429Z [DEBUG] Preserving file permissions: 100700
+2025-12-05T01:44:03.435Z [DEBUG] Temp file written successfully, size: 44221 bytes
+2025-12-05T01:44:03.435Z [DEBUG] Applied original permissions to temp file
+2025-12-05T01:44:03.435Z [DEBUG] Renaming /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764899043429 to /var/tristar/cli-config/claude/.claude.json
+2025-12-05T01:44:03.436Z [DEBUG] File /var/tristar/cli-config/claude/.claude.json written atomically
+2025-12-05T01:44:03.456Z [DEBUG] Writing to temp file: /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764899043456
+2025-12-05T01:44:03.456Z [DEBUG] Preserving file permissions: 100700
+2025-12-05T01:44:03.462Z [DEBUG] Temp file written successfully, size: 44259 bytes
+2025-12-05T01:44:03.462Z [DEBUG] Applied original permissions to temp file
+2025-12-05T01:44:03.462Z [DEBUG] Renaming /var/tristar/cli-config/claude/.claude.json.tmp.125919.1764899043456 to /var/tristar/cli-config/claude/.claude.json
+2025-12-05T01:44:03.462Z [DEBUG] File /var/tristar/cli-config/claude/.claude.json written atomically
+2025-12-05T01:44:09.541Z [DEBUG] Getting matching hook commands for SessionEnd with query: prompt_input_exit
+2025-12-05T01:44:09.541Z [DEBUG] Found 0 hook matchers in settings
+2025-12-05T01:44:09.541Z [DEBUG] Matched 0 unique hooks for query "prompt_input_exit" (0 before deduplication)

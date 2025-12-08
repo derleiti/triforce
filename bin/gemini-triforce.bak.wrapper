@@ -1,5 +1,0 @@
-#!/bin/bash
-# Gemini CLI Wrapper for TriForce/TriStar
-export HOME=/var/tristar/cli-config/gemini
-export GEMINI_CONFIG_DIR=/var/tristar/cli-config/gemini
-exec /root/.npm-global/bin/gemini "$@"

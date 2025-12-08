@@ -1,0 +1,29 @@
+# === PATCH für ailinux-repo/docker-compose.yml ===
+# 1. Füge diesen Service-Block am Ende der services: Sektion hinzu:
+
+  codex-agent:
+    build:
+      context: ../agent
+      dockerfile: Dockerfile
+    container_name: repo_codex_agent
+    environment:
+      TRIFORCE_ROOT: /opt/triforce
+      MCP_ENDPOINT: http://host.docker.internal:9100/v1/mcp
+      CHECK_INTERVAL: "60"
+      TZ: Europe/Berlin
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    networks:
+      - repo_network
+    depends_on:
+      - nginx
+
+# 2. Füge am Ende der Datei hinzu (falls noch nicht vorhanden):
+networks:
+  repo_network:
+    driver: bridge
+
+# 3. Füge beim nginx Service hinzu:
+#    networks:
+#      - repo_network

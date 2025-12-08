@@ -2,7 +2,8 @@
 # Update add-ailinux-repo.sh to include i386 architecture support
 set -euo pipefail
 
-TARGET="/home/zombie/ailinux-repo/repo/mirror/add-ailinux-repo.sh"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
+TARGET="$SCRIPT_DIR/repo/mirror/add-ailinux-repo.sh"
 
 echo "Aktualisiere $TARGET für i386-Unterstützung..."
 
@@ -20,6 +21,3 @@ echo ""
 echo "Änderungen:"
 echo "  - UBUNTU_ARCHS: amd64 i386"
 echo "  - WINE_ARCHS: amd64 i386"
-echo "  - Kommentar und Info-Ausgabe aktualisiert"
-echo ""
-echo "Backup gespeichert als: ${TARGET}.bak.$(date +%Y%m%d-%H%M%S)"

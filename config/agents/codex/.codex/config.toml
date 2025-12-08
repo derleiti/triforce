@@ -1,0 +1,14 @@
+# OpenAI Codex CLI Configuration
+# MCP Server Integration für TriForce
+
+[defaults]
+model = "gpt-5-codex"
+approval_mode = "full-auto"
+
+[sandbox]
+enabled = false
+
+[[mcp.servers]]
+name = "triforce"
+transport = "http"
+url = "http://localhost:9100/mcp"

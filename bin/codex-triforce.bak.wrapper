@@ -1,5 +1,0 @@
-#!/bin/bash
-# Codex CLI Wrapper for TriForce/TriStar
-export HOME=/var/tristar/cli-config/codex
-export CODEX_CONFIG_DIR=/var/tristar/cli-config/codex
-exec /root/.npm-global/bin/codex "$@"

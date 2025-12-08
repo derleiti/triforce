@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-cd /home/zombie/ailinux-repo
+# Use script directory instead of hardcoded path
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
+cd "$SCRIPT_DIR"
 
 echo "=== Re-signing ALL repositories with updated Packages files ==="
 

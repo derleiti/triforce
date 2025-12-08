@@ -1,0 +1,19 @@
+{
+  "version": "1.0",
+  "name": "triforce",
+  "description": "TriForce MCP Server für Docker Sidecar Agents",
+  "endpoints": {
+    "http": "http://host.docker.internal:9100/v1/mcp",
+    "sse": "http://host.docker.internal:9100/v1/mcp/sse"
+  },
+  "capabilities": [
+    "tools",
+    "memory",
+    "web_search",
+    "code_execution"
+  ],
+  "auth": {
+    "bypass": true,
+    "comment": "Auth bypassed for internal Docker network (172.17.0.0/16)"
+  }
+}

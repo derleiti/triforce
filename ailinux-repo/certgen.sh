@@ -216,7 +216,7 @@ set -euo pipefail
 log(){ printf "[deploy-hook-nginx] %s\n" "$*"; }
 
 # Docker Compose nginx service
-COMPOSE_DIR="${COMPOSE_DIR:-/home/zombie/ailinux-repo}"
+COMPOSE_DIR="${COMPOSE_DIR:-$SCRIPT_DIR}"
 if [[ -f "$COMPOSE_DIR/docker-compose.yml" ]]; then
   cd "$COMPOSE_DIR"
   if docker compose ps nginx 2>/dev/null | grep -q nginx; then
@@ -358,7 +358,7 @@ copy_certs_to_repo() {
 # ---- Reload services -----------------------------------------
 reload_services() {
   # Docker Compose nginx service
-  local compose_dir="${COMPOSE_DIR:-/home/zombie/ailinux-repo}"
+  local compose_dir="${COMPOSE_DIR:-$SCRIPT_DIR}"
   if [[ -f "$compose_dir/docker-compose.yml" ]]; then
     cd "$compose_dir"
     if docker compose ps nginx 2>/dev/null | grep -q nginx; then

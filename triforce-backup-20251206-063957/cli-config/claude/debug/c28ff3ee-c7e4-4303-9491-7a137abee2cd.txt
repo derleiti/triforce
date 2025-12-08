@@ -1,0 +1,52 @@
+2025-12-05T01:30:21.070Z [DEBUG] Watching for changes in setting files /home/zombie/ailinux-ai-server-backend/.claude/settings.local.json...
+2025-12-05T01:30:21.115Z [DEBUG] [LSP MANAGER] initializeLspServerManager() called
+2025-12-05T01:30:21.116Z [DEBUG] [LSP MANAGER] Created manager instance, state=pending
+2025-12-05T01:30:21.116Z [DEBUG] [LSP MANAGER] Starting async initialization (generation 1)
+2025-12-05T01:30:21.116Z [DEBUG] [LSP SERVER MANAGER] initialize() called
+2025-12-05T01:30:21.116Z [DEBUG] [LSP SERVER MANAGER] Calling getAllLspServers()
+2025-12-05T01:30:21.133Z [DEBUG] Found 0 plugins (0 enabled, 0 disabled)
+2025-12-05T01:30:21.184Z [DEBUG] Loading skills from directories: managed=/etc/claude-code/.claude/skills, user=/var/tristar/cli-config/claude/skills, project=/home/zombie/ailinux-ai-server-backend/.claude/skills
+2025-12-05T01:30:21.184Z [DEBUG] >>>>> getPluginSkills CALLED <<<<<
+2025-12-05T01:30:21.267Z [DEBUG] installed_plugins.json doesn't exist yet at /var/tristar/cli-config/claude/plugins/installed_plugins.json, returning empty object
+2025-12-05T01:30:21.328Z [DEBUG] Creating shell snapshot for bash (/bin/bash)
+2025-12-05T01:30:21.329Z [DEBUG] Looking for shell config file: /var/tristar/cli-config/claude/.bashrc
+2025-12-05T01:30:21.329Z [DEBUG] Shell config file not found: /var/tristar/cli-config/claude/.bashrc, creating snapshot with Claude Code defaults only
+2025-12-05T01:30:21.329Z [DEBUG] Snapshots directory: /var/tristar/cli-config/claude/shell-snapshots
+2025-12-05T01:30:21.330Z [DEBUG] Creating snapshot at: /var/tristar/cli-config/claude/shell-snapshots/snapshot-bash-1764898221329-uj7okw.sh
+2025-12-05T01:30:21.330Z [DEBUG] Shell binary exists: true
+2025-12-05T01:30:21.330Z [DEBUG] Execution timeout: 10000ms
+2025-12-05T01:30:21.345Z [DEBUG] Writing to temp file: /var/tristar/cli-config/claude/todos/c28ff3ee-c7e4-4303-9491-7a137abee2cd-agent-c28ff3ee-c7e4-4303-9491-7a137abee2cd.json.tmp.114093.1764898221345
+2025-12-05T01:30:21.352Z [DEBUG] Temp file written successfully, size: 2 bytes
+2025-12-05T01:30:21.352Z [DEBUG] Renaming /var/tristar/cli-config/claude/todos/c28ff3ee-c7e4-4303-9491-7a137abee2cd-agent-c28ff3ee-c7e4-4303-9491-7a137abee2cd.json.tmp.114093.1764898221345 to /var/tristar/cli-config/claude/todos/c28ff3ee-c7e4-4303-9491-7a137abee2cd-agent-c28ff3ee-c7e4-4303-9491-7a137abee2cd.json
+2025-12-05T01:30:21.352Z [DEBUG] File /var/tristar/cli-config/claude/todos/c28ff3ee-c7e4-4303-9491-7a137abee2cd-agent-c28ff3ee-c7e4-4303-9491-7a137abee2cd.json written atomically
+2025-12-05T01:30:21.403Z [DEBUG] Total LSP servers loaded: 0
+2025-12-05T01:30:21.403Z [DEBUG] getPluginSkills: Processing 0 enabled plugins
+2025-12-05T01:30:21.403Z [DEBUG] Total plugin skills loaded: 0
+2025-12-05T01:30:21.403Z [DEBUG] Total plugin commands loaded: 0
+2025-12-05T01:30:21.404Z [DEBUG] Registered 0 hooks from 0 plugins
+2025-12-05T01:30:21.439Z [DEBUG] [LSP SERVER MANAGER] getAllLspServers returned 0 server(s)
+2025-12-05T01:30:21.439Z [DEBUG] LSP manager initialized with 0 servers
+2025-12-05T01:30:21.439Z [DEBUG] Loaded 0 unique skills (managed: 0, user: 0, project: 0, duplicates removed: 0)
+2025-12-05T01:30:21.440Z [DEBUG] LSP server manager initialized successfully
+2025-12-05T01:30:21.440Z [DEBUG] LSP notification handlers registered successfully for all 0 server(s)
+2025-12-05T01:30:21.442Z [DEBUG] getSkills returning: 0 skill dir commands, 0 plugin skills
+2025-12-05T01:30:21.480Z [DEBUG] Git remote URL: null
+2025-12-05T01:30:21.480Z [DEBUG] No git remote URL found
+2025-12-05T01:30:21.480Z [DEBUG] Not in a GitHub repository, skipping path mapping update
+2025-12-05T01:30:21.482Z [DEBUG] Ripgrep first use test: PASSED (mode=builtin, path=/root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/vendor/ripgrep/x64-linux/rg)
+2025-12-05T01:30:21.489Z [DEBUG] Shell snapshot created successfully (366 bytes)
+2025-12-05T01:30:21.581Z [DEBUG] Writing to temp file: /var/tristar/cli-config/claude/.claude.json.tmp.114093.1764898221581
+2025-12-05T01:30:21.581Z [DEBUG] Preserving file permissions: 100700
+2025-12-05T01:30:21.584Z [DEBUG] Temp file written successfully, size: 42757 bytes
+2025-12-05T01:30:21.584Z [DEBUG] Applied original permissions to temp file
+2025-12-05T01:30:21.584Z [DEBUG] Renaming /var/tristar/cli-config/claude/.claude.json.tmp.114093.1764898221581 to /var/tristar/cli-config/claude/.claude.json
+2025-12-05T01:30:21.584Z [DEBUG] File /var/tristar/cli-config/claude/.claude.json written atomically
+2025-12-05T01:30:21.590Z [DEBUG] Writing to temp file: /var/tristar/cli-config/claude/.claude.json.tmp.114093.1764898221590
+2025-12-05T01:30:21.590Z [DEBUG] Preserving file permissions: 100700
+2025-12-05T01:30:21.593Z [DEBUG] Temp file written successfully, size: 42757 bytes
+2025-12-05T01:30:21.593Z [DEBUG] Applied original permissions to temp file
+2025-12-05T01:30:21.593Z [DEBUG] Renaming /var/tristar/cli-config/claude/.claude.json.tmp.114093.1764898221590 to /var/tristar/cli-config/claude/.claude.json
+2025-12-05T01:30:21.593Z [DEBUG] File /var/tristar/cli-config/claude/.claude.json written atomically
+2025-12-05T01:33:37.995Z [DEBUG] Getting matching hook commands for SessionEnd with query: other
+2025-12-05T01:33:37.996Z [DEBUG] Found 0 hook matchers in settings
+2025-12-05T01:33:37.996Z [DEBUG] Matched 0 unique hooks for query "other" (0 before deduplication)

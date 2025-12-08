@@ -1,0 +1,56 @@
+[Unit]
+Description=TriForce RAM-Mode Backend Service
+Documentation=https://github.com/ailinux/triforce
+After=network.target redis.service
+Wants=redis.service
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
+[Service]
+Type=simple
+User=root
+Group=root
+
+# Script locations
+ExecStart=/opt/triforce/bin/triforce-rammode.sh start
+ExecStop=/opt/triforce/bin/triforce-rammode.sh stop
+ExecReload=/bin/kill -HUP $MAINPID
+
+# Restart configuration
+Restart=on-failure
+RestartSec=5
+TimeoutStartSec=60
+TimeoutStopSec=30
+
+# Performance optimizations
+Nice=-5
+IOSchedulingClass=1
+IOSchedulingPriority=4
+LimitNOFILE=65536
+
+# Resource limits
+MemoryMax=1G
+TasksMax=4096
+
+# Security
+NoNewPrivileges=false
+PrivateDevices=false
+ProtectSystem=strict
+ProtectHome=false
+ReadWritePaths=/var/tristar /opt/triforce /var/log /var/run /tmp
+
+# Environment
+Environment=PYTHONPATH=/home/zombie/ailinux-ai-server-backend
+Environment=TRIFORCE_RAM_MODE=1
+Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+# Working directory
+WorkingDirectory=/home/zombie/ailinux-ai-server-backend
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=triforce-rammode
+
+[Install]
+WantedBy=multi-user.target

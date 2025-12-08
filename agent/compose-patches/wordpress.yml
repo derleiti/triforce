@@ -1,0 +1,20 @@
+# === PATCH für wordpress/docker-compose.yml ===
+# Füge diesen Service-Block am Ende der services: Sektion hinzu:
+
+  codex-agent:
+    build:
+      context: ../agent
+      dockerfile: Dockerfile
+    container_name: wordpress_codex_agent
+    environment:
+      TRIFORCE_ROOT: /opt/triforce
+      MCP_ENDPOINT: http://host.docker.internal:9100/v1/mcp
+      CHECK_INTERVAL: "60"
+      TZ: Europe/Berlin
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    networks:
+      - wordpress_network
+    depends_on:
+      - apache

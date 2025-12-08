@@ -1,0 +1,32 @@
+--- a/app/utils/mcp_auth.py
++++ b/app/utils/mcp_auth.py
+@@ -330,11 +330,27 @@ async def require_mcp_auth(request: Request) -> str:
+     auth_header = request.headers.get("Authorization", "")
+ 
+     # ========================================================================
+-    # Localhost Bypass - No auth required for local connections
++    # Localhost & Docker Bypass - No auth required for local/internal connections
+     # ========================================================================
++    # Localhost IPs
+     if client_ip in ("127.0.0.1", "::1", "localhost"):
+         logger.debug(f"AUTH_OK | IP: {client_ip} | Method: localhost_bypass")
+         return "localhost"
++    
++    # Docker network bypass (172.16.0.0/12, 10.0.0.0/8, 192.168.0.0/16)
++    import ipaddress
++    try:
++        ip = ipaddress.ip_address(client_ip)
++        private_networks = [
++            ipaddress.ip_network("172.16.0.0/12"),   # Docker default + custom
++            ipaddress.ip_network("10.0.0.0/8"),      # Docker Swarm / custom
++            ipaddress.ip_network("192.168.0.0/16"), # Custom bridge networks
++        ]
++        for network in private_networks:
++            if ip in network:
++                logger.debug(f"AUTH_OK | IP: {client_ip} | Method: docker_network_bypass")
++                return "docker_internal"
++    except ValueError:
++        pass  # Invalid IP format, continue to normal auth
+ 
+     # Check if auth is configured
+     if not MCP_AUTH_USER or not MCP_AUTH_PASS:

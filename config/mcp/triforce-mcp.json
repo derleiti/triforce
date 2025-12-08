@@ -1,0 +1,15 @@
+{
+  "version": "1.0",
+  "name": "triforce",
+  "description": "TriForce MCP Server für CLI Agents",
+  "endpoints": {
+    "http": "http://localhost:9100/v1/mcp",
+    "sse": "http://localhost:9100/v1/mcp/sse"
+  },
+  "capabilities": [
+    "tools",
+    "memory",
+    "web_search",
+    "code_execution"
+  ]
+}

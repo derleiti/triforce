@@ -1,12 +1,10 @@
 #!/usr/bin/env bash
 
 # Restore i386 architecture support where available
-# Note: Ubuntu Noble (24.04) repositories don't actually have i386 packages,
-# so you'll get warnings, but the configuration will request them if they exist.
-
 set -euo pipefail
 
-SCRIPT_FILE="/home/zombie/ailinux-repo/repo/mirror/add-ailinux-repo.sh"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
+SCRIPT_FILE="$SCRIPT_DIR/repo/mirror/add-ailinux-repo.sh"
 
 echo "===[ Restoring i386 Architecture Support ]==="
 echo ""
@@ -34,26 +32,6 @@ echo ""
 echo "Current architecture configuration:"
 grep -E "^(UBUNTU_ARCHS|NEON_ARCHS|XUBUNTU_ARCHS|CAPPELIKAN_ARCHS|LIBREOFFICE_ARCHS|DOCKER_ARCHS|CHROME_ARCHS|WINE_ARCHS)=" "$SCRIPT_FILE"
 
-echo ""
-echo "===[ Important Information ]==="
-echo ""
-echo "⚠️  NOTE: Ubuntu 24.04 Noble does NOT provide i386 packages for most repositories."
-echo "    The warnings you see are NORMAL and expected because:"
-echo ""
-echo "    1. You're requesting i386 packages (which is good for compatibility)"
-echo "    2. But Noble repositories don't have them (Ubuntu policy)"
-echo "    3. APT correctly warns you that i386 is not available"
-echo ""
-echo "This is NOT an error. It means:"
-echo "  ✓ Your mirror is correctly configured"
-echo "  ✓ Your client is correctly configured"
-echo "  ✓ The repositories simply don't offer i386 for Noble"
-echo ""
-echo "The only repository that SHOULD have i386 in Noble is WineHQ."
-echo ""
-echo "If you want to suppress these warnings, you would need to remove i386"
-echo "from the repositories that don't support it. But the system will work"
-echo "fine with the warnings - they're just informational."
 echo ""
 echo "===[ Next Steps ]==="
 echo "To apply the restored configuration on a client:"
