@@ -17,6 +17,7 @@ import os
 import signal
 import subprocess
 import uuid
+import shlex
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
@@ -30,12 +31,17 @@ logger = logging.getLogger("ailinux.tristar.agent_controller")
 # Only these binaries can be executed as agent commands
 # This prevents arbitrary command execution via agents.json manipulation
 ALLOWED_COMMAND_EXECUTABLES = frozenset([
-    # TriForce wrapper scripts
+    # TriForce wrapper scripts (primary - set correct HOME/env)
+    "/home/zombie/ailinux-ai-server-backend/triforce/bin/claude-triforce",
+    "/home/zombie/ailinux-ai-server-backend/triforce/bin/codex-triforce",
+    "/home/zombie/ailinux-ai-server-backend/triforce/bin/gemini-triforce",
+    "/home/zombie/ailinux-ai-server-backend/triforce/bin/opencode-triforce",
+    # Legacy paths (backwards compatibility)
     "/home/zombie/ailinux-ai-server-backend/bin/claude-triforce",
     "/home/zombie/ailinux-ai-server-backend/bin/codex-triforce",
     "/home/zombie/ailinux-ai-server-backend/bin/gemini-triforce",
     "/home/zombie/ailinux-ai-server-backend/bin/opencode-triforce",
-    # Direct CLI binaries (fallback)
+    # Direct CLI binaries (fallback for call_agent)
     "/usr/local/bin/claude",
     "/usr/local/bin/codex",
     "/usr/local/bin/gemini",
@@ -44,6 +50,10 @@ ALLOWED_COMMAND_EXECUTABLES = frozenset([
     "/root/.npm-global/bin/codex",
     "/root/.npm-global/bin/gemini",
     "/root/.npm-global/bin/opencode",
+    "/home/zombie/.npm-global/bin/claude",
+    "/home/zombie/.npm-global/bin/codex",
+    "/home/zombie/.npm-global/bin/gemini",
+    "/home/zombie/.npm-global/bin/opencode",
     # Bash for piped commands (used internally by call_agent)
     "bash",
     "/bin/bash",
@@ -164,9 +174,9 @@ class AgentInstance:
 
 
 # Vordefinierte Agent-Konfigurationen
-# Backend läuft als root, CLI Tools unter /root/.npm-global/bin/
-# Symlinks in bin/ zeigen auf /root/.npm-global/bin/*
-TRIFORCE_BIN = "/home/zombie/ailinux-ai-server-backend/bin"
+# Nutze TriForce Wrapper Scripts für korrektes HOME/Environment
+TRIFORCE_BIN = "/home/zombie/ailinux-ai-server-backend/triforce/bin"
+CLI_BIN = "/root/.npm-global/bin"  # Fallback für call_agent
 
 DEFAULT_AGENTS: List[Dict[str, Any]] = [
     {
@@ -175,28 +185,25 @@ DEFAULT_AGENTS: List[Dict[str, Any]] = [
         "name": "Claude Code MCP Agent",
         "command": [f"{TRIFORCE_BIN}/claude-triforce", "-p", "--output-format", "text"],
         "env": {
-            "HOME": "/root",
-            "PATH": "/root/.npm-global/bin:/usr/local/bin:/usr/bin:/bin",
+            "PATH": f"{TRIFORCE_BIN}:{CLI_BIN}:/usr/local/bin:/usr/bin:/bin",
         },
     },
     {
         "agent_id": "codex-mcp",
         "agent_type": "codex",
         "name": "OpenAI Codex MCP Agent",
-        "command": [f"{TRIFORCE_BIN}/codex-triforce", "exec", "--full-auto", "--dangerously-bypass-approvals-and-sandbox"],
+        "command": [f"{TRIFORCE_BIN}/codex-triforce", "exec", "--full-auto"],
         "env": {
-            "HOME": "/root",
-            "PATH": "/root/.npm-global/bin:/usr/local/bin:/usr/bin:/bin",
+            "PATH": f"{TRIFORCE_BIN}:{CLI_BIN}:/usr/local/bin:/usr/bin:/bin",
         },
     },
     {
         "agent_id": "gemini-mcp",
         "agent_type": "gemini",
         "name": "Google Gemini Lead Agent",
-        "command": [f"{TRIFORCE_BIN}/gemini-triforce", "--yolo", "--output-format", "text"],
+        "command": [f"{TRIFORCE_BIN}/gemini-triforce", "--yolo"],
         "env": {
-            "HOME": "/root",
-            "PATH": "/root/.npm-global/bin:/usr/local/bin:/usr/bin:/bin",
+            "PATH": f"{TRIFORCE_BIN}:{CLI_BIN}:/usr/local/bin:/usr/bin:/bin",
         },
     },
     {
@@ -205,8 +212,7 @@ DEFAULT_AGENTS: List[Dict[str, Any]] = [
         "name": "OpenCode AI Agent",
         "command": [f"{TRIFORCE_BIN}/opencode-triforce", "run"],
         "env": {
-            "HOME": "/root",
-            "PATH": "/root/.npm-global/bin:/usr/local/bin:/usr/bin:/bin",
+            "PATH": f"{TRIFORCE_BIN}:{CLI_BIN}:/usr/local/bin:/usr/bin:/bin",
         },
     },
 ]
@@ -403,6 +409,16 @@ class AgentController:
             # This catches any runtime modifications to the config
             if not validate_command(instance.config.command):
                 error_msg = f"SECURITY: Blocked execution - command not whitelisted: {instance.config.command}"
+                logger.error(error_msg)
+                instance.status = AgentStatus.ERROR
+                instance.last_error = error_msg
+                return {"status": "error", "error": error_msg, "agent": instance.to_dict()}
+
+            # Check if executable exists
+            executable = instance.config.command[0]
+            import shutil
+            if not os.path.exists(executable) and not shutil.which(executable):
+                error_msg = f"Executable not found: {executable}"
                 logger.error(error_msg)
                 instance.status = AgentStatus.ERROR
                 instance.last_error = error_msg
@@ -637,34 +653,35 @@ class AgentController:
             # Baue Command basierend auf Agent-Typ
             # Nutze Shell-Pipeline für stdin-basierte Kommunikation
             # Escape message für sichere Shell-Ausführung
-            safe_msg = message.replace("'", "'\\''")
+            safe_msg = shlex.quote(message)
 
             # Hole HOME aus der Agent-Config für explizites Setzen im Bash-Befehl
             agent_home = instance.config.env.get("HOME", "/root")
 
+            # Nutze TriForce Wrapper - diese setzen HOME/ENV korrekt
             if agent_type == AgentType.CLAUDE:
                 cmd = [
                     "bash", "-c",
-                    f"export HOME='/root' && echo '{safe_msg}' | {TRIFORCE_BIN}/claude-triforce -p --output-format text 2>&1"
+                    f"echo {safe_msg} | {TRIFORCE_BIN}/claude-triforce -p --output-format text 2>&1"
                 ]
             elif agent_type == AgentType.CODEX:
                 cmd = [
                     "bash", "-c",
-                    f"export HOME='/root' && echo '{safe_msg}' | {TRIFORCE_BIN}/codex-triforce exec - --full-auto 2>&1"
+                    f"echo {safe_msg} | {TRIFORCE_BIN}/codex-triforce exec - --full-auto 2>&1"
                 ]
             elif agent_type == AgentType.GEMINI:
                 cmd = [
                     "bash", "-c",
-                    f"export HOME='/root' && echo '{safe_msg}' | {TRIFORCE_BIN}/gemini-triforce --yolo --output-format text 2>&1"
+                    f"echo {safe_msg} | {TRIFORCE_BIN}/gemini-triforce --yolo 2>&1"
                 ]
             elif agent_type == AgentType.OPENCODE:
-                # OpenCode braucht GOOGLE_GENERATIVE_AI_API_KEY, wir haben GEMINI_API_KEY
+                # WICHTIG: Sauberes Workspace ohne CLAUDE.md um unerwartete Task-Ausführung zu vermeiden
+                opencode_workspace = "/var/tristar/agents/opencode-workspace"
+                os.makedirs(opencode_workspace, exist_ok=True)
+                
                 cmd = [
                     "bash", "-c",
-                    f"export HOME='/root' && export OPENCODE_CONFIG_DIR='/root/.local/share/opencode' && "
-                    f"source /home/zombie/ailinux-ai-server-backend/.env 2>/dev/null; "
-                    f"export GOOGLE_GENERATIVE_AI_API_KEY=\"$GEMINI_API_KEY\" && "
-                    f"{TRIFORCE_BIN}/opencode-triforce run '{safe_msg}' 2>&1"
+                    f"cd {opencode_workspace} && {TRIFORCE_BIN}/opencode-triforce run {safe_msg} 2>&1"
                 ]
             else:
                 cmd = instance.config.command + [message]

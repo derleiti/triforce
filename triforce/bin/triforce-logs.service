@@ -1,0 +1,15 @@
+[Unit]
+Description=TriForce Unified Log Forwarder
+After=network.target docker.service
+Wants=docker.service
+
+[Service]
+Type=forking
+ExecStart=/home/zombie/ailinux-ai-server-backend/triforce/bin/unified-log-forwarder.sh start
+ExecStop=/home/zombie/ailinux-ai-server-backend/triforce/bin/unified-log-forwarder.sh stop
+RemainAfterExit=yes
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target

@@ -1,1 +1,32 @@
-/home/zombie/ailinux-ai-server-backend/bin/gemini-triforce
+#!/bin/bash
+# Gemini CLI Wrapper für TriForce MCP
+# Auto-Sync: Lädt Settings aus triforce/secrets/ (safe mode)
+
+TRIFORCE_ROOT="/home/zombie/ailinux-ai-server-backend/triforce"
+RUNTIME_DIR="$TRIFORCE_ROOT/runtime/gemini"
+SECRETS="$TRIFORCE_ROOT/secrets"
+
+# Quick-Sync Auth aus Secrets
+if [[ -d "$SECRETS/gemini" ]]; then
+    mkdir -p "$RUNTIME_DIR/.gemini"
+    [[ -f "$SECRETS/gemini/oauth_creds.json" ]] && cp -n "$SECRETS/gemini/oauth_creds.json" "$RUNTIME_DIR/.gemini/" 2>/dev/null
+    [[ -f "$SECRETS/gemini/google_accounts.json" ]] && cp -n "$SECRETS/gemini/google_accounts.json" "$RUNTIME_DIR/.gemini/" 2>/dev/null
+    [[ -f "$SECRETS/gemini/installation_id" ]] && cp -n "$SECRETS/gemini/installation_id" "$RUNTIME_DIR/.gemini/" 2>/dev/null
+    [[ -f "$SECRETS/gemini/settings.json" ]] && [[ ! -f "$RUNTIME_DIR/.gemini/settings.json" ]] && cp "$SECRETS/gemini/settings.json" "$RUNTIME_DIR/.gemini/" 2>/dev/null
+fi
+
+# Binary
+BINARY="/root/.npm-global/bin/gemini"
+[[ ! -x "$BINARY" ]] && BINARY="/home/zombie/.npm-global/bin/gemini"
+
+if [[ ! -x "$BINARY" ]]; then
+    echo "ERROR: Gemini CLI nicht gefunden!"
+    exit 1
+fi
+
+# Environment
+export HOME="$RUNTIME_DIR"
+export GEMINI_CONFIG_DIR="$RUNTIME_DIR/.gemini"
+export PATH="$TRIFORCE_ROOT/bin:/root/.npm-global/bin:/home/zombie/.npm-global/bin:$PATH"
+
+exec "$BINARY" "$@"

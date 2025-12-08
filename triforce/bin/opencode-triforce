@@ -1,1 +1,32 @@
-/home/zombie/ailinux-ai-server-backend/bin/opencode-triforce
+#!/bin/bash
+# Opencode CLI Wrapper für TriForce MCP
+# Auto-Sync: Lädt Settings aus triforce/secrets/ (safe mode)
+
+TRIFORCE_ROOT="/home/zombie/ailinux-ai-server-backend/triforce"
+RUNTIME_DIR="$TRIFORCE_ROOT/runtime/opencode"
+SECRETS="$TRIFORCE_ROOT/secrets"
+
+# Quick-Sync Config aus Secrets
+if [[ -d "$SECRETS/opencode" ]]; then
+    mkdir -p "$RUNTIME_DIR/.config/opencode"
+    [[ -f "$SECRETS/opencode/config.json" ]] && [[ ! -f "$RUNTIME_DIR/.config/opencode/config.json" ]] && cp "$SECRETS/opencode/config.json" "$RUNTIME_DIR/.config/opencode/" 2>/dev/null
+fi
+
+# Binary
+BINARY="/root/.npm-global/bin/opencode"
+[[ ! -x "$BINARY" ]] && BINARY="/home/zombie/.npm-global/bin/opencode"
+
+if [[ ! -x "$BINARY" ]]; then
+    echo "ERROR: Opencode CLI nicht gefunden!"
+    exit 1
+fi
+
+# Environment
+export HOME="$RUNTIME_DIR"
+export XDG_CONFIG_HOME="$RUNTIME_DIR/.config"
+export PATH="$TRIFORCE_ROOT/bin:/root/.npm-global/bin:/home/zombie/.npm-global/bin:$PATH"
+
+# Workdir
+cd /home/zombie/ailinux-ai-server-backend 2>/dev/null || cd /home/zombie
+
+exec "$BINARY" "$@"

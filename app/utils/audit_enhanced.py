@@ -56,12 +56,16 @@ class EnhancedAuditLogger:
 
     def __init__(
         self,
-        log_dir: str = "logs/audit",
+        log_dir: Optional[str] = None,
         max_bytes: int = 100 * 1024 * 1024,  # 100MB
         backup_count: int = 10,
         retention_days: int = 30
     ):
-        self.log_dir = Path(log_dir)
+        # Default: ./triforce/logs/audit
+        if log_dir is None:
+            self.log_dir = Path(__file__).parent.parent.parent / "triforce" / "logs" / "audit"
+        else:
+            self.log_dir = Path(log_dir)
         self.log_dir.mkdir(parents=True, exist_ok=True)
         self.max_bytes = max_bytes
         self.backup_count = backup_count

@@ -30,6 +30,8 @@ import asyncio
 import json
 import logging
 import os
+import shlex
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -706,9 +708,19 @@ TRISTAR_TOOLS = [
             "type": "object",
             "properties": {
                 "key": {"type": "string", "description": "Setting key"},
-                "value": {"description": "Setting value (any type)"},
+                "value": {
+                    "description": "The configuration value to set. Supports string, number, boolean or object.",
+                    "type": ["string", "number", "boolean", "object"],
+                    "oneOf": [
+                        {"type": "string"},
+                        {"type": "number"},
+                        {"type": "boolean"},
+                        {"type": "object", "additionalProperties": True},
+                    ],
+                },
             },
             "required": ["key", "value"],
+            "additionalProperties": False,
         },
     },
     # Conversations
@@ -743,7 +755,14 @@ TRISTAR_TOOLS = [
                 "session_id": {"type": "string", "description": "Session ID"},
                 "messages": {
                     "type": "array",
-                    "items": {"type": "object"},
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "role": {"type": "string", "description": "Message role (system/user/assistant)"},
+                            "content": {"type": "string", "description": "Message content"}
+                        },
+                        "required": ["role", "content"]
+                    },
                     "description": "Chat messages",
                 },
                 "model": {"type": "string", "description": "Model used"},
@@ -798,6 +817,39 @@ TRISTAR_TOOLS = [
         "name": "tristar_status",
         "description": "Get full TriStar system status including services and directories",
         "inputSchema": {"type": "object", "properties": {}, "required": []},
+    },
+    {
+        "name": "tristar_shell_exec",
+        "description": "Execute a shell command on the TriStar server (DEVOPS ONLY, DANGEROUS).",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "command": {
+                    "type": "string",
+                    "description": "The shell command to execute (e.g. 'ls -la /var/log')."
+                },
+                "cwd": {
+                    "type": "string",
+                    "description": "Optional working directory for the command."
+                },
+                "timeout": {
+                    "type": "integer",
+                    "description": "Timeout in seconds (1–300).",
+                    "default": 30,
+                    "minimum": 1,
+                    "maximum": 300
+                },
+                "env": {
+                    "type": "object",
+                    "description": "Optional environment variables to add/override.",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": ["command"],
+            "additionalProperties": False
+        },
     },
 ]
 
@@ -928,6 +980,87 @@ async def handle_tristar_status(arguments: Dict[str, Any]) -> Dict[str, Any]:
     return await tristar_mcp.get_status()
 
 
+async def handle_tristar_shell_exec(arguments: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Execute a shell command on the TriStar server.
+
+    WARNING: Highly privileged. Guard via RBAC / MCP filter.
+    """
+    cmd = arguments.get("command")
+    if not cmd or not isinstance(cmd, str):
+        raise ValueError("command (string) is required")
+
+    cwd_arg = arguments.get("cwd")
+    timeout = arguments.get("timeout", 30)
+    env_arg = arguments.get("env") or {}
+
+    # Basic safety: bound timeout
+    if not isinstance(timeout, int) or timeout < 1 or timeout > 300:
+        timeout = 30
+
+    # Resolve working directory if provided
+    cwd: Optional[str] = None
+    if cwd_arg:
+        p = Path(cwd_arg).expanduser().resolve()
+        cwd = str(p)
+
+    # Build environment – overlay on current env
+    import os
+    env = os.environ.copy()
+    for k, v in env_arg.items():
+        if isinstance(k, str) and isinstance(v, str):
+            env[k] = v
+
+    start_time = time.time()
+
+    # IMPORTANT:
+    # Use shell=True bewusst – du willst echte Shell semantics.
+    # Wenn du es härter machen willst: shlex.split + shell=False.
+    proc = await asyncio.create_subprocess_shell(
+        cmd,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+        cwd=cwd,
+        env=env,
+    )
+
+    try:
+        stdout_bytes, stderr_bytes = await asyncio.wait_for(
+            proc.communicate(),
+            timeout=timeout,
+        )
+        timed_out = False
+    except asyncio.TimeoutError:
+        proc.kill()
+        try:
+            await proc.wait()
+        except Exception:
+            pass
+        stdout_bytes = b""
+        stderr_bytes = b"Command timed out"
+        timed_out = True
+
+    elapsed_ms = int((time.time() - start_time) * 1000)
+
+    stdout = stdout_bytes.decode("utf-8", errors="replace")
+    stderr = stderr_bytes.decode("utf-8", errors="replace")
+
+    result: Dict[str, Any] = {
+        "command": cmd,
+        "cwd": cwd,
+        "exit_code": proc.returncode if not timed_out else None,
+        "timed_out": timed_out,
+        "stdout": stdout,
+        "stderr": stderr,
+        "elapsed_ms": elapsed_ms,
+    }
+
+    # Optional: Hier kannst du dein TriForce-Audit-Logging einhängen:
+    # await audit_logger.log_system_shell_call(...)
+
+    return result
+
+
 # ============================================================================
 # Central Logger Handlers (for TriStar access to ALL system logs)
 # ============================================================================
@@ -1012,8 +1145,159 @@ async def handle_triforce_logs_stats(arguments: Dict[str, Any]) -> Dict[str, Any
     return central_logger.get_stats()
 
 
+# ============================================================================
+# Auto-Evolution Handlers (Multi-Agent Backend Self-Improvement)
+# ============================================================================
+
+try:
+    from .auto_evolve import AutoEvolveService, EvolutionMode
+    _HAS_AUTO_EVOLVE = True
+except ImportError:
+    _HAS_AUTO_EVOLVE = False
+    logger.warning("Auto-evolve service not available")
+
+
+async def handle_evolve_analyze(arguments: Dict[str, Any]) -> Dict[str, Any]:
+    """Run auto-evolution analysis phase."""
+    if not _HAS_AUTO_EVOLVE:
+        return {"error": "Auto-evolve service not available"}
+
+    service = AutoEvolveService()
+
+    # Log the evolution start
+    if _HAS_CENTRAL_LOGGER:
+        from ..utils.triforce_logging import TriForceLogEntry, LogCategory, LogLevel
+        central_logger.queue_log(TriForceLogEntry(
+            timestamp=datetime.now(timezone.utc).isoformat(),
+            trace_id="evolve",
+            category=LogCategory.SYSTEM,
+            level=LogLevel.INFO,
+            source="auto_evolve",
+            message=f"Starting evolution analysis mode={arguments.get('mode', 'analyze')}",
+        ))
+
+    result = await service.run_evolution(
+        mode=EvolutionMode(arguments.get("mode", "analyze")),
+        focus_areas=arguments.get("focus_areas"),
+        max_findings=arguments.get("max_findings", 50),
+    )
+
+    # Log completion
+    if _HAS_CENTRAL_LOGGER:
+        central_logger.queue_log(TriForceLogEntry(
+            timestamp=datetime.now(timezone.utc).isoformat(),
+            trace_id="evolve",
+            category=LogCategory.SYSTEM,
+            level=LogLevel.INFO,
+            source="auto_evolve",
+            message=f"Evolution completed: {len(result.findings)} findings",
+            metadata={"evolution_id": result.evolution_id, "findings_count": len(result.findings)},
+        ))
+
+    return result.to_dict()
+
+
+async def handle_evolve_history(arguments: Dict[str, Any]) -> Dict[str, Any]:
+    """Get evolution history."""
+    if not _HAS_AUTO_EVOLVE:
+        return {"error": "Auto-evolve service not available"}
+
+    service = AutoEvolveService()
+    history = await service.get_evolution_history(limit=arguments.get("limit", 10))
+    return {"history": history, "count": len(history)}
+
+
+async def handle_evolve_broadcast(arguments: Dict[str, Any]) -> Dict[str, Any]:
+    """Broadcast a message to all CLI agents for collective analysis."""
+    if not _HAS_AUTO_EVOLVE:
+        return {"error": "Auto-evolve service not available"}
+
+    message = arguments.get("message")
+    if not message:
+        return {"error": "message is required"}
+
+    service = AutoEvolveService()
+    results = await service._activate_agent_mesh()
+
+    # Log the broadcast
+    if _HAS_CENTRAL_LOGGER:
+        from ..utils.triforce_logging import TriForceLogEntry, LogCategory, LogLevel
+        central_logger.queue_log(TriForceLogEntry(
+            timestamp=datetime.now(timezone.utc).isoformat(),
+            trace_id="evolve_broadcast",
+            category=LogCategory.AGENT,
+            level=LogLevel.INFO,
+            source="auto_evolve",
+            message=f"Agent mesh broadcast completed: {len(results)} agents",
+            metadata={"agents": list(results.keys())},
+        ))
+
+    return {"agents": list(results.keys()), "results": results}
+
+
+# Evolution Tools definitions
+EVOLVE_TOOLS = [
+    {
+        "name": "evolve_analyze",
+        "description": "Run auto-evolution analysis to find improvement opportunities. Activates all CLI agents (Claude, Codex, Gemini, OpenCode) to analyze codebase, search for issues, and propose improvements.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "mode": {
+                    "type": "string",
+                    "enum": ["analyze", "suggest", "implement", "full_auto"],
+                    "default": "analyze",
+                    "description": "Evolution mode: analyze=report only, suggest=with code proposals, implement=apply changes, full_auto=complete cycle",
+                },
+                "focus_areas": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Optional focus areas: security, performance, quality, architecture, scalability",
+                },
+                "max_findings": {
+                    "type": "integer",
+                    "default": 50,
+                    "maximum": 200,
+                    "description": "Maximum number of findings to return",
+                },
+            },
+            "required": [],
+        },
+    },
+    {
+        "name": "evolve_history",
+        "description": "Get history of past evolution runs",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "limit": {"type": "integer", "default": 10, "maximum": 50},
+            },
+            "required": [],
+        },
+    },
+    {
+        "name": "evolve_broadcast",
+        "description": "Broadcast a custom message to all CLI agents for collective analysis",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "message": {"type": "string", "description": "Message to broadcast to all agents"},
+            },
+            "required": ["message"],
+        },
+    },
+]
+
+# Add evolution tools to TRISTAR_TOOLS
+TRISTAR_TOOLS.extend(EVOLVE_TOOLS)
+
+
 # Handler mapping
 TRISTAR_HANDLERS = {
+    # Auto-Evolution
+    "evolve_analyze": handle_evolve_analyze,
+    "evolve_history": handle_evolve_history,
+    "evolve_broadcast": handle_evolve_broadcast,
     # TriForce Central Logs (ALL system logs)
     "triforce_logs_recent": handle_triforce_logs_recent,
     "triforce_logs_errors": handle_triforce_logs_errors,
@@ -1039,4 +1323,5 @@ TRISTAR_HANDLERS = {
     "tristar_agent_config": handle_tristar_agent_config,
     "tristar_agent_configure": handle_tristar_agent_configure,
     "tristar_status": handle_tristar_status,
+    "tristar_shell_exec": handle_tristar_shell_exec,
 }

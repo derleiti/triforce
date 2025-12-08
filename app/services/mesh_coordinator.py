@@ -220,9 +220,43 @@ class MeshCoordinator:
 
     async def start(self):
         """Startet den Mesh Coordinator"""
+        await self._load_pending_commands()
         self._running = True
         self._mcp_processor_task = asyncio.create_task(self._process_mcp_queue())
         logger.info("Mesh Coordinator started")
+
+    async def _load_pending_commands(self):
+        """Lädt ausstehende Commands von Disk"""
+        try:
+            loaded_cmds = []
+            if QUEUE_DIR.exists():
+                for f in QUEUE_DIR.glob("*.json"):
+                    try:
+                        data = json.loads(f.read_text())
+                        if data.get("status") == "pending":
+                            cmd = MCPCommand(
+                                id=data["id"],
+                                source_agent=data["source_agent"],
+                                command=data["command"],
+                                params=data["params"],
+                                priority=data.get("priority", 2),
+                                status="pending",
+                                created_at=data["created_at"],
+                            )
+                            loaded_cmds.append(cmd)
+                    except Exception as e:
+                        logger.warning(f"Failed to load queue file {f}: {e}")
+            
+            # Sort by priority
+            loaded_cmds.sort(key=lambda x: x.priority)
+            
+            async with self._lock:
+                self._mcp_queue.extend(loaded_cmds)
+                
+            logger.info(f"Loaded {len(loaded_cmds)} pending MCP commands from disk")
+            
+        except Exception as e:
+            logger.error(f"Error loading pending commands: {e}")
 
     async def stop(self):
         """Stoppt den Mesh Coordinator"""

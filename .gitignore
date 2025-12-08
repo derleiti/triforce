@@ -346,3 +346,10 @@ dump.rdb
 docker-compose.override.yml
 docker-compose.local.yml
 docker-compose.dev.yml
+
+# TriForce Backups (contain auth tokens)
+triforce/backup/
+triforce/backups/
+triforce/runtime/
+triforce/secrets/
+.backups/

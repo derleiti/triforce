@@ -58,6 +58,12 @@ OLLAMA_MODELS = {
 
 # Cloud-Modelle (via Mesh)
 CLOUD_MODELS = {
+    "gemini/gemini-2.5-flash": {
+        "role": "lead",
+        "provider": "gemini",
+        "capabilities": ["reasoning", "code", "vision", "search"],
+        "system_prompt_key": "gemini-lead",
+    },
     "gemini/gemini-2.0-flash": {
         "role": "lead",
         "provider": "gemini",
@@ -90,6 +96,11 @@ CLOUD_MODELS = {
     },
 }
 
+GEMINI_MODEL_IDS = {
+    "flash": "gemini/gemini-2.5-flash",
+    "standard": "gemini/gemini-2.0-flash",
+}
+
 
 # ============================================================================
 # GEMINI MODEL INIT SERVICE
@@ -106,11 +117,43 @@ class GeminiModelInitService:
     4. Registriert Cloud-Modelle im Mesh
     """
 
-    def __init__(self, base_url: str = "http://localhost:9000"):
+    def __init__(self, base_url: str = "http://localhost:9100"):
         self.base_url = base_url
         self._initialized_models: Dict[str, Dict[str, Any]] = {}
         self._init_lock = asyncio.Lock()
         self._client: Optional[httpx.AsyncClient] = None
+
+    def _create_function_declarations(self, tools: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Map tool definitions to function declarations and log missing keys."""
+        declarations: List[Dict[str, Any]] = []
+
+        for tool in tools:
+            try:
+                name = tool["name"]
+                schema = tool["inputSchema"]
+            except KeyError as exc:
+                logger.warning("Tool declaration missing key %s: %s", exc, tool)
+                continue
+
+            declarations.append({
+                "name": name,
+                "description": tool.get("description", ""),
+                "parameters": schema,
+            })
+
+        return declarations
+
+    def get_model(self, quality: str = "flash") -> Optional[str]:
+        """Return configured Gemini model id for the requested quality."""
+        quality_key = (quality or "flash").lower()
+        model_id = GEMINI_MODEL_IDS.get(quality_key) or GEMINI_MODEL_IDS.get("flash")
+        if not model_id:
+            logger.warning("No Gemini model id configured for quality '%s'", quality)
+            return None
+        if model_id not in CLOUD_MODELS:
+            logger.warning("Requested model id %s not found in CLOUD_MODELS", model_id)
+            return None
+        return model_id
 
     async def _get_client(self) -> httpx.AsyncClient:
         """Lazy-init HTTP client"""

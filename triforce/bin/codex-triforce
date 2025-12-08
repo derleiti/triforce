@@ -1,1 +1,34 @@
-/home/zombie/ailinux-ai-server-backend/bin/codex-triforce
+#!/bin/bash
+# Codex CLI Wrapper für TriForce MCP
+# Auto-Sync: Lädt Settings aus triforce/secrets/ (safe mode)
+
+TRIFORCE_ROOT="/home/zombie/ailinux-ai-server-backend/triforce"
+RUNTIME_DIR="$TRIFORCE_ROOT/runtime/codex"
+SECRETS="$TRIFORCE_ROOT/secrets"
+
+# Quick-Sync Auth aus Secrets
+if [[ -d "$SECRETS/codex" ]]; then
+    mkdir -p "$RUNTIME_DIR/.codex"
+    [[ -f "$SECRETS/codex/auth.json" ]] && cp -n "$SECRETS/codex/auth.json" "$RUNTIME_DIR/.codex/" 2>/dev/null
+    [[ -f "$SECRETS/codex/.openai-auth" ]] && cp -n "$SECRETS/codex/.openai-auth" "$RUNTIME_DIR/.codex/" 2>/dev/null
+    [[ -f "$SECRETS/codex/config.toml" ]] && [[ ! -f "$RUNTIME_DIR/.codex/config.toml" ]] && cp "$SECRETS/codex/config.toml" "$RUNTIME_DIR/.codex/" 2>/dev/null
+fi
+
+# Binary
+BINARY="/root/.npm-global/bin/codex"
+[[ ! -x "$BINARY" ]] && BINARY="/home/zombie/.npm-global/bin/codex"
+
+if [[ ! -x "$BINARY" ]]; then
+    echo "ERROR: Codex CLI nicht gefunden!"
+    exit 1
+fi
+
+# Environment
+export HOME="$RUNTIME_DIR"
+export CODEX_HOME="$RUNTIME_DIR"
+export PATH="$TRIFORCE_ROOT/bin:/root/.npm-global/bin:/home/zombie/.npm-global/bin:$PATH"
+
+# Workdir
+cd /home/zombie/ailinux-ai-server-backend 2>/dev/null || cd /home/zombie
+
+exec "$BINARY" "$@"

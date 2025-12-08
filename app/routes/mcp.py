@@ -3,8 +3,9 @@ from __future__ import annotations
 import base64
 from datetime import datetime, timezone
 from typing import Any, Awaitable, Callable, Dict, Iterable, List, Optional
+import json
 
-from fastapi import APIRouter, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.responses import JSONResponse
 
 from ..services.crawler.user_crawler import user_crawler
@@ -21,6 +22,7 @@ from ..routes.mesh import MESH_TOOLS, MESH_HANDLERS
 from ..services.mcp_filter import MESH_FILTER_TOOLS, MESH_FILTER_HANDLERS
 from ..services.init_service import INIT_TOOLS, INIT_HANDLERS, init_service, loadbalancer, mcp_brain
 from ..services.gemini_model_init import MODEL_INIT_TOOLS, MODEL_INIT_HANDLERS, gemini_model_init
+from ..services.agent_bootstrap import BOOTSTRAP_TOOLS, BOOTSTRAP_HANDLERS, bootstrap_service, chat_processor, shortcode_filter
 from ..routes.admin_crawler import (
     CrawlerConfigUpdate,
     CrawlerConfigUpdateResponse,
@@ -33,8 +35,16 @@ from ..mcp.api_docs import get_api_docs, get_endpoint_for_task, API_DOCUMENTATIO
 from ..mcp.translation import BidirectionalTranslator, APIToMCPTranslator, MCPToAPITranslator
 from ..mcp.specialists import specialist_router, SpecialistCapability, SPECIALISTS
 from ..mcp.context import context_manager, prompt_library, workflow_manager
+from ..mcp.adaptive_code import ADAPTIVE_CODE_TOOLS, ADAPTIVE_CODE_HANDLERS
+from ..services.compatibility_layer import compatibility_layer
+from ..services.system_control import system_control
+from ..services.mcp_debugger import mcp_debugger
+from ..utils.mcp_auth import AUTH_ENABLED, require_mcp_auth
+import logging
 
-router = APIRouter()
+mcp_logger = logging.getLogger("ailinux.mcp")
+
+router = APIRouter(dependencies=[Depends(require_mcp_auth)])
 
 
 def _estimate_tokens(text: str) -> int:
@@ -345,6 +355,48 @@ async def handle_mcp_to_api(params: Dict[str, Any]) -> Dict[str, Any]:
 # =============================================================================
 # NEW: Specialist Routing Handlers
 # =============================================================================
+
+async def handle_models_list(_: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    List available AI models, optimized for context window usage.
+    Returns models grouped by provider and capability.
+    """
+    models = await registry.list_models()
+    
+    # Group by provider
+    by_provider = {}
+    for m in models:
+        if m.provider not in by_provider:
+            by_provider[m.provider] = []
+        by_provider[m.provider].append(m.id)
+
+    # Group by key capabilities (saving context by not listing every model for every cap)
+    by_capability = {
+        "code": [],
+        "vision": [],
+        "chat": [],
+        "embedding": []
+    }
+    
+    for m in models:
+        for cap in m.capabilities:
+            if cap in by_capability:
+                by_capability[cap].append(m.id)
+            elif cap == "image_gen": # Map specific caps to broader categories if needed
+                 if "vision" not in by_capability: by_capability["vision"] = []
+                 by_capability["vision"].append(m.id)
+
+    # Simplify lists - strictly limit to ID strings to save tokens
+    return {
+        "summary": {
+            "total_models": len(models),
+            "providers": list(by_provider.keys())
+        },
+        "by_provider": by_provider,
+        "by_capability": {k: v[:50] for k, v in by_capability.items()}, # Limit to top 50 per cap to prevent overflow
+        "note": "Lists are truncated to top 50 per capability to save context."
+    }
+
 
 async def handle_specialists_list(_: Dict[str, Any]) -> Dict[str, Any]:
     """List all available model specialists."""
@@ -792,15 +844,265 @@ async def init_specific_model_endpoint(
 
 
 # ============================================================================
+# Bootstrap Endpoints
+# ============================================================================
+
+@router.post("/bootstrap", tags=["Bootstrap"], summary="Bootstrap all CLI agents")
+async def bootstrap_agents_endpoint(
+    sequential_lead: bool = True,
+) -> Dict[str, Any]:
+    """
+    Startet alle CLI Agents und pusht /init.
+
+    Bootstrap-Reihenfolge:
+    1. gemini-mcp (Lead) - zuerst
+    2. claude-mcp, codex-mcp, opencode-mcp (parallel)
+
+    Features:
+    - Shortcode Protocol v2.0 wird gepusht
+    - Agents werden mit /init initialisiert
+    - Rate Limiting aktiviert
+    """
+    return await bootstrap_service.bootstrap_all(sequential_lead=sequential_lead)
+
+
+@router.post("/bootstrap/{agent_id}", tags=["Bootstrap"], summary="Wakeup single agent")
+async def wakeup_agent_endpoint(agent_id: str) -> Dict[str, Any]:
+    """
+    Weckt einen einzelnen Agent auf.
+
+    Startet den Agent und pusht /init.
+    """
+    return await bootstrap_service.wakeup_agent(agent_id)
+
+
+@router.get("/bootstrap/status", tags=["Bootstrap"], summary="Bootstrap status")
+async def bootstrap_status_endpoint() -> Dict[str, Any]:
+    """
+    Gibt den aktuellen Bootstrap-Status zurück.
+
+    Zeigt:
+    - Initialisierte Agents
+    - Ausstehende Agents
+    - Boot-Dauer
+    """
+    return bootstrap_service.get_status()
+
+
+@router.post("/agent/output/process", tags=["Bootstrap"], summary="Process agent output")
+async def process_agent_output_endpoint(
+    agent_id: str,
+    output: str,
+) -> Dict[str, Any]:
+    """
+    Verarbeitet Agent Output und führt Shortcode Commands aus.
+
+    Features:
+    - Extrahiert Shortcodes aus Output
+    - Validiert gegen Whitelist
+    - Rate Limiting
+    - Führt Commands aus
+    """
+    return await chat_processor.process_output(agent_id, output)
+
+
+@router.get("/agent/ratelimit", tags=["Bootstrap"], summary="Rate limit stats")
+async def rate_limit_stats_endpoint(
+    agent_id: Optional[str] = None,
+) -> Dict[str, Any]:
+    """
+    Gibt Rate Limit Statistiken zurück.
+
+    Zeigt pro Agent:
+    - Verbleibende Tokens
+    - Commands pro Minute/Stunde
+    - Violations
+    """
+    from ..services.agent_bootstrap import rate_limiter
+    return rate_limiter.get_stats(agent_id)
+
+
+@router.post("/shortcode/extract", tags=["Bootstrap"], summary="Extract shortcodes from text")
+async def extract_shortcodes_endpoint(text: str) -> Dict[str, Any]:
+    """
+    Extrahiert Shortcodes aus Text ohne Ausführung.
+
+    Nützlich zum Testen des Shortcode-Parsers.
+    """
+    commands = shortcode_filter.extract_commands(text)
+    return {
+        "text_length": len(text),
+        "commands_found": len(commands),
+        "commands": [
+            {
+                "raw": cmd.raw,
+                "source": cmd.source_agent,
+                "target": cmd.target_agent,
+                "action": cmd.action,
+                "content": cmd.content,
+                "flow": cmd.flow,
+                "priority": cmd.priority,
+                "is_blocked": cmd.is_blocked,
+                "requires_confirmation": cmd.requires_confirmation,
+            }
+            for cmd in commands
+        ],
+    }
+
+
+# ============================================================================
+# Codebase REST Endpoints - Direct access to codebase edit functions
+# ============================================================================
+
+@router.get("/codebase/structure", tags=["Codebase"], summary="Get backend codebase structure")
+async def codebase_structure_endpoint(
+    path: str = "app",
+    include_files: bool = True,
+    max_depth: int = 4,
+) -> Dict[str, Any]:
+    """Returns directory structure of the backend codebase."""
+    return await handle_codebase_structure({
+        "path": path,
+        "include_files": include_files,
+        "max_depth": max_depth,
+    })
+
+
+@router.get("/codebase/file", tags=["Codebase"], summary="Read a file from codebase")
+async def codebase_file_endpoint(path: str) -> Dict[str, Any]:
+    """Reads a specific file from the backend codebase."""
+    return await handle_codebase_file({"path": path})
+
+
+@router.post("/codebase/search", tags=["Codebase"], summary="Search in codebase")
+async def codebase_search_endpoint(
+    query: str,
+    path: str = "app",
+    file_pattern: str = "*.py",
+    max_results: int = 50,
+    context_lines: int = 2,
+) -> Dict[str, Any]:
+    """Search for patterns in the backend codebase."""
+    return await handle_codebase_search({
+        "query": query,
+        "path": path,
+        "file_pattern": file_pattern,
+        "max_results": max_results,
+        "context_lines": context_lines,
+    })
+
+
+@router.post("/codebase/edit", tags=["Codebase"], summary="Edit a file in codebase")
+async def codebase_edit_endpoint(
+    path: str,
+    mode: str,
+    old_text: Optional[str] = None,
+    new_text: Optional[str] = None,
+    line_number: Optional[int] = None,
+    start_line: Optional[int] = None,
+    end_line: Optional[int] = None,
+    create_backup: bool = True,
+    dry_run: bool = False,
+) -> Dict[str, Any]:
+    """
+    Edit a file in the backend codebase.
+
+    Modes:
+    - replace: Find old_text and replace with new_text
+    - insert: Insert new_text at line_number
+    - append: Append new_text to end of file
+    - delete_lines: Delete lines from start_line to end_line
+
+    Creates automatic backup and validates Python syntax for .py files.
+    """
+    return await handle_codebase_edit({
+        "path": path,
+        "mode": mode,
+        "old_text": old_text,
+        "new_text": new_text,
+        "line_number": line_number,
+        "start_line": start_line,
+        "end_line": end_line,
+        "create_backup": create_backup,
+        "dry_run": dry_run,
+    })
+
+
+@router.post("/codebase/create", tags=["Codebase"], summary="Create a new file in codebase")
+async def codebase_create_endpoint(
+    path: str,
+    content: Optional[str] = None,
+    template: Optional[str] = None,
+) -> Dict[str, Any]:
+    """
+    Create a new file in the backend codebase.
+
+    Templates:
+    - empty: Empty file
+    - python_module: Basic Python module
+    - fastapi_route: FastAPI route template
+    - service_class: Service class template
+    """
+    return await handle_codebase_create({
+        "path": path,
+        "content": content,
+        "template": template,
+    })
+
+
+@router.post("/codebase/backup", tags=["Codebase"], summary="Manage codebase backups")
+async def codebase_backup_endpoint(
+    path: str,
+    action: str,
+) -> Dict[str, Any]:
+    """
+    Manage backups of codebase files.
+
+    Actions:
+    - create: Create a new backup
+    - restore: Restore from latest backup
+    - list: List available backups
+    - diff: Show diff between current and backup
+    """
+    return await handle_codebase_backup({
+        "path": path,
+        "action": action,
+    })
+
+
+@router.get("/codebase/routes", tags=["Codebase"], summary="Get all API routes")
+async def codebase_routes_endpoint() -> Dict[str, Any]:
+    """Returns all API routes with methods and handlers."""
+    return await handle_codebase_routes({})
+
+
+@router.get("/codebase/services", tags=["Codebase"], summary="Get all services")
+async def codebase_services_endpoint() -> Dict[str, Any]:
+    """Returns all service modules with classes and functions."""
+    return await handle_codebase_services({})
+
+
+# ============================================================================
 # Standard MCP Protocol Methods (Codex/Claude compatible)
 # ============================================================================
 
-async def handle_initialize(params: Dict[str, Any]) -> Dict[str, Any]:
-    """MCP initialize method - returns server info and capabilities."""
+async def handle_initialize(params: Dict[str, Any], request: Optional[Request] = None) -> Dict[str, Any]:
+    """
+    MCP initialize method - returns server info and capabilities.
+    Simple, stateless - no confirmation needed (API key already validated).
+    """
     from ..services.tristar.model_init import model_init_service
 
     # Get TriStar model count
     stats = await model_init_service.get_stats()
+
+    # Extract client info for logging
+    client_info = params.get("clientInfo", {})
+    client_name = client_info.get("name", "unknown")
+    client_version = client_info.get("version", "0.0.0")
+    client_ip = request.client.host if request and request.client else "unknown"
+
+    mcp_logger.info(f"MCP_INITIALIZE | Client: {client_name} v{client_version} | IP: {client_ip}")
 
     return {
         "protocolVersion": "2024-11-05",
@@ -887,7 +1189,7 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
         },
         # TriStar Tools
         {
-            "name": "tristar.models",
+            "name": "tristar_models",
             "description": "Get all registered TriStar LLM models with their roles and capabilities",
             "inputSchema": {
                 "type": "object",
@@ -899,7 +1201,7 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
             },
         },
         {
-            "name": "tristar.init",
+            "name": "tristar_init",
             "description": "Initialize (impfen) a model with system prompt and configuration",
             "inputSchema": {
                 "type": "object",
@@ -910,7 +1212,7 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
             },
         },
         {
-            "name": "tristar.memory.store",
+            "name": "tristar_memory_store",
             "description": "Store a memory entry in TriStar shared memory",
             "inputSchema": {
                 "type": "object",
@@ -925,7 +1227,7 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
             },
         },
         {
-            "name": "tristar.memory.search",
+            "name": "tristar_memory_search",
             "description": "Search TriStar shared memory",
             "inputSchema": {
                 "type": "object",
@@ -940,7 +1242,7 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
         },
         # Codebase Access Tools
         {
-            "name": "codebase.structure",
+            "name": "codebase_structure",
             "description": "Get the backend codebase directory structure (app/, routes/, services/, etc.)",
             "inputSchema": {
                 "type": "object",
@@ -952,7 +1254,7 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
             },
         },
         {
-            "name": "codebase.file",
+            "name": "codebase_file",
             "description": "Read a specific file from the backend codebase",
             "inputSchema": {
                 "type": "object",
@@ -963,7 +1265,7 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
             },
         },
         {
-            "name": "codebase.search",
+            "name": "codebase_search",
             "description": "Search for patterns/text in the codebase",
             "inputSchema": {
                 "type": "object",
@@ -978,7 +1280,7 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
             },
         },
         {
-            "name": "codebase.routes",
+            "name": "codebase_routes",
             "description": "Get all API routes with their HTTP methods, paths, and handlers",
             "inputSchema": {
                 "type": "object",
@@ -986,16 +1288,72 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
             },
         },
         {
-            "name": "codebase.services",
+            "name": "codebase_services",
             "description": "Get all service modules with their classes and functions",
             "inputSchema": {
                 "type": "object",
                 "properties": {},
             },
         },
+        {
+            "name": "codebase_edit",
+            "description": "Edit a file in the backend codebase. Creates automatic backup. Validates Python syntax for .py files.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "path": {"type": "string", "description": "Relative file path (e.g., 'app/routes/mcp.py')"},
+                    "mode": {
+                        "type": "string",
+                        "enum": ["replace", "insert", "append", "delete_lines"],
+                        "description": "Edit mode: replace (old_text→new_text), insert (at line), append (to end), delete_lines (line range)"
+                    },
+                    "old_text": {"type": "string", "description": "Text to find and replace (for mode=replace)"},
+                    "new_text": {"type": "string", "description": "New text to insert (for replace/insert/append)"},
+                    "line_number": {"type": "integer", "description": "Line number for insert mode"},
+                    "start_line": {"type": "integer", "description": "Start line for delete_lines mode"},
+                    "end_line": {"type": "integer", "description": "End line for delete_lines mode"},
+                    "create_backup": {"type": "boolean", "default": True, "description": "Create .bak backup file"},
+                    "dry_run": {"type": "boolean", "default": False, "description": "Preview changes without writing"},
+                },
+                "required": ["path", "mode"],
+            },
+        },
+        {
+            "name": "codebase_create",
+            "description": "Create a new file in the backend codebase. Will not overwrite existing files.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "path": {"type": "string", "description": "Relative file path for new file"},
+                    "content": {"type": "string", "description": "File content"},
+                    "template": {
+                        "type": "string",
+                        "enum": ["empty", "python_module", "fastapi_route", "service_class"],
+                        "description": "Use a template instead of content"
+                    },
+                },
+                "required": ["path"],
+            },
+        },
+        {
+            "name": "codebase_backup",
+            "description": "Create or restore backups of codebase files",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "path": {"type": "string", "description": "Relative file path"},
+                    "action": {
+                        "type": "string",
+                        "enum": ["create", "restore", "list", "diff"],
+                        "description": "Backup action"
+                    },
+                },
+                "required": ["path", "action"],
+            },
+        },
         # CLI Agent Tools - Subprocess Management for Claude, Codex, Gemini
         {
-            "name": "cli-agents.list",
+            "name": "cli-agents_list",
             "description": "List all CLI agents (Claude, Codex, Gemini subprocesses) with their status",
             "inputSchema": {
                 "type": "object",
@@ -1003,7 +1361,7 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
             },
         },
         {
-            "name": "cli-agents.get",
+            "name": "cli-agents_get",
             "description": "Get details for a specific CLI agent including output buffer",
             "inputSchema": {
                 "type": "object",
@@ -1014,7 +1372,7 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
             },
         },
         {
-            "name": "cli-agents.start",
+            "name": "cli-agents_start",
             "description": "Start a CLI agent subprocess (fetches system prompt from TriForce)",
             "inputSchema": {
                 "type": "object",
@@ -1025,7 +1383,7 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
             },
         },
         {
-            "name": "cli-agents.stop",
+            "name": "cli-agents_stop",
             "description": "Stop a CLI agent subprocess",
             "inputSchema": {
                 "type": "object",
@@ -1037,7 +1395,7 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
             },
         },
         {
-            "name": "cli-agents.restart",
+            "name": "cli-agents_restart",
             "description": "Restart a CLI agent (stop + start)",
             "inputSchema": {
                 "type": "object",
@@ -1048,7 +1406,7 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
             },
         },
         {
-            "name": "cli-agents.call",
+            "name": "cli-agents_call",
             "description": "Send a message to a CLI agent",
             "inputSchema": {
                 "type": "object",
@@ -1061,7 +1419,7 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
             },
         },
         {
-            "name": "cli-agents.broadcast",
+            "name": "cli-agents_broadcast",
             "description": "Broadcast a message to multiple or all CLI agents",
             "inputSchema": {
                 "type": "object",
@@ -1073,7 +1431,7 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
             },
         },
         {
-            "name": "cli-agents.output",
+            "name": "cli-agents_output",
             "description": "Get output buffer for a CLI agent",
             "inputSchema": {
                 "type": "object",
@@ -1085,7 +1443,7 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
             },
         },
         {
-            "name": "cli-agents.stats",
+            "name": "cli-agents_stats",
             "description": "Get statistics for CLI agents (count by status and type)",
             "inputSchema": {
                 "type": "object",
@@ -1103,8 +1461,73 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
     tools.extend(MESH_FILTER_TOOLS)
     tools.extend(INIT_TOOLS)
     tools.extend(MODEL_INIT_TOOLS)
+    tools.extend(BOOTSTRAP_TOOLS)
+    tools.extend(ADAPTIVE_CODE_TOOLS)
+
+    # Add System & Compatibility Tools
+    tools.extend([
+        {
+            "name": "check_compatibility",
+            "description": "Checks compatibility of all MCP tools with OpenAI, Gemini and Anthropic",
+            "inputSchema": {"type": "object", "properties": {}}
+        },
+        {
+            "name": "debug_mcp_request",
+            "description": "Traces an MCP request without executing it",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "method": {"type": "string"},
+                    "params": {"type": "object"}
+                },
+                "required": ["method"]
+            }
+        },
+        {
+            "name": "restart_backend",
+            "description": "Restarts the entire backend service",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "delay": {"type": "integer", "default": 2}
+                }
+            }
+        },
+        {
+            "name": "restart_agent",
+            "description": "Restarts a specific CLI agent",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "agent_id": {"type": "string"}
+                },
+                "required": ["agent_id"]
+            }
+        }
+    ])
 
     return {"tools": tools}
+
+
+async def handle_check_compatibility(params: Dict[str, Any]) -> Dict[str, Any]:
+    """Handle check_compatibility tool."""
+    tools_response = await handle_tools_list({})
+    tools = tools_response["tools"]
+    return compatibility_layer.check_compatibility(tools)
+
+async def handle_debug_mcp_request(params: Dict[str, Any]) -> Dict[str, Any]:
+    """Handle debug_mcp_request tool."""
+    return await mcp_debugger.debug_mcp_request(
+        params.get("method", ""), params.get("params", {})
+    )
+
+async def handle_restart_backend(params: Dict[str, Any]) -> Dict[str, Any]:
+    """Handle restart_backend tool."""
+    return await system_control.restart_backend(params.get("delay", 2))
+
+async def handle_restart_agent(params: Dict[str, Any]) -> Dict[str, Any]:
+    """Handle restart_agent tool."""
+    return await system_control.restart_agent(params.get("agent_id", ""))
 
 
 async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
@@ -1118,31 +1541,39 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
     # Map tool names to internal handlers
     tool_map = {
         "chat": handle_llm_invoke,
-        "list_models": lambda p: handle_specialists_list({}),
+        "list_models": handle_models_list,
         "ask_specialist": handle_specialists_invoke,
         "crawl_url": handle_crawl_url,
         "web_search": lambda p: handle_llm_invoke({"model": "gemini/gemini-2.5-flash", "prompt": f"Web search: {p.get('query', '')}"}),
         # TriStar Integration
-        "tristar.models": handle_tristar_models,
-        "tristar.init": handle_tristar_init,
-        "tristar.memory.store": handle_tristar_memory_store,
-        "tristar.memory.search": handle_tristar_memory_search,
+        "tristar_models": handle_tristar_models,
+        "tristar_init": handle_tristar_init,
+        "tristar_memory_store": handle_tristar_memory_store,
+        "tristar_memory_search": handle_tristar_memory_search,
         # Codebase Access
-        "codebase.structure": handle_codebase_structure,
-        "codebase.file": handle_codebase_file,
-        "codebase.search": handle_codebase_search,
-        "codebase.routes": handle_codebase_routes,
-        "codebase.services": handle_codebase_services,
+        "codebase_structure": handle_codebase_structure,
+        "codebase_file": handle_codebase_file,
+        "codebase_search": handle_codebase_search,
+        "codebase_routes": handle_codebase_routes,
+        "codebase_services": handle_codebase_services,
+        "codebase_edit": handle_codebase_edit,
+        "codebase_create": handle_codebase_create,
+        "codebase_backup": handle_codebase_backup,
         # CLI Agents
-        "cli-agents.list": handle_cli_agents_list,
-        "cli-agents.get": handle_cli_agents_get,
-        "cli-agents.start": handle_cli_agents_start,
-        "cli-agents.stop": handle_cli_agents_stop,
-        "cli-agents.restart": handle_cli_agents_restart,
-        "cli-agents.call": handle_cli_agents_call,
-        "cli-agents.broadcast": handle_cli_agents_broadcast,
-        "cli-agents.output": handle_cli_agents_output,
-        "cli-agents.stats": handle_cli_agents_stats,
+        "cli-agents_list": handle_cli_agents_list,
+        "cli-agents_get": handle_cli_agents_get,
+        "cli-agents_start": handle_cli_agents_start,
+        "cli-agents_stop": handle_cli_agents_stop,
+        "cli-agents_restart": handle_cli_agents_restart,
+        "cli-agents_call": handle_cli_agents_call,
+        "cli-agents_broadcast": handle_cli_agents_broadcast,
+        "cli-agents_output": handle_cli_agents_output,
+        "cli-agents_stats": handle_cli_agents_stats,
+        # System & Compatibility
+        "check_compatibility": handle_check_compatibility,
+        "debug_mcp_request": handle_debug_mcp_request,
+        "restart_backend": handle_restart_backend,
+        "restart_agent": handle_restart_agent,
     }
 
     # Merge with dynamic handlers from services
@@ -1154,15 +1585,23 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
     tool_map.update(MESH_FILTER_HANDLERS)
     tool_map.update(INIT_HANDLERS)
     tool_map.update(MODEL_INIT_HANDLERS)
+    tool_map.update(BOOTSTRAP_HANDLERS)
+    tool_map.update(ADAPTIVE_CODE_HANDLERS)
 
     handler = tool_map.get(tool_name)
+    # Compatibility fallback
+    if not handler and "." in tool_name:
+        handler = tool_map.get(tool_name.replace(".", "_"))
+    if not handler and "_" in tool_name:
+        handler = tool_map.get(tool_name.replace("_", "."))
+
     if not handler:
         raise ValueError(f"Unknown tool: {tool_name}")
 
     result = await handler(arguments)
     return {
         "content": [
-            {"type": "text", "text": str(result)}
+            {"type": "text", "text": json.dumps(result, separators=(',', ':'))}
         ],
         "isError": False,
     }
@@ -1349,7 +1788,7 @@ def _safe_path(relative_path: str) -> Optional[Path]:
 
 
 async def handle_codebase_structure(params: Dict[str, Any]) -> Dict[str, Any]:
-    """Get the codebase directory structure."""
+    """Get the codebase directory structure as a concise tree string."""
     include_files = params.get("include_files", True)
     max_depth = params.get("max_depth", 4)
     path = params.get("path", "app")
@@ -1358,40 +1797,49 @@ async def handle_codebase_structure(params: Dict[str, Any]) -> Dict[str, Any]:
     if not safe_root or not safe_root.exists():
         raise ValueError(f"Path not found: {path}")
 
-    def scan_dir(dir_path: Path, current_depth: int = 0) -> Dict[str, Any]:
-        if current_depth >= max_depth:
-            return {"name": dir_path.name, "type": "directory", "truncated": True}
+    lines = []
 
-        result = {
-            "name": dir_path.name,
-            "type": "directory",
-            "children": [],
-        }
+    def build_tree(dir_path: Path, prefix: str = "", current_depth: int = 0):
+        if current_depth > max_depth:
+            lines.append(f"{prefix}└── ... (max depth)")
+            return
 
         try:
-            for item in sorted(dir_path.iterdir()):
+            # Sort: directories first, then files
+            items = sorted(dir_path.iterdir(), key=lambda x: (not x.is_dir(), x.name.lower()))
+            
+            # Filter items
+            filtered_items = []
+            for item in items:
                 if item.name.startswith(".") or item.name == "__pycache__":
                     continue
+                if item.is_file() and not include_files:
+                    continue
+                if item.is_file() and item.suffix not in ALLOWED_EXTENSIONS:
+                    continue
+                filtered_items.append(item)
 
+            for i, item in enumerate(filtered_items):
+                is_last = (i == len(filtered_items) - 1)
+                connector = "└── " if is_last else "├── "
+                
                 if item.is_dir():
-                    result["children"].append(scan_dir(item, current_depth + 1))
-                elif include_files and item.suffix in ALLOWED_EXTENSIONS:
-                    result["children"].append({
-                        "name": item.name,
-                        "type": "file",
-                        "size": item.stat().st_size,
-                        "path": str(item.relative_to(BACKEND_ROOT)),
-                    })
+                    lines.append(f"{prefix}{connector}{item.name}/")
+                    new_prefix = prefix + ("    " if is_last else "│   ")
+                    build_tree(item, new_prefix, current_depth + 1)
+                else:
+                    lines.append(f"{prefix}{connector}{item.name}")
+
         except PermissionError:
-            pass
+            lines.append(f"{prefix}└── (access denied)")
 
-        return result
-
-    structure = scan_dir(safe_root)
+    lines.append(f"{path}/")
+    build_tree(safe_root)
+    
     return {
         "root": path,
-        "structure": structure,
-        "backend_version": "2.80",
+        "structure": "\n".join(lines),
+        "backend_version": "2.80 (Optimized Tree)",
     }
 
 
@@ -1422,6 +1870,452 @@ async def handle_codebase_file(params: Dict[str, Any]) -> Dict[str, Any]:
         "size": len(content),
         "lines": content.count("\n") + 1,
     }
+
+
+# =============================================================================
+# CODEBASE EDIT TOOLS - Self-modification capability with safety measures
+# =============================================================================
+
+BACKUP_DIR = BACKEND_ROOT / ".backups"
+EDIT_LOG_FILE = BACKEND_ROOT / ".edit_log.jsonl"
+
+# Edit-specific sensitive paths
+EDIT_FORBIDDEN_PATHS = {
+    ".env", ".env.local", ".env.production",
+    "credentials.json", "secrets.py", "config.py",
+}
+
+
+def _validate_python_syntax(content: str) -> tuple[bool, Optional[str]]:
+    """Validates Python syntax without executing."""
+    import ast
+    try:
+        ast.parse(content)
+        return True, None
+    except SyntaxError as e:
+        return False, f"Line {e.lineno}: {e.msg}"
+
+
+def _create_backup(file_path: Path) -> Optional[Path]:
+    """Creates timestamped backup of file."""
+    from datetime import datetime
+
+    if not file_path.exists():
+        return None
+
+    BACKUP_DIR.mkdir(parents=True, exist_ok=True)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    rel_path = file_path.relative_to(BACKEND_ROOT)
+    backup_name = f"{rel_path.as_posix().replace('/', '_')}_{timestamp}.bak"
+    backup_path = BACKUP_DIR / backup_name
+
+    import shutil
+    shutil.copy2(file_path, backup_path)
+    return backup_path
+
+
+def _log_edit(action: str, path: str, details: Dict[str, Any]):
+    """Logs edit operations for audit trail."""
+    import json
+    from datetime import datetime
+
+    log_entry = {
+        "timestamp": datetime.now().isoformat(),
+        "action": action,
+        "path": path,
+        "details": details,
+    }
+
+    with open(EDIT_LOG_FILE, "a") as f:
+        f.write(json.dumps(log_entry) + "\n")
+
+
+async def handle_codebase_edit(params: Dict[str, Any]) -> Dict[str, Any]:
+    """Edit a file in the codebase with safety checks."""
+    file_path = params.get("path")
+    mode = params.get("mode")
+
+    if not file_path:
+        raise ValueError("'path' parameter is required")
+    if not mode:
+        raise ValueError("'mode' parameter is required")
+
+    # Security checks
+    safe_path = _safe_path(file_path)
+    if not safe_path:
+        raise ValueError(f"Invalid path: {file_path}")
+
+    if any(forbidden in file_path for forbidden in EDIT_FORBIDDEN_PATHS):
+        raise ValueError(f"Editing forbidden for security-sensitive files: {file_path}")
+
+    if not safe_path.exists():
+        raise ValueError(f"File not found: {file_path}")
+
+    if safe_path.suffix not in ALLOWED_EXTENSIONS:
+        raise ValueError(f"File type not allowed for editing: {safe_path.suffix}")
+
+    # Read current content
+    try:
+        original_content = safe_path.read_text(encoding="utf-8")
+    except UnicodeDecodeError:
+        raise ValueError("File is not valid UTF-8 text")
+
+    original_lines = original_content.splitlines(keepends=True)
+    dry_run = params.get("dry_run", False)
+    create_backup = params.get("create_backup", True)
+
+    # Process edit based on mode
+    if mode == "replace":
+        old_text = params.get("old_text")
+        new_text = params.get("new_text", "")
+
+        if not old_text:
+            raise ValueError("'old_text' parameter required for replace mode")
+
+        if old_text not in original_content:
+            raise ValueError(f"old_text not found in file. File has {len(original_content)} chars.")
+
+        # Count occurrences
+        occurrences = original_content.count(old_text)
+        if occurrences > 1:
+            raise ValueError(f"old_text found {occurrences} times. Please provide more unique text.")
+
+        new_content = original_content.replace(old_text, new_text, 1)
+
+    elif mode == "insert":
+        line_number = params.get("line_number")
+        new_text = params.get("new_text", "")
+
+        if not line_number or line_number < 1:
+            raise ValueError("'line_number' (>= 1) required for insert mode")
+
+        lines = original_lines.copy()
+        insert_idx = min(line_number - 1, len(lines))
+
+        # Ensure new_text ends with newline
+        if new_text and not new_text.endswith("\n"):
+            new_text += "\n"
+
+        lines.insert(insert_idx, new_text)
+        new_content = "".join(lines)
+
+    elif mode == "append":
+        new_text = params.get("new_text", "")
+
+        if not new_text:
+            raise ValueError("'new_text' parameter required for append mode")
+
+        new_content = original_content
+        if not new_content.endswith("\n"):
+            new_content += "\n"
+        new_content += new_text
+        if not new_content.endswith("\n"):
+            new_content += "\n"
+
+    elif mode == "delete_lines":
+        start_line = params.get("start_line")
+        end_line = params.get("end_line")
+
+        if not start_line or not end_line:
+            raise ValueError("'start_line' and 'end_line' required for delete_lines mode")
+        if start_line < 1 or end_line < start_line:
+            raise ValueError("Invalid line range")
+
+        lines = original_lines.copy()
+        del lines[start_line - 1:end_line]
+        new_content = "".join(lines)
+
+    else:
+        raise ValueError(f"Unknown mode: {mode}")
+
+    # Validate Python syntax for .py files
+    if safe_path.suffix == ".py":
+        is_valid, error_msg = _validate_python_syntax(new_content)
+        if not is_valid:
+            raise ValueError(f"Python syntax error in modified content: {error_msg}")
+
+    # Calculate diff summary
+    original_line_count = len(original_lines)
+    new_line_count = new_content.count("\n") + (0 if new_content.endswith("\n") else 1)
+    lines_changed = abs(new_line_count - original_line_count)
+
+    result = {
+        "path": file_path,
+        "mode": mode,
+        "dry_run": dry_run,
+        "original_lines": original_line_count,
+        "new_lines": new_line_count,
+        "lines_changed": lines_changed,
+        "syntax_valid": True if safe_path.suffix == ".py" else None,
+    }
+
+    if dry_run:
+        result["preview"] = new_content[:2000] + ("..." if len(new_content) > 2000 else "")
+        result["message"] = "Dry run - no changes written"
+    else:
+        # Create backup
+        if create_backup:
+            backup_path = _create_backup(safe_path)
+            result["backup"] = str(backup_path.relative_to(BACKEND_ROOT)) if backup_path else None
+
+        # Write new content
+        safe_path.write_text(new_content, encoding="utf-8")
+
+        # Log the edit
+        _log_edit("edit", file_path, {
+            "mode": mode,
+            "original_lines": original_line_count,
+            "new_lines": new_line_count,
+            "backup": result.get("backup"),
+        })
+
+        result["message"] = f"File edited successfully ({mode})"
+
+    return result
+
+
+async def handle_codebase_create(params: Dict[str, Any]) -> Dict[str, Any]:
+    """Create a new file in the codebase."""
+    file_path = params.get("path")
+    content = params.get("content", "")
+    template = params.get("template")
+
+    if not file_path:
+        raise ValueError("'path' parameter is required")
+
+    # Security checks
+    safe_path = _safe_path(file_path)
+    if not safe_path:
+        raise ValueError(f"Invalid path: {file_path}")
+
+    if any(forbidden in file_path for forbidden in EDIT_FORBIDDEN_PATHS):
+        raise ValueError(f"Creating forbidden for security-sensitive files")
+
+    if safe_path.exists():
+        raise ValueError(f"File already exists: {file_path}. Use codebase.edit to modify.")
+
+    if safe_path.suffix not in ALLOWED_EXTENSIONS:
+        raise ValueError(f"File type not allowed: {safe_path.suffix}")
+
+    # Use template if specified
+    if template:
+        templates = {
+            "empty": "",
+            "python_module": '''"""
+Module description.
+"""
+
+
+def main():
+    pass
+
+
+if __name__ == "__main__":
+    main()
+''',
+            "fastapi_route": '''"""
+API routes for {name}.
+"""
+from fastapi import APIRouter, HTTPException
+from typing import Dict, Any
+
+router = APIRouter()
+
+
+@router.get("/")
+async def get_items() -> Dict[str, Any]:
+    """Get all items."""
+    return {{"items": []}}
+
+
+@router.post("/")
+async def create_item(data: Dict[str, Any]) -> Dict[str, Any]:
+    """Create a new item."""
+    return {{"created": True, "data": data}}
+''',
+            "service_class": '''"""
+Service for {name}.
+"""
+from typing import Dict, Any, Optional
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+class {ClassName}Service:
+    """Service class for {name} operations."""
+
+    def __init__(self):
+        self.logger = logger
+
+    async def process(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """Process the data."""
+        self.logger.info(f"Processing: {{data}}")
+        return {{"status": "processed", "data": data}}
+
+
+# Singleton instance
+{instance_name}_service = {ClassName}Service()
+''',
+        }
+
+        if template not in templates:
+            raise ValueError(f"Unknown template: {template}")
+
+        # Generate names from path
+        name = safe_path.stem
+        class_name = "".join(word.capitalize() for word in name.split("_"))
+
+        content = templates[template].format(
+            name=name,
+            ClassName=class_name,
+            instance_name=name.lower(),
+        )
+
+    # Validate Python syntax for .py files
+    if safe_path.suffix == ".py" and content:
+        is_valid, error_msg = _validate_python_syntax(content)
+        if not is_valid:
+            raise ValueError(f"Python syntax error: {error_msg}")
+
+    # Ensure parent directory exists
+    safe_path.parent.mkdir(parents=True, exist_ok=True)
+
+    # Write file
+    safe_path.write_text(content, encoding="utf-8")
+
+    # Log the creation
+    _log_edit("create", file_path, {
+        "template": template,
+        "size": len(content),
+    })
+
+    return {
+        "path": file_path,
+        "created": True,
+        "size": len(content),
+        "lines": content.count("\n") + 1,
+        "template": template,
+    }
+
+
+async def handle_codebase_backup(params: Dict[str, Any]) -> Dict[str, Any]:
+    """Manage backups of codebase files."""
+    file_path = params.get("path")
+    action = params.get("action")
+
+    if not file_path:
+        raise ValueError("'path' parameter is required")
+    if not action:
+        raise ValueError("'action' parameter is required")
+
+    safe_path = _safe_path(file_path)
+    if not safe_path:
+        raise ValueError(f"Invalid path: {file_path}")
+
+    BACKUP_DIR.mkdir(parents=True, exist_ok=True)
+
+    # Get backup pattern for this file
+    rel_path = file_path.replace("/", "_")
+    backup_pattern = f"{rel_path}_*.bak"
+
+    if action == "create":
+        if not safe_path.exists():
+            raise ValueError(f"File not found: {file_path}")
+
+        backup_path = _create_backup(safe_path)
+        _log_edit("backup_create", file_path, {"backup": str(backup_path)})
+
+        return {
+            "action": "create",
+            "path": file_path,
+            "backup": str(backup_path.relative_to(BACKEND_ROOT)),
+        }
+
+    elif action == "list":
+        backups = sorted(BACKUP_DIR.glob(backup_pattern), reverse=True)
+        backup_list = []
+
+        for bp in backups[:20]:  # Limit to 20 most recent
+            stat = bp.stat()
+            backup_list.append({
+                "name": bp.name,
+                "size": stat.st_size,
+                "modified": stat.st_mtime,
+            })
+
+        return {
+            "action": "list",
+            "path": file_path,
+            "backups": backup_list,
+            "count": len(backup_list),
+        }
+
+    elif action == "restore":
+        backups = sorted(BACKUP_DIR.glob(backup_pattern), reverse=True)
+
+        if not backups:
+            raise ValueError(f"No backups found for: {file_path}")
+
+        latest_backup = backups[0]
+
+        # Create backup of current file before restore
+        if safe_path.exists():
+            _create_backup(safe_path)
+
+        # Restore from backup
+        import shutil
+        shutil.copy2(latest_backup, safe_path)
+
+        _log_edit("backup_restore", file_path, {
+            "restored_from": latest_backup.name,
+        })
+
+        return {
+            "action": "restore",
+            "path": file_path,
+            "restored_from": latest_backup.name,
+            "size": latest_backup.stat().st_size,
+        }
+
+    elif action == "diff":
+        if not safe_path.exists():
+            raise ValueError(f"File not found: {file_path}")
+
+        backups = sorted(BACKUP_DIR.glob(backup_pattern), reverse=True)
+
+        if not backups:
+            return {
+                "action": "diff",
+                "path": file_path,
+                "has_backup": False,
+                "message": "No backups to compare",
+            }
+
+        import difflib
+
+        current_content = safe_path.read_text(encoding="utf-8")
+        backup_content = backups[0].read_text(encoding="utf-8")
+
+        diff = list(difflib.unified_diff(
+            backup_content.splitlines(keepends=True),
+            current_content.splitlines(keepends=True),
+            fromfile=f"backup/{backups[0].name}",
+            tofile=file_path,
+            lineterm=""
+        ))
+
+        return {
+            "action": "diff",
+            "path": file_path,
+            "has_backup": True,
+            "backup": backups[0].name,
+            "diff": "".join(diff)[:5000],  # Limit diff output
+            "lines_changed": len([d for d in diff if d.startswith("+") or d.startswith("-")]),
+        }
+
+    else:
+        raise ValueError(f"Unknown action: {action}")
 
 
 async def handle_codebase_search(params: Dict[str, Any]) -> Dict[str, Any]:
@@ -1615,11 +2509,19 @@ async def handle_codebase_services(params: Dict[str, Any]) -> Dict[str, Any]:
 # ============================================================================
 
 async def handle_cli_agents_list(params: Dict[str, Any]) -> Dict[str, Any]:
-    """List all CLI agents (Claude, Codex, Gemini subprocesses)."""
+    """List all CLI agents (Claude, Codex, Gemini subprocesses) - Optimized Summary."""
     from ..services.tristar.agent_controller import agent_controller
     agents = await agent_controller.list_agents()
+    
+    summary = []
+    for a in agents:
+        agent_id = a.get("id", "unknown")
+        status = a.get("status", "unknown")
+        pid = a.get("pid", "-")
+        summary.append(f"{agent_id}: {status} (pid={pid})")
+
     return {
-        "cli_agents": agents,
+        "summary": summary,
         "count": len(agents),
     }
 
@@ -1811,78 +2713,299 @@ MCP_HANDLERS: Dict[str, Handler] = {
     "resources/read": handle_resources_read_mcp,
 
     # Original handlers
-    "crawl.url": handle_crawl_url,
-    "crawl.site": handle_crawl_site,
-    "crawl.status": handle_crawl_status,
-    "posts.create": handle_posts_create,
-    "media.upload": handle_media_upload,
-    "llm.invoke": handle_llm_invoke,
-    "admin.crawler.control": handle_admin_control,
+    "crawl_url": handle_crawl_url,
+    "crawl_site": handle_crawl_site,
+    "crawl_status": handle_crawl_status,
+    "posts_create": handle_posts_create,
+    "media_upload": handle_media_upload,
+    "llm_invoke": handle_llm_invoke,
+    "admin_crawler_control": handle_admin_control,
     "admin.crawler.config.get": handle_admin_config_get,
     "admin.crawler.config.set": handle_admin_config_set,
 
     # API Documentation (for Claude Code integration)
-    "api.docs": handle_api_docs,
-    "api.search": handle_api_search,
+    "api_docs": handle_api_docs,
+    "api_search": handle_api_search,
 
     # Translation Layer (API ↔ MCP)
     "translate": handle_translate,
-    "translate.api_to_mcp": handle_api_to_mcp,
-    "translate.mcp_to_api": handle_mcp_to_api,
+    "translate_api_to_mcp": handle_api_to_mcp,
+    "translate_mcp_to_api": handle_mcp_to_api,
 
     # Model Specialists
-    "specialists.list": handle_specialists_list,
-    "specialists.route": handle_specialists_route,
-    "specialists.invoke": handle_specialists_invoke,
+    "specialists_list": handle_specialists_list,
+    "specialists_route": handle_specialists_route,
+    "specialists_invoke": handle_specialists_invoke,
 
     # Context Management
-    "context.create": handle_context_create,
-    "context.get": handle_context_get,
-    "context.message": handle_context_message,
-    "context.list": handle_context_list,
-    "context.clear": handle_context_clear,
+    "context_create": handle_context_create,
+    "context_get": handle_context_get,
+    "context_message": handle_context_message,
+    "context_list": handle_context_list,
+    "context_clear": handle_context_clear,
 
     # Prompt Library
-    "prompts.list": handle_prompts_list,
-    "prompts.render": handle_prompts_render,
-    "prompts.add": handle_prompts_add,
+    "prompts_list": handle_prompts_list,
+    "prompts_render": handle_prompts_render,
+    "prompts_add": handle_prompts_add,
 
     # Workflow Orchestration
-    "workflows.list": handle_workflows_list,
-    "workflows.create": handle_workflows_create,
-    "workflows.status": handle_workflows_status,
+    "workflows_list": handle_workflows_list,
+    "workflows_create": handle_workflows_create,
+    "workflows_status": handle_workflows_status,
 
     # TriStar Integration (v2.80)
-    "tristar.models": handle_tristar_models,
-    "tristar.models.list": handle_tristar_models,
-    "tristar.init": handle_tristar_init,
-    "tristar.memory.store": handle_tristar_memory_store,
-    "tristar.memory.search": handle_tristar_memory_search,
+    "tristar_models": handle_tristar_models,
+    "tristar_models_list": handle_tristar_models,
+    "tristar_init": handle_tristar_init,
+    "tristar_memory_store": handle_tristar_memory_store,
+    "tristar_memory_search": handle_tristar_memory_search,
 
     # Codebase Access (v2.80)
-    "codebase.structure": handle_codebase_structure,
-    "codebase.file": handle_codebase_file,
-    "codebase.search": handle_codebase_search,
-    "codebase.routes": handle_codebase_routes,
-    "codebase.services": handle_codebase_services,
+    "codebase_structure": handle_codebase_structure,
+    "codebase_file": handle_codebase_file,
+    "codebase_search": handle_codebase_search,
+    "codebase_routes": handle_codebase_routes,
+    "codebase_services": handle_codebase_services,
+    # Codebase Edit (v2.90) - Self-modification capability
+    "codebase_edit": handle_codebase_edit,
+    "codebase_create": handle_codebase_create,
+    "codebase_backup": handle_codebase_backup,
 
     # CLI Agents (v2.80) - Claude, Codex, Gemini Subprocess Management
-    "cli-agents.list": handle_cli_agents_list,
-    "cli-agents.get": handle_cli_agents_get,
-    "cli-agents.start": handle_cli_agents_start,
-    "cli-agents.stop": handle_cli_agents_stop,
-    "cli-agents.restart": handle_cli_agents_restart,
-    "cli-agents.call": handle_cli_agents_call,
-    "cli-agents.broadcast": handle_cli_agents_broadcast,
-    "cli-agents.output": handle_cli_agents_output,
-    "cli-agents.stats": handle_cli_agents_stats,
-    "cli-agents.update-prompt": handle_cli_agents_update_prompt,
-    "cli-agents.reload-prompts": handle_cli_agents_reload_prompts,
+    "cli-agents_list": handle_cli_agents_list,
+    "cli-agents_get": handle_cli_agents_get,
+    "cli-agents_start": handle_cli_agents_start,
+    "cli-agents_stop": handle_cli_agents_stop,
+    "cli-agents_restart": handle_cli_agents_restart,
+    "cli-agents_call": handle_cli_agents_call,
+    "cli-agents_broadcast": handle_cli_agents_broadcast,
+    "cli-agents_output": handle_cli_agents_output,
+    "cli-agents_stats": handle_cli_agents_stats,
+    "cli-agents_update-prompt": handle_cli_agents_update_prompt,
+    "cli-agents_reload-prompts": handle_cli_agents_reload_prompts,
 }
 
 
-@router.post("/mcp", tags=["MCP"], summary="JSON-RPC 2.0 endpoint for MCP communication")
-async def mcp_endpoint(request: Request):
+from fastapi.responses import StreamingResponse
+import uuid
+import asyncio
+from typing import Dict, Any as TypingAny
+from datetime import datetime as dt_datetime
+
+# ============================================================================
+# MCP Session Management for Cursor-compatible SSE Transport
+# ============================================================================
+
+# In-memory session store with response queues
+_mcp_sessions: Dict[str, Dict[str, TypingAny]] = {}
+
+
+def _get_session(session_id: str) -> Dict[str, TypingAny]:
+    """Get or create a session"""
+    if session_id not in _mcp_sessions:
+        _mcp_sessions[session_id] = {
+            "created": dt_datetime.now(),
+            "queue": asyncio.Queue(),
+            "initialized": False,
+        }
+    return _mcp_sessions[session_id]
+
+
+def _cleanup_old_sessions():
+    """Remove sessions older than 1 hour"""
+    now = dt_datetime.now()
+    expired = [
+        sid for sid, data in _mcp_sessions.items()
+        if (now - data["created"]).total_seconds() > 3600
+    ]
+    for sid in expired:
+        del _mcp_sessions[sid]
+
+
+# ============================================================================
+# MCP Health Check Endpoint (GET /mcp without SSE)
+# ============================================================================
+
+@router.get("/mcp", tags=["MCP"], summary="MCP health check or SSE endpoint")
+@router.get("/mcp/", tags=["MCP"], summary="MCP health check or SSE endpoint")
+async def mcp_health_or_sse(request: Request):
+    """
+    MCP Health Check or redirect to SSE.
+    - If Accept: text/event-stream → redirect to /sse
+    - Otherwise → return JSON health info
+    """
+    await require_mcp_auth(request)
+
+    accept_header = request.headers.get("Accept", "")
+    if "text/event-stream" in accept_header:
+        # Redirect to SSE endpoint for proper handling
+        from fastapi.responses import RedirectResponse
+        return RedirectResponse(url="/v1/mcp/sse", status_code=307)
+
+    client_ip = request.client.host if request.client else "unknown"
+    mcp_logger.info(f"MCP_HEALTH_CHECK | IP: {client_ip}")
+
+    return JSONResponse({
+        "jsonrpc": "2.0",
+        "result": {
+            "protocolVersion": "2024-11-05",
+            "serverInfo": {
+                "name": "ailinux-mcp-server",
+                "version": "2.80",
+                "description": "AILinux TriForce MCP Server"
+            },
+            "capabilities": {
+                "tools": True,
+                "prompts": True,
+                "resources": True
+            },
+            "transports": ["http", "sse"],
+            "endpoints": {
+                "sse": "/v1/mcp/sse",
+                "messages": "/v1/mcp/messages"
+            }
+        }
+    })
+
+
+# ============================================================================
+# Cursor-Compatible SSE Endpoint (GET /mcp/sse)
+# Following MCP SSE Transport Specification
+# ============================================================================
+
+# POST handler for /sse (Streamable HTTP fallback - Cursor tries this first)
+@router.post("/mcp/sse", tags=["MCP"], summary="Streamable HTTP on SSE endpoint")
+@router.post("/mcp/sse/", tags=["MCP"], summary="Streamable HTTP on SSE endpoint")
+@router.post("/sse", tags=["MCP"], summary="Streamable HTTP on SSE endpoint (alias)")
+@router.post("/sse/", tags=["MCP"], summary="Streamable HTTP on SSE endpoint (alias)")
+async def mcp_sse_post(request: Request):
+    """
+    Handle POST requests on SSE endpoint.
+    Cursor tries Streamable HTTP first, falls back to SSE on failure.
+    This allows the streamable HTTP to work on /sse URL.
+    """
+    # Redirect to unified MCP endpoint
+    return await mcp_unified_endpoint(request)
+
+
+@router.get("/mcp/sse", tags=["MCP"], summary="SSE endpoint for Cursor/MCP clients")
+@router.get("/mcp/sse/", tags=["MCP"], summary="SSE endpoint for Cursor/MCP clients")
+@router.get("/sse", tags=["MCP"], summary="SSE endpoint (alias)")
+@router.get("/sse/", tags=["MCP"], summary="SSE endpoint (alias)")
+async def mcp_sse_connect(request: Request):
+    """
+    SSE Connection Endpoint for Cursor and other MCP clients.
+
+    Protocol:
+    1. Client connects to GET /sse
+    2. Server sends: event: endpoint\ndata: /messages/?session_id=xxx
+    3. Client POSTs JSON-RPC to /messages/?session_id=xxx
+    4. Server streams responses back via this SSE connection
+
+    This follows the MCP SSE Transport specification.
+    """
+    await require_mcp_auth(request)
+
+    client_ip = request.client.host if request.client else "unknown"
+    session_id = str(uuid.uuid4()).replace("-", "")
+
+    # Create session with response queue
+    session = _get_session(session_id)
+
+    mcp_logger.info(f"SSE_CONNECT | IP: {client_ip} | Session: {session_id}")
+
+    # Cleanup old sessions periodically
+    _cleanup_old_sessions()
+
+    async def event_generator():
+        try:
+            # First message: Tell client where to POST messages
+            # This is the critical message Cursor expects!
+            messages_endpoint = f"/v1/mcp/messages/?session_id={session_id}"
+            yield f"event: endpoint\ndata: {messages_endpoint}\n\n"
+
+            mcp_logger.info(f"SSE_ENDPOINT_SENT | Session: {session_id} | Endpoint: {messages_endpoint}")
+
+            # Send initial ping
+            yield f": ping - {dt_datetime.now().isoformat()}\n\n"
+
+            # Keep connection alive and send queued responses
+            ping_counter = 0
+            while True:
+                try:
+                    # Check for queued responses (non-blocking with timeout)
+                    try:
+                        response = await asyncio.wait_for(
+                            session["queue"].get(),
+                            timeout=15.0
+                        )
+                        # Send response as SSE message
+                        yield f"event: message\ndata: {json.dumps(response)}\n\n"
+                        mcp_logger.debug(f"SSE_RESPONSE | Session: {session_id} | Response sent")
+                    except asyncio.TimeoutError:
+                        # Send keepalive ping
+                        ping_counter += 1
+                        yield f": ping - {dt_datetime.now().isoformat()} - {ping_counter}\n\n"
+
+                except Exception as e:
+                    mcp_logger.error(f"SSE_ERROR | Session: {session_id} | Error: {e}")
+                    break
+
+        except asyncio.CancelledError:
+            mcp_logger.info(f"SSE_DISCONNECT | Session: {session_id}")
+        finally:
+            # Cleanup session on disconnect
+            if session_id in _mcp_sessions:
+                del _mcp_sessions[session_id]
+
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        }
+    )
+
+
+# ============================================================================
+# MCP Messages Endpoint (POST /mcp/messages)
+# Handles JSON-RPC requests from Cursor
+# ============================================================================
+
+@router.post("/mcp/messages", tags=["MCP"], summary="MCP messages endpoint for JSON-RPC")
+@router.post("/mcp/messages/", tags=["MCP"], summary="MCP messages endpoint for JSON-RPC")
+@router.post("/messages", tags=["MCP"], summary="MCP messages (alias)")
+@router.post("/messages/", tags=["MCP"], summary="MCP messages (alias)")
+async def mcp_messages_handler(request: Request, session_id: Optional[str] = None):
+    """
+    Handle JSON-RPC messages from MCP clients.
+
+    Cursor sends requests here after connecting to /sse.
+    Responses are either:
+    1. Returned directly as JSON (simple requests)
+    2. Queued to the SSE stream (for streaming)
+    """
+    import time as _time
+    from ..utils.triforce_logging import multi_logger
+
+    await require_mcp_auth(request)
+
+    client_ip = request.client.host if request.client else "unknown"
+    start_time = _time.time()
+    method = None
+    params = None
+    error_msg = None
+
+    # Get session if exists
+    session = _mcp_sessions.get(session_id) if session_id else None
+
+    mcp_logger.info(f"MCP_MESSAGE | IP: {client_ip} | Session: {session_id or 'none'}")
+
     try:
         body = await request.json()
         jsonrpc_version = body.get("jsonrpc")
@@ -1891,35 +3014,396 @@ async def mcp_endpoint(request: Request):
         req_id = body.get("id")
 
         if jsonrpc_version != "2.0":
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail={"jsonrpc": "2.0", "error": {"code": -32600, "message": "Invalid Request", "data": "jsonrpc field must be '2.0'"}},
-            )
-        if not method:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail={"jsonrpc": "2.0", "error": {"code": -32600, "message": "Invalid Request", "data": "method field is required"}},
+            error_msg = "jsonrpc field must be '2.0'"
+            return JSONResponse(
+                content={"jsonrpc": "2.0", "error": {"code": -32600, "message": "Invalid Request", "data": error_msg}, "id": req_id},
+                status_code=400
             )
 
+        if not method:
+            error_msg = "method field is required"
+            return JSONResponse(
+                content={"jsonrpc": "2.0", "error": {"code": -32600, "message": "Invalid Request", "data": error_msg}, "id": req_id},
+                status_code=400
+            )
+
+        mcp_logger.info(f"MCP_METHOD | Session: {session_id} | Method: {method}")
+
+        # Handle initialize specially
+        if method == "initialize":
+            # Mark session as initialized
+            if session:
+                session["initialized"] = True
+
+            result = {
+                "protocolVersion": "2024-11-05",
+                "serverInfo": {
+                    "name": "ailinux-mcp-server",
+                    "version": "2.80"
+                },
+                "capabilities": {
+                    "tools": {"listChanged": True},
+                    "prompts": {"listChanged": True},
+                    "resources": {"listChanged": True}
+                }
+            }
+            response = {"jsonrpc": "2.0", "result": result, "id": req_id}
+
+            # Queue response for SSE stream if session exists
+            if session:
+                await session["queue"].put(response)
+
+            latency_ms = (_time.time() - start_time) * 1000
+            await multi_logger.log_mcp(method, params, result, latency_ms)
+
+            return JSONResponse(content=response)
+
+        # Handle notifications/initialized (client acknowledgment)
+        if method == "notifications/initialized":
+            return JSONResponse(content={"jsonrpc": "2.0", "result": {}, "id": req_id})
+
+        # Handle other MCP methods through standard handlers
         handler = MCP_HANDLERS.get(method)
         if not handler:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail={"jsonrpc": "2.0", "error": {"code": -32601, "message": "Method not found", "data": f"Method '{method}' not supported"}},
+            error_msg = f"Method '{method}' not supported"
+            return JSONResponse(
+                content={"jsonrpc": "2.0", "error": {"code": -32601, "message": "Method not found", "data": error_msg}, "id": req_id},
+                status_code=404
             )
 
-        result = await handler(params)
-        return JSONResponse(content={"jsonrpc": "2.0", "result": result, "id": req_id})
+        # Execute handler
+        if method == "initialize":
+            result = await handler(params, request=request)
+        else:
+            result = await handler(params)
+
+        latency_ms = (_time.time() - start_time) * 1000
+
+        # Log successful call
+        await multi_logger.log_mcp(method, params, result, latency_ms)
+
+        response = {"jsonrpc": "2.0", "result": result, "id": req_id}
+
+        # Queue response for SSE if session exists
+        if session:
+            await session["queue"].put(response)
+
+        return JSONResponse(content=response)
 
     except ValueError as exc:
+        error_msg = str(exc)
         return JSONResponse(
-            content={"jsonrpc": "2.0", "error": {"code": -32000, "message": str(exc)}, "id": None},
-            status_code=status.HTTP_400_BAD_REQUEST,
+            content={"jsonrpc": "2.0", "error": {"code": -32000, "message": error_msg}, "id": None},
+            status_code=400
         )
-    except HTTPException as exc:
-        return JSONResponse(content=exc.detail, status_code=exc.status_code)
-    except Exception as exc:  # pragma: no cover - defensive catch-all
+    except Exception as exc:
+        error_msg = str(exc)
+        mcp_logger.error(f"MCP_ERROR | Session: {session_id} | Error: {error_msg}")
         return JSONResponse(
-            content={"jsonrpc": "2.0", "error": {"code": -32000, "message": "Internal Server Error", "data": str(exc)}, "id": None},
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"jsonrpc": "2.0", "error": {"code": -32000, "message": "Internal error", "data": error_msg}, "id": None},
+            status_code=500
         )
+
+
+# ============================================================================
+# UNIFIED MCP ENDPOINT - Maximum Compatibility
+# Supports: Streamable HTTP (2025-03-26), Legacy SSE (2024-11-05), ChatGPT
+# ============================================================================
+
+async def _process_mcp_request(
+    body: Dict[str, TypingAny],
+    request: Request,
+    session_id: Optional[str] = None
+) -> Dict[str, TypingAny]:
+    """Process a single JSON-RPC request and return the response."""
+    import time as _time
+    from ..utils.triforce_logging import multi_logger
+
+    start_time = _time.time()
+
+    jsonrpc_version = body.get("jsonrpc")
+    method = body.get("method")
+    params = body.get("params", {})
+    req_id = body.get("id")
+
+    # Validate JSON-RPC version
+    if jsonrpc_version != "2.0":
+        return {
+            "jsonrpc": "2.0",
+            "error": {"code": -32600, "message": "Invalid Request", "data": "jsonrpc must be '2.0'"},
+            "id": req_id
+        }
+
+    # Handle notifications (methods starting with "notifications/")
+    # These can come with or without an id depending on client
+    if method and method.startswith("notifications/"):
+        # Notifications are fire-and-forget, just acknowledge
+        # Common notifications: initialized, cancelled, progress, etc.
+        if req_id is None:
+            return None  # No id = no response expected
+        else:
+            # Some clients send notifications with id, return empty success
+            return {"jsonrpc": "2.0", "result": {}, "id": req_id}
+
+    if not method:
+        return {
+            "jsonrpc": "2.0",
+            "error": {"code": -32600, "message": "Invalid Request", "data": "method is required"},
+            "id": req_id
+        }
+
+    # Special handling for initialize
+    if method == "initialize":
+        # Get session if provided
+        session = _mcp_sessions.get(session_id) if session_id else None
+        if session:
+            session["initialized"] = True
+
+        result = {
+            "protocolVersion": "2024-11-05",
+            "serverInfo": {
+                "name": "ailinux-mcp-server",
+                "version": "2.80"
+            },
+            "capabilities": {
+                "tools": {"listChanged": True},
+                "prompts": {"listChanged": True},
+                "resources": {"listChanged": True}
+            }
+        }
+        latency_ms = (_time.time() - start_time) * 1000
+        await multi_logger.log_mcp(method, params, result, latency_ms)
+        return {"jsonrpc": "2.0", "result": result, "id": req_id}
+
+    # Find handler
+    handler = MCP_HANDLERS.get(method)
+    # Compatibility fallback
+    if not handler and "." in method:
+        handler = MCP_HANDLERS.get(method.replace(".", "_"))
+    if not handler and "_" in method:
+        handler = MCP_HANDLERS.get(method.replace("_", "."))
+
+    if not handler:
+        return {
+            "jsonrpc": "2.0",
+            "error": {"code": -32601, "message": "Method not found", "data": f"'{method}' not supported"},
+            "id": req_id
+        }
+
+    # Execute handler
+    try:
+        result = await handler(params)
+        latency_ms = (_time.time() - start_time) * 1000
+        await multi_logger.log_mcp(method, params, result, latency_ms)
+        return {"jsonrpc": "2.0", "result": result, "id": req_id}
+    except Exception as e:
+        return {
+            "jsonrpc": "2.0",
+            "error": {"code": -32000, "message": str(e)},
+            "id": req_id
+        }
+
+
+@router.post("/mcp", tags=["MCP"], summary="Unified MCP endpoint (Streamable HTTP + Legacy)")
+@router.post("/mcp/", tags=["MCP"], summary="Unified MCP endpoint (Streamable HTTP + Legacy)")
+async def mcp_unified_endpoint(request: Request):
+    """
+    Unified MCP Endpoint - Maximum Compatibility
+
+    Supports ALL MCP transport types:
+
+    1. **Streamable HTTP (2025-03-26)** - New standard
+       - POST with Accept: application/json → JSON response
+       - POST with Accept: text/event-stream → SSE stream response
+       - Supports batch requests (JSON array)
+       - Session management via Mcp-Session-Id header
+
+    2. **Legacy SSE (2024-11-05)** - For Cursor, older clients
+       - GET /sse → SSE stream with endpoint event
+       - POST /messages → JSON-RPC messages
+
+    3. **ChatGPT** - OpenAI MCP integration
+       - POST /mcp with JSON-RPC → JSON response
+
+    Headers:
+    - Accept: application/json, text/event-stream (for streaming)
+    - Mcp-Session-Id: Session ID (optional, returned in initialize response)
+    - Authorization: Bearer <token> or Basic <base64(user:pass)>
+    """
+    import time as _time
+    import logging
+    from ..utils.triforce_logging import multi_logger
+
+    await require_mcp_auth(request)
+
+    _log = logging.getLogger("ailinux.mcp.unified")
+    client_ip = request.client.host if request.client else "unknown"
+
+    # Get headers
+    accept_header = request.headers.get("Accept", "application/json")
+    session_id = request.headers.get("Mcp-Session-Id") or request.headers.get("mcp-session-id")
+
+    wants_streaming = "text/event-stream" in accept_header
+
+    _log.info(f"MCP_UNIFIED | IP: {client_ip} | Session: {session_id or 'none'} | Accept: {accept_header}")
+
+    try:
+        body = await request.json()
+    except Exception as e:
+        return JSONResponse(
+            content={"jsonrpc": "2.0", "error": {"code": -32700, "message": "Parse error", "data": str(e)}, "id": None},
+            status_code=400
+        )
+
+    # Handle batch requests (JSON array)
+    if isinstance(body, list):
+        responses = []
+        for item in body:
+            response = await _process_mcp_request(item, request, session_id)
+            if response is not None:  # Skip notification responses
+                responses.append(response)
+
+        if not responses:
+            return JSONResponse(status_code=202)  # All notifications, no response needed
+
+        # Return batch response
+        if wants_streaming:
+            async def stream_batch():
+                for resp in responses:
+                    yield f"event: message\ndata: {json.dumps(resp)}\n\n"
+            return StreamingResponse(
+                stream_batch(),
+                media_type="text/event-stream",
+                headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
+            )
+
+        return JSONResponse(content=responses)
+
+    # Single request
+    response = await _process_mcp_request(body, request, session_id)
+
+    if response is None:
+        return Response(status_code=202)  # Notification acknowledged
+
+    # Generate session ID for initialize if not provided
+    method = body.get("method")
+    response_headers = {}
+
+    if method == "initialize" and not session_id:
+        new_session_id = str(uuid.uuid4()).replace("-", "")
+        _get_session(new_session_id)  # Create session
+        response_headers["Mcp-Session-Id"] = new_session_id
+        _log.info(f"MCP_SESSION_CREATED | Session: {new_session_id}")
+
+    # Return streaming response if requested
+    if wants_streaming:
+        async def stream_single():
+            yield f"event: message\ndata: {json.dumps(response)}\n\n"
+        return StreamingResponse(
+            stream_single(),
+            media_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache",
+                "X-Accel-Buffering": "no",
+                **response_headers
+            }
+        )
+
+    return JSONResponse(content=response, headers=response_headers)
+
+
+# ============================================================================
+# Streamable HTTP GET Endpoint (2025-03-26 spec)
+# For server-initiated messages
+# ============================================================================
+
+@router.get("/mcp/stream", tags=["MCP"], summary="Streamable HTTP GET for server messages")
+@router.get("/mcp/stream/", tags=["MCP"], summary="Streamable HTTP GET for server messages")
+async def mcp_streamable_get(request: Request):
+    """
+    Streamable HTTP GET endpoint for receiving server-initiated messages.
+
+    Per MCP spec 2025-03-26:
+    - Client opens SSE stream
+    - Server MAY send JSON-RPC requests/notifications
+    - Used for server-to-client communication
+    """
+    await require_mcp_auth(request)
+
+    session_id = request.headers.get("Mcp-Session-Id") or request.headers.get("mcp-session-id")
+
+    if not session_id or session_id not in _mcp_sessions:
+        return JSONResponse(
+            content={"error": "Invalid or missing session"},
+            status_code=400
+        )
+
+    session = _mcp_sessions[session_id]
+    client_ip = request.client.host if request.client else "unknown"
+
+    mcp_logger.info(f"MCP_STREAM_GET | IP: {client_ip} | Session: {session_id}")
+
+    async def server_message_stream():
+        try:
+            ping_counter = 0
+            while True:
+                try:
+                    # Check for queued server messages
+                    response = await asyncio.wait_for(
+                        session["queue"].get(),
+                        timeout=30.0
+                    )
+                    yield f"event: message\ndata: {json.dumps(response)}\n\n"
+                except asyncio.TimeoutError:
+                    ping_counter += 1
+                    yield f": keepalive {ping_counter}\n\n"
+        except asyncio.CancelledError:
+            mcp_logger.info(f"MCP_STREAM_CLOSED | Session: {session_id}")
+
+    return StreamingResponse(
+        server_message_stream(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache, no-store",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        }
+    )
+
+
+# ============================================================================
+# Session Termination (DELETE)
+# ============================================================================
+
+@router.delete("/mcp", tags=["MCP"], summary="Terminate MCP session")
+@router.delete("/mcp/", tags=["MCP"], summary="Terminate MCP session")
+async def mcp_delete_session(request: Request):
+    """
+    Terminate an MCP session.
+
+    Per MCP spec 2025-03-26:
+    - Client sends DELETE with Mcp-Session-Id header
+    - Server removes session
+    """
+    await require_mcp_auth(request)
+
+    session_id = request.headers.get("Mcp-Session-Id") or request.headers.get("mcp-session-id")
+
+    if not session_id:
+        return JSONResponse(
+            content={"error": "Missing Mcp-Session-Id header"},
+            status_code=400
+        )
+
+    if session_id in _mcp_sessions:
+        del _mcp_sessions[session_id]
+        mcp_logger.info(f"MCP_SESSION_DELETED | Session: {session_id}")
+        return JSONResponse(status_code=204)
+
+    return JSONResponse(
+        content={"error": "Session not found"},
+        status_code=404
+    )
+
+
+# Connection management endpoints removed - stateless API key auth only

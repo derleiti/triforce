@@ -1,1 +1,40 @@
-/home/zombie/ailinux-ai-server-backend/bin/claude-triforce
+#!/bin/bash
+# Claude CLI Wrapper für TriForce MCP
+# Auto-Sync: Lädt Settings aus triforce/secrets/ (safe mode)
+
+TRIFORCE_ROOT="/home/zombie/ailinux-ai-server-backend/triforce"
+RUNTIME_DIR="$TRIFORCE_ROOT/runtime/claude"
+SECRETS="$TRIFORCE_ROOT/secrets"
+
+# Quick-Sync Auth aus Secrets (safe mode - überschreibt nicht)
+if [[ -d "$SECRETS/claude" ]]; then
+    mkdir -p "$RUNTIME_DIR/.claude"
+    [[ -f "$SECRETS/claude/credentials.json" ]] && cp -n "$SECRETS/claude/credentials.json" "$RUNTIME_DIR/.claude/" 2>/dev/null
+    [[ -f "$SECRETS/claude/.credentials.json" ]] && cp -n "$SECRETS/claude/.credentials.json" "$RUNTIME_DIR/.claude/" 2>/dev/null
+    [[ -f "$SECRETS/claude/config.json" ]] && [[ ! -f "$RUNTIME_DIR/.claude.json" ]] && cp "$SECRETS/claude/config.json" "$RUNTIME_DIR/.claude.json" 2>/dev/null
+    [[ -f "$SECRETS/claude/settings.json" ]] && [[ ! -f "$RUNTIME_DIR/.claude/settings.json" ]] && cp "$SECRETS/claude/settings.json" "$RUNTIME_DIR/.claude/" 2>/dev/null
+fi
+
+# Binary auswählen basierend auf User
+if [[ $EUID -eq 0 ]]; then
+    BINARY="/root/.npm-global/bin/claude"
+else
+    BINARY="$HOME/.npm-global/bin/claude"
+fi
+
+# Fallback
+[[ ! -x "$BINARY" ]] && BINARY="/home/zombie/.npm-global/bin/claude"
+[[ ! -x "$BINARY" ]] && BINARY="/root/.npm-global/bin/claude"
+
+if [[ ! -x "$BINARY" ]]; then
+    echo "ERROR: Claude CLI nicht gefunden!"
+    exit 1
+fi
+
+# Environment setzen - Runtime als HOME
+export HOME="$RUNTIME_DIR"
+export CLAUDE_CONFIG_DIR="$RUNTIME_DIR/.claude"
+export PATH="$TRIFORCE_ROOT/bin:/root/.npm-global/bin:/home/zombie/.npm-global/bin:$PATH"
+
+# Starte Claude
+exec "$BINARY" "$@"

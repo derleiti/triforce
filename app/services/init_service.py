@@ -7,8 +7,9 @@ Stellt /init für /v1/, /mcp/, /triforce/ bereit mit:
 - Auto-Decode
 - Loadbalancing zwischen API und MCP
 - MCP Server "Mitdenk"-Funktion
+- Umfassende API und Tool Dokumentation
 
-Version: 1.0.0
+Version: 1.1.0
 """
 
 import asyncio
@@ -18,6 +19,19 @@ import random
 import time
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
+
+# Import tool definitions for aggregation
+from ..services.ollama_mcp import OLLAMA_TOOLS
+from ..services.tristar_mcp import TRISTAR_TOOLS
+from ..services.gemini_access import GEMINI_ACCESS_TOOLS
+from ..services.command_queue import QUEUE_TOOLS
+from ..routes.mesh import MESH_TOOLS
+from ..services.mcp_filter import MESH_FILTER_TOOLS
+from ..services.gemini_model_init import MODEL_INIT_TOOLS
+from ..services.agent_bootstrap import BOOTSTRAP_TOOLS
+from ..mcp.adaptive_code import ADAPTIVE_CODE_TOOLS
+from ..services.huggingface_inference import HF_INFERENCE_TOOLS
+from ..mcp.api_docs import API_DOCUMENTATION
 
 logger = logging.getLogger("ailinux.init_service")
 
@@ -258,7 +272,7 @@ class InitService:
     """
 
     def __init__(self):
-        self._version = "2.0.0"
+        self._version = "2.80.0"
         self._initialized = False
 
     async def get_init_response(
@@ -367,18 +381,63 @@ class InitService:
         if decode_shortcode:
             response["decoded_shortcode"] = auto_decode_shortcode(decode_shortcode)
 
-        # Tool-Liste
+        # Tool-Liste und API-Dokumentation
         if include_tools:
-            response["available_endpoints"] = {
-                "/v1/init": "Initialisierung (REST API)",
-                "/mcp/init": "Initialisierung (MCP Protocol)",
-                "/triforce/init": "Initialisierung (TriForce)",
-                "/v1/chat/completions": "Chat Completions (OpenAI-kompatibel)",
-                "/mcp/tools/list": "MCP Tool-Liste",
-                "/mcp/tools/call": "MCP Tool-Aufruf",
-                "/mesh/submit": "Mesh Task einreichen",
-                "/mesh/queue/enqueue": "MCP Command queuen",
-                "/queue/enqueue": "Command Queue",
+            # Compile MCP Tools
+            all_tools = []
+            # Core tools
+            all_tools.extend([
+                {"name": "chat", "description": "Send message to AI model"},
+                {"name": "list_models", "description": "List available models"},
+                {"name": "ask_specialist", "description": "Route to expert model"},
+                {"name": "web_search", "description": "Search the internet"},
+                {"name": "codebase_structure", "description": "Get codebase structure"},
+                {"name": "codebase_file", "description": "Read codebase file"},
+                {"name": "codebase_search", "description": "Search codebase content"},
+                {"name": "codebase_routes", "description": "List API routes"},
+                {"name": "codebase_services", "description": "List codebase services"},
+                {"name": "cli-agents_list", "description": "List CLI agents"},
+                {"name": "cli-agents_call", "description": "Call CLI agent"},
+                {"name": "cli-agents_broadcast", "description": "Broadcast to agents"},
+            ])
+            
+            # Add extension tools
+            all_tools.extend(OLLAMA_TOOLS)
+            all_tools.extend(TRISTAR_TOOLS)
+            all_tools.extend(GEMINI_ACCESS_TOOLS)
+            all_tools.extend(QUEUE_TOOLS)
+            all_tools.extend(MESH_TOOLS)
+            all_tools.extend(MESH_FILTER_TOOLS)
+            all_tools.extend(INIT_TOOLS)
+            all_tools.extend(MODEL_INIT_TOOLS)
+            all_tools.extend(BOOTSTRAP_TOOLS)
+            all_tools.extend(ADAPTIVE_CODE_TOOLS)
+            all_tools.extend(HF_INFERENCE_TOOLS)
+            
+            # Additional tools from mcp.py manual registration
+            all_tools.extend([
+                {"name": "check_compatibility", "description": "Checks compatibility of all MCP tools"},
+                {"name": "debug_mcp_request", "description": "Traces an MCP request"},
+                {"name": "restart_backend", "description": "Restarts the backend service"},
+                {"name": "restart_agent", "description": "Restarts a CLI agent"},
+            ])
+
+            mcp_documentation = {}
+            for t in all_tools:
+                mcp_documentation[t["name"]] = t.get("description", "No description available")
+
+            # Compile REST Endpoints
+            rest_documentation = {}
+            if "endpoints" in API_DOCUMENTATION:
+                 for key, endpoint in API_DOCUMENTATION["endpoints"].items():
+                     entry = f"{endpoint.method.value} {endpoint.path}"
+                     rest_documentation[entry] = endpoint.summary.strip()
+
+            response["api_documentation"] = {
+                "rest_endpoints": rest_documentation,
+                "mcp_tools": mcp_documentation,
+                "total_rest_endpoints": len(rest_documentation),
+                "total_mcp_tools": len(mcp_documentation)
             }
 
         # Loadbalancer-Info

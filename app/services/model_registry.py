@@ -136,7 +136,7 @@ class ModelRegistry:
         self._lock = asyncio.Lock()
         self._cache: List[ModelInfo] | None = None
         self._cache_expiry: float = 0.0
-        self._ttl_seconds: float = 30.0
+        self._ttl_seconds: float = 300.0  # Increased from 30s to 5m to reduce API load
         self._refresh_task: asyncio.Task | None = None
         self._refresh_interval: float = 3600.0
         self._sd_discovery_disabled: bool = False

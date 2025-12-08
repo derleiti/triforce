@@ -37,6 +37,14 @@ try:
 except Exception:
     _HAS_TRIFORCE_LOGGING = False
 
+# Central Logging (all logs to ./triforce/logs/)
+try:
+    from .utils.central_logging import setup_central_logging, LOG_DIR
+    setup_central_logging()
+    _HAS_CENTRAL_LOGGING = True
+except Exception:
+    _HAS_CENTRAL_LOGGING = False
+
 from .config import get_settings
 
 # Import the router object from each route module
@@ -59,10 +67,25 @@ from .routes.triforce import router as triforce_router
 from .routes.tristar import router as tristar_router
 from .routes.tristar_settings import router as tristar_settings_router
 from .routes.mesh import router as mesh_router
+from .routes.oauth_service import router as oauth_router
 
 # Import routers from the top-level app directory
 from .routes_sd3 import router as sd3_router
 from .routes_vision import router as vision_router
+
+
+async def _delayed_bootstrap():
+    """Verzögerter Bootstrap der CLI Agents nach Server-Start"""
+    import asyncio
+    import logging
+    # Warte bis Server vollständig gestartet ist
+    await asyncio.sleep(5)
+    try:
+        from .services.agent_bootstrap import bootstrap_service
+        result = await bootstrap_service.bootstrap_all(sequential_lead=True)
+        logging.info(f"Agent Bootstrap complete: {result.get('success_count', 0)} agents started")
+    except Exception as e:
+        logging.error(f"Agent Bootstrap failed: {e}")
 
 
 @asynccontextmanager
@@ -120,6 +143,24 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         import logging
         logging.warning(f"Failed to start MCP Brain: {e}")
+
+    # Auto-Bootstrap CLI Agents (wenn konfiguriert)
+    try:
+        from .services.agent_bootstrap import bootstrap_service
+        import os
+        auto_bootstrap = os.environ.get("AUTO_BOOTSTRAP_AGENTS", "false").lower() == "true"
+        if auto_bootstrap:
+            import logging
+            logging.info("Auto-bootstrapping CLI Agents...")
+            import asyncio
+            # Verzögert starten um Server hochfahren zu lassen
+            asyncio.create_task(_delayed_bootstrap())
+        else:
+            import logging
+            logging.info("Agent Bootstrap available (AUTO_BOOTSTRAP_AGENTS=true to enable)")
+    except Exception as e:
+        import logging
+        logging.warning(f"Failed to setup Agent Bootstrap: {e}")
 
     yield
 
@@ -181,6 +222,23 @@ def create_app() -> FastAPI:
             content={"detail": exc.detail},
         )
 
+    @app.exception_handler(Exception)
+    async def global_exception_handler(request: Request, exc: Exception):
+        import traceback
+        logging.error(f"Global Unhandled Exception on {request.url.path}: {exc}")
+        logging.error(traceback.format_exc())
+        
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={
+                "detail": "Internal Server Error",
+                "error": {
+                    "code": "internal_error",
+                    "message": "An unexpected error occurred."
+                }
+            }
+        )
+
     settings = get_settings()
     allowed_origins = [origin.strip() for origin in settings.cors_allowed_origins.split(",") if origin.strip()]
 
@@ -197,6 +255,7 @@ def create_app() -> FastAPI:
 
     # =========================================================================
     # Primary Routes (/v1 prefix)
+    # Note: MCP health check is now handled by mcp_router with transport detection
     # =========================================================================
     app.include_router(admin_router, prefix="/v1", tags=["Admin"])
     app.include_router(admin_crawler_router, prefix="/v1", tags=["Admin Crawler"])
@@ -206,6 +265,7 @@ def create_app() -> FastAPI:
     app.include_router(health_router, tags=["Monitoring"])
     app.include_router(mcp_router, prefix="/v1", tags=["MCP"])
     app.include_router(mcp_remote_router, tags=["MCP Remote Server"])
+    app.include_router(oauth_router, tags=["OAuth 2.0"])
     app.include_router(models_router, prefix="/v1", tags=["Models"])
     app.include_router(openai_compat_router, prefix="/v1/openai", tags=["OpenAI Compatibility"])
     app.include_router(orchestration_router, prefix="/v1", tags=["Orchestration"])
@@ -225,9 +285,8 @@ def create_app() -> FastAPI:
     # (/tristar and /triforce), so we register them without additional prefix
     # for the root aliases, and with empty prefix for cross-links
 
-    # MCP Aliases: /mcp/mcp, /mcp/v1/mcp (router has no internal prefix)
-    app.include_router(mcp_router, prefix="/mcp", tags=["MCP Alias"])
-    app.include_router(mcp_router, prefix="/mcp/v1", tags=["MCP Alias"])
+    # Legacy /mcp aliases removed - use /v1/mcp instead
+    # Standard MCP endpoint: /v1/mcp (registered above in line 256)
 
     # TriStar Aliases: Register at root (router has prefix="/tristar")
     # This gives us: /tristar/..., /v1/tristar/... (primary)
@@ -245,9 +304,7 @@ def create_app() -> FastAPI:
     app.include_router(mesh_router, prefix="", tags=["Mesh Root"])  # /mesh/...
     app.include_router(mesh_router, prefix="/triforce", tags=["TriForce Mesh"])  # /triforce/mesh/...
 
-    # TriStar/TriForce under MCP namespace (without duplicate prefix)
-    app.include_router(tristar_router, prefix="/mcp", tags=["MCP TriStar"])
-    app.include_router(triforce_router, prefix="/mcp", tags=["MCP TriForce"])
+    # Legacy /mcp namespace aliases removed - use /v1/tristar and /v1/triforce instead
 
     # Include routers from the top-level app directory (prefixes are in the files)
     app.include_router(sd3_router, prefix="/v1", tags=["Stable Diffusion 3"])

@@ -499,7 +499,7 @@ class CrawlerManager:
         settings = get_settings()
         spool_dir = Path(getattr(settings, "crawler_spool_dir", "data/crawler_spool"))
         self._store = CrawlerStore(
-            max_memory_bytes=int(getattr(settings, "crawler_max_memory_bytes", 48 * 1024**3)),
+            max_memory_bytes=int(getattr(settings, "crawler_max_memory_bytes", 2 * 1024**3)),
             spool_dir=spool_dir,
         )
         self._jobs: Dict[str, CrawlJob] = {}
@@ -531,6 +531,7 @@ class CrawlerManager:
         self._current_shard_path: Optional[Path] = None
         self._last_flush_time: datetime = datetime.now(timezone.utc)
         self._train_buffer: List[CrawlResult] = []
+        self._train_buffer_max_size = int(getattr(settings, "crawler_buffer_max_size", 1000))
         self._flush_interval = int(getattr(settings, "crawler_flush_interval", 3600))
         self._retention_days = int(getattr(settings, "crawler_retention_days", 30))
         self._load_train_index()
@@ -582,6 +583,12 @@ class CrawlerManager:
                 name=f"{self._instance_name}-worker-{idx}",
             )
             self._worker_tasks.append(worker)
+
+        # Start background flush task
+        if not any(t.get_name() == f"{self._instance_name}-flush" for t in self._worker_tasks):
+            self._worker_tasks.append(
+                asyncio.create_task(self.flush_hourly(), name=f"{self._instance_name}-flush")
+            )
 
         # Only the primary manager runs the legacy auto-crawl loop
         if self._instance_name == "default" and not self._auto_crawl_task:
@@ -1037,6 +1044,7 @@ class CrawlerManager:
     ) -> List[Dict[str, Any]]:
         all_results: List[Dict[str, Any]] = []
         query_tokens = query.lower().split()
+        max_scan_docs = 10000  # Safety limit to prevent OOM
 
         # 1. Search RAM first
         async with self._store._lock:
@@ -1066,6 +1074,10 @@ class CrawlerManager:
                         result = CrawlResult.from_dict(obj)
                         if result.normalized_text:
                             all_results.append(obj)
+                        if len(all_results) >= max_scan_docs:
+                            break
+                if len(all_results) >= max_scan_docs:
+                    break
 
         # 3. Rerank results (BM25)
         if not all_results:
@@ -1373,6 +1385,10 @@ class CrawlerManager:
                 )
                 await self._store.add(result)
                 self._train_buffer.append(result)
+                if len(self._train_buffer) >= self._train_buffer_max_size:
+                    # Trigger background flush
+                    asyncio.create_task(self.flush_to_jsonl())
+
                 job.results.append(result.id)
                 logger.info("Stored relevant result %s (score %.2f)", result.url, result.score)
 

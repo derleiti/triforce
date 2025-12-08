@@ -1,0 +1,54 @@
+[Unit]
+Description=AILinux AI Server Backend v2.80
+Documentation=https://api.ailinux.me/docs
+After=network-online.target redis.service ollama.service docker.service
+Wants=network-online.target ollama.service docker.service
+Requires=redis.service
+
+[Service]
+Type=simple
+User=zombie
+Group=zombie
+WorkingDirectory=/home/zombie/ailinux-ai-server-backend
+
+# Environment
+Environment="PATH=/home/zombie/ailinux-ai-server-backend/.venv/bin:/usr/local/bin:/usr/bin:/bin"
+Environment=PYTHONUNBUFFERED=1
+EnvironmentFile=/home/zombie/ailinux-ai-server-backend/.env
+
+# Vorbereitungen
+ExecStartPre=+/bin/mkdir -p /var/tristar/projects /var/tristar/logs /var/tristar/memory /var/tristar/pids /var/tristar/agents
+ExecStartPre=+/bin/chown -R zombie:zombie /var/tristar
+
+# Start Backend
+ExecStart=/home/zombie/ailinux-ai-server-backend/.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 9100 --workers 4
+
+# Nach Start: TriForce Services starten (Log Forwarder, Settings Sync)
+ExecStartPost=+/home/zombie/ailinux-ai-server-backend/triforce/bin/triforce-services.sh start
+
+# Vor Stop: TriForce Services stoppen
+ExecStopPost=+/home/zombie/ailinux-ai-server-backend/triforce/bin/triforce-services.sh stop
+
+# Restart Policy
+Restart=always
+RestartSec=10
+TimeoutStartSec=120
+TimeoutStopSec=30
+
+# Resource Limits
+LimitNOFILE=65535
+LimitNPROC=4096
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=ailinux-backend
+
+# Security
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/home/zombie/ailinux-ai-server-backend /var/tristar /tmp /var/log /etc/systemd/system
+
+[Install]
+WantedBy=multi-user.target

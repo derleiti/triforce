@@ -25,11 +25,14 @@ from __future__ import annotations
 
 import json
 import uuid
+import secrets
 from datetime import datetime, timezone
+from datetime import timedelta
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, HTTPException, Request, Response
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import BaseModel
 
 from ..services.model_registry import registry
@@ -42,12 +45,30 @@ from ..services.tristar_mcp import TRISTAR_TOOLS, TRISTAR_HANDLERS
 from ..services.gemini_access import GEMINI_ACCESS_TOOLS, GEMINI_ACCESS_HANDLERS
 from ..services.command_queue import QUEUE_TOOLS, QUEUE_HANDLERS
 from ..services.huggingface_inference import HF_INFERENCE_TOOLS, HF_HANDLERS
+from ..mcp.adaptive_code import ADAPTIVE_CODE_TOOLS, ADAPTIVE_CODE_HANDLERS
 from ..utils.throttle import request_slot
 from ..mcp.api_docs import get_api_docs, API_DOCUMENTATION
 from ..mcp.specialists import specialist_router, SPECIALISTS
 from ..mcp.context import context_manager, prompt_library
+from ..utils.mcp_auth import (
+    AUTH_ENABLED,
+    MCP_AUTH_USER,
+    MCP_AUTH_PASS,
+    require_mcp_auth,
+    is_valid_token,
+    create_token,
+    add_token,
+    get_active_tokens,
+    get_persistent_tokens,
+    _validate_credentials,
+    _extract_basic_auth,
+    _safe_compare,
+)
 
 router = APIRouter(tags=["MCP Remote Server"])
+
+
+# NOTE: OAuth metadata endpoints are now in oauth_service.py
 
 
 # ============================================================================
@@ -67,6 +88,135 @@ MCP_CAPABILITIES = {
     "resources": False,
     "logging": False,
 }
+
+# ============================================================================
+# Authentication - Uses central mcp_auth module
+# NOTE: /authorize and /token endpoints are now in oauth_service.py
+# ============================================================================
+
+
+# Helper for localhost automation
+@router.post("/auth/auto", tags=["Auth"], summary="Automated localhost authorization")
+async def auto_authorize(request: Request):
+    """
+    Automates the OAuth flow for localhost CLI tools.
+    Input: JSON with { "auth_url": "...", "username": "...", "password": "..." }
+    Action: Parses URL, validates credentials, and triggers the callback.
+    """
+    from ..utils.mcp_auth import store_auth_code
+
+    try:
+        data = await request.json()
+        auth_url = data.get("auth_url")
+        username = data.get("username")
+        password = data.get("password")
+
+        if not auth_url:
+            raise HTTPException(status_code=400, detail="Missing auth_url")
+
+        # Verify credentials using central auth module
+        if not _validate_credentials(username, password):
+             raise HTTPException(status_code=401, detail="Invalid credentials for auto-auth")
+
+        from urllib.parse import urlparse, parse_qs, urlencode
+        parsed = urlparse(auth_url)
+        params = parse_qs(parsed.query)
+
+        state = params.get("state", [None])[0]
+        redirect_uri = params.get("redirect_uri", [None])[0]
+        client_id = params.get("client_id", [None])[0]
+
+        if not (state and redirect_uri):
+             raise HTTPException(status_code=400, detail="Invalid auth URL params")
+
+        # Generate and store auth code using central auth module
+        code = secrets.token_urlsafe(16)
+        code_challenge = params.get("code_challenge", [None])[0]
+        code_challenge_method = params.get("code_challenge_method", [None])[0]
+
+        store_auth_code(
+            code=code,
+            client_id=client_id,
+            redirect_uri=redirect_uri,
+            code_challenge=code_challenge,
+            code_challenge_method=code_challenge_method,
+            user=username,
+        )
+
+        # Construct Callback URL
+        callback_params = {"code": code, "state": state}
+        callback_url = f"{redirect_uri}?{urlencode(callback_params)}"
+
+        # Perform the callback (HIT the CLI tool's local server)
+        import httpx
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            # CLI tools usually expect a GET request to their callback
+            await client.get(callback_url)
+
+        return {"status": "success", "callback_url": callback_url}
+
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+
+# NOTE: /token endpoint is now handled by oauth_service.py
+# Token endpoints are kept for backward compatibility but use central mcp_auth module
+
+@router.post("/auth/create-token", tags=["Auth"], summary="Create a long-lived token for Claude Web")
+async def create_persistent_token(request: Request):
+    """
+    Create a long-lived Bearer token for Claude Web integration.
+    This bypasses the OAuth redirect flow.
+
+    POST with JSON: {"username": "...", "password": "...", "name": "claude-web"}
+    Returns: {"token": "...", "expires_in": 86400*30}
+
+    Use this token in Claude Web MCP settings as Bearer token.
+    """
+    try:
+        data = await request.json()
+    except:
+        raise HTTPException(status_code=400, detail="JSON body required")
+
+    username = data.get("username", "")
+    password = data.get("password", "")
+    token_name = data.get("name", "unnamed")
+
+    if not _validate_credentials(username, password):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    # Generate long-lived token using central auth module
+    token = create_token(user=token_name, scope="mcp", expires_days=30)
+
+    return {
+        "token": token,
+        "token_type": "bearer",
+        "expires_in": 86400 * 30,  # 30 days
+        "name": token_name,
+        "usage": {
+            "header": f"Authorization: Bearer {token}",
+            "claude_web": "In Claude Web MCP settings, use this token as Bearer token",
+            "curl_example": f"curl -H 'Authorization: Bearer {token}' https://api.ailinux.me/v1/mcp -d '{{\"jsonrpc\":\"2.0\",\"method\":\"tools/list\",\"id\":1}}'"
+        }
+    }
+
+
+@router.get("/auth/tokens", tags=["Auth"], summary="List active tokens")
+async def list_tokens(request: Request):
+    """List all active persistent tokens (requires auth)."""
+    await require_mcp_auth(request)
+
+    persistent = get_persistent_tokens()
+    tokens_info = []
+    for token, info in persistent.items():
+        tokens_info.append({
+            "token_prefix": token[:12] + "...",
+            "name": info.get("name") or info.get("user"),
+            "created_at": info.get("created_at"),
+            "expires_at": info.get("expires_at")
+        })
+
+    return {"tokens": tokens_info, "count": len(tokens_info)}
 
 
 # ============================================================================
@@ -763,6 +913,11 @@ def get_tools() -> List[Dict[str, Any]]:
         # Hugging Face Inference Tools (v2.80)
         # =================================================================
         *HF_INFERENCE_TOOLS,
+
+        # =================================================================
+        # Adaptive Code Illumination Tools (v2.80)
+        # =================================================================
+        *ADAPTIVE_CODE_TOOLS,
     ]
 
 
@@ -822,16 +977,44 @@ async def handle_chat(arguments: Dict[str, Any]) -> Dict[str, Any]:
 
 
 async def handle_list_models(_: Dict[str, Any]) -> Dict[str, Any]:
-    """List available models."""
+    """
+    List available models, optimized for context window usage.
+    Returns models grouped by provider and capability.
+    """
     models = await registry.list_models()
-    model_list = []
-    for model in models:
-        model_list.append({
-            "id": model.id,
-            "provider": model.provider,
-            "capabilities": model.capabilities
-        })
-    return {"models": model_list, "count": len(model_list)}
+    
+    # Group by provider
+    by_provider = {}
+    for m in models:
+        if m.provider not in by_provider:
+            by_provider[m.provider] = []
+        by_provider[m.provider].append(m.id)
+
+    # Group by key capabilities
+    by_capability = {
+        "code": [],
+        "vision": [],
+        "chat": [],
+        "embedding": []
+    }
+    
+    for m in models:
+        for cap in m.capabilities:
+            if cap in by_capability:
+                by_capability[cap].append(m.id)
+            elif cap == "image_gen":
+                 if "vision" not in by_capability: by_capability["vision"] = []
+                 by_capability["vision"].append(m.id)
+
+    return {
+        "summary": {
+            "total_models": len(models),
+            "providers": list(by_provider.keys())
+        },
+        "by_provider": by_provider,
+        "by_capability": {k: v[:50] for k, v in by_capability.items()},
+        "note": "Lists truncated to top 50 per capability to save context."
+    }
 
 
 async def handle_ask_specialist(arguments: Dict[str, Any]) -> Dict[str, Any]:
@@ -1319,6 +1502,9 @@ TOOL_HANDLERS = {
 
     # Hugging Face Inference Tools (v2.80)
     **HF_HANDLERS,
+
+    # Adaptive Code Illumination Tools (v2.80)
+    **ADAPTIVE_CODE_HANDLERS,
 }
 
 
@@ -1327,14 +1513,45 @@ TOOL_HANDLERS = {
 # ============================================================================
 
 @router.get("/.well-known/mcp.json")
-async def mcp_discovery():
-    """MCP server discovery endpoint."""
+@router.get("/v1/mcp/.well-known/mcp.json")
+async def mcp_discovery(request: Request):
+    """
+    MCP server discovery endpoint.
+    NO AUTH REQUIRED - this is a public discovery endpoint.
+    Standard URL: /v1/mcp (localhost:9100/v1/mcp or api.ailinux.me/v1/mcp)
+    """
+    # Build base URL from request
+    raw_base = str(request.base_url).rstrip("/")
+
+    # Remove any path suffixes to get root
+    if "/v1/mcp" in raw_base:
+        base_url = raw_base.split("/v1/mcp")[0]
+    elif "/mcp" in raw_base:
+        base_url = raw_base.split("/mcp")[0]
+    else:
+        base_url = raw_base
+
+    # Force HTTPS for external domains (not localhost)
+    if "localhost" not in base_url and "127.0.0.1" not in base_url:
+        base_url = base_url.replace("http://", "https://")
+
+    # Standard MCP endpoint is /v1/mcp
+    mcp_url = f"{base_url}/v1/mcp"
+
     return {
         "mcp_version": "2024-11-05",
         "server": MCP_SERVER_INFO,
         "capabilities": MCP_CAPABILITIES,
         "endpoints": {
-            "mcp": "/mcp"
+            "mcp": mcp_url,
+            "sse": f"{mcp_url}/sse",
+            "rpc": mcp_url
+        },
+        # Simple HTTP Auth - NO OAuth redirect, NO login form!
+        "authentication": {
+            "type": "http",
+            "scheme": "basic",
+            "description": "Use Basic Auth with username:password from .env (MCP_OAUTH_USER:MCP_OAUTH_PASS)"
         }
     }
 
@@ -1349,6 +1566,8 @@ async def mcp_sse_endpoint(request: Request):
     Claude.ai connects here to establish a session.
     Supports both /mcp and /mcp/ paths.
     """
+    await require_mcp_auth(request)
+
     async def event_generator():
         # Send initial connection message
         session_id = str(uuid.uuid4())
@@ -1399,6 +1618,18 @@ async def mcp_rpc_endpoint(request: Request):
     Supports both regular JSON-RPC and Streamable HTTP transport.
     Supports both /mcp and /mcp/ paths.
     """
+    import time as _time
+    import logging
+    from ..utils.triforce_logging import multi_logger
+
+    # Enforce authentication before processing request body
+    await require_mcp_auth(request)
+
+    _log = logging.getLogger("ailinux.mcp.remote")
+    start_time = _time.time()
+    method = None
+    params = None
+
     # Check for session header (Streamable HTTP)
     session_id = request.headers.get("mcp-session-id")
 
@@ -1418,6 +1649,8 @@ async def mcp_rpc_endpoint(request: Request):
     method = body.get("method")
     params = body.get("params", {})
     req_id = body.get("id")
+    # Log the incoming MCP request
+    _log.info(f"MCP request: method={method}")
 
     if jsonrpc != "2.0":
         return JSONResponse(
@@ -1463,10 +1696,28 @@ async def mcp_rpc_endpoint(request: Request):
         )
 
     elif method == "tools/list":
+        tools_result = get_tools()
+
+        # Filter tools by default to reduce token count (85 tools = 28K tokens!)
+        # Use X-TriForce-All: true header to get all tools
+        show_all = request.headers.get("X-TriForce-All", "").lower() == "true"
+        if not show_all:
+            # Essential tools only (reduces to ~15 tools, ~5K tokens)
+            essential_tools = [
+                "chat", "list_models", "ask_specialist", "web_search",
+                "tristar_memory_store", "tristar_memory_search",
+                "cli-agents_list", "cli-agents_call", "cli-agents_broadcast",
+                "codebase_structure", "codebase_file", "codebase_search",
+                "gemini_research", "gemini_quick", "ollama_list"
+            ]
+            tools_result = [t for t in tools_result if t.get("name") in essential_tools]
+
+        latency_ms = (_time.time() - start_time) * 1000
+        await multi_logger.log_mcp(method, params, {"tools_count": len(tools_result)}, latency_ms)
         return JSONResponse(
             content={
                 "jsonrpc": "2.0",
-                "result": {"tools": get_tools()},
+                "result": {"tools": tools_result},
                 "id": req_id
             },
             headers=response_headers
@@ -1489,12 +1740,14 @@ async def mcp_rpc_endpoint(request: Request):
 
         try:
             result = await handler(arguments)
+            latency_ms = (_time.time() - start_time) * 1000
+            await multi_logger.log_mcp(f"tools/call:{tool_name}", arguments, result, latency_ms)
             return JSONResponse(
                 content={
                     "jsonrpc": "2.0",
                     "result": {
                         "content": [
-                            {"type": "text", "text": json.dumps(result, indent=2, ensure_ascii=False)}
+                            {"type": "text", "text": json.dumps(result, separators=(',', ':'))}
                         ],
                         "isError": False
                     },
@@ -1503,6 +1756,8 @@ async def mcp_rpc_endpoint(request: Request):
                 headers=response_headers
             )
         except Exception as exc:
+            latency_ms = (_time.time() - start_time) * 1000
+            await multi_logger.log_mcp(f"tools/call:{tool_name}", arguments, None, latency_ms, str(exc))
             return JSONResponse(
                 content={
                     "jsonrpc": "2.0",
@@ -1604,6 +1859,7 @@ async def _handle_agent_mcp_call(agent_id: str, request: Request):
     Handle MCP JSON-RPC calls routed to a specific CLI agent.
     Starts the agent if not running, then forwards the message.
     """
+    await require_mcp_auth(request)
     from ..services.tristar.agent_controller import agent_controller
 
     try:
@@ -1881,8 +2137,9 @@ async def mcp_gemini_endpoint(request: Request):
 
 @router.get("/mcp/claude")
 @router.get("/mcp/claude/")
-async def mcp_claude_info():
+async def mcp_claude_info(request: Request):
     """Get Claude agent info."""
+    await require_mcp_auth(request)
     from ..services.tristar.agent_controller import agent_controller
     agent = await agent_controller.get_agent("claude-mcp")
     return {
@@ -1896,8 +2153,9 @@ async def mcp_claude_info():
 
 @router.get("/mcp/codex")
 @router.get("/mcp/codex/")
-async def mcp_codex_info():
+async def mcp_codex_info(request: Request):
     """Get Codex agent info."""
+    await require_mcp_auth(request)
     from ..services.tristar.agent_controller import agent_controller
     agent = await agent_controller.get_agent("codex-mcp")
     return {
@@ -1911,8 +2169,9 @@ async def mcp_codex_info():
 
 @router.get("/mcp/gemini")
 @router.get("/mcp/gemini/")
-async def mcp_gemini_info():
+async def mcp_gemini_info(request: Request):
     """Get Gemini agent info."""
+    await require_mcp_auth(request)
     from ..services.tristar.agent_controller import agent_controller
     agent = await agent_controller.get_agent("gemini-mcp")
     return {
@@ -1925,20 +2184,10 @@ async def mcp_gemini_info():
 
 
 # ============================================================================
-# OAuth Endpoints (for authenticated connectors)
+# OAuth Endpoints - REMOVED (now in oauth_service.py)
 # ============================================================================
-
-@router.get("/.well-known/oauth-authorization-server")
-async def oauth_discovery():
-    """OAuth 2.0 Authorization Server Metadata (RFC 8414)."""
-    # Return 404 to indicate no OAuth is required (public API)
-    raise HTTPException(status_code=404, detail="OAuth not required for this server")
-
-
-@router.get("/.well-known/oauth-protected-resource")
-async def oauth_protected_resource():
-    """OAuth 2.0 Protected Resource Metadata."""
-    raise HTTPException(status_code=404, detail="OAuth not required for this server")
+# All OAuth endpoints (/authorize, /token, /.well-known/*) are now
+# centralized in app/routes/oauth_service.py
 
 
 # ============================================================================
@@ -1946,11 +2195,12 @@ async def oauth_protected_resource():
 # ============================================================================
 
 @router.get("/robots.txt")
-async def robots_txt():
+async def robots_txt(request: Request):
     """
     robots.txt allowing all crawlers.
     Required for Claude.ai custom connector integration.
     """
+    await require_mcp_auth(request)
     return Response(
         content="User-agent: *\nAllow: /\n",
         media_type="text/plain"

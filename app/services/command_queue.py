@@ -137,15 +137,21 @@ class CommandQueue:
     - Research Distribution
     """
 
-    def __init__(self, max_queue_size: int = 1000):
+    def __init__(self, max_queue_size: int = 1000, persistence_file: str = "/var/tristar/queue/state.json"):
         self._queue: List[Command] = []  # Priority heap
         self._commands: Dict[str, Command] = {}  # ID -> Command
         self._agents: Dict[str, AgentStatus] = {}
         self._agent_queues: Dict[str, List[Command]] = defaultdict(list)
         self._max_queue_size = max_queue_size
+        self._persistence_file = persistence_file
         self._lock = asyncio.Lock()
         self._workers: Dict[str, asyncio.Task] = {}
         self._running = False
+
+        # Ensure directory exists
+        import os
+        from pathlib import Path
+        Path(self._persistence_file).parent.mkdir(parents=True, exist_ok=True)
 
         # Capabilities mapping
         self._capability_map = {
@@ -156,6 +162,62 @@ class CommandQueue:
             "chat": ["*"],  # Alle
             "coordinate": ["gemini"],  # Nur Gemini koordiniert
         }
+        
+        # Load state
+        self._load_state()
+
+    def _load_state(self):
+        """Load queue state from file"""
+        try:
+            from pathlib import Path
+            path = Path(self._persistence_file)
+            if path.exists():
+                data = json.loads(path.read_text())
+                
+                # Restore commands
+                for cmd_data in data.get("commands", []):
+                    cmd = Command(
+                        priority=cmd_data["priority"],
+                        timestamp=time.time(), # Reset timestamp to now to keep order relative
+                        id=cmd_data["id"],
+                        type=CommandType(cmd_data["type"]),
+                        payload=cmd_data["payload"],
+                        target_agent=cmd_data["target_agent"],
+                        status=CommandStatus(cmd_data["status"]),
+                        result=cmd_data.get("result"),
+                        error=cmd_data.get("error"),
+                        created_at=cmd_data["created_at"],
+                        started_at=cmd_data.get("started_at"),
+                        completed_at=cmd_data.get("completed_at"),
+                        assigned_to=cmd_data.get("assigned_to"),
+                        retries=cmd_data.get("retries", 0)
+                    )
+                    self._commands[cmd.id] = cmd
+                    
+                    # Re-queue pending/queued items
+                    if cmd.status in (CommandStatus.PENDING, CommandStatus.QUEUED):
+                        heapq.heappush(self._queue, cmd)
+                    # Handle running items (likely crashed during run)
+                    elif cmd.status == CommandStatus.RUNNING:
+                        cmd.status = CommandStatus.QUEUED # Reset to queued
+                        heapq.heappush(self._queue, cmd)
+                        logger.warning(f"Recovered running command {cmd.id} to queue")
+
+                logger.info(f"Loaded {len(self._commands)} commands from persistence")
+        except Exception as e:
+            logger.error(f"Failed to load queue state: {e}")
+
+    def _save_state(self):
+        """Save queue state to file"""
+        try:
+            data = {
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "commands": [cmd.to_dict() for cmd in self._commands.values()]
+            }
+            with open(self._persistence_file, "w") as f:
+                json.dump(data, f, indent=2)
+        except Exception as e:
+            logger.error(f"Failed to save queue state: {e}")
 
     async def start(self):
         """Start queue processing"""
@@ -245,6 +307,8 @@ class CommandQueue:
 
             heapq.heappush(self._queue, cmd)
             self._commands[cmd.id] = cmd
+            
+            self._save_state()
 
             logger.debug(f"Command enqueued: {cmd.id} ({command_type.value})")
 
@@ -284,6 +348,7 @@ class CommandQueue:
                     cmd.started_at = datetime.now(timezone.utc).isoformat()
                     agent.current_command = cmd.id
                     agent.available = False
+                    self._save_state()
                     return cmd
 
                 return None
@@ -293,6 +358,7 @@ class CommandQueue:
                 cmd = heapq.heappop(self._queue)
                 cmd.status = CommandStatus.RUNNING
                 cmd.started_at = datetime.now(timezone.utc).isoformat()
+                self._save_state()
                 return cmd
 
     def _can_handle(self, agent: AgentStatus, cmd: Command) -> bool:
@@ -347,6 +413,8 @@ class CommandQueue:
                         agent.completed_count += 1
                     else:
                         agent.failed_count += 1
+            
+            self._save_state()
 
     async def get_command(self, command_id: str) -> Optional[Command]:
         """Holt ein Kommando nach ID"""

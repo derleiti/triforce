@@ -199,12 +199,16 @@ class TriForceCentralLogger:
 
     def __init__(
         self,
-        log_dir: str = "/var/tristar/logs/central",
+        log_dir: Optional[str] = None,
         buffer_size: int = 10000,
         flush_interval: float = 5.0,  # seconds
         flush_threshold: int = 100,   # entries
     ):
-        self.log_dir = Path(log_dir)
+        # Default: ./triforce/logs/central
+        if log_dir is None:
+            self.log_dir = Path(__file__).parent.parent.parent / "triforce" / "logs" / "central"
+        else:
+            self.log_dir = Path(log_dir)
         self.log_dir.mkdir(parents=True, exist_ok=True)
 
         self.buffer_size = buffer_size
@@ -634,6 +638,7 @@ class TriForceLoggingMiddleware(BaseHTTPMiddleware):
 
         start_time = time.time()
         error_message = None
+        response = None
 
         try:
             response = await call_next(request)
@@ -647,7 +652,7 @@ class TriForceLoggingMiddleware(BaseHTTPMiddleware):
 
             # Get response size if available
             response_size = None
-            if hasattr(response, 'headers') and "content-length" in response.headers:
+            if response and hasattr(response, 'headers') and "content-length" in response.headers:
                 try:
                     response_size = int(response.headers["content-length"])
                 except (ValueError, AttributeError):
@@ -674,6 +679,129 @@ class TriForceLoggingMiddleware(BaseHTTPMiddleware):
 
 # Singleton instance
 central_logger = TriForceCentralLogger()
+
+
+class MultiFileLogger:
+    """
+    Logs to multiple categorized files:
+    - mcpserver.log - All MCP protocol traffic
+    - v1.log - REST API /v1/ traffic
+    - triforce.log - TriForce system events
+    - tristar.log - TriStar agent events
+    - aichat.log - AI chat/LLM calls
+    - errors.log - All errors consolidated
+    """
+
+    def __init__(self, log_dir: Optional[str] = None):
+        # Default: ./triforce/logs
+        if log_dir is None:
+            self.log_dir = Path(__file__).parent.parent.parent / "triforce" / "logs"
+        else:
+            self.log_dir = Path(log_dir)
+        self.log_dir.mkdir(parents=True, exist_ok=True)
+
+        # Create subdirectories
+        (self.log_dir / "mcp").mkdir(exist_ok=True)
+        (self.log_dir / "api").mkdir(exist_ok=True)
+        (self.log_dir / "agents").mkdir(exist_ok=True)
+        (self.log_dir / "system").mkdir(exist_ok=True)
+
+        # File handles cache
+        self._files = {}
+        self._lock = asyncio.Lock()
+
+    def _get_dated_path(self, subdir: str, name: str) -> Path:
+        """Get dated log file path"""
+        today = datetime.now().strftime("%Y-%m-%d")
+        return self.log_dir / subdir / f"{name}_{today}.log"
+
+    async def log_mcp(self, method: str, params: Any, result: Any, latency_ms: float, error: str = None):
+        """Log MCP protocol traffic"""
+        entry = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "type": "mcp",
+            "method": method,
+            "params": str(params)[:500] if params else None,
+            "result_size": len(str(result)) if result else 0,
+            "latency_ms": round(latency_ms, 2),
+            "error": error,
+        }
+        await self._write("mcp", "mcpserver", entry)
+
+    async def log_v1_api(self, method: str, path: str, status: int, latency_ms: float, client: str = None):
+        """Log REST API /v1/ traffic"""
+        entry = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "type": "v1_api",
+            "method": method,
+            "path": path,
+            "status": status,
+            "latency_ms": round(latency_ms, 2),
+            "client": client,
+        }
+        await self._write("api", "v1", entry)
+
+    async def log_triforce(self, event: str, details: Dict[str, Any] = None):
+        """Log TriForce system events"""
+        entry = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "type": "triforce",
+            "event": event,
+            "details": details,
+        }
+        await self._write("system", "triforce", entry)
+
+    async def log_tristar(self, agent_id: str, action: str, details: Dict[str, Any] = None):
+        """Log TriStar agent events"""
+        entry = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "type": "tristar",
+            "agent_id": agent_id,
+            "action": action,
+            "details": details,
+        }
+        await self._write("agents", "tristar", entry)
+
+    async def log_aichat(self, model: str, provider: str, tokens_in: int, tokens_out: int,
+                         latency_ms: float, error: str = None):
+        """Log AI/LLM chat calls"""
+        entry = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "type": "aichat",
+            "model": model,
+            "provider": provider,
+            "tokens_in": tokens_in,
+            "tokens_out": tokens_out,
+            "latency_ms": round(latency_ms, 2),
+            "error": error,
+        }
+        await self._write("api", "aichat", entry)
+
+    async def log_error(self, source: str, error_type: str, message: str, trace: str = None):
+        """Log errors to consolidated error log"""
+        entry = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "type": "error",
+            "source": source,
+            "error_type": error_type,
+            "message": message,
+            "trace": trace[:1000] if trace else None,
+        }
+        await self._write("system", "errors", entry)
+
+    async def _write(self, subdir: str, name: str, entry: Dict[str, Any]):
+        """Write entry to log file"""
+        async with self._lock:
+            try:
+                path = self._get_dated_path(subdir, name)
+                with open(path, "a", encoding="utf-8") as f:
+                    f.write(json.dumps(entry, ensure_ascii=False, default=str) + "\n")
+            except Exception as e:
+                logger.error(f"Failed to write to {name} log: {e}")
+
+
+# Multi-file logger instance
+multi_logger = MultiFileLogger()
 
 
 def setup_triforce_logging():

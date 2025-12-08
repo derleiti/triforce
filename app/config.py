@@ -53,6 +53,10 @@ class Settings(BaseSettings):
     tristar_gui_user: str = Field(default="admin", validation_alias="TRISTAR_GUI_USER")
     tristar_gui_password: str = Field(default="changeme", validation_alias="TRISTAR_GUI_PASSWORD")
 
+    # MCP Authentication (User/Password only - no API keys)
+    mcp_oauth_user: Optional[str] = Field(default=None, validation_alias="MCP_OAUTH_USER")
+    mcp_oauth_pass: Optional[str] = Field(default=None, validation_alias="MCP_OAUTH_PASS")
+
     # GPT-OSS
     gpt_oss_api_key: str | None = Field(default=None, validation_alias="GPT_OSS_API_KEY")
     gpt_oss_base_url: AnyHttpUrl | None = Field(default=None, validation_alias="GPT_OSS_BASE_URL")

@@ -545,6 +545,164 @@ Erstelle eine strukturierte Zusammenfassung und identifiziere:
     # FUNCTION CALLING (v2.80)
     # =========================================================================
 
+    async def _call_model(
+        self,
+        prompt: str,
+        model: str,
+        tools: Optional[List[Any]] = None,
+        timeout: int = 40,
+        temperature: float = 0.2,
+        max_retries: int = 2,
+    ):
+        """Call Gemini GenerativeModel with retries and timeout."""
+        if not GENAI_AVAILABLE or not self._genai_initialized:
+            raise RuntimeError("Gemini SDK not available or not initialized")
+
+        last_error: Optional[Exception] = None
+
+        for attempt in range(max_retries + 1):
+            try:
+                gemini_model = genai.GenerativeModel(
+                    model=model,
+                    tools=tools or None,
+                    generation_config=GenerationConfig(temperature=temperature),
+                )
+                response = await asyncio.wait_for(
+                    asyncio.to_thread(gemini_model.generate_content, prompt),
+                    timeout=timeout,
+                )
+                return response
+            except asyncio.TimeoutError as e:
+                last_error = e
+                logger.warning(
+                    "Gemini model call timed out on attempt %s/%s",
+                    attempt + 1,
+                    max_retries + 1,
+                )
+            except Exception as e:  # noqa: BLE001
+                last_error = e
+                logger.warning(
+                    "Gemini model call failed on attempt %s/%s: %s",
+                    attempt + 1,
+                    max_retries + 1,
+                    e,
+                )
+
+            await asyncio.sleep(1 + attempt)
+
+        raise RuntimeError(f"Gemini model call failed: {last_error}")
+
+    def _extract_function_payload(self, response_text: str) -> Optional[Dict[str, Any]]:
+        """Extract JSON payload for function calls from Gemini responses."""
+        if not response_text:
+            return None
+
+        try:
+            return json.loads(response_text)
+        except (TypeError, json.JSONDecodeError):
+            pass
+
+        json_match = re.search(r"\{.*\}", response_text, re.DOTALL)
+        if json_match:
+            try:
+                return json.loads(json_match.group(0))
+            except json.JSONDecodeError:
+                logger.debug("Regex JSON extraction failed", exc_info=True)
+
+        return None
+
+    async def _execute_function_calls(self, calls: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Execute parsed function calls using registered handlers or MCP tools."""
+        executed: List[Dict[str, Any]] = []
+
+        try:
+            from ..routes.mcp_remote import TOOL_HANDLERS
+        except ImportError:
+            TOOL_HANDLERS = {}
+
+        for call in calls:
+            name = call.get("name")
+            args = call.get("args", {}) if isinstance(call, dict) else {}
+            if not name:
+                executed.append({"error": "Missing function name", "call": call})
+                continue
+
+            handler = self._function_handlers.get(name) if name else None
+            if not handler:
+                handler = TOOL_HANDLERS.get(name) if name else None
+
+            if not handler:
+                executed.append({"name": name, "error": "Handler not found"})
+                continue
+
+            try:
+                result = await handler(args if isinstance(args, dict) else {})
+                executed.append({"name": name, "result": result})
+            except Exception as e:  # noqa: BLE001
+                logger.warning("Function call %s failed: %s", name, e)
+                executed.append({"name": name, "error": str(e)})
+
+        return executed
+
+    async def function_call(
+        self,
+        prompt: str,
+        tools: Optional[List[str]] = None,
+        auto_execute: bool = True,
+        max_iterations: int = 5,
+    ) -> Dict[str, Any]:
+        """
+        Execute Gemini with function calling support via SDK or fallback.
+        """
+        result: Dict[str, Any] = {
+            "prompt": prompt,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "function_calls": [],
+            "success": False,
+            "max_iterations": max_iterations,
+        }
+
+        # Fallback if SDK is unavailable
+        if not GENAI_AVAILABLE or not self._genai_initialized:
+            return await self._function_call_fallback(prompt, tools, auto_execute, max_iterations)
+
+        try:
+            gemini_tools = self._triforce_tools_to_gemini(tools)
+            response = await self._call_model(
+                prompt=prompt,
+                model="gemini-2.5-flash",
+                tools=gemini_tools,
+                timeout=60,
+                temperature=0.3,
+                max_retries=2,
+            )
+
+            raw_text = getattr(response, "text", None) or ""
+            if not raw_text and hasattr(response, "to_dict"):
+                raw_text = json.dumps(response.to_dict())
+
+            result["response"] = raw_text
+
+            payloads: List[Dict[str, Any]] = []
+            extracted = self._extract_function_payload(raw_text)
+            if extracted:
+                payloads = extracted if isinstance(extracted, list) else [extracted]
+
+            if payloads and auto_execute:
+                executed = await self._execute_function_calls(payloads[:max_iterations])
+                result["function_calls"] = executed
+                result["function_calls_found"] = len(payloads)
+
+            result["success"] = True
+            result["fallback_mode"] = False
+        except Exception as e:  # noqa: BLE001
+            logger.error("Gemini function_call failed: %s", e)
+            result["error"] = str(e)
+            fallback = await self._function_call_fallback(prompt, tools, auto_execute, max_iterations)
+            result.update({k: v for k, v in fallback.items() if k not in result or not result[k]})
+
+        return result
+
     def _triforce_tools_to_gemini(self, tool_names: Optional[List[str]] = None) -> List[Any]:
         """
         Convert TriForce tools to Gemini FunctionDeclarations.
@@ -562,7 +720,6 @@ Erstelle eine strukturierte Zusammenfassung und identifiziere:
             return []
 
         declarations = []
-
         tools_to_convert = tool_names or [t["name"] for t in TOOL_INDEX.get("tools", [])]
 
         for tool_name in tools_to_convert:
@@ -570,44 +727,64 @@ Erstelle eine strukturierte Zusammenfassung und identifiziere:
             if not tool:
                 continue
 
-            # Convert params to Gemini schema
+            # Convert params to Gemini schema (JSON Schema)
             properties = {}
             required = []
 
+            type_map = {
+                "string": "string",
+                "str": "string",
+                "int": "integer",
+                "integer": "integer",
+                "float": "number",
+                "number": "number",
+                "bool": "boolean",
+                "boolean": "boolean",
+                "array": "array",
+                "list": "array",
+                "object": "object",
+                "dict": "object",
+            }
+
             for param_name, param_def in tool.get("params", {}).items():
-                param_type = param_def.get("type", "string")
+                param_type = str(param_def.get("type", "string")).lower()
 
-                # Map types to Gemini types
-                type_map = {
-                    "string": "STRING",
-                    "int": "INTEGER",
-                    "float": "NUMBER",
-                    "bool": "BOOLEAN",
-                    "array": "ARRAY",
-                    "object": "OBJECT",
-                }
-
+                gemini_type = type_map.get(param_type, "string")
+                
                 prop = {
-                    "type": type_map.get(param_type, "STRING"),
+                    "type": gemini_type,
                     "description": param_def.get("description", ""),
                 }
-                # Fix: Arrays brauchen items definition für Gemini API
-                if param_type == "array":
-                    prop["items"] = {"type": "STRING"}
+                
+                # Fix: Arrays need items definition
+                if gemini_type == "array":
+                    # Try to get item type from definition, default to STRING
+                    items_def = param_def.get("items", {})
+                    if isinstance(items_def, dict):
+                        item_type_str = items_def.get("type", "string")
+                    else:
+                        item_type_str = "string"
+                    
+                    prop["items"] = {"type": type_map.get(str(item_type_str).lower(), "string")}
+                
                 properties[param_name] = prop
 
                 if param_def.get("required"):
                     required.append(param_name)
 
             try:
+                # Ensure correct schema structure for FunctionDeclaration
+                parameters_schema: Dict[str, Any] = {
+                    "type": "object",
+                    "properties": properties,
+                }
+                if required:
+                    parameters_schema["required"] = required
+
                 declaration = FunctionDeclaration(
                     name=tool_name,
                     description=tool.get("description", ""),
-                    parameters={
-                        "type": "OBJECT",
-                        "properties": properties,
-                        "required": required,
-                    }
+                    parameters=parameters_schema,
                 )
                 declarations.append(declaration)
             except Exception as e:
@@ -623,155 +800,69 @@ Erstelle eine strukturierte Zusammenfassung und identifiziere:
         tools: Optional[List[str]] = None,
         auto_execute: bool = True,
         max_iterations: int = 5,
-        temperature: float = 0.7,
     ) -> Dict[str, Any]:
         """
-        Execute Gemini with function calling capabilities.
-
-        Args:
-            prompt: User prompt
-            tools: List of TriForce tool names to expose, or None for defaults
-            auto_execute: Automatically execute called functions
-            max_iterations: Max function call iterations
-            temperature: Generation temperature
-
-        Returns:
-            Dict with response, function_calls, and results
+        Execute Gemini with function calling (GenAI SDK) and optional execution of calls.
+        Falls back to prompt-based function calling when SDK is unavailable.
         """
-        result = {
+        result: Dict[str, Any] = {
             "prompt": prompt,
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "function_calls": [],
-            "iterations": 0,
             "success": False,
+            "fallback_mode": False,
         }
 
-        # Check if GenAI SDK is available
         if not GENAI_AVAILABLE or not self._genai_initialized:
-            # Fallback: Use regular Gemini call with tool descriptions
+            logger.info("GenAI SDK unavailable, using fallback function calling")
             return await self._function_call_fallback(prompt, tools, auto_execute, max_iterations)
 
         try:
-            # Build Gemini tools from TriForce registry
-            default_tools = ["memory_recall", "memory_store", "web_search",
-                           "llm_call", "code_exec", "file_read"]
-            gemini_tools = self._triforce_tools_to_gemini(tools or default_tools)
-
-            # Initialize model with tools
-            model = genai.GenerativeModel(
-                model_name="gemini-2.5-flash",
-                tools=gemini_tools if gemini_tools else None,
-                generation_config=GenerationConfig(temperature=temperature),
+            tool_declarations = self._triforce_tools_to_gemini(tools)
+            response = await self._call_model(
+                prompt=prompt,
+                model="gemini-2.5-flash",
+                tools=tool_declarations,
+                temperature=0.2,
+                timeout=30,
+                max_retries=1,
             )
 
-            # Start chat
-            chat = model.start_chat(history=[])
-
-            current_message = prompt
-
-            for iteration in range(max_iterations):
-                result["iterations"] = iteration + 1
-
-                # Send message
-                response = chat.send_message(current_message)
-
-                # Check for function calls
-                function_calls = []
-                for part in response.parts:
-                    if hasattr(part, 'function_call') and part.function_call:
-                        fc = part.function_call
+            function_calls: List[Dict[str, Any]] = []
+            for candidate in getattr(response, "candidates", []) or []:
+                content = getattr(candidate, "content", None)
+                if not content:
+                    continue
+                for part in getattr(content, "parts", []) or []:
+                    fn_call = getattr(part, "function_call", None)
+                    if fn_call:
                         function_calls.append({
-                            "name": fc.name,
-                            "args": dict(fc.args) if fc.args else {},
+                            "name": getattr(fn_call, "name", None),
+                            "args": getattr(fn_call, "args", {}) or {},
                         })
 
-                if not function_calls:
-                    # No more function calls, we're done
-                    result["response"] = response.text
-                    result["success"] = True
-                    break
+            if not function_calls:
+                payload = self._extract_function_payload(getattr(response, "text", "") or "")
+                if isinstance(payload, dict):
+                    function_calls = [payload]
+                elif isinstance(payload, list):
+                    function_calls = [p for p in payload if isinstance(p, dict)]
 
-                # Execute functions if auto_execute
-                if auto_execute:
-                    function_responses = await self._execute_function_calls(function_calls)
-                    result["function_calls"].extend(function_responses)
+            result["raw_response"] = getattr(response, "text", "")
+            result["function_calls_found"] = len(function_calls)
 
-                    # Build response for Gemini
-                    response_parts = []
-                    for fr in function_responses:
-                        response_parts.append({
-                            "function_response": {
-                                "name": fr["name"],
-                                "response": fr["response"],
-                            }
-                        })
-
-                    # Send function results back
-                    current_message = response_parts
-                else:
-                    # Return function calls without executing
-                    result["pending_function_calls"] = function_calls
-                    result["success"] = True
-                    break
-
-            # Store findings in memory
-            if result["success"] and result.get("response"):
-                await self._store_findings(
-                    result["response"][:500],
-                    f"Function Call: {prompt[:100]}",
-                    confidence=0.85,
-                    tags=["gemini-function-call", "auto"],
+            if function_calls and auto_execute:
+                result["function_calls"] = await self._execute_function_calls(
+                    function_calls[:max_iterations]
                 )
-
-        except Exception as e:
-            logger.error(f"Gemini function call failed: {e}")
-            result["error"] = str(e)
-            # Try fallback
-            if not result.get("response"):
-                fallback_result = await self._function_call_fallback(prompt, tools, auto_execute, 1)
-                if fallback_result.get("success"):
-                    return fallback_result
-
-        return result
-
-    async def _execute_function_calls(self, function_calls: List[Dict]) -> List[Dict]:
-        """Execute function calls and return results."""
-        from ..routes.mcp_remote import TOOL_HANDLERS
-
-        function_responses = []
-
-        for fc in function_calls:
-            tool_name = fc["name"]
-            tool_args = fc["args"]
-
-            # Log the call
-            logger.info(f"Executing function call: {tool_name}")
-
-            # Find and execute handler
-            handler = TOOL_HANDLERS.get(tool_name)
-            if handler:
-                try:
-                    tool_result = await handler(tool_args)
-                    function_responses.append({
-                        "name": tool_name,
-                        "response": tool_result,
-                        "success": True,
-                    })
-                except Exception as e:
-                    logger.error(f"Function {tool_name} failed: {e}")
-                    function_responses.append({
-                        "name": tool_name,
-                        "response": {"error": str(e)},
-                        "success": False,
-                    })
             else:
-                function_responses.append({
-                    "name": tool_name,
-                    "response": {"error": f"Handler not found: {tool_name}"},
-                    "success": False,
-                })
+                result["function_calls"] = function_calls
 
-        return function_responses
+            result["success"] = True
+            return result
+        except Exception as exc:
+            logger.error("Gemini function_call failed, falling back: %s", exc, exc_info=True)
+            return await self._function_call_fallback(prompt, tools, auto_execute, max_iterations)
 
     async def _function_call_fallback(
         self,
@@ -815,23 +906,51 @@ Verfügbare Tools:
             response = await self._call_gemini(prompt, system_prompt)
             result["response"] = response
 
-            # Parse tool calls from response
-            import re
-            tool_pattern = r'@TOOL_CALL:\s*(\{[^}]+\})'
-            matches = re.findall(tool_pattern, response)
+            # Robust parsing of tool calls
+            calls_found = []
 
-            if matches and auto_execute:
-                for match in matches[:3]:
-                    try:
-                        call_data = json.loads(match)
-                        fc = {
-                            "name": call_data.get("name", ""),
-                            "args": call_data.get("args", {}),
-                        }
-                        executed = await self._execute_function_calls([fc])
-                        result["function_calls"].extend(executed)
-                    except json.JSONDecodeError:
-                        pass
+            payload = self._extract_function_payload(response)
+            if isinstance(payload, dict):
+                calls_found.append(payload)
+            elif isinstance(payload, list):
+                calls_found.extend([p for p in payload if isinstance(p, dict)])
+            
+            # Pattern to find start of tool call
+            start_marker = "@TOOL_CALL:"
+            start_indices = [m.start() for m in re.finditer(re.escape(start_marker), response)]
+            
+            for start_idx in start_indices:
+                # Find the first '{' after the marker
+                json_start = response.find('{', start_idx)
+                if json_start == -1:
+                    continue
+                
+                # Count braces to find matching '}'
+                balance = 0
+                for i in range(json_start, len(response)):
+                    if response[i] == '{':
+                        balance += 1
+                    elif response[i] == '}':
+                        balance -= 1
+                        if balance == 0:
+                            # Found potential JSON end
+                            json_str = response[json_start:i+1]
+                            try:
+                                call_data = json.loads(json_str)
+                                if "name" in call_data:
+                                    calls_found.append({
+                                        "name": call_data.get("name"),
+                                        "args": call_data.get("args", {})
+                                    })
+                            except json.JSONDecodeError:
+                                pass
+                            break
+
+            if calls_found and auto_execute:
+                result["function_calls_found"] = len(calls_found)
+                # Execute only the first few to avoid loops
+                executed = await self._execute_function_calls(calls_found[:3])
+                result["function_calls"].extend(executed)
 
             result["success"] = True
 

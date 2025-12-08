@@ -1981,19 +1981,32 @@ POST /v1/mcp
 
 def get_api_docs(section: Optional[str] = None) -> Dict[str, Any]:
     """
-    Get API documentation, optionally filtered by section.
+    Get API documentation. Returns a concise summary by default to save tokens.
+    Use 'section' parameter to get detailed info.
 
     Args:
-        section: Optional section name (endpoints, mcp_methods, providers, usage_examples)
+        section: Optional section name (endpoints, mcp_methods, providers, usage_examples, info)
 
     Returns:
-        Documentation dictionary
+        Documentation dictionary (summary or specific section)
     """
     if section:
         if section in API_DOCUMENTATION:
             return {section: API_DOCUMENTATION[section]}
         return {"error": f"Unknown section: {section}", "available": list(API_DOCUMENTATION.keys())}
-    return API_DOCUMENTATION
+    
+    # Return summary by default
+    return {
+        "info": {
+            "title": API_DOCUMENTATION["info"]["title"],
+            "version": API_DOCUMENTATION["info"]["version"],
+            "note": "This is a summary. Request specific sections for details."
+        },
+        "endpoints": [f"{e.method.value} {e.path}" for e in API_DOCUMENTATION["endpoints"].values()],
+        "mcp_tools": list(API_DOCUMENTATION["mcp_methods"].keys()),
+        "providers": list(API_DOCUMENTATION["providers"].keys()),
+        "available_sections": list(API_DOCUMENTATION.keys())
+    }
 
 
 def get_endpoint_for_task(task_description: str) -> List[Endpoint]:
