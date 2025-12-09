@@ -18,6 +18,7 @@ import json
 import logging
 import random
 import time
+from collections import deque
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
@@ -150,7 +151,7 @@ class MCPServerBrain:
     """
 
     def __init__(self):
-        self._changes: List[Dict[str, Any]] = []
+        self._changes: deque = deque(maxlen=1000)
         self._last_sync: Optional[str] = None
         self._sync_interval: int = 30  # Sekunden
         self._running: bool = False
@@ -182,9 +183,7 @@ class MCPServerBrain:
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             })
 
-            # Max 1000 Änderungen buffern
-            if len(self._changes) > 1000:
-                self._changes = self._changes[-500:]
+            # deque mit maxlen=1000 kürzt automatisch
 
     async def _sync_loop(self):
         """Background-Loop für Gemini-Updates"""
@@ -197,8 +196,8 @@ class MCPServerBrain:
                         continue
 
                     # Sammle Änderungen seit letztem Sync
-                    changes_to_sync = self._changes.copy()
-                    self._changes = []
+                    changes_to_sync = list(self._changes)
+                    self._changes.clear()
 
                 # Sende Update an Gemini
                 await self._send_gemini_update(changes_to_sync)
@@ -696,23 +695,6 @@ class CompactInitGenerator:
     Format: Strukturierte Kurznotation statt Prosa.
     """
 
-    # Tool-Kategorien für gruppierte Übersicht
-    TOOL_CATEGORIES = {
-        "core": ["chat", "list_models", "ask_specialist"],
-        "search": ["web_search", "smart_search", "multi_search", "google_deep_search"],
-        "code": ["codebase_structure", "codebase_file", "codebase_search", "codebase_routes",
-                 "codebase_services", "codebase_edit", "codebase_create"],
-        "agents": ["cli-agents_list", "cli-agents_call", "cli-agents_start", "cli-agents_stop",
-                   "cli-agents_broadcast", "cli-agents_output"],
-        "memory": ["tristar_memory_store", "tristar_memory_search"],
-        "ollama": ["ollama_list", "ollama_chat", "ollama_generate", "ollama_embed"],
-        "mesh": ["mesh_submit_task", "mesh_queue_command", "mesh_get_status", "mesh_list_agents"],
-        "gemini": ["gemini_research", "gemini_coordinate", "gemini_function_call", "gemini_code_exec"],
-        "system": ["tristar_status", "triforce_logs_recent", "triforce_logs_errors", "restart_backend"],
-        "debug": ["debug_mcp_request", "check_compatibility", "debug_toolchain"],
-    }
-
-    # ============================================================================
     # TRIFORCE BACKEND KURZREFERENZ (Kapitel 1 - am Anfang jeder Init)
     # ============================================================================
 
