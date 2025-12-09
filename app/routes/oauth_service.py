@@ -43,17 +43,60 @@ logger = logging.getLogger("ailinux.oauth")
 router = APIRouter(tags=["OAuth 2.0"])
 
 
+# Verifizierte/Autorisierte Domains für OAuth
+VERIFIED_DOMAINS = [
+    # Externe Domains
+    "api.ailinux.me",
+    "ailinux.me",
+    "search.ailinux.me",
+    "repo.ailinux.me",
+    # Local Development
+    "localhost",
+    "127.0.0.1",
+    # Docker Internal
+    "host.docker.internal",
+    "172.17.0.1",   # Docker Bridge Gateway
+    "172.19.0.1",   # WordPress Network Gateway
+]
+
+# Standard OAuth Issuer URL
+DEFAULT_ISSUER = "https://api.ailinux.me"
+
+
+# Hosts die HTTP behalten sollen (interne Kommunikation)
+LOCAL_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "host.docker.internal",
+    "172.17.0.1",
+    "172.19.0.1",
+]
+
+
 def _get_issuer(request: Request) -> str:
-    """Extract issuer URL from request."""
+    """Extract issuer URL from request, using verified domain."""
     raw_base = str(request.base_url).rstrip("/")
     issuer = raw_base.split("/.well-known")[0]
     for suffix in ["/v1/mcp", "/v1", "/mcp"]:
         if issuer.endswith(suffix):
             issuer = issuer[:-len(suffix)]
     issuer = issuer.rstrip("/")
-    if "localhost" not in issuer and "127.0.0.1" not in issuer:
-        issuer = issuer.replace("http://", "https://")
-    return issuer
+
+    # Prüfe ob Domain verifiziert ist
+    from urllib.parse import urlparse
+    parsed = urlparse(issuer)
+    host = parsed.hostname or ""
+
+    # Für lokale/Docker Hosts: behalte http
+    if host in LOCAL_HOSTS or host.startswith("172."):
+        return issuer
+
+    # Für verifizierte externe Domains: verwende https
+    if any(host == d or host.endswith(f".{d}") for d in VERIFIED_DOMAINS):
+        return issuer.replace("http://", "https://")
+
+    # Fallback auf Standard-Issuer
+    return DEFAULT_ISSUER
 
 
 # ============================================================================

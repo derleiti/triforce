@@ -1,0 +1,37 @@
+# SearXNG für AILinux Multi-Search
+version: "3.9"
+
+services:
+  searxng:
+    image: searxng/searxng:latest
+    container_name: ailinux-searxng
+    restart: unless-stopped
+    ports:
+      - "8089:8080"
+    volumes:
+      - ./settings.yml:/etc/searxng/settings.yml:ro
+      - searxng-data:/etc/searxng
+    environment:
+      - SEARXNG_BASE_URL=http://localhost:8089/
+      - UWSGI_WORKERS=4
+      - UWSGI_THREADS=4
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+    networks:
+      - ailinux-net
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  searxng-data:
+
+networks:
+  ailinux-net:
+    external: true

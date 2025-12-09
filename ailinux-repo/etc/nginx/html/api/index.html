@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>AILinux API – v1 / MCP / SSE</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Dokumentation und Live-Testoberfläche für die AILinux API (v1, MCP, SSE)." />
+  <style>
+    :root { color-scheme: dark; }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      line-height: 1.5;
+    }
+    header, section, footer {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+    header { border-bottom: 1px solid #21262d; }
+    h1, h2, h3 {
+      color: #58a6ff;
+      margin-top: 0;
+    }
+    a {
+      color: #58a6ff;
+      text-decoration: none;
+    }
+    a:hover { text-decoration: underline; }
+    code {
+      background: #161b22;
+      padding: 0.15em 0.35em;
+      border-radius: 4px;
+      font-family: "JetBrains Mono", ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.95em;
+    }
+    pre {
+      background: #161b22;
+      padding: 0.75rem 1rem;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-family: "JetBrains Mono", ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.9em;
+      border: 1px solid #21262d;
+    }
+    .endpoint {
+      border-left: 4px solid #58a6ff;
+      padding-left: 1rem;
+      margin: 1.5rem 0;
+    }
+    .tag {
+      display: inline-block;
+      font-size: 0.8em;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      border: 1px solid #30363d;
+      margin-right: 0.5rem;
+      margin-bottom: 0.25rem;
+      color: #8b949e;
+    }
+    .tag-ok   { border-color: #238636; color: #3fb950; }
+    .tag-exp  { border-color: #9e6a03; color: #e3b341; }
+    .tag-warn { border-color: #da3633; color: #f85149; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1rem;
+    }
+    .card {
+      background: #0d1117;
+      border-radius: 8px;
+      border: 1px solid #21262d;
+      padding: 1rem;
+    }
+    button {
+      cursor: pointer;
+      border-radius: 6px;
+      border: 1px solid #30363d;
+      padding: 0.4rem 0.8rem;
+      background: #21262d;
+      color: #e6edf3;
+      font-size: 0.9em;
+    }
+    button:hover { background: #30363d; }
+    button:disabled { opacity: 0.5; cursor: default; }
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      border-radius: 6px;
+      border: 1px solid #21262d;
+      background: #0d1117;
+      color: #e6edf3;
+      padding: 0.5rem;
+      resize: vertical;
+      font-family: "JetBrains Mono", ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.9em;
+    }
+    .small {
+      font-size: 0.85em;
+      color: #8b949e;
+    }
+    .log {
+      max-height: 260px;
+      overflow-y: auto;
+      background: #0d1117;
+      border-radius: 6px;
+      border: 1px solid #21262d;
+      padding: 0.5rem;
+      font-family: "JetBrains Mono", ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.85em;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .flex {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    ul.compact {
+      margin-top: 0.3rem;
+      margin-bottom: 0.3rem;
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <h1>AILinux API</h1>
+  <p>
+    Zentrale API für AILinux – mit OpenAI-kompatiblen Endpunkten,
+    <strong>MCP</strong> (Model Context Protocol) und <strong>Server-Sent Events</strong>.
+  </p>
+  <p>
+    Basis-URL (Empfehlung): <code>https://api.ailinux.me/v1</code>
+  </p>
+</header>
+
+<section>
+  <h2>Überblick</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>/v1</h3>
+      <p>
+        REST- & OpenAI-kompatible API.  
+        Chat, Modelle, Vision, Crawler, Text-/Bildfunktionen.
+      </p>
+      <p>
+        <span class="tag tag-ok">stabil</span>
+        <span class="tag">REST</span>
+        <span class="tag">OpenAI-Compat</span>
+      </p>
+      <pre>GET  /v1
+GET  /v1/models
+POST /v1/chat/completions</pre>
+    </div>
+
+    <div class="card">
+      <h3>/v1/mcp</h3>
+      <p>
+        Unified MCP-RPC Endpoint.  
+        MCP-Kommandos, Mesh-Orchestration, HF-Modelle, TriStar/TriForce-Tools.
+      </p>
+      <p>
+        <span class="tag tag-ok">aktiv</span>
+        <span class="tag">MCP-RPC</span>
+        <span class="tag">JSON POST</span>
+      </p>
+      <pre>POST /v1/mcp
+GET  /v1/mcp/status
+GET  /v1/mcp/.well-known/mcp.json</pre>
+    </div>
+
+    <div class="card">
+      <h3>/v1/mcp/sse</h3>
+      <p>
+        SSE-Endpoint für MCP-Events in Echtzeit: Agent-Output, Logs,
+        Workflow-Status.
+      </p>
+      <p>
+        <span class="tag tag-exp">experimentell</span>
+        <span class="tag">SSE</span>
+        <span class="tag">Event-Stream</span>
+      </p>
+      <pre>GET /v1/mcp/sse</pre>
+    </div>
+  </div>
+</section>
+
+<section class="endpoint">
+  <h2>/v1 – REST & OpenAI-kompatible API</h2>
+  <p>Auszug der wichtigsten Endpunkte (Stand: init-Dokumentation):</p>
+  <ul>
+    <li><code>GET /v1</code> – API-/Metadaten (OpenAI-Metadaten)</li>
+    <li><code>GET /v1/models</code> – verfügbare Modelle</li>
+    <li><code>POST /v1/chat/completions</code> – Chat-Completions</li>
+    <li><code>POST /v1/vision/chat/completions</code> – Vision-Chat</li>
+    <li><code>POST /v1/txt2img</code>, <code>/txt2img/stream</code> – Text→Bild</li>
+    <li><code>POST /v1/images/analyze</code> – Bildanalyse</li>
+    <li><code>POST /v1/text/analyze</code> – Textanalyse</li>
+    <li><code>POST /v1/crawler/jobs</code> / <code>GET /v1/crawler/jobs/{id}</code> – Crawler</li>
+    <li><code>GET /v1/tristar/status</code>, <code>GET /v1/triforce/status</code> – Systemstatus</li>
+  </ul>
+
+  <div class="card">
+    <h3>Live-Test: GET /v1</h3>
+    <p class="small">
+      Zeigt HTTP-Status und Antwort-Body von <code>/v1</code>.
+      Inhalt hängt von deiner OpenAI-Compat-Konfiguration ab.
+    </p>
+    <div class="flex" style="margin-bottom: 0.5rem;">
+      <button id="btn-v1-test">/v1 abfragen</button>
+      <span id="v1-status" class="small"></span>
+    </div>
+    <pre id="v1-response">{ }</pre>
+  </div>
+</section>
+
+<section class="endpoint">
+  <h2>/v1/mcp – MCP-RPC & Tools</h2>
+  <p>
+    Der Endpoint <code>/v1/mcp</code> bündelt die MCP-Funktionalität und
+    stellt über ein RPC-Interface verschiedenste Tools bereit.
+  </p>
+
+  <h3>Typische Tool-Gruppen</h3>
+  <div class="grid">
+    <div class="card">
+      <h4>LLM & Routing</h4>
+      <ul class="compact">
+        <li><code>chat</code> – Nachricht an Modell</li>
+        <li><code>list_models</code> – Modellübersicht</li>
+        <li><code>ask_specialist</code> – Routing zu Expertenmodell</li>
+        <li><code>web_search</code> – Web-/Infosuche</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Code & DevOps</h4>
+      <ul class="compact">
+        <li><code>codebase_structure</code>, <code>codebase_file</code></li>
+        <li><code>codebase_search</code>, <code>codebase_routes</code></li>
+        <li><code>code_scout</code>, <code>ram_search</code>, <code>ram_patch_apply</code></li>
+        <li><code>tristar_shell_exec</code> (Shell, DevOps-only)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Ollama & HF</h4>
+      <ul class="compact">
+        <li><code>ollama_list</code>, <code>ollama_generate</code>, <code>ollama_chat</code></li>
+        <li><code>hf_generate</code>, <code>hf_chat</code>, <code>hf_image</code></li>
+        <li><code>hf_embed</code>, <code>hf_summarize</code>, <code>hf_translate</code></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Mesh, Queue, Memory</h4>
+      <ul class="compact">
+        <li><code>mesh_submit_task</code>, <code>mesh_get_status</code></li>
+        <li><code>queue_enqueue</code>, <code>queue_status</code></li>
+        <li><code>tristar_memory_store</code>, <code>tristar_memory_search</code></li>
+        <li><code>execution_log</code>, <code>triforce_logs_recent</code></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:1rem;">
+    <h3>Live-Test: POST /v1/mcp</h3>
+    <p class="small">
+      Generischer MCP-RPC-Call. Das Beispiel unten fragt einen System-Status an
+      (konkreter Effekt hängt von deiner Konfiguration ab).
+    </p>
+    <textarea id="mcp-payload">{
+  "method": "tool.call",
+  "params": {
+    "name": "system.status"
+  }
+}</textarea>
+    <div class="flex" style="margin: 0.5rem 0;">
+      <button id="btn-mcp-send">MCP-Request senden</button>
+      <span id="mcp-status" class="small"></span>
+    </div>
+    <pre id="mcp-response">{ }</pre>
+  </div>
+</section>
+
+<section class="endpoint">
+  <h2>/v1/mcp/sse – Server-Sent Events</h2>
+  <p>
+    <strong>SSE</strong> verbindet deinen Client mit einem unidirektionalen
+    Event-Stream vom Server. Typische Einsätze:
+  </p>
+  <ul>
+    <li>Agent-Output in Echtzeit</li>
+    <li>Workflow-Status (Mesh/Queue)</li>
+    <li>Debug-/Audit-Events</li>
+  </ul>
+
+  <p>HTTP-Beispiel:</p>
+  <pre>GET /v1/mcp/sse
+Accept: text/event-stream</pre>
+
+  <div class="card">
+    <h3>Live-Stream: GET /v1/mcp/sse</h3>
+    <p class="small">
+      Öffnet ein <code>EventSource</code> auf <code>/v1/mcp/sse</code>.
+      Eingehende Events werden unten angezeigt.
+    </p>
+    <div class="flex" style="margin-bottom: 0.5rem;">
+      <button id="btn-sse-connect">SSE verbinden</button>
+      <button id="btn-sse-disconnect" disabled>SSE trennen</button>
+      <span id="sse-status" class="small"></span>
+    </div>
+    <div id="sse-log" class="log"></div>
+  </div>
+</section>
+
+<section>
+  <h2>MCP Shortcodes (TriForce v2.0)</h2>
+  <p class="small">
+    Kurzreferenz der wichtigsten Aliase und Aktionen (vollständig via
+    <code>/v1/mcp/init</code> abrufbar).
+  </p>
+  <div class="grid">
+    <div class="card">
+      <h4>Agenten</h4>
+      <ul class="compact">
+        <li><code>@c</code> → <code>claude-mcp</code></li>
+        <li><code>@g</code> → <code>gemini-mcp</code> (Lead)</li>
+        <li><code>@x</code> → <code>codex-mcp</code></li>
+        <li><code>@n</code> → <code>nova-mcp</code></li>
+        <li><code>@mcp</code> → MCP-Server</li>
+        <li><code>@*</code> → Broadcast</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Aktionen</h4>
+      <ul class="compact">
+        <li><code>!g</code>/<code>!gen</code> – generate</li>
+        <li><code>!c</code>/<code>!code</code> – code</li>
+        <li><code>!r</code>/<code>!review</code> – review</li>
+        <li><code>!s</code>/<code>!search</code> – search</li>
+        <li><code>!f</code> – fix</li>
+        <li><code>!sum</code> – summarize</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Philosophie</h2>
+  <p>
+    Die AILinux API ist:
+  </p>
+  <ul>
+    <li>minimalistisch – wenige, starke Endpunkte</li>
+    <li>deterministisch – klar definierte Effekte</li>
+    <li>logbar – alles über Logs/Audit nachvollziehbar</li>
+  </ul>
+  <p>
+    Fokus: kontrollierbare Infrastruktur für Agents, Mesh, Modelle und Tools –
+    nicht UI, sondern saubere Schnittstellen.
+  </p>
+</section>
+
+<footer>
+  <p class="small">
+    AILinux API • v1 • <a href="https://ailinux.me">ailinux.me</a>
+  </p>
+</footer>
+
+<script>
+  const apiBase = window.location.origin + "/v1";
+
+  // /v1 Test
+  const btnV1 = document.getElementById("btn-v1-test");
+  const v1Status = document.getElementById("v1-status");
+  const v1Response = document.getElementById("v1-response");
+
+  btnV1.addEventListener("click", async () => {
+    v1Status.textContent = "Lade...";
+    v1Response.textContent = "";
+    try {
+      const res = await fetch(apiBase + "/", {
+        method: "GET",
+        headers: {
+          "Accept": "application/json, text/plain;q=0.9, */*;q=0.8"
+        }
+      });
+      v1Status.textContent = "HTTP " + res.status + " " + res.statusText;
+      const text = await res.text();
+      try {
+        const json = JSON.parse(text);
+        v1Response.textContent = JSON.stringify(json, null, 2);
+      } catch (e) {
+        v1Response.textContent = text || "(Leere Antwort)";
+      }
+    } catch (err) {
+      v1Status.textContent = "Fehler beim Request";
+      v1Response.textContent = String(err);
+    }
+  });
+
+  // /v1/mcp Test
+  const btnMcp = document.getElementById("btn-mcp-send");
+  const mcpStatus = document.getElementById("mcp-status");
+  const mcpResponse = document.getElementById("mcp-response");
+  const mcpPayload = document.getElementById("mcp-payload");
+
+  btnMcp.addEventListener("click", async () => {
+    mcpStatus.textContent = "Sende...";
+    mcpResponse.textContent = "";
+    let body;
+    try {
+      body = JSON.parse(mcpPayload.value);
+    } catch (e) {
+      mcpStatus.textContent = "Ungültiges JSON im Request-Body";
+      mcpResponse.textContent = String(e);
+      return;
+    }
+    try {
+      const res = await fetch(apiBase + "/mcp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json, text/plain;q=0.9, */*;q=0.8"
+        },
+        body: JSON.stringify(body)
+      });
+      mcpStatus.textContent = "HTTP " + res.status + " " + res.statusText;
+      const text = await res.text();
+      try {
+        const json = JSON.parse(text);
+        mcpResponse.textContent = JSON.stringify(json, null, 2);
+      } catch (e) {
+        mcpResponse.textContent = text || "(Leere Antwort)";
+      }
+    } catch (err) {
+      mcpStatus.textContent = "Fehler beim Request";
+      mcpResponse.textContent = String(err);
+    }
+  });
+
+  // /v1/mcp/sse
+  const btnSseConnect = document.getElementById("btn-sse-connect");
+  const btnSseDisconnect = document.getElementById("btn-sse-disconnect");
+  const sseStatus = document.getElementById("sse-status");
+  const sseLog = document.getElementById("sse-log");
+  let eventSource = null;
+
+  function logSse(msg) {
+    const time = new Date().toISOString();
+    sseLog.textContent += "[" + time + "] " + msg + "\n";
+    sseLog.scrollTop = sseLog.scrollHeight;
+  }
+
+  btnSseConnect.addEventListener("click", () => {
+    if (eventSource) return;
+    sseStatus.textContent = "Verbinde...";
+    sseLog.textContent = "";
+
+    const url = apiBase + "/mcp/sse";
+    eventSource = new EventSource(url);
+
+    eventSource.onopen = () => {
+      sseStatus.textContent = "Verbunden mit " + url;
+      btnSseConnect.disabled = true;
+      btnSseDisconnect.disabled = false;
+      logSse("SSE Verbindung geöffnet.");
+    };
+
+    eventSource.onmessage = (event) => {
+      logSse("Event: " + event.data);
+    };
+
+    eventSource.onerror = (err) => {
+      logSse("Fehler: " + (err && err.message ? err.message : "Unbekannter Fehler"));
+      sseStatus.textContent = "Fehler oder getrennt";
+      if (eventSource && eventSource.readyState === EventSource.CLOSED) {
+        btnSseConnect.disabled = false;
+        btnSseDisconnect.disabled = true;
+        eventSource = null;
+      }
+    };
+  });
+
+  btnSseDisconnect.addEventListener("click", () => {
+    if (!eventSource) return;
+    eventSource.close();
+    eventSource = null;
+    sseStatus.textContent = "Manuell getrennt";
+    btnSseConnect.disabled = false;
+    btnSseDisconnect.disabled = true;
+    logSse("SSE Verbindung manuell geschlossen.");
+  });
+</script>
+</body>
+</html>

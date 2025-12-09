@@ -23,6 +23,9 @@ tristar.memory.store/search, codebase.file/structure/search,
 cli-agents.call/start/stop, queue_research, gemini_research,
 gemini_coordinate, ask_specialist, crawl.url/site
 
+NEU (EXPERIMENTAL):
+- execute_mcp_tool(tool_name, params): Erlaubt dynamische Ausführung von Tools zur Laufzeit via Code/Variablen.
+
 VERHALTEN:
 1. Geeignete Tools/Agents erkennen
 2. Teilaufgaben delegieren

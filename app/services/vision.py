@@ -17,6 +17,7 @@ from ..services.model_registry import ModelInfo
 from ..utils.errors import api_error
 from ..utils.http import extract_http_error
 from ..utils.http_client import HttpClient
+from ..utils.model_helpers import strip_provider_prefix
 
 MAX_IMAGE_BYTES = 10 * 1024 * 1024  # 10MB
 
@@ -339,7 +340,7 @@ async def _analyze_with_gemini_url(
 
 async def _dispatch_gemini(model_name: str, prompt: str, image: Image, api_key: str) -> str:
     genai.configure(api_key=api_key)
-    target_model = model_name.split("/", 1)[1] if "/" in model_name else model_name
+    target_model = strip_provider_prefix(model_name)
     model = genai.GenerativeModel(target_model)
     
     try:
@@ -404,7 +405,7 @@ async def _analyze_with_anthropic_data(
     # Map model aliases
     target_model = ANTHROPIC_VISION_ALIASES.get(model)
     if not target_model:
-        stripped = model.split("/", 1)[1] if "/" in model else model
+        stripped = strip_provider_prefix(model)
         target_model = ANTHROPIC_VISION_ALIASES.get(stripped, stripped)
 
     # Map content type to Anthropic media type

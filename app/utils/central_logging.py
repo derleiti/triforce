@@ -1,272 +1,168 @@
 """
-Central Logging Configuration for AILinux/TriForce
-===================================================
-
-All logs are stored in ./triforce/logs/
-
-Log Structure:
-- triforce/logs/all.log          - ALL logs combined
-- triforce/logs/auth.log         - Authentication events
-- triforce/logs/mcp.log          - MCP protocol traffic
-- triforce/logs/api.log          - REST API traffic
-- triforce/logs/llm.log          - LLM/AI calls
-- triforce/logs/agents.log       - Agent events
-- triforce/logs/errors.log       - Errors only
-- triforce/logs/security.log     - Security events
-- triforce/logs/system.log       - System events
+Central Logging v3.0 - Komprimiert & Optimiert
+==============================================
+Logs: ./triforce/logs/ AND /triforce/logs/
+- all.log, auth.log, mcp.log, api.log, llm.log, agents.log, errors.log
+- /triforce/logs/triforce-error-debug/{error,debug,warning}.log
 """
-
 import logging
 import sys
-from datetime import datetime
-from logging.handlers import RotatingFileHandler, TimedRotatingFileHandler
+from functools import lru_cache
+from logging.handlers import RotatingFileHandler
 from pathlib import Path
-from typing import Optional
 
-# Base log directory
-_BASE_DIR = Path(__file__).parent.parent.parent
-LOG_DIR = _BASE_DIR / "triforce" / "logs"
+# Directories
+_BASE = Path(__file__).parent.parent.parent
+LOG_DIR = _BASE / "triforce" / "logs"
 LOG_DIR.mkdir(parents=True, exist_ok=True)
+SYSTEM_LOG_DIR = LOG_DIR
+ERROR_DEBUG_DIR = SYSTEM_LOG_DIR / "triforce-error-debug"
 
-# Log format
-LOG_FORMAT = "%(asctime)s | %(levelname)-8s | %(name)-30s | %(message)s"
-LOG_FORMAT_DETAILED = "%(asctime)s | %(levelname)-8s | %(name)-30s | %(filename)s:%(lineno)d | %(message)s"
-DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+# Config
+FMT = "%(asctime)s|%(levelname)-8s|%(name)-25s|%(message)s"
+FMT_DETAIL = "%(asctime)s|%(levelname)-8s|%(name)-25s|%(filename)s:%(lineno)d|%(message)s"
+DATE_FMT = "%Y-%m-%d %H:%M:%S"
+MAX_BYTES, BACKUP = 50 * 1024 * 1024, 10
 
-# Rotation settings
-MAX_BYTES = 50 * 1024 * 1024  # 50 MB
-BACKUP_COUNT = 10
-
-# Track if already initialized
-_initialized = False
-_root_handler = None
+# State
+_init = {"central": False, "debug": False}
 
 
-class TriForceFormatter(logging.Formatter):
-    """Custom formatter with color support for console and clean format for files."""
+class ColorFormatter(logging.Formatter):
+    """Formatter with ANSI colors for console."""
+    C = {10: '\033[36m', 20: '\033[32m', 30: '\033[33m', 40: '\033[31m', 50: '\033[35m'}
+    R = '\033[0m'
 
-    COLORS = {
-        'DEBUG': '\033[36m',     # Cyan
-        'INFO': '\033[32m',      # Green
-        'WARNING': '\033[33m',   # Yellow
-        'ERROR': '\033[31m',     # Red
-        'CRITICAL': '\033[35m',  # Magenta
-    }
-    RESET = '\033[0m'
-
-    def __init__(self, use_colors: bool = False):
-        super().__init__(LOG_FORMAT, DATE_FORMAT)
-        self.use_colors = use_colors
-
-    def format(self, record: logging.LogRecord) -> str:
-        # Add custom fields if not present
-        if not hasattr(record, 'client_ip'):
-            record.client_ip = '-'
-
-        formatted = super().format(record)
-
-        if self.use_colors and record.levelname in self.COLORS:
-            return f"{self.COLORS[record.levelname]}{formatted}{self.RESET}"
-        return formatted
+    def format(self, r):
+        return f"{self.C.get(r.levelno, '')}{super().format(r)}{self.R}"
 
 
-def get_file_handler(
-    filename: str,
-    level: int = logging.DEBUG,
-    max_bytes: int = MAX_BYTES,
-    backup_count: int = BACKUP_COUNT
-) -> RotatingFileHandler:
-    """Create a rotating file handler."""
-    handler = RotatingFileHandler(
-        LOG_DIR / filename,
-        maxBytes=max_bytes,
-        backupCount=backup_count,
-        encoding='utf-8'
-    )
-    handler.setLevel(level)
-    handler.setFormatter(logging.Formatter(LOG_FORMAT_DETAILED, DATE_FORMAT))
-    return handler
+class LevelFilter(logging.Filter):
+    """Filter for exact log level matching."""
+    def __init__(self, level):
+        super().__init__()
+        self.level = level
+
+    def filter(self, record):
+        return record.levelno == self.level
 
 
-def get_daily_handler(
-    filename: str,
-    level: int = logging.DEBUG
-) -> TimedRotatingFileHandler:
-    """Create a daily rotating file handler."""
-    handler = TimedRotatingFileHandler(
-        LOG_DIR / filename,
-        when='midnight',
-        interval=1,
-        backupCount=30,
-        encoding='utf-8'
-    )
-    handler.setLevel(level)
-    handler.setFormatter(logging.Formatter(LOG_FORMAT_DETAILED, DATE_FORMAT))
-    return handler
+@lru_cache(maxsize=32)
+def _handler(path: str, level: int = logging.DEBUG) -> RotatingFileHandler:
+    """Cached rotating file handler factory."""
+    h = RotatingFileHandler(path, maxBytes=MAX_BYTES, backupCount=BACKUP, encoding='utf-8')
+    h.setLevel(level)
+    h.setFormatter(logging.Formatter(FMT_DETAIL, DATE_FMT))
+    return h
 
 
-def setup_central_logging(
-    console_level: int = logging.INFO,
-    file_level: int = logging.DEBUG,
-    enable_console: bool = True
-) -> None:
-    """
-    Initialize central logging for the entire application.
-    Call this once at application startup.
-    """
-    global _initialized, _root_handler
+def _add_category_logger(name: str, filename: str) -> None:
+    """Setup category logger with file handler."""
+    logger = logging.getLogger(f"ailinux.{name}")
+    logger.addHandler(_handler(str(LOG_DIR / filename)))
+    logger.propagate = True
 
-    if _initialized:
+
+def setup_central_logging(console_level: int = logging.INFO, enable_console: bool = True) -> None:
+    """Initialize central logging. Call once at startup."""
+    if _init["central"]:
         return
 
-    # Get root logger
     root = logging.getLogger()
     root.setLevel(logging.DEBUG)
-
-    # Clear existing handlers
     root.handlers.clear()
 
-    # === File Handlers ===
+    # Core handlers
+    root.addHandler(_handler(str(LOG_DIR / "all.log")))
+    root.addHandler(_handler(str(LOG_DIR / "errors.log"), logging.ERROR))
 
-    # 1. ALL logs combined
-    all_handler = get_file_handler("all.log", logging.DEBUG)
-    root.addHandler(all_handler)
-    _root_handler = all_handler
-
-    # 2. Errors only
-    error_handler = get_file_handler("errors.log", logging.ERROR)
-    root.addHandler(error_handler)
-
-    # === Console Handler ===
+    # Console
     if enable_console:
         console = logging.StreamHandler(sys.stdout)
         console.setLevel(console_level)
-        console.setFormatter(TriForceFormatter(use_colors=True))
+        console.setFormatter(ColorFormatter(FMT, DATE_FMT))
         root.addHandler(console)
 
-    # === Category-specific loggers ===
+    # Category loggers
+    for name, file in [
+        ("auth", "auth.log"), ("mcp", "mcp.log"), ("api", "api.log"),
+        ("llm", "llm.log"), ("agents", "agents.log"), ("security", "security.log"),
+        ("system", "system.log"), ("tristar", "tristar.log"), ("triforce", "triforce.log")
+    ]:
+        _add_category_logger(name, file)
 
-    # Auth logger
-    auth_logger = logging.getLogger("ailinux.auth")
-    auth_logger.addHandler(get_file_handler("auth.log"))
-    auth_logger.propagate = True  # Also goes to all.log
+    # Third-party
+    for name, file in [("uvicorn", "uvicorn.log"), ("uvicorn.access", "access.log")]:
+        lg = logging.getLogger(name)
+        lg.handlers.clear()
+        lg.addHandler(_handler(str(LOG_DIR / file)))
+        lg.propagate = True
 
-    # MCP logger
-    mcp_logger = logging.getLogger("ailinux.mcp")
-    mcp_logger.addHandler(get_file_handler("mcp.log"))
-    mcp_logger.propagate = True
+    logging.getLogger("fastapi").propagate = True
+    logging.getLogger("httpx").setLevel(logging.WARNING)
 
-    # API logger
-    api_logger = logging.getLogger("ailinux.api")
-    api_logger.addHandler(get_file_handler("api.log"))
-    api_logger.propagate = True
+    _init["central"] = True
+    _setup_error_debug(root)
 
-    # LLM logger
-    llm_logger = logging.getLogger("ailinux.llm")
-    llm_logger.addHandler(get_file_handler("llm.log"))
-    llm_logger.propagate = True
+    root.info("=" * 50)
+    root.info(f"TriForce Logging v3.0 | {LOG_DIR} | {ERROR_DEBUG_DIR}")
+    root.info("=" * 50)
 
-    # Agents logger
-    agents_logger = logging.getLogger("ailinux.agents")
-    agents_logger.addHandler(get_file_handler("agents.log"))
-    agents_logger.propagate = True
 
-    # Security logger
-    security_logger = logging.getLogger("ailinux.security")
-    security_logger.addHandler(get_file_handler("security.log"))
-    security_logger.propagate = True
+def _setup_error_debug(root: logging.Logger) -> None:
+    """Setup error.log, debug.log, warning.log in /triforce/logs/triforce-error-debug/"""
+    if _init["debug"]:
+        return
 
-    # System logger
-    system_logger = logging.getLogger("ailinux.system")
-    system_logger.addHandler(get_file_handler("system.log"))
-    system_logger.propagate = True
+    try:
+        ERROR_DEBUG_DIR.mkdir(parents=True, exist_ok=True)
+        target = ERROR_DEBUG_DIR
+    except PermissionError:
+        target = LOG_DIR / "error-debug"
+        target.mkdir(parents=True, exist_ok=True)
+        logging.warning(f"Using fallback: {target}")
+    except Exception as e:
+        logging.error(f"Error/debug setup failed: {e}")
+        return
 
-    # TriStar logger
-    tristar_logger = logging.getLogger("ailinux.tristar")
-    tristar_logger.addHandler(get_file_handler("tristar.log"))
-    tristar_logger.propagate = True
+    # Error handler
+    err_h = RotatingFileHandler(target / "error.log", maxBytes=MAX_BYTES, backupCount=BACKUP, encoding='utf-8')
+    err_h.setLevel(logging.ERROR)
+    err_h.setFormatter(logging.Formatter(FMT_DETAIL, DATE_FMT))
+    root.addHandler(err_h)
 
-    # TriForce logger
-    triforce_logger = logging.getLogger("ailinux.triforce")
-    triforce_logger.addHandler(get_file_handler("triforce.log"))
-    triforce_logger.propagate = True
+    # Debug handler (DEBUG only)
+    dbg_h = RotatingFileHandler(target / "debug.log", maxBytes=MAX_BYTES, backupCount=BACKUP, encoding='utf-8')
+    dbg_h.setLevel(logging.DEBUG)
+    dbg_h.setFormatter(logging.Formatter(FMT_DETAIL, DATE_FMT))
+    dbg_h.addFilter(LevelFilter(logging.DEBUG))
+    root.addHandler(dbg_h)
 
-    # === Third-party loggers ===
+    # Warning handler (WARNING only)
+    warn_h = RotatingFileHandler(target / "warning.log", maxBytes=MAX_BYTES, backupCount=BACKUP, encoding='utf-8')
+    warn_h.setLevel(logging.WARNING)
+    warn_h.setFormatter(logging.Formatter(FMT_DETAIL, DATE_FMT))
+    warn_h.addFilter(LevelFilter(logging.WARNING))
+    root.addHandler(warn_h)
 
-    # Uvicorn
-    uvicorn_logger = logging.getLogger("uvicorn")
-    uvicorn_logger.handlers.clear()
-    uvicorn_logger.addHandler(get_file_handler("uvicorn.log"))
-    uvicorn_logger.propagate = True
-
-    uvicorn_access = logging.getLogger("uvicorn.access")
-    uvicorn_access.handlers.clear()
-    uvicorn_access.addHandler(get_file_handler("access.log"))
-    uvicorn_access.propagate = True
-
-    # FastAPI
-    fastapi_logger = logging.getLogger("fastapi")
-    fastapi_logger.propagate = True
-
-    # HTTPX
-    httpx_logger = logging.getLogger("httpx")
-    httpx_logger.setLevel(logging.WARNING)  # Reduce noise
-
-    # Mark as initialized
-    _initialized = True
-
-    # Log startup
-    root.info("=" * 60)
-    root.info("TriForce Central Logging initialized")
-    root.info(f"Log directory: {LOG_DIR}")
-    root.info("=" * 60)
+    _init["debug"] = True
+    logging.getLogger("ailinux.system").info(f"Error/Debug logging: {target}")
 
 
 def get_logger(name: str) -> logging.Logger:
-    """
-    Get a logger with the ailinux prefix.
-
-    Usage:
-        logger = get_logger("mcp.handler")
-        # Returns logger named "ailinux.mcp.handler"
-    """
-    if not _initialized:
+    """Get logger with ailinux prefix."""
+    if not _init["central"]:
         setup_central_logging()
-
-    if not name.startswith("ailinux."):
-        name = f"ailinux.{name}"
-
-    return logging.getLogger(name)
+    return logging.getLogger(f"ailinux.{name}" if not name.startswith("ailinux.") else name)
 
 
 # Convenience loggers
-def get_auth_logger() -> logging.Logger:
-    return get_logger("auth")
-
-def get_mcp_logger() -> logging.Logger:
-    return get_logger("mcp")
-
-def get_api_logger() -> logging.Logger:
-    return get_logger("api")
-
-def get_llm_logger() -> logging.Logger:
-    return get_logger("llm")
-
-def get_agents_logger() -> logging.Logger:
-    return get_logger("agents")
-
-def get_security_logger() -> logging.Logger:
-    return get_logger("security")
-
-def get_system_logger() -> logging.Logger:
-    return get_logger("system")
-
-def get_tristar_logger() -> logging.Logger:
-    return get_logger("tristar")
-
-def get_triforce_logger() -> logging.Logger:
-    return get_logger("triforce")
-
-
-# Auto-initialize when imported (optional, can be disabled)
-# setup_central_logging()
+get_auth_logger = lambda: get_logger("auth")
+get_mcp_logger = lambda: get_logger("mcp")
+get_api_logger = lambda: get_logger("api")
+get_llm_logger = lambda: get_logger("llm")
+get_agents_logger = lambda: get_logger("agents")
+get_security_logger = lambda: get_logger("security")
+get_system_logger = lambda: get_logger("system")
+get_tristar_logger = lambda: get_logger("tristar")
+get_triforce_logger = lambda: get_logger("triforce")

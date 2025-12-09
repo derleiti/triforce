@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>AILinux API</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="AILinux TriForce API – Multi-LLM Orchestration Server" />
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 2rem;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      max-width: 500px;
+      text-align: center;
+    }
+    h1 {
+      color: #58a6ff;
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    p { color: #8b949e; margin: 0.5rem 0; }
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 1.5rem 0;
+      padding: 0.75rem 1.5rem;
+      background: #161b22;
+      border-radius: 8px;
+      border: 1px solid #21262d;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #8b949e;
+    }
+    .dot.online { background: #3fb950; }
+    .dot.offline { background: #f85149; }
+    .version { color: #8b949e; font-size: 0.9em; }
+    .links {
+      margin-top: 2rem;
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    a {
+      color: #58a6ff;
+      text-decoration: none;
+      padding: 0.6rem 1.2rem;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      background: #21262d;
+      transition: background 0.15s;
+    }
+    a:hover { background: #30363d; }
+    .footer {
+      margin-top: 3rem;
+      font-size: 0.85em;
+      color: #484f58;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚀 AILinux API</h1>
+    <p>TriForce MCP Server</p>
+    
+    <div class="status">
+      <span class="dot" id="dot"></span>
+      <span id="status-text">Prüfe Status...</span>
+    </div>
+    
+    <div class="links">
+      <a href="/docs">📖 API Docs</a>
+      <a href="/redoc">📚 ReDoc</a>
+      <a href="/health">❤️ Health</a>
+    </div>
+    
+    <p class="footer">
+      <a href="https://ailinux.me" style="border:none;background:none;padding:0;">ailinux.me</a>
+    </p>
+  </div>
+
+<script>
+(async () => {
+  const dot = document.getElementById('dot');
+  const text = document.getElementById('status-text');
+  try {
+    const res = await fetch('/health');
+    if (res.ok) {
+      const data = await res.json();
+      dot.classList.add('online');
+      text.textContent = 'Online • v' + (data.version || '?');
+    } else {
+      dot.classList.add('offline');
+      text.textContent = 'Offline';
+    }
+  } catch {
+    dot.classList.add('offline');
+    text.textContent = 'Nicht erreichbar';
+  }
+})();
+</script>
+</body>
+</html>

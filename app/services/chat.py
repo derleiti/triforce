@@ -19,10 +19,33 @@ from ..config import get_settings
 from ..services.model_registry import ModelInfo
 from ..utils.errors import api_error
 from ..utils.http import extract_http_error
+from ..utils.model_helpers import strip_provider_prefix
 from . import web_search
 from .crawler.manager import crawler_manager
 
 logger = __import__("logging").getLogger("ailinux.chat")
+
+# =============================================================================
+# UTILITY FUNCTIONS
+# =============================================================================
+
+
+async def _fallback_to_ollama(
+    messages: List[dict[str, str]],
+    temperature: Optional[float],
+    timeout: float,
+    original_provider: str,
+    original_error: Exception,
+    fallback_model: str | None = None,
+) -> AsyncGenerator[str, None]:
+    """Unified fallback logic - streams from Ollama when primary provider fails."""
+    settings = get_settings()
+    model = fallback_model or settings.ollama_fallback_model
+    logger.warning("%s failed (%s), falling back to %s", original_provider, original_error, model)
+    async for chunk in _stream_ollama(
+        model, messages, temperature=temperature, stream=True, timeout=timeout
+    ):
+        yield chunk
 
 STRUCTURE_PROMPT_MARKER = "nova_format_guideline"
 STRUCTURE_PROMPT = (
@@ -318,12 +341,7 @@ async def _get_initial_response(
             ):
                 chunks.append(chunk)
         except Exception as exc:
-            logger.warning("Mistral failed (%s), falling back to Ollama", exc)
-            fallback_model = "gpt-oss:20b-cloud"
-            logger.info(f"Mistral failed, falling back to Ollama model: {fallback_model}")
-            async for chunk in _stream_ollama(
-                fallback_model, messages, temperature=temperature, stream=True, timeout=settings.request_timeout
-            ):
+            async for chunk in _fallback_to_ollama(messages, temperature, settings.request_timeout, "Mistral", exc):
                 chunks.append(chunk)
     elif model.provider == "gemini":
         if not settings.gemini_api_key:
@@ -339,12 +357,7 @@ async def _get_initial_response(
             ):
                 chunks.append(chunk)
         except Exception as exc:
-            logger.warning("Gemini failed (%s), falling back to Ollama", exc)
-            fallback_model = "gpt-oss:20b-cloud"
-            logger.info(f"Gemini failed, falling back to Ollama model: {fallback_model}")
-            async for chunk in _stream_ollama(
-                fallback_model, messages, temperature=temperature, stream=True, timeout=settings.request_timeout
-            ):
+            async for chunk in _fallback_to_ollama(messages, temperature, settings.request_timeout, "Gemini", exc):
                 chunks.append(chunk)
     elif model.provider == "gpt-oss":
         if not settings.gpt_oss_api_key or not settings.gpt_oss_base_url:
@@ -361,13 +374,7 @@ async def _get_initial_response(
             ):
                 chunks.append(chunk)
         except Exception as exc:
-            logger.warning("GPT-OSS failed (%s), falling back to Ollama", exc)
-            # Fallback to a default Ollama model
-            fallback_model = "gpt-oss:20b-cloud"
-            logger.info(f"GPT-OSS failed, falling back to Ollama model: {fallback_model}")
-            async for chunk in _stream_ollama(
-                fallback_model, messages, temperature=temperature, stream=True, timeout=settings.request_timeout
-            ):
+            async for chunk in _fallback_to_ollama(messages, temperature, settings.request_timeout, "GPT-OSS", exc):
                 chunks.append(chunk)
     elif model.provider == "anthropic":
         if not settings.anthropic_api_key:
@@ -384,12 +391,7 @@ async def _get_initial_response(
             ):
                 chunks.append(chunk)
         except Exception as exc:
-            logger.warning("Anthropic Claude failed (%s), falling back to Ollama", exc)
-            fallback_model = "gpt-oss:20b-cloud"
-            logger.info(f"Anthropic Claude failed, falling back to Ollama model: {fallback_model}")
-            async for chunk in _stream_ollama(
-                fallback_model, messages, temperature=temperature, stream=True, timeout=settings.request_timeout
-            ):
+            async for chunk in _fallback_to_ollama(messages, temperature, settings.request_timeout, "Anthropic", exc):
                 chunks.append(chunk)
     elif model.provider in OPENAI_COMPATIBLE_PROVIDERS:
         # Handle Groq, Cerebras, Together, Fireworks, OpenRouter
@@ -412,11 +414,7 @@ async def _get_initial_response(
             ):
                 chunks.append(chunk)
         except Exception as exc:
-            logger.warning("%s failed (%s), falling back to Ollama", model.provider.title(), exc)
-            fallback_model = "gpt-oss:20b-cloud"
-            async for chunk in _stream_ollama(
-                fallback_model, messages, temperature=temperature, stream=True, timeout=settings.request_timeout
-            ):
+            async for chunk in _fallback_to_ollama(messages, temperature, settings.request_timeout, model.provider.title(), exc):
                 chunks.append(chunk)
     elif model.provider == "cohere":
         if not settings.cohere_api_key:
@@ -432,11 +430,7 @@ async def _get_initial_response(
             ):
                 chunks.append(chunk)
         except Exception as exc:
-            logger.warning("Cohere failed (%s), falling back to Ollama", exc)
-            fallback_model = "gpt-oss:20b-cloud"
-            async for chunk in _stream_ollama(
-                fallback_model, messages, temperature=temperature, stream=True, timeout=settings.request_timeout
-            ):
+            async for chunk in _fallback_to_ollama(messages, temperature, settings.request_timeout, "Cohere", exc):
                 chunks.append(chunk)
     elif model.provider == "cloudflare":
         if not settings.cloudflare_account_id or not settings.cloudflare_api_token:
@@ -453,11 +447,7 @@ async def _get_initial_response(
             ):
                 chunks.append(chunk)
         except Exception as exc:
-            logger.warning("Cloudflare Workers AI failed (%s), falling back to Ollama", exc)
-            fallback_model = "gpt-oss:20b-cloud"
-            async for chunk in _stream_ollama(
-                fallback_model, messages, temperature=temperature, stream=True, timeout=settings.request_timeout
-            ):
+            async for chunk in _fallback_to_ollama(messages, temperature, settings.request_timeout, "Cloudflare", exc):
                 chunks.append(chunk)
     else:
         raise api_error("Unsupported provider", status_code=400, code="unsupported_provider")
@@ -733,6 +723,9 @@ async def _stream_ollama(
     target_model = OLLAMA_MODEL_ALIASES.get(model)
     if not target_model:
         target_model = model
+    
+    # Strip provider prefix for Ollama API (generic)
+    target_model = strip_provider_prefix(target_model)
 
     url = str(httpx.URL(str(settings.ollama_base)).join("/api/chat"))
     payload: dict[str, object] = {
@@ -862,7 +855,7 @@ async def _stream_mistral(
 ) -> AsyncGenerator[str, None]:
     target_model = MISTRAL_MODEL_ALIASES.get(model)
     if not target_model:
-        target_model = model.split("/", 1)[1] if "/" in model else model
+        target_model = strip_provider_prefix(model)
     headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
@@ -971,7 +964,7 @@ async def _stream_gemini(
     # Map legacy model names to current models
     target_model = GEMINI_MODEL_ALIASES.get(model)
     if not target_model:
-        target_model = model.split("/", 1)[1] if "/" in model else model
+        target_model = strip_provider_prefix(model)
     
     generation_config = None
     if temperature is not None:
@@ -1147,7 +1140,7 @@ async def _stream_anthropic(
     target_model = ANTHROPIC_MODEL_ALIASES.get(model)
     if not target_model:
         # Try without prefix
-        stripped = model.split("/", 1)[1] if "/" in model else model
+        stripped = strip_provider_prefix(model)
         target_model = ANTHROPIC_MODEL_ALIASES.get(stripped, stripped)
 
     # Anthropic API requires system messages to be passed separately
@@ -1313,7 +1306,7 @@ async def _stream_openai_compatible(
     Supports: Groq, Cerebras, Together, Fireworks, OpenRouter
     """
     # Strip provider prefix from model name
-    target_model = model.split("/", 1)[1] if "/" in model else model
+    target_model = strip_provider_prefix(model)
 
     headers = {
         "Authorization": f"Bearer {api_key}",
@@ -1426,7 +1419,7 @@ async def _stream_cohere(
     Cohere has its own API format different from OpenAI.
     """
     # Strip provider prefix from model name
-    target_model = model.split("/", 1)[1] if "/" in model else model
+    target_model = strip_provider_prefix(model)
 
     headers = {
         "Authorization": f"Bearer {api_key}",
@@ -1561,7 +1554,7 @@ async def _stream_cloudflare(
     Cloudflare Workers AI has its own API format.
     """
     # Strip provider prefix from model name (e.g., "cloudflare/@cf/meta/llama..." -> "@cf/meta/llama...")
-    target_model = model.split("/", 1)[1] if "/" in model else model
+    target_model = strip_provider_prefix(model)
 
     headers = {
         "Authorization": f"Bearer {api_token}",

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import time
+from time import perf_counter
 from typing import AsyncGenerator, Iterable, List, Literal, Optional
 from uuid import uuid4
 
@@ -13,6 +14,13 @@ from ..services import chat as chat_service
 from ..services.model_registry import ModelInfo, registry
 from ..utils.errors import api_error
 from ..utils.throttle import request_slot
+
+# Performance Monitor für Model-Latenz-Tracking
+try:
+    from ..routes.perf_monitor import monitor as perf_monitor
+    _HAS_PERF_MONITOR = True
+except ImportError:
+    _HAS_PERF_MONITOR = False
 
 
 class OpenAIChatMessage(BaseModel):
@@ -117,15 +125,28 @@ async def create_chat_completion(payload: OpenAIChatCompletionRequest) -> dict[s
     created = int(time.time())
     completion_id = f"chatcmpl-{uuid4().hex}"
 
-    async with request_slot():
-        async for chunk in chat_service.stream_chat(
-            model_info,
-            resolved_model,
-            (message for message in internal_messages),
-            stream=bool(payload.stream),
-            temperature=payload.temperature,
-        ):
-            usage.append(chunk)
+    # Model-Latenz-Tracking
+    model_start = perf_counter()
+    error_occurred = False
+    
+    try:
+        async with request_slot():
+            async for chunk in chat_service.stream_chat(
+                model_info,
+                resolved_model,
+                (message for message in internal_messages),
+                stream=bool(payload.stream),
+                temperature=payload.temperature,
+            ):
+                usage.append(chunk)
+    except Exception as e:
+        error_occurred = True
+        raise
+    finally:
+        # Latenz aufzeichnen
+        if _HAS_PERF_MONITOR:
+            latency_ms = (perf_counter() - model_start) * 1000
+            perf_monitor.record_model(resolved_model, latency_ms, error=error_occurred)
 
     content = usage.completion_text
     finish_reason = "stop"
@@ -157,31 +178,44 @@ async def stream_chat_completion(payload: OpenAIChatCompletionRequest) -> Stream
     completion_id = f"chatcmpl-{uuid4().hex}"
 
     async def generator() -> AsyncGenerator[str, None]:
-        async with request_slot():
-            async for chunk in chat_service.stream_chat(
-                model_info,
-                resolved_model,
-                (message for message in internal_messages),
-                stream=True,
-                temperature=payload.temperature,
-            ):
-                if not chunk:
-                    continue
-                usage.append(chunk)
-                body = {
-                    "id": completion_id,
-                    "object": "chat.completion.chunk",
-                    "created": created,
-                    "model": payload.model,
-                    "choices": [
-                        {
-                            "index": 0,
-                            "delta": {"content": chunk},
-                            "finish_reason": None,
-                        }
-                    ],
-                }
-                yield f"data: {json.dumps(body, ensure_ascii=False)}\n\n"
+        # Model-Latenz-Tracking für Streaming
+        model_start = perf_counter()
+        error_occurred = False
+        
+        try:
+            async with request_slot():
+                async for chunk in chat_service.stream_chat(
+                    model_info,
+                    resolved_model,
+                    (message for message in internal_messages),
+                    stream=True,
+                    temperature=payload.temperature,
+                ):
+                    if not chunk:
+                        continue
+                    usage.append(chunk)
+                    body = {
+                        "id": completion_id,
+                        "object": "chat.completion.chunk",
+                        "created": created,
+                        "model": payload.model,
+                        "choices": [
+                            {
+                                "index": 0,
+                                "delta": {"content": chunk},
+                                "finish_reason": None,
+                            }
+                        ],
+                    }
+                    yield f"data: {json.dumps(body, ensure_ascii=False)}\n\n"
+        except Exception as e:
+            error_occurred = True
+            raise
+        finally:
+            # Latenz aufzeichnen (Gesamtzeit bis Stream-Ende)
+            if _HAS_PERF_MONITOR:
+                latency_ms = (perf_counter() - model_start) * 1000
+                perf_monitor.record_model(resolved_model, latency_ms, error=error_occurred)
 
         final_chunk = {
             "id": completion_id,

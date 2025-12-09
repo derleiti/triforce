@@ -40,9 +40,9 @@ services:
     ports:
       - "8080:8080"
       - "8443:8443"
-      - "9000:9000"
       - "8881:8881"
       - "8882:8882"
+      - "9000:9000"
     volumes:
       # ... und Nginx liest sie von der SSD.
       # Da beide das gleiche Verzeichnis mounten, klappt das perfekt.
@@ -61,3 +61,25 @@ services:
       timeout: 5s
       retries: 3
       start_period: 5s
+
+
+  # === Codex MCP Agent Sidecar ===
+  codex-agent:
+    build:
+      context: ../agent
+      dockerfile: Dockerfile
+    container_name: repo_codex_agent
+    environment:
+      TRIFORCE_ROOT: /opt/triforce
+      MCP_ENDPOINT: http://host.docker.internal:9100/v1/mcp
+      CHECK_INTERVAL: "60"
+      TZ: Europe/Berlin
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    depends_on:
+      - nginx
+
+networks:
+  repo_network:
+    driver: bridge

@@ -1,5 +1,4 @@
 from __future__ import annotations
-from .widget_handlers import handle_weather, handle_crypto_prices, handle_stock_indices, handle_market_overview, handle_google_deep_search, handle_current_time, handle_list_timezones
 
 import base64
 from datetime import datetime, timezone
@@ -38,11 +37,8 @@ from ..mcp.specialists import specialist_router, SpecialistCapability, SPECIALIS
 from ..mcp.context import context_manager, prompt_library, workflow_manager
 from ..mcp.adaptive_code import ADAPTIVE_CODE_TOOLS, ADAPTIVE_CODE_HANDLERS
 from ..services.compatibility_layer import compatibility_layer
-from ..services.system_control import system_control, HOTRELOAD_TOOLS, HOTRELOAD_HANDLERS
-from ..services.memory_index import MEMORY_INDEX_TOOLS, MEMORY_INDEX_HANDLERS, memory_index
+from ..services.system_control import system_control
 from ..services.mcp_debugger import mcp_debugger
-from ..services.llm_compat import LLM_COMPAT_TOOLS, LLM_COMPAT_HANDLERS, llm_compat
-from ..services.init_service import compact_init
 from ..utils.mcp_auth import AUTH_ENABLED, require_mcp_auth
 import logging
 
@@ -178,160 +174,6 @@ async def handle_media_upload(params: Dict[str, Any]) -> Dict[str, Any]:
     )
     return result
 
-
-
-
-async def handle_web_search(params: Dict[str, Any]) -> Dict[str, Any]:
-    """Search the web with pagination and language support (Multi-API)."""
-    from ..services.web_search import search_web
-    
-    query = params.get("query")
-    if not query:
-        raise ValueError("'query' parameter is required for web_search")
-    
-    num_results = params.get("num_results", 50)
-    page = params.get("page", 1)
-    per_page = params.get("per_page", 50)
-    lang = params.get("lang", "de")  # Sprachparameter
-    
-    # Multi-API Web-Suche mit Sprachunterstützung
-    result = await search_web(
-        query, 
-        num_results=num_results,
-        page=page,
-        per_page=per_page,
-        lang=lang
-    )
-    
-    return result
-
-
-async def handle_multi_search(params: Dict[str, Any]) -> Dict[str, Any]:
-    """Extended Multi-API Search with all providers including Grokipedia and AILinux News."""
-    from ..services.multi_search import multi_search_extended
-    
-    query = params.get("query")
-    if not query:
-        raise ValueError("'query' parameter is required for multi_search")
-    
-    result = await multi_search_extended(
-        query=query,
-        max_results=params.get("max_results", 50),
-        lang=params.get("lang", "de"),
-        use_searxng=params.get("use_searxng", True),
-        use_ddg=params.get("use_ddg", True),
-        use_wiby=params.get("use_wiby", True),
-        use_wikipedia=params.get("use_wikipedia", True),
-        use_grokipedia=params.get("use_grokipedia", True),
-        use_ailinux_news=params.get("use_ailinux_news", True),
-        searxng_categories=params.get("categories", "general"),
-    )
-    return result
-
-
-async def handle_smart_search(params: Dict[str, Any]) -> Dict[str, Any]:
-    """🚀 AI-Powered Smart Search with LLM enhancement (Cerebras/Groq).
-    
-    Features:
-    - Query Expansion (~50ms with Cerebras)
-    - Intent Detection (~30ms)
-    - Smart Re-Ranking (~80ms)
-    - Result Summarization (~300ms with Groq)
-    
-    Total target: <1000ms
-    """
-    from ..services.multi_search import smart_search
-    
-    query = params.get("query")
-    if not query:
-        raise ValueError("'query' parameter is required for smart_search")
-    
-    result = await smart_search(
-        query=query,
-        max_results=params.get("max_results", 30),
-        lang=params.get("lang", "de"),
-        use_searxng=params.get("use_searxng", True),
-        use_ddg=params.get("use_ddg", True),
-        use_wikipedia=params.get("use_wikipedia", True),
-        use_grokipedia=params.get("use_grokipedia", True),
-        use_ailinux_news=params.get("use_ailinux_news", True),
-        expand_query_enabled=params.get("expand_query", True),
-        detect_intent_enabled=params.get("detect_intent", True),
-        summarize_enabled=params.get("summarize", True),
-        smart_rank_enabled=params.get("smart_rank", True),
-    )
-    return result
-
-
-async def handle_quick_smart_search(params: Dict[str, Any]) -> Dict[str, Any]:
-    """⚡ Quick Smart Search - Speed-optimized for <500ms.
-    
-    - Query expansion only
-    - Fewer sources
-    - No summarization
-    """
-    from ..services.multi_search import quick_smart_search
-    
-    query = params.get("query")
-    if not query:
-        raise ValueError("'query' parameter is required")
-    
-    result = await quick_smart_search(
-        query=query,
-        max_results=params.get("max_results", 15),
-        lang=params.get("lang", "de"),
-    )
-    return result
-
-
-async def handle_search_llm_config(params: Dict[str, Any]) -> Dict[str, Any]:
-    """Configure or view LLM settings for smart search."""
-    from ..services.multi_search import configure_search_llm, get_available_search_models
-    
-    action = params.get("action", "view")
-    
-    if action == "view":
-        return get_available_search_models()
-    elif action == "configure":
-        return configure_search_llm(
-            fast_model=params.get("fast_model"),
-            quality_model=params.get("quality_model"),
-            enable_expansion=params.get("enable_expansion"),
-            enable_summary=params.get("enable_summary"),
-            enable_ranking=params.get("enable_ranking"),
-        )
-    else:
-        return get_available_search_models()
-
-
-async def handle_search_health(params: Dict[str, Any]) -> Dict[str, Any]:
-    """Check health of all search providers."""
-    from ..services.multi_search import check_search_health
-    return await check_search_health()
-
-
-async def handle_ailinux_search(params: Dict[str, Any]) -> Dict[str, Any]:
-    """Search AILinux.me News Archive via WordPress REST API."""
-    from ..services.multi_search import search_ailinux
-    
-    query = params.get("query")
-    if not query:
-        raise ValueError("'query' parameter is required")
-    
-    results = await search_ailinux(query, params.get("num_results", 20))
-    return {"query": query, "results": results, "count": len(results), "source": "ailinux_news"}
-
-
-async def handle_grokipedia_search(params: Dict[str, Any]) -> Dict[str, Any]:
-    """Search Grokipedia.com - xAI's knowledge base with 885K+ articles."""
-    from ..services.multi_search import search_grokipedia
-    
-    query = params.get("query")
-    if not query:
-        raise ValueError("'query' parameter is required")
-    
-    results = await search_grokipedia(query, params.get("num_results", 5))
-    return {"query": query, "results": results, "count": len(results), "source": "grokipedia"}
 
 async def handle_llm_invoke(params: Dict[str, Any]) -> Dict[str, Any]:
     model_id = params.get("model") or params.get("provider_id")
@@ -1345,173 +1187,6 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
                 "required": ["query"],
             },
         },
-        # Extended Multi-Search Tools (v3.0)
-        {
-            "name": "multi_search",
-            "description": "Extended Multi-API Search with 6 providers: SearXNG, DuckDuckGo, Wiby, Wikipedia, Grokipedia, AILinux News",
-            "inputSchema": {
-                "type": "object",
-                "properties": {
-                    "query": {"type": "string", "description": "Search query"},
-                    "max_results": {"type": "integer", "default": 50, "description": "Maximum results"},
-                    "lang": {"type": "string", "default": "de", "description": "Language code (de, en, etc.)"},
-                    "use_searxng": {"type": "boolean", "default": True},
-                    "use_ddg": {"type": "boolean", "default": True},
-                    "use_wiby": {"type": "boolean", "default": True},
-                    "use_wikipedia": {"type": "boolean", "default": True},
-                    "use_grokipedia": {"type": "boolean", "default": True},
-                    "use_ailinux_news": {"type": "boolean", "default": True},
-                },
-                "required": ["query"],
-            },
-        },
-        # Smart Search Tools (v4.0 - LLM-Powered)
-        {
-            "name": "smart_search",
-            "description": "🚀 AI-Powered Smart Search with LLM enhancement. Uses Cerebras (20x faster) for query expansion & ranking, Groq for summarization. Target latency: <1s",
-            "inputSchema": {
-                "type": "object",
-                "properties": {
-                    "query": {"type": "string", "description": "Search query"},
-                    "max_results": {"type": "integer", "default": 30, "description": "Maximum results"},
-                    "lang": {"type": "string", "default": "de", "description": "Language code"},
-                    "use_searxng": {"type": "boolean", "default": True},
-                    "use_ddg": {"type": "boolean", "default": True},
-                    "use_wikipedia": {"type": "boolean", "default": True},
-                    "use_grokipedia": {"type": "boolean", "default": True},
-                    "use_ailinux_news": {"type": "boolean", "default": True},
-                    "expand_query": {"type": "boolean", "default": True, "description": "Enable LLM query expansion (~50ms)"},
-                    "detect_intent": {"type": "boolean", "default": True, "description": "Enable intent detection (~30ms)"},
-                    "summarize": {"type": "boolean", "default": True, "description": "Enable result summarization (~300ms)"},
-                    "smart_rank": {"type": "boolean", "default": True, "description": "Enable LLM re-ranking (~80ms)"},
-                },
-                "required": ["query"],
-            },
-        },
-        {
-            "name": "quick_smart_search",
-            "description": "⚡ Quick Smart Search - Speed-optimized for <500ms. Query expansion only, fewer sources, no summarization.",
-            "inputSchema": {
-                "type": "object",
-                "properties": {
-                    "query": {"type": "string", "description": "Search query"},
-                    "max_results": {"type": "integer", "default": 15, "description": "Maximum results"},
-                    "lang": {"type": "string", "default": "de", "description": "Language code"},
-                },
-                "required": ["query"],
-            },
-        },
-        {
-            "name": "search_llm_config",
-            "description": "Configure or view LLM settings for smart search. Models: Cerebras (fast), Groq (quality), Gemini (fallback).",
-            "inputSchema": {
-                "type": "object",
-                "properties": {
-                    "action": {"type": "string", "enum": ["view", "configure"], "default": "view"},
-                    "fast_model": {"type": "string", "description": "Fast model ID (e.g., cerebras/llama-3.3-70b)"},
-                    "quality_model": {"type": "string", "description": "Quality model ID (e.g., groq/llama-3.3-70b-versatile)"},
-                    "enable_expansion": {"type": "boolean", "description": "Enable query expansion"},
-                    "enable_summary": {"type": "boolean", "description": "Enable summarization"},
-                    "enable_ranking": {"type": "boolean", "description": "Enable smart ranking"},
-                },
-            },
-        },
-        {
-            "name": "search_health",
-            "description": "Check health status of all search providers (SearXNG, DuckDuckGo, Wiby, Wikipedia, Grokipedia)",
-            "inputSchema": {"type": "object", "properties": {}},
-        },
-        # === NEW WIDGET TOOLS ===
-        {
-            "name": "weather",
-            "description": "Get current weather from Open-Meteo API (free, no key). Returns temperature, humidity, wind, weather code and icon.",
-            "inputSchema": {
-                "type": "object",
-                "properties": {
-                    "lat": {"type": "number", "default": 52.28, "description": "Latitude (default: Rheine)"},
-                    "lon": {"type": "number", "default": 7.44, "description": "Longitude"},
-                    "location": {"type": "string", "default": "Rheine", "description": "Location name"}
-                }
-            },
-        },
-        {
-            "name": "crypto_prices",
-            "description": "Get cryptocurrency prices from CoinGecko API (free). Returns USD/EUR prices and 24h change.",
-            "inputSchema": {
-                "type": "object",
-                "properties": {
-                    "coins": {"type": "array", "items": {"type": "string"}, "default": ["bitcoin", "ethereum", "solana"], "description": "Coin IDs"}
-                }
-            },
-        },
-        {
-            "name": "stock_indices",
-            "description": "Get major stock indices (DAX, S&P500, NASDAQ) from Yahoo Finance.",
-            "inputSchema": {"type": "object", "properties": {}},
-        },
-        {
-            "name": "market_overview",
-            "description": "Combined market data: crypto prices + stock indices in one call.",
-            "inputSchema": {"type": "object", "properties": {}},
-        },
-        {
-            "name": "google_deep_search",
-            "description": "Deep Google search with up to 150 results using googlesearch-python.",
-            "inputSchema": {
-                "type": "object",
-                "properties": {
-                    "query": {"type": "string", "description": "Search query"},
-                    "num_results": {"type": "integer", "default": 150, "description": "Max results (up to 200)"},
-                    "lang": {"type": "string", "default": "de", "description": "Language code"}
-                },
-                "required": ["query"]
-            },
-        },
-        {
-            "name": "current_time",
-            "description": "Get current time with timezone support via WorldTimeAPI. Returns date, time, weekday in DE/EN.",
-            "inputSchema": {
-                "type": "object",
-                "properties": {
-                    "timezone": {"type": "string", "default": "Europe/Berlin", "description": "IANA timezone (e.g., Europe/Berlin, America/New_York)"},
-                    "location": {"type": "string", "description": "Optional location name for display"}
-                }
-            },
-        },
-        {
-            "name": "list_timezones",
-            "description": "List available timezones from WorldTimeAPI.",
-            "inputSchema": {
-                "type": "object",
-                "properties": {
-                    "region": {"type": "string", "description": "Filter by region (e.g., Europe, America, Asia)"}
-                }
-            },
-        },
-        {
-            "name": "ailinux_search",
-            "description": "Search AILinux.me News Archive (71+ pages, Tech/Media/Games) via WordPress REST API",
-            "inputSchema": {
-                "type": "object",
-                "properties": {
-                    "query": {"type": "string", "description": "Search query"},
-                    "num_results": {"type": "integer", "default": 20, "description": "Number of results"},
-                },
-                "required": ["query"],
-            },
-        },
-        {
-            "name": "grokipedia_search",
-            "description": "Search Grokipedia.com - xAI's Wikipedia-style knowledge base with 885K+ articles",
-            "inputSchema": {
-                "type": "object",
-                "properties": {
-                    "query": {"type": "string", "description": "Search query"},
-                    "num_results": {"type": "integer", "default": 5, "description": "Number of results"},
-                },
-                "required": ["query"],
-            },
-        },
         # TriStar Tools
         {
             "name": "tristar_models",
@@ -1855,37 +1530,6 @@ async def handle_restart_agent(params: Dict[str, Any]) -> Dict[str, Any]:
     return await system_control.restart_agent(params.get("agent_id", ""))
 
 
-async def handle_execute_mcp_tool(params: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    EXPERIMENTAL: Execute any MCP tool dynamically.
-    Allows AI to chain tools or execute tools determined at runtime.
-    """
-    tool_name = params.get("tool_name")
-    tool_params = params.get("params", {})
-
-    if not tool_name:
-        raise ValueError("'tool_name' is required")
-
-    # Access the global handler map
-    # Note: We need to access MCP_HANDLERS, but it's defined below.
-    # We can reconstruct the lookup logic or use a lazy import/lookup pattern.
-    
-    # Re-using the logic from handle_tools_call but for internal use
-    handler = MCP_HANDLERS.get(tool_name)
-    
-    # Compatibility fallback
-    if not handler and "." in tool_name:
-        handler = MCP_HANDLERS.get(tool_name.replace(".", "_"))
-    if not handler and "_" in tool_name:
-        handler = MCP_HANDLERS.get(tool_name.replace("_", "."))
-
-    if not handler:
-        raise ValueError(f"Unknown tool: {tool_name}")
-
-    mcp_logger.warning(f"EXPERIMENTAL: Dynamic tool execution of '{tool_name}'")
-    return await handler(tool_params)
-
-
 async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
     """MCP tools/call method - executes a tool."""
     tool_name = params.get("name")
@@ -1900,23 +1544,7 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
         "list_models": handle_models_list,
         "ask_specialist": handle_specialists_invoke,
         "crawl_url": handle_crawl_url,
-        "web_search": handle_web_search,
-        # Extended Multi-Search (v3.0 - Grokipedia + AILinux News)
-        "multi_search": handle_multi_search,
-        # Smart Search (v4.0 - LLM-Powered with Cerebras/Groq)
-        "smart_search": handle_smart_search,
-        "quick_smart_search": handle_quick_smart_search,
-        "search_llm_config": handle_search_llm_config,
-        "search_health": handle_search_health,
-        "weather": handle_weather,
-        "crypto_prices": handle_crypto_prices,
-        "stock_indices": handle_stock_indices,
-        "market_overview": handle_market_overview,
-        "google_deep_search": handle_google_deep_search,
-        "current_time": handle_current_time,
-        "list_timezones": handle_list_timezones,
-        "ailinux_search": handle_ailinux_search,
-        "grokipedia_search": handle_grokipedia_search,
+        "web_search": lambda p: handle_llm_invoke({"model": "gemini/gemini-2.5-flash", "prompt": f"Web search: {p.get('query', '')}"}),
         # TriStar Integration
         "tristar_models": handle_tristar_models,
         "tristar_init": handle_tristar_init,
@@ -1944,10 +1572,10 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
         # System & Compatibility
         "check_compatibility": handle_check_compatibility,
         "debug_mcp_request": handle_debug_mcp_request,
-            "restart_backend": handle_restart_backend,
-            "restart_agent": handle_restart_agent,
-            "execute_mcp_tool": handle_execute_mcp_tool,
-        }
+        "restart_backend": handle_restart_backend,
+        "restart_agent": handle_restart_agent,
+    }
+
     # Merge with dynamic handlers from services
     tool_map.update(OLLAMA_HANDLERS)
     tool_map.update(TRISTAR_HANDLERS)
@@ -1959,9 +1587,6 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
     tool_map.update(MODEL_INIT_HANDLERS)
     tool_map.update(BOOTSTRAP_HANDLERS)
     tool_map.update(ADAPTIVE_CODE_HANDLERS)
-    tool_map.update(LLM_COMPAT_HANDLERS)
-    tool_map.update(HOTRELOAD_HANDLERS)
-    tool_map.update(MEMORY_INDEX_HANDLERS)
 
     handler = tool_map.get(tool_name)
     # Compatibility fallback

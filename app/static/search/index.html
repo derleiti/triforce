@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AILinux Search</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-primary: #0a0a0b;
+            --bg-secondary: #111113;
+            --bg-tertiary: #18181b;
+            --bg-hover: #1f1f23;
+            --text-primary: #fafafa;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --accent: #3b82f6;
+            --border: #27272a;
+            --success: #22c55e;
+            --gradient-start: #3b82f6;
+            --gradient-end: #8b5cf6;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+        header { padding: 60px 0 40px; text-align: center; }
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+        .tagline { color: var(--text-muted); font-size: 0.95rem; }
+        .search-wrapper { position: relative; margin-bottom: 32px; }
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 4px;
+            transition: all 0.2s ease;
+        }
+        .search-box:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .search-icon { padding: 12px 16px; color: var(--text-muted); }
+        .search-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            color: var(--text-primary);
+            padding: 12px 0;
+        }
+        .search-input::placeholder { color: var(--text-muted); }
+        .search-btn {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            border: none;
+            border-radius: 12px;
+            padding: 12px 24px;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .search-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        .search-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 24px;
+            font-size: 0.875rem;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .stats-count { color: var(--text-secondary); }
+        .stats-count strong { color: var(--text-primary); }
+        .stats-time { color: var(--text-muted); font-variant-numeric: tabular-nums; }
+        .stats-sources { display: flex; gap: 6px; flex-wrap: wrap; }
+        .source-badge {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 2px 8px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+        .source-badge.active { border-color: var(--success); color: var(--success); }
+        .results { display: flex; flex-direction: column; gap: 16px; }
+        .result-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: block;
+        }
+        .result-card:hover {
+            background: var(--bg-hover);
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 6px;
+        }
+        .result-url {
+            font-size: 0.8rem;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
+        }
+        .result-source {
+            font-size: 0.65rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 2px 6px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .result-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        .result-snippet {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 60px 0;
+            color: var(--text-muted);
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 16px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .empty-state {
+            text-align: center;
+            padding: 60px 0;
+            color: var(--text-muted);
+        }
+        .empty-state svg { width: 64px; height: 64px; margin-bottom: 16px; opacity: 0.5; }
+        .empty-state h3 { color: var(--text-secondary); margin-bottom: 8px; }
+        .error-state {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            color: #f87171;
+        }
+        .debug-info {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+            font-family: monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            max-height: 200px;
+            overflow: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+        footer a { color: var(--accent); text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+        .kbd-hint {
+            position: absolute;
+            right: 120px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .search-box:focus-within .kbd-hint { opacity: 1; }
+        kbd {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-family: inherit;
+            font-size: 0.7rem;
+        }
+        @media (max-width: 640px) {
+            header { padding: 40px 0 30px; }
+            .logo { font-size: 2rem; }
+            .search-btn { padding: 12px 16px; }
+            .kbd-hint { display: none; }
+            .result-card { padding: 16px; }
+        }
+        .fade-in { animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="logo">AILinux Search</h1>
+            <p class="tagline">Pre-Search AI Query Optimization • TriForce MCP • 6 APIs</p>
+        </header>
+        <main>
+            <div class="search-wrapper">
+                <form class="search-box" id="searchForm">
+                    <div class="search-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                        </svg>
+                    </div>
+                    <input type="text" class="search-input" id="searchInput" placeholder="Suche im Web..." autocomplete="off" autofocus>
+                    <span class="kbd-hint"><kbd>Enter</kbd> zum Suchen</span>
+                    <button type="submit" class="search-btn" id="searchBtn">Suchen</button>
+                </form>
+            </div>
+            <div id="resultsContainer"></div>
+        </main>
+        <footer>
+            <p><a href="https://ailinux.me" target="_blank">AILinux</a> • <a href="https://api.ailinux.me" target="_blank">API</a> • SearXNG + DuckDuckGo + Wiby + Wikipedia + Grokipedia + AILinux News</p>
+        </footer>
+    </div>
+    <script>
+        const API_BASE = 'https://api.ailinux.me/v1';
+        const searchForm = document.getElementById('searchForm');
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const resultsContainer = document.getElementById('resultsContainer');
+
+        // =====================================================================
+        // PRE-SEARCH AI OPTIMIERUNG
+        // Jede Suchanfrage wird zuerst durch KI analysiert und optimiert
+        // =====================================================================
+
+        let currentPreSearch = null; // Speichert aktuelles pre_search Objekt
+
+        /**
+         * Analysiert User-Input und generiert optimierte Suchanfrage
+         * Erkennt Intent (technical, informational, research, troubleshooting, news, exploratory)
+         * Wandelt natürliche Sprache in suchmaschinenfreundliche Queries um
+         */
+        async function preSearchOptimize(userInput) {
+            try {
+                // KI-Aufruf zur Query-Optimierung
+                const response = await fetch(API_BASE + '/mcp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: 'tools/call',
+                        params: {
+                            name: 'chat',
+                            arguments: {
+                                model: 'gemini/gemini-2.0-flash', // Schnelles Model für Pre-Search
+                                messages: [{
+                                    role: 'system',
+                                    content: `Du bist ein Search Query Optimizer für AILinux Multi-Source Search.
+Analysiere die Suchanfrage und optimiere sie für Suchmaschinen.
+
+WICHTIG: Antworte NUR mit einem JSON-Objekt, KEIN anderer Text!
+
+Aufgabe:
+1. Erkenne den Such-Intent (technical, informational, research, troubleshooting, news, exploratory)
+2. Extrahiere Schlüsselbegriffe
+3. Erstelle optimierte Suchanfrage (kurz, präzise, suchmaschinenfreundlich)
+4. Empfehle Suchmodus (combined_search für breite Suche, combined_research für tiefe Recherche)
+
+Output-Format (NUR JSON):
+{
+  "original": "<original input>",
+  "optimized_query": "<optimierte query>",
+  "intent": "<detected intent>",
+  "intent_confidence": 0.0-1.0,
+  "key_terms": ["term1", "term2"],
+  "recommended_mode": "combined_search",
+  "notes": "<kurze Erklärung>"
+}`
+                                }, {
+                                    role: 'user',
+                                    content: userInput
+                                }],
+                                temperature: 0.3, // Niedrig für konsistente Ergebnisse
+                                max_tokens: 300
+                            }
+                        },
+                        id: Date.now()
+                    })
+                });
+
+                const data = await response.json();
+                if (data.error) throw new Error(data.error.message);
+
+                // Parse LLM Response
+                let llmResponse = '';
+                if (data.result?.content?.[0]?.text) {
+                    llmResponse = data.result.content[0].text;
+                } else if (typeof data.result === 'string') {
+                    llmResponse = data.result;
+                }
+
+                // Extrahiere JSON aus Response
+                const jsonMatch = llmResponse.match(/\{[\s\S]*\}/);
+                if (jsonMatch) {
+                    const preSearch = JSON.parse(jsonMatch[0]);
+                    console.log('Pre-Search AI Result:', preSearch);
+                    return preSearch;
+                }
+
+                // Fallback wenn kein JSON gefunden
+                return {
+                    original: userInput,
+                    optimized_query: userInput,
+                    intent: 'informational',
+                    intent_confidence: 0.5,
+                    key_terms: userInput.split(' ').filter(t => t.length > 2),
+                    recommended_mode: 'combined_search',
+                    notes: 'Fallback: Original query used'
+                };
+
+            } catch (error) {
+                console.warn('Pre-Search AI failed, using original query:', error);
+                return {
+                    original: userInput,
+                    optimized_query: userInput,
+                    intent: 'unknown',
+                    intent_confidence: 0,
+                    key_terms: [],
+                    recommended_mode: 'combined_search',
+                    notes: 'Pre-Search AI unavailable'
+                };
+            }
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const initialQuery = urlParams.get('q');
+        if (initialQuery) { searchInput.value = initialQuery; performSearch(initialQuery); }
+
+        searchForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const query = searchInput.value.trim();
+            if (query) {
+                const newUrl = new URL(window.location);
+                newUrl.searchParams.set('q', query);
+                window.history.pushState({}, '', newUrl);
+                await performSearch(query);
+            }
+        });
+
+        async function performSearch(query) {
+            searchBtn.disabled = true;
+            searchBtn.textContent = '...';
+
+            // SCHRITT 1: Pre-Search AI Optimierung
+            resultsContainer.innerHTML = '<div class="loading fade-in"><div class="spinner"></div><p>🤖 Analysiere Suchanfrage...</p></div>';
+
+            const preSearch = await preSearchOptimize(query);
+            currentPreSearch = preSearch;
+
+            // Zeige optimierte Query an
+            const optimizedQuery = preSearch.optimized_query || query;
+            resultsContainer.innerHTML = '<div class="loading fade-in"><div class="spinner"></div><p>Suche nach "' + escapeHtml(optimizedQuery) + '" in 6 APIs...</p>' +
+                (preSearch.original !== preSearch.optimized_query ? '<p style="font-size:0.8rem;color:var(--text-muted);margin-top:8px;">Original: ' + escapeHtml(preSearch.original) + ' → Optimiert</p>' : '') +
+                '</div>';
+            // SCHRITT 2: Suche mit optimierter Query
+            const startTime = performance.now();
+            try {
+                // Nutze die optimierte Query statt der Original-Eingabe
+                const searchQuery = preSearch.optimized_query || query;
+
+                // Use multi_search instead of web_search for combined results
+                const response = await fetch(API_BASE + '/mcp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: 'tools/call',
+                        params: {
+                            name: 'multi_search',
+                            arguments: {
+                                query: searchQuery,  // OPTIMIERTE Query!
+                                max_results: 50,
+                                lang: 'de',
+                                use_searxng: true,
+                                use_ddg: true,
+                                use_wiby: true,
+                                use_wikipedia: true,
+                                use_grokipedia: true,
+                                use_ailinux_news: true
+                            }
+                        },
+                        id: Date.now()
+                    })
+                });
+                const data = await response.json();
+                const elapsed = ((performance.now() - startTime) / 1000).toFixed(2);
+                
+                console.log('API Response:', data);
+                
+                if (data.error) throw new Error(data.error.message || 'API Error');
+                
+                // Parse the result - it's wrapped in content[0].text
+                let resultData;
+                if (data.result && data.result.content && data.result.content[0]) {
+                    resultData = JSON.parse(data.result.content[0].text);
+                } else if (data.result) {
+                    resultData = data.result;
+                } else {
+                    throw new Error('Unexpected response format');
+                }
+                
+                console.log('Parsed Result:', resultData);
+                renderResults(resultData, elapsed, query);
+            } catch (error) {
+                console.error('Search error:', error);
+                resultsContainer.innerHTML = '<div class="error-state fade-in"><p><strong>Fehler bei der Suche</strong></p><p>' + escapeHtml(error.message) + '</p><div class="debug-info">Check console for details</div></div>';
+            } finally {
+                searchBtn.disabled = false;
+                searchBtn.textContent = 'Suchen';
+            }
+        }
+
+        function renderResults(data, elapsed, searchQuery) {
+            // Handle different response structures
+            const results = data.results || data.items || [];
+            const count = data.count || data.total || results.length;
+            const query = data.query || searchQuery;
+            const sources = data.sources || {};
+
+            console.log('Rendering:', { results, count, query, sources, preSearch: currentPreSearch });
+
+            if (!results || results.length === 0) {
+                resultsContainer.innerHTML = '<div class="empty-state fade-in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M8 11h6"/></svg><h3>Keine Ergebnisse</h3><p>Für "' + escapeHtml(query) + '" wurden keine Ergebnisse gefunden.</p></div>';
+                return;
+            }
+
+            // Build source badges
+            let sourceBadges = '';
+            const allSources = ['searxng', 'duckduckgo', 'wiby', 'wikipedia', 'grokipedia', 'ailinux_news'];
+            allSources.forEach(src => {
+                const srcCount = sources[src] || 0;
+                const isActive = srcCount > 0;
+                sourceBadges += '<span class="source-badge ' + (isActive ? 'active' : '') + '">' + src.replace('_', ' ') + (isActive ? ' (' + srcCount + ')' : '') + '</span>';
+            });
+
+            // Pre-Search AI Info Box (transparent für User)
+            let preSearchInfo = '';
+            if (currentPreSearch && currentPreSearch.original !== currentPreSearch.optimized_query) {
+                preSearchInfo = '<div class="pre-search-info fade-in" style="background:var(--bg-tertiary);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:16px;font-size:0.85rem;">' +
+                    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">' +
+                    '<span style="font-size:1.2rem;">🤖</span>' +
+                    '<strong style="color:var(--accent);">Pre-Search AI</strong>' +
+                    '<span class="source-badge" style="background:var(--accent);color:white;border:none;">' + currentPreSearch.intent + '</span>' +
+                    '<span style="color:var(--text-muted);">' + Math.round(currentPreSearch.intent_confidence * 100) + '% confidence</span>' +
+                    '</div>' +
+                    '<div style="display:flex;gap:16px;flex-wrap:wrap;">' +
+                    '<div><span style="color:var(--text-muted);">Original:</span> <span style="color:var(--text-secondary);">' + escapeHtml(currentPreSearch.original) + '</span></div>' +
+                    '<div><span style="color:var(--text-muted);">Optimiert:</span> <strong style="color:var(--success);">' + escapeHtml(currentPreSearch.optimized_query) + '</strong></div>' +
+                    '</div>' +
+                    (currentPreSearch.key_terms?.length ? '<div style="margin-top:8px;"><span style="color:var(--text-muted);">Keywords:</span> ' + currentPreSearch.key_terms.map(t => '<code style="background:var(--bg-hover);padding:2px 6px;border-radius:4px;font-size:0.75rem;">' + escapeHtml(t) + '</code>').join(' ') + '</div>' : '') +
+                    '</div>';
+            }
+
+            let html = preSearchInfo;
+            html += '<div class="stats-bar fade-in"><span class="stats-count"><strong>' + count + '</strong> Ergebnisse für "<strong>' + escapeHtml(currentPreSearch?.optimized_query || query) + '</strong>"</span><span class="stats-time">' + elapsed + 's</span></div>';
+            html += '<div class="stats-sources">' + sourceBadges + '</div>';
+            html += '<div class="results" style="margin-top: 16px;">';
+            
+            results.forEach((result, index) => {
+                const url = result.url || result.href || result.link || '#';
+                const title = result.title || 'Ohne Titel';
+                const snippet = result.snippet || result.body || result.description || result.content || '';
+                const source = result.source || 'unknown';
+                const displayUrl = url.replace(/^https?:\/\//, '').split('/')[0];
+                
+                html += '<a href="' + escapeHtml(url) + '" target="_blank" rel="noopener" class="result-card fade-in" style="animation-delay: ' + (index * 0.03) + 's">';
+                html += '<div class="result-header">';
+                html += '<div class="result-url"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>' + escapeHtml(displayUrl) + '</div>';
+                html += '<span class="result-source">' + escapeHtml(source) + '</span>';
+                html += '</div>';
+                html += '<h2 class="result-title">' + escapeHtml(title) + '</h2>';
+                html += '<p class="result-snippet">' + escapeHtml(snippet) + '</p>';
+                html += '</a>';
+            });
+            html += '</div>';
+            resultsContainer.innerHTML = html;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text || '';
+            return div.innerHTML;
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === '/' && document.activeElement !== searchInput) { e.preventDefault(); searchInput.focus(); }
+            if (e.key === 'Escape') { searchInput.blur(); }
+        });
+    </script>
+<script src="/static/perf-widget.js"></script>
+</body>
+</html>

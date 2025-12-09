@@ -20,8 +20,8 @@ EnvironmentFile=/home/zombie/ailinux-ai-server-backend/.env
 ExecStartPre=+/bin/mkdir -p /var/tristar/projects /var/tristar/logs /var/tristar/memory /var/tristar/pids /var/tristar/agents
 ExecStartPre=+/bin/chown -R zombie:zombie /var/tristar
 
-# Start Backend (mit 4 Workers)
-ExecStart=/home/zombie/ailinux-ai-server-backend/.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 9100 --workers 4
+# Start Backend (via wrapper script)
+ExecStart=/home/zombie/ailinux-ai-server-backend/scripts/start-backend.sh
 
 # Restart Policy
 Restart=always

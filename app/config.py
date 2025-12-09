@@ -14,6 +14,8 @@ DEFAULT_ALLOWED_ORIGINS = [
     "https://api.ailinux.me:9100",
     "https://api.ailinux.me:9000",
     "https://www.ailinux.me:9100",
+    "https://search.ailinux.me",
+    "https://search.ailinux.me:9000",
 ]
 
 class Settings(BaseSettings):
@@ -39,6 +41,7 @@ class Settings(BaseSettings):
     ollama_base: AnyHttpUrl = Field(default="http://localhost:11434", validation_alias="OLLAMA_BASE")
     ollama_bearer_token: Optional[str] = Field(default=None, validation_alias="OLLAMA_BEARER_TOKEN")
     ollama_bearer_auth_enabled: bool = Field(default=True, validation_alias="OLLAMA_BEARER_AUTH_ENABLED")
+    ollama_fallback_model: str = Field(default="gpt-oss:20b-cloud", validation_alias="OLLAMA_FALLBACK_MODEL")
     stable_diffusion_url: AnyHttpUrl = Field(default="http://localhost:7860", validation_alias="STABLE_DIFFUSION_URL")
     comfyui_url: Optional[AnyHttpUrl] = Field(default=None, validation_alias="COMFYUI_URL")
     stable_diffusion_backend: str = Field(default="automatic1111", validation_alias="STABLE_DIFFUSION_BACKEND")

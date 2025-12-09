@@ -8,8 +8,9 @@ Stellt /init für /v1/, /mcp/, /triforce/ bereit mit:
 - Loadbalancing zwischen API und MCP
 - MCP Server "Mitdenk"-Funktion
 - Umfassende API und Tool Dokumentation
+- Token-effiziente Compact Init für LLMs (OpenAI/Google/Anthropic kompatibel)
 
-Version: 1.1.0
+Version: 2.0.0
 """
 
 import asyncio
@@ -420,6 +421,7 @@ class InitService:
                 {"name": "debug_mcp_request", "description": "Traces an MCP request"},
                 {"name": "restart_backend", "description": "Restarts the backend service"},
                 {"name": "restart_agent", "description": "Restarts a CLI agent"},
+                {"name": "execute_mcp_tool", "description": "EXPERIMENTAL: Execute any MCP tool dynamically"},
             ])
 
             mcp_documentation = {}
@@ -500,6 +502,421 @@ init_service = InitService()
 
 
 # ============================================================================
+# TOKEN-EFFIZIENTE COMPACT INIT (OpenAI/Google/Anthropic kompatibel)
+# ============================================================================
+
+class CompactInitGenerator:
+    """
+    Generiert ultra-kompakte Init-Dokumentation für LLMs.
+    Ziel: Maximale Information bei minimalen Tokens.
+
+    Kompatibel mit:
+    - OpenAI (GPT-4, GPT-4o)
+    - Google (Gemini)
+    - Anthropic (Claude)
+
+    Format: Strukturierte Kurznotation statt Prosa.
+    """
+
+    # Tool-Kategorien für gruppierte Übersicht
+    TOOL_CATEGORIES = {
+        "core": ["chat", "list_models", "ask_specialist"],
+        "search": ["web_search", "smart_search", "multi_search", "google_deep_search"],
+        "code": ["codebase_structure", "codebase_file", "codebase_search", "codebase_routes",
+                 "codebase_services", "codebase_edit", "codebase_create"],
+        "agents": ["cli-agents_list", "cli-agents_call", "cli-agents_start", "cli-agents_stop",
+                   "cli-agents_broadcast", "cli-agents_output"],
+        "memory": ["tristar_memory_store", "tristar_memory_search"],
+        "ollama": ["ollama_list", "ollama_chat", "ollama_generate", "ollama_embed"],
+        "mesh": ["mesh_submit_task", "mesh_queue_command", "mesh_get_status", "mesh_list_agents"],
+        "gemini": ["gemini_research", "gemini_coordinate", "gemini_function_call", "gemini_code_exec"],
+        "system": ["tristar_status", "triforce_logs_recent", "triforce_logs_errors", "restart_backend"],
+        "debug": ["debug_mcp_request", "check_compatibility", "debug_toolchain"],
+    }
+
+    # ============================================================================
+    # TRIFORCE BACKEND KURZREFERENZ (Kapitel 1 - am Anfang jeder Init)
+    # ============================================================================
+
+    BACKEND_OVERVIEW = """[TRIFORCE BACKEND v2.80]
+ARCHITEKTUR:
+├── API: https://api.ailinux.me/v1/ (REST) | /mcp/ (MCP Protocol) | /triforce/ (Mesh)
+├── AUTH: Bearer Token via X-MCP-Key Header | OAuth2 via /auth/
+├── AGENTS: 9 CLI-Agents (Claude,Codex,Gemini,Mistral,DeepSeek,Nova,Qwen,Kimi,Cogito)
+├── MESH: Gemini-Lead koordiniert, Workers führen aus, Reviewer prüfen
+└── MEMORY: Shared Memory mit Confidence-Scoring, persistiert in /var/tristar/
+
+KOMMUNIKATION:
+1. REST→POST /v1/chat {model,messages} | /v1/models | /v1/search
+2. MCP→POST /mcp {"jsonrpc":"2.0","method":"tools/call","params":{"name":"..","arguments":{}}}
+3. SHORTCODE→@agent>!action"param"=[var] (intern, zwischen Agents)
+4. MESH→/triforce/mesh/call | /mesh/broadcast | /mesh/consensus
+
+TOOLS: 123 MCP-Tools in 10 Kategorien (core,search,code,agents,memory,ollama,mesh,gemini,system,debug)
+"""
+
+    # Meta-Instruktion: Parse-Only (nicht memorieren, sondern anwenden)
+    META_INSTRUCTION = """[PARSE-MODE]
+Diese MCP-Referenz ist NICHT zum Memorieren.
+Behandle als ausführbare Grammatik - parse bei Bedarf:
+- Lookup bei Tool-Nutzung, nicht speichern
+- Pattern-Match auf Shortcodes, nicht auswendig lernen
+- Bei Unklarheit: tools/list aufrufen, nicht raten
+[/PARSE-MODE]"""
+
+    # ============================================================================
+    # SHORTCODE SPRACHE (Kapitel 2 - Token-effiziente Agent-Kommunikation)
+    # ============================================================================
+
+    SHORTCODE_FULL_DOC = """[SHORTCODE PROTOKOLL v2.0]
+ZWECK: Token-effiziente Kommunikation zwischen LLM-Agents über MCP
+
+AGENT-ALIASE (Source/Target):
+@g/@gemini = gemini-mcp (Lead/Koordinator)
+@c/@claude = claude-mcp (Code/Review)
+@x/@codex = codex-mcp (Implementation)
+@m/@mistral = mistral-mcp (Research/Fast)
+@d/@deepseek = deepseek-mcp (Code/Math)
+@n/@nova = nova-mcp (Vision/Stream)
+@q/@qwen = qwen-mcp (Code/Chinese)
+@k/@kimi = kimi-mcp (Long-Context)
+@co/@cogito = cogito-mcp (Reasoning)
+@mcp = mcp-server (direkt)
+@* = broadcast (alle)
+
+ACTIONS (nach !):
+!g/!gen = generate (Text generieren)
+!c/!code = code (Code schreiben)
+!r/!review = review (Code prüfen)
+!s/!search = search (Websuche)
+!f/!fix = fix (Fehler beheben)
+!a/!analyze = analyze (Analyse)
+!d/!delegate = delegate (Weitergabe)
+!m/!mem = memory (Speichern/Abrufen)
+!?/!query = query (Abfrage)
+!x/!exec = execute (Ausführen)
+!t/!test = test (Testen)
+!e/!explain = explain (Erklären)
+!sum = summarize (Zusammenfassen)
+
+FLOW-OPERATOREN:
+> = send (senden an)
+>> = chain (Kette, nächster Agent)
+< = return (Ergebnis zurück)
+<< = final (finales Ergebnis)
+| = pipe (parallel)
+@mcp> = via MCP-Server
+
+VARIABLEN & OUTPUT:
+=[var] = in Variable speichern
+@[var] = Variable nutzen
+[outputtoken] = Token-Count erfassen
+[prompt] = Prompt erfassen
+[result] = Ergebnis erfassen
+
+MODIFIKATOREN:
+#tag = Tag hinzufügen
+!!! = CRITICAL Priority
+!! = HIGH Priority
+~ = LOW Priority
+
+BEISPIELE:
+1. @g>!s"linux kernel"=[results]>>@c>!sum@[results]
+   → Gemini sucht, Claude fasst zusammen
+
+2. @g>>@c!code"REST API endpoint"#backend!!
+   → Gemini delegiert an Claude für Code, high priority
+
+3. @*>!query"status"
+   → Broadcast an alle Agents
+
+4. @c>!review@[code]#security>>@m>!fix@[issues]
+   → Claude reviewed, Mistral fixt Probleme
+
+5. @mcp>@g>!delegate @c!analyze#deep
+   → Via MCP: Gemini delegiert an Claude
+
+PARSE-REGEL: Shortcode lesen → sofort ausführen → NICHT memorieren
+"""
+
+    # Kompakte Version für Kontext-Limits
+    SHORTCODE_COMPACT = """SHORTCODE:@g=gemini,@c=claude,@x=codex,@m=mistral,@d=deepseek,@n=nova,@*=all
+ACT:!g=gen,!c=code,!r=review,!s=search,!f=fix,!a=analyze,!m=mem,!x=exec,!t=test
+FLOW:>=send,>>=chain,<=ret,<<=final,|=pipe
+OUT:=[var]=store,@[var]=use,[result]=capture
+MOD:#tag=tag,!!=high,!!!=crit,~=low
+EX:@g>!s"query"=[r]>>@c>!sum@[r] | @g>>@c!code"feat"#urgent"""
+
+    # Tool-Nutzungsmuster (für aktive Anwendung)
+    USAGE_PATTERNS = """USE:
+1.search→smart_search(query) oder web_search(query)
+2.code→codebase_structure()→codebase_file(path)→codebase_edit(path,mode,text)
+3.agent→cli-agents_list()→cli-agents_call(id,msg)
+4.memory→tristar_memory_store(content,type)→tristar_memory_search(query)
+5.chain→debug_toolchain(preset) für Kombination
+PRESETS:full_trace_analysis,agent_health_check,error_investigation,tool_performance"""
+
+    # ============================================================================
+    # VOLLSTÄNDIGE TOOL-LISTE (alle 123 MCP Tools)
+    # ============================================================================
+
+    ALL_TOOLS_BY_CATEGORY = {
+        "core": [
+            "chat", "list_models", "ask_specialist", "crawl_url"
+        ],
+        "search": [
+            "web_search", "smart_search", "quick_smart_search", "multi_search",
+            "google_deep_search", "search_health", "ailinux_search", "grokipedia_search"
+        ],
+        "realtime": [
+            "weather", "crypto_prices", "stock_indices", "market_overview",
+            "current_time", "list_timezones"
+        ],
+        "codebase": [
+            "codebase_structure", "codebase_file", "codebase_search", "codebase_routes",
+            "codebase_services", "codebase_edit", "codebase_create", "codebase_backup",
+            "code_scout", "code_probe", "ram_search", "ram_context_export", "ram_patch_apply"
+        ],
+        "agents": [
+            "cli-agents_list", "cli-agents_get", "cli-agents_start", "cli-agents_stop",
+            "cli-agents_restart", "cli-agents_call", "cli-agents_broadcast", "cli-agents_output",
+            "cli-agents_stats"
+        ],
+        "memory": [
+            "tristar_memory_store", "tristar_memory_search", "memory_index_add",
+            "memory_index_search", "memory_index_get", "memory_index_compact", "memory_index_stats"
+        ],
+        "ollama": [
+            "ollama_list", "ollama_show", "ollama_pull", "ollama_push", "ollama_copy",
+            "ollama_delete", "ollama_create", "ollama_ps", "ollama_generate", "ollama_chat",
+            "ollama_embed", "ollama_health"
+        ],
+        "mesh": [
+            "mesh_submit_task", "mesh_queue_command", "mesh_get_status", "mesh_list_agents",
+            "mesh_get_task", "mesh_filter_check", "mesh_filter_audit"
+        ],
+        "queue": [
+            "queue_enqueue", "queue_research", "queue_status", "queue_get",
+            "queue_agents", "queue_broadcast"
+        ],
+        "gemini": [
+            "gemini_research", "gemini_coordinate", "gemini_quick", "gemini_update",
+            "gemini_function_call", "gemini_code_exec", "gemini_init_all", "gemini_init_model",
+            "gemini_get_models"
+        ],
+        "tristar": [
+            "tristar_models", "tristar_init", "tristar_logs", "tristar_logs_agent",
+            "tristar_logs_clear", "tristar_prompts_list", "tristar_prompts_get",
+            "tristar_prompts_set", "tristar_prompts_delete", "tristar_settings",
+            "tristar_settings_get", "tristar_settings_set", "tristar_conversations",
+            "tristar_conversation_get", "tristar_conversation_save", "tristar_conversation_delete",
+            "tristar_agents", "tristar_agent_config", "tristar_agent_configure", "tristar_status",
+            "tristar_shell_exec"
+        ],
+        "triforce": [
+            "triforce_logs_recent", "triforce_logs_errors", "triforce_logs_api",
+            "triforce_logs_trace", "triforce_logs_stats"
+        ],
+        "init": [
+            "init", "compact_init", "tool_lookup", "decode_shortcode", "execute_shortcode",
+            "loadbalancer_stats", "mcp_brain_status"
+        ],
+        "bootstrap": [
+            "bootstrap_agents", "wakeup_agent", "bootstrap_status", "process_agent_output",
+            "rate_limit_stats", "execution_log"
+        ],
+        "evolve": [
+            "evolve_analyze", "evolve_history", "evolve_broadcast"
+        ],
+        "llm_compat": [
+            "llm_compat_convert", "llm_compat_parse"
+        ],
+        "hotreload": [
+            "hot_reload_module", "hot_reload_services", "hot_reload_all",
+            "list_reloadable_modules", "reinit_service", "reload_history"
+        ],
+        "huggingface": [
+            "hf_generate", "hf_chat", "hf_embed", "hf_image", "hf_summarize",
+            "hf_translate", "hf_models"
+        ],
+        "debug": [
+            "debug_mcp_request", "check_compatibility", "restart_backend", "restart_agent",
+            "debug_toolchain", "execute_mcp_tool"
+        ]
+    }
+
+    def generate_compact_init(
+        self,
+        agent_id: str = None,
+        include_tools: bool = True,
+        include_shortcuts: bool = True,
+        include_full_shortcode: bool = False,
+        max_tokens: int = 800,
+    ) -> str:
+        """
+        Generiert token-effiziente Init-Dokumentation.
+
+        Args:
+            agent_id: Optional Agent-ID für rollenspezifische Hinweise
+            include_tools: Tool-Kategorien einschließen
+            include_shortcuts: Shortcode-Referenz einschließen
+            include_full_shortcode: Vollständige Shortcode-Dokumentation (statt kompakt)
+            max_tokens: Ungefähres Token-Limit (Zeichen/4)
+
+        Returns:
+            Kompakte Init-Dokumentation als String
+        """
+        parts = []
+
+        # Backend-Übersicht ZUERST (wichtigster Kontext)
+        parts.append(self.BACKEND_OVERVIEW)
+
+        # Meta-Instruktion (Parse-Mode aktivieren)
+        parts.append(self.META_INSTRUCTION)
+
+        # Agent-Rolle (wenn spezifiziert)
+        if agent_id:
+            role = self._get_agent_role(agent_id)
+            parts.append(f"ROLE:{agent_id}={role}")
+
+        # Shortcode-Referenz (vollständig oder kompakt)
+        if include_shortcuts:
+            if include_full_shortcode:
+                parts.append(self.SHORTCODE_FULL_DOC)
+            else:
+                parts.append(self.SHORTCODE_COMPACT)
+
+        # Tool-Kategorien (kompakt oder vollständig)
+        if include_tools:
+            # Zähle alle Tools
+            total_tools = sum(len(tools) for tools in self.ALL_TOOLS_BY_CATEGORY.values())
+            tool_lines = [f"[{total_tools} MCP TOOLS]"]
+
+            for cat, tools in self.ALL_TOOLS_BY_CATEGORY.items():
+                # Zeige alle Tools pro Kategorie
+                tool_str = ",".join(tools[:6])
+                if len(tools) > 6:
+                    tool_str += f"+{len(tools)-6}"
+                tool_lines.append(f"{cat}({len(tools)}):{tool_str}")
+
+            parts.append("\n".join(tool_lines))
+
+        # Nutzungsmuster
+        parts.append(self.USAGE_PATTERNS)
+
+        # Wichtige Hinweise (minimal)
+        parts.append("NOTE:tools/call→method,params|chains→use debug_toolchain(preset)|tool_lookup(name)→Details")
+
+        result = "\n".join(parts)
+
+        # Kürzen wenn nötig
+        max_chars = max_tokens * 4
+        if len(result) > max_chars:
+            result = result[:max_chars-3] + "..."
+
+        return result
+
+    def generate_tool_reference(self, category: str = None) -> str:
+        """
+        Generiert kompakte Tool-Referenz für eine Kategorie.
+        """
+        if category and category in self.ALL_TOOLS_BY_CATEGORY:
+            tools = self.ALL_TOOLS_BY_CATEGORY[category]
+            lines = [f"{category.upper()} TOOLS ({len(tools)}):"]
+            for t in tools:
+                lines.append(f"  {t}")
+            return "\n".join(lines)
+
+        # Alle Kategorien
+        total = sum(len(t) for t in self.ALL_TOOLS_BY_CATEGORY.values())
+        lines = [f"ALL TOOL CATEGORIES ({total} tools):"]
+        for cat, tools in self.ALL_TOOLS_BY_CATEGORY.items():
+            lines.append(f"{cat}({len(tools)})")
+        return " | ".join(lines)
+
+    def _get_agent_role(self, agent_id: str) -> str:
+        """Gibt kompakte Rollenbeschreibung zurück."""
+        roles = {
+            "gemini-mcp": "lead,coord,init",
+            "claude-mcp": "code,review,analysis",
+            "codex-mcp": "code,exec,impl",
+            "mistral-mcp": "research,fast,multi",
+            "deepseek-mcp": "code,math,reason",
+            "nova-mcp": "vision,multi,stream",
+            "cogito-mcp": "think,plan,reason",
+            "qwen-mcp": "code,chinese,multi",
+            "kimi-mcp": "long,chinese,doc",
+        }
+        return roles.get(agent_id, "worker")
+
+    def generate_openai_compatible(self, agent_id: str = None) -> dict:
+        """
+        Generiert OpenAI-kompatibles System-Message-Format.
+        """
+        compact = self.generate_compact_init(agent_id)
+        return {
+            "role": "system",
+            "content": f"MCP-INIT:\n{compact}\n\nUse tools via function_call. Chain with debug_toolchain."
+        }
+
+    def generate_gemini_compatible(self, agent_id: str = None) -> dict:
+        """
+        Generiert Gemini-kompatibles Format.
+        """
+        compact = self.generate_compact_init(agent_id)
+        return {
+            "system_instruction": f"MCP-INIT:\n{compact}",
+            "tool_config": {
+                "function_calling_config": {"mode": "AUTO"}
+            }
+        }
+
+    def generate_anthropic_compatible(self, agent_id: str = None) -> dict:
+        """
+        Generiert Anthropic/Claude-kompatibles Format.
+        """
+        compact = self.generate_compact_init(agent_id)
+        return {
+            "system": f"MCP-INIT:\n{compact}\n\nUse tool_use blocks for MCP tools.",
+            "metadata": {"mcp_version": "2.80.0"}
+        }
+
+    def get_universal_init(self, agent_id: str = None, provider: str = "auto") -> dict:
+        """
+        Generiert universelles Init-Format für alle Provider.
+
+        Args:
+            agent_id: Agent-ID
+            provider: openai, gemini, anthropic, oder auto (alle Formate)
+        """
+        compact = self.generate_compact_init(agent_id)
+
+        if provider == "openai":
+            return self.generate_openai_compatible(agent_id)
+        elif provider == "gemini":
+            return self.generate_gemini_compatible(agent_id)
+        elif provider == "anthropic":
+            return self.generate_anthropic_compatible(agent_id)
+        else:
+            # Universal format
+            return {
+                "mcp_version": "2.80.0",
+                "protocol": "TriForce MCP",
+                "compact_init": compact,
+                "token_count": len(compact) // 4,
+                "formats": {
+                    "openai": self.generate_openai_compatible(agent_id),
+                    "gemini": self.generate_gemini_compatible(agent_id),
+                    "anthropic": self.generate_anthropic_compatible(agent_id),
+                }
+            }
+
+
+# Singleton
+compact_init = CompactInitGenerator()
+
+
+# ============================================================================
 # MCP TOOLS
 # ============================================================================
 
@@ -514,6 +931,34 @@ INIT_TOOLS = [
                 "include_docs": {"type": "boolean", "default": True},
                 "include_tools": {"type": "boolean", "default": True},
                 "decode_shortcode": {"type": "string", "description": "Optional: Shortcode zum Decodieren"},
+            },
+        },
+    },
+    {
+        "name": "compact_init",
+        "description": "Token-effiziente Init für LLMs. Parse-Mode: nicht memorieren, bei Bedarf nachschlagen.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "agent_id": {"type": "string", "description": "Agent ID"},
+                "provider": {
+                    "type": "string",
+                    "enum": ["auto", "openai", "gemini", "anthropic"],
+                    "default": "auto",
+                    "description": "LLM Provider Format"
+                },
+                "max_tokens": {"type": "integer", "default": 800, "description": "Max Token-Budget"},
+            },
+        },
+    },
+    {
+        "name": "tool_lookup",
+        "description": "Schnelles Tool-Lookup für Parse-Mode. Gibt nur angefragte Tool-Info zurück.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "tool_name": {"type": "string", "description": "Tool-Name zum Nachschlagen"},
+                "category": {"type": "string", "description": "Tool-Kategorie (core,search,code,agents,memory,ollama,mesh,gemini,system,debug)"},
             },
         },
     },
@@ -603,10 +1048,98 @@ async def handle_mcp_brain_status(params: Dict[str, Any]) -> Dict[str, Any]:
     return mcp_brain.get_status()
 
 
+async def handle_compact_init(params: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Handle compact_init tool - Token-effiziente Init für LLMs.
+    Parse-Mode: LLM soll Referenz nicht memorieren, sondern bei Bedarf nachschlagen.
+    """
+    agent_id = params.get("agent_id")
+    provider = params.get("provider", "auto")
+    max_tokens = params.get("max_tokens", 800)
+
+    # Generiere universelles oder provider-spezifisches Format
+    result = compact_init.get_universal_init(agent_id, provider)
+
+    # Füge Parse-Mode Hinweis hinzu
+    result["parse_mode"] = True
+    result["instruction"] = "NICHT memorieren. Bei Tool-Bedarf: tool_lookup(name) aufrufen."
+
+    return result
+
+
+async def handle_tool_lookup(params: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Handle tool_lookup - Schnelles Nachschlagen für Parse-Mode.
+    Gibt nur die angefragte Information zurück, spart Tokens.
+    """
+    tool_name = params.get("tool_name")
+    category = params.get("category")
+
+    # Kategorie-Lookup (nutze vollständige Tool-Liste)
+    if category and category in compact_init.ALL_TOOLS_BY_CATEGORY:
+        tools = compact_init.ALL_TOOLS_BY_CATEGORY[category]
+        return {
+            "category": category,
+            "tools": tools,
+            "count": len(tools),
+            "usage_hint": f"Use: mcp.tools/call with method from {category}"
+        }
+
+    # Tool-Name Lookup
+    if tool_name:
+        # Suche Tool in allen Kategorien
+        found_in = None
+        for cat, tools in compact_init.ALL_TOOLS_BY_CATEGORY.items():
+            if tool_name in tools:
+                found_in = cat
+                break
+
+        # Hole Tool-Details aus INIT_TOOLS oder anderen Tool-Listen
+        tool_info = None
+        all_tool_sources = [
+            INIT_TOOLS, OLLAMA_TOOLS, TRISTAR_TOOLS, GEMINI_ACCESS_TOOLS,
+            QUEUE_TOOLS, MESH_TOOLS, MESH_FILTER_TOOLS, MODEL_INIT_TOOLS,
+            BOOTSTRAP_TOOLS, ADAPTIVE_CODE_TOOLS, HF_INFERENCE_TOOLS
+        ]
+
+        for source in all_tool_sources:
+            for t in source:
+                if t.get("name") == tool_name:
+                    tool_info = t
+                    break
+            if tool_info:
+                break
+
+        if tool_info:
+            return {
+                "tool": tool_name,
+                "category": found_in,
+                "description": tool_info.get("description", ""),
+                "schema": tool_info.get("inputSchema", {}),
+                "usage": f"mcp.tools/call method={tool_name} params={{...}}"
+            }
+        else:
+            return {
+                "tool": tool_name,
+                "found": False,
+                "suggestion": "Use list_models or check_compatibility to discover tools"
+            }
+
+    # Keine Parameter - gib Kategorien-Übersicht
+    total_tools = sum(len(t) for t in compact_init.ALL_TOOLS_BY_CATEGORY.values())
+    return {
+        "categories": list(compact_init.ALL_TOOLS_BY_CATEGORY.keys()),
+        "total_tools": total_tools,
+        "usage": "tool_lookup(category='codebase') oder tool_lookup(tool_name='chat')"
+    }
+
+
 INIT_HANDLERS = {
     "init": handle_init,
     "decode_shortcode": handle_decode_shortcode,
     "execute_shortcode": handle_execute_shortcode,
     "loadbalancer_stats": handle_loadbalancer_stats,
     "mcp_brain_status": handle_mcp_brain_status,
+    "compact_init": handle_compact_init,
+    "tool_lookup": handle_tool_lookup,
 }

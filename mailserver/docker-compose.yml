@@ -32,3 +32,24 @@ services:
       test: "ss -lntp | grep -E ':25|:587|:465|:993' || exit 1"
       timeout: 3s
       retries: 0
+
+  # === Codex MCP Agent Sidecar ===
+  codex-agent:
+    build:
+      context: ../agent
+      dockerfile: Dockerfile
+    container_name: mail_codex_agent
+    environment:
+      TRIFORCE_ROOT: /opt/triforce
+      MCP_ENDPOINT: http://host.docker.internal:9100/v1/mcp
+      CHECK_INTERVAL: "60"
+      TZ: Europe/Berlin
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    depends_on:
+      - mailserver
+
+networks:
+  mail_network:
+    driver: bridge

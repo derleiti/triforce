@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import AsyncGenerator, List, Literal, Optional
+from time import perf_counter
 from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
@@ -9,6 +10,13 @@ from ..services import chat as chat_service
 from ..services.model_registry import registry
 from ..utils.errors import api_error
 from ..utils.throttle import request_slot
+
+# Performance Monitor für Model-Latenz-Tracking
+try:
+    from .perf_monitor import monitor as perf_monitor
+    _HAS_PERF_MONITOR = True
+except ImportError:
+    _HAS_PERF_MONITOR = False
 
 router = APIRouter(tags=["chat"])
 
@@ -27,6 +35,10 @@ async def _chat_generator(payload: ChatRequest) -> AsyncGenerator[str, None]:
     if not model or "chat" not in model.capabilities:
         raise api_error("Requested model does not support chat", status_code=404, code="model_not_found")
 
+    # Model-Latenz-Tracking
+    model_start = perf_counter()
+    error_occurred = False
+
     async with request_slot():
         try:
             async for chunk in chat_service.stream_chat(
@@ -39,12 +51,18 @@ async def _chat_generator(payload: ChatRequest) -> AsyncGenerator[str, None]:
                 if chunk:
                     yield chunk
         except Exception as exc:
+            error_occurred = True
             # If streaming has started, yield error as text instead of raising
             import logging
             logger = logging.getLogger("ailinux.chat")
             logger.error("Streaming error: %s", exc)
             error_msg = f"\n\n[Fehler beim Streaming: {str(exc)}]"
             yield error_msg
+        finally:
+            # Latenz aufzeichnen
+            if _HAS_PERF_MONITOR:
+                latency_ms = (perf_counter() - model_start) * 1000
+                perf_monitor.record_model(payload.model, latency_ms, error=error_occurred)
 
 @router.post("/chat", dependencies=[Depends(RateLimiter(times=5, seconds=10))])
 async def chat_endpoint(payload: ChatRequest):

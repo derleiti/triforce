@@ -1,0 +1,73 @@
+# SearXNG Settings for AILinux
+use_default_settings: true
+
+general:
+  debug: false
+  instance_name: "AILinux Search"
+
+search:
+  safe_search: 0
+  autocomplete: "duckduckgo"
+  default_lang: "de"
+  formats:
+    - html
+    - json  # WICHTIG für API!
+
+server:
+  secret_key: "ailinux-searxng-secret-key-2024"
+  limiter: false  # Kein Rate-Limit für self-hosted
+  image_proxy: true
+  method: "POST"
+
+ui:
+  static_use_hash: true
+  default_theme: simple
+  results_on_new_tab: false
+
+enabled_plugins:
+  - 'Hash plugin'
+  - 'Search on category select'
+  - 'Self Information'
+  - 'Tracker URL remover'
+
+# Engine-Prioritäten
+engines:
+  - name: google
+    engine: google
+    shortcut: g
+    disabled: false
+    
+  - name: duckduckgo
+    engine: duckduckgo
+    shortcut: ddg
+    disabled: false
+    
+  - name: bing
+    engine: bing
+    shortcut: bi
+    disabled: false
+    
+  - name: brave
+    engine: brave
+    shortcut: br
+    disabled: false
+    
+  - name: wikipedia
+    engine: wikipedia
+    shortcut: wp
+    disabled: false
+    
+  - name: github
+    engine: github
+    shortcut: gh
+    disabled: false
+    
+  - name: stackoverflow
+    engine: stackoverflow
+    shortcut: so
+    disabled: false
+    
+  - name: arxiv
+    engine: arxiv
+    shortcut: arx
+    disabled: false

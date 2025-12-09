@@ -1,42 +1,87 @@
 """
-Adaptive Code Illumination MCP Extension.
+Adaptive Code Illumination MCP Extension v3.0
 
-Provides tools for efficient codebase analysis and manipulation using RAM-based caching
-and selective loading to minimize context window usage.
+Simplified: Uses Linux Page Cache instead of manual tmpfs caching.
+- Index stored in /var/tristar for worker synchronization  
+- File content read directly from filesystem (Linux caches automatically)
+- No duplication, no manual cache management
 """
 
 import os
 import fnmatch
 import re
 import time
+import json
 import logging
 import subprocess
 import tempfile
+import fcntl
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
+INDEX_DIR = Path("/var/tristar/code_index")
+INDEX_FILE = INDEX_DIR / "active_files.json"
+INDEX_TTL = 7200  # 2 hours
+
 @dataclass
-class RAMCacheEntry:
-    content: str
-    timestamp: float
-    size: int
+class CacheEntry:
     path: str
+    size: int
+    timestamp: float
+    mtime: float
 
 class AdaptiveCodeIlluminator:
     def __init__(self, root_dir: str = "/home/zombie/ailinux-ai-server-backend"):
         self.root_dir = Path(root_dir)
-        self.cache: Dict[str, RAMCacheEntry] = {}
-        self.max_cache_size = 100 * 1024 * 1024  # 100 MB limit
-        self.default_ttl = 3600  # 1 hour
+        self.default_ttl = INDEX_TTL
         self.ignored_patterns = [
             ".git", "__pycache__", "*.pyc", "node_modules", ".venv",
             ".pytest_cache", "dist", "build", ".idea", ".vscode",
-            "*.log", "*.lock", "package-lock.json"
+            "*.log", "*.lock", "package-lock.json", ".backups"
         ]
-
+        self._init_index_dir()
+    
+    def _init_index_dir(self):
+        try:
+            INDEX_DIR.mkdir(parents=True, exist_ok=True)
+            os.chmod(INDEX_DIR, 0o777)
+        except Exception as e:
+            logger.warning(f"Could not create index dir: {e}")
+    
+    def _load_index(self) -> Dict[str, dict]:
+        try:
+            if INDEX_FILE.exists():
+                with open(INDEX_FILE, 'r') as f:
+                    fcntl.flock(f.fileno(), fcntl.LOCK_SH)
+                    data = json.load(f)
+                    fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+                    return data
+        except Exception as e:
+            logger.warning(f"Index load error: {e}")
+        return {}
+    
+    def _save_index(self, index: Dict[str, dict]):
+        try:
+            with open(INDEX_FILE, 'w') as f:
+                fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+                json.dump(index, f, indent=2)
+                fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+        except Exception as e:
+            logger.error(f"Index save error: {e}")
+    
+    def _read_file(self, rel_path: str) -> Optional[str]:
+        """Read file directly - Linux Page Cache handles caching."""
+        try:
+            full_path = self.root_dir / rel_path
+            if full_path.exists() and full_path.is_file():
+                return full_path.read_text(errors='replace')
+        except Exception as e:
+            logger.warning(f"Read error for {rel_path}: {e}")
+        return None
+    
     def _is_ignored(self, path: str) -> bool:
         for pattern in self.ignored_patterns:
             if fnmatch.fnmatch(path, pattern) or fnmatch.fnmatch(os.path.basename(path), pattern):
@@ -44,35 +89,25 @@ class AdaptiveCodeIlluminator:
         return False
 
     def code_scout(self, path: str = ".", depth: int = 2) -> Dict[str, Any]:
-        """
-        Scouts the directory structure, respecting ignores and depth limits.
-        """
         start_path = (self.root_dir / path).resolve()
         if not start_path.is_relative_to(self.root_dir):
             raise ValueError(f"Access denied: {path}")
 
-        result = {
-            "path": str(path),
-            "type": "directory",
-            "children": []
-        }
+        result = {"path": str(path), "type": "directory", "children": []}
 
         def _scan(current_path: Path, current_depth: int) -> List[Dict[str, Any]]:
             if current_depth > depth:
                 return []
-            
             children = []
             try:
                 for item in sorted(current_path.iterdir()):
                     if self._is_ignored(item.name):
                         continue
-                    
                     child_info = {
                         "name": item.name,
                         "path": str(item.relative_to(self.root_dir)),
                         "type": "directory" if item.is_dir() else "file"
                     }
-                    
                     if item.is_dir():
                         if current_depth < depth:
                             child_info["children"] = _scan(item, current_depth + 1)
@@ -80,7 +115,6 @@ class AdaptiveCodeIlluminator:
                             child_info["truncated"] = True
                     else:
                         child_info["size"] = item.stat().st_size
-                        
                     children.append(child_info)
             except PermissionError:
                 pass
@@ -90,12 +124,11 @@ class AdaptiveCodeIlluminator:
         return result
 
     def code_probe(self, paths: List[str]) -> Dict[str, Any]:
-        """
-        Selectively loads files into RAM cache.
-        """
+        """Register files in index and trigger Page Cache by reading them."""
         loaded = []
         failed = []
         total_size = 0
+        index = self._load_index()
 
         for p in paths:
             try:
@@ -105,54 +138,62 @@ class AdaptiveCodeIlluminator:
                     continue
                 
                 if self._is_ignored(full_path.name):
-                     failed.append({"path": p, "reason": "Ignored file"})
-                     continue
+                    failed.append({"path": p, "reason": "Ignored file"})
+                    continue
 
-                # Check cache size limit roughly
-                current_cache_size = sum(e.size for e in self.cache.values())
-                file_size = full_path.stat().st_size
+                stat = full_path.stat()
                 
-                if current_cache_size + file_size > self.max_cache_size:
-                    # Evict oldest
-                    sorted_entries = sorted(self.cache.items(), key=lambda x: x[1].timestamp)
-                    while current_cache_size + file_size > self.max_cache_size and sorted_entries:
-                        k, v = sorted_entries.pop(0)
-                        del self.cache[k]
-                        current_cache_size -= v.size
-
+                # Read file to trigger Linux Page Cache
                 content = full_path.read_text(errors='replace')
-                self.cache[str(p)] = RAMCacheEntry(
-                    content=content,
-                    timestamp=time.time(),
-                    size=len(content),
-                    path=str(p)
-                )
-                loaded.append({"path": p, "size": len(content)})
-                total_size += len(content)
+                content_size = len(content)
+                
+                # Store only metadata in index
+                index[str(p)] = {
+                    'timestamp': time.time(),
+                    'size': content_size,
+                    'mtime': stat.st_mtime,
+                    'path': str(p)
+                }
+                
+                loaded.append({"path": p, "size": content_size})
+                total_size += content_size
                 
             except Exception as e:
                 failed.append({"path": p, "reason": str(e)})
+        
+        self._save_index(index)
 
         return {
             "loaded": loaded,
             "failed": failed,
             "total_loaded_size": total_size,
-            "cache_count": len(self.cache)
+            "cache_count": len(index),
+            "note": "Files now in Linux Page Cache"
         }
 
     def ram_search(self, query: str, regex: bool = False, context_lines: int = 2) -> Dict[str, Any]:
-        """
-        Searches exclusively within the RAM cache.
-        """
+        """Search within indexed files (reads from filesystem/Page Cache)."""
         matches = []
+        index = self._load_index()
+        now = time.time()
+        searched = 0
         
         try:
             pattern = re.compile(query, re.IGNORECASE) if regex else None
         except re.error as e:
             return {"error": f"Invalid regex: {e}"}
 
-        for path, entry in self.cache.items():
-            lines = entry.content.splitlines()
+        for path, meta in index.items():
+            if now - meta.get('timestamp', 0) > self.default_ttl:
+                continue
+                
+            content = self._read_file(path)
+            if not content:
+                continue
+                
+            searched += 1
+            lines = content.splitlines()
+            
             for i, line in enumerate(lines):
                 found = False
                 if regex and pattern:
@@ -178,82 +219,57 @@ class AdaptiveCodeIlluminator:
             "regex": regex,
             "matches": matches,
             "count": len(matches),
-            "searched_files": len(self.cache)
+            "searched_files": searched
         }
 
     def ram_context_export(self, file_paths: Optional[List[str]] = None) -> Dict[str, Any]:
-        """
-        Exports content from RAM cache for context.
-        """
+        """Export file contents from indexed files."""
         exported = {}
-        paths_to_export = file_paths if file_paths else list(self.cache.keys())
+        index = self._load_index()
+        paths_to_export = file_paths if file_paths else list(index.keys())
         
         for p in paths_to_export:
-            if p in self.cache:
-                exported[p] = self.cache[p].content
+            if p in index:
+                content = self._read_file(p)
+                if content:
+                    exported[p] = content
         
-        return {
-            "files": exported,
-            "count": len(exported)
-        }
+        return {"files": exported, "count": len(exported)}
 
     def ram_patch_apply(self, patch_content: str, dry_run: bool = True) -> Dict[str, Any]:
-        """
-        Applies a unified diff patch.
-        """
-        results = []
-        
+        """Apply unified diff patch."""
         with tempfile.NamedTemporaryFile(mode='w+', suffix='.patch', delete=False) as tmp:
             tmp.write(patch_content)
             patch_file = tmp.name
 
         try:
-            cmd = ["patch", "-p1", "-N"] # -N: ignore patches already applied
+            cmd = ["patch", "-p1", "-N"]
             if dry_run:
                 cmd.append("--dry-run")
-            
             cmd.extend(["-i", patch_file])
             
-            # Run from root dir
             try:
-                proc = subprocess.run(
-                    cmd, 
-                    cwd=self.root_dir, 
-                    capture_output=True, 
-                    text=True
-                )
+                proc = subprocess.run(cmd, cwd=self.root_dir, capture_output=True, text=True)
             except FileNotFoundError:
-                return {
-                    "dry_run": dry_run,
-                    "success": False,
-                    "error": "The 'patch' command is not available on this system."
-                }
+                return {"dry_run": dry_run, "success": False, "error": "patch command not available"}
             
-            # Invalidate cache for affected files if not dry run
-            if not dry_run and proc.returncode == 0:
-                # Very basic cache invalidation: clear everything or parse patch output
-                # For safety, let's just clear the cache for now or let the user re-probe
-                pass 
-
             return {
                 "dry_run": dry_run,
                 "success": proc.returncode == 0,
                 "stdout": proc.stdout,
                 "stderr": proc.stderr
             }
-            
         finally:
             if os.path.exists(patch_file):
                 os.unlink(patch_file)
 
-# Singleton instance
+
+# Singleton
 illuminator = AdaptiveCodeIlluminator()
 
-# MCP Tool Wrappers
+# MCP Handlers
 async def handle_code_scout(params: Dict[str, Any]) -> Dict[str, Any]:
-    path = params.get("path", ".")
-    depth = params.get("depth", 2)
-    return illuminator.code_scout(path, depth)
+    return illuminator.code_scout(params.get("path", "."), params.get("depth", 2))
 
 async def handle_code_probe(params: Dict[str, Any]) -> Dict[str, Any]:
     paths = params.get("paths", [])
@@ -265,19 +281,17 @@ async def handle_ram_search(params: Dict[str, Any]) -> Dict[str, Any]:
     query = params.get("query")
     if not query:
         raise ValueError("Query required")
-    regex = params.get("regex", False)
-    return illuminator.ram_search(query, regex)
+    return illuminator.ram_search(query, params.get("regex", False))
 
 async def handle_ram_context_export(params: Dict[str, Any]) -> Dict[str, Any]:
-    file_paths = params.get("file_paths")
-    return illuminator.ram_context_export(file_paths)
+    return illuminator.ram_context_export(params.get("file_paths"))
 
 async def handle_ram_patch_apply(params: Dict[str, Any]) -> Dict[str, Any]:
     diff = params.get("diff")
     if not diff:
         raise ValueError("Diff content required")
-    dry_run = params.get("dry_run", True)
-    return illuminator.ram_patch_apply(diff, dry_run)
+    return illuminator.ram_patch_apply(diff, params.get("dry_run", True))
+
 
 ADAPTIVE_CODE_TOOLS = [
     {

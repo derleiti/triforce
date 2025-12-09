@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AILinux Search - Multi-Provider</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0a0a0b; --bg2: #111113; --bg3: #18181b;
+            --text: #fafafa; --text2: #a1a1aa; --muted: #71717a;
+            --accent: #3b82f6; --accent2: #8b5cf6; --green: #22c55e;
+            --red: #ef4444; --border: #27272a; --yellow: #eab308;
+            --orange: #f97316; --cyan: #06b6d4; --pink: #ec4899;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg); color: var(--text);
+            min-height: 100vh; line-height: 1.5;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 12px; }
+        
+        /* Top Bar */
+        .top-bar {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 8px 0; margin-bottom: 10px; gap: 12px;
+        }
+        .widget {
+            background: var(--bg2); border: 1px solid var(--border);
+            border-radius: 8px; padding: 8px 12px; font-size: 0.75rem;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .widget-icon { font-size: 1.2rem; }
+        .widget-value { font-weight: 600; color: var(--text); }
+        .widget-label { color: var(--muted); font-size: 0.65rem; }
+        .widget-change { font-size: 0.65rem; }
+        .widget-change.up { color: var(--green); }
+        .widget-change.down { color: var(--red); }
+        .market-widget { display: flex; gap: 12px; flex-wrap: wrap; }
+        .market-item { display: flex; flex-direction: column; align-items: center; min-width: 60px; }
+        .market-item .name { font-size: 0.6rem; color: var(--muted); }
+        .market-item .price { font-size: 0.75rem; font-weight: 600; }
+        
+        /* Time Widget */
+        .time-widget { flex: 0 0 auto; text-align: center; padding: 6px 20px; }
+        .time-display { font-size: 1.8rem; font-weight: 700; font-family: 'Courier New', monospace; color: var(--text); letter-spacing: 2px; }
+        .date-display { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
+        
+        /* Header */
+        header { padding: 15px 0 10px; text-align: center; }
+        .logo {
+            font-size: 1.8rem; font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .tagline { color: var(--muted); font-size: 0.7rem; margin-top: 2px; }
+        
+        /* Search Box */
+        .search-box {
+            display: flex; gap: 8px;
+            background: var(--bg2); border: 1px solid var(--border);
+            border-radius: 10px; padding: 5px; margin-bottom: 10px;
+        }
+        .search-box:focus-within { border-color: var(--accent); }
+        .search-input {
+            flex: 1; background: transparent; border: none; outline: none;
+            font-size: 1rem; color: var(--text); padding: 10px 12px;
+        }
+        .search-btn {
+            background: var(--accent); border: none; border-radius: 6px;
+            padding: 10px 18px; color: white; font-weight: 600; cursor: pointer;
+        }
+        .search-btn:hover { background: #2563eb; }
+        .search-btn:disabled { opacity: 0.5; }
+        
+        /* Method Selector */
+        .method-selector {
+            display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px;
+            padding: 10px; background: var(--bg2); border-radius: 8px;
+        }
+        .method-btn {
+            background: var(--bg3); border: 1px solid var(--border);
+            color: var(--text2); padding: 6px 12px; border-radius: 6px;
+            cursor: pointer; font-size: 0.75rem; transition: all 0.2s;
+        }
+        .method-btn:hover { background: var(--bg); border-color: var(--accent); color: var(--text); }
+        .method-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+        .method-btn .badge {
+            font-size: 0.6rem; padding: 1px 4px; border-radius: 3px;
+            margin-left: 4px; background: rgba(255,255,255,0.2);
+        }
+        
+        /* Provider Pills */
+        .provider-pills {
+            display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px;
+        }
+        .provider-pill {
+            font-size: 0.65rem; padding: 3px 8px; border-radius: 10px;
+            background: var(--bg3); color: var(--muted); border: 1px solid var(--border);
+        }
+        .provider-pill.active { background: var(--green); color: white; border-color: var(--green); }
+        .provider-pill.error { background: var(--red); color: white; }
+        
+        /* Status Bar */
+        .status-bar {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 6px 0; font-size: 0.75rem; color: var(--text2);
+            border-bottom: 1px solid var(--border); margin-bottom: 10px;
+        }
+        .status-bar strong { color: var(--text); }
+        .ai-indicator { display: flex; align-items: center; gap: 5px; }
+        .ai-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); }
+        .ai-dot.active { background: var(--green); }
+        .ai-dot.loading { background: var(--yellow); animation: pulse 0.5s infinite; }
+        @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+        
+        /* Results */
+        #results { display: flex; flex-direction: column; gap: 8px; }
+        .result {
+            background: var(--bg2); border: 1px solid var(--border);
+            border-radius: 8px; padding: 12px; transition: border-color 0.2s;
+        }
+        .result:hover { border-color: var(--accent); }
+        .result-title {
+            font-size: 1rem; font-weight: 600; color: var(--accent);
+            text-decoration: none; display: block; margin-bottom: 4px;
+        }
+        .result-title:hover { text-decoration: underline; }
+        .result-url { font-size: 0.7rem; color: var(--green); margin-bottom: 6px; word-break: break-all; }
+        .result-snippet { font-size: 0.85rem; color: var(--text2); line-height: 1.5; }
+        .result-meta { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+        .result-source {
+            font-size: 0.65rem; padding: 2px 6px; border-radius: 4px;
+            background: var(--bg3); color: var(--muted);
+        }
+        .result-source.searxng { background: #1e40af; color: white; }
+        .result-source.duckduckgo { background: #de5833; color: white; }
+        .result-source.wikipedia { background: #333; color: white; }
+        .result-source.grokipedia { background: #7c3aed; color: white; }
+        .result-source.ailinux { background: #059669; color: white; }
+        .result-source.google { background: #4285f4; color: white; }
+        .result-source.wiby { background: #f97316; color: white; }
+        .result-source.codebase { background: #ec4899; color: white; }
+        
+        /* AI Summary Panel */
+        .ai-panel {
+            background: linear-gradient(135deg, var(--bg2), var(--bg3));
+            border: 1px solid var(--accent); border-radius: 10px;
+            margin-bottom: 12px; overflow: hidden; display: none;
+        }
+        .ai-panel.visible { display: block; }
+        .ai-panel-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 14px; background: rgba(59, 130, 246, 0.1);
+        }
+        .ai-panel-title { font-weight: 600; color: var(--accent); }
+        .ai-panel-content { padding: 14px; }
+        .ai-summary { color: var(--text2); font-size: 0.85rem; line-height: 1.6; }
+        .ai-expanded-query { color: var(--cyan); font-size: 0.75rem; margin-top: 8px; }
+        .ai-intent { color: var(--orange); font-size: 0.75rem; }
+        
+        /* Loading */
+        .loading-spinner {
+            display: none; text-align: center; padding: 30px; color: var(--muted);
+        }
+        .loading-spinner.active { display: block; }
+        .spinner {
+            width: 30px; height: 30px; border: 3px solid var(--border);
+            border-top-color: var(--accent); border-radius: 50%;
+            animation: spin 0.8s linear infinite; margin: 0 auto 10px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        /* Debug Panel */
+        .debug-toggle {
+            position: fixed; bottom: 10px; right: 10px;
+            background: var(--bg3); border: 1px solid var(--border);
+            border-radius: 6px; padding: 6px 10px; cursor: pointer;
+            font-size: 0.7rem; color: var(--text2); z-index: 99;
+        }
+        .debug-panel {
+            position: fixed; bottom: 40px; right: 10px; width: 400px;
+            background: var(--bg2); border: 1px solid var(--border);
+            border-radius: 8px; display: none; z-index: 100; max-height: 300px;
+        }
+        .debug-panel.visible { display: block; }
+        .debug-header { padding: 8px; background: var(--bg3); display: flex; justify-content: space-between; }
+        .debug-content { height: 200px; overflow-y: auto; padding: 8px; font-size: 0.7rem; font-family: monospace; }
+        .debug-entry { margin-bottom: 4px; padding: 4px; border-bottom: 1px solid var(--border); }
+        .debug-time { color: var(--muted); }
+        .debug-type { color: var(--accent); }
+        
+        .empty, .error { text-align: center; padding: 30px; color: var(--muted); }
+        .error { color: var(--red); }
+        footer { text-align: center; padding: 20px 0; color: var(--muted); font-size: 0.65rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="widget" id="weatherWidget">
+                <span class="widget-icon" id="weatherIcon">⏳</span>
+                <div>
+                    <div class="widget-value" id="weatherTemp">--°C</div>
+                    <div class="widget-label" id="weatherLocation">Laden...</div>
+                </div>
+            </div>
+            
+            <div class="widget time-widget">
+                <div>
+                    <div class="time-display" id="timeDisplay">--:--:--</div>
+                    <div class="date-display" id="dateDisplay">Laden...</div>
+                </div>
+            </div>
+            
+            <div class="widget market-widget" id="marketWidget">
+                <div class="market-item">
+                    <span class="name">BTC</span>
+                    <span class="price" id="btcPrice">--</span>
+                    <span class="widget-change" id="btcChange">--</span>
+                </div>
+                <div class="market-item">
+                    <span class="name">ETH</span>
+                    <span class="price" id="ethPrice">--</span>
+                    <span class="widget-change" id="ethChange">--</span>
+                </div>
+                <div class="market-item">
+                    <span class="name">DAX</span>
+                    <span class="price" id="daxPrice">--</span>
+                    <span class="widget-change" id="daxChange">--</span>
+                </div>
+            </div>
+        </div>
+        
+        <header>
+            <div class="logo">AILinux Search</div>
+            <div class="tagline">🔍 Multi-Search • 🚀 Smart AI • ⚡ Quick • 🌐 Google Deep • 🤖 Grokipedia • 📰 AILinux News • 🦆 DuckDuckGo • 💻 Codebase</div>
+        </header>
+        
+        <div class="search-box">
+            <input type="text" class="search-input" id="q" placeholder="Suche..." autofocus>
+            <button class="search-btn" id="btn" onclick="search()">🔍 Suchen</button>
+        </div>
+        
+        <!-- Method Selector -->
+        <div class="method-selector">
+            <button class="method-btn active" data-method="multi_search" onclick="setMethod('multi_search')">
+                🌐 Multi-Search <span class="badge">6 APIs</span>
+            </button>
+            <button class="method-btn" data-method="smart_search" onclick="setMethod('smart_search')">
+                🚀 Smart Search <span class="badge">LLM</span>
+            </button>
+            <button class="method-btn" data-method="quick_smart_search" onclick="setMethod('quick_smart_search')">
+                ⚡ Quick Smart <span class="badge">&lt;500ms</span>
+            </button>
+            <button class="method-btn" data-method="google_deep_search" onclick="setMethod('google_deep_search')">
+                🔍 Google Deep <span class="badge">150</span>
+            </button>
+            <button class="method-btn" data-method="grokipedia_search" onclick="setMethod('grokipedia_search')">
+                🧠 Grokipedia <span class="badge">xAI</span>
+            </button>
+            <button class="method-btn" data-method="ailinux_search" onclick="setMethod('ailinux_search')">
+                📰 AILinux News
+            </button>
+            <button class="method-btn" data-method="web_search" onclick="setMethod('web_search')">
+                🦆 DuckDuckGo
+            </button>
+            <button class="method-btn" data-method="codebase_search" onclick="setMethod('codebase_search')">
+                💻 Codebase <span class="badge">Backend</span>
+            </button>
+        </div>
+        
+        <!-- Provider Status -->
+        <div class="provider-pills" id="providerStatus">
+            <span class="provider-pill" id="pill-searxng">SearXNG</span>
+            <span class="provider-pill" id="pill-ddg">DuckDuckGo</span>
+            <span class="provider-pill" id="pill-wiby">Wiby</span>
+            <span class="provider-pill" id="pill-wiki">Wikipedia</span>
+            <span class="provider-pill" id="pill-groki">Grokipedia</span>
+            <span class="provider-pill" id="pill-ailinux">AILinux</span>
+            <span class="provider-pill" id="pill-google">Google</span>
+        </div>
+        
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div>
+                <span id="resultCount">0</span> Ergebnisse
+                <span id="searchTime" style="margin-left: 10px; color: var(--muted);">--</span>
+            </div>
+            <div class="ai-indicator">
+                <span class="ai-dot" id="aiDot"></span>
+                <span id="methodLabel">Multi-Search</span>
+            </div>
+        </div>
+        
+        <!-- AI Summary Panel -->
+        <div class="ai-panel" id="aiPanel">
+            <div class="ai-panel-header">
+                <span class="ai-panel-title">🤖 AI-Analyse</span>
+            </div>
+            <div class="ai-panel-content">
+                <div class="ai-intent" id="aiIntent"></div>
+                <div class="ai-expanded-query" id="aiExpandedQuery"></div>
+                <div class="ai-summary" id="aiSummary"></div>
+            </div>
+        </div>
+        
+        <!-- Loading -->
+        <div class="loading-spinner" id="loading">
+            <div class="spinner"></div>
+            <div id="loadingText">Suche läuft...</div>
+        </div>
+        
+        <!-- Results -->
+        <div id="results"></div>
+        
+        <footer>
+            AILinux Search v4.1 • Multi-Provider • Smart Search • Codebase • Fixed MCP Integration
+        </footer>
+    </div>
+    
+    <!-- Debug Panel -->
+    <button class="debug-toggle" onclick="toggleDebug()">🐛 Debug</button>
+    <div class="debug-panel" id="debugPanel">
+        <div class="debug-header">
+            <span>Debug Log</span>
+            <button onclick="clearDebug()" style="background:none;border:none;color:var(--text);cursor:pointer;">🗑️</button>
+        </div>
+        <div class="debug-content" id="debugContent"></div>
+    </div>
+    
+    <script>
+        const API = 'https://api.ailinux.me';
+        const $ = id => document.getElementById(id);
+        
+        let state = {
+            query: '',
+            method: 'multi_search',
+            results: [],
+            loading: false
+        };
+        
+        const METHOD_INFO = {
+            'multi_search': { name: '🔍 Multi-Search', desc: 'SearXNG + DDG + Wiby + Wiki + Grokipedia + AILinux' },
+            'smart_search': { name: '🚀 Smart Search', desc: 'LLM Query Expansion + Intent + Ranking + Summary' },
+            'quick_smart_search': { name: '⚡ Quick Smart', desc: 'Speed-optimiert <500ms' },
+            'google_deep_search': { name: '🌐 Google Deep', desc: 'Bis zu 150 Ergebnisse' },
+            'grokipedia_search': { name: '🤖 Grokipedia', desc: 'xAI Knowledge Base' },
+            'ailinux_search': { name: '📰 AILinux News', desc: 'WordPress News Archive' },
+            'web_search': { name: '🦆 DuckDuckGo', desc: 'Basis Web-Suche' },
+            'codebase_search': { name: '💻 Codebase', desc: 'Backend Python-Code' }
+        };
+        
+        // Debug logging
+        function debugLog(type, msg) {
+            const time = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.className = 'debug-entry';
+            entry.innerHTML = `<span class="debug-time">${time}</span> <span class="debug-type">[${type}]</span> ${msg}`;
+            $('debugContent').appendChild(entry);
+            $('debugContent').scrollTop = $('debugContent').scrollHeight;
+            console.log(`[${type}]`, msg);
+        }
+        
+        function toggleDebug() { $('debugPanel').classList.toggle('visible'); }
+        function clearDebug() { $('debugContent').innerHTML = ''; }
+        
+        // Clock
+        function updateClock() {
+            const now = new Date();
+            $('timeDisplay').textContent = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            const weekdays = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+            $('dateDisplay').textContent = weekdays[now.getDay()] + ', ' + now.toLocaleDateString('de-DE');
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+        
+        // Parse MCP Response - FIXED for nested JSON
+        function parseMCPResponse(data) {
+            if (data.error) throw new Error(data.error.message || 'MCP Error');
+            if (data.result) {
+                // MCP returns content[0].text as JSON string
+                if (data.result.content && data.result.content[0] && data.result.content[0].text) {
+                    try {
+                        return JSON.parse(data.result.content[0].text);
+                    } catch (e) {
+                        return { text: data.result.content[0].text };
+                    }
+                }
+                // Direct result
+                if (typeof data.result === 'object') return data.result;
+                if (typeof data.result === 'string') return JSON.parse(data.result);
+            }
+            return null;
+        }
+        
+        // MCP API Call
+        async function mcpCall(tool, args) {
+            debugLog('MCP', `Calling ${tool} with ${JSON.stringify(args).substring(0,50)}...`);
+            const res = await fetch(API + '/v1/mcp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    jsonrpc: '2.0',
+                    method: 'tools/call',
+                    params: { name: tool, arguments: args },
+                    id: Date.now()
+                })
+            });
+            const data = await res.json();
+            return parseMCPResponse(data);
+        }
+        
+        // Load widgets
+        async function loadWidgets() {
+            debugLog('INIT', 'Loading widgets...');
+            
+            // Weather
+            try {
+                const res = await mcpCall('weather', { location: 'Rheine' });
+                if (res) {
+                    $('weatherIcon').textContent = res.icon || '🌡️';
+                    $('weatherTemp').textContent = (res.temperature || '--') + '°C';
+                    $('weatherLocation').textContent = res.location || 'Rheine';
+                    debugLog('WEATHER', `${res.temperature}°C ${res.description}`);
+                }
+            } catch (e) { debugLog('ERROR', 'Weather: ' + e.message); }
+            
+            // Market
+            try {
+                const res = await mcpCall('market_overview', {});
+                if (res && res.crypto && res.crypto.prices) {
+                    const btc = res.crypto.prices.bitcoin;
+                    const eth = res.crypto.prices.ethereum;
+                    if (btc) {
+                        $('btcPrice').textContent = '$' + (btc.usd || 0).toLocaleString();
+                        $('btcChange').textContent = (btc.change_24h > 0 ? '+' : '') + (btc.change_24h?.toFixed(1) || 0) + '%';
+                        $('btcChange').className = 'widget-change ' + (btc.change_24h >= 0 ? 'up' : 'down');
+                    }
+                    if (eth) {
+                        $('ethPrice').textContent = '$' + (eth.usd || 0).toLocaleString();
+                        $('ethChange').textContent = (eth.change_24h > 0 ? '+' : '') + (eth.change_24h?.toFixed(1) || 0) + '%';
+                        $('ethChange').className = 'widget-change ' + (eth.change_24h >= 0 ? 'up' : 'down');
+                    }
+                }
+                if (res && res.stocks && res.stocks.indices) {
+                    const dax = res.stocks.indices.DAX;
+                    if (dax) {
+                        $('daxPrice').textContent = dax.value?.toLocaleString() || '--';
+                        $('daxChange').textContent = (dax.change >= 0 ? '+' : '') + (dax.change?.toFixed(1) || 0) + '%';
+                        $('daxChange').className = 'widget-change ' + (dax.change >= 0 ? 'up' : 'down');
+                    }
+                }
+                debugLog('MARKET', 'Loaded');
+            } catch (e) { debugLog('ERROR', 'Market: ' + e.message); }
+            
+            // Provider health check
+            checkProviderHealth();
+        }
+        
+        async function checkProviderHealth() {
+            try {
+                const res = await mcpCall('search_health', {});
+                debugLog('HEALTH', JSON.stringify(res));
+                if (res) {
+                    // Handle both formats: {providers: {...}} or direct {...}
+                    const providers = res.providers || res;
+                    const pillMap = {
+                        'searxng': 'pill-searxng',
+                        'duckduckgo': 'pill-ddg',
+                        'wiby': 'pill-wiby',
+                        'wikipedia': 'pill-wiki',
+                        'grokipedia': 'pill-groki',
+                        'ailinux_news': 'pill-ailinux',
+                        'google': 'pill-google'
+                    };
+                    Object.entries(providers).forEach(([name, status]) => {
+                        const pillId = pillMap[name];
+                        if (pillId) {
+                            const pill = $(pillId);
+                            if (pill) {
+                                pill.classList.toggle('active', status === true);
+                                pill.classList.toggle('error', status === false);
+                            }
+                        }
+                    });
+                }
+            } catch (e) { debugLog('WARN', 'Health check failed: ' + e.message); }
+        }
+        
+        function setMethod(method) {
+            state.method = method;
+            document.querySelectorAll('.method-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector(`[data-method="${method}"]`).classList.add('active');
+            $('methodLabel').textContent = METHOD_INFO[method]?.name || method;
+            debugLog('METHOD', `Switched to ${method}`);
+            
+            // Show/hide provider pills based on method
+            const showPills = ['multi_search', 'smart_search', 'quick_smart_search'].includes(method);
+            $('providerStatus').style.display = showPills ? 'flex' : 'none';
+        }
+        
+        async function search() {
+            const query = $('q').value.trim();
+            if (!query) return;
+            
+            state.query = query;
+            state.loading = true;
+            $('loading').classList.add('active');
+            $('results').innerHTML = '';
+            $('aiPanel').classList.remove('visible');
+            $('aiDot').className = 'ai-dot loading';
+            $('loadingText').textContent = `Suche mit ${METHOD_INFO[state.method]?.name}...`;
+            
+            debugLog('SEARCH', `Query: "${query}" Method: ${state.method}`);
+            const startTime = Date.now();
+            
+            try {
+                let args = { query };
+                
+                // Method-specific arguments
+                switch (state.method) {
+                    case 'multi_search':
+                        args.max_results = 50;
+                        args.lang = 'de';
+                        break;
+                    case 'smart_search':
+                        args.max_results = 30;
+                        args.expand_query = true;
+                        args.detect_intent = true;
+                        args.summarize = true;
+                        args.smart_rank = true;
+                        break;
+                    case 'quick_smart_search':
+                        args.max_results = 15;
+                        break;
+                    case 'google_deep_search':
+                        args.num_results = 150;
+                        args.lang = 'de';
+                        break;
+                    case 'grokipedia_search':
+                        args.num_results = 20;
+                        break;
+                    case 'ailinux_search':
+                        args.num_results = 30;
+                        break;
+                    case 'web_search':
+                        // web_search uses 'query' param
+                        break;
+                    case 'codebase_search':
+                        args.max_results = 50;
+                        args.file_pattern = '*.py';
+                        args.path = 'app';
+                        break;
+                }
+                
+                const result = await mcpCall(state.method, args);
+                
+                const elapsed = Date.now() - startTime;
+                debugLog('RESULT', `Got ${result?.results?.length || result?.count || 0} results in ${elapsed}ms`);
+                
+                // Process results - handle different response formats
+                state.results = result?.results || [];
+                $('resultCount').textContent = state.results.length;
+                $('searchTime').textContent = `${result?.search_time_ms || elapsed}ms`;
+                
+                // Show AI panel for smart search
+                if (['smart_search', 'quick_smart_search'].includes(state.method) && result) {
+                    $('aiPanel').classList.add('visible');
+                    // Handle nested query object
+                    const queryInfo = result.query || {};
+                    $('aiIntent').textContent = queryInfo.intent ? 
+                        `Intent: ${queryInfo.intent} (${Math.round((queryInfo.intent_confidence || 0) * 100)}%)` : '';
+                    $('aiExpandedQuery').textContent = queryInfo.expanded ? 
+                        `Erweitert: ${queryInfo.expanded}` : '';
+                    $('aiSummary').textContent = result.summary || '';
+                }
+                
+                // Update provider pills from sources
+                if (result?.sources) {
+                    Object.keys(result.sources).forEach(name => {
+                        const pillMap = {
+                            'searxng': 'pill-searxng',
+                            'duckduckgo': 'pill-ddg',
+                            'wiby': 'pill-wiby',
+                            'wikipedia': 'pill-wiki',
+                            'grokipedia': 'pill-groki',
+                            'ailinux_news': 'pill-ailinux',
+                            'google': 'pill-google'
+                        };
+                        const pillId = pillMap[name];
+                        if (pillId) $(pillId)?.classList.add('active');
+                    });
+                }
+                
+                // Render results
+                renderResults(state.results);
+                $('aiDot').className = 'ai-dot active';
+                
+            } catch (e) {
+                debugLog('ERROR', e.message);
+                $('results').innerHTML = `<div class="error">❌ Fehler: ${e.message}</div>`;
+                $('aiDot').className = 'ai-dot';
+            } finally {
+                state.loading = false;
+                $('loading').classList.remove('active');
+            }
+        }
+        
+        function renderResults(results) {
+            if (!results || results.length === 0) {
+                $('results').innerHTML = '<div class="empty">Keine Ergebnisse gefunden</div>';
+                return;
+            }
+            
+            const html = results.map(r => {
+                // Handle codebase results differently
+                if (state.method === 'codebase_search') {
+                    return `
+                        <div class="result">
+                            <div class="result-title">${escapeHtml(r.file || r.path || 'File')}</div>
+                            <div class="result-url">Zeile ${r.line || '--'}</div>
+                            <div class="result-snippet"><pre style="margin:0;white-space:pre-wrap;font-size:0.8rem;color:var(--cyan)">${escapeHtml(r.match || (r.context?.join('\n') || ''))}</pre></div>
+                            <div class="result-meta">
+                                <span class="result-source codebase">Codebase</span>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                const sourceClass = getSourceClass(r.source);
+                return `
+                    <div class="result">
+                        <a href="${escapeHtml(r.url || '#')}" target="_blank" class="result-title">${escapeHtml(r.title || 'Ohne Titel')}</a>
+                        <div class="result-url">${escapeHtml(r.url || '')}</div>
+                        <div class="result-snippet">${escapeHtml(r.snippet || r.description || '')}</div>
+                        <div class="result-meta">
+                            <span class="result-source ${sourceClass}">${escapeHtml(r.source || 'unknown')}</span>
+                            ${r.relevance_score ? `<span class="result-source">Score: ${r.relevance_score.toFixed(1)}</span>` : ''}
+                            ${r.lang ? `<span class="result-source">${r.lang}</span>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            $('results').innerHTML = html;
+        }
+        
+        function getSourceClass(source) {
+            if (!source) return '';
+            const s = source.toLowerCase();
+            if (s.includes('searxng')) return 'searxng';
+            if (s.includes('duckduckgo') || s.includes('ddg')) return 'duckduckgo';
+            if (s.includes('wikipedia') || s.includes('wiki')) return 'wikipedia';
+            if (s.includes('grokipedia')) return 'grokipedia';
+            if (s.includes('ailinux')) return 'ailinux';
+            if (s.includes('google')) return 'google';
+            if (s.includes('wiby')) return 'wiby';
+            return '';
+        }
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+        
+        // Event listeners
+        $('q').addEventListener('keydown', e => {
+            if (e.key === 'Enter') search();
+        });
+        
+        // Init
+        loadWidgets();
+        debugLog('INIT', 'AILinux Search v4.1 loaded - MCP Fixed');
+    </script>
+</body>
+</html>

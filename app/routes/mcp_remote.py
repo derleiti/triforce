@@ -1434,6 +1434,146 @@ async def handle_cli_agents_stats(arguments: Dict[str, Any]) -> Dict[str, Any]:
     return await _handler(arguments)
 
 
+
+# =================================================================
+# Extended Search Tool Handlers (v4.0)
+# =================================================================
+
+async def handle_multi_search_remote(arguments: Dict[str, Any]) -> Dict[str, Any]:
+    """Extended Multi-API Search with all providers."""
+    from ..services.multi_search import multi_search_extended
+    query = arguments.get("query")
+    if not query:
+        raise ValueError("'query' is required")
+    return await multi_search_extended(
+        query=query,
+        max_results=arguments.get("max_results", 50),
+        lang=arguments.get("lang", "de"),
+        use_searxng=arguments.get("use_searxng", True),
+        use_ddg=arguments.get("use_ddg", True),
+        use_wiby=arguments.get("use_wiby", True),
+        use_wikipedia=arguments.get("use_wikipedia", True),
+        use_grokipedia=arguments.get("use_grokipedia", True),
+        use_ailinux_news=arguments.get("use_ailinux_news", True),
+    )
+
+
+async def handle_smart_search_remote(arguments: Dict[str, Any]) -> Dict[str, Any]:
+    """AI-Powered Smart Search with LLM enhancement."""
+    from ..services.multi_search import smart_search
+    query = arguments.get("query")
+    if not query:
+        raise ValueError("'query' is required")
+    return await smart_search(
+        query=query,
+        max_results=arguments.get("max_results", 30),
+        lang=arguments.get("lang", "de"),
+        expand_query_enabled=arguments.get("expand_query", True),
+        detect_intent_enabled=arguments.get("detect_intent", True),
+        summarize_enabled=arguments.get("summarize", True),
+        smart_rank_enabled=arguments.get("smart_rank", True),
+    )
+
+
+async def handle_quick_smart_search_remote(arguments: Dict[str, Any]) -> Dict[str, Any]:
+    """Quick Smart Search - Speed optimized <500ms."""
+    from ..services.multi_search import quick_smart_search
+    query = arguments.get("query")
+    if not query:
+        raise ValueError("'query' is required")
+    return await quick_smart_search(
+        query=query,
+        max_results=arguments.get("max_results", 15),
+        lang=arguments.get("lang", "de"),
+    )
+
+
+async def handle_google_deep_search_remote(arguments: Dict[str, Any]) -> Dict[str, Any]:
+    """Deep Google search with up to 150 results."""
+    from ..services.multi_search import google_search_deep
+    query = arguments.get("query")
+    if not query:
+        raise ValueError("'query' is required")
+    results = await google_search_deep(
+        query=query,
+        num_results=arguments.get("num_results", 150),
+        lang=arguments.get("lang", "de"),
+    )
+    return {"query": query, "results": results, "count": len(results)}
+
+
+async def handle_ailinux_search_remote(arguments: Dict[str, Any]) -> Dict[str, Any]:
+    """Search AILinux.me News Archive."""
+    from ..services.multi_search import search_ailinux
+    query = arguments.get("query")
+    if not query:
+        raise ValueError("'query' is required")
+    results = await search_ailinux(query, arguments.get("num_results", 20))
+    return {"query": query, "results": results, "count": len(results), "source": "ailinux.me"}
+
+
+async def handle_grokipedia_search_remote(arguments: Dict[str, Any]) -> Dict[str, Any]:
+    """Search Grokipedia.com - xAI knowledge base."""
+    from ..services.multi_search import search_grokipedia
+    query = arguments.get("query")
+    if not query:
+        raise ValueError("'query' is required")
+    results = await search_grokipedia(query, arguments.get("num_results", 5))
+    return {"query": query, "results": results, "count": len(results), "source": "grokipedia.com"}
+
+
+async def handle_search_health_remote(arguments: Dict[str, Any]) -> Dict[str, Any]:
+    """Check health of all search providers."""
+    from ..services.multi_search import check_search_health
+    health = await check_search_health()
+    return {"providers": health, "status": "ok" if health.get("all_healthy") else "degraded"}
+
+
+async def handle_weather_remote(arguments: Dict[str, Any]) -> Dict[str, Any]:
+    """Get current weather from Open-Meteo API."""
+    from ..services.multi_search import get_weather
+    return await get_weather(
+        lat=arguments.get("lat", 52.28),
+        lon=arguments.get("lon", 7.44),
+        location=arguments.get("location", "Rheine"),
+    )
+
+
+async def handle_crypto_prices_remote(arguments: Dict[str, Any]) -> Dict[str, Any]:
+    """Get crypto prices from CoinGecko."""
+    from ..services.multi_search import get_crypto_prices
+    coins = arguments.get("coins", ["bitcoin", "ethereum", "solana"])
+    return await get_crypto_prices(coins)
+
+
+async def handle_stock_indices_remote(arguments: Dict[str, Any]) -> Dict[str, Any]:
+    """Get stock indices from Yahoo Finance."""
+    from ..services.multi_search import get_stock_indices
+    return await get_stock_indices()
+
+
+async def handle_market_overview_remote(arguments: Dict[str, Any]) -> Dict[str, Any]:
+    """Combined market data: crypto + stocks."""
+    from ..services.multi_search import get_market_overview
+    return await get_market_overview()
+
+
+async def handle_current_time_remote(arguments: Dict[str, Any]) -> Dict[str, Any]:
+    """Get current time with timezone."""
+    from ..services.multi_search import get_current_time
+    return await get_current_time(
+        timezone=arguments.get("timezone", "Europe/Berlin"),
+        location=arguments.get("location"),
+    )
+
+
+async def handle_list_timezones_remote(arguments: Dict[str, Any]) -> Dict[str, Any]:
+    """List available timezones."""
+    from ..services.multi_search import list_timezones
+    return await list_timezones(arguments.get("region"))
+
+
+
 TOOL_HANDLERS = {
     # Core
     "chat": handle_chat,
@@ -1505,6 +1645,23 @@ TOOL_HANDLERS = {
 
     # Adaptive Code Illumination Tools (v2.80)
     **ADAPTIVE_CODE_HANDLERS,
+
+    # Extended Search Tools (v4.0)
+    "multi_search": handle_multi_search_remote,
+    "smart_search": handle_smart_search_remote,
+    "quick_smart_search": handle_quick_smart_search_remote,
+    "google_deep_search": handle_google_deep_search_remote,
+    "ailinux_search": handle_ailinux_search_remote,
+    "grokipedia_search": handle_grokipedia_search_remote,
+    "search_health": handle_search_health_remote,
+
+    # Widget Tools
+    "weather": handle_weather_remote,
+    "crypto_prices": handle_crypto_prices_remote,
+    "stock_indices": handle_stock_indices_remote,
+    "market_overview": handle_market_overview_remote,
+    "current_time": handle_current_time_remote,
+    "list_timezones": handle_list_timezones_remote,
 }
 
 

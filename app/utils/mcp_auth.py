@@ -56,6 +56,25 @@ if not any(isinstance(h, logging.FileHandler) and getattr(h, 'baseFilename', '')
 # Export
 AUTH_ENABLED = True
 
+# Verifizierte/Autorisierte Domains für OAuth und Protected Resources
+VERIFIED_DOMAINS = [
+    # Externe Domains
+    "api.ailinux.me",
+    "ailinux.me",
+    "search.ailinux.me",
+    "repo.ailinux.me",
+    # Local Development
+    "localhost",
+    "127.0.0.1",
+    # Docker Internal
+    "host.docker.internal",
+    "172.17.0.1",   # Docker Bridge Gateway
+    "172.19.0.1",   # WordPress Network Gateway
+]
+
+# Standard OAuth Issuer URL (extern)
+DEFAULT_ISSUER = "https://api.ailinux.me"
+
 # Settings
 _settings = get_settings()
 
@@ -335,6 +354,17 @@ async def require_mcp_auth(request: Request) -> str:
     if client_ip in ("127.0.0.1", "::1", "localhost"):
         logger.debug(f"AUTH_OK | IP: {client_ip} | Method: localhost_bypass")
         return "localhost"
+
+    # ========================================================================
+    # Docker Network Bypass - No auth required for internal Docker containers
+    # Covers: 172.17-31.x.x (Docker bridge networks), 10.x.x.x (custom networks)
+    # ========================================================================
+    if client_ip.startswith(("172.17.", "172.18.", "172.19.", "172.20.", 
+                             "172.21.", "172.22.", "172.23.", "172.24.",
+                             "172.25.", "172.26.", "172.27.", "172.28.",
+                             "172.29.", "172.30.", "172.31.", "10.")):
+        logger.debug(f"AUTH_OK | IP: {client_ip} | Method: docker_network_bypass")
+        return "docker_agent"
 
     # Check if auth is configured
     if not MCP_AUTH_USER or not MCP_AUTH_PASS:

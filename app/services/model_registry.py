@@ -305,7 +305,7 @@ class ModelRegistry:
                     roles = ["assistant"]
 
             models.append(ModelInfo(
-                id=name,
+                id=f"ollama/{name}",
                 provider="ollama",
                 capabilities=capabilities,
                 roles=roles,
@@ -971,6 +971,10 @@ class ModelRegistry:
         """Discover models from Cloudflare Workers AI (10,000 neurons/day free)."""
         settings = self._settings
         if not settings.cloudflare_account_id or not settings.cloudflare_api_token:
+            return []
+
+        # Skip if credentials are placeholders
+        if "your_" in settings.cloudflare_account_id or "your_" in settings.cloudflare_api_token:
             return []
 
         models: List[ModelInfo] = []

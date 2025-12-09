@@ -44,6 +44,8 @@ PUBLIC_PATHS = [
     "/robots.txt",
     "/tristar/login",
     "/tristar/logout",
+    "/static/",         # Static files (JS, CSS)
+    "/v1/distributed",  # Distributed compute endpoints (public for workers)
 ]
 
 
