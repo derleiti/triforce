@@ -1,0 +1,41 @@
+# SearXNG Meta-Suchmaschine
+# Start: docker compose --env-file ../../.env up -d
+
+services:
+  searxng:
+    image: ${SEARXNG_IMAGE:-searxng/searxng:latest}
+    container_name: ${SEARXNG_CONTAINER_NAME:-ailinux-searxng}
+    restart: ${SEARXNG_RESTART_POLICY:-unless-stopped}
+    ports:
+      - "${SEARXNG_PORT:-8089}:8080"
+    volumes:
+      - ${SEARXNG_SETTINGS_PATH:-./settings.yml}:/etc/searxng/settings.yml:ro
+      - ${SEARXNG_DATA_VOLUME:-searxng-data}:/etc/searxng
+    environment:
+      - SEARXNG_BASE_URL=${SEARXNG_BASE_URL:-http://localhost:8089/}
+      - SEARXNG_SECRET=${SEARXNG_SECRET_KEY}
+      - UWSGI_WORKERS=${SEARXNG_WORKERS:-4}
+      - UWSGI_THREADS=${SEARXNG_THREADS:-4}
+      - TZ=${TZ:-Europe/Berlin}
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+    networks:
+      - ${SEARXNG_NETWORK:-searxng-network}
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/healthz"]
+      interval: ${SEARXNG_HEALTHCHECK_INTERVAL:-30s}
+      timeout: ${SEARXNG_HEALTHCHECK_TIMEOUT:-10s}
+      retries: ${SEARXNG_HEALTHCHECK_RETRIES:-3}
+
+volumes:
+  searxng-data:
+    name: ${SEARXNG_DATA_VOLUME:-searxng-data}
+
+networks:
+  searxng-network:
+    name: ${SEARXNG_NETWORK:-searxng-network}
+    driver: ${SEARXNG_NETWORK_DRIVER:-bridge}

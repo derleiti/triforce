@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+
+# Logs
+logs/
+*.log
+
+# Secrets & Config
+.env
+config/triforce.env
+config/markus-*.env
+config/*-production.env
+*.bak
+
+# Docker Daten (nicht Code!)
+docker/repository/repo/
+docker/repository/data/
+docker/wordpress/html/
+docker/flarum/data/
+
+# Build Artefakte
+*.deb
+*.tar.gz
+build/ailinux-triforce-installer_*/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# GPG Keys
+docker/repository/etc/gnupg/private-keys-v1.d/
+docker/repository/etc/gnupg/secret.asc
+*.key
+*.pem
+
+# Docker Runtime-Daten (Berechtigungsprobleme)
+docker/mailserver/data/
+docker/repository/etc/gnupg/
+coordination/

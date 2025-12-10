@@ -1,0 +1,56 @@
+# AILinux APT Repository
+# Start: docker compose --env-file ../../.env up -d
+
+services:
+  repository:
+    image: ${REPO_IMAGE:-nginx:alpine}
+    container_name: ${REPO_CONTAINER_NAME:-ailinux-repository}
+    restart: ${REPO_RESTART_POLICY:-unless-stopped}
+    ports:
+      - "${REPO_HTTPS_PORT:-8443}:8443"
+      - "${REPO_HTTP_PORT:-8081}:8080"
+      - "8882:8882"
+      - "9000:9000"
+    volumes:
+      - ./repo:/repo:ro
+      - ${REPO_NGINX_CONF:-./nginx.conf}:/etc/nginx/nginx.conf:ro
+      - ./conf.d:/etc/nginx/conf.d:ro
+      - ./api-root:/etc/nginx/html/api:ro
+      - ./etc/nginx/html/search:/etc/nginx/html/search:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - ${REPO_SSL_PATH:-./ssl}:/etc/nginx/ssl:ro
+    environment:
+      - TZ=${TZ:-Europe/Berlin}
+    networks:
+      - ${REPO_NETWORK:-repo-network}
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "--no-check-certificate", "https://localhost:8443/"]
+      interval: ${REPO_HEALTHCHECK_INTERVAL:-30s}
+      timeout: ${REPO_HEALTHCHECK_TIMEOUT:-10s}
+      retries: ${REPO_HEALTHCHECK_RETRIES:-3}
+
+  apt-mirror:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ${REPO_MIRROR_IMAGE:-ailinux-apt-mirror}
+    container_name: ${REPO_MIRROR_CONTAINER_NAME:-ailinux-apt-mirror}
+    restart: "no"
+    volumes:
+      - ${REPO_MIRROR_DATA_PATH:-./data}:/var/spool/apt-mirror
+      - ${REPO_MIRROR_LIST:-./mirror.list}:/etc/apt/mirror.list:ro
+      # Auto-mount scripts for post-mirror processing
+      - ./postmirror.sh:/var/spool/apt-mirror/var/postmirror.sh:ro
+      - ./sign-repos.sh:/var/spool/apt-mirror/var/sign-repos.sh:ro
+      # GPG for signing (etc/gnupg contains the signing key)
+      - ./etc/gnupg:/root/.gnupg
+      # Mirror output goes to repo/mirror
+      - ./repo/mirror:/var/spool/apt-mirror/mirror
+    command: ["apt-mirror"]
+    profiles:
+      - mirror
+
+networks:
+  repo-network:
+    name: ${REPO_NETWORK:-repo-network}
+    driver: ${REPO_NETWORK_DRIVER:-bridge}

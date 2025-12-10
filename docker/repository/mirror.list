@@ -1,0 +1,67 @@
+# AILinux Mirror Configuration
+# apt-mirror settings
+
+set base_path         /var/spool/apt-mirror
+set mirror_path       $base_path/mirror
+set skel_path         $base_path/skel
+set var_path          $base_path/var
+set postmirror_script $var_path/postmirror.sh
+set defaultarch       amd64
+set run_postmirror    1
+set nthreads          20
+set limit_rate        100m
+
+# ============================================================================
+# Ubuntu Noble (24.04) - amd64 only
+# ============================================================================
+deb-amd64 http://archive.ubuntu.com/ubuntu noble main restricted universe multiverse
+deb-amd64 http://archive.ubuntu.com/ubuntu noble-updates main restricted universe multiverse
+deb-amd64 http://archive.ubuntu.com/ubuntu noble-backports main restricted universe multiverse
+deb-amd64 http://archive.ubuntu.com/ubuntu noble-security main restricted universe multiverse
+
+# ============================================================================
+# KDE Neon
+# ============================================================================
+deb-amd64 http://archive.neon.kde.org/user noble main
+
+# ============================================================================
+# Google Chrome
+# ============================================================================
+deb-amd64 http://dl.google.com/linux/chrome/deb/ stable main
+
+# ============================================================================
+# WineHQ (amd64 + i386)
+# ============================================================================
+deb-amd64 https://dl.winehq.org/wine-builds/ubuntu/ noble main
+deb-i386 https://dl.winehq.org/wine-builds/ubuntu/ noble main
+
+# ============================================================================
+# Docker CE
+# ============================================================================
+deb-amd64 https://download.docker.com/linux/ubuntu noble stable
+
+# ============================================================================
+# Steam (amd64 + i386)
+# ============================================================================
+deb-amd64 http://repo.steampowered.com/steam/ stable steam
+deb-i386 http://repo.steampowered.com/steam/ stable steam
+
+# ============================================================================
+# Node.js 20.x
+# ============================================================================
+deb-amd64 https://deb.nodesource.com/node_20.x nodistro main
+
+# ============================================================================
+# PPAs
+# ============================================================================
+deb-amd64 http://ppa.launchpadcontent.net/cappelikan/ppa/ubuntu noble main
+
+# Clean up old packages
+clean http://archive.ubuntu.com/ubuntu
+clean http://archive.neon.kde.org/user
+clean http://dl.google.com/linux/chrome/deb/
+clean https://dl.winehq.org/wine-builds/ubuntu/
+clean https://download.docker.com/linux/ubuntu
+clean http://repo.steampowered.com/steam/
+clean https://deb.nodesource.com/node_20.x
+clean http://ppa.launchpadcontent.net/cappelikan/ppa/ubuntu

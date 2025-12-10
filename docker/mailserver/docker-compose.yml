@@ -1,0 +1,53 @@
+# Docker Mailserver
+# Start: docker compose --env-file ../../.env up -d
+
+services:
+  mailserver:
+    image: ${MAILSERVER_IMAGE:-ghcr.io/docker-mailserver/docker-mailserver:latest}
+    container_name: ${MAILSERVER_CONTAINER_NAME:-mailserver}
+    hostname: ${MAIL_HOSTNAME:-mail}
+    domainname: ${MAIL_DOMAIN:-ailinux.me}
+    restart: ${MAILSERVER_RESTART_POLICY:-unless-stopped}
+    stop_grace_period: ${MAILSERVER_STOP_GRACE:-1m}
+    ports:
+      - "${MAIL_SMTP_PORT:-25}:25"
+      - "${MAIL_IMAP_PORT:-143}:143"
+      - "${MAIL_SMTPS_PORT:-465}:465"
+      - "${MAIL_SUBMISSION_PORT:-587}:587"
+      - "${MAIL_IMAPS_PORT:-993}:993"
+    volumes:
+      - ${MAILSERVER_MAIL_PATH:-./data/mail}:/var/mail
+      - ${MAILSERVER_STATE_PATH:-./data/state}:/var/mail-state
+      - ${MAILSERVER_LOGS_PATH:-./data/logs}:/var/log/mail
+      - ${MAILSERVER_CONFIG_PATH:-./config}:/tmp/docker-mailserver
+      - ${MAILSERVER_LETSENCRYPT_PATH:-/etc/letsencrypt}:/etc/letsencrypt:ro
+    environment:
+      - ENABLE_SMTPS=${MAILSERVER_ENABLE_SMTPS:-1}
+      - ENABLE_CLAMAV=${MAILSERVER_ENABLE_CLAMAV:-0}
+      - ENABLE_SPAMASSASSIN=${MAILSERVER_ENABLE_SPAMASSASSIN:-0}
+      - ENABLE_FAIL2BAN=${MAILSERVER_ENABLE_FAIL2BAN:-0}
+      - ENABLE_POSTGREY=${MAILSERVER_ENABLE_POSTGREY:-0}
+      - ENABLE_AMAVIS=${MAILSERVER_ENABLE_AMAVIS:-0}
+      - SSL_TYPE=${MAILSERVER_SSL_TYPE:-letsencrypt}
+      - SSL_CERT_PATH=/etc/letsencrypt/live/${SSL_DOMAIN:-ailinux.me}/fullchain.pem
+      - SSL_KEY_PATH=/etc/letsencrypt/live/${SSL_DOMAIN:-ailinux.me}/privkey.pem
+      - PERMIT_DOCKER=${MAILSERVER_PERMIT_DOCKER:-network}
+      - ONE_DIR=${MAILSERVER_ONE_DIR:-1}
+      - POSTMASTER_ADDRESS=${MAILSERVER_POSTMASTER:-admin}@${MAIL_DOMAIN:-ailinux.me}
+      - SPOOF_PROTECTION=${MAILSERVER_SPOOF_PROTECTION:-1}
+      - TZ=${TZ:-Europe/Berlin}
+    cap_add:
+      - NET_ADMIN
+      - SYS_PTRACE
+    networks:
+      - ${MAILSERVER_NETWORK:-mail-network}
+    healthcheck:
+      test: "ss -lntp | grep -E ':25|:587|:465|:993' || exit 1"
+      interval: ${MAILSERVER_HEALTHCHECK_INTERVAL:-60s}
+      timeout: ${MAILSERVER_HEALTHCHECK_TIMEOUT:-3s}
+      retries: ${MAILSERVER_HEALTHCHECK_RETRIES:-3}
+
+networks:
+  mail-network:
+    name: ${MAILSERVER_NETWORK:-mail-network}
+    driver: ${MAILSERVER_NETWORK_DRIVER:-bridge}

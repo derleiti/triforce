@@ -1,0 +1,45 @@
+{
+  "chain_id": "chain_3783a2f801cb",
+  "project_id": "proj_f5bf2bd9",
+  "user_prompt": "Erstelle eine einfache Python-Funktion die zwei Zahlen addiert",
+  "status": "completed",
+  "started_at": "2025-12-04T14:37:58.771381+00:00",
+  "completed_at": "2025-12-04T14:37:58.782788+00:00",
+  "total_cycles": 2,
+  "max_cycles": 2,
+  "cycles": [
+    {
+      "cycle_number": 1,
+      "started_at": "2025-12-04T14:37:58.781218+00:00",
+      "completed_at": "2025-12-04T14:37:58.781764+00:00",
+      "status": "completed",
+      "lead_analysis": "",
+      "lead_plan": null,
+      "agent_tasks": [],
+      "agent_results": {},
+      "consolidation": null,
+      "next_action": "error",
+      "execution_time_ms": 0.5650520324707031,
+      "tokens_used": 0
+    },
+    {
+      "cycle_number": 2,
+      "started_at": "2025-12-04T14:37:58.782135+00:00",
+      "completed_at": "2025-12-04T14:37:58.782444+00:00",
+      "status": "completed",
+      "lead_analysis": "",
+      "lead_plan": null,
+      "agent_tasks": [],
+      "agent_results": {},
+      "consolidation": null,
+      "next_action": "error",
+      "execution_time_ms": 0.32639503479003906,
+      "tokens_used": 0
+    }
+  ],
+  "final_output": null,
+  "artifacts": [],
+  "total_execution_time_ms": 9.50002670288086,
+  "total_tokens_used": 0,
+  "error": null
+}

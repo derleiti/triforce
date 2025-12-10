@@ -1,0 +1,4 @@
+# Postfix CIDR-based access control
+# IPs/networks to reject
+196.251.92.134 REJECT PREGREET spam attacks
+81.30.107.0/24 REJECT SSL handshake attack source

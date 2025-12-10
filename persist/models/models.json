@@ -1,0 +1,3401 @@
+{
+  "gemini-lead": {
+    "model_id": "gemini-lead",
+    "model_name": "gemini/gemini-2.5-flash",
+    "provider": "gemini",
+    "role": "lead",
+    "capabilities": [
+      "reasoning",
+      "long_context",
+      "tool_use",
+      "analysis"
+    ],
+    "system_prompt": "Du bist gemini-lead, ein Lead-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- Analysiere eingehende Aufgaben und erstelle Ausf\u00fchrungspl\u00e4ne\n- Delegiere Teilaufgaben an spezialisierte Worker-Agenten\n...",
+    "system_prompt_crc": "44035047",
+    "neighbor_ids": [
+      "kimi-lead",
+      "gemini-pro-lead",
+      "system-admin",
+      "ollama-llama33-70b",
+      "ollama-llama31-405b",
+      "gemini-gemini_15_pro",
+      "anthropic-claude_3_opus",
+      "anthropic-claude_35_opus"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": true,
+    "healthy": true,
+    "last_heartbeat": "2025-12-04T17:29:14.898488+00:00",
+    "created_at": "2025-12-04T15:32:55.843964+00:00",
+    "updated_at": "2025-12-04T17:29:14.898495+00:00"
+  },
+  "kimi-lead": {
+    "model_id": "kimi-lead",
+    "model_name": "kimi-k2:1t-cloud",
+    "provider": "ollama",
+    "role": "lead",
+    "capabilities": [
+      "long_context",
+      "reasoning",
+      "analysis"
+    ],
+    "system_prompt": "Du bist kimi-lead, ein Lead-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- Analysiere eingehende Aufgaben und erstelle Ausf\u00fchrungspl\u00e4ne\n- Delegiere Teilaufgaben an spezialisierte Worker-Agenten\n- ...",
+    "system_prompt_crc": "39f972a5",
+    "neighbor_ids": [
+      "gemini-lead"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.844209+00:00",
+    "updated_at": "2025-12-04T15:32:55.844211+00:00"
+  },
+  "gemini-pro-lead": {
+    "model_id": "gemini-pro-lead",
+    "model_name": "gemini/gemini-2.5-pro",
+    "provider": "gemini",
+    "role": "lead",
+    "capabilities": [
+      "long_context",
+      "reasoning",
+      "code",
+      "analysis"
+    ],
+    "system_prompt": "Du bist gemini-pro-lead, ein Lead-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- Analysiere eingehende Aufgaben und erstelle Ausf\u00fchrungspl\u00e4ne\n- Delegiere Teilaufgaben an spezialisierte Worker-Agen...",
+    "system_prompt_crc": "54194e97",
+    "neighbor_ids": [
+      "gemini-lead",
+      "kimi-lead"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.844386+00:00",
+    "updated_at": "2025-12-04T15:32:55.844388+00:00"
+  },
+  "claude-worker": {
+    "model_id": "claude-worker",
+    "model_name": "anthropic/claude-sonnet-4",
+    "provider": "anthropic",
+    "role": "worker",
+    "capabilities": [
+      "documentation",
+      "code",
+      "analysis"
+    ],
+    "system_prompt": "Du bist claude-worker, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, analysis, documentation)\n- Akzeptiere nur Aufgaben von Sponsor od...",
+    "system_prompt_crc": "3088ee64",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "codestral-worker",
+      "claude-vision",
+      "mistral-reviewer",
+      "ollama-llama32-3b",
+      "ollama-llama32-8b",
+      "ollama-llama33-70b",
+      "ollama-llama31-8b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": true,
+    "healthy": true,
+    "last_heartbeat": "2025-12-04T17:29:15.740837+00:00",
+    "created_at": "2025-12-04T15:32:55.844574+00:00",
+    "updated_at": "2025-12-04T17:29:15.740845+00:00"
+  },
+  "deepseek-worker": {
+    "model_id": "deepseek-worker",
+    "model_name": "deepseek-v3.1:671b-cloud",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "math",
+      "reasoning",
+      "code"
+    ],
+    "system_prompt": "Du bist deepseek-worker, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, math, reasoning)\n- Akzeptiere nur Aufgaben von Sponsor oder Lea...",
+    "system_prompt_crc": "9b66fa4f",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "gemini-lead",
+      "kimi-lead",
+      "claude-worker"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.844764+00:00",
+    "updated_at": "2025-12-04T15:32:55.844767+00:00"
+  },
+  "qwen-coder": {
+    "model_id": "qwen-coder",
+    "model_name": "qwen3-coder:32b-cloud",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "tool_use",
+      "code"
+    ],
+    "system_prompt": "Du bist qwen-coder, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, tool_use)\n- Akzeptiere nur Aufgaben von Sponsor oder Lead\n- Liefere ...",
+    "system_prompt_crc": "33966306",
+    "neighbor_ids": [
+      "gemini-lead",
+      "gemini-pro-lead",
+      "claude-worker",
+      "deepseek-worker"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.844905+00:00",
+    "updated_at": "2025-12-04T15:32:55.844907+00:00"
+  },
+  "codestral-worker": {
+    "model_id": "codestral-worker",
+    "model_name": "mistral/codestral-latest",
+    "provider": "mistral",
+    "role": "worker",
+    "capabilities": [
+      "documentation",
+      "code"
+    ],
+    "system_prompt": "Du bist codestral-worker, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, documentation)\n- Akzeptiere nur Aufgaben von Sponsor oder Lead...",
+    "system_prompt_crc": "38ab6ffb",
+    "neighbor_ids": [
+      "claude-worker",
+      "gemini-pro-lead",
+      "deepseek-worker",
+      "qwen-coder"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.844995+00:00",
+    "updated_at": "2025-12-04T15:32:55.844995+00:00"
+  },
+  "qwen-worker": {
+    "model_id": "qwen-worker",
+    "model_name": "qwen3-vl:235b-cloud",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "translation",
+      "vision"
+    ],
+    "system_prompt": "Du bist qwen-worker, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: vision, translation, multilingual)\n- Akzeptiere nur Aufgaben von Sponsor ...",
+    "system_prompt_crc": "14833884",
+    "neighbor_ids": [],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.845077+00:00",
+    "updated_at": "2025-12-04T15:32:55.845077+00:00"
+  },
+  "nova-worker": {
+    "model_id": "nova-worker",
+    "model_name": "gpt-oss:20b-cloud",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "documentation",
+      "creative"
+    ],
+    "system_prompt": "Du bist nova-worker, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: creative, multilingual, documentation)\n- Akzeptiere nur Aufgaben von Spon...",
+    "system_prompt_crc": "bc17d503",
+    "neighbor_ids": [
+      "claude-worker",
+      "codestral-worker",
+      "qwen-worker"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.845157+00:00",
+    "updated_at": "2025-12-04T15:32:55.845158+00:00"
+  },
+  "deepseek-math": {
+    "model_id": "deepseek-math",
+    "model_name": "deepseek-v3.1:671b-cloud",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "math",
+      "reasoning"
+    ],
+    "system_prompt": "Du bist deepseek-math, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: math, reasoning)\n- Akzeptiere nur Aufgaben von Sponsor oder Lead\n- Lief...",
+    "system_prompt_crc": "437f5041",
+    "neighbor_ids": [
+      "deepseek-worker",
+      "gemini-lead",
+      "kimi-lead",
+      "gemini-pro-lead"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.845233+00:00",
+    "updated_at": "2025-12-04T15:32:55.845233+00:00"
+  },
+  "qwen-math": {
+    "model_id": "qwen-math",
+    "model_name": "qwen3-math:72b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "math",
+      "reasoning",
+      "code"
+    ],
+    "system_prompt": "Du bist qwen-math, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, math, reasoning)\n- Akzeptiere nur Aufgaben von Sponsor oder Lead\n- Li...",
+    "system_prompt_crc": "bcde2b10",
+    "neighbor_ids": [
+      "deepseek-worker",
+      "gemini-pro-lead",
+      "deepseek-math",
+      "gemini-lead",
+      "kimi-lead",
+      "claude-worker",
+      "qwen-coder",
+      "codestral-worker"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.845310+00:00",
+    "updated_at": "2025-12-04T15:32:55.845311+00:00"
+  },
+  "gemini-creative": {
+    "model_id": "gemini-creative",
+    "model_name": "gemini/gemini-2.0-flash",
+    "provider": "gemini",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "creative",
+      "analysis"
+    ],
+    "system_prompt": "Du bist gemini-creative, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: creative, analysis, multilingual)\n- Akzeptiere nur Aufgaben von Spons...",
+    "system_prompt_crc": "4b61bcc2",
+    "neighbor_ids": [
+      "nova-worker",
+      "gemini-lead",
+      "kimi-lead",
+      "gemini-pro-lead",
+      "claude-worker",
+      "qwen-worker"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.845389+00:00",
+    "updated_at": "2025-12-04T15:32:55.845390+00:00"
+  },
+  "gemini-vision": {
+    "model_id": "gemini-vision",
+    "model_name": "gemini/gemini-2.0-flash",
+    "provider": "gemini",
+    "role": "worker",
+    "capabilities": [
+      "vision",
+      "analysis"
+    ],
+    "system_prompt": "Du bist gemini-vision, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: vision, analysis)\n- Akzeptiere nur Aufgaben von Sponsor oder Lead\n- Lie...",
+    "system_prompt_crc": "f96f5bb5",
+    "neighbor_ids": [
+      "gemini-lead",
+      "kimi-lead",
+      "gemini-pro-lead",
+      "claude-worker",
+      "qwen-worker",
+      "gemini-creative"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.845469+00:00",
+    "updated_at": "2025-12-04T15:32:55.845470+00:00"
+  },
+  "claude-vision": {
+    "model_id": "claude-vision",
+    "model_name": "anthropic/claude-sonnet-4",
+    "provider": "anthropic",
+    "role": "worker",
+    "capabilities": [
+      "vision",
+      "code",
+      "analysis"
+    ],
+    "system_prompt": "Du bist claude-vision, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: vision, analysis, code)\n- Akzeptiere nur Aufgaben von Sponsor oder Lead...",
+    "system_prompt_crc": "2671db37",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "claude-worker",
+      "gemini-vision",
+      "gemini-lead",
+      "kimi-lead",
+      "deepseek-worker",
+      "qwen-coder",
+      "codestral-worker"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.845560+00:00",
+    "updated_at": "2025-12-04T15:32:55.845561+00:00"
+  },
+  "mistral-reviewer": {
+    "model_id": "mistral-reviewer",
+    "model_name": "mistral/mistral-medium-latest",
+    "provider": "mistral",
+    "role": "reviewer",
+    "capabilities": [
+      "security",
+      "code",
+      "analysis"
+    ],
+    "system_prompt": "Du bist mistral-reviewer, ein Reviewer-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- \u00dcberpr\u00fcfe Antworten mit Konfidenz < 0.85\n- Validiere Code auf Sicherheit und Best Practices\n- Pr\u00fcfe logische K...",
+    "system_prompt_crc": "e7c7a43b",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "claude-worker",
+      "claude-vision",
+      "gemini-lead",
+      "kimi-lead",
+      "deepseek-worker",
+      "qwen-coder",
+      "codestral-worker"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.845666+00:00",
+    "updated_at": "2025-12-04T15:32:55.845670+00:00"
+  },
+  "cogito-reviewer": {
+    "model_id": "cogito-reviewer",
+    "model_name": "cogito-2.1:671b-cloud",
+    "provider": "ollama",
+    "role": "reviewer",
+    "capabilities": [
+      "reasoning",
+      "analysis"
+    ],
+    "system_prompt": "Du bist cogito-reviewer, ein Reviewer-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- \u00dcberpr\u00fcfe Antworten mit Konfidenz < 0.85\n- Validiere Code auf Sicherheit und Best Practices\n- Pr\u00fcfe logische Ko...",
+    "system_prompt_crc": "0b792915",
+    "neighbor_ids": [
+      "gemini-lead",
+      "kimi-lead",
+      "gemini-pro-lead",
+      "claude-worker",
+      "deepseek-worker",
+      "deepseek-math",
+      "qwen-math",
+      "gemini-creative"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.845795+00:00",
+    "updated_at": "2025-12-04T15:32:55.845797+00:00"
+  },
+  "mistral-large-reviewer": {
+    "model_id": "mistral-large-reviewer",
+    "model_name": "mistral/mistral-large-latest",
+    "provider": "mistral",
+    "role": "reviewer",
+    "capabilities": [
+      "reasoning",
+      "code",
+      "security"
+    ],
+    "system_prompt": "Du bist mistral-large-reviewer, ein Reviewer-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- \u00dcberpr\u00fcfe Antworten mit Konfidenz < 0.85\n- Validiere Code auf Sicherheit und Best Practices\n- Pr\u00fcfe logi...",
+    "system_prompt_crc": "2ce7786c",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "deepseek-worker",
+      "qwen-math",
+      "mistral-reviewer",
+      "gemini-lead",
+      "kimi-lead",
+      "claude-worker",
+      "qwen-coder"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.845909+00:00",
+    "updated_at": "2025-12-04T15:32:55.845911+00:00"
+  },
+  "nova-admin": {
+    "model_id": "nova-admin",
+    "model_name": "gpt-oss:20b-cloud",
+    "provider": "ollama",
+    "role": "admin",
+    "capabilities": [
+      "multilingual",
+      "documentation",
+      "tool_use"
+    ],
+    "system_prompt": "Du bist nova-admin, ein Admin-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- Vollzugriff auf alle System-Funktionen\n- Verwaltung von Konfigurationen und Berechtigungen\n- \u00dcberwachung und Fehlerbehe...",
+    "system_prompt_crc": "3e3ac226",
+    "neighbor_ids": [
+      "nova-worker",
+      "gemini-lead",
+      "claude-worker",
+      "qwen-coder",
+      "codestral-worker",
+      "qwen-worker",
+      "gemini-creative"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.846062+00:00",
+    "updated_at": "2025-12-04T15:32:55.846064+00:00"
+  },
+  "system-admin": {
+    "model_id": "system-admin",
+    "model_name": "gemini/gemini-2.5-flash",
+    "provider": "gemini",
+    "role": "admin",
+    "capabilities": [
+      "reasoning",
+      "tool_use",
+      "analysis"
+    ],
+    "system_prompt": "Du bist system-admin, ein Admin-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- Vollzugriff auf alle System-Funktionen\n- Verwaltung von Konfigurationen und Berechtigungen\n- \u00dcberwachung und Fehlerbe...",
+    "system_prompt_crc": "07a90dc6",
+    "neighbor_ids": [
+      "gemini-lead",
+      "kimi-lead",
+      "gemini-pro-lead",
+      "cogito-reviewer",
+      "claude-worker",
+      "deepseek-worker",
+      "qwen-coder",
+      "deepseek-math"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.846199+00:00",
+    "updated_at": "2025-12-04T15:32:55.846201+00:00"
+  },
+  "ollama-llama32-3b": {
+    "model_id": "ollama-llama32-3b",
+    "model_name": "llama3.2:3b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "code",
+      "analysis"
+    ],
+    "system_prompt": "Du bist ollama-llama32-3b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, analysis)\n- Akzeptiere nur Aufgaben von Sponsor oder Lead\n- L...",
+    "system_prompt_crc": "c47acd20",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "claude-worker",
+      "claude-vision",
+      "mistral-reviewer",
+      "gemini-lead",
+      "kimi-lead",
+      "deepseek-worker",
+      "qwen-coder"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.846443+00:00",
+    "updated_at": "2025-12-04T15:32:55.846445+00:00"
+  },
+  "ollama-llama32-8b": {
+    "model_id": "ollama-llama32-8b",
+    "model_name": "llama3.2:8b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "reasoning",
+      "code",
+      "analysis"
+    ],
+    "system_prompt": "Du bist ollama-llama32-8b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, analysis, reasoning)\n- Akzeptiere nur Aufgaben von Sponsor od...",
+    "system_prompt_crc": "d32fb202",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "gemini-lead",
+      "kimi-lead",
+      "claude-worker",
+      "deepseek-worker",
+      "qwen-math",
+      "claude-vision",
+      "mistral-reviewer"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.846640+00:00",
+    "updated_at": "2025-12-04T15:32:55.846663+00:00"
+  },
+  "ollama-llama33-70b": {
+    "model_id": "ollama-llama33-70b",
+    "model_name": "llama3.3:70b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "long_context",
+      "reasoning",
+      "code",
+      "analysis"
+    ],
+    "system_prompt": "Du bist ollama-llama33-70b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, analysis, reasoning, long_context)\n- Akzeptiere nur Aufgaben...",
+    "system_prompt_crc": "4cdad4d9",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "gemini-lead",
+      "kimi-lead",
+      "ollama-llama32-8b",
+      "claude-worker",
+      "deepseek-worker",
+      "qwen-math",
+      "claude-vision"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.846844+00:00",
+    "updated_at": "2025-12-04T15:32:55.846846+00:00"
+  },
+  "ollama-llama31-8b": {
+    "model_id": "ollama-llama31-8b",
+    "model_name": "llama3.1:8b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "code",
+      "analysis"
+    ],
+    "system_prompt": "Du bist ollama-llama31-8b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, analysis)\n- Akzeptiere nur Aufgaben von Sponsor oder Lead\n- L...",
+    "system_prompt_crc": "692e02f4",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "claude-worker",
+      "claude-vision",
+      "mistral-reviewer",
+      "ollama-llama32-3b",
+      "ollama-llama32-8b",
+      "ollama-llama33-70b",
+      "gemini-lead"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.847009+00:00",
+    "updated_at": "2025-12-04T15:32:55.847012+00:00"
+  },
+  "ollama-llama31-70b": {
+    "model_id": "ollama-llama31-70b",
+    "model_name": "llama3.1:70b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "reasoning",
+      "code",
+      "analysis"
+    ],
+    "system_prompt": "Du bist ollama-llama31-70b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, analysis, reasoning)\n- Akzeptiere nur Aufgaben von Sponsor o...",
+    "system_prompt_crc": "12b748b8",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "ollama-llama32-8b",
+      "ollama-llama33-70b",
+      "gemini-lead",
+      "kimi-lead",
+      "claude-worker",
+      "deepseek-worker",
+      "qwen-math"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.847159+00:00",
+    "updated_at": "2025-12-04T15:32:55.847162+00:00"
+  },
+  "ollama-llama31-405b": {
+    "model_id": "ollama-llama31-405b",
+    "model_name": "llama3.1:405b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "long_context",
+      "reasoning",
+      "code",
+      "analysis"
+    ],
+    "system_prompt": "Du bist ollama-llama31-405b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, analysis, reasoning, long_context)\n- Akzeptiere nur Aufgabe...",
+    "system_prompt_crc": "84299ec6",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "ollama-llama33-70b",
+      "gemini-lead",
+      "kimi-lead",
+      "ollama-llama32-8b",
+      "ollama-llama31-70b",
+      "claude-worker",
+      "deepseek-worker"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.847369+00:00",
+    "updated_at": "2025-12-04T15:32:55.847371+00:00"
+  },
+  "ollama-codellama-7b": {
+    "model_id": "ollama-codellama-7b",
+    "model_name": "codellama:7b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-codellama-7b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code)\n- Akzeptiere nur Aufgaben von Sponsor oder Lead\n- Liefere E...",
+    "system_prompt_crc": "c73cb416",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "claude-worker",
+      "deepseek-worker",
+      "qwen-coder",
+      "codestral-worker",
+      "qwen-math",
+      "claude-vision",
+      "mistral-reviewer"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.847568+00:00",
+    "updated_at": "2025-12-04T15:32:55.847570+00:00"
+  },
+  "ollama-codellama-13b": {
+    "model_id": "ollama-codellama-13b",
+    "model_name": "codellama:13b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-codellama-13b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code)\n- Akzeptiere nur Aufgaben von Sponsor oder Lead\n- Liefere ...",
+    "system_prompt_crc": "95b26093",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "claude-worker",
+      "deepseek-worker",
+      "qwen-coder",
+      "codestral-worker",
+      "qwen-math",
+      "claude-vision",
+      "mistral-reviewer"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.847768+00:00",
+    "updated_at": "2025-12-04T15:32:55.847770+00:00"
+  },
+  "ollama-codellama-34b": {
+    "model_id": "ollama-codellama-34b",
+    "model_name": "codellama:34b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "reasoning",
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-codellama-34b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, reasoning)\n- Akzeptiere nur Aufgaben von Sponsor oder Lead...",
+    "system_prompt_crc": "9b47eda5",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "deepseek-worker",
+      "qwen-math",
+      "mistral-large-reviewer",
+      "ollama-llama32-8b",
+      "ollama-llama33-70b",
+      "ollama-llama31-70b",
+      "ollama-llama31-405b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.847947+00:00",
+    "updated_at": "2025-12-04T15:32:55.847949+00:00"
+  },
+  "ollama-codellama-70b": {
+    "model_id": "ollama-codellama-70b",
+    "model_name": "codellama:70b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "long_context",
+      "reasoning",
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-codellama-70b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, reasoning, long_context)\n- Akzeptiere nur Aufgaben von Spo...",
+    "system_prompt_crc": "764f22eb",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "ollama-llama33-70b",
+      "ollama-llama31-405b",
+      "gemini-lead",
+      "kimi-lead",
+      "deepseek-worker",
+      "qwen-math",
+      "mistral-large-reviewer"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.848125+00:00",
+    "updated_at": "2025-12-04T15:32:55.848127+00:00"
+  },
+  "ollama-mistral-7b": {
+    "model_id": "ollama-mistral-7b",
+    "model_name": "mistral:7b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-mistral-7b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, multilingual)\n- Akzeptiere nur Aufgaben von Sponsor oder Lead...",
+    "system_prompt_crc": "fc5ea021",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "claude-worker",
+      "deepseek-worker",
+      "qwen-coder",
+      "codestral-worker",
+      "qwen-worker",
+      "nova-worker",
+      "qwen-math"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.848305+00:00",
+    "updated_at": "2025-12-04T15:32:55.848307+00:00"
+  },
+  "ollama-mistral-7b-instruct": {
+    "model_id": "ollama-mistral-7b-instruct",
+    "model_name": "mistral:7b-instruct",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "code",
+      "analysis"
+    ],
+    "system_prompt": "Du bist ollama-mistral-7b-instruct, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, analysis, multilingual)\n- Akzeptiere nur Aufgaben vo...",
+    "system_prompt_crc": "0b1e07fd",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "claude-worker",
+      "gemini-creative",
+      "claude-vision",
+      "mistral-reviewer",
+      "ollama-llama32-3b",
+      "ollama-llama32-8b",
+      "ollama-llama33-70b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.848509+00:00",
+    "updated_at": "2025-12-04T15:32:55.848511+00:00"
+  },
+  "ollama-mistral-nemo-12b": {
+    "model_id": "ollama-mistral-nemo-12b",
+    "model_name": "mistral-nemo:12b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "reasoning",
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-mistral-nemo-12b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, multilingual, reasoning)\n- Akzeptiere nur Aufgaben von ...",
+    "system_prompt_crc": "c4873007",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "deepseek-worker",
+      "qwen-math",
+      "mistral-large-reviewer",
+      "ollama-llama32-8b",
+      "ollama-llama33-70b",
+      "ollama-llama31-70b",
+      "ollama-llama31-405b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.848733+00:00",
+    "updated_at": "2025-12-04T15:32:55.848735+00:00"
+  },
+  "ollama-mixtral-8x7b": {
+    "model_id": "ollama-mixtral-8x7b",
+    "model_name": "mixtral:8x7b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "reasoning",
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-mixtral-8x7b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, multilingual, reasoning)\n- Akzeptiere nur Aufgaben von Spon...",
+    "system_prompt_crc": "bd911f06",
+    "neighbor_ids": [
+      "ollama-mistral-nemo-12b",
+      "gemini-pro-lead",
+      "deepseek-worker",
+      "qwen-math",
+      "mistral-large-reviewer",
+      "ollama-llama32-8b",
+      "ollama-llama33-70b",
+      "ollama-llama31-70b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.848901+00:00",
+    "updated_at": "2025-12-04T15:32:55.848903+00:00"
+  },
+  "ollama-mixtral-8x22b": {
+    "model_id": "ollama-mixtral-8x22b",
+    "model_name": "mixtral:8x22b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "long_context",
+      "reasoning",
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-mixtral-8x22b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, multilingual, reasoning, long_context)\n- Akzeptiere nur Au...",
+    "system_prompt_crc": "4a96fe8e",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "ollama-llama33-70b",
+      "ollama-llama31-405b",
+      "ollama-codellama-70b",
+      "ollama-mistral-nemo-12b",
+      "ollama-mixtral-8x7b",
+      "gemini-lead",
+      "kimi-lead"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.849082+00:00",
+    "updated_at": "2025-12-04T15:32:55.849084+00:00"
+  },
+  "ollama-gemma-2b": {
+    "model_id": "ollama-gemma-2b",
+    "model_name": "gemma:2b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-gemma-2b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, multilingual)\n- Akzeptiere nur Aufgaben von Sponsor oder Lead\n-...",
+    "system_prompt_crc": "5ac33cc9",
+    "neighbor_ids": [
+      "ollama-mistral-7b",
+      "ollama-mistral-7b-instruct",
+      "ollama-mistral-nemo-12b",
+      "ollama-mixtral-8x7b",
+      "ollama-mixtral-8x22b",
+      "gemini-pro-lead",
+      "claude-worker",
+      "deepseek-worker"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.849244+00:00",
+    "updated_at": "2025-12-04T15:32:55.849245+00:00"
+  },
+  "ollama-gemma-7b": {
+    "model_id": "ollama-gemma-7b",
+    "model_name": "gemma:7b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-gemma-7b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, multilingual)\n- Akzeptiere nur Aufgaben von Sponsor oder Lead\n-...",
+    "system_prompt_crc": "8466c9a6",
+    "neighbor_ids": [
+      "ollama-mistral-7b",
+      "ollama-mistral-7b-instruct",
+      "ollama-mistral-nemo-12b",
+      "ollama-mixtral-8x7b",
+      "ollama-mixtral-8x22b",
+      "ollama-gemma-2b",
+      "gemini-pro-lead",
+      "claude-worker"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.849397+00:00",
+    "updated_at": "2025-12-04T15:32:55.849399+00:00"
+  },
+  "ollama-gemma2-2b": {
+    "model_id": "ollama-gemma2-2b",
+    "model_name": "gemma2:2b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-gemma2-2b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, multilingual)\n- Akzeptiere nur Aufgaben von Sponsor oder Lead\n...",
+    "system_prompt_crc": "6be5bd9b",
+    "neighbor_ids": [
+      "ollama-mistral-7b",
+      "ollama-mistral-7b-instruct",
+      "ollama-mistral-nemo-12b",
+      "ollama-mixtral-8x7b",
+      "ollama-mixtral-8x22b",
+      "ollama-gemma-2b",
+      "ollama-gemma-7b",
+      "gemini-pro-lead"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.849597+00:00",
+    "updated_at": "2025-12-04T15:32:55.849600+00:00"
+  },
+  "ollama-gemma2-9b": {
+    "model_id": "ollama-gemma2-9b",
+    "model_name": "gemma2:9b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "code",
+      "analysis"
+    ],
+    "system_prompt": "Du bist ollama-gemma2-9b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, analysis, multilingual)\n- Akzeptiere nur Aufgaben von Sponsor ...",
+    "system_prompt_crc": "1b54b462",
+    "neighbor_ids": [
+      "ollama-mistral-7b-instruct",
+      "gemini-pro-lead",
+      "claude-worker",
+      "gemini-creative",
+      "claude-vision",
+      "mistral-reviewer",
+      "ollama-llama32-3b",
+      "ollama-llama32-8b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.849820+00:00",
+    "updated_at": "2025-12-04T15:32:55.849822+00:00"
+  },
+  "ollama-gemma2-27b": {
+    "model_id": "ollama-gemma2-27b",
+    "model_name": "gemma2:27b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "reasoning",
+      "code",
+      "analysis"
+    ],
+    "system_prompt": "Du bist ollama-gemma2-27b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, analysis, multilingual, reasoning)\n- Akzeptiere nur Aufgaben ...",
+    "system_prompt_crc": "af707c4f",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "ollama-llama32-8b",
+      "ollama-llama33-70b",
+      "ollama-llama31-70b",
+      "ollama-llama31-405b",
+      "ollama-mistral-7b-instruct",
+      "ollama-mistral-nemo-12b",
+      "ollama-mixtral-8x7b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.850061+00:00",
+    "updated_at": "2025-12-04T15:32:55.850063+00:00"
+  },
+  "ollama-phi-27b": {
+    "model_id": "ollama-phi-27b",
+    "model_name": "phi:2.7b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "reasoning",
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-phi-27b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, reasoning)\n- Akzeptiere nur Aufgaben von Sponsor oder Lead\n- Lie...",
+    "system_prompt_crc": "2412f2fb",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "deepseek-worker",
+      "qwen-math",
+      "mistral-large-reviewer",
+      "ollama-llama32-8b",
+      "ollama-llama33-70b",
+      "ollama-llama31-70b",
+      "ollama-llama31-405b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.850276+00:00",
+    "updated_at": "2025-12-04T15:32:55.850278+00:00"
+  },
+  "ollama-phi3-38b": {
+    "model_id": "ollama-phi3-38b",
+    "model_name": "phi3:3.8b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "math",
+      "reasoning",
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-phi3-38b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, math, reasoning)\n- Akzeptiere nur Aufgaben von Sponsor oder Lea...",
+    "system_prompt_crc": "c430de62",
+    "neighbor_ids": [
+      "deepseek-worker",
+      "qwen-math",
+      "gemini-pro-lead",
+      "deepseek-math",
+      "mistral-large-reviewer",
+      "ollama-llama32-8b",
+      "ollama-llama33-70b",
+      "ollama-llama31-70b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.850466+00:00",
+    "updated_at": "2025-12-04T15:32:55.850468+00:00"
+  },
+  "ollama-phi3-14b": {
+    "model_id": "ollama-phi3-14b",
+    "model_name": "phi3:14b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "math",
+      "reasoning",
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-phi3-14b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, math, reasoning)\n- Akzeptiere nur Aufgaben von Sponsor oder Lea...",
+    "system_prompt_crc": "cf655af9",
+    "neighbor_ids": [
+      "deepseek-worker",
+      "qwen-math",
+      "ollama-phi3-38b",
+      "gemini-pro-lead",
+      "deepseek-math",
+      "mistral-large-reviewer",
+      "ollama-llama32-8b",
+      "ollama-llama33-70b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.850835+00:00",
+    "updated_at": "2025-12-04T15:32:55.850837+00:00"
+  },
+  "ollama-phi4-14b": {
+    "model_id": "ollama-phi4-14b",
+    "model_name": "phi4:14b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "math",
+      "reasoning",
+      "code",
+      "analysis"
+    ],
+    "system_prompt": "Du bist ollama-phi4-14b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, analysis, math, reasoning)\n- Akzeptiere nur Aufgaben von Sponso...",
+    "system_prompt_crc": "2f324af0",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "deepseek-worker",
+      "qwen-math",
+      "ollama-llama32-8b",
+      "ollama-llama33-70b",
+      "ollama-llama31-70b",
+      "ollama-llama31-405b",
+      "ollama-gemma2-27b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.851047+00:00",
+    "updated_at": "2025-12-04T15:32:55.851049+00:00"
+  },
+  "ollama-qwen-7b": {
+    "model_id": "ollama-qwen-7b",
+    "model_name": "qwen:7b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-qwen-7b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, multilingual)\n- Akzeptiere nur Aufgaben von Sponsor oder Lead\n- ...",
+    "system_prompt_crc": "8a0f22e0",
+    "neighbor_ids": [
+      "ollama-mistral-7b",
+      "ollama-mistral-7b-instruct",
+      "ollama-mistral-nemo-12b",
+      "ollama-mixtral-8x7b",
+      "ollama-mixtral-8x22b",
+      "ollama-gemma-2b",
+      "ollama-gemma-7b",
+      "ollama-gemma2-2b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.851213+00:00",
+    "updated_at": "2025-12-04T15:32:55.851215+00:00"
+  },
+  "ollama-qwen-14b": {
+    "model_id": "ollama-qwen-14b",
+    "model_name": "qwen:14b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "math",
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-qwen-14b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, math, multilingual)\n- Akzeptiere nur Aufgaben von Sponsor oder ...",
+    "system_prompt_crc": "ebbcdce5",
+    "neighbor_ids": [
+      "deepseek-worker",
+      "qwen-math",
+      "ollama-mistral-7b",
+      "ollama-mistral-7b-instruct",
+      "ollama-mistral-nemo-12b",
+      "ollama-mixtral-8x7b",
+      "ollama-mixtral-8x22b",
+      "ollama-gemma-2b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.851426+00:00",
+    "updated_at": "2025-12-04T15:32:55.851428+00:00"
+  },
+  "ollama-qwen-32b": {
+    "model_id": "ollama-qwen-32b",
+    "model_name": "qwen:32b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "math",
+      "reasoning",
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-qwen-32b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, math, multilingual, reasoning)\n- Akzeptiere nur Aufgaben von Sp...",
+    "system_prompt_crc": "3405754e",
+    "neighbor_ids": [
+      "deepseek-worker",
+      "qwen-math",
+      "ollama-mistral-nemo-12b",
+      "ollama-mixtral-8x7b",
+      "ollama-mixtral-8x22b",
+      "ollama-gemma2-27b",
+      "ollama-phi3-38b",
+      "ollama-phi3-14b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.851671+00:00",
+    "updated_at": "2025-12-04T15:32:55.851673+00:00"
+  },
+  "ollama-qwen-72b": {
+    "model_id": "ollama-qwen-72b",
+    "model_name": "qwen:72b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "reasoning",
+      "multilingual",
+      "math",
+      "long_context",
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-qwen-72b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, reasoning, long_context, math, multilingual)\n- Akzeptiere nur A...",
+    "system_prompt_crc": "a147a10c",
+    "neighbor_ids": [
+      "ollama-mixtral-8x22b",
+      "ollama-qwen-32b",
+      "gemini-pro-lead",
+      "deepseek-worker",
+      "qwen-math",
+      "ollama-llama33-70b",
+      "ollama-llama31-405b",
+      "ollama-codellama-70b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.851862+00:00",
+    "updated_at": "2025-12-04T15:32:55.851864+00:00"
+  },
+  "ollama-qwen-110b": {
+    "model_id": "ollama-qwen-110b",
+    "model_name": "qwen:110b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "reasoning",
+      "multilingual",
+      "math",
+      "long_context",
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-qwen-110b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, reasoning, long_context, math, multilingual)\n- Akzeptiere nur ...",
+    "system_prompt_crc": "52e21e22",
+    "neighbor_ids": [
+      "ollama-qwen-72b",
+      "ollama-mixtral-8x22b",
+      "ollama-qwen-32b",
+      "gemini-pro-lead",
+      "deepseek-worker",
+      "qwen-math",
+      "ollama-llama33-70b",
+      "ollama-llama31-405b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.852069+00:00",
+    "updated_at": "2025-12-04T15:32:55.852071+00:00"
+  },
+  "ollama-qwen2-7b": {
+    "model_id": "ollama-qwen2-7b",
+    "model_name": "qwen2:7b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-qwen2-7b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, multilingual)\n- Akzeptiere nur Aufgaben von Sponsor oder Lead\n-...",
+    "system_prompt_crc": "2af1c5ba",
+    "neighbor_ids": [
+      "ollama-mistral-7b",
+      "ollama-mistral-7b-instruct",
+      "ollama-mistral-nemo-12b",
+      "ollama-mixtral-8x7b",
+      "ollama-mixtral-8x22b",
+      "ollama-gemma-2b",
+      "ollama-gemma-7b",
+      "ollama-gemma2-2b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.852269+00:00",
+    "updated_at": "2025-12-04T15:32:55.852271+00:00"
+  },
+  "ollama-qwen2-72b": {
+    "model_id": "ollama-qwen2-72b",
+    "model_name": "qwen2:72b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "math",
+      "reasoning",
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-qwen2-72b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, math, multilingual, reasoning)\n- Akzeptiere nur Aufgaben von S...",
+    "system_prompt_crc": "12e11887",
+    "neighbor_ids": [
+      "ollama-qwen-32b",
+      "ollama-qwen-72b",
+      "ollama-qwen-110b",
+      "deepseek-worker",
+      "qwen-math",
+      "ollama-mistral-nemo-12b",
+      "ollama-mixtral-8x7b",
+      "ollama-mixtral-8x22b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.852462+00:00",
+    "updated_at": "2025-12-04T15:32:55.852464+00:00"
+  },
+  "ollama-qwen25-7b": {
+    "model_id": "ollama-qwen25-7b",
+    "model_name": "qwen2.5:7b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-qwen25-7b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, multilingual)\n- Akzeptiere nur Aufgaben von Sponsor oder Lead\n...",
+    "system_prompt_crc": "9d43c065",
+    "neighbor_ids": [
+      "ollama-mistral-7b",
+      "ollama-mistral-7b-instruct",
+      "ollama-mistral-nemo-12b",
+      "ollama-mixtral-8x7b",
+      "ollama-mixtral-8x22b",
+      "ollama-gemma-2b",
+      "ollama-gemma-7b",
+      "ollama-gemma2-2b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.852716+00:00",
+    "updated_at": "2025-12-04T15:32:55.852719+00:00"
+  },
+  "ollama-qwen25-14b": {
+    "model_id": "ollama-qwen25-14b",
+    "model_name": "qwen2.5:14b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "math",
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-qwen25-14b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, math, multilingual)\n- Akzeptiere nur Aufgaben von Sponsor ode...",
+    "system_prompt_crc": "3ad37957",
+    "neighbor_ids": [
+      "ollama-qwen-14b",
+      "ollama-qwen-32b",
+      "ollama-qwen-72b",
+      "ollama-qwen-110b",
+      "ollama-qwen2-72b",
+      "deepseek-worker",
+      "qwen-math",
+      "ollama-mistral-7b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.852935+00:00",
+    "updated_at": "2025-12-04T15:32:55.852937+00:00"
+  },
+  "ollama-qwen25-32b": {
+    "model_id": "ollama-qwen25-32b",
+    "model_name": "qwen2.5:32b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "math",
+      "reasoning",
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-qwen25-32b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, math, multilingual, reasoning)\n- Akzeptiere nur Aufgaben von ...",
+    "system_prompt_crc": "35fe4b6e",
+    "neighbor_ids": [
+      "ollama-qwen-32b",
+      "ollama-qwen-72b",
+      "ollama-qwen-110b",
+      "ollama-qwen2-72b",
+      "deepseek-worker",
+      "qwen-math",
+      "ollama-mistral-nemo-12b",
+      "ollama-mixtral-8x7b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.853263+00:00",
+    "updated_at": "2025-12-04T15:32:55.853265+00:00"
+  },
+  "ollama-qwen25-72b": {
+    "model_id": "ollama-qwen25-72b",
+    "model_name": "qwen2.5:72b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "reasoning",
+      "multilingual",
+      "math",
+      "long_context",
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-qwen25-72b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, reasoning, long_context, math, multilingual)\n- Akzeptiere nur...",
+    "system_prompt_crc": "652dad91",
+    "neighbor_ids": [
+      "ollama-qwen-72b",
+      "ollama-qwen-110b",
+      "ollama-mixtral-8x22b",
+      "ollama-qwen-32b",
+      "ollama-qwen2-72b",
+      "ollama-qwen25-32b",
+      "gemini-pro-lead",
+      "deepseek-worker"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.853497+00:00",
+    "updated_at": "2025-12-04T15:32:55.853499+00:00"
+  },
+  "ollama-qwen25-coder-7b": {
+    "model_id": "ollama-qwen25-coder-7b",
+    "model_name": "qwen2.5-coder:7b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-qwen25-coder-7b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code)\n- Akzeptiere nur Aufgaben von Sponsor oder Lead\n- Liefer...",
+    "system_prompt_crc": "12cc8f9c",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "claude-worker",
+      "deepseek-worker",
+      "qwen-coder",
+      "codestral-worker",
+      "qwen-math",
+      "claude-vision",
+      "mistral-reviewer"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.853754+00:00",
+    "updated_at": "2025-12-04T15:32:55.853756+00:00"
+  },
+  "ollama-qwen25-coder-14b": {
+    "model_id": "ollama-qwen25-coder-14b",
+    "model_name": "qwen2.5-coder:14b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "reasoning",
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-qwen25-coder-14b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, reasoning)\n- Akzeptiere nur Aufgaben von Sponsor oder L...",
+    "system_prompt_crc": "b49a7a4d",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "deepseek-worker",
+      "qwen-math",
+      "mistral-large-reviewer",
+      "ollama-llama32-8b",
+      "ollama-llama33-70b",
+      "ollama-llama31-70b",
+      "ollama-llama31-405b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.853957+00:00",
+    "updated_at": "2025-12-04T15:32:55.853960+00:00"
+  },
+  "ollama-qwen25-coder-32b": {
+    "model_id": "ollama-qwen25-coder-32b",
+    "model_name": "qwen2.5-coder:32b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "reasoning",
+      "code",
+      "analysis"
+    ],
+    "system_prompt": "Du bist ollama-qwen25-coder-32b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, analysis, reasoning)\n- Akzeptiere nur Aufgaben von Spon...",
+    "system_prompt_crc": "d49883a0",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "ollama-llama32-8b",
+      "ollama-llama33-70b",
+      "ollama-llama31-70b",
+      "ollama-llama31-405b",
+      "ollama-gemma2-27b",
+      "ollama-phi4-14b",
+      "gemini-lead"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.854181+00:00",
+    "updated_at": "2025-12-04T15:32:55.854183+00:00"
+  },
+  "ollama-deepseek-v2-16b": {
+    "model_id": "ollama-deepseek-v2-16b",
+    "model_name": "deepseek-v2:16b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "reasoning",
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-deepseek-v2-16b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, reasoning)\n- Akzeptiere nur Aufgaben von Sponsor oder Le...",
+    "system_prompt_crc": "a01fa038",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "deepseek-worker",
+      "qwen-math",
+      "mistral-large-reviewer",
+      "ollama-llama32-8b",
+      "ollama-llama33-70b",
+      "ollama-llama31-70b",
+      "ollama-llama31-405b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.854399+00:00",
+    "updated_at": "2025-12-04T15:32:55.854402+00:00"
+  },
+  "ollama-deepseek-v2-236b": {
+    "model_id": "ollama-deepseek-v2-236b",
+    "model_name": "deepseek-v2:236b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "long_context",
+      "reasoning",
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-deepseek-v2-236b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, reasoning, long_context)\n- Akzeptiere nur Aufgaben von ...",
+    "system_prompt_crc": "201011e7",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "ollama-llama33-70b",
+      "ollama-llama31-405b",
+      "ollama-codellama-70b",
+      "ollama-mixtral-8x22b",
+      "ollama-qwen-72b",
+      "ollama-qwen-110b",
+      "ollama-qwen25-72b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.854636+00:00",
+    "updated_at": "2025-12-04T15:32:55.854638+00:00"
+  },
+  "ollama-deepseek-v25-236b": {
+    "model_id": "ollama-deepseek-v25-236b",
+    "model_name": "deepseek-v2.5:236b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "math",
+      "long_context",
+      "reasoning",
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-deepseek-v25-236b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, math, reasoning, long_context)\n- Akzeptiere nur Aufgab...",
+    "system_prompt_crc": "86c11ce7",
+    "neighbor_ids": [
+      "ollama-qwen-72b",
+      "ollama-qwen-110b",
+      "ollama-qwen25-72b",
+      "gemini-pro-lead",
+      "deepseek-worker",
+      "qwen-math",
+      "ollama-llama33-70b",
+      "ollama-llama31-405b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.854895+00:00",
+    "updated_at": "2025-12-04T15:32:55.854897+00:00"
+  },
+  "ollama-deepseek-coder-67b": {
+    "model_id": "ollama-deepseek-coder-67b",
+    "model_name": "deepseek-coder:6.7b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-deepseek-coder-67b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code)\n- Akzeptiere nur Aufgaben von Sponsor oder Lead\n- Lie...",
+    "system_prompt_crc": "59226e36",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "claude-worker",
+      "deepseek-worker",
+      "qwen-coder",
+      "codestral-worker",
+      "qwen-math",
+      "claude-vision",
+      "mistral-reviewer"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.855109+00:00",
+    "updated_at": "2025-12-04T15:32:55.855111+00:00"
+  },
+  "ollama-deepseek-coder-33b": {
+    "model_id": "ollama-deepseek-coder-33b",
+    "model_name": "deepseek-coder:33b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "reasoning",
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-deepseek-coder-33b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, reasoning)\n- Akzeptiere nur Aufgaben von Sponsor oder...",
+    "system_prompt_crc": "30b92a19",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "deepseek-worker",
+      "qwen-math",
+      "mistral-large-reviewer",
+      "ollama-llama32-8b",
+      "ollama-llama33-70b",
+      "ollama-llama31-70b",
+      "ollama-llama31-405b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.855301+00:00",
+    "updated_at": "2025-12-04T15:32:55.855303+00:00"
+  },
+  "ollama-deepseek-coder-v2-16b": {
+    "model_id": "ollama-deepseek-coder-v2-16b",
+    "model_name": "deepseek-coder-v2:16b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-deepseek-coder-v2-16b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code)\n- Akzeptiere nur Aufgaben von Sponsor oder Lead\n- ...",
+    "system_prompt_crc": "7be9e4fb",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "claude-worker",
+      "deepseek-worker",
+      "qwen-coder",
+      "codestral-worker",
+      "qwen-math",
+      "claude-vision",
+      "mistral-reviewer"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.855510+00:00",
+    "updated_at": "2025-12-04T15:32:55.855512+00:00"
+  },
+  "ollama-deepseek-coder-v2-236b": {
+    "model_id": "ollama-deepseek-coder-v2-236b",
+    "model_name": "deepseek-coder-v2:236b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "reasoning",
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-deepseek-coder-v2-236b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, reasoning)\n- Akzeptiere nur Aufgaben von Sponsor ...",
+    "system_prompt_crc": "81bdcb02",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "deepseek-worker",
+      "qwen-math",
+      "mistral-large-reviewer",
+      "ollama-llama32-8b",
+      "ollama-llama33-70b",
+      "ollama-llama31-70b",
+      "ollama-llama31-405b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.855766+00:00",
+    "updated_at": "2025-12-04T15:32:55.855768+00:00"
+  },
+  "ollama-starcoder-3b": {
+    "model_id": "ollama-starcoder-3b",
+    "model_name": "starcoder:3b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-starcoder-3b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code)\n- Akzeptiere nur Aufgaben von Sponsor oder Lead\n- Liefere E...",
+    "system_prompt_crc": "b6b14dbe",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "claude-worker",
+      "deepseek-worker",
+      "qwen-coder",
+      "codestral-worker",
+      "qwen-math",
+      "claude-vision",
+      "mistral-reviewer"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.855981+00:00",
+    "updated_at": "2025-12-04T15:32:55.855983+00:00"
+  },
+  "ollama-starcoder-7b": {
+    "model_id": "ollama-starcoder-7b",
+    "model_name": "starcoder:7b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-starcoder-7b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code)\n- Akzeptiere nur Aufgaben von Sponsor oder Lead\n- Liefere E...",
+    "system_prompt_crc": "c74f9a57",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "claude-worker",
+      "deepseek-worker",
+      "qwen-coder",
+      "codestral-worker",
+      "qwen-math",
+      "claude-vision",
+      "mistral-reviewer"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.856180+00:00",
+    "updated_at": "2025-12-04T15:32:55.856182+00:00"
+  },
+  "ollama-starcoder-15b": {
+    "model_id": "ollama-starcoder-15b",
+    "model_name": "starcoder:15b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-starcoder-15b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code)\n- Akzeptiere nur Aufgaben von Sponsor oder Lead\n- Liefere ...",
+    "system_prompt_crc": "30d05d86",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "claude-worker",
+      "deepseek-worker",
+      "qwen-coder",
+      "codestral-worker",
+      "qwen-math",
+      "claude-vision",
+      "mistral-reviewer"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.856378+00:00",
+    "updated_at": "2025-12-04T15:32:55.856380+00:00"
+  },
+  "ollama-starcoder2-3b": {
+    "model_id": "ollama-starcoder2-3b",
+    "model_name": "starcoder2:3b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-starcoder2-3b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code)\n- Akzeptiere nur Aufgaben von Sponsor oder Lead\n- Liefere ...",
+    "system_prompt_crc": "c8190292",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "claude-worker",
+      "deepseek-worker",
+      "qwen-coder",
+      "codestral-worker",
+      "qwen-math",
+      "claude-vision",
+      "mistral-reviewer"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.856607+00:00",
+    "updated_at": "2025-12-04T15:32:55.856609+00:00"
+  },
+  "ollama-starcoder2-7b": {
+    "model_id": "ollama-starcoder2-7b",
+    "model_name": "starcoder2:7b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-starcoder2-7b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code)\n- Akzeptiere nur Aufgaben von Sponsor oder Lead\n- Liefere ...",
+    "system_prompt_crc": "b9e7d57b",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "claude-worker",
+      "deepseek-worker",
+      "qwen-coder",
+      "codestral-worker",
+      "qwen-math",
+      "claude-vision",
+      "mistral-reviewer"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.856835+00:00",
+    "updated_at": "2025-12-04T15:32:55.856838+00:00"
+  },
+  "ollama-starcoder2-15b": {
+    "model_id": "ollama-starcoder2-15b",
+    "model_name": "starcoder2:15b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "reasoning",
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-starcoder2-15b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, reasoning)\n- Akzeptiere nur Aufgaben von Sponsor oder Lea...",
+    "system_prompt_crc": "f4141199",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "deepseek-worker",
+      "qwen-math",
+      "mistral-large-reviewer",
+      "ollama-llama32-8b",
+      "ollama-llama33-70b",
+      "ollama-llama31-70b",
+      "ollama-llama31-405b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.857041+00:00",
+    "updated_at": "2025-12-04T15:32:55.857043+00:00"
+  },
+  "ollama-yi-6b": {
+    "model_id": "ollama-yi-6b",
+    "model_name": "yi:6b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "multilingual"
+    ],
+    "system_prompt": "Du bist ollama-yi-6b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: multilingual)\n- Akzeptiere nur Aufgaben von Sponsor oder Lead\n- Liefere ...",
+    "system_prompt_crc": "676ac46c",
+    "neighbor_ids": [
+      "qwen-worker",
+      "nova-worker",
+      "gemini-creative",
+      "nova-admin",
+      "ollama-mistral-7b",
+      "ollama-mistral-7b-instruct",
+      "ollama-mistral-nemo-12b",
+      "ollama-mixtral-8x7b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.857277+00:00",
+    "updated_at": "2025-12-04T15:32:55.857280+00:00"
+  },
+  "ollama-yi-9b": {
+    "model_id": "ollama-yi-9b",
+    "model_name": "yi:9b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "reasoning"
+    ],
+    "system_prompt": "Du bist ollama-yi-9b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: multilingual, reasoning)\n- Akzeptiere nur Aufgaben von Sponsor oder Lead...",
+    "system_prompt_crc": "eb8a4342",
+    "neighbor_ids": [
+      "ollama-mistral-nemo-12b",
+      "ollama-mixtral-8x7b",
+      "ollama-mixtral-8x22b",
+      "ollama-gemma2-27b",
+      "ollama-qwen-32b",
+      "ollama-qwen-72b",
+      "ollama-qwen-110b",
+      "ollama-qwen2-72b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.857472+00:00",
+    "updated_at": "2025-12-04T15:32:55.857474+00:00"
+  },
+  "ollama-yi-34b": {
+    "model_id": "ollama-yi-34b",
+    "model_name": "yi:34b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "reasoning"
+    ],
+    "system_prompt": "Du bist ollama-yi-34b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: multilingual, reasoning)\n- Akzeptiere nur Aufgaben von Sponsor oder Lea...",
+    "system_prompt_crc": "6287f2b3",
+    "neighbor_ids": [
+      "ollama-mistral-nemo-12b",
+      "ollama-mixtral-8x7b",
+      "ollama-mixtral-8x22b",
+      "ollama-gemma2-27b",
+      "ollama-qwen-32b",
+      "ollama-qwen-72b",
+      "ollama-qwen-110b",
+      "ollama-qwen2-72b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.857723+00:00",
+    "updated_at": "2025-12-04T15:32:55.857725+00:00"
+  },
+  "ollama-solar-107b": {
+    "model_id": "ollama-solar-107b",
+    "model_name": "solar:10.7b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "analysis"
+    ],
+    "system_prompt": "Du bist ollama-solar-107b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: analysis, multilingual)\n- Akzeptiere nur Aufgaben von Sponsor oder ...",
+    "system_prompt_crc": "2bc0092f",
+    "neighbor_ids": [
+      "gemini-creative",
+      "ollama-mistral-7b-instruct",
+      "ollama-gemma2-9b",
+      "ollama-gemma2-27b",
+      "gemini-lead",
+      "kimi-lead",
+      "gemini-pro-lead",
+      "claude-worker"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.857936+00:00",
+    "updated_at": "2025-12-04T15:32:55.857938+00:00"
+  },
+  "ollama-neural-chat-7b": {
+    "model_id": "ollama-neural-chat-7b",
+    "model_name": "neural-chat:7b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "creative"
+    ],
+    "system_prompt": "Du bist ollama-neural-chat-7b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: creative, multilingual)\n- Akzeptiere nur Aufgaben von Sponsor o...",
+    "system_prompt_crc": "deef5087",
+    "neighbor_ids": [
+      "nova-worker",
+      "gemini-creative",
+      "qwen-worker",
+      "nova-admin",
+      "ollama-mistral-7b",
+      "ollama-mistral-7b-instruct",
+      "ollama-mistral-nemo-12b",
+      "ollama-mixtral-8x7b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.858146+00:00",
+    "updated_at": "2025-12-04T15:32:55.858148+00:00"
+  },
+  "ollama-orca-mini-3b": {
+    "model_id": "ollama-orca-mini-3b",
+    "model_name": "orca-mini:3b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "analysis"
+    ],
+    "system_prompt": "Du bist ollama-orca-mini-3b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: analysis)\n- Akzeptiere nur Aufgaben von Sponsor oder Lead\n- Liefe...",
+    "system_prompt_crc": "6fa858b4",
+    "neighbor_ids": [
+      "gemini-lead",
+      "kimi-lead",
+      "gemini-pro-lead",
+      "claude-worker",
+      "gemini-creative",
+      "gemini-vision",
+      "claude-vision",
+      "mistral-reviewer"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.858343+00:00",
+    "updated_at": "2025-12-04T15:32:55.858345+00:00"
+  },
+  "ollama-orca-mini-7b": {
+    "model_id": "ollama-orca-mini-7b",
+    "model_name": "orca-mini:7b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "reasoning",
+      "analysis"
+    ],
+    "system_prompt": "Du bist ollama-orca-mini-7b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: analysis, reasoning)\n- Akzeptiere nur Aufgaben von Sponsor oder L...",
+    "system_prompt_crc": "9bca35a5",
+    "neighbor_ids": [
+      "gemini-lead",
+      "kimi-lead",
+      "gemini-pro-lead",
+      "cogito-reviewer",
+      "system-admin",
+      "ollama-llama32-8b",
+      "ollama-llama33-70b",
+      "ollama-llama31-70b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.858547+00:00",
+    "updated_at": "2025-12-04T15:32:55.858549+00:00"
+  },
+  "ollama-wizard-vicuna-13b": {
+    "model_id": "ollama-wizard-vicuna-13b",
+    "model_name": "wizard-vicuna:13b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "reasoning",
+      "creative"
+    ],
+    "system_prompt": "Du bist ollama-wizard-vicuna-13b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: creative, reasoning)\n- Akzeptiere nur Aufgaben von Sponsor o...",
+    "system_prompt_crc": "d69e9562",
+    "neighbor_ids": [
+      "gemini-lead",
+      "kimi-lead",
+      "gemini-pro-lead",
+      "deepseek-worker",
+      "nova-worker",
+      "deepseek-math",
+      "qwen-math",
+      "gemini-creative"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.858789+00:00",
+    "updated_at": "2025-12-04T15:32:55.858791+00:00"
+  },
+  "ollama-nous-hermes-13b": {
+    "model_id": "ollama-nous-hermes-13b",
+    "model_name": "nous-hermes:13b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "reasoning",
+      "creative"
+    ],
+    "system_prompt": "Du bist ollama-nous-hermes-13b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: creative, reasoning)\n- Akzeptiere nur Aufgaben von Sponsor ode...",
+    "system_prompt_crc": "df7894f0",
+    "neighbor_ids": [
+      "ollama-wizard-vicuna-13b",
+      "gemini-lead",
+      "kimi-lead",
+      "gemini-pro-lead",
+      "deepseek-worker",
+      "nova-worker",
+      "deepseek-math",
+      "qwen-math"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.858997+00:00",
+    "updated_at": "2025-12-04T15:32:55.859000+00:00"
+  },
+  "ollama-dolphin-phi-27b": {
+    "model_id": "ollama-dolphin-phi-27b",
+    "model_name": "dolphin-phi:2.7b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "reasoning",
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-dolphin-phi-27b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, reasoning)\n- Akzeptiere nur Aufgaben von Sponsor oder Le...",
+    "system_prompt_crc": "e2e5e5c0",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "deepseek-worker",
+      "qwen-math",
+      "mistral-large-reviewer",
+      "ollama-llama32-8b",
+      "ollama-llama33-70b",
+      "ollama-llama31-70b",
+      "ollama-llama31-405b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.859213+00:00",
+    "updated_at": "2025-12-04T15:32:55.859215+00:00"
+  },
+  "ollama-dolphin-mistral-7b": {
+    "model_id": "ollama-dolphin-mistral-7b",
+    "model_name": "dolphin-mistral:7b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-dolphin-mistral-7b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, multilingual)\n- Akzeptiere nur Aufgaben von Sponsor o...",
+    "system_prompt_crc": "ceb0d831",
+    "neighbor_ids": [
+      "ollama-mistral-7b",
+      "ollama-mistral-7b-instruct",
+      "ollama-mistral-nemo-12b",
+      "ollama-mixtral-8x7b",
+      "ollama-mixtral-8x22b",
+      "ollama-gemma-2b",
+      "ollama-gemma-7b",
+      "ollama-gemma2-2b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.859449+00:00",
+    "updated_at": "2025-12-04T15:32:55.859451+00:00"
+  },
+  "ollama-openhermes-7b": {
+    "model_id": "ollama-openhermes-7b",
+    "model_name": "openhermes:7b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "creative",
+      "analysis"
+    ],
+    "system_prompt": "Du bist ollama-openhermes-7b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: creative, analysis)\n- Akzeptiere nur Aufgaben von Sponsor oder L...",
+    "system_prompt_crc": "1f9d78da",
+    "neighbor_ids": [
+      "gemini-creative",
+      "gemini-lead",
+      "kimi-lead",
+      "gemini-pro-lead",
+      "claude-worker",
+      "nova-worker",
+      "gemini-vision",
+      "claude-vision"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.859758+00:00",
+    "updated_at": "2025-12-04T15:32:55.859760+00:00"
+  },
+  "ollama-tinyllama-11b": {
+    "model_id": "ollama-tinyllama-11b",
+    "model_name": "tinyllama:1.1b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "analysis"
+    ],
+    "system_prompt": "Du bist ollama-tinyllama-11b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: analysis)\n- Akzeptiere nur Aufgaben von Sponsor oder Lead\n- Lief...",
+    "system_prompt_crc": "3786d030",
+    "neighbor_ids": [
+      "gemini-lead",
+      "kimi-lead",
+      "gemini-pro-lead",
+      "claude-worker",
+      "gemini-creative",
+      "gemini-vision",
+      "claude-vision",
+      "mistral-reviewer"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.859968+00:00",
+    "updated_at": "2025-12-04T15:32:55.859971+00:00"
+  },
+  "ollama-stable-code-3b": {
+    "model_id": "ollama-stable-code-3b",
+    "model_name": "stable-code:3b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-stable-code-3b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code)\n- Akzeptiere nur Aufgaben von Sponsor oder Lead\n- Liefere...",
+    "system_prompt_crc": "d8f8e7a2",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "claude-worker",
+      "deepseek-worker",
+      "qwen-coder",
+      "codestral-worker",
+      "qwen-math",
+      "claude-vision",
+      "mistral-reviewer"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.860178+00:00",
+    "updated_at": "2025-12-04T15:32:55.860180+00:00"
+  },
+  "ollama-magicoder-7b": {
+    "model_id": "ollama-magicoder-7b",
+    "model_name": "magicoder:7b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "code"
+    ],
+    "system_prompt": "Du bist ollama-magicoder-7b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code)\n- Akzeptiere nur Aufgaben von Sponsor oder Lead\n- Liefere E...",
+    "system_prompt_crc": "b41d5504",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "claude-worker",
+      "deepseek-worker",
+      "qwen-coder",
+      "codestral-worker",
+      "qwen-math",
+      "claude-vision",
+      "mistral-reviewer"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.860385+00:00",
+    "updated_at": "2025-12-04T15:32:55.860387+00:00"
+  },
+  "ollama-zephyr-7b": {
+    "model_id": "ollama-zephyr-7b",
+    "model_name": "zephyr:7b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "creative"
+    ],
+    "system_prompt": "Du bist ollama-zephyr-7b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: creative, multilingual)\n- Akzeptiere nur Aufgaben von Sponsor oder L...",
+    "system_prompt_crc": "4b6b1ee0",
+    "neighbor_ids": [
+      "nova-worker",
+      "gemini-creative",
+      "ollama-neural-chat-7b",
+      "qwen-worker",
+      "nova-admin",
+      "ollama-mistral-7b",
+      "ollama-mistral-7b-instruct",
+      "ollama-mistral-nemo-12b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.860610+00:00",
+    "updated_at": "2025-12-04T15:32:55.860613+00:00"
+  },
+  "ollama-vicuna-7b": {
+    "model_id": "ollama-vicuna-7b",
+    "model_name": "vicuna:7b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "creative"
+    ],
+    "system_prompt": "Du bist ollama-vicuna-7b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: creative)\n- Akzeptiere nur Aufgaben von Sponsor oder Lead\n- Liefere ...",
+    "system_prompt_crc": "9fb8222f",
+    "neighbor_ids": [
+      "nova-worker",
+      "gemini-creative",
+      "ollama-neural-chat-7b",
+      "ollama-wizard-vicuna-13b",
+      "ollama-nous-hermes-13b",
+      "ollama-openhermes-7b",
+      "ollama-zephyr-7b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.860855+00:00",
+    "updated_at": "2025-12-04T15:32:55.860857+00:00"
+  },
+  "ollama-vicuna-13b": {
+    "model_id": "ollama-vicuna-13b",
+    "model_name": "vicuna:13b",
+    "provider": "ollama",
+    "role": "worker",
+    "capabilities": [
+      "reasoning",
+      "creative"
+    ],
+    "system_prompt": "Du bist ollama-vicuna-13b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: creative, reasoning)\n- Akzeptiere nur Aufgaben von Sponsor oder Lea...",
+    "system_prompt_crc": "e2aa640d",
+    "neighbor_ids": [
+      "ollama-wizard-vicuna-13b",
+      "ollama-nous-hermes-13b",
+      "gemini-lead",
+      "kimi-lead",
+      "gemini-pro-lead",
+      "deepseek-worker",
+      "nova-worker",
+      "deepseek-math"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.861051+00:00",
+    "updated_at": "2025-12-04T15:32:55.861053+00:00"
+  },
+  "gemini-gemini_10_pro": {
+    "model_id": "gemini-gemini_10_pro",
+    "model_name": "gemini/gemini-1.0-pro",
+    "provider": "gemini",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "analysis"
+    ],
+    "system_prompt": "Du bist gemini-gemini_10_pro, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: multilingual, analysis)\n- Akzeptiere nur Aufgaben von Sponsor od...",
+    "system_prompt_crc": "d39e05bc",
+    "neighbor_ids": [
+      "gemini-creative",
+      "ollama-mistral-7b-instruct",
+      "ollama-gemma2-9b",
+      "ollama-gemma2-27b",
+      "ollama-solar-107b",
+      "gemini-lead",
+      "kimi-lead",
+      "gemini-pro-lead"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.861273+00:00",
+    "updated_at": "2025-12-04T15:32:55.861274+00:00"
+  },
+  "gemini-gemini_15_flash": {
+    "model_id": "gemini-gemini_15_flash",
+    "model_name": "gemini/gemini-1.5-flash",
+    "provider": "gemini",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "vision",
+      "analysis"
+    ],
+    "system_prompt": "Du bist gemini-gemini_15_flash, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: multilingual, analysis, vision)\n- Akzeptiere nur Aufgaben von ...",
+    "system_prompt_crc": "0e0bfbe9",
+    "neighbor_ids": [
+      "qwen-worker",
+      "gemini-creative",
+      "gemini-vision",
+      "claude-vision",
+      "ollama-mistral-7b-instruct",
+      "ollama-gemma2-9b",
+      "ollama-gemma2-27b",
+      "ollama-solar-107b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.861504+00:00",
+    "updated_at": "2025-12-04T15:32:55.861506+00:00"
+  },
+  "gemini-gemini_15_flash_8b": {
+    "model_id": "gemini-gemini_15_flash_8b",
+    "model_name": "gemini/gemini-1.5-flash-8b",
+    "provider": "gemini",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "analysis"
+    ],
+    "system_prompt": "Du bist gemini-gemini_15_flash_8b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: multilingual, analysis)\n- Akzeptiere nur Aufgaben von Spons...",
+    "system_prompt_crc": "64bdbf1f",
+    "neighbor_ids": [
+      "gemini-creative",
+      "ollama-mistral-7b-instruct",
+      "ollama-gemma2-9b",
+      "ollama-gemma2-27b",
+      "ollama-solar-107b",
+      "gemini-gemini_10_pro",
+      "gemini-gemini_15_flash",
+      "gemini-lead"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.861965+00:00",
+    "updated_at": "2025-12-04T15:32:55.861967+00:00"
+  },
+  "gemini-gemini_15_pro": {
+    "model_id": "gemini-gemini_15_pro",
+    "model_name": "gemini/gemini-1.5-pro",
+    "provider": "gemini",
+    "role": "worker",
+    "capabilities": [
+      "vision",
+      "reasoning",
+      "long_context",
+      "analysis"
+    ],
+    "system_prompt": "Du bist gemini-gemini_15_pro, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: long_context, analysis, vision, reasoning)\n- Akzeptiere nur Aufg...",
+    "system_prompt_crc": "cb092f11",
+    "neighbor_ids": [
+      "gemini-lead",
+      "kimi-lead",
+      "gemini-pro-lead",
+      "ollama-llama33-70b",
+      "ollama-llama31-405b",
+      "gemini-vision",
+      "claude-vision",
+      "cogito-reviewer"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.862198+00:00",
+    "updated_at": "2025-12-04T15:32:55.862200+00:00"
+  },
+  "gemini-gemini_20_flash_thinking": {
+    "model_id": "gemini-gemini_20_flash_thinking",
+    "model_name": "gemini/gemini-2.0-flash-thinking",
+    "provider": "gemini",
+    "role": "worker",
+    "capabilities": [
+      "math",
+      "reasoning",
+      "analysis"
+    ],
+    "system_prompt": "Du bist gemini-gemini_20_flash_thinking, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: analysis, math, reasoning)\n- Akzeptiere nur Aufgaben ...",
+    "system_prompt_crc": "6290462b",
+    "neighbor_ids": [
+      "ollama-phi4-14b",
+      "gemini-lead",
+      "kimi-lead",
+      "gemini-pro-lead",
+      "deepseek-worker",
+      "deepseek-math",
+      "qwen-math",
+      "cogito-reviewer"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.862449+00:00",
+    "updated_at": "2025-12-04T15:32:55.862451+00:00"
+  },
+  "gemini-gemini_exp_1206": {
+    "model_id": "gemini-gemini_exp_1206",
+    "model_name": "gemini/gemini-exp-1206",
+    "provider": "gemini",
+    "role": "worker",
+    "capabilities": [
+      "reasoning",
+      "code",
+      "analysis"
+    ],
+    "system_prompt": "Du bist gemini-gemini_exp_1206, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, analysis, reasoning)\n- Akzeptiere nur Aufgaben von Spons...",
+    "system_prompt_crc": "66f1acee",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "ollama-llama32-8b",
+      "ollama-llama33-70b",
+      "ollama-llama31-70b",
+      "ollama-llama31-405b",
+      "ollama-gemma2-27b",
+      "ollama-phi4-14b",
+      "ollama-qwen25-coder-32b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.862729+00:00",
+    "updated_at": "2025-12-04T15:32:55.862732+00:00"
+  },
+  "mistral-mistral_tiny": {
+    "model_id": "mistral-mistral_tiny",
+    "model_name": "mistral/mistral-tiny",
+    "provider": "mistral",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "code"
+    ],
+    "system_prompt": "Du bist mistral-mistral_tiny, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, multilingual)\n- Akzeptiere nur Aufgaben von Sponsor oder L...",
+    "system_prompt_crc": "2e22de6d",
+    "neighbor_ids": [
+      "ollama-mistral-7b",
+      "ollama-mistral-7b-instruct",
+      "ollama-mistral-nemo-12b",
+      "ollama-mixtral-8x7b",
+      "ollama-mixtral-8x22b",
+      "ollama-gemma-2b",
+      "ollama-gemma-7b",
+      "ollama-gemma2-2b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.862994+00:00",
+    "updated_at": "2025-12-04T15:32:55.862996+00:00"
+  },
+  "mistral-mistral_small_latest": {
+    "model_id": "mistral-mistral_small_latest",
+    "model_name": "mistral/mistral-small-latest",
+    "provider": "mistral",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "code"
+    ],
+    "system_prompt": "Du bist mistral-mistral_small_latest, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, multilingual)\n- Akzeptiere nur Aufgaben von Sponso...",
+    "system_prompt_crc": "880a58c9",
+    "neighbor_ids": [
+      "ollama-mistral-7b",
+      "ollama-mistral-7b-instruct",
+      "ollama-mistral-nemo-12b",
+      "ollama-mixtral-8x7b",
+      "ollama-mixtral-8x22b",
+      "ollama-gemma-2b",
+      "ollama-gemma-7b",
+      "ollama-gemma2-2b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.863238+00:00",
+    "updated_at": "2025-12-04T15:32:55.863240+00:00"
+  },
+  "mistral-mistral_medium_latest": {
+    "model_id": "mistral-mistral_medium_latest",
+    "model_name": "mistral/mistral-medium-latest",
+    "provider": "mistral",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "reasoning",
+      "code"
+    ],
+    "system_prompt": "Du bist mistral-mistral_medium_latest, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, multilingual, reasoning)\n- Akzeptiere nur Aufgabe...",
+    "system_prompt_crc": "ce30d51b",
+    "neighbor_ids": [
+      "ollama-mistral-nemo-12b",
+      "ollama-mixtral-8x7b",
+      "ollama-mixtral-8x22b",
+      "ollama-gemma2-27b",
+      "ollama-qwen-32b",
+      "ollama-qwen-72b",
+      "ollama-qwen-110b",
+      "ollama-qwen2-72b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.863477+00:00",
+    "updated_at": "2025-12-04T15:32:55.863479+00:00"
+  },
+  "mistral-open_mistral_7b": {
+    "model_id": "mistral-open_mistral_7b",
+    "model_name": "mistral/open-mistral-7b",
+    "provider": "mistral",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "code"
+    ],
+    "system_prompt": "Du bist mistral-open_mistral_7b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, multilingual)\n- Akzeptiere nur Aufgaben von Sponsor ode...",
+    "system_prompt_crc": "c3072e39",
+    "neighbor_ids": [
+      "ollama-mistral-7b",
+      "ollama-mistral-7b-instruct",
+      "ollama-mistral-nemo-12b",
+      "ollama-mixtral-8x7b",
+      "ollama-mixtral-8x22b",
+      "ollama-gemma-2b",
+      "ollama-gemma-7b",
+      "ollama-gemma2-2b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.863759+00:00",
+    "updated_at": "2025-12-04T15:32:55.863761+00:00"
+  },
+  "mistral-open_mixtral_8x7b": {
+    "model_id": "mistral-open_mixtral_8x7b",
+    "model_name": "mistral/open-mixtral-8x7b",
+    "provider": "mistral",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "reasoning",
+      "code"
+    ],
+    "system_prompt": "Du bist mistral-open_mixtral_8x7b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, multilingual, reasoning)\n- Akzeptiere nur Aufgaben vo...",
+    "system_prompt_crc": "4068ec5b",
+    "neighbor_ids": [
+      "ollama-mistral-nemo-12b",
+      "ollama-mixtral-8x7b",
+      "ollama-mixtral-8x22b",
+      "ollama-gemma2-27b",
+      "ollama-qwen-32b",
+      "ollama-qwen-72b",
+      "ollama-qwen-110b",
+      "ollama-qwen2-72b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.864025+00:00",
+    "updated_at": "2025-12-04T15:32:55.864027+00:00"
+  },
+  "mistral-open_mixtral_8x22b": {
+    "model_id": "mistral-open_mixtral_8x22b",
+    "model_name": "mistral/open-mixtral-8x22b",
+    "provider": "mistral",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "long_context",
+      "reasoning",
+      "code"
+    ],
+    "system_prompt": "Du bist mistral-open_mixtral_8x22b, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, multilingual, reasoning, long_context)\n- Akzeptiere ...",
+    "system_prompt_crc": "6a55ad4d",
+    "neighbor_ids": [
+      "ollama-mixtral-8x22b",
+      "ollama-qwen-72b",
+      "ollama-qwen-110b",
+      "ollama-qwen25-72b",
+      "gemini-pro-lead",
+      "ollama-llama33-70b",
+      "ollama-llama31-405b",
+      "ollama-codellama-70b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.864274+00:00",
+    "updated_at": "2025-12-04T15:32:55.864277+00:00"
+  },
+  "mistral-pixtral_12b_2409": {
+    "model_id": "mistral-pixtral_12b_2409",
+    "model_name": "mistral/pixtral-12b-2409",
+    "provider": "mistral",
+    "role": "worker",
+    "capabilities": [
+      "vision",
+      "analysis"
+    ],
+    "system_prompt": "Du bist mistral-pixtral_12b_2409, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: vision, analysis)\n- Akzeptiere nur Aufgaben von Sponsor oder...",
+    "system_prompt_crc": "1b50c62b",
+    "neighbor_ids": [
+      "gemini-vision",
+      "claude-vision",
+      "gemini-gemini_15_flash",
+      "gemini-gemini_15_pro",
+      "gemini-lead",
+      "kimi-lead",
+      "gemini-pro-lead",
+      "claude-worker"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.864592+00:00",
+    "updated_at": "2025-12-04T15:32:55.864594+00:00"
+  },
+  "mistral-pixtral_large_latest": {
+    "model_id": "mistral-pixtral_large_latest",
+    "model_name": "mistral/pixtral-large-latest",
+    "provider": "mistral",
+    "role": "worker",
+    "capabilities": [
+      "vision",
+      "reasoning",
+      "analysis"
+    ],
+    "system_prompt": "Du bist mistral-pixtral_large_latest, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: vision, analysis, reasoning)\n- Akzeptiere nur Aufgaben v...",
+    "system_prompt_crc": "a06c1aa0",
+    "neighbor_ids": [
+      "gemini-gemini_15_pro",
+      "gemini-lead",
+      "kimi-lead",
+      "gemini-pro-lead",
+      "gemini-vision",
+      "claude-vision",
+      "cogito-reviewer",
+      "system-admin"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.864847+00:00",
+    "updated_at": "2025-12-04T15:32:55.864849+00:00"
+  },
+  "mistral-ministral_3b_latest": {
+    "model_id": "mistral-ministral_3b_latest",
+    "model_name": "mistral/ministral-3b-latest",
+    "provider": "mistral",
+    "role": "worker",
+    "capabilities": [
+      "code"
+    ],
+    "system_prompt": "Du bist mistral-ministral_3b_latest, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code)\n- Akzeptiere nur Aufgaben von Sponsor oder Lead\n- L...",
+    "system_prompt_crc": "59cceddc",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "claude-worker",
+      "deepseek-worker",
+      "qwen-coder",
+      "codestral-worker",
+      "qwen-math",
+      "claude-vision",
+      "mistral-reviewer"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.865089+00:00",
+    "updated_at": "2025-12-04T15:32:55.865091+00:00"
+  },
+  "mistral-ministral_8b_latest": {
+    "model_id": "mistral-ministral_8b_latest",
+    "model_name": "mistral/ministral-8b-latest",
+    "provider": "mistral",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "code"
+    ],
+    "system_prompt": "Du bist mistral-ministral_8b_latest, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, multilingual)\n- Akzeptiere nur Aufgaben von Sponsor...",
+    "system_prompt_crc": "1ccb28cc",
+    "neighbor_ids": [
+      "ollama-mistral-7b",
+      "ollama-mistral-7b-instruct",
+      "ollama-mistral-nemo-12b",
+      "ollama-mixtral-8x7b",
+      "ollama-mixtral-8x22b",
+      "ollama-gemma-2b",
+      "ollama-gemma-7b",
+      "ollama-gemma2-2b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.865321+00:00",
+    "updated_at": "2025-12-04T15:32:55.865324+00:00"
+  },
+  "anthropic-claude_3_haiku": {
+    "model_id": "anthropic-claude_3_haiku",
+    "model_name": "anthropic/claude-3-haiku",
+    "provider": "anthropic",
+    "role": "worker",
+    "capabilities": [
+      "code",
+      "analysis"
+    ],
+    "system_prompt": "Du bist anthropic-claude_3_haiku, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, analysis)\n- Akzeptiere nur Aufgaben von Sponsor oder L...",
+    "system_prompt_crc": "e2030020",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "claude-worker",
+      "claude-vision",
+      "mistral-reviewer",
+      "ollama-llama32-3b",
+      "ollama-llama32-8b",
+      "ollama-llama33-70b",
+      "ollama-llama31-8b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.865631+00:00",
+    "updated_at": "2025-12-04T15:32:55.865633+00:00"
+  },
+  "anthropic-claude_3_sonnet": {
+    "model_id": "anthropic-claude_3_sonnet",
+    "model_name": "anthropic/claude-3-sonnet",
+    "provider": "anthropic",
+    "role": "worker",
+    "capabilities": [
+      "reasoning",
+      "code",
+      "analysis"
+    ],
+    "system_prompt": "Du bist anthropic-claude_3_sonnet, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, analysis, reasoning)\n- Akzeptiere nur Aufgaben von Sp...",
+    "system_prompt_crc": "2cb46d7c",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "ollama-llama32-8b",
+      "ollama-llama33-70b",
+      "ollama-llama31-70b",
+      "ollama-llama31-405b",
+      "ollama-gemma2-27b",
+      "ollama-phi4-14b",
+      "ollama-qwen25-coder-32b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.865950+00:00",
+    "updated_at": "2025-12-04T15:32:55.865952+00:00"
+  },
+  "anthropic-claude_3_opus": {
+    "model_id": "anthropic-claude_3_opus",
+    "model_name": "anthropic/claude-3-opus",
+    "provider": "anthropic",
+    "role": "worker",
+    "capabilities": [
+      "long_context",
+      "reasoning",
+      "code",
+      "analysis"
+    ],
+    "system_prompt": "Du bist anthropic-claude_3_opus, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, analysis, reasoning, long_context)\n- Akzeptiere nur Auf...",
+    "system_prompt_crc": "698893bd",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "ollama-llama33-70b",
+      "ollama-llama31-405b",
+      "gemini-lead",
+      "kimi-lead",
+      "ollama-llama32-8b",
+      "ollama-llama31-70b",
+      "ollama-codellama-70b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.866263+00:00",
+    "updated_at": "2025-12-04T15:32:55.866265+00:00"
+  },
+  "anthropic-claude_35_haiku": {
+    "model_id": "anthropic-claude_35_haiku",
+    "model_name": "anthropic/claude-3.5-haiku",
+    "provider": "anthropic",
+    "role": "worker",
+    "capabilities": [
+      "code",
+      "analysis"
+    ],
+    "system_prompt": "Du bist anthropic-claude_35_haiku, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, analysis)\n- Akzeptiere nur Aufgaben von Sponsor oder ...",
+    "system_prompt_crc": "6caf4f0c",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "claude-worker",
+      "claude-vision",
+      "mistral-reviewer",
+      "ollama-llama32-3b",
+      "ollama-llama32-8b",
+      "ollama-llama33-70b",
+      "ollama-llama31-8b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.866593+00:00",
+    "updated_at": "2025-12-04T15:32:55.866595+00:00"
+  },
+  "anthropic-claude_35_sonnet": {
+    "model_id": "anthropic-claude_35_sonnet",
+    "model_name": "anthropic/claude-3.5-sonnet",
+    "provider": "anthropic",
+    "role": "worker",
+    "capabilities": [
+      "reasoning",
+      "code",
+      "analysis"
+    ],
+    "system_prompt": "Du bist anthropic-claude_35_sonnet, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, analysis, reasoning)\n- Akzeptiere nur Aufgaben von S...",
+    "system_prompt_crc": "69cc27ae",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "ollama-llama32-8b",
+      "ollama-llama33-70b",
+      "ollama-llama31-70b",
+      "ollama-llama31-405b",
+      "ollama-gemma2-27b",
+      "ollama-phi4-14b",
+      "ollama-qwen25-coder-32b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.866851+00:00",
+    "updated_at": "2025-12-04T15:32:55.866852+00:00"
+  },
+  "anthropic-claude_35_opus": {
+    "model_id": "anthropic-claude_35_opus",
+    "model_name": "anthropic/claude-3.5-opus",
+    "provider": "anthropic",
+    "role": "worker",
+    "capabilities": [
+      "long_context",
+      "reasoning",
+      "code",
+      "analysis"
+    ],
+    "system_prompt": "Du bist anthropic-claude_35_opus, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: code, analysis, reasoning, long_context)\n- Akzeptiere nur Au...",
+    "system_prompt_crc": "9c73fa81",
+    "neighbor_ids": [
+      "gemini-pro-lead",
+      "ollama-llama33-70b",
+      "ollama-llama31-405b",
+      "anthropic-claude_3_opus",
+      "gemini-lead",
+      "kimi-lead",
+      "ollama-llama32-8b",
+      "ollama-llama31-70b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.867077+00:00",
+    "updated_at": "2025-12-04T15:32:55.867079+00:00"
+  },
+  "gpt-oss-gpt_oss:7b_cloud": {
+    "model_id": "gpt-oss-gpt_oss:7b_cloud",
+    "model_name": "gpt-oss:7b-cloud",
+    "provider": "gpt-oss",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "creative"
+    ],
+    "system_prompt": "Du bist gpt-oss-gpt_oss:7b_cloud, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: creative, multilingual)\n- Akzeptiere nur Aufgaben von Sponso...",
+    "system_prompt_crc": "47f2c072",
+    "neighbor_ids": [
+      "nova-worker",
+      "gemini-creative",
+      "ollama-neural-chat-7b",
+      "ollama-zephyr-7b",
+      "qwen-worker",
+      "nova-admin",
+      "ollama-mistral-7b",
+      "ollama-mistral-7b-instruct"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.867308+00:00",
+    "updated_at": "2025-12-04T15:32:55.867310+00:00"
+  },
+  "gpt-oss-gpt_oss:13b_cloud": {
+    "model_id": "gpt-oss-gpt_oss:13b_cloud",
+    "model_name": "gpt-oss:13b-cloud",
+    "provider": "gpt-oss",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "creative",
+      "analysis"
+    ],
+    "system_prompt": "Du bist gpt-oss-gpt_oss:13b_cloud, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: creative, analysis, multilingual)\n- Akzeptiere nur Aufgaben...",
+    "system_prompt_crc": "f68ffc79",
+    "neighbor_ids": [
+      "gemini-creative",
+      "nova-worker",
+      "ollama-mistral-7b-instruct",
+      "ollama-gemma2-9b",
+      "ollama-gemma2-27b",
+      "ollama-solar-107b",
+      "ollama-neural-chat-7b",
+      "ollama-openhermes-7b"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.867507+00:00",
+    "updated_at": "2025-12-04T15:32:55.867509+00:00"
+  },
+  "gpt-oss-gpt_oss:30b_cloud": {
+    "model_id": "gpt-oss-gpt_oss:30b_cloud",
+    "model_name": "gpt-oss:30b-cloud",
+    "provider": "gpt-oss",
+    "role": "worker",
+    "capabilities": [
+      "multilingual",
+      "reasoning",
+      "creative",
+      "analysis"
+    ],
+    "system_prompt": "Du bist gpt-oss-gpt_oss:30b_cloud, ein Worker-Agent im TriStar Multi-LLM System.\n\nDEINE ROLLE:\n- F\u00fchre spezialisierte Aufgaben aus (Cluster: creative, analysis, multilingual, reasoning)\n- Akzeptiere n...",
+    "system_prompt_crc": "a933992e",
+    "neighbor_ids": [
+      "gemini-creative",
+      "ollama-gemma2-27b",
+      "gpt-oss-gpt_oss:13b_cloud",
+      "gemini-lead",
+      "kimi-lead",
+      "gemini-pro-lead",
+      "nova-worker",
+      "cogito-reviewer"
+    ],
+    "trust_score": 0.5,
+    "tokens_per_30s": 4000,
+    "max_parallel_requests": 5,
+    "initialized": false,
+    "healthy": true,
+    "last_heartbeat": null,
+    "created_at": "2025-12-04T15:32:55.867763+00:00",
+    "updated_at": "2025-12-04T15:32:55.867765+00:00"
+  }
+}

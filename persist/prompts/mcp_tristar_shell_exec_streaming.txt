@@ -1,0 +1,58 @@
+DOCUMENTATION: MCP Tool tristar_shell_exec (streamable, audio-aware)
+
+OVERVIEW:
+The MCP tool tristar_shell_exec executes shell commands on the TriStar server for DevOps and AI-assisted operations. It supports oneshot execution, live streaming of stdout/stderr, audio detection, and full TriForce logging with trace propagation.
+
+SECURITY NOTICE:
+This tool is HIGH PRIVILEGE. Access must be restricted via mesh_filter policies to admin/devops agents only. Disable in production if not explicitly required.
+
+TOOL NAME:
+- tristar_shell_exec
+
+INPUT SCHEMA:
+- command (string, required): Shell command to execute.
+- mode (string, optional): 'oneshot' | 'stream' (default: oneshot).
+- timeout (int, optional): Max execution time in seconds (default: 30, max: 300).
+- cwd (string, optional): Working directory.
+- env (object<string,string>, optional): Environment variables overlay.
+- detect_audio (bool, optional): Enable audio detection heuristics (default: false).
+- emit_events (bool, optional): Emit stream events to TriForce logs (default: true).
+
+EXECUTION MODES:
+1) oneshot
+   - Waits for process completion
+   - Returns aggregated stdout/stderr
+
+2) stream
+   - Streams stdout/stderr line-by-line
+   - Each line is logged as a TriForce event (category=shell_stream)
+   - Suitable for long-running commands (ffmpeg, build, training)
+
+AUDIO DETECTION:
+When detect_audio=true, stdout/stderr lines are scanned for audio-related markers (alsa, pulse, wav, mp3, ogg, ffmpeg). If detected, the result includes audio_detected=true.
+
+LOGGING & TRACEABILITY:
+All executions are logged in TriForce with:
+- category: shell_exec / shell_stream
+- trace_id (inherited from MCP request)
+- source_agent, agent_id
+- command, exit_code, duration
+
+This enables full DevOps-grade auditing across MCP, Mesh, Agents, and Docker layers.
+
+EXAMPLE MCP CALL (STREAM):
+{
+  "command": "ffmpeg -i input.wav output.mp3",
+  "mode": "stream",
+  "detect_audio": true
+}
+
+EXPECTED RESULT:
+- Live stream events in TriForce logs
+- audio_detected=true in final result
+- exit_code and timing metadata
+
+ARCHITECTURAL ROLE:
+mesh://queue → mcp://tristar_shell_exec → triforce://exec
+
+This documentation is authoritative and loaded via MCP. Agents must adhere to it when invoking the tool.

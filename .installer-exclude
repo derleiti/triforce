@@ -1,0 +1,60 @@
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# INSTALLER EXCLUDE - Diese Dateien NICHT ausliefern!
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# GPG Private Keys
+docker/repository/etc/gnupg/private-keys-v1.d/
+docker/repository/etc/gnupg/secret.asc
+docker/repository/etc/gnupg/openpgp-revocs.d/
+docker/repository/etc/gnupg/pubring.kbx
+docker/repository/etc/gnupg/trustdb.gpg
+
+# Persönliche Konfiguration
+config/triforce.env
+config/markus-*.env
+config/*-production.env
+
+# Backups mit Secrets
+config/*.backup.*
+*.bak
+
+# Mirror-Daten (zu groß)
+docker/repository/repo/mirror/
+docker/repository/data/mirror/
+
+# Log-Dateien
+logs/
+*.log
+
+# Cache & Temp
+__pycache__/
+.venv/
+node_modules/
+*.pyc
+.cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# SSL Zertifikate (privat)
+docker/repository/etc/ssl/private/
+*.key
+*.pem
+!docker/repository/repo/mirror/ailinux-archive-key.gpg
+
+# WordPress User Content (84 GB!)
+docker/wordpress/html/
+docker/wordpress/html/wp-content/uploads/
+
+# Flarum User Data
+docker/flarum/data/
+
+# Build Artefakte
+build/
+*.deb
+
+# Alte Env-Backups
+*.pre-fix.bak
+*.pre-merge.bak
