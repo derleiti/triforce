@@ -44,3 +44,7 @@ coordination/
 persist/cli-config/**/oauth_creds.json
 **/triforce.env.before_import
 **/*.env.before_import
+**/oauth_creds.json
+**/*.env.backup*
+**/*.env.before_import*
+persist/**
