@@ -2,7 +2,7 @@
 # Quick Settings Sync - für Wrapper-Startup
 # Safe-Mode: Nur Auth kopieren, Settings nur wenn nicht vorhanden
 
-SECRETS="/home/zombie/ailinux-ai-server-backend/triforce/secrets"
+SECRETS="/home/${SUDO_USER:-$USER}/ailinux-ai-server-backend/triforce/secrets"
 TOOL="$1"  # claude, gemini, codex, opencode
 TARGET="$2" # Ziel-Verzeichnis
 

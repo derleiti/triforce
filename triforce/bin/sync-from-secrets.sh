@@ -9,7 +9,7 @@ fi
 
 set -e
 
-TRIFORCE_ROOT="/home/zombie/ailinux-ai-server-backend/triforce"
+TRIFORCE_ROOT="/home/${SUDO_USER:-$USER}/ailinux-ai-server-backend/triforce"
 SECRETS="$TRIFORCE_ROOT/secrets"
 RUNTIME="$TRIFORCE_ROOT/runtime"
 
@@ -26,7 +26,7 @@ echo ""
 echo "=== 1. CLAUDE - Auth + Config verteilen ==="
 
 # Claude Locations
-CLAUDE_TARGETS=("/root/.claude" "/home/zombie/.claude" "$RUNTIME/claude/.claude")
+CLAUDE_TARGETS=("/root/.claude" "/home/${SUDO_USER:-$USER}/.claude" "$RUNTIME/claude/.claude")
 
 for target in "${CLAUDE_TARGETS[@]}"; do
     mkdir -p "$target"
@@ -47,7 +47,7 @@ done
 echo ""
 echo "=== 2. GEMINI - Auth + Config verteilen ==="
 
-GEMINI_TARGETS=("/root/.gemini" "/home/zombie/.gemini" "$RUNTIME/gemini/.gemini")
+GEMINI_TARGETS=("/root/.gemini" "/home/${SUDO_USER:-$USER}/.gemini" "$RUNTIME/gemini/.gemini")
 
 for target in "${GEMINI_TARGETS[@]}"; do
     mkdir -p "$target"
@@ -64,7 +64,7 @@ done
 echo ""
 echo "=== 3. CODEX - Auth + Config verteilen ==="
 
-CODEX_TARGETS=("/root/.codex" "/home/zombie/.codex" "$RUNTIME/codex/.codex")
+CODEX_TARGETS=("/root/.codex" "/home/${SUDO_USER:-$USER}/.codex" "$RUNTIME/codex/.codex")
 
 for target in "${CODEX_TARGETS[@]}"; do
     mkdir -p "$target"
@@ -86,7 +86,7 @@ mkdir -p "$RUNTIME/opencode/.config/opencode"
 echo ""
 echo "=== 5. OWNERSHIP KORRIGIEREN ==="
 
-chown -R zombie:zombie /home/zombie/.claude* /home/zombie/.gemini /home/zombie/.codex 2>/dev/null || true
+chown -R zombie:zombie /home/${SUDO_USER:-$USER}/.claude* /home/${SUDO_USER:-$USER}/.gemini /home/${SUDO_USER:-$USER}/.codex 2>/dev/null || true
 chown -R zombie:zombie "$RUNTIME" 2>/dev/null || true
 echo "  [✓] Ownership korrigiert"
 
@@ -96,5 +96,5 @@ echo ""
 echo "Secrets von:  $SECRETS"
 echo "Verteilt auf:"
 echo "  - /root/           (root user)"
-echo "  - /home/zombie/    (zombie user)"
+echo "  - /home/${SUDO_USER:-$USER}/    (zombie user)"
 echo "  - $RUNTIME/ (wrappers)"

@@ -1,4 +1,5 @@
 #!/bin/bash
+BACKEND_USER="${SUDO_USER:-$(stat -c "%U" /home/*/ailinux-ai-server-backend 2>/dev/null | head -1)}"
 ################################################################################
 # install-cli-tools-mcp.sh
 # Installiert CLI-Tools (Claude, Gemini, Codex, Opencode) mit MCP-Konfiguration
@@ -11,8 +12,8 @@ set -euo pipefail
 # =============================================================================
 # Konfiguration
 # =============================================================================
-TRIFORCE_ROOT="/home/zombie/ailinux-ai-server-backend/triforce"
-BACKEND_ROOT="/home/zombie/ailinux-ai-server-backend"
+TRIFORCE_ROOT="/home/${SUDO_USER:-$USER}/ailinux-ai-server-backend/triforce"
+BACKEND_ROOT="/home/${SUDO_USER:-$USER}/ailinux-ai-server-backend"
 BACKUP_DIR="$TRIFORCE_ROOT/backup/cli-auth-$(date +%Y%m%d-%H%M%S)"
 LOGFILE="$TRIFORCE_ROOT/logs/install-cli-tools-mcp.log"
 RUNTIME_DIR="$TRIFORCE_ROOT/runtime"
@@ -22,7 +23,7 @@ MCP_URL="http://127.0.0.1:9100/v1/mcp"
 
 # User-spezifische npm prefixes
 ROOT_NPM_PREFIX="/root/.npm-global"
-ZOMBIE_NPM_PREFIX="/home/zombie/.npm-global"
+ZOMBIE_NPM_PREFIX="/home/${SUDO_USER:-$USER}/.npm-global"
 
 # Auth-Dateien die gesichert/verteilt werden
 CLAUDE_AUTH_FILES=(".credentials.json" "statsig_user.json")
@@ -84,9 +85,9 @@ else
     log "[!] collect-to-secrets.sh nicht gefunden - manuelles Backup"
     mkdir -p "$BACKUP_DIR/auth-master"
     # Fallback: direkt kopieren
-    cp -a /home/zombie/.claude/.credentials.json "$BACKUP_DIR/auth-master/" 2>/dev/null || true
-    cp -a /home/zombie/.codex/auth.json "$BACKUP_DIR/auth-master/" 2>/dev/null || true
-    cp -a /home/zombie/.gemini/oauth_creds.json "$BACKUP_DIR/auth-master/" 2>/dev/null || true
+    cp -a /home/${SUDO_USER:-$USER}/.claude/.credentials.json "$BACKUP_DIR/auth-master/" 2>/dev/null || true
+    cp -a /home/${SUDO_USER:-$USER}/.codex/auth.json "$BACKUP_DIR/auth-master/" 2>/dev/null || true
+    cp -a /home/${SUDO_USER:-$USER}/.gemini/oauth_creds.json "$BACKUP_DIR/auth-master/" 2>/dev/null || true
 fi
 
 ################################################################################
@@ -167,8 +168,8 @@ log "Versionen (root):"
 "$ROOT_NPM_PREFIX/bin/codex" --version 2>/dev/null || echo "codex: nicht installiert"
 
 # Zombie
-install_for_user "$ZOMBIE_NPM_PREFIX" "zombie"
-chown -R zombie:zombie "$ZOMBIE_NPM_PREFIX"
+install_for_user "$ZOMBIE_NPM_PREFIX" "${BACKEND_USER}"
+chown -R ${BACKEND_USER}:${BACKEND_USER} "$ZOMBIE_NPM_PREFIX"
 
 # Versionscheck zombie
 log "Versionen (zombie):"
@@ -207,7 +208,7 @@ cat > "$TRIFORCE_ROOT/bin/claude-triforce" << 'WRAPPEREOF'
 # Claude CLI Wrapper für TriForce MCP
 # Funktioniert als root UND zombie
 
-TRIFORCE_ROOT="/home/zombie/ailinux-ai-server-backend/triforce"
+TRIFORCE_ROOT="/home/${SUDO_USER:-$USER}/ailinux-ai-server-backend/triforce"
 RUNTIME_DIR="$TRIFORCE_ROOT/runtime/claude"
 
 # Binary auswählen basierend auf User
@@ -218,7 +219,7 @@ else
 fi
 
 # Fallback
-[[ ! -x "$BINARY" ]] && BINARY="/home/zombie/.npm-global/bin/claude"
+[[ ! -x "$BINARY" ]] && BINARY="/home/${SUDO_USER:-$USER}/.npm-global/bin/claude"
 [[ ! -x "$BINARY" ]] && BINARY="/root/.npm-global/bin/claude"
 
 if [[ ! -x "$BINARY" ]]; then
@@ -250,7 +251,7 @@ cat > "$TRIFORCE_ROOT/bin/gemini-triforce" << 'WRAPPEREOF'
 #!/bin/bash
 # Gemini CLI Wrapper für TriForce MCP
 
-TRIFORCE_ROOT="/home/zombie/ailinux-ai-server-backend/triforce"
+TRIFORCE_ROOT="/home/${SUDO_USER:-$USER}/ailinux-ai-server-backend/triforce"
 RUNTIME_DIR="$TRIFORCE_ROOT/runtime/gemini"
 
 if [[ $EUID -eq 0 ]]; then
@@ -259,7 +260,7 @@ else
     BINARY="$HOME/.npm-global/bin/gemini"
 fi
 
-[[ ! -x "$BINARY" ]] && BINARY="/home/zombie/.npm-global/bin/gemini"
+[[ ! -x "$BINARY" ]] && BINARY="/home/${SUDO_USER:-$USER}/.npm-global/bin/gemini"
 [[ ! -x "$BINARY" ]] && BINARY="/root/.npm-global/bin/gemini"
 
 if [[ ! -x "$BINARY" ]]; then
@@ -279,7 +280,7 @@ cat > "$TRIFORCE_ROOT/bin/codex-triforce" << 'WRAPPEREOF'
 #!/bin/bash
 # Codex CLI Wrapper für TriForce MCP
 
-TRIFORCE_ROOT="/home/zombie/ailinux-ai-server-backend/triforce"
+TRIFORCE_ROOT="/home/${SUDO_USER:-$USER}/ailinux-ai-server-backend/triforce"
 RUNTIME_DIR="$TRIFORCE_ROOT/runtime/codex"
 
 if [[ $EUID -eq 0 ]]; then
@@ -288,7 +289,7 @@ else
     BINARY="$HOME/.npm-global/bin/codex"
 fi
 
-[[ ! -x "$BINARY" ]] && BINARY="/home/zombie/.npm-global/bin/codex"
+[[ ! -x "$BINARY" ]] && BINARY="/home/${SUDO_USER:-$USER}/.npm-global/bin/codex"
 [[ ! -x "$BINARY" ]] && BINARY="/root/.npm-global/bin/codex"
 
 if [[ ! -x "$BINARY" ]]; then
@@ -307,7 +308,7 @@ cat > "$TRIFORCE_ROOT/bin/opencode-triforce" << 'WRAPPEREOF'
 #!/bin/bash
 # Opencode CLI Wrapper für TriForce MCP
 
-TRIFORCE_ROOT="/home/zombie/ailinux-ai-server-backend/triforce"
+TRIFORCE_ROOT="/home/${SUDO_USER:-$USER}/ailinux-ai-server-backend/triforce"
 RUNTIME_DIR="$TRIFORCE_ROOT/runtime/opencode"
 
 if [[ $EUID -eq 0 ]]; then
@@ -316,7 +317,7 @@ else
     BINARY="$HOME/.npm-global/bin/opencode"
 fi
 
-[[ ! -x "$BINARY" ]] && BINARY="/home/zombie/.npm-global/bin/opencode"
+[[ ! -x "$BINARY" ]] && BINARY="/home/${SUDO_USER:-$USER}/.npm-global/bin/opencode"
 [[ ! -x "$BINARY" ]] && BINARY="/root/.npm-global/bin/opencode"
 
 if [[ ! -x "$BINARY" ]]; then
@@ -331,7 +332,7 @@ exec "$BINARY" "$@"
 WRAPPEREOF
 
 chmod +x "$TRIFORCE_ROOT/bin/"*-triforce
-chown zombie:zombie "$TRIFORCE_ROOT/bin/"*-triforce
+chown ${BACKEND_USER}:${BACKEND_USER} "$TRIFORCE_ROOT/bin/"*-triforce
 
 log "[✓] Wrapper Scripts aktualisiert"
 
@@ -340,11 +341,11 @@ log "[✓] Wrapper Scripts aktualisiert"
 ################################################################################
 log_section "Korrigiere Ownership"
 
-chown -R zombie:zombie "$RUNTIME_DIR"
-chown -R zombie:zombie /home/zombie/.claude /home/zombie/.claude.json 2>/dev/null || true
-chown -R zombie:zombie /home/zombie/.gemini 2>/dev/null || true
-chown -R zombie:zombie /home/zombie/.codex 2>/dev/null || true
-chown -R zombie:zombie /home/zombie/.npm-global 2>/dev/null || true
+chown -R ${BACKEND_USER}:${BACKEND_USER} "$RUNTIME_DIR"
+chown -R ${BACKEND_USER}:${BACKEND_USER} /home/${SUDO_USER:-$USER}/.claude /home/${SUDO_USER:-$USER}/.claude.json 2>/dev/null || true
+chown -R ${BACKEND_USER}:${BACKEND_USER} /home/${SUDO_USER:-$USER}/.gemini 2>/dev/null || true
+chown -R ${BACKEND_USER}:${BACKEND_USER} /home/${SUDO_USER:-$USER}/.codex 2>/dev/null || true
+chown -R ${BACKEND_USER}:${BACKEND_USER} /home/${SUDO_USER:-$USER}/.npm-global 2>/dev/null || true
 
 log "[✓] Ownership korrigiert"
 
@@ -374,9 +375,9 @@ log "=== Config Check ==="
 log "Root Claude:     $(test -f /root/.claude.json && echo '✓' || echo '✗')"
 log "Root Gemini:     $(test -f /root/.gemini/settings.json && echo '✓' || echo '✗')"
 log "Root Codex:      $(test -f /root/.codex/config.toml && echo '✓' || echo '✗')"
-log "Zombie Claude:   $(test -f /home/zombie/.claude.json && echo '✓' || echo '✗')"
-log "Zombie Gemini:   $(test -f /home/zombie/.gemini/settings.json && echo '✓' || echo '✗')"
-log "Zombie Codex:    $(test -f /home/zombie/.codex/config.toml && echo '✓' || echo '✗')"
+log "Zombie Claude:   $(test -f /home/${SUDO_USER:-$USER}/.claude.json && echo '✓' || echo '✗')"
+log "Zombie Gemini:   $(test -f /home/${SUDO_USER:-$USER}/.gemini/settings.json && echo '✓' || echo '✗')"
+log "Zombie Codex:    $(test -f /home/${SUDO_USER:-$USER}/.codex/config.toml && echo '✓' || echo '✗')"
 log "Runtime Claude:  $(test -f $RUNTIME_DIR/claude/.claude.json && echo '✓' || echo '✗')"
 log "Runtime Gemini:  $(test -f $RUNTIME_DIR/gemini/.gemini/settings.json && echo '✓' || echo '✗')"
 log "Runtime Codex:   $(test -f $RUNTIME_DIR/codex/.codex/config.toml && echo '✓' || echo '✗')"
@@ -386,9 +387,9 @@ log "=== Auth Check ==="
 log "Root Claude Auth:     $(test -f /root/.claude/.credentials.json && echo '✓' || echo '✗')"
 log "Root Gemini Auth:     $(test -f /root/.gemini/oauth_creds.json && echo '✓' || echo '✗')"
 log "Root Codex Auth:      $(test -f /root/.codex/auth.json && echo '✓' || echo '✗')"
-log "Zombie Claude Auth:   $(test -f /home/zombie/.claude/.credentials.json && echo '✓' || echo '✗')"
-log "Zombie Gemini Auth:   $(test -f /home/zombie/.gemini/oauth_creds.json && echo '✓' || echo '✗')"
-log "Zombie Codex Auth:    $(test -f /home/zombie/.codex/auth.json && echo '✓' || echo '✗')"
+log "Zombie Claude Auth:   $(test -f /home/${SUDO_USER:-$USER}/.claude/.credentials.json && echo '✓' || echo '✗')"
+log "Zombie Gemini Auth:   $(test -f /home/${SUDO_USER:-$USER}/.gemini/oauth_creds.json && echo '✓' || echo '✗')"
+log "Zombie Codex Auth:    $(test -f /home/${SUDO_USER:-$USER}/.codex/auth.json && echo '✓' || echo '✗')"
 log "Runtime Claude Auth:  $(test -f $RUNTIME_DIR/claude/.claude/.credentials.json && echo '✓' || echo '✗')"
 log "Runtime Gemini Auth:  $(test -f $RUNTIME_DIR/gemini/.gemini/oauth_creds.json && echo '✓' || echo '✗')"
 log "Runtime Codex Auth:   $(test -f $RUNTIME_DIR/codex/.codex/auth.json && echo '✓' || echo '✗')"
@@ -396,13 +397,13 @@ log "Runtime Codex Auth:   $(test -f $RUNTIME_DIR/codex/.codex/auth.json && echo
 log ""
 log "=== Wrapper MCP Test ==="
 log "claude-triforce mcp list (als zombie):"
-su - zombie -c "$TRIFORCE_ROOT/bin/claude-triforce mcp list" 2>&1 | head -5 || log "Fehlgeschlagen"
+su - ${BACKEND_USER} -c "$TRIFORCE_ROOT/bin/claude-triforce mcp list" 2>&1 | head -5 || log "Fehlgeschlagen"
 log ""
 log "gemini-triforce mcp list (als zombie):"
-su - zombie -c "$TRIFORCE_ROOT/bin/gemini-triforce mcp list" 2>&1 | head -5 || log "Fehlgeschlagen"
+su - ${BACKEND_USER} -c "$TRIFORCE_ROOT/bin/gemini-triforce mcp list" 2>&1 | head -5 || log "Fehlgeschlagen"
 log ""
 log "codex-triforce mcp list (als zombie):"
-su - zombie -c "$TRIFORCE_ROOT/bin/codex-triforce mcp list" 2>&1 | head -5 || log "Fehlgeschlagen"
+su - ${BACKEND_USER} -c "$TRIFORCE_ROOT/bin/codex-triforce mcp list" 2>&1 | head -5 || log "Fehlgeschlagen"
 
 ################################################################################
 # Abschluss
@@ -422,7 +423,7 @@ log "Log: $LOGFILE"
 log ""
 log "Auth-Schlüssel verteilt auf:"
 log "  - /root/           (für root-Aufruf)"
-log "  - /home/zombie/    (für zombie-Aufruf)"
+log "  - /home/${SUDO_USER:-$USER}/    (für zombie-Aufruf)"
 log "  - triforce/runtime (für Wrapper-Aufruf)"
 log ""
 log "Optimierte Settings:"

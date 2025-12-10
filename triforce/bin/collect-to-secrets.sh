@@ -1,4 +1,5 @@
 #!/bin/bash
+BACKEND_USER="${SUDO_USER:-$(stat -c "%U" /home/*/ailinux-ai-server-backend 2>/dev/null | head -1)}"
 # Auto-sudo: Startet sich selbst als root wenn nötig
 if [[ $EUID -ne 0 ]]; then
     exec sudo bash "$0" "$@"
@@ -9,7 +10,7 @@ fi
 
 set -e
 
-TRIFORCE_ROOT="/home/zombie/ailinux-ai-server-backend/triforce"
+TRIFORCE_ROOT="/home/${SUDO_USER:-$USER}/ailinux-ai-server-backend/triforce"
 SECRETS="$TRIFORCE_ROOT/secrets"
 
 echo "=========================================="
@@ -46,7 +47,7 @@ find_best() {
 echo ""
 echo "=== 1. CLAUDE - Auth + Config sammeln ==="
 
-CLAUDE_LOCATIONS=("/root/.claude" "/home/zombie/.claude" "$TRIFORCE_ROOT/runtime/claude/.claude")
+CLAUDE_LOCATIONS=("/root/.claude" "/home/${SUDO_USER:-$USER}/.claude" "$TRIFORCE_ROOT/runtime/claude/.claude")
 
 # Claude Auth
 for f in credentials.json .credentials.json; do
@@ -58,7 +59,7 @@ for f in credentials.json .credentials.json; do
 done
 
 # Claude Config (.claude.json ist im HOME)
-for base in "/root" "/home/zombie"; do
+for base in "/root" "/home/${BACKEND_USER}"; do
     if [[ -f "$base/.claude.json" ]]; then
         cp -a "$base/.claude.json" "$SECRETS/claude/config.json"
         echo "  [✓] config.json <- $base/.claude.json"
@@ -73,7 +74,7 @@ best=$(find_best "settings.json" "${CLAUDE_LOCATIONS[@]}")
 echo ""
 echo "=== 2. GEMINI - Auth + Config sammeln ==="
 
-GEMINI_LOCATIONS=("/root/.gemini" "/home/zombie/.gemini" "$TRIFORCE_ROOT/runtime/gemini/.gemini")
+GEMINI_LOCATIONS=("/root/.gemini" "/home/${SUDO_USER:-$USER}/.gemini" "$TRIFORCE_ROOT/runtime/gemini/.gemini")
 
 for f in oauth_creds.json google_accounts.json installation_id settings.json; do
     best=$(find_best "$f" "${GEMINI_LOCATIONS[@]}")
@@ -86,7 +87,7 @@ done
 echo ""
 echo "=== 3. CODEX - Auth + Config sammeln ==="
 
-CODEX_LOCATIONS=("/root/.codex" "/home/zombie/.codex" "$TRIFORCE_ROOT/runtime/codex/.codex")
+CODEX_LOCATIONS=("/root/.codex" "/home/${SUDO_USER:-$USER}/.codex" "$TRIFORCE_ROOT/runtime/codex/.codex")
 
 for f in auth.json .openai-auth config.toml; do
     best=$(find_best "$f" "${CODEX_LOCATIONS[@]}")
@@ -108,7 +109,7 @@ echo ""
 echo "=== 5. PERMISSIONS SETZEN ==="
 
 chmod 600 "$SECRETS"/*/* 2>/dev/null || true
-chown -R zombie:zombie "$SECRETS"
+chown -R ${BACKEND_USER}:${BACKEND_USER} "$SECRETS"
 echo "  [✓] Permissions gesetzt (700/600)"
 
 echo ""

@@ -23,7 +23,7 @@ if [[ $EUID -ne 0 ]]; then
     exec sudo bash "$0" "$@"
 fi
 
-BASE_DIR="/home/zombie/ailinux-ai-server-backend/triforce/logs"
+BASE_DIR="/home/${SUDO_USER:-$USER}/ailinux-ai-server-backend/triforce/logs"
 PID_FILE="$BASE_DIR/.unified-forwarder.pid"
 
 # Farben

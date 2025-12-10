@@ -1,1 +1,152 @@
-/home/zombie/ailinux-ai-server-backend/config/agents/claude/.claude/debug/903aee87-b43b-41e8-ab4c-52024fb1beff.txt
+2025-12-06T06:49:34.742Z [DEBUG] Watching for changes in setting files /home/zombie/ailinux-ai-server-backend/.claude/settings.local.json...
+2025-12-06T06:49:34.795Z [DEBUG] [LSP MANAGER] initializeLspServerManager() called
+2025-12-06T06:49:34.795Z [DEBUG] [LSP MANAGER] Created manager instance, state=pending
+2025-12-06T06:49:34.795Z [DEBUG] [LSP MANAGER] Starting async initialization (generation 1)
+2025-12-06T06:49:34.795Z [DEBUG] [LSP SERVER MANAGER] initialize() called
+2025-12-06T06:49:34.795Z [DEBUG] [LSP SERVER MANAGER] Calling getAllLspServers()
+2025-12-06T06:49:34.811Z [DEBUG] Applying permission update: Adding 185 allow rule(s) to destination 'localSettings': ["Read(//etc/systemd/system/**)","Bash(sudo cp:*)","Bash(sudo chmod:*)","Bash(cat:*)","Bash(sudo systemctl:*)","Bash(chmod:*)","Bash(test:*)","Bash(mkdir:*)","Bash(systemctl:*)","Read(//usr/bin/**)","Bash(sudo tee:*)","Bash(redis-cli:*)","Read(//home/zombie/ailinux-repo/conf.d/**)","Bash(nginx:*)","Read(//etc/apache2/**)","Bash(ss:*)","Bash(docker ps:*)","Bash(docker exec:*)","Read(//home/zombie/**)","Bash(docker inspect:*)","Bash(docker:*)","Bash(ip:*)","Bash(awk:*)","Bash(curl:*)","Bash(python3:*)","Read(//srv/comfyui/models/**)","Read(//srv/**)","Read(//home/**)","Bash(find:*)","Bash(sudo journalctl:*)","Read(//etc/**)","Bash(sudo nginx:*)","Bash(wp cache flush:*)","Bash(sudo ls:*)","Bash(sudo find:*)","Bash(sudo grep -r \"proxy_pass.*9000\\|proxy_pass.*9100\" /etc/nginx/)","Bash(sudo grep -r \"api.ailinux.me\" /etc/nginx/)","Bash(sudo chown:*)","Bash(sudo grep -r \"proxy_buffer\" /home/zombie/ailinux-repo/conf.d/)","Bash(timeout:*)","Read(//var/**)","Bash(sudo rsync:*)","Bash(wp plugin list:*)","Read(//tmp/**)","Bash(mysql:*)","Bash(sudo mysql ailinux_wp -e \"SELECT post_title, post_content FROM wp_posts WHERE post_name=''nova-ai-konsolenspielplatz'' OR post_title LIKE ''%Konsolenspielplatz%'' LIMIT 1;\")","Bash(source:*)","Bash(playwright --version)","Read(//root/.cache/**)","Bash(sudo mysql:*)","Bash(sudo grep:*)","Bash(dig:*)","Bash(sudo certbot certificates:*)","Bash(apache2:*)","Bash(npm run build:*)","Bash(ls:*)","Bash(node -c:*)","Bash(md5sum:*)","Bash(/usr/local/bin/wp cache flush:*)","Bash(docker-compose logs:*)","Bash(sudo rm:*)","Bash(claude mcp list:*)","Bash(claude mcp add:*)","Bash(claude mcp remove:*)","Bash(MCP_DEBUG=1 claude mcp:*)","Bash(claude --mcp-debug mcp list:*)","Bash(claude:*)","mcp__ailinux_code__list_models","mcp__ailinux_code__list_specialists","mcp__ailinux_code__chat","Bash(wc:*)","Bash(grep:*)","mcp__ailinux_code__ask_specialist","Bash(docker-compose restart:*)","Bash(sudo sed:*)","Bash(sudo ln:*)","Bash(tristar --help:*)","Bash(/home/zombie/ailinux-ai-server-backend/.venv/bin/pip install:*)","Bash(tristar status:*)","Bash(tristar list:*)","Bash(tristar project list:*)","Bash(tristar chain:*)","Bash(tristar logs:*)","Bash(sudo mkdir:*)","Bash(.venv/bin/python:*)","Bash(for svc in claude-mcp cogito-mcp deepseek-mcp gemini-lead kimi-mcp mistral-mcp nova-mcp qwen-mcp)","Bash(do)","Bash(echo:*)","Bash(done)","Bash(sudo /root/.npm-global/bin/claude:*)","Bash(sudo /root/.npm-global/bin/codex:*)","Bash(sudo /root/.npm-global/bin/gemini:*)","Bash(/usr/local/bin/claude mcp:*)","Bash(/usr/local/bin/codex mcp:*)","Bash(/usr/local/bin/gemini mcp:*)","Bash(sudo -u zombie /usr/local/bin/claude:*)","Bash(1 echo \"\" echo \"MCP Connections - Codex:\" /usr/local/bin/codex mcp list 2)","Bash(1 echo \"\" echo \"MCP Connections - Gemini:\" /usr/local/bin/gemini mcp list)","Bash(jq:*)","mcp__ailinux_code__codebase_structure","mcp__ailinux_code__codebase_file","mcp__ailinux_code__tristar_memory_store","mcp__ailinux_code__tristar_models","mcp__ailinux_code__prompt_template","mcp__ailinux_code__cli-agents_list","mcp__ailinux_code__cli-agents_stats","mcp__ailinux_code__cli-agents_start","mcp__ailinux_code__cli-agents_call","mcp__ailinux_code__cli-agents_output","mcp__ailinux_code__codebase_search","mcp__ailinux_code__tristar_memory_search","Bash(sudo which:*)","Bash(gemini --help:*)","Bash(codex --help:*)","Bash(sudo cat:*)","Bash(gemini mcp list:*)","Bash(codex mcp list:*)","Bash(gemini mcp:*)","Bash(codex mcp:*)","mcp__ailinux_code__codebase_routes","mcp__ailinux_code__codebase_services","mcp__ailinux_code__web_search","WebSearch","Bash(node --version:*)","Bash(npm --version:*)","Bash(sudo npm install:*)","Bash(npx ollama-mcp --help)","Bash(npx:*)","WebFetch(domain:github.com)","Bash(.venv/bin/python3:*)","Bash(sudo pkill:*)","Bash(sudo kill:*)","Bash(pip install:*)","Bash(python bin/tristar:*)","Bash(sudo fuser:*)","Bash(python:*)","mcp__ailinux_code__tristar_prompts_get","mcp__ailinux_code__tristar_prompts_list","Bash(sudo -u zombie bash -c 'echo \"\"\"\"Was ist 2+2? Antworte nur mit der Zahl.\"\"\"\" | /usr/local/bin/claude -p --output-format text 2>&1')","Bash(/usr/bin/python3:*)","mcp__ailinux_code__tristar_prompts_set","mcp__ailinux_code__cli-agents_get","Bash(/usr/local/bin/claude:*)","Bash(/usr/local/bin/codex:*)","Bash(/usr/local/bin/gemini:*)","mcp__ailinux_code__ollama_list","Bash(sudo -u zombie HOME=/home/zombie timeout 5 /usr/local/bin/claude mcp serve:*)","Bash(sudo -u zombie HOME=/home/zombie timeout 3 /usr/local/bin/codex:*)","Bash(/home/zombie/ailinux-ai-server-backend/bin/claude-triforce:*)","Bash(/home/zombie/ailinux-ai-server-backend/bin/codex-triforce:*)","Bash(/home/zombie/ailinux-ai-server-backend/bin/gemini-triforce:*)","mcp__ailinux_code__triforce_logs_stats","mcp__ailinux_code__triforce_logs_recent","Bash(du -sh:*)","Bash(mount:*)","Bash(/home/zombie/ailinux-ai-server-backend/.venv/bin/python:*)","Bash(sudo /opt/triforce/triforce-rammode.sh:*)","Bash(sudo sysctl:*)","Bash(triforce-rammode status:*)","Bash(/opt/triforce/triforce-rammode.sh status:*)","Bash(docker-compose up:*)","mcp__ailinux_code__tristar_status","mcp__ailinux_code__ollama_health","mcp__triforce__list_models","mcp__triforce__web_search","Bash(ln:*)","mcp__triforce__tristar_prompts_list","mcp__triforce__cli-agents_list","Bash(kill:*)","mcp__triforce__tristar_prompts_set","Bash(then codex --version)","Bash(then claude --version)","Bash(then gemini --version)","Bash(then opencode --version)","Bash(chown:*)","Bash(.venv/bin/pip:*)","mcp__ailinux_code__gemini_research","Bash(git rm:*)","Bash(git -C /home/zombie/ailinux-ai-server-backend push -u origin master)","Bash(https://api.github.com/user/repos )","Bash(git add:*)","Bash(git commit -m \"$(cat <<''EOF''\nfeat: Add Mesh AI, Shortcode Protocol v2.0, Init System\n\nMajor additions:\n- Mesh AI Coordinator with Gemini as Lead\n- Shortcode Protocol v2.0 for token-efficient agent communication\n- Init endpoints with auto-decode and documentation\n- MCP Brain \"Mitdenk\" function for proactive coordination\n- Gemini Model Init Service for local/cloud models\n- API Loadbalancer between /v1/ and /mcp/\n- Role-based MCP filtering (admin, lead, worker, reviewer)\n\nNew files:\n- app/services/mesh_coordinator.py - Multi-LLM orchestration\n- app/services/init_service.py - Init system with loadbalancer\n- app/services/gemini_model_init.py - Model initialization\n- app/routes/mesh.py - Mesh API endpoints\n- README.md - Comprehensive documentation\n- LICENSE - MIT License\n\nShortcode examples:\n- @g>@c !code \"feature\" - Gemini delegates to Claude\n- @c<@g [result] - Claude returns result\n- @g>>@c>>@m !review - Chain: Gemini → Claude → Mistral\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")","Bash(opencode:*)","Bash(/root/.npm-global/bin/opencode:*)","Bash(export GEMINI_API_KEY)"]
+2025-12-06T06:49:34.823Z [DEBUG] Found 0 plugins (0 enabled, 0 disabled)
+2025-12-06T06:49:34.857Z [DEBUG] Total LSP servers loaded: 0
+2025-12-06T06:49:34.857Z [DEBUG] [LSP SERVER MANAGER] getAllLspServers returned 0 server(s)
+2025-12-06T06:49:34.857Z [DEBUG] LSP manager initialized with 0 servers
+2025-12-06T06:49:34.858Z [DEBUG] LSP server manager initialized successfully
+2025-12-06T06:49:34.858Z [DEBUG] LSP notification handlers registered successfully for all 0 server(s)
+2025-12-06T06:49:34.926Z [DEBUG] Loading skills from directories: managed=/etc/claude-code/.claude/skills, user=/home/zombie/ailinux-ai-server-backend/config/agents/claude/.claude/skills, project=/home/zombie/ailinux-ai-server-backend/.claude/skills
+2025-12-06T06:49:34.926Z [DEBUG] >>>>> getPluginSkills CALLED <<<<<
+2025-12-06T06:49:35.031Z [DEBUG] installed_plugins.json doesn't exist yet at /home/zombie/ailinux-ai-server-backend/config/agents/claude/.claude/plugins/installed_plugins.json, returning empty object
+2025-12-06T06:49:35.097Z [DEBUG] Creating shell snapshot for bash (/usr/bin/bash)
+2025-12-06T06:49:35.097Z [DEBUG] Looking for shell config file: /home/zombie/ailinux-ai-server-backend/config/agents/claude/.bashrc
+2025-12-06T06:49:35.097Z [DEBUG] Shell config file not found: /home/zombie/ailinux-ai-server-backend/config/agents/claude/.bashrc, creating snapshot with Claude Code defaults only
+2025-12-06T06:49:35.097Z [DEBUG] Snapshots directory: /home/zombie/ailinux-ai-server-backend/config/agents/claude/.claude/shell-snapshots
+2025-12-06T06:49:35.100Z [DEBUG] Creating snapshot at: /home/zombie/ailinux-ai-server-backend/config/agents/claude/.claude/shell-snapshots/snapshot-bash-1765003775097-sej9ig.sh
+2025-12-06T06:49:35.100Z [DEBUG] Shell binary exists: true
+2025-12-06T06:49:35.100Z [DEBUG] Execution timeout: 10000ms
+2025-12-06T06:49:35.114Z [DEBUG] Writing to temp file: /home/zombie/ailinux-ai-server-backend/config/agents/claude/.claude/todos/903aee87-b43b-41e8-ab4c-52024fb1beff-agent-903aee87-b43b-41e8-ab4c-52024fb1beff.json.tmp.561922.1765003775114
+2025-12-06T06:49:35.118Z [DEBUG] Temp file written successfully, size: 2 bytes
+2025-12-06T06:49:35.118Z [DEBUG] Renaming /home/zombie/ailinux-ai-server-backend/config/agents/claude/.claude/todos/903aee87-b43b-41e8-ab4c-52024fb1beff-agent-903aee87-b43b-41e8-ab4c-52024fb1beff.json.tmp.561922.1765003775114 to /home/zombie/ailinux-ai-server-backend/config/agents/claude/.claude/todos/903aee87-b43b-41e8-ab4c-52024fb1beff-agent-903aee87-b43b-41e8-ab4c-52024fb1beff.json
+2025-12-06T06:49:35.118Z [DEBUG] File /home/zombie/ailinux-ai-server-backend/config/agents/claude/.claude/todos/903aee87-b43b-41e8-ab4c-52024fb1beff-agent-903aee87-b43b-41e8-ab4c-52024fb1beff.json written atomically
+2025-12-06T06:49:35.121Z [DEBUG] getPluginSkills: Processing 0 enabled plugins
+2025-12-06T06:49:35.121Z [DEBUG] Total plugin skills loaded: 0
+2025-12-06T06:49:35.121Z [DEBUG] Total plugin commands loaded: 0
+2025-12-06T06:49:35.121Z [DEBUG] Registered 0 hooks from 0 plugins
+2025-12-06T06:49:35.155Z [DEBUG] Loaded 0 unique skills (managed: 0, user: 0, project: 0, duplicates removed: 0)
+2025-12-06T06:49:35.158Z [DEBUG] getSkills returning: 0 skill dir commands, 0 plugin skills
+2025-12-06T06:49:35.159Z [DEBUG] Total plugin agents loaded: 0
+2025-12-06T06:49:35.242Z [DEBUG] Getting matching hook commands for SessionStart with query: startup
+2025-12-06T06:49:35.242Z [DEBUG] Found 0 hook matchers in settings
+2025-12-06T06:49:35.242Z [DEBUG] Matched 0 unique hooks for query "startup" (0 before deduplication)
+2025-12-06T06:49:35.269Z [DEBUG] Total plugin output styles loaded: 0
+2025-12-06T06:49:35.271Z [DEBUG] Git remote URL: null
+2025-12-06T06:49:35.271Z [DEBUG] No git remote URL found
+2025-12-06T06:49:35.271Z [DEBUG] Not in a GitHub repository, skipping path mapping update
+2025-12-06T06:49:35.282Z [DEBUG] Ripgrep first use test: PASSED (mode=builtin, path=/root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/vendor/ripgrep/x64-linux/rg)
+2025-12-06T06:49:35.288Z [DEBUG] Getting matching hook commands for SubagentStart with query: Explore
+2025-12-06T06:49:35.288Z [DEBUG] Found 0 hook matchers in settings
+2025-12-06T06:49:35.288Z [DEBUG] Matched 0 unique hooks for query "Explore" (0 before deduplication)
+2025-12-06T06:49:35.296Z [DEBUG] Getting matching hook commands for SubagentStart with query: Plan
+2025-12-06T06:49:35.296Z [DEBUG] Found 0 hook matchers in settings
+2025-12-06T06:49:35.296Z [DEBUG] Matched 0 unique hooks for query "Plan" (0 before deduplication)
+2025-12-06T06:49:35.305Z [DEBUG] [TeammateMailbox] getTeammateMailboxAttachments called: agentId=undefined, CLAUDE_CODE_AGENT_NAME=undefined, CLAUDE_CODE_AGENT_TYPE=undefined, resolved agentName=undefined, teamName=undefined
+2025-12-06T06:49:35.305Z [DEBUG] [TeammateMailbox] Not checking inbox - no agent name (neither CLAUDE_CODE_AGENT_NAME nor CLAUDE_CODE_AGENT_TYPE set)
+2025-12-06T06:49:35.306Z [DEBUG] LSP Diagnostics: getLSPDiagnosticAttachments called
+2025-12-06T06:49:35.306Z [DEBUG] LSP Diagnostics: Checking registry - 0 pending
+2025-12-06T06:49:35.307Z [DEBUG] Hooks: Found 0 total hooks in registry
+2025-12-06T06:49:35.307Z [DEBUG] Hooks: checkForNewResponses returning 0 responses
+2025-12-06T06:49:35.310Z [DEBUG] Getting matching hook commands for UserPromptSubmit with query: undefined
+2025-12-06T06:49:35.310Z [DEBUG] Found 0 hook matchers in settings
+2025-12-06T06:49:35.310Z [DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+2025-12-06T06:49:35.313Z [DEBUG] Shell snapshot created successfully (366 bytes)
+2025-12-06T06:49:35.328Z [DEBUG] Slash commands included in SlashCommand tool:
+2025-12-06T06:49:35.328Z [DEBUG] Skills and commands included in Skill tool:
+2025-12-06T06:49:35.359Z [ERROR] Error: Error: Could not resolve authentication method. Expected either apiKey or authToken to be set. Or for one of the "X-Api-Key" or "Authorization" headers to be explicitly omitted
+    at rT.validateHeaders (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:1283:1008)
+    at rT.buildHeaders (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:1283:8501)
+    at async rT.buildRequest (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:1283:7559)
+    at async rT.makeRequest (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:1283:3387)
+    at async file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:1435:2769
+    at async file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:1435:2262
+    at async t15 (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:1434:16948)
+    at async kA2 (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:1435:2195)
+    at async jjA (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:2219:52)
+    at async o71 (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:2219:261)
+2025-12-06T06:49:35.426Z [DEBUG] Writing to temp file: /home/zombie/ailinux-ai-server-backend/config/agents/claude/.claude.json.tmp.561922.1765003775426
+2025-12-06T06:49:35.426Z [DEBUG] Preserving file permissions: 100600
+2025-12-06T06:49:35.429Z [DEBUG] Temp file written successfully, size: 475 bytes
+2025-12-06T06:49:35.429Z [DEBUG] Applied original permissions to temp file
+2025-12-06T06:49:35.429Z [DEBUG] Renaming /home/zombie/ailinux-ai-server-backend/config/agents/claude/.claude.json.tmp.561922.1765003775426 to /home/zombie/ailinux-ai-server-backend/config/agents/claude/.claude.json
+2025-12-06T06:49:35.429Z [DEBUG] File /home/zombie/ailinux-ai-server-backend/config/agents/claude/.claude.json written atomically
+2025-12-06T06:49:35.432Z [DEBUG] Writing to temp file: /home/zombie/ailinux-ai-server-backend/config/agents/claude/.claude.json.tmp.561922.1765003775432
+2025-12-06T06:49:35.432Z [DEBUG] Preserving file permissions: 100600
+2025-12-06T06:49:35.435Z [DEBUG] Temp file written successfully, size: 475 bytes
+2025-12-06T06:49:35.435Z [DEBUG] Applied original permissions to temp file
+2025-12-06T06:49:35.435Z [DEBUG] Renaming /home/zombie/ailinux-ai-server-backend/config/agents/claude/.claude.json.tmp.561922.1765003775432 to /home/zombie/ailinux-ai-server-backend/config/agents/claude/.claude.json
+2025-12-06T06:49:35.435Z [DEBUG] File /home/zombie/ailinux-ai-server-backend/config/agents/claude/.claude.json written atomically
+2025-12-06T06:49:35.438Z [DEBUG] Writing to temp file: /home/zombie/ailinux-ai-server-backend/config/agents/claude/.claude.json.tmp.561922.1765003775438
+2025-12-06T06:49:35.438Z [DEBUG] Preserving file permissions: 100600
+2025-12-06T06:49:35.441Z [DEBUG] Temp file written successfully, size: 475 bytes
+2025-12-06T06:49:35.441Z [DEBUG] Applied original permissions to temp file
+2025-12-06T06:49:35.441Z [DEBUG] Renaming /home/zombie/ailinux-ai-server-backend/config/agents/claude/.claude.json.tmp.561922.1765003775438 to /home/zombie/ailinux-ai-server-backend/config/agents/claude/.claude.json
+2025-12-06T06:49:35.441Z [DEBUG] File /home/zombie/ailinux-ai-server-backend/config/agents/claude/.claude.json written atomically
+2025-12-06T06:49:35.443Z [DEBUG] Writing to temp file: /home/zombie/ailinux-ai-server-backend/config/agents/claude/.claude.json.tmp.561922.1765003775443
+2025-12-06T06:49:35.443Z [DEBUG] Preserving file permissions: 100600
+2025-12-06T06:49:35.446Z [DEBUG] Temp file written successfully, size: 475 bytes
+2025-12-06T06:49:35.446Z [DEBUG] Applied original permissions to temp file
+2025-12-06T06:49:35.446Z [DEBUG] Renaming /home/zombie/ailinux-ai-server-backend/config/agents/claude/.claude.json.tmp.561922.1765003775443 to /home/zombie/ailinux-ai-server-backend/config/agents/claude/.claude.json
+2025-12-06T06:49:35.447Z [DEBUG] File /home/zombie/ailinux-ai-server-backend/config/agents/claude/.claude.json written atomically
+2025-12-06T06:49:35.449Z [DEBUG] Writing to temp file: /home/zombie/ailinux-ai-server-backend/config/agents/claude/.claude.json.tmp.561922.1765003775449
+2025-12-06T06:49:35.449Z [DEBUG] Preserving file permissions: 100600
+2025-12-06T06:49:35.452Z [DEBUG] Temp file written successfully, size: 475 bytes
+2025-12-06T06:49:35.452Z [DEBUG] Applied original permissions to temp file
+2025-12-06T06:49:35.452Z [DEBUG] Renaming /home/zombie/ailinux-ai-server-backend/config/agents/claude/.claude.json.tmp.561922.1765003775449 to /home/zombie/ailinux-ai-server-backend/config/agents/claude/.claude.json
+2025-12-06T06:49:35.452Z [DEBUG] File /home/zombie/ailinux-ai-server-backend/config/agents/claude/.claude.json written atomically
+2025-12-06T06:49:35.589Z [ERROR] Error streaming, falling back to non-streaming mode: Could not resolve authentication method. Expected either apiKey or authToken to be set. Or for one of the "X-Api-Key" or "Authorization" headers to be explicitly omitted
+2025-12-06T06:49:35.589Z [ERROR] Error streaming, falling back to non-streaming mode: Could not resolve authentication method. Expected either apiKey or authToken to be set. Or for one of the "X-Api-Key" or "Authorization" headers to be explicitly omitted
+2025-12-06T06:49:35.591Z [ERROR] Error streaming, falling back to non-streaming mode: Could not resolve authentication method. Expected either apiKey or authToken to be set. Or for one of the "X-Api-Key" or "Authorization" headers to be explicitly omitted
+2025-12-06T06:49:35.614Z [ERROR] Error in non-streaming fallback: Could not resolve authentication method. Expected either apiKey or authToken to be set. Or for one of the "X-Api-Key" or "Authorization" headers to be explicitly omitted
+2025-12-06T06:49:35.614Z [ERROR] Error: Error: Could not resolve authentication method. Expected either apiKey or authToken to be set. Or for one of the "X-Api-Key" or "Authorization" headers to be explicitly omitted
+    at rT.validateHeaders (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:1283:1008)
+    at rT.buildHeaders (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:1283:8501)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async rT.buildRequest (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:1283:7559)
+    at async rT.makeRequest (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:1283:3387)
+    at async Q71.model (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:4129:10426)
+    at async Q71 (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:2064:3271)
+    at async pz9 (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:4129:10580)
+    at async file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:4129:3864
+    at async lo1 (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:1435:2037)
+2025-12-06T06:49:35.615Z [ERROR] Error in non-streaming fallback: Could not resolve authentication method. Expected either apiKey or authToken to be set. Or for one of the "X-Api-Key" or "Authorization" headers to be explicitly omitted
+2025-12-06T06:49:35.615Z [ERROR] Error: Error: Could not resolve authentication method. Expected either apiKey or authToken to be set. Or for one of the "X-Api-Key" or "Authorization" headers to be explicitly omitted
+    at rT.validateHeaders (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:1283:1008)
+    at rT.buildHeaders (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:1283:8501)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async rT.buildRequest (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:1283:7559)
+    at async rT.makeRequest (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:1283:3387)
+    at async Q71.model (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:4129:10426)
+    at async Q71 (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:2064:3271)
+    at async pz9 (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:4129:10580)
+    at async file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:4129:3864
+    at async lo1 (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:1435:2037)
+2025-12-06T06:49:35.618Z [ERROR] Error in non-streaming fallback: Could not resolve authentication method. Expected either apiKey or authToken to be set. Or for one of the "X-Api-Key" or "Authorization" headers to be explicitly omitted
+2025-12-06T06:49:35.618Z [ERROR] Error: Error: Could not resolve authentication method. Expected either apiKey or authToken to be set. Or for one of the "X-Api-Key" or "Authorization" headers to be explicitly omitted
+    at rT.validateHeaders (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:1283:1008)
+    at rT.buildHeaders (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:1283:8501)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async rT.buildRequest (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:1283:7559)
+    at async rT.makeRequest (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:1283:3387)
+    at async Q71.model (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:4129:10426)
+    at async Q71 (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:2064:3271)
+    at async pz9 (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:4129:10580)
+    at async file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:4129:3864
+    at async lo1 (file:///root/.npm-global/lib/node_modules/@anthropic-ai/claude-code/cli.js:1435:2037)
+2025-12-06T06:49:35.686Z [DEBUG] Getting matching hook commands for SubagentStop with query: undefined
+2025-12-06T06:49:35.686Z [DEBUG] Found 0 hook matchers in settings
+2025-12-06T06:49:35.686Z [DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+2025-12-06T06:49:35.687Z [DEBUG] Getting matching hook commands for SubagentStop with query: undefined
+2025-12-06T06:49:35.687Z [DEBUG] Found 0 hook matchers in settings
+2025-12-06T06:49:35.687Z [DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+2025-12-06T06:49:35.709Z [DEBUG] Getting matching hook commands for Stop with query: undefined
+2025-12-06T06:49:35.709Z [DEBUG] Found 0 hook matchers in settings
+2025-12-06T06:49:35.709Z [DEBUG] Matched 0 unique hooks for query "no match query" (0 before deduplication)
+2025-12-06T06:49:35.710Z [DEBUG] Getting matching hook commands for SessionEnd with query: other
+2025-12-06T06:49:35.710Z [DEBUG] Found 0 hook matchers in settings
+2025-12-06T06:49:35.710Z [DEBUG] Matched 0 unique hooks for query "other" (0 before deduplication)

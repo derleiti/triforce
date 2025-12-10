@@ -5,7 +5,7 @@ if [[ $EUID -ne 0 ]]; then
     exec sudo bash "$0" "$@"
 fi
 
-LOG_DIR="/home/zombie/ailinux-ai-server-backend/triforce/logs/docker"
+LOG_DIR="/home/${SUDO_USER:-$USER}/ailinux-ai-server-backend/triforce/logs/docker"
 PID_FILE="$LOG_DIR/.docker-forwarder.pid"
 
 mkdir -p "$LOG_DIR"

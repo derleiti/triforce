@@ -14,7 +14,7 @@ fi
 
 set -e
 
-TRIFORCE_ROOT="/home/zombie/ailinux-ai-server-backend/triforce"
+TRIFORCE_ROOT="/home/${SUDO_USER:-$USER}/ailinux-ai-server-backend/triforce"
 SECRETS="$TRIFORCE_ROOT/secrets"
 RUNTIME="$TRIFORCE_ROOT/runtime"
 
@@ -191,8 +191,8 @@ do_sync() {
     
     # Locations
     CLAUDE_TARGETS=("/root" "/home/zombie" "$RUNTIME/claude")
-    GEMINI_TARGETS=("/root/.gemini" "/home/zombie/.gemini" "$RUNTIME/gemini/.gemini")
-    CODEX_TARGETS=("/root/.codex" "/home/zombie/.codex" "$RUNTIME/codex/.codex")
+    GEMINI_TARGETS=("/root/.gemini" "/home/${SUDO_USER:-$USER}/.gemini" "$RUNTIME/gemini/.gemini")
+    CODEX_TARGETS=("/root/.codex" "/home/${SUDO_USER:-$USER}/.codex" "$RUNTIME/codex/.codex")
     
     echo ""
     echo "=== CLAUDE ==="
@@ -262,7 +262,7 @@ do_sync() {
     
     echo ""
     echo "=== OWNERSHIP ==="
-    chown -R zombie:zombie /home/zombie/.claude* /home/zombie/.gemini /home/zombie/.codex 2>/dev/null || true
+    chown -R zombie:zombie /home/${SUDO_USER:-$USER}/.claude* /home/${SUDO_USER:-$USER}/.gemini /home/${SUDO_USER:-$USER}/.codex 2>/dev/null || true
     chown -R zombie:zombie "$RUNTIME" 2>/dev/null || true
     log "Ownership fixed"
     
@@ -286,7 +286,7 @@ do_check() {
     
     echo ""
     echo "=== CODEX ==="
-    for base in "/root/.codex" "/home/zombie/.codex"; do
+    for base in "/root/.codex" "/home/${SUDO_USER:-$USER}/.codex"; do
         if [[ -f "$base/config.toml" ]] && [[ -f "$SECRETS/codex/config.toml" ]]; then
             diff -u "$SECRETS/codex/config.toml" "$base/config.toml" 2>/dev/null && echo "  $base/config.toml: OK" || echo "  $base/config.toml: DIFFERS"
         fi

@@ -17,7 +17,7 @@ if [[ $EUID -ne 0 ]]; then
     exec sudo bash "$0" "$@"
 fi
 
-TRIFORCE_ROOT="/home/zombie/ailinux-ai-server-backend/triforce"
+TRIFORCE_ROOT="/home/${SUDO_USER:-$USER}/ailinux-ai-server-backend/triforce"
 
 # Farben
 RED='\033[0;31m'
@@ -56,8 +56,8 @@ Wants=docker.service
 
 [Service]
 Type=forking
-ExecStart=/home/zombie/ailinux-ai-server-backend/triforce/bin/unified-log-forwarder.sh start
-ExecStop=/home/zombie/ailinux-ai-server-backend/triforce/bin/unified-log-forwarder.sh stop
+ExecStart=/home/${SUDO_USER:-$USER}/ailinux-ai-server-backend/triforce/bin/unified-log-forwarder.sh start
+ExecStop=/home/${SUDO_USER:-$USER}/ailinux-ai-server-backend/triforce/bin/unified-log-forwarder.sh stop
 RemainAfterExit=yes
 User=root
 Group=root

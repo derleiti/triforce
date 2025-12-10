@@ -14,10 +14,10 @@ echo "=========================================="
 LOCATIONS=(
     "/root"
     "/home/zombie"
-    "/home/zombie/ailinux-ai-server-backend/triforce/runtime/claude"
-    "/home/zombie/ailinux-ai-server-backend/triforce/runtime/gemini"
-    "/home/zombie/ailinux-ai-server-backend/triforce/runtime/codex"
-    "/home/zombie/ailinux-ai-server-backend/triforce/runtime/opencode"
+    "/home/${SUDO_USER:-$USER}/ailinux-ai-server-backend/triforce/runtime/claude"
+    "/home/${SUDO_USER:-$USER}/ailinux-ai-server-backend/triforce/runtime/gemini"
+    "/home/${SUDO_USER:-$USER}/ailinux-ai-server-backend/triforce/runtime/codex"
+    "/home/${SUDO_USER:-$USER}/ailinux-ai-server-backend/triforce/runtime/opencode"
 )
 
 echo ""
@@ -34,7 +34,7 @@ CLAUDE_JSON='{
   "bypassPermissions": true,
   "autoApprove": ["mcp"],
   "allowedTools": ["Bash", "Edit", "MultiEdit", "Write", "Read", "Glob", "Grep", "WebFetch", "WebSearch", "mcp__triforce-mcp__*"],
-  "trustedDirectories": ["/home/zombie/ailinux-ai-server-backend", "/home/zombie", "/"]
+  "trustedDirectories": ["/home/${SUDO_USER:-$USER}/ailinux-ai-server-backend", "/home/zombie", "/"]
 }'
 
 # Optimierte settings.json
@@ -50,7 +50,7 @@ CLAUDE_SETTINGS='{
 }'
 
 # Claude Configs verteilen
-for base in "/root" "/home/zombie" "/home/zombie/ailinux-ai-server-backend/triforce/runtime/claude"; do
+for base in "/root" "/home/zombie" "/home/${SUDO_USER:-$USER}/ailinux-ai-server-backend/triforce/runtime/claude"; do
     mkdir -p "$base/.claude"
     echo "$CLAUDE_JSON" > "$base/.claude.json"
     echo "$CLAUDE_SETTINGS" > "$base/.claude/settings.json"
@@ -73,7 +73,7 @@ GEMINI_SETTINGS='{
   "tools": {"autoAccept": true, "sandbox": false}
 }'
 
-for base in "/root" "/home/zombie" "/home/zombie/ailinux-ai-server-backend/triforce/runtime/gemini"; do
+for base in "/root" "/home/zombie" "/home/${SUDO_USER:-$USER}/ailinux-ai-server-backend/triforce/runtime/gemini"; do
     mkdir -p "$base/.gemini"
     echo "$GEMINI_SETTINGS" > "$base/.gemini/settings.json"
     echo "  [✓] $base/.gemini/settings.json"
@@ -91,7 +91,7 @@ network_access = true
 type = "http"
 url = "'"$MCP_URL"'"
 
-[projects."/home/zombie/ailinux-ai-server-backend"]
+[projects."/home/${SUDO_USER:-$USER}/ailinux-ai-server-backend"]
 trust_level = "trusted"
 
 [projects."/home/zombie"]
@@ -100,7 +100,7 @@ trust_level = "trusted"
 [projects."/"]
 trust_level = "trusted"'
 
-for base in "/root" "/home/zombie" "/home/zombie/ailinux-ai-server-backend/triforce/runtime/codex"; do
+for base in "/root" "/home/zombie" "/home/${SUDO_USER:-$USER}/ailinux-ai-server-backend/triforce/runtime/codex"; do
     mkdir -p "$base/.codex"
     echo "$CODEX_CONFIG" > "$base/.codex/config.toml"
     echo "  [✓] $base/.codex/config.toml"
@@ -113,15 +113,15 @@ OPENCODE_CONFIG='{
   "model": "opencode/grok-code"
 }'
 
-OPENCODE_BASE="/home/zombie/ailinux-ai-server-backend/triforce/runtime/opencode"
+OPENCODE_BASE="/home/${SUDO_USER:-$USER}/ailinux-ai-server-backend/triforce/runtime/opencode"
 mkdir -p "$OPENCODE_BASE/.config/opencode"
 echo "$OPENCODE_CONFIG" > "$OPENCODE_BASE/.config/opencode/config.json"
 echo "  [✓] $OPENCODE_BASE/.config/opencode/config.json"
 
 echo ""
 echo "=== 5. FIX OWNERSHIP ==="
-chown -R zombie:zombie /home/zombie/.claude* /home/zombie/.gemini /home/zombie/.codex 2>/dev/null || true
-chown -R zombie:zombie /home/zombie/ailinux-ai-server-backend/triforce/runtime 2>/dev/null || true
+chown -R zombie:zombie /home/${SUDO_USER:-$USER}/.claude* /home/${SUDO_USER:-$USER}/.gemini /home/${SUDO_USER:-$USER}/.codex 2>/dev/null || true
+chown -R zombie:zombie /home/${SUDO_USER:-$USER}/ailinux-ai-server-backend/triforce/runtime 2>/dev/null || true
 echo "  [✓] Ownership korrigiert"
 
 echo ""
@@ -129,7 +129,7 @@ echo "=== DONE ==="
 echo ""
 echo "Configs verteilt auf:"
 echo "  - /root/           (root user)"
-echo "  - /home/zombie/    (zombie user)"  
+echo "  - /home/${SUDO_USER:-$USER}/    (zombie user)"  
 echo "  - triforce/runtime (wrapper scripts)"
 echo ""
 echo "Modelle:"
