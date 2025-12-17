@@ -2,7 +2,7 @@
 # Reconfigure APT for amd64+i386, ensure mirror key, rewrite sources, and install Wine/Steam.
 set -euo pipefail
 
-MIRROR_URL="${MIRROR_URL:-https://repo.ailinux.me:8443/mirror}"
+MIRROR_URL="${MIRROR_URL:-https://repo.ailinux.me/mirror}"
 KEY_URL="${KEY_URL:-${MIRROR_URL}/ailinux-archive-key.gpg}"
 KEYRING_PATH="${KEYRING_PATH:-/usr/share/keyrings/ailinux-archive-keyring.gpg}"
 CODENAME="${CODENAME:-$(. /etc/os-release 2>/dev/null && echo "${VERSION_CODENAME:-noble}")}"

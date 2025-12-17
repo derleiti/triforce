@@ -1,9 +1,8 @@
 #!/bin/bash
 # ============================================================================
-# AILinux Backend - Unified Start Script v2.80
+# AILinux Backend - Unified Start Script v2.80-optimized
 # ============================================================================
-# Startet alle Services: Ollama → Backend → CLI Agents
-# Einziger Einstiegspunkt für systemd
+# Optimiert für Intel Core Ultra 7 265 (20 Cores, Arrow Lake)
 # ============================================================================
 
 set -e
@@ -14,7 +13,14 @@ BASE_DIR="/home/${OWNER}/triforce"
 VENV_DIR="$BASE_DIR/.venv"
 LOG_DIR="$BASE_DIR/logs"
 TRISTAR_DIR="/var/tristar"
-API_URL="http://localhost:9100"
+API_URL="http://localhost:9000"
+
+# === CPU-OPTIMIERTE EINSTELLUNGEN ===
+# Intel Core Ultra 7 265: 20 Kerne, kein HT
+CPU_CORES=$(nproc)
+UVICORN_WORKERS=$((CPU_CORES / 2))  # 10 Workers für 20 Kerne
+MAX_CONCURRENT=$((CPU_CORES * 5))   # 100 concurrent requests
+THREAD_POOL=$((CPU_CORES - 2))      # 18 Threads für Hintergrund
 
 # Farben für Output
 RED='\033[0;31m'
@@ -27,6 +33,20 @@ log() { echo -e "${BLUE}[$(date '+%H:%M:%S')]${NC} $1"; }
 ok()  { echo -e "${GREEN}[✓]${NC} $1"; }
 warn(){ echo -e "${YELLOW}[!]${NC} $1"; }
 err() { echo -e "${RED}[✗]${NC} $1"; }
+
+# === INTEL OPTIMIERUNGEN ===
+setup_cpu_governor() {
+    log "Optimiere CPU Governor..."
+    # Performance Mode für alle Kerne
+    for gov in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do
+        echo "performance" | sudo tee "$gov" 2>/dev/null || true
+    done
+    # Intel P-State
+    if [ -f /sys/devices/system/cpu/intel_pstate/no_turbo ]; then
+        echo "0" | sudo tee /sys/devices/system/cpu/intel_pstate/no_turbo 2>/dev/null || true
+    fi
+    ok "CPU Governor: performance"
+}
 
 # === VERZEICHNISSE ===
 setup_directories() {
@@ -46,21 +66,20 @@ setup_directories() {
 start_ollama() {
     log "Prüfe Ollama..."
     
-    # Prüfen ob Ollama läuft
     if curl -s http://localhost:11434/api/tags >/dev/null 2>&1; then
         ok "Ollama bereits aktiv"
         return 0
     fi
     
-    # Ollama starten
     log "Starte Ollama Server..."
     
-    # Ollama als Hintergrund-Prozess
+    # Ollama mit optimierten Thread-Settings
+    OLLAMA_NUM_PARALLEL=4 \
+    OLLAMA_MAX_LOADED_MODELS=2 \
     nohup /usr/local/bin/ollama serve > "$LOG_DIR/ollama.log" 2>&1 &
     OLLAMA_PID=$!
     echo $OLLAMA_PID > "$TRISTAR_DIR/pids/ollama.pid"
     
-    # Warten auf Ollama (max 30s)
     for i in {1..30}; do
         if curl -s http://localhost:11434/api/tags >/dev/null 2>&1; then
             ok "Ollama gestartet (PID: $OLLAMA_PID)"
@@ -99,7 +118,25 @@ activate_venv() {
         source "$VENV_DIR/bin/activate"
         export PYTHONPATH="$BASE_DIR"
         export PYTHONUNBUFFERED=1
-        ok "venv aktiviert"
+        
+        # === CPU-OPTIMIERTE ENVIRONMENT VARS ===
+        export OMP_NUM_THREADS=$THREAD_POOL
+        export MKL_NUM_THREADS=$THREAD_POOL
+        export OPENBLAS_NUM_THREADS=$THREAD_POOL
+        export NUMEXPR_NUM_THREADS=$THREAD_POOL
+        export VECLIB_MAXIMUM_THREADS=$THREAD_POOL
+        
+        # Intel-spezifisch
+        export DNNL_MAX_CPU_ISA="AVX2"
+        export MALLOC_ARENA_MAX="4"
+        export KMP_AFFINITY="granularity=fine,compact"
+        export KMP_BLOCKTIME="0"
+        
+        # Memory
+        export MALLOC_TRIM_THRESHOLD_="131072"
+        export MALLOC_MMAP_MAX_="65536"
+        
+        ok "venv aktiviert (Threads: $THREAD_POOL)"
     else
         err "venv nicht gefunden: $VENV_DIR"
         exit 1
@@ -110,7 +147,6 @@ activate_venv() {
 bootstrap_agents() {
     log "Bootstrap CLI Agents..."
     
-    # Warten auf Backend (max 60s)
     for i in {1..60}; do
         if curl -s "$API_URL/health" >/dev/null 2>&1; then
             break
@@ -118,14 +154,12 @@ bootstrap_agents() {
         sleep 1
     done
     
-    # Agents starten via API
     RESPONSE=$(curl -s -X POST "$API_URL/v1/bootstrap" \
         -H "Content-Type: application/json" \
         -d '{"sequential_lead": true}' 2>/dev/null || echo '{"error": "failed"}')
     
     if echo "$RESPONSE" | grep -q '"status"'; then
         ok "CLI Agents gebootstrapped"
-        # Zeige gestartete Agents
         echo "$RESPONSE" | python3 -c "
 import sys, json
 try:
@@ -144,11 +178,15 @@ except: pass
 main() {
     echo ""
     echo "╔════════════════════════════════════════════════════════════╗"
-    echo "║          AILinux Backend v2.80 - Unified Starter           ║"
+    echo "║    AILinux Backend v2.80 - Intel Core Ultra Optimized      ║"
+    echo "║    CPU: $CPU_CORES Cores | Workers: $UVICORN_WORKERS | Threads: $THREAD_POOL          ║"
     echo "╚════════════════════════════════════════════════════════════╝"
     echo ""
     
     cd "$BASE_DIR"
+    
+    # 0. CPU Governor (optional, benötigt root)
+    setup_cpu_governor 2>/dev/null || true
     
     # 1. Verzeichnisse
     setup_directories
@@ -162,16 +200,22 @@ main() {
     # 4. venv aktivieren
     activate_venv
     
-    # 5. Agent Bootstrap im Hintergrund (nach Backend-Start)
+    # 5. Agent Bootstrap im Hintergrund
     (sleep 10 && bootstrap_agents) &
     
-    # 6. Backend starten (exec ersetzt Shell-Prozess)
-    log "Starte Backend (uvicorn)..."
+    # 6. Backend starten - OPTIMIERT FÜR 20-KERN CPU
+    # Port 9000: Firewall schützt vor externem Zugriff
+    # Apache/Docker Container → host.docker.internal:9000 (X-Forwarded-For) → Auth
+    # Localhost → 127.0.0.1:9000 direkt → kein Auth (Middleware bypass)
+    log "Starte Backend (uvicorn auf 0.0.0.0:9000, $UVICORN_WORKERS Workers)..."
     echo ""
     exec uvicorn app.main:app \
         --host 0.0.0.0 \
-        --port 9100 \
-        --workers 4 \
+        --port 9000 \
+        --workers $UVICORN_WORKERS \
+        --limit-concurrency $MAX_CONCURRENT \
+        --backlog 2048 \
+        --timeout-keep-alive 30 \
         --log-level info \
         --no-access-log
 }
@@ -180,14 +224,12 @@ main() {
 stop_services() {
     log "Stoppe Services..."
     
-    # Ollama stoppen wenn wir es gestartet haben
     if [ -f "$TRISTAR_DIR/pids/ollama.pid" ]; then
         PID=$(cat "$TRISTAR_DIR/pids/ollama.pid")
         kill $PID 2>/dev/null && ok "Ollama gestoppt" || true
         rm -f "$TRISTAR_DIR/pids/ollama.pid"
     fi
     
-    # CLI Agents stoppen via API
     curl -s -X POST "$API_URL/v1/cli-agents/stop-all" >/dev/null 2>&1 || true
     
     ok "Cleanup abgeschlossen"
@@ -195,5 +237,4 @@ stop_services() {
 
 trap stop_services EXIT
 
-# Start
 main "$@"

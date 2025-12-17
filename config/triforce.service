@@ -1,0 +1,16 @@
+[Unit]
+Description=TriForce Multi-LLM Backend
+After=network.target
+
+[Service]
+Type=simple
+User=zombie
+WorkingDirectory=/home/zombie/triforce/backend
+Environment="PATH=/home/zombie/.local/bin:/usr/local/bin:/usr/bin:/bin"
+EnvironmentFile=/home/zombie/triforce/config/.env
+ExecStart=/usr/bin/python3 -m uvicorn app.main:app --host ${TRIFORCE_BIND_HOST:-127.0.0.1} --port ${TRIFORCE_API_PORT:-9100}
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

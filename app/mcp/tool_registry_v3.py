@@ -16,6 +16,11 @@ from __future__ import annotations
 import logging
 from typing import Any, Awaitable, Callable, Dict, List, Optional
 
+# === NEW CLIENT-SERVER ARCHITECTURE ===
+from app.services.api_vault import VAULT_TOOLS
+from app.services.chat_router import CHAT_ROUTER_TOOLS
+from app.services.task_spawner import TASK_SPAWNER_TOOLS
+
 logger = logging.getLogger("ailinux.mcp.registry")
 
 # Type alias für Handler
@@ -1039,6 +1044,19 @@ INIT_TOOLS: List[Dict[str, Any]] = [
 # CLI AGENTS TOOLS
 # =============================================================================
 
+# =============================================================================
+# MCP NODE TOOLS - WebSocket Client Management
+# =============================================================================
+
+MCP_NODE_TOOLS: List[Dict[str, Any]] = [
+    {
+        "name": "mcp_node_clients",
+        "description": "List all connected MCP Node clients (WebSocket connections). Shows client_id, user_id, tier, connection time, supported tools, and client_info.",
+        "inputSchema": {"type": "object", "properties": {}},
+    },
+]
+
+
 CLI_AGENTS_TOOLS: List[Dict[str, Any]] = [
     {
         "name": "cli-agents_list",
@@ -1370,6 +1388,86 @@ SYSTEM_TOOLS: List[Dict[str, Any]] = [
 
 
 # =============================================================================
+# REMOTE TASK TOOLS - SSH-basierte Remote-Execution
+# =============================================================================
+
+REMOTE_TASK_TOOLS: List[Dict[str, Any]] = [
+    {
+        "name": "remote_host_register",
+        "description": "Registriert einen Remote-Host (PC/Server) für Task-Ausführung via SSH",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "hostname": {"type": "string", "description": "IP oder Hostname des Remote-Systems"},
+                "username": {"type": "string", "description": "SSH Username"},
+                "password": {"type": "string", "description": "SSH Passwort"},
+                "port": {"type": "integer", "description": "SSH Port (default: 22)"},
+                "description": {"type": "string", "description": "Beschreibung des Hosts"},
+            },
+            "required": ["hostname", "username"],
+        },
+    },
+    {
+        "name": "remote_host_list",
+        "description": "Listet alle registrierten Remote-Hosts",
+        "inputSchema": {"type": "object", "properties": {}},
+    },
+    {
+        "name": "remote_task_submit",
+        "description": "Startet einen Task auf einem Remote-Host. Der Server spawnt einen CLI-Agent (Claude/Codex/Gemini) der per SSH auf dem Host arbeitet.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "host_id": {"type": "string", "description": "Host-ID des Zielrechners"},
+                "task_type": {
+                    "type": "string",
+                    "enum": ["gaming_optimize", "system_optimize", "analyze", "install", "configure", "debug", "custom"],
+                    "description": "Art des Tasks",
+                },
+                "description": {"type": "string", "description": "Beschreibung/Details für den Task"},
+                "agent_id": {"type": "string", "description": "Spezifischer Agent (default: auto)"},
+            },
+            "required": ["host_id"],
+        },
+    },
+    {
+        "name": "remote_task_status",
+        "description": "Holt den Status eines Remote-Tasks",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "task_id": {"type": "string", "description": "Task-ID"},
+            },
+            "required": ["task_id"],
+        },
+    },
+    {
+        "name": "remote_task_output",
+        "description": "Holt den Live-Output eines Remote-Tasks",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "task_id": {"type": "string", "description": "Task-ID"},
+                "last_n": {"type": "integer", "description": "Letzte N Zeilen (default: 50)"},
+            },
+            "required": ["task_id"],
+        },
+    },
+    {
+        "name": "remote_task_list",
+        "description": "Listet alle Remote-Tasks",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "host_id": {"type": "string", "description": "Filter nach Host"},
+                "status": {"type": "string", "enum": ["pending", "running", "completed", "failed", "cancelled"]},
+            },
+        },
+    },
+]
+
+
+# =============================================================================
 # KONSOLIDIERTE TOOL-LISTE
 # =============================================================================
 
@@ -1391,9 +1489,15 @@ def get_all_tools() -> List[Dict[str, Any]]:
     all_tools.extend(EVOLVE_TOOLS)
     all_tools.extend(INIT_TOOLS)
     all_tools.extend(CLI_AGENTS_TOOLS)
+    all_tools.extend(MCP_NODE_TOOLS)
     all_tools.extend(CODEBASE_TOOLS)
     all_tools.extend(ADAPTIVE_CODE_TOOLS)
     all_tools.extend(SYSTEM_TOOLS)
+    all_tools.extend(REMOTE_TASK_TOOLS)
+    # === NEW CLIENT-SERVER ARCHITECTURE TOOLS ===
+    all_tools.extend(VAULT_TOOLS)
+    all_tools.extend(CHAT_ROUTER_TOOLS)
+    all_tools.extend(TASK_SPAWNER_TOOLS)
     return all_tools
 
 
@@ -1433,6 +1537,7 @@ def get_tools_by_category(category: str) -> List[Dict[str, Any]]:
         "evolve": EVOLVE_TOOLS,
         "init": INIT_TOOLS,
         "cli_agents": CLI_AGENTS_TOOLS,
+        "mcp_node": MCP_NODE_TOOLS,
         "codebase": CODEBASE_TOOLS,
         "adaptive_code": ADAPTIVE_CODE_TOOLS,
         "system": SYSTEM_TOOLS,
@@ -1446,7 +1551,7 @@ def get_categories() -> List[str]:
         "core", "web_search", "tristar_core", "tristar_logging",
         "tristar_prompts", "tristar_settings", "tristar_conversations",
         "tristar_agents", "ollama", "gemini", "queue", "mesh",
-        "evolve", "init", "cli_agents", "codebase", "adaptive_code", "system"
+        "evolve", "init", "cli_agents", "mcp_node", "codebase", "adaptive_code", "system"
     ]
 
 

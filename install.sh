@@ -1,8 +1,9 @@
 #!/bin/bash
 #
-# TriForce Installer
-# ==================
+# TriForce Installer v3.1
+# =======================
 # Installation nach: /home/$USER/triforce
+# Fixed: sed escaping, glob expansion, pip feedback
 #
 set -e
 
@@ -32,7 +33,7 @@ cat << 'EOF'
 ║        ╚═╝   ╚═╝  ╚═╝╚═╝╚═╝      ╚═════╝ ╚═╝  ╚═╝ ╚═════╝╚══════╝  ║
 ║                                                              ║
 ║              Multi-LLM Orchestration System                  ║
-║                     Installer v3.0                           ║
+║                     Installer v3.1                           ║
 ╚══════════════════════════════════════════════════════════════╝
 EOF
 echo -e "${NC}"
@@ -48,28 +49,42 @@ mkdir -p "${LOG_DIR}"
 mkdir -p "${DATA_DIR}"
 echo -e "${GREEN}✓${NC} Verzeichnisse erstellt"
 
-# 2. Dateien kopieren
+# 2. Dateien kopieren (mit Glob-Protection)
 echo -e "${BLUE}[2/5]${NC} Kopiere Dateien..."
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
+# Backend kopieren (safe glob)
 if [ -d "${SCRIPT_DIR}/backend" ]; then
-    cp -r "${SCRIPT_DIR}/backend/"* "${BACKEND_DIR}/"
-    echo -e "${GREEN}✓${NC} Backend kopiert"
+    if [ "$(ls -A "${SCRIPT_DIR}/backend" 2>/dev/null)" ]; then
+        cp -r "${SCRIPT_DIR}/backend/"* "${BACKEND_DIR}/"
+        echo -e "${GREEN}✓${NC} Backend kopiert"
+    else
+        echo -e "${YELLOW}!${NC} Backend-Verzeichnis leer"
+    fi
+else
+    echo -e "${YELLOW}!${NC} Kein Backend-Verzeichnis gefunden"
 fi
 
+# Config kopieren (safe glob)
 if [ -d "${SCRIPT_DIR}/config" ]; then
-    cp -r "${SCRIPT_DIR}/config/"* "${CONFIG_DIR}/"
-    echo -e "${GREEN}✓${NC} Config kopiert"
+    if [ "$(ls -A "${SCRIPT_DIR}/config" 2>/dev/null)" ]; then
+        cp -r "${SCRIPT_DIR}/config/"* "${CONFIG_DIR}/"
+        echo -e "${GREEN}✓${NC} Config kopiert"
+    else
+        echo -e "${YELLOW}!${NC} Config-Verzeichnis leer"
+    fi
+else
+    echo -e "${YELLOW}!${NC} Kein Config-Verzeichnis gefunden"
 fi
 
-# 3. .env anpassen
+# 3. .env anpassen (fixed sed escaping)
 echo -e "${BLUE}[3/5]${NC} Konfiguriere .env..."
 ENV_FILE="${CONFIG_DIR}/.env"
 
 if [ -f "${ENV_FILE}" ]; then
-    # Pfade aktualisieren
-    sed -i "s|\\\$USER|${USER}|g" "${ENV_FILE}"
-    sed -i "s|\\\${INSTALL_DIR}|${INSTALL_DIR}|g" "${ENV_FILE}"
+    # Pfade aktualisieren - KORRIGIERTES Escaping
+    sed -i 's|\$USER|'"${USER}"'|g' "${ENV_FILE}"
+    sed -i 's|\${INSTALL_DIR}|'"${INSTALL_DIR}"'|g' "${ENV_FILE}"
     
     # Sicherstellen dass SETUP_COMPLETE=false
     if ! grep -q "^SETUP_COMPLETE=" "${ENV_FILE}"; then
@@ -83,12 +98,16 @@ else
     echo -e "${YELLOW}!${NC} Keine .env gefunden - wird beim Setup erstellt"
 fi
 
-# 4. Python Dependencies
-echo -e "${BLUE}[4/5]${NC} Prüfe Python Dependencies..."
+# 4. Python Dependencies (mit Feedback)
+echo -e "${BLUE}[4/5]${NC} Pruefe Python Dependencies..."
 if [ -f "${BACKEND_DIR}/requirements.txt" ]; then
     if command -v pip3 &> /dev/null; then
-        pip3 install -q -r "${BACKEND_DIR}/requirements.txt" --user 2>/dev/null || true
-        echo -e "${GREEN}✓${NC} Dependencies installiert"
+        echo -e "${BLUE}   Installiere packages...${NC}"
+        if pip3 install -r "${BACKEND_DIR}/requirements.txt" --user 2>&1 | tail -3; then
+            echo -e "${GREEN}✓${NC} Dependencies installiert"
+        else
+            echo -e "${YELLOW}!${NC} Einige Dependencies fehlgeschlagen - pruefe manuell"
+        fi
     else
         echo -e "${YELLOW}!${NC} pip3 nicht gefunden - manuell installieren"
     fi
@@ -96,9 +115,9 @@ else
     echo -e "${YELLOW}!${NC} requirements.txt nicht gefunden"
 fi
 
-# 5. systemd Service (optional)
+# 5. systemd Service (in config dir statt /tmp)
 echo -e "${BLUE}[5/5]${NC} Erstelle systemd Service..."
-SERVICE_FILE="/tmp/triforce.service"
+SERVICE_FILE="${CONFIG_DIR}/triforce.service"
 
 cat > "${SERVICE_FILE}" << SYSTEMD
 [Unit]
@@ -119,7 +138,7 @@ RestartSec=5
 WantedBy=multi-user.target
 SYSTEMD
 
-echo -e "${YELLOW}Service-Datei erstellt: ${SERVICE_FILE}${NC}"
+echo -e "${GREEN}✓${NC} Service-Datei erstellt: ${SERVICE_FILE}"
 echo -e "${YELLOW}Zum Aktivieren:${NC}"
 echo "  sudo cp ${SERVICE_FILE} /etc/systemd/system/"
 echo "  sudo systemctl daemon-reload"
@@ -127,41 +146,41 @@ echo "  sudo systemctl enable --now triforce"
 
 # Finale Info
 echo ""
-echo -e "${GREEN}═══════════════════════════════════════════════════════════════${NC}"
+echo -e "${GREEN}===============================================================${NC}"
 echo -e "${GREEN}  Installation abgeschlossen!${NC}"
-echo -e "${GREEN}═══════════════════════════════════════════════════════════════${NC}"
+echo -e "${GREEN}===============================================================${NC}"
 echo ""
 
 # Server-Info ermitteln
 SERVER_IP=$(hostname -I 2>/dev/null | awk '{print $1}' || echo "127.0.0.1")
-HOSTNAME=$(hostname 2>/dev/null || echo "localhost")
+HOSTNAME_VAL=$(hostname 2>/dev/null || echo "localhost")
 PORT=9100
 
-echo -e "${BLUE}📍 Installationsverzeichnis:${NC}"
+echo -e "${BLUE}Installationsverzeichnis:${NC}"
 echo "   ${INSTALL_DIR}"
 echo ""
-echo -e "${BLUE}🌐 Zugriff auf Setup-Wizard:${NC}"
+echo -e "${BLUE}Zugriff auf Setup-Wizard:${NC}"
 echo ""
 echo "   Lokal:    http://localhost:${PORT}/setup/"
 echo "   Netzwerk: http://${SERVER_IP}:${PORT}/setup/"
-echo "   Hostname: http://${HOSTNAME}:${PORT}/setup/"
+echo "   Hostname: http://${HOSTNAME_VAL}:${PORT}/setup/"
 echo ""
-echo -e "${BLUE}📋 Nächste Schritte:${NC}"
+echo -e "${BLUE}Naechste Schritte:${NC}"
 echo ""
 echo "   1. Service starten:"
 echo "      cd ${BACKEND_DIR}"
 echo "      python3 -m uvicorn app.main:app --host 127.0.0.1 --port 9100"
 echo ""
-echo "   2. Browser öffnen:"
+echo "   2. Browser oeffnen:"
 echo "      http://localhost:9100/setup/"
 echo ""
 echo "   3. Setup-Wizard durchlaufen"
 echo ""
-echo -e "${BLUE}📚 Wichtige Pfade:${NC}"
+echo -e "${BLUE}Wichtige Pfade:${NC}"
 echo "   Backend:  ${BACKEND_DIR}"
 echo "   Config:   ${CONFIG_DIR}"
 echo "   Logs:     ${LOG_DIR}"
 echo "   Data:     ${DATA_DIR}"
 echo ""
-echo -e "${YELLOW}🐻 Brumo: „Home sweet ~/triforce."${NC}"
+echo -e "${YELLOW}Brumo: Home sweet ~/triforce.${NC}"
 echo ""

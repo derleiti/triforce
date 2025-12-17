@@ -25,6 +25,10 @@ from ..services.gemini_access import GEMINI_ACCESS_TOOLS, GEMINI_ACCESS_HANDLERS
 from ..services.command_queue import QUEUE_TOOLS, QUEUE_HANDLERS
 from ..routes.mesh import MESH_TOOLS, MESH_HANDLERS
 from ..services.mcp_filter import MESH_FILTER_TOOLS, MESH_FILTER_HANDLERS
+# New Client-Server Architecture
+from ..services.api_vault import VAULT_HANDLERS
+from ..services.chat_router import CHAT_ROUTER_HANDLERS
+from ..services.task_spawner import TASK_SPAWNER_HANDLERS
 from ..services.init_service import INIT_TOOLS, INIT_HANDLERS, init_service, loadbalancer, mcp_brain
 from ..services.gemini_model_init import MODEL_INIT_TOOLS, MODEL_INIT_HANDLERS, gemini_model_init
 from ..services.agent_bootstrap import BOOTSTRAP_TOOLS, BOOTSTRAP_HANDLERS, bootstrap_service, chat_processor, shortcode_filter
@@ -331,35 +335,64 @@ async def handle_ailinux_search(params: Dict[str, Any]) -> Dict[str, Any]:
     if not query:
         raise ValueError("'query' parameter is required")
     
-    results = await search_ailinux(query, params.get("num_results", 20))
-    return {"query": query, "results": results, "count": len(results), "source": "ailinux_news"}
-
+    result = await search_ailinux(query, params.get("num_results", 20))
+    # search_ailinux gibt bereits {query, results, total} zurueck
+    return result
 
 async def handle_grokipedia_search(params: Dict[str, Any]) -> Dict[str, Any]:
-    """Search Grokipedia.com - xAI's knowledge base with 885K+ articles."""
+    """Search Grokipedia.com - xAI knowledge base with 885K+ articles."""
     from ..services.multi_search import search_grokipedia
     
     query = params.get("query")
     if not query:
         raise ValueError("'query' parameter is required")
     
-    results = await search_grokipedia(query, params.get("num_results", 5))
-    return {"query": query, "results": results, "count": len(results), "source": "grokipedia"}
+    result = await search_grokipedia(query, params.get("num_results", 5))
+    # search_grokipedia gibt bereits {query, results, total} zurueck
+    return result
+
+
+async def handle_image_search(params: Dict[str, Any]) -> Dict[str, Any]:
+    """Bildersuche via SearXNG."""
+    from ..services.multi_search import image_search
+    
+    query = params.get("query")
+    if not query:
+        raise ValueError("'query' parameter is required")
+    
+    return await image_search(
+        query,
+        params.get("num_results", 30),
+        params.get("lang", "de")
+    )
 
 async def handle_llm_invoke(params: Dict[str, Any]) -> Dict[str, Any]:
+    """Chat/LLM invoke - supports both 'message' (string) and 'messages' (array)."""
     model_id = params.get("model") or params.get("provider_id")
-    messages = params.get("messages")
+    messages_input = params.get("messages")
+    message = params.get("message")
+    system_prompt = params.get("system_prompt")
     options = params.get("options") or {}
-
-    if not model_id or not messages:
-        raise ValueError("'model' (or provider_id) and 'messages' are required for llm.invoke")
-    if not isinstance(messages, list):
-        raise ValueError("'messages' must be a list of role/content dictionaries")
-
+    temperature = options.get("temperature", params.get("temperature"))
+    
+    # Support both formats
+    if messages_input and isinstance(messages_input, list):
+        messages = messages_input
+    elif message:
+        messages = []
+        if system_prompt:
+            messages.append({"role": "system", "content": system_prompt})
+        messages.append({"role": "user", "content": message})
+    else:
+        raise ValueError("'message' or 'messages' is required")
+    
+    if not model_id:
+        model_id = "gpt-oss:20b-cloud"
+    
     model = await registry.get_model(model_id)
     if not model or "chat" not in model.capabilities:
         raise ValueError(f"Model '{model_id}' does not support chat capability")
-
+    
     formatted_messages: List[Dict[str, str]] = []
     for entry in messages:
         role = entry.get("role") if isinstance(entry, dict) else None
@@ -367,36 +400,20 @@ async def handle_llm_invoke(params: Dict[str, Any]) -> Dict[str, Any]:
         if not role or content is None:
             raise ValueError("Each message must include 'role' and 'content'")
         formatted_messages.append({"role": role, "content": content})
-
-    temperature = options.get("temperature")
+    
     stream = bool(options.get("stream", False))
-
     chunks: List[str] = []
     async with request_slot():
         async for chunk in chat_service.stream_chat(
-            model,
-            model_id,
-            (message for message in formatted_messages),
-            stream=stream,
-            temperature=temperature,
+            model, model_id,
+            (m for m in formatted_messages),
+            stream=stream, temperature=temperature,
         ):
             if chunk:
                 chunks.append(chunk)
-
+    
     completion = "".join(chunks)
-    prompt_tokens = sum(_estimate_tokens(item["content"]) for item in formatted_messages)
-    completion_tokens = _estimate_tokens(completion)
-
-    return {
-        "model": model_id,
-        "provider": model.provider,
-        "output": completion,
-        "usage": {
-            "prompt_tokens": prompt_tokens,
-            "completion_tokens": completion_tokens,
-            "total_tokens": prompt_tokens + completion_tokens,
-        },
-    }
+    return {"model": model_id, "provider": model.provider, "output": completion, "response": completion}
 
 
 async def handle_admin_control(params: Dict[str, Any]) -> Dict[str, Any]:
@@ -1356,8 +1373,14 @@ async def handle_initialize(params: Dict[str, Any], request: Optional[Request] =
 
 
 async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
-    """MCP tools/list method - returns available tools including Ollama, TriStar, Gemini, and Queue tools."""
-    # Base tools
+    """MCP tools/list method - returns all tools from registry v3."""
+    # Use centralized tool registry v3
+    tools = registry_v3_get_all_tools()
+    return {"tools": tools}
+
+
+async def _handle_tools_list_LEGACY(params: Dict[str, Any]) -> Dict[str, Any]:
+    """LEGACY: Old manual tool list - kept for reference."""
     tools = [
         {
             "name": "acknowledge_policy",
@@ -1430,7 +1453,7 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
         # Extended Multi-Search Tools (v3.0)
         {
             "name": "multi_search",
-            "description": "Extended Multi-API Search with 6 providers: SearXNG, DuckDuckGo, Wiby, Wikipedia, Grokipedia, AILinux News",
+            "description": "Multi-Search v2.1: SearXNG (9 Engines: Google, Bing, DDG, Brave, GitHub, arXiv) + Wikipedia, Grokipedia, AILinux News, Wiby",
             "inputSchema": {
                 "type": "object",
                 "properties": {
@@ -1500,7 +1523,7 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
         },
         {
             "name": "search_health",
-            "description": "Check health status of all search providers (SearXNG, DuckDuckGo, Wiby, Wikipedia, Grokipedia)",
+            "description": "Health-Check aller Suchprovider: SearXNG (9 Engines), Wikipedia, Grokipedia, AILinux News, Wiby",
             "inputSchema": {"type": "object", "properties": {}},
         },
         # === NEW WIDGET TOOLS ===
@@ -1590,6 +1613,19 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
                 "properties": {
                     "query": {"type": "string", "description": "Search query"},
                     "num_results": {"type": "integer", "default": 5, "description": "Number of results"},
+                },
+                "required": ["query"],
+            },
+        },
+        {
+            "name": "image_search",
+            "description": "Bildersuche via SearXNG (Google, Bing, DuckDuckGo Images). Liefert Bild-URLs, Thumbnails und Titel.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "query": {"type": "string", "description": "Image search query"},
+                    "num_results": {"type": "integer", "default": 20, "description": "Number of images (max 50)"},
+                    "lang": {"type": "string", "default": "de", "description": "Language code (de, en)"},
                 },
                 "required": ["query"],
             },
@@ -2001,6 +2037,7 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
         "list_timezones": handle_list_timezones,
         "ailinux_search": handle_ailinux_search,
         "grokipedia_search": handle_grokipedia_search,
+        "image_search": handle_image_search,
         # TriStar Integration
         "tristar_models": handle_tristar_models,
         "tristar_init": handle_tristar_init,
@@ -2047,6 +2084,10 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
     tool_map.update(LLM_COMPAT_HANDLERS)
     tool_map.update(HOTRELOAD_HANDLERS)
     tool_map.update(MEMORY_INDEX_HANDLERS)
+    # === NEW CLIENT-SERVER ARCHITECTURE HANDLERS ===
+    tool_map.update(VAULT_HANDLERS)
+    tool_map.update(CHAT_ROUTER_HANDLERS)
+    tool_map.update(TASK_SPAWNER_HANDLERS)
 
     handler = tool_map.get(tool_name)
     # Compatibility fallback
@@ -3132,6 +3173,46 @@ async def handle_cli_agents_reload_prompts(params: Dict[str, Any]) -> Dict[str, 
     return await agent_controller.reload_system_prompts()
 
 
+# ============================================================================
+# MCP Node Handlers - Connected WebSocket Clients
+# ============================================================================
+
+async def handle_mcp_node_clients(params: Dict[str, Any]) -> Dict[str, Any]:
+    """List all connected MCP Node clients (WebSocket connections) with telemetry data."""
+    from ..routes.mcp_node import CONNECTED_CLIENTS
+    
+    clients = []
+    for client_id, conn in CONNECTED_CLIENTS.items():
+        client_data = {
+            "client_id": client_id,
+            "user_id": conn.user_id,
+            "tier": conn.tier.value,
+            "connected_at": conn.connected_at.isoformat(),
+            "last_seen": conn.last_seen.isoformat(),
+            "supported_tools": conn.supported_tools,
+            "client_info": conn.client_info,
+        }
+        
+        # Telemetrie-Daten hinzufügen (falls vorhanden)
+        if hasattr(conn, 'mode'):
+            client_data["mode"] = conn.mode  # "full" oder "telemetry_only"
+        if hasattr(conn, 'total_tool_calls'):
+            client_data["telemetry"] = {
+                "total_tool_calls": conn.total_tool_calls,
+                "successful": conn.successful_tool_calls,
+                "failed": conn.failed_tool_calls,
+                "recent_tools": conn.tool_usage[-10:] if conn.tool_usage else []
+            }
+        
+        clients.append(client_data)
+    
+    return {
+        "clients": clients,
+        "count": len(clients),
+        "note": "Telemetry-only mode: Server kann nur Status sehen, KEINE Remote-Execution"
+    }
+
+
 async def handle_prompts_list_mcp(_: Dict[str, Any]) -> Dict[str, Any]:
     """MCP prompts/list method - returns available prompts (standard MCP protocol)."""
     templates = prompt_library.list_templates()
@@ -3244,6 +3325,9 @@ MCP_HANDLERS: Dict[str, Handler] = {
     "cli-agents_stats": handle_cli_agents_stats,
     "cli-agents_update-prompt": handle_cli_agents_update_prompt,
     "cli-agents_reload-prompts": handle_cli_agents_reload_prompts,
+    
+    # MCP Node Clients (WebSocket connections)
+    "mcp_node_clients": handle_mcp_node_clients,
 }
 
 # Merge with dynamic handlers from services
@@ -3253,6 +3337,10 @@ MCP_HANDLERS.update(GEMINI_ACCESS_HANDLERS)
 MCP_HANDLERS.update(QUEUE_HANDLERS)
 MCP_HANDLERS.update(MESH_HANDLERS)
 MCP_HANDLERS.update(MESH_FILTER_HANDLERS)
+# New Client-Server Architecture Handlers
+MCP_HANDLERS.update(VAULT_HANDLERS)
+MCP_HANDLERS.update(CHAT_ROUTER_HANDLERS)
+MCP_HANDLERS.update(TASK_SPAWNER_HANDLERS)
 MCP_HANDLERS.update(INIT_HANDLERS)
 MCP_HANDLERS.update(MODEL_INIT_HANDLERS)
 MCP_HANDLERS.update(BOOTSTRAP_HANDLERS)

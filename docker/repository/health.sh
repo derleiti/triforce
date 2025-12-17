@@ -1,31 +1,35 @@
-
 #!/usr/bin/env bash
-# AILinux Repository Healthcheck v2 (Auto-Deps, Cert-Discovery, Stale/By-Hash, IPv6, robust curl)
-# Date: 2025-09-25
+# ============================================================================
+# AILinux Repository Healthcheck v2.1
+# ============================================================================
+# Comprehensive health check for AILinux mirror infrastructure
+# Checks: DNS, SSL certificates, Origin server, Mirror content, IPv6
+# ============================================================================
 
 set -euo pipefail
 
-# ===== Konfiguration =====
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
+
+# ===== Configuration =====
 DOMAINS=("ailinux.me" "repo.ailinux.me")
 ORIGIN_IP="${ORIGIN_IP:-148.251.0.181}"
 ORIGIN_PORT="${ORIGIN_PORT:-8443}"
 
-# Test-URL zu einer Release-Datei deines Repos (über Cloudflare)
-CHECK_URL="${CHECK_URL:-https://repo.ailinux.me:8443/mirror/archive.ailinux.me/dists/stable/Release}"
+# Test URL for a Release file (via Cloudflare)
+CHECK_URL="${CHECK_URL:-https://repo.ailinux.me/mirror/archive.ubuntu.com/ubuntu/dists/noble/Release}"
 
-# Zertifikats-Trust
+# Certificate trust
 MIN_CERT_DAYS="${MIN_CERT_DAYS:-14}"
 TRUSTED_ISSUERS=("Cloudflare" "Let's Encrypt" "Google Trust Services")
 
-# Zertifikate: Entweder direkt angeben ODER Auto-Discovery aus NGINX-Konfigs
-# Beispiel: CERT_FILES=("/etc/ssl/certs/fullchain.pem" "/etc/ssl/private/ailinux_fullchain.pem")
+# Certificates: Either specify directly OR auto-discovery from NGINX configs
 : "${CERT_FILES:=()}"
-# In welchen Dateien nach ssl_certificate suchen (Globs erlaubt)
+# Config files to search for ssl_certificate (globs allowed)
 NGINX_CONF_GLOBS=(
   "${NGINX_CONF:-/etc/nginx/nginx.conf}"
   "/etc/nginx/conf.d/*.conf"
   "/etc/nginx/sites-enabled/*"
-  "/root/ailinux-repo/nginx.conf"
+  "${SCRIPT_DIR}/nginx.conf"
 )
 
 # APT/Installationsverhalten

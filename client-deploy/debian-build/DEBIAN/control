@@ -1,0 +1,15 @@
+Package: ailinux-client
+Version: 3.0.0
+Section: utils
+Priority: optional
+Architecture: amd64
+Depends: libxcb-cursor0
+Maintainer: Markus Leitermann <mrksleitermann@gmail.com>
+Homepage: https://ailinux.me
+Description: AILinux Desktop Client
+ PyQt6-basierter Desktop-Client fuer AILinux AI Server.
+ Features:
+  - 600+ KI-Modelle ueber api.ailinux.me
+  - Ollama Cloud-Proxy Integration
+  - MCP Tools und CLI Agents
+  - Auto-Updates vom Server

@@ -16,7 +16,7 @@ class SettingsResponse(BaseModel):
     ollama_base: str = Field(..., description="Ollama API base URL")
     ollama_bearer_auth_enabled: bool = Field(..., description="Whether Ollama bearer auth is enabled")
     gemini_api_key_configured: bool = Field(..., description="Whether Gemini API key is configured")
-    mixtral_api_key_configured: bool = Field(..., description="Whether Mixtral API key is configured")
+    mistral_api_key_configured: bool = Field(..., description="Whether Mistral API key is configured")
     gpt_oss_configured: bool = Field(..., description="Whether GPT-OSS is configured")
     stable_diffusion_url: str = Field(..., description="Stable Diffusion API URL")
     comfyui_url: Optional[str] = Field(None, description="ComfyUI API URL")

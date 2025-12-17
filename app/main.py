@@ -80,6 +80,9 @@ from .routes.oauth_service import router as oauth_router
 from .routes.perf_monitor import router as perf_monitor_router, perf_middleware
 from .routes.distributed_compute import router as distributed_compute_router
 from .routes.tristar_gui import router as tristar_gui_router
+from .routes.client_chat import router as client_chat_router
+from .routes.client_auth import router as client_auth_router
+from .routes.client_update import router as client_update_router
 
 # Import routers from the top-level app directory
 from .routes_sd3 import router as sd3_router
@@ -377,6 +380,9 @@ def create_app() -> FastAPI:
     # Include routers from the top-level app directory (prefixes are in the files)
     app.include_router(sd3_router, prefix="/v1", tags=["Stable Diffusion 3"])
     app.include_router(vision_router, tags=["Vision"])
+    app.include_router(client_chat_router, prefix="/v1", tags=["Client Chat"])
+    app.include_router(client_auth_router, prefix="/v1", tags=["Client Auth"])
+    app.include_router(client_update_router, prefix="/v1", tags=["Client Update"])
 
     # Import and include txt2img router
     try:

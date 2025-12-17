@@ -2,11 +2,9 @@
 Authentication Middleware for /v1 and /v1/mcp
 =============================================
 
-Protects /v1/* routes with:
-- Bearer Token (from OAuth 2.0 flow)
-- Basic Auth (username:password from .env)
-
-Uses central mcp_auth module for all authentication.
+Port-based authentication:
+- X-Forwarded-Port: 9100 → Auth required (external via Apache)
+- No X-Forwarded-Port → No auth (internal/direct/public endpoints)
 """
 
 from __future__ import annotations
@@ -37,6 +35,7 @@ PUBLIC_PATHS = [
     "/authorize",
     "/token",
     "/auth/",
+    "/v1/auth/",  # Client auth endpoints (login, register)
     "/health",
     "/docs",
     "/openapi.json",
@@ -44,18 +43,22 @@ PUBLIC_PATHS = [
     "/robots.txt",
     "/tristar/login",
     "/tristar/logout",
-    "/static/",         # Static files (JS, CSS)
-    "/v1/distributed",  # Distributed compute endpoints (public for workers)
+    "/static/",
+    "/v1/distributed",
+    "/v1/mcp/node/support",  # Support-Calls (KI-Support für alle)
+    "/v1/client/",  # Client-API (Free-Tier ohne Auth)
 ]
+
+# Port that requires authentication (set by Apache for external requests)
+AUTH_REQUIRED_PORT = 9100
 
 
 class AuthMiddleware(BaseHTTPMiddleware):
     """
-    FastAPI middleware that protects /v1/* routes.
-
-    Supports:
-    - Bearer Token
-    - Basic Auth (username:password)
+    Port-based authentication middleware.
+    
+    - X-Forwarded-Port: 9100 → require auth (external via Apache proxy)
+    - No X-Forwarded-Port or other port → bypass (internal/public)
     """
 
     async def dispatch(self, request: Request, call_next: Callable):
@@ -64,6 +67,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
         # Skip auth for public paths
         for public in PUBLIC_PATHS:
             if path.startswith(public) or path == public.rstrip("/"):
+                logger.info(f"AUTH_SKIP | Path: {path} | Matched: {public}")
                 return await call_next(request)
 
         # Check if path needs protection
@@ -76,24 +80,28 @@ class AuthMiddleware(BaseHTTPMiddleware):
         if not needs_auth:
             return await call_next(request)
 
-        # === Authenticate ===
+        # === Port-based auth decision ===
+        # Apache sets X-Forwarded-Port: 9100 for EXTERNAL requests
+        # Public endpoints (like /api/public/search) don't have this header
+        forwarded_port_str = request.headers.get("X-Forwarded-Port", "")
         client_ip = request.client.host if request.client else "unknown"
+        
+        # Parse forwarded port
+        forwarded_port = None
+        if forwarded_port_str:
+            try:
+                forwarded_port = int(forwarded_port_str)
+            except ValueError:
+                pass
 
-        # ========================================================================
-        # Internal IP Bypass - No auth required for localhost and Docker network
-        # This mirrors the logic in mcp_auth.py to allow internal agents to connect
-        # ========================================================================
-        if client_ip in ("127.0.0.1", "::1", "localhost"):
-            logger.debug(f"AUTH_OK | IP: {client_ip} | Method: localhost_bypass")
+        # Only require auth if X-Forwarded-Port is 9100 (external)
+        if forwarded_port != AUTH_REQUIRED_PORT:
+            logger.debug(f"AUTH_OK | IP: {client_ip} | X-Fwd-Port: {forwarded_port_str or 'none'} | Method: port_bypass")
             return await call_next(request)
 
-        if client_ip.startswith(("172.17.", "172.18.", "172.19.", "172.20.",
-                                 "172.21.", "172.22.", "172.23.", "172.24.",
-                                 "172.25.", "172.26.", "172.27.", "172.28.",
-                                 "172.29.", "172.30.", "172.31.", "10.")):
-            logger.debug(f"AUTH_OK | IP: {client_ip} | Method: docker_network_bypass")
-            return await call_next(request)
-
+        # External request (port 9100) → requires authentication
+        logger.debug(f"AUTH_CHECK | IP: {client_ip} | X-Fwd-Port: {forwarded_port} | Path: {path}")
+        
         auth_header = request.headers.get("Authorization", "")
 
         # Check if auth is configured
@@ -105,24 +113,24 @@ class AuthMiddleware(BaseHTTPMiddleware):
         if auth_header.lower().startswith("bearer "):
             token = auth_header[7:].strip()
             if is_valid_token(token):
-                logger.debug(f"AUTH_OK | IP: {client_ip} | Method: bearer | Path: {path}")
+                logger.debug(f"AUTH_OK | IP: {client_ip} | X-Fwd-Port: {forwarded_port} | Method: bearer")
                 return await call_next(request)
             else:
-                logger.warning(f"AUTH_FAIL | IP: {client_ip} | Reason: invalid_bearer | Path: {path}")
+                logger.warning(f"AUTH_FAIL | IP: {client_ip} | Reason: invalid_bearer")
                 return self._unauthorized_response(request, "Invalid bearer token")
 
         # Method 2: Basic Auth
         if auth_header.lower().startswith("basic "):
             username, password = _extract_basic_auth(request)
             if _validate_credentials(username, password):
-                logger.debug(f"AUTH_OK | IP: {client_ip} | Method: basic | User: {username} | Path: {path}")
+                logger.debug(f"AUTH_OK | IP: {client_ip} | X-Fwd-Port: {forwarded_port} | Method: basic | User: {username}")
                 return await call_next(request)
             else:
-                logger.warning(f"AUTH_FAIL | IP: {client_ip} | Reason: invalid_basic | Path: {path}")
+                logger.warning(f"AUTH_FAIL | IP: {client_ip} | Reason: invalid_basic")
                 return self._unauthorized_response(request, "Invalid credentials")
 
         # No auth provided
-        logger.warning(f"AUTH_FAIL | IP: {client_ip} | Reason: no_credentials | Path: {path}")
+        logger.warning(f"AUTH_FAIL | IP: {client_ip} | X-Fwd-Port: {forwarded_port} | Reason: no_credentials | Path: {path}")
         return self._unauthorized_response(request, "Authentication required")
 
     def _unauthorized_response(self, request: Request, detail: str) -> JSONResponse:

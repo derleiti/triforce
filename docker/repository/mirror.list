@@ -1,6 +1,12 @@
-# AILinux Mirror Configuration
-# apt-mirror settings
+# ============================================================================
+# AILinux Mirror Configuration - OPTIMIZED
+# ============================================================================
+# Core: Ubuntu, KDE Neon, Docker, Wine, Steam, Chrome, Node, LibreOffice
+# Dev: VS Code, Lutris
+# AI/GPU: NVIDIA CUDA, Container Toolkit, Intel oneAPI, Graphics Drivers
+# ============================================================================
 
+# --- apt-mirror Settings ---
 set base_path         /var/spool/apt-mirror
 set mirror_path       $base_path/mirror
 set skel_path         $base_path/skel
@@ -8,19 +14,27 @@ set var_path          $base_path/var
 set postmirror_script $var_path/postmirror.sh
 set defaultarch       amd64
 set run_postmirror    1
-set nthreads          20
+set nthreads          50
 set limit_rate        100m
 
 # ============================================================================
-# Ubuntu Noble (24.04) - amd64 only
+# Ubuntu 24.04 LTS (Noble Numbat) - ESSENTIAL ONLY
 # ============================================================================
+
+# --- Main Archive (amd64) ---
 deb-amd64 http://archive.ubuntu.com/ubuntu noble main restricted universe multiverse
 deb-amd64 http://archive.ubuntu.com/ubuntu noble-updates main restricted universe multiverse
-deb-amd64 http://archive.ubuntu.com/ubuntu noble-backports main restricted universe multiverse
-deb-amd64 http://archive.ubuntu.com/ubuntu noble-security main restricted universe multiverse
+
+# --- Security Updates ---
+deb-amd64 http://security.ubuntu.com/ubuntu noble-security main restricted universe multiverse
+
+# --- i386 Support (for Wine, Steam, 32-bit compatibility) ---
+deb-i386 http://archive.ubuntu.com/ubuntu noble main restricted universe multiverse
+deb-i386 http://archive.ubuntu.com/ubuntu noble-updates main restricted universe multiverse
+deb-i386 http://security.ubuntu.com/ubuntu noble-security main restricted universe multiverse
 
 # ============================================================================
-# KDE Neon
+# KDE Neon (User Edition)
 # ============================================================================
 deb-amd64 http://archive.neon.kde.org/user noble main
 
@@ -30,38 +44,83 @@ deb-amd64 http://archive.neon.kde.org/user noble main
 deb-amd64 http://dl.google.com/linux/chrome/deb/ stable main
 
 # ============================================================================
-# WineHQ (amd64 + i386)
+# WineHQ (amd64 + i386 for 32-bit Windows apps)
 # ============================================================================
 deb-amd64 https://dl.winehq.org/wine-builds/ubuntu/ noble main
 deb-i386 https://dl.winehq.org/wine-builds/ubuntu/ noble main
 
 # ============================================================================
-# Docker CE
+# Docker CE (Official)
 # ============================================================================
 deb-amd64 https://download.docker.com/linux/ubuntu noble stable
 
 # ============================================================================
-# Steam (amd64 + i386)
+# Steam (amd64 + i386 for gaming)
 # ============================================================================
 deb-amd64 http://repo.steampowered.com/steam/ stable steam
 deb-i386 http://repo.steampowered.com/steam/ stable steam
 
 # ============================================================================
-# Node.js 20.x
+# Node.js 22.x LTS (Jod)
 # ============================================================================
-deb-amd64 https://deb.nodesource.com/node_20.x nodistro main
+deb-amd64 https://deb.nodesource.com/node_22.x nodistro main
 
 # ============================================================================
-# PPAs
+# LibreOffice Fresh PPA
+# ============================================================================
+deb-amd64 http://ppa.launchpadcontent.net/libreoffice/ppa/ubuntu noble main
+
+# ============================================================================
+# Cappelikan - Mainline Linux Kernels
 # ============================================================================
 deb-amd64 http://ppa.launchpadcontent.net/cappelikan/ppa/ubuntu noble main
 
-# Clean up old packages
+# ============================================================================
+# DEV: Visual Studio Code (Microsoft Official)
+# ============================================================================
+deb-amd64 https://packages.microsoft.com/repos/code stable main
+
+# ============================================================================
+# GAMING: Lutris PPA (DISABLED - no noble support as of Dec 2025)
+# ============================================================================
+# deb-amd64 http://ppa.launchpadcontent.net/lutris-team/lutris/ubuntu noble main
+
+# ============================================================================
+# DRIVERS: NVIDIA Proprietary Drivers PPA
+# ============================================================================
+deb-amd64 http://ppa.launchpadcontent.net/graphics-drivers/ppa/ubuntu noble main
+
+# ============================================================================
+# AI/ML: NVIDIA CUDA Toolkit
+# ============================================================================
+deb-amd64 https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/ /
+
+# ============================================================================
+# AI/ML: NVIDIA Container Toolkit (Docker GPU Support)
+# ============================================================================
+deb-amd64 https://nvidia.github.io/libnvidia-container/stable/deb/amd64 /
+
+# ============================================================================
+# AI/ML: Intel oneAPI (CPU/GPU Compute, MKL, OpenVINO)
+# ============================================================================
+# deb-amd64 https://apt.repos.intel.com/oneapi all main
+
+# ============================================================================
+# Cleanup old/removed packages
+# ============================================================================
 clean http://archive.ubuntu.com/ubuntu
+clean http://security.ubuntu.com/ubuntu
 clean http://archive.neon.kde.org/user
 clean http://dl.google.com/linux/chrome/deb/
 clean https://dl.winehq.org/wine-builds/ubuntu/
 clean https://download.docker.com/linux/ubuntu
 clean http://repo.steampowered.com/steam/
-clean https://deb.nodesource.com/node_20.x
+clean https://deb.nodesource.com/node_22.x
+clean http://ppa.launchpadcontent.net/libreoffice/ppa/ubuntu
 clean http://ppa.launchpadcontent.net/cappelikan/ppa/ubuntu
+clean https://packages.microsoft.com/repos/code
+# clean http://ppa.launchpadcontent.net/lutris-team/lutris/ubuntu
+clean http://ppa.launchpadcontent.net/graphics-drivers/ppa/ubuntu
+clean https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/
+clean https://nvidia.github.io/libnvidia-container/stable/deb/amd64
+clean https://apt.repos.intel.com/oneapi

@@ -329,77 +329,52 @@ def exchange_auth_code(code: str, code_verifier: str = None) -> Optional[str]:
 
 async def require_mcp_auth(request: Request) -> str:
     """
-    Unified MCP authentication supporting multiple methods.
-
-    Supported authentication methods (in order of preference):
-    1. Localhost bypass (no auth required for 127.0.0.1/::1)
-    2. Bearer Token (from OAuth 2.0 flow)
-    3. Basic Auth (username:password from .env)
-
-    Compatible with:
-    - Claude Code CLI
-    - Codex CLI
-    - Gemini CLI
-    - OpenCode CLI
-    - Claude.ai
-    - ChatGPT
-    - Any OAuth 2.0 client
+    Unified MCP authentication - Port-based.
+    
+    X-Forwarded-Port: 9100 → Auth required (external)
+    No X-Forwarded-Port → Bypass (internal/public)
     """
     client_ip = request.client.host if request.client else "unknown"
     auth_header = request.headers.get("Authorization", "")
-
-    # ========================================================================
-    # Localhost Bypass - No auth required for local connections
-    # ========================================================================
-    if client_ip in ("127.0.0.1", "::1", "localhost"):
-        logger.debug(f"AUTH_OK | IP: {client_ip} | Method: localhost_bypass")
-        return "localhost"
-
-    # ========================================================================
-    # Docker Network Bypass - No auth required for internal Docker containers
-    # Covers: 172.17-31.x.x (Docker bridge networks), 10.x.x.x (custom networks)
-    # ========================================================================
-    if client_ip.startswith(("172.17.", "172.18.", "172.19.", "172.20.", 
-                             "172.21.", "172.22.", "172.23.", "172.24.",
-                             "172.25.", "172.26.", "172.27.", "172.28.",
-                             "172.29.", "172.30.", "172.31.", "10.")):
-        logger.debug(f"AUTH_OK | IP: {client_ip} | Method: docker_network_bypass")
-        return "docker_agent"
-
-    # Check if auth is configured
+    
+    # Port-based auth decision
+    forwarded_port = request.headers.get("X-Forwarded-Port", "")
+    
+    # No X-Forwarded-Port = internal/public → bypass
+    if forwarded_port != "9100":
+        logger.debug(f"AUTH_OK | IP: {client_ip} | X-Fwd-Port: {forwarded_port or 'none'} | Method: port_bypass")
+        return "internal"
+    
+    # External request (port 9100) → requires auth
+    logger.debug(f"AUTH_CHECK | IP: {client_ip} | X-Fwd-Port: {forwarded_port}")
+    
     if not MCP_AUTH_USER or not MCP_AUTH_PASS:
-        logger.error("AUTH_ERROR | MCP_OAUTH_USER and MCP_OAUTH_PASS not configured in .env")
+        logger.error("AUTH_ERROR | MCP_OAUTH_USER/PASS not configured")
         raise _unauthorized("Server authentication not configured")
-
-    # ========================================================================
+    
     # Method 1: Bearer Token
-    # ========================================================================
     if auth_header.lower().startswith("bearer "):
         token = auth_header[7:].strip()
         if is_valid_token(token):
             logger.debug(f"AUTH_OK | IP: {client_ip} | Method: bearer")
             return "oauth_client"
         else:
-            logger.warning(f"AUTH_FAIL | IP: {client_ip} | Reason: invalid_bearer_token")
+            logger.warning(f"AUTH_FAIL | IP: {client_ip} | Reason: invalid_bearer")
             raise _unauthorized("Invalid bearer token")
-
-    # ========================================================================
-    # Method 2: Basic Auth (username:password)
-    # ========================================================================
+    
+    # Method 2: Basic Auth
     if auth_header.lower().startswith("basic "):
         username, password = _extract_basic_auth(request)
         if _validate_credentials(username, password):
             logger.debug(f"AUTH_OK | IP: {client_ip} | Method: basic | User: {username}")
             return username
         else:
-            logger.warning(f"AUTH_FAIL | IP: {client_ip} | Reason: invalid_basic_auth")
+            logger.warning(f"AUTH_FAIL | IP: {client_ip} | Reason: invalid_basic")
             raise _unauthorized("Invalid credentials", "Basic")
-
-    # ========================================================================
-    # No valid authentication provided
-    # ========================================================================
+    
+    # No auth provided
     logger.warning(f"AUTH_FAIL | IP: {client_ip} | Reason: no_credentials")
-    raise _unauthorized("Authentication required. Use Bearer token or Basic Auth.")
+    raise _unauthorized("Authentication required")
 
 
 async def issue_token(form_data: OAuth2PasswordRequestForm = Depends()) -> dict:

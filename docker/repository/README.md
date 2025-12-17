@@ -22,7 +22,7 @@ docker compose --profile mirror up -d
 ## Repository hinzufügen (Client)
 
 ```bash
-curl -fsSL "https://repo.ailinux.me:8443/mirror/add-ailinux-repo.sh" | sudo bash
+curl -fsSL "https://repo.ailinux.me/mirror/add-ailinux-repo.sh" | sudo bash
 ```
 
 ## Paket erstellen

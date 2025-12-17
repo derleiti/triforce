@@ -67,9 +67,10 @@ class Settings(BaseSettings):
     # Gemini
     gemini_api_key: str | None = Field(default=None, validation_alias="GEMINI_API_KEY")
 
-    # Mistral / Mixtral
-    mixtral_api_key: str | None = Field(default=None, validation_alias="MIXTRAL_API_KEY")
-    ailinux_mixtral_organisation_id: str | None = Field(default=None, validation_alias="AILINUX_MIXTRAL_ORG_ID")
+    # Mistral
+    mistral_api_key: str | None = Field(default=None, validation_alias="MISTRAL_API_KEY")
+    mistral_organisation_id: str | None = Field(default=None, validation_alias="MISTRAL_ORG_ID")
+    codestral_api_key: str | None = Field(default=None, validation_alias="CODESTRAL_API_KEY")
 
     # Anthropic Claude
     anthropic_api_key: str | None = Field(default=None, validation_alias="ANTHROPIC_API_KEY")
@@ -134,6 +135,11 @@ class Settings(BaseSettings):
     cloudflare_account_id: str | None = Field(default=None, validation_alias="CLOUDFLARE_ACCOUNT_ID")
     cloudflare_api_token: str | None = Field(default=None, validation_alias="CLOUDFLARE_API_TOKEN")
     cloudflare_default_model: str = Field(default="@cf/meta/llama-3.3-70b-instruct-fp8-fast", validation_alias="CLOUDFLARE_DEFAULT_MODEL")
+
+    # GitHub Models (Free with PAT - GPT-4o, Llama, DeepSeek, etc.)
+    github_token: str | None = Field(default=None, validation_alias="GITHUB_TOKEN")
+    github_models_base_url: str = Field(default="https://models.github.ai/inference", validation_alias="GITHUB_MODELS_BASE_URL")
+    github_models_timeout_ms: int = Field(default=60000, validation_alias="GITHUB_MODELS_TIMEOUT_MS")
 
     # Jina AI (Free Embeddings)
     jina_api_key: str | None = Field(default=None, validation_alias="JINA_API_KEY")

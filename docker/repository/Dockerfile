@@ -1,8 +1,8 @@
 FROM debian:stable-slim
 
-# Enable i386 architecture
+# Enable i386 architecture for Wine/Steam
 RUN dpkg --add-architecture i386 && \
-    apt-get update && apt-get install -y \
+    apt-get update && apt-get install -y --no-install-recommends \
         apt-mirror \
         cron \
         wget \
@@ -11,42 +11,49 @@ RUN dpkg --add-architecture i386 && \
         apt-utils \
         dpkg-dev \
         ca-certificates \
+        xz-utils \
+        gzip \
         pv \
         progress \
         procps && \
     rm -rf /var/lib/apt/lists/*
 
-# Mirror directories
-RUN mkdir -p /var/spool/apt-mirror /repo /usr/share/keyrings
+# Create directories
+RUN mkdir -p \
+    /var/spool/apt-mirror/mirror \
+    /var/spool/apt-mirror/var \
+    /repo \
+    /usr/share/keyrings \
+    /var/log/ailinux
 
-# Mirror config + scripts
+# Copy mirror configuration
 COPY mirror.list /etc/apt/mirror.list
+
+# Copy scripts
 COPY update-mirror.sh /usr/local/bin/update-mirror.sh
 COPY generate-index.sh /repo/generate-index.sh
+COPY fix-packages-compression.sh /usr/local/bin/fix-packages-compression.sh
 
-RUN chmod +x /usr/local/bin/update-mirror.sh /repo/generate-index.sh
+RUN chmod +x \
+    /usr/local/bin/update-mirror.sh \
+    /repo/generate-index.sh \
+    /usr/local/bin/fix-packages-compression.sh
 
-# Google Chrome key
-RUN curl -fsSL https://dl.google.com/linux/linux_signing_key.pub \
-    | gpg --dearmor > /usr/share/keyrings/google-linux-keyring.gpg
-
-# WineHQ key
-RUN curl -fsSL https://dl.winehq.org/wine-builds/winehq.key \
-    | gpg --dearmor > /usr/share/keyrings/winehq-archive-keyring.gpg
-
-# Cappelikan PPA Key — sauber importieren
-# RICHTIGER COPY-PFAD ohne Slash!
-COPY cappelikan-ppa.asc /tmp/cappelikan-ppa.asc
-
-RUN gpg --import /tmp/cappelikan-ppa.asc && \
-    gpg --export --output /usr/share/keyrings/launchpad-cappelikan.gpg && \
-    rm /tmp/cappelikan-ppa.asc
-
-# Cronjob
-RUN echo "0 3 * * * /usr/local/bin/update-mirror.sh" > /etc/cron.d/aptmirror && \
+# Cronjob for automatic updates (3 AM daily)
+RUN echo "0 3 * * * /usr/local/bin/update-mirror.sh >> /var/log/ailinux/cron.log 2>&1" > /etc/cron.d/aptmirror && \
     chmod 0644 /etc/cron.d/aptmirror && \
     crontab /etc/cron.d/aptmirror
 
+# Entrypoint script to copy keyrings at startup
+RUN echo '#!/bin/bash\n\
+if [ -d /keyrings ] && [ "$(ls -A /keyrings 2>/dev/null)" ]; then\n\
+    cp -f /keyrings/*.gpg /usr/share/keyrings/ 2>/dev/null || true\n\
+    chmod 644 /usr/share/keyrings/*.gpg 2>/dev/null || true\n\
+    echo "[apt-mirror] Loaded $(ls /usr/share/keyrings/*.gpg 2>/dev/null | wc -l) GPG keys"\n\
+fi\n\
+exec "$@"' > /entrypoint.sh && chmod +x /entrypoint.sh
+
 EXPOSE 80
 
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["cron", "-f"]

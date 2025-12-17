@@ -1,20 +1,27 @@
 """
-Hardware Acceleration Service - Universal Auto-Detection
-=========================================================
+Hardware Acceleration Service - Universal Auto-Detection v2.0
+=============================================================
 
-Automatische Erkennung und Nutzung von:
+Optimiert für:
+- Intel Core Ultra (Arrow Lake) - Hybrid P/E/LP-E Core Architecture
+- Intel Alder Lake / Raptor Lake Hybrid CPUs
+- AMD Ryzen (Zen 4/5)
 - NVIDIA CUDA (cuDNN, TensorRT)
 - AMD ROCm (HIP, MIOpen)
 - Intel oneAPI (oneDNN, OpenVINO)
-- CPU Optimierungen (AVX2, AVX-512, OpenBLAS, MKL)
 
-Beim Start wird die beste verfügbare Hardware erkannt und konfiguriert.
+Changelog v2.0:
+- Arrow Lake Support (kein AVX-512!)
+- Hybrid Core Detection (P-Cores, E-Cores, LP-E-Cores)
+- Uvicorn Worker Empfehlungen
+- Verbesserte Thread-Affinität für Hybrid CPUs
 """
 
 import os
 import logging
 import platform
 import subprocess
+import re
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Dict, List, Optional, Any
@@ -24,26 +31,38 @@ logger = logging.getLogger("ailinux.hardware")
 
 
 class AcceleratorType(Enum):
-    """Verfügbare Beschleuniger-Typen"""
-    CUDA = auto()       # NVIDIA CUDA
-    ROCM = auto()       # AMD ROCm/HIP
-    ONEAPI = auto()     # Intel oneAPI
-    METAL = auto()      # Apple Metal (macOS)
-    VULKAN = auto()     # Vulkan Compute
-    OPENCL = auto()     # OpenCL
-    CPU_AVX512 = auto() # CPU mit AVX-512
-    CPU_AVX2 = auto()   # CPU mit AVX2
-    CPU_SSE = auto()    # CPU mit SSE4.2
-    CPU_BASIC = auto()  # Basis CPU
+    CUDA = auto()
+    ROCM = auto()
+    ONEAPI = auto()
+    METAL = auto()
+    VULKAN = auto()
+    OPENCL = auto()
+    CPU_AVX512 = auto()
+    CPU_AVX2 = auto()
+    CPU_SSE = auto()
+    CPU_BASIC = auto()
+
+
+class CPUArchitecture(Enum):
+    INTEL_ARROW_LAKE = "arrow_lake"
+    INTEL_METEOR_LAKE = "meteor_lake"
+    INTEL_RAPTOR_LAKE = "raptor_lake"
+    INTEL_ALDER_LAKE = "alder_lake"
+    INTEL_LEGACY = "intel_legacy"
+    AMD_ZEN5 = "zen5"
+    AMD_ZEN4 = "zen4"
+    AMD_ZEN3 = "zen3"
+    AMD_LEGACY = "amd_legacy"
+    APPLE_SILICON = "apple_silicon"
+    UNKNOWN = "unknown"
 
 
 @dataclass
 class GPUDevice:
-    """GPU-Geräteinformationen"""
     index: int
     name: str
-    memory_total: int  # in MB
-    memory_free: int   # in MB
+    memory_total: int
+    memory_free: int
     compute_capability: str = ""
     driver_version: str = ""
     accelerator: AcceleratorType = AcceleratorType.CPU_BASIC
@@ -51,7 +70,6 @@ class GPUDevice:
 
 @dataclass
 class CPUFeatures:
-    """CPU-Feature-Flags"""
     avx512: bool = False
     avx2: bool = False
     avx: bool = False
@@ -59,9 +77,22 @@ class CPUFeatures:
     sse42: bool = False
     sse41: bool = False
     aes: bool = False
+    sha_ni: bool = False
+    avx_vnni: bool = False
     cores: int = 1
     threads: int = 1
+    p_cores: int = 0
+    e_cores: int = 0
+    lpe_cores: int = 0
+    sockets: int = 1
+    l3_cache_mb: int = 0
     model: str = "Unknown"
+    vendor: str = "Unknown"
+    family: int = 0
+    model_id: int = 0
+    stepping: int = 0
+    architecture: CPUArchitecture = CPUArchitecture.UNKNOWN
+    max_mhz: float = 0.0
 
     @property
     def best_simd(self) -> AcceleratorType:
@@ -73,130 +104,211 @@ class CPUFeatures:
             return AcceleratorType.CPU_SSE
         return AcceleratorType.CPU_BASIC
 
+    @property
+    def is_hybrid(self) -> bool:
+        return self.p_cores > 0 and self.e_cores > 0
+
+    @property
+    def is_arrow_lake(self) -> bool:
+        return self.architecture == CPUArchitecture.INTEL_ARROW_LAKE
+
 
 @dataclass
 class HardwareConfig:
-    """Komplette Hardware-Konfiguration"""
     primary_accelerator: AcceleratorType = AcceleratorType.CPU_BASIC
     available_accelerators: List[AcceleratorType] = field(default_factory=list)
     gpus: List[GPUDevice] = field(default_factory=list)
     cpu: CPUFeatures = field(default_factory=CPUFeatures)
-    total_gpu_memory: int = 0  # MB
-    total_system_memory: int = 0  # MB
+    total_gpu_memory: int = 0
+    total_system_memory: int = 0
     recommended_batch_size: int = 1
     recommended_threads: int = 4
+    recommended_workers: int = 4
+    recommended_p_core_threads: int = 0
+    recommended_e_core_threads: int = 0
     env_vars: Dict[str, str] = field(default_factory=dict)
 
 
 class HardwareDetector:
-    """Hardware-Erkennung und Konfiguration"""
+    """Hardware-Erkennung v2.0 - Optimiert für Intel Hybrid CPUs"""
+
+    INTEL_ARCH_MAP = {
+        (6, 198): CPUArchitecture.INTEL_ARROW_LAKE,
+        (6, 170): CPUArchitecture.INTEL_METEOR_LAKE,
+        (6, 183): CPUArchitecture.INTEL_RAPTOR_LAKE,
+        (6, 191): CPUArchitecture.INTEL_RAPTOR_LAKE,
+        (6, 151): CPUArchitecture.INTEL_ALDER_LAKE,
+        (6, 154): CPUArchitecture.INTEL_ALDER_LAKE,
+    }
 
     def __init__(self):
         self.config = HardwareConfig()
         self._detected = False
 
     def detect_all(self) -> HardwareConfig:
-        """Erkennt alle verfügbare Hardware"""
         if self._detected:
             return self.config
 
-        logger.info("=== Hardware Auto-Detection gestartet ===")
-
-        # CPU Features erkennen
+        logger.info("=== Hardware Auto-Detection v2.0 ===")
         self._detect_cpu()
-
-        # GPU Detection in Reihenfolge der Präferenz
-        cuda_found = self._detect_cuda()
-        rocm_found = self._detect_rocm()
-        oneapi_found = self._detect_oneapi()
-
-        # System Memory
+        self._detect_hybrid_topology()
+        self._detect_cuda()
+        self._detect_rocm()
+        self._detect_oneapi()
         self._detect_system_memory()
-
-        # Primären Accelerator bestimmen
         self._determine_primary_accelerator()
-
-        # Optimale Konfiguration berechnen
         self._calculate_optimal_config()
-
-        # Environment Variables setzen
         self._setup_environment()
-
         self._detected = True
         self._log_config()
-
         return self.config
 
+    def _identify_architecture(self) -> None:
+        vendor = self.config.cpu.vendor.lower()
+        family = self.config.cpu.family
+        model = self.config.cpu.model_id
+        model_name = self.config.cpu.model.lower()
+
+        if "intel" in vendor or "genuineintel" in vendor:
+            arch = self.INTEL_ARCH_MAP.get((family, model))
+            if arch:
+                self.config.cpu.architecture = arch
+            elif "core ultra" in model_name:
+                if any(x in model_name for x in ["265", "285", "245", "225"]):
+                    self.config.cpu.architecture = CPUArchitecture.INTEL_ARROW_LAKE
+                else:
+                    self.config.cpu.architecture = CPUArchitecture.INTEL_METEOR_LAKE
+            elif "13th gen" in model_name or "14th gen" in model_name:
+                self.config.cpu.architecture = CPUArchitecture.INTEL_RAPTOR_LAKE
+            elif "12th gen" in model_name:
+                self.config.cpu.architecture = CPUArchitecture.INTEL_ALDER_LAKE
+            else:
+                self.config.cpu.architecture = CPUArchitecture.INTEL_LEGACY
+        elif "amd" in vendor:
+            if "9000" in model_name:
+                self.config.cpu.architecture = CPUArchitecture.AMD_ZEN5
+            elif "7000" in model_name:
+                self.config.cpu.architecture = CPUArchitecture.AMD_ZEN4
+            elif "5000" in model_name:
+                self.config.cpu.architecture = CPUArchitecture.AMD_ZEN3
+
     def _detect_cpu(self) -> None:
-        """CPU-Features erkennen"""
         try:
-            # Linux: /proc/cpuinfo parsen
             if Path("/proc/cpuinfo").exists():
                 cpuinfo = Path("/proc/cpuinfo").read_text()
 
-                # Model Name
                 for line in cpuinfo.split("\n"):
                     if "model name" in line:
                         self.config.cpu.model = line.split(":")[1].strip()
                         break
 
-                # Flags
+                for line in cpuinfo.split("\n"):
+                    if "vendor_id" in line:
+                        self.config.cpu.vendor = line.split(":")[1].strip()
+                        break
+
+                for line in cpuinfo.split("\n"):
+                    if line.startswith("cpu family"):
+                        self.config.cpu.family = int(line.split(":")[1].strip())
+                    elif line.startswith("model") and "name" not in line:
+                        self.config.cpu.model_id = int(line.split(":")[1].strip())
+                    elif line.startswith("stepping"):
+                        self.config.cpu.stepping = int(line.split(":")[1].strip())
+
+                self._identify_architecture()
+
                 for line in cpuinfo.split("\n"):
                     if "flags" in line:
-                        flags = line.split(":")[1].lower()
-                        self.config.cpu.avx512 = "avx512" in flags or "avx512f" in flags
+                        flags = line.split(":")[1].lower().split()
+
+                        # ARROW LAKE HAT KEIN AVX-512!
+                        if self.config.cpu.is_arrow_lake:
+                            self.config.cpu.avx512 = False
+                            logger.info("Arrow Lake: AVX-512 deaktiviert (Hardware-Limitation)")
+                        else:
+                            self.config.cpu.avx512 = "avx512f" in flags
+
                         self.config.cpu.avx2 = "avx2" in flags
-                        self.config.cpu.avx = "avx " in flags or flags.endswith("avx")
+                        self.config.cpu.avx = "avx" in flags
                         self.config.cpu.fma = "fma" in flags
                         self.config.cpu.sse42 = "sse4_2" in flags
                         self.config.cpu.sse41 = "sse4_1" in flags
                         self.config.cpu.aes = "aes" in flags
+                        self.config.cpu.sha_ni = "sha_ni" in flags
+                        self.config.cpu.avx_vnni = "avx_vnni" in flags
                         break
 
-                # Cores/Threads
                 self.config.cpu.cores = cpuinfo.count("processor")
-                self.config.cpu.threads = self.config.cpu.cores  # Vereinfacht
-
-            # macOS
-            elif platform.system() == "Darwin":
-                result = subprocess.run(
-                    ["sysctl", "-n", "machdep.cpu.brand_string"],
-                    capture_output=True, text=True
-                )
-                self.config.cpu.model = result.stdout.strip()
-
-                result = subprocess.run(
-                    ["sysctl", "-n", "hw.ncpu"],
-                    capture_output=True, text=True
-                )
-                self.config.cpu.cores = int(result.stdout.strip())
                 self.config.cpu.threads = self.config.cpu.cores
 
-                # Apple Silicon hat keine x86 SIMD
-                if "Apple" in self.config.cpu.model:
-                    self.config.cpu.avx2 = False
-                    self.config.cpu.avx = False
-
-            # Füge CPU-Accelerator hinzu
+            self._parse_lscpu()
             self.config.available_accelerators.append(self.config.cpu.best_simd)
 
             logger.info(f"CPU: {self.config.cpu.model}")
+            logger.info(f"  Architektur: {self.config.cpu.architecture.value}")
             logger.info(f"  Cores: {self.config.cpu.cores}, AVX2: {self.config.cpu.avx2}, AVX-512: {self.config.cpu.avx512}")
+            if self.config.cpu.avx_vnni:
+                logger.info("  AVX-VNNI: aktiviert (AI-Beschleunigung)")
 
         except Exception as e:
             logger.warning(f"CPU Detection Fehler: {e}")
             self.config.available_accelerators.append(AcceleratorType.CPU_BASIC)
 
-    def _detect_cuda(self) -> bool:
-        """NVIDIA CUDA erkennen"""
+    def _parse_lscpu(self) -> None:
         try:
-            # nvidia-smi verfügbar?
+            result = subprocess.run(["lscpu"], capture_output=True, text=True, timeout=5)
+            if result.returncode != 0:
+                return
+            for line in result.stdout.split("\n"):
+                if "l3 cache" in line.lower():
+                    match = re.search(r"(\d+)", line.split(":")[1])
+                    if match:
+                        val = int(match.group(1))
+                        self.config.cpu.l3_cache_mb = val if val < 1000 else val // 1024
+                if "cpu max mhz" in line.lower():
+                    match = re.search(r"([\d.]+)", line.split(":")[1])
+                    if match:
+                        self.config.cpu.max_mhz = float(match.group(1))
+        except Exception:
+            pass
+
+    def _detect_hybrid_topology(self) -> None:
+        if self.config.cpu.architecture not in [
+            CPUArchitecture.INTEL_ARROW_LAKE,
+            CPUArchitecture.INTEL_METEOR_LAKE,
+            CPUArchitecture.INTEL_RAPTOR_LAKE,
+            CPUArchitecture.INTEL_ALDER_LAKE,
+        ]:
+            return
+
+        model = self.config.cpu.model.lower()
+        total = self.config.cpu.cores
+
+        # Bekannte Konfigurationen
+        if "ultra 7 265" in model:
+            self.config.cpu.p_cores = 8
+            self.config.cpu.e_cores = 4
+            self.config.cpu.lpe_cores = 8
+        elif "ultra 9 285" in model:
+            self.config.cpu.p_cores = 8
+            self.config.cpu.e_cores = 16
+        elif "ultra 5 245" in model:
+            self.config.cpu.p_cores = 6
+            self.config.cpu.e_cores = 8
+        else:
+            self.config.cpu.p_cores = max(4, total * 6 // 10)
+            self.config.cpu.e_cores = total - self.config.cpu.p_cores
+
+        if self.config.cpu.p_cores > 0:
+            logger.info(f"  Hybrid: {self.config.cpu.p_cores}P + {self.config.cpu.e_cores}E + {self.config.cpu.lpe_cores}LP-E")
+
+    def _detect_cuda(self) -> bool:
+        try:
             result = subprocess.run(
                 ["nvidia-smi", "--query-gpu=index,name,memory.total,memory.free,driver_version,compute_cap",
                  "--format=csv,noheader,nounits"],
                 capture_output=True, text=True, timeout=5
             )
-
             if result.returncode != 0:
                 return False
 
@@ -219,299 +331,218 @@ class HardwareDetector:
 
             if self.config.gpus:
                 self.config.available_accelerators.append(AcceleratorType.CUDA)
-                logger.info(f"CUDA: {len(self.config.gpus)} GPU(s) erkannt")
-                for gpu in self.config.gpus:
-                    logger.info(f"  [{gpu.index}] {gpu.name} - {gpu.memory_total}MB VRAM")
+                logger.info(f"CUDA: {len(self.config.gpus)} GPU(s)")
                 return True
-
         except FileNotFoundError:
             pass
-        except Exception as e:
-            logger.debug(f"CUDA Detection: {e}")
-
         return False
 
     def _detect_rocm(self) -> bool:
-        """AMD ROCm erkennen"""
         try:
-            # rocminfo verfügbar?
-            result = subprocess.run(
-                ["rocminfo"],
-                capture_output=True, text=True, timeout=10
-            )
-
+            result = subprocess.run(["rocminfo"], capture_output=True, text=True, timeout=10)
             if result.returncode != 0:
                 return False
 
-            # Parse rocminfo output
             gpu_count = 0
-            current_gpu = None
-
             for line in result.stdout.split("\n"):
                 if "Name:" in line and "gfx" in line.lower():
-                    # AMD GPU gefunden
-                    name = line.split(":")[-1].strip()
-                    current_gpu = GPUDevice(
-                        index=gpu_count,
-                        name=name,
-                        memory_total=0,
-                        memory_free=0,
-                        accelerator=AcceleratorType.ROCM
-                    )
                     gpu_count += 1
-                elif "Size:" in line and current_gpu and "bytes" in line.lower():
-                    # Memory Size
-                    try:
-                        size_str = line.split(":")[-1].strip().split()[0]
-                        current_gpu.memory_total = int(size_str) // (1024 * 1024)
-                        current_gpu.memory_free = current_gpu.memory_total
-                        self.config.gpus.append(current_gpu)
-                        self.config.total_gpu_memory += current_gpu.memory_total
-                        current_gpu = None
-                    except (ValueError, IndexError) as e:
-                        logger.debug(f"Could not parse GPU memory size: {e}")
 
             if gpu_count > 0:
                 self.config.available_accelerators.append(AcceleratorType.ROCM)
-                logger.info(f"ROCm: {gpu_count} GPU(s) erkannt")
+                logger.info(f"ROCm: {gpu_count} GPU(s)")
                 return True
-
         except FileNotFoundError:
             pass
-        except Exception as e:
-            logger.debug(f"ROCm Detection: {e}")
-
         return False
 
     def _detect_oneapi(self) -> bool:
-        """Intel oneAPI erkennen"""
-        try:
-            # Check for Intel GPU via sycl-ls or clinfo
-            oneapi_root = os.environ.get("ONEAPI_ROOT", "/opt/intel/oneapi")
-
-            if Path(oneapi_root).exists():
-                self.config.available_accelerators.append(AcceleratorType.ONEAPI)
-                logger.info("Intel oneAPI: Installation erkannt")
-                return True
-
-            # Check for Intel GPU via OpenCL
-            result = subprocess.run(
-                ["clinfo", "-l"],
-                capture_output=True, text=True, timeout=5
-            )
-
-            if "Intel" in result.stdout:
-                self.config.available_accelerators.append(AcceleratorType.OPENCL)
-                logger.info("Intel OpenCL: GPU erkannt")
-                return True
-
-        except FileNotFoundError:
-            pass
-        except Exception as e:
-            logger.debug(f"oneAPI Detection: {e}")
-
+        if Path("/opt/intel/oneapi").exists():
+            self.config.available_accelerators.append(AcceleratorType.ONEAPI)
+            logger.info("Intel oneAPI: erkannt")
+            return True
         return False
 
     def _detect_system_memory(self) -> None:
-        """System-Speicher erkennen"""
         try:
             if Path("/proc/meminfo").exists():
                 meminfo = Path("/proc/meminfo").read_text()
                 for line in meminfo.split("\n"):
                     if "MemTotal:" in line:
-                        # Format: MemTotal: 12345678 kB
                         kb = int(line.split()[1])
-                        self.config.total_system_memory = kb // 1024  # MB
+                        self.config.total_system_memory = kb // 1024
                         break
-
             logger.info(f"System RAM: {self.config.total_system_memory} MB")
-
         except Exception as e:
-            logger.warning(f"Memory Detection Fehler: {e}")
+            logger.warning(f"Memory Detection: {e}")
 
     def _determine_primary_accelerator(self) -> None:
-        """Bestimmt den primären Beschleuniger"""
         priority = [
             AcceleratorType.CUDA,
             AcceleratorType.ROCM,
             AcceleratorType.ONEAPI,
-            AcceleratorType.METAL,
             AcceleratorType.CPU_AVX512,
             AcceleratorType.CPU_AVX2,
             AcceleratorType.CPU_SSE,
             AcceleratorType.CPU_BASIC,
         ]
-
         for accel in priority:
             if accel in self.config.available_accelerators:
                 self.config.primary_accelerator = accel
                 break
-
         logger.info(f"Primärer Accelerator: {self.config.primary_accelerator.name}")
 
     def _calculate_optimal_config(self) -> None:
-        """Berechnet optimale Konfiguration"""
-        # Batch Size basierend auf GPU Memory
-        if self.config.total_gpu_memory > 0:
-            # Grobe Heuristik: 1GB VRAM = Batch Size 8
-            self.config.recommended_batch_size = min(
-                64, max(1, self.config.total_gpu_memory // 1024 * 8)
-            )
-        else:
-            # CPU: konservativer
-            self.config.recommended_batch_size = min(8, self.config.cpu.cores)
+        cpu = self.config.cpu
 
-        # Thread Count
-        self.config.recommended_threads = max(4, self.config.cpu.cores - 2)
+        if self.config.total_gpu_memory > 0:
+            self.config.recommended_batch_size = min(64, max(1, self.config.total_gpu_memory // 1024 * 8))
+        else:
+            self.config.recommended_batch_size = min(8, cpu.cores)
+
+        # Thread-Empfehlungen für Hybrid CPUs
+        if cpu.is_hybrid:
+            self.config.recommended_p_core_threads = cpu.p_cores
+            self.config.recommended_e_core_threads = cpu.e_cores
+            # Für I/O-bound FastAPI: Alle Cores nutzen
+            self.config.recommended_threads = cpu.cores
+            # Workers: 2 * P-Cores + 1 (P-Cores sind wichtiger für Request-Handling)
+            self.config.recommended_workers = min(cpu.p_cores * 2 + 1, cpu.cores)
+        else:
+            self.config.recommended_threads = max(4, cpu.cores - 2)
+            self.config.recommended_workers = max(4, cpu.cores - 2)
+
+        logger.info(f"  Empfohlene Workers: {self.config.recommended_workers}")
+        logger.info(f"  Empfohlene Threads: {self.config.recommended_threads}")
 
     def _setup_environment(self) -> None:
-        """Setzt optimale Environment Variables"""
         env = self.config.env_vars
+        cpu = self.config.cpu
 
-        # === CPU Optimierungen ===
+        # Thread-Konfiguration
         env["OMP_NUM_THREADS"] = str(self.config.recommended_threads)
         env["MKL_NUM_THREADS"] = str(self.config.recommended_threads)
         env["OPENBLAS_NUM_THREADS"] = str(self.config.recommended_threads)
-        env["VECLIB_MAXIMUM_THREADS"] = str(self.config.recommended_threads)
         env["NUMEXPR_NUM_THREADS"] = str(self.config.recommended_threads)
 
-        # ONNX Runtime
-        env["ORT_DISABLE_ALL"] = "0"
-
-        # === GPU-spezifische Settings ===
-        if AcceleratorType.CUDA in self.config.available_accelerators:
-            # CUDA Optimierungen
-            env["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-            env["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
-            env["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:512"
-
-            # cuDNN
-            env["TF_CUDNN_USE_AUTOTUNE"] = "1"
-            env["CUDNN_FRONTEND_LOG_FILE"] = "/dev/null"
-
-        if AcceleratorType.ROCM in self.config.available_accelerators:
-            # ROCm/HIP Optimierungen
-            env["HSA_OVERRIDE_GFX_VERSION"] = "10.3.0"  # Fallback für neuere GPUs
-            env["HIP_VISIBLE_DEVICES"] = "0"
-            env["ROCM_PATH"] = "/opt/rocm"
-            env["HSA_ENABLE_SDMA"] = "0"  # Stabilität
-
-        if AcceleratorType.ONEAPI in self.config.available_accelerators:
-            # Intel oneAPI
-            env["SYCL_DEVICE_FILTER"] = "level_zero:gpu"
-            env["EnableImplicitScaling"] = "1"
-
-        # === Allgemeine Optimierungen ===
-        env["TOKENIZERS_PARALLELISM"] = "true"
-        env["TRANSFORMERS_OFFLINE"] = "0"
-
-        # AVX-512 spezifisch
-        if self.config.cpu.avx512:
+        # DNNL ISA - WICHTIG: Arrow Lake hat kein AVX-512!
+        if cpu.avx512 and not cpu.is_arrow_lake:
             env["DNNL_MAX_CPU_ISA"] = "AVX512_CORE_AMX"
-        elif self.config.cpu.avx2:
+        elif cpu.avx2:
             env["DNNL_MAX_CPU_ISA"] = "AVX2"
 
-        # Environment setzen
+        # Intel Hybrid CPU Optimierungen
+        if cpu.is_hybrid:
+            env["MALLOC_ARENA_MAX"] = "4"
+            env["KMP_AFFINITY"] = "granularity=fine,compact"
+            env["KMP_BLOCKTIME"] = "0"
+            
+            if cpu.is_arrow_lake:
+                # Arrow Lake spezifisch
+                env["GOMP_CPU_AFFINITY"] = f"0-{cpu.cores - 1}"
+                env["MALLOC_TRIM_THRESHOLD_"] = "131072"
+                env["MALLOC_MMAP_MAX_"] = "65536"
+                logger.info("Arrow Lake Optimierungen aktiviert")
+
+        # GPU Settings
+        if AcceleratorType.CUDA in self.config.available_accelerators:
+            env["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+            env["TF_FORCE_GPU_ALLOW_GROWTH"] = "true"
+
+        if AcceleratorType.ROCM in self.config.available_accelerators:
+            env["HSA_OVERRIDE_GFX_VERSION"] = "10.3.0"
+            env["ROCM_PATH"] = "/opt/rocm"
+
+        env["TOKENIZERS_PARALLELISM"] = "true"
+
         for key, value in env.items():
             os.environ[key] = value
 
     def _log_config(self) -> None:
-        """Loggt die finale Konfiguration"""
         logger.info("=== Hardware-Konfiguration ===")
         logger.info(f"  Primary: {self.config.primary_accelerator.name}")
-        logger.info(f"  Available: {[a.name for a in self.config.available_accelerators]}")
         logger.info(f"  GPUs: {len(self.config.gpus)}")
         logger.info(f"  GPU VRAM: {self.config.total_gpu_memory} MB")
         logger.info(f"  System RAM: {self.config.total_system_memory} MB")
-        logger.info(f"  Recommended Batch: {self.config.recommended_batch_size}")
-        logger.info(f"  Recommended Threads: {self.config.recommended_threads}")
-        logger.info("================================")
+        logger.info(f"  Workers: {self.config.recommended_workers}")
+        logger.info(f"  Threads: {self.config.recommended_threads}")
+        logger.info("==============================")
 
     def get_pytorch_device(self) -> str:
-        """Gibt das optimale PyTorch Device zurück"""
         if AcceleratorType.CUDA in self.config.available_accelerators:
             return "cuda"
         elif AcceleratorType.ROCM in self.config.available_accelerators:
-            return "cuda"  # PyTorch ROCm nutzt auch "cuda"
+            return "cuda"
         elif AcceleratorType.METAL in self.config.available_accelerators:
             return "mps"
         return "cpu"
 
     def get_onnx_providers(self) -> List[str]:
-        """Gibt optimale ONNX Runtime Providers zurück"""
         providers = []
-
         if AcceleratorType.CUDA in self.config.available_accelerators:
             providers.extend(["CUDAExecutionProvider", "TensorrtExecutionProvider"])
-
         if AcceleratorType.ROCM in self.config.available_accelerators:
             providers.append("ROCMExecutionProvider")
-
         if AcceleratorType.ONEAPI in self.config.available_accelerators:
-            providers.append("DmlExecutionProvider")
-
-        if AcceleratorType.OPENCL in self.config.available_accelerators:
             providers.append("OpenVINOExecutionProvider")
-
-        # CPU Provider immer als Fallback
         providers.append("CPUExecutionProvider")
-
         return providers
 
     def get_llama_cpp_args(self) -> Dict[str, Any]:
-        """Gibt optimale llama.cpp Argumente zurück"""
         args = {
             "n_threads": self.config.recommended_threads,
             "n_batch": self.config.recommended_batch_size * 512,
         }
-
         if AcceleratorType.CUDA in self.config.available_accelerators:
-            args["n_gpu_layers"] = -1  # Alle Layer auf GPU
-            args["main_gpu"] = 0
-            args["tensor_split"] = None
-
+            args["n_gpu_layers"] = -1
         elif AcceleratorType.ROCM in self.config.available_accelerators:
             args["n_gpu_layers"] = -1
-
         return args
 
+    def get_uvicorn_config(self) -> Dict[str, Any]:
+        """Gibt optimale Uvicorn-Konfiguration zurück"""
+        return {
+            "workers": self.config.recommended_workers,
+            "loop": "uvloop",
+            "http": "httptools",
+            "limit_concurrency": self.config.recommended_workers * 10,
+            "timeout_keep_alive": 30,
+        }
+
     def to_dict(self) -> Dict[str, Any]:
-        """Exportiert Konfiguration als Dictionary"""
         return {
             "primary_accelerator": self.config.primary_accelerator.name,
             "available_accelerators": [a.name for a in self.config.available_accelerators],
-            "gpus": [
-                {
-                    "index": g.index,
-                    "name": g.name,
-                    "memory_total_mb": g.memory_total,
-                    "memory_free_mb": g.memory_free,
-                    "type": g.accelerator.name,
-                }
-                for g in self.config.gpus
-            ],
+            "gpus": [{"index": g.index, "name": g.name, "memory_mb": g.memory_total} for g in self.config.gpus],
             "cpu": {
                 "model": self.config.cpu.model,
+                "architecture": self.config.cpu.architecture.value,
                 "cores": self.config.cpu.cores,
+                "p_cores": self.config.cpu.p_cores,
+                "e_cores": self.config.cpu.e_cores,
+                "lpe_cores": self.config.cpu.lpe_cores,
                 "avx2": self.config.cpu.avx2,
                 "avx512": self.config.cpu.avx512,
-                "fma": self.config.cpu.fma,
+                "avx_vnni": self.config.cpu.avx_vnni,
+                "l3_cache_mb": self.config.cpu.l3_cache_mb,
+                "max_mhz": self.config.cpu.max_mhz,
             },
             "total_gpu_memory_mb": self.config.total_gpu_memory,
             "total_system_memory_mb": self.config.total_system_memory,
             "recommended_batch_size": self.config.recommended_batch_size,
             "recommended_threads": self.config.recommended_threads,
+            "recommended_workers": self.config.recommended_workers,
+            "uvicorn_config": self.get_uvicorn_config(),
             "pytorch_device": self.get_pytorch_device(),
             "onnx_providers": self.get_onnx_providers(),
         }
 
 
-# === Singleton Instance ===
+# === Singleton ===
 _detector: Optional[HardwareDetector] = None
 
 
 def get_hardware_config() -> HardwareConfig:
-    """Gibt die Hardware-Konfiguration zurück (cached)"""
     global _detector
     if _detector is None:
         _detector = HardwareDetector()
@@ -520,7 +551,6 @@ def get_hardware_config() -> HardwareConfig:
 
 
 def get_hardware_detector() -> HardwareDetector:
-    """Gibt den Hardware-Detector zurück"""
     global _detector
     if _detector is None:
         _detector = HardwareDetector()
@@ -529,28 +559,23 @@ def get_hardware_detector() -> HardwareDetector:
 
 
 def get_device() -> str:
-    """Shortcut für PyTorch Device"""
     return get_hardware_detector().get_pytorch_device()
 
 
 def get_threads() -> int:
-    """Shortcut für optimale Thread-Anzahl"""
     return get_hardware_config().recommended_threads
 
 
+def get_workers() -> int:
+    return get_hardware_config().recommended_workers
+
+
 def get_batch_size() -> int:
-    """Shortcut für optimale Batch-Size"""
     return get_hardware_config().recommended_batch_size
 
 
-# === Startup Detection ===
 def init_hardware_acceleration() -> Dict[str, Any]:
-    """
-    Initialisiert Hardware-Beschleunigung beim Server-Start.
-    Sollte in main.py während lifespan aufgerufen werden.
-    """
     detector = get_hardware_detector()
     config = detector.to_dict()
-
-    logger.info("Hardware Acceleration initialisiert")
+    logger.info("Hardware Acceleration v2.0 initialisiert")
     return config

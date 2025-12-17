@@ -42,6 +42,10 @@ from ..services.crawler.manager import crawler_manager
 from ..services.wordpress import wordpress_service
 from ..services.ollama_mcp import OLLAMA_TOOLS, OLLAMA_HANDLERS
 from ..services.tristar_mcp import TRISTAR_TOOLS, TRISTAR_HANDLERS
+# New Client-Server Architecture
+from ..services.api_vault import VAULT_HANDLERS
+from ..services.chat_router import CHAT_ROUTER_HANDLERS
+from ..services.task_spawner import TASK_SPAWNER_HANDLERS
 from ..services.gemini_access import GEMINI_ACCESS_TOOLS, GEMINI_ACCESS_HANDLERS
 from ..services.command_queue import QUEUE_TOOLS, QUEUE_HANDLERS
 from ..services.huggingface_inference import HF_INFERENCE_TOOLS, HF_HANDLERS
@@ -933,29 +937,34 @@ def _serialize_job(job) -> Dict[str, Any]:
 
 
 async def handle_chat(arguments: Dict[str, Any]) -> Dict[str, Any]:
-    """Handle chat tool invocation."""
-    message = arguments.get("message")
+    """Handle chat tool invocation - supports both 'message' (string) and 'messages' (array)."""
     model_id = arguments.get("model", "gpt-oss:20b-cloud")
+    temperature = arguments.get("temperature", arguments.get("options", {}).get("temperature", 0.7))
+    
+    # Support both formats: 'message' (string) or 'messages' (array)
+    messages_input = arguments.get("messages")
+    message = arguments.get("message")
     system_prompt = arguments.get("system_prompt")
-    temperature = arguments.get("temperature", 0.7)
-
-    if not message:
-        raise ValueError("'message' is required")
-
+    
+    if messages_input and isinstance(messages_input, list):
+        # OpenAI-Format: messages array
+        messages = messages_input
+    elif message:
+        # Simple format: single message string
+        messages = []
+        if system_prompt:
+            messages.append({"role": "system", "content": system_prompt})
+        messages.append({"role": "user", "content": message})
+    else:
+        raise ValueError("'message' or 'messages' is required")
+    
     model = await registry.get_model(model_id)
     if not model:
-        # Try with ollama prefix
         model = await registry.get_model(f"ollama/{model_id}")
-    # Allow models with chat, code, or reasoning capabilities
     valid_caps = {"chat", "code", "reasoning"}
     if not model or not any(cap in model.capabilities for cap in valid_caps):
         raise ValueError(f"Model '{model_id}' not found or does not support chat/code")
-
-    messages = []
-    if system_prompt:
-        messages.append({"role": "system", "content": system_prompt})
-    messages.append({"role": "user", "content": message})
-
+    
     chunks = []
     async with request_slot():
         async for chunk in chat_service.stream_chat(
@@ -967,15 +976,9 @@ async def handle_chat(arguments: Dict[str, Any]) -> Dict[str, Any]:
         ):
             if chunk:
                 chunks.append(chunk)
-
+    
     response = "".join(chunks)
-    return {
-        "response": response,
-        "model": model_id,
-        "provider": model.provider
-    }
-
-
+    return {"response": response, "model": model_id}
 async def handle_list_models(_: Dict[str, Any]) -> Dict[str, Any]:
     """
     List available models, optimized for context window usage.
@@ -1521,6 +1524,14 @@ async def handle_grokipedia_search_remote(arguments: Dict[str, Any]) -> Dict[str
     results = await search_grokipedia(query, arguments.get("num_results", 5))
     return {"query": query, "results": results, "count": len(results), "source": "grokipedia.com"}
 
+async def handle_image_search_remote(arguments: Dict[str, Any]) -> Dict[str, Any]:
+    """Bildersuche via SearXNG."""
+    from ..services.multi_search import image_search
+    query = arguments.get("query")
+    if not query:
+        raise ValueError("'query' is required")
+    return await image_search(query, arguments.get("num_results", 30), arguments.get("lang", "de"))
+
 
 async def handle_search_health_remote(arguments: Dict[str, Any]) -> Dict[str, Any]:
     """Check health of all search providers."""
@@ -1653,6 +1664,7 @@ TOOL_HANDLERS = {
     "google_deep_search": handle_google_deep_search_remote,
     "ailinux_search": handle_ailinux_search_remote,
     "grokipedia_search": handle_grokipedia_search_remote,
+    "image_search": handle_image_search_remote,
     "search_health": handle_search_health_remote,
 
     # Widget Tools

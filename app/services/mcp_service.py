@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import base64
 import json
+import logging
 import re
 import os
 import unicodedata
@@ -42,6 +43,12 @@ from .compatibility_layer import compatibility_layer
 from .system_control import system_control
 from .mcp_debugger import mcp_debugger
 from .huggingface_inference import HF_INFERENCE_TOOLS, HF_HANDLERS
+from .remote_task import remote_task_service, TaskType, TaskStatus
+# === NEW CLIENT-SERVER ARCHITECTURE TOOLS ===
+from .api_vault import VAULT_TOOLS, VAULT_HANDLERS, api_vault
+from .chat_router import CHAT_ROUTER_TOOLS, CHAT_ROUTER_HANDLERS
+from .task_spawner import TASK_SPAWNER_TOOLS, TASK_SPAWNER_HANDLERS
+from .txt2img_mcp import TXT2IMG_TOOLS, TXT2IMG_HANDLERS
 
 # Constants
 BACKEND_ROOT = Path("/home/zombie/triforce")
@@ -86,14 +93,14 @@ ALLOWED_EXTENSIONS = {
     ".coffee", ".litcoffee",  # CoffeeScript
 }
 BLOCKED_PATHS = {
-    “.env”, “.git”, “.ssh”, “secrets”, “credentials”,
-    “__pycache__”, “.venv”, “node_modules”, “.claude”,
+    ".env", ".git", ".ssh", "secrets", "credentials",
+    "__pycache__", ".venv", "node_modules", ".claude",
 }
 BACKUP_DIR = BACKEND_ROOT / ".backups"
 EDIT_LOG_FILE = BACKEND_ROOT / ".edit_log.jsonl"
 EDIT_FORBIDDEN_PATHS = {
-    “.env”, “.env.local”, “.env.production”,
-    “credentials.json”, “secrets.py”, “config.py”,
+    ".env", ".env.local", ".env.production",
+    "credentials.json", "secrets.py", "config.py",
 }
 
 _mcp_logger = logging.getLogger("ailinux.mcp.service")
@@ -1217,30 +1224,12 @@ async def handle_codebase_create(params: Dict[str, Any]) -> Dict[str, Any]:
     if template:
         templates = {
             "empty": "",
-            "python_module": '"""
-Module description.
-"""\n\n',
-            "fastapi_route": '''"""
-Route module.
-"""
-from fastapi import APIRouter, HTTPException
-from typing import Dict, Any
-
-router = APIRouter()
-
-@router.get("/")
-async def get_root() -> Dict[str, str]:
-    return {"message": "Hello"}
-''',
-            "service_class": '''"""
-Service class.
-"""
-class Service:
-    def __init__(self):
-        pass
-'''
+            "python_module": '"""\nModule description.\n"""\n\n',
+            "fastapi_route": '"""\nRoute module.\n"""\nfrom fastapi import APIRouter, HTTPException\nfrom typing import Dict, Any\n\nrouter = APIRouter()\n\n@router.get("/")\nasync def get_root() -> Dict[str, str]:\n    return {"message": "Hello"}\n',
+            "service_class": '"""\nService class.\n"""\nclass Service:\n    def __init__(self):\n        pass\n'
         }
         content = templates.get(template, "")
+
     
     if content is None:
         content = ""
@@ -1880,6 +1869,13 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
     tools.extend(ADAPTIVE_CODE_TOOLS)
     tools.extend(ADAPTIVE_CODE_V4_TOOLS)  # Enhanced: LRU Cache, Async I/O, Delta Sync, Agent-Aware
     tools.extend(HF_INFERENCE_TOOLS)
+    tools.extend(REMOTE_TASK_TOOLS)
+    
+    # === NEW CLIENT-SERVER ARCHITECTURE TOOLS ===
+    tools.extend(VAULT_TOOLS)
+    tools.extend(CHAT_ROUTER_TOOLS)
+    tools.extend(TASK_SPAWNER_TOOLS)
+    tools.extend(TXT2IMG_TOOLS)  # Stable Diffusion / Image Generation
 
     # Add System & Compatibility Tools
     tools.extend([
@@ -1984,6 +1980,13 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
     tool_map.update(ADAPTIVE_CODE_HANDLERS)
     tool_map.update(ADAPTIVE_CODE_V4_HANDLERS)  # Enhanced V4 handlers
     tool_map.update(HF_HANDLERS)
+    tool_map.update(REMOTE_TASK_HANDLERS)  # Remote Task Execution via SSH
+    
+    # === NEW CLIENT-SERVER ARCHITECTURE HANDLERS ===
+    tool_map.update(VAULT_HANDLERS)
+    tool_map.update(CHAT_ROUTER_HANDLERS)
+    tool_map.update(TASK_SPAWNER_HANDLERS)
+    tool_map.update(TXT2IMG_HANDLERS)  # Stable Diffusion / Image Generation
 
     handler = tool_map.get(tool_name)
     if not handler:
@@ -1996,6 +1999,181 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
         ],
         "isError": False,
     }
+
+# ============================================================================
+# Remote Task Handlers - CLI Agents arbeiten auf Remote-Hosts
+# ============================================================================
+
+async def handle_remote_host_register(params: Dict[str, Any]) -> Dict[str, Any]:
+    """Registriert einen Remote-Host für Task-Ausführung."""
+    hostname = params.get("hostname")
+    username = params.get("username")
+    password = params.get("password")
+    
+    if not hostname or not username:
+        raise ValueError("'hostname' and 'username' are required")
+    
+    host = remote_task_service.register_host(
+        hostname=hostname,
+        username=username,
+        password=password,
+        port=params.get("port", 22),
+        description=params.get("description", "")
+    )
+    return host.to_dict()
+
+async def handle_remote_host_list(params: Dict[str, Any]) -> Dict[str, Any]:
+    """Listet alle registrierten Remote-Hosts."""
+    return {"hosts": remote_task_service.list_hosts()}
+
+async def handle_remote_task_submit(params: Dict[str, Any]) -> Dict[str, Any]:
+    """Reicht einen Remote-Task ein - startet CLI-Agent der per SSH arbeitet."""
+    host_id = params.get("host_id")
+    task_type = params.get("task_type", "custom")
+    description = params.get("description", "")
+    agent_id = params.get("agent_id")
+    
+    if not host_id:
+        raise ValueError("'host_id' is required")
+    
+    try:
+        task_type_enum = TaskType(task_type)
+    except ValueError:
+        task_type_enum = TaskType.CUSTOM
+    
+    task = await remote_task_service.submit_task(
+        host_id=host_id,
+        task_type=task_type_enum,
+        description=description,
+        agent_id=agent_id
+    )
+    
+    from dataclasses import asdict
+    return asdict(task)
+
+async def handle_remote_task_status(params: Dict[str, Any]) -> Dict[str, Any]:
+    """Holt den Status eines Remote-Tasks."""
+    task_id = params.get("task_id")
+    if not task_id:
+        raise ValueError("'task_id' is required")
+    
+    task = remote_task_service.get_task(task_id)
+    if not task:
+        raise ValueError(f"Task not found: {task_id}")
+    
+    from dataclasses import asdict
+    return asdict(task)
+
+async def handle_remote_task_output(params: Dict[str, Any]) -> Dict[str, Any]:
+    """Holt den Output eines laufenden/abgeschlossenen Tasks."""
+    task_id = params.get("task_id")
+    last_n = params.get("last_n", 50)
+    
+    if not task_id:
+        raise ValueError("'task_id' is required")
+    
+    output = remote_task_service.get_task_output(task_id, last_n)
+    return {"task_id": task_id, "output": output, "lines": len(output)}
+
+async def handle_remote_task_list(params: Dict[str, Any]) -> Dict[str, Any]:
+    """Listet alle Tasks, optional gefiltert nach Host oder Status."""
+    host_id = params.get("host_id")
+    status = params.get("status")
+    
+    status_enum = None
+    if status:
+        try:
+            status_enum = TaskStatus(status)
+        except ValueError:
+            pass
+    
+    tasks = remote_task_service.list_tasks(host_id=host_id, status=status_enum)
+    return {"tasks": tasks, "count": len(tasks)}
+
+# Remote Task Tools für handle_tools_list
+REMOTE_TASK_TOOLS = [
+    {
+        "name": "remote_host_register",
+        "description": "Registriert einen Remote-Host (PC/Server) für Task-Ausführung via SSH",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "hostname": {"type": "string", "description": "IP oder Hostname des Remote-Systems"},
+                "username": {"type": "string", "description": "SSH Username"},
+                "password": {"type": "string", "description": "SSH Passwort"},
+                "port": {"type": "integer", "description": "SSH Port (default: 22)"},
+                "description": {"type": "string", "description": "Beschreibung des Hosts"}
+            },
+            "required": ["hostname", "username"]
+        }
+    },
+    {
+        "name": "remote_host_list",
+        "description": "Listet alle registrierten Remote-Hosts",
+        "inputSchema": {"type": "object", "properties": {}}
+    },
+    {
+        "name": "remote_task_submit",
+        "description": "Startet einen Task auf einem Remote-Host. Der Server spawnt einen CLI-Agent (Claude/Codex/Gemini) der per SSH auf dem Host arbeitet.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "host_id": {"type": "string", "description": "Host-ID des Zielrechners"},
+                "task_type": {
+                    "type": "string",
+                    "enum": ["gaming_optimize", "system_optimize", "analyze", "install", "configure", "debug", "custom"],
+                    "description": "Art des Tasks"
+                },
+                "description": {"type": "string", "description": "Beschreibung/Details für den Task"},
+                "agent_id": {"type": "string", "description": "Spezifischer Agent (default: auto)"}
+            },
+            "required": ["host_id"]
+        }
+    },
+    {
+        "name": "remote_task_status",
+        "description": "Holt den Status eines Remote-Tasks",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "task_id": {"type": "string", "description": "Task-ID"}
+            },
+            "required": ["task_id"]
+        }
+    },
+    {
+        "name": "remote_task_output",
+        "description": "Holt den Live-Output eines Remote-Tasks",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "task_id": {"type": "string", "description": "Task-ID"},
+                "last_n": {"type": "integer", "description": "Letzte N Zeilen (default: 50)"}
+            },
+            "required": ["task_id"]
+        }
+    },
+    {
+        "name": "remote_task_list",
+        "description": "Listet alle Remote-Tasks",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "host_id": {"type": "string", "description": "Filter nach Host"},
+                "status": {"type": "string", "enum": ["pending", "running", "completed", "failed", "cancelled"]}
+            }
+        }
+    }
+]
+
+REMOTE_TASK_HANDLERS = {
+    "remote_host_register": handle_remote_host_register,
+    "remote_host_list": handle_remote_host_list,
+    "remote_task_submit": handle_remote_task_submit,
+    "remote_task_status": handle_remote_task_status,
+    "remote_task_output": handle_remote_task_output,
+    "remote_task_list": handle_remote_task_list,
+}
 
 Handler = Callable[[Dict[str, Any]], Awaitable[Any]]
 MCP_HANDLERS: Dict[str, Handler] = {

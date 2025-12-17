@@ -1,0 +1,148 @@
+# ============================================================================
+# API VHost für api.ailinux.me
+# Backend: host.docker.internal:9100 (FastAPI/Uvicorn auf Host)
+#
+# Verifizierte Domains für OAuth 2.0 (Whitelisted URLs):
+#   - api.ailinux.me (Primary MCP Server)
+#   - ailinux.me (Main Site)
+#   - search.ailinux.me (Search Service)
+#   - repo.ailinux.me (Package Repository)
+#   - localhost / 127.0.0.1 (Local Development)
+#   - host.docker.internal (Docker Host)
+#   - 172.17.0.1 (Docker Bridge Gateway)
+#   - 172.19.0.1 (WordPress Network Gateway)
+# ============================================================================
+
+# --- HTTP :80 -> HTTPS Redirect ---
+<VirtualHost *:80>
+  ServerName api.ailinux.me
+  RewriteEngine On
+  RewriteRule ^/(.*)$ https://api.ailinux.me/$1 [R=301,L]
+  Header always set X-Content-Type-Options "nosniff"
+</VirtualHost>
+
+# --- HTTPS :443 API Reverse Proxy ---
+<VirtualHost *:443>
+  ServerName api.ailinux.me
+
+  SSLEngine on
+  SSLCertificateFile      /etc/letsencrypt/live/ailinux.me/fullchain.pem
+  SSLCertificateKeyFile   /etc/letsencrypt/live/ailinux.me/privkey.pem
+  IncludeOptional conf.d/snippets/ssl-params.conf
+
+  # === STATISCHE INDEX-SEITE ===
+  DocumentRoot /var/www/api-root
+  <Directory /var/www/api-root>
+    Options -Indexes +FollowSymLinks
+    AllowOverride None
+    Require all granted
+  </Directory>
+
+  # Reverse Proxy Settings
+  ProxyPreserveHost On
+  ProxyTimeout 86400
+
+  # SSE/Streaming Support
+  SetEnv proxy-sendchunked 1
+  SetEnv proxy-sendcl 0
+  SetEnv proxy-initial-not-pooled 1
+
+  # === OAUTH 2.0 ENDPOINTS (ChatGPT/Claude.ai MCP Auth) ===
+  # WICHTIG: Diese MÜSSEN vor anderen ProxyPass-Regeln stehen!
+  # Intern: localhost:9100, Extern: api.ailinux.me
+
+  # OAuth Discovery (.well-known)
+  ProxyPass /.well-known http://host.docker.internal:9100/.well-known
+  ProxyPassReverse /.well-known http://host.docker.internal:9100/.well-known
+
+  # OAuth Authorization Endpoint
+  ProxyPass /authorize http://host.docker.internal:9100/authorize
+  ProxyPassReverse /authorize http://host.docker.internal:9100/authorize
+
+  # OAuth Token Endpoint
+  ProxyPass /token http://host.docker.internal:9100/token
+  ProxyPassReverse /token http://host.docker.internal:9100/token
+
+  # Auth Management (/auth/create-token, /auth/tokens)
+  ProxyPass /auth http://host.docker.internal:9100/auth
+  ProxyPassReverse /auth http://host.docker.internal:9100/auth
+
+  # MCP Root Endpoints (für ChatGPT/Claude.ai SSE)
+  <Location /mcp>
+    ProxyPass http://host.docker.internal:9100/mcp
+    ProxyPassReverse http://host.docker.internal:9100/mcp
+    SetEnv proxy-sendchunked 1
+    SetEnv proxy-nokeepalive 1
+  </Location>
+
+  # TriStar GUI & Routes
+  ProxyPass /tristar http://host.docker.internal:9100/tristar
+  ProxyPassReverse /tristar http://host.docker.internal:9100/tristar
+
+  # === API ENDPOINTS ===
+
+  # MCP Endpoint (SSE) - /v1/mcp
+  <Location /v1/mcp>
+    ProxyPass http://host.docker.internal:9100/v1/mcp
+    ProxyPassReverse http://host.docker.internal:9100/v1/mcp
+    SetEnv proxy-sendchunked 1
+    SetEnv proxy-nokeepalive 1
+  </Location>
+
+  # TriForce Endpoints
+  ProxyPass /triforce http://host.docker.internal:9100/triforce
+  ProxyPassReverse /triforce http://host.docker.internal:9100/triforce
+
+  # API v1 Endpoints (alle anderen unter /v1)
+  ProxyPass /v1 http://host.docker.internal:9100/v1
+  ProxyPassReverse /v1 http://host.docker.internal:9100/v1
+
+  # Docs/OpenAPI
+  ProxyPass /docs http://host.docker.internal:9100/docs
+  ProxyPassReverse /docs http://host.docker.internal:9100/docs
+  ProxyPass /openapi.json http://host.docker.internal:9100/openapi.json
+  ProxyPassReverse /openapi.json http://host.docker.internal:9100/openapi.json
+  ProxyPass /redoc http://host.docker.internal:9100/redoc
+  ProxyPassReverse /redoc http://host.docker.internal:9100/redoc
+
+  # Health/Status
+  ProxyPass /health http://host.docker.internal:9100/health
+  ProxyPassReverse /health http://host.docker.internal:9100/health
+  ProxyPass /healthz http://host.docker.internal:9100/healthz
+  ProxyPassReverse /healthz http://host.docker.internal:9100/healthz
+
+  # Hardware Acceleration Status
+  ProxyPass /hardware http://host.docker.internal:9100/hardware
+  ProxyPassReverse /hardware http://host.docker.internal:9100/hardware
+
+  # Prometheus Metrics
+  ProxyPass /metrics http://host.docker.internal:9100/metrics
+  ProxyPassReverse /metrics http://host.docker.internal:9100/metrics
+
+  # WebSocket Support
+  RewriteEngine On
+  RewriteCond %{HTTP:Upgrade} =websocket [NC]
+  RewriteRule /(.*)           ws://host.docker.internal:9100/$1 [P,L]
+
+  # Security Headers
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+  # CORS Headers
+  Header always set Access-Control-Allow-Origin "*"
+  Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS, PATCH"
+  Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-AILinux-Client, X-Requested-With, Accept, mcp-session-id"
+  Header always set Access-Control-Expose-Headers "mcp-session-id"
+  Header always set Access-Control-Max-Age "86400"
+
+  # OPTIONS preflight
+  RewriteCond %{REQUEST_METHOD} OPTIONS
+  RewriteRule ^(.*)$ $1 [R=204,L]
+
+  Protocols h2 http/1.1
+  SSLVerifyClient none
+
+  ErrorLog  "/proc/self/fd/2"
+  CustomLog "/proc/self/fd/1" realip
+</VirtualHost>

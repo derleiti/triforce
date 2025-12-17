@@ -6,11 +6,12 @@ services:
     image: ${REPO_IMAGE:-nginx:alpine}
     container_name: ${REPO_CONTAINER_NAME:-ailinux-repository}
     restart: ${REPO_RESTART_POLICY:-unless-stopped}
-    ports:
-      - "${REPO_HTTPS_PORT:-8443}:8443"
-      - "${REPO_HTTP_PORT:-8081}:8080"
-      - "8882:8882"
-      - "9000:9000"
+    # External ports removed - Apache proxies via internal network
+    # Uncomment for local debugging:
+    # ports:
+    #   - "${REPO_HTTP_PORT:-8081}:8080"
+    expose:
+      - "8080"
     volumes:
       - ./repo:/repo:ro
       - ${REPO_NGINX_CONF:-./nginx.conf}:/etc/nginx/nginx.conf:ro
@@ -23,11 +24,13 @@ services:
       - TZ=${TZ:-Europe/Berlin}
     networks:
       - ${REPO_NETWORK:-repo-network}
+      - wordpress-network
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "--no-check-certificate", "https://localhost:8443/"]
+      test: ["CMD", "wget", "-qO-", "--timeout=5", "http://127.0.0.1:8080/health"]
       interval: ${REPO_HEALTHCHECK_INTERVAL:-30s}
       timeout: ${REPO_HEALTHCHECK_TIMEOUT:-10s}
       retries: ${REPO_HEALTHCHECK_RETRIES:-3}
+      start_period: ${REPO_HEALTHCHECK_START:-30s}
 
   apt-mirror:
     build:
@@ -36,21 +39,34 @@ services:
     image: ${REPO_MIRROR_IMAGE:-ailinux-apt-mirror}
     container_name: ${REPO_MIRROR_CONTAINER_NAME:-ailinux-apt-mirror}
     restart: "no"
+    environment:
+      - TZ=${TZ:-Europe/Berlin}
+      - REPO_PATH=/var/spool/apt-mirror
     volumes:
+      # Data persistence
       - ${REPO_MIRROR_DATA_PATH:-./data}:/var/spool/apt-mirror
+      # Configuration
       - ${REPO_MIRROR_LIST:-./mirror.list}:/etc/apt/mirror.list:ro
-      # Auto-mount scripts for post-mirror processing
+      # Scripts for post-mirror processing
       - ./postmirror.sh:/var/spool/apt-mirror/var/postmirror.sh:ro
       - ./sign-repos.sh:/var/spool/apt-mirror/var/sign-repos.sh:ro
-      # GPG for signing (etc/gnupg contains the signing key)
+      - ./fix-packages-compression.sh:/usr/local/bin/fix-packages-compression.sh:ro
+      # GPG for signing
       - ./etc/gnupg:/root/.gnupg
-      # Mirror output goes to repo/mirror
+      # GPG keyrings for repo verification
+      - ./etc/keyrings:/keyrings:ro
+      # Mirror output
       - ./repo/mirror:/var/spool/apt-mirror/mirror
+      # Logs
+      - ./log:/var/log/ailinux
     command: ["apt-mirror"]
-    profiles:
-      - mirror
+    networks:
+      - ${REPO_NETWORK:-repo-network}
 
 networks:
   repo-network:
     name: ${REPO_NETWORK:-repo-network}
     driver: ${REPO_NETWORK_DRIVER:-bridge}
+  wordpress-network:
+    external: true
+    name: ${WP_NETWORK:-wordpress-network}

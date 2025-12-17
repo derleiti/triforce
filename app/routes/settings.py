@@ -24,7 +24,7 @@ async def get_settings_endpoint():
         ollama_base=str(settings.ollama_base),
         ollama_bearer_auth_enabled=settings.ollama_bearer_auth_enabled,
         gemini_api_key_configured=bool(settings.gemini_api_key),
-        mixtral_api_key_configured=bool(settings.mixtral_api_key),
+        mistral_api_key_configured=bool(settings.mistral_api_key),
         gpt_oss_configured=bool(settings.gpt_oss_api_key and settings.gpt_oss_base_url),
         stable_diffusion_url=str(settings.stable_diffusion_url),
         comfyui_url=str(settings.comfyui_url) if settings.comfyui_url else None,

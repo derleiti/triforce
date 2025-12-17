@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
+  <ShortName>AILinux Search</ShortName>
+  <Description>MeshAI-powered multi-source search</Description>
+  <InputEncoding>UTF-8</InputEncoding>
+  <Image width="16" height="16" type="image/x-icon">https://search.ailinux.me/favicon.ico</Image>
+  <Url type="text/html" method="get" template="https://search.ailinux.me/search?q={searchTerms}"/>
+  <Url type="application/x-suggestions+json" template="https://search.ailinux.me/searxng/autocompleter?q={searchTerms}"/>
+</OpenSearchDescription>

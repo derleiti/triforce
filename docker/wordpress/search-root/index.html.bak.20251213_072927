@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AILinux Search - MeshAI Powered</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
+    <link rel="search" type="application/opensearchdescription+xml" title="AILinux Search" href="/opensearch.xml">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-primary: #0a0a0b;
+            --bg-secondary: #111113;
+            --bg-tertiary: #18181b;
+            --bg-hover: #1f1f23;
+            --text-primary: #fafafa;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --accent: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --accent-green: #22c55e;
+            --accent-orange: #f97316;
+            --accent-pink: #ec4899;
+            --border: #27272a;
+            --success: #22c55e;
+            --gradient-start: #3b82f6;
+            --gradient-end: #8b5cf6;
+            --mesh-gradient: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
+            --wiki-color: #3366cc;
+            --grok-color: #00d4aa;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+        header { padding: 40px 0 24px; text-align: center; }
+        .logo {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: var(--mesh-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 6px;
+            letter-spacing: -0.02em;
+        }
+        .tagline { color: var(--text-muted); font-size: 0.85rem; }
+        .tagline .mesh-badge {
+            display: inline-block;
+            background: var(--mesh-gradient);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        /* Search Mode Tabs */
+        .search-modes {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        .mode-tab {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 6px 14px;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .mode-tab:hover { background: var(--bg-hover); color: var(--text-primary); }
+        .mode-tab.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+        .mode-tab.active.mesh { background: var(--accent-purple); border-color: var(--accent-purple); }
+        .mode-tab.active.smart { background: var(--accent-green); border-color: var(--accent-green); }
+        .mode-tab.active.quick { background: var(--accent-orange); border-color: var(--accent-orange); }
+
+        /* Search Box */
+        .search-wrapper { position: relative; margin-bottom: 20px; }
+        .search-box {
+            display: flex;
+            align-items: stretch;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .search-box:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .search-box.mesh-active:focus-within {
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+        }
+        .search-input {
+            flex: 1;
+            padding: 14px 18px;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1rem;
+            outline: none;
+        }
+        .search-input::placeholder { color: var(--text-muted); }
+        .search-btn {
+            padding: 14px 24px;
+            background: var(--accent);
+            border: none;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+        .search-btn:hover { background: #2563eb; }
+        .search-btn.mesh { background: var(--accent-purple); }
+        .search-btn.mesh:hover { background: #7c3aed; }
+        .search-btn.smart { background: var(--accent-green); }
+        .search-btn.quick { background: var(--accent-orange); }
+        .search-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .search-hint {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            margin-top: 8px;
+        }
+
+        /* Main Content Layout */
+        .main-content {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 24px;
+            margin-top: 20px;
+        }
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            .knowledge-sidebar { order: -1; }
+        }
+
+        /* Knowledge Sidebar (Wikipedia & Grokipedia) */
+        .knowledge-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .knowledge-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .knowledge-header {
+            padding: 12px 14px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+        .knowledge-header.wikipedia {
+            background: linear-gradient(135deg, rgba(51, 102, 204, 0.15), rgba(51, 102, 204, 0.05));
+            color: var(--wiki-color);
+        }
+        .knowledge-header.grokipedia {
+            background: linear-gradient(135deg, rgba(0, 212, 170, 0.15), rgba(0, 212, 170, 0.05));
+            color: var(--grok-color);
+        }
+        .knowledge-count {
+            margin-left: auto;
+            background: rgba(255,255,255,0.1);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+        }
+        .knowledge-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .knowledge-item {
+            display: block;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            text-decoration: none;
+            color: var(--text-secondary);
+            transition: all 0.15s ease;
+        }
+        .knowledge-item:last-child { border-bottom: none; }
+        .knowledge-item:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        .knowledge-item-title {
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .knowledge-item-url {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            word-break: break-all;
+        }
+        .knowledge-item.wikipedia:hover .knowledge-item-title { color: var(--wiki-color); }
+        .knowledge-item.grokipedia:hover .knowledge-item-title { color: var(--grok-color); }
+        .knowledge-empty {
+            padding: 20px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        /* Results Container */
+        .results-container {
+            min-height: 400px;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .stats-count { font-size: 0.85rem; color: var(--text-secondary); }
+        .stats-count strong { color: var(--text-primary); }
+        .stats-time { color: var(--text-muted); font-size: 0.8rem; }
+        .stats-sources {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            width: 100%;
+            margin-top: 8px;
+        }
+        .source-badge {
+            padding: 3px 8px;
+            background: var(--bg-tertiary);
+            border-radius: 6px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+        .source-badge.active { color: var(--accent-green); background: rgba(34, 197, 94, 0.1); }
+        .source-badge.offline { color: #666; background: rgba(100, 100, 100, 0.2); text-decoration: line-through; }
+        .source-badge.primary { color: var(--accent-green); background: rgba(34, 197, 94, 0.2); border: 1px solid var(--accent-green); }
+        .provider-status { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem; }
+
+        /* AI Analysis Box */
+        .ai-analysis {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(59, 130, 246, 0.1));
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 16px;
+        }
+        .ai-analysis-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .ai-analysis-header .icon { font-size: 1.1rem; }
+        .ai-analysis-header .title { font-weight: 600; color: var(--accent-purple); }
+        .ai-analysis-header .badge {
+            background: var(--accent-purple);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+        }
+        .ai-analysis-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        @media (max-width: 600px) {
+            .ai-analysis-content { grid-template-columns: 1fr; }
+        }
+        .ai-field-label { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 2px; }
+        .ai-field-value { font-size: 0.85rem; color: var(--text-secondary); }
+        .ai-field-value.highlight { color: var(--accent-green); font-weight: 500; }
+        .ai-keywords { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
+        .ai-keyword {
+            background: var(--bg-tertiary);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            color: var(--accent);
+        }
+
+        /* Results Grid - Endless Scroll */
+        .results {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .result-card {
+            display: block;
+            padding: 14px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all 0.15s ease;
+        }
+        .result-card:hover {
+            background: var(--bg-hover);
+            border-color: var(--accent);
+            transform: translateX(4px);
+        }
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            gap: 8px;
+        }
+        .result-url {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .result-badges { display: flex; gap: 6px; flex-shrink: 0; }
+        .result-source {
+            padding: 2px 8px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+        .result-source.wikipedia { background: rgba(51, 102, 204, 0.2); color: var(--wiki-color); }
+        .result-source.grokipedia { background: rgba(0, 212, 170, 0.2); color: var(--grok-color); }
+        .result-source.brave { background: rgba(255, 85, 0, 0.2); color: #FF5500; }
+        .mesh-score {
+            padding: 2px 8px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(236, 72, 153, 0.2));
+            border-radius: 4px;
+            font-size: 0.7rem;
+            color: var(--accent-purple);
+            font-weight: 600;
+        }
+        .result-card.mesh-ranked {
+            border-left: 3px solid var(--accent-purple);
+        }
+        .result-card.mesh-ranked:hover {
+            border-left-color: var(--accent-pink);
+        }
+        .result-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+        .result-card:hover .result-title { text-decoration: underline; }
+        .result-snippet {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Loading States */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
+        }
+        .spinner.mesh { border-top-color: var(--accent-purple); }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 12px;
+            font-size: 0.8rem;
+        }
+        .loading-step {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--text-muted);
+        }
+        .loading-step.active { color: var(--accent-purple); }
+        .loading-step.done { color: var(--accent-green); }
+        .loading-step .check { color: var(--accent-green); }
+
+        /* Load More Button */
+        .load-more-container {
+            text-align: center;
+            padding: 20px;
+        }
+        .load-more-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 12px 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+        .load-more-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border-color: var(--accent);
+        }
+        .load-more-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Infinite Scroll Sentinel */
+        .scroll-sentinel {
+            height: 1px;
+            width: 100%;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 0;
+            color: var(--text-muted);
+        }
+        .empty-state svg { width: 64px; height: 64px; margin-bottom: 16px; opacity: 0.5; }
+        .empty-state h3 { color: var(--text-secondary); margin-bottom: 8px; }
+        .error-state {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            color: #f87171;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+        footer a { color: var(--accent); text-decoration: none; }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-primary); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="logo">AILinux Search</h1>
+            <p class="tagline">
+                Multi-Source AI Search Engine
+                <span class="mesh-badge">MeshAI</span>
+            </p>
+        </header>
+
+        <main>
+            <!-- Search Modes -->
+            <div class="search-modes">
+                <button class="mode-tab active mesh" data-mode="mesh">
+                    <span class="mode-icon">🧠</span> MeshAI
+                </button>
+                <button class="mode-tab" data-mode="smart">
+                    <span class="mode-icon">✨</span> Smart
+                </button>
+                <button class="mode-tab" data-mode="quick">
+                    <span class="mode-icon">⚡</span> Quick
+                </button>
+                <button class="mode-tab" data-mode="keywords">
+                    <span class="mode-icon">🔤</span> Keywords
+                </button>
+            </div>
+
+            <!-- Search Box -->
+            <div class="search-wrapper">
+                <form id="searchForm" class="search-box mesh-active">
+                    <input type="text" class="search-input" id="searchInput"
+                           placeholder="Suche nach Wissen... (Stichworte oder natürliche Sprache)"
+                           autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"
+                           name="q" autofocus>
+                    <button type="submit" class="search-btn mesh" id="searchBtn">Suchen</button>
+                </form>
+                <p class="search-hint" id="searchHint">💡 MeshAI optimiert deine Suche für Wikipedia, Grokipedia und mehr</p>
+            </div>
+
+            <!-- Provider Info -->
+            <div style="text-align: center; margin-bottom: 20px;">
+                <span style="font-size: 0.75rem; color: var(--text-muted);">
+                    🔍 Google · 🌐 SearXNG · 🦆 DuckDuckGo · 📚 Wikipedia · 🧠 Grokipedia · 📰 AILinux News · 🌿 Wiby
+                </span>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content" id="mainContent" style="display: none;">
+                <!-- Knowledge Sidebar -->
+                <aside class="knowledge-sidebar">
+                    <!-- Wikipedia Section -->
+                    <div class="knowledge-section" id="wikipediaSection">
+                        <div class="knowledge-header wikipedia">
+                            <span>📚</span> Listing Wikipedia
+                            <span class="knowledge-count" id="wikiCount">0</span>
+                        </div>
+                        <div class="knowledge-list" id="wikipediaList">
+                            <div class="knowledge-empty">Keine Wikipedia-Ergebnisse</div>
+                        </div>
+                    </div>
+
+                    <!-- Grokipedia Section -->
+                    <div class="knowledge-section" id="grokipediaSection">
+                        <div class="knowledge-header grokipedia">
+                            <span>🧠</span> Listing Grokipedia
+                            <span class="knowledge-count" id="grokCount">0</span>
+                        </div>
+                        <div class="knowledge-list" id="grokipediaList">
+                            <div class="knowledge-empty">Keine Grokipedia-Ergebnisse</div>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Results -->
+                <div class="results-container" id="resultsContainer">
+                    <!-- Results will be rendered here -->
+                </div>
+            </div>
+
+            <!-- Initial State -->
+            <div id="initialState">
+                <div class="empty-state">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.35-4.35"/>
+                    </svg>
+                    <h3>Suche starten</h3>
+                    <p>Gib Stichworte oder eine Frage ein</p>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>© 2025 <a href="https://ailinux.me">AILinux.me</a> · Multi-Source Search mit MeshAI</p>
+        </footer>
+    </div>
+
+    <script>
+        // =================================================================
+        // CONFIGURATION
+        // =================================================================
+        const API_BASE = 'https://api.ailinux.me/v1';
+        // Fetch with timeout helper
+        async function fetchWithTimeout(url, options, timeoutMs = 30000) {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), timeoutMs);
+            try {
+                const response = await fetch(url, { ...options, signal: controller.signal });
+                clearTimeout(timeout);
+                return response;
+            } catch (e) {
+                clearTimeout(timeout);
+                throw e;
+            }
+        }
+
+        let currentMode = 'mesh';
+        let currentAnalysis = null;
+        let allResults = [];
+        let displayedResults = 0;
+        const RESULTS_PER_PAGE = 30;
+        let isLoading = false;
+        let hasMoreResults = true;
+
+        // DOM Elements
+        const searchForm = document.getElementById('searchForm');
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const searchHint = document.getElementById('searchHint');
+        const mainContent = document.getElementById('mainContent');
+        const initialState = document.getElementById('initialState');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const wikipediaList = document.getElementById('wikipediaList');
+        const grokipediaList = document.getElementById('grokipediaList');
+        const wikiCount = document.getElementById('wikiCount');
+        const grokCount = document.getElementById('grokCount');
+
+        // =================================================================
+        // INITIALIZATION
+        // =================================================================
+
+        function init() {
+            setupModeTabListeners();
+            setupInfiniteScroll();
+
+            // Load from URL params
+            const url = new URL(window.location);
+            const query = url.searchParams.get('q');
+            const mode = url.searchParams.get('mode') || 'mesh';
+
+            setSearchMode(mode);
+
+            if (query) {
+                searchInput.value = query;
+                performSearch(query);
+            }
+        }
+
+        // =================================================================
+        // MODE HANDLING
+        // =================================================================
+
+        function setupModeTabListeners() {
+            document.querySelectorAll('.mode-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const mode = tab.dataset.mode;
+                    setSearchMode(mode);
+                });
+            });
+        }
+
+        function setSearchMode(mode) {
+            currentMode = mode;
+
+            document.querySelectorAll('.mode-tab').forEach(t => {
+                t.classList.remove('active', 'mesh', 'smart', 'quick');
+            });
+            const activeTab = document.querySelector(`.mode-tab[data-mode="${mode}"]`);
+            if (activeTab) {
+                activeTab.classList.add('active');
+                if (mode === 'mesh') activeTab.classList.add('mesh');
+                else if (mode === 'smart') activeTab.classList.add('smart');
+                else if (mode === 'quick') activeTab.classList.add('quick');
+            }
+
+            searchBtn.className = 'search-btn';
+            if (mode === 'mesh') searchBtn.classList.add('mesh');
+            else if (mode === 'smart') searchBtn.classList.add('smart');
+            else if (mode === 'quick') searchBtn.classList.add('quick');
+
+            searchForm.classList.toggle('mesh-active', mode === 'mesh');
+
+            const hints = {
+                mesh: '💡 MeshAI optimiert deine Suche für Wikipedia, Grokipedia und mehr',
+                smart: '💡 AI erweitert deine Query automatisch für bessere Ergebnisse',
+                quick: '⚡ Schnelle Suche ohne AI-Optimierung',
+                keywords: '🔤 Klassische Stichwort-Suche'
+            };
+            searchHint.textContent = hints[mode] || hints.mesh;
+
+            const url = new URL(window.location);
+            url.searchParams.set('mode', mode);
+            window.history.replaceState({}, '', url);
+        }
+
+        // =================================================================
+        // INFINITE SCROLL
+        // =================================================================
+
+        function setupInfiniteScroll() {
+            const observer = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting && hasMoreResults && !isLoading) {
+                    loadMoreResults();
+                }
+            }, { threshold: 0.1 });
+
+            // Will observe sentinel when results are rendered
+            window.scrollObserver = observer;
+        }
+
+        function loadMoreResults() {
+            if (isLoading || !hasMoreResults) return;
+
+            const nextBatch = allResults.slice(displayedResults, displayedResults + RESULTS_PER_PAGE);
+            if (nextBatch.length === 0) {
+                hasMoreResults = false;
+                return;
+            }
+
+            appendResults(nextBatch);
+            displayedResults += nextBatch.length;
+            hasMoreResults = displayedResults < allResults.length;
+        }
+
+        // =================================================================
+        // MESHAI KEYWORD OPTIMIZER (für Wikipedia/Grokipedia)
+        // =================================================================
+
+        async function meshOptimizeForKnowledge(userInput) {
+            const models = [
+                'openrouter/meta-llama/llama-3.3-70b-instruct:free',
+                'openrouter/google/gemma-3-27b-it:free',
+                'openrouter/qwen/qwen3-235b-a22b:free'
+            ];
+
+            const systemPrompt = `Du bist ein Search Query Optimizer spezialisiert auf Knowledge-Quellen wie Wikipedia und Grokipedia.
+
+WICHTIG: Antworte NUR mit einem JSON-Objekt!
+
+Deine Aufgabe:
+1. Analysiere die Suchanfrage
+2. Extrahiere EINZELNE STICHWÖRTER die als Wikipedia/Grokipedia Artikeltitel existieren könnten
+3. Generiere optimierte Suchbegriffe für Knowledge-Bases
+4. Bei Prompts/Fragen: Konvertiere zu präzisen Stichwörtern
+
+Beispiele:
+- "Wie funktioniert künstliche Intelligenz?" → ["Künstliche Intelligenz", "Machine Learning", "Neuronales Netz"]
+- "linux server setup" → ["Linux", "Server", "Ubuntu", "Debian"]
+- "Was ist Python?" → ["Python", "Programmiersprache"]
+
+Output-Format (NUR JSON):
+{
+  "original": "<original>",
+  "optimized_query": "<beste allgemeine Suchquery>",
+  "wiki_keywords": ["keyword1", "keyword2", "keyword3"],
+  "grok_keywords": ["keyword1", "keyword2"],
+  "intent": "<intent>",
+  "confidence": 0.0-1.0,
+  "reasoning": "<kurze Erklärung>"
+}`;
+
+            for (const model of models) {
+                try {
+                    const response = await fetchWithTimeout(API_BASE + '/mcp', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            jsonrpc: '2.0',
+                            method: 'tools/call',
+                            params: {
+                                name: 'chat',
+                                arguments: {
+                                    model: model,
+                                    messages: [
+                                        { role: 'system', content: systemPrompt },
+                                        { role: 'user', content: userInput }
+                                    ],
+                                    options: { temperature: 0.2 }
+                                }
+                            },
+                            id: Date.now()
+                        })
+                    }, 12000);
+
+                    const data = await response.json();
+                    if (data.error) throw new Error(data.error.message);
+
+                    let llmResponse = '';
+                    if (data.result?.content?.[0]?.text) {
+                        llmResponse = data.result.content[0].text;
+                    } else if (data.result?.response) {
+                        llmResponse = data.result.response;
+                    } else if (typeof data.result === 'string') {
+                        llmResponse = data.result;
+                    }
+
+                    const jsonMatch = llmResponse.match(/\{[\s\S]*\}/);
+                    if (jsonMatch) {
+                        const result = JSON.parse(jsonMatch[0]);
+                        result.model_used = model;
+                        console.log(`MeshAI Knowledge Optimizer (${model}):`, result);
+                        return result;
+                    }
+                } catch (e) {
+                    console.warn(`Model ${model} failed:`, e.message);
+                    continue;
+                }
+            }
+
+            // Fallback
+            const words = userInput.split(/\s+/).filter(w => w.length > 2);
+            return {
+                original: userInput,
+                optimized_query: userInput,
+                wiki_keywords: words.slice(0, 5),
+                grok_keywords: words.slice(0, 2),
+                intent: 'informational',
+                confidence: 0.3,
+                reasoning: 'Fallback - AI nicht verfügbar',
+                model_used: 'none'
+            };
+        }
+
+        // =================================================================
+        // MESHAI CONSENSUS RANKING
+        // =================================================================
+
+        async function meshRankResults(results, query) {
+            // Use multiple AI models to score results and create consensus ranking
+            const models = [
+                'openrouter/meta-llama/llama-3.3-70b-instruct:free',
+                'openrouter/google/gemma-3-27b-it:free',
+                'openrouter/qwen/qwen3-235b-a22b:free'
+            ];
+
+            // Prepare results summary for scoring
+            const resultSummaries = results.slice(0, 30).map((r, i) =>
+                `${i}: ${(r.title || '').substring(0, 50)} | ${(r.snippet || '').substring(0, 80)} | ${r.source}`
+            ).join('\n');
+
+            const scoringPrompt = `Bewerte diese Suchergebnisse für die Query "${query}" mit Relevanz-Scores (0-10).
+Antworte NUR mit einer Komma-separierten Liste von Zahlen in der gleichen Reihenfolge.
+Beispiel: 8,6,9,4,7,5,3,8,6,5
+
+Ergebnisse:
+${resultSummaries}
+
+Scores (nur Zahlen, komma-separiert):`;
+
+            const allScores = [];
+            const respondedModels = [];
+
+            // Query multiple models in parallel
+            const scorePromises = models.map(async (model) => {
+                try {
+                    const response = await fetchWithTimeout(API_BASE + '/mcp', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            jsonrpc: '2.0',
+                            method: 'tools/call',
+                            params: {
+                                name: 'chat',
+                                arguments: {
+                                    model: model,
+                                    messages: [
+                                        { role: 'user', content: scoringPrompt }
+                                    ],
+                                    options: { temperature: 0.1 }
+                                }
+                            },
+                            id: Date.now()
+                        })
+                    }, 12000);
+
+                    const data = await response.json();
+                    if (data.error) throw new Error(data.error.message);
+
+                    let llmResponse = '';
+                    if (data.result?.content?.[0]?.text) {
+                        llmResponse = data.result.content[0].text;
+                    } else if (data.result?.response) {
+                        llmResponse = data.result.response;
+                    } else if (typeof data.result === 'string') {
+                        llmResponse = data.result;
+                    }
+
+                    // Extract numbers from response
+                    const numbers = llmResponse.match(/\d+(?:\.\d+)?/g);
+                    if (numbers && numbers.length >= 5) {
+                        const scores = numbers.slice(0, 30).map(n => Math.min(10, parseFloat(n)));
+                        return { model, scores };
+                    }
+                } catch (e) {
+                    console.debug(`Ranking model ${model} failed:`, e);
+                }
+                return null;
+            });
+
+            // Wait for all with timeout
+            const timeoutPromise = new Promise(resolve => setTimeout(() => resolve([]), 10000));
+            const modelResults = await Promise.race([
+                Promise.all(scorePromises),
+                timeoutPromise
+            ]);
+
+            // Collect valid scores
+            modelResults.forEach(result => {
+                if (result && result.scores) {
+                    allScores.push(result.scores);
+                    respondedModels.push(result.model);
+                }
+            });
+
+            console.log(`MeshAI Ranking: ${respondedModels.length} models responded:`, respondedModels);
+
+            if (allScores.length === 0) {
+                // No models responded, return original order
+                return results;
+            }
+
+            // Calculate consensus scores (average across models)
+            const consensusScores = [];
+            for (let i = 0; i < Math.min(30, results.length); i++) {
+                const scoresForResult = allScores.map(s => s[i] || 5).filter(s => !isNaN(s));
+                const avgScore = scoresForResult.length > 0
+                    ? scoresForResult.reduce((a, b) => a + b, 0) / scoresForResult.length
+                    : 5;
+                consensusScores.push({
+                    index: i,
+                    score: avgScore,
+                    modelCount: scoresForResult.length
+                });
+            }
+
+            // Sort by consensus score
+            consensusScores.sort((a, b) => b.score - a.score);
+
+            // Apply scores and reorder results
+            const rankedResults = consensusScores.map(cs => ({
+                ...results[cs.index],
+                mesh_score: cs.score,
+                mesh_models: cs.modelCount
+            }));
+
+            // Add remaining unscored results
+            const scoredIndices = new Set(consensusScores.map(cs => cs.index));
+            results.forEach((r, i) => {
+                if (!scoredIndices.has(i)) {
+                    rankedResults.push(r);
+                }
+            });
+
+            return rankedResults;
+        }
+
+        // =================================================================
+        // SEARCH EXECUTION
+        // =================================================================
+
+        searchForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const query = searchInput.value.trim();
+            if (query) {
+                const url = new URL(window.location);
+                url.searchParams.set('q', query);
+                window.history.pushState({}, '', url);
+                await performSearch(query);
+            }
+        });
+
+        async function performSearch(query) {
+            searchBtn.disabled = true;
+            isLoading = true;
+            allResults = [];
+            displayedResults = 0;
+            hasMoreResults = true;
+            const startTime = performance.now();
+
+            initialState.style.display = 'none';
+            mainContent.style.display = 'grid';
+
+            showLoadingState();
+
+            try {
+                // Step 1: MeshAI Optimization für Knowledge-Keywords
+                updateLoadingStep('optimize');
+                const analysis = await meshOptimizeForKnowledge(query);
+                currentAnalysis = analysis;
+                updateLoadingStep('optimize', true);
+
+                // Step 2: Multi-Search mit maximalen Ergebnissen
+                updateLoadingStep('search');
+                const searchQuery = analysis?.optimized_query || query;
+
+                const response = await fetchWithTimeout(API_BASE + '/mcp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: 'tools/call',
+                        params: {
+                            name: 'multi_search',
+                            arguments: {
+                                query: searchQuery,
+                                max_results: 100, // Maximum results for endless scroll
+                                lang: 'de'
+                            }
+                        },
+                        id: Date.now()
+                    })
+                }, 20000);
+
+                const data = await response.json();
+                if (data.error) throw new Error(data.error.message);
+                updateLoadingStep('search', true);
+
+                // Step 3: Additional Wikipedia/Grokipedia searches with keywords
+                updateLoadingStep('knowledge');
+                let additionalWiki = [];
+                let additionalGrok = [];
+
+                // Search Wikipedia with optimized keywords
+                if (analysis.wiki_keywords && analysis.wiki_keywords.length > 0) {
+                    for (const keyword of analysis.wiki_keywords.slice(0, 2)) {
+                        try {
+                            const wikiResp = await fetchWithTimeout(API_BASE + '/mcp', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    jsonrpc: '2.0',
+                                    method: 'tools/call',
+                                    params: { name: 'grokipedia_search', arguments: { query: keyword, num_results: 5 } },
+                                    id: Date.now()
+                                })
+                            }, 10000);
+                            const wikiData = await wikiResp.json();
+                            if (wikiData.result?.content?.[0]?.text) {
+                                const parsed = JSON.parse(wikiData.result.content[0].text);
+                                if (parsed.results) additionalGrok.push(...parsed.results);
+                            }
+                        } catch (e) { console.debug('Grok keyword search failed:', e); }
+                    }
+                }
+
+                updateLoadingStep('knowledge', true);
+
+                // Parse main results
+                let result = parseSearchResult(data);
+                allResults = result.results || [];
+
+                // Merge additional knowledge results
+                const existingUrls = new Set(allResults.map(r => r.url));
+                additionalWiki.forEach(r => {
+                    if (!existingUrls.has(r.url)) {
+                        allResults.push(r);
+                        existingUrls.add(r.url);
+                    }
+                });
+                additionalGrok.forEach(r => {
+                    if (!existingUrls.has(r.url)) {
+                        allResults.push(r);
+                        existingUrls.add(r.url);
+                    }
+                });
+
+                // Step 4: MeshAI Ranking - Multiple AI models score results
+                if (currentMode === 'mesh' && allResults.length > 0) {
+                    // Skip ranking if mobile or low-end device
+                    const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+                    const skipRanking = isMobile && allResults.length > 30;
+                    if (skipRanking) {
+                        console.log('Skipping MeshAI ranking on mobile for better performance');
+                        updateLoadingStep('ranking', true);
+                    } else {
+                    updateLoadingStep('ranking');
+                    try {
+                        const rankedResults = await meshRankResults(allResults.slice(0, 50), query);
+                        // Merge ranked results with unranked
+                        const rankedUrls = new Set(rankedResults.map(r => r.url));
+                        const unranked = allResults.filter(r => !rankedUrls.has(r.url));
+                        allResults = [...rankedResults, ...unranked];
+                    } catch (e) {
+                        console.warn('MeshAI Ranking failed, using default order:', e);
+                    }
+                    updateLoadingStep('ranking', true);
+                    }
+                }
+
+                const elapsed = ((performance.now() - startTime) / 1000).toFixed(2);
+                result.analysis = analysis;
+                result.results = allResults;
+                result.total = allResults.length;
+                result.mode = currentMode;
+
+                renderResults(result, elapsed, query);
+
+            } catch (error) {
+                console.error('Search error:', error);
+                resultsContainer.innerHTML = `
+                    <div class="error-state fade-in">
+                        <p><strong>Fehler bei der Suche</strong></p>
+                        <p>${escapeHtml(error.message)}</p>
+                    </div>
+                `;
+            } finally {
+                searchBtn.disabled = false;
+                isLoading = false;
+            }
+        }
+
+        function showLoadingState() {
+            const rankingStep = currentMode === 'mesh' ? `
+                        <div class="loading-step" id="step-ranking">
+                            <span class="check">○</span> MeshAI Consensus Ranking...
+                        </div>` : '';
+
+            resultsContainer.innerHTML = `
+                <div class="loading fade-in">
+                    <div class="spinner mesh"></div>
+                    <p>Suche wird vorbereitet...</p>
+                    <div class="loading-steps">
+                        <div class="loading-step active" id="step-optimize">
+                            <span class="check">○</span> MeshAI optimiert Keywords...
+                        </div>
+                        <div class="loading-step" id="step-search">
+                            <span class="check">○</span> Suche in 7 Quellen...
+                        </div>
+                        <div class="loading-step" id="step-knowledge">
+                            <span class="check">○</span> Wikipedia & Grokipedia erweitern...
+                        </div>
+                        ${rankingStep}
+                    </div>
+                </div>
+            `;
+            wikipediaList.innerHTML = '<div class="knowledge-empty">Lädt...</div>';
+            grokipediaList.innerHTML = '<div class="knowledge-empty">Lädt...</div>';
+            wikiCount.textContent = '...';
+            grokCount.textContent = '...';
+        }
+
+        function updateLoadingStep(stepId, done = false) {
+            const step = document.getElementById(`step-${stepId}`);
+            if (step) {
+                if (done) {
+                    step.classList.remove('active');
+                    step.classList.add('done');
+                    step.querySelector('.check').textContent = '✓';
+                } else {
+                    step.classList.add('active');
+                }
+            }
+            const nextStep = step?.nextElementSibling;
+            if (nextStep && done) nextStep.classList.add('active');
+        }
+
+        function parseSearchResult(data) {
+            let result;
+            if (data.result?.content?.[0]?.text) {
+                result = JSON.parse(data.result.content[0].text);
+            } else if (data.result) {
+                result = data.result;
+            } else {
+                throw new Error('Unexpected response format');
+            }
+            return result;
+        }
+
+        // =================================================================
+        // RESULTS RENDERING
+        // =================================================================
+
+        function renderResults(data, elapsed, searchQuery) {
+            const results = data.results || [];
+            const count = results.length;
+            const sources = data.sources || {};
+            const analysis = data.analysis || currentAnalysis;
+
+            // Separate Wikipedia and Grokipedia results
+            const wikiResults = results.filter(r => r.source === 'wikipedia');
+            const grokResults = results.filter(r => r.source === 'grokipedia');
+            const otherResults = results.filter(r => r.source !== 'wikipedia' && r.source !== 'grokipedia');
+
+            // Render Knowledge Sidebar
+            renderKnowledgeSidebar(wikiResults, grokResults);
+
+            // Build main results HTML
+            let html = '';
+
+            // AI Analysis Box
+            if (analysis && analysis.original) {
+                html += `
+                    <div class="ai-analysis fade-in">
+                        <div class="ai-analysis-header">
+                            <span class="icon">🧠</span>
+                            <span class="title">MeshAI Query Optimizer</span>
+                            <span class="badge">${analysis.intent || 'analysis'}</span>
+                            ${analysis.confidence ? `<span style="color: var(--text-muted); font-size: 0.75rem;">${Math.round(analysis.confidence * 100)}%</span>` : ''}
+                        </div>
+                        <div class="ai-analysis-content">
+                            <div class="ai-field">
+                                <div class="ai-field-label">Original</div>
+                                <div class="ai-field-value">${escapeHtml(analysis.original)}</div>
+                            </div>
+                            <div class="ai-field">
+                                <div class="ai-field-label">Optimiert</div>
+                                <div class="ai-field-value highlight">${escapeHtml(analysis.optimized_query || analysis.original)}</div>
+                            </div>
+                            ${analysis.wiki_keywords?.length ? `
+                                <div class="ai-field" style="grid-column: span 2;">
+                                    <div class="ai-field-label">Wikipedia/Grokipedia Keywords</div>
+                                    <div class="ai-keywords">
+                                        ${analysis.wiki_keywords.map(t => `<span class="ai-keyword">${escapeHtml(t)}</span>`).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                        ${analysis.reasoning ? `<div style="margin-top: 8px; font-size: 0.75rem; color: var(--text-muted);">💡 ${escapeHtml(analysis.reasoning)}</div>` : ''}
+                        ${analysis.model_used ? `<div style="font-size: 0.65rem; color: var(--text-muted);">Model: ${analysis.model_used}</div>` : ''}
+                    </div>
+                `;
+            }
+
+            // Stats Bar
+            html += `
+                <div class="stats-bar fade-in">
+                    <span class="stats-count">
+                        <strong>${count}</strong> Ergebnisse insgesamt
+                    </span>
+                    <span class="stats-time">${elapsed}s</span>
+                    <div class="stats-sources">
+                        ${Object.entries(sources).map(([src, cnt]) => `
+                            <span class="source-badge ${cnt > 0 ? (src === "searxng" ? "primary" : "active") : "offline"}">${getSourceIcon(src)} ${src} (${cnt})</span>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+
+            // Results container
+            html += '<div class="results" id="resultsGrid"></div>';
+            html += '<div class="scroll-sentinel" id="scrollSentinel"></div>';
+
+            resultsContainer.innerHTML = html;
+
+            // Store all non-knowledge results for infinite scroll
+            allResults = otherResults;
+            displayedResults = 0;
+            hasMoreResults = allResults.length > 0;
+
+            // Load first batch
+            loadMoreResults();
+
+            // Setup scroll observer
+            const sentinel = document.getElementById('scrollSentinel');
+            if (sentinel && window.scrollObserver) {
+                window.scrollObserver.observe(sentinel);
+            }
+        }
+
+        function renderKnowledgeSidebar(wikiResults, grokResults) {
+            // Wikipedia
+            wikiCount.textContent = wikiResults.length;
+            if (wikiResults.length > 0) {
+                wikipediaList.innerHTML = wikiResults.map(r => `
+                    <a href="${escapeHtml(r.url)}" target="_blank" rel="noopener" class="knowledge-item wikipedia">
+                        <div class="knowledge-item-title">
+                            <span>📚</span>
+                            ${escapeHtml(r.title?.replace('📚 ', '') || 'Wikipedia')}
+                        </div>
+                        <div class="knowledge-item-url">${escapeHtml(r.url)}</div>
+                    </a>
+                `).join('');
+            } else {
+                wikipediaList.innerHTML = '<div class="knowledge-empty">Keine Wikipedia-Ergebnisse für diese Suche</div>';
+            }
+
+            // Grokipedia
+            grokCount.textContent = grokResults.length;
+            if (grokResults.length > 0) {
+                grokipediaList.innerHTML = grokResults.map(r => `
+                    <a href="${escapeHtml(r.url)}" target="_blank" rel="noopener" class="knowledge-item grokipedia">
+                        <div class="knowledge-item-title">
+                            <span>🧠</span>
+                            ${escapeHtml(r.title?.replace('🤖 ', '').replace(' (Grokipedia)', '') || 'Grokipedia')}
+                        </div>
+                        <div class="knowledge-item-url">${escapeHtml(r.url)}</div>
+                    </a>
+                `).join('');
+            } else {
+                grokipediaList.innerHTML = '<div class="knowledge-empty">Keine Grokipedia-Ergebnisse für diese Suche</div>';
+            }
+        }
+
+        function appendResults(batch) {
+            const grid = document.getElementById('resultsGrid');
+            if (!grid) return;
+
+            const html = batch.map((result, i) => {
+                const url = result.url || '#';
+                const title = result.title || 'Ohne Titel';
+                const snippet = result.snippet || result.body || result.description || '';
+                const source = (result.source || 'unknown').split(':')[0];
+                const displayUrl = url.replace(/^https?:\/\//, '').substring(0, 60);
+                const meshScore = result.mesh_score;
+                const meshModels = result.mesh_models;
+                const hasMeshScore = meshScore !== undefined;
+
+                const sourceClass = source === 'wikipedia' ? 'wikipedia' : source === 'grokipedia' ? 'grokipedia' : '';
+                const meshClass = hasMeshScore ? 'mesh-ranked' : '';
+
+                return `
+                    <a href="${escapeHtml(url)}" target="_blank" rel="noopener"
+                       class="result-card fade-in ${meshClass}" style="animation-delay: ${i * 0.02}s">
+                        <div class="result-header">
+                            <div class="result-url">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                                </svg>
+                                ${escapeHtml(displayUrl)}
+                            </div>
+                            <div class="result-badges">
+                                ${hasMeshScore ? `<span class="mesh-score" title="${meshModels} AI models">🧠 ${meshScore.toFixed(1)}</span>` : ''}
+                                <span class="result-source ${sourceClass}">${getSourceIcon(source)} ${source}</span>
+                            </div>
+                        </div>
+                        <h2 class="result-title">${escapeHtml(title)}</h2>
+                        <p class="result-snippet">${escapeHtml(snippet)}</p>
+                    </a>
+                `;
+            }).join('');
+
+            grid.insertAdjacentHTML('beforeend', html);
+        }
+
+        function getSourceIcon(source) {
+            const icons = {
+                'bing': '🔷',
+                'brave': '🦁',
+                'google': '🔍',
+                'searxng': '🌐',
+                'duckduckgo': '🦆',
+                'wikipedia': '📚',
+                'grokipedia': '🧠',
+                'ailinux_news': '📰',
+                'wiby': '🌿'
+            };
+            return icons[source] || '🔗';
+        }
+
+        // =================================================================
+        // UTILITIES
+        // =================================================================
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text || '';
+            return div.innerHTML;
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === '/' && document.activeElement !== searchInput) {
+                e.preventDefault();
+                searchInput.focus();
+            }
+            if (e.key === 'Escape') {
+                searchInput.blur();
+            }
+            if (e.ctrlKey && ['1', '2', '3', '4'].includes(e.key)) {
+                e.preventDefault();
+                const modes = ['mesh', 'smart', 'quick', 'keywords'];
+                setSearchMode(modes[parseInt(e.key) - 1]);
+            }
+        });
+
+        // Initialize
+        init();
+    </script>
+</body>
+</html>

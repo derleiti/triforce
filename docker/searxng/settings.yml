@@ -1,4 +1,4 @@
-# SearXNG Settings for AILinux
+# SearXNG Settings for AILinux - Fixed
 use_default_settings: true
 
 general:
@@ -11,13 +11,21 @@ search:
   default_lang: "de"
   formats:
     - html
-    - json  # WICHTIG für API!
+    - json
 
 server:
   secret_key: "ailinux-searxng-secret-key-2024"
-  limiter: false  # Kein Rate-Limit für self-hosted
+  limiter: false
   image_proxy: true
   method: "POST"
+
+# Erhöhte Timeouts für stabilere Suche
+outgoing:
+  request_timeout: 6.0
+  max_request_timeout: 12.0
+  useragent_suffix: ""
+  pool_connections: 100
+  pool_maxsize: 20
 
 ui:
   static_use_hash: true
@@ -30,7 +38,7 @@ enabled_plugins:
   - 'Self Information'
   - 'Tracker URL remover'
 
-# Engine-Prioritäten
+# Engine-Prioritäten - stackoverflow entfernt (existiert nicht mehr)
 engines:
   - name: google
     engine: google
@@ -62,12 +70,14 @@ engines:
     shortcut: gh
     disabled: false
     
-  - name: stackoverflow
-    engine: stackoverflow
-    shortcut: so
-    disabled: false
-    
   - name: arxiv
     engine: arxiv
     shortcut: arx
     disabled: false
+    
+  # Torch/Ahmia deaktiviert (Darkweb, instabil)
+  - name: torch
+    disabled: true
+    
+  - name: ahmia
+    disabled: true

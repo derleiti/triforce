@@ -1,0 +1,60 @@
+{
+  "id": "msg_af264f510001cqQyJQvbgoSkNw",
+  "sessionID": "ses_50d9b167affeejVkpKV9FyRk78",
+  "role": "assistant",
+  "time": {
+    "created": 1765003293968,
+    "completed": 1765003294108
+  },
+  "error": {
+    "name": "APIError",
+    "data": {
+      "message": "Request too large for model `qwen/qwen3-32b` in organization `org_01k15p1bc6f9ybt57wj6wgssxj` service tier `on_demand` on tokens per minute (TPM): Limit 6000, Requested 9982, please reduce your message size and try again. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing",
+      "statusCode": 413,
+      "isRetryable": false,
+      "responseHeaders": {
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "cache-control": "private, max-age=0, no-store, no-cache, must-revalidate",
+        "cf-cache-status": "DYNAMIC",
+        "cf-ray": "9a99cc5bccad715c-DUS",
+        "connection": "keep-alive",
+        "content-length": "380",
+        "content-type": "application/json",
+        "date": "Sat, 06 Dec 2025 06:41:34 GMT",
+        "retry-after": "40",
+        "server": "cloudflare",
+        "strict-transport-security": "max-age=2592000",
+        "vary": "Origin",
+        "via": "1.1 google",
+        "x-groq-region": "fra",
+        "x-ratelimit-limit-requests": "1000",
+        "x-ratelimit-limit-tokens": "6000",
+        "x-ratelimit-remaining-requests": "1000",
+        "x-ratelimit-remaining-tokens": "6000",
+        "x-ratelimit-reset-requests": "1ms",
+        "x-ratelimit-reset-tokens": "1ms",
+        "x-request-id": "req_01kbs69xbef4nb7j74h7fbdncw",
+        "set-cookie": "__cf_bm=ICQZWYULmkwU1cLodtK9tnGh9ImY2TAQLQ7HUzUHJgs-1765003294.045915-1.0.1.1-7tynLID1Fb8h8fPQLkzk_gbx3YZ_r4HHXDn4W2TIZAkrJLgTDBdjnfWVRXRQqDl4yly3JuZX4lxrVtU3PJZiztVQDe_EZuTwjzKu.UuRLcGV2fjA_XxtLfLNkr9_Cf.7; HttpOnly; Secure; Path=/; Domain=groq.com; Expires=Sat, 06 Dec 2025 07:11:34 GMT"
+      },
+      "responseBody": "{\"error\":{\"message\":\"Request too large for model `qwen/qwen3-32b` in organization `org_01k15p1bc6f9ybt57wj6wgssxj` service tier `on_demand` on tokens per minute (TPM): Limit 6000, Requested 9982, please reduce your message size and try again. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing\",\"type\":\"tokens\",\"code\":\"rate_limit_exceeded\"}}\n"
+    }
+  },
+  "parentID": "msg_af264e9c1001xGb1VguvKUi4ff",
+  "modelID": "qwen/qwen3-32b",
+  "providerID": "groq",
+  "mode": "build",
+  "path": {
+    "cwd": "/var/tristar/agents/opencode-workspace",
+    "root": "/"
+  },
+  "cost": 0,
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "reasoning": 0,
+    "cache": {
+      "read": 0,
+      "write": 0
+    }
+  }
+}

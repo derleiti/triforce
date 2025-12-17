@@ -19,6 +19,8 @@ services:
       - ${WP_APACHE_VHOSTS_PATH:-./apache/vhosts}:/usr/local/apache2/conf/vhosts:ro
       - ${WP_HTML_PATH:-./html}:/var/www/html
       - ${WP_LETSENCRYPT_PATH:-/etc/letsencrypt}:/etc/letsencrypt:ro
+      - ${WP_API_ROOT_PATH:-./api-root}:/var/www/api-root:ro
+      - ${WP_SEARCH_ROOT_PATH:-./search-root}:/var/www/search-root:ro
     environment:
       TZ: ${TZ:-Europe/Berlin}
     healthcheck:
@@ -28,10 +30,9 @@ services:
       retries: ${WP_APACHE_HEALTHCHECK_RETRIES:-3}
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    restart: ${WP_RESTART_POLICY:-unless-stopped}
     networks:
       - ${WP_NETWORK:-wordpress-network}
-      - flarum-network
-    restart: ${WP_RESTART_POLICY:-unless-stopped}
 
   wordpress_fpm:
     image: ${WP_FPM_IMAGE:-wordpress:6.8.1-php8.3-fpm-alpine}
@@ -190,8 +191,7 @@ networks:
   wordpress-network:
     name: ${WP_NETWORK:-wordpress-network}
     driver: ${WP_NETWORK_DRIVER:-bridge}
-  flarum-network:
-    external: true
+    external: false
 
 volumes:
   wp_db_data:

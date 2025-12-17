@@ -1,23 +1,37 @@
 #!/usr/bin/env bash
+# ============================================================================
+# AILinux Repository GPG Signing Script v2.0
+# ============================================================================
+# Signs all Release files in mirrored repositories with GPG
+# Creates InRelease (clearsign) and Release.gpg (detached signature)
+#
+# Usage:
+#   ./sign-repos.sh [path]
+#
+# Environment Variables:
+#   REPO_PATH       - Base repository path
+#   GNUPGHOME       - GPG home directory
+#   SIGNING_KEY_ID  - GPG key ID for signing
+# ============================================================================
 
 # Bash-Guard
 if [ -z "${BASH_VERSION:-}" ]; then
   exec /usr/bin/env bash "$0" "$@"
 fi
 
-set -u # Wir wollen Fehler sehen, aber Skript soll nicht sofort sterben bei kleinen Problemen
+set -u
 
-# --- LOGGING FUNKTION ---
-log() { echo -e "[$(date '+%H:%M:%S')] \033[1;34mℹ️  $1\033[0m"; }
-err() { echo -e "[$(date '+%H:%M:%S')] \033[1;31m❌ $1\033[0m" >&2; }
-ok()  { echo -e "[$(date '+%H:%M:%S')] \033[1;32m✅ $1\033[0m"; }
+# --- LOGGING ---
+log() { echo -e "[$(date '+%H:%M:%S')] \033[1;34m[INFO]\033[0m  $1"; }
+err() { echo -e "[$(date '+%H:%M:%S')] \033[1;31m[ERROR]\033[0m $1" >&2; }
+ok()  { echo -e "[$(date '+%H:%M:%S')] \033[1;32m[OK]\033[0m    $1"; }
 
 # --- SETUP ---
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 
 # Repo Path Detection (Container vs Host)
 if [[ -z "${REPO_PATH:-}" ]]; then
-  for candidate in "$SCRIPT_DIR" "$SCRIPT_DIR/.." "/var/spool/apt-mirror" "/root/ailinux-repo"; do
+  for candidate in "$SCRIPT_DIR" "$SCRIPT_DIR/.." "/var/spool/apt-mirror"; do
     [[ -d "$candidate" ]] || continue
     if [[ -d "${candidate}/repo" ]] || [[ -d "${candidate}/mirror" ]]; then
       REPO_PATH="$candidate"
@@ -87,6 +101,11 @@ label_for(){
     *ppa.launchpadcontent.net*) echo 'Origin "PPA"; Label "PPA Mirror";';;
     *google.com*) echo 'Origin "Google"; Label "Google Chrome";';;
     *winehq.org*) echo 'Origin "WineHQ"; Label "WineHQ";';;
+    *nvidia*|*developer.download.nvidia.com*) echo 'Origin "NVIDIA"; Label "NVIDIA CUDA";';;
+    *docker.com*) echo 'Origin "Docker"; Label "Docker CE";';;
+    *microsoft.com*) echo 'Origin "Microsoft"; Label "VS Code";';;
+    *steampowered.com*) echo 'Origin "Valve"; Label "Steam";';;
+    *nodesource.com*) echo 'Origin "NodeSource"; Label "Node.js";';;
     *) echo 'Origin "AILinux"; Label "AILinux Mirror";';;
   esac
 }
@@ -167,5 +186,80 @@ for ddir in "${DIST_DIRS[@]}"; do
     rm -f "$tmpconf"
   done
 done
+
+# --- FLAT REPOS (keine dists/ Struktur) ---
+log "Suche nach Flat-Repositories (ohne dists/)..."
+
+# Finde Verzeichnisse mit Packages-Datei aber ohne dists/ Unterverzeichnis
+mapfile -t FLAT_DIRS < <(find "$BASE_DIR" -name "Packages" -type f ! -path "*/dists/*" -exec dirname {} \; | sort -u)
+
+if [ ${#FLAT_DIRS[@]} -gt 0 ]; then
+  log "Gefunden: ${#FLAT_DIRS[@]} Flat-Repositories"
+
+  for flat_dir in "${FLAT_DIRS[@]}"; do
+    # Skip wenn schon in einem dists/ Pfad
+    [[ "$flat_dir" == */dists/* ]] && continue
+
+    log "Bearbeite Flat-Repo: $flat_dir"
+    cd "$flat_dir" || continue
+
+    # Label basierend auf Pfad
+    extra="$(label_for "$flat_dir")"
+
+    # Release erstellen falls nicht vorhanden oder veraltet
+    if [[ ! -f "Release" ]] || [[ "Packages" -nt "Release" ]]; then
+        log "   Erstelle Release-Datei..."
+
+        # apt-ftparchive release generieren
+        tmpconf=$(mktemp)
+        {
+          echo 'APT::FTPArchive::Release {'
+          echo '  Architectures "amd64";'
+          echo '  Components "";'
+          echo "};"
+          printf '%s\n' "$extra"
+        } > "$tmpconf"
+
+        if apt-ftparchive release . > "Release.new" 2>/dev/null; then
+            mv "Release.new" "Release"
+            ok "   Release erstellt"
+        else
+            rm -f "Release.new"
+            # Fallback: Manuell generieren wenn apt-ftparchive fehlschlägt
+            log "   Fallback: Manuelle Release-Generierung..."
+            {
+              echo "Date: $(date -R)"
+              echo "Architectures: amd64"
+              echo "MD5Sum:"
+              md5sum Packages 2>/dev/null | awk '{print " "$1" "length($2)" "$2}' || true
+              [[ -f Packages.gz ]] && md5sum Packages.gz 2>/dev/null | awk '{print " "$1" "length($2)" "$2}' || true
+              [[ -f Packages.xz ]] && md5sum Packages.xz 2>/dev/null | awk '{print " "$1" "length($2)" "$2}' || true
+              echo "SHA256:"
+              sha256sum Packages 2>/dev/null | awk '{print " "$1" "length($2)" "$2}' || true
+              [[ -f Packages.gz ]] && sha256sum Packages.gz 2>/dev/null | awk '{print " "$1" "length($2)" "$2}' || true
+              [[ -f Packages.xz ]] && sha256sum Packages.xz 2>/dev/null | awk '{print " "$1" "length($2)" "$2}' || true
+            } > "Release"
+        fi
+        rm -f "$tmpconf"
+    fi
+
+    # Alte Signaturen löschen
+    rm -f "InRelease" "Release.gpg"
+
+    # Signieren
+    if [[ -f "Release" ]]; then
+        gpg_opts=(--batch --yes --local-user "$SIGNING_KEY_ID" --pinentry-mode loopback)
+
+        if gpg "${gpg_opts[@]}" --clearsign -o "InRelease" "Release" 2>/dev/null && \
+           gpg "${gpg_opts[@]}" --detach-sign -o "Release.gpg" "Release" 2>/dev/null; then
+
+           chmod 0644 "Release" "InRelease" "Release.gpg"
+           ok "   Flat-Repo signiert: $flat_dir"
+        else
+           err "   GPG Fehler bei Flat-Repo: $flat_dir"
+        fi
+    fi
+  done
+fi
 
 log "=== FERTIG ==="

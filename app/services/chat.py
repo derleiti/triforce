@@ -327,14 +327,14 @@ async def _get_initial_response(
         ):
             chunks.append(chunk)
     elif model.provider == "mistral":
-        if not settings.mixtral_api_key:
+        if not settings.mistral_api_key:
             raise api_error("Mistral support is not configured", status_code=503, code="mistral_unavailable")
         try:
             async for chunk in _stream_mistral(
                 request_model,
                 messages,
-                api_key=settings.mixtral_api_key,
-                organisation_id=settings.ailinux_mixtral_organisation_id,
+                api_key=settings.mistral_api_key,
+                organisation_id=settings.mistral_organisation_id,
                 temperature=temperature,
                 stream=True,
                 timeout=int(settings.request_timeout),
@@ -532,7 +532,7 @@ async def stream_chat(
                     yield chunk
             elif model.provider == "mistral":
                 async for chunk in _stream_mistral(
-                    request_model, augmented_messages, api_key=settings.mixtral_api_key, organisation_id=settings.ailinux_mixtral_organisation_id, temperature=temperature, stream=stream, timeout=settings.request_timeout
+                    request_model, augmented_messages, api_key=settings.mistral_api_key, organisation_id=settings.mistral_organisation_id, temperature=temperature, stream=stream, timeout=settings.request_timeout
                 ):
                     yield chunk
             elif model.provider == "gemini":
@@ -652,7 +652,7 @@ async def stream_chat(
                                 yield chunk
                         elif model.provider == "mistral":
                             async for chunk in _stream_mistral(
-                                request_model, augmented_messages, api_key=settings.mixtral_api_key, organisation_id=settings.ailinux_mixtral_organisation_id, temperature=temperature, stream=stream, timeout=settings.request_timeout
+                                request_model, augmented_messages, api_key=settings.mistral_api_key, organisation_id=settings.mistral_organisation_id, temperature=temperature, stream=stream, timeout=settings.request_timeout
                             ):
                                 yield chunk
                         elif model.provider == "gemini":

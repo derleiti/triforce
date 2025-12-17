@@ -227,6 +227,7 @@ class ModelRegistry:
                 self._discover_together(),
                 self._discover_fireworks(),
                 self._discover_cloudflare(),
+                self._discover_github_models(),
                 return_exceptions=True
             )
 
@@ -506,7 +507,7 @@ class ModelRegistry:
     async def _discover_mistral(self) -> List[ModelInfo]:
         """Discover models from Mistral API."""
         settings = self._settings
-        if not settings.mixtral_api_key:
+        if not settings.mistral_api_key:
             return []
 
         models: List[ModelInfo] = []
@@ -514,7 +515,7 @@ class ModelRegistry:
             async with httpx.AsyncClient(timeout=10.0) as client:
                 response = await client.get(
                     "https://api.mistral.ai/v1/models",
-                    headers={"Authorization": f"Bearer {settings.mixtral_api_key}"}
+                    headers={"Authorization": f"Bearer {settings.mistral_api_key}"}
                 )
                 response.raise_for_status()
                 data = response.json()
@@ -1037,6 +1038,59 @@ class ModelRegistry:
             logger.info("Discovered %d Cloudflare models from API", len(models))
             return models
         return self._cloudflare_fallback_models()
+
+
+
+    async def _discover_github_models(self) -> List[ModelInfo]:
+        """Discover models from GitHub Models API (Free with PAT)."""
+        settings = self._settings
+        if not settings.github_token:
+            return []
+        
+        # GitHub Models - curated list (API doesn't list all)
+        github_models = [
+            # OpenAI Models
+            ("gpt-4o", ["chat", "code", "vision"], ["lead", "worker"]),
+            ("gpt-4o-mini", ["chat", "code"], ["worker"]),
+            ("gpt-4.1", ["chat", "code", "vision"], ["lead", "worker"]),
+            ("gpt-4.1-mini", ["chat", "code"], ["worker"]),
+            ("gpt-4.1-nano", ["chat"], ["worker"]),
+            ("o1", ["chat", "reasoning"], ["lead"]),
+            ("o1-mini", ["chat", "reasoning"], ["worker"]),
+            ("o3-mini", ["chat", "reasoning"], ["worker"]),
+            # Meta Llama
+            ("Meta-Llama-3.1-405B-Instruct", ["chat", "code"], ["lead"]),
+            ("Meta-Llama-3.1-70B-Instruct", ["chat", "code"], ["worker"]),
+            ("Meta-Llama-3.1-8B-Instruct", ["chat"], ["worker"]),
+            ("Llama-3.3-70B-Instruct", ["chat", "code"], ["worker"]),
+            # DeepSeek
+            ("DeepSeek-R1", ["chat", "reasoning", "code"], ["lead", "worker"]),
+            ("DeepSeek-R1-0528", ["chat", "reasoning", "code"], ["worker"]),
+            ("DeepSeek-V3-0324", ["chat", "code"], ["worker"]),
+            # Mistral
+            ("Mistral-Small-3.1", ["chat", "code"], ["worker"]),
+            ("Codestral-2501", ["code"], ["worker"]),
+            # Cohere
+            ("Cohere-command-a", ["chat"], ["worker"]),
+            # Microsoft Phi
+            ("Phi-4", ["chat", "code"], ["worker"]),
+            ("Phi-4-multimodal-instruct", ["chat", "vision"], ["worker"]),
+            # xAI
+            ("Grok-3", ["chat", "reasoning"], ["lead"]),
+            ("Grok-3-Mini", ["chat"], ["worker"]),
+        ]
+        
+        models = []
+        for model_id, capabilities, roles in github_models:
+            models.append(ModelInfo(
+                id=f"github/{model_id}",
+                provider="github",
+                capabilities=capabilities,
+                roles=roles,
+            ))
+        
+        logger.info("Discovered %d GitHub Models (curated list)", len(models))
+        return models
 
     def _cloudflare_fallback_models(self) -> List[ModelInfo]:
         """Fallback Cloudflare models if API discovery fails."""
