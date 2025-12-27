@@ -55,7 +55,7 @@ class MCPWebSocketServer:
             
             ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
             ctx.load_cert_chain(str(ca_cert), str(ca_key))
-            ctx.verify_mode = ssl.CERT_OPTIONAL  # Optional for now
+            ctx.verify_mode = ssl.CERT_REQUIRED  # mTLS enforced
             ctx.load_verify_locations(str(ca_cert))
             
             return ctx
