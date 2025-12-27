@@ -182,6 +182,14 @@ async def lifespan(app: FastAPI):
         # import logging (centralized)
         logger.warning(f"Failed to start MCP Brain: {e}")
 
+    # Start MCP WebSocket Server (Port 44433)
+    try:
+        from .services.mcp_ws_server import mcp_ws_server
+        await mcp_ws_server.start()
+        logger.info("MCP WebSocket Server started on port 44433")
+    except Exception as e:
+        logger.warning(f"Failed to start MCP WebSocket Server: {e}")
+
     # Auto-Bootstrap CLI Agents (wenn konfiguriert)
     try:
         from .services.agent_bootstrap import bootstrap_service
@@ -238,6 +246,13 @@ async def lifespan(app: FastAPI):
         pass
 
     # Stop MCP Server Brain
+
+    # Stop MCP WebSocket Server
+    try:
+        from .services.mcp_ws_server import mcp_ws_server
+        await mcp_ws_server.stop()
+    except Exception:
+        pass
     try:
         from .services.init_service import mcp_brain
         await mcp_brain.stop()
