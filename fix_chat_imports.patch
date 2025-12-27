@@ -1,0 +1,44 @@
+--- a/app/services/chat.py
++++ b/app/services/chat.py
+@@ -460,6 +460,40 @@ async def _get_initial_response(
+     return response_body
+
+
++# =============================================================================
++# WRAPPER FUNCTIONS - For backwards compatibility
++# =============================================================================
++
++async def handle_chat(params: dict) -> dict:
++    """
++    Wrapper for handle_chat_smart from chat_router.
++    Provides backwards compatibility for old imports.
++    """
++    from app.services.chat_router import handle_chat_smart
++    return await handle_chat_smart(params)
++
++
++async def generate_response(
++    message: str,
++    model: str = "gemini-2.0-flash-001",
++    temperature: float = 0.7,
++    max_tokens: int = 2048,
++    **kwargs
++) -> str:
++    """
++    Generate a simple text response using the chat system.
++    Wrapper around stream_chat for synchronous-style usage.
++
++    Returns the complete response text.
++    """
++    messages = [{"role": "user", "content": message}]
++
++    full_response = ""
++    async for chunk in stream_chat(messages, model=model, temperature=temperature, max_tokens=max_tokens, **kwargs):
++        if isinstance(chunk, dict) and "content" in chunk:
++            full_response += chunk["content"]
++
++    return full_response
++
++
+ async def stream_chat(
+     messages: Iterable[dict[str, str]],

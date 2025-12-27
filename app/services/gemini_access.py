@@ -563,7 +563,7 @@ Erstelle eine strukturierte Zusammenfassung und identifiziere:
         for attempt in range(max_retries + 1):
             try:
                 gemini_model = genai.GenerativeModel(
-                    model=model,
+                    model_name=model,
                     tools=tools or None,
                     generation_config=GenerationConfig(temperature=temperature),
                 )
@@ -848,7 +848,11 @@ Erstelle eine strukturierte Zusammenfassung und identifiziere:
                 elif isinstance(payload, list):
                     function_calls = [p for p in payload if isinstance(p, dict)]
 
-            result["raw_response"] = getattr(response, "text", "")
+            try:
+                result["raw_response"] = response.text
+            except ValueError:
+                # Response contains function_call, not text - this is expected
+                result["raw_response"] = ""
             result["function_calls_found"] = len(function_calls)
 
             if function_calls and auto_execute:

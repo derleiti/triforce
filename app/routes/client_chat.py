@@ -1,5 +1,4 @@
 """
-import secrets
 AILinux Client Chat API
 Tier-basierter Chat:
 - Free: Ollama Backend (lokal auf Server)
@@ -29,9 +28,8 @@ OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 
-# JWT Config (gleich wie in client_auth.py)
-JWT_SECRET = os.environ.get("JWT_SECRET") or secrets.token_hex(32)
-JWT_ALGORITHM = "HS256"
+# JWT Config - Import from auth module to share secret
+from .client_auth import JWT_SECRET, JWT_ALGORITHM
 
 
 def extract_user_from_token(authorization: str = None) -> Optional[str]:

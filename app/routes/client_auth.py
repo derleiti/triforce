@@ -41,6 +41,7 @@ class ClientRole(str, Enum):
     CLI_AGENT = "cli_agent"  # Server-Side Agents
     DESKTOP = "desktop"      # Desktop Clients
     MOBILE = "mobile"        # Mobile Clients (eingeschränkt)
+    WEB = "web"              # Web Clients
 
 
 # =============================================================================
@@ -64,7 +65,7 @@ DEFAULT_CLIENT_PERMISSIONS = {
             "codebase_*", "restart_*", "tristar_shell_exec", "vault_*",
         ]
     },
-    ClientRole.CLI: {
+    ClientRole.CLI_AGENT: {
         "allowed_tools": ["chat", "chat_smart"],
         "blocked_tools": ["*"]  # Sehr eingeschränkt
     },

@@ -32,6 +32,7 @@ from . import (
     mcp,
     tristar,
     triforce,
+    client_logs,
 )
 
 __version__ = "2.80"
@@ -49,4 +50,5 @@ __all__ = [
     "mcp",
     "tristar",
     "triforce",
+    "client_logs",
 ]

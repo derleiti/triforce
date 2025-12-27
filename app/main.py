@@ -83,6 +83,7 @@ from .routes.tristar_gui import router as tristar_gui_router
 from .routes.client_chat import router as client_chat_router
 from .routes.client_auth import router as client_auth_router
 from .routes.client_update import router as client_update_router
+from .routes.client_logs import router as client_logs_router
 
 # Import routers from the top-level app directory
 from .routes_sd3 import router as sd3_router
@@ -360,19 +361,19 @@ def create_app() -> FastAPI:
 
     # TriStar Aliases: Register at root (router has prefix="/tristar")
     # This gives us: /tristar/..., /v1/tristar/... (primary)
-    app.include_router(tristar_router, prefix="", tags=["TriStar Root"])
+    # REDUNDANT: app.include_router(tristar_router, prefix="", tags=["TriStar Root"])  # Disabled 2025-12-26
 
     # TriForce Aliases: Register at root (router has prefix="/triforce")
     # This gives us: /triforce/..., /v1/triforce/... (primary)
-    app.include_router(triforce_router, prefix="", tags=["TriForce Root"])
+    # REDUNDANT: app.include_router(triforce_router, prefix="", tags=["TriForce Root"])  # Disabled 2025-12-26
 
     # MCP under TriStar/TriForce namespaces
-    app.include_router(mcp_router, prefix="/tristar/mcp", tags=["TriStar MCP"])
-    app.include_router(mcp_router, prefix="/triforce/mcp", tags=["TriForce MCP"])
+    # REDUNDANT: app.include_router(mcp_router, prefix="/tristar/mcp", tags=["TriStar MCP"])  # Disabled 2025-12-26
+    # REDUNDANT: app.include_router(mcp_router, prefix="/triforce/mcp", tags=["TriForce MCP"])  # Disabled 2025-12-26
 
     # Mesh AI Routes (additional aliases)
-    app.include_router(mesh_router, prefix="", tags=["Mesh Root"])  # /mesh/...
-    app.include_router(mesh_router, prefix="/triforce", tags=["TriForce Mesh"])  # /triforce/mesh/...
+    # REDUNDANT: app.include_router(mesh_router, prefix="", tags=["Mesh Root"])  # Disabled 2025-12-26  # /mesh/...
+    # REDUNDANT: app.include_router(mesh_router, prefix="/triforce", tags=["TriForce Mesh"])  # Disabled 2025-12-26  # /triforce/mesh/...
     app.include_router(perf_monitor_router, tags=["Performance Monitor"])
 
     # Legacy /mcp namespace aliases removed - use /v1/tristar and /v1/triforce instead
@@ -383,6 +384,7 @@ def create_app() -> FastAPI:
     app.include_router(client_chat_router, prefix="/v1", tags=["Client Chat"])
     app.include_router(client_auth_router, prefix="/v1", tags=["Client Auth"])
     app.include_router(client_update_router, prefix="/v1", tags=["Client Update"])
+    app.include_router(client_logs_router, tags=["Client Logs"])
 
     # Import and include txt2img router
     try:

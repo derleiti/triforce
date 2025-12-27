@@ -54,6 +54,22 @@ from ..mcp.tool_registry_v3 import (
     register_handlers_from_dict,
     integrate_with_mcp_handlers,
 )
+# v4 Consolidated Registry (52 tools, optimized from 134)
+from ..mcp.tool_registry_v4 import (
+    get_all_tools as registry_v4_get_all_tools,
+    get_tool_by_name as registry_v4_get_tool,
+    get_tool_count as registry_v4_tool_count,
+    get_categories as registry_v4_categories,
+    resolve_alias,
+    TOOL_ALIASES,
+    resolve_alias_reverse,
+)
+from ..mcp.handlers_v4 import (
+    handler_registry,
+    init_handlers as init_v4_handlers,
+    call_tool as call_v4_tool,
+    get_compatibility_handlers,
+)
 from ..services.compatibility_layer import compatibility_layer
 from ..services.system_control import system_control, HOTRELOAD_TOOLS, HOTRELOAD_HANDLERS
 from ..services.memory_index import MEMORY_INDEX_TOOLS, MEMORY_INDEX_HANDLERS, memory_index
@@ -1373,10 +1389,27 @@ async def handle_initialize(params: Dict[str, Any], request: Optional[Request] =
 
 
 async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
-    """MCP tools/list method - returns all tools from registry v3."""
-    # Use centralized tool registry v3
-    tools = registry_v3_get_all_tools()
-    return {"tools": tools}
+    """MCP tools/list method - returns optimized tools from registry v4.
+    
+    v4 reduced from 134 to 52 tools for better AI usability.
+    Old tool names still work via TOOL_ALIASES.
+    """
+    # Check if client wants legacy (v3) tools
+    use_legacy = params.get("legacy", False) or params.get("v3", False)
+    
+    if use_legacy:
+        # Return all 134 tools from v3 for backwards compatibility
+        tools = registry_v3_get_all_tools()
+        return {"tools": tools, "version": "v3", "count": len(tools)}
+    
+    # Default: Return optimized 52 tools from v4
+    tools = registry_v4_get_all_tools()
+    return {
+        "tools": tools, 
+        "version": "v4", 
+        "count": len(tools),
+        "note": "Optimized from 134 to 52 tools. Use legacy=true for v3."
+    }
 
 
 async def _handle_tools_list_LEGACY(params: Dict[str, Any]) -> Dict[str, Any]:
@@ -1982,6 +2015,9 @@ async def handle_execute_mcp_tool(params: Dict[str, Any]) -> Dict[str, Any]:
     tool_name = params.get("tool_name")
     tool_params = params.get("params", {})
 
+    # Resolve v4 short names to internal names
+    tool_name = resolve_alias_reverse(tool_name) if tool_name else tool_name
+
     if not tool_name:
         raise ValueError("'tool_name' is required")
 
@@ -1998,6 +2034,15 @@ async def handle_execute_mcp_tool(params: Dict[str, Any]) -> Dict[str, Any]:
     if not handler and "_" in tool_name:
         handler = MCP_HANDLERS.get(tool_name.replace("_", "."))
 
+    # Try v4 handlers first
+    if not handler:
+        try:
+            v4_result = await call_v4_tool(tool_name, arguments)
+            if v4_result:
+                return {"content": [{"type": "text", "text": json.dumps(v4_result, separators=(chr(44), chr(58)))}], "isError": False}
+        except Exception:
+            pass  # Fall through to error
+
     if not handler:
         raise ValueError(f"Unknown tool: {tool_name}")
 
@@ -2009,6 +2054,9 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
     """MCP tools/call method - executes a tool."""
     tool_name = params.get("name")
     arguments = params.get("arguments", {})
+
+    # Resolve v4 short names to internal names
+    tool_name = resolve_alias_reverse(tool_name) if tool_name else tool_name
 
     if not tool_name:
         raise ValueError("'name' parameter is required for tools/call")
@@ -2095,6 +2143,15 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
         handler = tool_map.get(tool_name.replace(".", "_"))
     if not handler and "_" in tool_name:
         handler = tool_map.get(tool_name.replace("_", "."))
+
+    # Try v4 handlers first
+    if not handler:
+        try:
+            v4_result = await call_v4_tool(tool_name, arguments)
+            if v4_result:
+                return {"content": [{"type": "text", "text": json.dumps(v4_result, separators=(chr(44), chr(58)))}], "isError": False}
+        except Exception:
+            pass  # Fall through to error
 
     if not handler:
         raise ValueError(f"Unknown tool: {tool_name}")
@@ -3355,6 +3412,13 @@ register_handlers_from_dict(MCP_HANDLERS)
 
 mcp_logger.info(f"MCP Handlers registered: {len(MCP_HANDLERS)} handlers, {registry_v3_tool_count()} tools in registry v3")
 
+# Initialize v4 consolidated handlers (52 optimized tools)
+try:
+    init_v4_handlers()
+    mcp_logger.info(f"MCP v4 Handlers initialized: {registry_v4_tool_count()} optimized tools")
+except Exception as e:
+    mcp_logger.warning(f"v4 handler init failed (non-critical): {e}")
+
 
 from fastapi.responses import StreamingResponse
 import uuid
@@ -3633,6 +3697,15 @@ async def mcp_messages_handler(request: Request, session_id: Optional[str] = Non
 
         # Handle other MCP methods through standard handlers
         handler = MCP_HANDLERS.get(method)
+        # Try v4 handlers as fallback
+        if not handler:
+            try:
+                v4_result = await call_v4_tool(tool_name, arguments)
+                if v4_result:
+                    return {"content": [{"type": "text", "text": json.dumps(v4_result, separators=(chr(44), chr(58)))}], "isError": False}
+            except Exception:
+                pass  # Fall through to error
+
         if not handler:
             error_msg = f"Method '{method}' not supported"
             return JSONResponse(
@@ -3751,6 +3824,15 @@ async def _process_mcp_request(
         handler = MCP_HANDLERS.get(method.replace(".", "_"))
     if not handler and "_" in method:
         handler = MCP_HANDLERS.get(method.replace("_", "."))
+
+    # Try v4 handlers first
+    if not handler:
+        try:
+            v4_result = await call_v4_tool(tool_name, arguments)
+            if v4_result:
+                return {"content": [{"type": "text", "text": json.dumps(v4_result, separators=(chr(44), chr(58)))}], "isError": False}
+        except Exception:
+            pass  # Fall through to error
 
     if not handler:
         return {

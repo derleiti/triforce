@@ -10,11 +10,12 @@ from __future__ import annotations
 from typing import Dict, Any, List
 
 # Import all search functions
+from .web_search import search_web
 from .multi_search import (
     # Core Search
     multi_search,
     multi_search_extended,
-    search_web,
+
     search_duckduckgo,
     search_searxng,
     check_search_health,
