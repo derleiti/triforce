@@ -56,7 +56,8 @@ export function MemoryStorage(input?: MemoryStorageOptions): StorageAdapter {
 
   if (input?.persist) {
     if (existsSync(input.persist)) {
-      const file = readFileSync(input?.persist)
+      if (input.persist.includes('..')) throw new Error('Invalid file path');
+      const file = readFileSync(input.persist)
       store.push(...JSON.parse(file.toString()))
     }
   }
