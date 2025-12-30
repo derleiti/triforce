@@ -11,7 +11,7 @@ pydantic-settings==2.11.0
 
 # HTTP Clients & Async
 httpx[http2]==0.28.1
-aiohttp>=3.11.10  # Stable release compatible with Python 3.12
+aiohttp==3.12.14
 
 # Rate Limiting & Caching
 fastapi-limiter==0.1.6
