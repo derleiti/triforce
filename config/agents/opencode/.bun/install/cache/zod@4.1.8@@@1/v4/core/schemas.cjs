@@ -1091,14 +1091,16 @@ function mergeValues(a, b) {
         const sharedKeys = Object.keys(a).filter((key) => bKeys.indexOf(key) !== -1);
         const newObj = { ...a, ...b };
         for (const key of sharedKeys) {
-            const sharedValue = mergeValues(a[key], b[key]);
-            if (!sharedValue.valid) {
-                return {
-                    valid: false,
-                    mergeErrorPath: [key, ...sharedValue.mergeErrorPath],
-                };
+            if (!["__proto__", "constructor", "prototype"].includes(key)) {
+                const sharedValue = mergeValues(a[key], b[key]);
+                if (!sharedValue.valid) {
+                    return {
+                        valid: false,
+                        mergeErrorPath: [key, ...sharedValue.mergeErrorPath],
+                    };
+                }
+                newObj[key] = sharedValue.data;
             }
-            newObj[key] = sharedValue.data;
         }
         return { valid: true, data: newObj };
     }
