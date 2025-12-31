@@ -20,6 +20,7 @@ from typing import Any, Awaitable, Callable, Dict, List, Optional
 from app.services.api_vault import VAULT_TOOLS
 from app.services.chat_router import CHAT_ROUTER_TOOLS
 from app.services.task_spawner import TASK_SPAWNER_TOOLS
+from app.mcp.brain_tools import BRAIN_TOOLS, handle_brain_tool
 
 logger = logging.getLogger("ailinux.mcp.registry")
 
@@ -1498,6 +1499,7 @@ def get_all_tools() -> List[Dict[str, Any]]:
     all_tools.extend(VAULT_TOOLS)
     all_tools.extend(CHAT_ROUTER_TOOLS)
     all_tools.extend(TASK_SPAWNER_TOOLS)
+    all_tools.extend(BRAIN_TOOLS)
     return all_tools
 
 

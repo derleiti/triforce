@@ -319,7 +319,7 @@ class FederationLoadBalancer:
         # Connect to peers
         for node_id, config in FEDERATION_NODES.items():
             if node_id != self.node_id:
-                ws_url = f"ws://{config['vpn_ip']}:{WS_PORT}/federation/ws"
+                ws_url = f"ws://{config['vpn_ip']}:{config.get('ws_port', WS_PORT)}/federation/ws"
                 peer = FederationPeer(node_id, ws_url)
                 peer.on_message("task_submit", self._handle_incoming_task)
                 peer.on_message("task_result", self._handle_task_result)

@@ -32,74 +32,91 @@ OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 from .client_auth import JWT_SECRET, JWT_ALGORITHM
 
 
-def extract_user_from_token(authorization: str = None) -> Optional[str]:
+
+
+def extract_user_and_tier_from_token(authorization: str = None) -> tuple:
     """
-    Extrahiert User-ID (Email) aus JWT Token.
+    Extrahiert User-ID (Email) UND Tier aus JWT Token.
     
-    Der Token enthält:
-    - email: User-Email (primärer Identifier für Tier-Service)
-    - sub: Standard JWT subject (auch Email)
-    - role: Tier (guest, registered, pro, enterprise)
-    
-    Returns: email oder None
+    Returns: (email, tier) oder (None, None)
+    Tier wird direkt aus Token genommen - kein DB-Lookup nötig.
     """
     if not authorization:
-        return None
+        return None, None
     
     try:
-        # Bearer Token extrahieren
         token = authorization.replace("Bearer ", "").strip()
         if not token:
-            return None
+            return None, None
         
-        # JWT dekodieren
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
         
-        # Email aus Token (primär)
         email = payload.get("email") or payload.get("sub")
-        if email:
-            logger.debug(f"Token valid: email={email}, role={payload.get('role')}")
-            return email
+        tier = payload.get("role") or payload.get("tier")
         
-        # Fallback: Role als Tier verwenden (für alte Tokens)
-        role = payload.get("role", "guest")
-        logger.warning(f"Token ohne Email, nutze role={role} als Fallback")
-        return None
+        if email:
+            logger.debug(f"Token valid: email={email}, tier={tier}")
+            return email, tier
+        
+        return None, tier
         
     except jwt.ExpiredSignatureError:
         logger.warning("JWT Token expired")
-        return None
+        return None, None
     except jwt.InvalidTokenError as e:
         logger.warning(f"Invalid JWT Token: {e}")
-        return None
+        return None, None
     except Exception as e:
         logger.error(f"Token extraction error: {e}")
-        return None
+        return None, None
 
 
-def get_user_id_from_headers(
+def get_user_and_tier_from_headers(
     authorization: str = None,
     x_user_id: str = None
-) -> str:
+) -> tuple:
     """
-    Ermittelt User-ID aus Headers.
-    Priorität:
-    1. Authorization Bearer Token (JWT)
-    2. X-User-ID Header
-    3. "anonymous" (Guest)
-    """
-    # 1. Versuche JWT Token
-    if authorization:
-        user_from_token = extract_user_from_token(authorization)
-        if user_from_token:
-            return user_from_token
+    Ermittelt User-ID und Tier aus Headers.
     
-    # 2. Fallback auf X-User-ID Header
+    Priorität:
+    1. JWT Token (enthält beides - kein Lookup)
+    2. X-User-ID + tier_service Lookup  
+    3. "anonymous" + GUEST
+    
+    Returns: (user_id, UserTier)
+    """
+    # 1. JWT Token - Tier direkt aus Token
+    if authorization:
+        email, tier_str = extract_user_and_tier_from_token(authorization)
+        if email:
+            try:
+                tier = UserTier(tier_str) if tier_str else tier_service.get_user_tier(email)
+            except ValueError:
+                tier = tier_service.get_user_tier(email)
+            return email, tier
+    
+    # 2. X-User-ID Header
     if x_user_id and x_user_id not in ("", "anonymous", "none", "null"):
-        return x_user_id
+        tier = tier_service.get_user_tier(x_user_id)
+        return x_user_id, tier
     
     # 3. Guest
-    return "anonymous"
+    return "anonymous", UserTier.GUEST
+
+
+# Legacy wrapper for compatibility
+def extract_user_from_token(authorization: str = None) -> Optional[str]:
+    """Legacy wrapper - use extract_user_and_tier_from_token instead."""
+    email, _ = extract_user_and_tier_from_token(authorization)
+    return email
+
+
+def get_user_id_from_headers(authorization: str = None, x_user_id: str = None) -> str:
+    """Legacy wrapper - use get_user_and_tier_from_headers instead."""
+    user_id, _ = get_user_and_tier_from_headers(authorization, x_user_id)
+    return user_id
+
+
 
 
 class ChatRequest(BaseModel):
@@ -333,11 +350,9 @@ async def client_chat(
     start_time = datetime.now()
 
     # User-ID ermitteln (Token hat Priorität)
-    user_id = get_user_id_from_headers(authorization, x_user_id)
+    user_id, tier = get_user_and_tier_from_headers(authorization, x_user_id)
     logger.debug(f"Chat request: user={user_id}, auth={'yes' if authorization else 'no'}")
 
-    # Tier holen
-    tier = tier_service.get_user_tier(user_id)
 
     # Messages bauen
     messages = []
@@ -461,10 +476,9 @@ async def get_client_models(
         1. Authorization: Bearer <JWT-Token>
         2. X-User-ID: User-Email
     """
-    user_id = get_user_id_from_headers(authorization, x_user_id)
+    user_id, tier = get_user_and_tier_from_headers(authorization, x_user_id)
     logger.debug(f"Models request: user={user_id}")
     
-    tier = tier_service.get_user_tier(user_id)
     config = tier_service.get_tier_info(tier)
 
     if tier in (UserTier.GUEST, UserTier.REGISTERED):
@@ -505,8 +519,7 @@ async def get_client_tier(
         1. Authorization: Bearer <JWT-Token>
         2. X-User-ID: User-Email
     """
-    user_id = get_user_id_from_headers(authorization, x_user_id)
-    tier = tier_service.get_user_tier(user_id)
+    user_id, tier = get_user_and_tier_from_headers(authorization, x_user_id)
     info = tier_service.get_tier_info(tier)
     info["backend"] = "ollama" if tier == UserTier.GUEST else "openrouter"
     info["user_id"] = user_id  # Für Debug
@@ -526,8 +539,7 @@ async def analyze_file(
 
     Actions: analyze, bugs, optimize, summarize, document, security
     """
-    user_id = get_user_id_from_headers(authorization, x_user_id)
-    tier = tier_service.get_user_tier(user_id)
+    user_id, tier = get_user_and_tier_from_headers(authorization, x_user_id)
 
     prompts = {
         "analyze": f"Analysiere diese Datei '{filename}' gründlich. Erkläre was sie tut, die Struktur und wichtige Teile:\n\n```\n{content[:8000]}\n```",
@@ -635,5 +647,5 @@ async def get_current_user_token_usage(
     x_user_id: str = Header(None, alias="X-User-ID")
 ):
     """Hole eigenen Token-Verbrauch"""
-    user_id = get_user_id_from_headers(authorization, x_user_id)
+    user_id, tier = get_user_and_tier_from_headers(authorization, x_user_id)
     return tier_service.get_token_usage(user_id)

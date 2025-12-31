@@ -165,7 +165,7 @@ async def lifespan(app: FastAPI):
     # Start Federation Manager (Server-to-Server)
     try:
         from .services.server_federation import federation_manager
-from .services.federation_websocket import federation_lb
+        from .services.federation_websocket import federation_lb
         await federation_manager.initialize()
         await federation_lb.start()
         logger.info("Federation Manager started")

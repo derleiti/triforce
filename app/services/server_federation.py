@@ -69,15 +69,17 @@ FEDERATION_NODES = {
         "vpn_ip": "10.10.0.1",
         "port": 9000,
         "role": "hub",
-        "capabilities": ["ollama", "mcp", "mesh", "chat"]
+        "capabilities": ["ollama", "mcp", "mesh", "chat"],
+        "ws_port": 9001
     },
     "backup": {
         "id": "backup", 
         "name": "Backup Secondary",
         "vpn_ip": "10.10.0.3",
-        "port": 9000,
+        "port": 9100,
         "role": "node",
-        "capabilities": ["ollama", "storage"]
+        "capabilities": ["ollama", "storage"],
+        "ws_port": 9101
     }
 }
 
