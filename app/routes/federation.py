@@ -327,6 +327,7 @@ async def federation_ws(websocket: WebSocket):
     try:
         while True:
             data = await websocket.receive_json()
+            logger.info(f"WS received: {list(data.keys()) if isinstance(data, dict) else type(data)}")
             payload = verify_signed_request(data)
             
             if payload is None:
