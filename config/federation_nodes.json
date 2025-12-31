@@ -1,0 +1,66 @@
+{
+  "version": "1.1",
+  "updated": "2024-12-31T23:00:00Z",
+  "nodes": {
+    "hetzner": {
+      "id": "hetzner",
+      "name": "Hetzner EX63",
+      "role": "master",
+      "vpn_ip": "10.10.0.1",
+      "public_ip": "138.201.50.230",
+      "port": 9000,
+      "mcp_port": 9001,
+      "specs": {
+        "cpu": "Intel Ultra 7 265",
+        "cores": 20,
+        "ram_gb": 62,
+        "storage_gb": 2000,
+        "gpu": null
+      },
+      "services": ["triforce", "ollama", "federation-master"],
+      "status": "active"
+    },
+    "backup": {
+      "id": "backup",
+      "name": "Backup VPS (Upgraded)",
+      "role": "hub",
+      "vpn_ip": "10.10.0.3",
+      "public_ip": "5.104.107.103",
+      "port": 9100,
+      "mcp_port": 9101,
+      "specs": {
+        "cpu": "Cloud vCPU",
+        "cores": 28,
+        "ram_gb": 64,
+        "storage_gb": 1000,
+        "gpu": null,
+        "note": "Upgraded 2024-12-31: +8 cores permanent, +16GB RAM permanent"
+      },
+      "services": ["triforce-hub", "cloud-ollama", "backup"],
+      "status": "active"
+    },
+    "zombie-pc": {
+      "id": "zombie-pc",
+      "name": "Zombie PC (Home)",
+      "role": "hub",
+      "vpn_ip": "10.10.0.2",
+      "public_ip": null,
+      "port": 9000,
+      "mcp_port": 9001,
+      "specs": {
+        "cpu": "AMD Ryzen 7 7700X",
+        "cores": 16,
+        "ram_gb": 30,
+        "storage_gb": 2000,
+        "gpu": "AMD RX 6800 XT"
+      },
+      "services": ["triforce-hub", "ollama-local"],
+      "status": "active"
+    }
+  },
+  "totals": {
+    "cores": 64,
+    "ram_gb": 156,
+    "nodes": 3
+  }
+}

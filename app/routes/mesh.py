@@ -500,6 +500,60 @@ async def handle_mesh_get_task(params: Dict[str, Any]) -> Dict[str, Any]:
 
     return {"task": task.to_dict()}
 
+# ============================================================================
+# MESH RESOURCES - Live Hardware Status
+# ============================================================================
+
+import time as _time
+
+FEDERATION_NODES = {
+    "hetzner": {"ip": "10.10.0.1", "port": 9000, "cores": 20, "ram": 62, "gpu": None, "role": "master", "name": "Hetzner EX63"},
+    "backup": {"ip": "10.10.0.3", "port": 9100, "cores": 28, "ram": 64, "gpu": None, "role": "hub", "name": "Backup VPS"},
+    "zombie-pc": {"ip": "10.10.0.2", "port": 9000, "cores": 16, "ram": 30, "gpu": "RX 6800 XT", "role": "hub", "name": "Zombie PC"}
+}
+
+CLOUD_PROVIDERS = {"gemini": 15, "anthropic": 5, "groq": 12, "cerebras": 4, "mistral": 8, "openrouter": 200, "github": 10, "cloudflare": 15}
+
+async def _check_node(session, nid, cfg):
+    import aiohttp
+    result = {"id": nid, "name": cfg["name"], "role": cfg["role"], "online": False, "latency_ms": None, "cores": cfg["cores"], "ram_gb": cfg["ram"], "gpu": cfg["gpu"]}
+    try:
+        t = _time.time()
+        async with session.get(f"http://{cfg['ip']}:{cfg['port']}/health", timeout=aiohttp.ClientTimeout(total=3)) as r:
+            if r.status == 200: result["online"], result["latency_ms"] = True, round((_time.time() - t) * 1000)
+    except: pass
+    return result
+
+async def _get_ollama(session, ip):
+    import aiohttp
+    try:
+        async with session.get(f"http://{ip}:11434/api/tags", timeout=aiohttp.ClientTimeout(total=2)) as r:
+            return [m["name"] for m in (await r.json()).get("models", [])] if r.status == 200 else []
+    except: return []
+
+async def get_mesh_resources(fmt="summary"):
+    import aiohttp, asyncio
+    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=10)) as s:
+        nodes = await asyncio.gather(*[_check_node(s, n, c) for n, c in FEDERATION_NODES.items()])
+        ollama = await asyncio.gather(*[_get_ollama(s, c["ip"]) for c in FEDERATION_NODES.values()])
+    for i, n in enumerate(nodes): n["ollama_models"] = ollama[i]
+    online = [n for n in nodes if n["online"]]
+    local = list(set(m for n in nodes for m in n.get("ollama_models", [])))
+    cloud = sum(CLOUD_PROVIDERS.values())
+    base = {"timestamp": datetime.now(timezone.utc).isoformat(), "status": "healthy" if len(online) >= 2 else "degraded"}
+    if fmt == "summary":
+        return {**base, "mesh": {"nodes": f"{len(online)}/{len(nodes)} online", "compute": f"{sum(n['cores'] for n in online)} Cores", "memory": f"{sum(n['ram_gb'] for n in online)} GB RAM", "gpus": [n["gpu"] for n in nodes if n.get("gpu")], "latency": f"{round(sum(n.get('latency_ms') or 0 for n in online) / max(1, len(online)))}ms avg"}, "intelligence": {"providers": len(CLOUD_PROVIDERS), "models": f"{cloud + len(local)}+", "local": len(local)}}
+    elif fmt == "nodes": return {**base, "nodes": [{k: v for k, v in n.items() if k != "ollama_models"} for n in nodes]}
+    else: return {**base, "federation": {"nodes": nodes, "totals": {"online": len(online), "cores": sum(n["cores"] for n in online), "ram_gb": sum(n["ram_gb"] for n in online), "gpus": [n["gpu"] for n in nodes if n.get("gpu")]}}, "intelligence": {"cloud": CLOUD_PROVIDERS, "local": local, "total": cloud + len(local)}}
+
+@router.get("/resources", summary="Live Mesh Hardware Resources")
+async def mesh_resources_endpoint(format: str = Query("summary", regex="^(summary|nodes|full)$")):
+    return await get_mesh_resources(format)
+
+async def handle_mesh_resources(params: Dict[str, Any]) -> Dict[str, Any]:
+    return await get_mesh_resources(params.get("format", "summary"))
+
+
 
 MESH_HANDLERS = {
     "mesh_submit_task": handle_mesh_submit_task,
@@ -507,4 +561,5 @@ MESH_HANDLERS = {
     "mesh_get_status": handle_mesh_get_status,
     "mesh_list_agents": handle_mesh_list_agents,
     "mesh_get_task": handle_mesh_get_task,
+    "mesh_resources": handle_mesh_resources,
 }
