@@ -424,3 +424,24 @@ def get_health_response() -> Dict[str, Any]:
         "ollama_models": ollama_models,
         "timestamp": datetime.now(timezone.utc).isoformat()
     })
+
+
+def create_signed_response(payload: Dict[str, Any]) -> Dict[str, Any]:
+    """Signiert eine Response mit HMAC-SHA256"""
+    import json
+    import hmac
+    import hashlib
+    import time
+    
+    payload["timestamp"] = time.time()
+    payload_json = json.dumps(payload, sort_keys=True)
+    signature = hmac.new(
+        FEDERATION_PSK.encode(),
+        payload_json.encode(),
+        hashlib.sha256
+    ).hexdigest()
+    
+    return {
+        "payload": payload,
+        "signature": signature
+    }
