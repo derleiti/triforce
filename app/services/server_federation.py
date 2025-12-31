@@ -166,6 +166,7 @@ class FederationNode:
     name: str
     vpn_ip: str
     port: int
+    role: str  # "hub" oder "node"
     ws_port: int = 9001
     capabilities: List[str] = field(default_factory=list)
     status: NodeStatus = NodeStatus.UNKNOWN
