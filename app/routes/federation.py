@@ -273,3 +273,32 @@ async def federation_status(request: Request):
         "total_nodes": total_nodes,
         "vpn_network": "10.10.0.0/24"
     }
+
+
+# =============================================================================
+# WebSocket Load Balancer Routes
+# =============================================================================
+
+from fastapi import WebSocket, WebSocketDisconnect
+from ..services.federation_websocket import federation_lb
+
+@router.get("/lb/status")
+async def lb_status():
+    """Load Balancer Cluster Status"""
+    return federation_lb.get_cluster_status()
+
+@router.get("/lb/best-node")
+async def lb_best_node(task_type: str = None):
+    """Gibt besten Node für Task zurück"""
+    return {"best_node": federation_lb.get_best_node(task_type)}
+
+@router.post("/lb/route-task")
+async def lb_route_task(request: Request):
+    """Routet Task zum besten Node"""
+    body = await request.json()
+    task_type = body.get("task_type", "default")
+    task_data = body.get("task_data", {})
+    timeout = body.get("timeout", 60.0)
+    
+    result = await federation_lb.route_task(task_type, task_data, timeout)
+    return result
