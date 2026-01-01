@@ -12,6 +12,13 @@ UPDATE_INTERVAL=300  # 5 Minuten
 
 cd "$REPO_DIR"
 
+# Load environment variables
+if [ -f "$REPO_DIR/config/triforce.env" ]; then
+    set -a
+    source "$REPO_DIR/config/triforce.env"
+    set +a
+fi
+
 log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1"
 }
