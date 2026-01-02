@@ -1,62 +1,78 @@
 #!/bin/bash
 # ============================================================================
 # TriForce Release Creator
-# Packages current code into a versioned release tarball
+# Creates release tarball and updates update.ailinux.me
 # ============================================================================
 
 set -e
 
-TRIFORCE_DIR="/home/zombie/triforce"
-UPDATE_DIR="/var/www/update.ailinux.me"
-RELEASES_DIR="$UPDATE_DIR/releases"
+TRIFORCE_DIR="${TRIFORCE_DIR:-/home/zombie/triforce}"
+UPDATE_DIR="/var/www/update.ailinux.me/server"
 
-# Get version
-VERSION="${1:-$(cat $TRIFORCE_DIR/VERSION 2>/dev/null || echo "2.80.$(date +%Y%m%d%H%M)")}"
-RELEASE_FILE="$RELEASES_DIR/$VERSION.tar.gz"
+# Get version from config or argument
+VERSION="${1:-}"
+if [ -z "$VERSION" ]; then
+    VERSION=$(grep -oP "VERSION\s*=\s*['\"]?\K[0-9]+\.[0-9]+" "${TRIFORCE_DIR}/app/config.py" 2>/dev/null || echo "2.80")
+fi
 
-echo "=== Creating TriForce Release $VERSION ==="
+echo "=== Creating TriForce Release v${VERSION} ==="
 
-# Ensure directories exist
-mkdir -p "$RELEASES_DIR"
-
-# Create tarball with essential directories
+# Create tarball
+RELEASE_FILE="triforce-${VERSION}.tar.gz"
 cd "$TRIFORCE_DIR"
-tar -czf "$RELEASE_FILE" \
-    --exclude='*.pyc' \
+
+tar --exclude='.venv' \
     --exclude='__pycache__' \
+    --exclude='*.pyc' \
     --exclude='.git' \
-    --exclude='logs/*' \
-    --exclude='*.log' \
-    --exclude='.venv' \
-    --exclude='node_modules' \
-    --exclude='*.bak*' \
-    --exclude='specs/tla/states' \
-    app/ \
-    config/ \
-    scripts/ \
-    VERSION \
-    requirements.txt
+    --exclude='logs/*.log' \
+    --exclude='client-deploy/ailinux-client' \
+    --exclude='docker/repository/repo/mirror' \
+    --exclude='docker/repository/data' \
+    --exclude='.backups' \
+    -czf "${UPDATE_DIR}/releases/${RELEASE_FILE}" \
+    app/ config/ scripts/ requirements.txt README.md CHANGELOG.md
 
-# Generate checksum
-sha256sum "$RELEASE_FILE" | cut -d' ' -f1 > "$RELEASES_DIR/$VERSION.sha256"
+# Create SHA256
+cd "${UPDATE_DIR}/releases"
+sha256sum "${RELEASE_FILE}" > "${RELEASE_FILE}.sha256"
+SHA256=$(cat "${RELEASE_FILE}.sha256" | cut -d' ' -f1)
+SIZE=$(stat -c%s "${RELEASE_FILE}")
 
-# Generate changelog from recent commits
-cd "$TRIFORCE_DIR"
-git log --oneline -20 > "$RELEASES_DIR/$VERSION.changelog" 2>/dev/null || echo "No git history" > "$RELEASES_DIR/$VERSION.changelog"
+# Update symlink
+ln -sf "${UPDATE_DIR}/releases/${RELEASE_FILE}" "${UPDATE_DIR}/current/triforce-latest.tar.gz"
 
-# Update current symlink
-ln -sf "$RELEASE_FILE" "$UPDATE_DIR/current/triforce-latest.tar.gz"
-ln -sf "$RELEASES_DIR/$VERSION.sha256" "$UPDATE_DIR/current/triforce-latest.sha256"
+# Update manifest
+cat > "${UPDATE_DIR}/manifest.json" << EOF
+{
+  "version": "$(date +%Y-%m-%d)",
+  "server": {
+    "version": "${VERSION}",
+    "codename": "TriStar",
+    "channel": "stable",
+    "date": "$(date +%Y-%m-%d)",
+    "downloads": {
+      "tarball": {
+        "url": "https://update.ailinux.me/server/releases/${RELEASE_FILE}",
+        "size": ${SIZE},
+        "sha256": "${SHA256}"
+      }
+    }
+  },
+  "sync": {
+    "script_url": "https://update.ailinux.me/server/scripts/hub-sync.sh",
+    "check_interval": "hourly"
+  }
+}
+EOF
 
-# Generate manifest
-$TRIFORCE_DIR/scripts/generate-update-manifest.sh
+# Copy changelog
+cp "${TRIFORCE_DIR}/CHANGELOG.md" "${UPDATE_DIR}/"
 
-echo "✅ Release created: $RELEASE_FILE"
-echo "   Size: $(du -h "$RELEASE_FILE" | cut -f1)"
-echo "   SHA256: $(cat "$RELEASES_DIR/$VERSION.sha256")"
 echo ""
-echo "Files:"
-echo "  - $RELEASE_FILE"
-echo "  - $RELEASES_DIR/$VERSION.sha256"
-echo "  - $RELEASES_DIR/$VERSION.changelog"
-echo "  - $UPDATE_DIR/manifest.json"
+echo "✅ Release v${VERSION} created"
+echo "   Tarball: ${UPDATE_DIR}/releases/${RELEASE_FILE}"
+echo "   Size: $(numfmt --to=iec $SIZE)"
+echo "   SHA256: ${SHA256}"
+echo ""
+echo "All federation hubs will auto-sync within 1 hour."

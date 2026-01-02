@@ -1,0 +1,16 @@
+[Unit]
+Description=TriForce Hub Sync Service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=zombie
+Group=zombie
+Environment="TRIFORCE_DIR=/home/zombie/triforce"
+ExecStart=/var/www/update.ailinux.me/server/scripts/hub-sync.sh
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
