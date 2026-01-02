@@ -21,6 +21,8 @@ services:
       - ${WP_LETSENCRYPT_PATH:-/etc/letsencrypt}:/etc/letsencrypt:ro
       - ${WP_API_ROOT_PATH:-./api-root}:/var/www/api-root:ro
       - ${WP_SEARCH_ROOT_PATH:-./search-root}:/var/www/search-root:ro
+      - /var/www/update.ailinux.me:/var/www/update.ailinux.me:ro
+      - /var/www/login.ailinux.me:/var/www/login.ailinux.me:ro
     environment:
       TZ: ${TZ:-Europe/Berlin}
     healthcheck:

@@ -1,0 +1,5 @@
+#!/bin/bash
+export HOME=/home/zombie
+export PATH="/home/zombie/.npm-global/bin:/usr/local/bin:/usr/bin:/bin"
+export NODE_PATH="/home/zombie/.npm-global/lib/node_modules"
+exec /home/zombie/.npm-global/bin/codex "$@"

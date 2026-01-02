@@ -12,6 +12,13 @@ from pathlib import Path
 from fastapi_limiter import FastAPILimiter
 from typing import Optional
 
+# Unified logging für alle Komponenten
+try:
+    from .utils.unified_logger import setup_unified_logging
+    setup_unified_logging()
+except ImportError:
+    pass
+
 # Setup module logger once at top
 logger = logging.getLogger(__name__)
 

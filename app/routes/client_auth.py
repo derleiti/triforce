@@ -240,6 +240,32 @@ class UserLoginResponse(BaseModel):
     client_id: str  # Server-assigned per login
 
 
+
+# User Register Models (für explizite Registrierung mit Beta-Code)
+class UserRegisterRequest(BaseModel):
+    """User Registration Request"""
+    email: str = Field(..., description="Email address")
+    password: str = Field(..., min_length=6, description="Password (min 6 chars)")
+    name: Optional[str] = Field(None, description="Display name")
+    beta_code: Optional[str] = Field(None, description="Beta code for tier upgrade")
+
+
+class UserRegisterResponse(BaseModel):
+    """User Registration Response"""
+    success: bool
+    message: str
+    tier: str
+    email: str
+
+
+# Beta codes für Tier-Upgrades
+BETA_CODES = {
+    "AILINUX2026": "pro",
+    "TRIFORCE": "pro",
+    "MARKUS": "enterprise",
+    "ADMIN": "enterprise",
+}
+
 class ClientAuthRequest(BaseModel):
     """Client Auth Request"""
     client_id: str = Field(..., description="Client-ID")
@@ -355,6 +381,48 @@ async def user_login(request: UserLoginRequest):
         tier=user["tier"],
         client_id=client_id
     )
+
+
+@router.post("/register", response_model=UserRegisterResponse)
+async def user_register(request: UserRegisterRequest):
+    """
+    Register a new user account.
+    Beta phase: All accounts get PRO tier automatically!
+    """
+    email = request.email.lower().strip()
+    
+    # Prüfe ob User bereits existiert
+    if email in USER_REGISTRY:
+        raise HTTPException(400, "Email already registered. Please login instead.")
+    
+    # Bestimme Tier basierend auf Beta-Code
+    tier = "pro"  # Beta: Alle bekommen PRO!
+    if request.beta_code:
+        beta_tier = BETA_CODES.get(request.beta_code.upper())
+        if beta_tier:
+            tier = beta_tier
+            logger.info(f"Beta code used: {request.beta_code} -> {tier}")
+    
+    # Registriere neuen User
+    user = register_new_user(
+        email=email,
+        password=request.password,
+        name=request.name,
+        tier=tier
+    )
+    
+    if not user:
+        raise HTTPException(500, "Failed to register user")
+    
+    logger.info(f"New user registered: {email} (tier: {tier})")
+    
+    return UserRegisterResponse(
+        success=True,
+        message=f"Account created! Tier: {tier.upper()}",
+        tier=tier,
+        email=email
+    )
+
 
 
 @router.post("/client", response_model=ClientAuthResponse)

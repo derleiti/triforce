@@ -11,6 +11,8 @@ DEFAULT_ALLOWED_ORIGINS = [
     "https://ailinux.me",
     "https://www.ailinux.me",
     "https://api.ailinux.me",
+    "https://login.ailinux.me",
+    "https://update.ailinux.me",
     "https://api.ailinux.me:9100",
     "https://api.ailinux.me:9000",
     "https://www.ailinux.me:9100",

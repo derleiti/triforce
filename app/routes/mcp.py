@@ -2041,8 +2041,9 @@ async def handle_execute_mcp_tool(params: Dict[str, Any]) -> Dict[str, Any]:
             v4_result = await call_v4_tool(tool_name, arguments)
             if v4_result:
                 return {"content": [{"type": "text", "text": json.dumps(v4_result, separators=(chr(44), chr(58)))}], "isError": False}
-        except Exception:
-            pass  # Fall through to error
+        except Exception as e:
+            mcp_logger.error(f"V4_TOOL_ERROR | {tool_name} | {type(e).__name__}: {e}")
+            return {"content": [{"type": "text", "text": json.dumps({"error": str(e), "tool": tool_name})}], "isError": True}
 
     if not handler:
         raise ValueError(f"Unknown tool: {tool_name}")
@@ -2152,8 +2153,9 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
             v4_result = await call_v4_tool(tool_name, arguments)
             if v4_result:
                 return {"content": [{"type": "text", "text": json.dumps(v4_result, separators=(chr(44), chr(58)))}], "isError": False}
-        except Exception:
-            pass  # Fall through to error
+        except Exception as e:
+            mcp_logger.error(f"V4_TOOL_ERROR | {tool_name} | {type(e).__name__}: {e}")
+            return {"content": [{"type": "text", "text": json.dumps({"error": str(e), "tool": tool_name})}], "isError": True}
 
     if not handler:
         raise ValueError(f"Unknown tool: {tool_name}")
@@ -3090,9 +3092,9 @@ async def handle_cli_agents_get(params: Dict[str, Any]) -> Dict[str, Any]:
     """Get details for a specific CLI agent."""
     from ..services.tristar.agent_controller import agent_controller
 
-    agent_id = params.get("agent_id")
+    agent_id = params.get("agent_id") or params.get("agent")
     if not agent_id:
-        raise ValueError("'agent_id' parameter is required")
+        raise ValueError("'agent_id' or 'agent' parameter is required")
 
     agent = await agent_controller.get_agent(agent_id)
     if not agent:
@@ -3105,9 +3107,9 @@ async def handle_cli_agents_start(params: Dict[str, Any]) -> Dict[str, Any]:
     """Start a CLI agent subprocess."""
     from ..services.tristar.agent_controller import agent_controller
 
-    agent_id = params.get("agent_id")
+    agent_id = params.get("agent_id") or params.get("agent")
     if not agent_id:
-        raise ValueError("'agent_id' parameter is required")
+        raise ValueError("'agent_id' or 'agent' parameter is required")
 
     try:
         result = await agent_controller.start_agent(agent_id)
@@ -3120,9 +3122,9 @@ async def handle_cli_agents_stop(params: Dict[str, Any]) -> Dict[str, Any]:
     """Stop a CLI agent subprocess."""
     from ..services.tristar.agent_controller import agent_controller
 
-    agent_id = params.get("agent_id")
+    agent_id = params.get("agent_id") or params.get("agent")
     if not agent_id:
-        raise ValueError("'agent_id' parameter is required")
+        raise ValueError("'agent_id' or 'agent' parameter is required")
 
     force = params.get("force", False)
 
@@ -3137,9 +3139,9 @@ async def handle_cli_agents_restart(params: Dict[str, Any]) -> Dict[str, Any]:
     """Restart a CLI agent."""
     from ..services.tristar.agent_controller import agent_controller
 
-    agent_id = params.get("agent_id")
+    agent_id = params.get("agent_id") or params.get("agent")
     if not agent_id:
-        raise ValueError("'agent_id' parameter is required")
+        raise ValueError("'agent_id' or 'agent' parameter is required")
 
     try:
         result = await agent_controller.restart_agent(agent_id)
@@ -3152,11 +3154,11 @@ async def handle_cli_agents_call(params: Dict[str, Any]) -> Dict[str, Any]:
     """Send a message to a CLI agent."""
     from ..services.tristar.agent_controller import agent_controller
 
-    agent_id = params.get("agent_id")
+    agent_id = params.get("agent_id") or params.get("agent")
     message = params.get("message")
 
     if not agent_id:
-        raise ValueError("'agent_id' parameter is required")
+        raise ValueError("'agent_id' or 'agent' parameter is required")
     if not message:
         raise ValueError("'message' parameter is required")
 
@@ -3187,9 +3189,9 @@ async def handle_cli_agents_output(params: Dict[str, Any]) -> Dict[str, Any]:
     """Get output buffer for a CLI agent."""
     from ..services.tristar.agent_controller import agent_controller
 
-    agent_id = params.get("agent_id")
+    agent_id = params.get("agent_id") or params.get("agent")
     if not agent_id:
-        raise ValueError("'agent_id' parameter is required")
+        raise ValueError("'agent_id' or 'agent' parameter is required")
 
     lines = params.get("lines", 50)
     output = await agent_controller.get_agent_output(agent_id, lines)
@@ -3833,8 +3835,9 @@ async def _process_mcp_request(
             v4_result = await call_v4_tool(tool_name, arguments)
             if v4_result:
                 return {"content": [{"type": "text", "text": json.dumps(v4_result, separators=(chr(44), chr(58)))}], "isError": False}
-        except Exception:
-            pass  # Fall through to error
+        except Exception as e:
+            mcp_logger.error(f"V4_TOOL_ERROR | {tool_name} | {type(e).__name__}: {e}")
+            return {"content": [{"type": "text", "text": json.dumps({"error": str(e), "tool": tool_name})}], "isError": True}
 
     if not handler:
         return {

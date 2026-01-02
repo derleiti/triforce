@@ -343,32 +343,61 @@ class HandlerRegistry:
     def _register_agent_handlers(self):
         """Agents: agents, agent_call, agent_broadcast, agent_start, agent_stop"""
         try:
-            # Agent functions not yet implemented - create stubs
+            from app.services.tristar.agent_controller import agent_controller
+
             async def handle_agents_list(params):
-                logger.warning("agents_list not yet implemented")
-                return {"status": "not_implemented", "agents": [], "message": "Agent list function pending"}
+                """List all CLI agents with status"""
+                agents = await agent_controller.list_agents()
+                return {"agents": agents, "count": len(agents)}
 
             async def handle_agent_call(params):
-                logger.warning("agent_call not yet implemented")
-                return {"status": "not_implemented", "message": "Agent call function pending"}
+                """Send message to specific agent and get response"""
+                agent_id = params.get("agent")
+                message = params.get("message")
+                timeout = params.get("timeout", 120)
+                if not agent_id or not message:
+                    return {"error": "agent and message required"}
+                return await agent_controller.call_agent(agent_id, message, timeout)
 
             async def handle_agent_broadcast(params):
-                logger.warning("agent_broadcast not yet implemented")
-                return {"status": "not_implemented", "message": "Agent broadcast function pending"}
+                """Broadcast message to all agents"""
+                message = params.get("message")
+                strategy = params.get("strategy", "parallel")
+                if not message:
+                    return {"error": "message required"}
+                agents = await agent_controller.list_agents()
+                results = {}
+                for agent in agents:
+                    agent_id = agent.get("agent_id", agent.get("id"))
+                    if agent.get("status") == "running":
+                        try:
+                            result = await agent_controller.call_agent(agent_id, message, timeout=60)
+                            results[agent_id] = result
+                        except Exception as e:
+                            results[agent_id] = {"error": str(e)}
+                return {"strategy": strategy, "results": results}
 
             async def handle_agent_start(params):
-                logger.warning("agent_start not yet implemented")
-                return {"status": "not_implemented", "message": "Agent start function pending"}
+                """Start a CLI agent"""
+                agent_id = params.get("agent")
+                if not agent_id:
+                    return {"error": "agent required"}
+                return await agent_controller.start_agent(agent_id)
 
             async def handle_agent_stop(params):
-                logger.warning("agent_stop not yet implemented")
-                return {"status": "not_implemented", "message": "Agent stop function pending"}
+                """Stop a running CLI agent"""
+                agent_id = params.get("agent")
+                force = params.get("force", False)
+                if not agent_id:
+                    return {"error": "agent required"}
+                return await agent_controller.stop_agent(agent_id, force)
 
             self.register("agents", handle_agents_list)
             self.register("agent_call", handle_agent_call)
             self.register("agent_broadcast", handle_agent_broadcast)
             self.register("agent_start", handle_agent_start)
             self.register("agent_stop", handle_agent_stop)
+            logger.info("Agent handlers registered successfully")
         except Exception as e:
             logger.warning(f"Agent handlers registration failed: {e}")
     
@@ -734,7 +763,24 @@ async def call_tool(tool_name: str, params: Dict[str, Any]) -> Any:
     Call a tool by name. Main entry point for MCP tool execution.
     Supports both old and new tool names via aliases.
     """
-    return await handler_registry.call(tool_name, params)
+    try:
+        from app.utils.unified_logger import log_tool_call
+    except ImportError:
+        log_tool_call = None
+    
+    logger.info(f"TOOL_CALL_START | {tool_name} | params={list(params.keys())}")
+    
+    try:
+        result = await handler_registry.call(tool_name, params)
+        logger.info(f"TOOL_CALL_OK | {tool_name} | result_type={type(result).__name__}")
+        if log_tool_call:
+            log_tool_call(tool_name, params, result=result)
+        return result
+    except Exception as e:
+        logger.error(f"TOOL_CALL_ERROR | {tool_name} | error={e}")
+        if log_tool_call:
+            log_tool_call(tool_name, params, error=str(e))
+        raise
 
 
 def get_tool_handler(tool_name: str):
