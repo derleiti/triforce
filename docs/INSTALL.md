@@ -1,267 +1,137 @@
 # TriForce Installation Guide
 
-## Übersicht
+## Quick Install
 
-Diese Anleitung beschreibt die Installation von:
-1. **TriForce Hub Server** - Backend für API und Federation
-2. **AILinux Client** - Desktop-Client für Linux
-3. **AIWindows Client** - Desktop-Client für Windows
+### Client (Desktop)
+
+**APT Repository (Recommended)**:
+```bash
+# Add GPG key
+curl -fsSL https://repo.ailinux.me/mirror/archive.ailinux.me/ailinux-archive-key.gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/ailinux.gpg
+
+# Add repository
+echo "deb https://repo.ailinux.me/mirror/archive.ailinux.me stable main" | sudo tee /etc/apt/sources.list.d/ailinux.list
+
+# Install
+sudo apt update && sudo apt install ailinux-client
+```
+
+**Direct Download**:
+```bash
+wget https://update.ailinux.me/client/linux/ailinux-client_4.3.3_amd64.deb
+sudo dpkg -i ailinux-client_4.3.3_amd64.deb
+```
+
+### Client (Android)
+
+Download APK from:
+```bash
+wget https://update.ailinux.me/client/android/ailinux-1.0.0-arm64-v8a-debug.apk
+```
+
+Or visit: https://update.ailinux.me
 
 ---
 
-## Systemanforderungen
+## Server (Hub) Installation
 
-### Hub Server (Minimum)
-- **OS**: Ubuntu 22.04+ / Debian 12+
-- **CPU**: 4 Cores
-- **RAM**: 8 GB (16 GB empfohlen)
-- **Storage**: 50 GB SSD
-- **Network**: Öffentliche IP oder Domain
+### Prerequisites
 
-### Hub Server (Empfohlen für Ollama)
-- **CPU**: 8+ Cores
-- **RAM**: 32 GB+
-- **GPU**: NVIDIA RTX 3060+ oder AMD RX 6700+
-- **Storage**: 100 GB+ NVMe
+- Ubuntu 22.04+ / Debian 12+
+- Python 3.10+
+- 4GB RAM minimum
+- (Optional) Ollama for local models
 
-### Client
-- **OS**: Linux (Debian/Ubuntu/Arch) oder Windows 10+
-- **RAM**: 4 GB
-- **Storage**: 500 MB
-
----
-
-## Hub Server Installation
-
-### Option 1: Quick Install (Empfohlen)
+### One-Line Install
 
 ```bash
-# Als root oder mit sudo
 curl -fsSL https://raw.githubusercontent.com/derleiti/triforce/master/scripts/install-hub.sh | bash
 ```
 
-### Option 2: Manuelle Installation
-
-#### 1. System vorbereiten
+### Manual Install
 
 ```bash
-# Updates
-sudo apt update && sudo apt upgrade -y
-
-# Abhängigkeiten
-sudo apt install -y \
-  python3.11 python3.11-venv python3-pip \
-  git curl wget \
-  redis-server \
-  nginx certbot python3-certbot-nginx
-```
-
-#### 2. Repository klonen
-
-```bash
-cd /home/$USER
+# Clone
 git clone https://github.com/derleiti/triforce.git
 cd triforce
-```
 
-#### 3. Python Environment
-
-```bash
-python3.11 -m venv .venv
+# Create venv
+python3 -m venv .venv
 source .venv/bin/activate
-pip install --upgrade pip
+
+# Install dependencies
 pip install -r requirements.txt
+
+# Configure
+cp config/config.example.yaml config/config.yaml
+# Edit config.yaml with your API keys
+
+# Start
+./scripts/start-triforce.sh
 ```
 
-#### 4. Konfiguration
-
-```bash
-# Config kopieren
-cp config/triforce.env.example config/triforce.env
-
-# Bearbeiten
-nano config/triforce.env
-```
-
-**Wichtige Einstellungen in `triforce.env`:**
-
-```bash
-# API Keys (mindestens einen)
-GEMINI_API_KEY=your_key_here
-ANTHROPIC_API_KEY=your_key_here
-GROQ_API_KEY=your_key_here
-
-# Server
-HOST=0.0.0.0
-PORT=9000
-
-# Redis
-REDIS_URL=redis://localhost:6379
-
-# JWT Secret (generieren mit: openssl rand -hex 32)
-JWT_SECRET=your_secret_here
-```
-
-#### 5. Systemd Service
+### Systemd Service
 
 ```bash
 sudo cp scripts/triforce.service /etc/systemd/system/
 sudo systemctl daemon-reload
-sudo systemctl enable triforce.service
-sudo systemctl start triforce.service
+sudo systemctl enable triforce
+sudo systemctl start triforce
 ```
 
-#### 6. Nginx Reverse Proxy
+### Ollama (Optional)
 
+For local LLM support:
 ```bash
-sudo cp scripts/nginx-triforce.conf /etc/nginx/sites-available/triforce
-sudo ln -s /etc/nginx/sites-available/triforce /etc/nginx/sites-enabled/
-sudo nginx -t
-sudo systemctl reload nginx
-```
-
-#### 7. SSL mit Let's Encrypt
-
-```bash
-sudo certbot --nginx -d api.yourdomain.com
-```
-
----
-
-## Ollama Installation (Optional, für lokale Modelle)
-
-```bash
-# Ollama installieren
 curl -fsSL https://ollama.com/install.sh | sh
-
-# Service starten
-sudo systemctl enable ollama
-sudo systemctl start ollama
-
-# Modelle herunterladen
-ollama pull llama3.2:3b
-ollama pull qwen2.5:7b
-ollama pull codellama:7b
+ollama pull llama3.2
 ```
 
 ---
 
-## Client Installation
+## Configuration
 
-### Linux (Debian/Ubuntu)
+### API Keys
 
+Store in `config/vault.json` or set environment variables:
 ```bash
-# Repository hinzufügen
-echo "deb https://repo.ailinux.me/apt stable main" | sudo tee /etc/apt/sources.list.d/ailinux.list
-curl -fsSL https://repo.ailinux.me/gpg | sudo gpg --dearmor -o /usr/share/keyrings/ailinux.gpg
-
-# Installieren
-sudo apt update
-sudo apt install ailinux-client
+export GEMINI_API_KEY="..."
+export ANTHROPIC_API_KEY="..."
+export GROQ_API_KEY="..."
 ```
 
-**Oder direkt als .deb:**
+### Ports
 
-```bash
-wget https://repo.ailinux.me/pool/main/ailinux-client_4.2.0_amd64.deb
-sudo dpkg -i ailinux-client_4.2.0_amd64.deb
-sudo apt install -f  # Falls Abhängigkeiten fehlen
-```
-
-### Linux (Arch/AUR)
-
-```bash
-yay -S ailinux-client
-# oder
-paru -S ailinux-client
-```
-
-### Windows
-
-1. Download: https://github.com/derleiti/aiwindows-client/releases
-2. `AILinux-Setup.exe` ausführen
-3. Installation folgen
+| Service | Port |
+|---------|------|
+| TriForce API | 9000 |
+| Ollama | 11434 |
 
 ---
 
-## Verifizierung
-
-### Hub Server
+## Verification
 
 ```bash
-# Service Status
-sudo systemctl status triforce.service
+# Check service
+systemctl status triforce
 
-# Health Check
-curl http://localhost:9000/health
+# Check API
+curl https://api.ailinux.me/health
 
-# API Test
-curl http://localhost:9000/v1/mesh/resources
-```
-
-### Client
-
-```bash
-# Linux
-ailinux-client --version
-
-# Verbindung testen
-ailinux-client --test-connection
+# Check MCP tools
+curl -X POST https://api.ailinux.me/v1/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","method":"tools/list","id":"1"}'
 ```
 
 ---
 
-## Troubleshooting
+## URLs
 
-### Service startet nicht
-
-```bash
-# Logs prüfen
-journalctl -u triforce.service -n 100
-
-# Manuell starten für Debug
-cd /home/$USER/triforce
-source .venv/bin/activate
-python -m uvicorn app.main:app --host 0.0.0.0 --port 9000
-```
-
-### Port bereits belegt
-
-```bash
-# Prozess finden
-sudo lsof -i :9000
-
-# Oder anderen Port in triforce.env setzen
-PORT=9001
-```
-
-### Redis Verbindungsfehler
-
-```bash
-# Redis Status
-sudo systemctl status redis-server
-
-# Redis testen
-redis-cli ping
-```
-
-### Ollama nicht erreichbar
-
-```bash
-# Status prüfen
-sudo systemctl status ollama
-
-# Manuell starten
-ollama serve
-
-# Test
-curl http://localhost:11434/api/tags
-```
-
----
-
-## Nächste Schritte
-
-- [Quickstart Guide](QUICKSTART.md) - Erste Schritte
-- [API Dokumentation](api/REST.md) - API Referenz
-- [Federation Setup](architecture/FEDERATION.md) - Mehrere Nodes verbinden
+| Resource | URL |
+|----------|-----|
+| API | https://api.ailinux.me |
+| API Docs | https://api.ailinux.me/docs |
+| Update Server | https://update.ailinux.me |
+| APT Repository | https://repo.ailinux.me/mirror/archive.ailinux.me |
+| GitHub | https://github.com/derleiti/triforce |

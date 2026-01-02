@@ -190,7 +190,7 @@ See [docs/MCP_TOOLS.md](docs/MCP_TOOLS.md) for full reference.
 | API Documentation | https://api.ailinux.me/docs |
 | Update Server | https://update.ailinux.me |
 | APT Repository | https://repo.ailinux.me |
-| Status | https://api.ailinux.me/v1/status |
+| Status | https://api.ailinux.me/health |
 
 ---
 
