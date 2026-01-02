@@ -1,3 +1,6 @@
+# TriForce Backend Version
+VERSION = "2.80"
+
 from functools import lru_cache
 from typing import Dict, List, Optional
 from pydantic_settings import BaseSettings, SettingsConfigDict
