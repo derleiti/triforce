@@ -10,7 +10,7 @@
 
 **Multi-LLM Orchestration Platform with Federation Support**
 
-[Installation](#installation) • [Quick Start](#quick-start) • [CLI Agents](#cli-agents) • [MCP Tools](#mcp-tools) • [Architecture](#architecture)
+[Installation](#installation) • [Quick Start](#quick-start) • [Hub Sync](#server-hub-sync) • [CLI Agents](#cli-agents) • [MCP Tools](#mcp-tools)
 
 </div>
 
@@ -26,9 +26,9 @@ TriForce is a decentralized AI platform that unifies **686+ LLM models** from **
 - **Federation**: Distributed compute across multiple nodes (64 cores, 156GB RAM)
 - **MCP Tools**: 134 integrated tools for code, search, memory, files
 - **CLI Agents**: 4 autonomous AI agents (Claude, Codex, Gemini, OpenCode)
+- **Auto-Sync**: Automatic hub synchronization via update.ailinux.me
 - **Local Models**: Ollama integration for private inference
 - **OpenAI Compatible**: Drop-in replacement for OpenAI API
-- **Unified Logging**: Centralized logging across all hubs
 
 ### Federation Status
 
@@ -78,6 +78,50 @@ systemctl start triforce.service
 
 ---
 
+## 🔄 Server Hub Sync
+
+All federation hubs synchronize automatically via **https://update.ailinux.me/server/**
+
+### One-Time Sync
+
+```bash
+curl -fsSL https://update.ailinux.me/server/scripts/hub-sync.sh | bash
+```
+
+### Automatic Updates (Hourly)
+
+```bash
+# Download systemd units
+sudo curl -o /etc/systemd/system/triforce-hub-sync.service \
+  https://update.ailinux.me/server/scripts/triforce-hub-sync.service
+sudo curl -o /etc/systemd/system/triforce-hub-sync.timer \
+  https://update.ailinux.me/server/scripts/triforce-hub-sync.timer
+
+# Enable hourly sync
+sudo systemctl daemon-reload
+sudo systemctl enable --now triforce-hub-sync.timer
+```
+
+### Create New Release
+
+On the master node:
+```bash
+./scripts/create-release.sh 2.81
+```
+
+This creates a tarball at `update.ailinux.me/server/releases/` and all hubs auto-sync within 1 hour.
+
+### Update URLs
+
+| Resource | URL |
+|----------|-----|
+| Server Index | https://update.ailinux.me/server/ |
+| Manifest | https://update.ailinux.me/server/manifest.json |
+| Latest Tarball | https://update.ailinux.me/server/current/triforce-latest.tar.gz |
+| Sync Script | https://update.ailinux.me/server/scripts/hub-sync.sh |
+
+---
+
 ## ⚡ Quick Start
 
 ### API Usage
@@ -99,35 +143,35 @@ curl https://api.ailinux.me/v1/chat/completions \
 curl -X POST https://api.ailinux.me/v1/mcp \
   -H "Authorization: Basic <credentials>" \
   -H "Content-Type: application/json" \
-  -d '{
-    "jsonrpc": "2.0",
-    "method": "tools/call",
-    "params": {"name": "status", "arguments": {}},
-    "id": "1"
-  }'
+  -d '{"jsonrpc":"2.0","method":"tools/list","id":"1"}'
 ```
 
 ---
 
 ## 🤖 CLI Agents
 
-| Agent | Type | Description |
-|-------|------|-------------|
-| `claude-mcp` | Claude Code | Autonomous coding with full MCP access |
-| `codex-mcp` | OpenAI Codex | Full-auto mode |
-| `gemini-mcp` | Google Gemini | YOLO mode coordinator |
-| `opencode-mcp` | OpenCode | Auto-mode execution |
+Four autonomous agents available via `/v1/agents/cli`:
 
-### Agent API
+| Agent | Model | Mode | Description |
+|-------|-------|------|-------------|
+| claude-mcp | Claude | Autonomous | Code, analysis, writing |
+| codex-mcp | OpenAI Codex | Full-Auto | Code execution |
+| gemini-mcp | Gemini 2.0 | YOLO | Coordinator, research |
+| opencode-mcp | OpenCode | Auto | Code generation |
 
 ```bash
 # List agents
 curl https://api.ailinux.me/v1/agents/cli -H "Authorization: Bearer TOKEN"
 
-# Start/Stop/Call
+# Start agent
 curl -X POST https://api.ailinux.me/v1/agents/cli/claude-mcp/start
+
+# Call agent
 curl -X POST https://api.ailinux.me/v1/agents/cli/claude-mcp/call \
-  -d '{"message":"Analyze codebase"}'
+  -H "Content-Type: application/json" \
+  -d '{"message": "Fix the bug in main.py"}'
+
+# Stop agent
 curl -X POST https://api.ailinux.me/v1/agents/cli/claude-mcp/stop
 ```
 
@@ -135,66 +179,64 @@ curl -X POST https://api.ailinux.me/v1/agents/cli/claude-mcp/stop
 
 ## 🔧 MCP Tools
 
-134+ tools organized by category:
+134 tools organized by category:
 
-| Category | Tools | Description |
-|----------|-------|-------------|
-| System | status, health, config | System management |
-| Agents | agents, agent_start, agent_call | CLI agent control |
-| Models | chat, models, specialist | LLM inference |
-| Ollama | ollama_list, ollama_run | Local models |
-| Memory | memory_store, memory_search | Persistent memory |
-| Code | code_read, code_search, code_edit | Codebase tools |
-| Search | search, crawl | Web search |
-| Mesh | mesh_status, mesh_task | Federation |
+| Category | Tools | Examples |
+|----------|-------|----------|
+| AI/Chat | chat, models, specialist | Multi-model routing |
+| Code | code_read, code_edit, code_search | File operations |
+| Web | search, crawl, web_fetch | Web scraping |
+| Memory | memory_store, memory_search | Persistent storage |
+| System | shell, status, health | Administration |
+| Agents | agent_call, agent_broadcast | Agent orchestration |
 
-See [docs/MCP_TOOLS.md](docs/MCP_TOOLS.md) for full reference.
+Full list: [docs/MCP_TOOLS.md](docs/MCP_TOOLS.md)
 
 ---
 
-## 🏗️ Architecture
+## 📊 Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    TriForce Backend v2.80                    │
+│                     TriForce Backend                        │
 ├─────────────────────────────────────────────────────────────┤
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
-│  │   MCP Hub   │  │  Agent Hub  │  │ Federation  │         │
-│  │  134 Tools  │  │  4 Agents   │  │   3 Nodes   │         │
-│  └─────────────┘  └─────────────┘  └─────────────┘         │
+│  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐       │
+│  │ Gemini  │  │ Claude  │  │  Groq   │  │ Ollama  │  ...  │
+│  └────┬────┘  └────┬────┘  └────┬────┘  └────┬────┘       │
+│       └────────────┴────────────┴────────────┘             │
+│                         │                                   │
+│              ┌──────────┴──────────┐                       │
+│              │   Load Balancer     │                       │
+│              │   (686+ models)     │                       │
+│              └──────────┬──────────┘                       │
+│                         │                                   │
+│  ┌──────────┬───────────┼───────────┬──────────┐          │
+│  │ MCP Hub  │ Agent Hub │ Federation│ Auth Hub │          │
+│  │134 tools │ 4 agents  │  3 nodes  │ JWT/RBAC │          │
+│  └──────────┴───────────┴───────────┴──────────┘          │
 ├─────────────────────────────────────────────────────────────┤
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │              Unified Logging System                  │   │
-│  │     File: logs/unified.log | stdout: journalctl     │   │
-│  └─────────────────────────────────────────────────────┘   │
+│                     API Gateway                             │
+│              https://api.ailinux.me                         │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 📊 Tier System
-
-| Tier | Models | Tokens/Day | Price |
-|------|--------|------------|-------|
-| Guest | 5 | 10k | Free |
-| Free | 50 | 50k | Free |
-| Pro | 630+ | 250k | €17.99/mo |
-| Unlimited | 686+ | ∞ | €59.99/mo |
-
----
-
-## 📚 Links
+## 🔗 Links
 
 | Resource | URL |
 |----------|-----|
-| API Documentation | https://api.ailinux.me/docs |
-| Update Server | https://update.ailinux.me |
+| API | https://api.ailinux.me |
+| API Docs | https://api.ailinux.me/docs |
+| Health | https://api.ailinux.me/health |
+| Updates | https://update.ailinux.me |
+| Server Updates | https://update.ailinux.me/server/ |
 | APT Repository | https://repo.ailinux.me |
-| Status | https://api.ailinux.me/health |
+| GitHub | https://github.com/derleiti/triforce |
 
 ---
 
-## 📄 License
+## 📝 License
 
 MIT License - see [LICENSE](LICENSE)
 
@@ -202,6 +244,6 @@ MIT License - see [LICENSE](LICENSE)
 
 <div align="center">
 
-**Built with ❤️ by AILinux Team**
+**[AILinux](https://ailinux.me)** • Built with ❤️ by Zombie
 
 </div>
