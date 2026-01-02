@@ -1,196 +1,74 @@
 # Changelog
 
-Alle wichtigen Änderungen an TriForce werden hier dokumentiert.
+All notable changes to TriForce Backend.
 
-Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/de/1.0.0/).
-
----
-
-## [2.80] - 2024-12-31
+## [2.80] - 2026-01-02
 
 ### Added
-- **mesh_resources API**: Live Federation Hardware-Status
-  - GET /v1/mesh/resources mit format=summary|nodes|full
-  - MCP Tool mesh_resources hinzugefügt
-- **Business Plan v2.0**: Zwei-Produkt-Modell (Hub + Client Lizenzen)
-- **Dokumentation komplett überarbeitet**
-  - README.md mit Badges und Quick Links
-  - INSTALL.md für Server und Client
-  - QUICKSTART.md für schnellen Einstieg
-  - API-Referenz (REST + MCP)
-  - Architecture-Dokumentation
-
-### Changed
-- Repository umbenannt: ailinux-ai-server-backend → triforce
-- Federation-Konfiguration auf 3 Nodes erweitert (64 Cores, 156GB RAM)
-- Backup VPS Upgrade: 28 Cores, 64GB RAM
+- **CLI Agent System**: Full MCP connectivity for 4 agents
+  - claude-mcp: Claude Code with autonomous coding
+  - codex-mcp: OpenAI Codex in full-auto mode
+  - gemini-mcp: Google Gemini as YOLO coordinator
+  - opencode-mcp: Auto-mode code execution
+- **Unified Logger v2.0**: Centralized logging across all hubs
+  - File output: `logs/unified.log` (50MB rotate)
+  - Stdout: journalctl compatible
+  - Special loggers: `log_tool_call()`, `log_agent_action()`, `log_federation_event()`
+- **Android Client v1.0.0-beta**: Kivy-based mobile app
+  - Chat interface with model selection
+  - JWT authentication
+  - APK available at update.ailinux.me
+- **Login Portal**: login.ailinux.me vhost configuration
 
 ### Fixed
-- mesh_resources Import-Fehler in mcp.py
-- MESH_HANDLERS Definition korrigiert
-
----
-
-## [2.75] - 2024-12-30
-
-### Added
-- **Server Federation v1.0**
-  - WireGuard VPN Mesh
-  - 4-Layer Security (VPN, IP Whitelist, PSK, Timestamp)
-  - Multi-Node Load Balancing
-- **Mesh Brain v2.0**
-  - Gemini als Lead-Agent
-  - Parallel/Sequential/Consensus Strategien
-  - 3.2x Speedup bei Workflows
+- **Repository URLs**: Fixed Nginx CORS configuration
+  - GPG keys now accessible
+  - Dists/stable symlink created
+  - All repo.ailinux.me URLs working
+- **Agent handlers_v4.py**: Connected stub implementations to real agent_controller
+- **Wrapper Scripts**: Created 4 scripts in triforce/bin/
 
 ### Changed
-- Backup VPS als Federation-Node integriert
-- zombie-pc mit RX 6800 XT eingebunden
+- README.md: Complete rewrite with correct URLs
+- Documentation: Added MCP_TOOLS.md, AGENT_SYSTEM_STATUS.md
 
----
+### Infrastructure
+- APT Repository: `deb https://repo.ailinux.me/mirror/archive.ailinux.me stable main`
+- Update Server: https://update.ailinux.me/manifest.json
+- API Health: https://api.ailinux.me/health
 
-## [2.70] - 2024-12-28
-
-### Added
-- AILinux Client v4.2.0 "Brumo"
-  - JWT Authentication
-  - Tier-basierte Modell-Auswahl
-  - WebSocket MCP Integration
-- AIWindows Client v4.2.0
-  - Native Windows Build
-  - Installer + Portable Version
-
-### Changed
-- Client-Repos als Submodule eingebunden
-- Deployment-Skripte aktualisiert
-
----
-
-## [2.60] - 2024-12-25
+## [2.79] - 2026-01-01
 
 ### Added
-- **MCP Tool Registry v4**
-  - 134 Tools implementiert
-  - Kategorien: Core, Code, Memory, Mesh, Ollama, Agents
-- **Prisma Memory System**
-  - 4-Layer Memory (Session, User, Persistent, Shared)
-  - 38+ Memory-Einträge
-
-### Changed
-- mcp.py auf 149k Zeilen gewachsen
-- Ollama-Integration verbessert
-
----
-
-## [2.50] - 2024-12-20
-
-### Added
-- **Multi-Agent System**
-  - claude-mcp, codex-mcp, gemini-mcp, opencode-mcp
-  - Agent Broadcast mit Strategien
-- **Evolve System**
-  - Auto-Evolution für Code-Qualität
-  - Security/Performance/Quality Focus
+- update.ailinux.me infrastructure
+- Client auto-updater integration
+- Login portal scaffolding
 
 ### Fixed
-- Redis Deprecation Warnings
-- JWT Tier-Lookup optimiert
+- PyQt6 QtWebEngineWidgets import
+- HTTPStatusError handling
 
----
-
-## [2.40] - 2024-12-15
+## [2.78] - 2025-12-31
 
 ### Added
-- **Tier System**
-  - Free: 10k Tokens/Tag
-  - Pro: 250k Tokens/Tag (€17.99)
-  - Unlimited: ∞ (€59.99)
-- Rate Limiting pro User/Tier
-
-### Changed
-- Modell-Routing nach Tier
-- Token-Counting für alle Provider
+- Federation mesh networking
+- MCP SSE endpoint
+- Claude.ai connector integration
 
 ---
 
-## [2.30] - 2024-12-10
+## URL Reference
 
-### Added
-- **OpenAI-kompatible API**
-  - /v1/chat/completions
-  - /v1/models
-  - Streaming Support (SSE)
-- 9 Provider integriert
-  - Gemini, Anthropic, Groq, Cerebras
-  - Mistral, OpenRouter, GitHub, Cloudflare
-  - Ollama (lokal)
-
----
-
-## [2.20] - 2024-12-05
-
-### Added
-- **SearXNG Integration**
-  - Web-Suche Tool
-  - Crawl Tool
-- Redis Caching für Responses
-
-### Fixed
-- Memory Leaks bei langen Sessions
-- Concurrent Request Handling
-
----
-
-## [2.10] - 2024-12-01
-
-### Added
-- **Ollama Integration**
-  - Lokale Modelle
-  - GPU-Support (CUDA/ROCm)
-  - Model Pull/Delete
-- ollama_* Tools
-
----
-
-## [2.00] - 2024-11-25
-
-### Added
-- **TriForce Backend v2.0**
-  - FastAPI Framework
-  - Async Architecture
-  - Modular Design
-- Erste MCP-Implementierung
-- Basic Auth für Admin
-
----
-
-## [1.x] - 2024-10-xx bis 2024-11-xx
-
-### Legacy
-- Erste Versionen (nicht öffentlich dokumentiert)
-- Prototype mit Flask
-- Einzelner Provider (Gemini)
-
----
-
-## Roadmap
-
-### Q1 2025
-- [ ] Payment Integration (Stripe)
-- [ ] Credit System für Federation
-- [ ] Client v5.0
-
-### Q2 2025
-- [ ] Public Beta Launch
-- [ ] 100+ User
-- [ ] Mobile App (Android/iOS)
-
-### Q3 2025
-- [ ] AILinux 1.0 ISO
-- [ ] Enterprise Edition
-- [ ] SLA Support
-
-### Q4 2025
-- [ ] 1000+ User
-- [ ] 50+ Hubs
-- [ ] Quantum Computing Integration (experimentell)
+| Service | URL | Status |
+|---------|-----|--------|
+| API | https://api.ailinux.me | ✅ |
+| API Docs | https://api.ailinux.me/docs | ✅ |
+| API Health | https://api.ailinux.me/health | ✅ |
+| MCP | https://api.ailinux.me/v1/mcp | ✅ |
+| Repository | https://repo.ailinux.me | ✅ |
+| APT Line | deb https://repo.ailinux.me/mirror/archive.ailinux.me stable main | ✅ |
+| GPG Key | https://repo.ailinux.me/mirror/archive.ailinux.me/ailinux-archive-key.gpg | ✅ |
+| Updates | https://update.ailinux.me | ✅ |
+| Manifest | https://update.ailinux.me/manifest.json | ✅ |
+| Linux DEB | https://update.ailinux.me/client/linux/ailinux-client_4.3.3_amd64.deb | ✅ |
+| Android APK | https://update.ailinux.me/client/android/ailinux-1.0.0-arm64-v8a-debug.apk | ✅ |

@@ -10,7 +10,7 @@
 
 **Multi-LLM Orchestration Platform with Federation Support**
 
-[Installation](#installation) • [Quick Start](#quick-start) • [API Docs](#api) • [CLI Agents](#cli-agents) • [Architecture](#architecture)
+[Installation](#installation) • [Quick Start](#quick-start) • [CLI Agents](#cli-agents) • [MCP Tools](#mcp-tools) • [Architecture](#architecture)
 
 </div>
 
@@ -24,13 +24,13 @@ TriForce is a decentralized AI platform that unifies **686+ LLM models** from **
 
 - **Multi-Provider**: Gemini, Anthropic, Groq, Cerebras, Mistral, OpenRouter, GitHub, Cloudflare, Ollama
 - **Federation**: Distributed compute across multiple nodes (64 cores, 156GB RAM)
-- **MCP Tools**: 134 integrated tools for code, search, memory, files, and more
+- **MCP Tools**: 134 integrated tools for code, search, memory, files
 - **CLI Agents**: 4 autonomous AI agents (Claude, Codex, Gemini, OpenCode)
-- **Local Models**: Ollama integration for private, free inference
+- **Local Models**: Ollama integration for private inference
 - **OpenAI Compatible**: Drop-in replacement for OpenAI API
-- **Unified Logging**: Centralized logging across all hubs (MCP, Agent, Federation)
+- **Unified Logging**: Centralized logging across all hubs
 
-### Current Federation Status
+### Federation Status
 
 | Node | Cores | RAM | GPU | Role |
 |------|-------|-----|-----|------|
@@ -43,43 +43,38 @@ TriForce is a decentralized AI platform that unifies **686+ LLM models** from **
 
 ## 📦 Installation
 
-### Server (Hub) Installation
-
-```bash
-# Clone
-git clone https://github.com/derleiti/triforce.git
-cd triforce
-
-# Setup
-./scripts/install-hub.sh
-
-# Start
-systemctl start triforce.service
-```
-
-See [docs/INSTALL.md](docs/INSTALL.md) for detailed instructions.
-
 ### Client Installation
 
-**Linux (Debian/Ubuntu)**:
+**Debian/Ubuntu (APT Repository)**:
 ```bash
+# Add GPG key
+curl -fsSL https://repo.ailinux.me/mirror/archive.ailinux.me/ailinux-archive-key.gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/ailinux.gpg
+
 # Add repository
-echo "deb https://repo.ailinux.me stable main" | sudo tee /etc/apt/sources.list.d/ailinux.list
-curl -fsSL https://repo.ailinux.me/pubkey.gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/ailinux.gpg
-sudo apt update
+echo "deb https://repo.ailinux.me/mirror/archive.ailinux.me stable main" | sudo tee /etc/apt/sources.list.d/ailinux.list
 
 # Install
-sudo apt install ailinux-client
+sudo apt update && sudo apt install ailinux-client
 ```
 
 **Direct Download**:
 ```bash
-wget https://repo.ailinux.me/pool/main/ailinux-client_4.3.3_amd64.deb
+# Desktop (Linux)
+wget https://update.ailinux.me/client/linux/ailinux-client_4.3.3_amd64.deb
 sudo dpkg -i ailinux-client_4.3.3_amd64.deb
+
+# Android (Beta)
+wget https://update.ailinux.me/client/android/ailinux-1.0.0-arm64-v8a-debug.apk
 ```
 
-**Android (Beta)**:
-- Download APK from [update.ailinux.me](https://update.ailinux.me/android/)
+### Server Installation
+
+```bash
+git clone https://github.com/derleiti/triforce.git
+cd triforce
+./scripts/install-hub.sh
+systemctl start triforce.service
+```
 
 ---
 
@@ -98,83 +93,62 @@ curl https://api.ailinux.me/v1/chat/completions \
   }'
 ```
 
-### MCP Usage
+### MCP Tool Call
 
 ```bash
-# List available tools
-curl https://api.ailinux.me/v1/mcp \
-  -H "Authorization: Basic <credentials>" \
-  -H "Content-Type: application/json" \
-  -d '{"jsonrpc":"2.0","method":"tools/list","id":"1"}'
-
-# Call a tool
-curl https://api.ailinux.me/v1/mcp \
+curl -X POST https://api.ailinux.me/v1/mcp \
   -H "Authorization: Basic <credentials>" \
   -H "Content-Type: application/json" \
   -d '{
-    "jsonrpc":"2.0",
-    "method":"tools/call",
-    "params":{"name":"status","arguments":{}},
-    "id":"2"
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {"name": "status", "arguments": {}},
+    "id": "1"
   }'
 ```
-
-### Available Models (Selection)
-
-| Provider | Model | Speed | Quality |
-|----------|-------|-------|---------|
-| Gemini | gemini-2.0-flash | ⚡⚡⚡ | ★★★★ |
-| Gemini | gemini-2.5-pro | ⚡⚡ | ★★★★★ |
-| Groq | llama-3.3-70b | ⚡⚡⚡ | ★★★★★ |
-| Cerebras | llama-3.3-70b | ⚡⚡⚡ | ★★★★★ |
-| Anthropic | claude-sonnet-4 | ⚡⚡ | ★★★★★ |
-| Mistral | mistral-large | ⚡⚡ | ★★★★ |
-| Ollama | * (local) | ⚡ | varies |
 
 ---
 
 ## 🤖 CLI Agents
 
-TriForce includes 4 autonomous CLI agents that can be controlled via REST API or MCP:
-
 | Agent | Type | Description |
 |-------|------|-------------|
-| `claude-mcp` | Claude Code | Autonomous coding agent with full MCP access |
-| `codex-mcp` | OpenAI Codex | Full-auto mode without sandbox |
-| `gemini-mcp` | Google Gemini | YOLO mode lead coordinator |
-| `opencode-mcp` | OpenCode | Auto-mode for code execution |
+| `claude-mcp` | Claude Code | Autonomous coding with full MCP access |
+| `codex-mcp` | OpenAI Codex | Full-auto mode |
+| `gemini-mcp` | Google Gemini | YOLO mode coordinator |
+| `opencode-mcp` | OpenCode | Auto-mode execution |
 
 ### Agent API
 
 ```bash
 # List agents
-curl https://api.ailinux.me/v1/agents/cli \
-  -H "Authorization: Bearer YOUR_TOKEN"
+curl https://api.ailinux.me/v1/agents/cli -H "Authorization: Bearer TOKEN"
 
-# Start agent
-curl -X POST https://api.ailinux.me/v1/agents/cli/claude-mcp/start \
-  -H "Authorization: Bearer YOUR_TOKEN"
-
-# Call agent
+# Start/Stop/Call
+curl -X POST https://api.ailinux.me/v1/agents/cli/claude-mcp/start
 curl -X POST https://api.ailinux.me/v1/agents/cli/claude-mcp/call \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"message":"Analyze the codebase structure"}'
-
-# Stop agent
-curl -X POST https://api.ailinux.me/v1/agents/cli/claude-mcp/stop \
-  -H "Authorization: Bearer YOUR_TOKEN"
+  -d '{"message":"Analyze codebase"}'
+curl -X POST https://api.ailinux.me/v1/agents/cli/claude-mcp/stop
 ```
 
-### Agent MCP Tools
+---
 
-Agents have access to 13+ MCP tools including:
-- `tristar_status` - System status
-- `codebase_structure` - Code analysis
-- `codebase_search` - Code search
-- `ollama_list` - Local models
-- `cli-agents_list` - Agent management
-- And more...
+## 🔧 MCP Tools
+
+134+ tools organized by category:
+
+| Category | Tools | Description |
+|----------|-------|-------------|
+| System | status, health, config | System management |
+| Agents | agents, agent_start, agent_call | CLI agent control |
+| Models | chat, models, specialist | LLM inference |
+| Ollama | ollama_list, ollama_run | Local models |
+| Memory | memory_store, memory_search | Persistent memory |
+| Code | code_read, code_search, code_edit | Codebase tools |
+| Search | search, crawl | Web search |
+| Mesh | mesh_status, mesh_task | Federation |
+
+See [docs/MCP_TOOLS.md](docs/MCP_TOOLS.md) for full reference.
 
 ---
 
@@ -193,74 +167,12 @@ Agents have access to 13+ MCP tools including:
 │  │              Unified Logging System                  │   │
 │  │     File: logs/unified.log | stdout: journalctl     │   │
 │  └─────────────────────────────────────────────────────┘   │
-├─────────────────────────────────────────────────────────────┤
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
-│  │   Ollama    │  │   Memory    │  │    Vault    │         │
-│  │  Local LLM  │  │  Prisma DB  │  │  API Keys   │         │
-│  └─────────────┘  └─────────────┘  └─────────────┘         │
 └─────────────────────────────────────────────────────────────┘
-          │                    │                    │
-          ▼                    ▼                    ▼
-   ┌──────────┐         ┌──────────┐         ┌──────────┐
-   │  Client  │         │  Client  │         │  Client  │
-   │ Desktop  │         │ Android  │         │   Web    │
-   └──────────┘         └──────────┘         └──────────┘
 ```
 
 ---
 
-## 📁 Project Structure
-
-```
-triforce/
-├── app/                    # Backend application
-│   ├── main.py            # FastAPI entry point
-│   ├── routes/            # API routes
-│   │   ├── mcp.py         # MCP endpoints
-│   │   ├── agents.py      # Agent management
-│   │   └── ...
-│   ├── mcp/               # MCP handlers
-│   │   ├── handlers_v4.py # Tool handlers
-│   │   └── ...
-│   ├── services/          # Business logic
-│   │   ├── tristar/       # Agent controller
-│   │   └── ...
-│   └── utils/             # Utilities
-│       └── unified_logger.py  # Centralized logging
-├── client-deploy/         # Client packages
-│   ├── ailinux-client/    # Desktop client (PyQt6)
-│   └── ailinux-android-app/ # Android client (Kivy)
-├── docker/                # Docker configs
-│   ├── wordpress/         # Web frontend
-│   └── repository/        # APT repository
-├── docs/                  # Documentation
-├── scripts/               # Utility scripts
-└── triforce/              # CLI agent wrappers
-    └── bin/               # Agent executables
-```
-
----
-
-## 🔧 Configuration
-
-### Environment Variables
-
-```bash
-# API Keys (via Vault)
-GEMINI_API_KEY=...
-ANTHROPIC_API_KEY=...
-GROQ_API_KEY=...
-
-# Server
-TRIFORCE_PORT=9000
-TRIFORCE_HOST=0.0.0.0
-
-# Federation
-FEDERATION_ENABLED=true
-FEDERATION_NODES=backup,zombie-pc
-```
-
-### Tier System
+## 📊 Tier System
 
 | Tier | Models | Tokens/Day | Price |
 |------|--------|------------|-------|
@@ -271,32 +183,14 @@ FEDERATION_NODES=backup,zombie-pc
 
 ---
 
-## 📚 Documentation
+## 📚 Links
 
-- [Installation Guide](docs/INSTALL.md)
-- [API Reference](docs/API.md)
-- [MCP Tools Reference](docs/MCP_TOOLS.md)
-- [Agent System](docs/AGENT_SYSTEM_STATUS.md)
-- [Client Documentation](client-deploy/CLIENT_STATUS_DOCUMENTATION.md)
-
----
-
-## 🛠️ Development
-
-```bash
-# Clone
-git clone https://github.com/derleiti/triforce.git
-cd triforce
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Run development server
-uvicorn app.main:app --reload --port 9000
-
-# Run tests
-pytest tests/
-```
+| Resource | URL |
+|----------|-----|
+| API Documentation | https://api.ailinux.me/docs |
+| Update Server | https://update.ailinux.me |
+| APT Repository | https://repo.ailinux.me |
+| Status | https://api.ailinux.me/v1/status |
 
 ---
 
@@ -306,16 +200,8 @@ MIT License - see [LICENSE](LICENSE)
 
 ---
 
-## 🤝 Contributing
-
-Contributions welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) first.
-
----
-
 <div align="center">
 
 **Built with ❤️ by AILinux Team**
-
-[Website](https://ailinux.me) • [API Docs](https://api.ailinux.me/docs) • [Discord](https://discord.gg/ailinux)
 
 </div>

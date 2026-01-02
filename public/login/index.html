@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AILinux Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0f;--card:#12121a;--border:#2a2a3a;--blue:#3b82f6;--purple:#8b5cf6;--cyan:#06b6d4;--green:#10b981;--red:#ef4444;--text:#f1f5f9;--muted:#94a3b8}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem}
+.bg-gradient{position:fixed;inset:0;background:radial-gradient(ellipse at 30% 20%,rgba(59,130,246,0.15) 0%,transparent 50%),radial-gradient(ellipse at 70% 80%,rgba(139,92,246,0.15) 0%,transparent 50%);pointer-events:none}
+.container{position:relative;width:100%;max-width:420px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2.5rem;box-shadow:0 25px 50px -12px rgba(0,0,0,0.5)}
+.logo{text-align:center;margin-bottom:2rem}
+.logo-icon{font-size:3rem;margin-bottom:0.5rem;display:block}
+.logo h1{font-size:1.75rem;font-weight:700;background:linear-gradient(135deg,var(--blue),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo p{color:var(--muted);font-size:0.875rem;margin-top:0.25rem}
+.tabs{display:flex;gap:0.5rem;margin-bottom:1.5rem;background:rgba(0,0,0,0.3);padding:0.25rem;border-radius:12px}
+.tab{flex:1;padding:0.75rem;border:none;background:transparent;color:var(--muted);font-size:0.875rem;font-weight:500;border-radius:10px;cursor:pointer;transition:all 0.2s}
+.tab.active{background:linear-gradient(135deg,var(--blue),var(--purple));color:white}
+.form-group{margin-bottom:1rem}
+.form-group label{display:block;font-size:0.75rem;color:var(--muted);margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.05em}
+.form-group input{width:100%;padding:0.875rem 1rem;background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:1rem;transition:border-color 0.2s}
+.form-group input:focus{outline:none;border-color:var(--blue)}
+.form-group input::placeholder{color:var(--muted)}
+.hidden{display:none !important}
+.beta-badge{background:linear-gradient(135deg,var(--green),var(--cyan));color:white;padding:0.5rem 1rem;border-radius:8px;font-size:0.75rem;font-weight:600;text-align:center;margin-bottom:1rem}
+.btn{width:100%;padding:1rem;border:none;border-radius:12px;font-size:1rem;font-weight:600;cursor:pointer;transition:all 0.2s;margin-top:0.5rem}
+.btn-primary{background:linear-gradient(135deg,var(--blue),var(--purple));color:white}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 20px rgba(59,130,246,0.3)}
+.btn-primary:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+.message{padding:0.75rem 1rem;border-radius:8px;font-size:0.875rem;margin-bottom:1rem;display:none}
+.message.error{background:rgba(239,68,68,0.15);border:1px solid var(--red);color:var(--red);display:block}
+.message.success{background:rgba(16,185,129,0.15);border:1px solid var(--green);color:var(--green);display:block}
+.divider{display:flex;align-items:center;gap:1rem;margin:1.5rem 0;color:var(--muted);font-size:0.75rem}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.links{text-align:center;margin-top:1.5rem;font-size:0.875rem;color:var(--muted)}
+.links a{color:var(--blue);text-decoration:none}
+.links a:hover{text-decoration:underline}
+.account-view{display:none}
+.account-view.active{display:block}
+.auth-view.hidden{display:none}
+.user-info{text-align:center;margin-bottom:1.5rem}
+.user-avatar{width:80px;height:80px;background:linear-gradient(135deg,var(--blue),var(--purple));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 1rem}
+.user-email{font-size:1.125rem;font-weight:600}
+.user-tier{display:inline-block;background:linear-gradient(135deg,var(--purple),var(--blue));padding:0.25rem 1rem;border-radius:20px;font-size:0.75rem;font-weight:600;margin-top:0.5rem}
+.tier-info{background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:12px;padding:1.25rem;margin-top:1.5rem}
+.tier-info h3{font-size:1rem;margin-bottom:0.75rem;display:flex;align-items:center;gap:0.5rem}
+.tier-info .tier-badge{background:linear-gradient(135deg,var(--purple),var(--blue));padding:0.25rem 0.75rem;border-radius:20px;font-size:0.75rem;font-weight:600}
+.tier-features{display:grid;gap:0.5rem;font-size:0.875rem;color:var(--muted)}
+.tier-features span::before{content:'✓ ';color:var(--green)}
+.btn-logout{background:transparent;border:1px solid var(--border);color:var(--muted)}
+.btn-logout:hover{border-color:var(--red);color:var(--red)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading::after{content:'';display:inline-block;width:16px;height:16px;border:2px solid transparent;border-top-color:white;border-radius:50%;animation:spin 0.8s linear infinite;margin-left:0.5rem;vertical-align:middle}
+</style>
+</head>
+<body>
+<div class="bg-gradient"></div>
+<div class="container">
+<div class="card">
+<div class="logo"><span class="logo-icon">🤖</span><h1>AILinux</h1><p>TriForce AI Platform</p></div>
+<div class="auth-view" id="authView">
+<div class="tabs"><button class="tab active" data-tab="login">Anmelden</button><button class="tab" data-tab="register">Registrieren</button></div>
+<div id="message" class="message"></div>
+<form id="loginForm"><div class="form-group"><label>Email</label><input type="email" id="loginEmail" placeholder="deine@email.de" required></div><div class="form-group"><label>Passwort</label><input type="password" id="loginPassword" placeholder="••••••••" required></div><button type="submit" class="btn btn-primary" id="loginBtn">Anmelden</button></form>
+<form id="registerForm" class="hidden"><div class="beta-badge">🎉 Beta: Alle Accounts bekommen PRO!</div><div class="form-group"><label>Email</label><input type="email" id="regEmail" placeholder="deine@email.de" required></div><div class="form-group"><label>Passwort (min. 6 Zeichen)</label><input type="password" id="regPassword" placeholder="••••••••" minlength="6" required></div><div class="form-group"><label>Name (optional)</label><input type="text" id="regName" placeholder="Dein Name"></div><div class="form-group"><label>Beta-Code (optional)</label><input type="text" id="regBetaCode" placeholder="AILINUX2026"></div><button type="submit" class="btn btn-primary" id="registerBtn">Account erstellen</button></form>
+<div class="divider">oder</div>
+<div class="links"><a href="https://ailinux.me">← Zurück</a></div>
+</div>
+<div class="account-view" id="accountView">
+<div class="user-info"><div class="user-avatar">👤</div><div class="user-email" id="userEmail">-</div><div class="user-tier" id="userTier">FREE</div></div>
+<div class="tier-info"><h3>Account <span class="tier-badge" id="tierBadge">PRO</span></h3><div class="tier-features" id="tierFeatures"><span>115+ AI-Modelle</span><span>Unbegrenzte Nachrichten</span><span>MCP Tools</span><span>Priority Support</span></div></div>
+<button class="btn btn-primary" onclick="openApp()">🚀 App öffnen</button>
+<button class="btn btn-logout" onclick="logout()">Abmelden</button>
+<div class="links" style="margin-top:1rem"><a href="https://ailinux.me/account">Account</a> · <a href="https://update.ailinux.me">Downloads</a></div>
+</div>
+</div>
+</div>
+<script>
+const API='https://api.ailinux.me/v1/auth';
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');const l=t.dataset.tab==='login';document.getElementById('loginForm').classList.toggle('hidden',!l);document.getElementById('registerForm').classList.toggle('hidden',l);hideMessage()}));
+function checkSession(){const t=localStorage.getItem('ailinux_token'),e=localStorage.getItem('ailinux_email'),r=localStorage.getItem('ailinux_tier');if(t&&e)showAccountView(e,r||'free')}
+function showMessage(t,y='error'){const m=document.getElementById('message');m.textContent=t;m.className='message '+y}
+function hideMessage(){document.getElementById('message').className='message'}
+document.getElementById('loginForm').addEventListener('submit',async e=>{e.preventDefault();const b=document.getElementById('loginBtn'),em=document.getElementById('loginEmail').value,pw=document.getElementById('loginPassword').value;b.disabled=true;b.classList.add('loading');try{const r=await fetch(API+'/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,password:pw})});const d=await r.json();if(r.ok){localStorage.setItem('ailinux_token',d.token);localStorage.setItem('ailinux_email',d.user_id);localStorage.setItem('ailinux_tier',d.tier);localStorage.setItem('ailinux_client_id',d.client_id);showMessage('Erfolgreich!','success');setTimeout(()=>showAccountView(d.user_id,d.tier),500)}else{showMessage(d.detail||'Login fehlgeschlagen')}}catch(err){showMessage('Fehler: '+err.message)}b.disabled=false;b.classList.remove('loading')});
+document.getElementById('registerForm').addEventListener('submit',async e=>{e.preventDefault();const b=document.getElementById('registerBtn'),em=document.getElementById('regEmail').value,pw=document.getElementById('regPassword').value,nm=document.getElementById('regName').value,bc=document.getElementById('regBetaCode').value;if(pw.length<6){showMessage('Passwort zu kurz');return}b.disabled=true;b.classList.add('loading');try{const r=await fetch(API+'/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,password:pw,name:nm||null,beta_code:bc||null})});const d=await r.json();if(r.ok&&d.success){showMessage('Account erstellt! Tier: '+d.tier.toUpperCase(),'success');setTimeout(()=>{document.getElementById('loginEmail').value=em;document.getElementById('loginPassword').value=pw;document.querySelector('[data-tab="login"]').click();document.getElementById('loginForm').dispatchEvent(new Event('submit'))},1000)}else{showMessage(d.detail||'Fehler')}}catch(err){showMessage('Fehler: '+err.message)}b.disabled=false;b.classList.remove('loading')});
+function showAccountView(e,t){document.getElementById('authView').classList.add('hidden');document.getElementById('accountView').classList.add('active');document.getElementById('userEmail').textContent=e;document.getElementById('userTier').textContent=t.toUpperCase();document.getElementById('tierBadge').textContent=t.toUpperCase()}
+function logout(){localStorage.removeItem('ailinux_token');localStorage.removeItem('ailinux_email');localStorage.removeItem('ailinux_tier');localStorage.removeItem('ailinux_client_id');document.getElementById('authView').classList.remove('hidden');document.getElementById('accountView').classList.remove('active')}
+function openApp(){const t=localStorage.getItem('ailinux_token');window.location.href='ailinux://auth?token='+t;setTimeout(()=>window.location.href='https://ailinux.me/chat',2000)}
+checkSession();
+</script>
+</body>
+</html>
