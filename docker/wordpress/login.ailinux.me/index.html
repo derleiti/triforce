@@ -50,6 +50,9 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .tier-info .tier-badge{background:linear-gradient(135deg,var(--purple),var(--blue));padding:0.25rem 0.75rem;border-radius:20px;font-size:0.75rem;font-weight:600}
 .tier-features{display:grid;gap:0.5rem;font-size:0.875rem;color:var(--muted)}
 .tier-features span::before{content:'✓ ';color:var(--green)}
+.account-actions{display:grid;gap:0.75rem;margin-top:1.25rem}
+.btn-secondary{background:transparent;border:1px solid var(--border);color:var(--text);text-decoration:none;text-align:center;display:block}
+.btn-secondary:hover{border-color:var(--blue);color:var(--text)}
 .btn-logout{background:transparent;border:1px solid var(--border);color:var(--muted)}
 .btn-logout:hover{border-color:var(--red);color:var(--red)}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -72,8 +75,12 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 <div class="account-view" id="accountView">
 <div class="user-info"><div class="user-avatar">👤</div><div class="user-email" id="userEmail">-</div><div class="user-tier" id="userTier">FREE</div></div>
 <div class="tier-info"><h3>Account <span class="tier-badge" id="tierBadge">PRO</span></h3><div class="tier-features" id="tierFeatures"><span>115+ AI-Modelle</span><span>Unbegrenzte Nachrichten</span><span>MCP Tools</span><span>Priority Support</span></div></div>
+<div class="account-actions">
 <button class="btn btn-primary" onclick="openApp()">🚀 App öffnen</button>
+<a class="btn btn-secondary" id="backToSiteLink" href="#">Zurueck zur Webseite</a>
+<a class="btn btn-secondary hidden" id="wpAdminLink" href="#">WordPress Dashboard</a>
 <button class="btn btn-logout" onclick="logout()">Abmelden</button>
+</div>
 <div class="links" style="margin-top:1rem"><a href="https://ailinux.me/account">Account</a> · <a href="https://update.ailinux.me">Downloads</a></div>
 </div>
 </div>
@@ -81,13 +88,18 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 <script>
 const API='https://api.ailinux.me/v1/auth';
 document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');const l=t.dataset.tab==='login';document.getElementById('loginForm').classList.toggle('hidden',!l);document.getElementById('registerForm').classList.toggle('hidden',l);hideMessage()}));
-function checkSession(){const t=localStorage.getItem('ailinux_token'),e=localStorage.getItem('ailinux_email'),r=localStorage.getItem('ailinux_tier');if(t&&e)showAccountView(e,r||'free')}
+function getRedirectUrl(){const p=new URLSearchParams(window.location.search);const r=p.get('redirect');if(!r)return'https://ailinux.me';try{return new URL(r,window.location.origin).toString()}catch(e){return'https://ailinux.me'}}
+function getWpOrigin(u){try{return new URL(u).origin}catch(e){return'https://ailinux.me'}}
+function updateReturnLinks(){const r=getRedirectUrl();const b=document.getElementById('backToSiteLink');if(b)b.href=r;const w=document.getElementById('wpAdminLink');if(w)w.href=getWpOrigin(r)+'/wp-admin/'}
+function showWpAdminLink(){const w=document.getElementById('wpAdminLink');if(w)w.classList.remove('hidden')}
+async function syncWordPress(e,t,r,c){const u=getWpOrigin(getRedirectUrl());const s=u+'/wp-json/nova-ai/v1/auth/sync';const l=localStorage.getItem('ailinux_wp_last_sync');if(l===t){if(localStorage.getItem('ailinux_wp_can_admin')==='1')showWpAdminLink();return}try{const d=await fetch(s,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:e,token:t,tier:r,client_id:c})});const j=await d.json();if(j&&j.success){localStorage.setItem('ailinux_wp_last_sync',t);if(j.can_admin){localStorage.setItem('ailinux_wp_can_admin','1');showWpAdminLink()}else{localStorage.removeItem('ailinux_wp_can_admin')}}}catch(err){}}
+function checkSession(){const t=localStorage.getItem('ailinux_token'),e=localStorage.getItem('ailinux_email'),r=localStorage.getItem('ailinux_tier'),c=localStorage.getItem('ailinux_client_id');updateReturnLinks();if(t&&e){showAccountView(e,r||'free');syncWordPress(e,t,r||'free',c||'')}}
 function showMessage(t,y='error'){const m=document.getElementById('message');m.textContent=t;m.className='message '+y}
 function hideMessage(){document.getElementById('message').className='message'}
-document.getElementById('loginForm').addEventListener('submit',async e=>{e.preventDefault();const b=document.getElementById('loginBtn'),em=document.getElementById('loginEmail').value,pw=document.getElementById('loginPassword').value;b.disabled=true;b.classList.add('loading');try{const r=await fetch(API+'/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,password:pw})});const d=await r.json();if(r.ok){localStorage.setItem('ailinux_token',d.token);localStorage.setItem('ailinux_email',d.user_id);localStorage.setItem('ailinux_tier',d.tier);localStorage.setItem('ailinux_client_id',d.client_id);showMessage('Erfolgreich!','success');setTimeout(()=>showAccountView(d.user_id,d.tier),500)}else{showMessage(d.detail||'Login fehlgeschlagen')}}catch(err){showMessage('Fehler: '+err.message)}b.disabled=false;b.classList.remove('loading')});
+document.getElementById('loginForm').addEventListener('submit',async e=>{e.preventDefault();const b=document.getElementById('loginBtn'),em=document.getElementById('loginEmail').value,pw=document.getElementById('loginPassword').value;b.disabled=true;b.classList.add('loading');try{const r=await fetch(API+'/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,password:pw})});const d=await r.json();if(r.ok){localStorage.setItem('ailinux_token',d.token);localStorage.setItem('ailinux_email',d.user_id);localStorage.setItem('ailinux_tier',d.tier);localStorage.setItem('ailinux_client_id',d.client_id);showMessage('Erfolgreich!','success');setTimeout(()=>{showAccountView(d.user_id,d.tier);syncWordPress(d.user_id,d.token,d.tier,d.client_id);updateReturnLinks()},500)}else{showMessage(d.detail||'Login fehlgeschlagen')}}catch(err){showMessage('Fehler: '+err.message)}b.disabled=false;b.classList.remove('loading')});
 document.getElementById('registerForm').addEventListener('submit',async e=>{e.preventDefault();const b=document.getElementById('registerBtn'),em=document.getElementById('regEmail').value,pw=document.getElementById('regPassword').value,nm=document.getElementById('regName').value,bc=document.getElementById('regBetaCode').value;if(pw.length<6){showMessage('Passwort zu kurz');return}b.disabled=true;b.classList.add('loading');try{const r=await fetch(API+'/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,password:pw,name:nm||null,beta_code:bc||null})});const d=await r.json();if(r.ok&&d.success){showMessage('Account erstellt! Tier: '+d.tier.toUpperCase(),'success');setTimeout(()=>{document.getElementById('loginEmail').value=em;document.getElementById('loginPassword').value=pw;document.querySelector('[data-tab="login"]').click();document.getElementById('loginForm').dispatchEvent(new Event('submit'))},1000)}else{showMessage(d.detail||'Fehler')}}catch(err){showMessage('Fehler: '+err.message)}b.disabled=false;b.classList.remove('loading')});
 function showAccountView(e,t){document.getElementById('authView').classList.add('hidden');document.getElementById('accountView').classList.add('active');document.getElementById('userEmail').textContent=e;document.getElementById('userTier').textContent=t.toUpperCase();document.getElementById('tierBadge').textContent=t.toUpperCase()}
-function logout(){localStorage.removeItem('ailinux_token');localStorage.removeItem('ailinux_email');localStorage.removeItem('ailinux_tier');localStorage.removeItem('ailinux_client_id');document.getElementById('authView').classList.remove('hidden');document.getElementById('accountView').classList.remove('active')}
+function logout(){localStorage.removeItem('ailinux_token');localStorage.removeItem('ailinux_email');localStorage.removeItem('ailinux_tier');localStorage.removeItem('ailinux_client_id');localStorage.removeItem('ailinux_wp_last_sync');localStorage.removeItem('ailinux_wp_can_admin');document.getElementById('authView').classList.remove('hidden');document.getElementById('accountView').classList.remove('active')}
 function openApp(){const t=localStorage.getItem('ailinux_token');window.location.href='ailinux://auth?token='+t;setTimeout(()=>window.location.href='https://ailinux.me/chat',2000)}
 checkSession();
 </script>

@@ -4,62 +4,12 @@ import logging
 import redis.asyncio as redis
 from fastapi import FastAPI, Request, status, HTTPException
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse, HTMLResponse, FileResponse, RedirectResponse
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
+
 from pathlib import Path
 from fastapi_limiter import FastAPILimiter
-from typing import Optional
-
-# Unified logging für alle Komponenten
-try:
-    from .utils.unified_logger import setup_unified_logging
-    setup_unified_logging()
-except ImportError:
-    pass
-
-# Setup module logger once at top
-logger = logging.getLogger(__name__)
-
-# Prometheus metrics integration
-try:
-    from prometheus_fastapi_instrumentator import Instrumentator  # optional
-    _HAS_INSTRUMENTATOR = True
-except Exception:
-    _HAS_INSTRUMENTATOR = False
-
-try:
-    from .utils.metrics import MetricsMiddleware, get_metrics_response
-    _HAS_CUSTOM_METRICS = True
-except Exception:
-    _HAS_CUSTOM_METRICS = False
-
-# TriForce Central Logging
-try:
-    from .utils.triforce_logging import (
-        central_logger,
-        TriForceLoggingMiddleware,
-        setup_triforce_logging,
-    )
-    _HAS_TRIFORCE_LOGGING = True
-except Exception:
-    _HAS_TRIFORCE_LOGGING = False
-
-# Central Logging (all logs to ./triforce/logs/)
-try:
-    from .utils.central_logging import setup_central_logging, LOG_DIR
-    setup_central_logging()
-    _HAS_CENTRAL_LOGGING = True
-except Exception:
-    _HAS_CENTRAL_LOGGING = False
-
-# System Log Collector (kernel, apps, journald -> /triforce/logs/)
-try:
-    from .utils.system_log_collector import init_system_logging, system_log_collector
-    _HAS_SYSTEM_LOG_COLLECTOR = True
-except Exception:
-    _HAS_SYSTEM_LOG_COLLECTOR = False
 
 from .config import get_settings
 
@@ -99,6 +49,55 @@ from .routes_sd3 import router as sd3_router
 from .routes_vision import router as vision_router
 
 
+# Unified logging für alle Komponenten
+try:
+    from .utils.unified_logger import setup_unified_logging
+    setup_unified_logging()
+except ImportError:
+    pass
+
+# Setup module logger once at top
+logger = logging.getLogger(__name__)
+
+# Prometheus metrics integration
+try:
+    from prometheus_fastapi_instrumentator import Instrumentator  # optional
+    _HAS_INSTRUMENTATOR = True
+except Exception:
+    _HAS_INSTRUMENTATOR = False
+
+try:
+    from .utils.metrics import MetricsMiddleware
+    _HAS_CUSTOM_METRICS = True
+except Exception:
+    _HAS_CUSTOM_METRICS = False
+
+# TriForce Central Logging
+try:
+    from .utils.triforce_logging import (
+        central_logger,
+        TriForceLoggingMiddleware,
+        setup_triforce_logging,
+    )
+    _HAS_TRIFORCE_LOGGING = True
+except Exception:
+    _HAS_TRIFORCE_LOGGING = False
+
+# Central Logging (all logs to ./triforce/logs/)
+try:
+    from .utils.central_logging import setup_central_logging
+    setup_central_logging()
+    _HAS_CENTRAL_LOGGING = True
+except Exception:
+    _HAS_CENTRAL_LOGGING = False
+
+# System Log Collector (kernel, apps, journald -> /triforce/logs/)
+try:
+    from .utils.system_log_collector import init_system_logging, system_log_collector
+    _HAS_SYSTEM_LOG_COLLECTOR = True
+except Exception:
+    _HAS_SYSTEM_LOG_COLLECTOR = False
+
 async def _delayed_bootstrap():
     """Verzögerter Bootstrap der CLI Agents nach Server-Start"""
     import asyncio
@@ -119,7 +118,7 @@ async def lifespan(app: FastAPI):
 
     # === Hardware Acceleration Auto-Detection ===
     try:
-        from .services.hardware_accel import init_hardware_acceleration, get_hardware_config
+        from .services.hardware_accel import init_hardware_acceleration
         hw_config = init_hardware_acceleration()
         logger.info(f"Hardware Acceleration: {hw_config.get('primary_accelerator', 'CPU')}")
         logger.info(f"  GPUs: {len(hw_config.get('gpus', []))}, Threads: {hw_config.get('recommended_threads', 4)}")
@@ -127,9 +126,12 @@ async def lifespan(app: FastAPI):
         logger.warning(f"Hardware detection failed (using defaults): {e}")
 
     settings = get_settings()
-    # Connect to Redis and initialize the rate limiter
-    redis_connection = redis.from_url(settings.redis_url, encoding="utf-8", decode_responses=True)
-    await FastAPILimiter.init(redis_connection)
+    # Connect to Redis and initialize the rate limiter (best effort)
+    try:
+        redis_connection = redis.from_url(settings.redis_url, encoding="utf-8", decode_responses=True)
+        await FastAPILimiter.init(redis_connection)
+    except Exception as e:
+        logger.warning(f"FastAPILimiter init skipped (Redis unavailable): {e}")
 
     # Start periodic model registry refresh (every hour)
     from .services.model_registry import registry
@@ -214,7 +216,6 @@ async def lifespan(app: FastAPI):
 
     # Auto-Bootstrap CLI Agents (wenn konfiguriert)
     try:
-        from .services.agent_bootstrap import bootstrap_service
         import os
         auto_bootstrap = os.environ.get("AUTO_BOOTSTRAP_AGENTS", "false").lower() == "true"
         if auto_bootstrap:

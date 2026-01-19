@@ -10,7 +10,6 @@ from typing import Optional, List
 import httpx
 import os
 import logging
-import jwt
 from datetime import datetime
 
 from ..services.user_tiers import (
@@ -29,7 +28,7 @@ OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 
 # JWT Config - Import from auth module to share secret
-from .client_auth import JWT_SECRET, JWT_ALGORITHM
+from .client_auth import JWT_SECRET, JWT_ALGORITHM, decode_jwt_token
 
 
 
@@ -49,7 +48,7 @@ def extract_user_and_tier_from_token(authorization: str = None) -> tuple:
         if not token:
             return None, None
         
-        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        payload = decode_jwt_token(token)
         
         email = payload.get("email") or payload.get("sub")
         tier = payload.get("role") or payload.get("tier")
@@ -60,11 +59,8 @@ def extract_user_and_tier_from_token(authorization: str = None) -> tuple:
         
         return None, tier
         
-    except jwt.ExpiredSignatureError:
-        logger.warning("JWT Token expired")
-        return None, None
-    except jwt.InvalidTokenError as e:
-        logger.warning(f"Invalid JWT Token: {e}")
+    except HTTPException as e:
+        logger.warning(f"JWT Token invalid/expired: {e.detail}")
         return None, None
     except Exception as e:
         logger.error(f"Token extraction error: {e}")

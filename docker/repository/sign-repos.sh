@@ -110,6 +110,35 @@ label_for(){
   esac
 }
 
+add_release_entry(){
+  local release_file="$1"
+  local rel_path="$2"
+
+  [[ -f "$release_file" ]] || return 0
+  [[ -f "$release_file" ]] || return 0
+  grep -q " ${rel_path}$" "$release_file" && return 0
+
+  local size md5 sha1 sha256 sha512
+  size=$(stat -c '%s' "${release_file%/Release}/${rel_path}" 2>/dev/null || echo 0)
+  md5=$(md5sum "${release_file%/Release}/${rel_path}" | awk '{print $1}')
+  sha1=$(sha1sum "${release_file%/Release}/${rel_path}" | awk '{print $1}')
+  sha256=$(sha256sum "${release_file%/Release}/${rel_path}" | awk '{print $1}')
+  sha512=$(sha512sum "${release_file%/Release}/${rel_path}" | awk '{print $1}')
+
+  local tmp
+  tmp=$(mktemp)
+  awk -v rel="$rel_path" -v size="$size" \
+      -v md5="$md5" -v sha1="$sha1" -v sha256="$sha256" -v sha512="$sha512" '
+    function entry(hash) { printf " %s %16d %s\n", hash, size, rel }
+    /^MD5Sum:/   { print; entry(md5); next }
+    /^SHA1:/     { print; entry(sha1); next }
+    /^SHA256:/   { print; entry(sha256); next }
+    /^SHA512:/   { print; entry(sha512); next }
+    { print }
+  ' "$release_file" > "$tmp"
+  mv "$tmp" "$release_file"
+}
+
 # --- LOOP DURCH REPOS ---
 for ddir in "${DIST_DIRS[@]}"; do
   repo_root="$(dirname "$ddir")"
@@ -169,6 +198,9 @@ for ddir in "${DIST_DIRS[@]}"; do
 
     # 1. Release Datei erstellen
     if apt-ftparchive -c "$tmpconf" release "$suite_dir" > "${suite_dir}/Release"; then
+        if [[ "$repo_root" == *"archive.neon.kde.org"* ]] && [[ -f "${suite_dir}/main/neon/pins" ]]; then
+           add_release_entry "${suite_dir}/Release" "main/neon/pins"
+        fi
         # 2. Signieren
         gpg_opts=(--batch --yes --local-user "$SIGNING_KEY_ID" --pinentry-mode loopback)
         

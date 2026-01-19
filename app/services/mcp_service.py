@@ -44,6 +44,7 @@ from .system_control import system_control
 from .mcp_debugger import mcp_debugger
 from .huggingface_inference import HF_INFERENCE_TOOLS, HF_HANDLERS
 from .remote_task import remote_task_service, TaskType, TaskStatus
+from .n8n_mcp import N8N_TOOLS, N8N_HANDLERS
 # === NEW CLIENT-SERVER ARCHITECTURE TOOLS ===
 from .api_vault import VAULT_TOOLS, VAULT_HANDLERS, api_vault
 from .chat_router import CHAT_ROUTER_TOOLS, CHAT_ROUTER_HANDLERS
@@ -1888,6 +1889,7 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
     tools.extend(ADAPTIVE_CODE_V4_TOOLS)  # Enhanced: LRU Cache, Async I/O, Delta Sync, Agent-Aware
     tools.extend(HF_INFERENCE_TOOLS)
     tools.extend(REMOTE_TASK_TOOLS)
+    tools.extend(N8N_TOOLS)
     
     # === NEW CLIENT-SERVER ARCHITECTURE TOOLS ===
     tools.extend(VAULT_TOOLS)
@@ -1999,6 +2001,7 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
     tool_map.update(ADAPTIVE_CODE_V4_HANDLERS)  # Enhanced V4 handlers
     tool_map.update(HF_HANDLERS)
     tool_map.update(REMOTE_TASK_HANDLERS)  # Remote Task Execution via SSH
+    tool_map.update(N8N_HANDLERS)
     
     # === NEW CLIENT-SERVER ARCHITECTURE HANDLERS ===
     tool_map.update(VAULT_HANDLERS)

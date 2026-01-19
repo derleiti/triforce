@@ -138,6 +138,21 @@ async def compute_status():
 
 
 @router.get(
+    "/v1/mcp/health",
+    tags=["Monitoring"],
+    summary="MCP compatibility health check",
+    include_in_schema=False,
+)
+async def mcp_health():
+    """
+    Minimal health endpoint for MCP-style probes.
+    Some internal probes call /v1/mcp/health; return 200 to avoid noisy 404s.
+    """
+    logger.debug("MCP health probe received")
+    return JSONResponse(content=HEALTH_RESPONSE, status_code=status.HTTP_200_OK)
+
+
+@router.get(
     "/metrics",
     tags=["Monitoring"],
     summary="Prometheus metrics endpoint",
