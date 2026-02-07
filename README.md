@@ -67,13 +67,184 @@ sudo dpkg -i ailinux-client_4.3.3_amd64.deb
 wget https://update.ailinux.me/client/android/ailinux-1.0.0-arm64-v8a-debug.apk
 ```
 
-### Server Installation
+### Server Installation (Single Node)
 
 ```bash
 git clone https://github.com/derleiti/triforce.git
 cd triforce
 ./scripts/install-hub.sh
 systemctl start triforce.service
+```
+
+### Multi-Node Deployment (Federation)
+
+Deploy TriForce across multiple servers for distributed compute and load balancing.
+
+**Prerequisites:**
+- VPN/Private network between nodes (e.g., WireGuard)
+- Python 3.10+, git installed on all nodes
+- SSH access to remote nodes
+
+**Step 1: Setup Master Node (e.g., hetzner)**
+
+```bash
+# On master node
+git clone https://github.com/derleiti/triforce.git
+cd triforce
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+
+# Create required directories
+sudo mkdir -p /var/tristar/{prompts,logs,memory,agents}
+sudo chown -R $USER:$USER /var/tristar
+
+# Configure .env
+cp .env.example .env
+# Edit FEDERATION_NODE_ID, FEDERATION_SECRET, API keys
+
+# Start backend
+python -m uvicorn app.main:app --host 0.0.0.0 --port 9000
+```
+
+**Step 2: Generate SSH Keys (for automation)**
+
+```bash
+# On master node
+ssh-keygen -t ed25519 -C "triforce-federation"
+cat ~/.ssh/id_ed25519.pub
+```
+
+**Step 3: Automated Remote Node Setup**
+
+Create setup script on master:
+
+```bash
+cat > /tmp/setup-node.sh << 'EOF'
+#!/bin/bash
+# Automated node setup script
+NODE_IP=$1
+NODE_USER=$2
+NODE_PORT=${3:-9000}
+
+ssh $NODE_USER@$NODE_IP << 'REMOTE'
+# Install TriForce
+cd ~
+git clone https://github.com/derleiti/triforce.git
+cd triforce
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+
+# Create directories
+sudo mkdir -p /var/tristar/{prompts,logs,memory,agents}
+sudo chown -R $USER:$USER /var/tristar
+
+# Start backend
+pkill -f "uvicorn app.main:app" || true
+nohup python -m uvicorn app.main:app \
+  --host 0.0.0.0 \
+  --port 9000 \
+  --timeout-keep-alive 75 \
+  > /tmp/triforce-backend.log 2>&1 &
+REMOTE
+EOF
+
+chmod +x /tmp/setup-node.sh
+```
+
+**Step 4: Deploy to Remote Nodes**
+
+```bash
+# Setup SSH keys
+ssh-copy-id zombie@10.10.0.2
+ssh-copy-id zombie@10.10.0.3
+
+# Deploy nodes
+./setup-node.sh 10.10.0.2 zombie 9000
+./setup-node.sh 10.10.0.3 zombie 9100
+```
+
+**Step 5: Configure Federation**
+
+Edit `app/services/server_federation.py`:
+
+```python
+FEDERATION_NODES = {
+    "master": {
+        "url": "http://10.10.0.1:9000",
+        "vpn_ip": "10.10.0.1",
+        "port": 9000,
+        "role": "hub",
+        "user": "zombie"
+    },
+    "node1": {
+        "url": "http://10.10.0.2:9000",
+        "vpn_ip": "10.10.0.2",
+        "port": 9000,
+        "role": "node",
+        "user": "zombie"
+    },
+    "node2": {
+        "url": "http://10.10.0.3:9100",
+        "vpn_ip": "10.10.0.3",
+        "port": 9100,
+        "role": "node",
+        "user": "zombie"
+    }
+}
+```
+
+**Step 6: Verify Federation**
+
+```bash
+# Check federation status
+curl http://localhost:9000/v1/federation/status | jq .
+
+# Expected output:
+# {
+#   "my_node_id": "master",
+#   "healthy_count": 2,
+#   "total_count": 2,
+#   "nodes": {
+#     "node1": { "status": "healthy" },
+#     "node2": { "status": "healthy" }
+#   }
+# }
+```
+
+**Deployment via HTTP Server (Alternative)**
+
+```bash
+# On master node
+cd /tmp
+python3 -m http.server 8000
+
+# On remote nodes
+curl -O http://MASTER_IP:8000/setup-node.sh
+bash setup-node.sh
+```
+
+**Key Features:**
+- 🔄 Automatic load balancing across nodes
+- 💓 WebSocket heartbeat monitoring
+- 🔐 PSK-based authentication
+- 🚀 Zero-downtime updates
+- 📊 Real-time health checks
+
+**Troubleshooting:**
+
+```bash
+# Check node connectivity
+ping 10.10.0.2
+nc -zv 10.10.0.2 9000
+
+# View logs
+tail -f /tmp/triforce-backend.log
+
+# Restart node
+pkill -f "uvicorn app.main:app"
+python -m uvicorn app.main:app --host 0.0.0.0 --port 9000
 ```
 
 ---
