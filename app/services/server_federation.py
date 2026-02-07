@@ -338,7 +338,8 @@ FEDERATION_NODES = {
         "url": "http://10.10.0.3:9100",
         "vpn_ip": "10.10.0.3",
         "port": 9100,
-        "role": "node"
+        "role": "node",
+        "user": "zombie"
     },
     "zombie-pc": {
         "url": "http://10.10.0.2:9000",
