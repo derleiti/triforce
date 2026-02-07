@@ -339,14 +339,14 @@ FEDERATION_NODES = {
         "vpn_ip": "10.10.0.3",
         "port": 9100,
         "role": "node"
+    },
+    "zombie-pc": {
+        "url": "http://10.10.0.2:9000",
+        "vpn_ip": "10.10.0.2",
+        "port": 9000,
+        "role": "node",
+        "user": "zombie"
     }
-    # zombie-pc temporarily disabled (offline/unreachable)
-    # "zombie-pc": {
-    #     "url": "http://10.10.0.2:9000",
-    #     "vpn_ip": "10.10.0.2",
-    #     "port": 9000,
-    #     "role": "node"
-    # }
 }
 
 
