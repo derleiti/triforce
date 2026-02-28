@@ -352,7 +352,27 @@ class FederationLoadBalancer:
         """Startet Load Balancer"""
         if self._running:
             return
-            
+
+        # IMPORTANT:
+        # Wenn Uvicorn mit mehreren Worker-Prozessen läuft, wird `lifespan()` in *jedem* Worker
+        # ausgeführt. Ohne Guard würde somit jeder Worker seine eigenen Federation-WS-Client-
+        # Verbindungen aufbauen → Connection-Flood (z.B. 8 parallele Verbindungen von zombie-pc).
+        #
+        # Lösung: hostweiter File-Lock. Genau EIN Prozess pro Node darf Federation starten.
+        try:
+            import fcntl
+            from pathlib import Path
+
+            lock_path = Path("/tmp/triforce_federation_lb.lock")
+            lock_path.parent.mkdir(parents=True, exist_ok=True)
+            self._lock_fh = open(lock_path, "w")
+            fcntl.flock(self._lock_fh, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except Exception as e:
+            logger.info(
+                f"Federation Load Balancer skipped (lock held by another worker/process): {e}"
+            )
+            return
+
         logger.info(f"Starting Federation Load Balancer as {self.node_id}")
         self._running = True
         
