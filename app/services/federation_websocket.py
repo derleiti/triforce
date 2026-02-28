@@ -60,7 +60,7 @@ elif "zombie" in _hostname_lower:
     NODE_ID = "zombie-pc"
 else:
     NODE_ID = os.getenv("FEDERATION_NODE_ID", "hetzner")
-WS_RECONNECT_DELAY = 5  # Sekunden
+WS_RECONNECT_DELAY = 30  # Sekunden
 WS_HEARTBEAT_INTERVAL = 10  # Sekunden
 WS_PORT = 9001  # Separater Port für Federation WS
 
@@ -141,17 +141,26 @@ class FederationPeer:
         self._message_handlers: Dict[str, Callable] = {}
         
     async def connect(self):
-        """Verbindet zum Peer Node"""
+        """Verbindet zum Peer Node - mit Timeout und Exponential Backoff"""
+        backoff = WS_RECONNECT_DELAY
+        max_backoff = 300  # Max 5 Minuten
+        
         while True:
             try:
                 logger.info(f"Connecting to peer {self.node_id} at {self.ws_url}")
-                self.websocket = await websockets.connect(
-                    self.ws_url,
-                    ping_interval=20,
-                    ping_timeout=10,
-                    close_timeout=5
+                # Timeout verhindert dass offline Nodes den Event Loop blockieren
+                self.websocket = await asyncio.wait_for(
+                    websockets.connect(
+                        self.ws_url,
+                        ping_interval=20,
+                        ping_timeout=10,
+                        close_timeout=5,
+                        open_timeout=10,
+                    ),
+                    timeout=15.0
                 )
                 self.connected = True
+                backoff = WS_RECONNECT_DELAY  # Reset backoff bei Erfolg
                 
                 # Send HELLO
                 await self._send_hello()
@@ -162,17 +171,26 @@ class FederationPeer:
                 # Message loop
                 await self._message_loop()
                 
+            except asyncio.TimeoutError:
+                logger.warning(f"Connect timeout to {self.node_id} (15s) - node likely offline")
             except ConnectionClosed as e:
                 logger.warning(f"Connection to {self.node_id} closed: {e}")
+                backoff = WS_RECONNECT_DELAY  # Reset bei sauberer Trennung
+            except OSError as e:
+                # Connection refused, network unreachable etc. - kein Stacktrace nötig
+                logger.warning(f"Connection error to {self.node_id}: {e}")
             except Exception as e:
-                logger.error(f"Connection error to {self.node_id}: {e}")
+                logger.error(f"Unexpected error for {self.node_id}: {e}")
             
             self.connected = False
             if self._heartbeat_task:
                 self._heartbeat_task.cancel()
+                self._heartbeat_task = None
             
-            logger.info(f"Reconnecting to {self.node_id} in {WS_RECONNECT_DELAY}s...")
-            await asyncio.sleep(WS_RECONNECT_DELAY)
+            logger.info(f"Reconnecting to {self.node_id} in {backoff}s...")
+            await asyncio.sleep(backoff)
+            # Exponential backoff: 30 -> 60 -> 120 -> 300 -> 300 -> ...
+            backoff = min(backoff * 2, max_backoff)
     
     async def _send_hello(self):
         """Sendet HELLO mit Token-Authentifizierung"""

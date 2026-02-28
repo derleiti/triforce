@@ -1372,10 +1372,14 @@ async def handle_initialize(params: Dict[str, Any], request: Optional[Request] =
     client_version = client_info.get("version", "0.0.0")
     client_ip = request.client.host if request and request.client else "unknown"
 
-    mcp_logger.info(f"MCP_INITIALIZE | Client: {client_name} v{client_version} | IP: {client_ip}")
+    # Negotiate protocol version - ChatGPT sends 2025-03-26, Cursor sends 2024-11-05
+    client_protocol = params.get("protocolVersion", "2025-03-26")
+    negotiated = client_protocol if client_protocol in ["2025-03-26", "2024-11-05"] else "2025-03-26"
+
+    mcp_logger.info(f"MCP_INITIALIZE | Client: {client_name} v{client_version} | IP: {client_ip} | Proto: {negotiated}")
 
     return {
-        "protocolVersion": "2024-11-05",
+        "protocolVersion": negotiated,
         "serverInfo": {
             "name": "ailinux-mcp-server",
             "version": "2.80",
@@ -1387,12 +1391,16 @@ async def handle_initialize(params: Dict[str, Any], request: Optional[Request] =
         },
         "capabilities": {
             "tools": {
-                "tristar": True,
-                "memory": True,
-                "mesh": True,
+                "listChanged": False,
             },
-            "prompts": {},
-            "resources": {},
+            "prompts": {
+                "listChanged": False,
+            },
+            "resources": {
+                "listChanged": False,
+                "subscribe": False,
+            },
+            "logging": {},
         },
     }
 
@@ -3491,7 +3499,7 @@ async def mcp_health_or_sse(request: Request):
     return JSONResponse({
         "jsonrpc": "2.0",
         "result": {
-            "protocolVersion": "2024-11-05",
+            "protocolVersion": "2025-03-26",
             "serverInfo": {
                 "name": "ailinux-mcp-server",
                 "version": "2.80",
@@ -3678,7 +3686,7 @@ async def mcp_messages_handler(request: Request, session_id: Optional[str] = Non
                 session["initialized"] = True
 
             result = {
-                "protocolVersion": "2024-11-05",
+                "protocolVersion": "2025-03-26",
                 "serverInfo": {
                     "name": "ailinux-mcp-server",
                     "version": "2.80"
@@ -3832,7 +3840,7 @@ async def _process_mcp_request(
             session["initialized"] = True
 
         result = {
-            "protocolVersion": "2024-11-05",
+            "protocolVersion": "2025-03-26",
             "serverInfo": {
                 "name": "ailinux-mcp-server",
                 "version": "2.80"
@@ -4088,3 +4096,38 @@ async def mcp_delete_session(request: Request):
 
 
 # Connection management endpoints removed - stateless API key auth only
+
+# ============================================================================
+# ChatGPT OAuth 2.0 Discovery Endpoints (RFC 8414 + RFC 9470)
+# ChatGPT sucht diese Endpoints BEVOR es MCP verbindet
+# ============================================================================
+
+@router.get("/.well-known/oauth-authorization-server", include_in_schema=False)
+@router.get("/.well-known/oauth-authorization-server/", include_in_schema=False)
+async def oauth_authorization_server_metadata(request: Request):
+    """OAuth 2.0 Authorization Server Metadata - ChatGPT requirement"""
+    base = str(request.base_url).rstrip("/")
+    return JSONResponse({
+        "issuer": base,
+        "authorization_endpoint": f"{base}/v1/mcp/authorize",
+        "token_endpoint": f"{base}/v1/mcp/token",
+        "registration_endpoint": f"{base}/v1/mcp/register",
+        "response_types_supported": ["code"],
+        "grant_types_supported": ["authorization_code", "client_credentials"],
+        "token_endpoint_auth_methods_supported": ["client_secret_basic", "none"],
+        "scopes_supported": ["mcp"],
+        "code_challenge_methods_supported": ["S256"],
+    })
+
+
+@router.get("/.well-known/mcp", include_in_schema=False)
+@router.get("/.well-known/mcp/", include_in_schema=False)
+async def mcp_discovery(request: Request):
+    """MCP Server Discovery - ChatGPT/Claude"""
+    base = str(request.base_url).rstrip("/")
+    return JSONResponse({
+        "mcp_endpoint": f"{base}/v1/mcp",
+        "protocol_version": "2025-03-26",
+        "server_name": "ailinux-mcp-server",
+        "auth": "bearer",
+    })
