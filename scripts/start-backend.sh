@@ -18,7 +18,7 @@ API_URL="http://localhost:9000"
 # === CPU-OPTIMIERTE EINSTELLUNGEN ===
 # Intel Core Ultra 7 265: 20 Kerne, kein HT
 CPU_CORES=$(nproc)
-UVICORN_WORKERS=1  # Hub-Node: 1 Worker reicht  # 10 Workers für 20 Kerne
+UVICORN_WORKERS=$((CPU_CORES / 2))  # 10 Workers für 20 Kerne
 MAX_CONCURRENT=$((CPU_CORES * 5))   # 100 concurrent requests
 THREAD_POOL=$((CPU_CORES - 2))      # 18 Threads für Hintergrund
 
