@@ -179,9 +179,17 @@ async def lifespan(app: FastAPI):
         import socket
         _hostname = socket.gethostname().lower()
         node_id = "backup" if "backup" in _hostname else "zombie-pc" if "zombie" in _hostname else "hetzner"
-        await federation_manager.initialize(node_id=node_id)
-        await federation_lb.start()
-        logger.info("Federation Manager started")
+        # Redis-Lock: nur ein Worker darf Federation starten
+        import redis.asyncio as _redis
+        _r = _redis.from_url("redis://localhost:6379/0")
+        _lock = await _r.set("federation_lock", 1, nx=True, ex=60)
+        await _r.aclose()
+        if _lock:
+            await federation_manager.initialize(node_id=node_id)
+            await federation_lb.start()
+            logger.info("Federation Manager started (lock acquired)")
+        else:
+            logger.info("Federation Manager skipped (another worker holds lock)")
     except Exception as e:
         logger.warning(f"Failed to start Federation Manager: {e}")
 
