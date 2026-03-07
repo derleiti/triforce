@@ -110,7 +110,7 @@ class ModelAvailabilityService:
         self._quota_cooldown = timedelta(hours=24)
         
         self._api_keys = {
-            "gemini": os.getenv("GEMINI_API_KEY", os.getenv("GOOGLE_GEMINI_KEY", "")),
+            "gemini": ((os.getenv("GOOGLE_AI_STUDIO_KEY") or "").strip() or (os.getenv("GEMINI_API_KEY") or "").strip() or (os.getenv("GOOGLE_GEMINI_KEY") or "").strip()),
             "anthropic": os.getenv("ANTHROPIC_API_KEY", ""),
             "openai": os.getenv("OPENAI_API_KEY", ""),
             "groq": os.getenv("GROQ_API_KEY", ""),

@@ -42,11 +42,13 @@ from .routes.client_chat import router as client_chat_router
 from .routes.client_auth import router as client_auth_router
 from .routes.client_update import router as client_update_router
 from .routes.client_logs import router as client_logs_router
+from .routes.client_ai_search import router as client_ai_search_router
 from .routes.federation import router as federation_router
 
 # Import routers from the top-level app directory
 from .routes_sd3 import router as sd3_router
 from .routes_vision import router as vision_router
+logger = logging.getLogger("app.main")
 
 
 # Unified logging für alle Komponenten
@@ -310,6 +312,10 @@ async def lifespan(app: FastAPI):
 def create_app() -> FastAPI:
     # import logging (centralized)
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    # FIX: Externe HTTP-Bibliotheken auf WARNING setzen — verhindert hpack/httpcore DEBUG-Flut
+    for _noisy_lib in ("hpack", "hpack.hpack", "httpcore", "httpcore.http2",
+                        "httpcore.http11", "httpx", "h2", "h11", "urllib3"):
+        logging.getLogger(_noisy_lib).setLevel(logging.WARNING)
     app = FastAPI(
         title="AILinux AI Server", 
         lifespan=lifespan,
@@ -432,6 +438,7 @@ def create_app() -> FastAPI:
     app.include_router(client_auth_router, prefix="/v1", tags=["Client Auth"])
     app.include_router(client_update_router, prefix="/v1", tags=["Client Update"])
     app.include_router(client_logs_router, tags=["Client Logs"])
+    app.include_router(client_ai_search_router, prefix="/v1", tags=["Client AI Search"])
     app.include_router(federation_router, prefix="/v1", tags=["Federation"])
 
     # Import and include txt2img router

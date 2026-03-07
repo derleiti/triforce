@@ -332,11 +332,24 @@ async def require_mcp_auth(request: Request) -> str:
     Unified MCP authentication - Port-based.
     
     X-Forwarded-Port: 9100 → Auth required (external)
-    No X-Forwarded-Port → Bypass (internal/public)
+    No X-Forwarded-Port   → Bypass (internal/public)
+    Docker-internal IPs   → Bypass (Container-zu-Container)
     """
     client_ip = request.client.host if request.client else "unknown"
     auth_header = request.headers.get("Authorization", "")
-    
+
+    # FIX: Docker/Private-Netz IPs immer bypass — Container-zu-Container Traffic
+    # braucht kein Auth (172.16-31.x, 10.x, 192.168.x)
+    _PRIVATE_PREFIXES = (
+        "172.16.", "172.17.", "172.18.", "172.19.", "172.20.",
+        "172.21.", "172.22.", "172.23.", "172.24.", "172.25.",
+        "172.26.", "172.27.", "172.28.", "172.29.", "172.30.",
+        "172.31.", "10.", "192.168.", "127.",
+    )
+    if any(client_ip.startswith(p) for p in _PRIVATE_PREFIXES):
+        logger.debug(f"AUTH_OK | IP: {client_ip} | Method: private_network_bypass")
+        return "internal"
+
     # Port-based auth decision
     forwarded_port = request.headers.get("X-Forwarded-Port", "")
     

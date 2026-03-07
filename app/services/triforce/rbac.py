@@ -116,6 +116,8 @@ LLM_ROLES: Dict[str, Role] = {
 
     # Lead roles
     "gemini": Role.LEAD,
+    "gemini-access": Role.LEAD,   # FIX: gemini_coordinate caller_llm='gemini-access' braucht LLM_CALL
+    "gemini-lead": Role.LEAD,     # FIX: Mesh-Agent alias
     "kimi": Role.LEAD,
 
     # Worker roles

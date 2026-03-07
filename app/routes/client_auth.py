@@ -275,8 +275,10 @@ class UserLoginResponse(BaseModel):
     """User Login Response"""
     user_id: str
     token: str
-    tier: str
-    client_id: str  # Server-assigned per login
+    tier: str        # Legacy: enterprise/pro/free
+    plan: str        # Klar: demo | subscriber
+    is_paid: bool    # Bezahlstatus
+    client_id: str   # Server-assigned per login
 
 
 
@@ -350,6 +352,8 @@ async def user_login(request: UserLoginRequest):
     Server assigns a new client_id per login
     """
     email = request.email.lower().strip()
+    # Immer frisch aus Datei lesen – damit Passwort-/Tier-Aenderungen ohne Restart wirksam sind
+    USER_REGISTRY.update(load_users_from_file())
     user = USER_REGISTRY.get(email)
 
     # Auto-Registrierung: Wenn User nicht existiert, registriere neuen User
@@ -414,10 +418,15 @@ async def user_login(request: UserLoginRequest):
 
     logger.info(f"User logged in: {email} ({user['tier']}) -> {client_id}")
 
+    from ..services.subscription import tier_to_plan
+    _plan = tier_to_plan(user["tier"])
+
     return UserLoginResponse(
         user_id=email,
         token=token,
         tier=user["tier"],
+        plan=_plan.value,
+        is_paid=_plan.value == "subscriber",
         client_id=client_id
     )
 
@@ -442,10 +451,15 @@ async def verify_token(authorization: str = Header(None), token: str = None):
     role = payload.get("role") or payload.get("tier")
     client_id = payload.get("client_id")
 
+    from ..services.subscription import tier_to_plan
+    _vplan = tier_to_plan(role)
+
     return {
         "valid": True,
         "email": email,
         "tier": role,
+        "plan": _vplan.value,
+        "is_paid": _vplan.value == "subscriber",
         "client_id": client_id,
         "exp": payload.get("exp"),
         "iat": payload.get("iat"),
@@ -758,3 +772,50 @@ async def require_admin(authorization: str = Header(None)) -> dict:
         raise HTTPException(403, "Admin access required")
     
     return client
+
+
+# =============================================================================
+# Handshake Endpoint — Client-Init beim Connect
+# =============================================================================
+
+@router.get("/client/handshake")
+async def client_handshake(authorization: str = Header(None)):
+    """
+    Client-Handshake beim Start.
+    Gibt Plan, Quota, erlaubte Tools und Context-Limit zurueck.
+    Kein zweiter Request nötig.
+    """
+    if not authorization:
+        raise HTTPException(401, "Authorization header required")
+
+    token = authorization.replace("Bearer ", "")
+    payload = decode_jwt_token(token)
+
+    client_id = payload.get("client_id")
+    user_id   = payload.get("sub") or client_id
+    role      = payload.get("role", "guest")
+
+
+    from ..services.subscription import subscription_service, PlanType, tier_to_plan
+
+    plan = tier_to_plan(role)
+    quota = subscription_service.get_quota(user_id, plan)
+
+    # Erlaubte Tools
+    from ..routes.client_mcp import get_tools_for_tier, FREE_TIER_TOOLS, ENTERPRISE_TIER_TOOLS
+    from ..services.user_tiers import UserTier
+    try:
+        tier_obj = UserTier(role)
+    except ValueError:
+        tier_obj = UserTier.GUEST
+    tools = get_tools_for_tier(tier_obj)
+
+    return {
+        "client_id":     client_id,
+        "user_id":       user_id,
+        "plan":          plan.value,
+        "context_limit": subscription_service.get_context_limit(plan),
+        "tools":         tools,
+        "tool_count":    len(tools),
+        "quota":         quota.to_api(),
+    }

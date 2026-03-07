@@ -5,6 +5,7 @@ from functools import lru_cache
 from typing import Dict, List, Optional
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import AnyHttpUrl, Field
+from pydantic import AliasChoices
 
 DEFAULT_ALLOWED_ORIGINS = [
     "http://localhost",
@@ -70,8 +71,10 @@ class Settings(BaseSettings):
     gpt_oss_base_url: AnyHttpUrl | None = Field(default=None, validation_alias="GPT_OSS_BASE_URL")
 
     # Gemini
-    gemini_api_key: str | None = Field(default=None, validation_alias="GEMINI_API_KEY")
-
+    gemini_api_key: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("GOOGLE_AI_STUDIO_KEY","GEMINI_API_KEY","GOOGLE_GEMINI_KEY")
+    )
     # Mistral
     mistral_api_key: str | None = Field(default=None, validation_alias="MISTRAL_API_KEY")
     mistral_organisation_id: str | None = Field(default=None, validation_alias="MISTRAL_ORG_ID")

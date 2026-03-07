@@ -192,25 +192,40 @@ class APIVault:
         return entry_id
     
     def get_key(self, provider: str, key_id: str = "main") -> Optional[str]:
-        """API Key entschlüsseln und zurückgeben"""
-        if not self._unlocked:
-            raise RuntimeError("Vault is locked")
-        
-        entry_id = f"{provider}:{key_id}"
-        entry = self.keys.get(entry_id)
-        
-        if not entry:
-            return None
-        
-        # Entschlüsseln
-        decrypted = self._fernet.decrypt(entry.encrypted_key)
-        
-        # Usage tracken
-        entry.last_used = datetime.now().isoformat()
-        entry.usage_count += 1
-        self._save()
-        
-        return decrypted.decode()
+        """API Key - Vault zuerst, dann ENV-Fallback (triforce.env)"""
+        import os
+        _ENV_MAP = {
+            "google":     ["GOOGLE_AI_STUDIO_KEY", "GOOGLE_GEMINI_KEY", "GEMINI_API_KEY", "GOOGLE_API_KEY"],
+            "gemini": ["GOOGLE_AI_STUDIO_KEY", "GEMINI_API_KEY", "GOOGLE_GEMINI_KEY", "GOOGLE_API_KEY"],
+            "anthropic":  ["ANTHROPIC_API_KEY"],
+            "openai":     ["OPENAI_API_KEY"],
+            "mistral":    ["MISTRAL_API_KEY"],
+            "groq":       ["GROQ_API_KEY"],
+            "cerebras":   ["CEREBRAS_API_KEY"],
+            "cloudflare": ["CLOUDFLARE_API_KEY", "CLOUDFLARE_AI_API_KEY"],
+            "github":     ["GITHUB_TOKEN", "GITHUB_API_KEY"],
+            "openrouter": ["OPENROUTER_API_KEY"],
+        }
+        # 1. Vault (wenn unlocked und Key vorhanden)
+        if self._unlocked:
+            entry_id = f"{provider}:{key_id}"
+            entry = self.keys.get(entry_id)
+            if entry:
+                try:
+                    decrypted = self._fernet.decrypt(entry.encrypted_key)
+                    entry.last_used = datetime.now().isoformat()
+                    entry.usage_count += 1
+                    self._save()
+                    return decrypted.decode()
+                except Exception:
+                    pass
+        # 2. ENV-Fallback
+        for env_var in _ENV_MAP.get(provider.lower(), [f"{provider.upper()}_API_KEY"]):
+            val = os.environ.get(env_var)
+            if val:
+                logger.debug(f"api_vault: ENV fallback {env_var} fuer provider '{provider}'")
+                return val
+        return None
     
     def remove_key(self, provider: str, key_id: str = "main") -> bool:
         """API Key entfernen"""
@@ -259,7 +274,7 @@ class APIVault:
             "openai": "OPENAI_API_KEY",
             "anthropic": "ANTHROPIC_API_KEY",
             "google": "GOOGLE_API_KEY",
-            "gemini": "GEMINI_API_KEY",
+            "gemini": "GOOGLE_AI_STUDIO_KEY",
             "mistral": "MISTRAL_API_KEY",
             "groq": "GROQ_API_KEY",
             "cerebras": "CEREBRAS_API_KEY",

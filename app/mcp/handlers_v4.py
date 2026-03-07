@@ -125,9 +125,9 @@ class HandlerRegistry:
                 try:
                     # Try Gemini first (most reliable)
                     if provider in ("gemini", "google"):
-                        api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_AI_STUDIO_KEY")
+                        api_key = ((os.environ.get('GOOGLE_AI_STUDIO_KEY') or '').strip() or (os.environ.get('GEMINI_API_KEY') or '').strip() or (os.environ.get('GOOGLE_GEMINI_KEY') or '').strip())
                         if not api_key:
-                            return {"error": "GEMINI_API_KEY not configured"}
+                            return {"error": "GOOGLE_AI_STUDIO_KEY not configured"}
                         
                         # Build request
                         contents = []

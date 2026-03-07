@@ -495,24 +495,51 @@ class TriStarMCPService:
         }
 
         # Check systemd services
-        services = [
-            "ailinux-backend",
-            "ollama",
-            "gemini-lead",
-            "claude-mcp",
-            "codex-mcp",
-        ]
-        for service in services:
+        # NOTE: Older versions referenced unit names that may not exist on this host.
+        # We map logical services to the actual units used in production.
+        service_map = {
+            # Core backend
+            "backend": "triforce",
+            # Local LLM runtime (this host uses the IPEX docker wrapper)
+            "ollama": "ollama-ipex",
+            # Infra
+            "redis": "redis-server",
+            # Optional/update related
+            "triforce-docker": "triforce-docker",
+            "triforce-hub-sync": "triforce-hub-sync",
+        }
+
+        # Also expose legacy keys for backward compatibility
+        legacy_aliases = {
+            "ailinux-backend": "triforce",
+            "gemini-lead": None,   # CLI agents are managed separately (not systemd units)
+            "claude-mcp": None,
+            "codex-mcp": None,
+        }
+
+        def _is_active(unit: str) -> str:
             try:
                 result = subprocess.run(
-                    ["systemctl", "is-active", f"{service}.service"],
+                    ["systemctl", "is-active", f"{unit}.service"],
                     capture_output=True,
                     text=True,
                     timeout=5,
                 )
-                status["services"][service] = result.stdout.strip()
+                out = (result.stdout or "").strip()
+                if out:
+                    return out
+                # If stdout is empty, fall back to stderr
+                return (result.stderr or "").strip() or "unknown"
             except Exception:
-                status["services"][service] = "unknown"
+                return "unknown"
+
+        # Primary services
+        for key, unit in service_map.items():
+            status["services"][key] = _is_active(unit)
+
+        # Legacy service keys
+        for legacy_key, unit in legacy_aliases.items():
+            status["services"][legacy_key] = _is_active(unit) if unit else "not_applicable"
 
         # Check directories
         for name, path in [

@@ -54,7 +54,7 @@ class TaskResponse(BaseModel):
 
 class MCPCommandRequest(BaseModel):
     """Request für MCP Command Queue"""
-    source_agent: str = Field(..., description="ID des sendenden Agents")
+    source_agent: str = Field("system", description="ID des sendenden Agents")  # FIX: war required, Default 'system' verhindert 422-Fehler
     command: str = Field(..., description="MCP Command Name")
     params: Dict[str, Any] = Field(default_factory=dict, description="Command Parameter")
     priority: int = Field(2, ge=0, le=4, description="Priorität (0=kritisch, 4=niedrig)")
@@ -521,7 +521,10 @@ async def _check_node(session, nid, cfg):
         t = _time.time()
         async with session.get(f"http://{cfg['ip']}:{cfg['port']}/health", timeout=aiohttp.ClientTimeout(total=3)) as r:
             if r.status == 200: result["online"], result["latency_ms"] = True, round((_time.time() - t) * 1000)
-    except: pass
+    except Exception as e:
+        # Kein swallow: Monitoring/Audit muss Ursache sehen.
+        result["online"] = False
+        result["error"] = str(e)[:200]
     return result
 
 async def _get_ollama(session, ip):
@@ -547,7 +550,7 @@ async def get_mesh_resources(fmt="summary"):
     else: return {**base, "federation": {"nodes": nodes, "totals": {"online": len(online), "cores": sum(n["cores"] for n in online), "ram_gb": sum(n["ram_gb"] for n in online), "gpus": [n["gpu"] for n in nodes if n.get("gpu")]}}, "intelligence": {"cloud": CLOUD_PROVIDERS, "local": local, "total": cloud + len(local)}}
 
 @router.get("/resources", summary="Live Mesh Hardware Resources")
-async def mesh_resources_endpoint(format: str = Query("summary", regex="^(summary|nodes|full)$")):
+async def mesh_resources_endpoint(format: str = Query("summary", pattern="^(summary|nodes|full)$")):  # FIX: regex → pattern (FastAPI/Pydantic v2)
     return await get_mesh_resources(format)
 
 async def handle_mesh_resources(params: Dict[str, Any]) -> Dict[str, Any]:

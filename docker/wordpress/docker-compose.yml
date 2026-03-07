@@ -4,6 +4,7 @@ x-gateway-hosts: &gateway_hosts
   - "docker.gateway:host-gateway"
   - "docker.host.internal:host-gateway"
   - "host.docker.internal:host-gateway"
+  - "api.ailinux.me:host-gateway"
 
 services:
   apache:

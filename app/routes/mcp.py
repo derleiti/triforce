@@ -836,6 +836,8 @@ async def handle_workflows_status(params: Dict[str, Any]) -> Dict[str, Any]:
 
 @router.get("/mcp/status", tags=["MCP"], summary="Health check for MCP subsystem")
 async def mcp_status() -> Dict[str, Any]:
+    import hashlib as _hl
+
     try:
         models = await registry.list_models()
         status = "ok"
@@ -846,10 +848,22 @@ async def mcp_status() -> Dict[str, Any]:
         model_count = 0
         payload = {"error": str(exc)}
 
+    handler_names = sorted(MCP_HANDLERS.keys())
+    tool_count = len(handler_names)
+    registry_fingerprint = _hl.md5("|".join(handler_names).encode()).hexdigest()[:8]
+
+    # degraded wenn Registry zu leer — deutet auf partiellen Boot-Fehler hin
+    MIN_TOOLS = 30
+    if tool_count < MIN_TOOLS:
+        status = "degraded"
+        payload["registry_error"] = f"Only {tool_count} handlers registered (expected >={MIN_TOOLS})"
+
     payload.update(
         {
             "status": status,
-            "methods": sorted(MCP_HANDLERS.keys()),
+            "tool_count": tool_count,
+            "registry_fingerprint": registry_fingerprint,
+            "methods": handler_names,
             "model_count": model_count,
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
@@ -2054,7 +2068,8 @@ async def handle_execute_mcp_tool(params: Dict[str, Any]) -> Dict[str, Any]:
     # Try v4 handlers first
     if not handler:
         try:
-            v4_result = await call_v4_tool(tool_name, arguments)
+            # v4 expects (tool_name, arguments)
+            v4_result = await call_v4_tool(tool_name, tool_params)
             if v4_result:
                 return {"content": [{"type": "text", "text": json.dumps(v4_result, separators=(chr(44), chr(58)))}], "isError": False}
         except Exception:
@@ -3105,9 +3120,10 @@ async def handle_cli_agents_get(params: Dict[str, Any]) -> Dict[str, Any]:
     """Get details for a specific CLI agent."""
     from ..services.tristar.agent_controller import agent_controller
 
-    agent_id = params.get("agent_id")
+    # Accept both agent_id and agent (tool schema drift hardening)
+    agent_id = params.get("agent_id") or params.get("agent")
     if not agent_id:
-        raise ValueError("'agent_id' parameter is required")
+        raise ValueError("'agent_id' (or 'agent') parameter is required")
 
     agent = await agent_controller.get_agent(agent_id)
     if not agent:
@@ -3714,14 +3730,8 @@ async def mcp_messages_handler(request: Request, session_id: Optional[str] = Non
 
         # Handle other MCP methods through standard handlers
         handler = MCP_HANDLERS.get(method)
-        # Try v4 handlers as fallback
-        if not handler:
-            try:
-                v4_result = await call_v4_tool(tool_name, arguments)
-                if v4_result:
-                    return {"content": [{"type": "text", "text": json.dumps(v4_result, separators=(chr(44), chr(58)))}], "isError": False}
-            except Exception:
-                pass  # Fall through to error
+        # NOTE: Don't execute v4 tools here. Tool execution belongs to tools/call.
+        # Keeping method-dispatch strict avoids undefined vars and accidental execution.
 
         if not handler:
             error_msg = f"Method '{method}' not supported"
@@ -4087,7 +4097,7 @@ async def mcp_delete_session(request: Request):
     if session_id in _mcp_sessions:
         del _mcp_sessions[session_id]
         mcp_logger.info(f"MCP_SESSION_DELETED | Session: {session_id}")
-        return JSONResponse(status_code=204)
+        return Response(status_code=204)
 
     return JSONResponse(
         content={"error": "Session not found"},
