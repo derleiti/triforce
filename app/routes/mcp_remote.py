@@ -1924,7 +1924,15 @@ async def mcp_rpc_endpoint(request: Request):
                         "tools": {"listChanged": False},
                         "prompts": {"listChanged": False},
                         "resources": {"listChanged": False},
-                    }
+                    },
+                    "instructions": (
+                        "AILinux MCP Server v2.81. "
+                        "Use structured tools: system_info, package_manager, service_control, "
+                        "container_control, file_ops, network_info, log_viewer, remote_admin, custom_exec. "
+                        "For arbitrary commands: task_runner(action='encode', text='cmd', format='b64') "
+                        "then task_runner(action='execute', task_data='b64:...'). elevated=true for root. "
+                        "binary_exec runs 60+ programs by name. Do NOT use raw 'shell' tool."
+                    ),
                 },
                 "id": req_id
             },

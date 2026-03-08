@@ -771,12 +771,23 @@ async def handle_prompts_list(_: Dict[str, Any]) -> Dict[str, Any]:
 
 
 async def handle_prompts_render(params: Dict[str, Any]) -> Dict[str, Any]:
-    """Render a prompt template with variables."""
+    """Render a prompt template with variables. Also serves MCP prompts/get."""
     name = params.get("name")
-    variables = params.get("variables", {})
+    variables = params.get("variables", params.get("arguments", {}))
 
     if not name:
         raise ValueError("'name' is required")
+
+    # Return ChatGPT admin instructions if requested
+    if name == "ailinux_admin":
+        from ..mcp.chatgpt_instructions import INIT_PROMPT, QUICK_REFERENCE
+        return {
+            "description": INIT_PROMPT["description"],
+            "messages": [
+                {"role": "user", "content": {"type": "text", "text": INIT_PROMPT["content"]}},
+            ],
+            "quick_reference": QUICK_REFERENCE,
+        }
 
     rendered = prompt_library.render(name, **variables)
     return {"name": name, "rendered": rendered}
@@ -1396,7 +1407,7 @@ async def handle_initialize(params: Dict[str, Any], request: Optional[Request] =
         "protocolVersion": negotiated,
         "serverInfo": {
             "name": "ailinux-mcp-server",
-            "version": "2.80",
+            "version": "2.81",
             "tristar": {
                 "enabled": True,
                 "total_models": stats.get("total_models", 0),
@@ -1416,6 +1427,15 @@ async def handle_initialize(params: Dict[str, Any], request: Optional[Request] =
             },
             "logging": {},
         },
+        "instructions": (
+            "AILinux MCP Server v2.81. "
+            "Use structured tools: system_info, package_manager, service_control, container_control, "
+            "file_ops, network_info, log_viewer, process_control, remote_admin, custom_exec. "
+            "For arbitrary commands: task_runner(action='encode', text='cmd', format='b64') then "
+            "task_runner(action='execute', task_data='b64:...'). Add elevated=true for root. "
+            "binary_exec runs 60+ programs by name with arguments array. "
+            "Do NOT use the raw 'shell' tool."
+        ),
     }
 
 
@@ -3317,16 +3337,21 @@ async def handle_mcp_node_clients(params: Dict[str, Any]) -> Dict[str, Any]:
 
 async def handle_prompts_list_mcp(_: Dict[str, Any]) -> Dict[str, Any]:
     """MCP prompts/list method - returns available prompts (standard MCP protocol)."""
+    from ..mcp.chatgpt_instructions import INIT_PROMPT
     templates = prompt_library.list_templates()
-    return {
-        "prompts": [
-            {
-                "name": t,
-                "description": prompt_library.get_template_info(t).get("description", ""),
-            }
-            for t in templates
-        ]
-    }
+    prompts = [
+        {
+            "name": t,
+            "description": prompt_library.get_template_info(t).get("description", ""),
+        }
+        for t in templates
+    ]
+    # Add system admin prompt for ChatGPT
+    prompts.insert(0, {
+        "name": INIT_PROMPT["name"],
+        "description": INIT_PROMPT["description"],
+    })
+    return {"prompts": prompts}
 
 
 async def handle_resources_list_mcp(_: Dict[str, Any]) -> Dict[str, Any]:
@@ -3717,13 +3742,21 @@ async def mcp_messages_handler(request: Request, session_id: Optional[str] = Non
                 "protocolVersion": "2025-03-26",
                 "serverInfo": {
                     "name": "ailinux-mcp-server",
-                    "version": "2.80"
+                    "version": "2.81"
                 },
                 "capabilities": {
                     "tools": {"listChanged": True},
                     "prompts": {"listChanged": True},
                     "resources": {"listChanged": True}
-                }
+                },
+                "instructions": (
+                    "AILinux MCP Server v2.81. "
+                    "Use structured tools: system_info, package_manager, service_control, container_control, "
+                    "file_ops, network_info, log_viewer, process_control, remote_admin, custom_exec. "
+                    "For arbitrary commands: task_runner(action='encode', text='cmd', format='b64') then "
+                    "task_runner(action='execute', task_data='b64:...'). Add elevated=true for root. "
+                    "binary_exec runs 60+ programs by name. Do NOT use raw 'shell' tool."
+                ),
             }
             response = {"jsonrpc": "2.0", "result": result, "id": req_id}
 

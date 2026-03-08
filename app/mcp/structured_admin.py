@@ -816,6 +816,12 @@ async def handle_task_runner(a):
         decoded = _decode_payload(task_data)
         return {"action": "decode", "decoded": decoded, "length": len(decoded)}
     
+    elif action == "quick_reference":
+        # Return pre-encoded common commands ready to use
+        from .chatgpt_instructions import QUICK_REFERENCE
+        return {"action": "quick_reference", "commands": QUICK_REFERENCE,
+                "usage": "Use any value as task_data with action=execute. Add elevated=true for sudo."}
+    
     return {"error": f"Unknown action: {action}"}
 
 
@@ -995,10 +1001,10 @@ async def handle_binary_exec(a):
 
 STRUCTURED_ADMIN_TOOLS.extend([
     {"name": "task_runner",
-     "description": "Execute encoded system tasks. The task_data parameter contains the encoded payload. Supports local and remote execution. Use action=encode to prepare payloads, action=execute to run locally, action=execute_remote for federation nodes.",
+     "description": "Execute system tasks using encoded payloads. WORKFLOW: Step 1: task_runner(action='encode', text='your command', format='b64') returns encoded string like 'b64:ZGYgLWg='. Step 2: task_runner(action='execute', task_data='b64:ZGYgLWg=') runs it. For root: add elevated=true. For remote: action='execute_remote', host='hetzner|backup|zombie-pc'. Formats: b64 (recommended), hex, rot. action='decode' for dry-run preview.",
      "inputSchema": {"type": "object", "properties": {
-         "action": {"type": "string", "enum": ["execute", "execute_remote", "encode", "decode"],
-                     "description": "execute=run task, execute_remote=run on node, encode=prepare payload, decode=preview"},
+         "action": {"type": "string", "enum": ["execute", "execute_remote", "encode", "decode", "quick_reference"],
+                     "description": "execute=run task, execute_remote=run on node, encode=prepare payload, decode=preview, quick_reference=show pre-encoded commands"},
          "task_data": {"type": "string", "description": "Encoded task payload (b64:xxx, hex:xxx, rot:xxx, or plain text)"},
          "host": {"type": "string", "enum": list(REMOTE_HOSTS.keys()), "description": "Remote node (for execute_remote)"},
          "elevated": {"type": "boolean", "description": "Run with elevated privileges (default: false)"},
@@ -1010,7 +1016,7 @@ STRUCTURED_ADMIN_TOOLS.extend([
      "annotations": {"title": "Encoded Task Runner", "readOnlyHint": False, "destructiveHint": True, "idempotentHint": False, "openWorldHint": False}},
      
     {"name": "binary_exec",
-     "description": "Execute system programs directly by name with arguments. Over 60 binaries available: python3, curl, git, docker, systemctl, grep, jq, and more. Use action=list to see all available programs, action=run to execute, action=pipe to chain multiple programs.",
+     "description": "Run system programs by name with typed arguments. action='list' shows 60+ programs (curl, git, docker, python3, grep, jq, systemctl, etc). action='run': program='curl', arguments=['-s','https://...']. action='pipe' chains: steps=[{program:'ps',arguments:['aux']},{program:'grep',arguments:['python']}]. Supports elevated=true, stdin_data, work_dir.",
      "inputSchema": {"type": "object", "properties": {
          "action": {"type": "string", "enum": ["list", "run", "pipe"],
                      "description": "list=show binaries, run=execute program, pipe=chain programs"},
