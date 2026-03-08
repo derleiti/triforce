@@ -572,7 +572,7 @@ async def register_client(
         payload = decode_jwt_token(token)
         if payload.get("role") != "admin":
             raise HTTPException(403, "Admin access required")
-    except:
+    except Exception:
         raise HTTPException(403, "Admin access required")
     
     # Prüfen ob Client schon existiert

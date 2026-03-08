@@ -241,7 +241,7 @@ async def create_persistent_token(request: Request):
     """
     try:
         data = await request.json()
-    except:
+    except Exception:
         raise HTTPException(status_code=400, detail="JSON body required")
 
     username = data.get("username", "")

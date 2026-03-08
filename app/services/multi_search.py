@@ -648,7 +648,7 @@ async def get_weather(lat: float = 52.28, lon: float = 7.44, location: str = "Rh
     url = "https://api.open-meteo.com/v1/forecast"
     params = {
         "latitude": lat, "longitude": lon,
-        "current_weather": True, "timezone": "Europe/Berlin",
+        "current_weather": "true", "timezone": "Europe/Berlin",
     }
     try:
         async with aiohttp.ClientSession() as session:
@@ -672,7 +672,7 @@ async def get_crypto_prices(coins: List[str] = None) -> Dict[str, Any]:
     if coins is None:
         coins = ["bitcoin", "ethereum", "solana"]
     url = "https://api.coingecko.com/api/v3/simple/price"
-    params = {"ids": ",".join(coins), "vs_currencies": "usd,eur", "include_24hr_change": True}
+    params = {"ids": ",".join(coins), "vs_currencies": "usd,eur", "include_24hr_change": "true"}
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(url, params=params, timeout=10) as resp:
@@ -722,3 +722,32 @@ async def google_search_deep(query: str, num_results: int = 150, lang: str = "de
         results = await loop.run_in_executor(executor, _sync_search)
     
     return results
+
+
+
+# =============================================================================
+# Time/Timezone Utilities (used by widget_handlers)
+# =============================================================================
+
+async def get_current_time(timezone: str = "Europe/Berlin", location: str = None) -> Dict[str, Any]:
+    """Get current time for a timezone."""
+    from datetime import datetime
+    try:
+        import zoneinfo
+        tz = zoneinfo.ZoneInfo(timezone)
+    except (ImportError, KeyError):
+        # Fallback for unknown timezone
+        import datetime as dt
+        tz = dt.timezone.utc
+        timezone = "UTC"
+    
+    now = datetime.now(tz)
+    return {
+        "timezone": timezone,
+        "location": location or timezone,
+        "time": now.strftime("%H:%M:%S"),
+        "date": now.strftime("%Y-%m-%d"),
+        "datetime": now.isoformat(),
+        "day_of_week": now.strftime("%A"),
+        "utc_offset": now.strftime("%z"),
+    }

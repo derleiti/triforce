@@ -129,7 +129,7 @@ class MCPMeshServer:
                 old = self.nodes[node_id]
                 try:
                     await old.websocket.close()
-                except:
+                except Exception:
                     pass
             
             node = MeshNode(
@@ -179,7 +179,7 @@ class MCPMeshServer:
             await node.websocket.send(json.dumps(message))
             self.stats["total_messages"] += 1
             return True
-        except:
+        except Exception:
             return False
     
     async def broadcast(self, message: Dict, exclude: Set[str] = None):

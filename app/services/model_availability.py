@@ -216,7 +216,7 @@ class ModelAvailabilityService:
                 async with httpx.AsyncClient(timeout=5) as client:
                     resp = await client.get("http://localhost:11434/api/tags")
                     results["status"] = "healthy" if resp.status_code == 200 else "offline"
-            except:
+            except Exception:
                 results["status"] = "offline"
         
         return results
