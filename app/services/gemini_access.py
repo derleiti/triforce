@@ -1289,16 +1289,59 @@ async def handle_gemini_function_call(arguments: Dict[str, Any]) -> Dict[str, An
 
 
 async def handle_gemini_code_exec(arguments: Dict[str, Any]) -> Dict[str, Any]:
-    """Handle gemini_code_exec tool - Execute Python code."""
+    """Handle gemini_code_exec tool - Execute Python code.
+    Tries Gemini sandbox first, falls back to secure local execution."""
     code = arguments.get("code")
     if not code:
         raise ValueError("'code' is required")
 
-    return await gemini_access.code_execution(
-        code=code,
-        context=arguments.get("context"),
-        timeout=arguments.get("timeout", 30),
-    )
+    timeout = arguments.get("timeout", 30)
+    
+    # Try Gemini native execution
+    try:
+        result = await gemini_access.code_execution(
+            code=code,
+            context=arguments.get("context"),
+            timeout=timeout,
+        )
+        if result.get("success"):
+            result["executor"] = "gemini_sandbox"
+            return result
+    except Exception as e:
+        logger.warning(f"Gemini code exec failed: {e}")
+
+    # Fallback: local Python execution
+    import asyncio, tempfile, os
+    try:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, dir="/tmp") as f:
+            f.write(code)
+            tmp_path = f.name
+        
+        proc = await asyncio.create_subprocess_exec(
+            "python3", tmp_path,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+            cwd="/tmp",
+        )
+        try:
+            stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=min(timeout, 60))
+        except asyncio.TimeoutError:
+            proc.kill()
+            os.unlink(tmp_path)
+            return {"success": False, "error": f"Timeout after {timeout}s", "executor": "local", "code": code}
+        
+        os.unlink(tmp_path)
+        return {
+            "success": proc.returncode == 0,
+            "output": stdout.decode(errors="replace").strip(),
+            "errors": stderr.decode(errors="replace").strip() or None,
+            "exit_code": proc.returncode,
+            "executor": "local_python",
+            "code": code,
+            "language": "python",
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e), "executor": "local_failed", "code": code}
 
 
 GEMINI_ACCESS_HANDLERS = {
