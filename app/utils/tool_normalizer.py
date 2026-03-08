@@ -28,7 +28,7 @@ READONLY_TOOLS: FrozenSet[str] = frozenset({
     # v3 / Legacy-Namen
     "list_models", "ask_specialist", "list_specialists",
     "web_search", "multi_search", "smart_search", "quick_smart_search",
-    "search_health", "ailinux_search", "grokipedia_search", "image_search",
+    "search_health", "fetch", "ailinux_search", "grokipedia_search", "image_search",
     "google_deep_search",
     "tristar_models", "tristar_memory_search", "tristar_status",
     "tristar_settings", "tristar_prompts_list",

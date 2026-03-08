@@ -83,7 +83,7 @@ router = APIRouter(tags=["MCP Remote Server"])
 
 MCP_SERVER_INFO = {
     "name": "AILinux API",
-    "version": "2.83",
+    "version": "2.84",
     "description": "AILinux AI Backend v2.82 - TriStar/TriForce Multi-LLM Orchestration with CLI Agents, Codebase Access, Self-Development, Read-Only Diagnostics, and MCP Tool Telemetry",
     "vendor": "AILinux",
 }
@@ -105,7 +105,7 @@ MCP_CAPABILITIES = {
 #      modelcontextprotocol.io/legacy/concepts/tools
 
 _WRITE_TOOLS = {
-    "create_post", "crawl_url", "crawl_site",
+    "create_post", "crawl_url", "crawl_site", "crawl",
     "tristar_init", "tristar_memory_store",
     "cli-agents_start", "cli-agents_stop", "cli-agents_restart",
     "cli-agents_call", "cli-agents_broadcast",
@@ -1508,7 +1508,7 @@ async def handle_health_remote(arguments: Dict[str, Any]) -> Dict[str, Any]:
     return {
         "status": "ok",
         "backend": "triforce",
-        "version": "2.83",
+        "version": "2.84",
         "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
     }
 
@@ -1720,6 +1720,28 @@ async def handle_list_timezones_remote(arguments: Dict[str, Any]) -> Dict[str, A
 
 
 
+async def handle_fetch(arguments: Dict[str, Any]) -> Dict[str, Any]:
+    """Fetch content from a URL. Required by OpenAI for Deep Research + Company Knowledge.
+    Schema matches OpenAI MCP compatibility spec: input={url:string}, output={content:string}."""
+    from ..services.crawler.user_crawler import user_crawler
+    
+    url = arguments.get("url")
+    if not url:
+        raise ValueError("'url' is required")
+    
+    try:
+        result = await user_crawler.crawl_url(url, max_pages=1)
+        # Return in OpenAI-expected format
+        text = ""
+        if isinstance(result, dict):
+            text = result.get("content", result.get("text", str(result)))
+        elif isinstance(result, str):
+            text = result
+        return {"content": text[:50000], "url": url}  # Cap at 50k chars
+    except Exception as e:
+        return {"content": f"Error fetching {url}: {str(e)}", "url": url}
+
+
 # ============================================================================
 # V4 Canonical Alias Tool Definitions
 # ============================================================================
@@ -1737,6 +1759,17 @@ _V4_ALIAS_TOOLS = [
                 "query": {"type": "string", "description": "Search query"}
             },
             "required": ["query"]
+        }
+    },
+    {
+        "name": "fetch",
+        "description": "Fetch and extract content from a URL. Returns the page text content.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "url": {"type": "string", "description": "URL to fetch content from"}
+            },
+            "required": ["url"]
         }
     },
     {
@@ -1949,6 +1982,7 @@ TOOL_HANDLERS = {
     "status": handle_status_remote,         # NOVA-PATCH: tristar_status alias
     "health": handle_health_remote,         # NOVA-PATCH: lightweight health check
     "search": handle_web_search,
+    "fetch": handle_fetch,  # OpenAI Deep Research / Company Knowledge compatibility
     "agents": handle_cli_agents_list,
     "agent_call": handle_cli_agents_call,
     "agent_broadcast": handle_cli_agents_broadcast,
@@ -2187,7 +2221,7 @@ async def mcp_rpc_endpoint(request: Request):
             # Essential tools only (reduces to ~15 tools, ~5K tokens)
             essential_tools = [
                 # Core
-                "chat", "models", "search", "specialist", "health", "status",
+                "chat", "models", "search", "fetch", "specialist", "health", "status",
                 # Agent Control
                 "agents", "agent_call", "agent_broadcast",
                 # Codebase
@@ -2458,7 +2492,7 @@ async def _handle_agent_mcp_call(agent_id: str, request: Request):
                     "protocolVersion": "2024-11-05",
                     "serverInfo": {
                         "name": agent.get("name", agent_id),
-                        "version": "2.83",
+                        "version": "2.84",
                         "description": f"Direct MCP access to {agent_id} CLI agent"
                     },
                     "capabilities": {
