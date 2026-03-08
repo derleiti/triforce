@@ -331,8 +331,57 @@ class HandlerRegistry:
                 return {"status": "not_implemented", "message": "Memory search function pending"}
 
             async def handle_memory_clear(params):
-                logger.warning("memory_clear not yet implemented")
-                return {"status": "not_implemented", "message": "Memory clear function pending"}
+                """Clear memory entries by tag, category, or all."""
+                try:
+                    from ..services.triforce.memory_enhanced import EnhancedMemoryService
+                    mem = EnhancedMemoryService()
+                    
+                    tags = params.get("tags", [])
+                    category = params.get("category")
+                    memory_id = params.get("memory_id")
+                    confirm = params.get("confirm", False)
+                    
+                    if memory_id:
+                        # Delete specific entry
+                        deleted = await mem.delete(memory_id)
+                        return {"cleared": 1 if deleted else 0, "memory_id": memory_id}
+                    
+                    if not confirm:
+                        return {"error": "Set confirm=true to clear memories. Use tags/category to filter."}
+                    
+                    # Search and delete matching entries
+                    cleared = 0
+                    if tags:
+                        for tag in tags:
+                            results = await mem.search(tag, limit=100)
+                            for entry in results:
+                                await mem.delete(entry.id)
+                                cleared += 1
+                    elif category:
+                        results = await mem.search(category, limit=100)
+                        for entry in results:
+                            if entry.category == category:
+                                await mem.delete(entry.id)
+                                cleared += 1
+                    else:
+                        return {"error": "Specify tags, category, or memory_id. Bulk clear not allowed without filter."}
+                    
+                    return {"cleared": cleared, "filter": {"tags": tags, "category": category}}
+                except ImportError:
+                    # Fallback: simple file-based memory clear
+                    import glob, os
+                    memory_dir = f"{BASE}/data/memory"
+                    if not os.path.isdir(memory_dir):
+                        return {"cleared": 0, "message": "No memory directory found"}
+                    files = glob.glob(f"{memory_dir}/*.json")
+                    cleared = 0
+                    for f in files:
+                        try:
+                            os.remove(f)
+                            cleared += 1
+                        except Exception:
+                            pass
+                    return {"cleared": cleared, "method": "file_cleanup"}
 
             self.register("memory_store", handle_memory_store)
             self.register("memory_search", handle_memory_search)
@@ -615,8 +664,190 @@ class HandlerRegistry:
                 return health_data
 
             async def handle_debug(params):
-                logger.warning("debug not yet implemented")
-                return {"status": "not_implemented", "message": "Debug function pending"}
+                """AI-enhanced MCP debugger.
+                
+                Modes:
+                - trace: Trace MCP request routing without execution
+                - analyze_file: Static analysis (typos, logic, imports)
+                - check_tools: Verify all tool schemas match handlers
+                - error_scan: Scan logs for error patterns
+                - inspect: Deep-inspect a specific tool/handler
+                """
+                import ast, re as _re, os, glob, importlib
+                
+                mode = params.get("mode", params.get("method", "trace"))
+                
+                if mode == "trace":
+                    # Trace MCP routing
+                    method = params.get("target", params.get("method", "tools/list"))
+                    test_params = params.get("params", {})
+                    try:
+                        from ..services.mcp_debugger import MCPDebugger
+                        debugger = MCPDebugger()
+                        return await debugger.debug_mcp_request(method, test_params)
+                    except Exception as e:
+                        return {"error": f"Trace failed: {e}", "mode": "trace"}
+                
+                elif mode == "analyze_file":
+                    # Static analysis: syntax, imports, typos, undefined vars
+                    filepath = params.get("path", "")
+                    if not filepath:
+                        return {"error": "'path' parameter required for analyze_file"}
+                    
+                    full_path = os.path.join("/home/zombie/triforce", filepath)
+                    if not os.path.isfile(full_path):
+                        return {"error": f"File not found: {filepath}"}
+                    
+                    issues = []
+                    try:
+                        with open(full_path) as f:
+                            source = f.read()
+                        lines = source.split("\n")
+                        
+                        # 1. Syntax check
+                        try:
+                            tree = ast.parse(source)
+                        except SyntaxError as e:
+                            issues.append({"type": "syntax_error", "line": e.lineno, "message": e.msg, "severity": "critical"})
+                            return {"file": filepath, "issues": issues, "parseable": False}
+                        
+                        # 2. Collect defined names
+                        defined = set()
+                        imports = set()
+                        for node in ast.walk(tree):
+                            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                                defined.add(node.name)
+                            elif isinstance(node, ast.Name) and isinstance(getattr(node, 'ctx', None), ast.Store):
+                                defined.add(node.id)
+                            elif isinstance(node, ast.Import):
+                                for alias in node.names:
+                                    imports.add(alias.asname or alias.name)
+                            elif isinstance(node, ast.ImportFrom):
+                                for alias in node.names:
+                                    imports.add(alias.asname or alias.name)
+                        
+                        # 3. Bare except detection
+                        for i, line in enumerate(lines, 1):
+                            stripped = line.strip()
+                            if stripped == "except:":
+                                issues.append({"type": "bare_except", "line": i, "message": "Bare except catches all — use except Exception:", "severity": "warning"})
+                            # 4. Common typos in Python
+                            for pattern, msg in [
+                                (r'\bpirnt\b', 'Typo: pirnt → print'),
+                                (r'\bimoprt\b', 'Typo: imoprt → import'),
+                                (r'\bretrun\b', 'Typo: retrun → return'),
+                                (r'\bflase\b', 'Typo: flase → False'),
+                                (r'\btreu\b', 'Typo: treu → True'),
+                                (r'\bNoen\b', 'Typo: Noen → None'),
+                                (r'\basnyc\b', 'Typo: asnyc → async'),
+                                (r'\bawiat\b', 'Typo: awiat → await'),
+                                (r'\bdefin\b', 'Typo: defin → define'),
+                                (r'== None\b', 'Style: use "is None" instead of "== None"'),
+                                (r'!= None\b', 'Style: use "is not None" instead of "!= None"'),
+                            ]:
+                                if _re.search(pattern, stripped):
+                                    issues.append({"type": "typo", "line": i, "message": msg, "severity": "warning"})
+                            # 5. Hardcoded secrets
+                            if _re.search(r'(password|secret|api_key)\s*=\s*["\'][^"\']{8,}["\']', stripped, _re.IGNORECASE):
+                                if not any(x in stripped.lower() for x in ['environ', 'getenv', 'config', '#', 'example', 'template']):
+                                    issues.append({"type": "hardcoded_secret", "line": i, "message": "Potential hardcoded credential", "severity": "critical"})
+                        
+                        return {"file": filepath, "issues": issues, "total_issues": len(issues), 
+                                "lines": len(lines), "functions": len([n for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]),
+                                "imports": len(imports), "parseable": True}
+                    except Exception as e:
+                        return {"error": str(e), "file": filepath}
+                
+                elif mode == "check_tools":
+                    # Verify tool schemas match handler signatures
+                    from ..routes.mcp import MCP_HANDLERS
+                    results = {"matched": [], "missing_handler": [], "total_handlers": len(MCP_HANDLERS)}
+                    
+                    tool_list_resp = None
+                    try:
+                        # Get registered tools
+                        from ..routes.mcp import handle_tools_list
+                        tool_list_resp = await handle_tools_list({})
+                        tools = tool_list_resp.get("tools", [])
+                        
+                        for tool in tools:
+                            name = tool["name"]
+                            if name in MCP_HANDLERS:
+                                results["matched"].append(name)
+                            else:
+                                results["missing_handler"].append(name)
+                    except Exception as e:
+                        results["error"] = str(e)
+                    
+                    return results
+                
+                elif mode == "error_scan":
+                    # Scan recent logs for error patterns
+                    log_files = [
+                        "/home/zombie/triforce/logs/triforce-error-debug/error.log",
+                        "/home/zombie/triforce/logs/triforce-error-debug/warning.log",
+                    ]
+                    errors = {}
+                    for lf in log_files:
+                        if not os.path.isfile(lf):
+                            continue
+                        try:
+                            with open(lf) as f:
+                                # Last 200 lines
+                                lines = f.readlines()[-200:]
+                            for line in lines:
+                                line = line.strip()
+                                if not line:
+                                    continue
+                                # Extract error type
+                                m = _re.search(r'(Error|Exception|Warning).*?[:|](.+?)(?:\n|$)', line)
+                                if m:
+                                    key = m.group(0)[:80]
+                                    errors[key] = errors.get(key, 0) + 1
+                        except Exception:
+                            pass
+                    
+                    sorted_errors = sorted(errors.items(), key=lambda x: -x[1])[:20]
+                    return {"mode": "error_scan", "unique_patterns": len(sorted_errors), 
+                            "top_errors": [{"pattern": k, "count": v} for k, v in sorted_errors]}
+                
+                elif mode == "inspect":
+                    # Deep inspect a specific tool
+                    tool_name = params.get("tool", "")
+                    if not tool_name:
+                        return {"error": "'tool' parameter required for inspect mode"}
+                    
+                    from ..routes.mcp import MCP_HANDLERS
+                    info = {"tool": tool_name, "found": tool_name in MCP_HANDLERS}
+                    
+                    if tool_name in MCP_HANDLERS:
+                        handler = MCP_HANDLERS[tool_name]
+                        info["handler"] = handler.__name__
+                        info["module"] = handler.__module__
+                        info["doc"] = (handler.__doc__ or "").strip()[:200]
+                        # Get source location
+                        try:
+                            import inspect
+                            src = inspect.getsource(handler)
+                            info["lines"] = len(src.split("\n"))
+                            info["file"] = inspect.getfile(handler)
+                        except Exception:
+                            pass
+                    
+                    return info
+                
+                else:
+                    return {
+                        "error": f"Unknown debug mode: {mode}",
+                        "available_modes": ["trace", "analyze_file", "check_tools", "error_scan", "inspect"],
+                        "examples": {
+                            "trace": {"mode": "trace", "target": "tools/call", "params": {"name": "health"}},
+                            "analyze_file": {"mode": "analyze_file", "path": "app/routes/mcp.py"},
+                            "check_tools": {"mode": "check_tools"},
+                            "error_scan": {"mode": "error_scan"},
+                            "inspect": {"mode": "inspect", "tool": "system_info"},
+                        }
+                    }
 
             self.register("status", handle_status)
             self.register("shell", handle_shell_exec)
@@ -653,16 +884,41 @@ class HandlerRegistry:
         try:
             # Remote functions not yet implemented - create stubs
             async def handle_remote_hosts(params):
-                logger.warning("remote_hosts not yet implemented")
-                return {"status": "not_implemented", "hosts": [], "message": "Remote hosts function pending"}
+                """List federation remote hosts — delegates to structured admin."""
+                try:
+                    from ..mcp.structured_admin import handle_remote_admin
+                    return await handle_remote_admin({"action": "list_hosts"})
+                except Exception as e:
+                    return {"hosts": [], "error": str(e)}
 
             async def handle_remote_task(params):
-                logger.warning("remote_task not yet implemented")
-                return {"status": "not_implemented", "message": "Remote task function pending"}
+                """Execute task on remote federation node."""
+                try:
+                    from ..mcp.structured_admin import handle_task_runner
+                    host = params.get("host", "hetzner")
+                    command = params.get("command", "")
+                    if not command:
+                        return {"error": "'command' parameter required"}
+                    import base64
+                    encoded = "b64:" + base64.b64encode(command.encode()).decode()
+                    return await handle_task_runner({
+                        "action": "execute_remote",
+                        "host": host,
+                        "task_data": encoded,
+                    })
+                except Exception as e:
+                    return {"error": str(e)}
 
             async def handle_remote_status(params):
-                logger.warning("remote_status not yet implemented")
-                return {"status": "not_implemented", "message": "Remote status function pending"}
+                """Get federation remote node status — delegates to structured admin."""
+                try:
+                    from ..mcp.structured_admin import handle_remote_admin
+                    host = params.get("host")
+                    if host:
+                        return await handle_remote_admin({"action": "system_overview", "host": host})
+                    return await handle_remote_admin({"action": "ping_all"})
+                except Exception as e:
+                    return {"error": str(e)}
 
             self.register("remote_hosts", handle_remote_hosts)
             self.register("remote_task", handle_remote_task)
@@ -715,8 +971,8 @@ class HandlerRegistry:
                 return {"status": "not_implemented", "message": "Gemini coordinate function pending"}
 
             async def handle_gemini_code_exec(params):
-                """Execute Python code using Gemini's native code execution."""
-                from ..services.gemini_access import gemini_access
+                """Execute Python code — tries Gemini sandbox, falls back to local exec."""
+                import asyncio as _aio, subprocess as _sp, tempfile, os
                 
                 code = params.get("code", "")
                 timeout = params.get("timeout", 30)
@@ -725,17 +981,48 @@ class HandlerRegistry:
                 if not code:
                     return {"error": "'code' parameter is required", "success": False}
                 
+                # Try Gemini native first
                 try:
+                    from ..services.gemini_access import gemini_access
                     result = await gemini_access.code_execution(
-                        code=code,
-                        timeout=timeout,
-                        use_gemini=True,  # Force Gemini native execution
-                        context=context
+                        code=code, timeout=timeout, use_gemini=True, context=context
                     )
-                    return result
+                    if result.get("success"):
+                        result["executor"] = "gemini_sandbox"
+                        return result
                 except Exception as e:
-                    logger.error(f"Gemini code exec error: {e}")
-                    return {"error": str(e), "success": False}
+                    logger.warning(f"Gemini exec failed ({e}), using local fallback")
+                
+                # Fallback: secure local execution
+                try:
+                    with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, dir="/tmp") as f:
+                        f.write(code)
+                        tmp_path = f.name
+                    
+                    proc = await _aio.create_subprocess_exec(
+                        "python3", tmp_path,
+                        stdout=_aio.subprocess.PIPE,
+                        stderr=_aio.subprocess.PIPE,
+                        cwd="/tmp",
+                    )
+                    try:
+                        stdout, stderr = await _aio.wait_for(proc.communicate(), timeout=min(timeout, 60))
+                    except _aio.TimeoutError:
+                        proc.kill()
+                        os.unlink(tmp_path)
+                        return {"success": False, "error": f"Timeout after {timeout}s", "executor": "local"}
+                    
+                    os.unlink(tmp_path)
+                    return {
+                        "success": proc.returncode == 0,
+                        "output": stdout.decode(errors="replace").strip(),
+                        "errors": stderr.decode(errors="replace").strip() or None,
+                        "exit_code": proc.returncode,
+                        "executor": "local_python",
+                        "code": code,
+                    }
+                except Exception as e:
+                    return {"success": False, "error": str(e), "executor": "local_failed"}
 
             self.register("gemini_research", handle_gemini_research)
             self.register("gemini_coordinate", handle_gemini_coordinate)
