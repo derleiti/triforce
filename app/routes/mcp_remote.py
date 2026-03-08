@@ -1900,6 +1900,127 @@ _V4_ALIAS_TOOLS = [
             "required": ["url"]
         }
     },
+    {
+        "name": "smart_search",
+        "description": "Use this for comprehensive AI-ranked search results from multiple engines.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "query": {"type": "string", "description": "Search query"},
+                "num_results": {"type": "integer", "description": "Max results", "default": 10}
+            },
+            "required": ["query"]
+        }
+    },
+    {
+        "name": "multi_search",
+        "description": "Use this to search across multiple engines simultaneously (SearxNG, Google, etc.).",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "query": {"type": "string", "description": "Search query"},
+                "engines": {"type": "array", "items": {"type": "string"}, "description": "Engines to use"}
+            },
+            "required": ["query"]
+        }
+    },
+    {
+        "name": "shell",
+        "description": "Execute shell commands on the server. Admin only.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "command": {"type": "string", "description": "Shell command"}
+            },
+            "required": ["command"]
+        }
+    },
+    {
+        "name": "task_runner",
+        "description": "Execute system commands via encoded payloads. Use action=encode first, then action=execute.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "action": {"type": "string", "enum": ["execute", "execute_remote", "encode", "decode", "quick_reference"]},
+                "task_data": {"type": "string", "description": "Encoded payload"},
+                "text": {"type": "string", "description": "Text to encode"},
+                "format": {"type": "string", "enum": ["b64", "hex", "rot"]},
+                "host": {"type": "string", "enum": ["hetzner", "backup", "zombie-pc"]},
+                "elevated": {"type": "boolean", "default": False}
+            },
+            "required": ["action"]
+        }
+    },
+    {
+        "name": "custom_exec",
+        "description": "Run predefined system command templates. Use action=list to see available templates.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "action": {"type": "string", "enum": ["list", "run", "run_on_remote"]},
+                "template": {"type": "string"},
+                "host": {"type": "string", "enum": ["hetzner", "backup", "zombie-pc"]}
+            },
+            "required": ["action"]
+        }
+    },
+    {
+        "name": "remote_admin",
+        "description": "Manage remote federation nodes: list hosts, check connectivity, restart services, view logs.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "action": {"type": "string", "enum": ["list_hosts", "ping_all", "system_overview", "service_status", "service_restart", "docker_status", "disk_usage", "memory_usage", "read_file", "tail_log", "check_connectivity"]},
+                "host": {"type": "string", "enum": ["hetzner", "backup", "zombie-pc"]},
+                "service": {"type": "string"},
+                "log": {"type": "string", "enum": ["syslog", "triforce", "errors", "auth"]}
+            },
+            "required": ["action"]
+        }
+    },
+    {
+        "name": "code_edit",
+        "description": "Edit a file: replace, insert, append, or delete lines.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "mode": {"type": "string", "enum": ["replace", "insert", "append", "delete"]},
+                "path": {"type": "string"},
+                "old_text": {"type": "string"},
+                "new_text": {"type": "string"}
+            },
+            "required": ["mode", "path"]
+        }
+    },
+    {
+        "name": "code_patch",
+        "description": "Apply a unified diff patch to the codebase.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "patch": {"type": "string", "description": "Unified diff content"},
+                "path": {"type": "string"}
+            },
+            "required": ["patch"]
+        }
+    },
+    {
+        "name": "config",
+        "description": "Get all configuration settings (sensitive values masked).",
+        "inputSchema": {"type": "object", "properties": {}, "required": []}
+    },
+    {
+        "name": "config_set",
+        "description": "Set a configuration value.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "key": {"type": "string"},
+                "value": {"type": "string"}
+            },
+            "required": ["key", "value"]
+        }
+    },
 ]
 
 TOOL_HANDLERS = {
