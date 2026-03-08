@@ -817,12 +817,6 @@ async def handle_task_runner(a):
         return {"action": "decode", "decoded": decoded, "length": len(decoded)}
     
     elif action == "quick_reference":
-        # Return pre-encoded common commands ready to use
-        from .chatgpt_instructions import QUICK_REFERENCE
-        return {"action": "quick_reference", "commands": QUICK_REFERENCE,
-                "usage": "Use any value as task_data with action=execute. Add elevated=true for sudo."}
-    
-    elif action == "quick_reference":
         # Pre-encoded commands ChatGPT can use directly
         import base64 as b64mod
         commands = {
