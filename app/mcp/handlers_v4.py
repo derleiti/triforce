@@ -759,21 +759,32 @@ class HandlerRegistry:
                         return {"error": str(e), "file": filepath}
                 
                 elif mode == "check_tools":
-                    # Verify tool schemas match handler signatures
-                    from ..routes.mcp import MCP_HANDLERS
-                    results = {"matched": [], "missing_handler": [], "total_handlers": len(MCP_HANDLERS)}
+                    # Verify tool schemas match handler signatures — ALL registries
+                    from ..routes.mcp import MCP_HANDLERS, handle_tools_call
+                    from ..mcp.structured_admin import STRUCTURED_ADMIN_HANDLERS
                     
-                    tool_list_resp = None
+                    # Collect ALL handler sources
+                    all_handlers = {}
+                    all_handlers.update(MCP_HANDLERS)  # method-level
+                    all_handlers.update(STRUCTURED_ADMIN_HANDLERS)  # structured admin
+                    # V4 handlers from our own registry
+                    all_handlers.update(self._handlers)
+                    
+                    results = {"matched": [], "missing_handler": [], "v4_only": [], 
+                               "total_legacy": len(MCP_HANDLERS), "total_v4": len(self._handlers),
+                               "total_admin": len(STRUCTURED_ADMIN_HANDLERS)}
+                    
                     try:
-                        # Get registered tools
                         from ..routes.mcp import handle_tools_list
                         tool_list_resp = await handle_tools_list({})
                         tools = tool_list_resp.get("tools", [])
                         
                         for tool in tools:
                             name = tool["name"]
-                            if name in MCP_HANDLERS:
+                            if name in all_handlers:
                                 results["matched"].append(name)
+                            elif name in self._handlers:
+                                results["v4_only"].append(name)
                             else:
                                 results["missing_handler"].append(name)
                     except Exception as e:
@@ -782,10 +793,12 @@ class HandlerRegistry:
                     return results
                 
                 elif mode == "error_scan":
-                    # Scan recent logs for error patterns
+                    # Scan recent logs for error patterns — ALL log sources
                     log_files = [
                         "/home/zombie/triforce/logs/triforce-error-debug/error.log",
                         "/home/zombie/triforce/logs/triforce-error-debug/warning.log",
+                        "/home/zombie/triforce/logs/mcp.log",
+                        "/home/zombie/triforce/logs/unified.log",
                     ]
                     errors = {}
                     for lf in log_files:
@@ -812,27 +825,51 @@ class HandlerRegistry:
                             "top_errors": [{"pattern": k, "count": v} for k, v in sorted_errors]}
                 
                 elif mode == "inspect":
-                    # Deep inspect a specific tool
+                    # Deep inspect a specific tool — checks ALL registries
                     tool_name = params.get("tool", "")
                     if not tool_name:
                         return {"error": "'tool' parameter required for inspect mode"}
                     
                     from ..routes.mcp import MCP_HANDLERS
-                    info = {"tool": tool_name, "found": tool_name in MCP_HANDLERS}
+                    from ..mcp.structured_admin import STRUCTURED_ADMIN_HANDLERS, STRUCTURED_ADMIN_TOOLS
                     
+                    info = {"tool": tool_name, "found": False, "registry": None}
+                    
+                    # Check all registries
+                    handler = None
                     if tool_name in MCP_HANDLERS:
                         handler = MCP_HANDLERS[tool_name]
-                        info["handler"] = handler.__name__
-                        info["module"] = handler.__module__
-                        info["doc"] = (handler.__doc__ or "").strip()[:200]
-                        # Get source location
+                        info["registry"] = "MCP_HANDLERS (legacy)"
+                    elif tool_name in STRUCTURED_ADMIN_HANDLERS:
+                        handler = STRUCTURED_ADMIN_HANDLERS[tool_name]
+                        info["registry"] = "STRUCTURED_ADMIN"
+                    elif tool_name in self._handlers:
+                        handler = self._handlers[tool_name]
+                        info["registry"] = "V4_HANDLERS"
+                    
+                    if handler:
+                        info["found"] = True
+                        info["handler"] = getattr(handler, '__name__', str(handler))
+                        info["module"] = getattr(handler, '__module__', '?')
+                        info["doc"] = (getattr(handler, '__doc__', '') or "").strip()[:200]
                         try:
-                            import inspect
-                            src = inspect.getsource(handler)
+                            import inspect as _inspect
+                            src = _inspect.getsource(handler)
                             info["lines"] = len(src.split("\n"))
-                            info["file"] = inspect.getfile(handler)
+                            info["file"] = _inspect.getfile(handler)
                         except Exception:
                             pass
+                    
+                    # Also get schema from tools/list
+                    try:
+                        # Check structured admin tools for schema
+                        for t in STRUCTURED_ADMIN_TOOLS:
+                            if t["name"] == tool_name:
+                                info["schema"] = list(t.get("inputSchema", {}).get("properties", {}).keys())
+                                info["required"] = t.get("inputSchema", {}).get("required", [])
+                                break
+                    except Exception:
+                        pass
                     
                     return info
                 
