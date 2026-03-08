@@ -1436,9 +1436,9 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
     # Default: Return optimized 52 tools from v4
     tools = registry_v4_get_all_tools()
     
-    # Add Structured Admin Tools (AI-optimized, no shell patterns)
-    from ..mcp.structured_admin import STRUCTURED_ADMIN_TOOLS
-    tools = tools + STRUCTURED_ADMIN_TOOLS
+    # Add Structured Admin Tools (AI-optimized, no raw patterns)
+    from ..mcp.admin_ops import ADMIN_OPS_TOOLS
+    tools = tools + ADMIN_OPS_TOOLS
     
     # Inject MCP annotations (readOnlyHint etc.) for ChatGPT Dev Mode
     from .mcp_remote import _inject_annotations
@@ -2178,8 +2178,8 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
     tool_map.update(CHAT_ROUTER_HANDLERS)
     tool_map.update(TASK_SPAWNER_HANDLERS)
     # Structured Admin API (v2.81) — AI-optimized system management
-    from ..mcp.structured_admin import STRUCTURED_ADMIN_HANDLERS
-    tool_map.update(STRUCTURED_ADMIN_HANDLERS)
+    from ..mcp.admin_ops import ADMIN_OPS_HANDLERS
+    tool_map.update(ADMIN_OPS_HANDLERS)
 
     handler = tool_map.get(tool_name)
     # Compatibility fallback

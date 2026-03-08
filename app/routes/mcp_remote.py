@@ -50,6 +50,7 @@ from ..services.gemini_access import GEMINI_ACCESS_TOOLS, GEMINI_ACCESS_HANDLERS
 from ..services.command_queue import QUEUE_TOOLS, QUEUE_HANDLERS
 from ..services.huggingface_inference import HF_INFERENCE_TOOLS, HF_HANDLERS
 from ..mcp.adaptive_code import ADAPTIVE_CODE_TOOLS, ADAPTIVE_CODE_HANDLERS
+from ..mcp.admin_ops import ADMIN_OPS_TOOLS, ADMIN_OPS_HANDLERS
 from ..mcp.structured_admin import STRUCTURED_ADMIN_TOOLS, STRUCTURED_ADMIN_HANDLERS
 from ..utils.throttle import request_slot
 from ..mcp.api_docs import get_api_docs, API_DOCUMENTATION
@@ -118,6 +119,8 @@ _WRITE_TOOLS = {
     "evolve", "memory_store", "memory_clear",
     "restart", "hot_reload", "remote_task",
     "prompt_set", "git", "dev_refactor",
+    # Structured Admin Ops (write actions)
+    "package_manager", "service_control", "container_ops", "file_ops",
 }
 
 _DESTRUCTIVE_TOOLS = {
