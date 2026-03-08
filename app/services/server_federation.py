@@ -321,8 +321,7 @@ import hashlib
 import base64
 
 FEDERATION_PSK = os.getenv("FEDERATION_SECRET", "ailinux-federation-2025")
-logger.info(f"FEDERATION_PSK initialized: {FEDERATION_PSK[:20] if FEDERATION_PSK else "EMPTY"}...")
-logger.info(f"FEDERATION_PSK loaded: {FEDERATION_PSK[:20] if FEDERATION_PSK else "EMPTY"}...")
+logger.info(f"FEDERATION_PSK loaded: {'set (' + FEDERATION_PSK[:12] + '...)' if FEDERATION_PSK and FEDERATION_PSK != 'ailinux-federation-2025' else 'USING DEFAULT (insecure!)'}")
 
 # Federation Node Configuration
 # vpn_ip: WireGuard VPN address for direct communication

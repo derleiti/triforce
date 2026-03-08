@@ -238,20 +238,16 @@ class FederationPeer:
                 data = json.loads(message)
                 logger.info(f"Raw WS message: {str(data)[:200]}")
                 
-                # Try signed message first
+                # Verify signed message - FAIL-CLOSED: reject all unsigned/invalid
                 payload = verify_signed_request(data)
                 
                 if payload is None:
-                    # Maybe unsigned message (legacy/direct)
-                    if "type" in data:
-                        payload = data
-                        logger.debug(f"Accepting unsigned message from {self.node_id}")
-                    elif "data" in data and isinstance(data.get("data"), dict):
-                        logger.warning(f"Rejected message from {self.node_id}: invalid signature (fail-closed)")
-                        continue  # SECURITY: fail-closed, do NOT accept unsigned payloads
-                    else:
-                        logger.warning(f"Unrecognized message format from {self.node_id}")
-                        continue
+                    node_hint = data.get("data", {}).get("node_id", "unknown") if isinstance(data.get("data"), dict) else "unknown"
+                    logger.warning(
+                        f"Rejected message from {self.node_id} (hint={node_hint}): "
+                        f"signature verification failed (fail-closed)"
+                    )
+                    continue
                 
                 msg_type = payload.get("type")
                 if msg_type:
