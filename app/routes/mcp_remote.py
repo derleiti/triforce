@@ -50,6 +50,7 @@ from ..services.gemini_access import GEMINI_ACCESS_TOOLS, GEMINI_ACCESS_HANDLERS
 from ..services.command_queue import QUEUE_TOOLS, QUEUE_HANDLERS
 from ..services.huggingface_inference import HF_INFERENCE_TOOLS, HF_HANDLERS
 from ..mcp.adaptive_code import ADAPTIVE_CODE_TOOLS, ADAPTIVE_CODE_HANDLERS
+from ..mcp.structured_admin import STRUCTURED_ADMIN_TOOLS, STRUCTURED_ADMIN_HANDLERS
 from ..utils.throttle import request_slot
 from ..mcp.api_docs import get_api_docs, API_DOCUMENTATION
 from ..mcp.specialists import specialist_router, SPECIALISTS
@@ -980,6 +981,11 @@ def get_tools() -> List[Dict[str, Any]]:
         # Adaptive Code Illumination Tools (v2.80)
         # =================================================================
         *ADAPTIVE_CODE_TOOLS,
+
+        # =================================================================
+        # Structured Admin API (v2.81) — AI-optimized system management
+        # =================================================================
+        *STRUCTURED_ADMIN_TOOLS,
     ]
 
 
@@ -1714,6 +1720,9 @@ TOOL_HANDLERS = {
 
     # Adaptive Code Illumination Tools (v2.80)
     **ADAPTIVE_CODE_HANDLERS,
+
+    # Structured Admin API (v2.81)
+    **STRUCTURED_ADMIN_HANDLERS,
 
     # Extended Search Tools (v4.0)
     "multi_search": handle_multi_search_remote,
