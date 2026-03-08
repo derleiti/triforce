@@ -247,8 +247,8 @@ class FederationPeer:
                         payload = data
                         logger.debug(f"Accepting unsigned message from {self.node_id}")
                     elif "data" in data and isinstance(data.get("data"), dict):
-                        payload = data["data"]
-                        logger.warning(f"Invalid signature from {self.node_id}, using payload anyway")
+                        logger.warning(f"Rejected message from {self.node_id}: invalid signature (fail-closed)")
+                        continue  # SECURITY: fail-closed, do NOT accept unsigned payloads
                     else:
                         logger.warning(f"Unrecognized message format from {self.node_id}")
                         continue

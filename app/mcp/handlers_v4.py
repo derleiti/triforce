@@ -352,16 +352,16 @@ class HandlerRegistry:
 
             async def handle_agent_call(params):
                 """Send message to specific agent and get response"""
-                agent_id = params.get("agent")
+                agent_id = params.get("agent_id") or params.get("agent")  # accept both
                 message = params.get("message")
                 timeout = params.get("timeout", 120)
                 if not agent_id or not message:
-                    return {"error": "agent and message required"}
+                    return {"error": "agent_id and message required"}
                 return await agent_controller.call_agent(agent_id, message, timeout)
 
             async def handle_agent_broadcast(params):
                 """Broadcast message to all agents"""
-                message = params.get("message")
+                message = params.get("message") or params.get("command")  # accept both
                 strategy = params.get("strategy", "parallel")
                 if not message:
                     return {"error": "message required"}
@@ -369,7 +369,8 @@ class HandlerRegistry:
                 results = {}
                 for agent in agents:
                     agent_id = agent.get("agent_id", agent.get("id"))
-                    if agent.get("status") == "running":
+                    status = agent.get("status", "")
+                    if status in ("running", "on_demand"):
                         try:
                             result = await agent_controller.call_agent(agent_id, message, timeout=60)
                             results[agent_id] = result
@@ -379,17 +380,17 @@ class HandlerRegistry:
 
             async def handle_agent_start(params):
                 """Start a CLI agent"""
-                agent_id = params.get("agent")
+                agent_id = params.get("agent_id") or params.get("agent")  # accept both
                 if not agent_id:
-                    return {"error": "agent required"}
+                    return {"error": "agent_id required"}
                 return await agent_controller.start_agent(agent_id)
 
             async def handle_agent_stop(params):
                 """Stop a running CLI agent"""
-                agent_id = params.get("agent")
+                agent_id = params.get("agent_id") or params.get("agent")  # accept both
                 force = params.get("force", False)
                 if not agent_id:
-                    return {"error": "agent required"}
+                    return {"error": "agent_id required"}
                 return await agent_controller.stop_agent(agent_id, force)
 
             self.register("agents", handle_agents_list)

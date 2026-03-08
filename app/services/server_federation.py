@@ -399,7 +399,7 @@ def verify_signed_request(request: dict, secret: str = None, max_age: int = 300)
         if hmac.compare_digest(signature, expected):
             return data  # Gib das entpackte data dict zurück
         else:
-            logger.warning(f"Signed request: signature mismatch\n  secret={secret[:20]}...\n  expected={expected}\n  got={signature}\n  data={str(data)[:100]}...")
+            logger.warning(f"Signed request: signature mismatch\n  expected={expected[:16]}...\n  got={signature[:16]}...\n  data_keys={list(data.keys()) if isinstance(data, dict) else type(data).__name__}")
             return None
     except Exception as e:
         logger.error(f"Signed request verification error: {e}")

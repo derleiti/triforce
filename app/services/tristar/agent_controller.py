@@ -97,6 +97,7 @@ class AgentStatus(str, Enum):
     RUNNING = "running"
     ERROR = "error"
     RESTARTING = "restarting"
+    ON_DEMAND = "on_demand"  # Agent ready but started only when called
 
 
 class AgentType(str, Enum):
