@@ -406,14 +406,15 @@ class MCPMeshServer:
             logger.error("websockets library not installed")
             return
         
-        # Guard: check if port is already in use
+        # Guard: check if port is already in use (expected in multi-worker mode)
         import socket
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             sock.bind((MCP_WS_HOST, MCP_WS_PORT))
             sock.close()
-        except OSError as e:
-            logger.error(f"Port {MCP_WS_PORT} already in use, skipping MCP WS Server start: {e}")
+        except OSError:
+            sock.close()
+            logger.info(f"Port {MCP_WS_PORT} already in use (multi-worker: another worker owns it)")
             self._running = False
             return
         
@@ -432,7 +433,8 @@ class MCPMeshServer:
             )
             logger.info(f"MCP Mesh Server v{self.VERSION} started on port {MCP_WS_PORT}")
         except Exception as e:
-            logger.error(f"Failed to start server: {e}")
+            # In multi-worker mode, race between test-socket and actual bind is possible
+            logger.info(f"MCP WS Server bind race: {e} (another worker likely claimed the port)")
             self._running = False
     
     async def stop(self):

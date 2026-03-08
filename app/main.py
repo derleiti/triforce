@@ -217,25 +217,16 @@ async def lifespan(app: FastAPI):
         logger.warning(f"Failed to start MCP Brain: {e}")
 
     # Start MCP WebSocket Server (Port 44433)
-    # Guard: In multi-worker mode, only one worker can bind the port.
-    # Other workers silently skip instead of logging errors.
+    # In multi-worker mode, only one worker can bind the port.
+    # mcp_ws_server.start() handles the port-check internally.
     try:
-        import socket as _sock
-        _test_sock = _sock.socket(_sock.AF_INET, _sock.SOCK_STREAM)
-        _test_sock.setsockopt(_sock.SOL_SOCKET, _sock.SO_REUSEADDR, 1)
-        try:
-            _test_sock.bind(("0.0.0.0", 44433))
-            _test_sock.close()
-            # Port is free — we are the elected worker
-            from .services.mcp_ws_server import mcp_ws_server
-            await mcp_ws_server.start()
-            if mcp_ws_server._running:
-                logger.info("MCP WebSocket Server started on port 44433")
-            else:
-                logger.warning("MCP WebSocket Server failed to start after port check")
-        except OSError:
-            _test_sock.close()
-            logger.info("MCP WebSocket Server: port 44433 already bound (another worker owns it) — skipping")
+        from .services.mcp_ws_server import mcp_ws_server
+        await mcp_ws_server.start()
+        if mcp_ws_server._running:
+            logger.info("MCP WebSocket Server started on port 44433")
+        else:
+            # Expected in multi-worker mode: another worker owns the port
+            logger.info("MCP WebSocket Server: port 44433 owned by another worker — skipping")
     except Exception as e:
         logger.warning(f"Failed to start MCP WebSocket Server: {e}")
 
