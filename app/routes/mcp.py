@@ -4016,8 +4016,16 @@ async def _process_mcp_request(
         result = await handler(params)
         latency_ms = (_time.time() - start_time) * 1000
         await multi_logger.log_mcp(method, params, result, latency_ms)
+        if method == "tools/call":
+            tn = params.get("name", "?")
+            ip = request.client.host if request and request.client else "?"
+            _log.info(f"TOOL_CALL_OK | {tn} | IP: {ip} | {latency_ms:.0f}ms")
         return {"jsonrpc": "2.0", "result": result, "id": req_id}
     except Exception as e:
+        if method == "tools/call":
+            tn = params.get("name", "?")
+            ip = request.client.host if request and request.client else "?"
+            _log.error(f"TOOL_CALL_ERROR | {tn} | IP: {ip} | {e}")
         return {
             "jsonrpc": "2.0",
             "error": {"code": -32000, "message": str(e)},
