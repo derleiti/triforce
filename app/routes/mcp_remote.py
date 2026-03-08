@@ -83,8 +83,8 @@ router = APIRouter(tags=["MCP Remote Server"])
 
 MCP_SERVER_INFO = {
     "name": "AILinux API",
-    "version": "2.80",
-    "description": "AILinux AI Backend v2.80 - TriStar/TriForce Multi-LLM Orchestration with CLI Agents, Codebase Access, and Self-Development capabilities",
+    "version": "2.81",
+    "description": "AILinux AI Backend v2.81 - TriStar/TriForce Multi-LLM Orchestration with CLI Agents, Codebase Access, and Self-Development capabilities",
     "vendor": "AILinux",
 }
 
@@ -2178,7 +2178,7 @@ async def _handle_agent_mcp_call(agent_id: str, request: Request):
                     "protocolVersion": "2024-11-05",
                     "serverInfo": {
                         "name": agent.get("name", agent_id),
-                        "version": "2.80",
+                        "version": "2.81",
                         "description": f"Direct MCP access to {agent_id} CLI agent"
                     },
                     "capabilities": {
