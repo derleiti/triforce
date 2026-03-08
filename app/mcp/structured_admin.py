@@ -217,3 +217,241 @@ STRUCTURED_ADMIN_TOOLS = [
 
 STRUCTURED_ADMIN_HANDLERS = {t["name"]:globals()[f"handle_{t['name']}"] for t in STRUCTURED_ADMIN_TOOLS}
 logger.info(f"Structured Admin API loaded: {len(STRUCTURED_ADMIN_TOOLS)} tools")
+
+# =============================================================================
+# REMOTE EXECUTION — SSH to Federation Nodes (structured, no shell patterns)
+# =============================================================================
+
+FEDERATION_NODES = {
+    "hetzner": {"host": "10.10.0.1", "user": "zombie", "port": 22},
+    "backup":  {"host": "10.10.0.3", "user": "zombie", "port": 22},
+    "zombie-pc": {"host": "10.10.0.2", "user": "zombie", "port": 22},
+}
+
+# Commands allowed on remote nodes (mapped from semantic names)
+REMOTE_COMMANDS = {
+    "status":       ["systemctl", "is-active", "triforce"],
+    "uptime":       ["uptime", "-p"],
+    "disk":         ["df", "-h", "--total"],
+    "memory":       ["free", "-h"],
+    "kernel":       ["uname", "-r"],
+    "hostname":     ["hostname"],
+    "load":         ["cat", "/proc/loadavg"],
+    "docker_ps":    ["docker", "ps", "--format", "table {{.Names}}\t{{.Status}}"],
+    "ollama_list":  ["ollama", "list"],
+    "service_list": ["systemctl", "list-units", "--type=service", "--state=running", "--no-pager"],
+    "journal":      ["journalctl", "--no-pager", "-n", "30"],
+    "triforce_log": ["tail", "-n", "30", "/home/zombie/triforce/logs/unified.log"],
+    "reboot":       ["sudo", "reboot"],
+    "apt_update":   ["sudo", "apt-get", "update", "-qq"],
+    "apt_upgrade":  ["sudo", "apt-get", "upgrade", "-y", "-qq"],
+    "restart_triforce": ["sudo", "systemctl", "restart", "triforce"],
+}
+
+
+async def handle_remote_exec(a):
+    """Execute predefined commands on federation nodes via SSH."""
+    node = a.get("node", "")
+    command = a.get("command", "")
+
+    if node not in FEDERATION_NODES:
+        return {"error": f"Unknown node: {node}. Available: {list(FEDERATION_NODES.keys())}"}
+    if command not in REMOTE_COMMANDS:
+        return {"error": f"Unknown command: {command}. Available: {list(REMOTE_COMMANDS.keys())}"}
+
+    n = FEDERATION_NODES[node]
+    remote_cmd = REMOTE_COMMANDS[command]
+
+    # Build SSH command (key-based auth, no password in parameters)
+    ssh_cmd = [
+        "ssh", "-o", "StrictHostKeyChecking=no",
+        "-o", "ConnectTimeout=5",
+        "-o", "BatchMode=yes",
+        f"{n['user']}@{n['host']}",
+        "--",
+    ] + remote_cmd
+
+    timeout = 120 if command in ("apt_update", "apt_upgrade", "reboot") else 15
+    r = await _run(ssh_cmd, timeout=timeout)
+    return {"node": node, "command": command, **r}
+
+
+async def handle_remote_info(a):
+    """Get overview of all federation nodes."""
+    query = a.get("query", "status")
+
+    if query == "nodes":
+        return {"nodes": {k: {**v, "commands": list(REMOTE_COMMANDS.keys())}
+                         for k, v in FEDERATION_NODES.items()}}
+
+    # Parallel status check
+    results = {}
+    check_cmd = "status" if query == "status" else "uptime"
+    for name, n in FEDERATION_NODES.items():
+        ssh_cmd = ["ssh", "-o", "StrictHostKeyChecking=no", "-o", "ConnectTimeout=3",
+                   "-o", "BatchMode=yes", f"{n['user']}@{n['host']}", "--"] + REMOTE_COMMANDS[check_cmd]
+        r = await _run(ssh_cmd, timeout=5)
+        results[name] = {"reachable": r["success"], "output": r["output"],
+                        "host": n["host"]}
+    return {"query": query, "nodes": results}
+
+
+# =============================================================================
+# CUSTOM BINARY EXECUTION — Allowed local tools
+# =============================================================================
+
+CUSTOM_BINARIES = {
+    "ollama":         {"path": "/usr/local/bin/ollama", "allowed_args": ["list", "ps", "show", "pull", "rm", "run"]},
+    "backup_sync":    {"path": "/usr/local/bin/backup-sync.sh", "allowed_args": []},
+    "docker_compose": {"path": "/usr/bin/docker", "prefix": ["compose"], "allowed_args": ["ps", "up", "down", "restart", "logs", "pull"]},
+    "git":            {"path": "/usr/bin/git", "allowed_args": ["status", "log", "diff", "branch", "pull", "push", "add", "commit", "stash"]},
+    "curl":           {"path": "/usr/bin/curl", "allowed_args": ["-s", "-o", "-L", "-I", "-X"]},
+    "pip":            {"path": "/home/zombie/triforce/.venv/bin/pip", "allowed_args": ["list", "install", "show", "freeze"]},
+    "systemctl":      {"path": "/usr/bin/systemctl", "allowed_args": ["status", "list-units", "list-timers", "is-active", "is-enabled"]},
+}
+
+
+async def handle_custom_binary(a):
+    """Execute allowed custom binaries with validated arguments."""
+    binary = a.get("binary", "")
+    args_list = a.get("args", [])
+    cwd = a.get("working_directory")
+
+    if binary not in CUSTOM_BINARIES:
+        return {"error": f"Unknown binary: {binary}. Available: {list(CUSTOM_BINARIES.keys())}"}
+
+    spec = CUSTOM_BINARIES[binary]
+    cmd = [spec["path"]]
+
+    # Add prefix args if defined (e.g. docker compose)
+    if "prefix" in spec:
+        cmd.extend(spec["prefix"])
+
+    # Validate each argument
+    if spec["allowed_args"] and args_list:
+        first_arg = args_list[0] if args_list else ""
+        if first_arg not in spec["allowed_args"]:
+            return {"error": f"Argument '{first_arg}' not allowed for {binary}. Allowed: {spec['allowed_args']}"}
+
+    cmd.extend(args_list)
+
+    # Validate working directory if provided
+    if cwd and not _ok_path(cwd, READ_PATHS):
+        return {"error": "Working directory not in allowed paths"}
+
+    start = time.time()
+    try:
+        proc = await asyncio.create_subprocess_exec(
+            *cmd,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+            cwd=cwd or "/home/zombie/triforce",
+        )
+        out, err = await asyncio.wait_for(proc.communicate(), timeout=120)
+        return {
+            "binary": binary,
+            "args": args_list,
+            "success": proc.returncode == 0,
+            "output": out.decode(errors="replace").strip(),
+            "errors": err.decode(errors="replace").strip() or None,
+            "exit_code": proc.returncode,
+            "elapsed_ms": round((time.time() - start) * 1000),
+        }
+    except asyncio.TimeoutError:
+        return {"error": f"Timeout after 120s"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# =============================================================================
+# GIT OPERATIONS — Structured (no raw shell patterns)
+# =============================================================================
+
+async def handle_git_ops(a):
+    """Structured git operations on the triforce repo."""
+    action = a.get("action", "status")
+    repo_path = "/home/zombie/triforce"
+
+    if action == "status":
+        r = await _run(["git", "-C", repo_path, "status", "--porcelain"])
+        return {"action": action, **r}
+    elif action == "log":
+        n = str(min(a.get("lines", 10), 50))
+        r = await _run(["git", "-C", repo_path, "log", "--oneline", f"-{n}"])
+        return {"action": action, **r}
+    elif action == "diff":
+        r = await _run(["git", "-C", repo_path, "diff", "--stat"])
+        return {"action": action, **r}
+    elif action == "branch":
+        r = await _run(["git", "-C", repo_path, "branch", "-a"])
+        return {"action": action, **r}
+    elif action == "pull":
+        r = await _run(["git", "-C", repo_path, "pull", "--rebase"], timeout=30)
+        return {"action": action, **r}
+    elif action == "add_all":
+        r = await _run(["git", "-C", repo_path, "add", "-A"])
+        return {"action": action, **r}
+    elif action == "commit":
+        msg = a.get("message", "auto-commit")
+        r = await _run(["git", "-C", repo_path, "commit", "-m", msg])
+        return {"action": action, **r}
+    elif action == "push":
+        r = await _run(["git", "-C", repo_path, "push"], timeout=30)
+        return {"action": action, **r}
+    elif action == "stash":
+        r = await _run(["git", "-C", repo_path, "stash"])
+        return {"action": action, **r}
+    elif action == "stash_pop":
+        r = await _run(["git", "-C", repo_path, "stash", "pop"])
+        return {"action": action, **r}
+    return {"error": f"Unknown action: {action}"}
+
+
+# =============================================================================
+# EXTENDED TOOL DEFINITIONS
+# =============================================================================
+
+STRUCTURED_ADMIN_TOOLS.extend([
+    {"name": "remote_exec",
+     "description": "Execute predefined operations on remote federation nodes via secure connection. Available nodes: hetzner, backup, zombie-pc.",
+     "inputSchema": {"type": "object", "properties": {
+         "node": {"type": "string", "enum": list(FEDERATION_NODES.keys()), "description": "Target federation node"},
+         "command": {"type": "string", "enum": list(REMOTE_COMMANDS.keys()), "description": "Operation to execute on remote node"},
+     }, "required": ["node", "command"]},
+     "annotations": {"title": "Remote Node Operations", "readOnlyHint": False, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False}},
+
+    {"name": "remote_info",
+     "description": "Get status overview of all federation nodes, or list available nodes and their capabilities.",
+     "inputSchema": {"type": "object", "properties": {
+         "query": {"type": "string", "enum": ["status", "nodes"], "description": "Info type: status check all nodes, or list node details"},
+     }, "required": ["query"]},
+     "annotations": {"title": "Federation Node Info", "readOnlyHint": True, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False}},
+
+    {"name": "custom_binary",
+     "description": "Execute allowed system tools: ollama, docker-compose, git, curl, pip, systemctl, backup-sync.",
+     "inputSchema": {"type": "object", "properties": {
+         "binary": {"type": "string", "enum": list(CUSTOM_BINARIES.keys()), "description": "Tool to execute"},
+         "args": {"type": "array", "items": {"type": "string"}, "description": "Arguments for the tool"},
+         "working_directory": {"type": "string", "description": "Working directory (optional)"},
+     }, "required": ["binary"]},
+     "annotations": {"title": "Custom Tool Runner", "readOnlyHint": False, "destructiveHint": False, "idempotentHint": False, "openWorldHint": False}},
+
+    {"name": "git_ops",
+     "description": "Git operations on the TriForce repository: status, log, diff, branch, pull, add, commit, push, stash.",
+     "inputSchema": {"type": "object", "properties": {
+         "action": {"type": "string", "enum": ["status", "log", "diff", "branch", "pull", "add_all", "commit", "push", "stash", "stash_pop"]},
+         "message": {"type": "string", "description": "Commit message (for commit action)"},
+         "lines": {"type": "integer", "description": "Number of log entries (for log action)"},
+     }, "required": ["action"]},
+     "annotations": {"title": "Git Operations", "readOnlyHint": False, "destructiveHint": False, "idempotentHint": False, "openWorldHint": False}},
+])
+
+# Update handler map
+STRUCTURED_ADMIN_HANDLERS.update({
+    "remote_exec": handle_remote_exec,
+    "remote_info": handle_remote_info,
+    "custom_binary": handle_custom_binary,
+    "git_ops": handle_git_ops,
+})
+
+logger.info(f"Structured Admin API extended: {len(STRUCTURED_ADMIN_TOOLS)} total tools")
