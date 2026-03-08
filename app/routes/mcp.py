@@ -90,6 +90,27 @@ def _estimate_tokens(text: str) -> int:
     return max(1, len(text.split()))
 
 
+def _ensure_schema_items(schema: Any) -> Any:
+    """Recursively ensure JSON schema arrays always define an items schema."""
+    if isinstance(schema, dict):
+        normalized = {k: _ensure_schema_items(v) for k, v in schema.items()}
+        if normalized.get("type") == "array" and "items" not in normalized:
+            normalized["items"] = {"type": "string"}
+        return normalized
+    if isinstance(schema, list):
+        return [_ensure_schema_items(item) for item in schema]
+    return schema
+
+
+def _normalize_tool_schema(tool: Dict[str, Any]) -> Dict[str, Any]:
+    """Return a copy of a tool definition with hardened inputSchema."""
+    normalized = dict(tool)
+    input_schema = normalized.get("inputSchema")
+    if isinstance(input_schema, dict):
+        normalized["inputSchema"] = _ensure_schema_items(input_schema)
+    return normalized
+
+
 def _serialize_job(job) -> Dict[str, Any]:
     payload = job.to_dict()
     payload["allowed_domains"] = list(job.allowed_domains)
@@ -1482,18 +1503,14 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
     use_legacy = params.get("legacy", False) or params.get("v3", False)
     
     if use_legacy:
-        # Return all 134 tools from v3 for backwards compatibility
-        tools = registry_v3_get_all_tools()
+        tools = [_normalize_tool_schema(tool) for tool in registry_v3_get_all_tools()]
         return {"tools": tools, "version": "v3", "count": len(tools)}
     
-    # Default: Return optimized 52 tools from v4
-    tools = registry_v4_get_all_tools()
+    tools = [_normalize_tool_schema(tool) for tool in registry_v4_get_all_tools()]
     
-    # Add Structured Admin Tools (AI-optimized, no raw patterns)
     from ..mcp.structured_admin import STRUCTURED_ADMIN_TOOLS
-    tools = tools + STRUCTURED_ADMIN_TOOLS
+    tools.extend(_normalize_tool_schema(tool) for tool in STRUCTURED_ADMIN_TOOLS)
     
-    # Inject MCP annotations (readOnlyHint etc.) for ChatGPT Dev Mode
     from .mcp_remote import _inject_annotations
     tools = _inject_annotations(tools)
     
@@ -2241,14 +2258,8 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
     if not handler and "_" in tool_name:
         handler = tool_map.get(tool_name.replace("_", "."))
 
-    # Try v4 handlers first
-    if not handler:
-        try:
-            v4_result = await call_v4_tool(tool_name, arguments)
-            if v4_result:
-                return {"content": [{"type": "text", "text": json.dumps(v4_result, separators=(chr(44), chr(58)))}], "isError": False}
-        except Exception:
-            pass  # Fall through to error
+    # NOTE: Do not dispatch arbitrary JSON-RPC methods into v4 tool execution here.
+    # Tool execution belongs strictly to the tools/call handler.
 
     if not handler:
         raise ValueError(f"Unknown tool: {tool_name}")

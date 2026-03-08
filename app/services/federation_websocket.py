@@ -375,27 +375,34 @@ class FederationLoadBalancer:
         """Startet WebSocket Server für eingehende Peer-Verbindungen"""
         async def handler(websocket, path):
             peer_id = None
+            authenticated = False
             try:
                 async for message in websocket:
                     data = json.loads(message)
                     
-                    # Try signed message first
+                    # Verify signature - REJECT unsigned messages (fail-closed)
                     payload = verify_signed_request(data)
                     
                     if payload is None:
-                        # Maybe unsigned message
-                        if "type" in data:
-                            payload = data
-                        elif "data" in data and isinstance(data.get("data"), dict):
-                            payload = data["data"]
-                        else:
-                            continue
+                        logger.warning(f"Rejected unsigned/invalid message from {peer_id or 'unknown'}")
+                        continue
                     
                     msg_type = payload.get("type")
                     
                     if msg_type == MessageType.HELLO:
                         peer_id = payload.get("node_id")
-                        logger.info(f"Peer {peer_id} connected")
+                        token = payload.get("token", "")
+                        
+                        # Verify token against vault
+                        from .federation_vault import FederationVault
+                        vault = FederationVault()
+                        if not vault.verify_token(peer_id, token):
+                            logger.warning(f"HELLO rejected: invalid token for node {peer_id}")
+                            await websocket.close(4001, "Authentication failed")
+                            return
+                        
+                        authenticated = True
+                        logger.info(f"Peer {peer_id} authenticated and connected")
                         
                         # Send ACK
                         ack = create_signed_request({
@@ -405,6 +412,9 @@ class FederationLoadBalancer:
                         await websocket.send(json.dumps(ack))
                         
                     elif msg_type == MessageType.HEARTBEAT:
+                        if not authenticated:
+                            logger.warning(f"Heartbeat from unauthenticated peer, ignoring")
+                            continue
                         # Update metrics
                         if peer_id and peer_id in self.peers:
                             metrics = payload.get("metrics", {})

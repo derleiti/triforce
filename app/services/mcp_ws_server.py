@@ -406,6 +406,17 @@ class MCPMeshServer:
             logger.error("websockets library not installed")
             return
         
+        # Guard: check if port is already in use
+        import socket
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        try:
+            sock.bind((MCP_WS_HOST, MCP_WS_PORT))
+            sock.close()
+        except OSError as e:
+            logger.error(f"Port {MCP_WS_PORT} already in use, skipping MCP WS Server start: {e}")
+            self._running = False
+            return
+        
         ssl_ctx = self._get_ssl_context()
         self._running = True
         self.stats["started_at"] = datetime.now().isoformat()
