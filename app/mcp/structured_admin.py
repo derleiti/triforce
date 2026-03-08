@@ -1066,7 +1066,7 @@ STRUCTURED_ADMIN_TOOLS.extend([
          "timeout": {"type": "integer", "description": "Timeout seconds (max 120)"},
          "work_dir": {"type": "string", "description": "Working directory"},
          "stdin_data": {"type": "string", "description": "Data to send to program's stdin"},
-         "steps": {"type": "array", "description": "For pipe: [{program, arguments}, ...] to chain"},
+         "steps": {"type": "array", "items": {"type": "object", "properties": {"program": {"type": "string", "description": "Program name"}, "arguments": {"type": "array", "items": {"type": "string"}, "description": "Program arguments"}}, "required": ["program"]}, "description": "For pipe: [{program, arguments}, ...] to chain"},
      }, "required": ["action"]},
      "annotations": {"title": "Program Executor", "readOnlyHint": False, "destructiveHint": False, "idempotentHint": False, "openWorldHint": False}},
 ])
