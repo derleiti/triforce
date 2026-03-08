@@ -1435,6 +1435,13 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
     
     # Default: Return optimized 52 tools from v4
     tools = registry_v4_get_all_tools()
+    
+    # Inject MCP annotations (readOnlyHint etc.) for ChatGPT Dev Mode
+    # ChatGPT treats tools WITHOUT readOnlyHint as write actions.
+    # Write actions can be "temporarily disabled" in ChatGPT beta.
+    from .mcp_remote import _inject_annotations
+    tools = _inject_annotations(tools)
+    
     return {
         "tools": tools, 
         "version": "v4", 
