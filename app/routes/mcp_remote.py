@@ -83,7 +83,7 @@ router = APIRouter(tags=["MCP Remote Server"])
 
 MCP_SERVER_INFO = {
     "name": "AILinux API",
-    "version": "2.82",
+    "version": "2.83",
     "description": "AILinux AI Backend v2.82 - TriStar/TriForce Multi-LLM Orchestration with CLI Agents, Codebase Access, Self-Development, Read-Only Diagnostics, and MCP Tool Telemetry",
     "vendor": "AILinux",
 }
@@ -1015,7 +1015,24 @@ def _serialize_job(job) -> Dict[str, Any]:
 
 async def handle_chat(arguments: Dict[str, Any]) -> Dict[str, Any]:
     """Handle chat tool invocation - supports both 'message' (string) and 'messages' (array)."""
-    model_id = arguments.get("model", "gpt-oss:20b-cloud")
+    model_id = arguments.get("model", "")
+    
+    # v2.83: Health-aware default model with fallback chain
+    if not model_id:
+        _fallback_chain = [
+            "mistral/mistral-large-latest",
+            "groq/llama-3.3-70b-versatile",
+            "openrouter/meta-llama/llama-3.3-70b-instruct:free",
+            "gemini/gemini-2.0-flash",
+            "ollama/llama3.2",
+        ]
+        for _candidate in _fallback_chain:
+            _m = await registry.get_model(_candidate)
+            if _m:
+                model_id = _candidate
+                break
+        if not model_id:
+            model_id = "mistral/mistral-large-latest"  # absolute fallback
     temperature = arguments.get("temperature", arguments.get("options", {}).get("temperature", 0.7))
     
     # Support both formats: 'message' (string) or 'messages' (array)
@@ -1491,7 +1508,7 @@ async def handle_health_remote(arguments: Dict[str, Any]) -> Dict[str, Any]:
     return {
         "status": "ok",
         "backend": "triforce",
-        "version": "2.82",
+        "version": "2.83",
         "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
     }
 
@@ -1701,6 +1718,156 @@ async def handle_list_timezones_remote(arguments: Dict[str, Any]) -> Dict[str, A
     return await list_timezones(arguments.get("region"))
 
 
+
+
+# ============================================================================
+# V4 Canonical Alias Tool Definitions
+# ============================================================================
+# These mirror existing tools under shorter, canonical names for ChatGPT/Claude
+# compatibility. They use the same handlers but are listed separately so
+# tools/list includes them with proper schemas.
+
+_V4_ALIAS_TOOLS = [
+    {
+        "name": "search",
+        "description": "Search the web for information. Returns relevant results from multiple search engines.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "query": {"type": "string", "description": "Search query"}
+            },
+            "required": ["query"]
+        }
+    },
+    {
+        "name": "models",
+        "description": "List all available AI models with their capabilities, grouped by provider.",
+        "inputSchema": {"type": "object", "properties": {}, "required": []}
+    },
+    {
+        "name": "specialist",
+        "description": "Route a task to the best specialist model based on task type (code, math, creative, analysis, research).",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "task": {"type": "string", "description": "Task type: code, math, creative, analysis, research"},
+                "message": {"type": "string", "description": "The actual message/prompt"}
+            },
+            "required": ["message", "task"]
+        }
+    },
+    {
+        "name": "health",
+        "description": "Quick health check of all services (backend, ollama, redis, searxng, API keys).",
+        "inputSchema": {"type": "object", "properties": {}, "required": []}
+    },
+    {
+        "name": "status",
+        "description": "Get full system status: services, agents, memory, uptime.",
+        "inputSchema": {"type": "object", "properties": {}, "required": []}
+    },
+    {
+        "name": "agents",
+        "description": "List all CLI agents (Claude, Codex, Gemini, OpenCode) with status and stats.",
+        "inputSchema": {"type": "object", "properties": {}, "required": []}
+    },
+    {
+        "name": "agent_call",
+        "description": "Send a message/task to a specific CLI agent and get response.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "agent": {"type": "string", "description": "Agent ID (gemini-mcp, claude-mcp, codex-mcp, opencode-mcp)"},
+                "message": {"type": "string", "description": "Message to send"}
+            },
+            "required": ["agent", "message"]
+        }
+    },
+    {
+        "name": "agent_broadcast",
+        "description": "Send message to all agents for parallel processing / consensus.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "message": {"type": "string", "description": "Message to broadcast"}
+            },
+            "required": ["message"]
+        }
+    },
+    {
+        "name": "code_tree",
+        "description": "Show directory structure of the codebase with optional depth limit.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "path": {"type": "string", "description": "Directory path (default: project root)", "default": "."},
+                "depth": {"type": "integer", "description": "Max depth (default: 3)", "default": 3}
+            },
+            "required": []
+        }
+    },
+    {
+        "name": "code_read",
+        "description": "Read a file from the codebase.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "path": {"type": "string", "description": "File path relative to project root"}
+            },
+            "required": ["path"]
+        }
+    },
+    {
+        "name": "code_search",
+        "description": "Search for patterns/text in the codebase (regex supported).",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "query": {"type": "string", "description": "Search pattern (regex supported)"},
+                "path": {"type": "string", "description": "Limit search to path"},
+                "regex": {"type": "boolean", "description": "Enable regex", "default": False},
+                "max_results": {"type": "integer", "description": "Max results", "default": 20}
+            },
+            "required": ["query"]
+        }
+    },
+    {
+        "name": "memory_search",
+        "description": "Search persistent memory for relevant information.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "query": {"type": "string", "description": "Search query"},
+                "limit": {"type": "integer", "description": "Max results", "default": 10}
+            },
+            "required": ["query"]
+        }
+    },
+    {
+        "name": "memory_store",
+        "description": "Store knowledge/facts/decisions in persistent memory.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "content": {"type": "string", "description": "Content to store"},
+                "tags": {"type": "array", "items": {"type": "string"}, "description": "Tags for categorization"}
+            },
+            "required": ["content"]
+        }
+    },
+    {
+        "name": "crawl",
+        "description": "Crawl a website and extract content.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "url": {"type": "string", "description": "URL to crawl"},
+                "keywords": {"type": "array", "items": {"type": "string"}, "description": "Optional keyword filter"}
+            },
+            "required": ["url"]
+        }
+    },
+]
 
 TOOL_HANDLERS = {
     # Core
@@ -2011,7 +2178,7 @@ async def mcp_rpc_endpoint(request: Request):
         )
 
     elif method == "tools/list":
-        tools_result = get_tools()
+        tools_result = get_tools() + _V4_ALIAS_TOOLS
 
         # Filter tools by default to reduce token count (85 tools = 28K tokens!)
         # Use X-TriForce-All: true header to get all tools
@@ -2019,16 +2186,30 @@ async def mcp_rpc_endpoint(request: Request):
         if not show_all:
             # Essential tools only (reduces to ~15 tools, ~5K tokens)
             essential_tools = [
-                "chat", "list_models", "ask_specialist", "web_search",
-                "tristar_memory_store", "tristar_memory_search",
-                "cli-agents_list", "cli-agents_call", "cli-agents_broadcast",
-                "codebase_structure", "codebase_file", "codebase_search",
-                "gemini_research", "gemini_quick", "ollama_list",
-                # v2.82 read-only diagnostics
+                # Core
+                "chat", "models", "search", "specialist", "health", "status",
+                # Agent Control
+                "agents", "agent_call", "agent_broadcast",
+                # Codebase
+                "code_tree", "code_read", "code_search",
+                # Memory
+                "memory_search", "memory_store",
+                # AI Access
+                "gemini_research", "gemini_quick", "ollama_list", "ollama_run",
+                # v2.82 Read-Only Diagnostics
                 "safe_probe", "agent_review", "service_status",
                 "container_status", "file_read", "remote_status",
-                "system_info", "log_viewer", "network_info", "mcp_telemetry",
-                "mcp_analytics", "process_control",
+                "system_info", "log_viewer", "network_info", "process_control",
+                "mcp_telemetry", "mcp_analytics",
+                # Admin (write-capable)
+                "shell", "task_runner", "binary_exec", "custom_exec",
+                "service_control", "container_control", "file_ops",
+                "package_manager", "remote_admin",
+                "code_edit", "code_patch",
+                "config", "config_set",
+                "crawl",
+                # Extended Search
+                "smart_search", "multi_search",
             ]
             tools_result = [t for t in tools_result if t.get("name") in essential_tools]
 
@@ -2277,7 +2458,7 @@ async def _handle_agent_mcp_call(agent_id: str, request: Request):
                     "protocolVersion": "2024-11-05",
                     "serverInfo": {
                         "name": agent.get("name", agent_id),
-                        "version": "2.82",
+                        "version": "2.83",
                         "description": f"Direct MCP access to {agent_id} CLI agent"
                     },
                     "capabilities": {
