@@ -3170,9 +3170,10 @@ async def handle_cli_agents_list(params: Dict[str, Any]) -> Dict[str, Any]:
     
     summary = []
     for a in agents:
-        agent_id = a.get("id", "unknown")
+        agent_id = a.get("agent_id", a.get("id", "unknown"))
         status = a.get("status", "unknown")
         pid = a.get("pid", "-")
+        name = a.get("name", "")
         summary.append(f"{agent_id}: {status} (pid={pid})")
 
     return {
