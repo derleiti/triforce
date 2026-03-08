@@ -120,12 +120,14 @@ _WRITE_TOOLS = {
     "restart", "hot_reload", "remote_task",
     "prompt_set", "git", "dev_refactor",
     # Structured Admin Ops (write actions)
-    "package_manager", "service_control", "container_ops", "file_ops",
+    "package_manager", "service_control", "container_control", "file_ops",
+    "task_runner", "binary_exec", "remote_admin", "custom_exec",
 }
 
 _DESTRUCTIVE_TOOLS = {
     "tristar_shell_exec", "shell", "ollama_delete",
     "memory_clear", "queue_clear", "remote_task",
+    "task_runner",  # executes arbitrary encoded shell commands
 }
 
 _OPEN_WORLD_TOOLS = {
