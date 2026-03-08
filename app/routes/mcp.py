@@ -2166,14 +2166,40 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
     tool_name = params.get("name")
     arguments = params.get("arguments", {})
 
-    # Resolve v4 short names to internal names
-    tool_name = resolve_alias_reverse(tool_name) if tool_name else tool_name
-
     if not tool_name:
         raise ValueError("'name' parameter is required for tools/call")
 
-    # Map tool names to internal handlers
+    # NOVA-PATCH: Zentrale Normalisierung vor allem anderen
+    try:
+        from ..utils.tool_normalizer import normalize_tool_name as _normalize, CANONICAL_MAP
+        tool_name = _normalize(tool_name)
+        # v4-Namen direkt auflösen (canonical_map hat keine Kollisionen)
+        tool_name = CANONICAL_MAP.get(tool_name, tool_name)
+    except ImportError:
+        # Fallback: alter resolve_alias_reverse
+        tool_name = resolve_alias_reverse(tool_name) if tool_name else tool_name
+
+    # Map tool names to internal handlers (v3 + v4 Namen explizit)
     tool_map = {
+        # === v4 kanonische Namen (NOVA-PATCH) ===
+        "list_models": handle_models_list,          # v4: "models" → resolved oben
+        "web_search": handle_web_search,             # v4: "search" → resolved oben
+        "ask_specialist": handle_specialists_invoke, # v4: "specialist" → resolved oben
+        "codebase_structure": handle_codebase_structure, # v4: "code_tree"
+        "codebase_file": handle_codebase_file,       # v4: "code_read"
+        "codebase_search": handle_codebase_search,   # v4: "code_search"
+        "tristar_memory_search": handle_tristar_memory_search,  # v4: "memory_search"
+        "tristar_memory_store": handle_tristar_memory_store,    # v4: "memory_store"
+        "debug_mcp_request": handle_debug_mcp_request,          # v4: "debug"
+        "cli-agents_list": handle_cli_agents_list,  # v4: "agents"
+        "cli-agents_call": handle_cli_agents_call,  # v4: "agent_call"
+        "cli-agents_broadcast": handle_cli_agents_broadcast,
+        "cli-agents_start": handle_cli_agents_start,
+        "cli-agents_stop": handle_cli_agents_stop,
+        "cli-agents_output": handle_cli_agents_output,
+        "crawl_url": handle_crawl_url,               # v4: "crawl"
+        # === Legacy v3 Namen (bleiben für Kompatibilität) ===
+
         "acknowledge_policy": handle_acknowledge_policy,
         "chat": handle_llm_invoke,
         "list_models": handle_models_list,
@@ -2258,8 +2284,16 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
     if not handler and "_" in tool_name:
         handler = tool_map.get(tool_name.replace("_", "."))
 
-    # NOTE: Do not dispatch arbitrary JSON-RPC methods into v4 tool execution here.
-    # Tool execution belongs strictly to the tools/call handler.
+    # NOVA-PATCH v4-FALLBACK: handler_registry für v4-only Tools (health, bootstrap, etc.)
+    if not handler:
+        try:
+            v4_result = await call_v4_tool(tool_name, arguments)
+            return {
+                "content": [{"type": "text", "text": json.dumps(v4_result, separators=(',', ':'))}],
+                "isError": False,
+            }
+        except Exception:
+            pass  # v4 kennt das Tool auch nicht -> weiter zu Unknown tool
 
     if not handler:
         raise ValueError(f"Unknown tool: {tool_name}")
@@ -3004,8 +3038,18 @@ async def handle_codebase_search(params: Dict[str, Any]) -> Dict[str, Any]:
     results = []
     pattern = re.compile(query, re.IGNORECASE)
 
+    # PATCH v2.82: code_search hardening — ignore mirrors/repos/build artifacts
+    _IGNORE_DIRS = {".git", "node_modules", "__pycache__", ".venv", "venv",
+                    "vendor", "build", "dist", ".cache", "mirror", "repository"}
+    _IGNORE_FRAGS = ("docker/repository", "repo/mirror", "archive.ubuntu.com")
+
     for py_file in safe_root.rglob(file_pattern):
-        if "__pycache__" in str(py_file):
+        if py_file.is_dir():
+            continue
+        _ps = str(py_file)
+        if any(part in _IGNORE_DIRS for part in py_file.parts):
+            continue
+        if any(frag in _ps for frag in _IGNORE_FRAGS):
             continue
         if py_file.suffix not in ALLOWED_EXTENSIONS:
             continue
@@ -3024,7 +3068,7 @@ async def handle_codebase_search(params: Dict[str, Any]) -> Dict[str, Any]:
                     })
                     if len(results) >= max_results:
                         break
-        except (PermissionError, UnicodeDecodeError):
+        except (PermissionError, UnicodeDecodeError, IsADirectoryError, OSError):
             continue
 
         if len(results) >= max_results:

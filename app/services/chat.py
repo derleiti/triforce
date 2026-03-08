@@ -341,6 +341,10 @@ async def _get_initial_response(
             ):
                 chunks.append(chunk)
         except Exception as exc:
+            # PATCH v2.82: No Ollama fallback for config/auth errors
+            _emsg = str(exc).lower()
+            if any(kw in _emsg for kw in ("api key", "unauthorized", "403", "401", "not configured", "forbidden")):
+                raise
             async for chunk in _fallback_to_ollama(messages, temperature, settings.request_timeout, "Mistral", exc):
                 chunks.append(chunk)
     elif model.provider == "gemini":
@@ -357,6 +361,10 @@ async def _get_initial_response(
             ):
                 chunks.append(chunk)
         except Exception as exc:
+            # PATCH v2.82: No Ollama fallback for config/auth errors
+            _emsg = str(exc).lower()
+            if any(kw in _emsg for kw in ("api key", "unauthorized", "403", "401", "not configured", "forbidden")):
+                raise
             async for chunk in _fallback_to_ollama(messages, temperature, settings.request_timeout, "Gemini", exc):
                 chunks.append(chunk)
     elif model.provider == "gpt-oss":
@@ -374,6 +382,10 @@ async def _get_initial_response(
             ):
                 chunks.append(chunk)
         except Exception as exc:
+            # PATCH v2.82: No Ollama fallback for config/auth errors
+            _emsg = str(exc).lower()
+            if any(kw in _emsg for kw in ("api key", "unauthorized", "403", "401", "not configured", "forbidden")):
+                raise
             async for chunk in _fallback_to_ollama(messages, temperature, settings.request_timeout, "GPT-OSS", exc):
                 chunks.append(chunk)
     elif model.provider == "anthropic":
@@ -391,6 +403,10 @@ async def _get_initial_response(
             ):
                 chunks.append(chunk)
         except Exception as exc:
+            # PATCH v2.82: No Ollama fallback for config/auth errors
+            _emsg = str(exc).lower()
+            if any(kw in _emsg for kw in ("api key", "unauthorized", "403", "401", "not configured", "forbidden")):
+                raise
             async for chunk in _fallback_to_ollama(messages, temperature, settings.request_timeout, "Anthropic", exc):
                 chunks.append(chunk)
     elif model.provider in OPENAI_COMPATIBLE_PROVIDERS:
@@ -414,6 +430,10 @@ async def _get_initial_response(
             ):
                 chunks.append(chunk)
         except Exception as exc:
+            # PATCH v2.82: No Ollama fallback for config/auth errors
+            _emsg = str(exc).lower()
+            if any(kw in _emsg for kw in ("api key", "unauthorized", "403", "401", "not configured", "forbidden")):
+                raise
             async for chunk in _fallback_to_ollama(messages, temperature, settings.request_timeout, model.provider.title(), exc):
                 chunks.append(chunk)
     elif model.provider == "cohere":
@@ -430,6 +450,10 @@ async def _get_initial_response(
             ):
                 chunks.append(chunk)
         except Exception as exc:
+            # PATCH v2.82: No Ollama fallback for config/auth errors
+            _emsg = str(exc).lower()
+            if any(kw in _emsg for kw in ("api key", "unauthorized", "403", "401", "not configured", "forbidden")):
+                raise
             async for chunk in _fallback_to_ollama(messages, temperature, settings.request_timeout, "Cohere", exc):
                 chunks.append(chunk)
     elif model.provider == "cloudflare":
@@ -447,6 +471,10 @@ async def _get_initial_response(
             ):
                 chunks.append(chunk)
         except Exception as exc:
+            # PATCH v2.82: No Ollama fallback for config/auth errors
+            _emsg = str(exc).lower()
+            if any(kw in _emsg for kw in ("api key", "unauthorized", "403", "401", "not configured", "forbidden")):
+                raise
             async for chunk in _fallback_to_ollama(messages, temperature, settings.request_timeout, "Cloudflare", exc):
                 chunks.append(chunk)
     else:

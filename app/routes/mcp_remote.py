@@ -83,8 +83,8 @@ router = APIRouter(tags=["MCP Remote Server"])
 
 MCP_SERVER_INFO = {
     "name": "AILinux API",
-    "version": "2.81",
-    "description": "AILinux AI Backend v2.81 - TriStar/TriForce Multi-LLM Orchestration with CLI Agents, Codebase Access, and Self-Development capabilities",
+    "version": "2.82",
+    "description": "AILinux AI Backend v2.82 - TriStar/TriForce Multi-LLM Orchestration with CLI Agents, Codebase Access, Self-Development, Read-Only Diagnostics, and MCP Tool Telemetry",
     "vendor": "AILinux",
 }
 
@@ -139,23 +139,31 @@ _OPEN_WORLD_TOOLS = {
 }
 
 
-def _inject_annotations(tools: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """Inject MCP tool annotations for ChatGPT Developer Mode compatibility."""
-    annotated = []
+def _inject_annotations(tools):
+    """Inject MCP tool annotations. PATCH v2.82: respects pre-set annotations."""
+    try:
+        from ..utils.tool_normalizer import is_readonly_tool as _is_ro
+    except ImportError:
+        _is_ro = lambda name: name not in _WRITE_TOOLS
+    out = []
     for tool in tools:
         t = dict(tool)
         name = t.get("name", "")
-        is_write = name in _WRITE_TOOLS
-        is_destructive = name in _DESTRUCTIVE_TOOLS
+        ex = t.get("annotations") or {}
+        if isinstance(ex, dict) and "readOnlyHint" in ex:
+            ro = ex["readOnlyHint"]
+        else:
+            ro = _is_ro(name)
+        destr = name in _DESTRUCTIVE_TOOLS
         t["annotations"] = {
-            "title": t.get("description", name)[:80],
-            "readOnlyHint": not is_write,
-            "destructiveHint": is_destructive,
-            "idempotentHint": not is_destructive,
-            "openWorldHint": name in _OPEN_WORLD_TOOLS,
+            "title": ex.get("title", t.get("description", name)[:80]) if isinstance(ex, dict) else t.get("description", name)[:80],
+            "readOnlyHint": ro,
+            "destructiveHint": ex.get("destructiveHint", destr) if isinstance(ex, dict) else destr,
+            "idempotentHint": ex.get("idempotentHint", not destr) if isinstance(ex, dict) else not destr,
+            "openWorldHint": ex.get("openWorldHint", name in _OPEN_WORLD_TOOLS) if isinstance(ex, dict) else name in _OPEN_WORLD_TOOLS,
         }
-        annotated.append(t)
-    return annotated
+        out.append(t)
+    return out
 
 # ============================================================================
 # Authentication - Uses central mcp_auth module
@@ -1027,12 +1035,35 @@ async def handle_chat(arguments: Dict[str, Any]) -> Dict[str, Any]:
     else:
         raise ValueError("'message' or 'messages' is required")
     
+    # --- PATCH v2.82: Provider-striktes Routing ---
+    # Detect explicit provider prefix to prevent wrong Ollama fallback
+    _known_providers = {"anthropic", "gemini", "mistral", "ollama", "gpt-oss",
+                        "groq", "cerebras", "together", "fireworks", "openrouter",
+                        "cohere", "cloudflare"}
+    _explicit_provider = None
+    for _prefix in _known_providers:
+        if model_id.startswith(f"{_prefix}/"):
+            _explicit_provider = _prefix
+            break
+
     model = await registry.get_model(model_id)
-    if not model:
+
+    if not model and not _explicit_provider:
+        # Nur Ollama-Fallback wenn KEIN Provider explizit angegeben wurde
         model = await registry.get_model(f"ollama/{model_id}")
+
+    if not model:
+        _provider_hint = f" (provider: {_explicit_provider})" if _explicit_provider else ""
+        raise ValueError(
+            f"Model '{model_id}' not found or not available{_provider_hint}. "
+            f"Use 'list_models' to see available models. "
+            f"Check that the provider API key is configured."
+        )
+
     valid_caps = {"chat", "code", "reasoning"}
-    if not model or not any(cap in model.capabilities for cap in valid_caps):
-        raise ValueError(f"Model '{model_id}' not found or does not support chat/code")
+    if not any(cap in model.capabilities for cap in valid_caps):
+        raise ValueError(f"Model '{model_id}' does not support chat/code/reasoning")
+    # --- END PATCH v2.82 ---
     
     chunks = []
     async with request_slot():
@@ -1448,6 +1479,23 @@ async def handle_codebase_services(arguments: Dict[str, Any]) -> Dict[str, Any]:
     return await _handler(arguments)
 
 
+async def handle_status_remote(arguments: Dict[str, Any]) -> Dict[str, Any]:
+    """Get full system status (v4 canonical: status → tristar_status). NOVA-PATCH"""
+    from ..services.tristar_mcp import handle_tristar_status as _handler
+    return await _handler(arguments)
+
+
+async def handle_health_remote(arguments: Dict[str, Any]) -> Dict[str, Any]:
+    """Lightweight health check — ChatGPT-safe read-only tool. NOVA-PATCH"""
+    import time
+    return {
+        "status": "ok",
+        "backend": "triforce",
+        "version": "2.82",
+        "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+    }
+
+
 # ============================================================================
 # CLI Agent Tool Handlers (v2.80)
 # ============================================================================
@@ -1729,6 +1777,23 @@ TOOL_HANDLERS = {
     # Structured Admin API (v2.81)
     **STRUCTURED_ADMIN_HANDLERS,
 
+    # v4 canonical name aliases (NOVA-PATCH: ChatGPT-Kompatibilität)
+    "models": handle_list_models,
+    "status": handle_status_remote,         # NOVA-PATCH: tristar_status alias
+    "health": handle_health_remote,         # NOVA-PATCH: lightweight health check
+    "search": handle_web_search,
+    "agents": handle_cli_agents_list,
+    "agent_call": handle_cli_agents_call,
+    "agent_broadcast": handle_cli_agents_broadcast,
+    "agent_start": handle_cli_agents_start,
+    "agent_stop": handle_cli_agents_stop,
+    "agent_output": handle_cli_agents_output,
+    "code_tree": handle_codebase_structure,
+    "code_read": handle_codebase_file,
+    "code_search": handle_codebase_search,
+    "memory_search": handle_tristar_memory_search,
+    "memory_store": handle_tristar_memory_store,
+    "crawl": handle_crawl_url,
     # Extended Search Tools (v4.0)
     "multi_search": handle_multi_search_remote,
     "smart_search": handle_smart_search_remote,
@@ -1928,12 +1993,13 @@ async def mcp_rpc_endpoint(request: Request):
                         "resources": {"listChanged": False},
                     },
                     "instructions": (
-                        "AILinux MCP Server v2.81. "
-                        "Use structured tools: system_info, package_manager, service_control, "
-                        "container_control, file_ops, network_info, log_viewer, remote_admin, custom_exec. "
+                        "AILinux MCP Server v2.82. "
+                        "Read-only diagnostics: safe_probe, agent_review, service_status, container_status, file_read, remote_status. "
+                        "Write tools: system_info, package_manager, service_control, container_control, file_ops, network_info, log_viewer, remote_admin, custom_exec. "
                         "For arbitrary commands: task_runner(action='encode', text='cmd', format='b64') "
                         "then task_runner(action='execute', task_data='b64:...'). elevated=true for root. "
-                        "binary_exec runs 60+ programs by name. Do NOT use raw 'shell' tool."
+                        "binary_exec runs 60+ programs by name. Do NOT use raw 'shell' tool. "
+                        "Provider-strict routing: use 'anthropic/model-name' or 'gemini/model-name' prefixes for explicit provider selection."
                     ),
                 },
                 "id": req_id
@@ -1957,7 +2023,12 @@ async def mcp_rpc_endpoint(request: Request):
                 "tristar_memory_store", "tristar_memory_search",
                 "cli-agents_list", "cli-agents_call", "cli-agents_broadcast",
                 "codebase_structure", "codebase_file", "codebase_search",
-                "gemini_research", "gemini_quick", "ollama_list"
+                "gemini_research", "gemini_quick", "ollama_list",
+                # v2.82 read-only diagnostics
+                "safe_probe", "agent_review", "service_status",
+                "container_status", "file_read", "remote_status",
+                "system_info", "log_viewer", "network_info", "mcp_telemetry",
+                "mcp_analytics", "process_control",
             ]
             tools_result = [t for t in tools_result if t.get("name") in essential_tools]
 
@@ -1994,6 +2065,13 @@ async def mcp_rpc_endpoint(request: Request):
             result = await handler(arguments)
             latency_ms = (_time.time() - start_time) * 1000
             await multi_logger.log_mcp(f"tools/call:{tool_name}", arguments, result, latency_ms)
+            # v2.82: Telemetry recording
+            try:
+                from ..mcp.structured_admin import mcp_telemetry
+                _rchars = len(json.dumps(result, separators=(',',':'))) if result else 0
+                mcp_telemetry.record(tool_name, latency_ms, success=True, response_chars=_rchars)
+            except Exception:
+                pass  # Telemetry must never break tool calls
             # v2.82: Dedicated tool call logging
             await multi_logger.log_mcp_tool_call(
                 tool_name=tool_name,
@@ -2003,6 +2081,13 @@ async def mcp_rpc_endpoint(request: Request):
                 caller="mcp_remote",
                 result_preview=str(result)[:300] if result else None
             )
+            # v2.82: In-memory analytics for mcp_analytics tool
+            try:
+                from ..mcp.structured_admin import record_mcp_call as _rec
+                _rsz = len(json.dumps(result, separators=(',',':'))) if result else 0
+                _rec(tool_name, latency_ms, "success", "mcp_remote", result_size=_rsz)
+            except Exception:
+                pass
             return JSONResponse(
                 content={
                     "jsonrpc": "2.0",
@@ -2019,6 +2104,12 @@ async def mcp_rpc_endpoint(request: Request):
         except Exception as exc:
             latency_ms = (_time.time() - start_time) * 1000
             await multi_logger.log_mcp(f"tools/call:{tool_name}", arguments, None, latency_ms, str(exc))
+            # v2.82: Telemetry recording (error)
+            try:
+                from ..mcp.structured_admin import mcp_telemetry
+                mcp_telemetry.record(tool_name, latency_ms, success=False, error=str(exc))
+            except Exception:
+                pass
             # v2.82: Log failed tool calls
             await multi_logger.log_mcp_tool_call(
                 tool_name=tool_name,
@@ -2028,6 +2119,12 @@ async def mcp_rpc_endpoint(request: Request):
                 caller="mcp_remote",
                 error=str(exc)
             )
+            # v2.82: In-memory analytics for mcp_analytics tool
+            try:
+                from ..mcp.structured_admin import record_mcp_call as _rec
+                _rec(tool_name, latency_ms, "error", "mcp_remote", error=str(exc))
+            except Exception:
+                pass
             return JSONResponse(
                 content={
                     "jsonrpc": "2.0",
@@ -2180,7 +2277,7 @@ async def _handle_agent_mcp_call(agent_id: str, request: Request):
                     "protocolVersion": "2024-11-05",
                     "serverInfo": {
                         "name": agent.get("name", agent_id),
-                        "version": "2.81",
+                        "version": "2.82",
                         "description": f"Direct MCP access to {agent_id} CLI agent"
                     },
                     "capabilities": {
@@ -2300,6 +2397,7 @@ async def _handle_agent_mcp_call(agent_id: str, request: Request):
                 }
             }
         ]
+        tools = _inject_annotations(tools)  # NOVA-PATCH: readOnlyHint für ChatGPT
         return JSONResponse(
             content={
                 "jsonrpc": "2.0",

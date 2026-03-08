@@ -218,6 +218,7 @@ STRUCTURED_ADMIN_TOOLS = [
 STRUCTURED_ADMIN_HANDLERS = {t["name"]:globals()[f"handle_{t['name']}"] for t in STRUCTURED_ADMIN_TOOLS}
 logger.info(f"Structured Admin API loaded: {len(STRUCTURED_ADMIN_TOOLS)} tools")
 
+
 # =============================================================================
 # REMOTE EXECUTION — SSH to Federation Nodes (structured, no shell patterns)
 # =============================================================================
@@ -1075,3 +1076,625 @@ STRUCTURED_ADMIN_HANDLERS["task_runner"] = handle_task_runner
 STRUCTURED_ADMIN_HANDLERS["binary_exec"] = handle_binary_exec
 
 logger.info(f"Structured Admin API final: {len(STRUCTURED_ADMIN_TOOLS)} tools, {len(COMMAND_TEMPLATES)} templates, {len(ALLOWED_BINARIES)} binaries")
+
+
+# =============================================================================
+# PATCH v2.82 — SAFE PROBE (Read-Only Diagnostik, MCP Write-Gate-safe)
+# =============================================================================
+
+_SAFE_PROBE_COMMANDS = {
+    "hostname":      ["hostname"],
+    "uptime":        ["uptime", "-p"],
+    "uname":         ["uname", "-a"],
+    "free":          ["free", "-h"],
+    "df":            ["df", "-h", "--total"],
+    "docker_ps":     ["docker", "ps", "--format", "table {{.Names}}\t{{.Status}}"],
+    "load":          ["cat", "/proc/loadavg"],
+    "kernel":        ["uname", "-r"],
+    "os_release":    ["lsb_release", "-ds"],
+    "who":           ["who"],
+    "systemd_failed":["systemctl", "--failed", "--no-pager"],
+}
+
+_SAFE_PROBE_SERVICES = SERVICES
+
+
+async def handle_safe_probe(a):
+    """Read-only system diagnostics. No side effects, no sudo, no pipes."""
+    action = a.get("action", "overview")
+
+    if action == "overview":
+        data = {}
+        for name in ("hostname", "uptime", "kernel", "load", "free", "df"):
+            r = await _run(_SAFE_PROBE_COMMANDS[name], timeout=5)
+            data[name] = r["output"] if r["success"] else f"[error: {r['errors']}]"
+        return {"action": "overview", "data": data}
+
+    elif action == "run":
+        probe = a.get("probe", "")
+        if probe not in _SAFE_PROBE_COMMANDS:
+            return {"error": f"Unknown probe: '{probe}'. Available: {list(_SAFE_PROBE_COMMANDS.keys())}"}
+        r = await _run(_SAFE_PROBE_COMMANDS[probe], timeout=10)
+        return {"action": "run", "probe": probe, **r}
+
+    elif action == "service_status":
+        service = a.get("service", "")
+        if service and service not in _SAFE_PROBE_SERVICES:
+            return {"error": f"Service '{service}' not in allowlist: {_SAFE_PROBE_SERVICES}"}
+        if service:
+            r = await _run(["systemctl", "status", service, "--no-pager", "-l"], timeout=10)
+            return {"action": "service_status", "service": service, **r}
+        else:
+            data = {}
+            for s in _SAFE_PROBE_SERVICES:
+                data[s] = (await _run(["systemctl", "is-active", s], timeout=5))["output"]
+            return {"action": "service_status", "services": data}
+
+    elif action == "journal":
+        n = str(min(a.get("lines", 30), 100))
+        unit = a.get("unit", "")
+        cmd = ["journalctl", "--no-pager", "-n", n]
+        if unit and unit in _SAFE_PROBE_SERVICES:
+            cmd.extend(["-u", unit])
+        r = await _run(cmd, timeout=10)
+        return {"action": "journal", "lines_requested": int(n), **r}
+
+    elif action == "remote_ping":
+        results = {}
+        for name, info in FEDERATION_NODES.items():
+            r = await _run(
+                ["ssh", "-o", "StrictHostKeyChecking=no", "-o", "ConnectTimeout=3",
+                 "-o", "BatchMode=yes", f"{info['user']}@{info['host']}", "--",
+                 "uptime", "-p"],
+                timeout=8
+            )
+            results[name] = {"reachable": r["success"], "uptime": r["output"] if r["success"] else None}
+        return {"action": "remote_ping", "nodes": results}
+
+    elif action == "list":
+        return {
+            "action": "list",
+            "probes": list(_SAFE_PROBE_COMMANDS.keys()),
+            "services": _SAFE_PROBE_SERVICES,
+            "remote_nodes": list(FEDERATION_NODES.keys()),
+        }
+
+    return {"error": f"Unknown action: {action}. Use: overview, run, service_status, journal, remote_ping, list"}
+
+
+STRUCTURED_ADMIN_TOOLS.append({
+    "name": "safe_probe",
+    "description": "Read-only system diagnostics: hostname, uptime, memory, disk, docker, service status, journal, remote node ping. No side effects, no sudo. Safe for MCP read-only gate.",
+    "inputSchema": {"type": "object", "properties": {
+        "action": {"type": "string", "enum": ["overview", "run", "service_status", "journal", "remote_ping", "list"],
+                    "description": "overview=quick system snapshot, run=specific probe, service_status=systemd check, journal=recent logs, remote_ping=federation connectivity, list=show all probes"},
+        "probe": {"type": "string", "enum": list(_SAFE_PROBE_COMMANDS.keys()),
+                   "description": "Specific probe to run (for action=run)"},
+        "service": {"type": "string", "enum": SERVICES,
+                     "description": "Service name (for service_status). Omit for all."},
+        "unit": {"type": "string", "description": "Journald unit filter (for journal)"},
+        "lines": {"type": "integer", "description": "Journal lines (max 100, default 30)"},
+    }, "required": ["action"]},
+    "annotations": {
+        "title": "Safe System Probe (Read-Only)",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    },
+})
+
+STRUCTURED_ADMIN_HANDLERS["safe_probe"] = handle_safe_probe
+logger.info("PATCH v2.82: safe_probe registered (read-only)")
+
+
+# =============================================================================
+# PATCH v2.82 — AGENT REVIEW (Read-Only AI-Debug / Review Tool)
+# =============================================================================
+
+async def handle_agent_review(a):
+    """Read-only agent inspection and AI-assisted review. No start/stop/modify."""
+    from ..services.tristar.agent_controller import agent_controller
+    action = a.get("action", "status")
+
+    if action == "status":
+        agent_id = a.get("agent_id")
+        if agent_id:
+            agent = await agent_controller.get_agent(agent_id)
+            return {"action": "status", "agent": agent or {"error": f"Agent '{agent_id}' not found"}}
+        else:
+            agents = await agent_controller.list_agents()
+            return {"action": "status", "agents": agents}
+
+    elif action == "output":
+        agent_id = a.get("agent_id", "")
+        if not agent_id:
+            return {"error": "agent_id required for output action"}
+        lines = min(a.get("lines", 50), 200)
+        output = await agent_controller.get_agent_output(agent_id, lines)
+        return {"action": "output", "agent_id": agent_id, "output": output, "lines": len(output)}
+
+    elif action == "stats":
+        stats = await agent_controller.get_stats() if hasattr(agent_controller, 'get_stats') else {}
+        return {"action": "stats", "data": stats}
+
+    elif action == "health_check":
+        agents = await agent_controller.list_agents()
+        health = {}
+        for agent in (agents if isinstance(agents, list) else agents.get("agents", [])):
+            aid = agent.get("id", agent.get("agent_id", "unknown"))
+            health[aid] = {
+                "status": agent.get("status", "unknown"),
+                "running": agent.get("status") == "running",
+                "pid": agent.get("pid"),
+            }
+        return {"action": "health_check", "agents": health}
+
+    elif action == "review_logs":
+        agent_id = a.get("agent_id", "")
+        context = {"agent_id": agent_id}
+
+        if agent_id:
+            agent = await agent_controller.get_agent(agent_id)
+            context["agent_status"] = agent
+            output = await agent_controller.get_agent_output(agent_id, 30)
+            context["recent_output"] = output
+
+        r = await _run(["systemctl", "is-active", "triforce"], timeout=5)
+        context["triforce_status"] = r["output"]
+        r = await _run(["free", "-h"], timeout=5)
+        context["memory"] = r["output"]
+        r = await _run(["cat", "/proc/loadavg"], timeout=5)
+        context["load"] = r["output"]
+
+        return {
+            "action": "review_logs",
+            "context": context,
+            "hint": "Use this data for root-cause analysis. No modifications were made.",
+        }
+
+    return {"error": f"Unknown action: {action}. Use: status, output, stats, health_check, review_logs"}
+
+
+STRUCTURED_ADMIN_TOOLS.append({
+    "name": "agent_review",
+    "description": "Read-only AI agent inspection and debugging. View agent status, output buffers, health checks, and collect review context. No start/stop/modify — safe for MCP read-only gate.",
+    "inputSchema": {"type": "object", "properties": {
+        "action": {"type": "string", "enum": ["status", "output", "stats", "health_check", "review_logs"],
+                    "description": "status=agent info, output=recent buffer, stats=metrics, health_check=all agents, review_logs=debug context"},
+        "agent_id": {"type": "string", "description": "Agent ID (e.g. 'claude-mcp', 'codex-mcp')"},
+        "lines": {"type": "integer", "description": "Output lines (max 200, default 50)"},
+    }, "required": ["action"]},
+    "annotations": {
+        "title": "Agent Review (Read-Only)",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    },
+})
+
+STRUCTURED_ADMIN_HANDLERS["agent_review"] = handle_agent_review
+logger.info("PATCH v2.82: agent_review registered (read-only)")
+
+
+# =============================================================================
+# PATCH v2.82 — READ-ONLY TOOL VARIANTS (Tool-Splitting)
+# =============================================================================
+
+async def handle_service_status(a):
+    """Read-only wrapper: delegiert an service_control mit action=status|logs."""
+    action = a.get("action", "status")
+    if action not in ("status", "logs"):
+        return {"error": f"service_status only supports: status, logs. Got: {action}"}
+    return await handle_service_control({**a, "action": action})
+
+async def handle_container_status(a):
+    """Read-only wrapper: delegiert an container_control mit action=list|status|logs|stats."""
+    action = a.get("action", "list")
+    if action not in ("list", "status", "logs", "stats"):
+        return {"error": f"container_status only supports: list, status, logs, stats. Got: {action}"}
+    return await handle_container_control({**a, "action": action})
+
+async def handle_file_read(a):
+    """Read-only wrapper: delegiert an file_ops mit action=read|list|find|size."""
+    action = a.get("action", "read")
+    if action not in ("read", "list", "find", "size"):
+        return {"error": f"file_read only supports: read, list, find, size. Got: {action}"}
+    return await handle_file_ops({**a, "action": action})
+
+async def handle_remote_status(a):
+    """Read-only wrapper: delegiert an remote_admin mit read-only actions."""
+    action = a.get("action", "ping_all")
+    read_only_actions = {"list_hosts", "ping_all", "system_overview", "service_status",
+                         "docker_status", "disk_usage", "memory_usage", "check_connectivity"}
+    if action not in read_only_actions:
+        return {"error": f"remote_status only supports: {sorted(read_only_actions)}. Got: {action}"}
+    return await handle_remote_admin({**a, "action": action})
+
+
+_READONLY_SPLIT_TOOLS = [
+    {"name": "service_status",
+     "description": "Check systemd service status and view logs (read-only). For start/stop/restart use service_control.",
+     "inputSchema": {"type": "object", "properties": {
+         "action": {"type": "string", "enum": ["status", "logs"]},
+         "service": {"type": "string", "enum": SERVICES},
+         "lines": {"type": "integer"},
+     }, "required": ["action", "service"]},
+     "annotations": {"title": "Service Status (Read-Only)", "readOnlyHint": True,
+                      "destructiveHint": False, "idempotentHint": True, "openWorldHint": False}},
+
+    {"name": "container_status",
+     "description": "View Docker container status, logs, and resource stats (read-only). For start/stop/restart use container_control.",
+     "inputSchema": {"type": "object", "properties": {
+         "action": {"type": "string", "enum": ["list", "status", "logs", "stats"]},
+         "container": {"type": "string", "enum": CONTAINERS},
+         "lines": {"type": "integer"},
+     }, "required": ["action"]},
+     "annotations": {"title": "Container Status (Read-Only)", "readOnlyHint": True,
+                      "destructiveHint": False, "idempotentHint": True, "openWorldHint": False}},
+
+    {"name": "file_read",
+     "description": "Read files, list directories, find files, check sizes (read-only). For write/append use file_ops.",
+     "inputSchema": {"type": "object", "properties": {
+         "action": {"type": "string", "enum": ["read", "list", "find", "size"]},
+         "path": {"type": "string"},
+         "pattern": {"type": "string"},
+         "start_line": {"type": "integer"},
+         "end_line": {"type": "integer"},
+     }, "required": ["action", "path"]},
+     "annotations": {"title": "File Reader (Read-Only)", "readOnlyHint": True,
+                      "destructiveHint": False, "idempotentHint": True, "openWorldHint": False}},
+
+    {"name": "remote_status",
+     "description": "View federation node status, connectivity, disk/memory usage (read-only). For service restarts use remote_admin.",
+     "inputSchema": {"type": "object", "properties": {
+         "action": {"type": "string", "enum": ["list_hosts", "ping_all", "system_overview", "service_status",
+                                                 "docker_status", "disk_usage", "memory_usage", "check_connectivity"]},
+         "host": {"type": "string", "enum": list(REMOTE_HOSTS.keys())},
+         "service": {"type": "string", "enum": SERVICES},
+     }, "required": ["action"]},
+     "annotations": {"title": "Remote Node Status (Read-Only)", "readOnlyHint": True,
+                      "destructiveHint": False, "idempotentHint": True, "openWorldHint": False}},
+]
+
+STRUCTURED_ADMIN_TOOLS.extend(_READONLY_SPLIT_TOOLS)
+STRUCTURED_ADMIN_HANDLERS.update({
+    "service_status": handle_service_status,
+    "container_status": handle_container_status,
+    "file_read": handle_file_read,
+    "remote_status": handle_remote_status,
+})
+
+logger.info(f"PATCH v2.82: Read-only split tools registered ({len(_READONLY_SPLIT_TOOLS)} tools). Total: {len(STRUCTURED_ADMIN_TOOLS)} tools")
+
+
+# =============================================================================
+# PATCH v2.82 — MCP TOOL TELEMETRY (Read-Only Performance Metrics)
+# =============================================================================
+
+from collections import defaultdict as _defaultdict
+
+class _MCPTelemetryStore:
+    """In-memory telemetry for MCP tool calls: latency, tokens, errors."""
+
+    def __init__(self):
+        self._calls = _defaultdict(lambda: {
+            "count": 0, "errors": 0,
+            "total_ms": 0, "min_ms": float("inf"), "max_ms": 0,
+            "last_call": None, "last_error": None,
+            "_total_chars": 0,
+        })
+        self._recent = []
+        self._max_recent = 100
+
+    def record(self, tool_name, latency_ms, success=True, response_chars=0, error=None):
+        s = self._calls[tool_name]
+        s["count"] += 1
+        s["total_ms"] += latency_ms
+        s["min_ms"] = min(s["min_ms"], latency_ms)
+        s["max_ms"] = max(s["max_ms"], latency_ms)
+        s["_total_chars"] += response_chars
+        s["last_call"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+        if not success:
+            s["errors"] += 1
+            s["last_error"] = str(error)[:200] if error else None
+        self._recent.append({
+            "tool": tool_name, "ms": latency_ms, "ok": success,
+            "chars": response_chars, "ts": s["last_call"],
+        })
+        if len(self._recent) > self._max_recent:
+            self._recent.pop(0)
+
+    def get_stats(self, tool_name=None):
+        if tool_name:
+            s = self._calls.get(tool_name)
+            if not s: return {"error": f"No data for: {tool_name}"}
+            avg_chars = s["_total_chars"] // max(s["count"], 1)
+            return {"tool": tool_name, "calls": s["count"], "errors": s["errors"],
+                    "avg_ms": round(s["total_ms"]/max(s["count"],1)),
+                    "min_ms": s["min_ms"] if s["min_ms"]!=float("inf") else 0,
+                    "max_ms": s["max_ms"], "est_tokens": avg_chars//4,
+                    "last_call": s["last_call"], "last_error": s["last_error"]}
+        return {n: {"calls": s["count"], "errors": s["errors"],
+                     "avg_ms": round(s["total_ms"]/max(s["count"],1)),
+                     "max_ms": s["max_ms"]}
+                for n, s in sorted(self._calls.items(), key=lambda x: x[1]["count"], reverse=True)}
+
+    def get_recent(self, n=20): return list(reversed(self._recent[-n:]))
+
+    def get_summary(self):
+        tc = sum(s["count"] for s in self._calls.values())
+        te = sum(s["errors"] for s in self._calls.values())
+        tm = sum(s["total_ms"] for s in self._calls.values())
+        return {"total_calls": tc, "total_errors": te,
+                "avg_latency_ms": round(tm/max(tc,1)), "unique_tools": len(self._calls),
+                "top_by_calls": [(k,v["count"]) for k,v in sorted(self._calls.items(), key=lambda x:x[1]["count"], reverse=True)[:5]]}
+
+mcp_telemetry = _MCPTelemetryStore()
+
+
+async def handle_mcp_telemetry(a):
+    """Read-only MCP telemetry: latency, tokens, error rates."""
+    action = a.get("action", "summary")
+    if action == "summary": return {"action": "summary", **mcp_telemetry.get_summary()}
+    elif action == "tool":
+        t = a.get("tool", "")
+        if not t: return {"error": "tool parameter required"}
+        return {"action": "tool", **mcp_telemetry.get_stats(t)}
+    elif action == "all": return {"action": "all", "tools": mcp_telemetry.get_stats()}
+    elif action == "recent": return {"action": "recent", "calls": mcp_telemetry.get_recent(min(a.get("lines",20),100))}
+    return {"error": f"Unknown action: {action}. Use: summary, tool, all, recent"}
+
+
+STRUCTURED_ADMIN_TOOLS.append({
+    "name": "mcp_telemetry",
+    "description": "Read-only MCP tool call telemetry: latency, token estimates, error rates per tool. summary=overview, tool=specific, all=all tools, recent=last N calls.",
+    "inputSchema": {"type": "object", "properties": {
+        "action": {"type": "string", "enum": ["summary", "tool", "all", "recent"]},
+        "tool": {"type": "string", "description": "Tool name (for action=tool)"},
+        "lines": {"type": "integer", "description": "Recent calls count (max 100)"},
+    }, "required": ["action"]},
+    "annotations": {"title": "MCP Telemetry (Read-Only)", "readOnlyHint": True,
+                     "destructiveHint": False, "idempotentHint": True, "openWorldHint": False},
+})
+
+STRUCTURED_ADMIN_HANDLERS["mcp_telemetry"] = handle_mcp_telemetry
+logger.info("PATCH v2.82: mcp_telemetry registered (read-only)")
+
+
+# =============================================================================
+# PATCH v2.82 — MCP ANALYTICS (Read-Only Performance & Benchmark Tool)
+# =============================================================================
+# Liest MCP Tool-Call-Logs und berechnet: Latenz, Erfolgsrate, Token-Schätzung,
+# Top-Tools, Fehler-Ranking. Read-only, keine Side Effects.
+
+import json as _json
+from collections import defaultdict as _defaultdict
+
+_MCP_CALL_LOG = []  # In-Memory Ring-Buffer für aktuelle Session
+_MCP_CALL_LOG_MAX = 500
+
+
+def record_mcp_call(tool_name, latency_ms, status, caller="unknown", error=None, result_size=0):
+    """Record an MCP tool call for analytics. Called from mcp_remote.py handler."""
+    import time as _t
+    entry = {
+        "tool": tool_name,
+        "latency_ms": round(latency_ms, 1),
+        "status": status,
+        "caller": caller,
+        "error": str(error)[:200] if error else None,
+        "result_bytes": result_size,
+        "timestamp": _t.strftime("%Y-%m-%dT%H:%M:%SZ", _t.gmtime()),
+        "ts": _t.time(),
+    }
+    _MCP_CALL_LOG.append(entry)
+    if len(_MCP_CALL_LOG) > _MCP_CALL_LOG_MAX:
+        _MCP_CALL_LOG.pop(0)
+
+
+async def handle_mcp_analytics(a):
+    """Read-only MCP tool call analytics and performance benchmarks."""
+    action = a.get("action", "summary")
+
+    if action == "summary":
+        if not _MCP_CALL_LOG:
+            # Fallback: lese aus Log-Datei
+            return await _analytics_from_logfile(a)
+
+        total = len(_MCP_CALL_LOG)
+        success = sum(1 for e in _MCP_CALL_LOG if e["status"] == "success")
+        errors = total - success
+
+        # Per-Tool Stats
+        tool_stats = _defaultdict(lambda: {"count": 0, "success": 0, "errors": 0,
+                                            "total_ms": 0, "min_ms": 99999, "max_ms": 0})
+        for e in _MCP_CALL_LOG:
+            t = tool_stats[e["tool"]]
+            t["count"] += 1
+            if e["status"] == "success":
+                t["success"] += 1
+            else:
+                t["errors"] += 1
+            ms = e["latency_ms"]
+            t["total_ms"] += ms
+            t["min_ms"] = min(t["min_ms"], ms)
+            t["max_ms"] = max(t["max_ms"], ms)
+
+        # Top-10 by call count
+        top_tools = sorted(tool_stats.items(), key=lambda x: x[1]["count"], reverse=True)[:10]
+        top_tools_formatted = []
+        for name, s in top_tools:
+            avg_ms = round(s["total_ms"] / s["count"], 1) if s["count"] else 0
+            top_tools_formatted.append({
+                "tool": name,
+                "calls": s["count"],
+                "success_rate": round(s["success"] / s["count"] * 100, 1) if s["count"] else 0,
+                "avg_latency_ms": avg_ms,
+                "min_ms": round(s["min_ms"], 1),
+                "max_ms": round(s["max_ms"], 1),
+            })
+
+        # Slowest calls
+        slowest = sorted(_MCP_CALL_LOG, key=lambda e: e["latency_ms"], reverse=True)[:5]
+
+        # Error summary
+        error_tools = [(name, s["errors"]) for name, s in tool_stats.items() if s["errors"] > 0]
+        error_tools.sort(key=lambda x: x[1], reverse=True)
+
+        # Overall latency
+        all_ms = [e["latency_ms"] for e in _MCP_CALL_LOG]
+        avg_ms = round(sum(all_ms) / len(all_ms), 1) if all_ms else 0
+        p50 = sorted(all_ms)[len(all_ms) // 2] if all_ms else 0
+        p95 = sorted(all_ms)[int(len(all_ms) * 0.95)] if all_ms else 0
+        p99 = sorted(all_ms)[int(len(all_ms) * 0.99)] if all_ms else 0
+
+        return {
+            "action": "summary",
+            "total_calls": total,
+            "success": success,
+            "errors": errors,
+            "success_rate": round(success / total * 100, 1) if total else 0,
+            "latency": {
+                "avg_ms": avg_ms,
+                "p50_ms": round(p50, 1),
+                "p95_ms": round(p95, 1),
+                "p99_ms": round(p99, 1),
+            },
+            "top_tools": top_tools_formatted,
+            "error_ranking": error_tools[:5],
+            "slowest_calls": [{
+                "tool": e["tool"], "latency_ms": e["latency_ms"],
+                "status": e["status"], "timestamp": e["timestamp"],
+            } for e in slowest],
+            "buffer_size": len(_MCP_CALL_LOG),
+            "buffer_max": _MCP_CALL_LOG_MAX,
+        }
+
+    elif action == "recent":
+        n = min(a.get("limit", 20), 50)
+        recent = _MCP_CALL_LOG[-n:]
+        return {
+            "action": "recent",
+            "calls": [{
+                "tool": e["tool"],
+                "latency_ms": e["latency_ms"],
+                "status": e["status"],
+                "caller": e.get("caller"),
+                "timestamp": e["timestamp"],
+                "error": e.get("error"),
+            } for e in reversed(recent)],
+            "count": len(recent),
+        }
+
+    elif action == "tool_detail":
+        tool_name = a.get("tool", "")
+        if not tool_name:
+            return {"error": "tool parameter required"}
+        entries = [e for e in _MCP_CALL_LOG if e["tool"] == tool_name]
+        if not entries:
+            return {"action": "tool_detail", "tool": tool_name, "message": "No calls recorded"}
+        ms_list = [e["latency_ms"] for e in entries]
+        errors = [e for e in entries if e["status"] != "success"]
+        return {
+            "action": "tool_detail",
+            "tool": tool_name,
+            "total_calls": len(entries),
+            "success": len(entries) - len(errors),
+            "errors": len(errors),
+            "latency": {
+                "avg_ms": round(sum(ms_list) / len(ms_list), 1),
+                "min_ms": round(min(ms_list), 1),
+                "max_ms": round(max(ms_list), 1),
+                "p95_ms": round(sorted(ms_list)[int(len(ms_list) * 0.95)], 1) if len(ms_list) > 1 else round(ms_list[0], 1),
+            },
+            "recent_errors": [{
+                "error": e.get("error"), "timestamp": e["timestamp"],
+            } for e in errors[-5:]],
+            "last_call": entries[-1]["timestamp"],
+        }
+
+    elif action == "from_log":
+        return await _analytics_from_logfile(a)
+
+    return {"error": f"Unknown action: {action}. Use: summary, recent, tool_detail, from_log"}
+
+
+async def _analytics_from_logfile(a):
+    """Parse MCP tool call stats from unified log file."""
+    log_path = "/home/zombie/triforce/logs/unified.log"
+    n_lines = min(a.get("lines", 500), 2000)
+    try:
+        r = await _run(["tail", "-n", str(n_lines), log_path], timeout=5)
+        if not r["success"]:
+            return {"error": f"Cannot read log: {r['errors']}"}
+        lines = r["output"].split("\n")
+        tool_calls = []
+        for line in lines:
+            if "TOOL_CALL_OK" in line or "TOOL_CALL" in line:
+                parts = line.split("|")
+                if len(parts) >= 4:
+                    tool_part = parts[2].strip() if len(parts) > 2 else ""
+                    # Extract tool name and latency
+                    tool_name = ""
+                    latency = 0
+                    for p in parts:
+                        p = p.strip()
+                        if p.startswith("TOOL_CALL"):
+                            pieces = p.split()
+                            if len(pieces) >= 3:
+                                tool_name = pieces[2]
+                        if "ms" in p and any(c.isdigit() for c in p):
+                            try:
+                                latency = float(''.join(c for c in p if c.isdigit() or c == '.'))
+                            except ValueError:
+                                pass
+                    if tool_name:
+                        tool_calls.append({"tool": tool_name, "latency_ms": latency})
+
+        # Aggregate
+        tool_stats = _defaultdict(lambda: {"count": 0, "total_ms": 0})
+        for tc in tool_calls:
+            s = tool_stats[tc["tool"]]
+            s["count"] += 1
+            s["total_ms"] += tc["latency_ms"]
+
+        top = sorted(tool_stats.items(), key=lambda x: x[1]["count"], reverse=True)[:15]
+        return {
+            "action": "from_log",
+            "source": "unified.log",
+            "lines_parsed": len(lines),
+            "tool_calls_found": len(tool_calls),
+            "tools": [{
+                "tool": name,
+                "calls": s["count"],
+                "avg_latency_ms": round(s["total_ms"] / s["count"], 1) if s["count"] else 0,
+            } for name, s in top],
+        }
+    except Exception as e:
+        return {"error": f"Log analysis failed: {e}"}
+
+
+# Tool-Definition
+STRUCTURED_ADMIN_TOOLS.append({
+    "name": "mcp_analytics",
+    "description": "MCP tool call analytics: latency percentiles, success rates, error ranking, per-tool benchmarks, recent call history. Read-only performance monitoring.",
+    "inputSchema": {"type": "object", "properties": {
+        "action": {"type": "string", "enum": ["summary", "recent", "tool_detail", "from_log"],
+                    "description": "summary=overall stats, recent=last N calls, tool_detail=per-tool deep-dive, from_log=parse from log file"},
+        "tool": {"type": "string", "description": "Tool name for tool_detail action"},
+        "limit": {"type": "integer", "description": "Number of recent calls (max 50, default 20)"},
+        "lines": {"type": "integer", "description": "Log lines to parse (max 2000, default 500)"},
+    }, "required": ["action"]},
+    "annotations": {
+        "title": "MCP Analytics (Read-Only)",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    },
+})
+
+STRUCTURED_ADMIN_HANDLERS["mcp_analytics"] = handle_mcp_analytics
+logger.info("PATCH v2.82: mcp_analytics registered (read-only performance monitoring)")
