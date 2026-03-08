@@ -4074,7 +4074,7 @@ async def mcp_unified_endpoint(request: Request):
 
     wants_streaming = "text/event-stream" in accept_header
 
-    _log.info(f"MCP_UNIFIED | IP: {client_ip} | Session: {session_id or 'none'} | Accept: {accept_header}")
+    mcp_logger.info(f"MCP_UNIFIED | IP: {client_ip} | Session: {session_id or 'none'} | Accept: {accept_header}")
 
     try:
         body = await request.json()
@@ -4122,7 +4122,7 @@ async def mcp_unified_endpoint(request: Request):
         new_session_id = str(uuid.uuid4()).replace("-", "")
         _get_session(new_session_id)  # Create session
         response_headers["Mcp-Session-Id"] = new_session_id
-        _log.info(f"MCP_SESSION_CREATED | Session: {new_session_id}")
+        mcp_logger.info(f"MCP_SESSION_CREATED | Session: {new_session_id}")
 
     # Return streaming response if requested
     if wants_streaming:
