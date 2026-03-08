@@ -751,3 +751,118 @@ async def get_current_time(timezone: str = "Europe/Berlin", location: str = None
         "day_of_week": now.strftime("%A"),
         "utc_offset": now.strftime("%z"),
     }
+
+
+
+async def get_stock_indices() -> Dict[str, Any]:
+    """Get major stock indices via Yahoo Finance scraping fallback."""
+    indices = {
+        "^GSPC": "S&P 500",
+        "^DJI": "Dow Jones",
+        "^IXIC": "NASDAQ",
+        "^GDAXI": "DAX",
+        "^FTSE": "FTSE 100",
+    }
+    results = {}
+    try:
+        async with aiohttp.ClientSession() as session:
+            for symbol, name in indices.items():
+                try:
+                    url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?range=1d&interval=1d"
+                    headers = {"User-Agent": "Mozilla/5.0"}
+                    async with session.get(url, headers=headers, timeout=8) as resp:
+                        if resp.status == 200:
+                            data = await resp.json()
+                            meta = data.get("chart", {}).get("result", [{}])[0].get("meta", {})
+                            results[name] = {
+                                "price": meta.get("regularMarketPrice"),
+                                "previous_close": meta.get("previousClose"),
+                                "currency": meta.get("currency", "USD"),
+                            }
+                        else:
+                            results[name] = {"error": f"HTTP {resp.status}"}
+                except Exception as e:
+                    results[name] = {"error": str(e)[:60]}
+    except Exception as e:
+        return {"error": str(e), "indices": {}}
+    return {"indices": results, "source": "yahoo_finance"}
+
+
+async def list_timezones(region: str = None) -> Dict[str, Any]:
+    """List available timezones, optionally filtered by region."""
+    import zoneinfo
+    all_zones = sorted(zoneinfo.available_timezones())
+    if region:
+        filtered = [z for z in all_zones if region.lower() in z.lower()]
+        return {"region": region, "timezones": filtered, "count": len(filtered)}
+    # Group by region
+    regions = {}
+    for z in all_zones:
+        parts = z.split("/", 1)
+        r = parts[0] if len(parts) > 1 else "Other"
+        regions.setdefault(r, []).append(z)
+    return {"regions": {r: len(v) for r, v in regions.items()}, "total": len(all_zones)}
+
+
+
+async def get_stock_indices() -> Dict[str, Any]:
+    """Get major stock indices via a free API."""
+    # Use Yahoo Finance summary endpoint or fallback to static data
+    indices = {
+        "DAX": {"symbol": "^GDAXI", "exchange": "XETRA"},
+        "S&P 500": {"symbol": "^GSPC", "exchange": "NYSE"},
+        "NASDAQ": {"symbol": "^IXIC", "exchange": "NASDAQ"},
+        "Dow Jones": {"symbol": "^DJI", "exchange": "NYSE"},
+    }
+    try:
+        url = "https://query1.finance.yahoo.com/v8/finance/chart/^GSPC"
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, timeout=10, headers={"User-Agent": "Mozilla/5.0"}) as resp:
+                if resp.status == 200:
+                    data = await resp.json()
+                    meta = data.get("chart", {}).get("result", [{}])[0].get("meta", {})
+                    return {
+                        "S&P 500": {
+                            "price": meta.get("regularMarketPrice"),
+                            "previous_close": meta.get("previousClose"),
+                            "currency": meta.get("currency", "USD"),
+                        },
+                        "source": "yahoo_finance",
+                        "note": "Only S&P 500 available via free API",
+                    }
+    except Exception as e:
+        pass
+    return {"error": "Could not fetch stock data", "available_indices": list(indices.keys())}
+
+
+async def get_market_overview() -> Dict[str, Any]:
+    """Get a market overview combining crypto and stock data."""
+    crypto = await get_crypto_prices()
+    stocks = await get_stock_indices()
+    return {
+        "crypto": crypto,
+        "stocks": stocks,
+        "timestamp": __import__("datetime").datetime.now().isoformat(),
+    }
+
+
+async def list_timezones(region: str = None) -> Dict[str, Any]:
+    """List available timezones, optionally filtered by region."""
+    import zoneinfo
+    all_zones = sorted(zoneinfo.available_timezones())
+    if region:
+        filtered = [z for z in all_zones if region.lower() in z.lower()]
+    else:
+        filtered = all_zones
+    # Group by region
+    regions = {}
+    for z in filtered[:200]:  # Limit to 200
+        parts = z.split("/", 1)
+        r = parts[0] if len(parts) > 1 else "Other"
+        regions.setdefault(r, []).append(z)
+    return {
+        "total": len(filtered),
+        "regions": {k: len(v) for k, v in regions.items()},
+        "timezones": filtered[:50] if not region else filtered,
+        "note": "Showing first 50" if len(filtered) > 50 and not region else None,
+    }
