@@ -455,3 +455,218 @@ STRUCTURED_ADMIN_HANDLERS.update({
 })
 
 logger.info(f"Structured Admin API extended: {len(STRUCTURED_ADMIN_TOOLS)} total tools")
+
+
+# =============================================================================
+# REMOTE ADMIN — SSH-basierte Federation-Node-Steuerung
+# =============================================================================
+
+# Known hosts from federation config (SSH via WireGuard VPN)
+REMOTE_HOSTS = {
+    "hetzner": {"ip": "10.10.0.1", "user": "zombie", "desc": "Hetzner EX63 Master"},
+    "backup":  {"ip": "10.10.0.3", "user": "zombie", "desc": "Backup VPS Hub"},
+    "zombie-pc": {"ip": "10.10.0.2", "user": "zombie", "desc": "Home PC Hub"},
+}
+
+async def _ssh_run(host_id, cmd_list, timeout=30):
+    """Execute command on remote host via SSH key auth."""
+    host = REMOTE_HOSTS.get(host_id)
+    if not host:
+        return {"success": False, "errors": f"Unknown host: {host_id}. Known: {list(REMOTE_HOSTS.keys())}"}
+    ssh_cmd = [
+        "ssh", "-o", "StrictHostKeyChecking=accept-new",
+        "-o", "ConnectTimeout=5", "-o", "BatchMode=yes",
+        f"{host['user']}@{host['ip']}",
+    ] + cmd_list
+    return await _run(ssh_cmd, timeout=timeout)
+
+async def handle_remote_admin(a):
+    """Remote host management via SSH."""
+    action = a.get("action")
+    host = a.get("host", "")
+
+    if action == "list_hosts":
+        return {"action": action, "hosts": {
+            k: {"ip": v["ip"], "desc": v["desc"]} for k, v in REMOTE_HOSTS.items()
+        }}
+
+    if action == "ping_all":
+        results = {}
+        for hid, hinfo in REMOTE_HOSTS.items():
+            r = await _run(["ping", "-c", "1", "-W", "2", hinfo["ip"]], timeout=5)
+            results[hid] = "reachable" if r["success"] else "unreachable"
+        return {"action": action, "results": results}
+
+    if host not in REMOTE_HOSTS:
+        return {"error": f"Unknown host '{host}'. Use: {list(REMOTE_HOSTS.keys())}"}
+
+    if action == "system_overview":
+        r = await _ssh_run(host, ["bash", "-c",
+            "echo HOSTNAME=$(hostname); echo KERNEL=$(uname -r); echo UPTIME=$(uptime -p); "
+            "echo LOAD=$(cat /proc/loadavg); echo MEM=$(free -h | grep Mem | awk '{print $3\"/\"$2}'); "
+            "echo DISK=$(df -h / | tail -1 | awk '{print $3\"/\"$2\" (\"$5\")\"}')"])
+        return {"action": action, "host": host, **r}
+
+    elif action == "service_status":
+        service = a.get("service", "triforce")
+        r = await _ssh_run(host, ["systemctl", "is-active", service])
+        return {"action": action, "host": host, "service": service, "status": r["output"]}
+
+    elif action == "service_restart":
+        service = a.get("service", "triforce")
+        if service not in SERVICES:
+            return {"error": f"Service '{service}' not in managed list"}
+        r = await _ssh_run(host, ["sudo", "systemctl", "restart", service], timeout=30)
+        return {"action": action, "host": host, "service": service, **r}
+
+    elif action == "docker_status":
+        r = await _ssh_run(host, ["docker", "ps", "--format", "{{.Names}}\t{{.Status}}"])
+        return {"action": action, "host": host, **r}
+
+    elif action == "disk_usage":
+        r = await _ssh_run(host, ["df", "-h", "--total"])
+        return {"action": action, "host": host, **r}
+
+    elif action == "memory_usage":
+        r = await _ssh_run(host, ["free", "-h"])
+        return {"action": action, "host": host, **r}
+
+    elif action == "read_file":
+        path = a.get("path", "")
+        if not path or ".." in path:
+            return {"error": "Invalid path"}
+        r = await _ssh_run(host, ["head", "-200", path])
+        return {"action": action, "host": host, "path": path, **r}
+
+    elif action == "tail_log":
+        log = a.get("log", "syslog")
+        n = str(min(a.get("lines", 50), 200))
+        log_paths = {
+            "syslog": "/var/log/syslog",
+            "triforce": "/home/zombie/triforce/logs/unified.log",
+            "errors": "/home/zombie/triforce/logs/triforce-error-debug/error.log",
+            "auth": "/var/log/auth.log",
+        }
+        lp = log_paths.get(log, log)
+        r = await _ssh_run(host, ["tail", "-n", n, lp])
+        return {"action": action, "host": host, "log": log, **r}
+
+    elif action == "check_connectivity":
+        r = await _ssh_run(host, ["bash", "-c",
+            "echo SSH=OK; ping -c1 -W2 1.1.1.1 >/dev/null 2>&1 && echo INTERNET=OK || echo INTERNET=FAIL; "
+            "ping -c1 -W2 10.10.0.1 >/dev/null 2>&1 && echo VPN_MASTER=OK || echo VPN_MASTER=FAIL"])
+        return {"action": action, "host": host, **r}
+
+    return {"error": f"Unknown action: {action}"}
+
+
+# =============================================================================
+# CUSTOM EXEC — Template-basierte Befehlsausführung
+# =============================================================================
+
+# Command templates: name → (cmd_list, needs_sudo, timeout, description)
+COMMAND_TEMPLATES = {
+    # System
+    "kernel_version":     (["uname", "-r"], False, 5, "Show kernel version"),
+    "os_release":         (["cat", "/etc/os-release"], False, 5, "Show OS release info"),
+    "hostname":           (["hostname", "-f"], False, 5, "Show full hostname"),
+    "reboot_required":    (["bash", "-c", "[ -f /var/run/reboot-required ] && echo YES || echo NO"], False, 5, "Check if reboot needed"),
+    "last_logins":        (["last", "-10"], False, 5, "Show last 10 logins"),
+    "failed_logins":      (["lastb", "-10"], True, 5, "Show last 10 failed logins"),
+    "cron_list":          (["crontab", "-l"], False, 5, "List cron jobs"),
+    "env_vars":           (["env"], False, 5, "Show environment variables"),
+    "timezone":           (["timedatectl", "status"], False, 5, "Show timezone info"),
+    # Netzwerk
+    "public_ip":          (["curl", "-s", "ifconfig.me"], False, 10, "Get public IP"),
+    "dns_lookup":         (["dig", "+short", "ailinux.me"], False, 5, "DNS lookup ailinux.me"),
+    "open_ports":         (["ss", "-tlnp"], False, 5, "List open TCP ports"),
+    "firewall_status":    (["sudo", "ufw", "status", "verbose"], True, 5, "Show firewall status"),
+    "wireguard_status":   (["sudo", "wg", "show"], True, 5, "Show WireGuard VPN status"),
+    # Pakete
+    "apt_history":        (["bash", "-c", "tail -30 /var/log/apt/history.log"], False, 5, "Recent apt operations"),
+    "autoremove_list":    (["apt", "--dry-run", "autoremove"], False, 10, "List auto-removable packages"),
+    "held_packages":      (["apt-mark", "showhold"], False, 5, "List held packages"),
+    # Docker
+    "docker_images":      (["docker", "images", "--format", "table {{.Repository}}\t{{.Tag}}\t{{.Size}}"], False, 10, "List Docker images"),
+    "docker_volumes":     (["docker", "volume", "ls"], False, 5, "List Docker volumes"),
+    "docker_networks":    (["docker", "network", "ls"], False, 5, "List Docker networks"),
+    "docker_disk":        (["docker", "system", "df"], False, 5, "Docker disk usage"),
+    # Storage
+    "disk_usage_detail":  (["du", "-sh", "/home/zombie/triforce/*/"], False, 10, "Disk usage per subdirectory"),
+    "largest_files":      (["bash", "-c", "find /home/zombie/triforce -type f -size +50M -exec ls -lh {} + 2>/dev/null | sort -k5 -h | tail -10"], False, 10, "Find files >50MB"),
+    "inode_usage":        (["df", "-i"], False, 5, "Show inode usage"),
+    # Triforce/AILinux
+    "triforce_version":   (["cat", "/home/zombie/triforce/VERSION"], False, 5, "Show TriForce version"),
+    "triforce_git_log":   (["bash", "-c", "cd /home/zombie/triforce && git log --oneline -10"], False, 5, "Last 10 git commits"),
+    "triforce_git_status":(["bash", "-c", "cd /home/zombie/triforce && git status --short"], False, 5, "Git working tree status"),
+    "ollama_models":      (["bash", "-c", "curl -s http://localhost:11434/api/tags | python3 -c \"import sys,json;[print(f'{m[\\\"name\\\"]:30s} {m[\\\"size\\\"]//1024//1024}MB') for m in json.load(sys.stdin).get('models',[])]\""], False, 10, "List Ollama models with sizes"),
+    "triforce_config":    (["bash", "-c", "grep -v '^#' /home/zombie/triforce/config/triforce.env | grep -v '^$' | grep -v 'KEY\\|PASS\\|SECRET\\|TOKEN' | head -30"], False, 5, "Show config (no secrets)"),
+    # Security
+    "ssh_auth_log":       (["bash", "-c", "grep 'sshd' /var/log/auth.log | tail -20"], False, 5, "Recent SSH auth events"),
+    "active_users":       (["who"], False, 5, "Currently logged in users"),
+    "sudo_log":           (["bash", "-c", "grep 'sudo' /var/log/auth.log | tail -10"], False, 5, "Recent sudo usage"),
+}
+
+async def handle_custom_exec(a):
+    """Execute predefined command templates by name."""
+    action = a.get("action", "list")
+
+    if action == "list":
+        return {"action": "list", "templates": {
+            k: v[3] for k, v in COMMAND_TEMPLATES.items()
+        }, "count": len(COMMAND_TEMPLATES)}
+
+    elif action == "run":
+        template = a.get("template", "")
+        if template not in COMMAND_TEMPLATES:
+            return {"error": f"Unknown template: '{template}'. Use action=list to see all."}
+        cmd, needs_sudo, timeout, desc = COMMAND_TEMPLATES[template]
+        if needs_sudo:
+            r = await _sudo(cmd if isinstance(cmd, list) else cmd.split(), timeout)
+        else:
+            r = await _run(cmd if isinstance(cmd, list) else cmd.split(), timeout)
+        return {"action": "run", "template": template, "description": desc, **r}
+
+    elif action == "run_on_remote":
+        template = a.get("template", "")
+        host = a.get("host", "")
+        if template not in COMMAND_TEMPLATES:
+            return {"error": f"Unknown template: '{template}'"}
+        if host not in REMOTE_HOSTS:
+            return {"error": f"Unknown host: '{host}'"}
+        cmd, needs_sudo, timeout, desc = COMMAND_TEMPLATES[template]
+        if needs_sudo:
+            cmd = ["sudo"] + (cmd if isinstance(cmd, list) else cmd.split())
+        r = await _ssh_run(host, cmd if isinstance(cmd, list) else cmd.split(), timeout)
+        return {"action": "run_on_remote", "template": template, "host": host, "description": desc, **r}
+
+    return {"error": f"Unknown action: {action}"}
+
+
+# === ADDITIONAL TOOL DEFINITIONS ===
+STRUCTURED_ADMIN_TOOLS.extend([
+    {"name": "remote_admin",
+     "description": "Manage remote federation nodes via secure channel: list hosts, check connectivity, view system info, restart services, read files, or view logs on any node.",
+     "inputSchema": {"type": "object", "properties": {
+         "action": {"type": "string", "enum": ["list_hosts", "ping_all", "system_overview", "service_status", "service_restart", "docker_status", "disk_usage", "memory_usage", "read_file", "tail_log", "check_connectivity"]},
+         "host": {"type": "string", "enum": list(REMOTE_HOSTS.keys()), "description": "Target node"},
+         "service": {"type": "string", "enum": SERVICES, "description": "Service name (for service actions)"},
+         "path": {"type": "string", "description": "File path (for read_file)"},
+         "log": {"type": "string", "enum": ["syslog", "triforce", "errors", "auth"], "description": "Log source (for tail_log)"},
+         "lines": {"type": "integer", "description": "Number of log lines (max 200)"},
+     }, "required": ["action"]},
+     "annotations": {"title": "Remote Node Management", "readOnlyHint": False, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False}},
+    {"name": "custom_exec",
+     "description": "Run predefined system commands by template name. List available templates or execute locally or on remote nodes. Templates cover: kernel, network, packages, docker, storage, security, triforce status.",
+     "inputSchema": {"type": "object", "properties": {
+         "action": {"type": "string", "enum": ["list", "run", "run_on_remote"], "description": "list=show templates, run=execute locally, run_on_remote=execute on node"},
+         "template": {"type": "string", "description": "Template name from the list"},
+         "host": {"type": "string", "enum": list(REMOTE_HOSTS.keys()), "description": "Remote host (for run_on_remote)"},
+     }, "required": ["action"]},
+     "annotations": {"title": "Command Template Runner", "readOnlyHint": False, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False}},
+])
+
+STRUCTURED_ADMIN_HANDLERS["remote_admin"] = handle_remote_admin
+STRUCTURED_ADMIN_HANDLERS["custom_exec"] = handle_custom_exec
+
+logger.info(f"Structured Admin API extended: {len(STRUCTURED_ADMIN_TOOLS)} tools, {len(COMMAND_TEMPLATES)} templates")
