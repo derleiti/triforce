@@ -1511,7 +1511,20 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
     from ..mcp.structured_admin import STRUCTURED_ADMIN_TOOLS
     tools.extend(_normalize_tool_schema(tool) for tool in STRUCTURED_ADMIN_TOOLS)
     
-    from .mcp_remote import _inject_annotations
+    # v2.84: Add V4 alias tools (search, fetch, models, etc.)
+    from .mcp_remote import _inject_annotations, _V4_ALIAS_TOOLS
+    tools.extend(_normalize_tool_schema(tool) for tool in _V4_ALIAS_TOOLS)
+    
+    # Deduplicate by name (spread imports may overlap with _V4_ALIAS_TOOLS)
+    seen = set()
+    deduped = []
+    for t in tools:
+        name = t.get("name", "")
+        if name not in seen:
+            seen.add(name)
+            deduped.append(t)
+    tools = deduped
+    
     tools = _inject_annotations(tools)
     
     return {
