@@ -1,5 +1,5 @@
 """
-MCP Remote Server for Claude.ai Connectors
+MCP Remote Server for Claude.ai / ChatGPT Connectors
 
 This module implements the Model Context Protocol (MCP) Remote Server specification
 for integration with Claude.ai custom connectors.
@@ -92,6 +92,64 @@ MCP_CAPABILITIES = {
     "resources": False,
     "logging": False,
 }
+
+# ============================================================================
+# MCP Tool Annotations — ChatGPT readOnlyHint Classification
+# ============================================================================
+# ChatGPT treats tools WITHOUT readOnlyHint as write actions.
+# Write actions can be "temporarily disabled" by ChatGPT beta restrictions.
+# By explicitly marking read-only tools, they bypass the write-action gate.
+# Ref: platform.openai.com/docs/guides/developer-mode
+#      modelcontextprotocol.io/legacy/concepts/tools
+
+_WRITE_TOOLS = {
+    "create_post", "crawl_url", "crawl_site",
+    "tristar_init", "tristar_memory_store",
+    "cli-agents_start", "cli-agents_stop", "cli-agents_restart",
+    "cli-agents_call", "cli-agents_broadcast",
+    "tristar_shell_exec", "shell",
+    "ollama_pull", "ollama_delete",
+    "vault_add", "vault_add_key",
+    "config_set", "tristar_settings_set",
+    "codebase_edit", "codebase_create", "code_edit", "code_patch",
+    "queue_submit", "queue_clear",
+    "agent_start", "agent_stop", "agent_call", "agent_broadcast",
+    "evolve", "memory_store", "memory_clear",
+    "restart", "hot_reload", "remote_task",
+    "prompt_set", "git", "dev_refactor",
+}
+
+_DESTRUCTIVE_TOOLS = {
+    "tristar_shell_exec", "shell", "ollama_delete",
+    "memory_clear", "queue_clear", "remote_task",
+}
+
+_OPEN_WORLD_TOOLS = {
+    "web_search", "search", "crawl_url", "crawl_site",
+    "smart_search", "multi_search", "google_deep_search",
+    "chat", "ask_specialist", "specialist",
+    "image_search", "weather", "crypto_prices",
+    "stock_indices", "market_overview",
+}
+
+
+def _inject_annotations(tools: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Inject MCP tool annotations for ChatGPT Developer Mode compatibility."""
+    annotated = []
+    for tool in tools:
+        t = dict(tool)
+        name = t.get("name", "")
+        is_write = name in _WRITE_TOOLS
+        is_destructive = name in _DESTRUCTIVE_TOOLS
+        t["annotations"] = {
+            "title": t.get("description", name)[:80],
+            "readOnlyHint": not is_write,
+            "destructiveHint": is_destructive,
+            "idempotentHint": not is_destructive,
+            "openWorldHint": name in _OPEN_WORLD_TOOLS,
+        }
+        annotated.append(t)
+    return annotated
 
 # ============================================================================
 # Authentication - Uses central mcp_auth module
@@ -1880,6 +1938,9 @@ async def mcp_rpc_endpoint(request: Request):
                 "gemini_research", "gemini_quick", "ollama_list"
             ]
             tools_result = [t for t in tools_result if t.get("name") in essential_tools]
+
+        # Inject MCP annotations for ChatGPT compatibility
+        tools_result = _inject_annotations(tools_result)
 
         latency_ms = (_time.time() - start_time) * 1000
         await multi_logger.log_mcp(method, params, {"tools_count": len(tools_result)}, latency_ms)
