@@ -2361,6 +2361,7 @@ async def mcp_rpc_endpoint(request: Request):
                 "service_control", "container_control", "file_ops",
                 "package_manager", "remote_admin",
                 "code_edit", "code_patch",
+                "remote_hosts", "binary_list", "template_list", "task_reference",
                 "config", "config_set",
                 "crawl",
                 # Extended Search
