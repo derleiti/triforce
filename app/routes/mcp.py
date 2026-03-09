@@ -2176,7 +2176,9 @@ async def handle_execute_mcp_tool(params: Dict[str, Any]) -> Dict[str, Any]:
 
 async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
     """MCP tools/call method - executes a tool."""
-    tool_name = params.get("name")
+    from ..utils.tool_normalizer import normalize_tool_name
+    raw_tool_name = params.get("name", "")
+    tool_name = normalize_tool_name(raw_tool_name)  # Normalize link_<id> paths etc.
     arguments = params.get("arguments", {})
 
     if not tool_name:
@@ -3923,7 +3925,8 @@ async def mcp_messages_handler(request: Request, session_id: Optional[str] = Non
         
         # v2.82: Dedicated tool call logging for tools/call method
         if method == "tools/call":
-            tool_name = params.get("name", "unknown")
+            from ..utils.tool_normalizer import normalize_tool_name as _norm
+            tool_name = _norm(params.get("name", "unknown"))
             tool_args = params.get("arguments", {})
             # Detect caller from request headers
             caller = "unknown"
@@ -4115,7 +4118,8 @@ async def _process_mcp_request(
         return {"jsonrpc": "2.0", "result": result, "id": req_id}
     except Exception as e:
         if method == "tools/call":
-            tn = params.get("name", "?")
+            from ..utils.tool_normalizer import normalize_tool_name as _norm_err
+            tn = _norm_err(params.get("name", "?"))
             ip = request.client.host if request and request.client else "?"
             mcp_logger.error(f"TOOL_CALL_ERROR | {tn} | IP: {ip} | {e}")
             # v2.85: Telemetry recording for errors

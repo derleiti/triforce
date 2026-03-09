@@ -83,7 +83,7 @@ router = APIRouter(tags=["MCP Remote Server"])
 
 MCP_SERVER_INFO = {
     "name": "AILinux API",
-    "version": "2.84",
+    "version": "2.85",
     "description": "AILinux AI Backend v2.82 - TriStar/TriForce Multi-LLM Orchestration with CLI Agents, Codebase Access, Self-Development, Read-Only Diagnostics, and MCP Tool Telemetry",
     "vendor": "AILinux",
 }
@@ -1508,7 +1508,7 @@ async def handle_health_remote(arguments: Dict[str, Any]) -> Dict[str, Any]:
     return {
         "status": "ok",
         "backend": "triforce",
-        "version": "2.84",
+        "version": "2.85",
         "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
     }
 
@@ -2383,7 +2383,8 @@ async def mcp_rpc_endpoint(request: Request):
         )
 
     elif method == "tools/call":
-        tool_name = params.get("name")
+        from ..utils.tool_normalizer import normalize_tool_name as _norm_tool
+        tool_name = _norm_tool(params.get("name", ""))
         arguments = params.get("arguments", {})
 
         handler = TOOL_HANDLERS.get(tool_name)
@@ -2613,7 +2614,7 @@ async def _handle_agent_mcp_call(agent_id: str, request: Request):
                     "protocolVersion": "2024-11-05",
                     "serverInfo": {
                         "name": agent.get("name", agent_id),
-                        "version": "2.84",
+                        "version": "2.85",
                         "description": f"Direct MCP access to {agent_id} CLI agent"
                     },
                     "capabilities": {

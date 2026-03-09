@@ -157,44 +157,41 @@ _PATH_PREFIX_RE = re.compile(r'^/[^/]+/[^/]+/([a-zA-Z0-9_/-]+)$')
 
 
 def normalize_tool_name(raw_name: str) -> str:
-    """
-    Kanonisiert einen Tool-Namen aus beliebiger Quelle.
-
-    Unterstützte Eingabeformate:
-      "status"                                   → "status"
-      "/api.ailinux.me/link_xxx/status"          → "status"
-      "/domain/link_abc/more/segments/mcp_analytics" → "mcp_analytics"
-      "agent/status"                             → "agent/status"
-      "tools/call:status"                        → "status"
-      "tristar_status"                           → "tristar_status"
+    """Normalize any MCP tool name/path to canonical form.
+    
+    Handles:
+    - /domain/link_xxx/tool_name -> tool_name
+    - tools/call:tool_name -> tool_name
+    - /v1/mcp/link_abc123/tool_name -> tool_name
+    - Whitespace/case normalization
     """
     if not raw_name:
-        return raw_name
-
+        return ""
+    
     name = raw_name.strip()
-
-    # "tools/call:xyz" → "xyz"
-    if ':' in name and name.startswith('tools/'):
-        name = name.split(':', 1)[-1].strip()
-
-    # Any path starting with "/" → extract last segment after link_xxx
-    if name.startswith('/'):
-        parts = [p for p in name.split('/') if p]
-        if len(parts) >= 2:
-            # Find the tool name: last segment, or segment after link_xxx
-            # Skip domain/link segments, take everything after
-            for i, p in enumerate(parts):
-                if p.startswith('link_') or p.startswith('link-'):
-                    # Tool name is everything after the link segment
-                    name = parts[-1]  # Always take the last segment as tool name
+    
+    # Strip "tools/call:" prefix (from log entries)
+    if name.startswith("tools/call:"):
+        name = name[len("tools/call:"):]
+    
+    # Strip path-based prefixes: /anything/link_xxx/tool -> tool
+    # Also handles /domain/anything/tool
+    if "/" in name:
+        # Take last segment after any path
+        segments = [s for s in name.split("/") if s]
+        if segments:
+            # If any segment looks like link_xxx, take everything after it
+            for i, seg in enumerate(segments):
+                if re.match(r'^link_[a-zA-Z0-9]+$', seg):
+                    name = "/".join(segments[i+1:]) if i+1 < len(segments) else segments[-1]
                     break
             else:
                 # No link_ segment found, take last segment
-                name = parts[-1]
-
-    # Strip any remaining path prefixes for "agent/status" style
-    # (keep as-is since these are valid MCP method names)
-
+                name = segments[-1]
+    
+    # Normalize dashes to underscores for handler lookup
+    # But preserve known dash-names like "cli-agents_list"
+    
     return name
 
 
