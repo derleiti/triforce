@@ -2300,7 +2300,17 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
     # NOVA-PATCH v4-FALLBACK: handler_registry für v4-only Tools (health, bootstrap, etc.)
     if not handler:
         try:
+            import time as _time_v4
+            _t0_v4 = _time_v4.time()
             v4_result = await call_v4_tool(tool_name, arguments)
+            _lat_v4 = (_time_v4.time() - _t0_v4) * 1000
+            try:
+                from ..mcp.structured_admin import mcp_telemetry, record_mcp_call
+                _rc = len(json.dumps(v4_result, separators=(',',':'))) if v4_result else 0
+                mcp_telemetry.record(tool_name, _lat_v4, success=True, response_chars=_rc)
+                record_mcp_call(tool_name, _lat_v4, "success", "mcp_unified_v4", result_size=_rc)
+            except Exception:
+                pass
             return {
                 "content": [{"type": "text", "text": json.dumps(v4_result, separators=(',', ':'))}],
                 "isError": False,
@@ -2311,7 +2321,20 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
     if not handler:
         raise ValueError(f"Unknown tool: {tool_name}")
 
+    import time as _time_inner
+    _t0 = _time_inner.time()
     result = await handler(arguments)
+    _latency = (_time_inner.time() - _t0) * 1000
+    
+    # v2.85: Telemetry recording for unified handler
+    try:
+        from ..mcp.structured_admin import mcp_telemetry, record_mcp_call
+        _rchars = len(json.dumps(result, separators=(',',':'))) if result else 0
+        mcp_telemetry.record(tool_name, _latency, success=True, response_chars=_rchars)
+        record_mcp_call(tool_name, _latency, "success", "mcp_unified", result_size=_rchars)
+    except Exception:
+        pass  # Telemetry must never break tool calls
+    
     return {
         "content": [
             {"type": "text", "text": json.dumps(result, separators=(',', ':'))}
@@ -4095,6 +4118,14 @@ async def _process_mcp_request(
             tn = params.get("name", "?")
             ip = request.client.host if request and request.client else "?"
             mcp_logger.error(f"TOOL_CALL_ERROR | {tn} | IP: {ip} | {e}")
+            # v2.85: Telemetry recording for errors
+            try:
+                _err_latency = (_time.time() - start_time) * 1000
+                from ..mcp.structured_admin import mcp_telemetry, record_mcp_call
+                mcp_telemetry.record(tn, _err_latency, success=False, error=str(e))
+                record_mcp_call(tn, _err_latency, "error", "mcp_unified", error=str(e))
+            except Exception:
+                pass
         return {
             "jsonrpc": "2.0",
             "error": {"code": -32000, "message": str(e)},
