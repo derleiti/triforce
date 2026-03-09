@@ -440,6 +440,7 @@ def create_app() -> FastAPI:
     # Include routers from the top-level app directory (prefixes are in the files)
     app.include_router(sd3_router, prefix="/v1", tags=["Stable Diffusion 3"])
     app.include_router(vision_router, tags=["Vision"])
+    app.include_router(nova_frontend_router, tags=["Nova Frontend"])
     app.include_router(client_chat_router, prefix="/v1", tags=["Client Chat"])
     app.include_router(client_auth_router, prefix="/v1", tags=["Client Auth"])
     app.include_router(client_update_router, prefix="/v1", tags=["Client Update"])
