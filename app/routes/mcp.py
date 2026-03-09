@@ -2185,9 +2185,11 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
         raise ValueError("'name' parameter is required for tools/call")
 
     # NOVA-PATCH: Zentrale Normalisierung vor allem anderen
+    canonical_name = tool_name  # v2.85: preserve for telemetry
     try:
         from ..utils.tool_normalizer import normalize_tool_name as _normalize, CANONICAL_MAP
         tool_name = _normalize(tool_name)
+        canonical_name = tool_name  # canonical v4 name (before handler resolution)
         # v4-Namen direkt auflösen (canonical_map hat keine Kollisionen)
         tool_name = CANONICAL_MAP.get(tool_name, tool_name)
     except ImportError:
@@ -2309,8 +2311,8 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
             try:
                 from ..mcp.structured_admin import mcp_telemetry, record_mcp_call
                 _rc = len(json.dumps(v4_result, separators=(',',':'))) if v4_result else 0
-                mcp_telemetry.record(tool_name, _lat_v4, success=True, response_chars=_rc)
-                record_mcp_call(tool_name, _lat_v4, "success", "mcp_unified_v4", result_size=_rc)
+                mcp_telemetry.record(canonical_name, _lat_v4, success=True, response_chars=_rc)
+                record_mcp_call(canonical_name, _lat_v4, "success", "mcp_unified_v4", result_size=_rc)
             except Exception:
                 pass
             return {
@@ -2332,8 +2334,8 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
     try:
         from ..mcp.structured_admin import mcp_telemetry, record_mcp_call
         _rchars = len(json.dumps(result, separators=(',',':'))) if result else 0
-        mcp_telemetry.record(tool_name, _latency, success=True, response_chars=_rchars)
-        record_mcp_call(tool_name, _latency, "success", "mcp_unified", result_size=_rchars)
+        mcp_telemetry.record(canonical_name, _latency, success=True, response_chars=_rchars)
+        record_mcp_call(canonical_name, _latency, "success", "mcp_unified", result_size=_rchars)
     except Exception:
         pass  # Telemetry must never break tool calls
     
