@@ -105,6 +105,11 @@ READONLY_TOOLS: FrozenSet[str] = frozenset({
     "file_read",                # Dateien lesen/listen, kein write/append
     "remote_status",            # Federation-Node-Status lesen, kein restart
     "mcp_analytics",            # MCP-Tool-Call-Statistiken lesen
+    # v2.86 Read-Only Wrappers
+    "remote_hosts",             # listet Federation-Hosts
+    "binary_list",              # listet verfuegbare Binaries
+    "template_list",            # listet Command-Templates
+    "task_reference",           # quick_reference/encode/decode
 })
 
 # ---------------------------------------------------------------------------
@@ -145,9 +150,9 @@ CANONICAL_MAP: dict[str, str] = {
     "restart"         : "restart_backend",
     "vault_keys"      : "vault_list_keys",
     "vault_add"       : "vault_add_key",
-    "remote_hosts"    : "remote_host_list",
+    "remote_hosts"    : "remote_hosts",          # v2.86: eigener Handler (war remote_host_list → nicht existent)
     "remote_task"     : "remote_task_submit",
-    "remote_status"   : "remote_task_status",
+    "remote_status"   : "remote_status",          # v2.86: zeigt auf registrierten read-only Wrapper
 }
 
 # ---------------------------------------------------------------------------

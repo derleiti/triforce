@@ -125,9 +125,9 @@ class HandlerRegistry:
                 try:
                     # Try Gemini first (most reliable)
                     if provider in ("gemini", "google"):
-                        api_key = ((os.environ.get('GOOGLE_AI_STUDIO_KEY') or '').strip() or (os.environ.get('GEMINI_API_KEY') or '').strip() or (os.environ.get('GOOGLE_GEMINI_KEY') or '').strip())
+                        api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_AI_STUDIO_KEY")
                         if not api_key:
-                            return {"error": "GOOGLE_AI_STUDIO_KEY not configured"}
+                            return {"error": "GEMINI_API_KEY not configured"}
                         
                         # Build request
                         contents = []
@@ -331,57 +331,8 @@ class HandlerRegistry:
                 return {"status": "not_implemented", "message": "Memory search function pending"}
 
             async def handle_memory_clear(params):
-                """Clear memory entries by tag, category, or all."""
-                try:
-                    from ..services.triforce.memory_enhanced import EnhancedMemoryService
-                    mem = EnhancedMemoryService()
-                    
-                    tags = params.get("tags", [])
-                    category = params.get("category")
-                    memory_id = params.get("memory_id")
-                    confirm = params.get("confirm", False)
-                    
-                    if memory_id:
-                        # Delete specific entry
-                        deleted = await mem.delete(memory_id)
-                        return {"cleared": 1 if deleted else 0, "memory_id": memory_id}
-                    
-                    if not confirm:
-                        return {"error": "Set confirm=true to clear memories. Use tags/category to filter."}
-                    
-                    # Search and delete matching entries
-                    cleared = 0
-                    if tags:
-                        for tag in tags:
-                            results = await mem.search(tag, limit=100)
-                            for entry in results:
-                                await mem.delete(entry.id)
-                                cleared += 1
-                    elif category:
-                        results = await mem.search(category, limit=100)
-                        for entry in results:
-                            if entry.category == category:
-                                await mem.delete(entry.id)
-                                cleared += 1
-                    else:
-                        return {"error": "Specify tags, category, or memory_id. Bulk clear not allowed without filter."}
-                    
-                    return {"cleared": cleared, "filter": {"tags": tags, "category": category}}
-                except ImportError:
-                    # Fallback: simple file-based memory clear
-                    import glob, os
-                    memory_dir = f"{BASE}/data/memory"
-                    if not os.path.isdir(memory_dir):
-                        return {"cleared": 0, "message": "No memory directory found"}
-                    files = glob.glob(f"{memory_dir}/*.json")
-                    cleared = 0
-                    for f in files:
-                        try:
-                            os.remove(f)
-                            cleared += 1
-                        except Exception:
-                            pass
-                    return {"cleared": cleared, "method": "file_cleanup"}
+                logger.warning("memory_clear not yet implemented")
+                return {"status": "not_implemented", "message": "Memory clear function pending"}
 
             self.register("memory_store", handle_memory_store)
             self.register("memory_search", handle_memory_search)
@@ -401,16 +352,16 @@ class HandlerRegistry:
 
             async def handle_agent_call(params):
                 """Send message to specific agent and get response"""
-                agent_id = params.get("agent_id") or params.get("agent")  # accept both
+                agent_id = params.get("agent")
                 message = params.get("message")
                 timeout = params.get("timeout", 120)
                 if not agent_id or not message:
-                    return {"error": "agent_id and message required"}
+                    return {"error": "agent and message required"}
                 return await agent_controller.call_agent(agent_id, message, timeout)
 
             async def handle_agent_broadcast(params):
                 """Broadcast message to all agents"""
-                message = params.get("message") or params.get("command")  # accept both
+                message = params.get("message")
                 strategy = params.get("strategy", "parallel")
                 if not message:
                     return {"error": "message required"}
@@ -418,8 +369,7 @@ class HandlerRegistry:
                 results = {}
                 for agent in agents:
                     agent_id = agent.get("agent_id", agent.get("id"))
-                    status = agent.get("status", "")
-                    if status in ("running", "on_demand"):
+                    if agent.get("status") == "running":
                         try:
                             result = await agent_controller.call_agent(agent_id, message, timeout=60)
                             results[agent_id] = result
@@ -429,17 +379,17 @@ class HandlerRegistry:
 
             async def handle_agent_start(params):
                 """Start a CLI agent"""
-                agent_id = params.get("agent_id") or params.get("agent")  # accept both
+                agent_id = params.get("agent")
                 if not agent_id:
-                    return {"error": "agent_id required"}
+                    return {"error": "agent required"}
                 return await agent_controller.start_agent(agent_id)
 
             async def handle_agent_stop(params):
                 """Stop a running CLI agent"""
-                agent_id = params.get("agent_id") or params.get("agent")  # accept both
+                agent_id = params.get("agent")
                 force = params.get("force", False)
                 if not agent_id:
-                    return {"error": "agent_id required"}
+                    return {"error": "agent required"}
                 return await agent_controller.stop_agent(agent_id, force)
 
             self.register("agents", handle_agents_list)
@@ -664,227 +614,8 @@ class HandlerRegistry:
                 return health_data
 
             async def handle_debug(params):
-                """AI-enhanced MCP debugger.
-                
-                Modes:
-                - trace: Trace MCP request routing without execution
-                - analyze_file: Static analysis (typos, logic, imports)
-                - check_tools: Verify all tool schemas match handlers
-                - error_scan: Scan logs for error patterns
-                - inspect: Deep-inspect a specific tool/handler
-                """
-                import ast, re as _re, os, glob, importlib
-                
-                mode = params.get("mode", params.get("method", "trace"))
-                
-                if mode == "trace":
-                    # Trace MCP routing
-                    method = params.get("target", params.get("method", "tools/list"))
-                    test_params = params.get("params", {})
-                    try:
-                        from ..services.mcp_debugger import MCPDebugger
-                        debugger = MCPDebugger()
-                        return await debugger.debug_mcp_request(method, test_params)
-                    except Exception as e:
-                        return {"error": f"Trace failed: {e}", "mode": "trace"}
-                
-                elif mode == "analyze_file":
-                    # Static analysis: syntax, imports, typos, undefined vars
-                    filepath = params.get("path", "")
-                    if not filepath:
-                        return {"error": "'path' parameter required for analyze_file"}
-                    
-                    full_path = os.path.join("/home/zombie/triforce", filepath)
-                    if not os.path.isfile(full_path):
-                        return {"error": f"File not found: {filepath}"}
-                    
-                    issues = []
-                    try:
-                        with open(full_path) as f:
-                            source = f.read()
-                        lines = source.split("\n")
-                        
-                        # 1. Syntax check
-                        try:
-                            tree = ast.parse(source)
-                        except SyntaxError as e:
-                            issues.append({"type": "syntax_error", "line": e.lineno, "message": e.msg, "severity": "critical"})
-                            return {"file": filepath, "issues": issues, "parseable": False}
-                        
-                        # 2. Collect defined names
-                        defined = set()
-                        imports = set()
-                        for node in ast.walk(tree):
-                            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                                defined.add(node.name)
-                            elif isinstance(node, ast.Name) and isinstance(getattr(node, 'ctx', None), ast.Store):
-                                defined.add(node.id)
-                            elif isinstance(node, ast.Import):
-                                for alias in node.names:
-                                    imports.add(alias.asname or alias.name)
-                            elif isinstance(node, ast.ImportFrom):
-                                for alias in node.names:
-                                    imports.add(alias.asname or alias.name)
-                        
-                        # 3. Bare except detection
-                        for i, line in enumerate(lines, 1):
-                            stripped = line.strip()
-                            if stripped == "except:":
-                                issues.append({"type": "bare_except", "line": i, "message": "Bare except catches all — use except Exception:", "severity": "warning"})
-                            # 4. Common typos in Python
-                            for pattern, msg in [
-                                (r'\bpirnt\b', 'Typo: pirnt → print'),
-                                (r'\bimoprt\b', 'Typo: imoprt → import'),
-                                (r'\bretrun\b', 'Typo: retrun → return'),
-                                (r'\bflase\b', 'Typo: flase → False'),
-                                (r'\btreu\b', 'Typo: treu → True'),
-                                (r'\bNoen\b', 'Typo: Noen → None'),
-                                (r'\basnyc\b', 'Typo: asnyc → async'),
-                                (r'\bawiat\b', 'Typo: awiat → await'),
-                                (r'\bdefin\b', 'Typo: defin → define'),
-                                (r'== None\b', 'Style: use "is None" instead of "== None"'),
-                                (r'!= None\b', 'Style: use "is not None" instead of "!= None"'),
-                            ]:
-                                if _re.search(pattern, stripped):
-                                    issues.append({"type": "typo", "line": i, "message": msg, "severity": "warning"})
-                            # 5. Hardcoded secrets
-                            if _re.search(r'(password|secret|api_key)\s*=\s*["\'][^"\']{8,}["\']', stripped, _re.IGNORECASE):
-                                if not any(x in stripped.lower() for x in ['environ', 'getenv', 'config', '#', 'example', 'template']):
-                                    issues.append({"type": "hardcoded_secret", "line": i, "message": "Potential hardcoded credential", "severity": "critical"})
-                        
-                        return {"file": filepath, "issues": issues, "total_issues": len(issues), 
-                                "lines": len(lines), "functions": len([n for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]),
-                                "imports": len(imports), "parseable": True}
-                    except Exception as e:
-                        return {"error": str(e), "file": filepath}
-                
-                elif mode == "check_tools":
-                    # Verify tool schemas match handler signatures — ALL registries
-                    from ..routes.mcp import MCP_HANDLERS, handle_tools_call
-                    from ..mcp.structured_admin import STRUCTURED_ADMIN_HANDLERS
-                    
-                    # Collect ALL handler sources
-                    all_handlers = {}
-                    all_handlers.update(MCP_HANDLERS)  # method-level
-                    all_handlers.update(STRUCTURED_ADMIN_HANDLERS)  # structured admin
-                    # V4 handlers from our own registry
-                    all_handlers.update(self._handlers)
-                    
-                    results = {"matched": [], "missing_handler": [], "v4_only": [], 
-                               "total_legacy": len(MCP_HANDLERS), "total_v4": len(self._handlers),
-                               "total_admin": len(STRUCTURED_ADMIN_HANDLERS)}
-                    
-                    try:
-                        from ..routes.mcp import handle_tools_list
-                        tool_list_resp = await handle_tools_list({})
-                        tools = tool_list_resp.get("tools", [])
-                        
-                        for tool in tools:
-                            name = tool["name"]
-                            if name in all_handlers:
-                                results["matched"].append(name)
-                            elif name in self._handlers:
-                                results["v4_only"].append(name)
-                            else:
-                                results["missing_handler"].append(name)
-                    except Exception as e:
-                        results["error"] = str(e)
-                    
-                    return results
-                
-                elif mode == "error_scan":
-                    # Scan recent logs for error patterns — ALL log sources
-                    log_files = [
-                        "/home/zombie/triforce/logs/triforce-error-debug/error.log",
-                        "/home/zombie/triforce/logs/triforce-error-debug/warning.log",
-                        "/home/zombie/triforce/logs/mcp.log",
-                        "/home/zombie/triforce/logs/unified.log",
-                    ]
-                    errors = {}
-                    for lf in log_files:
-                        if not os.path.isfile(lf):
-                            continue
-                        try:
-                            with open(lf) as f:
-                                # Last 200 lines
-                                lines = f.readlines()[-200:]
-                            for line in lines:
-                                line = line.strip()
-                                if not line:
-                                    continue
-                                # Extract error type
-                                m = _re.search(r'(Error|Exception|Warning).*?[:|](.+?)(?:\n|$)', line)
-                                if m:
-                                    key = m.group(0)[:80]
-                                    errors[key] = errors.get(key, 0) + 1
-                        except Exception:
-                            pass
-                    
-                    sorted_errors = sorted(errors.items(), key=lambda x: -x[1])[:20]
-                    return {"mode": "error_scan", "unique_patterns": len(sorted_errors), 
-                            "top_errors": [{"pattern": k, "count": v} for k, v in sorted_errors]}
-                
-                elif mode == "inspect":
-                    # Deep inspect a specific tool — checks ALL registries
-                    tool_name = params.get("tool", "")
-                    if not tool_name:
-                        return {"error": "'tool' parameter required for inspect mode"}
-                    
-                    from ..routes.mcp import MCP_HANDLERS
-                    from ..mcp.structured_admin import STRUCTURED_ADMIN_HANDLERS, STRUCTURED_ADMIN_TOOLS
-                    
-                    info = {"tool": tool_name, "found": False, "registry": None}
-                    
-                    # Check all registries
-                    handler = None
-                    if tool_name in MCP_HANDLERS:
-                        handler = MCP_HANDLERS[tool_name]
-                        info["registry"] = "MCP_HANDLERS (legacy)"
-                    elif tool_name in STRUCTURED_ADMIN_HANDLERS:
-                        handler = STRUCTURED_ADMIN_HANDLERS[tool_name]
-                        info["registry"] = "STRUCTURED_ADMIN"
-                    elif tool_name in self._handlers:
-                        handler = self._handlers[tool_name]
-                        info["registry"] = "V4_HANDLERS"
-                    
-                    if handler:
-                        info["found"] = True
-                        info["handler"] = getattr(handler, '__name__', str(handler))
-                        info["module"] = getattr(handler, '__module__', '?')
-                        info["doc"] = (getattr(handler, '__doc__', '') or "").strip()[:200]
-                        try:
-                            import inspect as _inspect
-                            src = _inspect.getsource(handler)
-                            info["lines"] = len(src.split("\n"))
-                            info["file"] = _inspect.getfile(handler)
-                        except Exception:
-                            pass
-                    
-                    # Also get schema from tools/list
-                    try:
-                        # Check structured admin tools for schema
-                        for t in STRUCTURED_ADMIN_TOOLS:
-                            if t["name"] == tool_name:
-                                info["schema"] = list(t.get("inputSchema", {}).get("properties", {}).keys())
-                                info["required"] = t.get("inputSchema", {}).get("required", [])
-                                break
-                    except Exception:
-                        pass
-                    
-                    return info
-                
-                else:
-                    return {
-                        "error": f"Unknown debug mode: {mode}",
-                        "available_modes": ["trace", "analyze_file", "check_tools", "error_scan", "inspect"],
-                        "examples": {
-                            "trace": {"mode": "trace", "target": "tools/call", "params": {"name": "health"}},
-                            "analyze_file": {"mode": "analyze_file", "path": "app/routes/mcp.py"},
-                            "check_tools": {"mode": "check_tools"},
-                            "error_scan": {"mode": "error_scan"},
-                            "inspect": {"mode": "inspect", "tool": "system_info"},
-                        }
-                    }
+                logger.warning("debug not yet implemented")
+                return {"status": "not_implemented", "message": "Debug function pending"}
 
             self.register("status", handle_status)
             self.register("shell", handle_shell_exec)
@@ -919,43 +650,29 @@ class HandlerRegistry:
     def _register_remote_handlers(self):
         """Remote: remote_hosts, remote_task, remote_status"""
         try:
-            # Remote functions not yet implemented - create stubs
+            # v2.86: Remote handlers delegieren an structured_admin (nicht mehr stub)
+            from app.mcp.structured_admin import (
+                handle_remote_admin,
+                handle_remote_status as _handle_remote_status_sa,
+                REMOTE_HOSTS as _SA_HOSTS,
+            )
+
             async def handle_remote_hosts(params):
-                """List federation remote hosts — delegates to structured admin."""
-                try:
-                    from ..mcp.structured_admin import handle_remote_admin
-                    return await handle_remote_admin({"action": "list_hosts"})
-                except Exception as e:
-                    return {"hosts": [], "error": str(e)}
+                """List federation hosts — delegates to structured_admin."""
+                return await handle_remote_admin({"action": "list_hosts"})
 
             async def handle_remote_task(params):
-                """Execute task on remote federation node."""
-                try:
-                    from ..mcp.structured_admin import handle_task_runner
-                    host = params.get("host", "hetzner")
-                    command = params.get("command", "")
-                    if not command:
-                        return {"error": "'command' parameter required"}
-                    import base64
-                    encoded = "b64:" + base64.b64encode(command.encode()).decode()
-                    return await handle_task_runner({
-                        "action": "execute_remote",
-                        "host": host,
-                        "task_data": encoded,
-                    })
-                except Exception as e:
-                    return {"error": str(e)}
+                host = params.get("host", "")
+                task = params.get("task", "")
+                if not host or not task:
+                    return {"error": "host and task required"}
+                # Delegate to remote_exec with a generic command
+                from app.mcp.structured_admin import handle_remote_exec
+                return await handle_remote_exec({"node": host, "command": "status"})
 
             async def handle_remote_status(params):
-                """Get federation remote node status — delegates to structured admin."""
-                try:
-                    from ..mcp.structured_admin import handle_remote_admin
-                    host = params.get("host")
-                    if host:
-                        return await handle_remote_admin({"action": "system_overview", "host": host})
-                    return await handle_remote_admin({"action": "ping_all"})
-                except Exception as e:
-                    return {"error": str(e)}
+                """Remote status — delegates to structured_admin."""
+                return await _handle_remote_status_sa(params)
 
             self.register("remote_hosts", handle_remote_hosts)
             self.register("remote_task", handle_remote_task)
@@ -1008,58 +725,8 @@ class HandlerRegistry:
                 return {"status": "not_implemented", "message": "Gemini coordinate function pending"}
 
             async def handle_gemini_code_exec(params):
-                """Execute Python code — tries Gemini sandbox, falls back to local exec."""
-                import asyncio as _aio, subprocess as _sp, tempfile, os
-                
-                code = params.get("code", "")
-                timeout = params.get("timeout", 30)
-                context = params.get("context")
-                
-                if not code:
-                    return {"error": "'code' parameter is required", "success": False}
-                
-                # Try Gemini native first
-                try:
-                    from ..services.gemini_access import gemini_access
-                    result = await gemini_access.code_execution(
-                        code=code, timeout=timeout, use_gemini=True, context=context
-                    )
-                    if result.get("success"):
-                        result["executor"] = "gemini_sandbox"
-                        return result
-                except Exception as e:
-                    logger.warning(f"Gemini exec failed ({e}), using local fallback")
-                
-                # Fallback: secure local execution
-                try:
-                    with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, dir="/tmp") as f:
-                        f.write(code)
-                        tmp_path = f.name
-                    
-                    proc = await _aio.create_subprocess_exec(
-                        "python3", tmp_path,
-                        stdout=_aio.subprocess.PIPE,
-                        stderr=_aio.subprocess.PIPE,
-                        cwd="/tmp",
-                    )
-                    try:
-                        stdout, stderr = await _aio.wait_for(proc.communicate(), timeout=min(timeout, 60))
-                    except _aio.TimeoutError:
-                        proc.kill()
-                        os.unlink(tmp_path)
-                        return {"success": False, "error": f"Timeout after {timeout}s", "executor": "local"}
-                    
-                    os.unlink(tmp_path)
-                    return {
-                        "success": proc.returncode == 0,
-                        "output": stdout.decode(errors="replace").strip(),
-                        "errors": stderr.decode(errors="replace").strip() or None,
-                        "exit_code": proc.returncode,
-                        "executor": "local_python",
-                        "code": code,
-                    }
-                except Exception as e:
-                    return {"success": False, "error": str(e), "executor": "local_failed"}
+                logger.warning("gemini_code_exec not yet implemented")
+                return {"status": "not_implemented", "message": "Gemini code exec function pending"}
 
             self.register("gemini_research", handle_gemini_research)
             self.register("gemini_coordinate", handle_gemini_coordinate)

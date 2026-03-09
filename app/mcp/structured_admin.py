@@ -1698,3 +1698,167 @@ STRUCTURED_ADMIN_TOOLS.append({
 
 STRUCTURED_ADMIN_HANDLERS["mcp_analytics"] = handle_mcp_analytics
 logger.info("PATCH v2.82: mcp_analytics registered (read-only performance monitoring)")
+
+
+# =============================================================================
+# PATCH v2.86 - remote_hosts als eigener Handler
+# =============================================================================
+
+async def handle_remote_hosts(a):
+    """List all known federation hosts. Read-only."""
+    return await handle_remote_admin({"action": "list_hosts"})
+
+STRUCTURED_ADMIN_TOOLS.append({
+    "name": "remote_hosts",
+    "description": "List registered remote hosts for task execution. Returns host IPs, descriptions, and capabilities.",
+    "inputSchema": {"type": "object", "properties": {}, "required": []},
+    "annotations": {"title": "Remote Hosts (Read-Only)", "readOnlyHint": True,
+                     "destructiveHint": False, "idempotentHint": True, "openWorldHint": False},
+})
+STRUCTURED_ADMIN_HANDLERS["remote_hosts"] = handle_remote_hosts
+STRUCTURED_ADMIN_HANDLERS["remote_host_list"] = handle_remote_hosts
+logger.info("PATCH v2.86: remote_hosts handler registered")
+
+
+# =============================================================================
+# PATCH v2.86 - container_status(stats) Container-Filter
+# =============================================================================
+
+_orig_container_control = handle_container_control
+
+async def _patched_container_control(a):
+    """Patched: stats respects container filter."""
+    act = a.get("action")
+    ctr = a.get("container", "")
+    if act == "stats":
+        cmd = ["docker", "stats", "--no-stream", "--format",
+               "table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.NetIO}}"]
+        if ctr:
+            cmd.append(ctr)
+            return {"action": act, "container": ctr, **(await _run(cmd))}
+        return {"action": act, **(await _run(cmd))}
+    return await _orig_container_control(a)
+
+# Patch auf BEIDE Ebenen: Dict UND Module-Level-Name
+# handle_container_status referenziert handle_container_control als global lookup
+handle_container_control = _patched_container_control
+STRUCTURED_ADMIN_HANDLERS["container_control"] = _patched_container_control
+logger.info("PATCH v2.86: container_control stats filter enabled (module-level + dict)")
+
+
+# =============================================================================
+# PATCH v2.86 - Read-Only Wrappers: binary_list, template_list, task_reference
+# =============================================================================
+
+async def handle_binary_list(a):
+    """Read-only: list available binaries."""
+    return await handle_binary_exec({"action": "list"})
+
+async def handle_template_list(a):
+    """Read-only: list available command templates."""
+    return await handle_custom_exec({"action": "list"})
+
+async def handle_task_reference(a):
+    """Read-only: quick_reference, encode, decode only."""
+    action = a.get("action", "quick_reference")
+    if action not in ("quick_reference", "encode", "decode"):
+        return {"error": f"task_reference only supports: quick_reference, encode, decode. Got: {action}"}
+    return await handle_task_runner({**a, "action": action})
+
+
+STRUCTURED_ADMIN_TOOLS.extend([
+    {"name": "binary_list",
+     "description": "List all available system programs that can be executed via binary_exec (read-only inventory).",
+     "inputSchema": {"type": "object", "properties": {}, "required": []},
+     "annotations": {"title": "Binary Inventory (Read-Only)", "readOnlyHint": True,
+                      "destructiveHint": False, "idempotentHint": True, "openWorldHint": False}},
+    {"name": "template_list",
+     "description": "List all available command templates for custom_exec (read-only inventory).",
+     "inputSchema": {"type": "object", "properties": {}, "required": []},
+     "annotations": {"title": "Command Templates (Read-Only)", "readOnlyHint": True,
+                      "destructiveHint": False, "idempotentHint": True, "openWorldHint": False}},
+    {"name": "task_reference",
+     "description": "Get pre-encoded command reference, encode text, or decode payloads (read-only). For execution use task_runner.",
+     "inputSchema": {"type": "object", "properties": {
+         "action": {"type": "string", "enum": ["quick_reference", "encode", "decode"]},
+         "text": {"type": "string", "description": "Text to encode (for encode action)"},
+         "format": {"type": "string", "enum": ["b64", "hex", "rot"]},
+         "task_data": {"type": "string", "description": "Encoded data to decode (for decode action)"},
+     }, "required": ["action"]},
+     "annotations": {"title": "Task Reference (Read-Only)", "readOnlyHint": True,
+                      "destructiveHint": False, "idempotentHint": True, "openWorldHint": False}},
+])
+
+STRUCTURED_ADMIN_HANDLERS.update({
+    "binary_list": handle_binary_list,
+    "template_list": handle_template_list,
+    "task_reference": handle_task_reference,
+})
+
+logger.info(f"PATCH v2.86: Read-only wrappers registered. Total: {len(STRUCTURED_ADMIN_TOOLS)} tools")
+
+
+# =============================================================================
+# PATCH v2.86 — remote_hosts Handler + container_status Fix + Read-Only Wrappers
+# =============================================================================
+
+async def handle_remote_hosts(a):
+    """List all known federation hosts. Read-only."""
+    return await handle_remote_admin({"action": "list_hosts"})
+
+STRUCTURED_ADMIN_TOOLS.append({
+    "name": "remote_hosts",
+    "description": "List registered remote hosts for task execution.",
+    "inputSchema": {"type": "object", "properties": {}, "required": []},
+    "annotations": {"title": "Remote Hosts (Read-Only)", "readOnlyHint": True,
+                     "destructiveHint": False, "idempotentHint": True, "openWorldHint": False},
+})
+STRUCTURED_ADMIN_HANDLERS["remote_hosts"] = handle_remote_hosts
+STRUCTURED_ADMIN_HANDLERS["remote_host_list"] = handle_remote_hosts
+
+# container_control(stats) Container-Filter
+_orig_cc = handle_container_control
+async def _patched_cc(a):
+    act, ctr = a.get("action"), a.get("container", "")
+    if act == "stats":
+        cmd = ["docker", "stats", "--no-stream", "--format",
+               "table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.NetIO}}"]
+        if ctr:
+            cmd.append(ctr)
+            return {"action": act, "container": ctr, **(await _run(cmd))}
+        return {"action": act, **(await _run(cmd))}
+    return await _orig_cc(a)
+STRUCTURED_ADMIN_HANDLERS["container_control"] = _patched_cc
+
+# Read-Only Wrappers
+async def handle_binary_list(a):
+    return await handle_binary_exec({"action": "list"})
+async def handle_template_list(a):
+    return await handle_custom_exec({"action": "list"})
+async def handle_task_reference(a):
+    action = a.get("action", "quick_reference")
+    if action not in ("quick_reference", "encode", "decode"):
+        return {"error": f"task_reference: only quick_reference/encode/decode. Got: {action}"}
+    return await handle_task_runner({**a, "action": action})
+
+STRUCTURED_ADMIN_TOOLS.extend([
+    {"name": "binary_list", "description": "List available system programs (read-only).",
+     "inputSchema": {"type": "object", "properties": {}, "required": []},
+     "annotations": {"title": "Binary Inventory", "readOnlyHint": True, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False}},
+    {"name": "template_list", "description": "List command templates (read-only).",
+     "inputSchema": {"type": "object", "properties": {}, "required": []},
+     "annotations": {"title": "Templates", "readOnlyHint": True, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False}},
+    {"name": "task_reference", "description": "Pre-encoded commands, encode/decode (read-only).",
+     "inputSchema": {"type": "object", "properties": {
+         "action": {"type": "string", "enum": ["quick_reference", "encode", "decode"]},
+         "text": {"type": "string"}, "format": {"type": "string", "enum": ["b64", "hex", "rot"]},
+         "task_data": {"type": "string"},
+     }, "required": ["action"]},
+     "annotations": {"title": "Task Reference", "readOnlyHint": True, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False}},
+])
+STRUCTURED_ADMIN_HANDLERS.update({
+    "binary_list": handle_binary_list,
+    "template_list": handle_template_list,
+    "task_reference": handle_task_reference,
+})
+logger.info(f"PATCH v2.86 applied: {len(STRUCTURED_ADMIN_TOOLS)} tools total")
