@@ -891,8 +891,8 @@ function nova_article_discuss_widget() {
       </div>
       <select id="nova-discuss-model-<?php echo $post->ID; ?>" name="nova-discuss-model" class="nova-discuss-model-select" aria-label="KI-Modell">
         <option value="groq/meta-llama/llama-4-scout-17b-16e-instruct">Llama 4 Scout (schnell)</option>
-        <option value="gemini/gemini-2.5-flash">Gemini 2.5 Flash</option>
-        <option value="anthropic/claude-sonnet-4-6">Claude Sonnet</option>
+        <option value="gemini/gemini-2.0-flash-001">Gemini 2.0 Flash</option>
+        <option value="anthropic/claude-sonnet-4">Claude Sonnet 4</option>
         <option value="groq/moonshotai/kimi-k2-instruct-0905">Kimi K2</option>
         <option value="ollama/qwen2.5:14b">Qwen 2.5 (lokal)</option>
       </select>
