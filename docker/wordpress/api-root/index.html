@@ -56,7 +56,7 @@
       justify-content: center;
       flex-wrap: wrap;
     }
-    a {
+    .links a, .links button {
       color: #58a6ff;
       text-decoration: none;
       padding: 0.6rem 1.2rem;
@@ -64,12 +64,137 @@
       border-radius: 6px;
       background: #21262d;
       transition: background 0.15s;
+      cursor: pointer;
     }
-    a:hover { background: #30363d; }
+    .links a:hover, .links button:hover { background: #30363d; }
+    .links button { font: inherit; }
     .footer {
       margin-top: 3rem;
       font-size: 0.85em;
       color: #484f58;
+    }
+    .overlay {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(13, 17, 23, 0.9);
+      padding: 1.5rem;
+      z-index: 100;
+    }
+    .overlay.open { display: flex; }
+    .panel {
+      width: min(960px, 100%);
+      max-height: 90vh;
+      background: #0b0f14;
+      border: 1px solid #21262d;
+      border-radius: 10px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+      display: flex;
+      flex-direction: column;
+    }
+    .panel-header {
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      border-bottom: 1px solid #21262d;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.7rem;
+      background: #161b22;
+      border: 1px solid #21262d;
+      border-radius: 999px;
+      font-weight: 600;
+      color: #c9d1d9;
+      font-size: 0.95em;
+    }
+    .panel-sub { color: #8b949e; font-size: 0.9em; margin-top: 0.2rem; }
+    .panel-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+    .panel-actions a {
+      color: #58a6ff;
+      text-decoration: none;
+      font-size: 0.9em;
+    }
+    .panel-actions button {
+      padding: 0.45rem 0.9rem;
+      border-radius: 6px;
+      background: #21262d;
+      color: #c9d1d9;
+      border: 1px solid #30363d;
+      cursor: pointer;
+    }
+    .panel-actions button:hover { background: #30363d; }
+    .panel-body {
+      padding: 1rem 1.25rem;
+      overflow: auto;
+      flex: 1;
+    }
+    .muted { color: #8b949e; }
+    .error { color: #f85149; }
+    .path {
+      border: 1px solid #21262d;
+      background: #0f131a;
+      border-radius: 8px;
+      padding: 0.75rem 0.9rem;
+      margin-bottom: 0.75rem;
+    }
+    .path summary {
+      list-style: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 600;
+      color: #c9d1d9;
+    }
+    .path summary::-webkit-details-marker { display: none; }
+    .method {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.8em;
+      color: #0d1117;
+      text-transform: uppercase;
+    }
+    .method.get { background: #3fb950; }
+    .method.post { background: #1f6feb; color: #e6edf3; }
+    .method.put { background: #c69026; }
+    .method.delete { background: #f85149; }
+    .method.patch { background: #a371f7; color: #e6edf3; }
+    .op {
+      padding: 0.35rem 0;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.45rem 0.8rem;
+      align-items: baseline;
+      border-top: 1px solid #161b22;
+    }
+    .op:first-of-type { border-top: none; }
+    .op summary {
+      grid-column: 1 / -1;
+      font-weight: 600;
+      color: #c9d1d9;
+    }
+    code { background: #161b22; padding: 0.15rem 0.35rem; border-radius: 4px; }
+    pre {
+      background: #0f131a;
+      border: 1px solid #21262d;
+      border-radius: 8px;
+      padding: 0.75rem;
+      color: #c9d1d9;
+      overflow: auto;
     }
   </style>
 </head>
@@ -84,14 +209,32 @@
     </div>
     
     <div class="links">
-      <a href="/docs">📖 API Docs</a>
-      <a href="/redoc">📚 ReDoc</a>
+      <a href="/docs" data-doc="swagger">📖 API Docs</a>
+      <a href="/redoc" data-doc="redoc">📚 ReDoc</a>
       <a href="/health">❤️ Health</a>
     </div>
     
     <p class="footer">
       <a href="https://ailinux.me" style="border:none;background:none;padding:0;">ailinux.me</a>
     </p>
+  </div>
+
+  <div id="doc-overlay" class="overlay" aria-hidden="true">
+    <div class="panel" role="dialog" aria-modal="true" aria-label="API Dokumentation">
+      <div class="panel-header">
+        <div>
+          <div class="pill" id="doc-kind">API Docs</div>
+          <div class="panel-sub" id="doc-subtitle">Lokale Vorschau aus /openapi.json</div>
+        </div>
+        <div class="panel-actions">
+          <a id="doc-original" href="/docs" target="_blank" rel="noreferrer">Original öffnen</a>
+          <button type="button" id="doc-close">Schließen</button>
+        </div>
+      </div>
+      <div class="panel-body" id="doc-body">
+        <p class="muted">Lade OpenAPI-Spezifikation...</p>
+      </div>
+    </div>
   </div>
 
 <script>
@@ -112,6 +255,131 @@
     dot.classList.add('offline');
     text.textContent = 'Nicht erreichbar';
   }
+
+  const overlay = document.getElementById('doc-overlay');
+  const docBody = document.getElementById('doc-body');
+  const docKind = document.getElementById('doc-kind');
+  const docSubtitle = document.getElementById('doc-subtitle');
+  const docOriginal = document.getElementById('doc-original');
+  const closeButton = document.getElementById('doc-close');
+  let openapiCache = null;
+
+  const methodClasses = ['get', 'post', 'put', 'delete', 'patch', 'options', 'head'];
+
+  function setOverlay(open) {
+    overlay.classList[open ? 'add' : 'remove']('open');
+    overlay.setAttribute('aria-hidden', open ? 'false' : 'true');
+  }
+
+  async function loadOpenApi() {
+    if (openapiCache) return openapiCache;
+    const res = await fetch('/openapi.json', { cache: 'no-store' });
+    if (!res.ok) throw new Error('OpenAPI-Spezifikation nicht gefunden');
+    openapiCache = await res.json();
+    return openapiCache;
+  }
+
+  function renderSwagger(spec) {
+    if (!spec || !spec.paths || Object.keys(spec.paths).length === 0) {
+      docBody.innerHTML = '<p class="error">Keine Pfade in der OpenAPI-Spezifikation gefunden.</p>';
+      return;
+    }
+    const frag = document.createDocumentFragment();
+    Object.entries(spec.paths).forEach(([path, operations]) => {
+      const details = document.createElement('details');
+      details.className = 'path';
+      const summary = document.createElement('summary');
+      summary.textContent = path;
+      details.appendChild(summary);
+
+      Object.entries(operations).forEach(([method, op]) => {
+        const lower = method.toLowerCase();
+        const opDiv = document.createElement('div');
+        opDiv.className = 'op';
+        const badge = document.createElement('span');
+        badge.className = `method ${methodClasses.includes(lower) ? lower : ''}`;
+        badge.textContent = lower.toUpperCase();
+        opDiv.appendChild(badge);
+
+        const text = document.createElement('div');
+        const summaryText = op.summary || op.description || 'Keine Beschreibung hinterlegt.';
+        text.textContent = summaryText;
+        text.className = 'muted';
+        opDiv.appendChild(text);
+
+        details.appendChild(opDiv);
+      });
+
+      frag.appendChild(details);
+    });
+    docBody.replaceChildren(frag);
+  }
+
+  function renderRedocFallback(spec) {
+    const info = spec?.info || {};
+    const servers = spec?.servers || [];
+    const container = document.createElement('div');
+    const title = document.createElement('h3');
+    title.textContent = info.title || 'ReDoc';
+    container.appendChild(title);
+
+    if (info.description) {
+      const p = document.createElement('p');
+      p.textContent = info.description;
+      p.className = 'muted';
+      container.appendChild(p);
+    }
+
+    if (servers.length) {
+      const srvTitle = document.createElement('p');
+      srvTitle.textContent = 'Server:';
+      srvTitle.className = 'muted';
+      container.appendChild(srvTitle);
+
+      const ul = document.createElement('ul');
+      servers.forEach((srv) => {
+        const li = document.createElement('li');
+        li.textContent = `${srv.url}${srv.description ? ` – ${srv.description}` : ''}`;
+        ul.appendChild(li);
+      });
+      container.appendChild(ul);
+    }
+
+    const pre = document.createElement('pre');
+    pre.textContent = JSON.stringify(spec, null, 2);
+    container.appendChild(pre);
+    docBody.replaceChildren(container);
+  }
+
+  async function showDocs(kind) {
+    docBody.innerHTML = '<p class="muted">Lade OpenAPI-Spezifikation...</p>';
+    docKind.textContent = kind === 'redoc' ? 'ReDoc (Fallback)' : 'API Docs (Fallback)';
+    docOriginal.setAttribute('href', kind === 'redoc' ? '/redoc' : '/docs');
+    docSubtitle.textContent = 'Lokale Darstellung aus /openapi.json';
+    setOverlay(true);
+    try {
+      const spec = await loadOpenApi();
+      if (kind === 'redoc') {
+        renderRedocFallback(spec);
+      } else {
+        renderSwagger(spec);
+      }
+    } catch (err) {
+      docBody.innerHTML = `<p class="error">${err.message}</p><p><a href="/openapi.json" class="muted">openapi.json direkt öffnen</a></p>`;
+    }
+  }
+
+  document.querySelectorAll('[data-doc]').forEach((link) => {
+    link.addEventListener('click', (event) => {
+      event.preventDefault();
+      showDocs(link.dataset.doc);
+    });
+  });
+
+  closeButton.addEventListener('click', () => setOverlay(false));
+  overlay.addEventListener('click', (event) => {
+    if (event.target === overlay) setOverlay(false);
+  });
 })();
 </script>
 </body>

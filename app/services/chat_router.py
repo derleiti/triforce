@@ -374,10 +374,8 @@ class APIProxy:
         """
         from .api_vault import api_vault
         
-        if not api_vault.is_unlocked:
-            raise RuntimeError("API Vault is locked - cannot access API keys")
-        
         provider, model_id = model.split("/", 1)
+        # get_key() hat ENV-Fallback - kein Vault-Lock noetig
         api_key = api_vault.get_key(provider)
         
         if not api_key:

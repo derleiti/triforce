@@ -5,6 +5,24 @@
 # ============================================================================
 # ENVIRONMENT FILES - KRITISCH! Niemals committen!
 # ============================================================================
+
+.patch-bak/
+.repair-backup/
+*.BAD.*
+*.BAK.*
+*.bak.*
+*.broken.*
+*.tmp
+*~
+app/config.py#
+data/n8n/*.sqlite
+data/n8n/*.sqlite-shm
+data/n8n/*.sqlite-wal
+all-debug-messeges-*.sh
+gather.sh
+mcp_stress.sh
+upfix.sh
+update.sh
 .env
 *.env
 !*.env.example
@@ -166,3 +184,5 @@ docker/repository/etc/gnupg/
 *.pyc
 __pycache__/
 .edit_log.jsonl
+app/mcp/structured_admin.py.bak2
+tests/

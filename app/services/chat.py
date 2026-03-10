@@ -13,7 +13,13 @@ from fastapi import HTTPException
 from pydantic import AnyHttpUrl
 
 from ..utils.http_client import HttpClient
-import google.generativeai as genai
+# BUG-015 FIX 2026-03-10: Optional import — verhindert Startup-Crash wenn Paket fehlt
+try:
+    import google.generativeai as genai
+    _HAS_GENAI = True
+except ImportError:
+    genai = None  # type: ignore
+    _HAS_GENAI = False
 
 from ..config import get_settings
 from ..services.model_registry import ModelInfo
@@ -171,6 +177,15 @@ OPENAI_COMPATIBLE_PROVIDERS = {
             "HTTP-Referer": "https://api.ailinux.me",
             "X-Title": "AILinux TriForce",
         },
+    },
+    # GitHub Models (OpenAI-compatible, uses Azure inference endpoint)
+    # NOTE: Requires GitHub fine-grained PAT with "Models" permission
+    # Classic PATs (ghp_) also work; fine-grained PATs need "Models" scope
+    "github": {
+        "base_url": "https://models.inference.ai.azure.com",
+        "api_key_setting": "github_token",
+        "timeout_setting": "groq_timeout_ms",  # reuse a sane ms timeout
+        "headers": {},
     },
 }
 
@@ -341,6 +356,10 @@ async def _get_initial_response(
             ):
                 chunks.append(chunk)
         except Exception as exc:
+            # PATCH v2.82: No Ollama fallback for config/auth errors
+            _emsg = str(exc).lower()
+            if any(kw in _emsg for kw in ("api key", "unauthorized", "403", "401", "not configured", "forbidden")):
+                raise
             async for chunk in _fallback_to_ollama(messages, temperature, settings.request_timeout, "Mistral", exc):
                 chunks.append(chunk)
     elif model.provider == "gemini":
@@ -357,6 +376,10 @@ async def _get_initial_response(
             ):
                 chunks.append(chunk)
         except Exception as exc:
+            # PATCH v2.82: No Ollama fallback for config/auth errors
+            _emsg = str(exc).lower()
+            if any(kw in _emsg for kw in ("api key", "unauthorized", "403", "401", "not configured", "forbidden")):
+                raise
             async for chunk in _fallback_to_ollama(messages, temperature, settings.request_timeout, "Gemini", exc):
                 chunks.append(chunk)
     elif model.provider == "gpt-oss":
@@ -374,6 +397,10 @@ async def _get_initial_response(
             ):
                 chunks.append(chunk)
         except Exception as exc:
+            # PATCH v2.82: No Ollama fallback for config/auth errors
+            _emsg = str(exc).lower()
+            if any(kw in _emsg for kw in ("api key", "unauthorized", "403", "401", "not configured", "forbidden")):
+                raise
             async for chunk in _fallback_to_ollama(messages, temperature, settings.request_timeout, "GPT-OSS", exc):
                 chunks.append(chunk)
     elif model.provider == "anthropic":
@@ -391,6 +418,10 @@ async def _get_initial_response(
             ):
                 chunks.append(chunk)
         except Exception as exc:
+            # PATCH v2.82: No Ollama fallback for config/auth errors
+            _emsg = str(exc).lower()
+            if any(kw in _emsg for kw in ("api key", "unauthorized", "403", "401", "not configured", "forbidden")):
+                raise
             async for chunk in _fallback_to_ollama(messages, temperature, settings.request_timeout, "Anthropic", exc):
                 chunks.append(chunk)
     elif model.provider in OPENAI_COMPATIBLE_PROVIDERS:
@@ -414,6 +445,17 @@ async def _get_initial_response(
             ):
                 chunks.append(chunk)
         except Exception as exc:
+            # PATCH v2.82: No Ollama fallback for config/auth errors
+            _emsg = str(exc).lower()
+            # GitHub: spezifische Fehlermeldung für fehlende "Models" Permission
+            if model.provider == "github" and "models" in _emsg and ("permission" in _emsg or "401" in _emsg):
+                raise api_error(
+                    "GitHub Models: Dein PAT benötigt die 'Models' Permission. "
+                    "→ github.com → Settings → Developer settings → Personal access tokens → Token bearbeiten → Models aktivieren",
+                    status_code=503, code="github_models_permission_missing"
+                )
+            if any(kw in _emsg for kw in ("api key", "unauthorized", "403", "401", "not configured", "forbidden")):
+                raise
             async for chunk in _fallback_to_ollama(messages, temperature, settings.request_timeout, model.provider.title(), exc):
                 chunks.append(chunk)
     elif model.provider == "cohere":
@@ -430,6 +472,10 @@ async def _get_initial_response(
             ):
                 chunks.append(chunk)
         except Exception as exc:
+            # PATCH v2.82: No Ollama fallback for config/auth errors
+            _emsg = str(exc).lower()
+            if any(kw in _emsg for kw in ("api key", "unauthorized", "403", "401", "not configured", "forbidden")):
+                raise
             async for chunk in _fallback_to_ollama(messages, temperature, settings.request_timeout, "Cohere", exc):
                 chunks.append(chunk)
     elif model.provider == "cloudflare":
@@ -447,6 +493,10 @@ async def _get_initial_response(
             ):
                 chunks.append(chunk)
         except Exception as exc:
+            # PATCH v2.82: No Ollama fallback for config/auth errors
+            _emsg = str(exc).lower()
+            if any(kw in _emsg for kw in ("api key", "unauthorized", "403", "401", "not configured", "forbidden")):
+                raise
             async for chunk in _fallback_to_ollama(messages, temperature, settings.request_timeout, "Cloudflare", exc):
                 chunks.append(chunk)
     else:

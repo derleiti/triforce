@@ -13,6 +13,11 @@ logger = logging.getLogger("ailinux.auto_crawler")
 
 # Kategorien mit wichtigen Quellen für 24/7 Crawling
 CRAWL_SOURCES = {
+    "ailinux": [
+        "https://ailinux.me/",
+        "https://www.ailinux.me/",
+        "https://ailinux.me/news/",
+    ],
     "ai_tech": [
         "https://news.ycombinator.com/",
         "https://www.reddit.com/r/artificial/",
@@ -50,6 +55,7 @@ CRAWL_SOURCES = {
 
 # Crawl-Intervalle pro Kategorie (in Sekunden)
 CRAWL_INTERVALS = {
+    "ailinux": 3600,
     "ai_tech": 3600,      # 1 Stunde (höchste Priorität)
     "media": 7200,        # 2 Stunden
     "games": 10800,       # 3 Stunden

@@ -309,7 +309,7 @@ verify_dep11_payloads(){
         fi
       fi
 
-    done < <(parse_sha256_entries "$relf")
+    done < <(parse_sha256_entries "$relf") || true
 
     # Statistik pro Release
     if [[ $rel_cleaned -gt 0 ]] || [[ $rel_failed -gt 0 ]]; then
@@ -320,7 +320,7 @@ verify_dep11_payloads(){
       ((SKIPPED++))
     fi
 
-  done < <(find "$MIRROR_ROOT" -type f -name Release -print0)
+  done < <(find "$MIRROR_ROOT" -type f -name Release -print0) || true
 
   # Abschlussbericht
   if [[ $CLEANED -gt 0 ]] || [[ $FAILED -gt 0 ]]; then
@@ -340,6 +340,57 @@ verify_dep11_payloads(){
   return 0
 }
 
+ensure_neon_pins(){
+  local bases=()
+  [[ -n "${MIRROR_ROOT:-}" ]] && bases+=("$MIRROR_ROOT")
+  bases+=("${REPO_PATH}/repo/mirror" "${REPO_PATH}/mirror" "/var/spool/apt-mirror/mirror")
+
+  for base in "${bases[@]}"; do
+    local dists_root="${base}/archive.neon.kde.org/user/dists"
+    [[ -d "$dists_root" ]] || continue
+
+    for suite_dir in "$dists_root"/*/; do
+      [[ -d "$suite_dir" ]] || continue
+      local pins_dir="${suite_dir%/}/main/neon"
+      local pins_file="${pins_dir}/pins"
+      local legacy_pins="${suite_dir%/}/neon-pins"
+
+      if [[ -f "$legacy_pins" ]]; then
+        rm -f "$legacy_pins"
+        log "✓ KDE neon: altes neon-pins entfernt (${legacy_pins})"
+      fi
+
+      if [[ ! -f "$pins_file" ]]; then
+        mkdir -p "$pins_dir"
+        cat > "$pins_file" <<'EOF'
+Package: *
+Pin: release o=KDE neon
+Pin-Priority: 1001
+EOF
+        chmod 0644 "$pins_file"
+        log "✓ KDE neon: pins erstellt (${pins_file})"
+      fi
+    done
+  done
+}
+
+cleanup_ailinux_stable_alias(){
+  local bases=()
+  [[ -n "${MIRROR_ROOT:-}" ]] && bases+=("$MIRROR_ROOT")
+  bases+=("${REPO_PATH}/repo/mirror" "${REPO_PATH}/mirror")
+
+  for base in "${bases[@]}"; do
+    local stable_link="${base}/archive.ailinux.me/dists/stable"
+    [[ -L "$stable_link" ]] || continue
+    local target
+    target=$(readlink "$stable_link" 2>/dev/null || echo "")
+    if [[ "$target" == "noble" || "$target" == */noble ]]; then
+      rm -f "$stable_link"
+      log "✓ Entfernt: archive.ailinux.me stable -> noble Symlink (${stable_link})"
+    fi
+  done
+}
+
 main(){
   if [[ -e "$LOCKFILE" ]]; then log "FEHLER: Lock existiert: $LOCKFILE"; exit 1; fi
   mkdir -p "$(dirname "$LOGFILE")"
@@ -348,6 +399,8 @@ main(){
   ensure_signing_key
   export_public_key
   detect_mirror_root || log "WARN: Mirror-Root nicht festgestellt."
+  ensure_neon_pins
+  cleanup_ailinux_stable_alias
 
   # CRITICAL: Sign repositories FIRST, before slow DEP-11 validation
   # This ensures mirrors get signed even if DEP-11 validation is slow/stuck

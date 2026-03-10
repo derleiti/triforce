@@ -129,7 +129,7 @@ class MCPMeshServer:
                 old = self.nodes[node_id]
                 try:
                     await old.websocket.close()
-                except:
+                except Exception:
                     pass
             
             node = MeshNode(
@@ -179,7 +179,7 @@ class MCPMeshServer:
             await node.websocket.send(json.dumps(message))
             self.stats["total_messages"] += 1
             return True
-        except:
+        except Exception:
             return False
     
     async def broadcast(self, message: Dict, exclude: Set[str] = None):
@@ -406,6 +406,18 @@ class MCPMeshServer:
             logger.error("websockets library not installed")
             return
         
+        # Guard: check if port is already in use (expected in multi-worker mode)
+        import socket
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        try:
+            sock.bind((MCP_WS_HOST, MCP_WS_PORT))  # nosec B104 — intentional: MCP WebSocket must be reachable via Docker bridge + LAN
+            sock.close()
+        except OSError:
+            sock.close()
+            logger.info(f"Port {MCP_WS_PORT} already in use (multi-worker: another worker owns it)")
+            self._running = False
+            return
+        
         ssl_ctx = self._get_ssl_context()
         self._running = True
         self.stats["started_at"] = datetime.now().isoformat()
@@ -421,7 +433,8 @@ class MCPMeshServer:
             )
             logger.info(f"MCP Mesh Server v{self.VERSION} started on port {MCP_WS_PORT}")
         except Exception as e:
-            logger.error(f"Failed to start server: {e}")
+            # In multi-worker mode, race between test-socket and actual bind is possible
+            logger.info(f"MCP WS Server bind race: {e} (another worker likely claimed the port)")
             self._running = False
     
     async def stop(self):

@@ -29,6 +29,7 @@ ANTHROPIC_VISION_ALIASES = {
     "anthropic/claude-3.5-haiku": "claude-3-5-haiku-20241022",
     "anthropic/claude-3-opus": "claude-3-opus-20240229",
     "anthropic/claude-3-sonnet": "claude-3-sonnet-20240229",
+    "anthropic/claude-3-haiku": "claude-3-haiku-20240307",
     "anthropic/claude": "claude-sonnet-4-20250514",
     "claude": "claude-sonnet-4-20250514",
 }
@@ -134,7 +135,7 @@ async def analyze(
             raise api_error("Anthropic Claude support is not configured", status_code=503, code="anthropic_unavailable")
 
         resolved_bytes = image_bytes
-        resolved_type = content_type or "image/png"
+        resolved_type = content_type or "image/jpeg"
 
         if resolved_bytes is None:
             assert image_url is not None
@@ -143,6 +144,15 @@ async def analyze(
         if resolved_bytes is None:
             raise api_error("Image bytes missing", status_code=422, code="missing_image")
 
+        # Detect actual MIME from magic bytes
+        if len(resolved_bytes) >= 3 and resolved_bytes[0] == 0xFF and resolved_bytes[1] == 0xD8 and resolved_bytes[2] == 0xFF:
+            resolved_type = "image/jpeg"
+        elif len(resolved_bytes) >= 4 and resolved_bytes[0] == 0x89 and resolved_bytes[1:4] == b"PNG":
+            resolved_type = "image/png"
+        elif len(resolved_bytes) >= 6 and resolved_bytes[:6] in (b"GIF87a", b"GIF89a"):
+            resolved_type = "image/gif"
+        elif len(resolved_bytes) >= 12 and resolved_bytes[:4] == b"RIFF" and resolved_bytes[8:12] == b"WEBP":
+            resolved_type = "image/webp"
         _persist_temp_file(resolved_bytes, filename)
         return await _analyze_with_anthropic_data(
             request_model,
@@ -153,6 +163,31 @@ async def analyze(
             max_tokens=settings.anthropic_max_tokens,
             timeout=settings.anthropic_timeout_ms / 1000.0,
         )
+
+    # ── OpenAI-compat providers (openrouter, github, groq, mistral, cerebras) ──
+    if model.provider in _OPENAI_COMPAT_VISION_PROVIDERS:
+        if image_bytes is not None:
+            return await _analyze_openai_compat_vision(
+                model.provider, request_model, prompt,
+                image_bytes=image_bytes, content_type=content_type or "image/jpeg",
+            )
+        else:
+            return await _analyze_openai_compat_vision(
+                model.provider, request_model, prompt,
+                image_url=image_url,
+            )
+
+    # ── Cloudflare Workers AI vision ──────────────────────────────────────────
+    if model.provider == "cloudflare":
+        if image_bytes is not None:
+            return await _analyze_cloudflare_vision(
+                request_model, prompt,
+                image_bytes=image_bytes, content_type=content_type or "image/jpeg",
+            )
+        else:
+            return await _analyze_cloudflare_vision(
+                request_model, prompt, image_url=image_url,
+            )
 
     raise api_error("Selected model does not support vision analysis", status_code=400, code="unsupported_provider")
 
@@ -362,8 +397,18 @@ async def _download_image(url: str) -> Tuple[str, bytes]:
     settings = get_settings()
     timeout = httpx.Timeout(settings.request_timeout)
     try:
+        _headers = {
+            "User-Agent": "Mozilla/5.0 (compatible; TriForce-Vision/1.0; +https://ailinux.me)",
+            "Accept": "image/webp,image/avif,image/*,*/*;q=0.8",
+            "Accept-Language": "en-US,en;q=0.5",
+        }
         async with httpx.AsyncClient(timeout=timeout) as client:
-            response = await client.get(url)
+            response = await client.get(url, follow_redirects=True, headers=_headers)
+            if response.status_code == 403:
+                raise api_error(
+                    f"Bild-URL blockiert (403 Forbidden). Direkte Bild-URLs (jpg/png) verwenden statt Webseiten.",
+                    status_code=422, code="image_access_denied"
+                )
             response.raise_for_status()
 
             content_length = response.headers.get("Content-Length")
@@ -407,6 +452,15 @@ async def _analyze_with_anthropic_data(
     if not target_model:
         stripped = strip_provider_prefix(model)
         target_model = ANTHROPIC_VISION_ALIASES.get(stripped, stripped)
+
+    # Cap max_tokens per model limit (claude-3-haiku has 4096 max)
+    CLAUDE3_MAX_TOKENS = {
+        "claude-3-haiku-20240307": 4096,
+        "claude-3-sonnet-20240229": 4096,
+        "claude-3-opus-20240229": 4096,
+    }
+    if target_model in CLAUDE3_MAX_TOKENS:
+        max_tokens = min(max_tokens, CLAUDE3_MAX_TOKENS[target_model])
 
     # Map content type to Anthropic media type
     media_type_map = {
@@ -499,3 +553,178 @@ async def _analyze_with_anthropic_data(
         raise api_error("Anthropic vision model returned no response", status_code=502, code="empty_response")
 
     return "\n".join(text_parts)
+
+# ── OpenAI-compatible Vision Handler ────────────────────────────────────────
+# Supports: openrouter, github, groq, mistral, cerebras
+# All use POST /chat/completions with image_url or base64 content parts.
+
+_OPENAI_COMPAT_VISION_PROVIDERS = {
+    "openrouter": {
+        "base_url": "https://openrouter.ai/api/v1/chat/completions",
+        "key_attr": "openrouter_api_key",
+    },
+    "github": {
+        "base_url": "https://models.inference.ai.azure.com/chat/completions",
+        "key_attr": "github_token",
+    },
+    "groq": {
+        "base_url": "https://api.groq.com/openai/v1/chat/completions",
+        "key_attr": "groq_api_key",
+    },
+    "mistral": {
+        "base_url": "https://api.mistral.ai/v1/chat/completions",
+        "key_attr": "mistral_api_key",
+    },
+    "cerebras": {
+        "base_url": "https://api.cerebras.ai/v1/chat/completions",
+        "key_attr": "cerebras_api_key",
+    },
+}
+
+
+async def _analyze_openai_compat_vision(
+    provider: str,
+    model: str,
+    prompt: str,
+    image_bytes: Optional[bytes] = None,
+    image_url: Optional[str] = None,
+    content_type: str = "image/png",
+    timeout: float = 120.0,
+) -> str:
+    """Generic OpenAI /chat/completions vision handler for all compatible providers."""
+    from ..config import get_settings
+    cfg = _OPENAI_COMPAT_VISION_PROVIDERS[provider]
+    settings = get_settings()
+    api_key = getattr(settings, cfg["key_attr"], None)
+    if not api_key:
+        raise api_error(
+            f"{provider.title()} API Key nicht konfiguriert ({cfg['key_attr']})",
+            status_code=503, code="provider_key_missing",
+        )
+    target_model = strip_provider_prefix(model)
+
+    # Build image content part
+    if image_bytes is not None:
+        optimized = _optimize_image(image_bytes, max_size=1536)
+        b64 = base64.b64encode(optimized).decode("ascii")
+        image_part = {
+            "type": "image_url",
+            "image_url": {"url": f"data:{content_type};base64,{b64}"},
+        }
+    elif image_url is not None:
+        image_part = {"type": "image_url", "image_url": {"url": image_url}}
+    else:
+        raise api_error("Kein Bild angegeben", status_code=422, code="missing_image")
+
+    body = {
+        "model": target_model,
+        "max_tokens": 4096,
+        "messages": [
+            {
+                "role": "user",
+                "content": [
+                    image_part,
+                    {"type": "text", "text": prompt},
+                ],
+            }
+        ],
+    }
+
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+    }
+    if provider == "openrouter":
+        headers["HTTP-Referer"] = "https://ailinux.me"
+        headers["X-Title"] = "Nova AI"
+
+    async with httpx.AsyncClient(timeout=timeout) as client:
+        r = await client.post(cfg["base_url"], json=body, headers=headers)
+        if r.status_code >= 400:
+            try:
+                err = r.json().get("error", {})
+                msg = err.get("message", r.text) if isinstance(err, dict) else str(err)
+            except Exception:
+                msg = r.text[:300]
+            raise api_error(
+                f"{provider.title()} Vision Fehler: {msg}",
+                status_code=r.status_code, code="provider_vision_error",
+            )
+        rdata = r.json()
+        choices = rdata.get("choices", [])
+        if not choices:
+            raise api_error("Leere Antwort vom Provider", status_code=500, code="empty_response")
+        return choices[0].get("message", {}).get("content", "")
+
+
+async def _analyze_cloudflare_vision(
+    model: str,
+    prompt: str,
+    image_bytes: Optional[bytes] = None,
+    image_url: Optional[str] = None,
+    content_type: str = "image/png",
+    timeout: float = 120.0,
+) -> str:
+    """Cloudflare Workers AI vision — uses /v1/chat/completions compatible endpoint."""
+    from ..config import get_settings
+    settings = get_settings()
+    cf_account = settings.cloudflare_account_id
+    cf_token = settings.cloudflare_api_token
+    if not cf_account or not cf_token:
+        raise api_error(
+            "Cloudflare Account ID oder API Token fehlt",
+            status_code=503, code="cloudflare_unavailable",
+        )
+    cf_model = strip_provider_prefix(model)  # @cf/meta/llama-3.2-11b-vision-instruct
+    url = f"https://api.cloudflare.com/client/v4/accounts/{cf_account}/ai/run/{cf_model}"
+
+    # CF uses OpenAI-style chat/completions body
+    if image_bytes is not None:
+        optimized = _optimize_image(image_bytes, max_size=1024)
+        b64 = base64.b64encode(optimized).decode("ascii")
+        img_content = f"data:{content_type};base64,{b64}"
+    elif image_url is not None:
+        img_content = image_url
+    else:
+        raise api_error("Kein Bild angegeben", status_code=422, code="missing_image")
+
+    body = {
+        "messages": [
+            {
+                "role": "user",
+                "content": [
+                    {"type": "image_url", "image_url": {"url": img_content}},
+                    {"type": "text", "text": prompt},
+                ],
+            }
+        ],
+        "max_tokens": 2048,
+    }
+
+    headers = {
+        "Authorization": f"Bearer {cf_token}",
+        "Content-Type": "application/json",
+    }
+    async with httpx.AsyncClient(timeout=timeout) as client:
+        r = await client.post(url, json=body, headers=headers)
+        if r.status_code >= 400:
+            try:
+                err_body = r.json()
+                msg = str(err_body.get("errors", err_body))[:200]
+            except Exception:
+                msg = r.text[:200]
+            raise api_error(
+                f"Cloudflare Vision Fehler: {msg}",
+                status_code=r.status_code, code="cloudflare_vision_error",
+            )
+        rdata = r.json()
+        # CF returns: {"result": {"response": "..."}} or choices[]
+        result = rdata.get("result", {})
+        if isinstance(result, dict):
+            text = result.get("response") or result.get("content") or ""
+            if text:
+                return text
+        choices = rdata.get("choices", [])
+        if choices:
+            return choices[0].get("message", {}).get("content", "")
+        return str(result)[:500]

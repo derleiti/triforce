@@ -189,7 +189,7 @@ async def receive_client_logs(
             if isinstance(entry, str):
                 try:
                     entry = json.loads(entry)
-                except:
+                except Exception:
                     continue
             
             level = entry.get("level", "").upper()

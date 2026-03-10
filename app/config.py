@@ -5,6 +5,7 @@ from functools import lru_cache
 from typing import Dict, List, Optional
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import AnyHttpUrl, Field
+from pydantic import AliasChoices
 
 DEFAULT_ALLOWED_ORIGINS = [
     "http://localhost",
@@ -70,8 +71,10 @@ class Settings(BaseSettings):
     gpt_oss_base_url: AnyHttpUrl | None = Field(default=None, validation_alias="GPT_OSS_BASE_URL")
 
     # Gemini
-    gemini_api_key: str | None = Field(default=None, validation_alias="GEMINI_API_KEY")
-
+    gemini_api_key: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("GOOGLE_AI_STUDIO_KEY","GEMINI_API_KEY","GOOGLE_GEMINI_KEY")
+    )
     # Mistral
     mistral_api_key: str | None = Field(default=None, validation_alias="MISTRAL_API_KEY")
     mistral_organisation_id: str | None = Field(default=None, validation_alias="MISTRAL_ORG_ID")
@@ -152,6 +155,16 @@ class Settings(BaseSettings):
 
     # OpenAI compatibility
     openai_model_aliases: Dict[str, str] = Field(default_factory=dict, validation_alias="OPENAI_MODEL_ALIASES")
+
+    # n8n (WordPress automation bridge)
+    enable_n8n: bool = Field(default=False, validation_alias="ENABLE_N8N")
+    n8n_api_key: str | None = Field(default=None, validation_alias="N8N_API_KEY")
+    n8n_webhook_url: AnyHttpUrl | None = Field(default=None, validation_alias="N8N_WEBHOOK_URL")
+    n8n_host: str | None = Field(default=None, validation_alias="N8N_HOST")
+    n8n_port: int | None = Field(default=None, validation_alias="N8N_PORT")
+    n8n_protocol: str = Field(default="https", validation_alias="N8N_PROTOCOL")
+    n8n_basic_auth_user: str | None = Field(default=None, validation_alias="N8N_BASIC_AUTH_USER")
+    n8n_basic_auth_password: str | None = Field(default=None, validation_alias="N8N_BASIC_AUTH_PASSWORD")
 
     # WordPress / bbPress
     wordpress_url: AnyHttpUrl | None = Field(default=None, validation_alias="WORDPRESS_URL")

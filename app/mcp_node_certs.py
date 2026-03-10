@@ -61,7 +61,7 @@ def get_ssl_context() -> ssl.SSLContext:
         try:
             os.unlink(client_pem)
             os.unlink(ca_crt)
-        except:
+        except Exception:
             pass
 
 

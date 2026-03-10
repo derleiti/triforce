@@ -7,6 +7,8 @@ from pydantic import BaseModel, ValidationError
 
 from ..services import agents as agents_service
 from ..utils.errors import api_error
+import logging
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/agents", tags=["agents"])
 
@@ -112,7 +114,9 @@ async def call_cli_agent(agent_id: str, payload: Dict[str, Any]):
         result = await agent_controller.call_agent(agent_id, message, timeout=timeout)
         return result
     except Exception as e:
-        raise api_error(str(e), status_code=500, code="agent_call_failed")
+        logger.error(f"agent_call {agent_id} failed: {e}", exc_info=True)  # full trace in logs only
+        # SECURITY: do not expose internal exception to client (CWE-209 / CodeQL py/stack-trace-exposure)
+        raise api_error("Agent call failed", status_code=500, code="agent_call_failed")
 
 
 class ToolListResponse(BaseModel):

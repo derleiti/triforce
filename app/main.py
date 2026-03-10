@@ -4,62 +4,12 @@ import logging
 import redis.asyncio as redis
 from fastapi import FastAPI, Request, status, HTTPException
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse, HTMLResponse, FileResponse, RedirectResponse
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
+
 from pathlib import Path
 from fastapi_limiter import FastAPILimiter
-from typing import Optional
-
-# Unified logging für alle Komponenten
-try:
-    from .utils.unified_logger import setup_unified_logging
-    setup_unified_logging()
-except ImportError:
-    pass
-
-# Setup module logger once at top
-logger = logging.getLogger(__name__)
-
-# Prometheus metrics integration
-try:
-    from prometheus_fastapi_instrumentator import Instrumentator  # optional
-    _HAS_INSTRUMENTATOR = True
-except Exception:
-    _HAS_INSTRUMENTATOR = False
-
-try:
-    from .utils.metrics import MetricsMiddleware, get_metrics_response
-    _HAS_CUSTOM_METRICS = True
-except Exception:
-    _HAS_CUSTOM_METRICS = False
-
-# TriForce Central Logging
-try:
-    from .utils.triforce_logging import (
-        central_logger,
-        TriForceLoggingMiddleware,
-        setup_triforce_logging,
-    )
-    _HAS_TRIFORCE_LOGGING = True
-except Exception:
-    _HAS_TRIFORCE_LOGGING = False
-
-# Central Logging (all logs to ./triforce/logs/)
-try:
-    from .utils.central_logging import setup_central_logging, LOG_DIR
-    setup_central_logging()
-    _HAS_CENTRAL_LOGGING = True
-except Exception:
-    _HAS_CENTRAL_LOGGING = False
-
-# System Log Collector (kernel, apps, journald -> /triforce/logs/)
-try:
-    from .utils.system_log_collector import init_system_logging, system_log_collector
-    _HAS_SYSTEM_LOG_COLLECTOR = True
-except Exception:
-    _HAS_SYSTEM_LOG_COLLECTOR = False
 
 from .config import get_settings
 
@@ -92,12 +42,65 @@ from .routes.client_chat import router as client_chat_router
 from .routes.client_auth import router as client_auth_router
 from .routes.client_update import router as client_update_router
 from .routes.client_logs import router as client_logs_router
+from .routes.client_ai_search import router as client_ai_search_router
 from .routes.federation import router as federation_router
+from .routes.nova_frontend import router as nova_frontend_router
+# BUG-006 FIX 2026-03-10: user_api war nie in main.py registriert
+from .routes.user_api import router as user_api_router
+# BUG-013 FIX 2026-03-10: support + tiers waren definiert aber nie registriert
+from .routes.support import router as support_router
+from .routes.tiers import router as tiers_router
 
 # Import routers from the top-level app directory
 from .routes_sd3 import router as sd3_router
 from .routes_vision import router as vision_router
+logger = logging.getLogger("app.main")
 
+# Unified logging für alle Komponenten
+try:
+    from .utils.unified_logger import setup_unified_logging
+    setup_unified_logging()
+except ImportError:
+    pass
+
+# Prometheus metrics integration
+try:
+    from prometheus_fastapi_instrumentator import Instrumentator  # optional
+    _HAS_INSTRUMENTATOR = True
+except Exception:
+    _HAS_INSTRUMENTATOR = False
+
+try:
+    from .utils.metrics import MetricsMiddleware
+    _HAS_CUSTOM_METRICS = True
+except Exception:
+    _HAS_CUSTOM_METRICS = False
+
+# TriForce Central Logging
+try:
+    from .utils.triforce_logging import (
+        central_logger,
+        TriForceLoggingMiddleware,
+        setup_triforce_logging,
+    )
+    _HAS_TRIFORCE_LOGGING = True
+except Exception:
+    _HAS_TRIFORCE_LOGGING = False
+
+# Central Logging (all logs to ./triforce/logs/)
+try:
+    from .utils.central_logging import setup_central_logging
+    setup_central_logging()
+    _HAS_CENTRAL_LOGGING = True
+except Exception:
+    _HAS_CENTRAL_LOGGING = False
+
+# System Log Collector (kernel, apps, journald -> /triforce/logs/)
+try:
+    from .utils.system_log_collector import init_system_logging, system_log_collector
+    _HAS_SYSTEM_LOG_COLLECTOR = True
+except Exception:
+    _HAS_SYSTEM_LOG_COLLECTOR = False
 
 async def _delayed_bootstrap():
     """Verzögerter Bootstrap der CLI Agents nach Server-Start"""
@@ -119,7 +122,7 @@ async def lifespan(app: FastAPI):
 
     # === Hardware Acceleration Auto-Detection ===
     try:
-        from .services.hardware_accel import init_hardware_acceleration, get_hardware_config
+        from .services.hardware_accel import init_hardware_acceleration
         hw_config = init_hardware_acceleration()
         logger.info(f"Hardware Acceleration: {hw_config.get('primary_accelerator', 'CPU')}")
         logger.info(f"  GPUs: {len(hw_config.get('gpus', []))}, Threads: {hw_config.get('recommended_threads', 4)}")
@@ -127,9 +130,12 @@ async def lifespan(app: FastAPI):
         logger.warning(f"Hardware detection failed (using defaults): {e}")
 
     settings = get_settings()
-    # Connect to Redis and initialize the rate limiter
-    redis_connection = redis.from_url(settings.redis_url, encoding="utf-8", decode_responses=True)
-    await FastAPILimiter.init(redis_connection)
+    # Connect to Redis and initialize the rate limiter (best effort)
+    try:
+        redis_connection = redis.from_url(settings.redis_url, encoding="utf-8", decode_responses=True)
+        await FastAPILimiter.init(redis_connection)
+    except Exception as e:
+        logger.warning(f"FastAPILimiter init skipped (Redis unavailable): {e}")
 
     # Start periodic model registry refresh (every hour)
     from .services.model_registry import registry
@@ -177,9 +183,17 @@ async def lifespan(app: FastAPI):
         import socket
         _hostname = socket.gethostname().lower()
         node_id = "backup" if "backup" in _hostname else "zombie-pc" if "zombie" in _hostname else "hetzner"
-        await federation_manager.initialize(node_id=node_id)
-        await federation_lb.start()
-        logger.info("Federation Manager started")
+        # Redis-Lock: nur ein Worker darf Federation starten
+        import redis.asyncio as _redis
+        _r = _redis.from_url("redis://localhost:6379/0")
+        _lock = await _r.set("federation_lock", 1, nx=True, ex=60)
+        await _r.aclose()
+        if _lock:
+            await federation_manager.initialize(node_id=node_id)
+            await federation_lb.start()
+            logger.info("Federation Manager started (lock acquired)")
+        else:
+            logger.info("Federation Manager skipped (another worker holds lock)")
     except Exception as e:
         logger.warning(f"Failed to start Federation Manager: {e}")
 
@@ -205,16 +219,21 @@ async def lifespan(app: FastAPI):
         logger.warning(f"Failed to start MCP Brain: {e}")
 
     # Start MCP WebSocket Server (Port 44433)
+    # In multi-worker mode, only one worker can bind the port.
+    # mcp_ws_server.start() handles the port-check internally.
     try:
         from .services.mcp_ws_server import mcp_ws_server
         await mcp_ws_server.start()
-        logger.info("MCP WebSocket Server started on port 44433")
+        if mcp_ws_server._running:
+            logger.info("MCP WebSocket Server started on port 44433")
+        else:
+            # Expected in multi-worker mode: another worker owns the port
+            logger.info("MCP WebSocket Server: port 44433 owned by another worker — skipping")
     except Exception as e:
         logger.warning(f"Failed to start MCP WebSocket Server: {e}")
 
     # Auto-Bootstrap CLI Agents (wenn konfiguriert)
     try:
-        from .services.agent_bootstrap import bootstrap_service
         import os
         auto_bootstrap = os.environ.get("AUTO_BOOTSTRAP_AGENTS", "false").lower() == "true"
         if auto_bootstrap:
@@ -301,6 +320,10 @@ async def lifespan(app: FastAPI):
 def create_app() -> FastAPI:
     # import logging (centralized)
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    # FIX: Externe HTTP-Bibliotheken auf WARNING setzen — verhindert hpack/httpcore DEBUG-Flut
+    for _noisy_lib in ("hpack", "hpack.hpack", "httpcore", "httpcore.http2",
+                        "httpcore.http11", "httpx", "h2", "h11", "urllib3"):
+        logging.getLogger(_noisy_lib).setLevel(logging.WARNING)
     app = FastAPI(
         title="AILinux AI Server", 
         lifespan=lifespan,
@@ -371,6 +394,11 @@ def create_app() -> FastAPI:
     app.include_router(health_router, tags=["Monitoring"])
     app.include_router(mcp_router, prefix="/v1", tags=["MCP"])
     app.include_router(mcp_node_router, prefix="/v1", tags=["MCP Node"])
+    # BUG-004 CLARIFICATION 2026-03-10:
+    # mcp_remote_router wird OHNE prefix registriert → Endpoint: /mcp (kein /v1)
+    # Dies ist ABSICHT: /mcp  = Claude.ai Remote Connector (OAuth, SSE, extern erreichbar)
+    #                  /v1/mcp = Interner/lokaler MCP Endpoint (für Clients, API-Zugriff)
+    # NICHT konsolidieren — beide haben unterschiedliche Auth-Stacks und Tool-Sets.
     app.include_router(mcp_remote_router, tags=["MCP Remote Server"])
     app.include_router(oauth_router, tags=["OAuth 2.0"])
     app.include_router(models_router, prefix="/v1", tags=["Models"])
@@ -419,11 +447,18 @@ def create_app() -> FastAPI:
     # Include routers from the top-level app directory (prefixes are in the files)
     app.include_router(sd3_router, prefix="/v1", tags=["Stable Diffusion 3"])
     app.include_router(vision_router, tags=["Vision"])
+    app.include_router(nova_frontend_router, prefix="/v1", tags=["Nova Frontend"])
+    # BUG-006 FIX 2026-03-10: User API Router registrieren
+    app.include_router(user_api_router, prefix="/v1", tags=["User API"])
     app.include_router(client_chat_router, prefix="/v1", tags=["Client Chat"])
     app.include_router(client_auth_router, prefix="/v1", tags=["Client Auth"])
     app.include_router(client_update_router, prefix="/v1", tags=["Client Update"])
     app.include_router(client_logs_router, tags=["Client Logs"])
+    app.include_router(client_ai_search_router, prefix="/v1", tags=["Client AI Search"])
     app.include_router(federation_router, prefix="/v1", tags=["Federation"])
+    # BUG-013 FIX 2026-03-10: support + tiers Routen registriert
+    app.include_router(support_router, prefix="/v1", tags=["Support"])
+    app.include_router(tiers_router, prefix="/v1", tags=["Tiers"])
 
     # Import and include txt2img router
     try:

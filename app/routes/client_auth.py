@@ -13,12 +13,14 @@ Stand: 2025-12-13
 from fastapi import APIRouter, HTTPException, Depends, Header
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 import hashlib
 import secrets
-import jwt
 import logging
+import hmac
+import base64
+import json as jsonlib
 
 # Pfad zur User-Datenbank
 USERS_FILE_PATH = Path(__file__).parent.parent.parent / "config" / "users.json"
@@ -94,35 +96,72 @@ def generate_client_secret() -> str:
     return secrets.token_urlsafe(32)
 
 
+def _b64url_encode(data: bytes) -> str:
+    return base64.urlsafe_b64encode(data).rstrip(b"=").decode("utf-8")
+
+
+def _b64url_decode(data: str) -> bytes:
+    padding = "=" * (-len(data) % 4)
+    return base64.urlsafe_b64decode(data + padding)
+
+
 def create_jwt_token(
-    client_id: str, 
-    role: str, 
+    client_id: str,
+    role: str,
     email: str = None,
     expires_hours: int = JWT_EXPIRY_HOURS
 ) -> str:
-    """JWT Token erstellen - enthält Email für Tier-Lookup"""
+    """JWT Token erstellen - enthält Email für Tier-Lookup (HS256, ohne externe Lib)"""
+    header = {"alg": "HS256", "typ": "JWT"}
     payload = {
         "client_id": client_id,
         "role": role,  # tier: guest, registered, pro, enterprise
-        "exp": datetime.utcnow() + timedelta(hours=expires_hours),
-        "iat": datetime.utcnow()
+        "exp": int((datetime.now(timezone.utc) + timedelta(hours=expires_hours)).timestamp()),
+        "iat": int(datetime.now(timezone.utc).timestamp())
     }
-    # Email im Token speichern für Tier-Service
     if email:
         payload["email"] = email
-        payload["sub"] = email  # Standard JWT subject claim
-    
-    return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+        payload["sub"] = email
+
+    signing_input = ".".join([
+        _b64url_encode(jsonlib.dumps(header, separators=(",", ":"), sort_keys=True).encode("utf-8")),
+        _b64url_encode(jsonlib.dumps(payload, separators=(",", ":"), sort_keys=True).encode("utf-8"))
+    ])
+    signature = hmac.new(
+        JWT_SECRET.encode("utf-8"),
+        signing_input.encode("utf-8"),
+        hashlib.sha256
+    ).digest()
+    return signing_input + "." + _b64url_encode(signature)
 
 
 def decode_jwt_token(token: str) -> dict:
-    """JWT Token dekodieren"""
-    try:
-        return jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(401, "Token expired")
-    except jwt.InvalidTokenError:
+    """JWT Token dekodieren und Signatur prüfen (HS256)"""
+    parts = token.split(".")
+    if len(parts) != 3:
         raise HTTPException(401, "Invalid token")
+
+    signing_input = ".".join(parts[:2])
+    signature = parts[2]
+    expected_sig = _b64url_encode(
+        hmac.new(
+            JWT_SECRET.encode("utf-8"),
+            signing_input.encode("utf-8"),
+            hashlib.sha256
+        ).digest()
+    )
+    if not hmac.compare_digest(signature, expected_sig):
+        raise HTTPException(401, "Invalid token signature")
+
+    try:
+        payload = jsonlib.loads(_b64url_decode(parts[1]))
+    except Exception:
+        raise HTTPException(401, "Invalid token payload")
+
+    exp = payload.get("exp")
+    if exp and datetime.now(timezone.utc).timestamp() > float(exp):
+        raise HTTPException(401, "Token expired")
+    return payload
 
 
 # =============================================================================
@@ -236,8 +275,10 @@ class UserLoginResponse(BaseModel):
     """User Login Response"""
     user_id: str
     token: str
-    tier: str
-    client_id: str  # Server-assigned per login
+    tier: str        # Legacy: enterprise/pro/free
+    plan: str        # Klar: demo | subscriber
+    is_paid: bool    # Bezahlstatus
+    client_id: str   # Server-assigned per login
 
 
 
@@ -311,6 +352,8 @@ async def user_login(request: UserLoginRequest):
     Server assigns a new client_id per login
     """
     email = request.email.lower().strip()
+    # Immer frisch aus Datei lesen – damit Passwort-/Tier-Aenderungen ohne Restart wirksam sind
+    USER_REGISTRY.update(load_users_from_file())
     user = USER_REGISTRY.get(email)
 
     # Auto-Registrierung: Wenn User nicht existiert, registriere neuen User
@@ -375,12 +418,52 @@ async def user_login(request: UserLoginRequest):
 
     logger.info(f"User logged in: {email} ({user['tier']}) -> {client_id}")
 
+    from ..services.subscription import tier_to_plan
+    _plan = tier_to_plan(user["tier"])
+
     return UserLoginResponse(
         user_id=email,
         token=token,
         tier=user["tier"],
+        plan=_plan.value,
+        is_paid=_plan.value == "subscriber",
         client_id=client_id
     )
+
+
+@router.get("/verify")
+async def verify_token(authorization: str = Header(None), token: str = None):
+    """
+    Verify JWT tokens for external callers (WordPress, clients).
+    Accepts Authorization: Bearer <token> or query/body param `token`.
+    """
+    raw = None
+    if authorization and authorization.lower().startswith("bearer "):
+        raw = authorization.split(" ", 1)[1].strip()
+    elif token:
+        raw = token.strip()
+
+    if not raw:
+        raise HTTPException(401, "Missing token")
+
+    payload = decode_jwt_token(raw)
+    email = payload.get("email") or payload.get("sub")
+    role = payload.get("role") or payload.get("tier")
+    client_id = payload.get("client_id")
+
+    from ..services.subscription import tier_to_plan
+    _vplan = tier_to_plan(role)
+
+    return {
+        "valid": True,
+        "email": email,
+        "tier": role,
+        "plan": _vplan.value,
+        "is_paid": _vplan.value == "subscriber",
+        "client_id": client_id,
+        "exp": payload.get("exp"),
+        "iat": payload.get("iat"),
+    }
 
 
 @router.post("/register", response_model=UserRegisterResponse)
@@ -489,7 +572,7 @@ async def register_client(
         payload = decode_jwt_token(token)
         if payload.get("role") != "admin":
             raise HTTPException(403, "Admin access required")
-    except:
+    except Exception:
         raise HTTPException(403, "Admin access required")
     
     # Prüfen ob Client schon existiert
@@ -689,3 +772,50 @@ async def require_admin(authorization: str = Header(None)) -> dict:
         raise HTTPException(403, "Admin access required")
     
     return client
+
+
+# =============================================================================
+# Handshake Endpoint — Client-Init beim Connect
+# =============================================================================
+
+@router.get("/client/handshake")
+async def client_handshake(authorization: str = Header(None)):
+    """
+    Client-Handshake beim Start.
+    Gibt Plan, Quota, erlaubte Tools und Context-Limit zurueck.
+    Kein zweiter Request nötig.
+    """
+    if not authorization:
+        raise HTTPException(401, "Authorization header required")
+
+    token = authorization.replace("Bearer ", "")
+    payload = decode_jwt_token(token)
+
+    client_id = payload.get("client_id")
+    user_id   = payload.get("sub") or client_id
+    role      = payload.get("role", "guest")
+
+
+    from ..services.subscription import subscription_service, PlanType, tier_to_plan
+
+    plan = tier_to_plan(role)
+    quota = subscription_service.get_quota(user_id, plan)
+
+    # Erlaubte Tools
+    from ..routes.client_mcp import get_tools_for_tier, FREE_TIER_TOOLS, ENTERPRISE_TIER_TOOLS
+    from ..services.user_tiers import UserTier
+    try:
+        tier_obj = UserTier(role)
+    except ValueError:
+        tier_obj = UserTier.GUEST
+    tools = get_tools_for_tier(tier_obj)
+
+    return {
+        "client_id":     client_id,
+        "user_id":       user_id,
+        "plan":          plan.value,
+        "context_limit": subscription_service.get_context_limit(plan),
+        "tools":         tools,
+        "tool_count":    len(tools),
+        "quota":         quota.to_api(),
+    }

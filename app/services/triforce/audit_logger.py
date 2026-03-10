@@ -17,6 +17,7 @@ import asyncio
 import json
 import uuid
 from datetime import datetime
+from pathlib import Path
 from dataclasses import dataclass, field, asdict
 from enum import Enum
 from typing import Optional, Dict, Any, List, Set
@@ -79,10 +80,12 @@ class AuditLogger:
 
     def __init__(
         self,
-        log_dir: str = "/home/zombie/triforce/triforce/logs",
+        log_dir: str = None,
         buffer_size: int = 1000,
         flush_threshold: int = 100
     ):
+        if log_dir is None:
+            log_dir = str(Path(__file__).resolve().parents[3] / "logs")
         self.log_dir = Path(log_dir)
         self.log_dir.mkdir(parents=True, exist_ok=True)
 

@@ -1,6 +1,6 @@
 {
   "version": "1.1",
-  "updated": "2024-12-31T23:00:00Z",
+  "updated": "2026-03-08T19:15:00Z",
   "nodes": {
     "hetzner": {
       "id": "hetzner",
@@ -17,7 +17,11 @@
         "storage_gb": 2000,
         "gpu": null
       },
-      "services": ["triforce", "ollama", "federation-master"],
+      "services": [
+        "triforce",
+        "ollama",
+        "federation-master"
+      ],
       "status": "active"
     },
     "backup": {
@@ -36,8 +40,13 @@
         "gpu": null,
         "note": "Upgraded 2024-12-31: +8 cores permanent, +16GB RAM permanent"
       },
-      "services": ["triforce-hub", "cloud-ollama", "backup"],
-      "status": "active"
+      "services": [
+        "triforce-hub",
+        "cloud-ollama",
+        "backup"
+      ],
+      "status": "active",
+      "user": "backupuser"
     },
     "zombie-pc": {
       "id": "zombie-pc",
@@ -54,8 +63,12 @@
         "storage_gb": 2000,
         "gpu": "AMD RX 6800 XT"
       },
-      "services": ["triforce-hub", "ollama-local"],
-      "status": "active"
+      "services": [
+        "triforce-hub",
+        "ollama-local"
+      ],
+      "status": "active",
+      "user": "zombie"
     }
   },
   "totals": {

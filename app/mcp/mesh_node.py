@@ -512,7 +512,7 @@ class MeshNode:
                         "params": {"message": message, "origin": origin, "ttl": ttl - 1}
                     })
                     forwarded += 1
-                except:
+                except Exception:
                     pass
         
         return {"forwarded": forwarded}
@@ -535,7 +535,7 @@ class MeshNode:
             if p.is_connected:
                 try:
                     return await self.call_peer(p.peer_id, "mesh/route", params, timeout=30)
-                except:
+                except Exception:
                     continue
         
         return {"error": f"No route to {target}"}
@@ -600,7 +600,7 @@ class MeshNode:
                     "method": method,
                     "params": params or {}
                 })
-            except:
+            except Exception:
                 pass
     
     # =========================================================================
@@ -644,7 +644,7 @@ class MeshNode:
                         await self.call_peer(peer_id, "ping", timeout=5)
                         peer.latency_ms = (datetime.now() - start).total_seconds() * 1000
                         peer.last_seen = datetime.now()
-                    except:
+                    except Exception:
                         peer.state = PeerState.FAILED
     
     async def _connect_to_hub(self):
@@ -699,7 +699,7 @@ class MeshNode:
             ip = s.getsockname()[0]
             s.close()
             return ip
-        except:
+        except Exception:
             return "127.0.0.1"
 
 

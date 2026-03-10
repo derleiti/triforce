@@ -650,18 +650,29 @@ class HandlerRegistry:
     def _register_remote_handlers(self):
         """Remote: remote_hosts, remote_task, remote_status"""
         try:
-            # Remote functions not yet implemented - create stubs
+            # v2.86: Remote handlers delegieren an structured_admin (nicht mehr stub)
+            from app.mcp.structured_admin import (
+                handle_remote_admin,
+                handle_remote_status as _handle_remote_status_sa,
+                REMOTE_HOSTS as _SA_HOSTS,
+            )
+
             async def handle_remote_hosts(params):
-                logger.warning("remote_hosts not yet implemented")
-                return {"status": "not_implemented", "hosts": [], "message": "Remote hosts function pending"}
+                """List federation hosts — delegates to structured_admin."""
+                return await handle_remote_admin({"action": "list_hosts"})
 
             async def handle_remote_task(params):
-                logger.warning("remote_task not yet implemented")
-                return {"status": "not_implemented", "message": "Remote task function pending"}
+                host = params.get("host", "")
+                task = params.get("task", "")
+                if not host or not task:
+                    return {"error": "host and task required"}
+                # Delegate to remote_exec with a generic command
+                from app.mcp.structured_admin import handle_remote_exec
+                return await handle_remote_exec({"node": host, "command": "status"})
 
             async def handle_remote_status(params):
-                logger.warning("remote_status not yet implemented")
-                return {"status": "not_implemented", "message": "Remote status function pending"}
+                """Remote status — delegates to structured_admin."""
+                return await _handle_remote_status_sa(params)
 
             self.register("remote_hosts", handle_remote_hosts)
             self.register("remote_task", handle_remote_task)
@@ -714,27 +725,8 @@ class HandlerRegistry:
                 return {"status": "not_implemented", "message": "Gemini coordinate function pending"}
 
             async def handle_gemini_code_exec(params):
-                """Execute Python code using Gemini's native code execution."""
-                from ..services.gemini_access import gemini_access
-                
-                code = params.get("code", "")
-                timeout = params.get("timeout", 30)
-                context = params.get("context")
-                
-                if not code:
-                    return {"error": "'code' parameter is required", "success": False}
-                
-                try:
-                    result = await gemini_access.code_execution(
-                        code=code,
-                        timeout=timeout,
-                        use_gemini=True,  # Force Gemini native execution
-                        context=context
-                    )
-                    return result
-                except Exception as e:
-                    logger.error(f"Gemini code exec error: {e}")
-                    return {"error": str(e), "success": False}
+                logger.warning("gemini_code_exec not yet implemented")
+                return {"status": "not_implemented", "message": "Gemini code exec function pending"}
 
             self.register("gemini_research", handle_gemini_research)
             self.register("gemini_coordinate", handle_gemini_coordinate)

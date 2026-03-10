@@ -1,5 +1,5 @@
 """
-API Documentation for MCP Server v2.80
+API Documentation for MCP Server v2.81
 
 Provides comprehensive API documentation that Claude can query
 to understand how to interact with the AILinux backend.

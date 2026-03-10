@@ -1,5 +1,15 @@
-# WordPress + PHP-FPM + MariaDB + Redis
-# Start: docker compose --env-file ../../.env up -d
+
+x-logging: &default_logging
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+x-gateway-hosts: &gateway_hosts
+  - "docker.gateway:host-gateway"
+  - "docker.host.internal:host-gateway"
+  - "host.docker.internal:host-gateway"
+  - "api.ailinux.me:host-gateway"
 
 services:
   apache:
@@ -7,7 +17,7 @@ services:
     container_name: ${WP_APACHE_CONTAINER_NAME:-wordpress_apache}
     depends_on:
       wordpress_fpm:
-        condition: service_started
+        condition: service_healthy
     ports:
       - "${WP_HTTP_PORT:-80}:80"
       - "${WP_HTTPS_PORT:-443}:443"
@@ -17,7 +27,7 @@ services:
       - ${WP_APACHE_EXTRA_PATH:-./apache/extra}:/usr/local/apache2/conf/extra:ro
       - ${WP_APACHE_SNIPPETS_PATH:-./apache/snippets}:/usr/local/apache2/conf/snippets:ro
       - ${WP_APACHE_VHOSTS_PATH:-./apache/vhosts}:/usr/local/apache2/conf/vhosts:ro
-      - ${WP_HTML_PATH:-./html}:/var/www/html
+      - ${WP_HTML_PATH:-./html}:/var/www/html:delegated
       - ${WP_LETSENCRYPT_PATH:-/etc/letsencrypt}:/etc/letsencrypt:ro
       - ${WP_API_ROOT_PATH:-./api-root}:/var/www/api-root:ro
       - ${WP_SEARCH_ROOT_PATH:-./search-root}:/var/www/search-root:ro
@@ -25,13 +35,13 @@ services:
       - /var/www/login.ailinux.me:/var/www/login.ailinux.me:ro
     environment:
       TZ: ${TZ:-Europe/Berlin}
+      HTTPS: "on"
     healthcheck:
       test: ["CMD", "httpd", "-t"]
       interval: ${WP_APACHE_HEALTHCHECK_INTERVAL:-30s}
       timeout: ${WP_APACHE_HEALTHCHECK_TIMEOUT:-10s}
       retries: ${WP_APACHE_HEALTHCHECK_RETRIES:-3}
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    extra_hosts: *gateway_hosts
     restart: ${WP_RESTART_POLICY:-unless-stopped}
     networks:
       - ${WP_NETWORK:-wordpress-network}
@@ -44,8 +54,7 @@ services:
         condition: service_healthy
       wordpress_redis:
         condition: service_healthy
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    extra_hosts: *gateway_hosts
     environment:
       TZ: ${TZ:-Europe/Berlin}
       WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST:-wordpress_db}
@@ -55,24 +64,14 @@ services:
       REDIS_PASSWORD: ${WP_REDIS_PASSWORD:-}
       WORDPRESS_REDIS_HOST: ${WP_REDIS_HOST:-wordpress_redis}
       WORDPRESS_REDIS_PORT: ${WP_REDIS_PORT:-6379}
-      WORDPRESS_CONFIG_EXTRA: |
-        if (!defined('WP_REDIS_HOST')) {
-          define('WP_REDIS_HOST', getenv('WORDPRESS_REDIS_HOST') ?: 'wordpress_redis');
-        }
-        if (!defined('WP_REDIS_PORT')) {
-          $$port = getenv('WORDPRESS_REDIS_PORT');
-          define('WP_REDIS_PORT', $$port !== false ? (int) $$port : 6379);
-        }
-        $$redisPassword = getenv('REDIS_PASSWORD');
-        if ($$redisPassword !== false && trim($$redisPassword) !== '' && !defined('WP_REDIS_PASSWORD')) {
-          define('WP_REDIS_PASSWORD', $$redisPassword);
-        }
+      # WICHTIG: Kein WORDPRESS_CONFIG_EXTRA mehr -> kein eval-Parse-Error
     volumes:
-      - ${WP_HTML_PATH:-./html}:/var/www/html
-      - ${WP_PHP_CUSTOM_INI:-./php/custom.ini}:/usr/local/etc/php/conf.d/custom.ini
+      - ${WP_HTML_PATH:-./html}:/var/www/html:delegated
+      - ${WP_PHP_CUSTOM_INI:-./php/custom.ini}:/usr/local/etc/php/conf.d/99-custom.ini:ro
+      - ./php/opcache-boost.ini:/usr/local/etc/php/conf.d/98-opcache.ini:ro
       - ${WP_PHP_WWW_CONF:-./php/www.conf}:/usr/local/etc/php-fpm.d/www.conf
     healthcheck:
-      test: ["CMD-SHELL", "pidof php-fpm >/dev/null 2>&1"]
+      test: ["CMD-SHELL", "php-fpm --test 2>&1 | grep -q test"]
       interval: ${WP_FPM_HEALTHCHECK_INTERVAL:-30s}
       timeout: ${WP_FPM_HEALTHCHECK_TIMEOUT:-10s}
       retries: ${WP_FPM_HEALTHCHECK_RETRIES:-3}
@@ -92,9 +91,10 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
       - ${WP_DB_DATA_VOLUME:-wp_db_data}:/var/lib/mysql
-      - ${WP_DB_CUSTOM_CNF:-./mysql/custom.cnf}:/etc/mysql/conf.d/custom.cnf
+      - ${WP_DB_CUSTOM_CNF:-./mysql/custom.cnf}:/etc/mysql/conf.d/custom.cnf:ro
+      - ./mysql/conf.d:/etc/mysql/conf.d/extra:ro
     healthcheck:
-      test: ["CMD-SHELL", "MYSQL_PWD=\"$$MYSQL_ROOT_PASSWORD\" mariadb-admin ping -h 127.0.0.1 -uroot --silent"]
+      test: ["CMD-SHELL", "MYSQL_PWD=\"${MYSQL_ROOT_PASSWORD}\" mariadb-admin ping -h 127.0.0.1 -uroot --silent"]
       interval: ${WP_DB_HEALTHCHECK_INTERVAL:-10s}
       timeout: ${WP_DB_HEALTHCHECK_TIMEOUT:-5s}
       retries: ${WP_DB_HEALTHCHECK_RETRIES:-12}
@@ -102,50 +102,38 @@ services:
     networks:
       - ${WP_NETWORK:-wordpress-network}
     restart: ${WP_RESTART_POLICY:-unless-stopped}
+    logging: *default_logging
 
   wordpress_redis:
     image: ${WP_REDIS_IMAGE:-redis:alpine}
     container_name: ${WP_REDIS_CONTAINER_NAME:-wordpress_redis}
     environment:
       REDIS_PASSWORD: ${WP_REDIS_PASSWORD:-}
-    command: ["sh", "-lc", "if [ -n \"$$REDIS_PASSWORD\" ]; then exec redis-server --requirepass \"$$REDIS_PASSWORD\"; else exec redis-server; fi"]
+    command: >
+      sh -c "
+        if [ -n \"$$REDIS_PASSWORD\" ]; then
+          exec redis-server /etc/redis/redis.conf --requirepass \"$$REDIS_PASSWORD\"
+        else
+          exec redis-server /etc/redis/redis.conf
+        fi
+      "
     healthcheck:
-      test: ["CMD-SHELL", "if [ -n \"$$REDIS_PASSWORD\" ]; then redis-cli -a \"$$REDIS_PASSWORD\" ping; else redis-cli ping; fi"]
+      test: ["CMD-SHELL", "if [ -n \"$$REDIS_PASSWORD\" ]; then redis-cli -a \"$$REDIS_PASSWORD\" ping | grep -q PONG; else redis-cli ping | grep -q PONG; fi"]
       interval: ${WP_REDIS_HEALTHCHECK_INTERVAL:-30s}
       timeout: ${WP_REDIS_HEALTHCHECK_TIMEOUT:-10s}
       retries: ${WP_REDIS_HEALTHCHECK_RETRIES:-5}
-    networks:
-      - ${WP_NETWORK:-wordpress-network}
-    restart: ${WP_RESTART_POLICY:-unless-stopped}
-
-  wordpress_backup:
-    image: ${WP_BACKUP_IMAGE:-mariadb:11}
-    container_name: ${WP_BACKUP_CONTAINER_NAME:-wordpress_backup}
-    profiles:
-      - backup
-    entrypoint: ["${WP_BACKUP_SCRIPT:-/run-backup.sh}"]
-    environment:
-      TZ: ${TZ:-Europe/Berlin}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST:-wordpress_db}
-      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME:-wordpress}
-      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
-      BACKUP_RETENTION_DAYS: ${WP_BACKUP_RETENTION:-30}
     volumes:
-      - ${WP_BACKUP_PATH:-./backups}:/backup
-      - ${WP_BACKUP_SCRIPT_PATH:-./backups/run-backup.sh}:/run-backup.sh:ro
-    depends_on:
-      wordpress_db:
-        condition: service_healthy
+      - ./redis/redis-optimized.conf:/etc/redis/redis.conf:ro
+      - ${WP_REDIS_DATA_VOLUME:-wp_redis_data}:/data
     networks:
       - ${WP_NETWORK:-wordpress-network}
     restart: ${WP_RESTART_POLICY:-unless-stopped}
+    logging: *default_logging
 
   wpcli:
     image: ${WP_CLI_IMAGE:-wordpress:cli}
     container_name: ${WP_CLI_CONTAINER_NAME:-wordpress_wpcli}
-    profiles:
-      - tools
+    profiles: ["tools"]
     depends_on:
       wordpress_fpm:
         condition: service_healthy
@@ -160,34 +148,11 @@ services:
       WORDPRESS_DB_USER: ${WORDPRESS_DB_USER:-wordpress}
       WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
     volumes:
-      - ${WP_HTML_PATH:-./html}:/var/www/html
+      - ${WP_HTML_PATH:-./html}:/var/www/html:delegated
+    extra_hosts: *gateway_hosts
     entrypoint: ["wp", "--allow-root"]
     networks:
       - ${WP_NETWORK:-wordpress-network}
-
-  wordpress_cron:
-    image: ${WP_CRON_IMAGE:-wordpress:cli}
-    container_name: ${WP_CRON_CONTAINER_NAME:-wordpress_cron}
-    profiles:
-      - cron
-    depends_on:
-      wordpress_fpm:
-        condition: service_healthy
-    working_dir: /var/www/html
-    environment:
-      TZ: ${TZ:-Europe/Berlin}
-      WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST:-wordpress_db}
-      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME:-wordpress}
-      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER:-wordpress}
-      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
-      WP_CRON_INTERVAL: ${WP_CRON_INTERVAL:-300}
-    volumes:
-      - ${WP_HTML_PATH:-./html}:/var/www/html
-      - ${WP_CRON_SCRIPT:-./cron-runner.sh}:/cron-runner.sh:ro
-    entrypoint: ["/bin/sh", "/cron-runner.sh"]
-    networks:
-      - ${WP_NETWORK:-wordpress-network}
-    restart: ${WP_RESTART_POLICY:-unless-stopped}
 
 networks:
   wordpress-network:
@@ -198,3 +163,5 @@ networks:
 volumes:
   wp_db_data:
     name: ${WP_DB_DATA_VOLUME:-wp_db_data}
+  wp_redis_data:
+    name: ${WP_REDIS_DATA_VOLUME:-wp_redis_data}

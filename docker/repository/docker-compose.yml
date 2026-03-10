@@ -24,7 +24,7 @@ services:
       - TZ=${TZ:-Europe/Berlin}
     networks:
       - ${REPO_NETWORK:-repo-network}
-      - wordpress-network
+      - ${WP_NETWORK:-wordpress-network}
     healthcheck:
       test: ["CMD", "wget", "-qO-", "--timeout=5", "http://127.0.0.1:8080/health"]
       interval: ${REPO_HEALTHCHECK_INTERVAL:-30s}
@@ -62,11 +62,13 @@ services:
     command: ["apt-mirror"]
     networks:
       - ${REPO_NETWORK:-repo-network}
+      - ${WP_NETWORK:-wordpress-network}
 
 networks:
   repo-network:
     name: ${REPO_NETWORK:-repo-network}
     driver: ${REPO_NETWORK_DRIVER:-bridge}
   wordpress-network:
-    external: true
     name: ${WP_NETWORK:-wordpress-network}
+    driver: ${WP_NETWORK_DRIVER:-bridge}
+    external: true

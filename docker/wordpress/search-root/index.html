@@ -1,1599 +1,1838 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AILinux Search - MeshAI Powered</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
+    <title>AILinux Private Search Console</title>
+    <meta name="description" content="High-contrast privacy-first AI search with local model routing and zero usage logging on search.ailinux.me.">
+    <meta name="color-scheme" content="dark">
     <link rel="search" type="application/opensearchdescription+xml" title="AILinux Search" href="/opensearch.xml">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --bg-primary: #0a0a0b;
-            --bg-secondary: #111113;
-            --bg-tertiary: #18181b;
-            --bg-hover: #1f1f23;
-            --text-primary: #fafafa;
-            --text-secondary: #a1a1aa;
-            --text-muted: #71717a;
-            --accent: #3b82f6;
-            --accent-purple: #8b5cf6;
-            --accent-green: #22c55e;
-            --accent-orange: #f97316;
-            --accent-pink: #ec4899;
-            --border: #27272a;
-            --success: #22c55e;
-            --gradient-start: #3b82f6;
-            --gradient-end: #8b5cf6;
-            --mesh-gradient: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
-            --wiki-color: #3366cc;
-            --grok-color: #00d4aa;
+            --bg-0: #080a0c;
+            --bg-1: #0f1418;
+            --bg-2: #161d23;
+            --panel: #121922;
+            --line: #2a3642;
+            --text-0: #f1f5f9;
+            --text-1: #d0d7de;
+            --text-2: #95a2af;
+            --accent-a: #4cc9f0;
+            --accent-b: #ffd166;
+            --accent-c: #7ce38b;
+            --danger: #ff6b6b;
+            --radius: 18px;
+            --shadow: 0 20px 60px rgba(0, 0, 0, 0.38);
         }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            min-height: 100vh;
-            line-height: 1.6;
-        }
-        
-        /* Dashboard Header */
-        .dashboard-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 24px;
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border);
-            font-size: 0.85rem;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-        .dashboard-left, .dashboard-center, .dashboard-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .dashboard-center { flex-direction: column; gap: 2px; }
-        .weather-widget {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--text-secondary);
-            background: var(--bg-tertiary);
-            padding: 6px 12px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-        }
-        .weather-widget .temp { font-weight: 600; color: var(--text-primary); font-size: 1rem; }
-        .weather-widget .condition { color: var(--text-muted); font-size: 0.75rem; }
-        .weather-widget .location { color: var(--text-muted); font-size: 0.7rem; border-left: 1px solid var(--border); padding-left: 8px; margin-left: 4px; }
-        .clock-widget { font-size: 1.8rem; font-weight: 700; color: var(--text-primary); font-variant-numeric: tabular-nums; }
-        .clock-date { font-size: 0.75rem; color: var(--text-muted); }
-        .ticker-widget { display: flex; gap: 16px; flex-wrap: wrap; }
-        .ticker-item { display: flex; align-items: center; gap: 6px; background: var(--bg-tertiary); padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border); }
-        .ticker-item .symbol { font-weight: 600; color: var(--text-primary); font-size: 0.75rem; }
-        .ticker-item .price { color: var(--text-primary); font-weight: 500; }
-        .ticker-item .change { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: 600; }
-        .ticker-item .change.up { color: var(--accent-green); background: rgba(34, 197, 94, 0.15); }
-        .ticker-item .change.down { color: #ef4444; background: rgba(239, 68, 68, 0.15); }
-        .ticker-item.btc .symbol { color: #f7931a; }
-        .ticker-item.eth .symbol { color: #627eea; }
-        .widget-loading { color: var(--text-muted); font-size: 0.75rem; }
-        @media (max-width: 768px) {
-            .dashboard-bar { flex-direction: column; padding: 10px 16px; }
-            .dashboard-left, .dashboard-right { width: 100%; justify-content: center; }
-            .clock-widget { font-size: 1.4rem; }
-            .ticker-widget { justify-content: center; }
+            min-height: 100%;
         }
 
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-        header { padding: 40px 0 24px; text-align: center; }
-        .logo {
-            font-size: 2.2rem;
-            font-weight: 700;
-            background: var(--mesh-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 6px;
-            letter-spacing: -0.02em;
-        }
-        .tagline { color: var(--text-muted); font-size: 0.85rem; }
-        .tagline .mesh-badge {
-            display: inline-block;
-            background: var(--mesh-gradient);
-            color: white;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            margin-left: 8px;
-            vertical-align: middle;
+        body {
+            font-family: "IBM Plex Sans", "Fira Sans", "Noto Sans", sans-serif;
+            background:
+                radial-gradient(circle at 14% 12%, color-mix(in srgb, var(--accent-a) 20%, transparent), transparent 40%),
+                radial-gradient(circle at 82% 86%, color-mix(in srgb, var(--accent-b) 16%, transparent), transparent 44%),
+                linear-gradient(165deg, var(--bg-0), var(--bg-1) 36%, var(--bg-2));
+            color: var(--text-0);
+            line-height: 1.5;
+            letter-spacing: 0.01em;
+            overflow-x: hidden;
         }
 
-        /* Search Mode Tabs */
-        .search-modes {
-            display: flex;
-            justify-content: center;
-            gap: 6px;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-        }
-        .mode-tab {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 6px 14px;
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .mode-tab:hover { background: var(--bg-hover); color: var(--text-primary); }
-        .mode-tab.active {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: white;
-        }
-        .mode-tab.active.mesh { background: var(--accent-purple); border-color: var(--accent-purple); }
-        .mode-tab.active.smart { background: var(--accent-green); border-color: var(--accent-green); }
-        .mode-tab.active.quick { background: var(--accent-orange); border-color: var(--accent-orange); }
-
-        /* Search Box */
-        .search-wrapper { position: relative; margin-bottom: 20px; }
-        .search-box {
-            display: flex;
-            align-items: stretch;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-        .search-box:focus-within {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-        .search-box.mesh-active:focus-within {
-            border-color: var(--accent-purple);
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
-        }
-        .search-input {
-            flex: 1;
-            padding: 14px 18px;
-            background: transparent;
-            border: none;
-            color: var(--text-primary);
-            font-size: 1rem;
-            outline: none;
-        }
-        .search-input::placeholder { color: var(--text-muted); }
-        .search-btn {
-            padding: 14px 24px;
-            background: var(--accent);
-            border: none;
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 0.9rem;
-        }
-        .search-btn:hover { background: #2563eb; }
-        .search-btn.mesh { background: var(--accent-purple); }
-        .search-btn.mesh:hover { background: #7c3aed; }
-        .search-btn.smart { background: var(--accent-green); }
-        .search-btn.quick { background: var(--accent-orange); }
-        .search-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-        .search-hint {
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.75rem;
-            margin-top: 8px;
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0.15;
+            background-image:
+                linear-gradient(to right, transparent 0, transparent 49%, color-mix(in srgb, var(--line) 40%, transparent) 50%, transparent 51%, transparent 100%),
+                linear-gradient(to bottom, transparent 0, transparent 49%, color-mix(in srgb, var(--line) 28%, transparent) 50%, transparent 51%, transparent 100%);
+            background-size: 72px 72px;
+            mask: radial-gradient(circle at center, black 30%, transparent 100%);
         }
 
-        /* Main Content Layout */
-        .main-content {
+        .container {
+            width: min(1280px, calc(100vw - 32px));
+            margin: 18px auto 44px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .topbar {
             display: grid;
-            grid-template-columns: 280px 1fr;
-            gap: 24px;
-            margin-top: 20px;
-        }
-        @media (max-width: 900px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-            .knowledge-sidebar { order: -1; }
+            grid-template-columns: 1.5fr 1fr auto;
+            gap: 14px;
+            align-items: stretch;
+            margin-bottom: 16px;
+            animation: rise-in 0.7s ease-out both;
         }
 
-        /* Knowledge Sidebar (Wikipedia & Grokipedia) */
-        .knowledge-sidebar {
+        .brand,
+        .privacy-flag,
+        .top-actions {
+            border: 1px solid color-mix(in srgb, var(--line) 88%, white 12%);
+            border-radius: var(--radius);
+            background: linear-gradient(140deg, color-mix(in srgb, var(--panel) 92%, black), color-mix(in srgb, var(--panel) 72%, var(--bg-1)));
+            box-shadow: var(--shadow);
+            padding: 14px 16px;
+        }
+
+        .eyebrow {
+            color: var(--text-2);
+            font-size: 0.77rem;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            margin-bottom: 2px;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: "Sora", "Avenir Next", "Trebuchet MS", sans-serif;
+            letter-spacing: 0.02em;
+            font-weight: 640;
+        }
+
+        h1 {
+            font-size: clamp(1.3rem, 2.4vw, 1.9rem);
+            margin-bottom: 6px;
+        }
+
+        .subtitle {
+            color: var(--text-1);
+            font-size: 0.92rem;
+            max-width: 75ch;
+        }
+
+        .privacy-flag {
+            display: grid;
+            gap: 8px;
+        }
+
+        .privacy-flag strong {
+            color: var(--accent-c);
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+        }
+
+        .privacy-flag p {
+            color: var(--text-1);
+            font-size: 0.86rem;
+        }
+
+        .top-actions {
             display: flex;
             flex-direction: column;
+            gap: 10px;
+            justify-content: center;
+            min-width: 180px;
+        }
+
+        .btn,
+        .btn-quiet,
+        .chip,
+        select,
+        input,
+        textarea {
+            border-radius: 12px;
+            border: 1px solid color-mix(in srgb, var(--line) 84%, white 16%);
+            background: color-mix(in srgb, var(--bg-2) 75%, black 25%);
+            color: var(--text-0);
+            font: inherit;
+        }
+
+        .btn,
+        .btn-quiet {
+            cursor: pointer;
+            transition: transform 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+            font-weight: 620;
+            letter-spacing: 0.02em;
+        }
+
+        .btn {
+            background: linear-gradient(145deg, var(--accent-a), color-mix(in srgb, var(--accent-a) 36%, var(--accent-b)));
+            color: #061019;
+            border-color: color-mix(in srgb, var(--accent-a) 80%, var(--accent-b));
+            padding: 10px 14px;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            filter: saturate(1.05);
+        }
+
+        .btn-quiet {
+            padding: 8px 12px;
+            color: var(--text-1);
+            background: color-mix(in srgb, var(--bg-1) 70%, black);
+        }
+
+        .btn-quiet:hover {
+            border-color: color-mix(in srgb, var(--accent-a) 50%, var(--line));
+            color: var(--text-0);
+        }
+
+        .workspace {
+            display: grid;
+            grid-template-columns: 1.25fr 1fr;
             gap: 16px;
         }
-        .knowledge-section {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            overflow: hidden;
-        }
-        .knowledge-header {
-            padding: 12px 14px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border-bottom: 1px solid var(--border);
-        }
-        .knowledge-header.wikipedia {
-            background: linear-gradient(135deg, rgba(51, 102, 204, 0.15), rgba(51, 102, 204, 0.05));
-            color: var(--wiki-color);
-        }
-        .knowledge-header.grokipedia {
-            background: linear-gradient(135deg, rgba(0, 212, 170, 0.15), rgba(0, 212, 170, 0.05));
-            color: var(--grok-color);
-        }
-        .knowledge-count {
-            margin-left: auto;
-            background: rgba(255,255,255,0.1);
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 0.7rem;
-        }
-        .knowledge-list {
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        .knowledge-item {
-            display: block;
-            padding: 10px 14px;
-            border-bottom: 1px solid var(--border);
-            text-decoration: none;
-            color: var(--text-secondary);
-            transition: all 0.15s ease;
-        }
-        .knowledge-item:last-child { border-bottom: none; }
-        .knowledge-item:hover {
-            background: var(--bg-hover);
-            color: var(--text-primary);
-        }
-        .knowledge-item-title {
-            font-size: 0.85rem;
-            font-weight: 500;
-            margin-bottom: 2px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .knowledge-item-url {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            word-break: break-all;
-        }
-        .knowledge-item.wikipedia:hover .knowledge-item-title { color: var(--wiki-color); }
-        .knowledge-item.grokipedia:hover .knowledge-item-title { color: var(--grok-color); }
-        .knowledge-empty {
-            padding: 20px;
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.8rem;
+
+        .card {
+            border: 1px solid color-mix(in srgb, var(--line) 84%, white 16%);
+            border-radius: var(--radius);
+            background: linear-gradient(180deg, color-mix(in srgb, var(--panel) 88%, black), color-mix(in srgb, var(--panel) 62%, black));
+            box-shadow: var(--shadow);
+            padding: 16px;
+            animation: rise-in 0.55s ease both;
         }
 
-        /* Results Container */
-        .results-container {
-            min-height: 400px;
+        .stack {
+            display: grid;
+            gap: 16px;
         }
 
-        /* Stats Bar */
-        .stats-bar {
+        .section-title {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 16px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
             gap: 10px;
-        }
-        .stats-count { font-size: 0.85rem; color: var(--text-secondary); }
-        .stats-count strong { color: var(--text-primary); }
-        .stats-time { color: var(--text-muted); font-size: 0.8rem; }
-        .stats-sources {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-            width: 100%;
-            margin-top: 8px;
-        }
-        .source-badge {
-            padding: 3px 8px;
-            background: var(--bg-tertiary);
-            border-radius: 6px;
-            font-size: 0.7rem;
-            color: var(--text-muted);
-        }
-        .source-badge.active { color: var(--accent-green); background: rgba(34, 197, 94, 0.1); }
-        .source-badge.offline { color: #666; background: rgba(100, 100, 100, 0.2); text-decoration: line-through; }
-        .source-badge.primary { color: var(--accent-green); background: rgba(34, 197, 94, 0.2); border: 1px solid var(--accent-green); }
-        .provider-status { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem; }
-
-        /* AI Analysis Box */
-        .ai-analysis {
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(59, 130, 246, 0.1));
-            border: 1px solid rgba(139, 92, 246, 0.3);
-            border-radius: 12px;
-            padding: 14px;
-            margin-bottom: 16px;
-        }
-        .ai-analysis-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
             margin-bottom: 10px;
+        }
+
+        .section-title p {
+            color: var(--text-2);
+            font-size: 0.84rem;
+        }
+
+        .search-form {
+            display: grid;
+            gap: 12px;
+        }
+
+        .field {
+            display: grid;
+            gap: 7px;
+        }
+
+        label {
+            color: var(--text-1);
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.11em;
+        }
+
+        .query-input {
+            min-height: 90px;
+            resize: vertical;
+            padding: 11px 12px;
+            font-size: 1rem;
+            line-height: 1.45;
+        }
+
+        .query-input:focus,
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: 2px solid color-mix(in srgb, var(--accent-a) 62%, white 38%);
+            outline-offset: 2px;
+        }
+
+        .mode-row,
+        .task-row,
+        .chip-row {
+            display: flex;
             flex-wrap: wrap;
+            gap: 8px;
         }
-        .ai-analysis-header .icon { font-size: 1.1rem; }
-        .ai-analysis-header .title { font-weight: 600; color: var(--accent-purple); }
-        .ai-analysis-header .badge {
-            background: var(--accent-purple);
-            color: white;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.7rem;
+
+        .chip {
+            padding: 7px 11px;
+            cursor: pointer;
+            color: var(--text-1);
+            font-size: 0.84rem;
+            transition: border-color 0.16s ease, color 0.16s ease, background-color 0.16s ease;
         }
-        .ai-analysis-content {
+
+        .chip.active {
+            border-color: color-mix(in srgb, var(--accent-b) 48%, var(--accent-a));
+            color: var(--text-0);
+            background: color-mix(in srgb, var(--accent-a) 22%, var(--bg-2));
+        }
+
+        .control-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
         }
-        @media (max-width: 600px) {
-            .ai-analysis-content { grid-template-columns: 1fr; }
-        }
-        .ai-field-label { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 2px; }
-        .ai-field-value { font-size: 0.85rem; color: var(--text-secondary); }
-        .ai-field-value.highlight { color: var(--accent-green); font-weight: 500; }
-        .ai-keywords { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
-        .ai-keyword {
-            background: var(--bg-tertiary);
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            color: var(--accent);
+
+        .inline-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-2);
+            font-size: 0.84rem;
         }
 
-        /* Results Grid - Endless Scroll */
-        .results {
+        .inline-toggle input {
+            accent-color: var(--accent-a);
+        }
+
+        .search-actions {
             display: flex;
-            flex-direction: column;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .meta-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 10px;
         }
-        .result-card {
-            display: block;
-            padding: 14px 16px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
+
+        .mini-panel {
+            border: 1px solid color-mix(in srgb, var(--line) 84%, white 16%);
+            border-radius: 11px;
+            padding: 9px;
+            background: color-mix(in srgb, var(--bg-1) 88%, black);
+            display: grid;
+            gap: 8px;
+        }
+
+        .keyword-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            min-height: 30px;
+        }
+
+        .keyword-tag {
+            border: 1px solid color-mix(in srgb, var(--line) 80%, var(--accent-a));
+            border-radius: 999px;
+            padding: 3px 9px;
+            background: color-mix(in srgb, var(--accent-a) 16%, var(--bg-2));
+            color: var(--text-0);
+            font-size: 0.77rem;
+            letter-spacing: 0.02em;
+        }
+
+        .result-stats {
+            color: var(--text-1);
+            font-size: 0.84rem;
+            line-height: 1.45;
+        }
+
+        .status {
+            border: 1px dashed color-mix(in srgb, var(--line) 75%, var(--accent-a));
             border-radius: 10px;
-            text-decoration: none;
-            color: var(--text-primary);
-            transition: all 0.15s ease;
+            padding: 10px 11px;
+            color: var(--text-1);
+            background: color-mix(in srgb, var(--bg-1) 85%, black);
+            font-size: 0.88rem;
+            min-height: 44px;
         }
-        .result-card:hover {
-            background: var(--bg-hover);
-            border-color: var(--accent);
-            transform: translateX(4px);
+
+        .weights {
+            display: grid;
+            gap: 9px;
+            margin-bottom: 10px;
         }
-        .result-header {
+
+        .weight-row {
+            display: grid;
+            grid-template-columns: 120px 1fr 42px;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .weight-row span {
+            color: var(--text-1);
+            font-size: 0.84rem;
+        }
+
+        .weight-row input[type="range"] {
+            width: 100%;
+            accent-color: var(--accent-b);
+        }
+
+        .weight-row output {
+            color: var(--text-0);
+            font-variant-numeric: tabular-nums;
+            text-align: right;
+        }
+
+        .top-models {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            margin: 12px 0;
+        }
+
+        .model-card {
+            border: 1px solid color-mix(in srgb, var(--line) 78%, var(--accent-a));
+            border-radius: 13px;
+            background: linear-gradient(155deg, color-mix(in srgb, var(--bg-2) 78%, black), color-mix(in srgb, var(--bg-1) 70%, black));
+            padding: 11px;
+            display: grid;
+            gap: 6px;
+        }
+
+        .model-name {
+            font-weight: 650;
+            color: var(--text-0);
+            font-size: 0.9rem;
+            letter-spacing: 0.02em;
+        }
+
+        .model-meta {
+            color: var(--text-2);
+            font-size: 0.78rem;
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 6px;
             gap: 8px;
         }
-        .result-url {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: var(--text-muted);
-            font-size: 0.75rem;
-            overflow: hidden;
-            text-overflow: ellipsis;
+
+        .model-score {
+            color: var(--accent-c);
+            font-size: 0.87rem;
+            font-weight: 630;
+        }
+
+        .table-wrap {
+            max-height: 320px;
+            overflow: auto;
+            border: 1px solid color-mix(in srgb, var(--line) 88%, white 12%);
+            border-radius: 12px;
+            background: color-mix(in srgb, var(--bg-1) 85%, black);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.81rem;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 8px 9px;
+            border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
             white-space: nowrap;
         }
-        .result-badges { display: flex; gap: 6px; flex-shrink: 0; }
-        .result-source {
-            padding: 2px 8px;
-            background: var(--bg-tertiary);
-            border-radius: 4px;
-            font-size: 0.65rem;
-            color: var(--text-muted);
+
+        th {
+            position: sticky;
+            top: 0;
+            background: color-mix(in srgb, var(--bg-2) 88%, black);
+            color: var(--text-1);
+            z-index: 1;
+            font-size: 0.76rem;
+            letter-spacing: 0.07em;
             text-transform: uppercase;
         }
-        .result-source.wikipedia { background: rgba(51, 102, 204, 0.2); color: var(--wiki-color); }
-        .result-source.grokipedia { background: rgba(0, 212, 170, 0.2); color: var(--grok-color); }
-        .result-source.brave { background: rgba(255, 85, 0, 0.2); color: #FF5500; }
-        .mesh-score {
-            padding: 2px 8px;
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(236, 72, 153, 0.2));
-            border-radius: 4px;
-            font-size: 0.7rem;
-            color: var(--accent-purple);
-            font-weight: 600;
-        }
-        .result-card.mesh-ranked {
-            border-left: 3px solid var(--accent-purple);
-        }
-        .result-card.mesh-ranked:hover {
-            border-left-color: var(--accent-pink);
-        }
-        .result-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--accent);
-            margin-bottom: 4px;
-            line-height: 1.3;
-        }
-        .result-card:hover .result-title { text-decoration: underline; }
-        .result-snippet {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+
+        tr.top-ranked td {
+            background: color-mix(in srgb, var(--accent-a) 10%, transparent);
         }
 
-        /* Loading States */
-        .loading {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--text-muted);
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            margin-bottom: 12px;
         }
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid var(--border);
-            border-top-color: var(--accent);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 16px;
+
+        .feature-card {
+            border: 1px solid color-mix(in srgb, var(--line) 90%, var(--accent-b));
+            border-radius: 12px;
+            padding: 10px;
+            background: color-mix(in srgb, var(--bg-1) 84%, black);
+            display: grid;
+            gap: 5px;
         }
-        .spinner.mesh { border-top-color: var(--accent-purple); }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .loading-steps {
+
+        .feature-card strong {
+            font-size: 0.88rem;
+            letter-spacing: 0.02em;
+        }
+
+        .feature-card p {
+            color: var(--text-2);
+            font-size: 0.81rem;
+        }
+
+        .rules {
+            display: grid;
+            gap: 8px;
+            margin: 6px 0 10px;
+        }
+
+        .rule-item {
+            border-left: 3px solid color-mix(in srgb, var(--accent-b) 60%, var(--accent-a));
+            padding: 8px 9px;
+            background: color-mix(in srgb, var(--bg-1) 80%, black);
+            border-radius: 8px;
+            color: var(--text-1);
+            font-size: 0.84rem;
+        }
+
+        .launch-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .launch-grid button {
+            text-align: left;
+            padding: 9px 10px;
+            font-size: 0.84rem;
+        }
+
+        .result-list {
+            max-height: 440px;
+            overflow: auto;
+            border: 1px solid color-mix(in srgb, var(--line) 86%, white 14%);
+            border-radius: 12px;
+            background: color-mix(in srgb, var(--bg-1) 88%, black);
+            padding: 9px;
+            display: grid;
+            gap: 8px;
+        }
+
+        .result-item {
+            border: 1px solid color-mix(in srgb, var(--line) 80%, white 20%);
+            border-radius: 10px;
+            padding: 9px;
+            background: color-mix(in srgb, var(--bg-2) 70%, black);
+            display: grid;
+            gap: 5px;
+        }
+
+        .result-topline {
             display: flex;
-            flex-direction: column;
-            gap: 6px;
-            margin-top: 12px;
+            gap: 10px;
+            align-items: center;
+            color: var(--text-2);
+            font-size: 0.74rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .result-link {
+            color: var(--text-0);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 620;
+            letter-spacing: 0.01em;
+        }
+
+        .result-link:hover {
+            color: var(--accent-a);
+        }
+
+        .result-snippet {
+            color: var(--text-1);
+            font-size: 0.84rem;
+            line-height: 1.45;
+        }
+
+        .result-meta {
+            color: var(--text-2);
+            font-size: 0.76rem;
+        }
+
+        .tiny {
+            color: var(--text-2);
+            font-size: 0.78rem;
+        }
+
+        footer {
+            margin-top: 14px;
+            text-align: center;
+            color: var(--text-2);
             font-size: 0.8rem;
         }
-        .loading-step {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            color: var(--text-muted);
-        }
-        .loading-step.active { color: var(--accent-purple); }
-        .loading-step.done { color: var(--accent-green); }
-        .loading-step .check { color: var(--accent-green); }
 
-        /* Load More Button */
-        .load-more-container {
-            text-align: center;
-            padding: 20px;
-        }
-        .load-more-btn {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-            padding: 12px 32px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.2s ease;
-        }
-        .load-more-btn:hover {
-            background: var(--bg-hover);
-            color: var(--text-primary);
-            border-color: var(--accent);
-        }
-        .load-more-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* Infinite Scroll Sentinel */
-        .scroll-sentinel {
-            height: 1px;
-            width: 100%;
-        }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 60px 0;
-            color: var(--text-muted);
-        }
-        .empty-state svg { width: 64px; height: 64px; margin-bottom: 16px; opacity: 0.5; }
-        .empty-state h3 { color: var(--text-secondary); margin-bottom: 8px; }
-        .error-state {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            color: #f87171;
-        }
-
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 30px 0;
-            color: var(--text-muted);
+        kbd {
+            display: inline-block;
+            border: 1px solid color-mix(in srgb, var(--line) 70%, white 30%);
+            border-bottom-width: 2px;
+            border-radius: 6px;
+            padding: 1px 5px;
+            margin: 0 2px;
+            background: color-mix(in srgb, var(--bg-2) 85%, black);
+            color: var(--text-1);
             font-size: 0.75rem;
         }
-        footer a { color: var(--accent); text-decoration: none; }
 
-        /* Animations */
-        .fade-in {
-            animation: fadeIn 0.3s ease-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes rise-in {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: var(--bg-primary); }
-        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+        @media (max-width: 1080px) {
+            .topbar {
+                grid-template-columns: 1fr;
+            }
+
+            .workspace {
+                grid-template-columns: 1fr;
+            }
+
+            .top-models,
+            .feature-grid,
+            .launch-grid,
+            .meta-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 720px) {
+            .container {
+                width: min(1280px, calc(100vw - 16px));
+                margin-top: 10px;
+            }
+
+            .card,
+            .brand,
+            .privacy-flag,
+            .top-actions {
+                padding: 13px;
+            }
+
+            .control-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .weight-row {
+                grid-template-columns: 96px 1fr 38px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation: none !important;
+                transition: none !important;
+                scroll-behavior: auto !important;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
-        <!-- Dashboard Bar -->
-        <div class="dashboard-bar">
-            <div class="dashboard-left">
-                <div class="weather-widget" id="weatherWidget">
-                    <span class="icon">🌡️</span>
-                    <span class="widget-loading">Wetter laden...</span>
-                </div>
-            </div>
-            <div class="dashboard-center">
-                <div class="clock-widget" id="clockWidget">--:--</div>
-                <div class="clock-date" id="dateWidget">--</div>
-            </div>
-            <div class="dashboard-right">
-                <div class="ticker-widget" id="tickerWidget">
-                    <div class="ticker-item btc">
-                        <span class="symbol">₿ BTC</span>
-                        <span class="widget-loading">...</span>
-                    </div>
-                    <div class="ticker-item eth">
-                        <span class="symbol">Ξ ETH</span>
-                        <span class="widget-loading">...</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <h1 class="logo" style="margin-top: 24px;">AILinux Search</h1>
-        <p class="tagline">
-            Such schnell – oder such richtig.
-            <span class="mesh-badge">MeshAI</span>
-        </p>
-
+        <header class="topbar">
+            <section class="brand">
+                <p class="eyebrow">search.ailinux.me</p>
+                <h1>Private AI Search Console</h1>
+                <p class="subtitle">Professional high-contrast dark workspace for search, AI routing, and rapid answer workflows with zero on-site telemetry.</p>
+            </section>
+            <section class="privacy-flag">
+                <strong>No Usage Logs. No Search Logs.</strong>
+                <p>This site is designed to be 100% anonymity-friendly: search.ailinux.me does not log your usage or your search queries.</p>
+                <p class="tiny">Only destination engines receive requests when you actively submit a query.</p>
+            </section>
+            <section class="top-actions">
+                <button class="btn" id="searchNowTop" type="button">Run Search</button>
+                <button class="btn-quiet" id="shuffleTheme" type="button">Random New Style</button>
+                <button class="btn-quiet" id="copyRuleSet" type="button">Copy AI Rule Set</button>
+            </section>
         </header>
 
-        <main>
-            <!-- Search Modes -->
-            <div class="search-modes">
-                <button class="mode-tab active mesh" data-mode="mesh">
-                    <span class="mode-icon">🧠</span> MeshAI
-                </button>
-                <button class="mode-tab" data-mode="smart">
-                    <span class="mode-icon">✨</span> Smart
-                </button>
-                <button class="mode-tab" data-mode="quick">
-                    <span class="mode-icon">⚡</span> Quick
-                </button>
-                <button class="mode-tab" data-mode="keywords">
-                    <span class="mode-icon">🔤</span> Keywords
-                </button>
-            </div>
-
-            <!-- Search Box -->
-            <div class="search-wrapper">
-                <form id="searchForm" class="search-box mesh-active">
-                    <input type="text" class="search-input" id="searchInput"
-                           placeholder="Suche nach Wissen... (Stichworte oder natürliche Sprache)"
-                           autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"
-                           name="q" autofocus>
-                    <button type="submit" class="search-btn mesh" id="searchBtn">Suchen</button>
-                </form>
-                <p class="search-hint" id="searchHint">💡 SearXNG kombiniert 9 Suchmaschinen für optimale Ergebnisse</p>
-            </div>
-
-            <!-- Provider Info -->
-            <div style="text-align: center; margin-bottom: 20px;">
-                <span style="font-size: 0.75rem; color: var(--text-muted);">
-                    🌐 SearXNG (Google · Bing · DuckDuckGo · Brave · GitHub · arXiv) · 📚 Wikipedia · 🧠 Grokipedia · 📰 AILinux · 🌿 Wiby
-                </span>
-            </div>
-
-            <!-- Main Content -->
-            <div class="main-content" id="mainContent" style="display: none;">
-                <!-- Knowledge Sidebar -->
-                <aside class="knowledge-sidebar">
-                    <!-- Wikipedia Section -->
-                    <div class="knowledge-section" id="wikipediaSection">
-                        <div class="knowledge-header wikipedia">
-                            <span>📚</span> Listing Wikipedia
-                            <span class="knowledge-count" id="wikiCount">0</span>
-                        </div>
-                        <div class="knowledge-list" id="wikipediaList">
-                            <div class="knowledge-empty">Keine Wikipedia-Ergebnisse</div>
+        <main class="workspace">
+            <section class="stack">
+                <article class="card">
+                    <div class="section-title">
+                        <div>
+                            <h2>AI-Enhanced Web Search</h2>
+                            <p>Private-user and SME-friendly AI search with focused optimization.</p>
                         </div>
                     </div>
 
-                    <!-- Grokipedia Section -->
-                    <div class="knowledge-section" id="grokipediaSection">
-                        <div class="knowledge-header grokipedia">
-                            <span>🧠</span> Listing Grokipedia
-                            <span class="knowledge-count" id="grokCount">0</span>
+                    <form class="search-form" id="searchForm">
+                        <div class="field">
+                            <label for="queryInput">Query</label>
+                            <textarea id="queryInput" class="query-input" placeholder="Ask anything: compare models, debug code, summarize a topic, or find trusted sources."></textarea>
                         </div>
-                        <div class="knowledge-list" id="grokipediaList">
-                            <div class="knowledge-empty">Keine Grokipedia-Ergebnisse</div>
+
+                        <div class="field">
+                            <label>Search Mode</label>
+                            <div class="mode-row" id="modeRow">
+                                <button class="chip active" type="button" data-mode="web">Web</button>
+                                <button class="chip" type="button" data-mode="research">Research</button>
+                                <button class="chip" type="button" data-mode="code">Code</button>
+                                <button class="chip" type="button" data-mode="news">News</button>
+                                <button class="chip" type="button" data-mode="compare">Compare</button>
+                                <button class="chip" type="button" data-mode="local">Private-Min</button>
+                            </div>
+                        </div>
+
+                        <div class="control-grid">
+                            <div class="field">
+                                <label for="providerSelect">Search Provider</label>
+                                <select id="providerSelect">
+                                    <option value="searxng">AILinux SearXNG</option>
+                                    <option value="duckduckgo">DuckDuckGo</option>
+                                    <option value="brave">Brave Search</option>
+                                    <option value="wikipedia">Wikipedia</option>
+                                    <option value="arxiv">arXiv</option>
+                                    <option value="github">GitHub</option>
+                                    <option value="stackoverflow">Stack Overflow</option>
+                                    <option value="news">Google News</option>
+                                    <option value="scholar">Google Scholar</option>
+                                    <option value="youtube">YouTube</option>
+                                    <option value="reddit">Reddit</option>
+                                </select>
+                            </div>
+
+                            <div class="field">
+                                <label>Quick Intent</label>
+                                <div class="chip-row" id="intentRow">
+                                    <button class="chip" type="button" data-intent="summary">Summarize</button>
+                                    <button class="chip" type="button" data-intent="steps">Step-by-Step</button>
+                                    <button class="chip" type="button" data-intent="source">Trusted Sources</button>
+                                    <button class="chip" type="button" data-intent="benchmark">Benchmark</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="control-grid">
+                            <div class="field">
+                                <label>User Profile</label>
+                                <div class="chip-row" id="profileRow">
+                                    <button class="chip active" type="button" data-profile="private">Private User</button>
+                                    <button class="chip" type="button" data-profile="sme">SME Team</button>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <label for="rankLimitInput">AI Rank Limit (Max 150)</label>
+                                <input id="rankLimitInput" type="number" min="20" max="150" step="10" value="150">
+                                <p class="tiny">Direct-hit ranking is capped at 150 results per search.</p>
+                            </div>
+                        </div>
+
+                        <label class="inline-toggle" for="newTabToggle">
+                            <input id="newTabToggle" type="checkbox" checked>
+                            Open search results in a new tab
+                        </label>
+
+                        <div class="search-actions">
+                            <button class="btn" type="submit">Search</button>
+                            <button class="btn-quiet" type="button" id="analyzeRank">Analyze & Rank</button>
+                            <button class="btn-quiet" type="button" id="openTopSources">Open Top 3 Sources</button>
+                            <button class="btn-quiet" type="button" id="buildPrompt">Build AI Prompt</button>
+                        </div>
+                    </form>
+
+                    <div class="status" id="searchStatus">Ready. Tip: press <kbd>/</kbd> to focus the query input and <kbd>Ctrl</kbd> + <kbd>Enter</kbd> to search.</div>
+                </article>
+
+                <article class="card">
+                    <div class="section-title">
+                        <div>
+                            <h2>AI Ranked Direct Hits</h2>
+                            <p>Keyword-context optimization and ranking for up to 150 direct results.</p>
                         </div>
                     </div>
-                </aside>
 
-                <!-- Results -->
-                <div class="results-container" id="resultsContainer">
-                    <!-- Results will be rendered here -->
-                </div>
-            </div>
+                    <div class="meta-grid" style="margin-bottom: 10px;">
+                        <div class="mini-panel">
+                            <label>Optimized Keywords</label>
+                            <div class="keyword-tags" id="keywordTags"></div>
+                        </div>
+                        <div class="mini-panel">
+                            <label>Agentic AI Pool</label>
+                            <div class="result-stats" id="agentPoolMeta"></div>
+                        </div>
+                    </div>
 
-            <!-- Initial State -->
-            <div id="initialState">
-                <div class="empty-state">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <circle cx="11" cy="11" r="8"/>
-                        <path d="m21 21-4.35-4.35"/>
-                    </svg>
-                    <h3>Suche starten</h3>
-                    <p>Gib Stichworte oder eine Frage ein</p>
-                </div>
-            </div>
+                    <p class="tiny" id="resultStats">No ranking yet. Run Analyze & Rank or Search.</p>
+                    <div class="result-list" id="rankedResults"></div>
+                </article>
+
+                <article class="card">
+                    <div class="section-title">
+                        <div>
+                            <h2>Integrated Feature Upgrades</h2>
+                            <p>Balanced upgrades for privacy-first home users and small business teams.</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-grid" id="featureGrid"></div>
+
+                    <h3>Optimized AI Rule Set</h3>
+                    <div class="rules" id="rulesList"></div>
+                    <p class="tiny">Rule set drives ranking, fallback, and quick-answer behavior across all AI modes.</p>
+                </article>
+            </section>
+
+            <section class="stack">
+                <article class="card">
+                    <div class="section-title">
+                        <div>
+                            <h2>AI Model Router (25 Quick Models)</h2>
+                            <p>Agentic pool picks the 25 quickest models, then ranks by task fit and quality.</p>
+                        </div>
+                    </div>
+
+                    <div class="task-row" id="taskRow">
+                        <button class="chip active" type="button" data-task="quick">Quick Answers</button>
+                        <button class="chip" type="button" data-task="reasoning">Reasoning</button>
+                        <button class="chip" type="button" data-task="coding">Coding</button>
+                        <button class="chip" type="button" data-task="research">Research</button>
+                        <button class="chip" type="button" data-task="agent">Agent Tools</button>
+                    </div>
+
+                    <div class="weights" id="weightControls"></div>
+
+                    <div class="top-models" id="topModels"></div>
+
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Model</th>
+                                    <th>Provider</th>
+                                    <th>Task Fit</th>
+                                    <th>Latency</th>
+                                    <th>Quality</th>
+                                    <th>Privacy</th>
+                                    <th>Cost</th>
+                                    <th>Score</th>
+                                </tr>
+                            </thead>
+                            <tbody id="modelTableBody"></tbody>
+                        </table>
+                    </div>
+                </article>
+
+                <article class="card">
+                    <div class="section-title">
+                        <div>
+                            <h2>Quick AI Launchpad</h2>
+                            <p>One-click launches using your current query.</p>
+                        </div>
+                    </div>
+
+                    <div class="launch-grid" id="launchGrid"></div>
+                    <p class="tiny" style="margin-top: 10px;">For privacy: launches happen only after your click. No background requests are made by this page.</p>
+                </article>
+            </section>
         </main>
 
         <footer>
-            <p>© 2025 <a href="https://ailinux.me">AILinux.me</a> · Multi-Source Search mit MeshAI</p>
+            search.ailinux.me is built for readable, contrast-rich work sessions and fast AI-assisted search routing.
         </footer>
     </div>
 
     <script>
-        // =================================================================
-        // CONFIGURATION
-        // =================================================================
-        const API_BASE = '/api';  // Internal proxy to localhost:9000
-        // Fetch with timeout helper
-        async function fetchWithTimeout(url, options, timeoutMs = 30000) {
-            const controller = new AbortController();
-            const timeout = setTimeout(() => controller.abort(), timeoutMs);
-            try {
-                const response = await fetch(url, { ...options, signal: controller.signal });
-                clearTimeout(timeout);
-                return response;
-            } catch (e) {
-                clearTimeout(timeout);
-                throw e;
+        const MAX_RANK_LIMIT = 150;
+        const MIN_RANK_LIMIT = 20;
+        const AGENT_POOL_SIZE = 25;
+
+        const paletteSet = [
+            {
+                id: "night-cyan",
+                bg0: "#070a0d",
+                bg1: "#0c141a",
+                bg2: "#172229",
+                panel: "#131c24",
+                line: "#2d3f4e",
+                text0: "#f1f6fb",
+                text1: "#d2dce6",
+                text2: "#95a9bc",
+                accentA: "#58d3ff",
+                accentB: "#ffc857",
+                accentC: "#7ef2b8"
+            },
+            {
+                id: "carbon-amber",
+                bg0: "#0b0908",
+                bg1: "#17110f",
+                bg2: "#231a16",
+                panel: "#1b1513",
+                line: "#3f3228",
+                text0: "#f7f2ed",
+                text1: "#e4d5c7",
+                text2: "#b89f87",
+                accentA: "#ffb454",
+                accentB: "#66c7ff",
+                accentC: "#98f5a5"
+            },
+            {
+                id: "graphite-lime",
+                bg0: "#090b09",
+                bg1: "#121815",
+                bg2: "#1b2620",
+                panel: "#151f1a",
+                line: "#31433a",
+                text0: "#f2f8f4",
+                text1: "#d4e0d8",
+                text2: "#9cb1a2",
+                accentA: "#8de969",
+                accentB: "#67d9f8",
+                accentC: "#f5de7d"
+            },
+            {
+                id: "ink-coral",
+                bg0: "#0a090c",
+                bg1: "#13131c",
+                bg2: "#1c1d29",
+                panel: "#171824",
+                line: "#333850",
+                text0: "#f5f6fe",
+                text1: "#d9dbec",
+                text2: "#a0a7bf",
+                accentA: "#ff7f72",
+                accentB: "#6dd2ff",
+                accentC: "#9de77b"
             }
+        ];
+
+        const userProfiles = {
+            private: {
+                label: "Private User",
+                contextTokens: ["privacy", "simple", "direct", "trusted", "fast"],
+                weightPreset: { speed: 8, quality: 8, privacy: 10, cost: 7, context: 6 }
+            },
+            sme: {
+                label: "SME Team",
+                contextTokens: ["business", "practical", "implementation", "cost", "reliable"],
+                weightPreset: { speed: 8, quality: 9, privacy: 8, cost: 8, context: 8 }
+            }
+        };
+
+        const modeContexts = {
+            web: ["web", "direct"],
+            research: ["sources", "evidence", "publication"],
+            code: ["code", "implementation", "debug"],
+            news: ["latest", "timeline", "verified"],
+            compare: ["compare", "pros", "cons"],
+            local: ["private", "minimal", "tracking"]
+        };
+
+        const stopWords = new Set([
+            "a", "an", "and", "are", "as", "at", "be", "by", "for", "from", "how", "if", "in", "into",
+            "is", "it", "of", "on", "or", "that", "the", "to", "was", "were", "what", "when", "where",
+            "who", "why", "with", "you", "your", "der", "die", "das", "und", "oder", "mit", "ist", "im",
+            "in", "ein", "eine", "zu", "von", "auf", "nach", "bei", "ich", "du", "wir", "sie", "es"
+        ]);
+
+        const providers = {
+            searxng: {
+                label: "AILinux SearXNG Mesh",
+                makeUrl: q => `https://search.ailinux.me/searxng/search?q=${encodeURIComponent(q)}`,
+                makeApiUrl: q => `/searxng/search?format=json&q=${encodeURIComponent(q)}`
+            },
+            duckduckgo: {
+                label: "DuckDuckGo",
+                makeUrl: q => `https://duckduckgo.com/?q=${encodeURIComponent(q)}`
+            },
+            brave: {
+                label: "Brave Search",
+                makeUrl: q => `https://search.brave.com/search?q=${encodeURIComponent(q)}`
+            },
+            wikipedia: {
+                label: "Wikipedia",
+                makeUrl: q => `https://en.wikipedia.org/w/index.php?search=${encodeURIComponent(q)}`
+            },
+            arxiv: {
+                label: "arXiv",
+                makeUrl: q => `https://arxiv.org/search/?searchtype=all&query=${encodeURIComponent(q)}`
+            },
+            github: {
+                label: "GitHub",
+                makeUrl: q => `https://github.com/search?q=${encodeURIComponent(q)}`
+            },
+            stackoverflow: {
+                label: "Stack Overflow",
+                makeUrl: q => `https://stackoverflow.com/search?q=${encodeURIComponent(q)}`
+            },
+            news: {
+                label: "Google News",
+                makeUrl: q => `https://news.google.com/search?q=${encodeURIComponent(q)}`
+            },
+            scholar: {
+                label: "Google Scholar",
+                makeUrl: q => `https://scholar.google.com/scholar?q=${encodeURIComponent(q)}`
+            },
+            youtube: {
+                label: "YouTube",
+                makeUrl: q => `https://www.youtube.com/results?search_query=${encodeURIComponent(q)}`
+            },
+            reddit: {
+                label: "Reddit",
+                makeUrl: q => `https://www.reddit.com/search/?q=${encodeURIComponent(q)}`
+            }
+        };
+
+        const modeBoosters = {
+            web: q => q,
+            research: q => `${q} source backed explanation`,
+            code: q => `${q} production code and debugging`,
+            news: q => `${q} latest updates with dates`,
+            compare: q => `${q} compare options and tradeoffs`,
+            local: q => `${q} private and minimal tracking`
+        };
+
+        const intentPhrases = {
+            summary: "Give a short summary.",
+            steps: "Provide practical steps.",
+            source: "Use trusted sources.",
+            benchmark: "Include speed and quality checks."
+        };
+
+        const featureCards = [
+            {
+                title: "Dual Profile Optimization",
+                text: "One click switch between private user and SME search behavior."
+            },
+            {
+                title: "Keyword Context AI",
+                text: "Each query is enriched with context keywords before ranking and routing."
+            },
+            {
+                title: "Agentic Pool of 25",
+                text: "Always uses a 25-model quick-response pool for fast AI processing."
+            },
+            {
+                title: "Top 150 Direct Hits",
+                text: "Results are AI-ranked and capped at 150 direct hits for clarity."
+            },
+            {
+                title: "Mesh + Multi Search",
+                text: "Optimized for AILinux mesh search and other source providers."
+            },
+            {
+                title: "No-Telemetry UX",
+                text: "No usage logs, no query logs, and no hidden background tracking."
+            }
+        ];
+
+        const aiRuleSet = [
+            "Always activate a 25-model quick-response agentic pool.",
+            "Optimize query with mode + profile context keywords before searching.",
+            "Rank results by keyword match, source trust, relevance, and freshness.",
+            "Limit output to a maximum of 150 direct hits per query.",
+            "Prefer privacy-safe routing for private user profile queries.",
+            "Balance quality and cost for SME profile without over-complex tuning.",
+            "Use mesh SearXNG ranking first, then graceful fallback if unavailable.",
+            "Keep optimization understandable and not overly detail-heavy.",
+            "Store only local interface preferences, never query history.",
+            "Show ranking and routing decisions clearly to the user."
+        ];
+
+        const modelCatalog = [
+            { name: "GPT-4.1 mini", provider: "OpenAI", speed: 10, quality: 8, privacy: 7, cost: 7, context: 8, fit: { quick: 10, reasoning: 8, coding: 8, research: 7, agent: 9 } },
+            { name: "GPT-4o mini", provider: "OpenAI", speed: 10, quality: 8, privacy: 7, cost: 8, context: 8, fit: { quick: 10, reasoning: 7, coding: 8, research: 7, agent: 9 } },
+            { name: "GPT-4.1", provider: "OpenAI", speed: 8, quality: 10, privacy: 7, cost: 5, context: 10, fit: { quick: 7, reasoning: 10, coding: 10, research: 10, agent: 9 } },
+            { name: "o4-mini", provider: "OpenAI", speed: 9, quality: 9, privacy: 7, cost: 6, context: 9, fit: { quick: 9, reasoning: 9, coding: 9, research: 8, agent: 9 } },
+            { name: "o3", provider: "OpenAI", speed: 6, quality: 10, privacy: 7, cost: 3, context: 10, fit: { quick: 6, reasoning: 10, coding: 10, research: 10, agent: 8 } },
+            { name: "Claude 3.5 Haiku", provider: "Anthropic", speed: 10, quality: 8, privacy: 7, cost: 8, context: 8, fit: { quick: 10, reasoning: 8, coding: 8, research: 8, agent: 8 } },
+            { name: "Claude 3.7 Sonnet", provider: "Anthropic", speed: 8, quality: 10, privacy: 7, cost: 5, context: 10, fit: { quick: 8, reasoning: 10, coding: 10, research: 10, agent: 9 } },
+            { name: "Gemini 2.0 Flash", provider: "Google", speed: 10, quality: 8, privacy: 6, cost: 8, context: 9, fit: { quick: 10, reasoning: 8, coding: 8, research: 8, agent: 8 } },
+            { name: "Gemini 2.0 Flash-Lite", provider: "Google", speed: 10, quality: 7, privacy: 6, cost: 9, context: 7, fit: { quick: 10, reasoning: 7, coding: 7, research: 7, agent: 8 } },
+            { name: "Gemini 1.5 Pro", provider: "Google", speed: 7, quality: 9, privacy: 6, cost: 6, context: 10, fit: { quick: 7, reasoning: 9, coding: 8, research: 9, agent: 8 } },
+            { name: "Mistral Small 3", provider: "Mistral", speed: 9, quality: 8, privacy: 8, cost: 8, context: 8, fit: { quick: 9, reasoning: 8, coding: 8, research: 8, agent: 9 } },
+            { name: "Mistral Medium", provider: "Mistral", speed: 8, quality: 9, privacy: 8, cost: 6, context: 9, fit: { quick: 8, reasoning: 9, coding: 9, research: 9, agent: 9 } },
+            { name: "Llama 3.3 70B", provider: "Meta", speed: 7, quality: 8, privacy: 9, cost: 7, context: 8, fit: { quick: 7, reasoning: 8, coding: 8, research: 8, agent: 8 } },
+            { name: "Llama 3.1 8B", provider: "Meta", speed: 10, quality: 6, privacy: 9, cost: 10, context: 6, fit: { quick: 10, reasoning: 6, coding: 6, research: 6, agent: 8 } },
+            { name: "Qwen 2.5 72B", provider: "Alibaba", speed: 8, quality: 9, privacy: 8, cost: 7, context: 9, fit: { quick: 8, reasoning: 9, coding: 9, research: 9, agent: 8 } },
+            { name: "Qwen 2.5 14B", provider: "Alibaba", speed: 9, quality: 8, privacy: 8, cost: 8, context: 8, fit: { quick: 9, reasoning: 8, coding: 8, research: 8, agent: 9 } },
+            { name: "DeepSeek-V3", provider: "DeepSeek", speed: 9, quality: 9, privacy: 7, cost: 8, context: 9, fit: { quick: 9, reasoning: 9, coding: 9, research: 9, agent: 9 } },
+            { name: "DeepSeek-R1", provider: "DeepSeek", speed: 7, quality: 10, privacy: 7, cost: 6, context: 10, fit: { quick: 7, reasoning: 10, coding: 10, research: 10, agent: 9 } },
+            { name: "Phi-4", provider: "Microsoft", speed: 9, quality: 8, privacy: 8, cost: 9, context: 7, fit: { quick: 9, reasoning: 8, coding: 8, research: 7, agent: 8 } },
+            { name: "Grok-2", provider: "xAI", speed: 8, quality: 8, privacy: 6, cost: 6, context: 8, fit: { quick: 8, reasoning: 8, coding: 7, research: 8, agent: 7 } },
+            { name: "Grok-2 mini", provider: "xAI", speed: 9, quality: 7, privacy: 6, cost: 7, context: 7, fit: { quick: 9, reasoning: 7, coding: 7, research: 7, agent: 7 } },
+            { name: "Command R+", provider: "Cohere", speed: 8, quality: 9, privacy: 8, cost: 6, context: 10, fit: { quick: 8, reasoning: 9, coding: 8, research: 10, agent: 9 } },
+            { name: "Command R", provider: "Cohere", speed: 9, quality: 8, privacy: 8, cost: 7, context: 9, fit: { quick: 9, reasoning: 8, coding: 7, research: 9, agent: 8 } },
+            { name: "Mixtral 8x22B", provider: "Mistral", speed: 7, quality: 9, privacy: 8, cost: 6, context: 9, fit: { quick: 7, reasoning: 9, coding: 8, research: 9, agent: 8 } },
+            { name: "Gemma 2 27B", provider: "Google", speed: 8, quality: 7, privacy: 8, cost: 8, context: 7, fit: { quick: 8, reasoning: 7, coding: 7, research: 7, agent: 7 } },
+            { name: "Solar Pro 2", provider: "Upstage", speed: 8, quality: 8, privacy: 8, cost: 7, context: 8, fit: { quick: 8, reasoning: 8, coding: 8, research: 8, agent: 8 } },
+            { name: "Yi-Lightning", provider: "01.AI", speed: 9, quality: 8, privacy: 7, cost: 8, context: 8, fit: { quick: 9, reasoning: 8, coding: 8, research: 8, agent: 8 } },
+            { name: "Nous Hermes 3 70B", provider: "Nous", speed: 7, quality: 8, privacy: 9, cost: 7, context: 8, fit: { quick: 7, reasoning: 8, coding: 8, research: 8, agent: 8 } },
+            { name: "Perplexity Sonar", provider: "Perplexity", speed: 9, quality: 8, privacy: 6, cost: 7, context: 8, fit: { quick: 9, reasoning: 8, coding: 7, research: 9, agent: 8 } },
+            { name: "OpenRouter Auto", provider: "OpenRouter", speed: 9, quality: 8, privacy: 7, cost: 8, context: 8, fit: { quick: 9, reasoning: 8, coding: 8, research: 8, agent: 9 } }
+        ];
+
+        const launchTargets = [
+            { label: "Perplexity", url: q => `https://www.perplexity.ai/search?q=${encodeURIComponent(q)}` },
+            { label: "Phind", url: q => `https://www.phind.com/search?q=${encodeURIComponent(q)}` },
+            { label: "You.com", url: q => `https://you.com/search?q=${encodeURIComponent(q)}` },
+            { label: "ChatGPT", url: q => `https://chatgpt.com/?q=${encodeURIComponent(q)}` },
+            { label: "Claude", url: q => `https://claude.ai/new` },
+            { label: "Gemini", url: q => `https://gemini.google.com/app` },
+            { label: "Grok", url: q => `https://grok.com/` },
+            { label: "Poe", url: q => `https://poe.com/` }
+        ];
+
+        const weightDefaults = {
+            speed: 8,
+            quality: 9,
+            privacy: 9,
+            cost: 6,
+            context: 7
+        };
+
+        const state = {
+            mode: "web",
+            task: "quick",
+            intent: "",
+            profile: "private",
+            rankLimit: MAX_RANK_LIMIT,
+            weights: { ...weightDefaults },
+            lastRankedResults: []
+        };
+
+        const modeRow = document.getElementById("modeRow");
+        const taskRow = document.getElementById("taskRow");
+        const intentRow = document.getElementById("intentRow");
+        const profileRow = document.getElementById("profileRow");
+        const providerSelect = document.getElementById("providerSelect");
+        const rankLimitInput = document.getElementById("rankLimitInput");
+        const queryInput = document.getElementById("queryInput");
+        const searchStatus = document.getElementById("searchStatus");
+        const newTabToggle = document.getElementById("newTabToggle");
+        const topModels = document.getElementById("topModels");
+        const modelTableBody = document.getElementById("modelTableBody");
+        const weightControls = document.getElementById("weightControls");
+        const featureGrid = document.getElementById("featureGrid");
+        const rulesList = document.getElementById("rulesList");
+        const launchGrid = document.getElementById("launchGrid");
+        const keywordTags = document.getElementById("keywordTags");
+        const agentPoolMeta = document.getElementById("agentPoolMeta");
+        const resultStats = document.getElementById("resultStats");
+        const rankedResults = document.getElementById("rankedResults");
+
+        function clampRankLimit(value) {
+            if (!Number.isFinite(value)) {
+                return MAX_RANK_LIMIT;
+            }
+            return Math.min(MAX_RANK_LIMIT, Math.max(MIN_RANK_LIMIT, Math.round(value)));
         }
 
-        let currentMode = 'mesh';
-        let currentAnalysis = null;
-        let allResults = [];
-        let displayedResults = 0;
-        const RESULTS_PER_PAGE = 30;
-        let isLoading = false;
-        let hasMoreResults = true;
-
-        // DOM Elements
-        const searchForm = document.getElementById('searchForm');
-        const searchInput = document.getElementById('searchInput');
-        const searchBtn = document.getElementById('searchBtn');
-        const searchHint = document.getElementById('searchHint');
-        const mainContent = document.getElementById('mainContent');
-        const initialState = document.getElementById('initialState');
-        const resultsContainer = document.getElementById('resultsContainer');
-        const wikipediaList = document.getElementById('wikipediaList');
-        const grokipediaList = document.getElementById('grokipediaList');
-        const wikiCount = document.getElementById('wikiCount');
-        const grokCount = document.getElementById('grokCount');
-
-        // =================================================================
-        // INITIALIZATION
-        // =================================================================
-
-        function init() {
-            setupModeTabListeners();
-            setupInfiniteScroll();
-
-            // Load from URL params
-            const url = new URL(window.location);
-            const query = url.searchParams.get('q');
-            const mode = url.searchParams.get('mode') || 'mesh';
-
-            setSearchMode(mode);
-
-            if (query) {
-                searchInput.value = query;
-                performSearch(query);
-            }
+        function applyPalette(palette) {
+            const root = document.documentElement;
+            root.style.setProperty("--bg-0", palette.bg0);
+            root.style.setProperty("--bg-1", palette.bg1);
+            root.style.setProperty("--bg-2", palette.bg2);
+            root.style.setProperty("--panel", palette.panel);
+            root.style.setProperty("--line", palette.line);
+            root.style.setProperty("--text-0", palette.text0);
+            root.style.setProperty("--text-1", palette.text1);
+            root.style.setProperty("--text-2", palette.text2);
+            root.style.setProperty("--accent-a", palette.accentA);
+            root.style.setProperty("--accent-b", palette.accentB);
+            root.style.setProperty("--accent-c", palette.accentC);
+            localStorage.setItem("ailinux_palette", palette.id);
         }
 
-        // =================================================================
-        // MODE HANDLING
-        // =================================================================
+        function setStatus(message) {
+            searchStatus.textContent = message;
+        }
 
-        function setupModeTabListeners() {
-            document.querySelectorAll('.mode-tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    const mode = tab.dataset.mode;
-                    setSearchMode(mode);
-                });
+        function randomPalette() {
+            const choice = paletteSet[Math.floor(Math.random() * paletteSet.length)];
+            applyPalette(choice);
+            setStatus(`Style switched to ${choice.id}. Contrast remains high by default.`);
+        }
+
+        function updateChipGroup(container, valueAttr, selected) {
+            container.querySelectorAll(".chip").forEach(chip => {
+                chip.classList.toggle("active", chip.dataset[valueAttr] === selected);
             });
         }
 
-        function setSearchMode(mode) {
-            currentMode = mode;
+        function extractKeywords(query) {
+            return query
+                .toLowerCase()
+                .replace(/[^\p{L}\p{N}\s]/gu, " ")
+                .split(/\s+/)
+                .filter(token => token.length >= 3 && !stopWords.has(token))
+                .slice(0, 18);
+        }
 
-            document.querySelectorAll('.mode-tab').forEach(t => {
-                t.classList.remove('active', 'mesh', 'smart', 'quick');
-            });
-            const activeTab = document.querySelector(`.mode-tab[data-mode="${mode}"]`);
-            if (activeTab) {
-                activeTab.classList.add('active');
-                if (mode === 'mesh') activeTab.classList.add('mesh');
-                else if (mode === 'smart') activeTab.classList.add('smart');
-                else if (mode === 'quick') activeTab.classList.add('quick');
+        function buildQueryPackage(rawQuery) {
+            const normalized = rawQuery.trim().replace(/\s+/g, " ");
+            if (!normalized) {
+                return null;
             }
 
-            searchBtn.className = 'search-btn';
-            if (mode === 'mesh') searchBtn.classList.add('mesh');
-            else if (mode === 'smart') searchBtn.classList.add('smart');
-            else if (mode === 'quick') searchBtn.classList.add('quick');
+            let base = modeBoosters[state.mode] ? modeBoosters[state.mode](normalized) : normalized;
+            if (state.intent && intentPhrases[state.intent]) {
+                base = `${base}. ${intentPhrases[state.intent]}`;
+            }
 
-            searchForm.classList.toggle('mesh-active', mode === 'mesh');
+            const profileTokens = userProfiles[state.profile]?.contextTokens || [];
+            const modeTokens = modeContexts[state.mode] || [];
+            const coreKeywords = extractKeywords(normalized);
+            const contextKeywords = [...modeTokens, ...profileTokens];
+            const allKeywords = [...new Set([...coreKeywords, ...contextKeywords])].slice(0, 16);
+            const keywordTail = allKeywords.slice(0, 7).join(" ");
+            const optimizedQuery = `${base} ${keywordTail}`.trim().slice(0, 360);
 
-            const hints = {
-                mesh: '💡 SearXNG kombiniert 9 Suchmaschinen für optimale Ergebnisse',
-                smart: '💡 AI erweitert deine Query automatisch für bessere Ergebnisse',
-                quick: '⚡ Schnelle Suche ohne AI-Optimierung',
-                keywords: '🔤 Klassische Stichwort-Suche'
+            return {
+                rawQuery: normalized,
+                optimizedQuery,
+                keywords: allKeywords
             };
-            searchHint.textContent = hints[mode] || hints.mesh;
-
-            const url = new URL(window.location);
-            url.searchParams.set('mode', mode);
-            window.history.replaceState({}, '', url);
         }
 
-        // =================================================================
-        // INFINITE SCROLL
-        // =================================================================
+        function renderKeywordTags(keywords) {
+            keywordTags.innerHTML = "";
+            if (!keywords.length) {
+                const empty = document.createElement("span");
+                empty.className = "tiny";
+                empty.textContent = "Keywords appear here after query optimization.";
+                keywordTags.appendChild(empty);
+                return;
+            }
+            keywords.slice(0, 14).forEach(keyword => {
+                const tag = document.createElement("span");
+                tag.className = "keyword-tag";
+                tag.textContent = keyword;
+                keywordTags.appendChild(tag);
+            });
+        }
 
-        function setupInfiniteScroll() {
-            const observer = new IntersectionObserver((entries) => {
-                if (entries[0].isIntersecting && hasMoreResults && !isLoading) {
-                    loadMoreResults();
+        function openUrl(url) {
+            if (newTabToggle.checked) {
+                window.open(url, "_blank", "noopener,noreferrer");
+            } else {
+                window.location.href = url;
+            }
+        }
+
+        function makeWeightControl(key, value) {
+            const row = document.createElement("label");
+            row.className = "weight-row";
+            row.innerHTML = `<span>${key}</span><input type="range" min="1" max="10" value="${value}" data-weight="${key}"><output>${value}</output>`;
+            return row;
+        }
+
+        function renderWeightControls() {
+            weightControls.innerHTML = "";
+            Object.entries(state.weights).forEach(([key, value]) => {
+                const control = makeWeightControl(key, value);
+                weightControls.appendChild(control);
+            });
+        }
+
+        function normalizeWeights() {
+            const total = Object.values(state.weights).reduce((sum, val) => sum + val, 0);
+            return Object.fromEntries(
+                Object.entries(state.weights).map(([k, v]) => [k, v / total])
+            );
+        }
+
+        function scoreModels() {
+            const w = normalizeWeights();
+            return modelCatalog
+                .map(model => {
+                    const taskFit = model.fit[state.task] || 7;
+                    const costAdjusted = 11 - model.cost;
+                    const base =
+                        model.speed * w.speed +
+                        model.quality * w.quality +
+                        model.privacy * w.privacy +
+                        costAdjusted * w.cost +
+                        model.context * w.context;
+
+                    let bonus = taskFit * 0.28;
+                    if (state.mode === "local" && model.privacy >= 8) {
+                        bonus += 0.35;
+                    }
+                    if (state.profile === "private" && model.privacy >= 8) {
+                        bonus += 0.3;
+                    }
+                    if (state.profile === "sme" && model.quality >= 8 && model.cost <= 8) {
+                        bonus += 0.28;
+                    }
+                    if (state.mode === "code" && model.fit.coding >= 9) {
+                        bonus += 0.25;
+                    }
+                    if (state.mode === "research" && model.fit.research >= 9) {
+                        bonus += 0.25;
+                    }
+
+                    const score = base * 0.72 + bonus;
+                    return {
+                        ...model,
+                        taskFit,
+                        score: Number(score.toFixed(2))
+                    };
+                })
+                .sort((a, b) => b.score - a.score);
+        }
+
+        function buildAgenticPool() {
+            const ranked = scoreModels();
+            const quickest = [...ranked].sort((a, b) => {
+                const speedDiff = b.speed - a.speed;
+                if (speedDiff !== 0) {
+                    return speedDiff;
                 }
-            }, { threshold: 0.1 });
-
-            // Will observe sentinel when results are rendered
-            window.scrollObserver = observer;
+                const fitDiff = b.taskFit - a.taskFit;
+                if (fitDiff !== 0) {
+                    return fitDiff;
+                }
+                return b.score - a.score;
+            });
+            return quickest
+                .slice(0, AGENT_POOL_SIZE)
+                .sort((a, b) => b.score - a.score);
         }
 
-        function loadMoreResults() {
-            if (isLoading || !hasMoreResults) return;
+        function renderAgentPoolMeta(pool) {
+            const averageSpeed = (pool.reduce((sum, model) => sum + model.speed, 0) / pool.length).toFixed(2);
+            const providersUsed = [...new Set(pool.map(model => model.provider))].join(", ");
+            agentPoolMeta.textContent = `${pool.length} quick models active (${userProfiles[state.profile].label}). Avg speed ${averageSpeed}/10. Providers: ${providersUsed}.`;
+        }
 
-            const nextBatch = allResults.slice(displayedResults, displayedResults + RESULTS_PER_PAGE);
-            if (nextBatch.length === 0) {
-                hasMoreResults = false;
+        function renderModelRanking(poolInput) {
+            const pool = poolInput || buildAgenticPool();
+            topModels.innerHTML = "";
+            pool.slice(0, 6).forEach((model, index) => {
+                const card = document.createElement("div");
+                card.className = "model-card";
+                card.innerHTML = `
+                    <div class="model-name">${index + 1}. ${model.name}</div>
+                    <div class="model-meta"><span>${model.provider}</span><span>Task Fit ${model.taskFit}/10</span></div>
+                    <div class="model-score">Routing Score: ${model.score}</div>
+                `;
+                topModels.appendChild(card);
+            });
+
+            const fragment = document.createDocumentFragment();
+            pool.forEach((model, index) => {
+                const row = document.createElement("tr");
+                if (index < 5) {
+                    row.className = "top-ranked";
+                }
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${model.name}</td>
+                    <td>${model.provider}</td>
+                    <td>${model.taskFit}/10</td>
+                    <td>${model.speed}/10</td>
+                    <td>${model.quality}/10</td>
+                    <td>${model.privacy}/10</td>
+                    <td>${model.cost}/10</td>
+                    <td>${model.score}</td>
+                `;
+                fragment.appendChild(row);
+            });
+            modelTableBody.innerHTML = "";
+            modelTableBody.appendChild(fragment);
+            renderAgentPoolMeta(pool);
+            return pool;
+        }
+
+        function hostFromUrl(urlValue) {
+            try {
+                return new URL(urlValue).hostname.replace(/^www\./, "");
+            } catch (_error) {
+                return "";
+            }
+        }
+
+        function trustBoost(host) {
+            const trustMap = {
+                "wikipedia.org": 1.8,
+                "github.com": 1.8,
+                "arxiv.org": 2.2,
+                "stackoverflow.com": 1.7,
+                "reddit.com": 0.6,
+                "news.google.com": 1.2,
+                "scholar.google.com": 1.9
+            };
+            for (const [domain, boost] of Object.entries(trustMap)) {
+                if (host.endsWith(domain)) {
+                    return boost;
+                }
+            }
+            return 0.2;
+        }
+
+        function scoreSearchHit(hit, keywords, index) {
+            const title = String(hit.title || "");
+            const content = String(hit.content || hit.snippet || "");
+            const url = String(hit.url || "");
+            const host = hostFromUrl(url);
+            const corpus = `${title} ${content} ${url}`.toLowerCase();
+
+            const matches = keywords.reduce((sum, keyword) => sum + (corpus.includes(keyword.toLowerCase()) ? 1 : 0), 0);
+            const titleMatches = keywords.reduce((sum, keyword) => sum + (title.toLowerCase().includes(keyword.toLowerCase()) ? 1 : 0), 0);
+            const freshness = /\b2026\b|\b2025\b/.test(corpus) ? 0.7 : 0;
+            const trust = trustBoost(host);
+            const position = Math.max(0, 2.8 - index * 0.02);
+            const score = matches * 1.35 + titleMatches * 0.9 + trust + freshness + position;
+
+            return {
+                title: title || "Untitled result",
+                content: content || "No snippet available.",
+                url: url || providers.searxng.makeUrl(hit.query || ""),
+                host: host || "unknown",
+                engine: hit.engine || "mesh",
+                matchCount: matches,
+                aiScore: Number(score.toFixed(2))
+            };
+        }
+
+        function rankHits(rawHits, queryPackage) {
+            const ranked = rawHits
+                .map((hit, index) => scoreSearchHit(hit, queryPackage.keywords, index))
+                .sort((a, b) => b.aiScore - a.aiScore)
+                .slice(0, state.rankLimit);
+            return ranked;
+        }
+
+        function buildFallbackHits(queryPackage) {
+            return Object.values(providers).slice(0, 10).map((provider, index) => ({
+                title: `${provider.label} direct result for: ${queryPackage.rawQuery}`,
+                content: `Fallback direct source link generated because live mesh ranking endpoint was unavailable.`,
+                url: provider.makeUrl(queryPackage.optimizedQuery),
+                engine: "fallback",
+                query: queryPackage.optimizedQuery,
+                index
+            }));
+        }
+
+        async function fetchSearxHits(queryPackage) {
+            const provider = providers.searxng;
+            if (!provider.makeApiUrl) {
+                return [];
+            }
+
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 6500);
+            try {
+                const response = await fetch(provider.makeApiUrl(queryPackage.optimizedQuery), {
+                    signal: controller.signal,
+                    headers: { "Accept": "application/json" }
+                });
+                if (!response.ok) {
+                    return [];
+                }
+                const payload = await response.json();
+                if (!Array.isArray(payload.results)) {
+                    return [];
+                }
+                return payload.results;
+            } catch (_error) {
+                return [];
+            } finally {
+                clearTimeout(timeout);
+            }
+        }
+
+        function renderRankedResults(results, sourceLabel) {
+            rankedResults.innerHTML = "";
+            if (!results.length) {
+                const empty = document.createElement("div");
+                empty.className = "result-item";
+                empty.textContent = "No ranked hits yet. Run Analyze & Rank to generate direct-hit ordering.";
+                rankedResults.appendChild(empty);
+                resultStats.textContent = "No ranking yet.";
                 return;
             }
 
-            appendResults(nextBatch);
-            displayedResults += nextBatch.length;
-            hasMoreResults = displayedResults < allResults.length;
+            const fragment = document.createDocumentFragment();
+            results.forEach((item, index) => {
+                const row = document.createElement("article");
+                row.className = "result-item";
+
+                const topline = document.createElement("div");
+                topline.className = "result-topline";
+                topline.textContent = `#${index + 1}  score ${item.aiScore}  matches ${item.matchCount}  source ${item.engine}`;
+
+                const link = document.createElement("a");
+                link.className = "result-link";
+                link.href = item.url;
+                link.target = "_blank";
+                link.rel = "noopener noreferrer";
+                link.textContent = item.title;
+
+                const snippet = document.createElement("p");
+                snippet.className = "result-snippet";
+                snippet.textContent = item.content;
+
+                const meta = document.createElement("p");
+                meta.className = "result-meta";
+                meta.textContent = `Host: ${item.host}`;
+
+                row.appendChild(topline);
+                row.appendChild(link);
+                row.appendChild(snippet);
+                row.appendChild(meta);
+                fragment.appendChild(row);
+            });
+            rankedResults.appendChild(fragment);
+            resultStats.textContent = `${results.length} ranked hits shown (max ${state.rankLimit}). Source pipeline: ${sourceLabel}.`;
         }
 
-        // =================================================================
-        // MESHAI KEYWORD OPTIMIZER (für Wikipedia/Grokipedia)
-        // =================================================================
+        async function analyzeAndRank(queryPackage, pool) {
+            renderKeywordTags(queryPackage.keywords);
+            renderAgentPoolMeta(pool);
 
-        async function meshOptimizeForKnowledge(userInput) {
-            const models = [
-                'openrouter/meta-llama/llama-3.3-70b-instruct:free',
-                'openrouter/google/gemma-3-27b-it:free',
-                'openrouter/qwen/qwen3-235b-a22b:free'
-            ];
-
-            const systemPrompt = `Du bist ein Search Query Optimizer spezialisiert auf Knowledge-Quellen wie Wikipedia und Grokipedia.
-
-WICHTIG: Antworte NUR mit einem JSON-Objekt!
-
-Deine Aufgabe:
-1. Analysiere die Suchanfrage
-2. Extrahiere EINZELNE STICHWÖRTER die als Wikipedia/Grokipedia Artikeltitel existieren könnten
-3. Generiere optimierte Suchbegriffe für Knowledge-Bases
-4. Bei Prompts/Fragen: Konvertiere zu präzisen Stichwörtern
-
-Beispiele:
-- "Wie funktioniert künstliche Intelligenz?" → ["Künstliche Intelligenz", "Machine Learning", "Neuronales Netz"]
-- "linux server setup" → ["Linux", "Server", "Ubuntu", "Debian"]
-- "Was ist Python?" → ["Python", "Programmiersprache"]
-
-Output-Format (NUR JSON):
-{
-  "original": "<original>",
-  "optimized_query": "<beste allgemeine Suchquery>",
-  "wiki_keywords": ["keyword1", "keyword2", "keyword3"],
-  "grok_keywords": ["keyword1", "keyword2"],
-  "intent": "<intent>",
-  "confidence": 0.0-1.0,
-  "reasoning": "<kurze Erklärung>"
-}`;
-
-            for (const model of models) {
-                try {
-                    const response = await fetchWithTimeout(API_BASE, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            jsonrpc: '2.0',
-                            method: 'tools/call',
-                            params: {
-                                name: 'chat',
-                                arguments: {
-                                    model: model,
-                                    messages: [
-                                        { role: 'system', content: systemPrompt },
-                                        { role: 'user', content: userInput }
-                                    ],
-                                    options: { temperature: 0.2 }
-                                }
-                            },
-                            id: Date.now()
-                        })
-                    }, 6000);
-
-                    const data = await response.json();
-                    if (data.error) throw new Error(data.error.message);
-
-                    let llmResponse = '';
-                    if (data.result?.content?.[0]?.text) {
-                        llmResponse = data.result.content[0].text;
-                    } else if (data.result?.response) {
-                        llmResponse = data.result.response;
-                    } else if (typeof data.result === 'string') {
-                        llmResponse = data.result;
-                    }
-
-                    const jsonMatch = llmResponse.match(/\{[\s\S]*\}/);
-                    if (jsonMatch) {
-                        const result = JSON.parse(jsonMatch[0]);
-                        result.model_used = model;
-                        console.log(`MeshAI Knowledge Optimizer (${model}):`, result);
-                        return result;
-                    }
-                } catch (e) {
-                    console.warn(`Model ${model} failed:`, e.message);
-                    continue;
-                }
+            const searxHits = await fetchSearxHits(queryPackage);
+            if (searxHits.length) {
+                const ranked = rankHits(searxHits, queryPackage);
+                state.lastRankedResults = ranked;
+                renderRankedResults(ranked, "mesh searxng");
+                return ranked;
             }
 
-            // Fallback
-            const words = userInput.split(/\s+/).filter(w => w.length > 2);
-            return {
-                original: userInput,
-                optimized_query: userInput,
-                wiki_keywords: words.slice(0, 5),
-                grok_keywords: words.slice(0, 2),
-                intent: 'informational',
-                confidence: 0.3,
-                reasoning: 'Fallback - AI nicht verfügbar',
-                model_used: 'none'
-            };
+            const fallback = rankHits(buildFallbackHits(queryPackage), queryPackage);
+            state.lastRankedResults = fallback;
+            renderRankedResults(fallback, "fallback direct sources");
+            return fallback;
         }
 
-        // =================================================================
-        // MESHAI CONSENSUS RANKING
-        // =================================================================
-
-        async function meshRankResults(results, query) {
-            // Use multiple AI models to score results and create consensus ranking
-            const models = [
-                'openrouter/meta-llama/llama-3.3-70b-instruct:free',
-                'openrouter/google/gemma-3-27b-it:free',
-                'openrouter/qwen/qwen3-235b-a22b:free'
-            ];
-
-            // Prepare results summary for scoring
-            const resultSummaries = results.slice(0, 30).map((r, i) =>
-                `${i}: ${(r.title || '').substring(0, 50)} | ${(r.snippet || '').substring(0, 80)} | ${r.source}`
-            ).join('\n');
-
-            const scoringPrompt = `Bewerte diese Suchergebnisse für die Query "${query}" mit Relevanz-Scores (0-10).
-Antworte NUR mit einer Komma-separierten Liste von Zahlen in der gleichen Reihenfolge.
-Beispiel: 8,6,9,4,7,5,3,8,6,5
-
-Ergebnisse:
-${resultSummaries}
-
-Scores (nur Zahlen, komma-separiert):`;
-
-            const allScores = [];
-            const respondedModels = [];
-
-            // Query multiple models in parallel
-            const scorePromises = models.map(async (model) => {
-                try {
-                    const response = await fetchWithTimeout(API_BASE, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            jsonrpc: '2.0',
-                            method: 'tools/call',
-                            params: {
-                                name: 'chat',
-                                arguments: {
-                                    model: model,
-                                    messages: [
-                                        { role: 'user', content: scoringPrompt }
-                                    ],
-                                    options: { temperature: 0.1 }
-                                }
-                            },
-                            id: Date.now()
-                        })
-                    }, 6000);
-
-                    const data = await response.json();
-                    if (data.error) throw new Error(data.error.message);
-
-                    let llmResponse = '';
-                    if (data.result?.content?.[0]?.text) {
-                        llmResponse = data.result.content[0].text;
-                    } else if (data.result?.response) {
-                        llmResponse = data.result.response;
-                    } else if (typeof data.result === 'string') {
-                        llmResponse = data.result;
-                    }
-
-                    // Extract numbers from response
-                    const numbers = llmResponse.match(/\d+(?:\.\d+)?/g);
-                    if (numbers && numbers.length >= 5) {
-                        const scores = numbers.slice(0, 30).map(n => Math.min(10, parseFloat(n)));
-                        return { model, scores };
-                    }
-                } catch (e) {
-                    console.debug(`Ranking model ${model} failed:`, e);
-                }
-                return null;
-            });
-
-            // Wait for all with timeout
-            const timeoutPromise = new Promise(resolve => setTimeout(() => resolve([]), 10000));
-            const modelResults = await Promise.race([
-                Promise.all(scorePromises),
-                timeoutPromise
-            ]);
-
-            // Collect valid scores
-            modelResults.forEach(result => {
-                if (result && result.scores) {
-                    allScores.push(result.scores);
-                    respondedModels.push(result.model);
-                }
-            });
-
-            console.log(`MeshAI Ranking: ${respondedModels.length} models responded:`, respondedModels);
-
-            if (allScores.length === 0) {
-                // No models responded, return original order
-                return results;
+        async function runSearch(options = { openExternal: true }) {
+            const queryPackage = buildQueryPackage(queryInput.value);
+            if (!queryPackage) {
+                setStatus("Enter a query first.");
+                queryInput.focus();
+                return;
             }
 
-            // Calculate consensus scores (average across models)
-            const consensusScores = [];
-            for (let i = 0; i < Math.min(30, results.length); i++) {
-                const scoresForResult = allScores.map(s => s[i] || 5).filter(s => !isNaN(s));
-                const avgScore = scoresForResult.length > 0
-                    ? scoresForResult.reduce((a, b) => a + b, 0) / scoresForResult.length
-                    : 5;
-                consensusScores.push({
-                    index: i,
-                    score: avgScore,
-                    modelCount: scoresForResult.length
+            state.rankLimit = clampRankLimit(Number(rankLimitInput.value));
+            rankLimitInput.value = String(state.rankLimit);
+            localStorage.setItem("ailinux_rank_limit", String(state.rankLimit));
+
+            const pool = renderModelRanking();
+            setStatus(`Analyzing with 25 quick models for ${userProfiles[state.profile].label} profile...`);
+            const ranked = await analyzeAndRank(queryPackage, pool);
+
+            const provider = providers[providerSelect.value] || providers.searxng;
+            if (options.openExternal) {
+                openUrl(provider.makeUrl(queryPackage.optimizedQuery));
+            }
+
+            const topModels = pool.slice(0, 3).map(model => model.name).join(", ");
+            setStatus(`Ranked ${ranked.length} direct hits (max ${state.rankLimit}) with 25-model agent pool. Top agents: ${topModels}.`);
+        }
+
+        async function analyzeOnly() {
+            await runSearch({ openExternal: false });
+        }
+
+        function openTopSources() {
+            if (state.lastRankedResults.length) {
+                state.lastRankedResults.slice(0, 3).forEach(hit => {
+                    window.open(hit.url, "_blank", "noopener,noreferrer");
                 });
+                setStatus("Opened top 3 AI-ranked direct hits.");
+                return;
             }
 
-            // Sort by consensus score
-            consensusScores.sort((a, b) => b.score - a.score);
+            const queryPackage = buildQueryPackage(queryInput.value);
+            if (!queryPackage) {
+                setStatus("Enter a query before opening sources.");
+                queryInput.focus();
+                return;
+            }
 
-            // Apply scores and reorder results
-            const rankedResults = consensusScores.map(cs => ({
-                ...results[cs.index],
-                mesh_score: cs.score,
-                mesh_models: cs.modelCount
-            }));
-
-            // Add remaining unscored results
-            const scoredIndices = new Set(consensusScores.map(cs => cs.index));
-            results.forEach((r, i) => {
-                if (!scoredIndices.has(i)) {
-                    rankedResults.push(r);
-                }
-            });
-
-            return rankedResults;
+            const quick = [providers.searxng, providers.brave, providers.duckduckgo];
+            quick.forEach(provider => window.open(provider.makeUrl(queryPackage.optimizedQuery), "_blank", "noopener,noreferrer"));
+            setStatus("Opened top source engines. Run Analyze & Rank for AI direct-hit ranking.");
         }
 
-        // =================================================================
-        // SEARCH EXECUTION
-        // =================================================================
-
-        searchForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const query = searchInput.value.trim();
-            if (query) {
-                const url = new URL(window.location);
-                url.searchParams.set('q', query);
-                window.history.pushState({}, '', url);
-                await performSearch(query);
-            }
-        });
-
-        async function performSearch(query) {
-            searchBtn.disabled = true;
-            isLoading = true;
-            allResults = [];
-            displayedResults = 0;
-            hasMoreResults = true;
-            const startTime = performance.now();
-
-            initialState.style.display = 'none';
-            mainContent.style.display = 'grid';
-
-            showLoadingState();
-
+        async function copyText(content, successMsg) {
             try {
-                // Step 1: MeshAI Optimization für Knowledge-Keywords
-                updateLoadingStep('optimize');
-                const analysis = await meshOptimizeForKnowledge(query);
-                currentAnalysis = analysis;
-                updateLoadingStep('optimize', true);
-
-                // Step 2: Multi-Search mit maximalen Ergebnissen
-                updateLoadingStep('search');
-                const searchQuery = analysis?.optimized_query || query;
-
-                const response = await fetchWithTimeout(API_BASE, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        jsonrpc: '2.0',
-                        method: 'tools/call',
-                        params: {
-                            name: 'multi_search',
-                            arguments: {
-                                query: searchQuery,
-                                max_results: 350, // Maximum results for endless scroll
-                                lang: 'de'
-                            }
-                        },
-                        id: Date.now()
-                    })
-                }, 15000);
-
-                const data = await response.json();
-                if (data.error) throw new Error(data.error.message);
-                updateLoadingStep('search', true);
-
-                // Step 3: PARALLEL Wikipedia/Grokipedia searches - SPEED OPTIMIZED
-                updateLoadingStep('knowledge');
-                let additionalWiki = [];
-                let additionalGrok = [];
-
-                // Determine search terms: use wiki_keywords if available, otherwise original query
-                const searchTerms = (analysis && analysis.wiki_keywords && analysis.wiki_keywords.length > 0) 
-                    ? analysis.wiki_keywords.slice(0, 3) 
-                    : [query];
-
-                // PARALLEL: All knowledge searches at once
-                const knowledgePromises = [];
-
-                // Wikipedia DE - multiple keywords parallel
-                searchTerms.forEach(keyword => {
-                    knowledgePromises.push(
-                        fetchWithTimeout(
-                            `https://de.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(keyword)}&limit=10&format=json&origin=*`,
-                            {}, 5000
-                        ).then(r => r.json()).then(data => {
-                            if (data[1] && data[3]) {
-                                return data[1].map((title, i) => ({
-                                    title, snippet: data[2][i] || '', url: data[3][i], source: 'wikipedia_de'
-                                }));
-                            }
-                            return [];
-                        }).catch(() => [])
-                    );
-                });
-
-                // Wikipedia EN - first keyword
-                knowledgePromises.push(
-                    fetchWithTimeout(
-                        `https://en.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(searchTerms[0])}&limit=8&format=json&origin=*`,
-                        {}, 5000
-                    ).then(r => r.json()).then(data => {
-                        if (data[1] && data[3]) {
-                            return data[1].map((title, i) => ({
-                                title: title + ' (EN)', snippet: data[2][i] || '', url: data[3][i], source: 'wikipedia_en'
-                            }));
-                        }
-                        return [];
-                    }).catch(() => [])
-                );
-
-                // Grokipedia via site-search
-                knowledgePromises.push(
-                    fetchWithTimeout(API_BASE, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            jsonrpc: '2.0',
-                            method: 'tools/call',
-                            params: { name: 'quick_smart_search', arguments: { 
-                                query: searchTerms[0] + ' site:grokipedia.com', 
-                                max_results: 15
-                            }},
-                            id: Date.now()
-                        })
-                    }, 8000).then(r => r.json()).then(data => {
-                        if (data.result?.content?.[0]?.text) {
-                            const parsed = JSON.parse(data.result.content[0].text);
-                            return (parsed.results || []).filter(r => r.url?.includes('grokipedia.com')).map(r => ({...r, source: 'grokipedia'}));
-                        }
-                        return [];
-                    }).catch(() => [])
-                );
-
-                // Wait for ALL knowledge searches in parallel
-                const knowledgeResults = await Promise.all(knowledgePromises);
-                
-                // Merge results, deduplicate by URL
-                const seenUrls = new Set();
-                knowledgeResults.flat().forEach(r => {
-                    if (r.url && !seenUrls.has(r.url)) {
-                        seenUrls.add(r.url);
-                        if (r.source === 'grokipedia') {
-                            additionalGrok.push(r);
-                        } else {
-                            additionalWiki.push(r);
-                        }
-                    }
-                });
-
-                updateLoadingStep('knowledge', true);
-
-                // Parse main results
-                let result = parseSearchResult(data);
-                allResults = result.results || [];
-
-                // Merge additional knowledge results
-                const existingUrls = new Set(allResults.map(r => r.url));
-                additionalWiki.forEach(r => {
-                    if (!existingUrls.has(r.url)) {
-                        allResults.push(r);
-                        existingUrls.add(r.url);
-                    }
-                });
-                additionalGrok.forEach(r => {
-                    if (!existingUrls.has(r.url)) {
-                        allResults.push(r);
-                        existingUrls.add(r.url);
-                    }
-                });
-
-                // Step 4: MeshAI Ranking - Multiple AI models score results
-                if (currentMode === 'mesh' && allResults.length > 0) {
-                    // Skip ranking if mobile or low-end device
-                    const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
-                    const skipRanking = isMobile && allResults.length > 30;
-                    if (skipRanking) {
-                        console.log('Skipping MeshAI ranking on mobile for better performance');
-                        updateLoadingStep('ranking', true);
-                    } else {
-                    updateLoadingStep('ranking');
-                    try {
-                        const rankedResults = await meshRankResults(allResults.slice(0, 50), query);
-                        // Merge ranked results with unranked
-                        const rankedUrls = new Set(rankedResults.map(r => r.url));
-                        const unranked = allResults.filter(r => !rankedUrls.has(r.url));
-                        allResults = [...rankedResults, ...unranked];
-                    } catch (e) {
-                        console.warn('MeshAI Ranking failed, using default order:', e);
-                    }
-                    updateLoadingStep('ranking', true);
-                    }
-                }
-
-                const elapsed = ((performance.now() - startTime) / 1000).toFixed(2);
-                result.analysis = analysis;
-                result.results = allResults;
-                result.total = allResults.length;
-                result.mode = currentMode;
-
-                renderResults(result, elapsed, query);
-
-            } catch (error) {
-                console.error('Search error:', error);
-                resultsContainer.innerHTML = `
-                    <div class="error-state fade-in">
-                        <p><strong>Fehler bei der Suche</strong></p>
-                        <p>${escapeHtml(error.message)}</p>
-                    </div>
-                `;
-            } finally {
-                searchBtn.disabled = false;
-                isLoading = false;
+                await navigator.clipboard.writeText(content);
+                setStatus(successMsg);
+            } catch (_error) {
+                setStatus("Clipboard write failed. The payload is printed in browser console.");
+                console.log(content);
             }
         }
 
-        function showLoadingState() {
-            const rankingStep = currentMode === 'mesh' ? `
-                        <div class="loading-step" id="step-ranking">
-                            <span class="check">○</span> MeshAI Consensus Ranking...
-                        </div>` : '';
-
-            resultsContainer.innerHTML = `
-                <div class="loading fade-in">
-                    <div class="spinner mesh"></div>
-                    <p>Suche wird vorbereitet...</p>
-                    <div class="loading-steps">
-                        <div class="loading-step active" id="step-optimize">
-                            <span class="check">○</span> MeshAI optimiert Keywords...
-                        </div>
-                        <div class="loading-step" id="step-search">
-                            <span class="check">○</span> Suche in 7 Quellen...
-                        </div>
-                        <div class="loading-step" id="step-knowledge">
-                            <span class="check">○</span> Wikipedia & Grokipedia erweitern...
-                        </div>
-                        ${rankingStep}
-                    </div>
-                </div>
-            `;
-            wikipediaList.innerHTML = '<div class="knowledge-empty">Lädt...</div>';
-            grokipediaList.innerHTML = '<div class="knowledge-empty">Lädt...</div>';
-            wikiCount.textContent = '...';
-            grokCount.textContent = '...';
+        function buildPrompt() {
+            const queryPackage = buildQueryPackage(queryInput.value);
+            if (!queryPackage) {
+                setStatus("Enter a query to build a structured AI prompt.");
+                queryInput.focus();
+                return;
+            }
+            const pool = buildAgenticPool();
+            const prompt = [
+                `Objective: ${queryPackage.rawQuery}`,
+                `Optimized Query: ${queryPackage.optimizedQuery}`,
+                `Keywords: ${queryPackage.keywords.join(", ")}`,
+                `User Profile: ${state.profile}`,
+                `Mode: ${state.mode}`,
+                `Task Profile: ${state.task}`,
+                `Rank Limit: ${state.rankLimit}`,
+                `Agentic Pool: ${pool.slice(0, 5).map(model => `${model.name} (${model.provider})`).join("; ")}`,
+                "Output: concise answer, top direct hits, source confidence, next actions."
+            ].join("\n");
+            copyText(prompt, "AI prompt copied with keyword + context optimization.");
         }
 
-        function updateLoadingStep(stepId, done = false) {
-            const step = document.getElementById(`step-${stepId}`);
-            if (step) {
-                if (done) {
-                    step.classList.remove('active');
-                    step.classList.add('done');
-                    step.querySelector('.check').textContent = '✓';
-                } else {
-                    step.classList.add('active');
+        function renderFeatureCards() {
+            featureGrid.innerHTML = "";
+            featureCards.forEach(item => {
+                const card = document.createElement("div");
+                card.className = "feature-card";
+                card.innerHTML = `<strong>${item.title}</strong><p>${item.text}</p>`;
+                featureGrid.appendChild(card);
+            });
+        }
+
+        function renderRuleSet() {
+            rulesList.innerHTML = "";
+            aiRuleSet.forEach((rule, index) => {
+                const item = document.createElement("div");
+                item.className = "rule-item";
+                item.textContent = `${index + 1}. ${rule}`;
+                rulesList.appendChild(item);
+            });
+        }
+
+        function renderLaunchpad() {
+            launchGrid.innerHTML = "";
+            launchTargets.forEach(target => {
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.className = "btn-quiet";
+                btn.textContent = `Open ${target.label}`;
+                btn.addEventListener("click", () => {
+                    const queryPackage = buildQueryPackage(queryInput.value || "AI search");
+                    const routedQuery = queryPackage ? queryPackage.optimizedQuery : "AI search";
+                    window.open(target.url(routedQuery), "_blank", "noopener,noreferrer");
+                    setStatus(`Opened ${target.label} with optimized query context.`);
+                });
+                launchGrid.appendChild(btn);
+            });
+        }
+
+        function applyProfile(profileId, options = { silent: false }) {
+            if (!userProfiles[profileId]) {
+                return;
+            }
+            state.profile = profileId;
+            state.weights = { ...state.weights, ...userProfiles[profileId].weightPreset };
+            localStorage.setItem("ailinux_profile", profileId);
+            updateChipGroup(profileRow, "profile", state.profile);
+            renderWeightControls();
+            renderModelRanking();
+            if (!options.silent) {
+                setStatus(`Profile switched to ${userProfiles[profileId].label}.`);
+            }
+        }
+
+        function restoreState() {
+            const storedPalette = localStorage.getItem("ailinux_palette");
+            const palette = paletteSet.find(item => item.id === storedPalette) || paletteSet[Math.floor(Math.random() * paletteSet.length)];
+            applyPalette(palette);
+
+            const storedProfile = localStorage.getItem("ailinux_profile");
+            if (storedProfile && userProfiles[storedProfile]) {
+                state.profile = storedProfile;
+            }
+            state.weights = { ...weightDefaults, ...userProfiles[state.profile].weightPreset };
+
+            const storedWeights = localStorage.getItem("ailinux_weights");
+            if (storedWeights) {
+                try {
+                    const parsed = JSON.parse(storedWeights);
+                    Object.keys(state.weights).forEach(key => {
+                        if (Number.isFinite(parsed[key])) {
+                            state.weights[key] = Math.min(10, Math.max(1, parsed[key]));
+                        }
+                    });
+                } catch (_error) {
+                    localStorage.removeItem("ailinux_weights");
                 }
             }
-            const nextStep = step?.nextElementSibling;
-            if (nextStep && done) nextStep.classList.add('active');
+
+            const storedRankLimit = Number(localStorage.getItem("ailinux_rank_limit"));
+            if (Number.isFinite(storedRankLimit)) {
+                state.rankLimit = clampRankLimit(storedRankLimit);
+            }
+            rankLimitInput.value = String(state.rankLimit);
+
+            const params = new URLSearchParams(window.location.search);
+            const q = params.get("q");
+            const mode = params.get("mode");
+            const provider = params.get("provider");
+            const profile = params.get("profile");
+            const limit = Number(params.get("limit"));
+
+            if (q) {
+                queryInput.value = q;
+            }
+            if (mode && modeBoosters[mode]) {
+                state.mode = mode;
+            }
+            if (provider && providers[provider]) {
+                providerSelect.value = provider;
+            }
+            if (profile && userProfiles[profile]) {
+                state.profile = profile;
+                state.weights = { ...state.weights, ...userProfiles[profile].weightPreset };
+            }
+            if (Number.isFinite(limit)) {
+                state.rankLimit = clampRankLimit(limit);
+                rankLimitInput.value = String(state.rankLimit);
+            }
+
+            updateChipGroup(modeRow, "mode", state.mode);
+            updateChipGroup(taskRow, "task", state.task);
+            updateChipGroup(intentRow, "intent", state.intent);
+            updateChipGroup(profileRow, "profile", state.profile);
         }
 
-        function parseSearchResult(data) {
-            let result;
-            if (data.result?.content?.[0]?.text) {
-                result = JSON.parse(data.result.content[0].text);
-            } else if (data.result) {
-                result = data.result;
-            } else {
-                throw new Error('Unexpected response format');
-            }
-            return result;
+        function wireEvents() {
+            modeRow.addEventListener("click", event => {
+                const btn = event.target.closest("button[data-mode]");
+                if (!btn) {
+                    return;
+                }
+                state.mode = btn.dataset.mode;
+                updateChipGroup(modeRow, "mode", state.mode);
+                renderModelRanking();
+                setStatus(`Mode switched to ${state.mode}.`);
+            });
+
+            taskRow.addEventListener("click", event => {
+                const btn = event.target.closest("button[data-task]");
+                if (!btn) {
+                    return;
+                }
+                state.task = btn.dataset.task;
+                updateChipGroup(taskRow, "task", state.task);
+                renderModelRanking();
+                setStatus(`Task profile changed to ${state.task}.`);
+            });
+
+            intentRow.addEventListener("click", event => {
+                const btn = event.target.closest("button[data-intent]");
+                if (!btn) {
+                    return;
+                }
+                state.intent = state.intent === btn.dataset.intent ? "" : btn.dataset.intent;
+                updateChipGroup(intentRow, "intent", state.intent);
+                setStatus(state.intent ? `Intent booster enabled: ${state.intent}.` : "Intent booster cleared.");
+            });
+
+            profileRow.addEventListener("click", event => {
+                const btn = event.target.closest("button[data-profile]");
+                if (!btn) {
+                    return;
+                }
+                applyProfile(btn.dataset.profile);
+            });
+
+            rankLimitInput.addEventListener("input", event => {
+                state.rankLimit = clampRankLimit(Number(event.target.value));
+                rankLimitInput.value = String(state.rankLimit);
+                localStorage.setItem("ailinux_rank_limit", String(state.rankLimit));
+                if (state.lastRankedResults.length) {
+                    const sliced = state.lastRankedResults.slice(0, state.rankLimit);
+                    renderRankedResults(sliced, "cached ranking");
+                }
+            });
+
+            weightControls.addEventListener("input", event => {
+                const slider = event.target.closest("input[type=range][data-weight]");
+                if (!slider) {
+                    return;
+                }
+                const key = slider.dataset.weight;
+                const value = Number(slider.value);
+                state.weights[key] = value;
+                slider.nextElementSibling.textContent = String(value);
+                localStorage.setItem("ailinux_weights", JSON.stringify(state.weights));
+                renderModelRanking();
+            });
+
+            document.getElementById("searchForm").addEventListener("submit", event => {
+                event.preventDefault();
+                runSearch({ openExternal: true });
+            });
+
+            document.getElementById("searchNowTop").addEventListener("click", () => runSearch({ openExternal: true }));
+            document.getElementById("analyzeRank").addEventListener("click", analyzeOnly);
+            document.getElementById("openTopSources").addEventListener("click", openTopSources);
+            document.getElementById("buildPrompt").addEventListener("click", buildPrompt);
+            document.getElementById("shuffleTheme").addEventListener("click", randomPalette);
+            document.getElementById("copyRuleSet").addEventListener("click", () => {
+                const payload = {
+                    generated_at: new Date().toISOString(),
+                    profile: state.profile,
+                    mode: state.mode,
+                    task: state.task,
+                    rank_limit: state.rankLimit,
+                    agent_pool_size: AGENT_POOL_SIZE,
+                    weights: state.weights,
+                    rules: aiRuleSet
+                };
+                copyText(JSON.stringify(payload, null, 2), "AI rule set copied as JSON.");
+            });
+
+            document.addEventListener("keydown", event => {
+                if (event.key === "/" && document.activeElement !== queryInput) {
+                    event.preventDefault();
+                    queryInput.focus();
+                }
+                if (event.key === "Enter" && event.ctrlKey) {
+                    event.preventDefault();
+                    runSearch({ openExternal: true });
+                }
+                if (event.key.toLowerCase() === "r" && event.altKey) {
+                    event.preventDefault();
+                    randomPalette();
+                }
+                if (event.key.toLowerCase() === "a" && event.altKey) {
+                    event.preventDefault();
+                    analyzeOnly();
+                }
+            });
         }
 
-        // =================================================================
-        // RESULTS RENDERING
-        // =================================================================
+        function init() {
+            renderFeatureCards();
+            renderRuleSet();
+            renderLaunchpad();
+            restoreState();
+            renderWeightControls();
+            renderModelRanking();
+            renderKeywordTags([]);
+            renderRankedResults([], "none");
+            wireEvents();
+            setStatus("Ready. Private + SME optimized search with 25 quick AI agents and top-150 ranking.");
 
-        function renderResults(data, elapsed, searchQuery) {
-            const results = data.results || [];
-            const count = results.length;
-            const sources = data.sources || {};
-            const analysis = data.analysis || currentAnalysis;
-
-            // Separate Wikipedia and Grokipedia results (by URL pattern OR source)
-            const wikiResults = results.filter(r => 
-                r.source === 'wikipedia' || 
-                r.source === 'wikipedia_de' ||
-                r.source === 'wikipedia_en' ||
-                (r.url && r.url.includes('wikipedia.org'))
-            );
-            const grokResults = results.filter(r => 
-                r.source === 'grokipedia' || 
-                (r.url && r.url.includes('grokipedia.com'))
-            );
-            const otherResults = results.filter(r => 
-                !r.url?.includes('wikipedia.org') && 
-                !r.url?.includes('grokipedia.com') &&
-                r.source !== 'wikipedia' && 
-                r.source !== 'wikipedia_de' &&
-                r.source !== 'wikipedia_en' &&
-                r.source !== 'grokipedia'
-            );
-
-            // Render Knowledge Sidebar
-            renderKnowledgeSidebar(wikiResults, grokResults);
-
-            // Build main results HTML
-            let html = '';
-
-            // AI Analysis Box
-            if (analysis && analysis.original) {
-                html += `
-                    <div class="ai-analysis fade-in">
-                        <div class="ai-analysis-header">
-                            <span class="icon">🧠</span>
-                            <span class="title">MeshAI Query Optimizer</span>
-                            <span class="badge">${analysis.intent || 'analysis'}</span>
-                            ${analysis.confidence ? `<span style="color: var(--text-muted); font-size: 0.75rem;">${Math.round(analysis.confidence * 100)}%</span>` : ''}
-                        </div>
-                        <div class="ai-analysis-content">
-                            <div class="ai-field">
-                                <div class="ai-field-label">Original</div>
-                                <div class="ai-field-value">${escapeHtml(analysis.original)}</div>
-                            </div>
-                            <div class="ai-field">
-                                <div class="ai-field-label">Optimiert</div>
-                                <div class="ai-field-value highlight">${escapeHtml(analysis.optimized_query || analysis.original)}</div>
-                            </div>
-                            ${analysis.wiki_keywords?.length ? `
-                                <div class="ai-field" style="grid-column: span 2;">
-                                    <div class="ai-field-label">Wikipedia/Grokipedia Keywords</div>
-                                    <div class="ai-keywords">
-                                        ${analysis.wiki_keywords.map(t => `<span class="ai-keyword">${escapeHtml(t)}</span>`).join('')}
-                                    </div>
-                                </div>
-                            ` : ''}
-                        </div>
-                        ${analysis.reasoning ? `<div style="margin-top: 8px; font-size: 0.75rem; color: var(--text-muted);">💡 ${escapeHtml(analysis.reasoning)}</div>` : ''}
-                        ${analysis.model_used ? `<div style="font-size: 0.65rem; color: var(--text-muted);">Model: ${analysis.model_used}</div>` : ''}
-                    </div>
-                `;
-            }
-
-            // Stats Bar
-            html += `
-                <div class="stats-bar fade-in">
-                    <span class="stats-count">
-                        <strong>${count}</strong> Ergebnisse insgesamt
-                    </span>
-                    <span class="stats-time">${elapsed}s</span>
-                    <div class="stats-sources">
-                        ${Object.entries(sources).map(([src, cnt]) => `
-                            <span class="source-badge ${cnt > 0 ? (src === "searxng" ? "primary" : "active") : "offline"}">${getSourceIcon(src)} ${src} (${cnt})</span>
-                        `).join('')}
-                    </div>
-                </div>
-            `;
-
-            // Results container
-            html += '<div class="results" id="resultsGrid"></div>';
-            html += '<div class="scroll-sentinel" id="scrollSentinel"></div>';
-
-            resultsContainer.innerHTML = html;
-
-            // Store all non-knowledge results for infinite scroll
-            allResults = otherResults;
-            displayedResults = 0;
-            hasMoreResults = allResults.length > 0;
-
-            // Load first batch
-            loadMoreResults();
-
-            // Setup scroll observer
-            const sentinel = document.getElementById('scrollSentinel');
-            if (sentinel && window.scrollObserver) {
-                window.scrollObserver.observe(sentinel);
-            }
-        }
-
-        function renderKnowledgeSidebar(wikiResults, grokResults) {
-            // Wikipedia
-            wikiCount.textContent = wikiResults.length;
-            if (wikiResults.length > 0) {
-                wikipediaList.innerHTML = wikiResults.map(r => `
-                    <a href="${escapeHtml(r.url)}" target="_blank" rel="noopener" class="knowledge-item wikipedia">
-                        <div class="knowledge-item-title">
-                            <span>📚</span>
-                            ${escapeHtml(r.title?.replace('📚 ', '') || 'Wikipedia')}
-                        </div>
-                        <div class="knowledge-item-url">${escapeHtml(r.url)}</div>
-                    </a>
-                `).join('');
-            } else {
-                wikipediaList.innerHTML = '<div class="knowledge-empty">Keine Wikipedia-Ergebnisse für diese Suche</div>';
-            }
-
-            // Grokipedia
-            grokCount.textContent = grokResults.length;
-            if (grokResults.length > 0) {
-                grokipediaList.innerHTML = grokResults.map(r => `
-                    <a href="${escapeHtml(r.url)}" target="_blank" rel="noopener" class="knowledge-item grokipedia">
-                        <div class="knowledge-item-title">
-                            <span>🧠</span>
-                            ${escapeHtml(r.title?.replace('🤖 ', '').replace(' (Grokipedia)', '') || 'Grokipedia')}
-                        </div>
-                        <div class="knowledge-item-url">${escapeHtml(r.url)}</div>
-                    </a>
-                `).join('');
-            } else {
-                grokipediaList.innerHTML = '<div class="knowledge-empty">Keine Grokipedia-Ergebnisse für diese Suche</div>';
+            const params = new URLSearchParams(window.location.search);
+            if (params.get("auto") === "1" && queryInput.value.trim()) {
+                setTimeout(() => runSearch({ openExternal: true }), 100);
             }
         }
 
-        function appendResults(batch) {
-            const grid = document.getElementById('resultsGrid');
-            if (!grid) return;
-
-            const html = batch.map((result, i) => {
-                const url = result.url || '#';
-                const title = result.title || 'Ohne Titel';
-                const snippet = result.snippet || result.body || result.description || '';
-                const source = (result.source || 'unknown').split(':')[0];
-                const displayUrl = url.replace(/^https?:\/\//, '').substring(0, 60);
-                const meshScore = result.mesh_score;
-                const meshModels = result.mesh_models;
-                const hasMeshScore = meshScore !== undefined;
-
-                const sourceClass = source === 'wikipedia' ? 'wikipedia' : source === 'grokipedia' ? 'grokipedia' : '';
-                const meshClass = hasMeshScore ? 'mesh-ranked' : '';
-
-                return `
-                    <a href="${escapeHtml(url)}" target="_blank" rel="noopener"
-                       class="result-card fade-in ${meshClass}" style="animation-delay: ${i * 0.02}s">
-                        <div class="result-header">
-                            <div class="result-url">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="12" cy="12" r="10"/>
-                                    <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                                </svg>
-                                ${escapeHtml(displayUrl)}
-                            </div>
-                            <div class="result-badges">
-                                ${hasMeshScore ? `<span class="mesh-score" title="${meshModels} AI models">🧠 ${meshScore.toFixed(1)}</span>` : ''}
-                                <span class="result-source ${sourceClass}">${getSourceIcon(source)} ${source}</span>
-                            </div>
-                        </div>
-                        <h2 class="result-title">${escapeHtml(title)}</h2>
-                        <p class="result-snippet">${escapeHtml(snippet)}</p>
-                    </a>
-                `;
-            }).join('');
-
-            grid.insertAdjacentHTML('beforeend', html);
-        }
-
-        function getSourceIcon(source) {
-            const icons = {
-                'bing': '🔷',
-                'brave': '🦁',
-                'google': '🔍',
-                'searxng': '🌐',
-                'duckduckgo': '🦆',
-                'wikipedia': '📚',
-                'grokipedia': '🧠',
-                'ailinux_news': '📰',
-                'wiby': '🌿'
-            };
-            return icons[source] || '🔗';
-        }
-
-        // =================================================================
-        // UTILITIES
-        // =================================================================
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text || '';
-            return div.innerHTML;
-        }
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (e.key === '/' && document.activeElement !== searchInput) {
-                e.preventDefault();
-                searchInput.focus();
-            }
-            if (e.key === 'Escape') {
-                searchInput.blur();
-            }
-            if (e.ctrlKey && ['1', '2', '3', '4'].includes(e.key)) {
-                e.preventDefault();
-                const modes = ['mesh', 'smart', 'quick', 'keywords'];
-                setSearchMode(modes[parseInt(e.key) - 1]);
-            }
-        });
-
-        // Initialize
         init();
     </script>
-
-    <script>
-    (function() {
-        function updateClock() {
-            const now = new Date();
-            const clockEl = document.getElementById("clockWidget");
-            const dateEl = document.getElementById("dateWidget");
-            if (clockEl) clockEl.textContent = now.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
-            if (dateEl) dateEl.textContent = now.toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
-        }
-        updateClock();
-        setInterval(updateClock, 1000);
-        
-        async function updateWeather() {
-            const widget = document.getElementById("weatherWidget");
-            if (!widget) return;
-            try {
-                const geoResponse = await fetch("https://ipapi.co/json/");
-                const geoData = await geoResponse.json();
-                const city = geoData.city || "Germany";
-                const weatherResponse = await fetch("https://wttr.in/" + encodeURIComponent(city) + "?format=j1");
-                const weatherData = await weatherResponse.json();
-                const current = weatherData.current_condition[0];
-                const icons = {"113":"☀️","116":"⛅","119":"☁️","122":"☁️","176":"🌧️","200":"⛈️","227":"❄️","230":"❄️","248":"🌫️","296":"🌧️","302":"🌧️","308":"🌧️","326":"🌨️","332":"❄️","338":"❄️"};
-                const icon = icons[current.weatherCode] || "🌡️";
-                const condition = current.lang_de && current.lang_de[0] ? current.lang_de[0].value : current.weatherDesc[0].value;
-                widget.innerHTML = "<span class=\"icon\">" + icon + "</span><span class=\"temp\">" + current.temp_C + "°C</span><span class=\"condition\">" + condition + "</span><span class=\"location\">📍 " + city + "</span>";
-            } catch (e) {
-                widget.innerHTML = "<span class=\"icon\">🌡️</span><span class=\"temp\">--°C</span>";
-            }
-        }
-        updateWeather();
-        setInterval(updateWeather, 600000);
-        
-        async function updateTicker() {
-            const widget = document.getElementById("tickerWidget");
-            if (!widget) return;
-            try {
-                const response = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=eur&include_24hr_change=true");
-                const data = await response.json();
-                const fmt = (p) => p >= 1000 ? p.toLocaleString("de-DE", {maximumFractionDigits:0}) : p.toLocaleString("de-DE", {maximumFractionDigits:2});
-                const fmtC = (c) => (c >= 0 ? "+" : "") + c.toFixed(1) + "%";
-                widget.innerHTML = "<div class=\"ticker-item btc\"><span class=\"symbol\">₿ BTC</span><span class=\"price\">€" + fmt(data.bitcoin.eur) + "</span><span class=\"change " + (data.bitcoin.eur_24h_change >= 0 ? "up" : "down") + "\">" + fmtC(data.bitcoin.eur_24h_change) + "</span></div><div class=\"ticker-item eth\"><span class=\"symbol\">Ξ ETH</span><span class=\"price\">€" + fmt(data.ethereum.eur) + "</span><span class=\"change " + (data.ethereum.eur_24h_change >= 0 ? "up" : "down") + "\">" + fmtC(data.ethereum.eur_24h_change) + "</span></div>";
-            } catch (e) {
-                widget.innerHTML = "<div class=\"ticker-item btc\"><span class=\"symbol\">₿ BTC</span><span class=\"price\">--</span></div><div class=\"ticker-item eth\"><span class=\"symbol\">Ξ ETH</span><span class=\"price\">--</span></div>";
-            }
-        }
-        updateTicker();
-        setInterval(updateTicker, 60000);
-    })();
-    </script>
-
 </body>
 </html>

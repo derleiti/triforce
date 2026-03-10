@@ -27,6 +27,7 @@ from datetime import datetime
 from enum import Enum
 
 from ..services.user_tiers import tier_service, UserTier
+from ..services.subscription import tier_to_plan, PlanType, subscription_service
 from ..routes.client_auth import decode_jwt_token
 
 logger = logging.getLogger("ailinux.mcp_node")
@@ -327,21 +328,28 @@ async def websocket_connect(
     # User-ID: aus Token, Query-Param oder Client-ID
     resolved_user_id = payload.get("sub") or user_id or client_id
     
-    # Tier: aus Query-Param oder Service abfragen
-    # Map client tier names to UserTier enum
+    # Tier: PRIORITAET -> JWT role claim > Query-Param > Vault-Lookup
+    # JWT role ist die einzige verlässliche Quelle (kommt vom Login-Server)
     tier_mapping = {
         "free": UserTier.GUEST,
         "guest": UserTier.GUEST,
         "registered": UserTier.REGISTERED,
         "pro": UserTier.PRO,
-        "enterprise": UserTier.ENTERPRISE
+        "enterprise": UserTier.ENTERPRISE,
+        "admin": UserTier.ENTERPRISE,
+        "subscriber": UserTier.ENTERPRISE,
     }
-    if tier and tier.lower() in tier_mapping:
-        resolved_tier = tier_mapping[tier.lower()]
+    jwt_role = payload.get("role") or payload.get("tier") or ""
+    tier_source = jwt_role or tier or ""
+    if tier_source and tier_source.lower() in tier_mapping:
+        resolved_tier = tier_mapping[tier_source.lower()]
     else:
         resolved_tier = tier_service.get_user_tier(resolved_user_id)
     
-    logger.info(f"MCP Node connecting: session={session_id}, machine={machine_id}, user={resolved_user_id}, tier={resolved_tier.value}, version={client_version}")
+    # Tier -> Plan mappen (DEMO/SUBSCRIBER)
+    resolved_plan = tier_to_plan(resolved_tier.value)
+
+    logger.info(f"MCP Node connecting: session={session_id}, machine={machine_id}, user={resolved_user_id}, tier={resolved_tier.value}, plan={resolved_plan.value}, version={client_version}")
 
     # Client-Verbindung registrieren
     connection = ClientConnection(client_id, resolved_user_id, websocket, resolved_tier)
@@ -354,7 +362,7 @@ async def websocket_connect(
 
     logger.info(f"Client connected: {client_id} ({resolved_tier.value})")
 
-    # Willkommensnachricht mit verfügbaren Tools
+    # Willkommensnachricht: plan (DEMO/SUBSCRIBER) + tier (legacy) fuer Abwaertskompatibilitaet
     await websocket.send_json({
         "jsonrpc": "2.0",
         "method": "connected",
@@ -362,7 +370,10 @@ async def websocket_connect(
             "client_id": client_id,
             "session_id": session_id,
             "user_id": resolved_user_id,
+            "plan": resolved_plan.value,
+            "is_paid": resolved_plan == PlanType.SUBSCRIBER,
             "tier": resolved_tier.value,
+            "context_limit": subscription_service.get_context_limit(resolved_plan),
             "available_tools": list(CLIENT_SIDE_TOOLS.keys()),
             "server_version": "2.80.0"
         }

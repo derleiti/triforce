@@ -321,8 +321,7 @@ import hashlib
 import base64
 
 FEDERATION_PSK = os.getenv("FEDERATION_SECRET", "ailinux-federation-2025")
-logger.info(f"FEDERATION_PSK initialized: {FEDERATION_PSK[:20] if FEDERATION_PSK else "EMPTY"}...")
-logger.info(f"FEDERATION_PSK loaded: {FEDERATION_PSK[:20] if FEDERATION_PSK else "EMPTY"}...")
+logger.info(f"FEDERATION_PSK loaded: {'set (' + FEDERATION_PSK[:12] + '...)' if FEDERATION_PSK and FEDERATION_PSK != 'ailinux-federation-2025' else 'USING DEFAULT (insecure!)'}")
 
 # Federation Node Configuration
 # vpn_ip: WireGuard VPN address for direct communication
@@ -338,13 +337,15 @@ FEDERATION_NODES = {
         "url": "http://10.10.0.3:9100",
         "vpn_ip": "10.10.0.3",
         "port": 9100,
-        "role": "node"
+        "role": "node",
+        "user": "zombie"
     },
     "zombie-pc": {
         "url": "http://10.10.0.2:9000",
         "vpn_ip": "10.10.0.2",
         "port": 9000,
-        "role": "node"
+        "role": "node",
+        "user": "zombie"
     }
 }
 
@@ -397,7 +398,13 @@ def verify_signed_request(request: dict, secret: str = None, max_age: int = 300)
         if hmac.compare_digest(signature, expected):
             return data  # Gib das entpackte data dict zurück
         else:
-            logger.warning(f"Signed request: signature mismatch\n  secret={secret[:20]}...\n  expected={expected}\n  got={signature}\n  data={str(data)[:100]}...")
+            node_id = data.get("node_id", "unknown") if isinstance(data, dict) else "unknown"
+            logger.warning(
+                f"Signed request: signature mismatch from node={node_id} "
+                f"(psk_hint={len(secret)}b, data_keys="
+                f"{list(data.keys()) if isinstance(data, dict) else type(data).__name__})"
+                # SECURITY: PSK/HMAC material removed from logs (CWE-312 / CodeQL py/clear-text-logging-sensitive-data)
+            )
             return None
     except Exception as e:
         logger.error(f"Signed request verification error: {e}")

@@ -310,7 +310,8 @@ class UserTierService:
             "cli_agents": cfg.cli_agents,
             "priority_queue": cfg.priority_queue,
             "daily_token_limit": cfg.daily_token_limit,
-            "ollama_unlimited": cfg.ollama_unlimited
+            "ollama_unlimited": cfg.ollama_unlimited,
+            "support_level": cfg.support_level,  # none|community|email|priority
         }
     
     def get_all_tiers(self) -> List[Dict]:

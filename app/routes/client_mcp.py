@@ -14,6 +14,7 @@ import logging
 from pathlib import Path
 
 from ..services.user_tiers import tier_service, UserTier
+from ..services.subscription import subscription_service, PlanType, tier_to_plan, DEMO_BLOCKED_TOOLS
 from ..services.user_system.user_manager import user_manager
 from ..routes.client_auth import decode_jwt_token, CLIENT_REGISTRY
 
@@ -66,13 +67,11 @@ ADMIN_TOOLS = ["*"]
 
 
 def get_tools_for_tier(tier: UserTier) -> List[str]:
-    """Hole erlaubte Tools für ein Tier"""
-    if tier == UserTier.FREE:
+    """Hole erlaubte Tools fuer ein Tier (neu: DEMO/SUBSCRIBER Mapping)"""
+    plan = tier_to_plan(tier.value if hasattr(tier, "value") else str(tier))
+    if plan == PlanType.DEMO:
         return FREE_TIER_TOOLS
-    elif tier == UserTier.PRO:
-        return PRO_TIER_TOOLS
-    else:
-        return ENTERPRISE_TIER_TOOLS
+    return ENTERPRISE_TIER_TOOLS  # Subscriber bekommt alles
 
 
 def is_tool_allowed_for_client(client_id: str, tool_name: str, user_tier: UserTier) -> bool:
@@ -110,9 +109,9 @@ def is_tool_allowed_for_client(client_id: str, tool_name: str, user_tier: UserTi
             # Wenn allowed definiert aber Tool nicht drin -> nicht erlaubt
             return False
 
-    # Fallback: Tier-basierte Berechtigung
-    tier_tools = get_tools_for_tier(user_tier)
-    return tool_name in tier_tools
+    # Fallback: Subscription-basierte Berechtigung
+    plan = tier_to_plan(user_tier.value if hasattr(user_tier, "value") else str(user_tier))
+    return subscription_service.is_tool_allowed(tool_name, plan)
 
 
 def check_path_allowed(path: str, allowed_paths: List[str]) -> bool:
@@ -260,11 +259,23 @@ async def call_mcp_tool(
     """
     tool_name = request.tool
     params = request.params
+    user_id = ctx["user_id"]
+    plan = tier_to_plan(ctx["tier"].value if hasattr(ctx["tier"], "value") else str(ctx["tier"]))
+
+    # Quota prüfen
+    if not subscription_service.is_allowed(user_id, plan, estimated_tokens=100):
+        quota = subscription_service.get_quota(user_id, plan)
+        raise HTTPException(429, {
+            "error": "weekly_quota_exhausted",
+            "plan": plan.value,
+            "remaining": quota.remaining,
+            "reset_iso": quota.to_api()["reset_iso"],
+        })
 
     # Tool-Berechtigung prüfen
     if not is_tool_allowed_for_client(ctx["client_id"], tool_name, ctx["tier"]):
         logger.warning(f"Tool denied: {tool_name} for {ctx['client_id']} ({ctx['tier'].value})")
-        raise HTTPException(403, f"Tool '{tool_name}' nicht erlaubt für {ctx['tier'].value} Tier")
+        raise HTTPException(403, f"Tool '{tool_name}' nicht erlaubt fuer {plan.value} Plan")
 
     # Dateisystem-Tools: Pfad prüfen
     if tool_name in ["file_read", "file_write", "file_list", "codebase_edit"]:
@@ -293,6 +304,9 @@ async def call_mcp_tool(
         result = await handler(params)
 
         logger.info(f"Tool called: {tool_name} by {ctx['client_id']}")
+
+        # Quota verbuchen (geschaetzt 200 tokens pro Tool-Call)
+        subscription_service.consume(user_id, plan, tokens=200)
 
         return MCPToolResponse(
             success=True,
@@ -443,3 +457,15 @@ async def grant_bash_access(
             }
 
     raise HTTPException(404, "Device nicht gefunden")
+
+
+# =============================================================================
+# Quota Endpoint
+# =============================================================================
+
+@router.get("/quota")
+async def get_quota_status(ctx: Dict = Depends(get_client_context)):
+    """Zeigt aktuellen Quota-Stand der Woche."""
+    plan = tier_to_plan(ctx["tier"].value if hasattr(ctx["tier"], "value") else str(ctx["tier"]))
+    quota = subscription_service.get_quota(ctx["user_id"], plan)
+    return quota.to_api()

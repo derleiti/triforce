@@ -154,11 +154,11 @@ AGENT_TOOLS: List[Dict[str, Any]] = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "agent": {"type": "string", "description": "Agent ID: claude, codex, gemini, opencode"},
+                "agent_id": {"type": "string", "description": "Agent ID: claude-mcp, codex-mcp, gemini-mcp, opencode-mcp"},
                 "message": {"type": "string", "description": "Message to send"},
                 "timeout": {"type": "integer", "description": "Timeout seconds (default: 120)"},
             },
-            "required": ["agent", "message"],
+            "required": ["agent_id", "message"],
         },
     },
     {
@@ -179,9 +179,9 @@ AGENT_TOOLS: List[Dict[str, Any]] = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "agent": {"type": "string", "description": "Agent ID to start"},
+                "agent_id": {"type": "string", "description": "Agent ID to start"},
             },
-            "required": ["agent"],
+            "required": ["agent_id"],
         },
     },
     {
@@ -190,10 +190,10 @@ AGENT_TOOLS: List[Dict[str, Any]] = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "agent": {"type": "string", "description": "Agent ID to stop"},
+                "agent_id": {"type": "string", "description": "Agent ID to stop"},
                 "force": {"type": "boolean", "description": "Force kill"},
             },
-            "required": ["agent"],
+            "required": ["agent_id"],
         },
     },
 ]
@@ -323,9 +323,9 @@ OLLAMA_TOOLS: List[Dict[str, Any]] = [
             "type": "object",
             "properties": {
                 "model": {"type": "string", "description": "Embedding model"},
-                "text": {"type": "string", "description": "Text to embed"},
+                "input": {"type": "string", "description": "Text to embed"},
             },
-            "required": ["model", "text"],
+            "required": ["model", "input"],
         },
     },
     {

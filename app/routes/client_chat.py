@@ -10,7 +10,6 @@ from typing import Optional, List
 import httpx
 import os
 import logging
-import jwt
 from datetime import datetime
 
 from ..services.user_tiers import (
@@ -28,8 +27,10 @@ OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 
+DEMO_MODE = (os.getenv("DEMO_MODE") or "false").strip().lower() in ("1","true","yes","on")
+
 # JWT Config - Import from auth module to share secret
-from .client_auth import JWT_SECRET, JWT_ALGORITHM
+from .client_auth import JWT_SECRET, JWT_ALGORITHM, decode_jwt_token
 
 
 
@@ -49,7 +50,7 @@ def extract_user_and_tier_from_token(authorization: str = None) -> tuple:
         if not token:
             return None, None
         
-        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        payload = decode_jwt_token(token)
         
         email = payload.get("email") or payload.get("sub")
         tier = payload.get("role") or payload.get("tier")
@@ -60,11 +61,8 @@ def extract_user_and_tier_from_token(authorization: str = None) -> tuple:
         
         return None, tier
         
-    except jwt.ExpiredSignatureError:
-        logger.warning("JWT Token expired")
-        return None, None
-    except jwt.InvalidTokenError as e:
-        logger.warning(f"Invalid JWT Token: {e}")
+    except HTTPException as e:
+        logger.warning(f"JWT Token invalid/expired: {e.detail}")
         return None, None
     except Exception as e:
         logger.error(f"Token extraction error: {e}")
@@ -351,6 +349,12 @@ async def client_chat(
 
     # User-ID ermitteln (Token hat Priorität)
     user_id, tier = get_user_and_tier_from_headers(authorization, x_user_id)
+    effective_tier = UserTier.ENTERPRISE if DEMO_MODE else tier
+    tier_out = 'demo' if DEMO_MODE else tier.value
+
+    # DEMO_MODE: disable tier gating (treat everyone as enterprise)
+    if DEMO_MODE:
+        tier = UserTier.ENTERPRISE
     logger.debug(f"Chat request: user={user_id}, auth={'yes' if authorization else 'no'}")
 
 
@@ -367,67 +371,197 @@ async def client_chat(
     })
 
     # Model bestimmen
-    model = request.model or get_default_model(tier)
+
+    model = request.model or get_default_model(effective_tier)
+
+
+    force_or = (os.getenv("FORCE_GEMINI_OPENROUTER") or "").strip().lower() in ("1","true","yes","on")
+    if (DEMO_MODE or force_or) and model.startswith("gemini/"):
+        model = "openrouter/google/" + model.split("/", 1)[1]
+
+    # DEMO_MODE: map native Gemini -> OpenRouter (native quota often 0)
+
+    if DEMO_MODE and model.startswith("gemini/"):
+
+        model = "openrouter/google/" + model.split("/", 1)[1]
+
 
     # === GUEST / REGISTERED: Nur Ollama ===
-    if tier in (UserTier.GUEST, UserTier.REGISTERED):
+
+    if (not DEMO_MODE) and tier in (UserTier.GUEST, UserTier.REGISTERED):
+
         # Erzwinge Ollama-Prefix
+
         if not model.startswith("ollama/"):
+
             model = f"ollama/{model}"
 
+
         # Prüfen ob erlaubt
+
         if not tier_service.is_model_allowed(user_id, model):
+
             model = "ollama/deepseek-v3.1:671b-cloud"
+
             logger.warning(f"Model nicht erlaubt für {tier.value}, Fallback: {model}")
 
+
         # Token-Limit prüfen
+
         limit_check = tier_service.check_token_limit(user_id, model)
+
         if not limit_check["allowed"]:
+
             raise HTTPException(429, f"Token-Limit erreicht ({limit_check['limit']}/Tag)")
 
+
         # Ollama Call
+
         result = await call_ollama(
+
             model=model,
+
             messages=messages,
+
             temperature=request.temperature,
+
             max_tokens=request.max_tokens
+
         )
+
         backend = "ollama"
 
+
     # === PRO / ENTERPRISE: Alle Modelle ===
+
     else:
+
         # Ollama-Modelle direkt über Ollama
+
         if model.startswith("ollama/") or tier_service.is_ollama_model(model):
+
             if not model.startswith("ollama/"):
+
                 model = f"ollama/{model}"
-            
-            # PRO: Ollama = unlimited (kein Limit-Check nötig)
+
+
             result = await call_ollama(
+
                 model=model,
+
                 messages=messages,
+
                 temperature=request.temperature,
+
                 max_tokens=request.max_tokens
+
             )
+
             backend = "ollama"
+
         else:
+
             # Cloud-Modelle: Token-Limit prüfen (außer Enterprise)
-            if tier != UserTier.ENTERPRISE:
+
+            if effective_tier != UserTier.ENTERPRISE:
+
                 limit_check = tier_service.check_token_limit(user_id, model)
+
                 if not limit_check["allowed"]:
+
                     raise HTTPException(429, f"Token-Limit erreicht ({limit_check['limit']}/Tag). Nutze Ollama-Modelle für unlimited.")
 
-            # OpenRouter-Prefix entfernen
-            if model.startswith("openrouter/"):
-                model = model[11:]
 
-            # OpenRouter Call
-            result = await call_openrouter(
-                model=model,
-                messages=messages,
-                temperature=request.temperature,
-                max_tokens=request.max_tokens
-            )
-            backend = "openrouter"
+            _CHAT_ROUTER_PREFIXES = {"gemini", "anthropic", "openai", "mistral", "groq", "cerebras", "cloudflare", "github"}
+
+            model_prefix = model.split("/")[0].lower() if "/" in model else ""
+
+
+            if model.startswith("openrouter/"):
+
+                result = await call_openrouter(
+
+                    model=model[11:],
+
+                    messages=messages,
+
+                    temperature=request.temperature,
+
+                    max_tokens=request.max_tokens
+
+                )
+
+                backend = "openrouter"
+
+
+            elif model_prefix in _CHAT_ROUTER_PREFIXES:
+
+                from ..services.chat_router import api_proxy
+
+                try:
+
+                    response_str = await api_proxy.chat(
+
+                        model=model,
+
+                        messages=messages,
+
+                        temperature=request.temperature,
+
+                        max_tokens=request.max_tokens
+
+                    )
+
+                    result = {
+
+                        "choices": [{"message": {"role": "assistant", "content": response_str}}],
+
+                        "usage": {"total_tokens": 0},
+
+                        "model_used": model,
+
+                    }
+
+                    backend = model_prefix
+
+                except Exception as e:
+
+                    err = str(e)
+
+                    if ("RESOURCE_EXHAUSTED" in err or "Quota exceeded" in err or '"code": 429' in err):
+
+                        if model.startswith("gemini/"):
+
+                            availability_service.add_exclusion(model, "Google quota exhausted")
+
+                        raise HTTPException(429, f"Provider-Fehler ({model_prefix}): {err}")
+
+                    if "No API key" in err or "Vault" in err or "locked" in err:
+
+                        raise HTTPException(400, f"Provider '{model_prefix}' nicht konfiguriert: API-Key fehlt. Nutze ein Ollama-Modell.")
+
+                    raise HTTPException(502, f"Provider-Fehler ({model_prefix}): {err}")
+
+
+            else:
+
+                logger.warning(f"Unbekannter Model-Prefix '{model_prefix}' fuer '{model}', versuche OpenRouter")
+
+                result = await call_openrouter(
+
+                    model=model,
+
+                    messages=messages,
+
+                    temperature=request.temperature,
+
+                    max_tokens=request.max_tokens
+
+                )
+
+                backend = "openrouter"
+
+
 
     # Response extrahieren
     response_text = result.get("choices", [{}])[0].get("message", {}).get("content", "")
@@ -441,18 +575,18 @@ async def client_chat(
 
     # Prüfen ob Ollama unlimited (Pro/Enterprise mit Ollama-Modell)
     is_ollama = tier_service.is_ollama_model(model) or backend == "ollama"
-    is_unlimited = (tier in (UserTier.PRO, UserTier.ENTERPRISE) and is_ollama) or tier == UserTier.ENTERPRISE
+    is_unlimited = (effective_tier in (UserTier.PRO, UserTier.ENTERPRISE) and is_ollama) or effective_tier == UserTier.ENTERPRISE
 
     # Tokens tracken - NUR bei erfolgreicher Operation und NICHT für unlimited Ollama
-    if tokens and user_id != "anonymous" and response_text:
+    if (not DEMO_MODE) and tokens and user_id != "anonymous" and response_text:
         # Pro mit Ollama = nicht tracken (unlimited)
-        if not (tier == UserTier.PRO and is_ollama):
+        if not (effective_tier == UserTier.PRO and is_ollama):
             tier_service.track_tokens(user_id, tokens, model)
 
     return ChatResponse(
         response=response_text,
         model=model,
-        tier=tier.value,
+        tier=tier_out,
         backend=backend,
         tokens_used=tokens if not is_unlimited else None,  # Nicht anzeigen wenn unlimited
         tokens_unlimited=is_unlimited,
@@ -481,7 +615,7 @@ async def get_client_models(
     
     config = tier_service.get_tier_info(tier)
 
-    if tier in (UserTier.GUEST, UserTier.REGISTERED):
+    if (not DEMO_MODE) and tier in (UserTier.GUEST, UserTier.REGISTERED):
         # Guest/Registered: Nur Ollama Modelle
         models = FREE_MODELS_OLLAMA
         backend = "ollama"
@@ -491,6 +625,9 @@ async def get_client_models(
         all_ids = [m.id for m in all_models]
         # Filtere unavailable Models raus
         models = availability_service.filter_available(all_ids)
+        # DEMO_MODE: hide native Gemini models (quota often 0). Use OpenRouter Gemini instead.
+        if DEMO_MODE:
+            models = [m for m in models if not m.startswith('gemini/')]
         # Stelle sicher dass Ollama-Modelle immer dabei sind
         for om in FREE_MODELS_OLLAMA:
             if om not in models:
@@ -498,12 +635,12 @@ async def get_client_models(
         backend = "mixed"
 
     return ModelsResponse(
-        tier=tier.value,
-        tier_name=config["name"],
+      tier=("demo" if DEMO_MODE else tier.value),
+      tier_name=("Demo" if DEMO_MODE else config["name"]),
         model_count=len(models),
         models=models,
         backend=backend,
-        upgrade_available=(tier in (UserTier.GUEST, UserTier.REGISTERED))
+      upgrade_available=(False if DEMO_MODE else (tier in (UserTier.GUEST, UserTier.REGISTERED)))
     )
 
 
@@ -520,6 +657,23 @@ async def get_client_tier(
         2. X-User-ID: User-Email
     """
     user_id, tier = get_user_and_tier_from_headers(authorization, x_user_id)
+    if DEMO_MODE:
+        return {
+            "tier": "demo",
+            "name": "Demo",
+            "price_monthly": 0.0,
+            "price_yearly": 0.0,
+            "features": ["Alle Modelle (via OpenRouter/Ollama)", "Native Gemini ausgeblendet (Quota=0)", "1 Woche Demo"],
+            "model_count": "all",
+            "mcp_access": True,
+            "cli_agents": True,
+            "priority_queue": False,
+            "daily_token_limit": 0,
+            "ollama_unlimited": True,
+            "backend": "mixed",
+            "user_id": user_id
+        }
+
     info = tier_service.get_tier_info(tier)
     info["backend"] = "ollama" if tier == UserTier.GUEST else "openrouter"
     info["user_id"] = user_id  # Für Debug

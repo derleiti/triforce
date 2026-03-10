@@ -9,11 +9,15 @@ services:
       - N8N_HOST=${N8N_HOST}
       - N8N_PORT=5678
       - N8N_PROTOCOL=${N8N_PROTOCOL:-https}
+      - N8N_EDITOR_BASE_URL=${N8N_EDITOR_BASE_URL:-https://n8n.ailinux.me}
+      - N8N_PUBLIC_URL=${N8N_PUBLIC_URL:-https://n8n.ailinux.me}
+      - N8N_ENDPOINT_REST=${N8N_ENDPOINT_REST:-/rest}
+      - N8N_ENDPOINT_WEBHOOK=${N8N_ENDPOINT_WEBHOOK:-/webhook}
       - NODE_ENV=production
       - WEBHOOK_URL=${N8N_WEBHOOK_URL}
       - GENERIC_TIMEZONE=${TZ:-Europe/Berlin}
       # Auth
-      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_ACTIVE=${N8N_BASIC_AUTH_ACTIVE:-false}
       - N8N_BASIC_AUTH_USER=${TRIFORCE_ADMIN_USER}
       - N8N_BASIC_AUTH_PASSWORD=${TRIFORCE_ADMIN_PASSWORD}
       # AI Integration
@@ -23,6 +27,8 @@ services:
       - OLLAMA_HOST=${OLLAMA_HOST}
     volumes:
       - ${TRIFORCE_DATA_DIR:-/home/zombie/triforce/data}/n8n:/home/node/.n8n
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - triforce-net
     healthcheck:

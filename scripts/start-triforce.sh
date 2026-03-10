@@ -56,7 +56,8 @@ update_loop() {
 
 # Initial update
 log "Starting TriForce..."
-do_update || log "Already up to date"
+# v2.86: Kein synchroner git fetch im Startpfad
+log "Update check deferred to background loop (30s)"
 
 # Start update loop in background
 update_loop &

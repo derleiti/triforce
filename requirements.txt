@@ -3,7 +3,7 @@
 # Cutting-edge stable versions (2025)
 # ========================================
 
-# Core Framework - Latest Stable (FastAPI 0.118 available!)
+# Core Framework
 fastapi==0.118.0
 uvicorn[standard]==0.37.0
 pydantic==2.11.10
@@ -17,16 +17,16 @@ aiohttp==3.13.3
 fastapi-limiter==0.1.6
 redis==6.4.0
 
-# AI Provider SDKs (cutting-edge)
+# AI Provider SDKs
 google-generativeai==0.8.5
 anthropic==0.69.0
 openai==2.1.0
 mistralai==1.9.11  # Latest stable (Dec 2024)
 
 # Data Processing & Validation
-python-multipart==0.0.20
+python-multipart==0.0.22
 email-validator==2.3.0
-Pillow==11.3.0
+Pillow==12.1.1
 
 # Testing & Development
 pytest==8.4.2
@@ -43,16 +43,17 @@ mypy==1.18.2
 psutil==7.1.0
 prometheus-client==0.23.1
 
-# Crawler dependencies
-playwright>=1.55.0
-crawlee>=1.0.0
-beautifulsoup4>=4.14.2
+# Crawler dependencies (pinned auf installierte Versionen)
+playwright==1.57.0
+crawlee==1.0.4
+beautifulsoup4==4.14.3
 python-dateutil==2.9.0.post0
-rank-bm25>=0.2.2
-jsonlines>=4.0.0
+rank-bm25==0.2.2
+jsonlines==4.0.0
 tenacity==9.1.2
 
 # Security & Auth
 python-jose[cryptography]==3.5.0
 passlib[bcrypt]==1.7.4
-websockets>=12.0
+websockets==16.0
+jwt==1.4.0

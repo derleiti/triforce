@@ -365,15 +365,11 @@ header p { color: var(--text-secondary); }
   align-items: center;
   gap: 12px;
   transition: border-color 0.2s;
+  text-decoration: none;
+  color: var(--text-primary);
 }
 
 .tool-card:hover { border-color: var(--accent-cyan); }
-
-.tool-card a {
-  color: var(--text-primary);
-  text-decoration: none;
-  font-weight: 500;
-}
 
 .tool-card .icon { font-size: 1.5rem; }
 .tool-card .desc { font-size: 0.8rem; color: var(--text-secondary); }
@@ -426,46 +422,46 @@ cat >> "$TMP_INDEX_FILE" << HTMLHEADER
 
 <main class="container">
   <div class="search-box">
-    <input type="text" id="searchInput" placeholder="🔍 Repository suchen... (z.B. ubuntu, docker, wine)" onkeyup="filterRepos()">
+    <input type="text" id="searchInput" placeholder="🔍 Repository suchen... (z.B. ubuntu, docker, wine)">
   </div>
 
   <div class="quick-start">
     <h2><span>⚡</span> Quick Install</h2>
     <div class="code-block">
-      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <button class="copy-btn" type="button">Copy</button>
       <code>curl -fsSL "${PUBLIC_BASE}/add-ailinux-repo.sh" | sudo bash</code>
     </div>
   </div>
 
   <div class="tools-section">
-    <div class="tool-card">
+    <a class="tool-card" href="${PUBLIC_BASE}/ailinux-archive-key.gpg">
       <span class="icon">🔐</span>
       <div>
-        <a href="${PUBLIC_BASE}/ailinux-archive-key.gpg">GPG Key</a>
+        <div class="tool-title">GPG Key</div>
         <div class="desc">Repository Signing Key</div>
       </div>
-    </div>
-    <div class="tool-card">
+    </a>
+    <a class="tool-card" href="${PUBLIC_BASE}/add-ailinux-repo.sh">
       <span class="icon">⚙️</span>
       <div>
-        <a href="${PUBLIC_BASE}/add-ailinux-repo.sh">Install Script</a>
+        <div class="tool-title">Install Script</div>
         <div class="desc">Automatisches Setup</div>
       </div>
-    </div>
-    <div class="tool-card">
+    </a>
+    <a class="tool-card" href="${PUBLIC_BASE}/mirror-summary.html">
       <span class="icon">📊</span>
       <div>
-        <a href="${PUBLIC_BASE}/mirror-summary.html">Status</a>
+        <div class="tool-title">Status</div>
         <div class="desc">Mirror Health Report</div>
       </div>
-    </div>
-    <div class="tool-card">
+    </a>
+    <a class="tool-card" href="${PUBLIC_BASE}/live-log.html">
       <span class="icon">📜</span>
       <div>
-        <a href="${PUBLIC_BASE}/live-log.html">Logs</a>
+        <div class="tool-title">Logs</div>
         <div class="desc">Sync Protokoll</div>
       </div>
-    </div>
+    </a>
   </div>
 
   <div id="repoCategories">
@@ -484,7 +480,7 @@ output_category() {
 
   cat >> "$TMP_INDEX_FILE" << CATHEAD
     <div class="category open" data-category="${cat_id}">
-      <div class="category-header" onclick="toggleCategory(this)">
+      <div class="category-header">
         <div class="category-title">
           <span class="category-icon">${cat_icon}</span>
           <span>${cat_name}</span>
@@ -541,8 +537,13 @@ cat >> "$TMP_INDEX_FILE" << HTMLFOOTER
     Base URL: <code>${PUBLIC_BASE}</code>
   </p>
 </footer>
+<script src="index.js" defer></script>
+</body>
+</html>
+HTMLFOOTER
 
-<script>
+# External JS for interactions (CSP-friendly)
+cat > "$HOST_MIRROR_PATH/index.js" << 'JSSCRIPT'
 function toggleCategory(header) {
   header.parentElement.classList.toggle('open');
 }
@@ -571,18 +572,73 @@ function filterRepos() {
 
 function copyCode(btn) {
   const code = btn.parentElement.querySelector('code').textContent;
-  navigator.clipboard.writeText(code).then(() => {
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(code).then(() => {
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy', 2000);
+    });
+    return;
+  }
+  const textarea = document.createElement('textarea');
+  textarea.value = code;
+  textarea.style.position = 'fixed';
+  textarea.style.top = '-1000px';
+  document.body.appendChild(textarea);
+  textarea.focus();
+  textarea.select();
+  try {
+    document.execCommand('copy');
     btn.textContent = 'Copied!';
     setTimeout(() => btn.textContent = 'Copy', 2000);
-  });
+  } catch (err) {
+    btn.textContent = 'Copy failed';
+    setTimeout(() => btn.textContent = 'Copy', 2000);
+  }
+  document.body.removeChild(textarea);
 }
 
-// Open all categories by default
-document.querySelectorAll('.category').forEach(c => c.classList.add('open'));
-</script>
-</body>
-</html>
-HTMLFOOTER
+document.addEventListener('DOMContentLoaded', () => {
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    searchInput.addEventListener('keyup', filterRepos);
+  }
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', () => copyCode(btn));
+  });
+  document.querySelectorAll('.category-header').forEach(header => {
+    header.addEventListener('click', () => toggleCategory(header));
+  });
+  document.querySelectorAll('.category').forEach(c => c.classList.add('open'));
+});
+JSSCRIPT
+
+# Copy JS alongside index.html targets
+declare -a JS_TARGETS
+JS_TARGETS+=("$HOST_MIRROR_PATH/index.js")
+if [[ "${WRITE_ROOT_INDEX:-1}" == "1" ]]; then
+  JS_TARGETS+=("$HOST_REPO_PATH/index.js")
+fi
+if [[ -n "${EXTRA_INDEX_TARGETS:-}" ]]; then
+  while IFS= read -r extra_target; do
+    [[ -n "$extra_target" ]] || continue
+    JS_TARGETS+=("$(dirname "$extra_target")/index.js")
+  done <<< "${EXTRA_INDEX_TARGETS}"
+fi
+declare -A JS_GENERATED
+for js_target in "${JS_TARGETS[@]}"; do
+  [[ -n "$js_target" ]] || continue
+  if [[ -n "${JS_GENERATED[$js_target]+x}" ]]; then
+    continue
+  fi
+  if [[ "$js_target" == "$HOST_MIRROR_PATH/index.js" ]]; then
+    JS_GENERATED["$js_target"]=1
+    continue
+  fi
+  JS_GENERATED["$js_target"]=1
+  mkdir -p "$(dirname "$js_target")"
+  cp "$HOST_MIRROR_PATH/index.js" "$js_target"
+  chmod 644 "$js_target"
+done
 
 # Deploy index files
 declare -a INDEX_TARGETS

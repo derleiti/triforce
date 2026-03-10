@@ -18,7 +18,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-VAULT_PATH = Path("/home/zombie/triforce/.vault")
+VAULT_PATH = Path(__file__).resolve().parents[2] / ".vault"
 FEDERATION_VAULT_FILE = VAULT_PATH / "federation_nodes.enc"
 FEDERATION_TOKENS_FILE = VAULT_PATH / "federation_tokens.json"
 
@@ -77,7 +77,7 @@ class FederationVault:
         # Load shared secret from env or file
         self._shared_secret = os.getenv("FEDERATION_SECRET")
         if not self._shared_secret:
-            secret_file = Path("/home/zombie/triforce/config/federation_psk.key")
+            secret_file = Path(__file__).resolve().parents[2] / "config" / "federation_psk.key"
             if secret_file.exists():
                 self._shared_secret = secret_file.read_text().strip()
     
