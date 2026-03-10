@@ -1131,7 +1131,7 @@ class ModelRegistry:
                 # Claude 3 Series
                 ModelInfo(id="anthropic/claude-3-opus", provider="anthropic", capabilities=["chat", "vision", "reasoning"], roles=["assistant", "vision_analyst", "reasoning_engine"]),
                 ModelInfo(id="anthropic/claude-3-sonnet", provider="anthropic", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
-                ModelInfo(id="anthropic/claude-3-haiku", provider="anthropic", capabilities=["chat"], roles=["assistant"]),
+                ModelInfo(id="anthropic/claude-3-haiku", provider="anthropic", capabilities=["chat", "vision"], roles=["assistant"]),
                 # Legacy aliases
                 ModelInfo(id="anthropic/claude", provider="anthropic", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
                 ModelInfo(id="claude", provider="anthropic", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),

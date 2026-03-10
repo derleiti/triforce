@@ -183,11 +183,24 @@ async def _vision_proxy(model: str, prompt: str, image_url: Optional[str], image
     except Exception as exc:
         raise HTTPException(status_code=400, detail=f"Invalid base64: {exc}")
 
-    ext = mime_type.split("/")[-1] if "/" in mime_type else "png"
+    # BUG-FIX: detect actual MIME type from magic bytes (browser can lie)
+    def _detect_mime(data: bytes) -> str:
+        if data[:3] == b"\xff\xd8\xff":
+            return "image/jpeg"
+        if data[:4] == b"\x89PNG":
+            return "image/png"
+        if data[:6] in (b"GIF87a", b"GIF89a"):
+            return "image/gif"
+        if data[:4] == b"RIFF" and data[8:12] == b"WEBP":
+            return "image/webp"
+        return mime_type  # fallback to declared type
+
+    actual_mime = _detect_mime(image_bytes)
+    ext = actual_mime.split("/")[-1] if "/" in actual_mime else "png"
     filename = f"upload.{ext}"
 
     async with httpx.AsyncClient(timeout=120.0) as client:
-        files = {"image_file": (filename, image_bytes, mime_type)}
+        files = {"image_file": (filename, image_bytes, actual_mime)}
         data = {"model": model, "prompt": prompt}
         r = await client.post(f"{base}/v1/images/analyze/upload", files=files, data=data)
         if r.status_code >= 400:
@@ -215,7 +228,61 @@ async def _image_proxy(req: ImageRequest) -> Dict[str, Any]:
                 raise HTTPException(status_code=r.status_code, detail=r.text)
             return {"ok": True, "mode": "media_image", "provider": "openai", "result": r.json()}
 
-    # Internal txt2img path (SD, ComfyUI, FLUX via together, cloudflare SD, etc.)
+    # Cloudflare Workers AI path
+    if m.startswith("cloudflare/"):
+        cf_account = os.getenv("CLOUDFLARE_ACCOUNT_ID", "")
+        cf_token = os.getenv("CLOUDFLARE_API_TOKEN", "")
+        if not cf_account or not cf_token:
+            raise HTTPException(status_code=400, detail="CLOUDFLARE_ACCOUNT_ID or CLOUDFLARE_API_TOKEN missing")
+        # Strip "cloudflare/" prefix to get the model path
+        cf_model = req.model[len("cloudflare/"):]
+        cf_url = f"https://api.cloudflare.com/client/v4/accounts/{cf_account}/ai/run/{cf_model}"
+        headers = {"Authorization": f"Bearer {cf_token}", "Content-Type": "application/json"}
+        payload_cf = {"prompt": req.prompt}
+        async with httpx.AsyncClient(timeout=180.0) as client:
+            r = await client.post(cf_url, headers=headers, json=payload_cf)
+            if r.status_code >= 400:
+                raise HTTPException(status_code=r.status_code, detail=f"Cloudflare AI error: {r.text}")
+            # Response is binary image data
+            img_b64 = base64.b64encode(r.content).decode()
+            ct = r.headers.get("content-type", "image/jpeg")
+            return {"ok": True, "mode": "media_image", "provider": "cloudflare",
+                    "result": {"data": [{"b64_json": img_b64, "content_type": ct}]}}
+
+    # Gemini Imagen path
+    if m.startswith("gemini/imagen") or m.startswith("gemini/gemini-3-pro-image") or m.startswith("gemini/gemini-3.1"):
+        gemini_key = os.getenv("GEMINI_API_KEY", "")
+        if not gemini_key:
+            raise HTTPException(status_code=400, detail="GEMINI_API_KEY missing for Imagen")
+        # Strip "gemini/" prefix
+        gemini_model = req.model[len("gemini/"):]
+        # Parse size
+        size_parts = req.size.split("x")
+        width, height = (int(size_parts[0]), int(size_parts[1])) if len(size_parts) == 2 else (1024, 1024)
+        aspect_map = {"1024x1024": "1:1", "1280x720": "16:9", "720x1280": "9:16", "512x512": "1:1"}
+        aspect_ratio = aspect_map.get(req.size, "1:1")
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{gemini_model}:generateImages"
+        payload_gemini = {
+            "prompt": {"text": req.prompt},
+            "number_of_images": req.n,
+            "aspect_ratio": aspect_ratio,
+        }
+        async with httpx.AsyncClient(timeout=180.0) as client:
+            r = await client.post(url, params={"key": gemini_key}, json=payload_gemini)
+            if r.status_code >= 400:
+                raise HTTPException(status_code=r.status_code, detail=f"Gemini Imagen error: {r.text}")
+            rdata = r.json()
+            # Extract base64 images
+            images = rdata.get("generatedImages") or rdata.get("images") or []
+            result_images = []
+            for img in images:
+                b64 = img.get("image", {}).get("imageBytes") or img.get("b64_json") or img.get("imageBytes", "")
+                if b64:
+                    result_images.append({"b64_json": b64, "content_type": "image/png"})
+            return {"ok": True, "mode": "media_image", "provider": "google",
+                    "result": {"data": result_images, "raw": rdata}}
+
+    # Internal txt2img path (SD, ComfyUI, FLUX via together, etc.)
     base = _base_url()
     payload = {"prompt": req.prompt, "model": req.model, "size": req.size, "n": req.n}
     async with httpx.AsyncClient(timeout=180.0) as client:
