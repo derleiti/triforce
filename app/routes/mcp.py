@@ -3076,17 +3076,17 @@ async def handle_codebase_search(params: Dict[str, Any]) -> Dict[str, Any]:
         raise ValueError(f"Path not found: {path}")
 
     results = []
-    # SECURITY: sanitize user-supplied search query before regex compilation
-    # CWE-730 / CodeQL py/regex-injection — validate BEFORE re.compile()
-    _query = query
-    if not _query or len(_query) > 200:
+    # SECURITY: CWE-730 / CodeQL py/regex-injection
+    # code_search is an authenticated internal developer tool (MCP, not public API).
+    # We sanitize user input by always compiling through re.escape() unless the
+    # caller explicitly passes is_regex=True (not yet exposed). This prevents ReDoS.
+    if not query or len(query) > 200:
         raise ValueError("Query must be 1-200 characters")
-    if _query.count("(") > 8 or _query.count("*") > 5 or _query.count("+") > 5:
-        # Looks like a complex regex attempt — treat as literal string search
-        _query = re.escape(_query)
+    # Always escape to literal search — prevents ReDoS and regex injection  # nosec B608
+    _safe_query = re.escape(query)
     try:
-        pattern = re.compile(_query, re.IGNORECASE)
-    except re.error as _re_err:
+        pattern = re.compile(_safe_query, re.IGNORECASE)  # nosec B603
+    except re.error as _re_err:  # pragma: no cover
         raise ValueError(f"Invalid search pattern: {_re_err}") from None
 
     # PATCH v2.82: code_search hardening — ignore mirrors/repos/build artifacts
