@@ -27,8 +27,15 @@ async def analyze_image(payload: VisionRequest) -> dict[str, str]:
         raise HTTPException(status_code=400, detail="Image URL is required for vision models.")
     try:
         model = await registry.get_model(payload.model)
-        if not model or "vision" not in model.capabilities:
-            raise api_error("Requested model does not support vision analysis", status_code=404, code="model_not_found")
+
+        # Dynamic provider fallback (same as upload route)
+        if not model or "vision" not in (model.capabilities if model else []):
+            if not _is_dynamic_vision_model(payload.model):
+                raise api_error("Requested model does not support vision analysis", status_code=404, code="model_not_found")
+            from ..services.model_registry import ModelInfo
+            prefix = payload.model.split("/")[0].lower()
+            model = ModelInfo(id=payload.model, provider=prefix, capabilities=["vision", "chat"])
+            logger.info("Dynamic vision model stub (URL) created for: %s", payload.model)
 
         async with request_slot():
             text = await vision_service.analyze_from_url(model, payload.model, str(payload.image_url), payload.prompt)
