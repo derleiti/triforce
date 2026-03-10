@@ -409,6 +409,15 @@ async def _analyze_with_anthropic_data(
         stripped = strip_provider_prefix(model)
         target_model = ANTHROPIC_VISION_ALIASES.get(stripped, stripped)
 
+    # Cap max_tokens per model limit (claude-3-haiku has 4096 max)
+    CLAUDE3_MAX_TOKENS = {
+        "claude-3-haiku-20240307": 4096,
+        "claude-3-sonnet-20240229": 4096,
+        "claude-3-opus-20240229": 4096,
+    }
+    if target_model in CLAUDE3_MAX_TOKENS:
+        max_tokens = min(max_tokens, CLAUDE3_MAX_TOKENS[target_model])
+
     # Map content type to Anthropic media type
     media_type_map = {
         "image/png": "image/png",
