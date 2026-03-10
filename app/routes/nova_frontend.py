@@ -60,6 +60,26 @@ def _provider(model: Dict[str, Any]) -> str:
     raw = str(_pick(model, "provider", "owned_by", "vendor", default="")).lower()
     mid = str(_pick(model, "id", "model", "name", default="")).lower()
 
+    # ID-Prefix hat höchste Priorität (verhindert falsche Klassifizierung)
+    # z.B. openrouter/google/gemini-* → openrouter, nicht google
+    if mid.startswith("openrouter/"):
+        return "openrouter"
+    if mid.startswith("cloudflare/") or mid.startswith("@cf/") or mid.startswith("cf/"):
+        return "cloudflare"
+    if mid.startswith("github/"):
+        return "github"
+    if mid.startswith("groq/"):
+        return "groq"
+    if mid.startswith("gemini/") or mid.startswith("google/"):
+        return "gemini"
+    if mid.startswith("mistral/"):
+        return "mistral"
+    if mid.startswith("anthropic/") or mid.startswith("claude"):
+        return "anthropic"
+    if mid.startswith("ollama/"):
+        return "ollama"
+
+    # Fallback: raw provider field
     if "openai" in raw or mid.startswith("gpt-") or "dall-e" in mid or "gpt-image" in mid or "sora" in mid:
         return "openai"
     if "anthropic" in raw or "claude" in mid:
@@ -70,7 +90,7 @@ def _provider(model: Dict[str, Any]) -> str:
         return "mistral"
     if "groq" in raw:
         return "groq"
-    if "cloudflare" in raw or mid.startswith("@cf/") or mid.startswith("cf/"):
+    if "cloudflare" in raw:
         return "cloudflare"
     if "cerebras" in raw:
         return "cerebras"
@@ -128,7 +148,7 @@ def _categorize(model: Dict[str, Any]) -> Dict[str, Any]:
     if "video_gen" in caps_list or any(x in blob for x in ["sora", "veo", "video generation", "text-to-video", "video_gen"]):
         caps["media_video"] = True
 
-    if provider in {"openai", "anthropic", "google", "mistral", "groq", "cloudflare", "cerebras", "openrouter", "ollama"}:
+    if provider in {"openai", "anthropic", "google", "gemini", "mistral", "groq", "cloudflare", "cerebras", "openrouter", "ollama", "github"}:
         caps["backend_supported"] = caps["chat"] or caps["vision"]
 
     return {
@@ -248,35 +268,6 @@ async def _image_proxy(req: ImageRequest) -> Dict[str, Any]:
                 raise HTTPException(status_code=r.status_code, detail=r.text)
             return {"ok": True, "mode": "media_image", "provider": "openai", "result": r.json()}
 
-    # Cloudflare Workers AI path
-    if m.startswith("cloudflare/"):
-        cf_account = os.getenv("CLOUDFLARE_ACCOUNT_ID", "")
-        cf_token = os.getenv("CLOUDFLARE_API_TOKEN", "")
-        if not cf_account or not cf_token:
-            raise HTTPException(status_code=400, detail="CLOUDFLARE_ACCOUNT_ID or CLOUDFLARE_API_TOKEN missing")
-        cf_model = req.model[len("cloudflare/"):]
-        cf_url = f"https://api.cloudflare.com/client/v4/accounts/{cf_account}/ai/run/{cf_model}"
-        auth_headers = {"Authorization": f"Bearer {cf_token}"}
-        async with httpx.AsyncClient(timeout=180.0) as client:
-            # Try JSON first; if CF returns 'multipart' error, retry with multipart form
-            r = await client.post(cf_url, headers={**auth_headers, "Content-Type": "application/json"},
-                                  json={"prompt": req.prompt, "num_steps": 4})
-            if r.status_code == 400 and "multipart" in r.text:
-                # Newer CF models (flux-2-dev, flux-2-klein-*) require multipart
-                r = await client.post(cf_url, headers=auth_headers,
-                                      data={"prompt": req.prompt})
-            if r.status_code >= 400:
-                raise HTTPException(status_code=r.status_code, detail=f"Cloudflare AI error: {r.text}")
-            ct = r.headers.get("content-type", "image/png")
-            # JSON response (some models wrap in JSON)
-            if "application/json" in ct:
-                jdata = r.json()
-                b64 = jdata.get("result", {}).get("image") or jdata.get("image") or base64.b64encode(r.content).decode()
-            else:
-                b64 = base64.b64encode(r.content).decode()
-            return {"ok": True, "mode": "media_image", "provider": "cloudflare",
-                    "result": {"data": [{"b64_json": b64, "content_type": "image/png"}]}}
-
     # Gemini native image generation (gemini-2.5-flash-image = "nano banana" — FREE tier 500 RPD)
     # Uses generateContent with responseModalities=["image","text"]
     _GEMINI_NATIVE_IMG = ("gemini/gemini-2.5-flash-image", "gemini/gemini-3.1-flash-image", "gemini/gemini-3.1-pro-image")
@@ -329,7 +320,7 @@ async def _image_proxy(req: ImageRequest) -> Dict[str, Any]:
                     "result": {"data": result_images}}
 
     # Gemini Imagen path
-    if m.startswith("gemini/imagen") or m.startswith("gemini/gemini-3-pro-image") or m.startswith("gemini/gemini-3.1-pro"):
+    if m.startswith("gemini/imagen") or m.startswith("gemini/gemini-3-pro-image") or m.startswith("gemini/gemini-3.1-pro") or m.startswith("gemini/nano-banana"):
         gemini_key = os.getenv("GEMINI_API_KEY", "")
         if not gemini_key:
             raise HTTPException(status_code=400, detail="GEMINI_API_KEY missing for Imagen")
@@ -442,13 +433,20 @@ async def _image_proxy(req: ImageRequest) -> Dict[str, Any]:
         # OpenRouter hat keine dedizierte /images/generations API.
         # Gemini-Image via OpenRouter läuft über /chat/completions mit generateContent-Semantik.
         # Für direkte Bild-Generierung: Gemini native Pfad verwenden (gemini/* statt openrouter/*).
-        raise HTTPException(
-            status_code=501,
-            detail=(
-                f"OpenRouter unterstützt keine direkte Bild-Generierung für '{req.model}'. "
-                "Bitte das entsprechende Gemini-Modell direkt wählen, z.B. 'gemini/gemini-2.5-flash-image' "
-                "oder ein Cloudflare Flux-Modell."
+        # OpenRouter Gemini image models: redirect user to free native gemini/* models
+        _or_mid = req.model.lower()
+        if any(x in _or_mid for x in ("flash-image", "pro-image", "gemini-3.1-flash-image", "gemini-3-pro-image", "gemini-2.5-flash-image")):
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    f"Bildgenerierung via OpenRouter wird nicht unterstützt. "
+                    "Bitte das native Gemini-Modell wählen: 'gemini/gemini-2.5-flash-image' (kostenlos, 500/Tag) "
+                    "oder ein Cloudflare Flux-Modell für sofortige Ergebnisse."
+                )
             )
+        raise HTTPException(
+            status_code=400,
+            detail=f"OpenRouter Bildgenerierung für '{req.model}' nicht verfügbar. Bitte ein direktes Modell wählen."
         )
 
     # Internal txt2img path (SD, ComfyUI, FLUX via together, etc.)
