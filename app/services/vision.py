@@ -372,8 +372,18 @@ async def _download_image(url: str) -> Tuple[str, bytes]:
     settings = get_settings()
     timeout = httpx.Timeout(settings.request_timeout)
     try:
+        _headers = {
+            "User-Agent": "Mozilla/5.0 (compatible; TriForce-Vision/1.0; +https://ailinux.me)",
+            "Accept": "image/webp,image/avif,image/*,*/*;q=0.8",
+            "Accept-Language": "en-US,en;q=0.5",
+        }
         async with httpx.AsyncClient(timeout=timeout) as client:
-            response = await client.get(url, follow_redirects=True)
+            response = await client.get(url, follow_redirects=True, headers=_headers)
+            if response.status_code == 403:
+                raise api_error(
+                    f"Bild-URL blockiert (403 Forbidden). Direkte Bild-URLs (jpg/png) verwenden statt Webseiten.",
+                    status_code=422, code="image_access_denied"
+                )
             response.raise_for_status()
 
             content_length = response.headers.get("Content-Length")

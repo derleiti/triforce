@@ -275,7 +275,8 @@ async def _image_proxy(req: ImageRequest) -> Dict[str, Any]:
 
     # Gemini native image generation (gemini-2.5-flash-image = "nano banana" — FREE tier 500 RPD)
     # Uses generateContent with responseModalities=["image","text"]
-    _GEMINI_NATIVE_IMG = ("gemini/gemini-2.5-flash-image", "gemini/gemini-3.1-flash-image")
+    _GEMINI_NATIVE_IMG = ("gemini/gemini-2.5-flash-image", "gemini/gemini-3.1-flash-image", "gemini/gemini-3.1-pro-image")
+    # gemini-3.1-pro-image via :predict (Imagen), but gemini-3.1-flash-image via generateContent (free)
     if any(m.startswith(p) for p in _GEMINI_NATIVE_IMG):
         gemini_key = os.getenv("GEMINI_API_KEY", "")
         if not gemini_key:
@@ -324,7 +325,7 @@ async def _image_proxy(req: ImageRequest) -> Dict[str, Any]:
                     "result": {"data": result_images}}
 
     # Gemini Imagen path
-    if m.startswith("gemini/imagen") or m.startswith("gemini/gemini-3-pro-image") or m.startswith("gemini/gemini-3.1"):
+    if m.startswith("gemini/imagen") or m.startswith("gemini/gemini-3-pro-image") or m.startswith("gemini/gemini-3.1-pro"):
         gemini_key = os.getenv("GEMINI_API_KEY", "")
         if not gemini_key:
             raise HTTPException(status_code=400, detail="GEMINI_API_KEY missing for Imagen")
