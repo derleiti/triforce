@@ -44,6 +44,7 @@ from .routes.client_update import router as client_update_router
 from .routes.client_logs import router as client_logs_router
 from .routes.client_ai_search import router as client_ai_search_router
 from .routes.federation import router as federation_router
+from .routes.nova_frontend import router as nova_frontend_router
 
 # Import routers from the top-level app directory
 from .routes_sd3 import router as sd3_router
