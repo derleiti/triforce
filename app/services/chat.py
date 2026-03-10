@@ -447,6 +447,13 @@ async def _get_initial_response(
         except Exception as exc:
             # PATCH v2.82: No Ollama fallback for config/auth errors
             _emsg = str(exc).lower()
+            # GitHub: spezifische Fehlermeldung für fehlende "Models" Permission
+            if model.provider == "github" and "models" in _emsg and ("permission" in _emsg or "401" in _emsg):
+                raise api_error(
+                    "GitHub Models: Dein PAT benötigt die 'Models' Permission. "
+                    "→ github.com → Settings → Developer settings → Personal access tokens → Token bearbeiten → Models aktivieren",
+                    status_code=503, code="github_models_permission_missing"
+                )
             if any(kw in _emsg for kw in ("api key", "unauthorized", "403", "401", "not configured", "forbidden")):
                 raise
             async for chunk in _fallback_to_ollama(messages, temperature, settings.request_timeout, model.provider.title(), exc):
