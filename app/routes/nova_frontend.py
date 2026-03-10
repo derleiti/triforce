@@ -99,6 +99,14 @@ def _categorize(model: Dict[str, Any]) -> Dict[str, Any]:
 
     if any(x in blob for x in ["vision", "image understanding", "image-to-text", "multimodal", "pixtral", "gpt-4o", "claude-3", "claude-4", "gemini", "llama-4-scout"]):
         caps["vision"] = True
+    # Vision-Blacklist: Modelle die zwar "gemini" im Namen haben, aber KEIN vision-chat können
+    _vision_blacklist = [
+        "native-audio", "-tts", "preview-tts", "-embed", "embedding",
+        "resnet", "computer-use", "deep-research", "audio-preview",
+        "flash-image", "pro-image", "nano-banana", "imagen",  # Bildgenerierung ≠ Vision-Chat
+    ]
+    if any(x in blob for x in _vision_blacklist):
+        caps["vision"] = False
 
     # image_gen: check capabilities list from model_registry output
     caps_list = model.get("capabilities", [])
