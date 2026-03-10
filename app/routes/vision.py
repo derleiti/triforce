@@ -38,6 +38,13 @@ async def analyze_image(payload: VisionRequest) -> dict[str, str]:
         raise
 
 
+# Dynamic providers that don't live in the static registry
+_DYNAMIC_VISION_PROVIDERS = {"openrouter", "mistral", "github", "groq", "cerebras", "cloudflare"}
+
+def _is_dynamic_vision_model(model_id: str) -> bool:
+    prefix = model_id.split("/")[0].lower()
+    return prefix in _DYNAMIC_VISION_PROVIDERS
+
 @router.post("/images/analyze/upload")
 async def analyze_image_upload(
     model: str = Form(...),
@@ -46,8 +53,17 @@ async def analyze_image_upload(
 ) -> dict[str, str]:
     try:
         entry = await registry.get_model(model)
-        if not entry or "vision" not in entry.capabilities:
-            raise api_error("Requested model does not support vision analysis", status_code=404, code="model_not_found")
+
+        # Relax check for dynamic providers (openrouter/mistral/github/groq/cloudflare)
+        # that are not in the static registry but are valid vision models
+        if not entry or "vision" not in (entry.capabilities if entry else []):
+            if not _is_dynamic_vision_model(model):
+                raise api_error("Requested model does not support vision analysis", status_code=404, code="model_not_found")
+            # Create a minimal stub so vision_service.analyze() can route by model ID
+            from ..services.model_registry import ModelInfo
+            prefix = model.split("/")[0].lower()
+            entry = ModelInfo(id=model, provider=prefix, capabilities=["vision", "chat"])
+            logger.info("Dynamic vision model stub created for: %s", model)
 
         data = await image_file.read()
         if not data:

@@ -155,6 +155,36 @@ async def analyze(
             timeout=settings.anthropic_timeout_ms / 1000.0,
         )
 
+    # ── OpenRouter / Mistral / GitHub / Cloudflare fallback ──────────────────
+    # These providers all use OpenAI-compatible vision format.
+    settings = get_settings()
+    provider = model.provider if model else request_model.split("/")[0].lower()
+
+    OPENAI_COMPAT_PROVIDERS = {"openrouter", "mistral", "github", "groq", "cerebras"}
+
+    if provider in OPENAI_COMPAT_PROVIDERS or request_model.startswith(("openrouter/", "mistral/", "github/", "groq/")):
+        resolved_bytes = image_bytes
+        resolved_type = content_type or "image/jpeg"
+
+        if resolved_bytes is None:
+            assert image_url is not None
+            resolved_type, resolved_bytes = await _download_image(image_url)
+        if resolved_bytes is None:
+            raise api_error("Image bytes missing", status_code=422, code="missing_image")
+
+        def _detect_mime2(data: bytes) -> str:
+            if data[:3] == b"\xff\xd8\xff": return "image/jpeg"
+            if data[:4] == b"\x89PNG": return "image/png"
+            if data[:6] in (b"GIF87a", b"GIF89a"): return "image/gif"
+            if data[:4] == b"RIFF" and data[8:12] == b"WEBP": return "image/webp"
+            return resolved_type
+        resolved_type = _detect_mime2(resolved_bytes)
+
+        _persist_temp_file(resolved_bytes, filename)
+        return await _analyze_with_openai_compat(
+            request_model, prompt, resolved_bytes, resolved_type, provider, settings
+        )
+
     raise api_error("Selected model does not support vision analysis", status_code=400, code="unsupported_provider")
 
 
@@ -383,6 +413,69 @@ async def _download_image(url: str) -> Tuple[str, bytes]:
             status_code=502,
             code="image_download_failed",
         ) from exc
+
+
+async def _analyze_with_openai_compat(
+    model: str,
+    prompt: str,
+    image_bytes: bytes,
+    content_type: str,
+    provider: str,
+    settings,
+) -> str:
+    """OpenAI-compatible vision call for openrouter/mistral/github/groq."""
+    b64 = base64.b64encode(image_bytes).decode("ascii")
+    data_url = f"data:{content_type};base64,{b64}"
+
+    # Pick endpoint + auth header
+    if provider == "openrouter" or model.startswith("openrouter/"):
+        api_key = os.getenv("OPENROUTER_API_KEY", "")
+        base_url = os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
+        clean_model = model[len("openrouter/"):] if model.startswith("openrouter/") else model
+        extra_headers = {"HTTP-Referer": "https://ailinux.me", "X-Title": "AILinux Nova"}
+    elif provider == "mistral" or model.startswith("mistral/"):
+        api_key = os.getenv("MISTRAL_API_KEY", "")
+        base_url = "https://api.mistral.ai/v1"
+        clean_model = model[len("mistral/"):] if model.startswith("mistral/") else model
+        extra_headers = {}
+    elif provider == "github" or model.startswith("github/"):
+        api_key = os.getenv("GITHUB_TOKEN", "")
+        base_url = "https://models.inference.ai.azure.com"
+        clean_model = model[len("github/"):] if model.startswith("github/") else model
+        extra_headers = {}
+    elif provider == "groq" or model.startswith("groq/"):
+        api_key = os.getenv("GROQ_API_KEY", "")
+        base_url = "https://api.groq.com/openai/v1"
+        clean_model = model[len("groq/"):] if model.startswith("groq/") else model
+        extra_headers = {}
+    else:
+        raise api_error(f"No API key configured for provider: {provider}", status_code=503, code="provider_unavailable")
+
+    if not api_key:
+        raise api_error(f"API key missing for provider: {provider}", status_code=503, code="provider_unavailable")
+
+    headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json", **extra_headers}
+    payload = {
+        "model": clean_model,
+        "messages": [{
+            "role": "user",
+            "content": [
+                {"type": "text", "text": prompt},
+                {"type": "image_url", "image_url": {"url": data_url}},
+            ],
+        }],
+        "max_tokens": 1024,
+    }
+
+    try:
+        async with httpx.AsyncClient(timeout=120.0) as client:
+            r = await client.post(f"{base_url.rstrip('/')}/chat/completions", headers=headers, json=payload)
+            if r.status_code >= 400:
+                raise api_error(f"{provider} vision error: {r.text[:300]}", status_code=r.status_code, code=f"{provider}_vision_error")
+            data = r.json()
+            return data["choices"][0]["message"]["content"]
+    except httpx.RequestError as exc:
+        raise api_error(f"Failed to reach {provider}: {exc}", status_code=502, code=f"{provider}_unreachable") from exc
 
 
 async def _analyze_with_anthropic_data(
