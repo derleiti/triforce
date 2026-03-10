@@ -368,6 +368,12 @@ async def _video_proxy(req: VideoRequest) -> Dict[str, Any]:
                 rdata = {}
             if r.status_code >= 400:
                 err_msg = rdata.get("error", {}).get("message", "") or r.text[:300]
+                # Leeres 404 = Endpoint nicht verfügbar (free tier) oder Modell nicht erreichbar
+                if not err_msg.strip() or r.status_code == 404:
+                    raise HTTPException(
+                        status_code=402,
+                        detail="Gemini Veo ist auf dem kostenlosen Google AI Studio Plan nicht verfügbar. Bitte upgraden unter https://ai.dev"
+                    )
                 if any(x in err_msg.lower() for x in ["paid", "billing", "upgrade", "quota", "permission"]):
                     raise HTTPException(
                         status_code=402,
