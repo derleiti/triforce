@@ -4093,12 +4093,16 @@ async def _process_mcp_request(
         handler = MCP_HANDLERS.get(method.replace("_", "."))
 
     # Try v4 handlers first
+    # BUG-002 FIX 2026-03-10: tool_name/arguments were not defined in this scope
     if not handler:
         try:
-            v4_result = await call_v4_tool(tool_name, arguments)
+            _v4_tool_name = params.get("name", "") if isinstance(params, dict) else ""
+            _v4_arguments = params.get("arguments", {}) if isinstance(params, dict) else {}
+            v4_result = await call_v4_tool(_v4_tool_name, _v4_arguments)
             if v4_result:
                 return {"content": [{"type": "text", "text": json.dumps(v4_result, separators=(chr(44), chr(58)))}], "isError": False}
-        except Exception:
+        except Exception as _v4_err:
+            mcp_logger.debug(f"V4_HANDLER_FALLBACK_MISS | tool={_v4_tool_name!r} | {_v4_err}")
             pass  # Fall through to error
 
     if not handler:

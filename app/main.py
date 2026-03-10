@@ -45,12 +45,13 @@ from .routes.client_logs import router as client_logs_router
 from .routes.client_ai_search import router as client_ai_search_router
 from .routes.federation import router as federation_router
 from .routes.nova_frontend import router as nova_frontend_router
+# BUG-006 FIX 2026-03-10: user_api war nie in main.py registriert
+from .routes.user_api import router as user_api_router
 
 # Import routers from the top-level app directory
 from .routes_sd3 import router as sd3_router
 from .routes_vision import router as vision_router
 logger = logging.getLogger("app.main")
-
 
 # Unified logging für alle Komponenten
 try:
@@ -58,9 +59,6 @@ try:
     setup_unified_logging()
 except ImportError:
     pass
-
-# Setup module logger once at top
-logger = logging.getLogger(__name__)
 
 # Prometheus metrics integration
 try:
@@ -393,6 +391,11 @@ def create_app() -> FastAPI:
     app.include_router(health_router, tags=["Monitoring"])
     app.include_router(mcp_router, prefix="/v1", tags=["MCP"])
     app.include_router(mcp_node_router, prefix="/v1", tags=["MCP Node"])
+    # BUG-004 CLARIFICATION 2026-03-10:
+    # mcp_remote_router wird OHNE prefix registriert → Endpoint: /mcp (kein /v1)
+    # Dies ist ABSICHT: /mcp  = Claude.ai Remote Connector (OAuth, SSE, extern erreichbar)
+    #                  /v1/mcp = Interner/lokaler MCP Endpoint (für Clients, API-Zugriff)
+    # NICHT konsolidieren — beide haben unterschiedliche Auth-Stacks und Tool-Sets.
     app.include_router(mcp_remote_router, tags=["MCP Remote Server"])
     app.include_router(oauth_router, tags=["OAuth 2.0"])
     app.include_router(models_router, prefix="/v1", tags=["Models"])
@@ -441,7 +444,9 @@ def create_app() -> FastAPI:
     # Include routers from the top-level app directory (prefixes are in the files)
     app.include_router(sd3_router, prefix="/v1", tags=["Stable Diffusion 3"])
     app.include_router(vision_router, tags=["Vision"])
-    app.include_router(nova_frontend_router, tags=["Nova Frontend"])
+    app.include_router(nova_frontend_router, prefix="/v1", tags=["Nova Frontend"])
+    # BUG-006 FIX 2026-03-10: User API Router registrieren
+    app.include_router(user_api_router, prefix="/v1", tags=["User API"])
     app.include_router(client_chat_router, prefix="/v1", tags=["Client Chat"])
     app.include_router(client_auth_router, prefix="/v1", tags=["Client Auth"])
     app.include_router(client_update_router, prefix="/v1", tags=["Client Update"])

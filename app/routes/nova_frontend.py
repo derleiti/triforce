@@ -10,7 +10,8 @@ import httpx
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-router = APIRouter(prefix="/v1/frontend/dashboard", tags=["nova-frontend"])
+# BUG-005 FIX 2026-03-10: prefix /v1 wird jetzt konsistent über main.py gesetzt
+router = APIRouter(prefix="/frontend/dashboard", tags=["nova-frontend"])
 
 def _base_url() -> str:
     return (os.getenv("TRIFORCE_PUBLIC_BASE_URL") or os.getenv("TRIFORCE_BASE_URL") or "http://127.0.0.1:9000").rstrip("/")
