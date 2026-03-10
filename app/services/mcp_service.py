@@ -10,6 +10,7 @@ from datetime import datetime, timezone
 from typing import Any, Awaitable, Callable, Dict, Iterable, List, Optional
 from pathlib import Path
 
+import aiofiles
 from .crawler.user_crawler import user_crawler
 from .crawler.manager import crawler_manager
 from .wordpress import wordpress_service
@@ -177,16 +178,16 @@ def _create_backup(file_path: Path) -> Optional[Path]:
     shutil.copy2(file_path, backup_path)
     return backup_path
 
-def _log_edit(action: str, path: str, details: Dict[str, Any]):
-    """Logs edit operations for audit trail."""
+async def _log_edit(action: str, path: str, details: Dict[str, Any]):
+    """Logs edit operations for audit trail (async to avoid blocking the event loop)."""
     log_entry = {
         "timestamp": datetime.now().isoformat(),
         "action": action,
         "path": path,
         "details": details,
     }
-    with open(EDIT_LOG_FILE, "a") as f:
-        f.write(json.dumps(log_entry) + "\n")
+    async with aiofiles.open(EDIT_LOG_FILE, "a") as f:
+        await f.write(json.dumps(log_entry) + "\n")
 async def handle_crawl_url(params: Dict[str, Any]) -> Dict[str, Any]:
     url = params.get("url")
     if not url:
@@ -1213,7 +1214,7 @@ async def handle_codebase_edit(params: Dict[str, Any]) -> Dict[str, Any]:
 
         safe_path.write_text(new_content, encoding="utf-8")
 
-        _log_edit("edit", file_path, {
+        await _log_edit("edit", file_path, {
             "mode": mode,
             "original_lines": original_line_count,
             "new_lines": new_line_count,
@@ -1282,7 +1283,7 @@ async def handle_codebase_backup(params: Dict[str, Any]) -> Dict[str, Any]:
             raise ValueError(f"File not found: {file_path}")
 
         backup_path = _create_backup(safe_path)
-        _log_edit("backup_create", file_path, {"backup": str(backup_path)})
+        await _log_edit("backup_create", file_path, {"backup": str(backup_path)})
 
         return {
             "action": "create",
@@ -1305,7 +1306,7 @@ async def handle_codebase_backup(params: Dict[str, Any]) -> Dict[str, Any]:
         latest = backups[0]
         import shutil
         shutil.copy2(latest, safe_path)
-        _log_edit("restore", file_path, {"from": str(latest)})
+        await _log_edit("restore", file_path, {"from": str(latest)})
         
         return {
             "action": "restore",
