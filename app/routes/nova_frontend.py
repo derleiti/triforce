@@ -109,7 +109,8 @@ def _categorize(model: Dict[str, Any]) -> Dict[str, Any]:
     _is_blacklisted = any(x in blob for x in _img_blacklist)
     if not _is_blacklisted and ("image_gen" in caps_list or any(x in blob for x in [
             "gpt-image", "dall-e", "imagen", "image generation", "text-to-image",
-            "flux", "stable diffusion", "image_gen", "dreamshaper", "sdxl", "lucid-origin", "phoenix"])):
+            "flux", "stable diffusion", "image_gen", "dreamshaper", "sdxl", "lucid-origin", "phoenix",
+            "flash-image", "nano-banana", "gemini-3-pro-image", "gemini-3.1-flash-image"])):
         caps["media_image"] = True
 
     if "video_gen" in caps_list or any(x in blob for x in ["sora", "veo", "video generation", "text-to-video", "video_gen"]):
@@ -264,13 +265,74 @@ async def _image_proxy(req: ImageRequest) -> Dict[str, Any]:
             return {"ok": True, "mode": "media_image", "provider": "cloudflare",
                     "result": {"data": [{"b64_json": b64, "content_type": "image/png"}]}}
 
+    # Gemini native image generation (gemini-2.5-flash-image = "nano banana" — FREE tier 500 RPD)
+    # Uses generateContent with responseModalities=["image","text"]
+    _GEMINI_NATIVE_IMG = ("gemini/gemini-2.5-flash-image", "gemini/gemini-3.1-flash-image")
+    if any(m.startswith(p) for p in _GEMINI_NATIVE_IMG):
+        gemini_key = os.getenv("GEMINI_API_KEY", "")
+        if not gemini_key:
+            raise HTTPException(status_code=400, detail="GEMINI_API_KEY missing for Gemini native image")
+        gemini_model = req.model[len("gemini/"):]
+        # Map pixel size to aspect ratio string for imageConfig
+        _aspect_map2 = {
+            "512x512": "1:1", "768x768": "1:1", "1024x1024": "1:1",
+            "640x360": "16:9", "1280x720": "16:9", "1920x1080": "16:9",
+            "640x480": "4:3", "800x600": "4:3", "1024x768": "4:3",
+            "480x640": "3:4", "600x800": "3:4", "768x1024": "3:4",
+            "360x640": "9:16", "480x854": "9:16", "720x1280": "9:16", "1080x1920": "9:16",
+        }
+        aspect_ratio = _aspect_map2.get(req.size or "", "1:1")
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{gemini_model}:generateContent"
+        payload_native = {
+            "contents": [{"parts": [{"text": req.prompt}]}],
+            "generationConfig": {
+                "responseModalities": ["image", "text"],
+                "candidateCount": min(req.n or 1, 4),
+                "imageConfig": {"aspectRatio": aspect_ratio},
+            },
+        }
+        async with httpx.AsyncClient(timeout=180.0) as client:
+            r = await client.post(url, params={"key": gemini_key}, json=payload_native)
+            if r.status_code >= 400:
+                try:
+                    err_msg = r.json().get("error", {}).get("message", r.text)
+                except Exception:
+                    err_msg = r.text or f"HTTP {r.status_code}"
+                err_lower = err_msg.lower()
+                if any(k in err_lower for k in ("paid", "upgrade", "billing", "permission", "quota", "resource exhausted")):
+                    raise HTTPException(status_code=402,
+                        detail="Gemini native image: Free-Tier-Limit erreicht oder API-Key benötigt Bezahlung. Quota: 500 RPD kostenlos via AI Studio.")
+                raise HTTPException(status_code=r.status_code, detail=f"Gemini native image error: {err_msg}")
+            rdata = r.json()
+            result_images = []
+            for cand in rdata.get("candidates", []):
+                for part in cand.get("content", {}).get("parts", []):
+                    idata = part.get("inlineData") or part.get("inline_data")
+                    if idata and idata.get("data"):
+                        result_images.append({"b64_json": idata["data"], "content_type": idata.get("mimeType", "image/png")})
+            if not result_images:
+                raise HTTPException(status_code=500, detail=f"Gemini native image: keine Bilder in Antwort. Raw: {str(rdata)[:300]}")
+            return {"ok": True, "mode": "media_image", "provider": "google_native",
+                    "result": {"data": result_images}}
+
     # Gemini Imagen path
     if m.startswith("gemini/imagen") or m.startswith("gemini/gemini-3-pro-image") or m.startswith("gemini/gemini-3.1"):
         gemini_key = os.getenv("GEMINI_API_KEY", "")
         if not gemini_key:
             raise HTTPException(status_code=400, detail="GEMINI_API_KEY missing for Imagen")
         gemini_model = req.model[len("gemini/"):]
-        aspect_map = {"1024x1024": "1:1", "1280x720": "16:9", "720x1280": "9:16", "512x512": "1:1"}
+        aspect_map = {
+            # 1:1 Square
+            "512x512": "1:1", "768x768": "1:1", "1024x1024": "1:1",
+            # 16:9 Widescreen
+            "640x360": "16:9", "1280x720": "16:9", "1920x1080": "16:9",
+            # 4:3 Standard
+            "640x480": "4:3", "800x600": "4:3", "1024x768": "4:3",
+            # 3:4 Portrait
+            "480x640": "3:4", "600x800": "3:4", "768x1024": "3:4",
+            # 9:16 Smartphone
+            "360x640": "9:16", "480x854": "9:16", "720x1280": "9:16", "1080x1920": "9:16",
+        }
         aspect_ratio = aspect_map.get(req.size, "1:1")
         # Imagen 3/4 uses :predict endpoint with Vertex-style payload
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{gemini_model}:predict"
