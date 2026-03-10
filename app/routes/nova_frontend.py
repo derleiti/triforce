@@ -102,7 +102,14 @@ def _categorize(model: Dict[str, Any]) -> Dict[str, Any]:
 
     # image_gen: check capabilities list from model_registry output
     caps_list = model.get("capabilities", [])
-    if "image_gen" in caps_list or any(x in blob for x in ["gpt-image", "dall-e", "imagen", "image generation", "text-to-image", "flux", "stable diffusion", "image_gen"]):
+    # Exclude img2img, inpainting, audio and other non-text2image models
+    _img_blacklist = ["img2img", "inpainting", "deepgram", "whisper", "aura-", "melotts",
+                      "reranker", "embed", "stt", "tts", "transcribe", "guard", "classification",
+                      "dreamshaper"]
+    _is_blacklisted = any(x in blob for x in _img_blacklist)
+    if not _is_blacklisted and ("image_gen" in caps_list or any(x in blob for x in [
+            "gpt-image", "dall-e", "imagen", "image generation", "text-to-image",
+            "flux", "stable diffusion", "image_gen", "dreamshaper", "sdxl", "lucid-origin", "phoenix"])):
         caps["media_image"] = True
 
     if "video_gen" in caps_list or any(x in blob for x in ["sora", "veo", "video generation", "text-to-video", "video_gen"]):
@@ -234,53 +241,67 @@ async def _image_proxy(req: ImageRequest) -> Dict[str, Any]:
         cf_token = os.getenv("CLOUDFLARE_API_TOKEN", "")
         if not cf_account or not cf_token:
             raise HTTPException(status_code=400, detail="CLOUDFLARE_ACCOUNT_ID or CLOUDFLARE_API_TOKEN missing")
-        # Strip "cloudflare/" prefix to get the model path
         cf_model = req.model[len("cloudflare/"):]
         cf_url = f"https://api.cloudflare.com/client/v4/accounts/{cf_account}/ai/run/{cf_model}"
-        headers = {"Authorization": f"Bearer {cf_token}", "Content-Type": "application/json"}
-        payload_cf = {"prompt": req.prompt}
+        auth_headers = {"Authorization": f"Bearer {cf_token}"}
         async with httpx.AsyncClient(timeout=180.0) as client:
-            r = await client.post(cf_url, headers=headers, json=payload_cf)
+            # Try JSON first; if CF returns 'multipart' error, retry with multipart form
+            r = await client.post(cf_url, headers={**auth_headers, "Content-Type": "application/json"},
+                                  json={"prompt": req.prompt, "num_steps": 4})
+            if r.status_code == 400 and "multipart" in r.text:
+                # Newer CF models (flux-2-dev, flux-2-klein-*) require multipart
+                r = await client.post(cf_url, headers=auth_headers,
+                                      data={"prompt": req.prompt})
             if r.status_code >= 400:
                 raise HTTPException(status_code=r.status_code, detail=f"Cloudflare AI error: {r.text}")
-            # Response is binary image data
-            img_b64 = base64.b64encode(r.content).decode()
-            ct = r.headers.get("content-type", "image/jpeg")
+            ct = r.headers.get("content-type", "image/png")
+            # JSON response (some models wrap in JSON)
+            if "application/json" in ct:
+                jdata = r.json()
+                b64 = jdata.get("result", {}).get("image") or jdata.get("image") or base64.b64encode(r.content).decode()
+            else:
+                b64 = base64.b64encode(r.content).decode()
             return {"ok": True, "mode": "media_image", "provider": "cloudflare",
-                    "result": {"data": [{"b64_json": img_b64, "content_type": ct}]}}
+                    "result": {"data": [{"b64_json": b64, "content_type": "image/png"}]}}
 
     # Gemini Imagen path
     if m.startswith("gemini/imagen") or m.startswith("gemini/gemini-3-pro-image") or m.startswith("gemini/gemini-3.1"):
         gemini_key = os.getenv("GEMINI_API_KEY", "")
         if not gemini_key:
             raise HTTPException(status_code=400, detail="GEMINI_API_KEY missing for Imagen")
-        # Strip "gemini/" prefix
         gemini_model = req.model[len("gemini/"):]
-        # Parse size
-        size_parts = req.size.split("x")
-        width, height = (int(size_parts[0]), int(size_parts[1])) if len(size_parts) == 2 else (1024, 1024)
         aspect_map = {"1024x1024": "1:1", "1280x720": "16:9", "720x1280": "9:16", "512x512": "1:1"}
         aspect_ratio = aspect_map.get(req.size, "1:1")
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/{gemini_model}:generateImages"
+        # Imagen 3/4 uses :predict endpoint with Vertex-style payload
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{gemini_model}:predict"
         payload_gemini = {
-            "prompt": {"text": req.prompt},
-            "number_of_images": req.n,
-            "aspect_ratio": aspect_ratio,
+            "instances": [{"prompt": req.prompt}],
+            "parameters": {"sampleCount": req.n, "aspectRatio": aspect_ratio},
         }
         async with httpx.AsyncClient(timeout=180.0) as client:
             r = await client.post(url, params={"key": gemini_key}, json=payload_gemini)
             if r.status_code >= 400:
-                raise HTTPException(status_code=r.status_code, detail=f"Gemini Imagen error: {r.text}")
+                try:
+                    err_msg = r.json().get("error", {}).get("message", r.text)
+                except Exception:
+                    err_msg = r.text or f"HTTP {r.status_code}"
+                # Paid plan gate — give friendly message
+                if "paid" in err_msg.lower() or "upgrade" in err_msg.lower() or "billing" in err_msg.lower():
+                    raise HTTPException(status_code=402,
+                        detail="Gemini Imagen erfordert einen bezahlten Google AI-Plan. Bitte upgraden unter https://ai.dev")
+                raise HTTPException(status_code=r.status_code, detail=f"Gemini Imagen error: {err_msg}")
             rdata = r.json()
-            # Extract base64 images
-            images = rdata.get("generatedImages") or rdata.get("images") or []
+            # :predict returns predictions[].bytesBase64Encoded
+            predictions = rdata.get("predictions") or []
             result_images = []
-            for img in images:
-                b64 = img.get("image", {}).get("imageBytes") or img.get("b64_json") or img.get("imageBytes", "")
+            for pred in predictions:
+                b64 = pred.get("bytesBase64Encoded") or pred.get("image", {}).get("imageBytes") or pred.get("imageBytes", "")
                 if b64:
                     result_images.append({"b64_json": b64, "content_type": "image/png"})
+            if not result_images:
+                raise HTTPException(status_code=500, detail=f"Gemini Imagen: keine Bilder in Antwort. Raw: {str(rdata)[:300]}")
             return {"ok": True, "mode": "media_image", "provider": "google",
-                    "result": {"data": result_images, "raw": rdata}}
+                    "result": {"data": result_images}}
 
     # Internal txt2img path (SD, ComfyUI, FLUX via together, etc.)
     base = _base_url()
@@ -318,12 +339,68 @@ async def _video_proxy(req: VideoRequest) -> Dict[str, Any]:
                 raise HTTPException(status_code=r.status_code, detail=r.text)
             return {"ok": True, "mode": "media_video", "provider": "openai", "result": r.json()}
 
-    # Gemini Veo — no internal adapter yet, honest error
+    # Gemini Veo — Google AI API (long-running operation + polling)
     if "veo" in m:
-        raise HTTPException(
-            status_code=501,
-            detail="Gemini Veo video generation not yet wired internally. Provider: google. Adapter: pending."
-        )
+        key = os.environ.get("GOOGLE_AI_STUDIO_KEY") or os.environ.get("GEMINI_API_KEY")
+        if not key:
+            raise HTTPException(status_code=400, detail="GOOGLE_AI_STUDIO_KEY fehlt für Gemini Veo")
+        size_clean = req.size.replace("\u00d7", "x").replace("×", "x").replace(" ", "")
+        parts = size_clean.split("x")
+        width, height = (int(parts[0]), int(parts[1])) if len(parts) == 2 else (1280, 720)
+        payload = {
+            "model": req.model,
+            "prompt": req.prompt,
+            "config": {
+                "durationSeconds": req.seconds,
+                "aspectRatio": f"{width}:{height}",
+                "numberOfVideos": 1,
+            }
+        }
+        async with httpx.AsyncClient(timeout=300.0) as client:
+            r = await client.post(
+                f"https://generativelanguage.googleapis.com/v1beta/models/{req.model}:generateVideo",
+                params={"key": key},
+                json=payload
+            )
+            try:
+                rdata = r.json()
+            except Exception:
+                rdata = {}
+            if r.status_code >= 400:
+                err_msg = rdata.get("error", {}).get("message", "") or r.text[:300]
+                if any(x in err_msg.lower() for x in ["paid", "billing", "upgrade", "quota", "permission"]):
+                    raise HTTPException(
+                        status_code=402,
+                        detail="Gemini Veo erfordert einen bezahlten Google AI-Plan. Bitte upgraden unter https://ai.dev"
+                    )
+                raise HTTPException(status_code=r.status_code, detail=f"Veo API Fehler: {err_msg}")
+            op_name = rdata.get("name", "")
+            if not op_name:
+                raise HTTPException(status_code=500, detail=f"Veo: kein operation name. Response: {str(rdata)[:300]}")
+            import asyncio as _asyncio
+            for _ in range(24):  # 24 × 5s = 120s
+                await _asyncio.sleep(5)
+                poll = await client.get(
+                    f"https://generativelanguage.googleapis.com/v1beta/{op_name}",
+                    params={"key": key}
+                )
+                poll_data = poll.json() if poll.status_code == 200 else {}
+                if poll_data.get("done"):
+                    resp_data = poll_data.get("response", {})
+                    videos = resp_data.get("generatedVideos", [])
+                    if not videos:
+                        raise HTTPException(status_code=500, detail=f"Veo: keine Videos. Raw: {str(poll_data)[:300]}")
+                    video_uri = videos[0].get("video", {}).get("uri", "")
+                    if not video_uri:
+                        raise HTTPException(status_code=500, detail="Veo: kein video URI")
+                    dl = await client.get(video_uri, params={"key": key})
+                    import base64 as _b64
+                    b64 = _b64.b64encode(dl.content).decode()
+                    return {
+                        "ok": True, "mode": "media_video", "provider": "google",
+                        "result": {"data": [{"b64_json": b64, "content_type": "video/mp4"}]}
+                    }
+            raise HTTPException(status_code=504, detail="Veo: Timeout beim Polling (>120s)")
 
     raise HTTPException(
         status_code=400,
