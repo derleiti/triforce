@@ -343,3 +343,53 @@ async def media_image(req: ImageRequest) -> Dict[str, Any]:
 @router.post("/media/video")
 async def media_video(req: VideoRequest) -> Dict[str, Any]:
     return await _video_proxy(req)
+
+@router.get("/downloads")
+async def downloads() -> Dict[str, Any]:
+    """Return available client downloads with metadata."""
+    import glob, os as _os
+    base = _os.path.dirname(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+    deploy_dir = _os.path.join(base, "client-deploy")
+    latest_dir = _os.path.join(base, "client-releases", "latest")
+
+    # Read version info
+    def _read(p: str) -> str:
+        try:
+            return open(p).read().strip()
+        except Exception:
+            return ""
+
+    version = _read(_os.path.join(latest_dir, "VERSION")) or "4.3.6"
+    build_date = _read(_os.path.join(latest_dir, "BUILD_DATE")) or ""
+
+    files = []
+    total_bytes = 0
+    # Scan latest .deb
+    for pattern in ["*.deb", "*.apk", "*.exe"]:
+        for fp in sorted(glob.glob(_os.path.join(deploy_dir, pattern))):
+            fname = _os.path.basename(fp)
+            size = _os.path.getsize(fp)
+            total_bytes += size
+            ext = fname.rsplit(".", 1)[-1].upper()
+            platform = "Linux" if ext == "DEB" else ("Android" if ext == "APK" else "Windows")
+            files.append({
+                "name": fname,
+                "platform": platform,
+                "size": size,
+                "version": version,
+                "url": f"/downloads/{fname}",
+            })
+
+    # Newest first
+    files.sort(key=lambda x: x["name"], reverse=True)
+    # Only latest per platform
+    seen = set()
+    unique = []
+    for f in files:
+        key = (f["platform"], f["version"])
+        if key not in seen:
+            seen.add(key)
+            unique.append(f)
+
+    return {"ok": True, "version": version, "build_date": build_date, "files": unique, "total_bytes": total_bytes}
+
