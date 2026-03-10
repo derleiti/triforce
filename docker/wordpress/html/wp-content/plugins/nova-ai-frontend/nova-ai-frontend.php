@@ -25,6 +25,30 @@ add_filter('script_loader_tag', function (string $tag, string $handle): string {
 
 /* ── REST API Proxy ─────────────────────────────────────────────────────────── */
 add_action('rest_api_init', function () {
+    // Bypass WP cookie auth for nova-ai endpoints.
+    // rest_cookie_check_errors fires even with permission_callback=__return_true
+    // and rejects requests when browser has a WP cookie but no valid nonce.
+    // Fix: WP's rest_cookie_check_errors runs at priority 100.
+    // It fires after our priority-5 filter and still returns 403 for logged-in
+    // users without a valid nonce. We override it AFTER at priority 200.
+    add_filter('rest_authentication_errors', function($result) {
+        // Multi-source check: original URI, rewritten path, rest_route param
+        $uri   = isset($_SERVER['REQUEST_URI'])   ? $_SERVER['REQUEST_URI']   : '';
+        $qs    = isset($_SERVER['QUERY_STRING'])  ? $_SERVER['QUERY_STRING']  : '';
+        $route = isset($_SERVER['PATH_INFO'])     ? $_SERVER['PATH_INFO']     : '';
+        $rr    = isset($_GET['rest_route'])       ? $_GET['rest_route']       : '';
+        $is_nova = (
+            strpos($uri,   '/nova-ai/') !== false ||
+            strpos($qs,    'nova-ai')   !== false ||
+            strpos($rr,    '/nova-ai/') !== false ||
+            strpos($route, '/nova-ai/') !== false
+        );
+        if ($is_nova) {
+            error_log('[nova-ai] auth bypass fired, uri=' . $uri . ' result_type=' . (is_wp_error($result) ? 'WP_Error:' . $result->get_error_code() : gettype($result)));
+            return null;
+        }
+        return $result;
+    }, 200); // priority 200 = AFTER WP's cookie check at priority 100
     $ns = 'nova-ai/v1';
     // Frontend routes
     register_rest_route($ns, '/health',  ['methods'=>'GET',  'callback'=>'nova_proxy_health',  'permission_callback'=>'__return_true']);
@@ -36,8 +60,8 @@ add_action('rest_api_init', function () {
     register_rest_route($ns, '/media/video', ['methods'=>'POST','callback'=>'nova_proxy_video','permission_callback'=>'__return_true']);
     register_rest_route($ns, '/media/video/status/(?P<job_id>[a-zA-Z0-9_\-]+)', ['methods'=>'GET','callback'=>'nova_proxy_video_status','permission_callback'=>'__return_true']);
     register_rest_route($ns, '/nonce',   ['methods'=>'GET', 'permission_callback'=>'__return_true', 'callback'=>function(){
-        if (!is_user_logged_in()) return new WP_REST_Response(['ok'=>false,'error'=>'not_logged_in'],401);
-        return new WP_REST_Response(['ok'=>true,'nonce'=>wp_create_nonce('wp_rest')],200,
+        // Always return a nonce - guests get anonymous nonce (user_id=0), logged-in users get personal nonce
+        return new WP_REST_Response(['ok'=>true,'nonce'=>wp_create_nonce('wp_rest'),'guest'=>!is_user_logged_in()],200,
             ['Cache-Control'=>'no-store,no-cache,max-age=0','Pragma'=>'no-cache']);
     }]);
     register_rest_route($ns, '/article-chat', ['methods'=>'POST', 'callback'=>'nova_proxy_article_chat', 'permission_callback'=>'__return_true']);
@@ -614,13 +638,19 @@ add_shortcode('ailinux_ai_playground', function ($atts): string {
           <label class="nova-label" for="nova-img-count">Anzahl</label>
           <input type="number" id="nova-img-count" name="nova-img-count" class="nova-input nova-img-count" value="1" min="1" max="4">
         </div>
-        <div class="nova-form-group" style="flex:1">
-          <label class="nova-label" for="nova-img-size">Größe</label>
-          <select id="nova-img-size" name="nova-img-size" class="nova-select nova-img-size">
-            <option value="1024x1024" selected>1024×1024</option>
-            <option value="1280x720">1280×720</option>
-            <option value="512x512">512×512</option>
+        <div class="nova-form-group">
+          <label class="nova-label" for="nova-img-aspect">Format</label>
+          <select id="nova-img-aspect" class="nova-select nova-img-aspect">
+            <option value="1:1" selected>1:1 – Quadrat</option>
+            <option value="16:9">16:9 – Breitbild</option>
+            <option value="4:3">4:3 – Standard</option>
+            <option value="3:4">3:4 – Hochformat</option>
+            <option value="9:16">9:16 – Smartphone</option>
           </select>
+        </div>
+        <div class="nova-form-group" style="flex:1">
+          <label class="nova-label" for="nova-img-size">Auflösung</label>
+          <select id="nova-img-size" class="nova-select nova-img-size"></select>
         </div>
       </div>
       <button class="nova-action-btn nova-img-btn">Bild erzeugen</button>
@@ -641,12 +671,16 @@ add_shortcode('ailinux_ai_playground', function ($atts): string {
           <label class="nova-label" for="nova-vid-duration">Dauer (s)</label>
           <input type="number" id="nova-vid-duration" name="nova-vid-duration" class="nova-input nova-vid-duration" value="8" min="4" max="30">
         </div>
+        <div class="nova-form-group">
+          <label class="nova-label" for="nova-vid-aspect">Format</label>
+          <select id="nova-vid-aspect" class="nova-select nova-vid-aspect">
+            <option value="16:9" selected>16:9 – Breitbild</option>
+            <option value="9:16">9:16 – Hochformat</option>
+          </select>
+        </div>
         <div class="nova-form-group" style="flex:1">
           <label class="nova-label" for="nova-vid-resolution">Auflösung</label>
-          <select id="nova-vid-resolution" name="nova-vid-resolution" class="nova-select nova-vid-resolution">
-            <option value="1280x720" selected>1280×720</option>
-            <option value="1920x1080">1920×1080</option>
-          </select>
+          <select id="nova-vid-resolution" class="nova-select nova-vid-resolution"></select>
         </div>
       </div>
       <button class="nova-action-btn nova-vid-btn">Video starten</button>

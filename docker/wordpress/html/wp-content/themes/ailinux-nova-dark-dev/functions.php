@@ -162,13 +162,9 @@ function ailinux_nova_dark_enqueue_assets() {
          true
      );
 
-     wp_enqueue_script(
-         'ailinux-nova-dark-webgpu',
-         AILINUX_NOVA_DARK_URI . '/dist/webgpu.js',
-         [],
-         ailinux_nova_dark_get_asset_version( '/dist/webgpu.js' ),
-         true
-     );
+     // webgpu.js dequeued: ES module (export statement) breaks Rocket Loader,
+     // and the module is not referenced anywhere in the active theme.
+     // wp_dequeue_script( 'ailinux-nova-dark-webgpu' ); // already not enqueued
 
     // API-Basis konfigurierbar (Customizer) + für JS verfügbar machen
     $api_base = trim(get_theme_mod('ailinux_nova_dark_api_base', 'https://api.ailinux.me'));
@@ -798,6 +794,11 @@ add_filter('script_loader_tag', function ($tag, $handle, $src) {
     if (in_array($handle, $handles, true)) {
         $tag = str_replace('<script ', '<script nonce="' . esc_attr(AILINUX_CSP_NONCE) . '" ', $tag);
     }
+    // webgpu.js is an ES module - must have type="module" or Rocket Loader breaks it
+    if ($handle === 'ailinux-nova-dark-webgpu') {
+        $tag = str_replace(' type="text/javascript"', '', $tag);
+        $tag = str_replace('<script ', '<script type="module" data-cfasync="false" ', $tag);
+    }
     return $tag;
 }, 10, 3);
 
@@ -1078,3 +1079,9 @@ add_action( 'wp_footer', function () {
 </script>
     <?php
 }, 99 );
+
+// webgpu.js dequeue: ES Module breaks Rocket Loader. Not used in theme. Remove completely.
+add_action('wp_enqueue_scripts', function() {
+    wp_dequeue_script('ailinux-nova-dark-webgpu');
+    wp_deregister_script('ailinux-nova-dark-webgpu');
+}, 99);
