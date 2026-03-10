@@ -7,7 +7,7 @@ import re
 from typing import Any, Dict, List, Optional
 
 import httpx
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 from pydantic import BaseModel
 
 # BUG-005 FIX 2026-03-10: prefix /v1 wird jetzt konsistent über main.py gesetzt
@@ -631,6 +631,24 @@ async def vision(req: VisionRequest) -> Dict[str, Any]:
     if not req.image_url and not req.image_base64:
         raise HTTPException(status_code=400, detail="image_url or image_base64 required")
     result = await _vision_proxy(req.model, req.prompt, req.image_url, req.image_base64, req.mime_type)
+    return {"ok": True, "mode": "vision", "raw": result}
+
+
+@router.post("/vision-upload")
+async def vision_upload(
+    model: str = Form(""),
+    prompt: str = Form("Beschreibe dieses Bild detailliert."),
+    image_file: UploadFile = File(...),
+) -> Dict[str, Any]:
+    """Multipart file upload endpoint for vision analysis."""
+    import base64 as _b64
+    raw_bytes = await image_file.read()
+    mime = image_file.content_type or "image/jpeg"
+    if mime not in ("image/jpeg", "image/png", "image/gif", "image/webp"):
+        mime = "image/jpeg"
+    b64 = _b64.b64encode(raw_bytes).decode()
+    mdl = model or "gemini/gemini-2.5-flash"
+    result = await _vision_proxy(mdl, prompt, None, b64, mime)
     return {"ok": True, "mode": "vision", "raw": result}
 
 @router.post("/media/image")
