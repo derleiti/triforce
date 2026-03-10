@@ -29,6 +29,7 @@ ANTHROPIC_VISION_ALIASES = {
     "anthropic/claude-3.5-haiku": "claude-3-5-haiku-20241022",
     "anthropic/claude-3-opus": "claude-3-opus-20240229",
     "anthropic/claude-3-sonnet": "claude-3-sonnet-20240229",
+    "anthropic/claude-3-haiku": "claude-3-haiku-20240307",
     "anthropic/claude": "claude-sonnet-4-20250514",
     "claude": "claude-sonnet-4-20250514",
 }
