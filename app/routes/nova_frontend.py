@@ -26,7 +26,9 @@ def _pick(d: Dict[str, Any], *keys: str, default=None):
 
 class ChatRequest(BaseModel):
     model: str
-    message: str
+    # Accept single-turn (message: str) OR multi-turn (messages: list) from JS
+    message: str = ""
+    messages: Optional[List[Dict[str, Any]]] = None
     system: str = ""
     temperature: float = 0.4
     max_tokens: int = 1200
@@ -299,10 +301,20 @@ async def models() -> Dict[str, Any]:
 
 @router.post("/chat")
 async def chat(req: ChatRequest) -> Dict[str, Any]:
-    messages = []
-    if req.system.strip():
-        messages.append({"role": "system", "content": req.system.strip()})
-    messages.append({"role": "user", "content": req.message})
+    # Build messages: prefer req.messages[] (multi-turn from JS), fall back to req.message string
+    if req.messages:
+        messages = list(req.messages)
+        # Prepend system prompt if provided and not already in messages
+        if req.system.strip() and (not messages or messages[0].get("role") != "system"):
+            messages.insert(0, {"role": "system", "content": req.system.strip()})
+    else:
+        if not req.message:
+            from fastapi import HTTPException
+            raise HTTPException(status_code=422, detail="Either 'message' or 'messages' required")
+        messages = []
+        if req.system.strip():
+            messages.append({"role": "system", "content": req.system.strip()})
+        messages.append({"role": "user", "content": req.message})
     raw = await _chat_proxy({
         "model": req.model,
         "messages": messages,
@@ -310,7 +322,12 @@ async def chat(req: ChatRequest) -> Dict[str, Any]:
         "max_tokens": req.max_tokens,
         "stream": False,
     })
-    return {"ok": True, "mode": "chat", "raw": raw}
+    # Normalize response: extract text from raw
+    text = None
+    if isinstance(raw, dict):
+        text = (raw.get("text") or raw.get("content") or raw.get("response")
+                or (raw.get("choices") or [{}])[0].get("message", {}).get("content"))
+    return {"ok": True, "mode": "chat", "content": text or str(raw), "raw": raw}
 
 @router.post("/vision")
 async def vision(req: VisionRequest) -> Dict[str, Any]:
