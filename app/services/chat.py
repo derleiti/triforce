@@ -13,7 +13,13 @@ from fastapi import HTTPException
 from pydantic import AnyHttpUrl
 
 from ..utils.http_client import HttpClient
-import google.generativeai as genai
+# BUG-015 FIX 2026-03-10: Optional import — verhindert Startup-Crash wenn Paket fehlt
+try:
+    import google.generativeai as genai
+    _HAS_GENAI = True
+except ImportError:
+    genai = None  # type: ignore
+    _HAS_GENAI = False
 
 from ..config import get_settings
 from ..services.model_registry import ModelInfo

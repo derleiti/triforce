@@ -1,4 +1,5 @@
 # app/routes/user_api.py
+import os
 import secrets
 """
 AILinux User API Routes
@@ -18,6 +19,10 @@ from typing import Optional, Dict, Any, List
 from datetime import datetime
 import hashlib
 import hmac
+
+# BUG-012 FIX 2026-03-10: JWT_SECRET als Modul-Level-Variable (einmalig beim Import)
+# secrets.token_hex(32) wird NUR beim Modul-Import aufgerufen, nicht pro Request
+_JWT_SECRET_MODULE = os.environ.get("JWT_SECRET") or secrets.token_hex(32)
 import logging
 
 from ..services.user_system.user_manager import (
@@ -75,9 +80,16 @@ class WebhookPayload(BaseModel):
 # ============================================================================
 
 def _get_webhook_secret() -> str:
-    """Lädt Webhook Secret aus Environment"""
+    """Lädt Webhook Secret aus Environment. Gibt WARNING wenn nicht gesetzt."""
     import os
-    return os.environ.get("AILINUX_WEBHOOK_SECRET", "ailinux-webhook-secret-change-me")
+    import logging as _log
+    secret = os.environ.get("AILINUX_WEBHOOK_SECRET")
+    if not secret:
+        _log.getLogger("ailinux.user_api").warning(
+            "AILINUX_WEBHOOK_SECRET not set — webhook signature verification disabled (all requests rejected)"
+        )
+        return ""  # leerer String → compare_digest schlägt immer fehl → kein Accept
+    return secret
 
 async def verify_webhook_signature(request: Request, x_webhook_signature: str = Header(None)) -> bool:
     """
@@ -451,7 +463,7 @@ async def get_auth_token(
     import base64
     import json
 
-    jwt_secret = os.environ.get("JWT_SECRET", secrets.token_hex(32))
+    jwt_secret = _JWT_SECRET_MODULE  # BUG-012 FIX: Modul-Level, nicht per-Request
     expires_in = 3600  # 1 Stunde
 
     # JWT Header

@@ -1829,36 +1829,7 @@ async def _patched_cc(a):
         return {"action": act, **(await _run(cmd))}
     return await _orig_cc(a)
 STRUCTURED_ADMIN_HANDLERS["container_control"] = _patched_cc
-
-# Read-Only Wrappers
-async def handle_binary_list(a):
-    return await handle_binary_exec({"action": "list"})
-async def handle_template_list(a):
-    return await handle_custom_exec({"action": "list"})
-async def handle_task_reference(a):
-    action = a.get("action", "quick_reference")
-    if action not in ("quick_reference", "encode", "decode"):
-        return {"error": f"task_reference: only quick_reference/encode/decode. Got: {action}"}
-    return await handle_task_runner({**a, "action": action})
-
-STRUCTURED_ADMIN_TOOLS.extend([
-    {"name": "binary_list", "description": "List available system programs (read-only).",
-     "inputSchema": {"type": "object", "properties": {}, "required": []},
-     "annotations": {"title": "Binary Inventory", "readOnlyHint": True, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False}},
-    {"name": "template_list", "description": "List command templates (read-only).",
-     "inputSchema": {"type": "object", "properties": {}, "required": []},
-     "annotations": {"title": "Templates", "readOnlyHint": True, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False}},
-    {"name": "task_reference", "description": "Pre-encoded commands, encode/decode (read-only).",
-     "inputSchema": {"type": "object", "properties": {
-         "action": {"type": "string", "enum": ["quick_reference", "encode", "decode"]},
-         "text": {"type": "string"}, "format": {"type": "string", "enum": ["b64", "hex", "rot"]},
-         "task_data": {"type": "string"},
-     }, "required": ["action"]},
-     "annotations": {"title": "Task Reference", "readOnlyHint": True, "destructiveHint": False, "idempotentHint": True, "openWorldHint": False}},
-])
-STRUCTURED_ADMIN_HANDLERS.update({
-    "binary_list": handle_binary_list,
-    "template_list": handle_template_list,
-    "task_reference": handle_task_reference,
-})
+# BUG-008 FIX 2026-03-10: Doppelte Definitionen entfernt — handle_binary_list,
+# handle_template_list, handle_task_reference bereits oben (v2.86 Wrappers) definiert.
+# Zweiter STRUCTURED_ADMIN_TOOLS.extend() und STRUCTURED_ADMIN_HANDLERS.update() entfernt.
 logger.info(f"PATCH v2.86 applied: {len(STRUCTURED_ADMIN_TOOLS)} tools total")

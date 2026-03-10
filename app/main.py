@@ -47,6 +47,9 @@ from .routes.federation import router as federation_router
 from .routes.nova_frontend import router as nova_frontend_router
 # BUG-006 FIX 2026-03-10: user_api war nie in main.py registriert
 from .routes.user_api import router as user_api_router
+# BUG-013 FIX 2026-03-10: support + tiers waren definiert aber nie registriert
+from .routes.support import router as support_router
+from .routes.tiers import router as tiers_router
 
 # Import routers from the top-level app directory
 from .routes_sd3 import router as sd3_router
@@ -453,6 +456,9 @@ def create_app() -> FastAPI:
     app.include_router(client_logs_router, tags=["Client Logs"])
     app.include_router(client_ai_search_router, prefix="/v1", tags=["Client AI Search"])
     app.include_router(federation_router, prefix="/v1", tags=["Federation"])
+    # BUG-013 FIX 2026-03-10: support + tiers Routen registriert
+    app.include_router(support_router, prefix="/v1", tags=["Support"])
+    app.include_router(tiers_router, prefix="/v1", tags=["Tiers"])
 
     # Import and include txt2img router
     try:

@@ -356,7 +356,8 @@ async def downloads() -> Dict[str, Any]:
     # Read version info
     def _read(p: str) -> str:
         try:
-            return open(p).read().strip()
+            with open(p) as _f:
+                return _f.read().strip()
         except Exception:
             return ""
 
