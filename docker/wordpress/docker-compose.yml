@@ -91,7 +91,8 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
       - ${WP_DB_DATA_VOLUME:-wp_db_data}:/var/lib/mysql
-      - ${WP_DB_CUSTOM_CNF:-./mysql/custom.cnf}:/etc/mysql/conf.d/custom.cnf
+      - ${WP_DB_CUSTOM_CNF:-./mysql/custom.cnf}:/etc/mysql/conf.d/custom.cnf:ro
+      - ./mysql/conf.d:/etc/mysql/conf.d/extra:ro
     healthcheck:
       test: ["CMD-SHELL", "MYSQL_PWD=\"${MYSQL_ROOT_PASSWORD}\" mariadb-admin ping -h 127.0.0.1 -uroot --silent"]
       interval: ${WP_DB_HEALTHCHECK_INTERVAL:-10s}
@@ -101,21 +102,33 @@ services:
     networks:
       - ${WP_NETWORK:-wordpress-network}
     restart: ${WP_RESTART_POLICY:-unless-stopped}
+    logging: *default_logging
 
   wordpress_redis:
     image: ${WP_REDIS_IMAGE:-redis:alpine}
     container_name: ${WP_REDIS_CONTAINER_NAME:-wordpress_redis}
     environment:
       REDIS_PASSWORD: ${WP_REDIS_PASSWORD:-}
-    command: ["sh", "-lc", "if [ -n \"${REDIS_PASSWORD}\" ]; then exec redis-server --requirepass \"${REDIS_PASSWORD}\"; else exec redis-server; fi"]
+    command: >
+      sh -c "
+        if [ -n \"$$REDIS_PASSWORD\" ]; then
+          exec redis-server /etc/redis/redis.conf --requirepass \"$$REDIS_PASSWORD\"
+        else
+          exec redis-server /etc/redis/redis.conf
+        fi
+      "
     healthcheck:
-      test: ["CMD-SHELL", "if [ -n \"${REDIS_PASSWORD}\" ]; then redis-cli -a \"${REDIS_PASSWORD}\" ping; else redis-cli ping; fi"]
+      test: ["CMD-SHELL", "if [ -n \"$$REDIS_PASSWORD\" ]; then redis-cli -a \"$$REDIS_PASSWORD\" ping | grep -q PONG; else redis-cli ping | grep -q PONG; fi"]
       interval: ${WP_REDIS_HEALTHCHECK_INTERVAL:-30s}
       timeout: ${WP_REDIS_HEALTHCHECK_TIMEOUT:-10s}
       retries: ${WP_REDIS_HEALTHCHECK_RETRIES:-5}
+    volumes:
+      - ./redis/redis-optimized.conf:/etc/redis/redis.conf:ro
+      - ${WP_REDIS_DATA_VOLUME:-wp_redis_data}:/data
     networks:
       - ${WP_NETWORK:-wordpress-network}
     restart: ${WP_RESTART_POLICY:-unless-stopped}
+    logging: *default_logging
 
   wpcli:
     image: ${WP_CLI_IMAGE:-wordpress:cli}
