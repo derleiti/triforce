@@ -363,7 +363,7 @@ async def _download_image(url: str) -> Tuple[str, bytes]:
     timeout = httpx.Timeout(settings.request_timeout)
     try:
         async with httpx.AsyncClient(timeout=timeout) as client:
-            response = await client.get(url)
+            response = await client.get(url, follow_redirects=True)
             response.raise_for_status()
 
             content_length = response.headers.get("Content-Length")
