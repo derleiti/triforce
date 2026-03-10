@@ -6,7 +6,7 @@ from __future__ import annotations
 PROVIDER_PREFIXES = (
     "ollama/", "gemini/", "mistral/", "anthropic/", "groq/", 
     "cerebras/", "cohere/", "openrouter/", "together/", 
-    "fireworks/", "cloudflare/", "gpt-oss/"
+    "fireworks/", "cloudflare/", "gpt-oss/", "github/"
 )
 
 # Default fallback model

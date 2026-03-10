@@ -178,6 +178,15 @@ OPENAI_COMPATIBLE_PROVIDERS = {
             "X-Title": "AILinux TriForce",
         },
     },
+    # GitHub Models (OpenAI-compatible, uses Azure inference endpoint)
+    # NOTE: Requires GitHub fine-grained PAT with "Models" permission
+    # Classic PATs (ghp_) also work; fine-grained PATs need "Models" scope
+    "github": {
+        "base_url": "https://models.inference.ai.azure.com",
+        "api_key_setting": "github_token",
+        "timeout_setting": "groq_timeout_ms",  # reuse a sane ms timeout
+        "headers": {},
+    },
 }
 
 UNCERTAINTY_PHRASES = [
