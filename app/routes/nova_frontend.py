@@ -374,6 +374,89 @@ async def _image_proxy(req: ImageRequest) -> Dict[str, Any]:
             return {"ok": True, "mode": "media_image", "provider": "google",
                     "result": {"data": result_images}}
 
+    # ── Cloudflare Workers AI image path ──────────────────────────────────────
+    if m.startswith("cloudflare/@cf/"):
+        import os as _os
+        cf_account = _os.getenv("CLOUDFLARE_ACCOUNT_ID", "")
+        cf_token   = _os.getenv("CLOUDFLARE_API_TOKEN", "")
+        if not cf_account or not cf_token:
+            raise HTTPException(status_code=503, detail="Cloudflare Workers AI nicht konfiguriert (CLOUDFLARE_ACCOUNT_ID/CLOUDFLARE_API_TOKEN fehlen)")
+        # Modell-ID ohne "cloudflare/" prefix
+        cf_model = req.model[len("cloudflare/"):]  # z.B. @cf/black-forest-labs/flux-1-schnell
+        cf_url = f"https://api.cloudflare.com/client/v4/accounts/{cf_account}/ai/run/{cf_model}"
+        # CF Workers AI: POST {"prompt": ..., "num_steps": 4}
+        # Size → width/height
+        _w, _h = (1024, 1024)
+        if req.size and "x" in req.size:
+            try:
+                _parts = req.size.split("x")
+                _w, _h = int(_parts[0]), int(_parts[1])
+            except Exception:
+                pass
+        cf_payload = {"prompt": req.prompt, "num_steps": 8, "width": _w, "height": _h}
+        cf_headers = {"Authorization": f"Bearer {cf_token}", "Content-Type": "application/json"}
+        async with httpx.AsyncClient(timeout=120.0) as client:
+            r = await client.post(cf_url, json=cf_payload, headers=cf_headers)
+            if r.status_code >= 400:
+                try:
+                    err_body = r.json()
+                    err_msg = str(err_body.get("errors", err_body))[:200]
+                except Exception:
+                    err_msg = r.text[:200]
+                raise HTTPException(status_code=r.status_code,
+                    detail=f"Cloudflare Workers AI Fehler: {err_msg}")
+            # CF returns raw image bytes (PNG) directly
+            img_bytes = r.content
+            import base64 as _b64
+            b64_data = _b64.b64encode(img_bytes).decode()
+            return {"ok": True, "mode": "media_image", "provider": "cloudflare",
+                    "result": {"data": [{"b64_json": b64_data, "content_type": "image/png"}]}}
+
+    # ── OpenRouter image generation path ──────────────────────────────────────
+    if m.startswith("openrouter/"):
+        import os as _os
+        or_key = _os.getenv("OPENROUTER_API_KEY", "")
+        if not or_key:
+            raise HTTPException(status_code=503, detail="OpenRouter API Key fehlt (OPENROUTER_API_KEY)")
+        # OpenRouter model-ID ohne "openrouter/" prefix
+        or_model = req.model[len("openrouter/"):]  # z.B. google/gemini-3.1-flash-image-preview
+        # OpenRouter unterstützt images/generations (OpenAI-kompatibel)
+        or_url = "https://openrouter.ai/api/v1/images/generations"
+        _size = req.size or "1024x1024"
+        or_payload = {
+            "model": or_model,
+            "prompt": req.prompt,
+            "n": req.n or 1,
+            "size": _size,
+            "response_format": "b64_json",
+        }
+        or_headers = {
+            "Authorization": f"Bearer {or_key}",
+            "Content-Type": "application/json",
+            "HTTP-Referer": "https://ailinux.me",
+            "X-Title": "AILinux TriForce",
+        }
+        async with httpx.AsyncClient(timeout=180.0) as client:
+            r = await client.post(or_url, json=or_payload, headers=or_headers)
+            if r.status_code >= 400:
+                try:
+                    err_body = r.json()
+                    err_msg = err_body.get("error", {}).get("message", str(err_body))[:200]
+                except Exception:
+                    err_msg = r.text[:200]
+                if r.status_code == 402:
+                    raise HTTPException(status_code=402,
+                        detail=f"OpenRouter Bild-Generierung: Guthaben erschöpft oder Modell kostenpflichtig. Fehler: {err_msg}")
+                raise HTTPException(status_code=r.status_code,
+                    detail=f"OpenRouter Bild-Generierung Fehler: {err_msg}")
+            rdata = r.json()
+            images = rdata.get("data", [])
+            if not images:
+                raise HTTPException(status_code=500,
+                    detail=f"OpenRouter: keine Bilder zurückgegeben. Raw: {str(rdata)[:200]}")
+            return {"ok": True, "mode": "media_image", "provider": "openrouter",
+                    "result": {"data": images}}
+
     # Internal txt2img path (SD, ComfyUI, FLUX via together, etc.)
     base = _base_url()
     payload = {"prompt": req.prompt, "model": req.model, "size": req.size, "n": req.n}
@@ -386,8 +469,8 @@ async def _image_proxy(req: ImageRequest) -> Dict[str, Any]:
         if r2.status_code == 200:
             return {"ok": True, "mode": "media_image", "provider": "internal_sd3", "result": r2.json()}
         raise HTTPException(
-            status_code=r.status_code,
-            detail=f"image generation not wired for model: {req.model} (tried txt2img + images/generate)"
+            status_code=503,
+            detail=f"Bild-Generierung für Modell '{req.model}' nicht verfügbar. Bitte ein anderes Modell wählen."
         )
 
 async def _video_proxy(req: VideoRequest) -> Dict[str, Any]:
