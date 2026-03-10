@@ -3076,7 +3076,14 @@ async def handle_codebase_search(params: Dict[str, Any]) -> Dict[str, Any]:
         raise ValueError(f"Path not found: {path}")
 
     results = []
-    pattern = re.compile(query, re.IGNORECASE)
+    # SECURITY: validate user-supplied regex to prevent ReDoS (CWE-730 / CodeQL py/regex-injection)
+    try:
+        pattern = re.compile(query, re.IGNORECASE)
+        # Reject patterns with excessive quantifier nesting (ReDoS heuristic)
+        if len(query) > 200 or query.count("(") > 10:
+            raise ValueError("Query too complex")
+    except re.error as _re_err:
+        raise ValueError(f"Invalid regex pattern: {_re_err}") from None
 
     # PATCH v2.82: code_search hardening — ignore mirrors/repos/build artifacts
     _IGNORE_DIRS = {".git", "node_modules", "__pycache__", ".venv", "venv",

@@ -130,9 +130,10 @@ async def compute_status():
         }, status_code=status.HTTP_200_OK)
 
     except Exception as e:
-        logger.error(f"Compute status failed: {e}")
+        logger.error(f"Compute status failed: {e}", exc_info=True)  # full trace in logs only
         return JSONResponse(
-            content={"error": str(e)},
+            # SECURITY: do not expose exception details externally (CWE-209 / CodeQL py/stack-trace-exposure)
+            content={"error": "Internal server error"},
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 

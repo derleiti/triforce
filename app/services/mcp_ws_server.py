@@ -410,7 +410,7 @@ class MCPMeshServer:
         import socket
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
-            sock.bind((MCP_WS_HOST, MCP_WS_PORT))
+            sock.bind((MCP_WS_HOST, MCP_WS_PORT))  # nosec B104 — intentional: MCP WebSocket must be reachable via Docker bridge + LAN
             sock.close()
         except OSError:
             sock.close()

@@ -400,11 +400,10 @@ def verify_signed_request(request: dict, secret: str = None, max_age: int = 300)
         else:
             node_id = data.get("node_id", "unknown") if isinstance(data, dict) else "unknown"
             logger.warning(
-                f"Signed request: signature mismatch from node={node_id}\n"
-                f"  psk_used={secret[:12]}...\n"
-                f"  expected={expected[:16]}...\n"
-                f"  got={signature[:16]}...\n"
-                f"  data_keys={list(data.keys()) if isinstance(data, dict) else type(data).__name__}"
+                f"Signed request: signature mismatch from node={node_id} "
+                f"(psk_hint={len(secret)}b, data_keys="
+                f"{list(data.keys()) if isinstance(data, dict) else type(data).__name__})"
+                # SECURITY: PSK/HMAC material removed from logs (CWE-312 / CodeQL py/clear-text-logging-sensitive-data)
             )
             return None
     except Exception as e:
