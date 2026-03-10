@@ -11,7 +11,7 @@ pydantic-settings==2.11.0
 
 # HTTP Clients & Async
 httpx[http2]==0.28.1
-aiohttp==3.12.14
+aiohttp==3.13.3
 aiofiles==25.1.0
 
 # Rate Limiting & Caching
@@ -25,9 +25,9 @@ openai==2.1.0
 mistralai==1.9.11  # Latest stable (Dec 2024)
 
 # Data Processing & Validation
-python-multipart==0.0.20
+python-multipart==0.0.22
 email-validator==2.3.0
-Pillow==11.3.0
+Pillow==12.1.1
 
 # Testing & Development
 pytest==8.4.2
