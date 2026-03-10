@@ -115,6 +115,10 @@ def _categorize(model: Dict[str, Any]) -> Dict[str, Any]:
                       "reranker", "embed", "stt", "tts", "transcribe", "guard", "classification",
                       "dreamshaper"]
     _is_blacklisted = any(x in blob for x in _img_blacklist)
+    # OpenRouter hat keine /images/generations API — openrouter/*-image Modelle nicht anzeigen
+    if provider == "openrouter" and any(x in blob for x in [
+            "flash-image", "pro-image", "gemini-3.1-flash-image", "gemini-3-pro-image"]):
+        _is_blacklisted = True
     if not _is_blacklisted and ("image_gen" in caps_list or any(x in blob for x in [
             "gpt-image", "dall-e", "imagen", "image generation", "text-to-image",
             "flux", "stable diffusion", "image_gen", "dreamshaper", "sdxl", "lucid-origin", "phoenix",
@@ -405,10 +409,25 @@ async def _image_proxy(req: ImageRequest) -> Dict[str, Any]:
                     err_msg = r.text[:200]
                 raise HTTPException(status_code=r.status_code,
                     detail=f"Cloudflare Workers AI Fehler: {err_msg}")
-            # CF returns raw image bytes (PNG) directly
-            img_bytes = r.content
+            # CF returns raw PNG bytes OR JSON depending on model
             import base64 as _b64
-            b64_data = _b64.b64encode(img_bytes).decode()
+            ct = r.headers.get("content-type", "")
+            if "json" in ct:
+                # Some CF models return JSON: {"result":{"image":"base64..."}} or {"image":"..."}
+                try:
+                    jbody = r.json()
+                    raw_b64 = (jbody.get("result", {}) or {}).get("image") or jbody.get("image", "")
+                    if not raw_b64:
+                        # Try: result is list or nested
+                        preds = jbody.get("result", jbody)
+                        if isinstance(preds, list) and preds:
+                            raw_b64 = preds[0].get("image", "")
+                    b64_data = raw_b64
+                except Exception:
+                    b64_data = _b64.b64encode(r.content).decode()
+            else:
+                # Raw PNG bytes (Flux, SDXL etc.)
+                b64_data = _b64.b64encode(r.content).decode()
             return {"ok": True, "mode": "media_image", "provider": "cloudflare",
                     "result": {"data": [{"b64_json": b64_data, "content_type": "image/png"}]}}
 
@@ -420,42 +439,17 @@ async def _image_proxy(req: ImageRequest) -> Dict[str, Any]:
             raise HTTPException(status_code=503, detail="OpenRouter API Key fehlt (OPENROUTER_API_KEY)")
         # OpenRouter model-ID ohne "openrouter/" prefix
         or_model = req.model[len("openrouter/"):]  # z.B. google/gemini-3.1-flash-image-preview
-        # OpenRouter unterstützt images/generations (OpenAI-kompatibel)
-        or_url = "https://openrouter.ai/api/v1/images/generations"
-        _size = req.size or "1024x1024"
-        or_payload = {
-            "model": or_model,
-            "prompt": req.prompt,
-            "n": req.n or 1,
-            "size": _size,
-            "response_format": "b64_json",
-        }
-        or_headers = {
-            "Authorization": f"Bearer {or_key}",
-            "Content-Type": "application/json",
-            "HTTP-Referer": "https://ailinux.me",
-            "X-Title": "AILinux TriForce",
-        }
-        async with httpx.AsyncClient(timeout=180.0) as client:
-            r = await client.post(or_url, json=or_payload, headers=or_headers)
-            if r.status_code >= 400:
-                try:
-                    err_body = r.json()
-                    err_msg = err_body.get("error", {}).get("message", str(err_body))[:200]
-                except Exception:
-                    err_msg = r.text[:200]
-                if r.status_code == 402:
-                    raise HTTPException(status_code=402,
-                        detail=f"OpenRouter Bild-Generierung: Guthaben erschöpft oder Modell kostenpflichtig. Fehler: {err_msg}")
-                raise HTTPException(status_code=r.status_code,
-                    detail=f"OpenRouter Bild-Generierung Fehler: {err_msg}")
-            rdata = r.json()
-            images = rdata.get("data", [])
-            if not images:
-                raise HTTPException(status_code=500,
-                    detail=f"OpenRouter: keine Bilder zurückgegeben. Raw: {str(rdata)[:200]}")
-            return {"ok": True, "mode": "media_image", "provider": "openrouter",
-                    "result": {"data": images}}
+        # OpenRouter hat keine dedizierte /images/generations API.
+        # Gemini-Image via OpenRouter läuft über /chat/completions mit generateContent-Semantik.
+        # Für direkte Bild-Generierung: Gemini native Pfad verwenden (gemini/* statt openrouter/*).
+        raise HTTPException(
+            status_code=501,
+            detail=(
+                f"OpenRouter unterstützt keine direkte Bild-Generierung für '{req.model}'. "
+                "Bitte das entsprechende Gemini-Modell direkt wählen, z.B. 'gemini/gemini-2.5-flash-image' "
+                "oder ein Cloudflare Flux-Modell."
+            )
+        )
 
     # Internal txt2img path (SD, ComfyUI, FLUX via together, etc.)
     base = _base_url()
