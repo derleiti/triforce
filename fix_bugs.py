@@ -9,7 +9,7 @@ wp_php = '/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai
 try:
     with open(wp_php, 'r') as f:
         c = f.read()
-    old = "    $args = ['method'=>$method, 'timeout'=>15, 'headers'=>[\n        'Content-Type'=>'application/json',\n        'Authorization'=>'Basic '.base64_encode('zombie:e9F8DuKbH-'),\n    ]];"
+    old = "    $args = ['method'=>$method, 'timeout'=>15, 'headers'=>[\n        'Content-Type'=>'application/json',\n        'Authorization'=>'Basic '.base64_encode('zombie:JxBWta21vGyMEiPc9Trbn1HlN7KV'),\n    ]];"
     new = "    // FIX WP#2 2026-03-11: Credentials aus wp-config defines — kein Hardcode im Git\n    $api_user = defined('NOVA_AI_API_USER') ? NOVA_AI_API_USER : ($s['api_user'] ?? '');\n    $api_pass = defined('NOVA_AI_API_PASS') ? NOVA_AI_API_PASS : ($s['api_pass'] ?? '');\n    $auth_header = ($api_user && $api_pass) ? 'Basic ' . base64_encode($api_user . ':' . $api_pass) : '';\n    $headers = ['Content-Type' => 'application/json'];\n    if ($auth_header) $headers['Authorization'] = $auth_header;\n    $args = ['method'=>$method, 'timeout'=>15, 'headers'=>$headers];"
     if old in c:
         c2 = c.replace(old, new, 1)
