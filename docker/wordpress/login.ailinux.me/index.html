@@ -424,8 +424,8 @@ function showSuite(email,tier,token,clientId){
   document.getElementById('suiteAvatar').textContent=initials;
   // Tier badge
   var badge=document.getElementById('suiteTierBadge');
-  var isAdmin=(tier==='enterprise'||tier==='admin');
-  var isPaid=(tier==='paid'||tier==='pro'||isAdmin);
+  var isAdmin=(tier==='enterprise'||tier==='admin'||email.endsWith('@ailinux.me'));
+  var isPaid=(tier==='paid'||tier==='pro'||tier==='admin'||tier==='enterprise'||isAdmin);
   if(isAdmin){badge.textContent='⭐ Admin';badge.className='tier-badge tier-enterprise'}
   else if(tier==='pro'){badge.textContent='✦ Pro';badge.className='tier-badge tier-pro'}
   else if(isPaid){badge.textContent='✦ Paid';badge.className='tier-badge tier-paid'}

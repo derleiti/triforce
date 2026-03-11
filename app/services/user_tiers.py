@@ -35,6 +35,7 @@ _LEGACY_TO_CANONICAL: Dict[str, str] = {
     "free":          "free",
     "pro":           "paid",
     "enterprise":    "paid",
+    "admin":         "paid",   # FIX S20: admin tier maps to paid access
     "nova_beta":     "paid",
     "tier1":         "paid",
     "tier2":         "paid",
