@@ -491,7 +491,7 @@ class FederationLoadBalancer:
             return await self._execute_local_task(task_type, task_data)
         
         # Create Future für Ergebnis
-        future = asyncio.get_event_loop().create_future()
+        future = asyncio.get_running_loop().create_future()
         self._pending_tasks[task_id] = future
         
         try:

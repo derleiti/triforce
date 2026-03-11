@@ -219,7 +219,7 @@ class MCPMeshServer:
         self._request_counter += 1
         req_id = f"hub_{self._request_counter}"
         
-        fut = asyncio.get_event_loop().create_future()
+        fut = asyncio.get_running_loop().create_future()
         self.pending_requests[req_id] = fut
         
         # Send to node

@@ -717,7 +717,7 @@ async def google_search_deep(query: str, num_results: int = 150, lang: str = "de
             logger.error(f"Google Deep Search error: {e}")
             return []
     
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
     with ThreadPoolExecutor() as executor:
         results = await loop.run_in_executor(executor, _sync_search)
     

@@ -573,7 +573,7 @@ class MeshNode:
         self._request_counter += 1
         req_id = f"{self.node_id}_{self._request_counter}"
         
-        fut = asyncio.get_event_loop().create_future()
+        fut = asyncio.get_running_loop().create_future()
         self._pending_requests[req_id] = fut
         
         message = {

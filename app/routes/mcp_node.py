@@ -81,7 +81,7 @@ class ClientConnection:
         }
 
         # Future für Antwort erstellen
-        future = asyncio.get_event_loop().create_future()
+        future = asyncio.get_running_loop().create_future()
         self.pending_requests[request_id] = future
 
         try:

@@ -228,7 +228,10 @@ def _persist_temp_file(data: bytes, filename: Optional[str]) -> None:
         handle.write(data)
     path = Path(temp_path)
 
-    loop = asyncio.get_event_loop()
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        loop = asyncio.get_event_loop()
     loop.call_later(
         TEMP_RETENTION_SECONDS,
         lambda: path.exists() and path.unlink(missing_ok=True),
