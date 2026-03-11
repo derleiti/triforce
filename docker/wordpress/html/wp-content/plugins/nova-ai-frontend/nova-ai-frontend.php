@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Nova AI Frontend
  * Description: AILinux AI Playground & Downloads — Chat, Vision, Media Generation + Admin Dashboard
- * Version: 6.3.0
+ * Version: 6.5.0
  * Author: zombie@ailinux
  * Text Domain: nova-ai-frontend
  */
@@ -66,6 +66,12 @@ add_action('rest_api_init', function () {
     }]);
     register_rest_route($ns, '/article-chat', ['methods'=>'POST', 'callback'=>'nova_proxy_article_chat', 'permission_callback'=>'__return_true']);
     register_rest_route($ns, '/account', ['methods'=>'GET', 'callback'=>'nova_proxy_account', 'permission_callback'=>'__return_true']);
+    // Auth routes delegated to AuthService.php (register_rest_routes)
+    // Subscription & Purchase routes (user must be logged in)
+    $user_perm = function() { return is_user_logged_in(); };
+    register_rest_route($ns, '/subscription',        ['methods'=>'GET',  'callback'=>'nova_proxy_subscription',        'permission_callback'=>$user_perm]);
+    register_rest_route($ns, '/subscription/cancel', ['methods'=>'POST', 'callback'=>'nova_proxy_subscription_cancel', 'permission_callback'=>$user_perm]);
+    register_rest_route($ns, '/purchases',           ['methods'=>'GET',  'callback'=>'nova_proxy_purchases',           'permission_callback'=>$user_perm]);
 
     // Admin routes – require manage_options capability
     $admin_perm = function() { return current_user_can('manage_options'); };
@@ -104,7 +110,7 @@ function nova_proxy_auth(string $path, string $method='GET', ?array $body=null):
     $url  = rtrim($base, '/') . $path;
     $args = ['method'=>$method, 'timeout'=>15, 'headers'=>[
         'Content-Type'=>'application/json',
-        'Authorization'=>'Basic '.base64_encode('zombie:e9F8DuKbH-'),
+        'Authorization'=>'Basic '.base64_encode((defined('NOVA_AI_API_USER') ? NOVA_AI_API_USER : 'zombie').':'.(defined('NOVA_AI_API_PASS') ? NOVA_AI_API_PASS : '')),
     ]];
     if ($body !== null) $args['body'] = json_encode($body);
     $resp = wp_remote_request($url, $args);
@@ -168,7 +174,8 @@ function nova_proxy_account(WP_REST_Request $r): WP_REST_Response {
             'register_url' => 'https://login.ailinux.me',
         ], 200);
     }
-    $tier     = get_user_meta($user->ID, 'nova_tier', true) ?: 'free';
+    $raw_tier = get_user_meta($user->ID, 'nova_tier', true) ?: 'free';
+    $tier     = nova_normalize_tier($raw_tier);
     $email    = $user->user_email;
     $sub_id   = get_user_meta($user->ID, 'nova_payment_subscription_id', true) ?: '';
     $entitls  = (array)(get_user_meta($user->ID, 'nova_entitlements', true) ?: []);
@@ -176,7 +183,7 @@ function nova_proxy_account(WP_REST_Request $r): WP_REST_Response {
 
     // Get available downloads from backend
     $downloads = [];
-    $dl_resp = nova_proxy('/v1/frontend/dashboard/downloads', 'GET', []);
+    $dl_resp = nova_proxy('/v1/frontend/dashboard/downloads', 'GET');
     if ($dl_resp instanceof WP_REST_Response) {
         $dl_data = $dl_resp->get_data();
         $downloads = $dl_data['files'] ?? [];
@@ -196,6 +203,106 @@ function nova_proxy_account(WP_REST_Request $r): WP_REST_Response {
         'shop_url'    => 'https://ailinux.me/shop',
     ], 200);
 }
+
+/* ── Auth callbacks (login.ailinux.me sync) ─────────────────────────────────── */
+function nova_auth_status(): WP_REST_Response {
+    $user = wp_get_current_user();
+    if (!$user || !$user->ID) {
+        return new WP_REST_Response(['wp_logged_in'=>false,'login_url'=>'https://login.ailinux.me'], 200);
+    }
+    return new WP_REST_Response([
+        'wp_logged_in' => true,
+        'user'         => [
+            'id'        => $user->ID,
+            'email'     => $user->user_email,
+            'name'      => $user->display_name,
+            'tier'      => get_user_meta($user->ID, 'nova_tier', true) ?: 'free',
+            'client_id' => get_user_meta($user->ID, 'nova_client_id', true) ?: '',
+        ],
+    ], 200);
+}
+
+function nova_auth_sync(WP_REST_Request $r): WP_REST_Response {
+    $email     = sanitize_email($r->get_param('email'));
+    $token     = sanitize_text_field($r->get_param('token'));
+    $tier      = sanitize_text_field($r->get_param('tier') ?? 'free');
+    $client_id = sanitize_text_field($r->get_param('client_id') ?? '');
+    $name      = sanitize_text_field($r->get_param('name') ?? '');
+
+    if (!$email || !$token) {
+        return new WP_REST_Response(['success'=>false,'error'=>'email and token required'], 400);
+    }
+
+    // Verify token via backend
+    $s = get_option('nova_ai_settings', []);
+    $base = $s['api_endpoint_internal'] ?? $s['api_endpoint'] ?? 'https://api.ailinux.me';
+    $vr = wp_remote_get(rtrim($base, '/') . '/v1/auth/verify', [
+        'headers' => ['Authorization' => 'Bearer ' . $token],
+        'timeout' => 8,
+    ]);
+    if (is_wp_error($vr) || wp_remote_retrieve_response_code($vr) < 200 || wp_remote_retrieve_response_code($vr) >= 300) {
+        // Soft: allow sync even if verify fails (offline mode)
+        error_log('[nova-ai] auth/sync: token verify failed — soft allow');
+    } else {
+        $vd = json_decode(wp_remote_retrieve_body($vr), true);
+        if (!empty($vd['tier']))      $tier      = sanitize_text_field($vd['tier']);
+        if (!empty($vd['client_id'])) $client_id = sanitize_text_field($vd['client_id']);
+        if (!empty($vd['name']))      $name      = sanitize_text_field($vd['name']);
+    }
+
+    // Find or create WP user
+    $user_id = email_exists($email);
+    if (!$user_id) {
+        $base_name = sanitize_user(strstr($email, '@', true)) ?: 'nova';
+        $uname = $base_name; $i = 1;
+        while (username_exists($uname)) $uname = $base_name . $i++;
+        $user_id = wp_create_user($uname, wp_generate_password(), $email);
+        if (is_wp_error($user_id)) return new WP_REST_Response(['success'=>false,'error'=>$user_id->get_error_message()], 500);
+        if ($name) wp_update_user(['ID'=>$user_id, 'display_name'=>$name]);
+    }
+
+    // Normalize tier
+    $tier_map = ['pro'=>'paid','unlimited'=>'paid','premium'=>'paid','enterprise'=>'enterprise','admin'=>'enterprise'];
+    $tier_n   = $tier_map[strtolower($tier)] ?? ($tier === 'free' ? 'free' : 'paid');
+
+    update_user_meta($user_id, 'nova_tier', $tier_n);
+    update_user_meta($user_id, 'nova_session_token', $token);
+    if ($client_id) update_user_meta($user_id, 'nova_client_id', $client_id);
+    update_user_meta($user_id, 'nova_ailinux_email', $email);
+
+    // Log user in + set auth cookie
+    wp_set_current_user($user_id);
+    wp_set_auth_cookie($user_id, true);
+
+    $can_admin = current_user_can('manage_options');
+    return new WP_REST_Response(['success'=>true,'can_admin'=>$can_admin,'tier'=>$tier_n,'user_id'=>$user_id], 200);
+}
+
+function nova_auth_logout(): WP_REST_Response {
+    // FIX 2026-03-11 v2: The rest_authentication_errors bypass (priority 200) also skips
+    // cookie auth for /auth/logout, so is_user_logged_in() can return false here even when
+    // the user has a valid WP auth cookie. We manually parse + set the user from the cookie
+    // so wp_logout() properly destroys the session token in the DB.
+    if ( ! is_user_logged_in() ) {
+        $uid = wp_validate_auth_cookie( '', 'auth' );
+        if ( $uid ) {
+            wp_set_current_user( $uid );
+        }
+    }
+    if ( is_user_logged_in() ) {
+        $uid = get_current_user_id();
+        delete_user_meta( $uid, 'nova_session_token' );
+        delete_user_meta( $uid, 'nova_wp_last_sync' );
+    }
+    // Clear nova_session cookie
+    if ( isset( $_COOKIE['nova_session'] ) ) {
+        setcookie( 'nova_session', '', time() - 3600, '/', '', is_ssl(), true );
+    }
+    // Destroy WP session + clear auth cookie
+    wp_logout();
+    return new WP_REST_Response( ['success' => true, 'redirect' => home_url()], 200 );
+}
+
 function nova_proxy_image(WP_REST_Request $r): WP_REST_Response   { return nova_proxy('/v1/frontend/dashboard/media/image','POST',$r->get_json_params()); }
 function nova_proxy_video(WP_REST_Request $r): WP_REST_Response   { return nova_proxy('/v1/frontend/dashboard/media/video','POST',$r->get_json_params()); }
 function nova_proxy_video_status(WP_REST_Request $r): WP_REST_Response { return nova_proxy('/v1/frontend/dashboard/media/video/status/'.$r['job_id']); }
@@ -223,6 +330,46 @@ function nova_proxy_article_chat(WP_REST_Request $r): WP_REST_Response {
     return new WP_REST_Response(json_decode(wp_remote_retrieve_body($resp), true), wp_remote_retrieve_response_code($resp));
 }
 
+
+/* ── Subscription & Purchases callbacks ─────────────────────────────────────── */
+function nova_normalize_tier(string $tier): string {
+    return ($tier === 'free') ? 'free' : 'paid';
+}
+
+function nova_proxy_subscription(WP_REST_Request $r): WP_REST_Response {
+    $user = wp_get_current_user();
+    if (!$user || !$user->ID) return new WP_REST_Response(['error'=>'not logged in'], 401);
+    $client_id = get_user_meta($user->ID, 'nova_client_id', true) ?: '';
+    if (!$client_id) return new WP_REST_Response(['ok'=>true,'tier'=>'free','status'=>'none','client_id'=>'']);
+    // Proxy to backend
+    $resp = nova_proxy('/v1/tiers/subscription/'.$client_id);
+    $data = $resp->get_data();
+    // Normalize tier in response
+    if (!empty($data['tier'])) $data['tier'] = nova_normalize_tier($data['tier']);
+    return new WP_REST_Response($data, $resp->get_status());
+}
+
+function nova_proxy_subscription_cancel(WP_REST_Request $r): WP_REST_Response {
+    $user = wp_get_current_user();
+    if (!$user || !$user->ID) return new WP_REST_Response(['error'=>'not logged in'], 401);
+    $client_id = get_user_meta($user->ID, 'nova_client_id', true) ?: '';
+    if (!$client_id) return new WP_REST_Response(['error'=>'no client_id found'], 400);
+    $resp = nova_proxy('/v1/tiers/cancel', 'POST', ['user_id'=>$client_id]);
+    // On success: downgrade WP user_meta to free
+    if ($resp->get_status() < 300) {
+        update_user_meta($user->ID, 'nova_tier', 'free');
+    }
+    return $resp;
+}
+
+function nova_proxy_purchases(WP_REST_Request $r): WP_REST_Response {
+    $user = wp_get_current_user();
+    if (!$user || !$user->ID) return new WP_REST_Response(['error'=>'not logged in'], 401);
+    $client_id = get_user_meta($user->ID, 'nova_client_id', true) ?: '';
+    if (!$client_id) return new WP_REST_Response(['ok'=>true,'purchases'=>[],'client_id'=>'']);
+    return nova_proxy('/v1/tiers/purchases/'.$client_id);
+}
+
 /* ── Admin REST callbacks ───────────────────────────────────────────────────── */
 function nova_admin_status(): WP_REST_Response {
     // FIX 2026-03-10: /health hat kein /v1 Prefix
@@ -241,7 +388,10 @@ function nova_admin_logs(WP_REST_Request $r): WP_REST_Response {
     $limit = intval($r->get_param('limit') ?? 100);
     $valid_cats = ['all','api','llm','mcp','error','agent'];
     if (!in_array($cat, $valid_cats, true)) $cat = 'all';
-    return nova_proxy("/v1/triforce/logs/recent?limit={$limit}");
+    // FIX 2026-03-11: pass category filter to backend
+    $qs = "limit={$limit}";
+    if ($cat !== 'all') $qs .= "&category={$cat}";
+    return nova_proxy("/v1/triforce/logs/recent?{$qs}");
 }
 
 function nova_admin_agents(): WP_REST_Response {
@@ -257,15 +407,56 @@ function nova_admin_agent_action(WP_REST_Request $r): WP_REST_Response {
 }
 
 function nova_admin_mcp_tools(): WP_REST_Response {
-    return nova_proxy('/v1/mcp/node/tools');
+    // FIX 2026-03-11: Use server-side MCP tools (81 tools) instead of client-side node/tools (7 desktop tools)
+    // /v1/mcp accepts JSON-RPC without auth and returns all server-side tools
+    $args = [
+        'method'  => 'POST',
+        'timeout' => 15,
+        'headers' => ['Content-Type' => 'application/json'],
+        'body'    => wp_json_encode(['jsonrpc' => '2.0', 'method' => 'tools/list', 'id' => 1]),
+    ];
+    $response = wp_remote_request(NOVA_AI_BACKEND . '/v1/mcp', $args);
+    if (is_wp_error($response)) return new WP_REST_Response(['error' => $response->get_error_message()], 502);
+    $body = json_decode(wp_remote_retrieve_body($response), true) ?? [];
+    // Normalize JSON-RPC result → {tools: [...]} format admin.js expects
+    $tools = $body['result']['tools'] ?? [];
+    // Add inputSchema-based default args hint for admin.js
+    foreach ($tools as &$t) {
+        $props = $t['inputSchema']['properties'] ?? [];
+        $t['args'] = array_fill_keys(array_keys($props), '');
+    }
+    unset($t);
+    return new WP_REST_Response(['tools' => $tools, 'count' => count($tools)], 200);
 }
 
 function nova_admin_mcp_call(WP_REST_Request $r): WP_REST_Response {
+    // FIX 2026-03-11 v2: Use server-side MCP /v1/mcp tools/call (JSON-RPC, no auth needed)
+    // This replaces the broken /v1/mcp/node/call (requires connected desktop client + JWT)
     $params = $r->get_json_params();
     $tool   = sanitize_text_field($params['tool'] ?? '');
     $args   = $params['args'] ?? [];
-    if (!$tool) return new WP_REST_Response(['error'=>'tool required'],400);
-    return nova_proxy('/v1/mcp/node/call', 'POST', ['client_id'=>'wordpress-admin','tool'=>$tool,'params'=>$args]);
+    if (!$tool) return new WP_REST_Response(['error' => 'tool required'], 400);
+    $rpc_body = wp_json_encode([
+        'jsonrpc'  => '2.0',
+        'method'   => 'tools/call',
+        'id'       => 1,
+        'params'   => ['name' => $tool, 'arguments' => (object)$args],
+    ]);
+    $resp = wp_remote_request(NOVA_AI_BACKEND . '/v1/mcp', [
+        'method'  => 'POST',
+        'timeout' => 60,
+        'headers' => ['Content-Type' => 'application/json'],
+        'body'    => $rpc_body,
+    ]);
+    if (is_wp_error($resp)) return new WP_REST_Response(['error' => $resp->get_error_message()], 502);
+    $body = json_decode(wp_remote_retrieve_body($resp), true) ?? [];
+    // Normalize JSON-RPC result → flat response for admin.js
+    if (isset($body['error'])) {
+        return new WP_REST_Response(['error' => $body['error']['message'] ?? 'MCP error'], 400);
+    }
+    $content = $body['result']['content'] ?? [];
+    $text = implode("\n", array_map(fn($c) => $c['text'] ?? json_encode($c), $content));
+    return new WP_REST_Response(['ok' => true, 'result' => $text, 'raw' => $body['result'] ?? []], 200);
 }
 
 function nova_admin_crawler_get(): WP_REST_Response {
@@ -295,7 +486,7 @@ function nova_admin_settings_get(): WP_REST_Response {
 }
 
 function nova_admin_settings_set(WP_REST_Request $r): WP_REST_Response {
-    if (!check_ajax_referer('wp_rest', false, false))
+    if (!wp_verify_nonce($r->get_header('X-WP-Nonce') ?: $r->get_param('_wpnonce') ?: '', 'wp_rest'))
         return new WP_REST_Response(['error'=>'bad nonce'],403);
     $params = $r->get_json_params();
     $s = get_option('nova_ai_settings', []);
@@ -555,11 +746,8 @@ add_shortcode('ailinux_ai_playground', function ($atts): string {
     <button class="nova-tab active" data-tab="nova-panel-chat">Chat</button>
     <button class="nova-tab" data-tab="nova-panel-vision">Vision Analyse</button>
     <button class="nova-tab" data-tab="nova-panel-media">Media Generation</button>
-    <button class="nova-tab" data-tab="nova-panel-account">&#128100; Mein Account</button>
-    <div class="nova-theme-picker">
-      <button class="nova-theme-btn" title="Theme wechseln">🎨 <span class="nova-theme-label" data-nova-theme-label>Theme</span></button>
-      <div class="nova-theme-dropdown"></div>
-    </div>
+    <button class="nova-tab" data-tab="nova-panel-account">&#128100; My Account</button>
+
   </div>
   <div class="nova-panel active" id="nova-panel-chat">
     <div class="nova-form-row-inline">
@@ -686,6 +874,16 @@ add_shortcode('ailinux_ai_playground', function ($atts): string {
       <button class="nova-action-btn nova-vid-btn">Video starten</button>
       <div class="nova-progress nova-vid-progress"><div class="nova-progress-bar" style="width:0%"></div></div>
       <div class="nova-output-box nova-vid-output"><div class="nova-output-text"></div></div>
+    </div>
+  </div>
+  <div class="nova-panel" id="nova-panel-account">
+    <div style="padding:1.5rem 0">
+      <div class="nova-account-container" id="nova-account-panel">
+        <div style="text-align:center;padding:2rem;color:#94a3b8">
+          <div style="font-size:2rem;margin-bottom:.5rem">&#128100;</div>
+          <div>Lade Account…</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

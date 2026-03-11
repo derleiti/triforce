@@ -1,0 +1,15 @@
+[Unit]
+Description=TriForce Node-Sync Timer — alle 5 Minuten + Bootup
+Requires=triforce-node-sync.service
+
+[Timer]
+# Beim Bootup (nach 30s Wartezeit für Netzwerk)
+OnBootSec=30sec
+# Dann alle 5 Minuten
+OnUnitActiveSec=5min
+# Verpasste Timer beim Boot nachholen
+Persistent=true
+Unit=triforce-node-sync.service
+
+[Install]
+WantedBy=timers.target

@@ -799,7 +799,8 @@ TOOL_ALIASES: Dict[str, str] = {
     "remote_task_status": "remote_status",
     # Missing reverse mappings
     "memory_clear": "tristar_memory_clear",
-    "health": "ollama_health",
+    # NOTE: "health" intentionally NOT aliased to "ollama_health"
+    # health = system health (v5 STRUCTURED_ADMIN), ollama_health = Ollama-specific
     "debug": "debug_mcp_request",
     "remote_hosts": "remote_host_list",
     "remote_task": "remote_task_submit",

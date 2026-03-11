@@ -8,7 +8,12 @@ from pathlib import Path
 from typing import Optional, Tuple
 
 import httpx
-import google.generativeai as genai
+try:
+    import google.generativeai as genai
+    _GENAI_AVAILABLE = True
+except ImportError:
+    genai = None  # type: ignore
+    _GENAI_AVAILABLE = False
 from PIL import Image
 import io
 
@@ -374,6 +379,8 @@ async def _analyze_with_gemini_url(
 
 
 async def _dispatch_gemini(model_name: str, prompt: str, image: Image, api_key: str) -> str:
+    if not _GENAI_AVAILABLE or genai is None:
+        raise api_error("google-generativeai not installed", status_code=503, code="genai_unavailable")
     genai.configure(api_key=api_key)
     target_model = strip_provider_prefix(model_name)
     model = genai.GenerativeModel(target_model)
@@ -607,9 +614,12 @@ async def _analyze_openai_compat_vision(
     if image_bytes is not None:
         optimized = _optimize_image(image_bytes, max_size=1536)
         b64 = base64.b64encode(optimized).decode("ascii")
+        # BUG-FIX 2026-03-11: _optimize_image always outputs JPEG regardless of input.
+        # Original content_type caused MIME mismatch -> "Invalid image data" from GitHub etc.
+        actual_mime = "image/jpeg"
         image_part = {
             "type": "image_url",
-            "image_url": {"url": f"data:{content_type};base64,{b64}"},
+            "image_url": {"url": f"data:{actual_mime};base64,{b64}"},
         }
     elif image_url is not None:
         image_part = {"type": "image_url", "image_url": {"url": image_url}}
@@ -682,7 +692,8 @@ async def _analyze_cloudflare_vision(
     if image_bytes is not None:
         optimized = _optimize_image(image_bytes, max_size=1024)
         b64 = base64.b64encode(optimized).decode("ascii")
-        img_content = f"data:{content_type};base64,{b64}"
+        # BUG-FIX 2026-03-11: _optimize_image always outputs JPEG
+        img_content = f"data:image/jpeg;base64,{b64}"
     elif image_url is not None:
         img_content = image_url
     else:
@@ -706,17 +717,35 @@ async def _analyze_cloudflare_vision(
         "Content-Type": "application/json",
     }
     async with httpx.AsyncClient(timeout=timeout) as client:
-        r = await client.post(url, json=body, headers=headers)
-        if r.status_code >= 400:
-            try:
-                err_body = r.json()
-                msg = str(err_body.get("errors", err_body))[:200]
-            except Exception:
-                msg = r.text[:200]
-            raise api_error(
-                f"Cloudflare Vision Fehler: {msg}",
-                status_code=r.status_code, code="cloudflare_vision_error",
-            )
+        # BUG-FIX 2026-03-11: CF llama-3.2-11b-vision-instruct requires model
+        # license agreement via sending "agree" as first prompt. Auto-agree on 403.
+        for _attempt in range(2):
+            r = await client.post(url, json=body, headers=headers)
+            if r.status_code == 403:
+                try:
+                    err_body = r.json()
+                    msg = str(err_body.get("errors", err_body))[:400]
+                except Exception:
+                    msg = r.text[:400]
+                if "Model Agreement" in msg and _attempt == 0:
+                    agree_body = {"messages": [{"role": "user", "content": "agree"}], "max_tokens": 10}
+                    await client.post(url, json=agree_body, headers=headers)
+                    continue
+                raise api_error(
+                    f"Cloudflare Vision Fehler: {msg}",
+                    status_code=r.status_code, code="cloudflare_vision_error",
+                )
+            if r.status_code >= 400:
+                try:
+                    err_body = r.json()
+                    msg = str(err_body.get("errors", err_body))[:200]
+                except Exception:
+                    msg = r.text[:200]
+                raise api_error(
+                    f"Cloudflare Vision Fehler: {msg}",
+                    status_code=r.status_code, code="cloudflare_vision_error",
+                )
+            break
         rdata = r.json()
         # CF returns: {"result": {"response": "..."}} or choices[]
         result = rdata.get("result", {})

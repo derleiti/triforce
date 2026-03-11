@@ -1,0 +1,1445 @@
+=== BACKEND ROUTE ===
+from __future__ import annotations
+
+import json
+import os
+from typing import Any, Dict, List, Optional
+
+import httpx
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
+
+router = APIRouter(prefix="/v1/frontend/dashboard", tags=["nova-frontend"])
+
+def _base_url() -> str:
+    return (os.getenv("TRIFORCE_PUBLIC_BASE_URL") or os.getenv("TRIFORCE_BASE_URL") or "http://127.0.0.1:9000").rstrip("/")
+
+def _openai_key() -> Optional[str]:
+    return os.getenv("OPENAI_API_KEY") or os.getenv("OPENAI_KEY") or os.getenv("CHATGPT_API_KEY")
+
+def _pick(d: Dict[str, Any], *keys: str, default=None):
+    for k in keys:
+        if k in d and d[k] not in (None, "", []):
+            return d[k]
+    return default
+
+class ChatRequest(BaseModel):
+    model: str
+    message: str
+    system: str = ""
+    temperature: float = 0.4
+    max_tokens: int = 1200
+
+class VisionRequest(BaseModel):
+    model: str
+    prompt: str
+    image_url: Optional[str] = None
+    image_base64: Optional[str] = None
+    mime_type: str = "image/png"
+    temperature: float = 0.2
+    max_tokens: int = 1200
+
+class ImageRequest(BaseModel):
+    model: str
+    prompt: str
+    size: str = "1024x1024"
+    quality: str = "medium"
+    n: int = 1
+
+class VideoRequest(BaseModel):
+    model: str
+    prompt: str
+    seconds: int = 8
+    size: str = "1280x720"
+
+def _provider(model: Dict[str, Any]) -> str:
+    raw = str(_pick(model, "provider", "owned_by", "vendor", default="")).lower()
+    mid = str(_pick(model, "id", "model", "name", default="")).lower()
+
+    if "openai" in raw or mid.startswith("gpt-") or "dall-e" in mid or "gpt-image" in mid or "sora" in mid:
+        return "openai"
+    if "anthropic" in raw or "claude" in mid:
+        return "anthropic"
+    if "google" in raw or "gemini" in mid or "imagen" in mid or "veo" in mid:
+        return "google"
+    if "mistral" in raw or "pixtral" in mid or "ministral" in mid:
+        return "mistral"
+    if "groq" in raw:
+        return "groq"
+    if "cloudflare" in raw or mid.startswith("@cf/") or mid.startswith("cf/"):
+        return "cloudflare"
+    if "cerebras" in raw:
+        return "cerebras"
+    if "openrouter" in raw:
+        return "openrouter"
+    if "ollama" in raw:
+        return "ollama"
+    return raw or "unknown"
+
+def _categorize(model: Dict[str, Any]) -> Dict[str, Any]:
+    mid = str(_pick(model, "id", "model", "name", default=""))
+    name = str(_pick(model, "name", "display_name", default=mid))
+    provider = _provider(model)
+    blob = json.dumps(model, default=str).lower() + " " + mid.lower() + " " + name.lower()
+
+    caps = {
+        "chat": False,
+        "vision": False,
+        "media_image": False,
+        "media_video": False,
+        "backend_supported": False,
+    }
+
+    if any(x in blob for x in ["gpt-", "claude", "gemini", "mistral", "ministral", "pixtral", "llama", "qwen", "deepseek", "command-r", "chat"]):
+        caps["chat"] = True
+
+    if any(x in blob for x in ["vision", "image understanding", "image-to-text", "multimodal", "pixtral", "gpt-4o", "claude-3", "claude-4", "gemini", "llama-4-scout"]):
+        caps["vision"] = True
+
+    if any(x in blob for x in ["gpt-image", "dall-e", "imagen", "image generation", "text-to-image", "flux", "stable diffusion"]):
+        caps["media_image"] = True
+
+    if any(x in blob for x in ["sora", "veo", "video generation", "text-to-video"]):
+        caps["media_video"] = True
+
+    if provider in {"openai", "anthropic", "google", "mistral", "groq", "cloudflare", "cerebras", "openrouter", "ollama"}:
+        caps["backend_supported"] = caps["chat"] or caps["vision"]
+
+    return {
+        "id": mid,
+        "name": name,
+        "provider": provider,
+        **caps,
+        "categories": [k for k in ("chat", "vision", "media_image", "media_video") if caps[k]],
+    }
+
+async def _get_models() -> List[Dict[str, Any]]:
+    urls = [
+        f"{_base_url()}/v1/models",
+        f"{_base_url()}/models",
+        f"{_base_url()}/v1/tristar/models",
+    ]
+    async with httpx.AsyncClient(timeout=15.0) as client:
+        for url in urls:
+            try:
+                r = await client.get(url)
+                if r.status_code != 200:
+                    continue
+                data = r.json()
+                if isinstance(data, list):
+                    return [x for x in data if isinstance(x, dict)]
+                if isinstance(data, dict):
+                    for k in ("models", "data", "items", "available_models"):
+                        if isinstance(data.get(k), list):
+                            return [x for x in data[k] if isinstance(x, dict)]
+            except Exception:
+                pass
+    return []
+
+async def _chat_proxy(payload: Dict[str, Any]) -> Dict[str, Any]:
+    urls = [
+        f"{_base_url()}/v1/chat/completions",
+        f"{_base_url()}/chat/completions",
+    ]
+    async with httpx.AsyncClient(timeout=120.0) as client:
+        for url in urls:
+            try:
+                r = await client.post(url, json=payload)
+                if r.status_code == 200:
+                    return r.json()
+            except Exception:
+                pass
+    raise HTTPException(status_code=502, detail="chat proxy failed")
+
+@router.get("/health")
+async def health() -> Dict[str, Any]:
+    models = await _get_models()
+    return {"ok": True, "status": "ok", "model_count": len(models)}
+
+@router.get("/models")
+async def models() -> Dict[str, Any]:
+    raw = await _get_models()
+    items = [_categorize(m) for m in raw]
+    items.sort(key=lambda x: (not x["backend_supported"], x["provider"], x["name"].lower()))
+    return {
+        "ok": True,
+        "count": len(items),
+        "categories": {
+            "chat": [m for m in items if m["chat"]],
+            "vision": [m for m in items if m["vision"]],
+            "media_image": [m for m in items if m["media_image"]],
+            "media_video": [m for m in items if m["media_video"]],
+        },
+        "models": items,
+    }
+
+@router.post("/chat")
+async def chat(req: ChatRequest) -> Dict[str, Any]:
+    messages = []
+    if req.system.strip():
+        messages.append({"role": "system", "content": req.system.strip()})
+    messages.append({"role": "user", "content": req.message})
+    raw = await _chat_proxy({
+        "model": req.model,
+        "messages": messages,
+        "temperature": req.temperature,
+        "max_tokens": req.max_tokens,
+        "stream": False,
+    })
+    return {"ok": True, "mode": "chat", "raw": raw}
+
+@router.post("/vision")
+async def vision(req: VisionRequest) -> Dict[str, Any]:
+    if not req.image_url and not req.image_base64:
+        raise HTTPException(status_code=400, detail="image_url or image_base64 required")
+
+    content = [{"type": "text", "text": req.prompt}]
+    if req.image_url:
+        content.append({"type": "image_url", "image_url": {"url": req.image_url}})
+    else:
+        content.append({"type": "image_url", "image_url": {"url": f"data:{req.mime_type};base64,{req.image_base64}"}})
+
+    raw = await _chat_proxy({
+        "model": req.model,
+        "messages": [{"role": "user", "content": content}],
+        "temperature": req.temperature,
+        "max_tokens": req.max_tokens,
+        "stream": False,
+    })
+    return {"ok": True, "mode": "vision", "raw": raw}
+
+@router.post("/media/image")
+async def media_image(req: ImageRequest) -> Dict[str, Any]:
+    key = _openai_key()
+    if not key:
+        raise HTTPException(status_code=400, detail="OPENAI_API_KEY missing for image generation")
+    headers = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
+    payload = {
+        "model": req.model,
+        "prompt": req.prompt,
+        "size": req.size,
+        "quality": req.quality,
+        "n": req.n,
+    }
+    async with httpx.AsyncClient(timeout=180.0) as client:
+        r = await client.post("https://api.openai.com/v1/images/generations", headers=headers, json=payload)
+        if r.status_code >= 400:
+            raise HTTPException(status_code=r.status_code, detail=r.text)
+        return {"ok": True, "mode": "media_image", "result": r.json()}
+
+@router.post("/media/video")
+async def media_video(req: VideoRequest) -> Dict[str, Any]:
+    raise HTTPException(status_code=400, detail="video generation route prepared, but provider binding still needs final backend-specific implementation")
+
+=== MAIN REGISTRATION ===
+
+=== PLUGIN MAIN ===
+<?php
+/*
+Plugin Name: Nova AI Frontend
+Description: AILinux styled AI playground + downloads with backend model categorization
+Version: 2.0.1
+*/
+if (!defined('ABSPATH')) exit;
+
+final class Nova_AI_Frontend {
+    const OPT = 'nova_ai_frontend_options';
+    const NS  = 'nova-ai/v1';
+
+    static function defaults() {
+        return [
+            'backend_url'   => 'http://127.0.0.1:9000',
+            'downloads_dir' => ABSPATH . 'downloads',
+            'downloads_url' => home_url('/downloads/'),
+            'timeout'       => 120,
+        ];
+    }
+
+    static function opts() {
+        return wp_parse_args(get_option(self::OPT, []), self::defaults());
+    }
+
+    static function init() {
+        add_action('admin_menu', [__CLASS__, 'menu']);
+        add_action('admin_init', [__CLASS__, 'settings']);
+        add_action('wp_enqueue_scripts', [__CLASS__, 'assets']);
+        add_action('admin_enqueue_scripts', [__CLASS__, 'assets']);
+        add_shortcode('ailinux_ai_playground', [__CLASS__, 'playground']);
+        add_shortcode('ailinux_downloads', [__CLASS__, 'downloads_shortcode']);
+        add_action('rest_api_init', [__CLASS__, 'rest']);
+    }
+
+    static function settings() { register_setting(self::OPT, self::OPT); }
+
+    static function menu() {
+        add_menu_page('Nova AI', 'Nova AI', 'manage_options', 'nova-ai-frontend', [__CLASS__, 'page_chat'], 'dashicons-superhero-alt', 58);
+        add_submenu_page('nova-ai-frontend', 'Chat', 'Chat', 'manage_options', 'nova-ai-frontend', [__CLASS__, 'page_chat']);
+        add_submenu_page('nova-ai-frontend', 'Vision Analyse', 'Vision Analyse', 'manage_options', 'nova-ai-vision', [__CLASS__, 'page_vision']);
+        add_submenu_page('nova-ai-frontend', 'Media Generation', 'Media Generation', 'manage_options', 'nova-ai-media', [__CLASS__, 'page_media']);
+        add_submenu_page('nova-ai-frontend', 'Downloads', 'Downloads', 'manage_options', 'nova-ai-downloads', [__CLASS__, 'page_downloads']);
+    }
+
+    static function assets() {
+        $url = plugin_dir_url(__FILE__);
+        wp_enqueue_style('nova-ai-frontend', $url . 'assets/nova-ai.css', [], '2.0.1');
+        wp_enqueue_script('nova-ai-frontend', $url . 'assets/nova-ai.js', [], '2.0.1', true);
+        wp_localize_script('nova-ai-frontend', 'NovaAIFrontend', [
+            'rest'  => rest_url(self::NS),
+            'nonce' => wp_create_nonce('wp_rest'),
+        ]);
+    }
+
+    static function shell() {
+        ob_start(); ?>
+        <div class="nova-ai-shell">
+            <div class="nova-ai-hero">
+                <div>
+                    <div class="nova-kicker">AILinux AI Playground</div>
+                    <h2>Nova Frontend</h2>
+                    <p>Chat, Vision Analyse und Media Generation mit backend-seitiger Modellsortierung.</p>
+                </div>
+                <div class="nova-status">
+                    <span class="nova-pill" data-health>Backend: prüft</span>
+                    <span class="nova-pill" data-count>Modelle: …</span>
+                </div>
+            </div>
+
+            <div class="nova-tabs">
+                <button class="nova-tab active" data-tab="chat">Chat</button>
+                <button class="nova-tab" data-tab="vision">Vision Analyse</button>
+                <button class="nova-tab" data-tab="media">Media Generation</button>
+            </div>
+
+            <div class="nova-panel active" data-panel="chat">
+                <div class="nova-grid">
+                    <div class="nova-card">
+                        <label>Chat Modell</label>
+                        <select data-model="chat"></select>
+                        <label>System</label>
+                        <textarea data-system rows="4"></textarea>
+                        <label>Nachricht</label>
+                        <textarea data-chat-message rows="8"></textarea>
+                        <button class="nova-btn" data-run-chat>Senden</button>
+                    </div>
+                    <div class="nova-card">
+                        <pre class="nova-output" data-chat-output>Bereit.</pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nova-panel" data-panel="vision">
+                <div class="nova-grid">
+                    <div class="nova-card">
+                        <label>Vision Modell</label>
+                        <select data-model="vision"></select>
+                        <label>Bild URL</label>
+                        <input type="url" data-vision-url />
+                        <label>Oder Base64</label>
+                        <textarea data-vision-base64 rows="5"></textarea>
+                        <label>Analyseauftrag</label>
+                        <textarea data-vision-prompt rows="6"></textarea>
+                        <button class="nova-btn" data-run-vision>Analysieren</button>
+                    </div>
+                    <div class="nova-card">
+                        <pre class="nova-output" data-vision-output>Bereit.</pre>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nova-panel" data-panel="media">
+                <div class="nova-subtabs">
+                    <button class="nova-subtab active" data-subtab="image">Bild</button>
+                    <button class="nova-subtab" data-subtab="video">Video</button>
+                </div>
+
+                <div class="nova-subpanel active" data-subpanel="image">
+                    <div class="nova-grid">
+                        <div class="nova-card">
+                            <label>Bildmodell</label>
+                            <select data-model="media_image"></select>
+                            <label>Prompt</label>
+                            <textarea data-image-prompt rows="6"></textarea>
+                            <div class="nova-inline">
+                                <input type="text" data-image-size value="1024x1024" />
+                                <select data-image-quality>
+                                    <option>low</option>
+                                    <option selected>medium</option>
+                                    <option>high</option>
+                                </select>
+                                <input type="number" data-image-n value="1" min="1" max="4" />
+                            </div>
+                            <button class="nova-btn" data-run-image>Bild erzeugen</button>
+                        </div>
+                        <div class="nova-card">
+                            <div class="nova-media-grid" data-image-results></div>
+                            <pre class="nova-output" data-image-output>Bereit.</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="nova-subpanel" data-subpanel="video">
+                    <div class="nova-grid">
+                        <div class="nova-card">
+                            <label>Videomodell</label>
+                            <select data-model="media_video"></select>
+                            <label>Prompt</label>
+                            <textarea data-video-prompt rows="6"></textarea>
+                            <div class="nova-inline">
+                                <input type="number" data-video-seconds value="8" min="4" max="20" />
+                                <input type="text" data-video-size value="1280x720" />
+                            </div>
+                            <button class="nova-btn" data-run-video>Video starten</button>
+                        </div>
+                        <div class="nova-card">
+                            <pre class="nova-output" data-video-output>Bereit.</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <?php return ob_get_clean();
+    }
+
+    static function playground() { return self::shell(); }
+    static function page_chat() { echo '<div class="wrap"><h1>Nova AI Chat</h1>' . self::shell() . '</div>'; }
+    static function page_vision() { echo '<div class="wrap"><h1>Nova AI Vision</h1>' . self::shell() . '</div>'; }
+    static function page_media() { echo '<div class="wrap"><h1>Nova AI Media</h1>' . self::shell() . '</div>'; }
+
+    static function scan_downloads() {
+        $o = self::opts();
+        $dir = rtrim($o['downloads_dir'], '/');
+        $base = trailingslashit($o['downloads_url']);
+        $items = [];
+        $bytes = 0;
+
+        if (!is_dir($dir)) {
+            return ['ok' => false, 'count' => 0, 'bytes' => 0, 'items' => [], 'error' => "downloads dir missing: $dir"];
+        }
+
+        $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS));
+        foreach ($it as $f) {
+            if (!$f->isFile()) continue;
+            $path = $f->getPathname();
+            $rel = ltrim(str_replace($dir, '', $path), DIRECTORY_SEPARATOR);
+            $size = filesize($path) ?: 0;
+            $bytes += $size;
+            $mime = function_exists('mime_content_type') ? @mime_content_type($path) : 'application/octet-stream';
+            $mtime = filemtime($path) ?: 0;
+            $items[] = [
+                'relative'   => $rel,
+                'ext'        => strtolower(pathinfo($path, PATHINFO_EXTENSION)) ?: '-',
+                'size'       => $size,
+                'size_h'     => size_format($size),
+                'mime'       => $mime ?: 'application/octet-stream',
+                'modified'   => $mtime,
+                'modified_h' => date_i18n('Y-m-d H:i', $mtime),
+                'sha1_short' => substr(@sha1_file($path) ?: '', 0, 12),
+                'url'        => $base . str_replace(DIRECTORY_SEPARATOR, '/', $rel),
+            ];
+        }
+
+        usort($items, fn($a, $b) => $b['modified'] <=> $a['modified']);
+        return ['ok' => true, 'count' => count($items), 'bytes' => $bytes, 'items' => $items];
+    }
+
+    static function downloads_shortcode() {
+        $data = self::scan_downloads();
+        ob_start(); ?>
+        <div class="nova-downloads-shell">
+            <div class="nova-ai-hero">
+                <div>
+                    <div class="nova-kicker">AILinux Downloads</div>
+                    <h2>Downloads</h2>
+                    <p>Mehr Metadaten, mehr Übersicht, weniger Blindflug.</p>
+                </div>
+                <div class="nova-status">
+                    <span class="nova-pill">Dateien: <?php echo intval($data['count'] ?? 0); ?></span>
+                    <span class="nova-pill">Gesamt: <?php echo esc_html(size_format($data['bytes'] ?? 0)); ?></span>
+                </div>
+            </div>
+            <div class="nova-card">
+                <div class="nova-table-wrap">
+                    <table class="nova-table">
+                        <thead><tr><th>Datei</th><th>Typ</th><th>Größe</th><th>Geändert</th><th>SHA1</th><th>Link</th></tr></thead>
+                        <tbody>
+                        <?php foreach (($data['items'] ?? []) as $item): ?>
+                            <tr>
+                                <td><?php echo esc_html($item['relative']); ?><div class="nova-muted"><?php echo esc_html($item['mime']); ?></div></td>
+                                <td><?php echo esc_html($item['ext']); ?></td>
+                                <td><?php echo esc_html($item['size_h']); ?></td>
+                                <td><?php echo esc_html($item['modified_h']); ?></td>
+                                <td><code><?php echo esc_html($item['sha1_short']); ?></code></td>
+                                <td><a href="<?php echo esc_url($item['url']); ?>" target="_blank" rel="noopener">öffnen</a></td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <?php return ob_get_clean();
+    }
+
+    static function page_downloads() {
+        echo '<div class="wrap"><h1>Nova AI Downloads</h1>' . self::downloads_shortcode() . '</div>';
+    }
+
+    static function backend_get($path) {
+        $o = self::opts();
+        $r = wp_remote_get(rtrim($o['backend_url'], '/') . $path, ['timeout' => intval($o['timeout'])]);
+        if (is_wp_error($r)) return $r;
+        $body = wp_remote_retrieve_body($r);
+        $code = wp_remote_retrieve_response_code($r);
+        if ($code >= 400) return new WP_Error('nova_backend_get', $body, ['status' => $code]);
+        return json_decode($body, true);
+    }
+
+
+=== PLUGIN CORE ===
+<?php
+/**
+ * Nova AI Frontend Plugin Core
+ *
+ * @package NovAI
+ * @version 4.6.4
+ */
+
+namespace NovAI\Core;
+
+defined('ABSPATH') || exit;
+
+class Plugin {
+    private static $instance = null;
+    private $settings;
+
+    public static function instance() {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
+    private function __construct() {
+        $this->settings = get_option('nov_ai_settings', []);
+        $this->init_hooks();
+    }
+
+    private function init_hooks() {
+        add_action('init', [$this, 'init_services']);
+        add_action('wp_enqueue_scripts', [$this, 'enqueue_frontend_assets']);
+        add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_assets']);
+        add_action('init', [$this, 'register_shortcodes']);
+        add_action('admin_menu', [$this, 'register_admin_menu']);
+        add_filter('the_content', [$this, 'add_discuss_button']);
+        add_action('wp_footer', [$this, 'render_discuss_overlay']);
+        add_action('wp_footer', [$this, 'render_chat_widget']);
+
+        // Shop shortcode REST + AJAX hooks
+        \NovAI\Core\ShopShortcode::register();
+    }
+
+    public function init_services() {
+        \NovAI\Services\DownloadsService::instance();
+        \NovAI\Services\ChatProxy::instance();
+        \NovAI\Services\EarlyAccessService::instance();
+        \NovAI\Services\VisionProxy::instance();
+        \NovAI\Services\McpProxy::instance();
+        \NovAI\Services\PaymentsService::instance();
+        \NovAI\Services\ShopService::instance();
+    }
+
+    public function enqueue_frontend_assets() {
+        // Check for debug mode: ?debug=1 or ?nova_debug=1
+        $debug_mode = isset($_GET['debug']) || isset($_GET['nova_debug']);
+        
+        // Allow debug via cookie for persistence
+        if (isset($_COOKIE['nova_debug'])) {
+            $debug_mode = true;
+        }
+        
+        // Always load the main bundle; debug flag is passed to JS
+        $js_file = 'nova-ai.js';
+        
+        wp_enqueue_style(
+            'nov-ai-frontend',
+            NOV_AI_PLUGIN_URL . 'frontend/css/nova-ai.css',
+            [],
+            NOV_AI_VERSION . ($debug_mode ? '.debug' : '')
+        );
+
+        wp_enqueue_script(
+            'nov-ai-frontend',
+            NOV_AI_PLUGIN_URL . 'frontend/js/' . $js_file,
+            [],
+            NOV_AI_VERSION . ($debug_mode ? '.debug' : ''),
+            true
+        );
+
+        // Pass configuration to JavaScript
+        wp_localize_script('nov-ai-frontend', 'novAiConfig', [
+            'apiEndpoint' => $this->settings['api_endpoint'] ?? 'https://api.ailinux.me',
+            'ajaxUrl' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('nov_ai_nonce'),
+            'restUrl' => rest_url('nova-ai/v1'),
+            'debugMode' => $debug_mode,
+            'defaultModel' => $this->settings['default_model'] ?? 'openai/gpt-oss-120b:free',
+            'version' => NOV_AI_VERSION,
+        ]);
+    }
+
+    public function enqueue_admin_assets($hook) {
+        if (strpos($hook, 'nova-ai') === false) return;
+
+        wp_enqueue_style(
+            'nov-ai-admin',
+            NOV_AI_PLUGIN_URL . 'admin/css/admin.css',
+            [],
+            NOV_AI_VERSION
+        );
+
+        wp_enqueue_script(
+            'nov-ai-admin',
+            NOV_AI_PLUGIN_URL . 'admin/js/admin.js',
+            [],
+            NOV_AI_VERSION,
+            true
+        );
+
+        wp_localize_script('nov-ai-admin', 'novAdminConfig', [
+            'ajaxUrl'     => admin_url('admin-ajax.php'),
+            'nonce'       => wp_create_nonce('nov_ai_nonce'),
+            'apiEndpoint' => $this->settings['api_endpoint'] ?? 'https://api.ailinux.me',
+            'mcpEndpoint' => $this->settings['mcp_endpoint'] ?? 'https://api.ailinux.me',
+            'restUrl'     => rest_url('nova-ai/v1'),
+            'version'     => NOV_AI_VERSION,
+        ]);
+    }
+
+    public function register_shortcodes() {
+        add_shortcode('ailinux_downloads', function($atts) {
+            $atts = shortcode_atts(['path' => ''], $atts);
+            ob_start();
+            include NOV_AI_PLUGIN_DIR . 'templates/downloads.php';
+            return ob_get_clean();
+        });
+
+        add_shortcode('ailinux_ai_playground', function($atts) {
+            $atts = shortcode_atts([
+                'default_tab' => 'chat',
+                'height' => '600px'
+            ], $atts);
+            ob_start();
+            include NOV_AI_PLUGIN_DIR . 'templates/playground.php';
+            return ob_get_clean();
+        });
+
+        add_shortcode('ailinux_pass', function($atts) {
+            ob_start();
+            include NOV_AI_PLUGIN_DIR . 'templates/early-access.php';
+            return ob_get_clean();
+        });
+
+        add_shortcode('ailinux_chat_widget', function($atts) {
+            $atts = shortcode_atts([
+                'position' => $this->settings['widget_position'] ?? 'bottom-right'
+            ], $atts);
+            ob_start();
+            include NOV_AI_PLUGIN_DIR . 'templates/chat-widget.php';
+            return ob_get_clean();
+        });
+
+        add_shortcode('ailinux_shop', function($atts) {
+            $atts = shortcode_atts([
+                'layout'    => 'grid',
+                'highlight' => '',
+                'columns'   => 3,
+            ], $atts);
+            ob_start();
+            include NOV_AI_PLUGIN_DIR . 'templates/shop.php';
+            return ob_get_clean();
+        });
+    }
+
+    public function register_admin_menu() {
+        add_menu_page(
+            'Nova AI',
+            'Nova AI',
+            'manage_options',
+            'nova-ai',
+            [$this, 'render_admin_page'],
+            'dashicons-format-chat',
+            30
+        );
+    }
+
+    public function render_admin_page() {
+        include NOV_AI_PLUGIN_DIR . 'admin/AdminDashboard.php';
+    }
+
+    public function add_discuss_button($content) {
+        if (!is_singular()) {
+            return $content;
+        }
+
+        $enabled = $this->settings['discuss_button_enabled'] ?? true;
+        if (!$enabled) {
+            return $content;
+        }
+
+        $button = '<div class="nov-discuss-wrapper">
+            <button class="nov-discuss-btn nova-discuss-button" type="button" data-novai-discuss onclick="NovAI.openDiscuss()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                Discuss with AI
+            </button>
+        </div>';
+
+        return $button . $content . $button;
+    }
+
+    public function render_discuss_overlay() {
+        if (!is_singular()) {
+            return;
+        }
+
+        $enabled = $this->settings['discuss_button_enabled'] ?? true;
+        if (!$enabled) {
+            return;
+        }
+
+        include NOV_AI_PLUGIN_DIR . 'templates/discuss-overlay.php';
+    }
+
+    /**
+     * Render the floating chat widget if enabled
+     */
+    public function render_chat_widget() {
+        // Check if widget is enabled in settings
+        $enabled = $this->settings['widget_enabled'] ?? false;
+        if (!$enabled) {
+            return;
+        }
+
+        // Don't show on admin pages
+        if (is_admin()) {
+            return;
+        }
+
+        include NOV_AI_PLUGIN_DIR . 'templates/chat-widget.php';
+    }
+}
+
+=== CHAT PROXY ===
+<?php
+namespace NovAI\Services;
+
+defined('ABSPATH') || exit;
+
+class ChatProxy {
+    private static $instance = null;
+    private $api_endpoint;
+    private $api_endpoint_internal;
+    private $api_base;
+    
+    // Debug logging
+    private function debug_log($message, $data = null) {
+        $log_file = WP_CONTENT_DIR . '/nova-debug.log';
+        $timestamp = date('Y-m-d H:i:s');
+        $entry = "[$timestamp] $message";
+        if ($data !== null) {
+            $entry .= " | " . json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        }
+        error_log($entry . "\n", 3, $log_file);
+    }
+    
+    public static function instance() {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+    
+    private function __construct() {
+        $settings = get_option('nov_ai_settings', []);
+        $this->api_endpoint = $settings['api_endpoint'] ?? 'http://localhost:9000';
+        $this->api_endpoint_internal = $settings['api_endpoint_internal'] ?? '';
+        $this->api_base = $this->resolve_api_base($this->get_server_api_endpoint());
+
+        add_action('wp_ajax_nov_ai_chat', [$this, 'handle_chat']);
+        add_action('wp_ajax_nopriv_nov_ai_chat', [$this, 'handle_chat']);
+
+        add_action('wp_ajax_nov_ai_health', [$this, 'handle_health']);
+
+        add_action('wp_ajax_nov_ai_models', [$this, 'handle_models']);
+        add_action('wp_ajax_nopriv_nov_ai_models', [$this, 'handle_models']);
+
+        add_action('wp_ajax_nov_ai_vision_models', [$this, 'handle_vision_models']);
+        add_action('wp_ajax_nopriv_nov_ai_vision_models', [$this, 'handle_vision_models']);
+    }
+
+    private function get_server_api_endpoint() {
+        if (!empty($this->api_endpoint_internal)) {
+            $normalized = $this->normalize_endpoint($this->api_endpoint_internal);
+            return $this->normalize_internal_endpoint($normalized);
+        }
+
+        $derived = $this->derive_internal_endpoint($this->api_endpoint);
+        if (!empty($derived)) {
+            $normalized = $this->normalize_endpoint($derived);
+            return $this->normalize_internal_endpoint($normalized);
+        }
+
+        return $this->normalize_endpoint($this->api_endpoint);
+    }
+
+    private function derive_internal_endpoint($endpoint) {
+        $parsed = wp_parse_url($endpoint);
+        if (!$parsed || empty($parsed['host'])) {
+            return '';
+        }
+
+        $port = isset($parsed['port']) ? (int) $parsed['port'] : null;
+        if ($port !== 9100) {
+            return '';
+        }
+
+        $scheme = $parsed['scheme'] ?? 'http';
+        $host = $parsed['host'];
+        $path = $parsed['path'] ?? '';
+
+        if ($scheme === 'https') {
+            $scheme = 'http';
+        }
+
+        return $scheme . '://' . $host . ':9000' . $path;
+    }
+
+    private function normalize_internal_endpoint($endpoint) {
+        $parsed = wp_parse_url($endpoint);
+        if (!$parsed || empty($parsed['host'])) {
+            return $endpoint;
+        }
+
+        $port = isset($parsed['port']) ? (int) $parsed['port'] : null;
+        if ($port !== 9000) {
+            return $endpoint;
+        }
+
+        $scheme = $parsed['scheme'] ?? 'http';
+        if ($scheme !== 'https') {
+            return $endpoint;
+        }
+
+        $host = $parsed['host'];
+        $path = $parsed['path'] ?? '';
+        return 'http://' . $host . ':9000' . $path;
+    }
+
+    private function resolve_api_base($default_base) {
+        $cached = get_transient('nov_ai_api_base');
+        if ($cached) {
+            return $cached;
+        }
+
+        $candidates = $this->build_endpoint_candidates($default_base);
+        foreach ($candidates as $candidate) {
+            if ($this->probe_endpoint($candidate)) {
+                set_transient('nov_ai_api_base', $candidate, 300);
+                return $candidate;
+            }
+        }
+
+        return $default_base;
+    }
+
+    private function build_endpoint_candidates($base) {
+        $candidates = [];
+
+        if (!empty($base)) {
+            $candidates[] = $base;
+        }
+
+        if (file_exists('/.dockerenv')) {
+            $parsed = wp_parse_url($base);
+            $scheme = $parsed['scheme'] ?? 'http';
+            $port = isset($parsed['port']) ? ':' . $parsed['port'] : '';
+            $path = $parsed['path'] ?? '';
+
+            $resolved = gethostbyname('host.docker.internal');
+            if ($resolved && $resolved !== 'host.docker.internal') {
+                $candidates[] = $scheme . '://' . $resolved . $port . $path;
+            }
+
+            $gateway = $this->get_docker_gateway_ip();
+            if ($gateway) {
+                $candidates[] = $scheme . '://' . $gateway . $port . $path;
+            }
+
+            foreach ([17, 18, 19, 20, 21, 22] as $octet) {
+                $candidates[] = $scheme . '://172.' . $octet . '.0.1' . $port . $path;
+            }
+        }
+
+        return array_values(array_unique(array_filter($candidates)));
+    }
+
+    private function probe_endpoint($base) {
+        $url = rtrim($base, '/') . '/health';
+        $response = wp_remote_get($url, [
+            'timeout' => 2,
+            'headers' => ['Accept' => 'application/json'],
+        ]);
+
+        if (is_wp_error($response)) {
+            return false;
+        }
+
+        $code = wp_remote_retrieve_response_code($response);
+        return $code >= 200 && $code < 300;
+    }
+
+    private function normalize_endpoint($endpoint) {
+        $parsed = wp_parse_url($endpoint);
+        if (!$parsed || empty($parsed['host'])) {
+            return $endpoint;
+        }
+
+        $host = $parsed['host'];
+        $scheme = $parsed['scheme'] ?? 'http';
+        $port_number = isset($parsed['port']) ? (int) $parsed['port'] : null;
+        $port = isset($parsed['port']) ? ':' . $parsed['port'] : '';
+        $path = $parsed['path'] ?? '';
+
+        if ($scheme === 'https' && in_array($host, ['localhost', '127.0.0.1', 'host.docker.internal'], true)) {
+            if ($port_number === null || $port_number === 9000 || $port_number === 9100) {
+                $scheme = 'http';
+            }
+        }
+
+        if (file_exists('/.dockerenv') && in_array($host, ['localhost', '127.0.0.1'], true)) {
+            $resolved = gethostbyname('host.docker.internal');
+            if ($resolved && $resolved !== 'host.docker.internal') {
+                return $scheme . '://' . $resolved . $port . $path;
+            }
+
+            $gateway = $this->get_docker_gateway_ip();
+            if ($gateway) {
+                return $scheme . '://' . $gateway . $port . $path;
+            }
+        }
+
+        if ($host === 'host.docker.internal') {
+            $resolved = gethostbyname($host);
+            if ($resolved && $resolved !== $host) {
+                return $scheme . '://' . $resolved . $port . $path;
+            }
+
+            if (file_exists('/.dockerenv')) {
+                $gateway = $this->get_docker_gateway_ip();
+                if ($gateway) {
+                    return $scheme . '://' . $gateway . $port . $path;
+                }
+            }
+        }
+
+        return $endpoint;
+    }
+
+    private function get_docker_gateway_ip() {
+        $routes = @file('/proc/net/route');
+        if (!$routes) {
+            return '';
+        }
+
+        foreach ($routes as $index => $line) {
+            if ($index === 0) {
+                continue;
+            }
+
+            $parts = preg_split('/\s+/', trim($line));
+            if (count($parts) < 3) {
+                continue;
+            }
+
+            $destination = $parts[1];
+            $gateway_hex = $parts[2];
+
+            if ($destination !== '00000000') {
+                continue;
+            }
+
+            $gateway = $this->hex_to_ip($gateway_hex);
+            if ($gateway) {
+                return $gateway;
+            }
+        }
+
+        return '';
+    }
+
+    private function hex_to_ip($hex) {
+        if (strlen($hex) !== 8) {
+            return '';
+        }
+
+        $parts = array_reverse(str_split($hex, 2));
+        return implode('.', array_map('hexdec', $parts));
+    }
+    
+    public function handle_chat() {
+        header('Content-Type: application/json');
+        $this->debug_log('CHAT', ['action' => 'handle_chat', 'method' => $_SERVER['REQUEST_METHOD']]);
+        
+
+=== PLAYGROUND TEMPLATE ===
+<?php
+/**
+ * Nova AI Playground v4.0 - Mobile-First Responsive
+ * Theme: AILinux Nova Dark Integration
+ */
+defined("ABSPATH") || exit;
+$tab = $atts["default_tab"] ?? "chat";
+$height = $atts["height"] ?? "auto";
+?>
+<div class="nova-ai" data-tab="<?php echo esc_attr($tab); ?>" id="nova-playground">
+    <div class="nova-bar">
+        <button class="nova-tab <?php echo $tab === 'chat' ? 'on' : ''; ?>" data-t="chat">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <span>Chat</span>
+        </button>
+        <button class="nova-tab <?php echo $tab === 'vision' ? 'on' : ''; ?>" data-t="vision">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"></path>
+            </svg>
+            <span>Vision</span>
+        </button>
+        <div class="nova-select-wrap">
+            <select id="nova-model" aria-label="Model Selection" class="nova-select-scroll">
+                <option>Loading...</option>
+            </select>
+        </div>
+        <button id="nova-new" title="New Chat" aria-label="Start new conversation">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+        </button>
+        <button id="nova-fullscreen" title="Fullscreen" aria-label="Toggle fullscreen">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="fs-expand">
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <polyline points="9 21 3 21 3 15"></polyline>
+                <line x1="21" y1="3" x2="14" y2="10"></line>
+                <line x1="3" y1="21" x2="10" y2="14"></line>
+            </svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="fs-collapse" style="display:none">
+                <polyline points="4 14 10 14 10 20"></polyline>
+                <polyline points="20 10 14 10 14 4"></polyline>
+                <line x1="14" y1="10" x2="21" y2="3"></line>
+                <line x1="3" y1="21" x2="10" y2="14"></line>
+            </svg>
+        </button>
+    </div>
+
+    <!-- CHAT TAB -->
+    <div class="nova-box <?php echo $tab === 'chat' ? 'on' : ''; ?>" id="chat-box">
+        <div class="nova-chat" id="chat-log" role="log" aria-live="polite">
+            <div class="nova-welcome">
+                <div class="nova-welcome-icon">✨</div>
+                <h3>Nova AI Chat</h3>
+                <p>Powered by 115+ AI Models via TriForce Backend</p>
+            </div>
+        </div>
+        <div class="nova-foot">
+            <div id="chat-attachment-preview" class="nova-attachment" aria-live="polite"></div>
+            <textarea id="chat-in" placeholder="Type your message... (Enter to send, Shift+Enter for newline)" rows="1" aria-label="Chat input"></textarea>
+            <button id="chat-send" aria-label="Send message">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+                <span>Send</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- VISION TAB -->
+    <div class="nova-box <?php echo $tab === 'vision' ? 'on' : ''; ?>" id="vision-box">
+        <div class="nova-chat" id="vision-log" role="log" aria-live="polite">
+            <div class="nova-welcome">
+                <div class="nova-welcome-icon">👁️</div>
+                <h3>Vision Analysis</h3>
+                <p>Upload an image or paste a URL for AI analysis</p>
+            </div>
+        </div>
+        <div class="nova-foot">
+            <div id="vision-preview"></div>
+            <div class="nova-row">
+                <label class="nova-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <span>Upload</span>
+                    <input type="file" id="vision-file" accept="image/*" hidden>
+                </label>
+                <input type="text" id="vision-url" placeholder="Or paste image URL..." aria-label="Image URL">
+                <div class="nova-select-wrap">
+                    <select id="vision-model" aria-label="Vision model selection" size="10" class="nova-select-scroll">
+                        <option value="gemini/gemini-2.0-flash">Gemini 2.0 Flash</option>
+                        <option value="gemini/gemini-1.5-pro">Gemini 1.5 Pro</option>
+                        <option value="anthropic/claude-3.5-sonnet">Claude 3.5 Sonnet</option>
+                    </select>
+                </div>
+            </div>
+            <div class="nova-row">
+                <textarea id="vision-prompt" rows="2" placeholder="What would you like to know about this image?" aria-label="Vision prompt">Describe this image in detail.</textarea>
+                <button id="vision-go" aria-label="Analyze image">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <span>Analyze</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Welcome Screen */
+.nova-welcome {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 200px;
+    text-align: center;
+    color: var(--nova-text-muted);
+    animation: nova-fade-in 0.5s ease;
+}
+.nova-welcome-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    filter: grayscale(0.3);
+}
+.nova-welcome h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--nova-text);
+    margin-bottom: 8px;
+}
+.nova-welcome p {
+    font-size: 14px;
+    opacity: 0.7;
+}
+.nova-select-wrap {
+    width: 100%;
+    max-width: 320px;
+}
+.nova-select-scroll {
+    width: 100%;
+    box-sizing: border-box;
+    height: 44px;
+    padding: var(--nova-space-sm) var(--nova-space-md);
+    background: var(--nova-bg-1);
+    border: 1px solid var(--nova-border, rgba(255,255,255,0.12));
+    border-radius: var(--nova-radius-sm);
+}
+/* Button Icons */
+#chat-send, #vision-go, .nova-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+#chat-send svg, #vision-go svg, .nova-btn svg {
+    flex-shrink: 0;
+}
+/* Tab Icons */
+.nova-tab svg {
+    flex-shrink: 0;
+}
+@media (max-width: 480px) {
+    .nova-tab span,
+    #chat-send span,
+    #vision-go span {
+        display: none;
+    }
+    .nova-tab, #chat-send, #vision-go {
+        justify-content: center;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Fullscreen Toggle
+    const fsBtn = document.getElementById('nova-fullscreen');
+    const container = document.getElementById('nova-playground');
+    if (fsBtn && container) {
+        fsBtn.addEventListener('click', function() {
+            container.classList.toggle('fullscreen');
+            const expand = fsBtn.querySelector('.fs-expand');
+            const collapse = fsBtn.querySelector('.fs-collapse');
+            if (container.classList.contains('fullscreen')) {
+                expand.style.display = 'none';
+                collapse.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            } else {
+                expand.style.display = 'block';
+                collapse.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+        });
+        // ESC to exit fullscreen
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && container.classList.contains('fullscreen')) {
+                fsBtn.click();
+            }
+        });
+    }
+    // Remove welcome on first message
+    const removeWelcome = (logId) => {
+        const log = document.getElementById(logId);
+        const welcome = log?.querySelector('.nova-welcome');
+        if (welcome) welcome.remove();
+    };
+    const chatSend = document.getElementById('chat-send');
+    if (chatSend) chatSend.addEventListener('click', () => removeWelcome('chat-log'), {once: true});
+    const visionGo = document.getElementById('vision-go');
+    if (visionGo) visionGo.addEventListener('click', () => removeWelcome('vision-log'), {once: true});
+});
+</script>
+
+=== DOWNLOADS TEMPLATE ===
+<?php
+/**
+ * Downloads Template v2.5
+ * Shortcode: [ailinux_downloads]
+ */
+defined('ABSPATH') || exit;
+
+$service = \NovAI\Services\DownloadsService::instance();
+$path = isset($atts['path']) ? sanitize_text_field($atts['path']) : '';
+$data = $service->get_directory_contents($path);
+?>
+<div class="nov-downloads" data-base-url="<?php echo esc_attr(home_url('/downloads')); ?>">
+    <nav class="nov-crumb">
+        <?php foreach ($data['breadcrumb'] as $i => $crumb): ?>
+            <?php if ($i === count($data['breadcrumb']) - 1): ?>
+                <span><?php echo esc_html($crumb['name']); ?></span>
+            <?php else: ?>
+                <a href="#" data-path="<?php echo esc_attr($crumb['path']); ?>"><?php echo esc_html($crumb['name']); ?></a> / 
+            <?php endif; ?>
+        <?php endforeach; ?>
+    </nav>
+    
+    <ul class="nov-list">
+        <?php if (empty($data['files'])): ?>
+            <li class="nov-item">
+                <span class="nov-icon">📂</span>
+                <span class="nov-name">Empty folder</span>
+                <span class="nov-size">-</span>
+            </li>
+        <?php else: ?>
+            <?php foreach ($data['files'] as $file): ?>
+                <li class="nov-item <?php echo $file['type'] === 'folder' ? 'is-folder' : ''; ?>" 
+                    data-path="<?php echo esc_attr($file['path']); ?>">
+                    <span class="nov-icon"><?php echo $file['icon']; ?></span>
+                    <span class="nov-name">
+                        <?php if ($file['type'] === 'folder'): ?>
+                            <?php echo esc_html($file['name']); ?>
+                        <?php else: ?>
+                            <a href="<?php echo esc_url($file['url']); ?>" download><?php echo esc_html($file['name']); ?></a>
+                        <?php endif; ?>
+                    </span>
+                    <span class="nov-size"><?php echo esc_html($file['size']); ?></span>
+                </li>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </ul>
+</div>
+
+=== JS ===
+(() => {
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  const shell = $('.nova-ai-shell');
+  if (!shell || typeof NovaAIFrontend === 'undefined') return;
+
+  async function api(path, method = 'GET', body = null) {
+    const res = await fetch(`${NovaAIFrontend.rest}${path}`, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        'X-WP-Nonce': NovaAIFrontend.nonce
+      },
+      body: body ? JSON.stringify(body) : undefined
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || data.detail || res.statusText);
+    return data;
+  }
+
+  function out(sel, val) {
+    const el = $(sel);
+    if (!el) return;
+    el.textContent = typeof val === 'string' ? val : JSON.stringify(val, null, 2);
+  }
+
+  function fill(kind, items) {
+    const sel = document.querySelector(`[data-model="${kind}"]`);
+    if (!sel) return;
+    sel.innerHTML = '';
+    if (!items.length) {
+      sel.innerHTML = '<option value="">keine Modelle</option>';
+      return;
+    }
+    for (const item of items) {
+      const opt = document.createElement('option');
+      opt.value = item.id;
+      opt.textContent = `${item.name} [${item.provider}]`;
+      sel.appendChild(opt);
+    }
+  }
+
+  function renderImages(items) {
+    const box = $('[data-image-results]');
+    if (!box) return;
+    box.innerHTML = '';
+    for (const item of (items || [])) {
+      const d = document.createElement('div');
+      d.className = 'nova-media-card';
+      const img = document.createElement('img');
+      if (item.b64_json) img.src = `data:image/png;base64,${item.b64_json}`;
+      if (item.url) img.src = item.url;
+      d.appendChild(img);
+      box.appendChild(d);
+    }
+  }
+
+  async function init() {
+    const health = await api('/health');
+    const models = await api('/models');
+    $('[data-health]').textContent = `Backend: ${health.status || 'ok'}`;
+    $('[data-count]').textContent = `Modelle: ${models.count || 0}`;
+    fill('chat', models.categories?.chat || []);
+    fill('vision', models.categories?.vision || []);
+    fill('media_image', models.categories?.media_image || []);
+    fill('media_video', models.categories?.media_video || []);
+  }
+
+  $$('[data-tab]').forEach(btn => btn.addEventListener('click', () => {
+    $$('[data-tab]').forEach(x => x.classList.remove('active'));
+    $$('[data-panel]').forEach(x => x.classList.remove('active'));
+    btn.classList.add('active');
+    $(`[data-panel="${btn.dataset.tab}"]`).classList.add('active');
+  }));
+
+  $$('[data-subtab]').forEach(btn => btn.addEventListener('click', () => {
+    $$('[data-subtab]').forEach(x => x.classList.remove('active'));
+    $$('[data-subpanel]').forEach(x => x.classList.remove('active'));
+    btn.classList.add('active');
+    $(`[data-subpanel="${btn.dataset.subtab}"]`).classList.add('active');
+  }));
+
+  $('[data-run-chat]')?.addEventListener('click', async () => {
+    try {
+      out('[data-chat-output]', 'läuft …');
+      const res = await api('/chat', 'POST', {
+        model: $('[data-model="chat"]').value,
+        message: $('[data-chat-message]').value,
+        system: $('[data-system]').value
+      });
+      out('[data-chat-output]', res.raw || res);
+    } catch (e) {
+      out('[data-chat-output]', `Fehler: ${e.message}`);
+    }
+  });
+
+  $('[data-run-vision]')?.addEventListener('click', async () => {
+    try {
+      out('[data-vision-output]', 'läuft …');
+      const res = await api('/vision', 'POST', {
+        model: $('[data-model="vision"]').value,
+        prompt: $('[data-vision-prompt]').value,
+        image_url: $('[data-vision-url]').value || null,
+        image_base64: $('[data-vision-base64]').value || null
+      });
+      out('[data-vision-output]', res.raw || res);
+    } catch (e) {
+      out('[data-vision-output]', `Fehler: ${e.message}`);
+    }
+  });
+
+  $('[data-run-image]')?.addEventListener('click', async () => {
+    try {
+      out('[data-image-output]', 'läuft …');
+      const res = await api('/media/image', 'POST', {
+        model: $('[data-model="media_image"]').value,
+        prompt: $('[data-image-prompt]').value,
+        size: $('[data-image-size]').value,
+        quality: $('[data-image-quality]').value,
+        n: parseInt($('[data-image-n]').value || '1', 10)
+      });
+      renderImages(res.result?.data || []);
+      out('[data-image-output]', res.result || res);
+    } catch (e) {
+      out('[data-image-output]', `Fehler: ${e.message}`);
+    }
+  });
+
+  $('[data-run-video]')?.addEventListener('click', async () => {
+    try {
+      out('[data-video-output]', 'läuft …');
+      const res = await api('/media/video', 'POST', {
+        model: $('[data-model="media_video"]').value,
+        prompt: $('[data-video-prompt]').value,
+        seconds: parseInt($('[data-video-seconds]').value || '8', 10),
+        size: $('[data-video-size]').value
+      });
+      out('[data-video-output]', res.result || res);
+    } catch (e) {
+      out('[data-video-output]', `Fehler: ${e.message}`);
+    }
+  });
+
+  init().catch(err => {
+    $('[data-health]').textContent = 'Backend: Fehler';
+    out('[data-chat-output]', `Initialisierung fehlgeschlagen: ${err.message}`);
+  });
+})();
+
+=== CSS ===
+:root{
+  --n-bg:#0b1220; --n-bg2:#122038; --n-card:#101a2d; --n-border:#2b4769;
+  --n-text:#e8f0ff; --n-muted:#9db2cf; --n-accent:#36c2ff; --n-accent2:#7c4dff;
+}
+.nova-ai-shell,.nova-downloads-shell{background:linear-gradient(180deg,var(--n-bg),var(--n-bg2));color:var(--n-text);border:1px solid var(--n-border);border-radius:18px;padding:24px}
+.nova-ai-hero{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:16px;padding:18px;border:1px solid var(--n-border);border-radius:16px;background:linear-gradient(135deg,rgba(54,194,255,.10),rgba(124,77,255,.10))}
+.nova-kicker{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--n-accent);margin-bottom:8px}
+.nova-status{display:flex;gap:8px;flex-wrap:wrap}
+.nova-pill{padding:8px 12px;border:1px solid var(--n-border);border-radius:999px;background:rgba(255,255,255,.04)}
+.nova-tabs,.nova-subtabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.nova-tab,.nova-subtab,.nova-btn{border:1px solid var(--n-border);background:var(--n-card);color:var(--n-text);border-radius:12px;padding:10px 14px;cursor:pointer}
+.nova-tab.active,.nova-subtab.active,.nova-btn{background:linear-gradient(135deg,var(--n-accent2),var(--n-accent));border-color:transparent;color:#fff;font-weight:700}
+.nova-panel,.nova-subpanel{display:none}
+.nova-panel.active,.nova-subpanel.active{display:block}
+.nova-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.nova-inline{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.nova-card{background:rgba(0,0,0,.18);border:1px solid var(--n-border);border-radius:16px;padding:18px}
+.nova-ai-shell input,.nova-ai-shell select,.nova-ai-shell textarea{width:100%;margin-top:6px;margin-bottom:10px;padding:12px;border-radius:12px;border:1px solid var(--n-border);background:#0b1322;color:var(--n-text)}
+.nova-output{min-height:320px;white-space:pre-wrap;overflow:auto;border:1px solid var(--n-border);border-radius:12px;padding:14px;background:#08111d}
+.nova-media-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:12px}
+.nova-media-card{border:1px solid var(--n-border);border-radius:12px;padding:10px;background:#09111f}
+.nova-media-card img{display:block;width:100%;height:auto;border-radius:10px}
+.nova-table-wrap{overflow:auto}
+.nova-table{width:100%;border-collapse:collapse}
+.nova-table th,.nova-table td{padding:12px;border-bottom:1px solid var(--n-border);text-align:left;vertical-align:top}
+.nova-muted{color:var(--n-muted);font-size:12px}
+@media (max-width:960px){.nova-grid,.nova-inline{grid-template-columns:1fr}.nova-ai-hero{flex-direction:column}}

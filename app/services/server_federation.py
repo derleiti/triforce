@@ -360,7 +360,7 @@ def create_signed_request(data: dict, secret: str = None) -> dict:
     signature = hmac.new(
         secret.encode(),
         message.encode(),
-        hashlib.sha256
+        digestmod=hashlib.sha256
     ).hexdigest()
     
     return {
@@ -392,7 +392,7 @@ def verify_signed_request(request: dict, secret: str = None, max_age: int = 300)
         expected = hmac.new(
             secret.encode(),
             message.encode(),
-            hashlib.sha256
+            digestmod=hashlib.sha256
         ).hexdigest()
         
         if hmac.compare_digest(signature, expected):

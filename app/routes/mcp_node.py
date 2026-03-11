@@ -16,7 +16,7 @@ Protokoll:
 - JSON-RPC 2.0 Format (MCP-kompatibel)
 - Client meldet verfügbare Tools an Server
 """
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, HTTPException, Header
+from fastapi import Request, APIRouter, WebSocket, WebSocketDisconnect, HTTPException, Header
 from pydantic import BaseModel
 from typing import Optional, Dict, Any, List
 import asyncio
@@ -475,6 +475,7 @@ async def list_connected_clients(authorization: str = Header(None)):
 @router.post("/call", response_model=ProxyToolResponse)
 async def call_client_tool(
     request: ProxyToolRequest,
+    http_request: Request = None,
     authorization: str = Header(None)
 ):
     """
@@ -482,16 +483,52 @@ async def call_client_tool(
 
     Der Server sendet den Tool-Call an den verbundenen Client,
     der Client führt das Tool lokal aus und sendet das Ergebnis zurück.
-    """
-    if not authorization:
-        raise HTTPException(401, "Authorization required")
 
-    # Validiere Caller
-    try:
-        token = authorization.replace("Bearer ", "")
-        payload = decode_jwt_token(token)
-    except Exception:
-        raise HTTPException(401, "Invalid token")
+    Auth: Bearer JWT ODER Basic (MCP_OAUTH_USER:PASS) für interne Aufrufe.
+    Interne IPs (127.x, 172.18.x) können auch ohne Auth zugreifen.
+    """
+    import os, base64
+
+    # ── Bypass: Interne IPs (localhost, Docker-Netz) dürfen immer ───────────
+    client_ip = ""
+    if http_request:
+        client_ip = getattr(http_request.client, "host", "") or ""
+    _internal = (
+        client_ip.startswith("127.") or
+        client_ip.startswith("172.18.") or
+        client_ip.startswith("172.17.") or
+        client_ip == "::1" or
+        client_ip == ""
+    )
+
+    if not authorization:
+        if _internal:
+            logger.debug(f"[mcp/node/call] Internal bypass (no auth) from {client_ip}")
+        else:
+            raise HTTPException(401, "Authorization required")
+    else:
+        # ── Bearer JWT ────────────────────────────────────────────────────────
+        if authorization.startswith("Bearer "):
+            try:
+                token = authorization[7:]
+                decode_jwt_token(token)
+            except Exception:
+                raise HTTPException(401, "Invalid token")
+        # ── Basic Auth (WordPress / interne Services) ─────────────────────────
+        elif authorization.startswith("Basic "):
+            try:
+                decoded = base64.b64decode(authorization[6:]).decode("utf-8")
+                given_user, given_pass = decoded.split(":", 1)
+            except Exception:
+                raise HTTPException(401, "Invalid Basic auth")
+            mcp_user = os.environ.get("MCP_OAUTH_USER", "zombie")
+            mcp_pass = os.environ.get("MCP_OAUTH_PASS", "")
+            import hmac as _hmac
+            if not (given_user == mcp_user and _hmac.compare_digest(given_pass, mcp_pass)):
+                raise HTTPException(401, "Invalid credentials")
+        else:
+            if not _internal:
+                raise HTTPException(401, "Unsupported auth scheme")
 
     # Client finden
     client_id = request.client_id

@@ -46,6 +46,7 @@ from ..mcp.specialists import specialist_router, SpecialistCapability, SPECIALIS
 from ..mcp.context import context_manager, prompt_library, workflow_manager
 from ..mcp.adaptive_code import ADAPTIVE_CODE_TOOLS, ADAPTIVE_CODE_HANDLERS
 from ..mcp.adaptive_code_v4 import ADAPTIVE_CODE_V4_TOOLS, ADAPTIVE_CODE_V4_HANDLERS
+from ..mcp.dev_tools import DEV_TOOL_HANDLERS, DEV_TOOL_NAMES
 from ..mcp.tool_registry_v3 import (
     get_all_tools as registry_v3_get_all_tools,
     get_tool_by_name as registry_v3_get_tool,
@@ -2283,6 +2284,7 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
     tool_map.update(BOOTSTRAP_HANDLERS)
     tool_map.update(ADAPTIVE_CODE_HANDLERS)
     tool_map.update(ADAPTIVE_CODE_V4_HANDLERS)  # Enhanced V4 handlers
+    tool_map.update(DEV_TOOL_HANDLERS)           # Dev-Tools: dev_analyze, dev_lint, git, etc.
     tool_map.update(LLM_COMPAT_HANDLERS)
     tool_map.update(HOTRELOAD_HANDLERS)
     tool_map.update(MEMORY_INDEX_HANDLERS)
@@ -3613,6 +3615,7 @@ MCP_HANDLERS.update(MODEL_INIT_HANDLERS)
 MCP_HANDLERS.update(BOOTSTRAP_HANDLERS)
 MCP_HANDLERS.update(ADAPTIVE_CODE_HANDLERS)
 MCP_HANDLERS.update(ADAPTIVE_CODE_V4_HANDLERS)
+MCP_HANDLERS.update(DEV_TOOL_HANDLERS)          # dev_analyze, dev_lint, git etc.
 MCP_HANDLERS.update(LLM_COMPAT_HANDLERS)
 MCP_HANDLERS.update(HOTRELOAD_HANDLERS)
 MCP_HANDLERS.update(MEMORY_INDEX_HANDLERS)

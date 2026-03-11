@@ -1,0 +1,56 @@
+=== plugin markers ===
+5:Version: 2.0.1
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/core/ShopShortcode.php:31:        register_rest_route('nova-ai/v1', '/shop/checkout', [
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/core/ShopShortcode.php:163:            'checkout_url'   => rest_url('nova-ai/v1/shop/checkout'),
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/core/Plugin.php:85:            'restUrl' => rest_url('nova-ai/v1'),
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/core/Plugin.php:115:            'restUrl'     => rest_url('nova-ai/v1'),
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/nova-ai-frontend.php:11:    const NS  = 'nova-ai/v1';
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/DOCUMENTATION.md:70:3. `POST /wp-json/nova-ai/v1/auth/sync` legt ggf. einen WP-User an und setzt das Auth-Cookie.
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/DOCUMENTATION.md:94:- `GET /wp-json/nova-ai/v1/auth/status`  
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/DOCUMENTATION.md:96:- `POST /wp-json/nova-ai/v1/auth/sync`  
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/config/lemonsqueezy.php:37:// true = WP empfängt Webhooks direkt (Endpunkt: /wp-json/nova-ai/v1/payments/webhook/lemonsqueezy)
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/admin/AdminDashboard.php:921:            $rest_base    = rest_url('nova-ai/v1');
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/admin/AdminDashboard.php:1220:            $rest_base   = rest_url('nova-ai/v1');
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/admin/AdminDashboard.php:1310:            $rest_base     = rest_url('nova-ai/v1');
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/admin/AdminDashboard.php:1350:                POST <?php echo esc_url(rest_url('nova-ai/v1/payments/webhook/lemonsqueezy')); ?>
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/services/PaymentsService.php:75:        register_rest_route('nova-ai/v1', '/payments/webhook/lemonsqueezy', [
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/services/PaymentsService.php:82:        register_rest_route('nova-ai/v1', '/admin/resync-entitlements', [
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/services/AuthService.php:288:            $rest_url = esc_url(rest_url('nova-ai/v1/auth/logout'));
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/services/AuthService.php:343:        register_rest_route('nova-ai/v1', '/auth/status', [
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/services/AuthService.php:349:        register_rest_route('nova-ai/v1', '/auth/sync', [
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/services/AuthService.php:355:        register_rest_route('nova-ai/v1', '/auth/logout', [
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/services/AuthService.php:362:        register_rest_route('nova-ai/v1', '/admin/users', [
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/services/AuthService.php:368:        register_rest_route('nova-ai/v1', '/admin/set-tier', [
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/services/AuthService.php:374:        register_rest_route('nova-ai/v1', '/admin/invalidate-session', [
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/services/AuthService.php:729:            'restUrl'        => rest_url('nova-ai/v1'),
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/services/AuthService.php:730:            'syncUrl'        => rest_url('nova-ai/v1/auth/sync'),
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/services/MenuAuthService.php:53:            $rest_logout = esc_url(rest_url('nova-ai/v1/auth/logout'));
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/services/MenuAuthService.php:97:            $sync_url      = esc_url(rest_url('nova-ai/v1/auth/sync'));
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/services/MenuAuthService.php:124:        $sync_url      = wp_json_encode(rest_url('nova-ai/v1/auth/sync'));
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/nova-ai-frontend.php:279:            'callback' => fn() => self::backend_get('/v1/frontend/dashboard/health'),
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/nova-ai-frontend.php:285:            'callback' => fn() => self::backend_get('/v1/frontend/dashboard/models'),
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/nova-ai-frontend.php:291:            'callback' => fn($req) => self::backend_post('/v1/frontend/dashboard/chat', $req->get_json_params()),
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/nova-ai-frontend.php:297:            'callback' => fn($req) => self::backend_post('/v1/frontend/dashboard/vision', $req->get_json_params()),
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/nova-ai-frontend.php:303:            'callback' => fn($req) => self::backend_post('/v1/frontend/dashboard/media/image', $req->get_json_params()),
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/nova-ai-frontend.php:309:            'callback' => fn($req) => self::backend_post('/v1/frontend/dashboard/media/video', $req->get_json_params()),
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/core/Plugin.php:121:        add_shortcode('ailinux_downloads', function($atts) {
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/core/Plugin.php:128:        add_shortcode('ailinux_ai_playground', function($atts) {
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/nova-ai-frontend.php:31:        add_shortcode('ailinux_ai_playground', [__CLASS__, 'playground']);
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/nova-ai-frontend.php:32:        add_shortcode('ailinux_downloads', [__CLASS__, 'downloads_shortcode']);
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/includes/adsense-blocker.php:11:    $has_shortcode = isset($post->post_content) && has_shortcode($post->post_content, 'ailinux_ai_playground');
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/templates/downloads.php:4: * Shortcode: [ailinux_downloads]
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/DOCUMENTATION.md:45:- `[ailinux_downloads]`  
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/DOCUMENTATION.md:47:- `[ailinux_ai_playground]`  
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/admin/AdminDashboard.php:242:                            <td><code>[ailinux_downloads]</code></td>
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/admin/AdminDashboard.php:245:                            <td><button class="button button-small nov-copy-btn" data-copy="[ailinux_downloads]">📋 Copy</button></td>
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/admin/AdminDashboard.php:248:                            <td><code>[ailinux_ai_playground]</code></td>
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/admin/AdminDashboard.php:251:                            <td><button class="button button-small nov-copy-btn" data-copy='[ailinux_ai_playground default_tab="chat" height="600px"]'>📋 Copy</button></td>
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/core/Plugin.php:34:        add_action('admin_menu', [$this, 'register_admin_menu']);
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/core/Plugin.php:165:    public function register_admin_menu() {
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/core/Plugin.php:166:        add_menu_page(
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/nova-ai-frontend.php:27:        add_action('admin_menu', [__CLASS__, 'menu']);
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/nova-ai-frontend.php:39:        add_menu_page('Nova AI', 'Nova AI', 'manage_options', 'nova-ai-frontend', [__CLASS__, 'page_chat'], 'dashicons-superhero-alt', 58);
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/nova-ai-frontend.php:40:        add_submenu_page('nova-ai-frontend', 'Chat', 'Chat', 'manage_options', 'nova-ai-frontend', [__CLASS__, 'page_chat']);
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/nova-ai-frontend.php:41:        add_submenu_page('nova-ai-frontend', 'Vision Analyse', 'Vision Analyse', 'manage_options', 'nova-ai-vision', [__CLASS__, 'page_vision']);
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/nova-ai-frontend.php:42:        add_submenu_page('nova-ai-frontend', 'Media Generation', 'Media Generation', 'manage_options', 'nova-ai-media', [__CLASS__, 'page_media']);
+/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/nova-ai-frontend.php:43:        add_submenu_page('nova-ai-frontend', 'Downloads', 'Downloads', 'manage_options', 'nova-ai-downloads', [__CLASS__, 'page_downloads']);

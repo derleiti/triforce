@@ -661,51 +661,135 @@ async def media_video(req: VideoRequest) -> Dict[str, Any]:
 
 @router.get("/downloads")
 async def downloads() -> Dict[str, Any]:
-    """Return available client downloads with metadata."""
-    import glob, os as _os
-    base = _os.path.dirname(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
-    deploy_dir = _os.path.join(base, "client-deploy")
-    latest_dir = _os.path.join(base, "client-releases", "latest")
+    """Browsable folder tree from WordPress downloads directory.
+    BUG-FIX 2026-03-11: was only scanning client-deploy/*.deb — now returns full tree with all filetypes.
+    Supports custom descriptions via download_descriptions.json.
+    """
+    import os as _os, hashlib, mimetypes as _mt, json as _json, datetime as _dt
 
-    # Read version info
-    def _read(p: str) -> str:
+    WP_DOWNLOADS   = "/home/zombie/triforce/docker/wordpress/html/downloads"
+    DESCRIPTIONS_F = "/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/config/download_descriptions.json"
+    BASE_URL       = "https://ailinux.me/downloads"
+
+    desc_map: Dict[str, str] = {}
+    try:
+        with open(DESCRIPTIONS_F) as _df:
+            desc_map = _json.load(_df)
+    except Exception:
+        pass
+
+    TYPE_ICONS = {
+        "deb":"📦","rpm":"📦","apk":"📱","exe":"🖥️","msi":"🖥️",
+        "tar":"🗜️","gz":"🗜️","zip":"🗜️","xz":"🗜️","7z":"🗜️","bz2":"🗜️",
+        "mp4":"🎬","mkv":"🎬","avi":"🎬","mov":"🎬","webm":"🎬",
+        "mp3":"🎵","flac":"🎵","wav":"🎵","ogg":"🎵",
+        "iso":"💿","img":"💿",
+        "pdf":"📄","txt":"📝","md":"📝",
+        "sh":"⚙️","py":"⚙️","js":"⚙️",
+    }
+
+    def _fmt(n: int) -> str:
+        for unit in ["B","KB","MB","GB"]:
+            if n < 1024:
+                return f"{n:.1f} {unit}"
+            n //= 1024
+        return f"{n:.1f} TB"
+
+    def _sha1(fp: str, max_mb: int = 2) -> str:
+        h = hashlib.sha1()
         try:
-            with open(p) as _f:
-                return _f.read().strip()
+            with open(fp,"rb") as _f:
+                h.update(_f.read(max_mb * 1024 * 1024))
         except Exception:
             return ""
+        return h.hexdigest()
 
-    version = _read(_os.path.join(latest_dir, "VERSION")) or "4.3.6"
-    build_date = _read(_os.path.join(latest_dir, "BUILD_DATE")) or ""
+    def _scan(dir_path: str, rel_base: str = "") -> Dict[str, Any]:
+        files: list = []
+        folders: list = []
+        try:
+            names = sorted(_os.listdir(dir_path))
+        except Exception:
+            return {"files": [], "folders": []}
+        for name in names:
+            if name.startswith("."):
+                continue
+            full = _os.path.join(dir_path, name)
+            rel  = f"{rel_base}/{name}" if rel_base else name
+            if _os.path.isdir(full):
+                sub = _scan(full, rel)
+                total_sub = sum(f["size"] for f in sub["files"])
+                for sf in sub["folders"]:
+                    total_sub += sf.get("total_size", 0)
+                folders.append({
+                    "name": name, "path": rel,
+                    "description": desc_map.get(f"folder:{rel}", ""),
+                    "icon": "📁",
+                    "file_count": len(sub["files"]),
+                    "total_size": total_sub,
+                    "total_size_formatted": _fmt(total_sub),
+                    "files": sub["files"],
+                    "folders": sub["folders"],
+                })
+            elif _os.path.isfile(full):
+                try:
+                    stat = _os.stat(full)
+                except Exception:
+                    continue
+                ext = name.rsplit(".", 1)[-1].lower() if "." in name else ""
+                mime = _mt.guess_type(name)[0] or "application/octet-stream"
+                files.append({
+                    "name": name, "path": rel,
+                    "size": stat.st_size,
+                    "size_formatted": _fmt(stat.st_size),
+                    "type": ext,
+                    "mime": mime,
+                    "icon": TYPE_ICONS.get(ext, "📄"),
+                    "modified": _dt.datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%d"),
+                    "sha1": _sha1(full),
+                    "url": f"{BASE_URL}/{rel}",
+                    "description": desc_map.get(f"file:{rel}", ""),
+                })
+        return {"files": files, "folders": folders}
 
-    files = []
-    total_bytes = 0
-    # Scan latest .deb
-    for pattern in ["*.deb", "*.apk", "*.exe"]:
-        for fp in sorted(glob.glob(_os.path.join(deploy_dir, pattern))):
-            fname = _os.path.basename(fp)
-            size = _os.path.getsize(fp)
-            total_bytes += size
-            ext = fname.rsplit(".", 1)[-1].upper()
-            platform = "Linux" if ext == "DEB" else ("Android" if ext == "APK" else "Windows")
-            files.append({
-                "name": fname,
-                "platform": platform,
-                "size": size,
-                "version": version,
-                "url": f"/downloads/{fname}",
-            })
+    if not _os.path.isdir(WP_DOWNLOADS):
+        return {"ok": False, "error": "downloads directory not found", "files": [], "folders": [], "total_bytes": 0}
 
-    # Newest first
-    files.sort(key=lambda x: x["name"], reverse=True)
-    # Only latest per platform
-    seen = set()
-    unique = []
-    for f in files:
-        key = (f["platform"], f["version"])
-        if key not in seen:
-            seen.add(key)
-            unique.append(f)
+    tree = _scan(WP_DOWNLOADS)
+    total_bytes = sum(f["size"] for f in tree["files"])
+    for folder in tree["folders"]:
+        total_bytes += folder.get("total_size", 0)
 
-    return {"ok": True, "version": version, "build_date": build_date, "files": unique, "total_bytes": total_bytes}
+    return {
+        "ok": True,
+        "files": tree["files"],
+        "folders": tree["folders"],
+        "total_bytes": total_bytes,
+        "total_formatted": _fmt(total_bytes),
+    }
+
+@router.get("/downloads/descriptions")
+async def downloads_descriptions_get() -> Dict[str, Any]:
+    """Get all download descriptions for admin editing."""
+    DESCRIPTIONS_F = "/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/config/download_descriptions.json"
+    import json as _json
+    try:
+        with open(DESCRIPTIONS_F) as f:
+            return {"ok": True, "descriptions": _json.load(f)}
+    except Exception:
+        return {"ok": True, "descriptions": {}}
+
+@router.post("/downloads/descriptions")
+async def downloads_descriptions_set(data: Dict[str, Any]) -> Dict[str, Any]:
+    """Save download descriptions."""
+    DESCRIPTIONS_F = "/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/config/download_descriptions.json"
+    import json as _json, os as _os
+    try:
+        descs = data.get("descriptions", {})
+        _os.makedirs(_os.path.dirname(DESCRIPTIONS_F), exist_ok=True)
+        with open(DESCRIPTIONS_F, "w") as f:
+            _json.dump(descs, f, indent=2, ensure_ascii=False)
+        return {"ok": True}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 

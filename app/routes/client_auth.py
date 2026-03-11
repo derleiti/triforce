@@ -130,7 +130,7 @@ def create_jwt_token(
     signature = hmac.new(
         JWT_SECRET.encode("utf-8"),
         signing_input.encode("utf-8"),
-        hashlib.sha256
+        digestmod=hashlib.sha256
     ).digest()
     return signing_input + "." + _b64url_encode(signature)
 
@@ -147,7 +147,7 @@ def decode_jwt_token(token: str) -> dict:
         hmac.new(
             JWT_SECRET.encode("utf-8"),
             signing_input.encode("utf-8"),
-            hashlib.sha256
+            digestmod=hashlib.sha256
         ).digest()
     )
     if not hmac.compare_digest(signature, expected_sig):
@@ -396,7 +396,10 @@ async def user_login(request: UserLoginRequest):
         blocked = ["codebase_*", "restart_*", "vault_*", "tristar_*"]
 
     # Create JWT token MIT EMAIL (wichtig für Tier-Service!)
-    token = create_jwt_token(client_id, user["tier"], email=email)
+    # FIX 2026-03-11: normalize legacy enterprise/pro to free/paid before storing in JWT
+    from ..services.user_tiers import normalize_tier
+    _norm_tier = normalize_tier(user["tier"]).value  # → "free" or "paid"
+    token = create_jwt_token(client_id, _norm_tier, email=email)
 
     # Register client session
     CLIENT_REGISTRY[client_id] = {
@@ -531,8 +534,10 @@ async def client_auth(request: ClientAuthRequest):
         client["secret_hash"] = hash_secret(request.client_secret)
         logger.info(f"First login for client: {request.client_id}, secret set")
     
-    # Token generieren
-    token = create_jwt_token(request.client_id, client["role"].value)
+    # Token generieren (FIX 2026-03-11: normalize legacy tier to free/paid)
+    from ..services.user_tiers import normalize_tier as _nt
+    _role_norm = _nt(client["role"].value if hasattr(client["role"], "value") else str(client["role"])).value
+    token = create_jwt_token(request.client_id, _role_norm)
     
     # Session tracken
     ACTIVE_SESSIONS[request.client_id] = {

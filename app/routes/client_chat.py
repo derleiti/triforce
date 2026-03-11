@@ -6,7 +6,7 @@ Tier-basierter Chat:
 """
 from fastapi import APIRouter, HTTPException, Header
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional, List, Union
 import httpx
 import os
 import logging
@@ -139,7 +139,7 @@ class ChatResponse(BaseModel):
 class ModelsResponse(BaseModel):
     tier: str
     tier_name: str
-    model_count: int
+    model_count: Union[int, str]  # FIX BE#19: DEMO_MODE returns "all"
     models: List[str]
     backend: str
     upgrade_available: bool

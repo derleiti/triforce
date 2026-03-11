@@ -110,7 +110,7 @@ async def verify_webhook_signature(request: Request, x_webhook_signature: str = 
     expected_sig = hmac.new(
         webhook_secret.encode('utf-8'),
         body,
-        hashlib.sha256
+        digestmod=hashlib.sha256
     ).hexdigest()
 
     # Signatur-Format: "sha256=<hex>" oder nur "<hex>"
@@ -491,7 +491,7 @@ async def get_auth_token(
     # Signature
     message = f"{header_b64}.{payload_b64}"
     signature = hmac.new(
-        jwt_secret.encode(),
+        jwt_secret.encode("utf-8"),
         message.encode(),
         hashlib.sha256
     ).digest()

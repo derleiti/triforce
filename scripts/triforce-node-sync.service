@@ -1,0 +1,17 @@
+[Unit]
+Description=TriForce Node-Sync — Update vom Hetzner Master
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/bin/bash /opt/triforce-sync/node-sync-from-master.sh
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=triforce-node-sync
+TimeoutSec=120
+RemainAfterExit=no
+
+[Install]
+WantedBy=multi-user.target

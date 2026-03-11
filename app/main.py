@@ -208,6 +208,14 @@ async def lifespan(app: FastAPI):
         # import logging (centralized)
         logger.warning(f"Failed to start Distributed Compute Manager: {e}")
 
+    # BUG-003 FIX 2026-03-11: init_v4_handlers wurde nie aufgerufen → alle v4 Handler tot nach Restart
+    try:
+        from .routes.mcp import init_v4_handlers
+        init_v4_handlers()
+        logger.info("MCP v4 Handler Registry initialized")
+    except Exception as e:
+        logger.warning(f"MCP v4 Handler init failed: {e}")
+
     # Start MCP Server Brain (Mitdenk-Funktion)
     try:
         from .services.init_service import mcp_brain

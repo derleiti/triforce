@@ -71,8 +71,12 @@ class HotReloader:
         "app.services.tristar.shortcodes",
         "app.routes.mcp",
         "app.routes.mcp_remote",
+        "app.routes.widget_handlers",
         "app.routes.chat",
         "app.routes.mesh",
+        "app.mcp.handlers_v4",
+        "app.mcp.tool_registry_v5",
+        "app.mcp.dev_tools",
         "app.utils.mcp_auth",
     ]
 

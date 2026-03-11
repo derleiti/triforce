@@ -302,22 +302,21 @@ class HandlerRegistry:
             self.register("specialist", handle_specialist)
         except ImportError as e:
             logger.warning(f"Core handlers import failed: {e}")
-    
+
     def _register_search_handlers(self):
-        """Search: search, crawl"""
+        """Search: search, multi_search, smart_search"""
         try:
-            from app.services.search_mcp import handle_web_search
-            from app.services.mcp_service import handle_crawl_url
-
-            # Wrapper for crawl - uses crawl_url as default
-            async def handle_crawl(params):
-                return await handle_crawl_url(params)
-
-            self.register("search", handle_web_search)
-            self.register("crawl", handle_crawl)
+            from app.services.search_mcp import (
+                handle_multi_search,
+                handle_smart_search,
+                handle_search_health,
+            )
+            self.register("search", handle_multi_search)
+            self.register("multi_search", handle_multi_search)
+            self.register("smart_search", handle_smart_search)
         except ImportError as e:
             logger.warning(f"Search handlers import failed: {e}")
-    
+
     def _register_memory_handlers(self):
         """Memory: memory_store, memory_search, memory_clear"""
         try:
@@ -412,18 +411,18 @@ class HandlerRegistry:
             
             # Use existing handlers with new names
             async def handle_code_read(params):
-                from app.services.tristar_mcp import handle_codebase_file
+                from app.services.mcp_service import handle_codebase_file
                 return await handle_codebase_file(params)
             
             async def handle_code_search(params):
                 # Combine codebase_search and ram_search
                 if params.get("regex"):
                     return await handle_ram_search(params)
-                from app.services.tristar_mcp import handle_codebase_search
+                from app.services.mcp_service import handle_codebase_search
                 return await handle_codebase_search(params)
             
             async def handle_code_edit(params):
-                from app.services.tristar_mcp import handle_codebase_edit
+                from app.services.mcp_service import handle_codebase_edit
                 return await handle_codebase_edit(params)
             
             self.register("code_read", handle_code_read)
