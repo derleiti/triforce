@@ -65,6 +65,7 @@ add_action('rest_api_init', function () {
             ['Cache-Control'=>'no-store,no-cache,max-age=0','Pragma'=>'no-cache']);
     }]);
     register_rest_route($ns, '/article-chat', ['methods'=>'POST', 'callback'=>'nova_proxy_article_chat', 'permission_callback'=>'__return_true']);
+    register_rest_route($ns, '/auth/status', ['methods'=>'GET', 'callback'=>'nova_auth_status', 'permission_callback'=>'__return_true']);
     register_rest_route($ns, '/account', ['methods'=>'GET', 'callback'=>'nova_proxy_account', 'permission_callback'=>'__return_true']);
     // Auth routes delegated to AuthService.php (register_rest_routes)
     // Subscription & Purchase routes (user must be logged in)
