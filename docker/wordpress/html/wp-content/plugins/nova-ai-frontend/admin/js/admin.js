@@ -248,8 +248,11 @@ async function callMcpTool() {
     setHTML('mcp-call-result', '⏳ Läuft…');
     try {
         const d = await post('/admin/mcp/call', { tool, args });
-        // Show text result directly if available, otherwise JSON
-        const display = d.result ? d.result : JSON.stringify(d, null, 2);
+        // BUG-FIX 2026-03-11: d.result can be an object → must stringify before escHtml
+        const raw = d.result;
+        const display = raw !== undefined
+          ? (typeof raw === 'string' ? raw : JSON.stringify(raw, null, 2))
+          : JSON.stringify(d, null, 2);
         setHTML('mcp-call-result', escHtml(display));
     } catch (e) {
         setHTML('mcp-call-result', `❌ ${escHtml(e.message)}`);
