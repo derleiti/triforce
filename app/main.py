@@ -50,6 +50,7 @@ from .routes.user_api import router as user_api_router
 # BUG-013 FIX 2026-03-10: support + tiers waren definiert aber nie registriert
 from .routes.support import router as support_router
 from .routes.tiers import router as tiers_router
+from .routes.nova_wordpress import router as nova_wordpress_router
 
 # Import routers from the top-level app directory
 from .routes_sd3 import router as sd3_router
@@ -467,6 +468,7 @@ def create_app() -> FastAPI:
     # BUG-013 FIX 2026-03-10: support + tiers Routen registriert
     app.include_router(support_router, prefix="/v1", tags=["Support"])
     app.include_router(tiers_router, prefix="/v1", tags=["Tiers"])
+    app.include_router(nova_wordpress_router, tags=["Nova WordPress"])
 
     # Import and include txt2img router
     try:
