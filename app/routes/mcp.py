@@ -1527,7 +1527,18 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
     tools = deduped
     
     tools = _inject_annotations(tools)
-    
+
+    # 2026-03-11: Inject Mail + WordPress MCP tools from v5 registry
+    try:
+        from ..mcp.tool_registry_v5 import V5_TOOLS
+        mail_wp_names = {"mail_inbox","mail_read","mail_send","mail_mark_seen","wp_list_drafts","wp_create_draft","wp_update_post"}
+        existing = {t.get("name") for t in tools}
+        for t in V5_TOOLS:
+            if t.get("name") in mail_wp_names and t.get("name") not in existing:
+                tools.append(_normalize_tool_schema(t))
+    except Exception:
+        pass
+
     return {
         "tools": tools, 
         "version": "v4", 

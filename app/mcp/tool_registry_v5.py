@@ -832,6 +832,101 @@ V5_TOOLS: List[Dict[str, Any]] = [
             "required": ["tool_name"],
         },
     },
+    # =========================================================================
+    # MAIL — Nova IMAP/SMTP (nova@ailinux.me) — Added 2026-03-11
+    # =========================================================================
+    {
+        "name": "mail_inbox",
+        "description": "List recent emails from Nova inbox (nova@ailinux.me). Returns subject, from, date, seen-flag per message.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "limit": {"type": "integer", "description": "Max messages to return (default: 20)"},
+                "folder": {"type": "string", "description": "IMAP folder (default: INBOX)"},
+            },
+        },
+    },
+    {
+        "name": "mail_read",
+        "description": "Read full email body by UID from Nova inbox. Returns headers + plain-text body (max 4000 chars).",
+        "inputSchema": {
+            "type": "object",
+            "required": ["uid"],
+            "properties": {
+                "uid": {"type": "string", "description": "IMAP message UID from mail_inbox"},
+                "folder": {"type": "string", "description": "IMAP folder (default: INBOX)"},
+            },
+        },
+    },
+    {
+        "name": "mail_send",
+        "description": "Send email from nova@ailinux.me via SMTP. Requires to, subject, body.",
+        "inputSchema": {
+            "type": "object",
+            "required": ["to", "subject", "body"],
+            "properties": {
+                "to": {"type": "string", "description": "Recipient email address"},
+                "subject": {"type": "string", "description": "Email subject"},
+                "body": {"type": "string", "description": "Plain text email body"},
+                "cc": {"type": "string", "description": "CC recipient (optional)"},
+                "reply_to": {"type": "string", "description": "Reply-To address (optional)"},
+            },
+        },
+    },
+    {
+        "name": "mail_mark_seen",
+        "description": "Mark an email as read/seen by UID in Nova inbox.",
+        "inputSchema": {
+            "type": "object",
+            "required": ["uid"],
+            "properties": {
+                "uid": {"type": "string", "description": "IMAP message UID"},
+                "folder": {"type": "string", "description": "IMAP folder (default: INBOX)"},
+            },
+        },
+    },
+
+    # =========================================================================
+    # WORDPRESS — Nova Admin via Application Password — Added 2026-03-11
+    # =========================================================================
+    {
+        "name": "wp_list_drafts",
+        "description": "List WordPress draft posts on ailinux.me. Returns post ID, title, date.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "per_page": {"type": "integer", "description": "Max posts to return (default: 20)"},
+            },
+        },
+    },
+    {
+        "name": "wp_create_draft",
+        "description": "Create a new WordPress draft post on ailinux.me. Returns post ID and link.",
+        "inputSchema": {
+            "type": "object",
+            "required": ["title"],
+            "properties": {
+                "title": {"type": "string", "description": "Post title"},
+                "content": {"type": "string", "description": "Post body (HTML or plain text)"},
+                "categories": {"type": "array", "items": {"type": "integer"}, "description": "Category IDs (optional)"},
+            },
+        },
+    },
+    {
+        "name": "wp_update_post",
+        "description": "Update an existing WordPress post on ailinux.me. Can update title, content, status.",
+        "inputSchema": {
+            "type": "object",
+            "required": ["post_id"],
+            "properties": {
+                "post_id": {"type": "integer", "description": "WordPress post ID"},
+                "title": {"type": "string", "description": "New title (optional)"},
+                "content": {"type": "string", "description": "New content (optional)"},
+                "status": {"type": "string", "enum": ["draft", "publish", "private"], "description": "Post status (optional)"},
+            },
+        },
+    },
+
 ]
 
 # =============================================================================
