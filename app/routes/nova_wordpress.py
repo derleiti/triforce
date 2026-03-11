@@ -177,6 +177,8 @@ def publish_post(post_id: int):
 def get_post(post_id: int):
     """Einzelnen Post abrufen."""
     data = wp(f"post get {post_id} --fields=ID,post_title,post_content,post_status,post_date,post_type,post_author,guid")
+    if not data or data == "" or (isinstance(data, dict) and not data.get("ID")):
+        raise HTTPException(status_code=404, detail=f"Post {post_id} nicht gefunden")
     return {"ok": True, "post": data}
 
 
