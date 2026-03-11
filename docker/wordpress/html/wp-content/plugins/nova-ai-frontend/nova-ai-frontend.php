@@ -968,3 +968,43 @@ add_filter('render_block_core/shortcode', function ($content) {
         return do_shortcode($content);
     return $content;
 });
+
+/* ── Discuss with AI Button (the_content injection) ───────────────────────── */
+// FIX 2026-03-11: Plugin.php was dead code — DiscussButton.php never instantiated.
+// This filter directly injects the discuss button+overlay HTML into single posts/pages.
+// IDs match exactly what initDiscuss() in nova-ai.js expects.
+add_filter('the_content', function (string $content): string {
+    $s = get_option('nova_ai_settings', []);
+    if (empty($s['discuss_button_enabled'])) return $content;
+    if (!is_singular()) return $content; // Only on single posts/pages
+
+    ob_start(); ?>
+<div id="ai-discuss-wrap">
+  <button id="ai-discuss-btn" class="ai-discuss-fab" aria-label="Discuss with AI" title="Discuss with AI">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+    <span>Discuss with AI</span>
+  </button>
+  <div id="ai-discuss-panel" class="ai-discuss-panel" aria-hidden="true" role="dialog" aria-label="Discuss this article with AI">
+    <div class="ai-discuss-header">
+      <span class="ai-discuss-title">&#10022; Discuss with AI</span>
+      <div class="ai-discuss-header-right">
+        <select id="ai-model-select" class="ai-discuss-model-sel" title="Model"></select>
+        <button id="ai-discuss-close" class="ai-discuss-close" aria-label="Close">&#x2715;</button>
+      </div>
+    </div>
+    <div id="ai-discuss-chat" class="ai-discuss-chat" role="log" aria-live="polite">
+      <div class="ai-discuss-welcome">Frag mich etwas zu diesem Artikel &mdash; <kbd>Ctrl+Enter</kbd> sendet.</div>
+    </div>
+    <div id="ai-discuss-output" class="ai-discuss-status"></div>
+    <div class="ai-discuss-input-row">
+      <textarea id="ai-discuss-input" class="ai-discuss-input" placeholder="Frage zum Artikel&hellip;" rows="2" aria-label="Nachricht"></textarea>
+      <button id="ai-discuss-send" class="ai-discuss-send" aria-label="Senden">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M.5 1.163A1 1 0 0 1 1.97.28l12.868 6.837a1 1 0 0 1 0 1.766L1.969 15.72A1 1 0 0 1 .5 14.836V10.33a1 1 0 0 1 .816-.983L8.5 8 1.316 6.653A1 1 0 0 1 .5 5.67V1.163Z"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+    <?php
+    $html = ob_get_clean();
+    return $content . $html;
+});

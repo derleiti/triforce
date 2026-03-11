@@ -210,7 +210,8 @@ window.novaAgentAction = async (agentId, action) => {
     if (!agentId) return;
     try {
         const d = await post(`/admin/agents/${agentId}/${action}`, {});
-        alert(d.message || d.ok ? `${action} OK` : JSON.stringify(d));
+        // BUG-FIX 2026-03-11: operator precedence — d.message||d.ok was parsed as (d.message||d.ok)?...
+        alert(d.ok ? (d.message || `${action} OK`) : (d.message || JSON.stringify(d)));
         await loadAgents();
     } catch (e) { alert('Fehler: ' + e.message); }
 };

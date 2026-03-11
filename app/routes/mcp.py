@@ -47,6 +47,7 @@ from ..mcp.context import context_manager, prompt_library, workflow_manager
 from ..mcp.adaptive_code import ADAPTIVE_CODE_TOOLS, ADAPTIVE_CODE_HANDLERS
 from ..mcp.adaptive_code_v4 import ADAPTIVE_CODE_V4_TOOLS, ADAPTIVE_CODE_V4_HANDLERS
 from ..mcp.dev_tools import DEV_TOOL_HANDLERS, DEV_TOOL_NAMES
+from ..mcp.doc_browser import DOC_TOOL_HANDLERS, DOC_TOOL_NAMES
 from ..mcp.flarum_tools import FLARUM_TOOL_HANDLERS, FLARUM_TOOL_NAMES
 from ..mcp.notification_manager import NOTIFY_TOOL_HANDLERS, NOTIFY_TOOL_NAMES
 from ..mcp.tla_workflow import TLA_TOOL_HANDLERS, TLA_TOOL_NAMES
@@ -2339,6 +2340,7 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
     tool_map.update(ADAPTIVE_CODE_HANDLERS)
     tool_map.update(ADAPTIVE_CODE_V4_HANDLERS)  # Enhanced V4 handlers
     tool_map.update(DEV_TOOL_HANDLERS)           # Dev-Tools: dev_analyze, dev_lint, git, etc.
+    tool_map.update(DOC_TOOL_HANDLERS)           # Doc-Browser: doc_scan, doc_read, doc_search, etc.
     tool_map.update(FLARUM_TOOL_HANDLERS)             # Flarum Forum: discussions, posts, tags, users
     tool_map.update(NOTIFY_TOOL_HANDLERS)             # Notification Manager: notify_list, notify_send etc.
     tool_map.update(TLA_TOOL_HANDLERS)                # TLA+ Workflow: tla_plan, tla_verify, tla_advance ...
@@ -3683,6 +3685,7 @@ MCP_HANDLERS.update(BOOTSTRAP_HANDLERS)
 MCP_HANDLERS.update(ADAPTIVE_CODE_HANDLERS)
 MCP_HANDLERS.update(ADAPTIVE_CODE_V4_HANDLERS)
 MCP_HANDLERS.update(DEV_TOOL_HANDLERS)          # dev_analyze, dev_lint, git etc.
+MCP_HANDLERS.update(DOC_TOOL_HANDLERS)          # doc_scan, doc_read, doc_search, doc_tree, doc_stats
 MCP_HANDLERS.update(FLARUM_TOOL_HANDLERS)
 MCP_HANDLERS.update(NOTIFY_TOOL_HANDLERS)          # notify_list, notify_send etc.
 MCP_HANDLERS.update(TLA_TOOL_HANDLERS)             # tla_plan, tla_verify, tla_status ...

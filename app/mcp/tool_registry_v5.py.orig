@@ -1021,94 +1021,6 @@ V5_TOOLS: List[Dict[str, Any]] = [
         },
     },
 
-    # =========================================================================
-    # DOC-BROWSER — Rekursiver Dokumentations-Browser — Added 2026-03-11
-    # =========================================================================
-    {
-        "name": "doc_scan",
-        "description": (
-            "Rekursiv alle Dokumentationsdateien im TriForce-Projekt finden. "
-            "Unterstützt *.md, *.txt, *.sh, *.json, *.yml, *.toml u.v.m. "
-            "Gibt Dateiliste mit Metadaten (Pfad, Größe, Datum, Zeilenzahl, Typ) zurück. "
-            "category-Shortcuts: docs | scripts | config | all"
-        ),
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "path":       {"type": "string",  "description": "Startpfad (default: project root)"},
-                "extensions": {"type": "array",   "items": {"type": "string"}, "description": "Dateierweiterungen z.B. [.md, .sh]"},
-                "category":   {"type": "string",  "enum": ["docs", "scripts", "config", "all"], "description": "Kategorie-Shortcut"},
-                "max_depth":  {"type": "integer", "description": "Max. Verzeichnistiefe (default: unbegrenzt)"},
-                "sort_by":    {"type": "string",  "enum": ["rel_path", "modified", "size", "kind", "name"], "description": "Sortierung"},
-            },
-        },
-    },
-    {
-        "name": "doc_read",
-        "description": (
-            "Dokumentationsdatei lesen mit vollständigen Metadaten (Pfad, Größe, Zeilen, Datum, Typ). "
-            "Unterstützt Zeilenfenster (start_line/end_line) für große Dateien."
-        ),
-        "inputSchema": {
-            "type": "object",
-            "required": ["path"],
-            "properties": {
-                "path":       {"type": "string",  "description": "Dateipfad (absolut oder relativ zu project root)"},
-                "start_line": {"type": "integer", "description": "Erste Zeile (default: 1)"},
-                "end_line":   {"type": "integer", "description": "Letzte Zeile (default: EOF)"},
-                "show_meta":  {"type": "boolean", "description": "Metadaten mitgeben (default: true)"},
-                "max_chars":  {"type": "integer", "description": "Max. Zeichen im Output (default: 50000)"},
-            },
-        },
-    },
-    {
-        "name": "doc_search",
-        "description": (
-            "Volltext-Suche über alle Dokumentationsdateien. Grep-style mit Kontext-Zeilen. "
-            "Unterstützt Regex, case-sensitive, Dateifilter."
-        ),
-        "inputSchema": {
-            "type": "object",
-            "required": ["query"],
-            "properties": {
-                "query":          {"type": "string",  "description": "Suchbegriff oder Regex"},
-                "path":           {"type": "string",  "description": "Startpfad (default: project root)"},
-                "extensions":     {"type": "array",   "items": {"type": "string"}, "description": "Nur diese Erweiterungen"},
-                "max_results":    {"type": "integer", "description": "Max. Treffer-Dateien (default: 50)"},
-                "context_lines":  {"type": "integer", "description": "Kontext-Zeilen um Treffer (default: 2)"},
-                "case_sensitive": {"type": "boolean", "description": "Case-sensitive (default: false)"},
-                "regex":          {"type": "boolean", "description": "Query als Regex (default: false)"},
-            },
-        },
-    },
-    {
-        "name": "doc_tree",
-        "description": (
-            "Verzeichnis-Tree nur für Dokumentationsdateien mit Icons, Größe und Datum."
-        ),
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "path":       {"type": "string",  "description": "Startpfad (default: project root)"},
-                "extensions": {"type": "array",   "items": {"type": "string"}, "description": "Zu zeigende Erweiterungen"},
-                "max_depth":  {"type": "integer", "description": "Max. Tiefe (default: 4)"},
-            },
-        },
-    },
-    {
-        "name": "doc_stats",
-        "description": (
-            "Statistik über die gesamte Dokumentationsbasis: Dateizahl, Gesamtgröße, Zeilenzahl, "
-            "Verteilung nach Typ, neueste/älteste Datei, Top-10 größte Dateien."
-        ),
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "path": {"type": "string", "description": "Startpfad (default: project root)"},
-            },
-        },
-    },
-
 ]
 
 # =============================================================================
@@ -1274,7 +1186,7 @@ def get_tool_count() -> int:
 # =============================================================================
 # FLARUM — Community Forum Tools
 # =============================================================================
-V5_TOOLS += [
+TOOLS_REGISTRY += [
     {
         "name": "flarum_refresh",
         "description": "Prüft Flarum Forum-Verbindung und gibt Status zurück. Nützlich als Verbindungstest.",

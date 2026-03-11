@@ -610,12 +610,15 @@
   // Simple Markdown renderer (no external dep needed)
   function renderMd(text) {
     if (!text) return '';
+    // FIX 2026-03-11: protect code blocks from nl→br conversion using placeholder array
+    var blocks = [];
     var s = String(text)
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    // code blocks (multiline) - process first before other replacements
-    s = s.replace(/```[\s\S]*?```/g, function(m) {
-      var inner = m.replace(/^```\w*/, '').replace(/```$/, '').trim();
-      return '<pre><code>' + inner + '</code></pre>';
+    // Extract fenced code blocks to placeholders BEFORE any other processing
+    s = s.replace(/```(\w*)\n?([\s\S]*?)```/g, function(_, lang, code) {
+      var slot = '\x00RMDCB' + blocks.length + '\x00';
+      blocks.push('<pre><code' + (lang ? ' class="lang-' + lang + '"' : '') + '>' + code.trim() + '</code></pre>');
+      return slot;
     });
     s = s
       .replace(/`([^`\n]+)`/g, '<code>$1</code>')
@@ -626,9 +629,11 @@
       .replace(/^# (.+)$/gm, '<h2>$1</h2>')
       .replace(/^[-*] (.+)$/gm, '<li>$1</li>');
     // wrap consecutive li elements
-    // FIX 2026-03-11: group consecutive <li> into one <ul> (was wrapping each separately)
     s = s.replace(/(<li>.*?<\/li>\s*)+/gs, m => '<ul>' + m + '</ul>');
+    // nl→br only runs on non-code-block content (code blocks are placeholders here)
     s = s.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>');
+    // Re-inject code blocks unmodified
+    blocks.forEach(function(block, i) { s = s.split('\x00RMDCB' + i + '\x00').join(block); });
     return s;
   }
   function setOutput(el, html, cls) {

@@ -19,6 +19,7 @@ MCP Tools:
   agent_skill_update - Skill-Score eines Agents updaten (nach Task)
 """
 
+import asyncio
 import json
 import os
 import tempfile
@@ -30,6 +31,113 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 log = logging.getLogger("ailinux.mcp.agent_router")
+
+# Modell-ID → CLI-Agent-ID Mapping
+# Nur Modelle mit einem laufenden CLI-Agent werden direkt executiert.
+# Alle anderen (Ollama, Mistral etc.) gehen via /v1/chat (HTTP).
+MODEL_TO_CLI_AGENT: Dict[str, str] = {
+    "gemini-2.0-flash":         "gemini-mcp",
+    "gemini-2.5-pro":           "gemini-mcp",
+    "claude-sonnet-4-20250514": "claude-mcp",
+    "gpt-4o":                   "codex-mcp",
+}
+
+async def _execute_task_background(task_id: str, model: str, prompt: str) -> None:
+    """Führt Task asynchron aus und speichert Ergebnis im Store."""
+    start_ms = time.time()
+
+    # State → running
+    data = _load_tasks()
+    if task_id in data["tasks"]:
+        data["tasks"][task_id]["state"] = "running"
+        data["tasks"][task_id]["updated_at"] = datetime.now(timezone.utc).isoformat()
+        _save_tasks(data)
+
+    result_text = None
+    error_text  = None
+
+    try:
+        cli_agent = MODEL_TO_CLI_AGENT.get(model)
+
+        if cli_agent:
+            # Execution via CLI-Agent (claude-mcp / gemini-mcp / codex-mcp)
+            from ..services.tristar.agent_controller import agent_controller
+            res = await agent_controller.call_agent(cli_agent, prompt, timeout=180)
+            if isinstance(res, dict):
+                result_text = res.get("response") or res.get("output") or str(res)
+            else:
+                result_text = str(res)
+        else:
+            # Fallback: direkt via provider-spezifischen Endpoint
+            import aiohttp
+            skills_data = _load_skills()
+            provider = skills_data.get(model, DEFAULT_SKILLS.get(model, {})).get("provider", "")
+
+            if provider == "ollama":
+                # Direkt Ollama API — unterstützt alle Modelle inkl. code-only
+                ollama_url = "http://localhost:11434/api/chat"
+                payload = {
+                    "model": model,  # ohne prefix
+                    "messages": [{"role": "user", "content": prompt}],
+                    "stream": False,
+                }
+                async with aiohttp.ClientSession() as session:
+                    async with session.post(
+                        ollama_url, json=payload,
+                        timeout=aiohttp.ClientTimeout(total=180),
+                    ) as resp:
+                        if resp.status == 200:
+                            body = await resp.json()
+                            result_text = body.get("message", {}).get("content") or str(body)
+                        else:
+                            error_text = f"Ollama HTTP {resp.status}: {await resp.text()}"
+            else:
+                # API-Provider: via /v1/chat mit Provider-Prefix
+                if provider == "mistral" and not model.startswith("mistral/"):
+                    chat_model = f"mistral/{model}"
+                elif provider == "groq" and not model.startswith("groq/"):
+                    chat_model = f"groq/{model}"
+                elif provider == "openai" and not model.startswith("openai/"):
+                    chat_model = f"openai/{model}"
+                else:
+                    chat_model = model
+                payload = {
+                    "model": chat_model,
+                    "messages": [{"role": "user", "content": prompt}],
+                    "stream": False,
+                }
+                async with aiohttp.ClientSession() as session:
+                    async with session.post(
+                        "http://127.0.0.1:9000/v1/chat",
+                        json=payload,
+                        timeout=aiohttp.ClientTimeout(total=180),
+                    ) as resp:
+                        if resp.status == 200:
+                            body = await resp.json()
+                            result_text = body.get("text") or body.get("content") or str(body)
+                        else:
+                            error_text = f"HTTP {resp.status}: {await resp.text()}"
+
+    except Exception as exc:
+        error_text = str(exc)
+        log.exception("Task %s execution failed: %s", task_id, exc)
+
+    duration_ms = int((time.time() - start_ms) * 1000)
+
+    # State → done / failed
+    data = _load_tasks()
+    if task_id in data["tasks"]:
+        data["tasks"][task_id].update({
+            "state":       "failed" if error_text else "done",
+            "result":      result_text,
+            "error":       error_text,
+            "duration_ms": duration_ms,
+            "updated_at":  datetime.now(timezone.utc).isoformat(),
+        })
+        _save_tasks(data)
+
+    log.info("Task %s finished: state=%s duration=%dms",
+             task_id, "done" if not error_text else "failed", duration_ms)
 
 STORE_FILE   = Path("/var/lib/triforce/agent_tasks.json")
 SKILLS_FILE  = Path("/var/lib/triforce/agent_skills.json")
@@ -257,14 +365,27 @@ async def handle_agent_task_create(params: Dict[str, Any]) -> Dict:
         
         skills = _load_skills()
         agent_info = skills.get(model, {})
-        
+        prompt = params.get("prompt", "")
+
+        # Auto-Execute: wenn Prompt vorhanden, Task direkt starten
+        execution_mode = "queued"
+        if prompt:
+            try:
+                loop = asyncio.get_running_loop()
+                loop.create_task(_execute_task_background(task_id, model, prompt))
+                execution_mode = "running"
+            except RuntimeError:
+                execution_mode = "manual"
+
+        cli_agent = MODEL_TO_CLI_AGENT.get(model)
         return {
-            "task_id": task_id,
+            "task_id":        task_id,
             "assigned_model": model,
-            "model_tags": agent_info.get("tags", []),
-            "skill_score": agent_info.get("skills", {}).get(skill, 0),
-            "state": "pending",
-            "hint": f"Nutze agent_call(agent=..., message=prompt) um Task auszuführen",
+            "cli_agent":      cli_agent or "http:/v1/chat",
+            "model_tags":     agent_info.get("tags", []),
+            "skill_score":    agent_info.get("skills", {}).get(skill, 0),
+            "state":          "running" if execution_mode == "running" else "pending",
+            "execution_mode": execution_mode,
         }
     except Exception as e:
         return {"error": str(e)}
