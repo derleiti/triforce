@@ -856,7 +856,8 @@ async def handle_mail_inbox(params: Dict[str, Any]) -> Dict[str, Any]:
     limit = int(params.get("limit", 20))
     folder = str(params.get("folder", "INBOX"))
     # B-03 FIX: run blocking IMAP in executor to not stall asyncio event loop
-    loop = asyncio.get_event_loop()
+    # B-03b: get_running_loop() (py3.12-safe) instead of deprecated get_event_loop()
+    loop = asyncio.get_running_loop()
     messages = await loop.run_in_executor(None, lambda: mail_service.inbox(limit=limit, folder=folder))
     return {"ok": True, "count": len(messages), "messages": messages, "folder": folder}
 
@@ -869,7 +870,7 @@ async def handle_mail_read(params: Dict[str, Any]) -> Dict[str, Any]:
     if not uid:
         return {"ok": False, "error": "uid required"}
     folder = str(params.get("folder", "INBOX"))
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
     return await loop.run_in_executor(None, lambda: mail_service.read(uid=uid, folder=folder))
 
 
@@ -884,8 +885,11 @@ async def handle_mail_send(params: Dict[str, Any]) -> Dict[str, Any]:
         return {"ok": False, "error": "to, subject, body required"}
     cc = params.get("cc")
     reply_to = params.get("reply_to")
-    loop = asyncio.get_event_loop()
-    return await loop.run_in_executor(None, lambda: mail_service.send(to=to, subject=subject, body=body, cc=cc, reply_to=reply_to))
+    loop = asyncio.get_running_loop()
+    try:
+        return await loop.run_in_executor(None, lambda: mail_service.send(to=to, subject=subject, body=body, cc=cc, reply_to=reply_to))
+    except Exception as e:
+        return {"ok": False, "error": str(e), "type": type(e).__name__}
 
 
 async def handle_mail_mark_seen(params: Dict[str, Any]) -> Dict[str, Any]:
@@ -896,7 +900,7 @@ async def handle_mail_mark_seen(params: Dict[str, Any]) -> Dict[str, Any]:
     if not uid:
         return {"ok": False, "error": "uid required"}
     folder = str(params.get("folder", "INBOX"))
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
     return await loop.run_in_executor(None, lambda: mail_service.mark_seen(uid=uid, folder=folder))
 
 
