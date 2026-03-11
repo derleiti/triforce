@@ -54,18 +54,36 @@ update_loop() {
     done
 }
 
+# Graceful shutdown handler — forwards SIGTERM to uvicorn
+cleanup() {
+    log "SIGTERM received — shutting down uvicorn (PID: ${MAIN_PID:-?})..."
+    if [ -n "${MAIN_PID:-}" ]; then
+        kill -TERM "$MAIN_PID" 2>/dev/null || true
+        # Warte max 20s auf sauberes Ende
+        local deadline=$(( $(date +%s) + 20 ))
+        while kill -0 "$MAIN_PID" 2>/dev/null && [ "$(date +%s)" -lt "$deadline" ]; do
+            sleep 1
+        done
+        kill -KILL "$MAIN_PID" 2>/dev/null || true
+    fi
+    kill "${UPDATE_PID:-}" 2>/dev/null || true
+    log "Shutdown complete."
+    exit 0
+}
+
+trap cleanup TERM INT
+
 # Initial update
 log "Starting TriForce..."
-# v2.86: Kein synchroner git fetch im Startpfad
 log "Update check deferred to background loop (30s)"
 
 # Start update loop in background
 update_loop &
 UPDATE_PID=$!
 
-# Start uvicorn
+# Start uvicorn in background
 log "Starting uvicorn on port 9000..."
-exec "$REPO_DIR/.venv/bin/python" -m uvicorn app.main:app \
+"$REPO_DIR/.venv/bin/python" -m uvicorn app.main:app \
     --host 0.0.0.0 \
     --port 9000 \
     --timeout-keep-alive 75 &

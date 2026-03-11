@@ -252,7 +252,7 @@ class AgentController:
         self._shutting_down = False  # Prevent auto-restart during shutdown
         self._monitor_task: Optional[asyncio.Task] = None
         # Use localhost for internal API calls (no internet required)
-        self._triforce_url = "http://localhost:9100/v1/triforce"
+        self._triforce_url = "http://localhost:9000/v1/triforce"
 
     async def initialize(self):
         """Initialisiert den Controller"""
@@ -391,10 +391,10 @@ class AgentController:
         try:
             async with aiohttp.ClientSession() as session:
                 url = f"{self._triforce_url}/init"
-                async with session.post(url, json={"agent_type": agent_type.value}, timeout=10) as resp:
+                async with session.post(url, json={"request": "systemprompt", "llm_id": agent_type.value}, timeout=10) as resp:
                     if resp.status == 200:
                         data = await resp.json()
-                        return data.get("system_prompt", "")
+                        return data.get("systemprompt", data.get("system_prompt", ""))
         except Exception as e:
             logger.warning(f"Failed to fetch system prompt from TriForce: {e}")
 

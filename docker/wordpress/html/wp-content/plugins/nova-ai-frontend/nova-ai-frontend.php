@@ -68,11 +68,7 @@ add_action('rest_api_init', function () {
     register_rest_route($ns, '/auth/status', ['methods'=>'GET', 'callback'=>'nova_auth_status', 'permission_callback'=>'__return_true']);
     register_rest_route($ns, '/account', ['methods'=>'GET', 'callback'=>'nova_proxy_account', 'permission_callback'=>'__return_true']);
     // Auth routes delegated to AuthService.php (register_rest_routes)
-    // Subscription & Purchase routes (user must be logged in)
-    $user_perm = function() { return is_user_logged_in(); };
-    register_rest_route($ns, '/subscription',        ['methods'=>'GET',  'callback'=>'nova_proxy_subscription',        'permission_callback'=>$user_perm]);
-    register_rest_route($ns, '/subscription/cancel', ['methods'=>'POST', 'callback'=>'nova_proxy_subscription_cancel', 'permission_callback'=>$user_perm]);
-    register_rest_route($ns, '/purchases',           ['methods'=>'GET',  'callback'=>'nova_proxy_purchases',           'permission_callback'=>$user_perm]);
+    // NOTE: /subscription, /subscription/cancel, /purchases delegated to AccountSuiteService (avoids duplicate registration)
 
     // Admin routes – require manage_options capability
     $admin_perm = function() { return current_user_can('manage_options'); };
@@ -924,7 +920,11 @@ add_shortcode('ailinux_downloads', function ($atts): string {
   <?php if (empty($files)): ?>
     <div class="nova-status-bar warn" style="margin:16px"><span class="nova-status-icon">⚠️</span> Backend nicht erreichbar.</div>
   <?php else: ?>
-  <div class="nova-panel active" style="padding-top:0">
+  <div class="nova-toolbar">
+    <button class="nova-tab active" data-tab="nova-downloads-panel">📂 Downloads</button>
+    <button class="nova-tab" data-tab="nova-panel-account">&#128100; Mein Account</button>
+  </div>
+  <div class="nova-panel active" id="nova-downloads-panel" style="padding-top:0">
     <div class="nova-table-wrap">
       <table class="nova-table">
         <thead><tr><th data-sort="0">Datei</th><th data-sort="1">Typ</th><th data-sort="2">Größe</th><th data-sort="3">SHA1</th><th data-sort="4">Geändert</th><th data-sort="5">Link</th></tr></thead>

@@ -30,7 +30,7 @@ import json
 logger = logging.getLogger("ailinux.system.collector")
 
 # Base directories
-BACKEND_LOG_BASE = Path(__file__).parent.parent.parent / "triforce" / "logs"
+BACKEND_LOG_BASE = Path(__file__).parent.parent.parent / "logs"
 TRIFORCE_LOG_BASE = BACKEND_LOG_BASE
 
 # Ensure directories exist

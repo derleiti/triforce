@@ -223,14 +223,10 @@ async def token_endpoint(request: Request):
         if not client_secret:
             client_id, client_secret = _extract_basic_auth(request)
 
-        # RFC 7636: PKCE public clients send code_verifier — no client_secret needed.
-        # The code_verifier IS the proof of identity for public clients.
-        if code_verifier:
-            logger.info(f"TOKEN_PKCE | client={client_id!r} | skipping secret validation (PKCE flow)")
-        elif client_id and client_secret:
-            # Confidential client without PKCE: validate secret
+        # Validate client credentials (required for confidential clients)
+        if client_id and client_secret:
             if not _validate_credentials(client_id, client_secret):
-                logger.warning(f"TOKEN_FAIL | grant=authorization_code | reason=invalid_client | client={client_id!r}")
+                logger.warning(f"TOKEN_FAIL | grant=authorization_code | reason=invalid_client")
                 raise HTTPException(401, "Invalid client credentials")
 
         token = exchange_auth_code(code, code_verifier)

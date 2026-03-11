@@ -39,10 +39,11 @@ class AccountSuiteService {
 
     public function register_rest_routes(): void {
         $ns = 'nova-ai/v1';
-        register_rest_route($ns, '/subscription',        ['methods'=>'GET',  'callback'=>[$this,'api_get_subscription'],   'permission_callback'=>'__return_true']);
-        register_rest_route($ns, '/subscription/cancel', ['methods'=>'POST', 'callback'=>[$this,'api_cancel_subscription'],'permission_callback'=>'__return_true']);
-        register_rest_route($ns, '/purchases',           ['methods'=>'GET',  'callback'=>[$this,'api_get_purchases'],      'permission_callback'=>'__return_true']);
-        register_rest_route($ns, '/profile/update',      ['methods'=>'POST', 'callback'=>[$this,'api_update_profile'],     'permission_callback'=>'__return_true']);
+        $logged_in = function() { return is_user_logged_in(); };
+        register_rest_route($ns, '/subscription',        ['methods'=>'GET',  'callback'=>[$this,'api_get_subscription'],   'permission_callback'=>$logged_in]);
+        register_rest_route($ns, '/subscription/cancel', ['methods'=>'POST', 'callback'=>[$this,'api_cancel_subscription'],'permission_callback'=>$logged_in]);
+        register_rest_route($ns, '/purchases',           ['methods'=>'GET',  'callback'=>[$this,'api_get_purchases'],      'permission_callback'=>$logged_in]);
+        register_rest_route($ns, '/profile/update',      ['methods'=>'POST', 'callback'=>[$this,'api_update_profile'],     'permission_callback'=>$logged_in]);
     }
 
     public function api_get_subscription(\WP_REST_Request $r): \WP_REST_Response {
@@ -54,7 +55,7 @@ class AccountSuiteService {
         if ($cid) {
             $s    = get_option('nova_ai_settings',[]);
             $base = $s['api_endpoint_internal'] ?? $s['api_endpoint'] ?? 'https://api.ailinux.me';
-            $resp = wp_remote_get(rtrim($base,'/')  .'/tiers/subscription/'.urlencode($cid), ['timeout'=>8]);
+            $resp = wp_remote_get(rtrim($base,'/')  .'/v1/tiers/subscription/'.urlencode($cid), ['timeout'=>8]);
             if (!is_wp_error($resp) && wp_remote_retrieve_response_code($resp)===200)
                 return new \WP_REST_Response(['ok'=>true,'data'=>json_decode(wp_remote_retrieve_body($resp),true)??[],'source'=>'live']);
         }
@@ -68,7 +69,7 @@ class AccountSuiteService {
         if (!$sid) return new \WP_REST_Response(['ok'=>false,'error'=>'no_subscription'], 400);
         $s    = get_option('nova_ai_settings',[]);
         $base = $s['api_endpoint_internal'] ?? $s['api_endpoint'] ?? 'https://api.ailinux.me';
-        $resp = wp_remote_post(rtrim($base,'/').'/tiers/subscription/cancel',
+        $resp = wp_remote_post(rtrim($base,'/').'/v1/tiers/cancel',
             ['body'=>wp_json_encode(['subscription_id'=>$sid]),'headers'=>['Content-Type'=>'application/json'],'timeout'=>10]);
         if (is_wp_error($resp)) return new \WP_REST_Response(['ok'=>false,'error'=>$resp->get_error_message()], 502);
         $code = wp_remote_retrieve_response_code($resp);
@@ -84,7 +85,7 @@ class AccountSuiteService {
         if ($cid) {
             $s    = get_option('nova_ai_settings',[]);
             $base = $s['api_endpoint_internal'] ?? $s['api_endpoint'] ?? 'https://api.ailinux.me';
-            $resp = wp_remote_get(rtrim($base,'/').'/tiers/purchases/'.urlencode($cid), ['timeout'=>8]);
+            $resp = wp_remote_get(rtrim($base,'/').'/v1/tiers/purchases/'.urlencode($cid), ['timeout'=>8]);
             if (!is_wp_error($resp) && wp_remote_retrieve_response_code($resp)===200) {
                 $data = json_decode(wp_remote_retrieve_body($resp),true) ?? [];
                 $p = $data['purchases'] ?? $cache;

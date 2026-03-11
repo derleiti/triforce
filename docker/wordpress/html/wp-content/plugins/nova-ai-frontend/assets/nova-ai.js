@@ -190,7 +190,7 @@
         const resp = await fetch(API + '/chat', {
           method: 'POST',
           headers: Object.assign({'Content-Type': 'application/json'}, nonceHeader()),
-          body: JSON.stringify({ model: modelSel?.value||'', system: sysSel?.value||'', messages }),
+          body: JSON.stringify({ model: modelSel?.value||'', messages: (sysSel?.value?.trim() ? [{role:'system',content:sysSel.value.trim()},...messages] : messages), stream: false }),
         });
         const data = await resp.json();
         typingEl.remove();
@@ -279,16 +279,29 @@
   // ── Markdown ─────────────────────────────────────────────────
   function renderMarkdown(text) {
     if (!text) return '';
-    return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-      .replace(/```(\w*)\n?([\s\S]*?)```/g, (_,lang,code) => `<pre><code class="lang-${lang}">${code.trim()}</code></pre>`)
+    // BUG-FIX 2026-03-11: protect code blocks from nl->br conversion
+    var codeBlocks = [];
+    var s = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    s = s.replace(/```(\w*)\n?([\s\S]*?)```/g, function(_,lang,code) {
+      var slot = '\x00CODEBLOCK' + codeBlocks.length + '\x00';
+      codeBlocks.push('<pre><code class="lang-'+lang+'">'+code.trim()+'</code></pre>');
+      return slot;
+    });
+    s = s
       .replace(/`([^`]+)`/g, '<code>$1</code>')
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*(.+?)\*/g, '<em>$1</em>')
       .replace(/^### (.+)$/gm, '<h3>$1</h3>').replace(/^## (.+)$/gm, '<h2>$1</h2>').replace(/^# (.+)$/gm, '<h1>$1</h1>')
-      .replace(/^[\-\*] (.+)$/gm, '<li>$1</li>').replace(/(<li>[\s\S]*?<\/li>)/g, '<ul>$1</ul>')
+      .replace(/^[\-\*] (.+)$/gm, '<li>$1</li>')
       .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
-      .replace(/\[(.+?)\]\((https?:\/\/[^\)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
-      .replace(/\n{2,}/g, '</p><p>').replace(/\n/g, '<br>');
+      .replace(/\[(.+?)\]\((https?:\/\/[^\)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+    // FIX: group consecutive <li> into a single <ul>
+    s = s.replace(/(<li>.*?<\/li>\s*)+/gs, function(m) { return '<ul>' + m + '</ul>'; });
+    // FIX: proper paragraph wrapping (code blocks excluded via placeholders)
+    s = '<p>' + s.replace(/\n{2,}/g, '</p><p>').replace(/\n/g, '<br>') + '</p>';
+    // Re-inject code blocks unmodified
+    codeBlocks.forEach(function(block, i) { s = s.split('\x00CODEBLOCK'+i+'\x00').join(block); });
+    return s;
   }
 
   // ── Vision ──────────────────────────────────────────────────────────────────
@@ -583,9 +596,9 @@
     const badge = container.querySelector('.nova-health-badge,[data-health-badge]');
     if (!badge) return;
     try {
-      const resp = await fetch('/wp-json/nova-ai/v1/health');
+      const resp = await fetch(API + '/health', { headers: nonceHeader() });
       const json = await resp.json();
-      if (json.ok||json.status==='ok') {
+      if (json.ok||json.status==='ok'||json.status==='healthy') {
         badge.textContent='Backend: ok'; badge.className='nova-badge ok';
         const mb=container.querySelector('.nova-model-count,[data-model-count]');
         if(mb&&json.model_count) mb.textContent='Modelle: '+json.model_count;
@@ -613,7 +626,8 @@
       .replace(/^# (.+)$/gm, '<h2>$1</h2>')
       .replace(/^[-*] (.+)$/gm, '<li>$1</li>');
     // wrap consecutive li elements
-    s = s.replace(/(<li>[\s\S]+?<\/li>)(\s*(?!<li>))/g, '<ul>$1</ul>$2');
+    // FIX 2026-03-11: group consecutive <li> into one <ul> (was wrapping each separately)
+    s = s.replace(/(<li>.*?<\/li>\s*)+/gs, m => '<ul>' + m + '</ul>');
     s = s.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>');
     return s;
   }
@@ -653,9 +667,10 @@
       const [accResp, subResp] = await Promise.all([
         fetch(API + '/account',      { headers: nonceHeader() }),
         fetch(API + '/subscription', { headers: nonceHeader() }).catch(() => null)
+        // NOTE: /subscription route is optional — missing route returns null, handled below
       ]);
       const d   = await accResp.json();
-      const sub = subResp ? await subResp.json().catch(() => ({})) : {};
+      const sub = subResp && subResp.ok ? await subResp.json().catch(() => ({})) : {};
       if (!d.ok) throw new Error(d.error || 'Fehler');
       if (!d.logged_in) {
         panel.innerHTML = `
@@ -675,13 +690,15 @@
       const tico  = TIER_ICONS[tier]  || '\u{1F513}';
       const ents  = Array.isArray(d.entitlements) ? d.entitlements : [];
       const dls   = Array.isArray(d.downloads)    ? d.downloads    : [];
-      const subStatus = sub.status || 'none';
+      // BUG-FIX 2026-03-11: API returns sub.data.status (not sub.status) — normalize both shapes
+      const subStatus = sub?.data?.status || sub.status || 'none';
       const subActive = subStatus === 'active';
 
       // Build subscription management section
       let subHTML = '';
       if (tier === 'paid' && subActive) {
-        const renewDate = sub.renews_at ? new Date(sub.renews_at).toLocaleDateString('de-DE') : '';
+        const _renewRaw = sub?.data?.renews_at || sub.renews_at || null;
+        const renewDate = _renewRaw ? new Date(_renewRaw).toLocaleDateString('de-DE') : '';
         subHTML = `
           <div style="background:rgba(0,0,0,.3);border:1px solid #2a2a3a;border-radius:12px;padding:1.25rem;margin-bottom:1.25rem">
             <h4 style="color:#f1f5f9;margin:0 0 .75rem;font-size:.95rem">\u{1F4B3} Subscription</h4>
@@ -707,7 +724,7 @@
               </div>
               <a href="${d.shop_url||'https://ailinux.me/shop'}" target="_blank"
                  style="padding:.5rem 1.25rem;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:white;border-radius:8px;text-decoration:none;font-size:.85rem;font-weight:600">
-                \u2B06\uFE0F Upgrade auf Pro — 35 €/Mo
+                \u2B06\uFE0F Upgrade auf Pro — 17,99 €/Mo
               </a>
             </div>
           </div>`;
@@ -794,7 +811,9 @@
   }
   function initDownloadsShell(container) {
     buildThemePicker(container);
+    initTabs(container, '.nova-tab', '.nova-panel');
     initDownloads(container);
+    initAccount(container);
   }
 
   // ── Nonce Refresh ──────────────────────────────────────────────────────────
@@ -914,7 +933,7 @@
       if (!chatEl) return;
       const div = document.createElement('div');
       div.className = 'nov-msg nov-msg-' + role;
-      div.textContent = text;
+      if (role === 'assistant') { div.classList.add('nova-md'); div.innerHTML = renderMd(text); } else { div.textContent = text; }
       chatEl.appendChild(div);
       chatEl.scrollTop = chatEl.scrollHeight;
     }

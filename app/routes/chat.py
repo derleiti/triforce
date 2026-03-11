@@ -33,7 +33,12 @@ class ChatRequest(BaseModel):
 async def _chat_generator(payload: ChatRequest) -> AsyncGenerator[str, None]:
     model = await registry.get_model(payload.model)
     if not model or "chat" not in model.capabilities:
-        raise api_error("Requested model does not support chat", status_code=404, code="model_not_found")
+        # BUGFIX 2026-03-11: Never raise HTTPException inside a streaming generator —
+        # headers are already sent at this point, causing "response already started" crash.
+        # The endpoint now pre-validates before creating StreamingResponse, so this path
+        # is only hit for non-stream calls and yields a safe error chunk instead.
+        yield '{"error":{"message":"Requested model does not support chat","code":"model_not_found"}}'
+        return
 
     # Model-Latenz-Tracking
     model_start = perf_counter()
@@ -68,6 +73,13 @@ async def _chat_generator(payload: ChatRequest) -> AsyncGenerator[str, None]:
 async def chat_endpoint(payload: ChatRequest):
     if not payload.messages:
         raise api_error("At least one message is required", status_code=422, code="missing_messages")
+
+    # PRE-VALIDATE model BEFORE creating StreamingResponse.
+    # BUGFIX 2026-03-11: Without this, the generator raises HTTPException after headers
+    # are already sent → RuntimeError: "Caught handled exception, but response already started."
+    model_check = await registry.get_model(payload.model)
+    if not model_check or "chat" not in model_check.capabilities:
+        raise api_error("Requested model does not support chat", status_code=404, code="model_not_found")
 
     if payload.stream:
         return StreamingResponse(_chat_generator(payload), media_type="text/plain")

@@ -47,6 +47,39 @@ from ..mcp.context import context_manager, prompt_library, workflow_manager
 from ..mcp.adaptive_code import ADAPTIVE_CODE_TOOLS, ADAPTIVE_CODE_HANDLERS
 from ..mcp.adaptive_code_v4 import ADAPTIVE_CODE_V4_TOOLS, ADAPTIVE_CODE_V4_HANDLERS
 from ..mcp.dev_tools import DEV_TOOL_HANDLERS, DEV_TOOL_NAMES
+from ..mcp.flarum_tools import FLARUM_TOOL_HANDLERS, FLARUM_TOOL_NAMES
+from ..mcp.notification_manager import NOTIFY_TOOL_HANDLERS, NOTIFY_TOOL_NAMES
+from ..mcp.tla_workflow import TLA_TOOL_HANDLERS, TLA_TOOL_NAMES
+from ..mcp.agent_router import AGENT_ROUTER_HANDLERS, AGENT_ROUTER_TOOL_NAMES
+# ── Inline-Schemas für tools/list (kein V5-Import nötig) ─────────────────────
+_EXTRA_TOOL_SCHEMAS = [
+    # Notify
+    {"name":"notify_list","description":"Listet Notifications (unread_only, source, priority, limit)","inputSchema":{"type":"object","properties":{"unread_only":{"type":"boolean"},"source":{"type":"string"},"priority":{"type":"string"},"limit":{"type":"integer"}}}},
+    {"name":"notify_send","description":"Erstellt eine Notification (title required, body, source, priority, tags, action_url)","inputSchema":{"type":"object","required":["title"],"properties":{"title":{"type":"string"},"body":{"type":"string"},"source":{"type":"string"},"priority":{"type":"string"},"tags":{"type":"array","items":{"type":"string"}}}}},
+    {"name":"notify_read","description":"Notification als gelesen/erledigt markieren (id, resolve)","inputSchema":{"type":"object","required":["id"],"properties":{"id":{"type":"string"},"resolve":{"type":"boolean"}}}},
+    {"name":"notify_clear","description":"Erledigte Notifications löschen (all=true für alle)","inputSchema":{"type":"object","properties":{"all":{"type":"boolean"}}}},
+    {"name":"notify_status","description":"Notification Manager Status + Statistiken","inputSchema":{"type":"object","properties":{}}},
+    # TLA+
+    {"name":"tla_plan","description":"TLA+ Workflow-Plan erstellen (title, phases, invariants, agent)","inputSchema":{"type":"object","required":["title"],"properties":{"title":{"type":"string"},"description":{"type":"string"},"phases":{"type":"array"},"invariants":{"type":"array"},"agent":{"type":"string"}}}},
+    {"name":"tla_verify","description":"TLA+ Spec verifizieren (id)","inputSchema":{"type":"object","required":["id"],"properties":{"id":{"type":"string"}}}},
+    {"name":"tla_status","description":"TLA+ Workflow-Status abfragen (id optional, all=bool)","inputSchema":{"type":"object","properties":{"id":{"type":"string"},"all":{"type":"boolean"}}}},
+    {"name":"tla_advance","description":"TLA+ Phase vorwärts (id, result, success)","inputSchema":{"type":"object","required":["id"],"properties":{"id":{"type":"string"},"result":{"type":"string"},"success":{"type":"boolean"}}}},
+    {"name":"tla_abort","description":"TLA+ Workflow abbrechen (id, reason)","inputSchema":{"type":"object","required":["id"],"properties":{"id":{"type":"string"},"reason":{"type":"string"}}}},
+    # Flarum
+    {"name":"flarum_discussions","description":"Forum-Discussions auflisten (limit, sort, filter)","inputSchema":{"type":"object","properties":{"limit":{"type":"integer"},"sort":{"type":"string"},"filter":{"type":"string"}}}},
+    {"name":"flarum_discussion_create","description":"Neuen Forum-Thread erstellen (title, content, tag_id)","inputSchema":{"type":"object","required":["title","content"],"properties":{"title":{"type":"string"},"content":{"type":"string"},"tag_id":{"type":"integer"}}}},
+    {"name":"flarum_post_create","description":"Im Forum antworten (discussion_id, content)","inputSchema":{"type":"object","required":["discussion_id","content"],"properties":{"discussion_id":{"type":"integer"},"content":{"type":"string"}}}},
+    {"name":"flarum_post_edit","description":"Forum-Post bearbeiten (post_id, content)","inputSchema":{"type":"object","required":["post_id","content"],"properties":{"post_id":{"type":"integer"},"content":{"type":"string"}}}},
+    {"name":"flarum_users","description":"Flarum-User auflisten (query optional)","inputSchema":{"type":"object","properties":{"query":{"type":"string"}}}},
+    {"name":"flarum_tags","description":"Alle Forum-Tags auflisten","inputSchema":{"type":"object","properties":{}}},
+    {"name":"flarum_refresh","description":"Flarum-Cache leeren und neu laden","inputSchema":{"type":"object","properties":{}}},
+    # Agent Router
+    {"name":"agent_task_create","description":"Neuen Task erstellen und besten Agent automatisch assignen (skill, complexity, title, prompt)","inputSchema":{"type":"object","properties":{"title":{"type":"string"},"skill":{"type":"string"},"complexity":{"type":"string"},"prompt":{"type":"string"},"local_only":{"type":"boolean"}}}},
+    {"name":"agent_task_status","description":"Task-Status abfragen (id optional, state-Filter, limit)","inputSchema":{"type":"object","properties":{"id":{"type":"string"},"state":{"type":"string"},"limit":{"type":"integer"}}}},
+    {"name":"agent_skill_list","description":"Alle Agents mit Skill-Rankings anzeigen (skill, type, top)","inputSchema":{"type":"object","properties":{"skill":{"type":"string"},"type":{"type":"string"},"top":{"type":"integer"}}}},
+    {"name":"agent_skill_update","description":"Skill-Score eines Agents updaten (model, skill, score/delta/success)","inputSchema":{"type":"object","required":["model","skill"],"properties":{"model":{"type":"string"},"skill":{"type":"string"},"score":{"type":"integer"},"delta":{"type":"integer"},"success":{"type":"boolean"}}}},
+]
+from ..mcp.flarum_tools import FLARUM_TOOL_HANDLERS, FLARUM_TOOL_NAMES
 from ..mcp.tool_registry_v3 import (
     get_all_tools as registry_v3_get_all_tools,
     get_tool_by_name as registry_v3_get_tool,
@@ -1532,12 +1565,22 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
     try:
         from ..mcp.tool_registry_v5 import V5_TOOLS
         mail_wp_names = {"mail_inbox","mail_read","mail_send","mail_mark_seen","wp_list_drafts","wp_create_draft","wp_update_post"}
+        mail_wp_names |= FLARUM_TOOL_NAMES
+        mail_wp_names |= set(NOTIFY_TOOL_NAMES)
+        mail_wp_names |= set(TLA_TOOL_NAMES)
         existing = {t.get("name") for t in tools}
         for t in V5_TOOLS:
             if t.get("name") in mail_wp_names and t.get("name") not in existing:
                 tools.append(_normalize_tool_schema(t))
     except Exception:
         pass
+
+    # 2026-03-11: Direkt-Inject Flarum/Notify/TLA aus inline Schemas
+    _existing = {t.get("name") for t in tools}
+    for _t in _EXTRA_TOOL_SCHEMAS:
+        if _t["name"] not in _existing:
+            tools.append(_normalize_tool_schema(_t))
+            _existing.add(_t["name"])
 
     return {
         "tools": tools, 
@@ -2296,6 +2339,10 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
     tool_map.update(ADAPTIVE_CODE_HANDLERS)
     tool_map.update(ADAPTIVE_CODE_V4_HANDLERS)  # Enhanced V4 handlers
     tool_map.update(DEV_TOOL_HANDLERS)           # Dev-Tools: dev_analyze, dev_lint, git, etc.
+    tool_map.update(FLARUM_TOOL_HANDLERS)             # Flarum Forum: discussions, posts, tags, users
+    tool_map.update(NOTIFY_TOOL_HANDLERS)             # Notification Manager: notify_list, notify_send etc.
+    tool_map.update(TLA_TOOL_HANDLERS)                # TLA+ Workflow: tla_plan, tla_verify, tla_advance ...
+    tool_map.update(AGENT_ROUTER_HANDLERS)           # Agent Router: agent_task_create, agent_skill_list ...
     tool_map.update(LLM_COMPAT_HANDLERS)
     tool_map.update(HOTRELOAD_HANDLERS)
     tool_map.update(MEMORY_INDEX_HANDLERS)
@@ -2485,7 +2532,7 @@ import logging
 _mcp_logger = logging.getLogger("ailinux.mcp.security")
 
 BACKEND_ROOT = Path("/home/zombie/triforce")
-ALLOWED_EXTENSIONS = {".py", ".md", ".json", ".yaml", ".yml", ".toml", ".txt", ".env.example"}
+ALLOWED_EXTENSIONS = {".py", ".md", ".json", ".yaml", ".yml", ".toml", ".txt", ".env.example", ".js", ".ts", ".jsx", ".tsx", ".sh", ".html", ".css", ".conf", ".ini", ".cfg"}
 
 # Sensitive paths that should never be accessed
 BLOCKED_PATHS = {
@@ -3636,6 +3683,10 @@ MCP_HANDLERS.update(BOOTSTRAP_HANDLERS)
 MCP_HANDLERS.update(ADAPTIVE_CODE_HANDLERS)
 MCP_HANDLERS.update(ADAPTIVE_CODE_V4_HANDLERS)
 MCP_HANDLERS.update(DEV_TOOL_HANDLERS)          # dev_analyze, dev_lint, git etc.
+MCP_HANDLERS.update(FLARUM_TOOL_HANDLERS)
+MCP_HANDLERS.update(NOTIFY_TOOL_HANDLERS)          # notify_list, notify_send etc.
+MCP_HANDLERS.update(TLA_TOOL_HANDLERS)             # tla_plan, tla_verify, tla_status ...
+MCP_HANDLERS.update(AGENT_ROUTER_HANDLERS)         # agent_task_create, agent_skill_list ...
 MCP_HANDLERS.update(LLM_COMPAT_HANDLERS)
 MCP_HANDLERS.update(HOTRELOAD_HANDLERS)
 MCP_HANDLERS.update(MEMORY_INDEX_HANDLERS)

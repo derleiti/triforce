@@ -927,6 +927,100 @@ V5_TOOLS: List[Dict[str, Any]] = [
         },
     },
 
+    # =========================================================================
+    # FLARUM — Nova Forum Interface — Added 2026-03-11
+    # =========================================================================
+    {
+        "name": "flarum_discussions",
+        "description": "List or search discussions on the AILinux Community Forum. Supports search, tag filter, sorting and pagination.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "q":     {"type": "string",  "description": "Search query (optional)"},
+                "sort":  {"type": "string",  "description": "Sort: -lastPostedAt (default), -createdAt, top"},
+                "tag":   {"type": "string",  "description": "Filter by tag slug (optional)"},
+                "limit": {"type": "integer", "description": "Max results (default 20, max 50)"},
+                "page":  {"type": "integer", "description": "Page number (default 0)"},
+            },
+        },
+    },
+    {
+        "name": "flarum_discussion_get",
+        "description": "Read a forum discussion including all posts. Returns title, metadata and post content.",
+        "inputSchema": {
+            "type": "object",
+            "required": ["id"],
+            "properties": {
+                "id":            {"type": "string",  "description": "Discussion ID"},
+                "include_posts": {"type": "boolean", "description": "Include posts (default true)"},
+            },
+        },
+    },
+    {
+        "name": "flarum_post_get",
+        "description": "Read a single forum post by ID.",
+        "inputSchema": {
+            "type": "object",
+            "required": ["id"],
+            "properties": {
+                "id": {"type": "string", "description": "Post ID"},
+            },
+        },
+    },
+    {
+        "name": "flarum_post_create",
+        "description": "Post a reply in a forum discussion as Nova (ailinux-nova-ai).",
+        "inputSchema": {
+            "type": "object",
+            "required": ["discussion_id", "content"],
+            "properties": {
+                "discussion_id": {"type": "string", "description": "Discussion ID to reply to"},
+                "content":       {"type": "string", "description": "Post content (plain text or Markdown)"},
+            },
+        },
+    },
+    {
+        "name": "flarum_post_edit",
+        "description": "Edit an existing post by Nova. Only works for posts authored by ailinux-nova-ai.",
+        "inputSchema": {
+            "type": "object",
+            "required": ["post_id", "content"],
+            "properties": {
+                "post_id": {"type": "string", "description": "Post ID to edit"},
+                "content": {"type": "string", "description": "New post content"},
+            },
+        },
+    },
+    {
+        "name": "flarum_discussion_create",
+        "description": "Create a new forum discussion as Nova. Optionally assign tags.",
+        "inputSchema": {
+            "type": "object",
+            "required": ["title", "content"],
+            "properties": {
+                "title":   {"type": "string", "description": "Discussion title"},
+                "content": {"type": "string", "description": "Opening post content"},
+                "tags":    {"type": "array", "items": {"type": "integer"}, "description": "Tag IDs (get via flarum_tags)"},
+            },
+        },
+    },
+    {
+        "name": "flarum_tags",
+        "description": "List all available tags in the AILinux Community Forum.",
+        "inputSchema": {"type": "object", "properties": {}},
+    },
+    {
+        "name": "flarum_users",
+        "description": "List or search forum users.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "q":     {"type": "string",  "description": "Search query"},
+                "limit": {"type": "integer", "description": "Max results (default 20)"},
+            },
+        },
+    },
+
 ]
 
 # =============================================================================
@@ -1088,3 +1182,153 @@ def resolve_alias(name: str) -> str:
 
 def get_tool_count() -> int:
     return len(V5_TOOLS)
+
+# =============================================================================
+# FLARUM — Community Forum Tools
+# =============================================================================
+TOOLS_REGISTRY += [
+    {
+        "name": "flarum_refresh",
+        "description": "Prüft Flarum Forum-Verbindung und gibt Status zurück. Nützlich als Verbindungstest.",
+        "inputSchema": {"type": "object", "properties": {}},
+    },
+    {
+        "name": "flarum_discussions",
+        "description": (
+            "Listet oder durchsucht Flarum-Discussions. "
+            "Unterstützt Suche, Tag-Filter und Sortierung. "
+            "Gibt Titel, ID, Post-Anzahl, URL und Zeitstempel zurück."
+        ),
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "query":  {"type": "string", "description": "Suchbegriff (optional)"},
+                "tag":    {"type": "string", "description": "Tag-Slug Filter (optional)"},
+                "sort":   {"type": "string", "enum": ["newest", "top", "latest"], "description": "Sortierung (default: latest)"},
+                "limit":  {"type": "integer", "description": "Max Einträge (default: 20, max: 50)"},
+                "offset": {"type": "integer", "description": "Pagination offset"},
+            },
+        },
+    },
+    {
+        "name": "flarum_discussion",
+        "description": "Liest eine einzelne Discussion mit allen Posts. Gibt vollständigen Thread-Inhalt zurück.",
+        "inputSchema": {
+            "type": "object",
+            "required": ["id"],
+            "properties": {
+                "id":    {"type": "string", "description": "Discussion ID"},
+                "limit": {"type": "integer", "description": "Max Posts (default: 20)"},
+            },
+        },
+    },
+    {
+        "name": "flarum_posts",
+        "description": "Listet neueste Posts über alle Discussions. Optional gefiltert nach Discussion oder Author.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "limit":         {"type": "integer", "description": "Max Einträge (default: 20)"},
+                "discussion_id": {"type": "string", "description": "Nur Posts dieser Discussion"},
+                "author_id":     {"type": "string", "description": "Nur Posts dieses Users"},
+            },
+        },
+    },
+    {
+        "name": "flarum_post_create",
+        "description": "Schreibt einen neuen Post in eine Discussion (als Nova/ailinux-nova-ai). Inhalt in Markdown.",
+        "inputSchema": {
+            "type": "object",
+            "required": ["discussion_id", "content"],
+            "properties": {
+                "discussion_id": {"type": "string", "description": "Discussion ID"},
+                "content":       {"type": "string", "description": "Post-Inhalt (Markdown)"},
+            },
+        },
+    },
+    {
+        "name": "flarum_post_edit",
+        "description": "Bearbeitet einen bestehenden eigenen Post. Nur für Posts von Nova/ailinux-nova-ai.",
+        "inputSchema": {
+            "type": "object",
+            "required": ["post_id", "content"],
+            "properties": {
+                "post_id": {"type": "string", "description": "Post ID"},
+                "content": {"type": "string", "description": "Neuer Inhalt (Markdown)"},
+            },
+        },
+    },
+    {
+        "name": "flarum_discussion_create",
+        "description": "Erstellt eine neue Discussion im Forum (als Nova). Titel, Inhalt und optionale Tags.",
+        "inputSchema": {
+            "type": "object",
+            "required": ["title", "content"],
+            "properties": {
+                "title":   {"type": "string", "description": "Discussion-Titel"},
+                "content": {"type": "string", "description": "Erster Post-Inhalt (Markdown)"},
+                "tag_ids": {"type": "array", "items": {"type": "integer"}, "description": "Tag-IDs (optional)"},
+            },
+        },
+    },
+    {
+        "name": "flarum_users",
+        "description": "Listet Forum-User mit Stats (Discussions, Posts, Admin-Status).",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "limit": {"type": "integer", "description": "Max Einträge (default: 20)"},
+                "query": {"type": "string", "description": "Username-Filter (optional)"},
+            },
+        },
+    },
+    {
+        "name": "flarum_tags",
+        "description": "Listet alle verfügbaren Forum-Tags mit ID, Slug, Beschreibung und Discussion-Anzahl.",
+        "inputSchema": {"type": "object", "properties": {}},
+    },
+    # ── Notification Manager ──────────────────────────────────────────────────
+    {
+        "name": "notify_list",
+        "description": "Listet alle Notifications (System, Agent, Forum, Mail, MCP). Standardmäßig nur ungelesene.",
+        "inputSchema": {"type": "object", "properties": {
+            "unread_only": {"type": "boolean", "description": "Nur ungelesene (default: true)"},
+            "source": {"type": "string", "description": "Filter: system|agent|forum|mail|mcp|manual"},
+            "priority": {"type": "string", "description": "Filter: low|normal|high|critical"},
+            "limit": {"type": "integer", "description": "Max Einträge (default: 50)"},
+        }},
+    },
+    {
+        "name": "notify_read",
+        "description": "Markiert eine Notification als gelesen oder erledigt (resolve=true löscht sie aus der Liste).",
+        "inputSchema": {"type": "object", "required": ["id"], "properties": {
+            "id": {"type": "string", "description": "Notification-ID"},
+            "resolve": {"type": "boolean", "description": "Als erledigt markieren (default: false)"},
+        }},
+    },
+    {
+        "name": "notify_clear",
+        "description": "Löscht erledigte Notifications. Mit all=true werden alle gelöscht.",
+        "inputSchema": {"type": "object", "properties": {
+            "all": {"type": "boolean", "description": "Alle löschen inkl. ungelesene (default: false)"},
+        }},
+    },
+    {
+        "name": "notify_send",
+        "description": "Erstellt eine neue Notification — z.B. von Agents, System-Events oder manuell.",
+        "inputSchema": {"type": "object", "required": ["title"], "properties": {
+            "title": {"type": "string", "description": "Titel (required)"},
+            "body": {"type": "string", "description": "Nachrichtentext"},
+            "source": {"type": "string", "description": "system|agent|forum|mail|mcp|manual"},
+            "priority": {"type": "string", "description": "low|normal|high|critical"},
+            "tags": {"type": "array", "items": {"type": "string"}, "description": "Tags"},
+            "action_url": {"type": "string", "description": "Link zur Quelle"},
+            "auto_resolve": {"type": "boolean", "description": "Sofort als erledigt markieren"},
+        }},
+    },
+    {
+        "name": "notify_status",
+        "description": "Gibt Status und Statistiken des Notification Managers zurück.",
+        "inputSchema": {"type": "object", "properties": {}},
+    },
+]

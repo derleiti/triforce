@@ -330,37 +330,32 @@ def exchange_auth_code(code: str, code_verifier: str = None) -> Optional[str]:
 async def require_mcp_auth(request: Request) -> str:
     """
     Unified MCP authentication - Port-based.
-
-    Reihenfolge ist entscheidend:
-    1. X-Forwarded-Port: 9100 → Auth IMMER erzwingen (externer Request via Apache)
-       Apache sitzt im 172.18.x Docker-Netz, daher muss Port-Check VOR IP-Check kommen.
-    2. Private IP ohne Port 9100 → Bypass (echter Container-zu-Container Traffic)
-    3. Kein Header → Bypass (direkter interner Zugriff)
+    
+    X-Forwarded-Port: 9100 → Auth required (external)
+    No X-Forwarded-Port   → Bypass (internal/public)
+    Docker-internal IPs   → Bypass (Container-zu-Container)
     """
     client_ip = request.client.host if request.client else "unknown"
     auth_header = request.headers.get("Authorization", "")
 
-    # 1. PORT-CHECK ZUERST: X-Forwarded-Port: 9100 = externer Request via Apache
-    #    Apache (172.18.x) setzt diesen Header für alle externen Requests.
-    #    MUSS vor dem IP-Bypass geprüft werden, sonst bypassen alle Apache-Requests Auth!
-    forwarded_port = request.headers.get("X-Forwarded-Port", "")
-    if forwarded_port == "9100":
-        # → fällt durch zu Auth-Prüfung unten
-        logger.debug(f"AUTH_CHECK | IP: {client_ip} | X-Fwd-Port: 9100 | Path: {request.url.path}")
-    else:
-        # 2. IP-BYPASS: Echter interner/Docker Traffic (kein X-Forwarded-Port: 9100)
-        _PRIVATE_PREFIXES = (
-            "172.16.", "172.17.", "172.18.", "172.19.", "172.20.",
-            "172.21.", "172.22.", "172.23.", "172.24.", "172.25.",
-            "172.26.", "172.27.", "172.28.", "172.29.", "172.30.",
-            "172.31.", "10.", "192.168.", "127.",
-        )
-        if any(client_ip.startswith(p) for p in _PRIVATE_PREFIXES):
-            logger.debug(f"AUTH_OK | IP: {client_ip} | Method: private_network_bypass")
-            return "internal"
+    # FIX: Docker/Private-Netz IPs immer bypass — Container-zu-Container Traffic
+    # braucht kein Auth (172.16-31.x, 10.x, 192.168.x)
+    _PRIVATE_PREFIXES = (
+        "172.16.", "172.17.", "172.18.", "172.19.", "172.20.",
+        "172.21.", "172.22.", "172.23.", "172.24.", "172.25.",
+        "172.26.", "172.27.", "172.28.", "172.29.", "172.30.",
+        "172.31.", "10.", "192.168.", "127.",
+    )
+    if any(client_ip.startswith(p) for p in _PRIVATE_PREFIXES):
+        logger.debug(f"AUTH_OK | IP: {client_ip} | Method: private_network_bypass")
+        return "internal"
 
-        # 3. Kein Port, keine private IP → auch bypass (public/direkt)
-        logger.debug(f"AUTH_OK | IP: {client_ip} | X-Fwd-Port: none | Method: port_bypass")
+    # Port-based auth decision
+    forwarded_port = request.headers.get("X-Forwarded-Port", "")
+    
+    # No X-Forwarded-Port = internal/public → bypass
+    if forwarded_port != "9100":
+        logger.debug(f"AUTH_OK | IP: {client_ip} | X-Fwd-Port: {forwarded_port or 'none'} | Method: port_bypass")
         return "internal"
     
     # External request (port 9100) → requires auth

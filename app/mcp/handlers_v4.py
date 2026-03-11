@@ -725,8 +725,37 @@ class HandlerRegistry:
                 return {"status": "not_implemented", "message": "Gemini coordinate function pending"}
 
             async def handle_gemini_code_exec(params):
-                logger.warning("gemini_code_exec not yet implemented")
-                return {"status": "not_implemented", "message": "Gemini code exec function pending"}
+                """Execute Python code via Gemini Flash through /v1/chat."""
+                import aiohttp
+                code = params.get("code") or params.get("script", "")
+                if not code:
+                    return {"status": "error", "message": "Parameter 'code' required"}
+                try:
+                    prompt = (
+                        "Execute this Python code in your head or sandbox and return ONLY the output. "
+                        "No explanation, no markdown, just the printed output:\n\n"
+                        f"```python\n{code}\n```"
+                    )
+                    payload = {
+                        "model": "gemini/gemini-2.0-flash",
+                        "messages": [{"role": "user", "content": prompt}],
+                        "stream": False,
+                        "max_tokens": 512,
+                    }
+                    async with aiohttp.ClientSession() as session:
+                        async with session.post(
+                            "http://localhost:9000/v1/chat",
+                            json=payload, timeout=aiohttp.ClientTimeout(total=30)
+                        ) as resp:
+                            if resp.status == 200:
+                                data = await resp.json()
+                                output = data.get("text", "").strip()
+                                return {"status": "ok", "output": output, "model": "gemini-2.0-flash"}
+                            else:
+                                return {"status": "error", "message": f"Chat API returned {resp.status}"}
+                except Exception as e:
+                    logger.warning(f"gemini_exec via chat failed: {e}")
+                    return {"status": "error", "message": str(e)}
 
             self.register("gemini_research", handle_gemini_research)
             self.register("gemini_coordinate", handle_gemini_coordinate)

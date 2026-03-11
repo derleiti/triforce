@@ -81,11 +81,12 @@ class AuthMiddleware(BaseHTTPMiddleware):
             return await call_next(request)
 
         # === Port-based auth decision ===
-        # Apache sets X-Forwarded-Port: 9100 for EXTERNAL requests
-        # Public endpoints (like /api/public/search) don't have this header
+        # WICHTIG: Port-Check ZUERST, dann IP-Check.
+        # Apache (172.18.x) setzt X-Forwarded-Port: 9100 für externe Requests.
+        # Würde IP-Check zuerst kommen, bypassten alle Apache-Requests die Auth.
         forwarded_port_str = request.headers.get("X-Forwarded-Port", "")
         client_ip = request.client.host if request.client else "unknown"
-        
+
         # Parse forwarded port
         forwarded_port = None
         if forwarded_port_str:
@@ -94,13 +95,16 @@ class AuthMiddleware(BaseHTTPMiddleware):
             except ValueError:
                 pass
 
-        # Only require auth if X-Forwarded-Port is 9100 (external)
-        if forwarded_port != AUTH_REQUIRED_PORT:
+        # 1. PORT 9100 = externer Request via Apache → Auth erzwingen
+        if forwarded_port == AUTH_REQUIRED_PORT:
+            logger.debug(f"AUTH_CHECK | IP: {client_ip} | X-Fwd-Port: {forwarded_port} | Path: {path}")
+        else:
+            # 2. Kein Port 9100 → interner/public Request → bypass
             logger.debug(f"AUTH_OK | IP: {client_ip} | X-Fwd-Port: {forwarded_port_str or 'none'} | Method: port_bypass")
             return await call_next(request)
 
         # External request (port 9100) → requires authentication
-        logger.debug(f"AUTH_CHECK | IP: {client_ip} | X-Fwd-Port: {forwarded_port} | Path: {path}")
+        logger.debug(f"AUTH_ENFORCE | IP: {client_ip} | X-Fwd-Port: {forwarded_port} | Path: {path}")
         
         auth_header = request.headers.get("Authorization", "")
 
