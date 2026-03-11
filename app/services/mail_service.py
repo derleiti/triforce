@@ -78,23 +78,26 @@ def _extract_body(msg: email.message.Message) -> str:
 # ─── Public API ────────────────────────────────────────────────────────────────
 
 def mail_inbox(limit: int = 20, folder: str = "INBOX") -> List[Dict[str, Any]]:
-    """List recent messages from the inbox. Returns list of message summaries."""
+    """List recent messages from the inbox. Returns list of message summaries.
+    Uses UID-based IMAP operations for stable message references across sessions.
+    """
     conn = _imap_connect()
     try:
         conn.select(folder)
-        _, data = conn.search(None, "ALL")
+        # B-01 FIX: use uid('SEARCH') to get stable UIDs (not MSNs which shift on expunge)
+        _, data = conn.uid("SEARCH", None, "ALL")
         uids = data[0].split()
         recent = uids[-limit:] if len(uids) > limit else uids
         recent.reverse()  # newest first
 
         messages = []
         for uid in recent:
-            _, raw = conn.fetch(uid, "(RFC822.HEADER FLAGS)")
+            _, raw = conn.uid("FETCH", uid, "(RFC822.HEADER FLAGS)")
             if not raw or not raw[0]:
                 continue
             if not isinstance(raw[0], tuple):
                 continue
-            meta_str = raw[0][0]   # e.g. b'1 (RFC822.HEADER {size} FLAGS (\Seen))'
+            meta_str = raw[0][0]
             header_data = raw[0][1]
             msg = email.message_from_bytes(header_data)
             seen = b"\\Seen" in meta_str
@@ -116,7 +119,8 @@ def mail_read(uid: str, folder: str = "INBOX") -> Dict[str, Any]:
     conn = _imap_connect()
     try:
         conn.select(folder)
-        _, raw = conn.fetch(uid.encode(), "(RFC822)")
+        # B-01 FIX: use uid('FETCH') with stable UIDs
+        _, raw = conn.uid("FETCH", uid.encode(), "(RFC822)")
         if not raw or not raw[0]:
             raise api_error(f"Message UID {uid} not found", status_code=404, code="mail_not_found")
 
@@ -142,7 +146,8 @@ def mail_mark_seen(uid: str, folder: str = "INBOX") -> Dict[str, Any]:
     conn = _imap_connect()
     try:
         conn.select(folder)
-        conn.store(uid.encode(), "+FLAGS", "\\Seen")
+        # B-01 FIX: use uid('STORE') with stable UIDs
+        conn.uid("STORE", uid.encode(), "+FLAGS", "\\Seen")
         return {"ok": True, "uid": uid, "action": "marked_seen"}
     finally:
         conn.logout()

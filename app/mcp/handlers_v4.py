@@ -851,25 +851,31 @@ logger.info("MCP Handlers v4.0 loaded")
 
 async def handle_mail_inbox(params: Dict[str, Any]) -> Dict[str, Any]:
     """MCP Tool: List inbox messages. Params: limit(int), folder(str)."""
+    import asyncio
     from app.services.mail_service import mail_service
     limit = int(params.get("limit", 20))
     folder = str(params.get("folder", "INBOX"))
-    messages = mail_service.inbox(limit=limit, folder=folder)
+    # B-03 FIX: run blocking IMAP in executor to not stall asyncio event loop
+    loop = asyncio.get_event_loop()
+    messages = await loop.run_in_executor(None, lambda: mail_service.inbox(limit=limit, folder=folder))
     return {"ok": True, "count": len(messages), "messages": messages, "folder": folder}
 
 
 async def handle_mail_read(params: Dict[str, Any]) -> Dict[str, Any]:
     """MCP Tool: Read full message by UID. Params: uid(str), folder(str)."""
+    import asyncio
     from app.services.mail_service import mail_service
     uid = str(params.get("uid", ""))
     if not uid:
         return {"ok": False, "error": "uid required"}
     folder = str(params.get("folder", "INBOX"))
-    return mail_service.read(uid=uid, folder=folder)
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(None, lambda: mail_service.read(uid=uid, folder=folder))
 
 
 async def handle_mail_send(params: Dict[str, Any]) -> Dict[str, Any]:
     """MCP Tool: Send email. Params: to, subject, body, cc(opt), reply_to(opt)."""
+    import asyncio
     from app.services.mail_service import mail_service
     to = str(params.get("to", ""))
     subject = str(params.get("subject", ""))
@@ -878,17 +884,20 @@ async def handle_mail_send(params: Dict[str, Any]) -> Dict[str, Any]:
         return {"ok": False, "error": "to, subject, body required"}
     cc = params.get("cc")
     reply_to = params.get("reply_to")
-    return mail_service.send(to=to, subject=subject, body=body, cc=cc, reply_to=reply_to)
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(None, lambda: mail_service.send(to=to, subject=subject, body=body, cc=cc, reply_to=reply_to))
 
 
 async def handle_mail_mark_seen(params: Dict[str, Any]) -> Dict[str, Any]:
     """MCP Tool: Mark message as read. Params: uid(str), folder(str)."""
+    import asyncio
     from app.services.mail_service import mail_service
     uid = str(params.get("uid", ""))
     if not uid:
         return {"ok": False, "error": "uid required"}
     folder = str(params.get("folder", "INBOX"))
-    return mail_service.mark_seen(uid=uid, folder=folder)
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(None, lambda: mail_service.mark_seen(uid=uid, folder=folder))
 
 
 # =============================================================================
@@ -935,6 +944,3 @@ async def handle_wp_update_post(params: Dict[str, Any]) -> Dict[str, Any]:
         status=params.get("status"),
     )
     return {"ok": True, "post_id": result.get("id"), "status": result.get("status"), "link": result.get("link")}
-
-
-    logger.info(f"Mail+WP MCP handlers registered: {list(tools.keys())}")
