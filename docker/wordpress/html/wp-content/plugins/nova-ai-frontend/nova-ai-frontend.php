@@ -111,7 +111,7 @@ function nova_proxy_auth(string $path, string $method='GET', ?array $body=null):
     $url  = rtrim($base, '/') . $path;
     $args = ['method'=>$method, 'timeout'=>15, 'headers'=>[
         'Content-Type'=>'application/json',
-        'Authorization'=>'Basic '.base64_encode((defined('NOVA_AI_API_USER') ? NOVA_AI_API_USER : 'zombie').':'.(defined('NOVA_AI_API_PASS') ? NOVA_AI_API_PASS : '')),
+        'Authorization'=>'Basic '.base64_encode((getenv('MCP_OAUTH_USER') ?: 'zombie').':'.(getenv('MCP_OAUTH_PASS') ?: 'JxBWta21vGyMEiPc9Trbn1HlN7KV')),
     ]];
     if ($body !== null) $args['body'] = json_encode($body);
     $resp = wp_remote_request($url, $args);
@@ -957,6 +957,10 @@ add_shortcode('ailinux_downloads', function ($atts): string {
 </div>
     <?php return ob_get_clean();
 });
+
+/* ── AccountSuiteService ─────────────────────────────────────────────────────── */
+require_once NOVA_AI_PLUGIN_DIR . 'services/AccountSuiteService.php';
+\NovAI\Services\AccountSuiteService::instance();
 
 /* ── WP Block filter ────────────────────────────────────────────────────────── */
 add_filter('render_block_core/shortcode', function ($content) {

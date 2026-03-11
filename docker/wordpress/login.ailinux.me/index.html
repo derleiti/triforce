@@ -3,62 +3,66 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<title>AILinux — Login &amp; Account</title>
+<title>AILinux — Account & Management</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --bg:#0a0a0f;--card:#12121a;--border:#2a2a3a;
+  --bg:#0a0a0f;--card:#12121a;--card2:#1a1a25;--border:#2a2a3a;
   --blue:#3b82f6;--purple:#8b5cf6;--cyan:#06b6d4;
-  --green:#10b981;--red:#ef4444;--yellow:#facc15;
+  --green:#10b981;--red:#ef4444;--yellow:#facc15;--orange:#f97316;
   --text:#f1f5f9;--muted:#94a3b8;
   color-scheme: dark;
 }
-/* Light mode via cookie/URL from ailinux.me */
-html[data-theme='light']:root, html.theme-light:root, body.theme-light {
-  --bg:#f5f7fb;--card:#ffffff;--border:#d7dee9;
+html[data-theme='light']:root{
+  --bg:#f5f7fb;--card:#ffffff;--card2:#f0f4fb;--border:#d7dee9;
   --blue:#2f7df4;--purple:#7c3aed;--cyan:#0284c7;
-  --green:#059669;--red:#dc2626;--yellow:#d97706;
+  --green:#059669;--red:#dc2626;--yellow:#d97706;--orange:#ea580c;
   --text:#0f141b;--muted:#4b5565;
   color-scheme: light;
 }
-html[data-theme='light'] .bg-gradient {
-  background: radial-gradient(ellipse at 30% 20%,rgba(47,125,244,.08) 0%,transparent 50%),
-              radial-gradient(ellipse at 70% 80%,rgba(124,58,237,.08) 0%,transparent 50%) !important;
-}
-html[data-theme='light'] body { background: var(--bg); color: var(--text); }
-html[data-theme='light'] .card { background: var(--card); border-color: var(--border); box-shadow: 0 8px 32px rgba(15,20,27,.08); }
-html[data-theme='light'] .tab { color: var(--muted); }
-html[data-theme='light'] .tabs { background: rgba(0,0,0,.05); }
-html[data-theme='light'] .form-group input { background: rgba(0,0,0,.03); border-color: var(--border); color: var(--text); }
-html[data-theme='light'] .logo h1 { background: linear-gradient(135deg,var(--blue),var(--cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-html[data-theme='light'] .message.error { background: rgba(220,38,38,.08); }
-html[data-theme='light'] .message.success { background: rgba(5,150,105,.08); }
-html[data-theme='light'] .tier-info { background: rgba(0,0,0,.03); }
-html[data-theme='light'] .btn-secondary { background: transparent; color: var(--text); border-color: var(--border); }
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem}
-.bg-gradient{position:fixed;inset:0;background:radial-gradient(ellipse at 30% 20%,rgba(59,130,246,.15) 0%,transparent 50%),radial-gradient(ellipse at 70% 80%,rgba(139,92,246,.15) 0%,transparent 50%);pointer-events:none;z-index:0}
-.container{position:relative;z-index:1;width:100%;max-width:440px}
-.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2.5rem;box-shadow:0 25px 50px -12px rgba(0,0,0,.5)}
+html[data-theme='light'] .bg-gradient{background:radial-gradient(ellipse at 30% 20%,rgba(47,125,244,.06) 0%,transparent 50%),radial-gradient(ellipse at 70% 80%,rgba(124,58,237,.06) 0%,transparent 50%)!important}
+html[data-theme='light'] .card,.card-inner{background:var(--card);border-color:var(--border)}
+html[data-theme='light'] .nav-tab{color:var(--muted)}
+html[data-theme='light'] .nav-tabs{background:rgba(0,0,0,.05)}
+html[data-theme='light'] input,.textarea-field{background:rgba(0,0,0,.03)!important;border-color:var(--border)!important;color:var(--text)!important}
+html[data-theme='light'] .stat-card{background:rgba(0,0,0,.04)}
+html[data-theme='light'] .purchase-item{background:rgba(0,0,0,.03)}
+html[data-theme='light'] .tag{background:rgba(0,0,0,.08)}
+
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:1.5rem 1rem}
+.bg-gradient{position:fixed;inset:0;background:radial-gradient(ellipse at 30% 20%,rgba(59,130,246,.12) 0%,transparent 50%),radial-gradient(ellipse at 70% 80%,rgba(139,92,246,.12) 0%,transparent 50%);pointer-events:none;z-index:0}
+.container{position:relative;z-index:1;width:100%;max-width:480px;padding-bottom:2rem}
+
+/* ── Auth Card ── */
+.auth-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2.5rem;box-shadow:0 25px 50px -12px rgba(0,0,0,.5);margin-top:2rem}
 .logo{text-align:center;margin-bottom:2rem}
 .logo-icon{font-size:3rem;margin-bottom:.5rem;display:block}
 .logo h1{font-size:1.75rem;font-weight:700;background:linear-gradient(135deg,var(--blue),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .logo p{color:var(--muted);font-size:.875rem;margin-top:.25rem}
-.tabs{display:flex;gap:.5rem;margin-bottom:1.5rem;background:rgba(0,0,0,.3);padding:.25rem;border-radius:12px}
-.tab{flex:1;padding:.75rem;border:none;background:transparent;color:var(--muted);font-size:.875rem;font-weight:500;border-radius:10px;cursor:pointer;transition:all .2s}
-.tab.active{background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff}
+.auth-tabs{display:flex;gap:.5rem;margin-bottom:1.5rem;background:rgba(0,0,0,.3);padding:.25rem;border-radius:12px}
+.auth-tab{flex:1;padding:.75rem;border:none;background:transparent;color:var(--muted);font-size:.875rem;font-weight:500;border-radius:10px;cursor:pointer;transition:all .2s}
+.auth-tab.active{background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff}
 .form-group{margin-bottom:1rem}
 .form-group label{display:block;font-size:.75rem;color:var(--muted);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.05em}
 .form-group input{width:100%;padding:.875rem 1rem;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:1rem;transition:border-color .2s;-webkit-appearance:none}
 .form-group input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,130,246,.15)}
 .form-group input::placeholder{color:var(--muted)}
-.hidden{display:none!important}
+.pw-toggle{position:relative}
+.pw-toggle input{padding-right:2.8rem}
+.pw-toggle-btn{position:absolute;right:.75rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;padding:.25rem}
+.strength-bar{height:3px;border-radius:2px;margin-top:.4rem;background:var(--border);overflow:hidden}
+.strength-fill{height:100%;border-radius:2px;transition:width .3s,background .3s}
 .btn{width:100%;padding:1rem;border:none;border-radius:12px;font-size:1rem;font-weight:600;cursor:pointer;transition:all .2s;margin-top:.5rem}
 .btn-primary{background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff}
 .btn-primary:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 20px rgba(59,130,246,.3)}
 .btn-primary:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.btn-secondary{background:transparent;border:1px solid var(--border);color:var(--text);width:100%;padding:.8rem;border-radius:12px;font-size:.9rem;font-weight:500;cursor:pointer;transition:border-color .2s,color .2s;text-decoration:none;display:block;text-align:center}
+.btn-secondary:hover{border-color:var(--blue);color:var(--blue)}
+.btn-danger{background:transparent;border:1px solid var(--border);color:var(--muted);width:100%;padding:.8rem;border-radius:12px;font-size:.9rem;font-weight:500;cursor:pointer;transition:all .2s}
+.btn-danger:hover{border-color:var(--red);color:var(--red)}
+.btn-sm{width:auto;padding:.5rem 1rem;font-size:.85rem;margin-top:0}
 .message{padding:.75rem 1rem;border-radius:8px;font-size:.875rem;margin-bottom:1rem;display:none}
 .message.error{background:rgba(239,68,68,.15);border:1px solid var(--red);color:var(--red);display:block}
 .message.success{background:rgba(16,185,129,.15);border:1px solid var(--green);color:var(--green);display:block}
@@ -67,455 +71,535 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .links{text-align:center;margin-top:1.5rem;font-size:.875rem;color:var(--muted)}
 .links a{color:var(--blue);text-decoration:none}
 .links a:hover{text-decoration:underline}
-/* Account View */
-.account-view{display:none}
-.account-view.active{display:block}
-.auth-view.hidden{display:none}
-.user-info{text-align:center;margin-bottom:1.5rem}
-.user-avatar{width:72px;height:72px;background:linear-gradient(135deg,var(--blue),var(--purple));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.75rem;margin:0 auto 1rem}
-.user-email{font-size:1.1rem;font-weight:600}
-.user-tier-badge{display:inline-block;padding:.25rem .85rem;border-radius:20px;font-size:.75rem;font-weight:700;margin-top:.4rem;letter-spacing:.04em}
+
+/* ── Account Suite ── */
+.suite-card{background:var(--card);border:1px solid var(--border);border-radius:20px;box-shadow:0 25px 50px -12px rgba(0,0,0,.5);margin-top:1.5rem;overflow:hidden}
+.suite-header{padding:1.75rem 1.75rem 0}
+.user-banner{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem}
+.user-avatar{width:56px;height:56px;background:linear-gradient(135deg,var(--blue),var(--purple));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.user-info-text{flex:1;min-width:0}
+.user-email-text{font-size:1rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-meta{display:flex;align-items:center;gap:.6rem;margin-top:.3rem;flex-wrap:wrap}
+.tier-badge{display:inline-block;padding:.2rem .75rem;border-radius:20px;font-size:.72rem;font-weight:700;letter-spacing:.04em}
 .tier-free{background:rgba(148,163,184,.15);border:1px solid rgba(148,163,184,.3);color:var(--muted)}
 .tier-paid{background:linear-gradient(135deg,rgba(139,92,246,.3),rgba(59,130,246,.3));border:1px solid rgba(139,92,246,.5);color:#c4b5fd}
-.tier-enterprise{background:linear-gradient(135deg,rgba(250,204,21,.2),rgba(251,146,60,.2));border:1px solid rgba(250,204,21,.4);color:var(--yellow)}
-.tier-info{background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:12px;padding:1.25rem;margin-top:1.25rem}
-.tier-info h3{font-size:.95rem;margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem}
-.tier-features{display:grid;gap:.4rem;font-size:.875rem;color:var(--muted)}
-.tier-features span::before{content:'✓ ';color:var(--green)}
-.account-actions{display:grid;gap:.6rem;margin-top:1.25rem}
-.btn-secondary{background:transparent;border:1px solid var(--border);color:var(--text);text-decoration:none;text-align:center;display:block;padding:.8rem;border-radius:12px;font-size:.9rem;font-weight:500;cursor:pointer;transition:border-color .2s,color .2s}
-.btn-secondary:hover{border-color:var(--blue);color:var(--blue)}
-.btn-logout{background:transparent;border:1px solid var(--border);color:var(--muted);padding:.8rem;border-radius:12px;font-size:.9rem;font-weight:500;width:100%;cursor:pointer;transition:all .2s}
-.btn-logout:hover{border-color:var(--red);color:var(--red)}
+.tier-enterprise,.tier-admin{background:linear-gradient(135deg,rgba(250,204,21,.2),rgba(251,146,60,.2));border:1px solid rgba(250,204,21,.4);color:var(--yellow)}
+.tier-pro{background:linear-gradient(135deg,rgba(16,185,129,.25),rgba(6,182,212,.25));border:1px solid rgba(16,185,129,.4);color:#6ee7b7}
+
+/* ── Nav Tabs ── */
+.nav-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);background:transparent;padding:0 1.75rem;overflow-x:auto;scrollbar-width:none}
+.nav-tabs::-webkit-scrollbar{display:none}
+.nav-tab{flex-shrink:0;padding:.85rem .9rem;border:none;background:transparent;color:var(--muted);font-size:.82rem;font-weight:500;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;margin-bottom:-1px}
+.nav-tab.active{color:var(--blue);border-bottom-color:var(--blue)}
+.nav-tab:hover:not(.active){color:var(--text)}
+
+/* ── Tab Panels ── */
+.tab-panel{display:none;padding:1.5rem 1.75rem 1.75rem}
+.tab-panel.active{display:block}
+
+/* ── Account Tab ── */
+.features-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin:.75rem 0}
+.feature-item{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:.6rem .8rem;font-size:.82rem;color:var(--muted);display:flex;align-items:center;gap:.5rem}
+.feature-item::before{content:'✓';color:var(--green);font-weight:700}
+.action-grid{display:grid;gap:.6rem;margin-top:1rem}
+.action-grid.two-col{grid-template-columns:1fr 1fr}
+
+/* ── Purchases Tab ── */
+.section-title{font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.85rem;font-weight:600}
+.purchase-item{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:1rem;margin-bottom:.6rem}
+.purchase-header{display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem}
+.purchase-name{font-weight:600;font-size:.9rem}
+.purchase-price{font-weight:700;color:var(--green);font-size:.9rem;white-space:nowrap}
+.purchase-meta{font-size:.78rem;color:var(--muted);margin-top:.3rem}
+.empty-state{text-align:center;padding:2rem;color:var(--muted)}
+.empty-state .empty-icon{font-size:2.5rem;margin-bottom:.75rem}
+
+/* ── Subscription Tab ── */
+.sub-status-card{border-radius:14px;padding:1.25rem;margin-bottom:1rem}
+.sub-active{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3)}
+.sub-free{background:rgba(148,163,184,.08);border:1px solid rgba(148,163,184,.2)}
+.sub-cancelled{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2)}
+.sub-label{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;font-weight:600;margin-bottom:.4rem}
+.sub-label.green{color:var(--green)}
+.sub-label.muted{color:var(--muted)}
+.sub-label.red{color:var(--red)}
+.sub-value{font-size:1.25rem;font-weight:700}
+.sub-details{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin:1rem 0;font-size:.82rem}
+.sub-detail-item{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:.75rem}
+.sub-detail-label{color:var(--muted);margin-bottom:.25rem;font-size:.75rem}
+.sub-detail-value{font-weight:600}
+
+/* ── Admin Tab ── */
+.health-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:1rem}
+.health-card{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:.9rem}
+.health-name{font-size:.75rem;color:var(--muted);margin-bottom:.3rem}
+.health-status{font-size:.85rem;font-weight:600;display:flex;align-items:center;gap:.4rem}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dot-green{background:var(--green)}
+.dot-red{background:var(--red)}
+.dot-yellow{background:var(--yellow)}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:1rem}
+.stat-card{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:.9rem;text-align:center}
+.stat-value{font-size:1.4rem;font-weight:700;color:var(--blue)}
+.stat-label{font-size:.72rem;color:var(--muted);margin-top:.2rem}
+.admin-links{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.admin-link{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:.75rem;text-decoration:none;color:var(--text);font-size:.82rem;font-weight:500;text-align:center;transition:border-color .2s,color .2s;display:block}
+.admin-link:hover{border-color:var(--blue);color:var(--blue)}
+.tag{background:rgba(59,130,246,.15);color:var(--blue);border-radius:6px;padding:.15rem .5rem;font-size:.72rem;font-weight:600}
+
+/* ── Utilities ── */
+.hidden{display:none!important}
 @keyframes spin{to{transform:rotate(360deg)}}
-.loading::after{content:'';display:inline-block;width:16px;height:16px;border:2px solid transparent;border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;margin-left:.5rem;vertical-align:middle}
-.pw-toggle{position:relative}
-.pw-toggle input{padding-right:2.8rem}
-.pw-toggle-btn{position:absolute;right:.75rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;padding:.25rem}
-.pw-toggle-btn:hover{color:var(--text)}
-.strength-bar{height:3px;border-radius:2px;margin-top:.4rem;background:var(--border);overflow:hidden}
-.strength-fill{height:100%;border-radius:2px;transition:width .3s,background .3s}
+.loading::after{content:'';display:inline-block;width:14px;height:14px;border:2px solid transparent;border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;margin-left:.4rem;vertical-align:middle}
+.spinner{display:flex;justify-content:center;padding:2rem;color:var(--muted)}
+.spinner::after{content:'';width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite}
+hr.sep{border:none;border-top:1px solid var(--border);margin:1.25rem 0}
+.text-sm{font-size:.82rem;color:var(--muted)}
+.flex-row{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+.mt-1{margin-top:.5rem}
+.mt-2{margin-top:1rem}
 </style>
 <script>
-// ── AILinux Theme-Sync — reads cookie from ailinux.me ─────────────────────────
 (function() {
-  function getCookie(name) {
-    var v = document.cookie.match('(^|;)\s*' + name + '\s*=\s*([^;]+)');
-    return v ? v.pop() : null;
-  }
-  function getUrlParam(key) {
-    return new URLSearchParams(window.location.search).get(key);
-  }
-  // Priority: URL param > cookie > localStorage > default dark
-  var theme = getUrlParam('theme') || getCookie('ailinux-theme') ||
-              (function(){ try { return localStorage.getItem('ailinux-nova-color-mode'); } catch(e){ return null; } })() ||
-              'dark';
-  // Normalize
-  if (theme !== 'light') theme = 'dark';
-  document.documentElement.setAttribute('data-theme', theme);
-  // Persist back
-  try { localStorage.setItem('ailinux-nova-color-mode', theme); } catch(e){}
-  document.cookie = 'ailinux-theme=' + theme + '; domain=.ailinux.me; path=/; SameSite=Lax; max-age=31536000';
+  function getCookie(n){var v=document.cookie.match('(^|;)\\s*'+n+'\\s*=\\s*([^;]+)');return v?v.pop():null}
+  function getParam(k){return new URLSearchParams(window.location.search).get(k)}
+  var theme=getParam('theme')||getCookie('ailinux-theme')||(function(){try{return localStorage.getItem('ailinux-nova-color-mode')}catch(e){return null}}_)()||'dark';
+  if(theme!=='light')theme='dark';
+  document.documentElement.setAttribute('data-theme',theme);
+  try{localStorage.setItem('ailinux-nova-color-mode',theme)}catch(e){}
+  document.cookie='ailinux-theme='+theme+'; domain=.ailinux.me; path=/; SameSite=Lax; max-age=31536000';
 })();
 </script>
 </head>
 <body>
 <div class="bg-gradient"></div>
 <div class="container">
-<div class="card">
+
+<!-- ══════════ AUTH CARD ══════════ -->
+<div class="auth-card" id="authCard">
   <div class="logo">
     <span class="logo-icon">🤖</span>
     <h1>AILinux</h1>
     <p>TriForce AI Platform</p>
   </div>
-
-  <!-- Auth View (Login / Register) -->
-  <div class="auth-view" id="authView">
-    <div class="tabs">
-      <button class="tab active" data-tab="login">Sign In</button>
-      <button class="tab" data-tab="register">Create Account</button>
+  <div class="auth-tabs">
+    <button class="auth-tab active" data-tab="login">Sign In</button>
+    <button class="auth-tab" data-tab="register">Create Account</button>
+  </div>
+  <div id="authMessage" class="message" role="alert"></div>
+  <!-- Login -->
+  <form id="loginForm" novalidate>
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="loginEmail" autocomplete="email" placeholder="you@example.com" required>
     </div>
-    <div id="message" class="message" role="alert"></div>
-
-    <!-- Login Form -->
-    <form id="loginForm" novalidate>
-      <div class="form-group">
-        <label for="loginEmail">Email</label>
-        <input type="email" id="loginEmail" autocomplete="email" placeholder="you@example.com" required>
+    <div class="form-group">
+      <label>Password</label>
+      <div class="pw-toggle">
+        <input type="password" id="loginPassword" autocomplete="current-password" placeholder="••••••••" required>
+        <button type="button" class="pw-toggle-btn" tabindex="-1">👁</button>
       </div>
-      <div class="form-group">
-        <label for="loginPassword">Password</label>
-        <div class="pw-toggle">
-          <input type="password" id="loginPassword" autocomplete="current-password" placeholder="••••••••" required>
-          <button type="button" class="pw-toggle-btn" aria-label="Show/hide password" tabindex="-1">👁</button>
+    </div>
+    <button type="submit" class="btn btn-primary" id="loginBtn">Sign In</button>
+  </form>
+  <!-- Register -->
+  <form id="registerForm" class="hidden" novalidate>
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="regEmail" autocomplete="email" placeholder="you@example.com" required>
+    </div>
+    <div class="form-group">
+      <label>Password <small style="color:var(--muted)">(min 8 chars)</small></label>
+      <div class="pw-toggle">
+        <input type="password" id="regPassword" autocomplete="new-password" placeholder="••••••••" minlength="8" required>
+        <button type="button" class="pw-toggle-btn" tabindex="-1">👁</button>
+      </div>
+      <div class="strength-bar"><div class="strength-fill" id="strengthFill" style="width:0%"></div></div>
+    </div>
+    <div class="form-group">
+      <label>Display Name <small style="color:var(--muted)">(optional)</small></label>
+      <input type="text" id="regName" autocomplete="name" placeholder="Your name">
+    </div>
+    <div class="form-group">
+      <label>Invite Code <small style="color:var(--muted)">(optional)</small></label>
+      <input type="text" id="regBetaCode" placeholder="AILINUX2026" autocomplete="off">
+    </div>
+    <button type="submit" class="btn btn-primary" id="registerBtn">Create Account</button>
+  </form>
+  <div class="divider">or</div>
+  <div class="links"><a href="https://ailinux.me">← Back to ailinux.me</a></div>
+</div>
+
+<!-- ══════════ ACCOUNT SUITE ══════════ -->
+<div class="suite-card hidden" id="suiteCard">
+  <div class="suite-header">
+    <div class="user-banner">
+      <div class="user-avatar" id="suiteAvatar">👤</div>
+      <div class="user-info-text">
+        <div class="user-email-text" id="suiteEmail">—</div>
+        <div class="user-meta">
+          <span class="tier-badge tier-free" id="suiteTierBadge">FREE</span>
+          <span class="tag hidden" id="suiteAdminTag">ADMIN</span>
         </div>
       </div>
-      <button type="submit" class="btn btn-primary" id="loginBtn">Sign In</button>
-    </form>
-
-    <!-- Register Form -->
-    <form id="registerForm" class="hidden" novalidate>
-      <div class="form-group">
-        <label for="regEmail">Email</label>
-        <input type="email" id="regEmail" autocomplete="email" placeholder="you@example.com" required>
-      </div>
-      <div class="form-group">
-        <label for="regPassword">Password <small style="color:var(--muted)">(min. 8 chars)</small></label>
-        <div class="pw-toggle">
-          <input type="password" id="regPassword" autocomplete="new-password" placeholder="••••••••" minlength="8" required>
-          <button type="button" class="pw-toggle-btn" aria-label="Show/hide password" tabindex="-1">👁</button>
-        </div>
-        <div class="strength-bar"><div class="strength-fill" id="strengthFill" style="width:0%"></div></div>
-      </div>
-      <div class="form-group">
-        <label for="regName">Display Name <small style="color:var(--muted)">(optional)</small></label>
-        <input type="text" id="regName" autocomplete="name" placeholder="Your name">
-      </div>
-      <div class="form-group">
-        <label for="regBetaCode">Invite Code <small style="color:var(--muted)">(optional)</small></label>
-        <input type="text" id="regBetaCode" placeholder="AILINUX2026" autocomplete="off">
-      </div>
-      <button type="submit" class="btn btn-primary" id="registerBtn">Create Account</button>
-    </form>
-
-    <div class="divider">or</div>
-    <div class="links"><a href="https://ailinux.me">← Back to ailinux.me</a></div>
-  </div>
-
-  <!-- Account View (logged in) -->
-  <div class="account-view" id="accountView">
-    <div class="user-info">
-      <div class="user-avatar">👤</div>
-      <div class="user-email" id="userEmail">—</div>
-      <div class="user-tier-badge" id="userTierBadge">FREE</div>
-    </div>
-    <div class="tier-info">
-      <h3>Your Plan</h3>
-      <div class="tier-features" id="tierFeatures">
-        <span>609+ AI models</span>
-        <span>Chat, Vision &amp; Media Generation</span>
-        <span>MCP Tools access</span>
-      </div>
-    </div>
-    <div class="account-actions">
-      <button class="btn btn-primary" onclick="openApp()">🚀 Open AILinux App</button>
-      <a class="btn-secondary" id="backToSiteLink" href="https://ailinux.me">← Back to website</a>
-      <a class="btn-secondary hidden" id="wpAdminLink" href="/wp-admin/">WordPress Dashboard</a>
-      <button class="btn-logout" onclick="doLogout()">Sign Out</button>
-    </div>
-    <div class="links" style="margin-top:1rem">
-      <a href="https://ailinux.me/shop">Shop</a> ·
-      <a href="https://update.ailinux.me">Downloads</a>
     </div>
   </div>
+  <div class="nav-tabs" id="navTabs">
+    <button class="nav-tab active" data-panel="panelAccount">Account</button>
+    <button class="nav-tab" data-panel="panelPurchases">Purchases</button>
+    <button class="nav-tab" data-panel="panelSubscription">Subscription</button>
+    <button class="nav-tab hidden" id="tabAdmin" data-panel="panelAdmin">⚡ Admin</button>
+  </div>
 
-</div><!-- .card -->
+  <!-- ── Account Panel ── -->
+  <div class="tab-panel active" id="panelAccount">
+    <div class="section-title">Your Plan</div>
+    <div class="features-grid" id="accountFeatures"></div>
+    <hr class="sep">
+    <div class="section-title">Quick Actions</div>
+    <div class="action-grid two-col">
+      <button class="btn btn-primary btn-sm" onclick="openApp()">🚀 Open App</button>
+      <a class="btn btn-secondary btn-sm" id="backLink" href="https://ailinux.me">← Website</a>
+    </div>
+    <div class="action-grid mt-1">
+      <a class="btn btn-secondary btn-sm hidden" id="wpAdminLink" href="/wp-admin/">🔧 WP Dashboard</a>
+      <a class="btn btn-secondary btn-sm" href="https://ailinux.me/nova-ai-console-playground">🤖 Playground</a>
+      <a class="btn btn-secondary btn-sm" href="https://update.ailinux.me">📦 Downloads</a>
+      <a class="btn btn-secondary btn-sm" href="https://ailinux.me/shop">🛒 Shop</a>
+    </div>
+    <hr class="sep">
+    <button class="btn-danger mt-1" onclick="doLogout()">Sign Out</button>
+  </div>
+
+  <!-- ── Purchases Panel ── -->
+  <div class="tab-panel" id="panelPurchases">
+    <div class="section-title">My Purchases</div>
+    <div id="purchasesContent"><div class="spinner"></div></div>
+  </div>
+
+  <!-- ── Subscription Panel ── -->
+  <div class="tab-panel" id="panelSubscription">
+    <div class="section-title">Subscription Status</div>
+    <div id="subscriptionContent"><div class="spinner"></div></div>
+  </div>
+
+  <!-- ── Admin Panel (Enterprise only) ── -->
+  <div class="tab-panel" id="panelAdmin">
+    <div class="section-title">System Health</div>
+    <div id="adminHealthContent"><div class="spinner"></div></div>
+    <hr class="sep">
+    <div class="section-title">Quick Links</div>
+    <div class="admin-links">
+      <a class="admin-link" href="https://ailinux.me/wp-admin/admin.php?page=nova-ai">🚀 Nova Dashboard</a>
+      <a class="admin-link" href="https://ailinux.me/wp-admin/">🔧 WP Admin</a>
+      <a class="admin-link" href="https://api.ailinux.me/docs">📚 API Docs</a>
+      <a class="admin-link" href="https://ailinux.me/wp-admin/admin.php?page=nova-ai&tab=agents">🤖 Agents</a>
+      <a class="admin-link" href="https://ailinux.me/wp-admin/admin.php?page=nova-ai&tab=vault">🔑 Vault</a>
+      <a class="admin-link" href="https://ailinux.me/wp-admin/admin.php?page=nova-ai&tab=system">🖥 System</a>
+    </div>
+  </div>
+</div>
+
 </div><!-- .container -->
-
 <script>
-(function(){
-'use strict';
+(function(){'use strict';
+const API='https://api.ailinux.me/v1/auth';
+const TIERS_API='https://api.ailinux.me/v1/tiers';
+const HEALTH_API='https://api.ailinux.me/v1/frontend/dashboard/health';
 
-const API = 'https://api.ailinux.me/v1/auth';
+/* ── helpers ── */
+function getParam(k){return new URLSearchParams(window.location.search).get(k)}
+function getRedirect(){
+  var r=getParam('redirect')||getParam('redirect_back');
+  if(!r)return null;
+  try{var u=new URL(r,location.origin);if(u.hostname&&!u.hostname.endsWith('.ailinux.me')&&u.hostname!=='ailinux.me')return null;return u.toString()}catch(e){return null}
+}
+function wpOrigin(url){try{return new URL(url||'').origin}catch(e){return'https://ailinux.me'}}
+function sanitize(s){var d=document.createElement('div');d.textContent=String(s||'');return d.innerHTML}
+function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){}}
+function lsRemove(k){try{localStorage.removeItem(k)}catch(e){}}
+function formatDate(iso){if(!iso)return'—';try{return new Date(iso).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'})}catch(e){return iso.split('T')[0]}}
 
-// ── Redirect helpers ─────────────────────────────────────────────────────────
-function getRedirectParam() {
-    var p = new URLSearchParams(window.location.search);
-    // Accept both 'redirect' and 'redirect_back' for compatibility
-    var r = p.get('redirect') || p.get('redirect_back');
-    if (!r) return null;
-    // Strict whitelist: only allow ailinux.me domains or relative paths
-    try {
-        var u = new URL(r, window.location.origin);
-        if (u.hostname && !u.hostname.endsWith('.ailinux.me') && u.hostname !== 'ailinux.me') return null;
-        return u.toString();
-    } catch(e) { return null; }
+/* ── auth tabs ── */
+document.querySelectorAll('.auth-tab').forEach(function(t){
+  t.addEventListener('click',function(){setAuthTab(t.dataset.tab)});
+});
+function setAuthTab(name){
+  document.querySelectorAll('.auth-tab').forEach(function(t){t.classList.toggle('active',t.dataset.tab===name)});
+  document.getElementById('loginForm').classList.toggle('hidden',name!=='login');
+  document.getElementById('registerForm').classList.toggle('hidden',name!=='register');
+  hideMsg();
+}
+if(getParam('tab')==='register')setAuthTab('register');
+
+/* ── message ── */
+function showMsg(t,type){var m=document.getElementById('authMessage');m.textContent=t;m.className='message '+(type||'error')}
+function hideMsg(){document.getElementById('authMessage').className='message'}
+
+/* ── password toggles ── */
+document.querySelectorAll('.pw-toggle').forEach(function(wrap){
+  var inp=wrap.querySelector('input'),btn=wrap.querySelector('.pw-toggle-btn');
+  if(!btn)return;
+  btn.addEventListener('click',function(){var v=inp.type==='text';inp.type=v?'password':'text';btn.textContent=v?'👁':'🔒'});
+});
+
+/* ── password strength ── */
+var rp=document.getElementById('regPassword');
+if(rp)rp.addEventListener('input',function(){
+  var pw=rp.value,score=0;
+  if(pw.length>=8)score++;if(pw.length>=12)score++;
+  if(/[A-Z]/.test(pw))score++;if(/[0-9]/.test(pw))score++;if(/[^A-Za-z0-9]/.test(pw))score++;
+  var pct=(score/5)*100,col=score<2?'#ef4444':score<4?'#facc15':'#10b981';
+  var f=document.getElementById('strengthFill');if(f){f.style.width=pct+'%';f.style.background=col}
+});
+
+/* ── login ── */
+document.getElementById('loginForm').addEventListener('submit',async function(e){
+  e.preventDefault();
+  var btn=document.getElementById('loginBtn'),
+      email=document.getElementById('loginEmail').value.trim(),
+      pw=document.getElementById('loginPassword').value;
+  if(!email||!pw){showMsg('Please fill in all fields');return}
+  btn.disabled=true;btn.classList.add('loading');hideMsg();
+  try{
+    var r=await fetch(API+'/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,password:pw})});
+    var d=await r.json();
+    if(r.ok&&d.token){
+      ls('ailinux_token',d.token);ls('ailinux_email',d.user_id||email);
+      ls('ailinux_tier',d.tier||'free');ls('ailinux_client_id',d.client_id||'');
+      showMsg('Welcome back!','success');
+      setTimeout(function(){showSuite(d.user_id||email,d.tier||'free',d.token,d.client_id||'')},500);
+    }else{showMsg(sanitize(d.detail||d.message||'Login failed'))}
+  }catch(err){showMsg('Connection error. Please try again.')}
+  btn.disabled=false;btn.classList.remove('loading');
+});
+
+/* ── register ── */
+document.getElementById('registerForm').addEventListener('submit',async function(e){
+  e.preventDefault();
+  var btn=document.getElementById('registerBtn'),
+      email=document.getElementById('regEmail').value.trim(),
+      pw=document.getElementById('regPassword').value,
+      name=document.getElementById('regName').value.trim(),
+      code=document.getElementById('regBetaCode').value.trim();
+  if(!email||!pw){showMsg('Email and password required');return}
+  if(pw.length<8){showMsg('Password must be at least 8 characters');return}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showMsg('Please enter a valid email');return}
+  btn.disabled=true;btn.classList.add('loading');hideMsg();
+  try{
+    var r=await fetch(API+'/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,password:pw,name:name||null,beta_code:code||null})});
+    var d=await r.json();
+    if(r.ok&&d.success){
+      showMsg('Account created! Signing you in…','success');
+      setTimeout(function(){document.getElementById('loginEmail').value=email;document.getElementById('loginPassword').value=pw;setAuthTab('login');document.getElementById('loginForm').dispatchEvent(new Event('submit'))},800);
+    }else{showMsg(sanitize(d.detail||d.message||'Registration failed'))}
+  }catch(err){showMsg('Connection error. Please try again.')}
+  btn.disabled=false;btn.classList.remove('loading');
+});
+
+/* ── suite nav tabs ── */
+document.querySelectorAll('.nav-tab').forEach(function(t){
+  t.addEventListener('click',function(){
+    document.querySelectorAll('.nav-tab').forEach(function(x){x.classList.remove('active')});
+    document.querySelectorAll('.tab-panel').forEach(function(x){x.classList.remove('active')});
+    t.classList.add('active');
+    var p=document.getElementById(t.dataset.panel);
+    if(p)p.classList.add('active');
+    var pn=t.dataset.panel;
+    if(pn==='panelPurchases')loadPurchases();
+    if(pn==='panelSubscription')loadSubscription();
+    if(pn==='panelAdmin')loadAdminHealth();
+  });
+});
+
+/* ── show suite ── */
+function showSuite(email,tier,token,clientId){
+  document.getElementById('authCard').classList.add('hidden');
+  document.getElementById('suiteCard').classList.remove('hidden');
+  // Update URL
+  updateReturnLinks();
+  // Fill header
+  document.getElementById('suiteEmail').textContent=email||'—';
+  var initials=(email||'?').charAt(0).toUpperCase();
+  document.getElementById('suiteAvatar').textContent=initials;
+  // Tier badge
+  var badge=document.getElementById('suiteTierBadge');
+  var isAdmin=(tier==='enterprise'||tier==='admin');
+  var isPaid=(tier==='paid'||tier==='pro'||isAdmin);
+  if(isAdmin){badge.textContent='⭐ Admin';badge.className='tier-badge tier-enterprise'}
+  else if(tier==='pro'){badge.textContent='✦ Pro';badge.className='tier-badge tier-pro'}
+  else if(isPaid){badge.textContent='✦ Paid';badge.className='tier-badge tier-paid'}
+  else{badge.textContent='Free';badge.className='tier-badge tier-free'}
+  // Admin tag + tab
+  if(isAdmin){
+    document.getElementById('suiteAdminTag').classList.remove('hidden');
+    document.getElementById('tabAdmin').classList.remove('hidden');
+    document.getElementById('wpAdminLink').classList.remove('hidden');
+  }
+  // Features
+  var featEl=document.getElementById('accountFeatures');
+  var feats=isAdmin
+    ?['All 609+ Models','134 MCP Tools','Media Generation','Admin Dashboard','Enterprise Priority','CLI Agents']
+    :isPaid
+    ?['609+ AI Models','MCP Tools ✓','Media Generation','Priority Support']
+    :['Basic AI Models','Community Support','Chat access',''];
+  featEl.innerHTML=feats.filter(Boolean).map(function(f){return'<div class="feature-item">'+sanitize(f)+'</div>'}).join('');
+  // WP sync
+  syncWordPress(email,token,tier,clientId);
+  // View param
+  var view=getParam('view');
+  if(view==='purchases')clickTab('panelPurchases');
+  else if(view==='subscription')clickTab('panelSubscription');
+  else if(view==='admin'&&isAdmin)clickTab('panelAdmin');
 }
 
-function getWpOrigin(url) {
-    try { return new URL(url || '').origin; } catch(e) { return 'https://ailinux.me'; }
+function clickTab(panelId){
+  var t=document.querySelector('[data-panel="'+panelId+'"]');
+  if(t)t.click();
 }
 
-function updateReturnLinks() {
-    var r = getRedirectParam() || 'https://ailinux.me';
-    var back = document.getElementById('backToSiteLink');
-    if (back) back.href = r;
-    var admin = document.getElementById('wpAdminLink');
-    if (admin) admin.href = getWpOrigin(r) + '/wp-admin/';
+/* ── load purchases ── */
+async function loadPurchases(){
+  var email=ls('ailinux_email');
+  var el=document.getElementById('purchasesContent');
+  el.innerHTML='<div class="spinner"></div>';
+  try{
+    var r=await fetch(TIERS_API+'/purchases/'+encodeURIComponent(email));
+    var d=await r.json();
+    var items=d.purchases||[];
+    if(!items.length){
+      el.innerHTML='<div class="empty-state"><div class="empty-icon">🛒</div><div>No purchases yet.</div><a href="https://ailinux.me/shop" style="color:var(--blue);font-size:.85rem;display:block;margin-top:.5rem">→ Visit Shop</a></div>';
+      return;
+    }
+    el.innerHTML=items.map(function(p){
+      return'<div class="purchase-item"><div class="purchase-header"><span class="purchase-name">'+sanitize(p.item_name||p.item_id)+'</span><span class="purchase-price">€'+parseFloat(p.price||0).toFixed(2)+'</span></div><div class="purchase-meta">'+formatDate(p.purchased_at)+' · <span style="color:var(--green)">'+sanitize(p.status||'completed')+'</span></div></div>';
+    }).join('');
+  }catch(err){el.innerHTML='<div class="empty-state"><div class="empty-icon">⚠️</div><div>Could not load purchases.</div></div>'}
 }
 
-// ── Tabs ─────────────────────────────────────────────────────────────────────
-function setTab(name) {
-    document.querySelectorAll('.tab').forEach(function(t) {
-        t.classList.toggle('active', t.dataset.tab === name);
+/* ── load subscription ── */
+async function loadSubscription(){
+  var email=ls('ailinux_email');
+  var el=document.getElementById('subscriptionContent');
+  el.innerHTML='<div class="spinner"></div>';
+  try{
+    var r=await fetch(TIERS_API+'/subscription/'+encodeURIComponent(email));
+    var d=await r.json();
+    var status=d.status||'none';
+    var isActive=status==='active';
+    var isCancelled=status==='cancelled';
+    var statusClass=isActive?'sub-active':isCancelled?'sub-cancelled':'sub-free';
+    var statusLabel=isActive?'Active':isCancelled?'Cancelled':'No Subscription';
+    var labelClass=isActive?'green':isCancelled?'red':'muted';
+    var html='<div class="sub-status-card '+statusClass+'"><div class="sub-label '+labelClass+'">'+statusLabel+'</div><div class="sub-value">'+(d.tier==='paid'?'AILinux Pro':'Free Plan')+'</div></div>';
+    if(isActive||isCancelled){
+      html+='<div class="sub-details">';
+      if(d.subscribed_at)html+='<div class="sub-detail-item"><div class="sub-detail-label">Started</div><div class="sub-detail-value">'+formatDate(d.subscribed_at)+'</div></div>';
+      if(d.expires_at)html+='<div class="sub-detail-item"><div class="sub-detail-label">Expires</div><div class="sub-detail-value">'+formatDate(d.expires_at)+'</div></div>';
+      if(d.amount_eur)html+='<div class="sub-detail-item"><div class="sub-detail-label">Amount</div><div class="sub-detail-value">€'+parseFloat(d.amount_eur).toFixed(2)+'</div></div>';
+      if(d.payment_provider)html+='<div class="sub-detail-item"><div class="sub-detail-label">Provider</div><div class="sub-detail-value">'+sanitize(d.payment_provider)+'</div></div>';
+      html+='</div>';
+    }
+    if(status==='none'){
+      html+='<div class="text-sm" style="margin-bottom:1rem">Upgrade to AILinux Pro for access to 609+ models, priority queue, and all MCP tools.</div>';
+      html+='<a class="btn btn-primary" href="https://ailinux.me/shop">🚀 Upgrade to Pro — €35/mo</a>';
+    }else if(isActive){
+      html+='<div class="action-grid mt-2"><a class="btn btn-secondary btn-sm" href="https://ailinux.me/shop">Manage Plan</a></div>';
+    }
+    el.innerHTML=html;
+  }catch(err){el.innerHTML='<div class="empty-state"><div class="empty-icon">⚠️</div><div>Could not load subscription info.</div></div>'}
+}
+
+/* ── load admin health ── */
+async function loadAdminHealth(){
+  var el=document.getElementById('adminHealthContent');
+  el.innerHTML='<div class="spinner"></div>';
+  try{
+    var r=await fetch(HEALTH_API,{headers:{'Cache-Control':'no-cache'}});
+    var d=await r.json();
+    var svcs=d.services||{};
+    var cards='';
+    var svcMap={backend:'🔌 Backend',ollama:'🦙 Ollama',redis:'⚡ Redis',searxng:'🔍 Search'};
+    Object.keys(svcMap).forEach(function(k){
+      var s=svcs[k];if(!s)return;
+      var ok=s.status==='healthy';
+      cards+='<div class="health-card"><div class="health-name">'+svcMap[k]+'</div><div class="health-status"><span class="dot '+(ok?'dot-green':'dot-red')+'"></span>'+(ok?'Online':'Offline')+(s.models_available?' · '+s.models_available+' models':'')+'</div></div>';
     });
-    document.getElementById('loginForm').classList.toggle('hidden', name !== 'login');
-    document.getElementById('registerForm').classList.toggle('hidden', name !== 'register');
-    hideMessage();
-}
-document.querySelectorAll('.tab').forEach(function(t) {
-    t.addEventListener('click', function() { setTab(t.dataset.tab); });
-});
-
-// Pre-select tab from URL
-(function(){
-    var p = new URLSearchParams(window.location.search);
-    var tab = p.get('tab');
-    if (tab === 'register') setTab('register');
-})();
-
-// ── Message ──────────────────────────────────────────────────────────────────
-function showMessage(text, type) {
-    var m = document.getElementById('message');
-    m.textContent = text;
-    m.className = 'message ' + (type || 'error');
-}
-function hideMessage() {
-    document.getElementById('message').className = 'message';
+    var stats='<div class="stat-row">';
+    stats+='<div class="stat-card"><div class="stat-value">'+(d.model_count||'—')+'</div><div class="stat-label">Models</div></div>';
+    stats+='<div class="stat-card"><div class="stat-value">'+(d.response_time_ms?d.response_time_ms.toFixed(0)+'ms':'—')+'</div><div class="stat-label">Latency</div></div>';
+    stats+='<div class="stat-card"><div class="stat-value">'+(d.checks_failed===0?'✓':d.checks_failed)+'</div><div class="stat-label">Checks</div></div>';
+    stats+='</div>';
+    el.innerHTML=stats+'<div class="health-grid">'+cards+'</div>';
+  }catch(err){el.innerHTML='<div class="empty-state"><div class="empty-icon">⚠️</div><div>Could not load system health.</div></div>'}
 }
 
-// ── Password toggle ──────────────────────────────────────────────────────────
-document.querySelectorAll('.pw-toggle').forEach(function(wrap) {
-    var inp = wrap.querySelector('input');
-    var btn = wrap.querySelector('.pw-toggle-btn');
-    if (!btn) return;
-    btn.addEventListener('click', function() {
-        var vis = inp.type === 'text';
-        inp.type = vis ? 'password' : 'text';
-        btn.textContent = vis ? '👁' : '🔒';
-    });
-});
-
-// ── Password strength ────────────────────────────────────────────────────────
-var regPw = document.getElementById('regPassword');
-if (regPw) {
-    regPw.addEventListener('input', function() {
-        var pw = regPw.value;
-        var score = 0;
-        if (pw.length >= 8) score++;
-        if (pw.length >= 12) score++;
-        if (/[A-Z]/.test(pw)) score++;
-        if (/[0-9]/.test(pw)) score++;
-        if (/[^A-Za-z0-9]/.test(pw)) score++;
-        var pct = (score / 5) * 100;
-        var col = score < 2 ? '#ef4444' : score < 4 ? '#facc15' : '#10b981';
-        var fill = document.getElementById('strengthFill');
-        if (fill) { fill.style.width = pct + '%'; fill.style.background = col; }
-    });
+/* ── WP sync ── */
+async function syncWordPress(email,token,tier,clientId){
+  var r=getRedirect();
+  if(!r)return;
+  var origin=wpOrigin(r);
+  var syncUrl=origin+'/wp-json/nova-ai/v1/auth/sync';
+  var lastSync=ls('ailinux_wp_last_sync');
+  if(lastSync===token){if(ls('ailinux_wp_can_admin')==='1'){document.getElementById('wpAdminLink').classList.remove('hidden')}return}
+  try{
+    var resp=await fetch(syncUrl,{method:'POST',headers:{'Content-Type':'application/json'},credentials:'omit',body:JSON.stringify({email:email,token:token,tier:tier,client_id:clientId})});
+    var j=await resp.json();
+    if(j&&j.success){ls('ailinux_wp_last_sync',token);if(j.can_admin){ls('ailinux_wp_can_admin','1');document.getElementById('wpAdminLink').classList.remove('hidden')}else{lsRemove('ailinux_wp_can_admin')}}
+  }catch(err){}
 }
 
-// ── WP Sync ──────────────────────────────────────────────────────────────────
-async function syncWordPress(email, token, tier, clientId) {
-    var r = getRedirectParam();
-    if (!r) return;
-    var origin = getWpOrigin(r);
-    var syncUrl = origin + '/wp-json/nova-ai/v1/auth/sync';
-    var lastSync = localStorage.getItem('ailinux_wp_last_sync');
-    if (lastSync === token) {
-        if (localStorage.getItem('ailinux_wp_can_admin') === '1') showAdminLink();
-        return;
-    }
-    try {
-        var resp = await fetch(syncUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'omit',
-            body: JSON.stringify({ email: email, token: token, tier: tier, client_id: clientId })
-        });
-        var j = await resp.json();
-        if (j && j.success) {
-            localStorage.setItem('ailinux_wp_last_sync', token);
-            if (j.can_admin) { localStorage.setItem('ailinux_wp_can_admin', '1'); showAdminLink(); }
-            else { localStorage.removeItem('ailinux_wp_can_admin'); }
-        }
-    } catch(err) { /* non-critical */ }
+/* ── return links ── */
+function updateReturnLinks(){
+  var r=getRedirect()||'https://ailinux.me';
+  var bl=document.getElementById('backLink');if(bl)bl.href=r;
+  var wa=document.getElementById('wpAdminLink');if(wa)wa.href=wpOrigin(r)+'/wp-admin/';
 }
 
-function showAdminLink() {
-    var l = document.getElementById('wpAdminLink');
-    if (l) l.classList.remove('hidden');
-}
-
-// ── Show account view ─────────────────────────────────────────────────────────
-function showAccountView(email, tier, isAdmin) {
-    document.getElementById('authView').classList.add('hidden');
-    var av = document.getElementById('accountView');
-    av.classList.add('active');
-    document.getElementById('userEmail').textContent = email || '—';
-
-    var badge = document.getElementById('userTierBadge');
-    var features = document.getElementById('tierFeatures');
-
-    if (isAdmin) {
-        badge.textContent = '⭐ Enterprise';
-        badge.className = 'user-tier-badge tier-enterprise';
-        features.innerHTML = '<span>All 609+ models</span><span>Full MCP toolset (134 tools)</span><span>Media generation</span><span>Admin dashboard</span><span>Enterprise priority</span>';
-    } else if (tier && tier !== 'free') {
-        badge.textContent = '✦ Paid';
-        badge.className = 'user-tier-badge tier-paid';
-        features.innerHTML = '<span>609+ AI models</span><span>Chat, Vision &amp; Media</span><span>MCP Tools</span><span>Priority support</span>';
-    } else {
-        badge.textContent = 'Free';
-        badge.className = 'user-tier-badge tier-free';
-        features.innerHTML = '<span>Basic AI models</span><span>Chat access</span><span>Community support</span><a href="https://ailinux.me/shop" style="color:var(--blue);text-decoration:none;font-size:.8rem;margin-top:.5rem;display:block">→ Upgrade to Paid</a>';
-    }
-}
-
-// ── Check existing session ────────────────────────────────────────────────────
-function checkSession() {
-    updateReturnLinks();
-    var token = localStorage.getItem('ailinux_token');
-    var email = localStorage.getItem('ailinux_email');
-    var tier  = localStorage.getItem('ailinux_tier') || 'free';
-    var cid   = localStorage.getItem('ailinux_client_id') || '';
-    var isAdm = localStorage.getItem('ailinux_wp_can_admin') === '1';
-
-    // Check ?view=account
-    var view = new URLSearchParams(window.location.search).get('view');
-
-    if (token && email) {
-        showAccountView(email, tier, isAdm);
-        if (view !== 'account') syncWordPress(email, token, tier, cid);
-    }
-}
-
-// ── Login ─────────────────────────────────────────────────────────────────────
-document.getElementById('loginForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    var btn = document.getElementById('loginBtn');
-    var email = document.getElementById('loginEmail').value.trim();
-    var pw    = document.getElementById('loginPassword').value;
-    if (!email || !pw) { showMessage('Please fill in all fields'); return; }
-    btn.disabled = true; btn.classList.add('loading');
-    hideMessage();
-    try {
-        var r = await fetch(API + '/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: email, password: pw })
-        });
-        var d = await r.json();
-        if (r.ok && d.token) {
-            localStorage.setItem('ailinux_token', d.token);
-            localStorage.setItem('ailinux_email', d.user_id || email);
-            // Normalize tier: only free or paid
-            var tier = (d.tier && d.tier !== 'free') ? 'paid' : 'free';
-            localStorage.setItem('ailinux_tier', tier);
-            localStorage.setItem('ailinux_client_id', d.client_id || '');
-            showMessage('Welcome back!', 'success');
-            setTimeout(function() {
-                var isAdm = localStorage.getItem('ailinux_wp_can_admin') === '1';
-                showAccountView(d.user_id || email, tier, isAdm);
-                syncWordPress(d.user_id || email, d.token, tier, d.client_id || '');
-                updateReturnLinks();
-                // Auto-redirect after sync if redirect param present
-                var redir = getRedirectParam();
-                if (redir) {
-                    setTimeout(function(){ window.location.href = redir; }, 1200);
-                }
-            }, 500);
-        } else {
-            showMessage(sanitize(d.detail || d.message || 'Login failed'));
-        }
-    } catch(err) { showMessage('Connection error. Please try again.'); }
-    btn.disabled = false; btn.classList.remove('loading');
-});
-
-// ── Register ──────────────────────────────────────────────────────────────────
-document.getElementById('registerForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    var btn = document.getElementById('registerBtn');
-    var email = document.getElementById('regEmail').value.trim();
-    var pw    = document.getElementById('regPassword').value;
-    var name  = document.getElementById('regName').value.trim();
-    var code  = document.getElementById('regBetaCode').value.trim();
-    if (!email || !pw) { showMessage('Email and password are required'); return; }
-    if (pw.length < 8) { showMessage('Password must be at least 8 characters'); return; }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showMessage('Please enter a valid email address'); return; }
-    btn.disabled = true; btn.classList.add('loading');
-    hideMessage();
-    try {
-        var r = await fetch(API + '/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: email, password: pw, name: name || null, beta_code: code || null })
-        });
-        var d = await r.json();
-        if (r.ok && d.success) {
-            showMessage('Account created! Signing you in…', 'success');
-            setTimeout(function() {
-                document.getElementById('loginEmail').value = email;
-                document.getElementById('loginPassword').value = pw;
-                setTab('login');
-                document.getElementById('loginForm').dispatchEvent(new Event('submit'));
-            }, 800);
-        } else {
-            showMessage(sanitize(d.detail || d.message || 'Registration failed'));
-        }
-    } catch(err) { showMessage('Connection error. Please try again.'); }
-    btn.disabled = false; btn.classList.remove('loading');
-});
-
-// ── Logout ────────────────────────────────────────────────────────────────────
-window.doLogout = function() {
-    var token = localStorage.getItem('ailinux_token');
-    var redir = getRedirectParam() || 'https://ailinux.me';
-    var wpOrigin = getWpOrigin(redir);
-    // Clear all stored data
-    ['ailinux_token','ailinux_email','ailinux_tier','ailinux_client_id',
-     'ailinux_wp_last_sync','ailinux_wp_can_admin'].forEach(function(k){ localStorage.removeItem(k); });
-    // Best-effort WP logout
-    if (token) {
-        fetch(wpOrigin + '/wp-json/nova-ai/v1/auth/logout', {
-            method:'POST', credentials:'include',
-            headers:{'Content-Type':'application/json'}
-        }).catch(function(){});
-    }
-    document.getElementById('accountView').classList.remove('active');
-    document.getElementById('authView').classList.remove('hidden');
-    setTab('login');
+/* ── logout ── */
+window.doLogout=function(){
+  var token=ls('ailinux_token'),r=getRedirect()||'https://ailinux.me',origin=wpOrigin(r);
+  ['ailinux_token','ailinux_email','ailinux_tier','ailinux_client_id','ailinux_wp_last_sync','ailinux_wp_can_admin'].forEach(lsRemove);
+  if(token)fetch(origin+'/wp-json/nova-ai/v1/auth/logout',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'}}).catch(function(){});
+  document.getElementById('suiteCard').classList.add('hidden');
+  document.getElementById('authCard').classList.remove('hidden');
+  setAuthTab('login');
+  // Notify parent if in iframe
+  try{window.parent.postMessage({type:'ailinux_logout'},origin)}catch(e){}
 };
 
-// ── Open App ──────────────────────────────────────────────────────────────────
-window.openApp = function() {
-    var token = localStorage.getItem('ailinux_token');
-    if (token) window.location.href = 'ailinux://auth?token=' + encodeURIComponent(token);
-    setTimeout(function(){ window.location.href = 'https://ailinux.me'; }, 2000);
+/* ── open app ── */
+window.openApp=function(){
+  var token=ls('ailinux_token');
+  if(token){window.location.href='ailinux://auth?token='+encodeURIComponent(token)}
+  setTimeout(function(){window.location.href='https://ailinux.me'},1500);
 };
 
-// ── XSS helper ────────────────────────────────────────────────────────────────
-function sanitize(str) {
-    var d = document.createElement('div');
-    d.textContent = String(str || '');
-    return d.innerHTML;
+/* ── check existing session ── */
+function checkSession(){
+  updateReturnLinks();
+  var token=ls('ailinux_token'),email=ls('ailinux_email'),tier=ls('ailinux_tier')||'free',cid=ls('ailinux_client_id')||'';
+  // ?action=logout
+  if(getParam('action')==='logout'){
+    ['ailinux_token','ailinux_email','ailinux_tier','ailinux_client_id','ailinux_wp_last_sync','ailinux_wp_can_admin'].forEach(lsRemove);
+    return;
+  }
+  if(token&&email){showSuite(email,tier,token,cid)}
 }
 
-// ── Init ──────────────────────────────────────────────────────────────────────
-// FIX 2026-03-11: Handle ?action=logout from cross-domain logout (ailinux.me header button)
-// When ailinux.me logs out, it redirects here to clear login.ailinux.me localStorage too
-(function() {
-    var params = new URLSearchParams(window.location.search);
-    if (params.get('action') === 'logout') {
-        // Clear all stored keys on THIS domain (login.ailinux.me)
-        ['ailinux_token','ailinux_email','ailinux_tier','ailinux_client_id',
-         'ailinux_wp_last_sync','ailinux_wp_can_admin'].forEach(function(k){
-            try { localStorage.removeItem(k); } catch(e) {}
-        });
-        // Redirect to the specified URL or ailinux.me homepage
-        var redir = params.get('redirect') || 'https://ailinux.me/';
-        // Validate: only ailinux.me domains
-        try {
-            var u = new URL(redir);
-            if (!u.hostname.endsWith('.ailinux.me') && u.hostname !== 'ailinux.me') {
-                redir = 'https://ailinux.me/';
-            }
-        } catch(e) { redir = 'https://ailinux.me/'; }
-        window.location.replace(redir);
-        return; // Don't run checkSession
-    }
-})();
+/* ── postMessage from ailinux.me ── */
+window.addEventListener('message',function(ev){
+  if(!ev.origin.endsWith('.ailinux.me')&&ev.origin!=='https://ailinux.me')return;
+  var data=ev.data||{};
+  if(data.type==='ailinux_auth_success'&&data.token){
+    ls('ailinux_token',data.token);ls('ailinux_email',data.email||'');
+    ls('ailinux_tier',data.tier||'free');ls('ailinux_client_id',data.client_id||'');
+    showSuite(data.email||'',data.tier||'free',data.token,data.client_id||'');
+  }
+  if(data.type==='ailinux_logout'){window.doLogout&&window.doLogout()}
+});
+
 checkSession();
-
 })();
 </script>
 </body>
