@@ -30,7 +30,7 @@ class WordPressService:
         self._wordpress_url = str(settings.wordpress_url)
         self._username = app_user
         self._password = app_pass
-        self._client = HttpClient(base_url=self._wordpress_url, timeout_ms=settings.request_timeout * 1000)
+        self._client = HttpClient(base_url=self._wordpress_url, timeout=float(settings.request_timeout))
 
     def _get_auth_headers(self) -> Dict[str, str]:
         if not self._username or not self._password:
