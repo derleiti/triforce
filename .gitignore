@@ -167,6 +167,7 @@ backend/
 docker/data/
 docker/mailserver/state/
 docker/wordpress/html/
+!docker/wordpress/html/wp-content/plugins/nova-ai-frontend/
 
 # User-Datenbank (enthält Passwort-Hashes!)
 config/users.json
