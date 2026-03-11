@@ -169,9 +169,11 @@ def mail_send(
     from_name = s.mail_from_name or "Nova AI"
     from_addr = s.mail_from_addr or "nova@ailinux.me"
 
-    if not all([host, user, password]):
+    # FIX S16-SMTP-RELAY: Port 25 trusted relay braucht nur host, kein user/pass
+    # user/pass nur nötig bei AUTH (Port 587) — docker-mailserver hat smtpd_sasl_auth_enable=no
+    if not host:
         raise api_error(
-            "SMTP credentials not configured (MAIL_SMTP_HOST/USER/PASS)",
+            "SMTP not configured (MAIL_SMTP_HOST missing)",
             status_code=503,
             code="smtp_unconfigured",
         )
@@ -187,12 +189,19 @@ def mail_send(
     msg.set_content(body)
 
     use_starttls = s.mail_smtp_starttls if s.mail_smtp_starttls is not None else True
+    # FIX S16-SSL: Localhost mailserver hat kein gültiges Zertifikat für 127.0.0.1
+    # → check_hostname + verify_mode deaktivieren für interne SMTP-Verbindung
     context = ssl.create_default_context()
+    context.check_hostname = False
+    context.verify_mode = ssl.CERT_NONE
 
     with smtplib.SMTP(host, port) as server:
         if use_starttls:
             server.starttls(context=context)
-        server.login(user, password)
+        # FIX S16-SMTP-AUTH: docker-mailserver hat smtpd_sasl_auth_enable=no
+        # → login() nur aufrufen wenn Credentials vorhanden, sonst trusted relay (mynetworks)
+        if user and password:
+            server.login(user, password)
         server.send_message(msg)
 
     return {"ok": True, "to": to, "subject": subject, "from": from_addr}
