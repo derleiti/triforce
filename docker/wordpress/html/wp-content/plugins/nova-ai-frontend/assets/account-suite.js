@@ -1,0 +1,480 @@
+/* Nova AI — Account Suite JS v2.0 — Management Suite Edition */
+(function(){
+'use strict';
+const CFG=window.novaAccountConfig||{};
+const API=CFG.apiBase||'/wp-json/nova-ai/v1';
+const LOGIN_URL=CFG.loginUrl||'https://login.ailinux.me';
+
+const TIER_LABELS={free:'FREE',pro:'PRO',enterprise:'ENTERPRISE',unlimited:'UNLIMITED',admin:'ADMIN',paid:'PAID'};
+const TIER_CLASS={free:'nas-tier-free',pro:'nas-tier-pro',enterprise:'nas-tier-enterprise',unlimited:'nas-tier-unlimited',admin:'nas-tier-admin',paid:'nas-tier-paid'};
+const TIER_FEATURES={
+  free:['33+ lokale Modelle (Ollama)','Chat & Vision Analyse','Community Support','AILinux Beta-Zugang'],
+  paid:['609+ AI-Modelle (9 Provider)','Media Generation (Bild & Video)','Priority Support','Vollständige MCP Tools','Unbegrenzte API-Zugriffe'],
+  pro:['609+ AI-Modelle (9 Provider)','Media Generation (Bild & Video)','Priority Support','Vollständige MCP Tools','Unbegrenzte API-Zugriffe'],
+  enterprise:['Alle 609+ Modelle','Voller Admin-Zugriff','134 MCP Tools','System-Kontrolle','Vault & CLI-Agents','Dedicated Support'],
+  admin:['Alle 609+ Modelle','Voller Admin-Zugriff','134 MCP Tools','System-Kontrolle','Vault & CLI-Agents','Dedicated Support'],
+  unlimited:['Alles in Pro','Unbegrenzte Agents','Codebase Tools','Dedicated Support']
+};
+function tierLabel(t){return TIER_LABELS[t?.toLowerCase()]||t?.toUpperCase()||'FREE'}
+function tierClass(t){return TIER_CLASS[t?.toLowerCase()]||'nas-tier-free'}
+function tierFeatures(t){return TIER_FEATURES[t?.toLowerCase()]||TIER_FEATURES.free}
+function isAdminTier(t){return ['enterprise','admin','unlimited'].includes(t?.toLowerCase())}
+function isPaidTier(t){return ['paid','pro','enterprise','admin','unlimited'].includes(t?.toLowerCase())}
+
+function wrap(el){return el?document.getElementById(el):null}
+function html(id,h){const el=wrap(id);if(el)el.innerHTML=h}
+function show(id){const el=wrap(id);if(el)el.style.display=''}
+function hide(id){const el=wrap(id);if(el)el.style.display='none'}
+
+document.querySelectorAll('.nova-account-suite,[data-nova-account-suite]').forEach(function(root){
+  if(root.dataset.nasInit)return; root.dataset.nasInit='1';
+  const isLoggedIn=root.dataset.loggedIn==='1'||CFG.isLoggedIn;
+  if(!isLoggedIn){
+    const loginBtn=root.querySelector('.nas-login-btn');
+    if(loginBtn){loginBtn.addEventListener('click',function(){window.location.href=LOGIN_URL+'?redirect='+encodeURIComponent(location.href)})}
+    initAuthForms(root);
+    return;
+  }
+  initDashboard(root);
+});
+
+function initAuthForms(root){
+  // Tab switching (login/register)
+  root.querySelectorAll('.nas-tab').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      root.querySelectorAll('.nas-tab').forEach(function(x){x.classList.remove('active')});
+      btn.classList.add('active');
+      const tab=btn.dataset.tab;
+      root.querySelectorAll('.nas-form').forEach(function(f){f.style.display='none'});
+      const f=root.querySelector('#nas-'+tab+'-form');
+      if(f)f.style.display='block';
+    });
+  });
+  // Password toggles
+  root.querySelectorAll('.nas-pw-toggle').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      const inp=btn.closest('.nas-pw-wrap')?.querySelector('input');
+      if(inp){inp.type=inp.type==='password'?'text':'password';btn.textContent=inp.type==='password'?'👁':'🙈'}
+    });
+  });
+}
+
+function initDashboard(root){
+  // Nav switching
+  root.querySelectorAll('.nas-nav-item').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      root.querySelectorAll('.nas-nav-item').forEach(function(x){x.classList.remove('active')});
+      btn.classList.add('active');
+      root.querySelectorAll('.nas-panel').forEach(function(p){p.classList.remove('active')});
+      const panel=root.querySelector('#nas-panel-'+btn.dataset.panel);
+      if(panel){panel.classList.add('active');loadPanel(btn.dataset.panel,root)}
+    });
+  });
+
+  // Logout
+  const logoutBtn=root.querySelector('#nas-logout');
+  if(logoutBtn){
+    logoutBtn.addEventListener('click',async function(){
+      try{await fetch(API+'/auth/logout',{method:'POST',headers:{'Content-Type':'application/json','X-WP-Nonce':CFG.nonce||''}})}catch{}
+      location.href=LOGIN_URL;
+    });
+  }
+
+  // Copy buttons
+  root.querySelectorAll('.nas-copy-btn').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      const text=btn.dataset.clipboard||(root.querySelector('#'+btn.dataset.target)?.textContent||'');
+      navigator.clipboard?.writeText(text).then(function(){btn.textContent='✓';setTimeout(function(){btn.textContent='📋'},1500)}).catch(function(){});
+    });
+  });
+
+  // Settings form
+  const settingsForm=root.querySelector('#nas-settings-form');
+  if(settingsForm){
+    settingsForm.addEventListener('submit',async function(e){
+      e.preventDefault();
+      const nameInput=root.querySelector('#nas-set-name');
+      const pwInput=root.querySelector('#nas-set-pw');
+      const body={};
+      if(nameInput?.value.trim())body.display_name=nameInput.value.trim();
+      if(pwInput?.value&&pwInput.value.length>=8)body.new_password=pwInput.value;
+      if(!Object.keys(body).length){showMsg(root,'#nas-settings-msg','Nichts zu aktualisieren','error');return}
+      const r=await fetch(API+'/profile/update',{method:'POST',headers:{'Content-Type':'application/json','X-WP-Nonce':CFG.nonce||''},body:JSON.stringify(body)}).catch(function(e){return{ok:false,json:function(){return{error:e.message}}}});
+      const d=await r.json().catch(function(){return{}});
+      showMsg(root,'#nas-settings-msg',d.ok?'Gespeichert ✅':'Fehler: '+(d.error||'unbekannt'),d.ok?'ok':'error');
+    });
+  }
+
+  // Password toggles (dashboard)
+  root.querySelectorAll('.nas-pw-toggle').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      const inp=btn.closest('.nas-pw-wrap')?.querySelector('input');
+      if(inp){inp.type=inp.type==='password'?'text':'password';btn.textContent=inp.type==='password'?'👁':'🙈'}
+    });
+  });
+
+  // Cancel subscription
+  const cancelBtn=root.querySelector('#nas-cancel-sub-btn');
+  if(cancelBtn){
+    cancelBtn.addEventListener('click',async function(){
+      if(!confirm('Abo wirklich kündigen?'))return;
+      const r=await fetch(API+'/subscription/cancel',{method:'POST',headers:{'Content-Type':'application/json','X-WP-Nonce':CFG.nonce||''}}).catch(function(){return{json:function(){return{ok:false}}}});
+      const d=await r.json().catch(function(){return{ok:false}});
+      if(d.ok){alert('Abo erfolgreich gekündigt.');location.reload()}
+      else{alert('Fehler: '+(d.error||'unbekannt'))}
+    });
+  }
+
+  // Load initial data
+  loadOverview(root);
+}
+
+function showMsg(root,selector,text,type){
+  const el=root.querySelector(selector);
+  if(!el)return;
+  el.textContent=text;el.className='nas-msg '+(type||'err');
+  el.style.display='block';
+  setTimeout(function(){el.style.display='none'},4000);
+}
+
+const _loaded={};
+function loadPanel(name,root){
+  const key=name+'_'+(root.id||'r');
+  if(_loaded[key])return; _loaded[key]=1;
+  if(name==='subscription')loadSubscription(root);
+  if(name==='downloads')loadDownloads(root);
+  if(name==='admin')loadAdminOverview(root);
+  if(name==='system')loadSystem(root);
+  if(name==='agents')loadAgents(root);
+  if(name==='mcp')loadMcpTools(root);
+  if(name==='vault')loadVault(root);
+  if(name==='logs')loadLogs(root);
+}
+
+function loadOverview(root){
+  fetch(API+'/health').then(function(r){return r.json()}).then(function(d){
+    const el=root.querySelector('#nas-backend-status');
+    if(el)el.textContent=(d.status==='ok'||d.status==='healthy'||d.ok)?'✅ Online':'⚠ '+d.status;
+  }).catch(function(){
+    const el=root.querySelector('#nas-backend-status');
+    if(el)el.textContent='⚠ Offline';
+  });
+  fetch(API+'/account').then(function(r){return r.json()}).then(function(d){
+    if(!d.ok)return;
+    const t=(d.tier||'free').toLowerCase();
+    const lbl=tierLabel(t);
+    const cls=tierClass(t);
+    const cid=d.client_id||'—';
+    const cidEl=root.querySelector('#nas-client-id-val');
+    const apiCidEl=root.querySelector('#nas-api-client-id');
+    if(cidEl)cidEl.textContent=cid;
+    if(apiCidEl)apiCidEl.textContent=cid;
+    const featsEl=root.querySelector('#nas-features-list');
+    if(featsEl){
+      const feats=tierFeatures(t);
+      featsEl.innerHTML=feats.map(function(f){return '<span class="nas-feature-item">✓ '+f+'</span>'}).join('');
+    }
+    const tierCardEl=root.querySelector('.nas-card-tier .nas-card-value');
+    if(tierCardEl)tierCardEl.innerHTML='<span class="nas-tier-badge '+cls+'">'+lbl+'</span>';
+    if(t==='free'){const upEl=root.querySelector('.nas-upgrade-link');if(upEl)upEl.style.display='inline-block'}
+    // Show admin nav items if admin tier
+    if(isAdminTier(t)){
+      root.querySelectorAll('[data-admin-only]').forEach(function(el){el.style.display=''});
+    }
+  }).catch(function(){});
+}
+
+async function loadSubscription(root){
+  const loadEl=root.querySelector('#nas-sub-loading');
+  const contentEl=root.querySelector('#nas-sub-content');
+  try{
+    const r=await fetch(API+'/subscription',{headers:{'X-WP-Nonce':CFG.nonce||''}});
+    const d=await r.json();
+    const data=d.data||{};
+    const t=data.tier||'free';
+    const sid=data.subscription_id||data.payment_ref||'';
+    const statusEl=root.querySelector('#nas-sub-status');
+    if(statusEl){
+      statusEl.innerHTML=sid
+        ?'<span class="status-active">● Aktiv</span> · '+tierLabel(t)
+        :'<span style="color:var(--nas-muted)">Kein aktives Abo</span>';
+    }
+    if(sid){const cancelSection=root.querySelector('#nas-cancel-section');if(cancelSection)cancelSection.style.display='block'}
+    if(loadEl)loadEl.style.display='none';
+    if(contentEl)contentEl.style.display='block';
+  }catch(e){
+    if(loadEl)loadEl.innerHTML='<div style="color:var(--nas-muted)">Fehler beim Laden</div>';
+  }
+}
+
+async function loadDownloads(root){
+  const loadEl=root.querySelector('#nas-dl-loading');
+  const contentEl=root.querySelector('#nas-dl-content');
+  const filesEl=root.querySelector('#nas-downloads-table');
+  const purchasesEl=root.querySelector('#nas-purchases-list');
+  try{
+    const r=await fetch(API+'/purchases',{headers:{'X-WP-Nonce':CFG.nonce||''}});
+    const d=await r.json();
+    const files=d.downloads||[];
+    const purchases=d.purchases||[];
+    if(purchasesEl&&purchases.length){
+      purchasesEl.innerHTML='<h3 style="margin-bottom:.75rem">Käufe</h3>'+purchases.map(function(p){return'<div class="nas-card" style="margin-bottom:.5rem"><strong>'+(p.item_name||p.name||p.id||'Kauf')+'</strong><div style="font-size:.8rem;color:var(--nas-muted)">'+(p.purchased_at||p.date||'')+'</div></div>'}).join('');
+    }
+    if(filesEl){
+      if(!files.length){
+        filesEl.innerHTML='<div class="nas-loading-box">Keine Downloads verfügbar</div>';
+      }else{
+        filesEl.innerHTML='<table class="nas-dl-table"><thead><tr><th>Datei</th><th>Typ</th><th>Größe</th><th>Geändert</th><th>Download</th></tr></thead><tbody>'+files.map(function(f){var sz=fmtBytes(f.size||0);return'<tr><td>'+esc(f.name||'—')+'</td><td>'+esc((f.type||'').toUpperCase())+'</td><td>'+sz+'</td><td>'+esc(f.modified||'—')+'</td><td>'+(f.url?'<a href="'+esc(f.url)+'" download class="nas-dl-link">↓</a>':'—')+'</td></tr>'}).join('')+'</tbody></table>';
+      }
+    }
+    if(loadEl)loadEl.style.display='none';
+    if(contentEl)contentEl.style.display='block';
+  }catch(e){
+    if(loadEl)loadEl.innerHTML='<div style="color:var(--nas-muted)">Fehler beim Laden</div>';
+  }
+}
+
+/* ── ADMIN PANELS ─────────────────────────────────────────────────────── */
+
+async function loadAdminOverview(root){
+  const el=root.querySelector('#nas-admin-overview');
+  if(!el)return;
+  try{
+    const [health,agents]=await Promise.all([
+      fetch(API+'/health').then(r=>r.json()).catch(()=>({})),
+      fetch(API+'/admin/agents',{headers:{'X-WP-Nonce':CFG.nonce||''}}).then(r=>r.json()).catch(()=>({}))
+    ]);
+    const agentList=agents.agents||agents.data||[];
+    const active=Array.isArray(agentList)?agentList.filter(a=>a.status==='running'||a.running).length:0;
+    el.innerHTML=`
+      <div class="nas-admin-stat-grid">
+        <div class="nas-admin-stat"><div class="nas-admin-stat-icon">🔌</div><div class="nas-admin-stat-val">${health.status==='healthy'?'✅ Healthy':'⚠ '+health.status}</div><div class="nas-admin-stat-label">Backend</div></div>
+        <div class="nas-admin-stat"><div class="nas-admin-stat-icon">🤖</div><div class="nas-admin-stat-val">${active}/${Array.isArray(agentList)?agentList.length:0}</div><div class="nas-admin-stat-label">Agents aktiv</div></div>
+        <div class="nas-admin-stat"><div class="nas-admin-stat-icon">🧠</div><div class="nas-admin-stat-val">${health.services?.ollama?.models_available||'?'}</div><div class="nas-admin-stat-label">Ollama Modelle</div></div>
+        <div class="nas-admin-stat"><div class="nas-admin-stat-icon">🔴</div><div class="nas-admin-stat-val">${health.services?.redis?.status==='healthy'?'✅':'⚠'}</div><div class="nas-admin-stat-label">Redis</div></div>
+        <div class="nas-admin-stat"><div class="nas-admin-stat-icon">🔍</div><div class="nas-admin-stat-val">${health.services?.searxng?.status==='healthy'?'✅':'⚠'}</div><div class="nas-admin-stat-label">SearxNG</div></div>
+        <div class="nas-admin-stat"><div class="nas-admin-stat-icon">⚡</div><div class="nas-admin-stat-val">${health.response_time_ms||0}ms</div><div class="nas-admin-stat-label">Response</div></div>
+      </div>
+    `;
+  }catch(e){
+    el.innerHTML='<div style="color:var(--nas-muted)">Fehler beim Laden der Admin-Übersicht</div>';
+  }
+}
+
+async function loadSystem(root){
+  const el=root.querySelector('#nas-system-content');
+  if(!el)return;
+  el.innerHTML='<div class="nas-loading-box">⏳ Lade System-Status…</div>';
+  try{
+    const r=await fetch(API+'/admin/status',{headers:{'X-WP-Nonce':CFG.nonce||''}});
+    const d=await r.json();
+    const svcs=d.services||{};
+    let html='<div class="nas-sys-grid">';
+    for(const[k,v]of Object.entries(svcs)){
+      const ok=v.status==='healthy'||v.status==='ok'||v.running;
+      html+=`<div class="nas-sys-card ${ok?'ok':'warn'}">
+        <div class="nas-sys-name">${k}</div>
+        <div class="nas-sys-status">${ok?'✅':'⚠'} ${v.status||'unknown'}</div>
+        ${v.models_available?`<div class="nas-sys-detail">${v.models_available} Modelle</div>`:''}
+        ${v.message?`<div class="nas-sys-detail">${esc(v.message)}</div>`:''}
+      </div>`;
+    }
+    html+='</div>';
+    if(d.model_count)html+=`<div class="nas-info-bar">📊 Modelle gesamt: <strong>${d.model_count}</strong></div>`;
+    el.innerHTML=html;
+  }catch(e){
+    el.innerHTML='<div style="color:var(--nas-muted)">Fehler: '+e.message+'</div>';
+  }
+}
+
+async function loadAgents(root){
+  const el=root.querySelector('#nas-agents-content');
+  if(!el)return;
+  el.innerHTML='<div class="nas-loading-box">⏳ Lade Agents…</div>';
+  try{
+    const r=await fetch(API+'/admin/agents',{headers:{'X-WP-Nonce':CFG.nonce||''}});
+    const d=await r.json();
+    const agents=d.agents||d.data||[];
+    if(!agents.length){el.innerHTML='<div class="nas-loading-box">Keine Agents gefunden</div>';return}
+    el.innerHTML='<div class="nas-agent-grid">'+agents.map(function(a){
+      const running=a.status==='running'||a.running;
+      const aid=a.id||a.name||'agent';
+      return `<div class="nas-agent-card ${running?'running':'stopped'}">
+        <div class="nas-agent-header">
+          <span class="nas-agent-dot"></span>
+          <strong class="nas-agent-name">${esc(a.name||aid)}</strong>
+          <span class="nas-agent-status">${running?'🟢':'🔴'} ${esc(a.status||'stopped')}</span>
+        </div>
+        ${a.model?`<div class="nas-agent-model">🧠 ${esc(a.model)}</div>`:''}
+        ${a.uptime?`<div class="nas-agent-detail">⏱ ${esc(String(a.uptime))}</div>`:''}
+        <div class="nas-agent-actions">
+          ${running
+            ?`<button class="nas-btn-sm nas-btn-warn" data-agent="${esc(aid)}" data-action="stop">⏹ Stop</button>
+               <button class="nas-btn-sm nas-btn-outline" data-agent="${esc(aid)}" data-action="restart">🔄 Restart</button>`
+            :`<button class="nas-btn-sm nas-btn-ok" data-agent="${esc(aid)}" data-action="start">▶ Start</button>`}
+        </div>
+      </div>`;
+    }).join('')+'</div>';
+    // Agent action buttons
+    el.querySelectorAll('[data-agent][data-action]').forEach(function(btn){
+      btn.addEventListener('click',async function(){
+        const aid=btn.dataset.agent;
+        const action=btn.dataset.action;
+        btn.disabled=true; btn.textContent='⏳';
+        try{
+          const r=await fetch(API+'/admin/agents/'+encodeURIComponent(aid)+'/'+action,{method:'POST',headers:{'X-WP-Nonce':CFG.nonce||''}});
+          const d=await r.json();
+          // Reload agents panel
+          const key='agents_'+(root.id||'r');
+          delete _loaded[key];
+          loadAgents(root);
+        }catch(e){btn.disabled=false;btn.textContent='Fehler'}
+      });
+    });
+  }catch(e){
+    el.innerHTML='<div style="color:var(--nas-muted)">Fehler: '+e.message+'</div>';
+  }
+}
+
+async function loadMcpTools(root){
+  const el=root.querySelector('#nas-mcp-content');
+  if(!el)return;
+  el.innerHTML='<div class="nas-loading-box">⏳ Lade MCP Tools…</div>';
+  try{
+    const r=await fetch(API+'/admin/mcp/tools',{headers:{'X-WP-Nonce':CFG.nonce||''}});
+    const d=await r.json();
+    const tools=d.tools||d.data||[];
+    const filterInput=root.querySelector('#nas-mcp-filter');
+    function renderTools(filter){
+      const filtered=filter?tools.filter(t=>(t.name||'').toLowerCase().includes(filter.toLowerCase())||(t.description||'').toLowerCase().includes(filter.toLowerCase())):tools;
+      el.innerHTML='<div class="nas-mcp-count">'+filtered.length+' / '+tools.length+' Tools</div><div class="nas-mcp-grid">'+filtered.map(function(t){
+        return `<div class="nas-mcp-tool" data-tool="${esc(t.name||'')}">
+          <div class="nas-mcp-tool-name">🔧 ${esc(t.name||'—')}</div>
+          <div class="nas-mcp-tool-desc">${esc((t.description||'').substring(0,80))}${t.description&&t.description.length>80?'…':''}</div>
+          <button class="nas-btn-sm nas-btn-outline nas-mcp-run" data-tool="${esc(t.name||'')}">▶ Run</button>
+        </div>`;
+      }).join('')+'</div>';
+      // MCP run buttons
+      el.querySelectorAll('.nas-mcp-run').forEach(function(btn){
+        btn.addEventListener('click',function(){
+          const toolName=btn.dataset.tool;
+          const argsEl=root.querySelector('#nas-mcp-args');
+          const toolEl=root.querySelector('#nas-mcp-call-tool');
+          if(toolEl)toolEl.value=toolName;
+          if(argsEl)argsEl.value='{}';
+          // Scroll to call panel
+          const callPanel=root.querySelector('#nas-mcp-call-section');
+          if(callPanel)callPanel.scrollIntoView({behavior:'smooth'});
+        });
+      });
+    }
+    renderTools('');
+    if(filterInput){filterInput.addEventListener('input',function(){renderTools(filterInput.value)})}
+  }catch(e){
+    el.innerHTML='<div style="color:var(--nas-muted)">Fehler: '+e.message+'</div>';
+  }
+  // MCP call form
+  const callBtn=root.querySelector('#nas-mcp-call-btn');
+  if(callBtn&&!callBtn.dataset.bound){
+    callBtn.dataset.bound='1';
+    callBtn.addEventListener('click',async function(){
+      const toolEl=root.querySelector('#nas-mcp-call-tool');
+      const argsEl=root.querySelector('#nas-mcp-args');
+      const resultEl=root.querySelector('#nas-mcp-result');
+      const tool=toolEl?.value?.trim()||'';
+      if(!tool){if(resultEl)resultEl.textContent='Tool-Name fehlt';return}
+      let args={};
+      try{args=JSON.parse(argsEl?.value||'{}')}catch{if(resultEl)resultEl.textContent='Ungültiges JSON';return}
+      if(resultEl)resultEl.textContent='⏳ Ausführen…';
+      callBtn.disabled=true;
+      try{
+        const r=await fetch(API+'/admin/mcp/call',{method:'POST',headers:{'Content-Type':'application/json','X-WP-Nonce':CFG.nonce||''},body:JSON.stringify({tool,args})});
+        const d=await r.json();
+        if(resultEl)resultEl.textContent=JSON.stringify(d,null,2);
+      }catch(e){
+        if(resultEl)resultEl.textContent='Fehler: '+e.message;
+      }finally{callBtn.disabled=false}
+    });
+  }
+}
+
+async function loadVault(root){
+  const el=root.querySelector('#nas-vault-content');
+  if(!el)return;
+  el.innerHTML='<div class="nas-loading-box">⏳ Lade Vault…</div>';
+  try{
+    const r=await fetch(API+'/admin/vault/keys',{headers:{'X-WP-Nonce':CFG.nonce||''}});
+    const d=await r.json();
+    const keys=d.keys||d.data||[];
+    el.innerHTML='<div class="nas-vault-keys"><h3>🔑 Gespeicherte Keys ('+keys.length+')</h3><div class="nas-vault-list">'+
+      (keys.length?keys.map(function(k){return`<div class="nas-vault-key-row"><span class="nas-vault-key-name">${esc(typeof k==='string'?k:k.name||k.key||String(k))}</span><span class="nas-vault-key-mask">●●●●●●●●</span></div>`}).join(''):'<div class="nas-muted">Keine Keys gefunden</div>')+
+    '</div></div>';
+  }catch(e){
+    el.innerHTML='<div style="color:var(--nas-muted)">Fehler: '+e.message+'</div>';
+  }
+  // Set key form
+  const setBtn=root.querySelector('#nas-vault-set-btn');
+  if(setBtn&&!setBtn.dataset.bound){
+    setBtn.dataset.bound='1';
+    setBtn.addEventListener('click',async function(){
+      const keyEl=root.querySelector('#nas-vault-key-name');
+      const valEl=root.querySelector('#nas-vault-key-value');
+      const msgEl=root.querySelector('#nas-vault-msg');
+      const k=keyEl?.value?.trim()||'';
+      const v=valEl?.value?.trim()||'';
+      if(!k||!v){if(msgEl){msgEl.textContent='Key und Wert erforderlich';msgEl.className='nas-msg error';msgEl.style.display='block'}return}
+      try{
+        const r=await fetch(API+'/admin/vault/set',{method:'POST',headers:{'Content-Type':'application/json','X-WP-Nonce':CFG.nonce||''},body:JSON.stringify({key:k,value:v})});
+        const d=await r.json();
+        if(msgEl){msgEl.textContent=d.ok!==false?'✅ Key gespeichert':'Fehler: '+(d.error||'unbekannt');msgEl.className='nas-msg '+(d.ok!==false?'ok':'error');msgEl.style.display='block'}
+        if(d.ok!==false){if(keyEl)keyEl.value='';if(valEl)valEl.value='';const key='vault_'+(root.id||'r');delete _loaded[key];loadVault(root)}
+      }catch(e){
+        if(msgEl){msgEl.textContent='Fehler: '+e.message;msgEl.className='nas-msg error';msgEl.style.display='block'}
+      }
+    });
+  }
+}
+
+async function loadLogs(root){
+  const el=root.querySelector('#nas-logs-content');
+  if(!el)return;
+  el.innerHTML='<div class="nas-loading-box">⏳ Lade Logs…</div>';
+  try{
+    const cat=root.querySelector('#nas-logs-cat')?.value||'all';
+    const r=await fetch(API+'/admin/logs?category='+cat+'&limit=50',{headers:{'X-WP-Nonce':CFG.nonce||''}});
+    const d=await r.json();
+    const logs=d.logs||d.data||[];
+    if(!logs.length){el.innerHTML='<div class="nas-loading-box">Keine Logs</div>';return}
+    el.innerHTML='<div class="nas-log-box">'+logs.map(function(l){
+      const msg=l.message||l.msg||String(l);
+      const lvl=(l.level||'info').toLowerCase();
+      return`<div class="nas-log-line nas-log-${lvl}">${esc(msg)}</div>`;
+    }).join('')+'</div>';
+    // Scroll to bottom
+    const logBox=el.querySelector('.nas-log-box');
+    if(logBox)logBox.scrollTop=logBox.scrollHeight;
+  }catch(e){
+    el.innerHTML='<div style="color:var(--nas-muted)">Fehler: '+e.message+'</div>';
+  }
+  // Refresh + filter
+  const refreshBtn=root.querySelector('#nas-logs-refresh');
+  if(refreshBtn&&!refreshBtn.dataset.bound){
+    refreshBtn.dataset.bound='1';
+    refreshBtn.addEventListener('click',function(){const key='logs_'+(root.id||'r');delete _loaded[key];loadLogs(root)});
+  }
+  const catSel=root.querySelector('#nas-logs-cat');
+  if(catSel&&!catSel.dataset.bound){
+    catSel.dataset.bound='1';
+    catSel.addEventListener('change',function(){const key='logs_'+(root.id||'r');delete _loaded[key];loadLogs(root)});
+  }
+}
+
+function fmtBytes(b){
+  if(b>=1073741824)return(b/1073741824).toFixed(1)+' GB';
+  if(b>=1048576)return(b/1048576).toFixed(1)+' MB';
+  if(b>=1024)return(b/1024).toFixed(1)+' KB';
+  return b+' B';
+}
+function esc(s){const d=document.createElement('div');d.textContent=String(s||'');return d.innerHTML}
+
+})();

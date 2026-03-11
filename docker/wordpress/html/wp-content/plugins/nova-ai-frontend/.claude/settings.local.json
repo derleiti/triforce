@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tree:*)",
+      "mcp__ailinux-mcp__codebase_structure",
+      "mcp__ailinux-mcp__codebase_routes",
+      "mcp__ailinux-mcp__codebase_services",
+      "mcp__ailinux-mcp__codebase_file",
+      "mcp__ailinux-mcp__codebase_edit",
+      "Bash(curl:*)",
+      "Bash(python3:*)",
+      "Bash(cat:*)",
+      "Bash(node --check:*)"
+    ]
+  }
+}

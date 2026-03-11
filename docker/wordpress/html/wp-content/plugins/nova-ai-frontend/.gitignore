@@ -1,0 +1,15 @@
+# Secrets / API keys – niemals committen!
+config/lemonsqueezy.php
+
+# Logs
+wp-content/ailinux-payments.log
+wp-content/ailinux-payments.log.old
+
+# Backups
+*.bak
+*.bak2
+
+# IDE
+.idea/
+.vscode/
+*.swp
