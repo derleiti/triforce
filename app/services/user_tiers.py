@@ -255,7 +255,7 @@ class UserTierService:
     def get_tier_info(self, tier) -> Dict:
         canonical = normalize_tier(tier.value if hasattr(tier, "value") else str(tier))
         cfg = TIER_CONFIGS[canonical.value]
-        cnt = len(OLLAMA_MODELS) if cfg.models == "ollama_only" else "all"
+        cnt = len(OLLAMA_MODELS) if cfg.models == "ollama_only" else -1  # FIX 2026-03-11: -1 = unlimited (was "all" string → Pydantic v2 Union[int,str] int-parse fail)
         return {
             "tier": canonical.value,
             "name": cfg.display_name,

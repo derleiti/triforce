@@ -248,10 +248,21 @@ CLIENT_SIDE_TOOLS = {
 # =============================================================================
 
 class ProxyToolRequest(BaseModel):
-    """Tool-Call über Proxy"""
-    client_id: str
+    """Tool-Call über Proxy
+    FIX S16-3: client_id optional (kein Crash wenn Caller es weglässt → 404 statt 422)
+    FIX S16-3: args als Alias für params (verschiedene Caller-Konventionen)
+    """
+    client_id: Optional[str] = None
     tool: str
     params: Dict[str, Any] = {}
+    args: Dict[str, Any] = {}  # Alias for params — merged on access
+
+    @property
+    def merged_params(self) -> Dict[str, Any]:
+        """Merged params + args (args is alias, params takes precedence)"""
+        merged = dict(self.args)
+        merged.update(self.params)
+        return merged
 
 
 class ProxyToolResponse(BaseModel):
@@ -532,6 +543,9 @@ async def call_client_tool(
 
     # Client finden
     client_id = request.client_id
+    if not client_id:
+        # FIX S16-3: client_id optional — 404 statt 422 Validation Error
+        raise HTTPException(400, "client_id ist erforderlich für /mcp/node/call")
     connection = CONNECTED_CLIENTS.get(client_id)
 
     if not connection:
@@ -548,7 +562,7 @@ async def call_client_tool(
     start_time = datetime.now()
 
     try:
-        result = await connection.send_tool_call(request.tool, request.params)
+        result = await connection.send_tool_call(request.tool, request.merged_params)
         latency = int((datetime.now() - start_time).total_seconds() * 1000)
 
         logger.info(f"Proxy call success: {request.tool} on {client_id} ({latency}ms)")

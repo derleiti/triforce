@@ -2332,8 +2332,17 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
                 "content": [{"type": "text", "text": json.dumps(v4_result, separators=(',', ':'))}],
                 "isError": False,
             }
-        except Exception:
-            pass  # v4 kennt das Tool auch nicht -> weiter zu Unknown tool
+        except Exception as _v4_exc:
+            # FIX BE-NEW-3 2026-03-11: Re-raise HTTPException so credential errors
+            # (503 mail not configured etc.) surface correctly instead of becoming
+            # misleading "Unknown tool" errors.
+            from fastapi import HTTPException as _FastAPIHTTPException
+            if isinstance(_v4_exc, _FastAPIHTTPException):
+                raise
+            # ValueError from v4 = tool not found there either → continue to Unknown tool
+            # Any other exception = real error → also re-raise for visibility
+            if not isinstance(_v4_exc, ValueError):
+                raise
 
     if not handler:
         raise ValueError(f"Unknown tool: {tool_name}")
