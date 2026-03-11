@@ -3,7 +3,14 @@ AILinux Tier & Subscription API Routes v4.1
 FREE / PAID only — 35 €/month subscription
 FIX BE#19 2026-03-11: model_count: Union[int, str] statt object — kein Pydantic ResponseValidationError
 """
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Header, Depends
+import os as _os
+
+def _require_internal_key(x_internal_key: str = Header(default="")):
+    """Webhook/internal endpoints — require X-Internal-Key header."""
+    expected = _os.environ.get("INTERNAL_API_KEY", "")
+    if not expected or x_internal_key != expected:
+        raise HTTPException(status_code=403, detail="Forbidden: invalid internal key")
 from pydantic import BaseModel, EmailStr
 from typing import Optional, List, Union
 from datetime import datetime, timedelta
@@ -159,7 +166,7 @@ async def check_model_access(user_id: str, model: str):
 # ─── Subscription Routes ──────────────────────────────────────────────────────
 
 @router.post("/subscribe")
-async def subscribe(req: SubscribeRequest):
+async def subscribe(req: SubscribeRequest, _: None = Depends(_require_internal_key)):
     """
     User auf PAID (AILinux Pro) upgraden nach Zahlungsbestätigung.
     Wird vom WP-Plugin nach LemonSqueezy-Webhook aufgerufen.
@@ -193,7 +200,7 @@ async def subscribe(req: SubscribeRequest):
 
 
 @router.post("/cancel")
-async def cancel_subscription(req: CancelRequest):
+async def cancel_subscription(req: CancelRequest, _: None = Depends(_require_internal_key)):
     """Subscription kündigen — User wird am Ablaufdatum auf FREE gesetzt."""
     sub = _load_sub(req.user_id)
     if not sub or sub.get("tier") != "paid":

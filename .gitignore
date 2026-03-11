@@ -186,3 +186,6 @@ __pycache__/
 .edit_log.jsonl
 app/mcp/structured_admin.py.bak2
 tests/
+
+# DKIM-Keys — private keys, never commit
+docker/mailserver/config/opendkim/
