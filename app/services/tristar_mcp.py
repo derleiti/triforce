@@ -500,13 +500,13 @@ class TriStarMCPService:
         service_map = {
             # Core backend
             "backend": "triforce",
-            # Local LLM runtime (this host uses the IPEX docker wrapper)
-            "ollama": "ollama-ipex",
+            # Local LLM runtime — runs as ollama.service (not ollama-ipex which is legacy IPEX docker)
+            "ollama": "ollama",
             # Infra
             "redis": "redis-server",
             # Optional/update related
             "triforce-docker": "triforce-docker",
-            "triforce-hub-sync": "triforce-hub-sync",
+            # triforce-hub-sync removed: service is disabled/legacy, replaced by federation-node/mesh logic
         }
 
         # Also expose legacy keys for backward compatibility

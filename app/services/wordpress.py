@@ -3,9 +3,9 @@ from __future__ import annotations
 import base64
 from typing import Dict, List, Optional
 
-import httpx
 from app.config import get_settings
 from app.utils.http_client import HttpClient
+from app.utils.errors import api_error  # FIX: war nicht importiert → NameError bei fehlenden Credentials
 
 class WordPressService:
     def __init__(self) -> None:
@@ -19,12 +19,17 @@ class WordPressService:
             return
 
         settings = get_settings()
-        if not settings.wordpress_url or not settings.wordpress_user or not settings.wordpress_password:
-            raise api_error("WordPress credentials/url are not configured", status_code=503, code="wordpress_unavailable")
+        # Prefer Application Password (WORDPRESS_APP_USER/WORDPRESS_APP_PASSWORD) for API access.
+        # Fallback to old WORDPRESS_USER/WORDPRESS_PASSWORD for backwards compatibility.
+        app_user = settings.wordpress_app_user or settings.wordpress_user
+        app_pass = settings.wordpress_app_password or settings.wordpress_password
+
+        if not settings.wordpress_url or not app_user or not app_pass:
+            raise api_error("WordPress credentials not configured (WORDPRESS_APP_USER/PASSWORD or WORDPRESS_URL)", status_code=503, code="wordpress_unavailable")
 
         self._wordpress_url = str(settings.wordpress_url)
-        self._username = settings.wordpress_user
-        self._password = settings.wordpress_password
+        self._username = app_user
+        self._password = app_pass
         self._client = HttpClient(base_url=self._wordpress_url, timeout_ms=settings.request_timeout * 1000)
 
     def _get_auth_headers(self) -> Dict[str, str]:
@@ -52,7 +57,8 @@ class WordPressService:
         if featured_media:
             data["featured_media"] = featured_media
 
-        return await self._client.post(path, headers=headers, json=data)
+        resp = await self._client.post(path, headers=headers, json=data)
+        return resp.json()
 
     async def upload_media(self, filename: str, file_content: bytes, content_type: str) -> Dict:
         self._ensure_client()
@@ -79,8 +85,10 @@ class WordPressService:
             raise RuntimeError("WordPress client not initialized.")
 
         path = "/wp-json/wp/v2/categories"
-        
-        return await self._client.get(path)
+        headers = self._get_auth_headers()  # FIX: Auth-Header für alle WP API Requests nötig
+
+        resp = await self._client.get(path, headers=headers)
+        return resp.json()
 
     async def create_category(self, name: str) -> Dict:
         self._ensure_client()
@@ -92,6 +100,37 @@ class WordPressService:
 
         data = {"name": name}
 
-        return await self._client.post(path, headers=headers, json=data)
+        resp = await self._client.post(path, headers=headers, json=data)
+        return resp.json()
+
+    async def list_posts(self, status: str = "draft", per_page: int = 20) -> List[Dict]:
+        """List posts — neu implementiert für MCP WordPress-Admin-Tool."""
+        self._ensure_client()
+        if not self._client:
+            raise RuntimeError("WordPress client not initialized.")
+
+        path = f"/wp-json/wp/v2/posts?status={status}&per_page={per_page}"
+        headers = self._get_auth_headers()
+        resp = await self._client.get(path, headers=headers)
+        return resp.json()
+
+    async def update_post(self, post_id: int, title: Optional[str] = None, content: Optional[str] = None, status: Optional[str] = None) -> Dict:
+        """Update existing post — neu für MCP WordPress-Admin-Tool."""
+        self._ensure_client()
+        if not self._client:
+            raise RuntimeError("WordPress client not initialized.")
+
+        path = f"/wp-json/wp/v2/posts/{post_id}"
+        headers = self._get_auth_headers()
+        data: Dict = {}
+        if title is not None:
+            data["title"] = title
+        if content is not None:
+            data["content"] = content
+        if status is not None:
+            data["status"] = status
+
+        resp = await self._client.post(path, headers=headers, json=data)
+        return resp.json()
 
 wordpress_service = WordPressService()

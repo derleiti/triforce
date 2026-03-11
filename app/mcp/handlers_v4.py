@@ -90,6 +90,7 @@ class HandlerRegistry:
         self._register_init_handlers()
         self._register_gemini_handlers()
         self._register_mesh_handlers()
+        self._register_mail_handlers()  # Mail + WordPress MCP tools (2026-03-11)
         
         self._initialized = True
         logger.info(f"Initialized {len(self._handlers)} handlers")
@@ -757,6 +758,21 @@ class HandlerRegistry:
 
 
 # =============================================================================
+
+    def _register_mail_handlers(self) -> None:
+        """Register all mail + WordPress MCP tools."""
+        tools = {
+            "mail_inbox": handle_mail_inbox,
+            "mail_read": handle_mail_read,
+            "mail_send": handle_mail_send,
+            "mail_mark_seen": handle_mail_mark_seen,
+            "wp_list_drafts": handle_wp_list_drafts,
+            "wp_create_draft": handle_wp_create_draft,
+            "wp_update_post": handle_wp_update_post,
+        }
+        for name, fn in tools.items():
+            self.register(name, fn)
+
 # SINGLETON INSTANCE
 # =============================================================================
 
@@ -826,3 +842,99 @@ def get_compatibility_handlers() -> Dict[str, Any]:
 
 
 logger.info("MCP Handlers v4.0 loaded")
+
+
+# =============================================================================
+# MAIL MCP HANDLERS — Nova IMAP/SMTP (nova@ailinux.me)
+# Added 2026-03-11
+# =============================================================================
+
+async def handle_mail_inbox(params: Dict[str, Any]) -> Dict[str, Any]:
+    """MCP Tool: List inbox messages. Params: limit(int), folder(str)."""
+    from app.services.mail_service import mail_service
+    limit = int(params.get("limit", 20))
+    folder = str(params.get("folder", "INBOX"))
+    messages = mail_service.inbox(limit=limit, folder=folder)
+    return {"ok": True, "count": len(messages), "messages": messages, "folder": folder}
+
+
+async def handle_mail_read(params: Dict[str, Any]) -> Dict[str, Any]:
+    """MCP Tool: Read full message by UID. Params: uid(str), folder(str)."""
+    from app.services.mail_service import mail_service
+    uid = str(params.get("uid", ""))
+    if not uid:
+        return {"ok": False, "error": "uid required"}
+    folder = str(params.get("folder", "INBOX"))
+    return mail_service.read(uid=uid, folder=folder)
+
+
+async def handle_mail_send(params: Dict[str, Any]) -> Dict[str, Any]:
+    """MCP Tool: Send email. Params: to, subject, body, cc(opt), reply_to(opt)."""
+    from app.services.mail_service import mail_service
+    to = str(params.get("to", ""))
+    subject = str(params.get("subject", ""))
+    body = str(params.get("body", ""))
+    if not all([to, subject, body]):
+        return {"ok": False, "error": "to, subject, body required"}
+    cc = params.get("cc")
+    reply_to = params.get("reply_to")
+    return mail_service.send(to=to, subject=subject, body=body, cc=cc, reply_to=reply_to)
+
+
+async def handle_mail_mark_seen(params: Dict[str, Any]) -> Dict[str, Any]:
+    """MCP Tool: Mark message as read. Params: uid(str), folder(str)."""
+    from app.services.mail_service import mail_service
+    uid = str(params.get("uid", ""))
+    if not uid:
+        return {"ok": False, "error": "uid required"}
+    folder = str(params.get("folder", "INBOX"))
+    return mail_service.mark_seen(uid=uid, folder=folder)
+
+
+# =============================================================================
+# WORDPRESS MCP HANDLERS — Nova Admin via Application Password
+# Added 2026-03-11
+# =============================================================================
+
+async def handle_wp_list_drafts(params: Dict[str, Any]) -> Dict[str, Any]:
+    """MCP Tool: List WordPress draft posts. Params: per_page(int)."""
+    from app.services.wordpress import wordpress_service
+    per_page = int(params.get("per_page", 20))
+    posts = await wordpress_service.list_posts(status="draft", per_page=per_page)
+    return {
+        "ok": True,
+        "count": len(posts),
+        "posts": [{"id": p.get("id"), "title": p.get("title", {}).get("rendered", ""), "date": p.get("date")} for p in posts],
+    }
+
+
+async def handle_wp_create_draft(params: Dict[str, Any]) -> Dict[str, Any]:
+    """MCP Tool: Create WordPress draft post. Params: title, content, categories(list)."""
+    from app.services.wordpress import wordpress_service
+    title = str(params.get("title", ""))
+    content = str(params.get("content", ""))
+    if not title:
+        return {"ok": False, "error": "title required"}
+    categories = params.get("categories")
+    result = await wordpress_service.create_post(
+        title=title, content=content, status="draft", categories=categories
+    )
+    return {"ok": True, "post_id": result.get("id"), "link": result.get("link"), "status": result.get("status")}
+
+
+async def handle_wp_update_post(params: Dict[str, Any]) -> Dict[str, Any]:
+    """MCP Tool: Update existing WordPress post. Params: post_id, title(opt), content(opt), status(opt)."""
+    from app.services.wordpress import wordpress_service
+    post_id = params.get("post_id")
+    if not post_id:
+        return {"ok": False, "error": "post_id required"}
+    result = await wordpress_service.update_post(
+        post_id=int(post_id),
+        title=params.get("title"),
+        content=params.get("content"),
+        status=params.get("status"),
+    )
+    return {"ok": True, "post_id": result.get("id"), "status": result.get("status"), "link": result.get("link")}
+
+
+    logger.info(f"Mail+WP MCP handlers registered: {list(tools.keys())}")

@@ -202,6 +202,16 @@ class Settings(BaseSettings):
     mail_smtp_starttls: Optional[bool] = Field(default=None, validation_alias="MAIL_SMTP_STARTTLS")
     mail_recipient_allowlist: Optional[str] = Field(default=None, validation_alias="MAIL_RECIPIENT_ALLOWLIST")
     mail_rate_per_min: Optional[int] = Field(default=None, validation_alias="MAIL_RATE_PER_MIN")
+    # IMAP — Nova inbox read access
+    mail_imap_host: Optional[str] = Field(default=None, validation_alias="MAIL_IMAP_HOST")
+    mail_imap_port: Optional[int] = Field(default=993, validation_alias="MAIL_IMAP_PORT")
+    mail_imap_user: Optional[str] = Field(default=None, validation_alias="MAIL_IMAP_USER")
+    mail_imap_pass: Optional[str] = Field(default=None, validation_alias="MAIL_IMAP_PASS")
+    mail_imap_ssl: Optional[bool] = Field(default=True, validation_alias="MAIL_IMAP_SSL")
+    mail_imap_folder: Optional[str] = Field(default="INBOX", validation_alias="MAIL_IMAP_FOLDER")
+    # WordPress Application Password (Nova admin API access)
+    wordpress_app_user: Optional[str] = Field(default=None, validation_alias="WORDPRESS_APP_USER")
+    wordpress_app_password: Optional[str] = Field(default=None, validation_alias="WORDPRESS_APP_PASSWORD")
 
 @lru_cache
 def get_settings() -> Settings:
