@@ -70,13 +70,13 @@ class WordPressService:
         headers["Content-Disposition"] = f'attachment; filename="{filename}"'
         headers["Content-Type"] = content_type
 
+        # HttpClient._request() already calls raise_for_status() internally
         response = await self._client.post(
             path,
             headers=headers,
             content=file_content,
             timeout=self._client.timeout,
         )
-        response.raise_for_status()
         return response.json()
 
     async def list_categories(self) -> List[Dict]:

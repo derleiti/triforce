@@ -92,10 +92,12 @@ def mail_inbox(limit: int = 20, folder: str = "INBOX") -> List[Dict[str, Any]]:
             _, raw = conn.fetch(uid, "(RFC822.HEADER FLAGS)")
             if not raw or not raw[0]:
                 continue
-            header_data = raw[0][1] if isinstance(raw[0], tuple) else raw[0]
+            if not isinstance(raw[0], tuple):
+                continue
+            meta_str = raw[0][0]   # e.g. b'1 (RFC822.HEADER {size} FLAGS (\Seen))'
+            header_data = raw[0][1]
             msg = email.message_from_bytes(header_data)
-            flags_raw = raw[0][0] if isinstance(raw[0], tuple) else b""
-            seen = b"\\Seen" in flags_raw
+            seen = b"\\Seen" in meta_str
 
             messages.append({
                 "uid": uid.decode(),

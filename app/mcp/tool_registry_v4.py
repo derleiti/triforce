@@ -665,6 +665,80 @@ MESH_TOOLS: List[Dict[str, Any]] = [
 
 
 # =============================================================================
+# MAIL TOOLS — Nova IMAP/SMTP (nova@ailinux.me) — Added 2026-03-11
+# =============================================================================
+MAIL_TOOLS = [
+    {
+        "name": "mail_inbox",
+        "description": "List recent emails from Nova inbox (nova@ailinux.me). Returns subject, from, date, seen-flag per message.",
+        "inputSchema": {"type": "object", "properties": {
+            "limit": {"type": "integer", "description": "Max messages (default: 20)"},
+            "folder": {"type": "string", "description": "IMAP folder (default: INBOX)"},
+        }},
+    },
+    {
+        "name": "mail_read",
+        "description": "Read full email body by UID. Returns headers + plain-text body (max 4000 chars).",
+        "inputSchema": {"type": "object", "required": ["uid"], "properties": {
+            "uid": {"type": "string", "description": "IMAP UID from mail_inbox"},
+            "folder": {"type": "string", "description": "IMAP folder (default: INBOX)"},
+        }},
+    },
+    {
+        "name": "mail_send",
+        "description": "Send email from nova@ailinux.me via SMTP.",
+        "inputSchema": {"type": "object", "required": ["to", "subject", "body"], "properties": {
+            "to": {"type": "string"},
+            "subject": {"type": "string"},
+            "body": {"type": "string"},
+            "cc": {"type": "string"},
+            "reply_to": {"type": "string"},
+        }},
+    },
+    {
+        "name": "mail_mark_seen",
+        "description": "Mark email as read/seen by UID.",
+        "inputSchema": {"type": "object", "required": ["uid"], "properties": {
+            "uid": {"type": "string"},
+            "folder": {"type": "string"},
+        }},
+    },
+]
+
+# =============================================================================
+# WORDPRESS TOOLS — Nova Admin via Application Password — Added 2026-03-11
+# =============================================================================
+WP_TOOLS = [
+    {
+        "name": "wp_list_drafts",
+        "description": "List WordPress draft posts on ailinux.me.",
+        "inputSchema": {"type": "object", "properties": {
+            "per_page": {"type": "integer", "description": "Max posts (default: 20)"},
+        }},
+    },
+    {
+        "name": "wp_create_draft",
+        "description": "Create a new WordPress draft post on ailinux.me.",
+        "inputSchema": {"type": "object", "required": ["title"], "properties": {
+            "title": {"type": "string"},
+            "content": {"type": "string"},
+            "categories": {"type": "array", "items": {"type": "integer"}},
+        }},
+    },
+    {
+        "name": "wp_update_post",
+        "description": "Update an existing WordPress post (title/content/status).",
+        "inputSchema": {"type": "object", "required": ["post_id"], "properties": {
+            "post_id": {"type": "integer"},
+            "title": {"type": "string"},
+            "content": {"type": "string"},
+            "status": {"type": "string", "enum": ["draft", "publish", "private"]},
+        }},
+    },
+]
+
+
+# =============================================================================
 # CONSOLIDATED TOOL LIST
 # =============================================================================
 
@@ -686,7 +760,9 @@ def get_all_tools() -> List[Dict[str, Any]]:
     all_tools.extend(INIT_TOOLS)        # 2
     all_tools.extend(GEMINI_TOOLS)      # 3
     all_tools.extend(MESH_TOOLS)        # 3
-    return all_tools                    # = 52 Total
+    all_tools.extend(MAIL_TOOLS)        # 4
+    all_tools.extend(WP_TOOLS)          # 3
+    return all_tools                    # = 59 Total (+ 7 Mail+WP)
 
 
 def get_tool_count() -> int:
