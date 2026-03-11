@@ -195,7 +195,7 @@ class Settings(BaseSettings):
     # Mail / Notification (optional)
     mail_from_name: Optional[str] = Field(default=None, validation_alias="MAIL_FROM_NAME")
     mail_from_addr: Optional[str] = Field(default=None, validation_alias="MAIL_FROM_ADDR")
-    mail_smtp_host: Optional[str] = Field(default=None, validation_alias="MAIL_SMTP_HOST")
+    mail_smtp_host: Optional[str] = Field(default="127.0.0.1", validation_alias="MAIL_SMTP_HOST")  # FIX S15-1: was None
     mail_smtp_port: Optional[int] = Field(default=None, validation_alias="MAIL_SMTP_PORT")
     mail_smtp_user: Optional[str] = Field(default=None, validation_alias="MAIL_SMTP_USER")
     mail_smtp_pass: Optional[str] = Field(default=None, validation_alias="MAIL_SMTP_PASS")
@@ -203,7 +203,7 @@ class Settings(BaseSettings):
     mail_recipient_allowlist: Optional[str] = Field(default=None, validation_alias="MAIL_RECIPIENT_ALLOWLIST")
     mail_rate_per_min: Optional[int] = Field(default=None, validation_alias="MAIL_RATE_PER_MIN")
     # IMAP — Nova inbox read access
-    mail_imap_host: Optional[str] = Field(default=None, validation_alias="MAIL_IMAP_HOST")
+    mail_imap_host: Optional[str] = Field(default="127.0.0.1", validation_alias="MAIL_IMAP_HOST")  # FIX S15-1: was None
     mail_imap_port: Optional[int] = Field(default=993, validation_alias="MAIL_IMAP_PORT")
     mail_imap_user: Optional[str] = Field(default=None, validation_alias="MAIL_IMAP_USER")
     mail_imap_pass: Optional[str] = Field(default=None, validation_alias="MAIL_IMAP_PASS")
