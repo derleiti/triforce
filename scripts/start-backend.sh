@@ -13,7 +13,8 @@ BASE_DIR="/home/${OWNER}/triforce"
 VENV_DIR="$BASE_DIR/.venv"
 LOG_DIR="$BASE_DIR/logs"
 TRISTAR_DIR="/var/tristar"
-API_URL="http://localhost:9000"
+API_PORT="${TRIFORCE_API_PORT:-9100}"
+API_URL="http://localhost:${API_PORT}"
 
 # === CPU-OPTIMIERTE EINSTELLUNGEN ===
 # Intel Core Ultra 7 265: 20 Kerne, kein HT
@@ -204,14 +205,13 @@ main() {
     (sleep 10 && bootstrap_agents) &
     
     # 6. Backend starten - OPTIMIERT FÜR 20-KERN CPU
-    # Port 9000: Firewall schützt vor externem Zugriff
-    # Apache/Docker Container → host.docker.internal:9000 (X-Forwarded-For) → Auth
-    # Localhost → 127.0.0.1:9000 direkt → kein Auth (Middleware bypass)
-    log "Starte Backend (uvicorn auf 0.0.0.0:9000, $UVICORN_WORKERS Workers)..."
+    # Port via TRIFORCE_API_PORT (default 9100)
+    # Apache/Docker Container -> host.docker.internal:${API_PORT}
+    log "Starte Backend (uvicorn auf 0.0.0.0:${API_PORT}, $UVICORN_WORKERS Workers)..."
     echo ""
     exec uvicorn app.main:app \
         --host 0.0.0.0 \
-        --port 9000 \
+        --port "$API_PORT" \
         --workers $UVICORN_WORKERS \
         --limit-concurrency $MAX_CONCURRENT \
         --backlog 2048 \

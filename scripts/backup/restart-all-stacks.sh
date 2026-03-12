@@ -1,16 +1,5 @@
-#!/bin/bash
-set -e
-cd ~/triforce
+#!/usr/bin/env bash
+set -Eeuo pipefail
 
-echo "🔄 Restarting all Docker stacks..."
-
-for stack in wordpress flarum searxng mailserver repository; do
-    echo "📦 $stack..."
-    cd docker/$stack
-    docker compose down
-    docker compose --env-file ../../.env up -d
-    cd ../..
-done
-
-echo "✅ Fertig!"
-docker ps --format "table {{.Names}}\t{{.Status}}"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+exec "${SCRIPT_DIR}/../restart-all-stacks.sh" "$@"

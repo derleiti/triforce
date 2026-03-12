@@ -1,186 +1,346 @@
-#!/bin/bash
-#
-# TriForce Installer v3.1
-# =======================
-# Installation nach: /home/$USER/triforce
-# Fixed: sed escaping, glob expansion, pip feedback
-#
-set -e
+#!/usr/bin/env bash
+set -Eeuo pipefail
 
-# Farben
+ROOT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+cd "$ROOT_DIR"
+
+RUN_USER="${SUDO_USER:-${USER}}"
+HOME_DIR="$(eval echo "~${RUN_USER}")"
+VENV_DIR="$ROOT_DIR/.venv"
+ENV_FILE="$ROOT_DIR/.env"
+ENV_EXAMPLE_FILE="$ROOT_DIR/.env.example"
+TRIFORCE_ENV_TEMPLATE="$ROOT_DIR/config/triforce.env.template"
+TRIFORCE_ENV_FILE="$ROOT_DIR/config/triforce.env"
+SYSTEMD_TEMPLATE="$ROOT_DIR/scripts/systemd/triforce.service"
+SYSTEMD_DOCKER_TEMPLATE="$ROOT_DIR/scripts/systemd/triforce-docker.service"
+FEDERATION_TEMPLATE="$ROOT_DIR/systemd/federation-node.service"
+FIRST_STARTUP_MARKER="$ROOT_DIR/.state/first-startup.done"
+
+API_HOST="127.0.0.1"
+API_PORT="9100"
+DOMAIN="example.com"
+TIMEZONE="Europe/Berlin"
+LOG_LEVEL="INFO"
+ENABLE_DOCKER_SERVICE="false"
+ENABLE_FEDERATION_SERVICE="true"
+INSTALL_SYSTEMD="true"
+START_SYSTEMD="true"
+INSTALL_SHORTCUT="true"
+SKIP_DEPS="false"
+NON_INTERACTIVE="false"
+FIRST_STARTUP="false"
+
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-# Konfiguration
-INSTALL_DIR="${HOME}/triforce"
-BACKEND_DIR="${INSTALL_DIR}/backend"
-CONFIG_DIR="${INSTALL_DIR}/config"
-LOG_DIR="${INSTALL_DIR}/logs"
-DATA_DIR="${INSTALL_DIR}/data"
+log() { printf "%b[%s]%b %s\n" "$BLUE" "INFO" "$NC" "$*"; }
+ok() { printf "%b[%s]%b %s\n" "$GREEN" "OK" "$NC" "$*"; }
+warn() { printf "%b[%s]%b %s\n" "$YELLOW" "WARN" "$NC" "$*"; }
+err() { printf "%b[%s]%b %s\n" "$RED" "ERROR" "$NC" "$*"; }
 
-echo -e "${BLUE}"
-cat << 'EOF'
-╔══════════════════════════════════════════════════════════════╗
-║                                                              ║
-║     ████████╗██████╗ ██╗███████╗ ██████╗ ██████╗  ██████╗███████╗  ║
-║     ╚══██╔══╝██╔══██╗██║██╔════╝██╔═══██╗██╔══██╗██╔════╝██╔════╝  ║
-║        ██║   ██████╔╝██║█████╗  ██║   ██║██████╔╝██║     █████╗    ║
-║        ██║   ██╔══██╗██║██╔══╝  ██║   ██║██╔══██╗██║     ██╔══╝    ║
-║        ██║   ██║  ██║██║██║     ╚██████╔╝██║  ██║╚██████╗███████╗  ║
-║        ╚═╝   ╚═╝  ╚═╝╚═╝╚═╝      ╚═════╝ ╚═╝  ╚═╝ ╚═════╝╚══════╝  ║
-║                                                              ║
-║              Multi-LLM Orchestration System                  ║
-║                     Installer v3.1                           ║
-╚══════════════════════════════════════════════════════════════╝
-EOF
-echo -e "${NC}"
+usage() {
+  cat <<USAGE
+TriForce Installer (reliable + first-startup capable)
 
-echo -e "${YELLOW}Installation nach: ${INSTALL_DIR}${NC}"
-echo ""
+Usage:
+  ./install.sh [options]
 
-# 1. Verzeichnisse erstellen
-echo -e "${BLUE}[1/5]${NC} Erstelle Verzeichnisse..."
-mkdir -p "${BACKEND_DIR}"
-mkdir -p "${CONFIG_DIR}"
-mkdir -p "${LOG_DIR}"
-mkdir -p "${DATA_DIR}"
-echo -e "${GREEN}✓${NC} Verzeichnisse erstellt"
+Options:
+  --host <ip>                    API bind host (default: 127.0.0.1)
+  --port <port>                  API port (default: 9100)
+  --domain <domain>              Base domain for config/triforce.env
+  --timezone <tz>                Timezone (default: Europe/Berlin)
+  --log-level <level>            LOG_LEVEL in .env (default: INFO)
+  --enable-docker-service        Install/enable triforce-docker.service
+  --disable-federation-service   Skip federation-node.service install
+  --skip-systemd                 Do not install/start systemd services
+  --skip-deps                    Skip pip upgrade + requirements install
+  --no-shortcut                  Do not create desktop shortcut
+  --no-start                     Install units but do not start/enable
+  --first-startup                Mark and run first-startup initialization
+  --non-interactive              No prompts
+  -h, --help                     Show this help
+USAGE
+}
 
-# 2. Dateien kopieren (mit Glob-Protection)
-echo -e "${BLUE}[2/5]${NC} Kopiere Dateien..."
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+require_file() {
+  local f="$1"
+  [[ -f "$f" ]] || { err "Missing required file: $f"; exit 1; }
+}
 
-# Backend kopieren (safe glob)
-if [ -d "${SCRIPT_DIR}/backend" ]; then
-    if [ "$(ls -A "${SCRIPT_DIR}/backend" 2>/dev/null)" ]; then
-        cp -r "${SCRIPT_DIR}/backend/"* "${BACKEND_DIR}/"
-        echo -e "${GREEN}✓${NC} Backend kopiert"
-    else
-        echo -e "${YELLOW}!${NC} Backend-Verzeichnis leer"
+upsert_env_key() {
+  local file="$1"
+  local key="$2"
+  local value="$3"
+  local tmp
+  tmp="$(mktemp)"
+  awk -v k="$key" -v v="$value" '
+    BEGIN { done=0 }
+    $0 ~ "^" k "=" { print k "=" v; done=1; next }
+    { print }
+    END { if (!done) print k "=" v }
+  ' "$file" > "$tmp"
+  mv "$tmp" "$file"
+}
+
+run_sudo() {
+  if [[ "$EUID" -eq 0 ]]; then
+    "$@"
+  else
+    sudo "$@"
+  fi
+}
+
+parse_args() {
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --host)
+        API_HOST="$2"; shift 2 ;;
+      --port)
+        API_PORT="$2"; shift 2 ;;
+      --domain)
+        DOMAIN="$2"; shift 2 ;;
+      --timezone)
+        TIMEZONE="$2"; shift 2 ;;
+      --log-level)
+        LOG_LEVEL="$2"; shift 2 ;;
+      --enable-docker-service)
+        ENABLE_DOCKER_SERVICE="true"; shift ;;
+      --disable-federation-service)
+        ENABLE_FEDERATION_SERVICE="false"; shift ;;
+      --skip-systemd)
+        INSTALL_SYSTEMD="false"; shift ;;
+      --skip-deps)
+        SKIP_DEPS="true"; shift ;;
+      --no-shortcut)
+        INSTALL_SHORTCUT="false"; shift ;;
+      --no-start)
+        START_SYSTEMD="false"; shift ;;
+      --first-startup)
+        FIRST_STARTUP="true"; shift ;;
+      --non-interactive)
+        NON_INTERACTIVE="true"; shift ;;
+      -h|--help)
+        usage; exit 0 ;;
+      *)
+        err "Unknown option: $1"
+        usage
+        exit 2 ;;
+    esac
+  done
+}
+
+print_header() {
+  echo ""
+  echo "TriForce Installer"
+  echo "=================="
+  echo "root_dir:    $ROOT_DIR"
+  echo "run_user:    $RUN_USER"
+  echo "api:         http://${API_HOST}:${API_PORT}"
+  echo "domain:      $DOMAIN"
+  echo "timezone:    $TIMEZONE"
+  echo ""
+}
+
+prepare_dirs() {
+  mkdir -p "$ROOT_DIR/logs" "$ROOT_DIR/data" "$ROOT_DIR/.state"
+  mkdir -p /var/tristar/{prompts,logs,memory,agents} 2>/dev/null || true
+  run_sudo chown -R "$RUN_USER:$RUN_USER" /var/tristar 2>/dev/null || true
+  ok "Directories prepared"
+}
+
+ensure_env_files() {
+  require_file "$ENV_EXAMPLE_FILE"
+  if [[ ! -f "$ENV_FILE" ]]; then
+    cp "$ENV_EXAMPLE_FILE" "$ENV_FILE"
+    ok "Created .env from .env.example"
+  else
+    log ".env exists, updating core keys only"
+  fi
+
+  upsert_env_key "$ENV_FILE" "TRIFORCE_BIND_HOST" "$API_HOST"
+  upsert_env_key "$ENV_FILE" "TRIFORCE_API_PORT" "$API_PORT"
+  upsert_env_key "$ENV_FILE" "LOG_LEVEL" "$LOG_LEVEL"
+  upsert_env_key "$ENV_FILE" "TRIFORCE_DOMAIN" "$DOMAIN"
+  upsert_env_key "$ENV_FILE" "TRIFORCE_TIMEZONE" "$TIMEZONE"
+
+  if [[ -f "$TRIFORCE_ENV_TEMPLATE" && ! -f "$TRIFORCE_ENV_FILE" ]]; then
+    cp "$TRIFORCE_ENV_TEMPLATE" "$TRIFORCE_ENV_FILE"
+    ok "Created config/triforce.env from template"
+  fi
+
+  if [[ -f "$TRIFORCE_ENV_FILE" ]]; then
+    upsert_env_key "$TRIFORCE_ENV_FILE" "DOMAIN" "$DOMAIN"
+    upsert_env_key "$TRIFORCE_ENV_FILE" "TZ" "$TIMEZONE"
+    upsert_env_key "$TRIFORCE_ENV_FILE" "INSTALL_DIR" "$ROOT_DIR"
+  fi
+
+  ok "Environment files configured"
+}
+
+install_python_deps() {
+  if [[ "$SKIP_DEPS" == "true" ]]; then
+    warn "Skipping dependency install as requested"
+    return
+  fi
+
+  log "Ensuring virtual environment"
+  if [[ ! -x "$VENV_DIR/bin/python" ]]; then
+    python3 -m venv "$VENV_DIR"
+    ok "Virtual environment created"
+  fi
+
+  log "Upgrading pip"
+  "$VENV_DIR/bin/python" -m pip install --upgrade pip
+
+  log "Installing requirements"
+  "$VENV_DIR/bin/python" -m pip install -r "$ROOT_DIR/requirements.txt"
+
+  "$VENV_DIR/bin/python" -m pip check
+  ok "Python dependencies installed and validated"
+}
+
+render_unit() {
+  local template="$1"
+  local out="$2"
+
+  sed -e "s|User=zombie|User=${RUN_USER}|g" \
+      -e "s|Group=zombie|Group=${RUN_USER}|g" \
+      -e "s|/home/zombie/triforce|${ROOT_DIR}|g" \
+      "$template" > "$out"
+}
+
+install_systemd_units() {
+  if [[ "$INSTALL_SYSTEMD" != "true" ]]; then
+    warn "Skipping systemd install as requested"
+    return
+  fi
+
+  require_file "$SYSTEMD_TEMPLATE"
+
+  local tmp_triforce tmp_docker tmp_federation
+  tmp_triforce="$(mktemp)"
+  tmp_docker="$(mktemp)"
+  tmp_federation="$(mktemp)"
+
+  render_unit "$SYSTEMD_TEMPLATE" "$tmp_triforce"
+  render_unit "$SYSTEMD_DOCKER_TEMPLATE" "$tmp_docker"
+  if [[ -f "$FEDERATION_TEMPLATE" ]]; then
+    render_unit "$FEDERATION_TEMPLATE" "$tmp_federation"
+  fi
+
+  run_sudo install -m 644 "$tmp_triforce" /etc/systemd/system/triforce.service
+  if [[ "$ENABLE_DOCKER_SERVICE" == "true" ]]; then
+    run_sudo install -m 644 "$tmp_docker" /etc/systemd/system/triforce-docker.service
+  fi
+  if [[ "$ENABLE_FEDERATION_SERVICE" == "true" && -f "$FEDERATION_TEMPLATE" ]]; then
+    run_sudo install -m 644 "$tmp_federation" /etc/systemd/system/federation-node.service
+  fi
+
+  run_sudo systemctl daemon-reload
+
+  if [[ "$START_SYSTEMD" == "true" ]]; then
+    run_sudo systemctl enable --now triforce.service
+
+    if [[ "$ENABLE_DOCKER_SERVICE" == "true" ]]; then
+      run_sudo systemctl enable --now triforce-docker.service
     fi
-else
-    echo -e "${YELLOW}!${NC} Kein Backend-Verzeichnis gefunden"
-fi
 
-# Config kopieren (safe glob)
-if [ -d "${SCRIPT_DIR}/config" ]; then
-    if [ "$(ls -A "${SCRIPT_DIR}/config" 2>/dev/null)" ]; then
-        cp -r "${SCRIPT_DIR}/config/"* "${CONFIG_DIR}/"
-        echo -e "${GREEN}✓${NC} Config kopiert"
-    else
-        echo -e "${YELLOW}!${NC} Config-Verzeichnis leer"
+    if [[ "$ENABLE_FEDERATION_SERVICE" == "true" && -f "$FEDERATION_TEMPLATE" ]]; then
+      run_sudo systemctl enable --now federation-node.service
     fi
-else
-    echo -e "${YELLOW}!${NC} Kein Config-Verzeichnis gefunden"
-fi
-
-# 3. .env anpassen (fixed sed escaping)
-echo -e "${BLUE}[3/5]${NC} Konfiguriere .env..."
-ENV_FILE="${CONFIG_DIR}/.env"
-
-if [ -f "${ENV_FILE}" ]; then
-    # Pfade aktualisieren - KORRIGIERTES Escaping
-    sed -i 's|\$USER|'"${USER}"'|g' "${ENV_FILE}"
-    sed -i 's|\${INSTALL_DIR}|'"${INSTALL_DIR}"'|g' "${ENV_FILE}"
-    
-    # Sicherstellen dass SETUP_COMPLETE=false
-    if ! grep -q "^SETUP_COMPLETE=" "${ENV_FILE}"; then
-        echo "SETUP_COMPLETE=false" >> "${ENV_FILE}"
-    else
-        sed -i 's/^SETUP_COMPLETE=.*/SETUP_COMPLETE=false/' "${ENV_FILE}"
+  else
+    run_sudo systemctl enable triforce.service
+    if [[ "$ENABLE_DOCKER_SERVICE" == "true" ]]; then
+      run_sudo systemctl enable triforce-docker.service
     fi
-    
-    echo -e "${GREEN}✓${NC} .env konfiguriert"
-else
-    echo -e "${YELLOW}!${NC} Keine .env gefunden - wird beim Setup erstellt"
-fi
-
-# 4. Python Dependencies (mit Feedback)
-echo -e "${BLUE}[4/5]${NC} Pruefe Python Dependencies..."
-if [ -f "${BACKEND_DIR}/requirements.txt" ]; then
-    if command -v pip3 &> /dev/null; then
-        echo -e "${BLUE}   Installiere packages...${NC}"
-        if pip3 install -r "${BACKEND_DIR}/requirements.txt" --user 2>&1 | tail -3; then
-            echo -e "${GREEN}✓${NC} Dependencies installiert"
-        else
-            echo -e "${YELLOW}!${NC} Einige Dependencies fehlgeschlagen - pruefe manuell"
-        fi
-    else
-        echo -e "${YELLOW}!${NC} pip3 nicht gefunden - manuell installieren"
+    if [[ "$ENABLE_FEDERATION_SERVICE" == "true" && -f "$FEDERATION_TEMPLATE" ]]; then
+      run_sudo systemctl enable federation-node.service
     fi
-else
-    echo -e "${YELLOW}!${NC} requirements.txt nicht gefunden"
-fi
+  fi
 
-# 5. systemd Service (in config dir statt /tmp)
-echo -e "${BLUE}[5/5]${NC} Erstelle systemd Service..."
-SERVICE_FILE="${CONFIG_DIR}/triforce.service"
+  rm -f "$tmp_triforce" "$tmp_docker" "$tmp_federation"
+  ok "Systemd units installed"
+}
 
-cat > "${SERVICE_FILE}" << SYSTEMD
-[Unit]
-Description=TriForce Multi-LLM Backend
-After=network.target
+install_desktop_shortcut() {
+  if [[ "$INSTALL_SHORTCUT" != "true" ]]; then
+    warn "Skipping desktop shortcut"
+    return
+  fi
 
-[Service]
-Type=simple
-User=${USER}
-WorkingDirectory=${BACKEND_DIR}
-Environment="PATH=${HOME}/.local/bin:/usr/local/bin:/usr/bin:/bin"
-EnvironmentFile=${CONFIG_DIR}/.env
-ExecStart=/usr/bin/python3 -m uvicorn app.main:app --host \${TRIFORCE_BIND_HOST:-127.0.0.1} --port \${TRIFORCE_API_PORT:-9100}
-Restart=always
-RestartSec=5
+  local web_url desktop_entry apps_dir desktop_dir
+  web_url="http://localhost:${API_PORT}/"
+  apps_dir="$HOME_DIR/.local/share/applications"
+  desktop_dir="$HOME_DIR/Desktop"
 
-[Install]
-WantedBy=multi-user.target
-SYSTEMD
+  mkdir -p "$apps_dir"
+  cat > "$apps_dir/triforce-webui.desktop" <<DESKTOP
+[Desktop Entry]
+Type=Application
+Name=TriForce Web UI
+Comment=Open TriForce Web Interface
+Exec=xdg-open ${web_url}
+Terminal=false
+Categories=Network;Development;
+DESKTOP
 
-echo -e "${GREEN}✓${NC} Service-Datei erstellt: ${SERVICE_FILE}"
-echo -e "${YELLOW}Zum Aktivieren:${NC}"
-echo "  sudo cp ${SERVICE_FILE} /etc/systemd/system/"
-echo "  sudo systemctl daemon-reload"
-echo "  sudo systemctl enable --now triforce"
+  chmod 644 "$apps_dir/triforce-webui.desktop"
 
-# Finale Info
-echo ""
-echo -e "${GREEN}===============================================================${NC}"
-echo -e "${GREEN}  Installation abgeschlossen!${NC}"
-echo -e "${GREEN}===============================================================${NC}"
-echo ""
+  if [[ -d "$desktop_dir" ]]; then
+    cp "$apps_dir/triforce-webui.desktop" "$desktop_dir/TriForce Web UI.desktop"
+    chmod +x "$desktop_dir/TriForce Web UI.desktop"
+  fi
 
-# Server-Info ermitteln
-SERVER_IP=$(hostname -I 2>/dev/null | awk '{print $1}' || echo "127.0.0.1")
-HOSTNAME_VAL=$(hostname 2>/dev/null || echo "localhost")
-PORT=9100
+  run_sudo chown -R "$RUN_USER:$RUN_USER" "$apps_dir" "$desktop_dir" 2>/dev/null || true
+  ok "Desktop shortcut installed (${web_url})"
+}
 
-echo -e "${BLUE}Installationsverzeichnis:${NC}"
-echo "   ${INSTALL_DIR}"
-echo ""
-echo -e "${BLUE}Zugriff auf Setup-Wizard:${NC}"
-echo ""
-echo "   Lokal:    http://localhost:${PORT}/setup/"
-echo "   Netzwerk: http://${SERVER_IP}:${PORT}/setup/"
-echo "   Hostname: http://${HOSTNAME_VAL}:${PORT}/setup/"
-echo ""
-echo -e "${BLUE}Naechste Schritte:${NC}"
-echo ""
-echo "   1. Service starten:"
-echo "      cd ${BACKEND_DIR}"
-echo "      python3 -m uvicorn app.main:app --host 127.0.0.1 --port 9100"
-echo ""
-echo "   2. Browser oeffnen:"
-echo "      http://localhost:9100/setup/"
-echo ""
-echo "   3. Setup-Wizard durchlaufen"
-echo ""
-echo -e "${BLUE}Wichtige Pfade:${NC}"
-echo "   Backend:  ${BACKEND_DIR}"
-echo "   Config:   ${CONFIG_DIR}"
-echo "   Logs:     ${LOG_DIR}"
-echo "   Data:     ${DATA_DIR}"
-echo ""
-echo -e "${YELLOW}Brumo: Home sweet ~/triforce.${NC}"
-echo ""
+mark_first_startup_done() {
+  if [[ "$FIRST_STARTUP" == "true" ]]; then
+    mkdir -p "$(dirname "$FIRST_STARTUP_MARKER")"
+    printf "installed_at=%s\n" "$(date -Iseconds)" > "$FIRST_STARTUP_MARKER"
+    ok "First-startup marker written"
+  fi
+}
+
+print_next_steps() {
+  echo ""
+  echo "Setup complete"
+  echo "--------------"
+  echo "Web UI:        http://localhost:${API_PORT}/"
+  echo "API docs:      http://localhost:${API_PORT}/docs"
+  echo "Health:        http://localhost:${API_PORT}/health"
+  echo ""
+  echo "Useful commands:"
+  echo "  systemctl status triforce --no-pager -n 50"
+  echo "  journalctl -u triforce -f"
+  echo "  .venv/bin/python -m pytest -q"
+  echo ""
+}
+
+main() {
+  parse_args "$@"
+  print_header
+
+  if [[ "$NON_INTERACTIVE" != "true" ]]; then
+    read -r -p "Proceed with installation? [y/N] " answer
+    if [[ ! "$answer" =~ ^[Yy]$ ]]; then
+      warn "Installation aborted"
+      exit 0
+    fi
+  fi
+
+  prepare_dirs
+  ensure_env_files
+  install_python_deps
+  install_systemd_units
+  install_desktop_shortcut
+  mark_first_startup_done
+  print_next_steps
+}
+
+main "$@"

@@ -7,7 +7,7 @@
 ![Models](https://img.shields.io/badge/models-615%2B-purple)
 ![Providers](https://img.shields.io/badge/providers-10-orange)
 ![Python](https://img.shields.io/badge/python-3.12-yellow)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.118.0-teal)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.135.1-teal)
 
 **Multi-LLM Orchestration Platform with Federation, MCP Tools, and WordPress AI Integration**
 
@@ -39,8 +39,8 @@ TriForce is a self-hosted AI backend built on **FastAPI + Python 3.12**. It unif
 
 | Layer | Technology |
 |-------|-----------|
-| Backend | FastAPI 0.118, uvicorn 0.37, Python 3.12 |
-| Runtime | systemd service (`triforce.service`), port **9000** |
+| Backend | FastAPI 0.135.1, uvicorn 0.41, Python 3.12 |
+| Runtime | systemd service (`triforce.service`), port **9100** (default) |
 | Cache / Rate-limiting | Redis (localhost:6379) |
 | MCP WebSocket | Port **44433** (internal agent bus) |
 | Reverse Proxy | Apache2 (ailinux.me), Cloudflare CDN |
@@ -146,11 +146,31 @@ sudo journalctl -u triforce -f
 ### Via Install Script
 
 ```bash
-# Full install (sets up venv, systemd, directories, Redis)
-./install.sh
+# Full install (venv + pip upgrade + requirements + env + systemd + desktop shortcut)
+./install.sh --non-interactive
+
+# Basic install tuning examples
+./install.sh --host 127.0.0.1 --port 9100 --domain example.com --timezone Europe/Berlin
+./install.sh --skip-systemd --skip-deps
+
+# First-startup marker flow
+./install.sh --first-startup --non-interactive
 
 # RAM-mode (tmpfs mounts for faster I/O on low-disk systems)
 ./install-rammode.sh
+```
+
+### Ops Helpers
+
+```bash
+# Unified admin command hub
+scripts/triforce-admin.sh help
+scripts/triforce-admin.sh status
+scripts/triforce-admin.sh start-services-except-triforce
+scripts/triforce-admin.sh clean-python-cache
+
+# Short status wrapper
+scripts/status.sh
 ```
 
 ### Multi-Node Federation
