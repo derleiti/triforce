@@ -9,9 +9,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from pathlib import Path
-from fastapi_limiter import FastAPILimiter
-
 from .config import get_settings
+from .utils.rate_limit_compat import FastAPILimiter
 
 # Import the router object from each route module
 from .routes.admin import router as admin_router
@@ -179,20 +178,26 @@ async def lifespan(app: FastAPI):
 
     # Start Federation Manager (Server-to-Server)
     try:
-        from .services.server_federation import federation_manager
+        from .services.server_federation import federation_manager, NodeRole
         from .services.federation_websocket import federation_lb
         import socket
+        import os
         _hostname = socket.gethostname().lower()
-        node_id = "backup" if "backup" in _hostname else "zombie-pc" if "zombie" in _hostname else "hetzner"
+        node_id = (
+            os.getenv("FEDERATION_NODE_ID")
+            or ("backup" if "backup" in _hostname else "zombie-pc" if "zombie" in _hostname else "hetzner")
+        )
+        role_env = (os.getenv("FEDERATION_ROLE", "node") or "node").strip().lower()
+        role = NodeRole.HUB if role_env == "hub" else NodeRole.NODE
         # Redis-Lock: nur ein Worker darf Federation starten
         import redis.asyncio as _redis
         _r = _redis.from_url("redis://localhost:6379/0")
         _lock = await _r.set("federation_lock", 1, nx=True, ex=60)
         await _r.aclose()
         if _lock:
-            await federation_manager.initialize(node_id=node_id)
+            await federation_manager.initialize(node_id=node_id, role=role)
             await federation_lb.start()
-            logger.info("Federation Manager started (lock acquired)")
+            logger.info(f"Federation Manager started (lock acquired) as {node_id}/{role.value}")
         else:
             logger.info("Federation Manager skipped (another worker holds lock)")
     except Exception as e:
@@ -234,7 +239,7 @@ async def lifespan(app: FastAPI):
         from .services.mcp_ws_server import mcp_ws_server
         await mcp_ws_server.start()
         if mcp_ws_server._running:
-            logger.info("MCP WebSocket Server started on port 44433")
+            logger.info(f"MCP WebSocket Server started on port {settings.mcp_ws_port}")
         else:
             # Expected in multi-worker mode: another worker owns the port
             logger.info("MCP WebSocket Server: port 44433 owned by another worker — skipping")

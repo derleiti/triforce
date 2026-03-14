@@ -21,6 +21,10 @@ import ssl
 import logging
 import uuid
 from pathlib import Path
+from app.config import get_settings
+from app.config import get_settings
+from app.config import get_settings
+from app.config import get_settings
 from typing import Dict, Set, Any, Optional, List
 from datetime import datetime
 from collections import defaultdict
@@ -36,9 +40,36 @@ except ImportError:
 logger = logging.getLogger("mcp_ws_server")
 
 # Config
-MCP_WS_HOST = "0.0.0.0"
-MCP_WS_PORT = 44433
+_settings = get_settings()
+MCP_WS_HOST = _settings.mcp_ws_host
+MCP_WS_PORT = _settings.mcp_ws_port
+MCP_WS_ENABLE_IPV6 = _settings.mcp_ws_enable_ipv6
 CERT_DIR = Path("/home/zombie/triforce/certs/client-auth")
+
+
+def _port_available(host: str, port: int, enable_ipv6: bool = True) -> bool:
+    import socket
+
+    family = socket.AF_INET6 if (":" in host or host == "::") else socket.AF_INET
+    sock = socket.socket(family, socket.SOCK_STREAM)
+    try:
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        if family == socket.AF_INET6:
+            try:
+                sock.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_V6ONLY, 0 if enable_ipv6 else 1)
+            except Exception:
+                pass
+            sock.bind((host, port, 0, 0))
+        else:
+            sock.bind((host, port))
+        return True
+    except OSError:
+        return False
+    finally:
+        try:
+            sock.close()
+        except Exception:
+            pass
 
 
 @dataclass
@@ -407,14 +438,8 @@ class MCPMeshServer:
             return
         
         # Guard: check if port is already in use (expected in multi-worker mode)
-        import socket
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        try:
-            sock.bind((MCP_WS_HOST, MCP_WS_PORT))  # nosec B104 — intentional: MCP WebSocket must be reachable via Docker bridge + LAN
-            sock.close()
-        except OSError:
-            sock.close()
-            logger.info(f"Port {MCP_WS_PORT} already in use (multi-worker: another worker owns it)")
+        if not _port_available(MCP_WS_HOST, MCP_WS_PORT, MCP_WS_ENABLE_IPV6):
+            logger.info(f"Port {MCP_WS_PORT} on {MCP_WS_HOST} already in use (multi-worker: another worker owns it)")
             self._running = False
             return
         
