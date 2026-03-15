@@ -20,6 +20,9 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 HOST_REPO_PATH="${HOST_REPO_PATH:-$SCRIPT_DIR/repo}"
 HOST_MIRROR_PATH="$HOST_REPO_PATH/mirror"
 INDEX_FILE_ON_MIRROR="$HOST_MIRROR_PATH/index.html"
+LOG_DIR="${LOG_DIR:-$SCRIPT_DIR/log}"
+UPDATE_LOGFILE="${UPDATE_LOGFILE:-$LOG_DIR/update-mirror.log}"
+POSTMIRROR_LOGFILE="${POSTMIRROR_LOGFILE:-$LOG_DIR/postmirror.log}"
 
 BASE_URL="${BASE_URL:-https://repo.ailinux.me}"
 BASE_URL="${BASE_URL%/}"
@@ -132,7 +135,9 @@ GENERATED_DATE=$(date '+%Y-%m-%d %H:%M:%S')
 GENERATED_YEAR=$(date +%Y)
 
 TMP_INDEX_FILE="$(mktemp)"
-trap 'rm -f "$TMP_INDEX_FILE"' EXIT
+TMP_SUMMARY_FILE="$(mktemp)"
+TMP_LOG_FILE="$(mktemp)"
+trap 'rm -f "$TMP_INDEX_FILE" "$TMP_SUMMARY_FILE" "$TMP_LOG_FILE"' EXIT
 
 # Generate HTML
 cat > "$TMP_INDEX_FILE" << 'HTMLHEAD'
@@ -448,14 +453,14 @@ cat >> "$TMP_INDEX_FILE" << HTMLHEADER
         <div class="desc">Automatisches Setup</div>
       </div>
     </a>
-    <a class="tool-card" href="${PUBLIC_BASE}/mirror-summary.html">
+    <a class="tool-card" href="${PUBLIC_BASE}/summary.html">
       <span class="icon">📊</span>
       <div>
         <div class="tool-title">Status</div>
         <div class="desc">Mirror Health Report</div>
       </div>
     </a>
-    <a class="tool-card" href="${PUBLIC_BASE}/live-log.html">
+    <a class="tool-card" href="${PUBLIC_BASE}/log.html">
       <span class="icon">📜</span>
       <div>
         <div class="tool-title">Logs</div>
@@ -542,6 +547,156 @@ cat >> "$TMP_INDEX_FILE" << HTMLFOOTER
 </html>
 HTMLFOOTER
 
+html_escape() {
+  sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g'
+}
+
+strip_ansi() {
+  sed -E $'s/\x1B\\[[0-9;]*[[:alpha:]]//g'
+}
+
+write_log_snippet() {
+  local title="$1"
+  local logfile="$2"
+  local lines="$3"
+
+  echo "<section>"
+  echo "<h2>${title}</h2>"
+  echo "<pre><code>"
+  if [[ -f "$logfile" ]]; then
+    tail -n "$lines" "$logfile" | strip_ansi | html_escape
+  else
+    printf 'Log file not found: %s\n' "$logfile" | html_escape
+  fi
+  echo "</code></pre>"
+  echo "</section>"
+}
+
+build_summary_page() {
+  local inrelease_count release_sig_count amd64_packages i386_packages key_status
+  local update_log_size postmirror_log_size update_log_mtime postmirror_log_mtime
+
+  inrelease_count=$(find "$HOST_MIRROR_PATH" -maxdepth 6 -type f -name "InRelease" 2>/dev/null | wc -l | tr -d ' ')
+  release_sig_count=$(find "$HOST_MIRROR_PATH" -maxdepth 6 -type f -name "Release.gpg" 2>/dev/null | wc -l | tr -d ' ')
+
+  amd64_packages=0
+  i386_packages=0
+  if [[ -f "$HOST_MIRROR_PATH/repo.ailinux.me/dists/noble/main/binary-amd64/Packages" ]]; then
+    amd64_packages=$(grep -c '^Package:' "$HOST_MIRROR_PATH/repo.ailinux.me/dists/noble/main/binary-amd64/Packages" || true)
+  fi
+  if [[ -f "$HOST_MIRROR_PATH/repo.ailinux.me/dists/noble/main/binary-i386/Packages" ]]; then
+    i386_packages=$(grep -c '^Package:' "$HOST_MIRROR_PATH/repo.ailinux.me/dists/noble/main/binary-i386/Packages" || true)
+  fi
+
+  if [[ -f "$HOST_MIRROR_PATH/ailinux-archive-key.gpg" ]]; then
+    key_status="present"
+  else
+    key_status="missing"
+  fi
+
+  if [[ -f "$UPDATE_LOGFILE" ]]; then
+    update_log_size=$(du -h "$UPDATE_LOGFILE" 2>/dev/null | awk '{print $1}')
+    update_log_mtime=$(date -r "$UPDATE_LOGFILE" '+%Y-%m-%d %H:%M:%S' 2>/dev/null || echo "n/a")
+  else
+    update_log_size="missing"
+    update_log_mtime="n/a"
+  fi
+
+  if [[ -f "$POSTMIRROR_LOGFILE" ]]; then
+    postmirror_log_size=$(du -h "$POSTMIRROR_LOGFILE" 2>/dev/null | awk '{print $1}')
+    postmirror_log_mtime=$(date -r "$POSTMIRROR_LOGFILE" '+%Y-%m-%d %H:%M:%S' 2>/dev/null || echo "n/a")
+  else
+    postmirror_log_size="missing"
+    postmirror_log_mtime="n/a"
+  fi
+
+  cat > "$TMP_SUMMARY_FILE" <<SUMMARY_HEAD
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>AILinux Mirror Summary</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body { background: #0d1117; color: #e6edf3; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 0; }
+.wrap { max-width: 1100px; margin: 0 auto; padding: 24px; }
+h1, h2 { margin: 0 0 12px; }
+h1 { font-size: 1.8rem; }
+h2 { font-size: 1.15rem; margin-top: 22px; color: #58a6ff; }
+.meta { color: #8b949e; margin-bottom: 18px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px 0 20px; }
+.card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 12px 14px; }
+.label { color: #8b949e; font-size: 0.85rem; }
+.value { font-size: 1.2rem; font-weight: 600; margin-top: 4px; }
+pre { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 12px; overflow: auto; max-height: 360px; }
+a { color: #58a6ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>AILinux Mirror Summary</h1>
+  <p class="meta">Generated: ${GENERATED_DATE}</p>
+  <p class="meta"><a href="${PUBLIC_BASE}/index.html">Index</a> · <a href="${PUBLIC_BASE}/log.html">Logs</a></p>
+
+  <section class="grid">
+    <div class="card"><div class="label">Repositories</div><div class="value">${REPO_COUNT}</div></div>
+    <div class="card"><div class="label">Mirror Size</div><div class="value">${TOTAL_SIZE}</div></div>
+    <div class="card"><div class="label">InRelease Files</div><div class="value">${inrelease_count}</div></div>
+    <div class="card"><div class="label">Release.gpg Files</div><div class="value">${release_sig_count}</div></div>
+    <div class="card"><div class="label">repo.ailinux.me amd64 Packages</div><div class="value">${amd64_packages}</div></div>
+    <div class="card"><div class="label">repo.ailinux.me i386 Packages</div><div class="value">${i386_packages}</div></div>
+    <div class="card"><div class="label">Archive Key</div><div class="value">${key_status}</div></div>
+    <div class="card"><div class="label">update-mirror.log</div><div class="value">${update_log_size} (${update_log_mtime})</div></div>
+    <div class="card"><div class="label">postmirror.log</div><div class="value">${postmirror_log_size} (${postmirror_log_mtime})</div></div>
+  </section>
+SUMMARY_HEAD
+
+  write_log_snippet "Tail: update-mirror.log (120 lines)" "$UPDATE_LOGFILE" 120 >> "$TMP_SUMMARY_FILE"
+  write_log_snippet "Tail: postmirror.log (120 lines)" "$POSTMIRROR_LOGFILE" 120 >> "$TMP_SUMMARY_FILE"
+
+  cat >> "$TMP_SUMMARY_FILE" <<'SUMMARY_FOOT'
+</main>
+</body>
+</html>
+SUMMARY_FOOT
+}
+
+build_log_page() {
+  cat > "$TMP_LOG_FILE" <<LOG_HEAD
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>AILinux Mirror Logs</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body { background: #0d1117; color: #e6edf3; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; margin: 0; }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 24px; }
+h1, h2 { margin: 0 0 12px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+h2 { margin-top: 20px; color: #58a6ff; font-size: 1.1rem; }
+p { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #8b949e; }
+pre { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 12px; overflow: auto; max-height: 520px; }
+a { color: #58a6ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>AILinux Mirror Logs</h1>
+  <p>Generated: ${GENERATED_DATE} · <a href="${PUBLIC_BASE}/summary.html">Summary</a> · <a href="${PUBLIC_BASE}/index.html">Index</a></p>
+LOG_HEAD
+
+  write_log_snippet "update-mirror.log (tail 400)" "$UPDATE_LOGFILE" 400 >> "$TMP_LOG_FILE"
+  write_log_snippet "postmirror.log (tail 400)" "$POSTMIRROR_LOGFILE" 400 >> "$TMP_LOG_FILE"
+
+  cat >> "$TMP_LOG_FILE" <<'LOG_FOOT'
+</main>
+</body>
+</html>
+LOG_FOOT
+}
+
 # External JS for interactions (CSP-friendly)
 cat > "$HOST_MIRROR_PATH/index.js" << 'JSSCRIPT'
 function toggleCategory(header) {
@@ -612,6 +767,56 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 JSSCRIPT
 
+# Build shared target list from index targets
+declare -a INDEX_TARGETS
+INDEX_TARGETS+=("$INDEX_FILE_ON_MIRROR")
+
+if [[ "${WRITE_ROOT_INDEX:-1}" == "1" ]]; then
+  INDEX_TARGETS+=("$HOST_REPO_PATH/index.html")
+fi
+
+if [[ -n "${EXTRA_INDEX_TARGETS:-}" ]]; then
+  while IFS= read -r extra_target; do
+    [[ -n "$extra_target" ]] || continue
+    INDEX_TARGETS+=("$extra_target")
+  done <<< "${EXTRA_INDEX_TARGETS}"
+fi
+
+deploy_file_to_index_targets() {
+  local source_file="$1"
+  local basename_target="$2"
+  local log_label="$3"
+  local target target_dir target_path
+  declare -A emitted=()
+
+  for target in "${INDEX_TARGETS[@]}"; do
+    [[ -n "$target" ]] || continue
+    target_dir="$(dirname "$target")"
+    target_path="$target_dir/$basename_target"
+    if [[ -n "${emitted[$target_path]+x}" ]]; then
+      continue
+    fi
+    emitted["$target_path"]=1
+    mkdir -p "$target_dir"
+    cp "$source_file" "$target_path"
+    chmod 644 "$target_path"
+    echo "[generate-index] ${log_label}: $target_path erstellt."
+  done
+}
+
+deploy_optional_file_to_index_targets() {
+  local source_file="$1"
+  local basename_target="$2"
+  local log_label="$3"
+
+  if [[ ! -f "$source_file" ]]; then
+    echo "[generate-index] ${log_label}: Quelle fehlt, übersprungen (${source_file})."
+    return 0
+  fi
+
+  deploy_file_to_index_targets "$source_file" "$basename_target" "$log_label"
+}
+
 # Copy JS alongside index.html targets
 declare -a JS_TARGETS
 JS_TARGETS+=("$HOST_MIRROR_PATH/index.js")
@@ -640,32 +845,20 @@ for js_target in "${JS_TARGETS[@]}"; do
   chmod 644 "$js_target"
 done
 
-# Deploy index files
-declare -a INDEX_TARGETS
-INDEX_TARGETS+=("$INDEX_FILE_ON_MIRROR")
+# Build summary/log pages and deploy all HTML outputs
+build_summary_page
+build_log_page
 
-if [[ "${WRITE_ROOT_INDEX:-1}" == "1" ]]; then
-  INDEX_TARGETS+=("$HOST_REPO_PATH/index.html")
-fi
+deploy_file_to_index_targets "$TMP_INDEX_FILE" "index.html" "Index"
+deploy_file_to_index_targets "$TMP_SUMMARY_FILE" "summary.html" "Summary"
+deploy_file_to_index_targets "$TMP_LOG_FILE" "log.html" "Log"
 
-if [[ -n "${EXTRA_INDEX_TARGETS:-}" ]]; then
-  while IFS= read -r extra_target; do
-    [[ -n "$extra_target" ]] || continue
-    INDEX_TARGETS+=("$extra_target")
-  done <<< "${EXTRA_INDEX_TARGETS}"
-fi
+# Legacy compatibility names used by older links
+deploy_file_to_index_targets "$TMP_SUMMARY_FILE" "mirror-summary.html" "Legacy summary"
+deploy_file_to_index_targets "$TMP_LOG_FILE" "live-log.html" "Legacy log"
 
-declare -A GENERATED
-for target in "${INDEX_TARGETS[@]}"; do
-  [[ -n "$target" ]] || continue
-  if [[ -n "${GENERATED[$target]+x}" ]]; then
-    continue
-  fi
-  GENERATED["$target"]=1
-  mkdir -p "$(dirname "$target")"
-  cp "$TMP_INDEX_FILE" "$target"
-  chmod 644 "$target"
-  echo "[generate-index] $target erfolgreich erstellt."
-done
+# Publish the underlying raw log files alongside the HTML views
+deploy_optional_file_to_index_targets "$UPDATE_LOGFILE" "update-mirror.log" "Raw update log"
+deploy_optional_file_to_index_targets "$POSTMIRROR_LOGFILE" "postmirror.log" "Raw postmirror log"
 
 echo "[generate-index] ${REPO_COUNT} Repositories katalogisiert, Gesamtgröße: ${TOTAL_SIZE}"

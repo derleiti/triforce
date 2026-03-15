@@ -457,6 +457,10 @@ async def _analyze_with_anthropic_data(
     # Optimize image to prevent issues with large images
     optimized_bytes = _optimize_image(image_bytes, max_size=2048)
 
+    # BUG-FIX 2026-03-12: _optimize_image always outputs JPEG, update content_type
+    if optimized_bytes != image_bytes:
+        content_type = "image/jpeg"
+
     # Map model aliases
     target_model = ANTHROPIC_VISION_ALIASES.get(model)
     if not target_model:

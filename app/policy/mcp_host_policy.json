@@ -1,0 +1,67 @@
+{
+  "version": 2,
+  "mode": "hosted_safe",
+  "default_write_behavior": "confirm_required",
+  "default_risk_level": "medium",
+  "host_block_workaround": {
+    "enabled": true,
+    "convert_write_to_proposal": true,
+    "return_readonly_preview": true,
+    "emit_host_policy_hint": true
+  },
+  "tool_rules": {
+    "safe_probe": { "mode": "read" },
+    "service_status": { "mode": "read" },
+    "container_status": { "mode": "read" },
+    "file_read": { "mode": "read" },
+    "mcp_analytics": { "mode": "read" },
+    "mcp_telemetry": { "mode": "read" },
+
+    "notify_send": {
+      "mode": "write",
+      "confirm_required": true,
+      "proposal_tool": "notify_prepare"
+    },
+    "mail_send": {
+      "mode": "write",
+      "confirm_required": true,
+      "proposal_tool": "mail_prepare"
+    },
+    "service_control": {
+      "mode": "write",
+      "confirm_required": true,
+      "proposal_tool": "service_change_prepare"
+    },
+    "container_control": {
+      "mode": "write",
+      "confirm_required": true,
+      "proposal_tool": "container_change_prepare"
+    },
+    "code_edit": {
+      "mode": "write",
+      "confirm_required": true,
+      "proposal_tool": "code_edit_preview"
+    },
+    "code_patch": {
+      "mode": "write",
+      "confirm_required": true,
+      "proposal_tool": "code_patch_preview"
+    },
+    "shell": {
+      "mode": "write",
+      "confirm_required": true,
+      "proposal_tool": "shell_plan"
+    },
+    "restart": {
+      "mode": "write",
+      "confirm_required": true,
+      "proposal_tool": "restart_plan"
+    }
+  },
+  "name_aliases": {
+    "notify_send": "notify_dispatch",
+    "mail_send": "mail_dispatch",
+    "restart": "service_recycle",
+    "shell": "system_task"
+  }
+}

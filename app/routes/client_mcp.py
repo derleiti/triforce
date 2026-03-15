@@ -17,6 +17,7 @@ from ..services.user_tiers import tier_service, UserTier
 from ..services.subscription import subscription_service, PlanType, tier_to_plan, DEMO_BLOCKED_TOOLS
 from ..services.user_system.user_manager import user_manager
 from ..routes.client_auth import decode_jwt_token, CLIENT_REGISTRY
+from ..mcp.runtime_registry import get_runtime_registry
 
 logger = logging.getLogger("ailinux.client_mcp")
 
@@ -66,12 +67,17 @@ ENTERPRISE_TIER_TOOLS = PRO_TIER_TOOLS + [
 ADMIN_TOOLS = ["*"]
 
 
-def get_tools_for_tier(tier: UserTier) -> List[str]:
-    """Hole erlaubte Tools fuer ein Tier (neu: DEMO/SUBSCRIBER Mapping)"""
-    plan = tier_to_plan(tier.value if hasattr(tier, "value") else str(tier))
+def get_tools_for_tier(tier: UserTier, node_id: Optional[str] = None) -> List[str]:
+    """Hole erlaubte Tools für ein Tier aus der Runtime-Registry mit Fallback."""
+    runtime_registry = get_runtime_registry()
+    tier_name = tier.value if hasattr(tier, "value") else str(tier)
+    tools = runtime_registry.get_client_tools(tier_name, node_id=node_id)
+    if tools:
+        return tools
+    plan = tier_to_plan(tier_name)
     if plan == PlanType.DEMO:
         return FREE_TIER_TOOLS
-    return ENTERPRISE_TIER_TOOLS  # Subscriber bekommt alles
+    return ENTERPRISE_TIER_TOOLS
 
 
 def is_tool_allowed_for_client(client_id: str, tool_name: str, user_tier: UserTier) -> bool:
@@ -204,6 +210,7 @@ async def get_client_context(authorization: str = Header(None)) -> Dict[str, Any
     allowed_paths = ["/home", "/tmp"]
     allow_file_write = False
     allow_bash = False
+    node_id = payload.get("node_id") or "prod-main"
 
     if user:
         for device in user.devices:
@@ -220,6 +227,7 @@ async def get_client_context(authorization: str = Header(None)) -> Dict[str, Any
         "allowed_paths": allowed_paths,
         "allow_file_write": allow_file_write,
         "allow_bash": allow_bash,
+        "node_id": node_id,
     }
 
 
@@ -233,7 +241,7 @@ async def list_available_tools(ctx: Dict = Depends(get_client_context)):
     Liste alle für diesen Client verfügbaren MCP-Tools
     """
     tier = ctx["tier"]
-    tools = get_tools_for_tier(tier)
+    tools = get_tools_for_tier(tier, ctx.get("node_id"))
 
     return MCPToolsListResponse(
         tier=tier.value,
@@ -297,7 +305,8 @@ async def call_mcp_tool(
     try:
         from ..routes.mcp import MCP_HANDLERS
 
-        handler = MCP_HANDLERS.get(tool_name)
+        runtime_registry = get_runtime_registry()
+        handler = runtime_registry.get_handler(tool_name) or MCP_HANDLERS.get(tool_name)
         if not handler:
             raise HTTPException(404, f"Tool nicht gefunden: {tool_name}")
 
@@ -331,7 +340,7 @@ async def get_client_permissions(ctx: Dict = Depends(get_client_context)):
     Zeigt alle Berechtigungen des aktuellen Clients
     """
     tier = ctx["tier"]
-    tools = get_tools_for_tier(tier)
+    tools = get_tools_for_tier(tier, ctx.get("node_id"))
 
     return {
         "client_id": ctx["client_id"],

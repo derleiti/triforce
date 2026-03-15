@@ -18,13 +18,13 @@ if (isset($_POST['nov_ai_save_settings']) && wp_verify_nonce($_POST['_wpnonce'],
     $settings = get_option('nova_ai_settings', []);
 
     if (array_key_exists('api_endpoint', $_POST)) {
-        $settings['api_endpoint'] = sanitize_text_field($_POST['api_endpoint'] ?? 'http://localhost:9000');
+        $settings['api_endpoint'] = sanitize_text_field($_POST['api_endpoint'] ?? 'http://localhost:9100');
     }
     if (array_key_exists('api_endpoint_internal', $_POST)) {
         $settings['api_endpoint_internal'] = sanitize_text_field($_POST['api_endpoint_internal'] ?? '');
     }
     if (array_key_exists('mcp_endpoint', $_POST)) {
-        $settings['mcp_endpoint'] = sanitize_text_field($_POST['mcp_endpoint'] ?? 'http://localhost:9000');
+        $settings['mcp_endpoint'] = sanitize_text_field($_POST['mcp_endpoint'] ?? 'http://localhost:9100');
     }
     if (array_key_exists('downloads_path', $_POST)) {
         $settings['downloads_path'] = sanitize_text_field($_POST['downloads_path'] ?? ABSPATH . 'downloads');
@@ -295,8 +295,8 @@ $active_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'dashboa
                                 <th><label for="api_endpoint">Backend API URL</label></th>
                                 <td>
                                     <input type="url" name="api_endpoint" id="api_endpoint" class="regular-text"
-                                        value="<?php echo esc_attr($settings['api_endpoint'] ?? 'http://localhost:9000'); ?>">
-                                    <p class="description">Main API endpoint (e.g., http://localhost:9000)</p>
+                                        value="<?php echo esc_attr($settings['api_endpoint'] ?? 'http://localhost:9100'); ?>">
+                                    <p class="description">Main API endpoint (e.g., http://localhost:9100)</p>
                                 </td>
                             </tr>
                             <tr>
@@ -304,14 +304,14 @@ $active_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'dashboa
                                 <td>
                                     <input type="text" name="api_endpoint_internal" id="api_endpoint_internal" class="regular-text"
                                         value="<?php echo esc_attr($settings['api_endpoint_internal'] ?? ''); ?>">
-                                    <p class="description">Optional: internal container URL (e.g., http://host.docker.internal:9000)</p>
+                                    <p class="description">Optional: internal container URL (e.g., http://host.docker.internal:9100)</p>
                                 </td>
                             </tr>
                             <tr>
                                 <th><label for="mcp_endpoint">MCP Server URL</label></th>
                                 <td>
                                     <input type="url" name="mcp_endpoint" id="mcp_endpoint" class="regular-text"
-                                        value="<?php echo esc_attr($settings['mcp_endpoint'] ?? 'http://localhost:9000'); ?>">
+                                        value="<?php echo esc_attr($settings['mcp_endpoint'] ?? 'http://localhost:9100'); ?>">
                                     <p class="description">MCP Server for agent orchestration</p>
                                 </td>
                             </tr>
@@ -1415,7 +1415,7 @@ $active_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'dashboa
 var novAdminConfig = {
     ajaxUrl: '<?php echo admin_url('admin-ajax.php'); ?>',
     nonce: '<?php echo wp_create_nonce('nov_ai_admin'); ?>',
-    apiEndpoint: '<?php echo esc_url($settings['api_endpoint'] ?? 'http://localhost:9000'); ?>',
-    mcpEndpoint: '<?php echo esc_url($settings['mcp_endpoint'] ?? 'http://localhost:9000'); ?>'
+    apiEndpoint: '<?php echo esc_url($settings['api_endpoint'] ?? 'http://localhost:9100'); ?>',
+    mcpEndpoint: '<?php echo esc_url($settings['mcp_endpoint'] ?? 'http://localhost:9100'); ?>'
 };
 </script>

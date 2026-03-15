@@ -142,6 +142,7 @@ add_release_entry(){
 # --- LOOP DURCH REPOS ---
 for ddir in "${DIST_DIRS[@]}"; do
   repo_root="$(dirname "$ddir")"
+
   cd "$repo_root" || continue
   
   log "Bearbeite Repo: $(basename "$repo_root")"

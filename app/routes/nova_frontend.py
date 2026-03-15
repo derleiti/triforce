@@ -14,7 +14,11 @@ from pydantic import BaseModel
 router = APIRouter(prefix="/frontend/dashboard", tags=["nova-frontend"])
 
 def _base_url() -> str:
-    return (os.getenv("TRIFORCE_PUBLIC_BASE_URL") or os.getenv("TRIFORCE_BASE_URL") or "http://127.0.0.1:9000").rstrip("/")
+    return (
+        os.getenv("TRIFORCE_PUBLIC_BASE_URL")
+        or os.getenv("TRIFORCE_BASE_URL")
+        or "http://127.0.0.1:9000"
+    ).rstrip("/")
 
 def _openai_key() -> Optional[str]:
     return os.getenv("OPENAI_API_KEY") or os.getenv("OPENAI_KEY") or os.getenv("CHATGPT_API_KEY")
@@ -792,4 +796,3 @@ async def downloads_descriptions_set(data: Dict[str, Any]) -> Dict[str, Any]:
         return {"ok": True}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-

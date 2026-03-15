@@ -1,0 +1,28 @@
+#!/bin/bash
+# Gemini CLI TriForce Wrapper
+set -euo pipefail
+
+BASE_DIR="/home/zombie/triforce"
+AGENT_NAME="gemini"
+LOG_FILE="${BASE_DIR}/logs/${AGENT_NAME}.log"
+
+# HOME auf Agent-Config setzen
+export HOME="${BASE_DIR}/config/agents/${AGENT_NAME}"
+
+# API Keys laden
+if [ -f "${BASE_DIR}/auth/.env.agents" ]; then
+    source "${BASE_DIR}/auth/.env.agents"
+fi
+
+# Logging
+echo "--- $(date '+%Y-%m-%d %H:%M:%S') | gemini-triforce | Args: $* ---" >> "$LOG_FILE"
+
+# Binary Pfad
+GEMINI_BIN="${BASE_DIR}/bin/gemini"
+
+# STDIN Check und Ausführung
+if [ -t 0 ]; then
+    exec "$GEMINI_BIN" --yolo --output-format text "$@" 2>> "$LOG_FILE"
+else
+    exec "$GEMINI_BIN" --yolo --output-format text "$@" < /dev/stdin 2>> "$LOG_FILE"
+fi

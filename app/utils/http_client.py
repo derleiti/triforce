@@ -31,6 +31,7 @@ class HttpClient:
         follow_redirects: bool = True,
         base_url: Optional[str] = None,
         headers: Optional[dict] = None,
+        verify: bool | str = True,
     ) -> None:
         if not isinstance(timeout, httpx.Timeout):
             timeout = httpx.Timeout(timeout)
@@ -38,8 +39,9 @@ class HttpClient:
         self.retries = retries
         self.backoff = backoff
         self.follow_redirects = follow_redirects
+        self.verify = verify
         
-        key = f"{base_url}"
+        key = f"{base_url}_{verify}"
         with HttpClient._lock:
             if key not in HttpClient._shared_clients:
                 self._client = httpx.AsyncClient(
@@ -48,6 +50,7 @@ class HttpClient:
                     base_url=base_url or "",
                     headers=headers or {},
                     http2=True,
+                    verify=self.verify,
                 )
                 HttpClient._shared_clients[key] = self._client
             else:
@@ -108,6 +111,7 @@ async def client(
     follow_redirects: bool = True,
     base_url: Optional[str] = None,
     headers: Optional[dict] = None,
+    verify: bool | str = True,
 ):
     hc = HttpClient(
         timeout=timeout,
@@ -116,6 +120,7 @@ async def client(
         follow_redirects=follow_redirects,
         base_url=base_url,
         headers=headers,
+        verify=verify,
     )
     try:
         yield hc

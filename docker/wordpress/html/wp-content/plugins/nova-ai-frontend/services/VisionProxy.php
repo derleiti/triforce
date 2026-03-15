@@ -18,7 +18,7 @@ class VisionProxy {
     
     private function __construct() {
         $settings = get_option('nova_ai_settings', []);
-        $this->api_endpoint = $settings['api_endpoint'] ?? 'http://localhost:9000';
+        $this->api_endpoint = $settings['api_endpoint'] ?? 'http://localhost:9100';
         $this->api_endpoint_internal = $settings['api_endpoint_internal'] ?? '';
         $this->api_base = $this->resolve_api_base($this->get_server_api_endpoint());
 
@@ -49,20 +49,20 @@ class VisionProxy {
             return '';
         }
 
-        $port = isset($parsed['port']) ? (int) $parsed['port'] : null;
-        if ($port !== 9100) {
-            return '';
-        }
-
         $scheme = $parsed['scheme'] ?? 'http';
         $host = $parsed['host'];
         $path = $parsed['path'] ?? '';
+        $port = isset($parsed['port']) ? (int) $parsed['port'] : null;
 
-        if ($scheme === 'https') {
+        if ($scheme === 'https' && in_array($host, ['localhost', '127.0.0.1', 'host.docker.internal'], true)) {
             $scheme = 'http';
         }
 
-        return $scheme . '://' . $host . ':9000' . $path;
+        if ($port === null) {
+            return '';
+        }
+
+        return $scheme . '://' . $host . ':' . $port . $path;
     }
 
     private function normalize_internal_endpoint($endpoint) {
@@ -71,19 +71,15 @@ class VisionProxy {
             return $endpoint;
         }
 
-        $port = isset($parsed['port']) ? (int) $parsed['port'] : null;
-        if ($port !== 9000) {
-            return $endpoint;
-        }
-
         $scheme = $parsed['scheme'] ?? 'http';
-        if ($scheme !== 'https') {
-            return $endpoint;
-        }
-
         $host = $parsed['host'];
         $path = $parsed['path'] ?? '';
-        return 'http://' . $host . ':9000' . $path;
+        $port = isset($parsed['port']) ? ':' . $parsed['port'] : '';
+
+        if ($scheme !== 'https' || !in_array($host, ['localhost', '127.0.0.1', 'host.docker.internal'], true)) {
+            return $endpoint;
+        }
+        return 'http://' . $host . $port . $path;
     }
 
     private function resolve_api_base($default_base) {

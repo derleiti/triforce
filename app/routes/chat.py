@@ -1,10 +1,17 @@
 from __future__ import annotations
 from typing import AsyncGenerator, List, Literal, Optional
 from time import perf_counter
+
+# Dynamic Router — Swarm-Generated #1 Feature
+try:
+    from app.services.dynamic_router import get_router as _get_dynamic_router
+    _HAS_ROUTER = True
+except Exception:
+    _HAS_ROUTER = False
 from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
-from fastapi_limiter.depends import RateLimiter
+from ..utils.rate_limit_compat import RateLimiter
 
 from ..services import chat as chat_service
 from ..services.model_registry import registry
@@ -29,6 +36,7 @@ class ChatRequest(BaseModel):
     messages: List[ChatMessage]
     stream: bool = True
     temperature: Optional[float] = Field(None, ge=0.0, le=2.0)
+    no_fallback: bool = False  # Swarm: skip Ollama fallback on provider error
 
 async def _chat_generator(payload: ChatRequest) -> AsyncGenerator[str, None]:
     model = await registry.get_model(payload.model)
@@ -52,6 +60,7 @@ async def _chat_generator(payload: ChatRequest) -> AsyncGenerator[str, None]:
                 (m.model_dump() for m in payload.messages),
                 stream=payload.stream,
                 temperature=payload.temperature,
+                no_fallback=payload.no_fallback,
             ):
                 if chunk:
                     yield chunk
@@ -68,6 +77,19 @@ async def _chat_generator(payload: ChatRequest) -> AsyncGenerator[str, None]:
             if _HAS_PERF_MONITOR:
                 latency_ms = (perf_counter() - model_start) * 1000
                 perf_monitor.record_model(payload.model, latency_ms, error=error_occurred)
+            # Dynamic Router: track latency for intelligent model selection
+            if _dynamic_router:
+                _latency = (perf_counter() - model_start) * 1000
+                import asyncio
+                asyncio.create_task(_dynamic_router.record(payload.model, _latency, error=error_occurred))
+            # Dynamic Router — track latency per model for intelligent routing
+            if _HAS_ROUTER:
+                try:
+                    import asyncio
+                    latency_ms = (perf_counter() - model_start) * 1000
+                    asyncio.ensure_future(_get_dynamic_router().record(payload.model, latency_ms, error=error_occurred))
+                except Exception:
+                    pass
 
 @router.post("/chat", dependencies=[Depends(RateLimiter(times=5, seconds=10))])
 async def chat_endpoint(payload: ChatRequest):

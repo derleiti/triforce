@@ -92,7 +92,7 @@ class EarlyAccessService {
     }
 
     private function register_with_api($email, $password, $name) {
-        $api_endpoint = $this->settings['api_endpoint'] ?? 'http://localhost:9000';
+        $api_endpoint = $this->settings['api_endpoint'] ?? 'http://localhost:9100';
         
         $response = wp_remote_post($api_endpoint . '/v1/client/auth/register', [
             'headers' => ['Content-Type' => 'application/json'],

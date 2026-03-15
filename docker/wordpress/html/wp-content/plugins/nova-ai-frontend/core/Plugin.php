@@ -41,6 +41,7 @@ class Plugin {
     }
 
     public function init_services() {
+        \NovAI\Services\AiDescriptionService::instance();
         \NovAI\Services\DownloadsService::instance();
         \NovAI\Services\ChatProxy::instance();
         \NovAI\Services\EarlyAccessService::instance();
@@ -121,7 +122,7 @@ class Plugin {
         add_shortcode('ailinux_downloads', function($atts) {
             $atts = shortcode_atts(['path' => ''], $atts);
             ob_start();
-            include NOV_AI_PLUGIN_DIR . 'templates/downloads.php';
+            include NOVA_AI_PLUGIN_DIR . 'templates/downloads.php';
             return ob_get_clean();
         });
 
@@ -131,13 +132,13 @@ class Plugin {
                 'height' => '600px'
             ], $atts);
             ob_start();
-            include NOV_AI_PLUGIN_DIR . 'templates/playground.php';
+            include NOVA_AI_PLUGIN_DIR . 'templates/playground.php';
             return ob_get_clean();
         });
 
         add_shortcode('ailinux_pass', function($atts) {
             ob_start();
-            include NOV_AI_PLUGIN_DIR . 'templates/early-access.php';
+            include NOVA_AI_PLUGIN_DIR . 'templates/early-access.php';
             return ob_get_clean();
         });
 
@@ -146,7 +147,7 @@ class Plugin {
                 'position' => $this->settings['widget_position'] ?? 'bottom-right'
             ], $atts);
             ob_start();
-            include NOV_AI_PLUGIN_DIR . 'templates/chat-widget.php';
+            include NOVA_AI_PLUGIN_DIR . 'templates/chat-widget.php';
             return ob_get_clean();
         });
 
@@ -157,7 +158,7 @@ class Plugin {
                 'columns'   => 3,
             ], $atts);
             ob_start();
-            include NOV_AI_PLUGIN_DIR . 'templates/shop.php';
+            include NOVA_AI_PLUGIN_DIR . 'templates/shop.php';
             return ob_get_clean();
         });
     }
@@ -175,7 +176,7 @@ class Plugin {
     }
 
     public function render_admin_page() {
-        include NOV_AI_PLUGIN_DIR . 'admin/AdminDashboard.php';
+        include NOVA_AI_PLUGIN_DIR . 'admin/AdminDashboard.php';
     }
 
     public function add_discuss_button($content) {
@@ -210,7 +211,7 @@ class Plugin {
             return;
         }
 
-        include NOV_AI_PLUGIN_DIR . 'templates/discuss-overlay.php';
+        include NOVA_AI_PLUGIN_DIR . 'templates/discuss-overlay.php';
     }
 
     /**
@@ -228,6 +229,6 @@ class Plugin {
             return;
         }
 
-        include NOV_AI_PLUGIN_DIR . 'templates/chat-widget.php';
+        include NOVA_AI_PLUGIN_DIR . 'templates/chat-widget.php';
     }
 }

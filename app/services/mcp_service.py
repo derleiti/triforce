@@ -48,8 +48,11 @@ from .n8n_mcp import N8N_TOOLS, N8N_HANDLERS
 # === NEW CLIENT-SERVER ARCHITECTURE TOOLS ===
 from .api_vault import VAULT_TOOLS, VAULT_HANDLERS, api_vault
 from .chat_router import CHAT_ROUTER_TOOLS, CHAT_ROUTER_HANDLERS
+from .nova_chat_agent import nova_chat_agent_service
 from .task_spawner import TASK_SPAWNER_TOOLS, TASK_SPAWNER_HANDLERS
 from .txt2img_mcp import TXT2IMG_TOOLS, TXT2IMG_HANDLERS
+from ..mcp.tool_registry_unified import resolve_tool_name_for_call
+from ..utils.tool_normalizer import normalize_tool_name
 
 # Constants
 BACKEND_ROOT = Path("/home/zombie/triforce")
@@ -187,6 +190,23 @@ def _log_edit(action: str, path: str, details: Dict[str, Any]):
     }
     with open(EDIT_LOG_FILE, "a") as f:
         f.write(json.dumps(log_entry) + "\n")
+
+
+def _normalize_exported_tools(tools: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Export only normalized external tool names while keeping alias-compatible calls."""
+    normalized_tools: List[Dict[str, Any]] = []
+    seen = set()
+    for tool in tools:
+        cloned = dict(tool)
+        name = resolve_tool_name_for_call(cloned.get("name", ""))
+        if not name or name in seen:
+            continue
+        cloned["name"] = name
+        normalized_tools.append(cloned)
+        seen.add(name)
+    return normalized_tools
+
+
 async def handle_crawl_url(params: Dict[str, Any]) -> Dict[str, Any]:
     url = params.get("url")
     if not url:
@@ -529,9 +549,13 @@ async def handle_models_list(_: Dict[str, Any]) -> Dict[str, Any]:
 
 async def handle_specialists_list(_: Dict[str, Any]) -> Dict[str, Any]:
     """List all available model specialists."""
+    account_specialists = nova_chat_agent_service.list_specialized_agents()["specialized_agents"]
     return {
         "specialists": specialist_router.list_specialists(),
-        "count": len(SPECIALISTS)
+        "account_specialists": account_specialists,
+        "count": len(SPECIALISTS) + len(account_specialists),
+        "model_specialist_count": len(SPECIALISTS),
+        "account_specialist_count": len(account_specialists),
     }
 
 async def handle_specialists_route(params: Dict[str, Any]) -> Dict[str, Any]:
@@ -566,6 +590,17 @@ async def handle_specialists_invoke(params: Dict[str, Any]) -> Dict[str, Any]:
 
     # Get specialist - either specified or auto-routed
     if specialist_id:
+        if specialist_id.startswith("nova-account/"):
+            return await nova_chat_agent_service.invoke_specialized_agent(
+                specialist_id=specialist_id,
+                message=message,
+                messages=params.get("messages"),
+                system=str(params.get("system", "")),
+                model=params.get("model"),
+                temperature=float(params.get("temperature", 0.4)),
+                max_tokens=int(params.get("max_tokens", 1200)),
+                timeout=int(params.get("timeout", 120)),
+            )
         specialist = specialist_router.get_specialist_by_id(specialist_id)
         if not specialist:
             raise ValueError(f"Specialist '{specialist_id}' not found")
@@ -1939,11 +1974,12 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
         }
     ])
 
-    return {"tools": tools}
+    return {"tools": _normalize_exported_tools(tools)}
 
 async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
     """MCP tools/call method - executes a tool."""
-    tool_name = params.get("name")
+    raw_tool_name = params.get("name")
+    tool_name = resolve_tool_name_for_call(normalize_tool_name(raw_tool_name or ""))
     arguments = params.get("arguments", {})
 
     if not tool_name:
@@ -2009,9 +2045,15 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
     tool_map.update(TASK_SPAWNER_HANDLERS)
     tool_map.update(TXT2IMG_HANDLERS)  # Stable Diffusion / Image Generation
 
+    # Accept legacy aliases and dotted names, but execute canonical normalized tools.
+    for alias_name, handler in list(tool_map.items()):
+        canonical_name = resolve_tool_name_for_call(normalize_tool_name(alias_name))
+        if canonical_name:
+            tool_map.setdefault(canonical_name, handler)
+
     handler = tool_map.get(tool_name)
     if not handler:
-        raise ValueError(f"Unknown tool: {tool_name}")
+        raise ValueError(f"Unknown tool: {raw_tool_name}")
 
     result = await handler(arguments)
     return {

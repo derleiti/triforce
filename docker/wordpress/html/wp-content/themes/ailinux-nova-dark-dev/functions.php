@@ -459,7 +459,7 @@ function ailinux_nova_dark_customize_register( $wp_customize ) {
     ] );
 
     $wp_customize->add_setting( 'ailinux_nova_dark_api_base', [
-        'default'           => 'https://api.ailinux.me:9000',
+        'default'           => 'https://api.ailinux.me',
         'sanitize_callback' => 'esc_url_raw',
     ] );
     $wp_customize->add_control( 'ailinux_nova_dark_api_base', [

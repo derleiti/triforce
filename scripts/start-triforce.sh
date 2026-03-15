@@ -1,101 +1,30 @@
 #!/bin/bash
-#
-# TriForce Startup Script with Auto-Update
-#
-
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(dirname "$SCRIPT_DIR")"
-BRANCH="master"
-UPDATE_INTERVAL=300  # 5 Minuten
-
 cd "$REPO_DIR"
 
-# Load environment variables
 if [ -f "$REPO_DIR/config/triforce.env" ]; then
     set -a
     source "$REPO_DIR/config/triforce.env"
     set +a
 fi
 
-log() {
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1"
-}
+"$REPO_DIR/scripts/detect-hardware.sh"
 
-# Git Pull vor Start
-do_update() {
-    log "Checking for updates..."
-    git fetch origin "$BRANCH" 2>/dev/null || return 1
-    
-    LOCAL=$(git rev-parse HEAD)
-    REMOTE=$(git rev-parse origin/$BRANCH)
-    
-    if [ "$LOCAL" != "$REMOTE" ]; then
-        log "Update available: $LOCAL -> $REMOTE"
-        git stash push -m "auto-stash $(date +%Y%m%d-%H%M%S)" 2>/dev/null || true
-        git pull --ff-only origin "$BRANCH" || return 1
-        log "Updated to $(git rev-parse --short HEAD)"
-        return 0  # Update happened
-    fi
-    return 1  # No update
-}
+if [ -f "/run/triforce/hw.env" ]; then
+    set -a
+    source "/run/triforce/hw.env"
+    set +a
+fi
 
-# Background Update Loop
-update_loop() {
-    while true; do
-        sleep $UPDATE_INTERVAL
-        if do_update; then
-            log "Code changed - restarting..."
-            # Signal main process to restart
-            kill -TERM $MAIN_PID 2>/dev/null || true
-            exit 0
-        fi
-    done
-}
+API_PORT="${TRIFORCE_API_PORT:-9000}"
 
-# Graceful shutdown handler — forwards SIGTERM to uvicorn
-cleanup() {
-    log "SIGTERM received — shutting down uvicorn (PID: ${MAIN_PID:-?})..."
-    if [ -n "${MAIN_PID:-}" ]; then
-        kill -TERM "$MAIN_PID" 2>/dev/null || true
-        # Warte max 20s auf sauberes Ende
-        local deadline=$(( $(date +%s) + 20 ))
-        while kill -0 "$MAIN_PID" 2>/dev/null && [ "$(date +%s)" -lt "$deadline" ]; do
-            sleep 1
-        done
-        kill -KILL "$MAIN_PID" 2>/dev/null || true
-    fi
-    kill "${UPDATE_PID:-}" 2>/dev/null || true
-    log "Shutdown complete."
-    exit 0
-}
+echo "[TRIFORCE] Starting on port ${API_PORT}"
+echo "[TRIFORCE] HW mode=${TRIFORCE_RUNTIME_MODE:-unset} cpu=${TRIFORCE_CPU_MODEL:-unset} gpu=${TRIFORCE_GPU_BACKEND:-unset} workers=${TRIFORCE_UVICORN_WORKERS:-unset} threads=${TRIFORCE_THREAD_POOL:-unset}"
 
-trap cleanup TERM INT
-
-# Initial update
-log "Starting TriForce..."
-log "Update check deferred to background loop (30s)"
-
-# Start update loop in background
-update_loop &
-UPDATE_PID=$!
-
-# Start uvicorn in background
-log "Starting uvicorn on port 9000..."
-"$REPO_DIR/.venv/bin/python" -m uvicorn app.main:app \
+exec "$REPO_DIR/.venv/bin/python" -m uvicorn app.main:app \
     --host 0.0.0.0 \
-    --port 9000 \
-    --timeout-keep-alive 75 &
-
-MAIN_PID=$!
-log "Uvicorn PID: $MAIN_PID, Update PID: $UPDATE_PID"
-
-# Wait for uvicorn
-wait $MAIN_PID
-EXIT_CODE=$?
-
-# Cleanup
-kill $UPDATE_PID 2>/dev/null || true
-
-exit $EXIT_CODE
+    --port "$API_PORT" \
+    --timeout-keep-alive 75

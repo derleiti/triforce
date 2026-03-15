@@ -11,6 +11,7 @@ from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 from .config import get_settings
 from .utils.rate_limit_compat import FastAPILimiter
+from .utils.mcp_auth import require_mcp_auth
 
 # Import the router object from each route module
 from .routes.admin import router as admin_router
@@ -19,7 +20,7 @@ from .routes.agents import router as agents_router
 from .routes.chat import router as chat_router
 from .routes.crawler import router as crawler_router
 from .routes.health import router as health_router
-from .routes.mcp import router as mcp_router
+from .routes.mcp import public_router as mcp_public_router, router as mcp_router
 from .routes.mcp_node import router as mcp_node_router
 from .routes.mcp_remote import router as mcp_remote_router
 from .routes.models import router as models_router
@@ -44,6 +45,7 @@ from .routes.client_logs import router as client_logs_router
 from .routes.client_ai_search import router as client_ai_search_router
 from .routes.federation import router as federation_router
 from .routes.nova_frontend import router as nova_frontend_router
+from .routes.nova_chat_agent import router as nova_chat_agent_router
 # BUG-006 FIX 2026-03-10: user_api war nie in main.py registriert
 from .routes.user_api import router as user_api_router
 # BUG-013 FIX 2026-03-10: support + tiers waren definiert aber nie registriert
@@ -275,6 +277,16 @@ async def lifespan(app: FastAPI):
             # import logging (centralized)
             logger.warning(f"Failed to initialize System Log Collector: {e}")
 
+    # === SWARM-IMPROVEMENT #2: Redis Auto-Cleanup (DeepSeek-Vorschlag) ===
+    try:
+        from .services.redis_optimizer import get_cleanup
+        cleanup = get_cleanup()
+        import asyncio as _aio
+        _aio.get_event_loop().create_task(cleanup.start_periodic(interval=3600))
+        logger.info("Redis Auto-Cleanup started (hourly)")
+    except Exception as e:
+        logger.warning(f"Redis Auto-Cleanup init failed: {e}")
+
     yield
 
     # Clean up resources on shutdown
@@ -344,10 +356,59 @@ def create_app() -> FastAPI:
         redirect_slashes=False  # Verhindert 307 Redirect bei trailing slash
     )
 
+
+    public_auth_exempt_paths = {
+        "/health",
+        "/.well-known/mcp",
+        "/.well-known/mcp/",
+        "/.well-known/oauth-authorization-server",
+        "/.well-known/oauth-authorization-server/",
+        "/v1/.well-known/mcp",
+        "/v1/.well-known/mcp/",
+        "/v1/.well-known/oauth-authorization-server",
+        "/v1/.well-known/oauth-authorization-server/",
+        "/v1/mcp/.well-known/mcp.json",
+    }
+
+    @app.middleware("http")
+    async def central_auth_middleware(request: Request, call_next):
+        if request.method == "OPTIONS":
+            return await call_next(request)
+
+        path = request.url.path
+
+        needs_auth = (
+            (path.startswith("/v1") and path not in public_auth_exempt_paths)
+            or path.startswith("/mcp")
+        )
+
+        if needs_auth:
+            await require_mcp_auth(request)
+
+        return await call_next(request)
+
     @app.exception_handler(RequestValidationError)
     async def validation_exception_handler(request: Request, exc: RequestValidationError):
         import json
-        logger.error("Request validation error: %s", json.dumps(exc.errors()))
+
+        body_preview = exc.body
+        try:
+            if isinstance(body_preview, (dict, list)):
+                body_preview = json.dumps(body_preview, ensure_ascii=False)
+            else:
+                body_preview = str(body_preview)
+        except Exception:
+            body_preview = "<unserializable>"
+
+        logger.error(
+            "Request validation error on %s %s | content-type=%s | user-agent=%s | errors=%s | body=%s",
+            request.method,
+            request.url.path,
+            request.headers.get("content-type"),
+            request.headers.get("user-agent"),
+            json.dumps(exc.errors(), ensure_ascii=False),
+            (body_preview[:1000] if body_preview else "<empty>"),
+        )
         return JSONResponse(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             content={"detail": exc.errors(), "body": exc.body},
@@ -406,6 +467,7 @@ def create_app() -> FastAPI:
     app.include_router(chat_router, prefix="/v1", tags=["Chat"])
     app.include_router(crawler_router, prefix="/v1", tags=["Crawler"])
     app.include_router(health_router, tags=["Monitoring"])
+    app.include_router(mcp_public_router, prefix="/v1", tags=["MCP"])
     app.include_router(mcp_router, prefix="/v1", tags=["MCP"])
     app.include_router(mcp_node_router, prefix="/v1", tags=["MCP Node"])
     # BUG-004 CLARIFICATION 2026-03-10:
@@ -462,6 +524,7 @@ def create_app() -> FastAPI:
     app.include_router(sd3_router, prefix="/v1", tags=["Stable Diffusion 3"])
     app.include_router(vision_router, tags=["Vision"])
     app.include_router(nova_frontend_router, prefix="/v1", tags=["Nova Frontend"])
+    app.include_router(nova_chat_agent_router, prefix="/v1", tags=["Nova Chat Agent"])
     # BUG-006 FIX 2026-03-10: User API Router registrieren
     app.include_router(user_api_router, prefix="/v1", tags=["User API"])
     app.include_router(client_chat_router, prefix="/v1", tags=["Client Chat"])
@@ -517,3 +580,12 @@ def create_app() -> FastAPI:
 
 # Uvicorn Entry
 app = create_app()
+
+
+### MCP_HOST_POLICY_IMPORT ###
+try:
+    from app.policy.mcp_host_policy import should_convert_to_proposal, build_proposal_response
+except Exception:
+    should_convert_to_proposal = None
+    build_proposal_response = None
+

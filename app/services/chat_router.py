@@ -361,7 +361,7 @@ class APIProxy:
         max_tokens: int = 4096
     ) -> str:
         """
-        Chat mit Cloud-API
+        Chat mit Cloud-API (mit LLM Response Cache)
         
         Args:
             model: Model-ID (z.B. "openai/gpt-4o")
@@ -372,6 +372,16 @@ class APIProxy:
         Returns:
             Assistant-Antwort als String
         """
+        # === SWARM-IMPROVEMENT #1: LLM Response Cache (Mistral-Vorschlag) ===
+        try:
+            from .redis_optimizer import get_cache
+            cache = get_cache()
+            cached = await cache.get(model, messages)
+            if cached:
+                return cached
+        except Exception:
+            pass  # Cache miss or unavailable — continue normally
+        
         from .api_vault import api_vault
         
         provider, model_id = model.split("/", 1)
@@ -382,20 +392,31 @@ class APIProxy:
             raise RuntimeError(f"No API key for provider: {provider}")
         
         # Provider-spezifische Implementierung
+        result = None
         if provider == "openai":
-            return await self._openai_chat(api_key, model_id, messages, temperature, max_tokens)
+            result = await self._openai_chat(api_key, model_id, messages, temperature, max_tokens)
         elif provider == "anthropic":
-            return await self._anthropic_chat(api_key, model_id, messages, temperature, max_tokens)
+            result = await self._anthropic_chat(api_key, model_id, messages, temperature, max_tokens)
         elif provider in ("google", "gemini"):
-            return await self._gemini_chat(api_key, model_id, messages, temperature, max_tokens)
+            result = await self._gemini_chat(api_key, model_id, messages, temperature, max_tokens)
         elif provider == "mistral":
-            return await self._mistral_chat(api_key, model_id, messages, temperature, max_tokens)
+            result = await self._mistral_chat(api_key, model_id, messages, temperature, max_tokens)
         elif provider == "groq":
-            return await self._groq_chat(api_key, model_id, messages, temperature, max_tokens)
+            result = await self._groq_chat(api_key, model_id, messages, temperature, max_tokens)
         elif provider == "cerebras":
-            return await self._cerebras_chat(api_key, model_id, messages, temperature, max_tokens)
+            result = await self._cerebras_chat(api_key, model_id, messages, temperature, max_tokens)
         else:
             raise RuntimeError(f"Unknown provider: {provider}")
+        
+        # === SWARM-IMPROVEMENT #1b: Cache successful response ===
+        if result:
+            try:
+                from .redis_optimizer import get_cache
+                await get_cache().set(model, messages, result)
+            except Exception:
+                pass
+        
+        return result
     
     async def _openai_chat(self, api_key: str, model: str, messages: list, temp: float, max_tokens: int) -> str:
         """OpenAI API Call"""

@@ -40,6 +40,9 @@ MODEL_TO_CLI_AGENT: Dict[str, str] = {
     "gemini-2.5-pro":           "gemini-mcp",
     "claude-sonnet-4-20250514": "claude-mcp",
     "gpt-4o":                   "codex-mcp",
+    "nova-account/chatgpt":     "codex-mcp",
+    "nova-account/claude":      "claude-mcp",
+    "nova-account/google":      "gemini-mcp",
 }
 
 async def _execute_task_background(task_id: str, model: str, prompt: str) -> None:
@@ -176,6 +179,27 @@ DEFAULT_SKILLS: Dict[str, Dict] = {
         "skills": {"code":88,"debug":85,"math":88,"creative":82,"reasoning":88,
                    "search":80,"system":78,"planning":85,"summarize":82,"translate":80},
         "tags": ["reliable","versatile"],
+    },
+    "nova-account/chatgpt": {
+        "provider": "openai", "type": "account",
+        "speed": 78, "context": 85,
+        "skills": {"code":92,"debug":90,"math":86,"creative":80,"reasoning":89,
+                   "search":72,"system":84,"planning":90,"summarize":80,"translate":78},
+        "tags": ["account","specialized","generalist","execution"],
+    },
+    "nova-account/claude": {
+        "provider": "anthropic", "type": "account",
+        "speed": 72, "context": 98,
+        "skills": {"code":90,"debug":91,"math":88,"creative":92,"reasoning":96,
+                   "search":74,"system":84,"planning":91,"summarize":89,"translate":86},
+        "tags": ["account","specialized","long-context","review"],
+    },
+    "nova-account/google": {
+        "provider": "gemini", "type": "account",
+        "speed": 90, "context": 100,
+        "skills": {"code":78,"debug":74,"math":84,"creative":78,"reasoning":87,
+                   "search":95,"system":72,"planning":86,"summarize":92,"translate":84},
+        "tags": ["account","specialized","research","multimodal","fast"],
     },
     # ── Ollama lokal (schnell, klein) ──
     "qwen2.5:7b": {

@@ -614,8 +614,8 @@ class HandlerRegistry:
                 return health_data
 
             async def handle_debug(params):
-                logger.warning("debug not yet implemented")
-                return {"status": "not_implemented", "message": "Debug function pending"}
+                from app.services.mcp_debugger import handle_debug_action
+                return await handle_debug_action(params)
 
             self.register("status", handle_status)
             self.register("shell", handle_shell_exec)

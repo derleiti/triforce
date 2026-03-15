@@ -32,7 +32,7 @@ class McpProxy {
      */
     private function __construct() {
         $settings = get_option('nova_ai_settings', []);
-        $raw_endpoint = $settings['mcp_endpoint'] ?? 'http://localhost:9000';
+        $raw_endpoint = $settings['mcp_endpoint'] ?? 'http://localhost:9100';
         $this->mcp_endpoint = $this->resolve_api_base($this->normalize_endpoint($raw_endpoint));
 
         // Register AJAX handlers

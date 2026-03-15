@@ -38,11 +38,25 @@ LOCKFILE="${LOG_DIR}/apt-mirror.update.lock"
 COMPOSE_FILE="${REPO_ROOT}/docker-compose.yml"
 SERVICE="apt-mirror"
 
-# Host scripts
+# Host scripts (prefer local repo root, fallback to project scripts path)
 HEAL_PERMS_SCRIPT="${REPO_ROOT}/heal-perms.sh"
 COMPRESS_FIX_SCRIPT="${REPO_ROOT}/fix-packages-compression.sh"
 PUBLIC_KEY_SCRIPT="${REPO_ROOT}/export-public-key.sh"
 SIGN_REPOS_SCRIPT="${REPO_ROOT}/sign-repos.sh"
+INSTALLER_SOURCE="${REPO_ROOT}/add-ailinux-repo.sh"
+
+if [[ ! -f "$HEAL_PERMS_SCRIPT" && -f "/home/zombie/triforce/scripts/docker/repository/heal-perms.sh" ]]; then
+  HEAL_PERMS_SCRIPT="/home/zombie/triforce/scripts/docker/repository/heal-perms.sh"
+fi
+if [[ ! -f "$COMPRESS_FIX_SCRIPT" && -f "/home/zombie/triforce/scripts/docker/repository/fix-packages-compression.sh" ]]; then
+  COMPRESS_FIX_SCRIPT="/home/zombie/triforce/scripts/docker/repository/fix-packages-compression.sh"
+fi
+if [[ ! -f "$PUBLIC_KEY_SCRIPT" && -f "/home/zombie/triforce/scripts/docker/repository/export-public-key.sh" ]]; then
+  PUBLIC_KEY_SCRIPT="/home/zombie/triforce/scripts/docker/repository/export-public-key.sh"
+fi
+if [[ ! -f "$SIGN_REPOS_SCRIPT" && -f "/home/zombie/triforce/scripts/docker/repository/sign-repos.sh" ]]; then
+  SIGN_REPOS_SCRIPT="/home/zombie/triforce/scripts/docker/repository/sign-repos.sh"
+fi
 
 # Mirror paths - auto-detected from ./repo/mirror
 MIRROR_ROOT="${REPO_ROOT}/repo/mirror"
@@ -237,13 +251,13 @@ run_step() {
 
 step_heal_perms() {
     # Fix permissions at the start to ensure we can write to mirror files
-    if [[ ! -x "$HEAL_PERMS_SCRIPT" ]]; then
+    if [[ ! -f "$HEAL_PERMS_SCRIPT" ]]; then
         log_warn "heal-perms.sh not found: $HEAL_PERMS_SCRIPT"
         return 0
     fi
 
     log "Running permission healer (heal-perms.sh)..."
-    if "$HEAL_PERMS_SCRIPT" 2>&1 | tee -a "$LOGFILE"; then
+    if bash "$HEAL_PERMS_SCRIPT" 2>&1 | tee -a "$LOGFILE"; then
         log_ok "Permissions healed"
         return 0
     else
@@ -348,14 +362,14 @@ step_permissions() {
 }
 
 step_compression_fix() {
-    if [[ ! -x "$COMPRESS_FIX_SCRIPT" ]]; then
+    if [[ ! -f "$COMPRESS_FIX_SCRIPT" ]]; then
         log_warn "Compression fix script not found: $COMPRESS_FIX_SCRIPT"
         return 0
     fi
 
     log "Regenerating compressed Packages files (.gz/.xz)..."
 
-    if "$COMPRESS_FIX_SCRIPT" 2>&1 | tee -a "$LOGFILE"; then
+    if bash "$COMPRESS_FIX_SCRIPT" 2>&1 | tee -a "$LOGFILE"; then
         log_ok "Compression fix completed"
         return 0
     else
@@ -365,44 +379,162 @@ step_compression_fix() {
 }
 
 step_generate_packages() {
-    log "Generating Packages files for archive.ailinux.me..."
+    log "Generating Packages and Release metadata for local APT repos..."
 
-    local repo_path_host="${MIRROR_ROOT}/archive.ailinux.me"
-    local repo_path_container="/var/spool/apt-mirror/mirror/archive.ailinux.me"
+    local repo_name repo_path_host repo_path_container cmd
+    local updated=0
+    local local_repos=()
 
-    if [[ ! -d "$repo_path_host/dists/noble" ]]; then
-        log "Distribution 'noble' not found in archive.ailinux.me, skipping package generation."
+    while IFS= read -r repo_name; do
+        [[ -n "$repo_name" ]] || continue
+        local_repos+=("$repo_name")
+    done < <(find "$MIRROR_ROOT" -mindepth 1 -maxdepth 1 -type d -name "*.ailinux.me" -printf '%f\n' | sort)
+
+    if [[ ${#local_repos[@]} -eq 0 ]]; then
+        log_warn "No local *.ailinux.me repositories found in $MIRROR_ROOT"
         return 0
     fi
 
-    log "Running dpkg-scanpackages in container for archive.ailinux.me..."
+    for repo_name in "${local_repos[@]}"; do
+      repo_path_host="${MIRROR_ROOT}/${repo_name}"
+      repo_path_container="/var/spool/apt-mirror/mirror/${repo_name}"
 
-    local cmd="
-      set -e
-      cd ${repo_path_container}
-      
-      # Scan amd64 packages
-      echo 'Scanning for amd64 packages in pool/...'
-      dpkg-scanpackages -a amd64 pool/ /dev/null > dists/noble/main/binary-amd64/Packages
-      gzip -9c dists/noble/main/binary-amd64/Packages > dists/noble/main/binary-amd64/Packages.gz
-      xz -c dists/noble/main/binary-amd64/Packages > dists/noble/main/binary-amd64/Packages.xz
-      
-      # Scan i386 packages
-      echo 'Scanning for i386 packages in pool/...'
-      dpkg-scanpackages -a i386 pool/ /dev/null > dists/noble/main/binary-i386/Packages
-      gzip -9c dists/noble/main/binary-i386/Packages > dists/noble/main/binary-i386/Packages.gz
-      xz -c dists/noble/main/binary-i386/Packages > dists/noble/main/binary-i386/Packages.xz
-      
-      echo 'Packages files generated for noble distribution.'
-    "
-    
-    if dc_run bash -c "$cmd" 2>&1 | tee -a "$LOGFILE"; then
-        log_ok "Successfully generated Packages files for archive.ailinux.me."
-        return 0
-    else
-        log_err "Failed to generate Packages files for archive.ailinux.me."
+      if [[ ! -d "$repo_path_host/pool" ]] || [[ ! -d "$repo_path_host/dists" ]]; then
+        log "Skipping ${repo_name}: missing pool/ or dists/."
+        continue
+      fi
+
+      log "Running dpkg-scanpackages + apt-ftparchive in container for ${repo_name}..."
+      cmd="
+        set -euo pipefail
+        cd ${repo_path_container}
+        shopt -s nullglob
+
+        if ! command -v dpkg-scanpackages >/dev/null 2>&1; then
+          echo 'dpkg-scanpackages not found in container' >&2
+          exit 1
+        fi
+        if ! command -v apt-ftparchive >/dev/null 2>&1; then
+          echo 'apt-ftparchive not found in container' >&2
+          exit 1
+        fi
+
+        write_binary_release() {
+          local out_file=\"\$1\"
+          local suite=\"\$2\"
+          local component=\"\$3\"
+          local arch=\"\$4\"
+          cat > \"\$out_file\" <<EOF
+Archive: \$suite
+Component: \$component
+Origin: AILinux
+Label: AILinux
+Architecture: \$arch
+EOF
+        }
+
+        mapfile -t suites < <(find dists -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort)
+        if [[ \${#suites[@]} -eq 0 ]]; then
+          echo 'No distributions found under dists/' >&2
+          exit 0
+        fi
+
+        for suite in \"\${suites[@]}\"; do
+          suite_dir=\"dists/\$suite\"
+          release_file=\"\$suite_dir/Release\"
+          components=()
+          architectures=()
+
+          if [[ -f \"\$release_file\" ]]; then
+            components_line=\$(awk -F': ' '\$1==\"Components\" { print \$2; exit }' \"\$release_file\")
+            arch_line=\$(awk -F': ' '\$1==\"Architectures\" { print \$2; exit }' \"\$release_file\")
+            [[ -n \"\$components_line\" ]] && read -r -a components <<< \"\$components_line\"
+            [[ -n \"\$arch_line\" ]] && read -r -a architectures <<< \"\$arch_line\"
+          fi
+
+          if [[ \${#components[@]} -eq 0 ]]; then
+            while IFS= read -r component; do
+              [[ -n \"\$component\" ]] && components+=(\"\$component\")
+            done < <(find \"\$suite_dir\" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort)
+          fi
+          if [[ \${#components[@]} -eq 0 ]]; then
+            components=(main)
+          fi
+
+          if [[ \${#architectures[@]} -eq 0 ]]; then
+            while IFS= read -r arch_dir; do
+              [[ -n \"\$arch_dir\" ]] && architectures+=(\"\${arch_dir#binary-}\")
+            done < <(find \"\$suite_dir\" -mindepth 2 -maxdepth 2 -type d -name 'binary-*' -printf '%f\n' | sort -u)
+          fi
+          if [[ \${#architectures[@]} -eq 0 ]]; then
+            architectures=(amd64 i386)
+          fi
+
+          echo \"Generating metadata for suite \$suite (components: \${components[*]}, archs: \${architectures[*]})\"
+
+          for component in \"\${components[@]}\"; do
+            component_dir=\"\$suite_dir/\$component\"
+            mkdir -p \"\$component_dir\"
+
+            pool_dir=\"pool/\$component\"
+            if [[ ! -d \"\$pool_dir\" ]]; then
+              pool_dir=\"pool\"
+            fi
+
+            for arch in \"\${architectures[@]}\"; do
+              case \"\$arch\" in
+                source|all) continue ;;
+              esac
+
+              out_dir=\"\$component_dir/binary-\$arch\"
+              mkdir -p \"\$out_dir\"
+
+              if ! dpkg-scanpackages -a \"\$arch\" \"\$pool_dir\" /dev/null > \"\$out_dir/Packages\"; then
+                : > \"\$out_dir/Packages\"
+              fi
+
+              gzip -9c \"\$out_dir/Packages\" > \"\$out_dir/Packages.gz\"
+              xz -c \"\$out_dir/Packages\" > \"\$out_dir/Packages.xz\"
+              write_binary_release \"\$out_dir/Release\" \"\$suite\" \"\$component\" \"\$arch\"
+            done
+
+            source_dir=\"\$component_dir/source\"
+            mkdir -p \"\$source_dir\"
+            : > \"\$source_dir/Packages\"
+            gzip -9c \"\$source_dir/Packages\" > \"\$source_dir/Packages.gz\"
+          done
+
+          components_joined=\$(printf '%s ' \"\${components[@]}\" | sed 's/ \$//')
+          architectures_joined=\$(printf '%s ' \"\${architectures[@]}\" | sed 's/ \$//')
+          tmpconf=\$(mktemp)
+          cat > \"\$tmpconf\" <<EOF
+APT::FTPArchive::Release {
+  Origin \"AILinux\";
+  Label \"AILinux\";
+  Suite \"\$suite\";
+  Codename \"\$suite\";
+  Components \"\$components_joined\";
+  Architectures \"\$architectures_joined\";
+};
+EOF
+          apt-ftparchive -c \"\$tmpconf\" release \"\$suite_dir\" > \"\$release_file\"
+          rm -f \"\$tmpconf\"
+        done
+      "
+
+      if dc_run bash -c "$cmd" 2>&1 | tee -a "$LOGFILE"; then
+        log_ok "Generated Packages/Release metadata for ${repo_name}"
+        updated=1
+      else
+        log_err "Failed to generate metadata for ${repo_name}"
         return 1
+      fi
+    done
+
+    if [[ $updated -eq 0 ]]; then
+      log_warn "No matching repositories were updated."
     fi
+    return 0
 }
 
 
@@ -419,10 +551,10 @@ step_signing() {
     detect_mirror_repos "$MIRROR_ROOT"
 
     # Try host signing first if GNUPGHOME with key exists
-    if [[ -d "$GNUPG_HOME" ]] && [[ -x "$SIGN_REPOS_SCRIPT" ]]; then
+    if [[ -d "$GNUPG_HOME" ]] && [[ -f "$SIGN_REPOS_SCRIPT" ]]; then
         log "Attempting host-based signing with GNUPGHOME=$GNUPG_HOME"
 
-        if GNUPGHOME="$GNUPG_HOME" "$SIGN_REPOS_SCRIPT" "$MIRROR_ROOT" 2>&1 | tee -a "$LOGFILE"; then
+        if GNUPGHOME="$GNUPG_HOME" bash "$SIGN_REPOS_SCRIPT" "$MIRROR_ROOT" 2>&1 | tee -a "$LOGFILE"; then
             log_ok "Host signing completed"
             return 0
         else
@@ -433,7 +565,7 @@ step_signing() {
     # Fallback: Run signing in container (has access to GPG key)
     log "Running signing in Docker container..."
     dc --profile mirror run --rm "$SERVICE" bash -lc \
-        "export REPO_PATH='/var/spool/apt-mirror'; /var/spool/apt-mirror/var/sign-repos.sh /var/spool/apt-mirror/mirror" 2>&1 | tee -a "$LOGFILE"
+        "export REPO_PATH='/var/spool/apt-mirror'; bash /var/spool/apt-mirror/var/sign-repos.sh /var/spool/apt-mirror/mirror" 2>&1 | tee -a "$LOGFILE"
 
     local rc=$?
     if [[ $rc -eq 0 ]]; then
@@ -445,7 +577,7 @@ step_signing() {
 }
 
 step_export_key() {
-    if [[ ! -x "$PUBLIC_KEY_SCRIPT" ]]; then
+    if [[ ! -f "$PUBLIC_KEY_SCRIPT" ]]; then
         log_warn "Public key export script not found: $PUBLIC_KEY_SCRIPT"
         return 0
     fi
@@ -454,7 +586,7 @@ step_export_key() {
     log "Using GNUPGHOME: $GNUPG_HOME"
 
     # Export with correct GNUPGHOME
-    if GNUPGHOME="$GNUPG_HOME" "$PUBLIC_KEY_SCRIPT" 2>&1 | tee -a "$LOGFILE"; then
+    if GNUPGHOME="$GNUPG_HOME" bash "$PUBLIC_KEY_SCRIPT" 2>&1 | tee -a "$LOGFILE"; then
         log_ok "Public key exported to $MIRROR_ROOT/ailinux-archive-key.gpg"
         return 0
     else
@@ -464,11 +596,20 @@ step_export_key() {
 }
 
 step_generate_index() {
+    if [[ -f "$INSTALLER_SOURCE" ]]; then
+        mkdir -p "$MIRROR_ROOT"
+        cp "$INSTALLER_SOURCE" "${MIRROR_ROOT}/add-ailinux-repo.sh"
+        chmod 755 "${MIRROR_ROOT}/add-ailinux-repo.sh"
+        log_ok "Published installer script to ${MIRROR_ROOT}/add-ailinux-repo.sh"
+    else
+        log_warn "Installer source not found: $INSTALLER_SOURCE"
+    fi
+
     log "Generating HTML index..."
 
     # Run generate-index.sh on host since it accesses the mirror directory
-    if [[ -x "${REPO_ROOT}/generate-index.sh" ]]; then
-        if "${REPO_ROOT}/generate-index.sh" 2>&1 | tee -a "$LOGFILE"; then
+    if [[ -f "${REPO_ROOT}/generate-index.sh" ]]; then
+        if bash "${REPO_ROOT}/generate-index.sh" 2>&1 | tee -a "$LOGFILE"; then
             log_ok "HTML index generated"
             return 0
         else

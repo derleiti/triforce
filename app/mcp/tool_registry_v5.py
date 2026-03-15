@@ -1229,6 +1229,9 @@ V5_ALIASES: Dict[str, str] = {
     "tristar_settings": "config",
     "tristar_settings_get": "config",
     "tristar_settings_set": "config_set",
+    "admin.crawler.control": "admin_crawler_control",
+    "admin.crawler.config.get": "admin_crawler_config_get",
+    "admin.crawler.config.set": "admin_crawler_config_set",
     # debug/compat
     "check_compatibility": "debug",
     "debug_mcp_request": "debug",
@@ -1418,5 +1421,78 @@ V5_TOOLS += [
         "name": "notify_status",
         "description": "Gibt Status und Statistiken des Notification Managers zurück.",
         "inputSchema": {"type": "object", "properties": {}},
+    },
+]
+
+
+# =============================================================================
+# GROUP CHAT — Multi-AI Collaboration Tools (2026-03-15)
+# =============================================================================
+V5_TOOLS += [
+    {
+        "name": "group_chat_create",
+        "description": "Erstelle eine neue Multi-AI Group Chat Session. Startet eine Gruppendiskussion zwischen Gemini (Lead), Claude-Web, ChatGPT-Web und Coding-Agents.",
+        "inputSchema": {"type": "object", "required": ["topic"], "properties": {
+            "topic": {"type": "string", "description": "Thema/Aufgabe für die Diskussion"},
+            "participants": {"type": "array", "items": {"type": "string"}, "description": "Optional: Teilnehmer-IDs"},
+        }},
+    },
+    {
+        "name": "group_chat_ask",
+        "description": "Stelle eine Frage an die AI-Gruppe. Gemini Lead analysiert und erstellt Sub-Tasks für Claude-Web und ChatGPT-Web.",
+        "inputSchema": {"type": "object", "required": ["session_id"], "properties": {
+            "session_id": {"type": "string", "description": "Group Chat Session ID"},
+            "question": {"type": "string", "description": "Optional: Zusätzliche Frage"},
+        }},
+    },
+    {
+        "name": "group_chat_message",
+        "description": "Poste eine Nachricht in den Group Chat. Wird von Claude-Web und ChatGPT-Web genutzt um auf Sub-Tasks zu antworten.",
+        "inputSchema": {"type": "object", "required": ["session_id", "sender", "content"], "properties": {
+            "session_id": {"type": "string", "description": "Group Chat Session ID"},
+            "sender": {"type": "string", "description": "Deine ID (z.B. 'claude-web', 'chatgpt-web')"},
+            "content": {"type": "string", "description": "Deine Antwort/Analyse"},
+            "type": {"type": "string", "enum": ["response", "code_result", "review"], "description": "Nachrichtentyp"},
+        }},
+    },
+    {
+        "name": "group_chat_read",
+        "description": "Lese Nachrichten aus dem Group Chat. Zeigt Sub-Tasks, Antworten und Status.",
+        "inputSchema": {"type": "object", "required": ["session_id"], "properties": {
+            "session_id": {"type": "string", "description": "Group Chat Session ID"},
+            "since": {"type": "string", "description": "Optional: Nur Nachrichten seit ISO-Timestamp"},
+            "for_participant": {"type": "string", "description": "Optional: Nur Nachrichten für diesen Teilnehmer"},
+            "limit": {"type": "integer", "description": "Max Nachrichten (default: 50)"},
+        }},
+    },
+    {
+        "name": "group_chat_status",
+        "description": "Zeige den Status einer Group Chat Session.",
+        "inputSchema": {"type": "object", "required": ["session_id"], "properties": {
+            "session_id": {"type": "string", "description": "Group Chat Session ID"},
+        }},
+    },
+    {
+        "name": "group_chat_list",
+        "description": "Liste aller aktiven Group Chat Sessions.",
+        "inputSchema": {"type": "object", "properties": {
+            "active_only": {"type": "boolean", "description": "Nur aktive Sessions (default: true)"},
+        }},
+    },
+    {
+        "name": "group_chat_consolidate",
+        "description": "Gemini Lead konsolidiert alle Antworten der Web-AIs zu einer Zusammenfassung und einem Coding-Prompt.",
+        "inputSchema": {"type": "object", "required": ["session_id"], "properties": {
+            "session_id": {"type": "string", "description": "Group Chat Session ID"},
+        }},
+    },
+    {
+        "name": "group_chat_assign",
+        "description": "Weise den konsolidierten Coding-Task einem Agent zu. CLI-Agents führen sofort aus, Web-Agents lesen via group_chat_read.",
+        "inputSchema": {"type": "object", "required": ["session_id"], "properties": {
+            "session_id": {"type": "string", "description": "Group Chat Session ID"},
+            "coder": {"type": "string", "description": "Coding-Agent ID (default: auto). Optionen: claude-mcp, codex-mcp, gemini-mcp, claude-web, chatgpt-web"},
+            "context": {"type": "string", "description": "Optional: Zusätzlicher Kontext"},
+        }},
     },
 ]

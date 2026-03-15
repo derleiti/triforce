@@ -56,6 +56,7 @@ from ..utils.throttle import request_slot
 from ..mcp.api_docs import get_api_docs, API_DOCUMENTATION
 from ..mcp.specialists import specialist_router, SPECIALISTS
 from ..mcp.context import context_manager, prompt_library
+from ..mcp.runtime_registry import get_runtime_registry
 from ..utils.mcp_auth import (
     AUTH_ENABLED,
     MCP_AUTH_USER,
@@ -2140,6 +2141,12 @@ TOOL_HANDLERS = {
 # MCP Protocol Endpoints
 # ============================================================================
 
+def _is_local_mcp_request(request: Request) -> bool:
+    forwarded_port = request.headers.get("X-Forwarded-Port", "")
+    host = (request.url.hostname or "").lower()
+    return not forwarded_port and host in {"localhost", "127.0.0.1", "::1", "host.docker.internal"}
+
+
 @router.get("/.well-known/mcp.json")
 @router.get("/v1/mcp/.well-known/mcp.json")
 async def mcp_discovery(request: Request):
@@ -2166,6 +2173,15 @@ async def mcp_discovery(request: Request):
     # Standard MCP endpoint is /v1/mcp
     mcp_url = f"{base_url}/v1/mcp"
 
+    auth_config = {
+        "type": "none",
+        "description": "Local loopback MCP access bypasses auth"
+    } if _is_local_mcp_request(request) else {
+        "type": "http",
+        "scheme": "basic",
+        "description": "Use Basic Auth with username:password from .env (MCP_OAUTH_USER:MCP_OAUTH_PASS)"
+    }
+
     return {
         "mcp_version": "2024-11-05",
         "server": MCP_SERVER_INFO,
@@ -2175,12 +2191,7 @@ async def mcp_discovery(request: Request):
             "sse": f"{mcp_url}/sse",
             "rpc": mcp_url
         },
-        # Simple HTTP Auth - NO OAuth redirect, NO login form!
-        "authentication": {
-            "type": "http",
-            "scheme": "basic",
-            "description": "Use Basic Auth with username:password from .env (MCP_OAUTH_USER:MCP_OAUTH_PASS)"
-        }
+        "authentication": auth_config
     }
 
 
@@ -2333,7 +2344,10 @@ async def mcp_rpc_endpoint(request: Request):
         )
 
     elif method == "tools/list":
-        tools_result = get_tools() + _V4_ALIAS_TOOLS
+        runtime_registry = get_runtime_registry()
+        tools_result = runtime_registry.list_tools(remote_only=True)
+        if not tools_result:
+            tools_result = get_tools() + _V4_ALIAS_TOOLS
 
         # Filter tools by default to reduce token count (85 tools = 28K tokens!)
         # Use X-TriForce-All: true header to get all tools
@@ -2388,7 +2402,8 @@ async def mcp_rpc_endpoint(request: Request):
         tool_name = _norm_tool(params.get("name", ""))
         arguments = params.get("arguments", {})
 
-        handler = TOOL_HANDLERS.get(tool_name)
+        runtime_registry = get_runtime_registry()
+        handler = runtime_registry.get_handler(tool_name) or TOOL_HANDLERS.get(tool_name)
         if not handler:
             return JSONResponse(
                 content={

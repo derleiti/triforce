@@ -1,8 +1,10 @@
 # OpenAI Codex CLI Configuration
 # MCP Server Integration für TriForce
+# Port 9000: Internal MCP backend (no auth needed for local access)
+# Port 9100: Auth trigger marker (only via Apache X-Forwarded-Port header)
 
 [defaults]
-model = "gpt-5-codex"
+model = "gpt-4o"
 approval_mode = "full-auto"
 
 [sandbox]
@@ -11,4 +13,4 @@ enabled = false
 [[mcp.servers]]
 name = "triforce"
 transport = "http"
-url = "http://localhost:9100/mcp"
+url = "http://localhost:9000/mcp"

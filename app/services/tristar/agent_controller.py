@@ -25,7 +25,165 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 import aiohttp
 
+from app.config import get_settings
+
 logger = logging.getLogger("ailinux.tristar.agent_controller")
+
+
+def _inject_chatgpt_env(env: Dict[str, str]) -> Dict[str, str]:
+    """Expose CHATGPT_* credentials to agent subprocesses."""
+    settings = get_settings()
+    chatgpt_env = {
+        "CHATGPT_URL": os.getenv("CHATGPT_URL") or settings.chatgpt_url,
+        "CHATGPT_USER": os.getenv("CHATGPT_USER") or settings.chatgpt_user,
+        "CHATGPT_PASS": os.getenv("CHATGPT_PASS") or settings.chatgpt_pass,
+    }
+    for key, value in chatgpt_env.items():
+        if value:
+            env[key] = value
+    return env
+
+
+def _inject_google_env(env: Dict[str, str]) -> Dict[str, str]:
+    """Expose Google/Gemini credentials to agent subprocesses."""
+    settings = get_settings()
+    google_env = {
+        "GOOGLE_URL": os.getenv("GOOGLE_URL") or settings.google_url,
+        "GOOGLE_USER": os.getenv("GOOGLE_USER") or settings.google_user,
+        "GOOGLE_PASS": os.getenv("GOOGLE_PASS") or settings.google_pass,
+        "GEMINI_AGENT_ID": os.getenv("GEMINI_AGENT_ID") or settings.gemini_agent_id,
+        "GOOGLE_AI_STUDIO_KEY": os.getenv("GOOGLE_AI_STUDIO_KEY") or settings.gemini_api_key,
+        "GEMINI_API_KEY": os.getenv("GEMINI_API_KEY") or settings.gemini_api_key,
+    }
+    for key, value in google_env.items():
+        if value:
+            env[key] = value
+    return env
+
+
+def _inject_claude_env(env: Dict[str, str]) -> Dict[str, str]:
+    """Expose Claude account credentials to agent subprocesses."""
+    settings = get_settings()
+    claude_env = {
+        "CLAUDE_URL": os.getenv("CLAUDE_URL") or settings.claude_url or settings.nova_claude_url,
+        "CLAUDE_USER": os.getenv("CLAUDE_USER") or settings.claude_user or settings.nova_claude_user,
+        "CLAUDE_PASS": os.getenv("CLAUDE_PASS") or settings.claude_pass or settings.nova_claude_pass,
+        "CLAUDE_AGENT_ID": os.getenv("CLAUDE_AGENT_ID") or settings.claude_agent_id or settings.nova_claude_agent_id,
+        "ANTHROPIC_API_KEY": os.getenv("ANTHROPIC_API_KEY") or settings.anthropic_api_key,
+    }
+    for key, value in claude_env.items():
+        if value:
+            env[key] = value
+    return env
+
+
+def _inject_nova_env(env: Dict[str, str]) -> Dict[str, str]:
+    """Expose Nova-specific provider credentials to agent subprocesses."""
+    settings = get_settings()
+    nova_env = {
+        "NOVA_CHATGPT_URL": os.getenv("NOVA_CHATGPT_URL") or settings.nova_chatgpt_url,
+        "NOVA_CHATGPT_USER": os.getenv("NOVA_CHATGPT_USER") or settings.nova_chatgpt_user,
+        "NOVA_CHATGPT_PASS": os.getenv("NOVA_CHATGPT_PASS") or settings.nova_chatgpt_pass,
+        "NOVA_CHATGPT_AGENT_ID": os.getenv("NOVA_CHATGPT_AGENT_ID") or settings.nova_chatgpt_agent_id,
+        "NOVA_GOOGLE_URL": os.getenv("NOVA_GOOGLE_URL") or settings.nova_google_url,
+        "NOVA_GOOGLE_USER": os.getenv("NOVA_GOOGLE_USER") or settings.nova_google_user,
+        "NOVA_GOOGLE_PASS": os.getenv("NOVA_GOOGLE_PASS") or settings.nova_google_pass,
+        "NOVA_GEMINI_AGENT_ID": os.getenv("NOVA_GEMINI_AGENT_ID") or settings.nova_gemini_agent_id,
+        "NOVA_CLAUDE_URL": os.getenv("NOVA_CLAUDE_URL") or settings.nova_claude_url,
+        "NOVA_CLAUDE_USER": os.getenv("NOVA_CLAUDE_USER") or settings.nova_claude_user,
+        "NOVA_CLAUDE_PASS": os.getenv("NOVA_CLAUDE_PASS") or settings.nova_claude_pass,
+        "NOVA_CLAUDE_AGENT_ID": os.getenv("NOVA_CLAUDE_AGENT_ID") or settings.nova_claude_agent_id,
+        "NOVA_MISTRAL_URL": os.getenv("NOVA_MISTRAL_URL") or settings.nova_mistral_url,
+        "NOVA_MISTRAL_USER": os.getenv("NOVA_MISTRAL_USER") or settings.nova_mistral_user,
+        "NOVA_MISTRAL_PASS": os.getenv("NOVA_MISTRAL_PASS") or settings.nova_mistral_pass,
+        "NOVA_MISTRAL_AGENT_ID": os.getenv("NOVA_MISTRAL_AGENT_ID") or settings.nova_mistral_agent_id,
+    }
+    for key, value in nova_env.items():
+        if value:
+            env[key] = value
+    return env
+
+def _clean_agent_response(agent_id: str, response: str) -> str:
+    """
+    Entfernt bekanntes CLI-/Startup-Rauschen aus Agent-Antworten,
+    ohne den Raw-Output im Buffer zu verlieren.
+    """
+    if not response:
+        return response
+
+    import re
+
+    # ANSI entfernen
+    response = re.sub(r"\x1b\[[0-9;]*[A-Za-z]", "", response)
+
+    noise_prefixes = [
+        "YOLO mode is enabled.",
+        "Loaded cached credentials.",
+        "Server 'ailinux-local' supports",
+        "Server 'ailinux-internal' supports",
+        "Server 'ailinux-external' supports",
+        'Prompt with name "',
+        "Attempt 1 failed with status 429.",
+        "OpenAI Codex v",
+        "--------",
+        "workdir:",
+        "model:",
+        "provider:",
+        "approval:",
+        "sandbox:",
+        "reasoning effort:",
+        "reasoning summaries:",
+        "session id:",
+        "mcp: ailinux-local starting",
+        "mcp: ailinux-internal starting",
+        "mcp: ailinux-local ready",
+        "mcp: ailinux-internal ready",
+        "mcp startup: ready:",
+        "codex",
+        "user",
+        "tokens used",
+        "[fallback-from:",
+        "> build",
+        "Launching OpenClaw with",
+        "Starting your assistant",
+        "This will modify your OpenClaw configuration:",
+        "Backups will be saved to /tmp/ollama-backups/",
+        "Added 2 models to OpenClaw",        "Launching Claude Code with",
+        "• Suche nach",
+        "✓ Suche nach",
+
+    ]
+
+    original_lines = response.splitlines()
+    cleaned_lines = []
+
+    for i, line in enumerate(original_lines):
+        stripped = line.strip()
+        if not stripped:
+            continue
+
+        if any(stripped.startswith(prefix) for prefix in noise_prefixes):
+            continue
+
+        if re.fullmatch(r"[\d.,]+", stripped):
+            continue
+
+        if i == 0 and stripped.endswith("deine Rolle im MCP-System."):
+            continue
+
+        cleaned_lines.append(stripped)
+
+    deduped = []
+    seen = set()
+    for line in cleaned_lines:
+        if line in seen:
+            continue
+        seen.add(line)
+        deduped.append(line)
+
+    cleaned = "\n".join(deduped).strip()
+    return cleaned if cleaned else response.strip()
+
 
 # SECURITY: Whitelist of allowed command executables
 # Only these binaries can be executed as agent commands
@@ -36,6 +194,9 @@ ALLOWED_COMMAND_EXECUTABLES = frozenset([
     "/home/zombie/triforce/triforce/bin/codex-triforce",
     "/home/zombie/triforce/triforce/bin/gemini-triforce",
     "/home/zombie/triforce/triforce/bin/opencode-triforce",
+    "/home/zombie/triforce/triforce/bin/ollama-claude-triforce",
+    "/home/zombie/triforce/triforce/bin/ollama-codex-triforce",
+    "/home/zombie/triforce/triforce/bin/ollama-openclaw-triforce",
     # Legacy paths (backwards compatibility)
     "/home/zombie/triforce/bin/claude-triforce",
     "/home/zombie/triforce/bin/codex-triforce",
@@ -359,33 +520,47 @@ class AgentController:
         Holt System-Prompt für CLI-Agenten.
 
         Reihenfolge:
-        1. triforce/prompts/cli-agent-system.txt (universeller Prompt)
-        2. triforce/prompts/{agent_type}.txt (spezifischer Prompt)
+        1. project prompts unter /home/zombie/triforce/triforce/prompts
+        2. TriStar prompts unter /var/tristar/prompts
         3. TriForce API Fallback
+        4. TriStar model_init Fallback
         """
-        prompts_dir = Path("/home/zombie/triforce/triforce/prompts")
 
-        # 1. Universeller CLI-Agent System-Prompt
-        universal_prompt = prompts_dir / "cli-agent-system.txt"
-        if universal_prompt.exists():
+        def _read_prompt_file(path: Path) -> Optional[str]:
+            if not path.exists():
+                return None
             try:
-                prompt = universal_prompt.read_text(encoding="utf-8").strip()
+                prompt = path.read_text(encoding="utf-8").strip()
                 if prompt:
-                    logger.info(f"Loaded system prompt from {universal_prompt}")
+                    logger.info(f"Loaded system prompt from {path}")
                     return prompt
             except Exception as e:
-                logger.warning(f"Failed to read {universal_prompt}: {e}")
+                logger.warning(f"Failed to read {path}: {e}")
+            return None
 
-        # 2. Agent-spezifischer Prompt
-        specific_prompt = prompts_dir / f"{agent_type.value}.txt"
-        if specific_prompt.exists():
-            try:
-                prompt = specific_prompt.read_text(encoding="utf-8").strip()
+        prompt_dirs = [
+            Path("/home/zombie/triforce/triforce/prompts"),
+            Path("/var/tristar/prompts"),
+        ]
+
+        if agent_type == AgentType.GEMINI:
+            candidate_names = [
+                "reflect_resume_debug_prompt.txt",
+                "reflect_prompt.txt",
+                f"{agent_type.value}.txt",
+                "cli-agent-system.txt",
+            ]
+        else:
+            candidate_names = [
+                "cli-agent-system.txt",
+                f"{agent_type.value}.txt",
+            ]
+
+        for prompts_dir in prompt_dirs:
+            for candidate in candidate_names:
+                prompt = _read_prompt_file(prompts_dir / candidate)
                 if prompt:
-                    logger.info(f"Loaded system prompt from {specific_prompt}")
                     return prompt
-            except Exception as e:
-                logger.warning(f"Failed to read {specific_prompt}: {e}")
 
         # 3. Fallback: TriForce API
         try:
@@ -456,6 +631,10 @@ class AgentController:
                 # Wir nutzen die env aus der Config, nicht überschreiben!
                 env = os.environ.copy()
                 env.update(instance.config.env)
+                env = _inject_chatgpt_env(env)
+                env = _inject_google_env(env)
+                env = _inject_claude_env(env)
+                env = _inject_nova_env(env)
                 # USER für Prozess-Kontext setzen
                 env["USER"] = "zombie"
 
@@ -678,6 +857,10 @@ class AgentController:
             # Nutze die env aus der Config - die Wrapper-Scripts setzen HOME korrekt
             env = os.environ.copy()
             env.update(instance.config.env)
+            env = _inject_chatgpt_env(env)
+            env = _inject_google_env(env)
+            env = _inject_claude_env(env)
+            env = _inject_nova_env(env)
             # Stelle sicher dass PATH die npm-global binaries enthält
             env["PATH"] = "/root/.npm-global/bin:/usr/local/bin:/usr/bin:/bin"
 
@@ -690,7 +873,15 @@ class AgentController:
             agent_home = instance.config.env.get("HOME", "/root")
 
             # Nutze TriForce Wrapper - diese setzen HOME/ENV korrekt
-            if agent_type == AgentType.CLAUDE:
+            if agent_id == "ollama-claude-mcp":
+                cmd = [
+                    instance.config.command[0],
+                    "-p",
+                    message,
+                    "--permission-mode", "acceptEdits",
+                    "--allowedTools", "Read,Bash",
+                ]
+            elif agent_type == AgentType.CLAUDE:
                 cmd = [
                     "bash", "-c",
                     f"echo {safe_msg} | {TRIFORCE_BIN}/claude-triforce -p --output-format text 2>&1"
@@ -701,9 +892,23 @@ class AgentController:
                     f"echo {safe_msg} | {TRIFORCE_BIN}/codex-triforce exec - --full-auto 2>&1"
                 ]
             elif agent_type == AgentType.GEMINI:
+                prompt_dir = Path("/var/tristar/agents/runtime-prompts")
+                prompt_dir.mkdir(parents=True, exist_ok=True)
+                call_prompt_file = prompt_dir / f"{agent_id}.call_prompt.txt"
+
+                full_prompt = message
+                if instance.config.system_prompt:
+                    full_prompt = (
+                        f"{instance.config.system_prompt}\n\n"
+                        f"AKTUELLE AUFGABE:\n{message}\n\n"
+                        f"Antworte direkt auf die Aufgabe."
+                    )
+
+                call_prompt_file.write_text(full_prompt, encoding="utf-8")
+
                 cmd = [
                     "bash", "-c",
-                    f"echo {safe_msg} | {TRIFORCE_BIN}/gemini-triforce --yolo 2>&1"
+                    f'{TRIFORCE_BIN}/gemini-triforce --yolo -p "$(cat {shlex.quote(str(call_prompt_file))})" 2>&1'
                 ]
             elif agent_type == AgentType.OPENCODE:
                 # WICHTIG: Sauberes Workspace ohne CLAUDE.md um unerwartete Task-Ausführung zu vermeiden
@@ -733,6 +938,53 @@ class AgentController:
                 )
                 response = stdout.decode("utf-8", errors="replace").strip()
 
+                # Bekannte Agent-Fehler erkennen und auf robusten Fallback routen
+                fallback_agent = None
+                fallback_reason = None
+                lower_response = response.lower()
+
+                if agent_id == "claude-mcp" and "credit balance is too low" in lower_response:
+                    fallback_agent = "codex-mcp"
+                    fallback_reason = "claude_credit_balance_too_low"
+                elif agent_id == "ollama-claude-mcp" and "credit balance is too low" in lower_response:
+                    fallback_agent = "ollama-codex-mcp"
+                    fallback_reason = "ollama_claude_credit_balance_too_low"
+                elif agent_id == "opencode-mcp" and "sdk.languagemodel is not a function" in lower_response:
+                    fallback_agent = "codex-mcp"
+                    fallback_reason = "opencode_sdk_language_model_missing"
+                elif agent_id == "gemini-mcp" and (
+                    "resource_exhausted" in lower_response
+                    or "model_capacity_exhausted" in lower_response
+                    or "no capacity available" in lower_response
+                    or "status 429" in lower_response
+                ):
+                    fallback_agent = "codex-mcp"
+                    fallback_reason = "gemini_capacity_exhausted"
+
+                # Einmaliger Fallback, um Schleifen zu vermeiden
+                if fallback_agent and "[fallback-from:" not in message:
+                    fallback_message = (
+                        f"[fallback-from:{agent_id}] "
+                        f"Der ursprüngliche Agent ist aktuell nicht nutzbar. "
+                        f"Bearbeite stattdessen diese Aufgabe:\n\n{message}"
+                    )
+                    logger.warning(
+                        f"Agent fallback triggered: {agent_id} -> {fallback_agent}"
+                    )
+                    fallback_result = await self.call_agent(
+                        fallback_agent,
+                        fallback_message,
+                        timeout=timeout,
+                    )
+                    if isinstance(fallback_result, dict):
+                        fallback_result["requested_agent"] = agent_id
+                        fallback_result["executed_agent"] = fallback_result.get("agent_id", fallback_agent)
+                        fallback_result["fallback_used"] = True
+                        fallback_result["fallback_reason"] = fallback_reason
+                    return fallback_result
+
+                cleaned_response = _clean_agent_response(agent_id, response)
+
                 # Speichere in Output-Buffer
                 instance.output_buffer.append(f">>> {message[:50]}...")
                 instance.output_buffer.append(response[:500])
@@ -741,8 +993,12 @@ class AgentController:
 
                 return {
                     "agent_id": agent_id,
+                    "requested_agent": agent_id,
+                    "executed_agent": agent_id,
+                    "fallback_used": False,
+                    "fallback_reason": None,
                     "status": "success",
-                    "response": response,
+                    "response": cleaned_response,
                     "exit_code": process.returncode,
                 }
 

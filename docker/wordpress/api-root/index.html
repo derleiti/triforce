@@ -2,385 +2,146 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <title>AILinux API</title>
+  <title>AILinux TriForce — Multi-LLM Backend</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="AILinux TriForce API – Multi-LLM Orchestration Server" />
+  <meta name="description" content="AILinux TriForce — Self-hosted Multi-LLM Orchestration Backend mit 631+ Modellen, Swarm Intelligence und 260 MCP Tools. Gebaut von einem Entwickler." />
   <style>
     :root { color-scheme: dark; }
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      margin: 0;
-      padding: 2rem;
       font-family: system-ui, -apple-system, sans-serif;
       background: #0d1117;
       color: #e6edf3;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      line-height: 1.6;
     }
-    .container {
-      max-width: 500px;
+    .hero {
       text-align: center;
-    }
-    h1 {
-      color: #58a6ff;
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
-    }
-    p { color: #8b949e; margin: 0.5rem 0; }
-    .status {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin: 1.5rem 0;
-      padding: 0.75rem 1.5rem;
-      background: #161b22;
-      border-radius: 8px;
-      border: 1px solid #21262d;
-    }
-    .dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: #8b949e;
-    }
-    .dot.online { background: #3fb950; }
-    .dot.offline { background: #f85149; }
-    .version { color: #8b949e; font-size: 0.9em; }
-    .links {
-      margin-top: 2rem;
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-    .links a, .links button {
-      color: #58a6ff;
-      text-decoration: none;
-      padding: 0.6rem 1.2rem;
-      border: 1px solid #30363d;
-      border-radius: 6px;
-      background: #21262d;
-      transition: background 0.15s;
-      cursor: pointer;
-    }
-    .links a:hover, .links button:hover { background: #30363d; }
-    .links button { font: inherit; }
-    .footer {
-      margin-top: 3rem;
-      font-size: 0.85em;
-      color: #484f58;
-    }
-    .overlay {
-      position: fixed;
-      inset: 0;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      background: rgba(13, 17, 23, 0.9);
-      padding: 1.5rem;
-      z-index: 100;
-    }
-    .overlay.open { display: flex; }
-    .panel {
-      width: min(960px, 100%);
-      max-height: 90vh;
-      background: #0b0f14;
-      border: 1px solid #21262d;
-      border-radius: 10px;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
-      display: flex;
-      flex-direction: column;
-    }
-    .panel-header {
-      padding: 1rem 1.25rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
+      padding: 4rem 1.5rem 2.5rem;
+      background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #0d1117 100%);
       border-bottom: 1px solid #21262d;
     }
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.35rem 0.7rem;
-      background: #161b22;
-      border: 1px solid #21262d;
-      border-radius: 999px;
-      font-weight: 600;
-      color: #c9d1d9;
-      font-size: 0.95em;
+    h1 { color: #58a6ff; font-size: 2.2rem; margin-bottom: 0.3rem; }
+    .subtitle { color: #8b949e; font-size: 1.1rem; margin-bottom: 0.5rem; }
+    .tagline { color: #c9d1d9; font-size: 0.95rem; max-width: 600px; margin: 1rem auto; }
+    .status {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      margin: 1.5rem 0; padding: 0.6rem 1.2rem;
+      background: rgba(35,134,54,.15); border: 1px solid rgba(35,134,54,.4);
+      border-radius: 2rem; color: #3fb950; font-weight: 600;
     }
-    .panel-sub { color: #8b949e; font-size: 0.9em; margin-top: 0.2rem; }
-    .panel-actions {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      flex-wrap: wrap;
+    .status::before { content: ''; width: 10px; height: 10px; background: #3fb950; border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
+
+    .stats {
+      display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;
+      margin: 1.5rem 0;
     }
-    .panel-actions a {
-      color: #58a6ff;
-      text-decoration: none;
-      font-size: 0.9em;
+    .stat { text-align: center; }
+    .stat-num { font-size: 1.8rem; font-weight: 700; color: #58a6ff; }
+    .stat-label { font-size: 0.8rem; color: #8b949e; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    .links { display: flex; gap: 0.8rem; flex-wrap: wrap; margin: 1.5rem 0; justify-content: center; }
+    .links a {
+      padding: 0.6rem 1.2rem; border-radius: 6px; text-decoration: none;
+      background: #21262d; color: #58a6ff; border: 1px solid #30363d;
+      font-weight: 500; transition: all .2s;
     }
-    .panel-actions button {
-      padding: 0.45rem 0.9rem;
-      border-radius: 6px;
-      background: #21262d;
-      color: #c9d1d9;
-      border: 1px solid #30363d;
-      cursor: pointer;
+    .links a:hover { background: #30363d; border-color: #58a6ff; }
+
+    .container { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
+    h2 { color: #58a6ff; margin: 2rem 0 1rem; font-size: 1.4rem; border-bottom: 1px solid #21262d; padding-bottom: 0.3rem; }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; }
+    .card {
+      background: #161b22; border: 1px solid #21262d; border-radius: 8px;
+      padding: 1rem 1.2rem; transition: border-color .2s;
     }
-    .panel-actions button:hover { background: #30363d; }
-    .panel-body {
-      padding: 1rem 1.25rem;
-      overflow: auto;
-      flex: 1;
+    .card:hover { border-color: #58a6ff; }
+    .card-title { font-weight: 600; color: #e6edf3; margin-bottom: 0.3rem; }
+    .card-desc { color: #8b949e; font-size: 0.85rem; }
+    .badge {
+      display: inline-block; padding: 0.15rem 0.5rem; border-radius: 1rem;
+      font-size: 0.7rem; font-weight: 600; margin-left: 0.3rem;
     }
-    .muted { color: #8b949e; }
-    .error { color: #f85149; }
-    .path {
-      border: 1px solid #21262d;
-      background: #0f131a;
-      border-radius: 8px;
-      padding: 0.75rem 0.9rem;
-      margin-bottom: 0.75rem;
-    }
-    .path summary {
-      list-style: none;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-weight: 600;
-      color: #c9d1d9;
-    }
-    .path summary::-webkit-details-marker { display: none; }
-    .method {
-      display: inline-block;
-      padding: 0.2rem 0.5rem;
-      border-radius: 6px;
-      font-weight: 700;
-      font-size: 0.8em;
-      color: #0d1117;
-      text-transform: uppercase;
-    }
-    .method.get { background: #3fb950; }
-    .method.post { background: #1f6feb; color: #e6edf3; }
-    .method.put { background: #c69026; }
-    .method.delete { background: #f85149; }
-    .method.patch { background: #a371f7; color: #e6edf3; }
-    .op {
-      padding: 0.35rem 0;
-      display: grid;
-      grid-template-columns: auto 1fr;
-      gap: 0.45rem 0.8rem;
-      align-items: baseline;
-      border-top: 1px solid #161b22;
-    }
-    .op:first-of-type { border-top: none; }
-    .op summary {
-      grid-column: 1 / -1;
-      font-weight: 600;
-      color: #c9d1d9;
-    }
-    code { background: #161b22; padding: 0.15rem 0.35rem; border-radius: 4px; }
-    pre {
-      background: #0f131a;
-      border: 1px solid #21262d;
-      border-radius: 8px;
-      padding: 0.75rem;
-      color: #c9d1d9;
-      overflow: auto;
-    }
+    .badge-new { background: rgba(35,134,54,.2); color: #3fb950; border: 1px solid rgba(35,134,54,.4); }
+    .badge-swarm { background: rgba(130,80,223,.2); color: #bc8cff; border: 1px solid rgba(130,80,223,.4); }
+
+    .provider-list { color: #8b949e; font-size: 0.9rem; margin: 0.5rem 0; }
+    .muted { color: #8b949e; font-size: 0.85rem; }
+    footer { text-align: center; padding: 2rem; color: #484f58; font-size: 0.8rem; border-top: 1px solid #21262d; }
+    footer a { color: #58a6ff; text-decoration: none; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🚀 AILinux API</h1>
-    <p>TriForce MCP Server</p>
-    
-    <div class="status">
-      <span class="dot" id="dot"></span>
-      <span id="status-text">Prüfe Status...</span>
-    </div>
-    
-    <div class="links">
-      <a href="/docs" data-doc="swagger">📖 API Docs</a>
-      <a href="/redoc" data-doc="redoc">📚 ReDoc</a>
-      <a href="/health">❤️ Health</a>
-    </div>
-    
-    <p class="footer">
-      <a href="https://ailinux.me" style="border:none;background:none;padding:0;">ailinux.me</a>
-    </p>
+
+<div class="hero">
+  <h1>🔱 AILinux TriForce</h1>
+  <p class="subtitle">Self-Hosted Multi-LLM Orchestration Backend</p>
+  <div class="status">Backend Online — v2.85</div>
+
+  <p class="tagline">Ein selbst-gehostetes KI-Backend das 631+ Modelle von 10 Providern orchestriert — mit Swarm Intelligence, Multi-AI Group Chat, Browser-Automatisierung und 260 MCP Tools. Gebaut als Solo-Projekt.</p>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-num">631+</div><div class="stat-label">AI Modelle</div></div>
+    <div class="stat"><div class="stat-num">10</div><div class="stat-label">Provider</div></div>
+    <div class="stat"><div class="stat-num">260</div><div class="stat-label">MCP Tools</div></div>
+    <div class="stat"><div class="stat-num">3</div><div class="stat-label">Federation Nodes</div></div>
   </div>
 
-  <div id="doc-overlay" class="overlay" aria-hidden="true">
-    <div class="panel" role="dialog" aria-modal="true" aria-label="API Dokumentation">
-      <div class="panel-header">
-        <div>
-          <div class="pill" id="doc-kind">API Docs</div>
-          <div class="panel-sub" id="doc-subtitle">Lokale Vorschau aus /openapi.json</div>
-        </div>
-        <div class="panel-actions">
-          <a id="doc-original" href="/docs" target="_blank" rel="noreferrer">Original öffnen</a>
-          <button type="button" id="doc-close">Schließen</button>
-        </div>
-      </div>
-      <div class="panel-body" id="doc-body">
-        <p class="muted">Lade OpenAPI-Spezifikation...</p>
-      </div>
-    </div>
+  <div class="links">
+    <a href="https://ailinux.me">🌐 AILinux.me</a>
+    <a href="https://forum.ailinux.me">💬 Community Forum</a>
+    <a href="https://github.com/derleiti">🐙 GitHub</a>
+  </div>
+</div>
+
+<div class="container">
+
+  <h2>🧠 AI Swarm Intelligence <span class="badge badge-swarm">NEU</span></h2>
+  <p class="muted">Sendet einen Prompt gleichzeitig an alle 631+ Modelle. Sammelt Antworten parallel, bewertet Qualität, rankt Ergebnisse und konsolidiert die besten Ideen über Gemini 2.5 Flash.</p>
+  <div class="grid">
+    <div class="card"><div class="card-title">Broadcast → Score → Rank</div><div class="card-desc">Alle Modelle gleichzeitig befragen, Antworten nach Relevanz und Qualität bewerten</div></div>
+    <div class="card"><div class="card-title">Consolidate → Code</div><div class="card-desc">Lead-AI fasst alle Perspektiven zusammen, Coding-Agents setzen den Plan um</div></div>
+  </div>
+  <p class="muted" style="margin-top:0.8rem;">Erster Live-Test: 20 Modelle, 8 einzigartige Antworten, 23 Sekunden. Kein einzelnes Modell hätte alle 5 Ideen generiert.</p>
+
+  <h2>👥 Multi-AI Group Chat <span class="badge badge-swarm">NEU</span></h2>
+  <p class="muted">12 KI-Teilnehmer — Gemini Lead, Claude-Web, ChatGPT-Web, 4 CLI-Agents, API-Provider — arbeiten in Phasen an komplexen Aufgaben zusammen. Der Lead analysiert, delegiert Sub-Tasks und konsolidiert Ergebnisse.</p>
+
+  <h2>🌐 Browser-Automatisierung <span class="badge badge-new">NEU</span></h2>
+  <p class="muted">Headless Chromium via Playwright — KI-Agents können im Web browsen, Seiten lesen, Formulare ausfüllen, Screenshots machen und Suchergebnisse verarbeiten. Direkt als MCP-Tool ansteuerbar.</p>
+
+  <h2>📝 WordPress CMS Integration <span class="badge badge-new">NEU</span></h2>
+  <p class="muted">Vollständige CMS-Steuerung via MCP — Posts erstellen, bearbeiten, publizieren, löschen. Inklusive Multi-AI-Post: Jeder Provider schreibt seinen eigenen Blogpost zu einem Thema.</p>
+
+  <h2>🏗️ Architektur</h2>
+  <div class="grid">
+    <div class="card"><div class="card-title">FastAPI + uvicorn</div><div class="card-desc">Async Python-Backend, Apache Reverse Proxy, Redis Cache, 3-Node WireGuard Federation</div></div>
+    <div class="card"><div class="card-title">260 MCP Tools</div><div class="card-desc">Shell, Code, Git, Docker, System-Diagnostik, Memory, Mail, Forum, WordPress, Browser</div></div>
+    <div class="card"><div class="card-title">4 CLI Agents</div><div class="card-desc">claude-mcp, codex-mcp, gemini-mcp (Lead), opencode-mcp — on-demand Subprozesse</div></div>
+    <div class="card"><div class="card-title">4-Layer Memory</div><div class="card-desc">Prisma Persistent Memory mit 38+ aktiven Einträgen, automatischem Pruning und Shard-System</div></div>
   </div>
 
-<script>
-(async () => {
-  const dot = document.getElementById('dot');
-  const text = document.getElementById('status-text');
-  try {
-    const res = await fetch('/health');
-    if (res.ok) {
-      const data = await res.json();
-      dot.classList.add('online');
-      text.textContent = 'Online • v' + (data.version || '?');
-    } else {
-      dot.classList.add('offline');
-      text.textContent = 'Offline';
-    }
-  } catch {
-    dot.classList.add('offline');
-    text.textContent = 'Nicht erreichbar';
-  }
+  <h2>📡 Provider</h2>
+  <p class="provider-list">Groq (18) · Cerebras (2) · Mistral (58) · Google Gemini (43) · Anthropic (8) · OpenRouter (346) · Cloudflare Workers AI (88) · GitHub Models (22) · Ollama Cloud (45) · Ollama Local</p>
 
-  const overlay = document.getElementById('doc-overlay');
-  const docBody = document.getElementById('doc-body');
-  const docKind = document.getElementById('doc-kind');
-  const docSubtitle = document.getElementById('doc-subtitle');
-  const docOriginal = document.getElementById('doc-original');
-  const closeButton = document.getElementById('doc-close');
-  let openapiCache = null;
+  <h2>🖥️ Hardware</h2>
+  <p class="muted">Hetzner EX63 Dedicated — Intel Core Ultra 7 265 (Arrow Lake), 64GB RAM, AVX-VNNI AI-Beschleunigung. Backup VPS + lokale Maschine via WireGuard Mesh.</p>
 
-  const methodClasses = ['get', 'post', 'put', 'delete', 'patch', 'options', 'head'];
+  <h2>📋 Projekt-Info</h2>
+  <div class="grid">
+    <div class="card"><div class="card-title">AILinux Distribution</div><div class="card-desc">Bleeding-edge Linux (Ubuntu 24.04 LTS) für Entwickler und Creator. KI-Assistenten direkt in Desktop und Terminal.</div></div>
+    <div class="card"><div class="card-title">Open Source</div><div class="card-desc">GitHub: <a href="https://github.com/derleiti" style="color:#58a6ff">derleiti</a> — triforce, ailinux-client, aiwindows-client, ai-twitch-bot</div></div>
+    <div class="card"><div class="card-title">AUR Package</div><div class="card-desc">ailinux-client im AUR verfügbar. GPG: 59FAE19560F5E25B</div></div>
+    <div class="card"><div class="card-title">Solo-Projekt</div><div class="card-desc">Gebaut von einem Entwickler in Warzenried, Oberpfalz. Produktionsreifes KI-Ökosystem — was Teams bauen würden.</div></div>
+  </div>
 
-  function setOverlay(open) {
-    overlay.classList[open ? 'add' : 'remove']('open');
-    overlay.setAttribute('aria-hidden', open ? 'false' : 'true');
-  }
+</div>
 
-  async function loadOpenApi() {
-    if (openapiCache) return openapiCache;
-    const res = await fetch('/openapi.json', { cache: 'no-store' });
-    if (!res.ok) throw new Error('OpenAPI-Spezifikation nicht gefunden');
-    openapiCache = await res.json();
-    return openapiCache;
-  }
+<footer>
+  <p>Gebaut von <a href="https://github.com/derleiti">Markus Leitermann</a> in Warzenried, Oberpfalz</p>
+  <p>AILinux TriForce v2.85 · <em>Efficiency beats enthusiasm.</em></p>
+</footer>
 
-  function renderSwagger(spec) {
-    if (!spec || !spec.paths || Object.keys(spec.paths).length === 0) {
-      docBody.innerHTML = '<p class="error">Keine Pfade in der OpenAPI-Spezifikation gefunden.</p>';
-      return;
-    }
-    const frag = document.createDocumentFragment();
-    Object.entries(spec.paths).forEach(([path, operations]) => {
-      const details = document.createElement('details');
-      details.className = 'path';
-      const summary = document.createElement('summary');
-      summary.textContent = path;
-      details.appendChild(summary);
-
-      Object.entries(operations).forEach(([method, op]) => {
-        const lower = method.toLowerCase();
-        const opDiv = document.createElement('div');
-        opDiv.className = 'op';
-        const badge = document.createElement('span');
-        badge.className = `method ${methodClasses.includes(lower) ? lower : ''}`;
-        badge.textContent = lower.toUpperCase();
-        opDiv.appendChild(badge);
-
-        const text = document.createElement('div');
-        const summaryText = op.summary || op.description || 'Keine Beschreibung hinterlegt.';
-        text.textContent = summaryText;
-        text.className = 'muted';
-        opDiv.appendChild(text);
-
-        details.appendChild(opDiv);
-      });
-
-      frag.appendChild(details);
-    });
-    docBody.replaceChildren(frag);
-  }
-
-  function renderRedocFallback(spec) {
-    const info = spec?.info || {};
-    const servers = spec?.servers || [];
-    const container = document.createElement('div');
-    const title = document.createElement('h3');
-    title.textContent = info.title || 'ReDoc';
-    container.appendChild(title);
-
-    if (info.description) {
-      const p = document.createElement('p');
-      p.textContent = info.description;
-      p.className = 'muted';
-      container.appendChild(p);
-    }
-
-    if (servers.length) {
-      const srvTitle = document.createElement('p');
-      srvTitle.textContent = 'Server:';
-      srvTitle.className = 'muted';
-      container.appendChild(srvTitle);
-
-      const ul = document.createElement('ul');
-      servers.forEach((srv) => {
-        const li = document.createElement('li');
-        li.textContent = `${srv.url}${srv.description ? ` – ${srv.description}` : ''}`;
-        ul.appendChild(li);
-      });
-      container.appendChild(ul);
-    }
-
-    const pre = document.createElement('pre');
-    pre.textContent = JSON.stringify(spec, null, 2);
-    container.appendChild(pre);
-    docBody.replaceChildren(container);
-  }
-
-  async function showDocs(kind) {
-    docBody.innerHTML = '<p class="muted">Lade OpenAPI-Spezifikation...</p>';
-    docKind.textContent = kind === 'redoc' ? 'ReDoc (Fallback)' : 'API Docs (Fallback)';
-    docOriginal.setAttribute('href', kind === 'redoc' ? '/redoc' : '/docs');
-    docSubtitle.textContent = 'Lokale Darstellung aus /openapi.json';
-    setOverlay(true);
-    try {
-      const spec = await loadOpenApi();
-      if (kind === 'redoc') {
-        renderRedocFallback(spec);
-      } else {
-        renderSwagger(spec);
-      }
-    } catch (err) {
-      docBody.innerHTML = `<p class="error">${err.message}</p><p><a href="/openapi.json" class="muted">openapi.json direkt öffnen</a></p>`;
-    }
-  }
-
-  document.querySelectorAll('[data-doc]').forEach((link) => {
-    link.addEventListener('click', (event) => {
-      event.preventDefault();
-      showDocs(link.dataset.doc);
-    });
-  });
-
-  closeButton.addEventListener('click', () => setOverlay(false));
-  overlay.addEventListener('click', (event) => {
-    if (event.target === overlay) setOverlay(false);
-  });
-})();
-</script>
 </body>
 </html>

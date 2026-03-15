@@ -159,6 +159,23 @@ CANONICAL_MAP: dict[str, str] = {
 # Path-Präfix-Pattern: "/api.ailinux.me/link_xxx/toolname" → "toolname"
 # ---------------------------------------------------------------------------
 _PATH_PREFIX_RE = re.compile(r'^/[^/]+/[^/]+/([a-zA-Z0-9_/-]+)$')
+VALID_TOOL_NAME_RE = re.compile(r"^[a-zA-Z0-9_-]{1,64}$")
+RESERVED_SLASH_NAMES: FrozenSet[str] = frozenset({
+    "initialize",
+    "tools/list",
+    "tools/call",
+    "prompts/list",
+    "prompts/get",
+    "resources/list",
+    "resources/read",
+    "agent/status",
+    "agent/output",
+})
+
+
+def is_valid_tool_name(name: str) -> bool:
+    """Return True if a tool name matches the external MCP export pattern."""
+    return bool(VALID_TOOL_NAME_RE.fullmatch(name or ""))
 
 
 def normalize_tool_name(raw_name: str) -> str:
@@ -174,14 +191,20 @@ def normalize_tool_name(raw_name: str) -> str:
         return ""
     
     name = raw_name.strip()
+
+    if name in RESERVED_SLASH_NAMES:
+        return name
     
     # Strip "tools/call:" prefix (from log entries)
     if name.startswith("tools/call:"):
         name = name[len("tools/call:"):]
+
+    if name in RESERVED_SLASH_NAMES:
+        return name
     
     # Strip path-based prefixes: /anything/link_xxx/tool -> tool
     # Also handles /domain/anything/tool
-    if "/" in name:
+    if "/" in name and name not in RESERVED_SLASH_NAMES:
         # Take last segment after any path
         segments = [s for s in name.split("/") if s]
         if segments:
@@ -193,10 +216,22 @@ def normalize_tool_name(raw_name: str) -> str:
             else:
                 # No link_ segment found, take last segment
                 name = segments[-1]
-    
-    # Normalize dashes to underscores for handler lookup
-    # But preserve known dash-names like "cli-agents_list"
-    
+
+    if name in RESERVED_SLASH_NAMES:
+        return name
+
+    if is_valid_tool_name(name):
+        return name
+
+    # Normalize legacy dotted/slashed names to external-safe MCP tool IDs.
+    name = name.replace(".", "_").replace("/", "_")
+    name = re.sub(r"\s+", "_", name)
+    name = re.sub(r"[^a-zA-Z0-9_-]+", "_", name)
+    name = re.sub(r"_+", "_", name).strip("_")
+
+    if len(name) > 64:
+        name = name[:64].rstrip("_-")
+
     return name
 
 

@@ -42,14 +42,14 @@ class DownloadsService {
         $relative_path = $this->sanitize_path($relative_path);
         $full_path = rtrim($this->base_path, '/') . '/' . ltrim($relative_path, '/');
         $full_path = rtrim($full_path, '/');
-        
+
         if (!is_dir($full_path)) {
             return ['files' => [], 'breadcrumb' => $this->build_breadcrumb('')];
         }
 
         $files = [];
         $items = @scandir($full_path);
-        
+
         if ($items === false) {
             return ['files' => [], 'breadcrumb' => $this->build_breadcrumb($relative_path)];
         }
@@ -57,20 +57,20 @@ class DownloadsService {
         // First pass: folders
         foreach ($items as $item) {
             if ($item === '.' || $item === '..') continue;
-            
+
             $item_path = $full_path . '/' . $item;
             $item_relative = trim($relative_path . '/' . $item, '/');
-            
+
             if (is_dir($item_path)) {
                 $file_count = $this->count_files_in_dir($item_path);
                 $files[] = [
-                    'name' => $item,
-                    'type' => 'folder',
-                    'path' => $item_relative,
-                    'icon' => '📁',
-                    'size' => $file_count . ' items',
+                    'name'     => $item,
+                    'type'     => 'folder',
+                    'path'     => $item_relative,
+                    'icon'     => '📁',
+                    'size'     => $file_count . ' items',
                     'modified' => date('Y-m-d H:i', filemtime($item_path)),
-                    'url' => ''
+                    'url'      => '',
                 ];
             }
         }
@@ -78,27 +78,37 @@ class DownloadsService {
         // Second pass: files
         foreach ($items as $item) {
             if ($item === '.' || $item === '..') continue;
-            
+
             $item_path = $full_path . '/' . $item;
             $item_relative = trim($relative_path . '/' . $item, '/');
-            
+
             if (is_file($item_path)) {
                 $files[] = [
-                    'name' => $item,
-                    'type' => 'file',
-                    'path' => $item_relative,
-                    'icon' => $this->get_file_icon($item),
-                    'size' => $this->format_size(filesize($item_path)),
+                    'name'     => $item,
+                    'type'     => 'file',
+                    'path'     => $item_relative,
+                    'icon'     => $this->get_file_icon($item),
+                    'size'     => $this->format_size(filesize($item_path)),
                     'modified' => date('Y-m-d H:i', filemtime($item_path)),
-                    'url' => $this->base_url . '/' . $item_relative
+                    'url'      => $this->base_url . '/' . $item_relative,
                 ];
             }
         }
 
+        // Detect new items and generate AI descriptions (cached after first run)
+        $ai = \NovAI\Services\AiDescriptionService::instance();
+        $ai->process_new($files, $relative_path);
+
+        // Attach cached descriptions to each item
+        foreach ($files as &$file) {
+            $file['description'] = $ai->get($file['name'], $file['type'], $relative_path);
+        }
+        unset($file);
+
         return [
-            'files' => $files,
-            'breadcrumb' => $this->build_breadcrumb($relative_path),
-            'current_path' => $relative_path
+            'files'        => $files,
+            'breadcrumb'   => $this->build_breadcrumb($relative_path),
+            'current_path' => $relative_path,
         ];
     }
 

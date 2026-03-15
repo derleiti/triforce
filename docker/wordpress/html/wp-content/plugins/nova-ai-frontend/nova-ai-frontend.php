@@ -10,9 +10,142 @@
 defined('ABSPATH') || exit;
 
 define('NOVA_AI_BACKEND',     'http://172.18.0.1:9000');
+define('NOVA_AI_LOCAL_BACKEND', 'http://localhost:9000');
 define('NOVA_AI_VERSION',     '6.5.0');
 define('NOVA_AI_PLUGIN_URL',  plugin_dir_url(__FILE__));
 define('NOVA_AI_PLUGIN_DIR',  plugin_dir_path(__FILE__));
+
+function nova_get_docker_gateway_ip(): string {
+    $routes = @file('/proc/net/route');
+    if (!$routes) {
+        return '';
+    }
+
+    foreach ($routes as $index => $line) {
+        if ($index === 0) {
+            continue;
+        }
+
+        $parts = preg_split('/\s+/', trim($line));
+        if (count($parts) < 3 || $parts[1] !== '00000000') {
+            continue;
+        }
+
+        $hex = $parts[2];
+        if (strlen($hex) !== 8) {
+            continue;
+        }
+
+        $bytes = array_map('hexdec', str_split($hex, 2));
+        return implode('.', array_reverse($bytes));
+    }
+
+    return '';
+}
+
+function nova_is_local_backend_host(string $host): bool {
+    return in_array($host, ['localhost', '127.0.0.1', '172.18.0.1', 'host.docker.internal'], true);
+}
+
+function nova_normalize_backend_url(?string $url, ?string $default = null): string {
+    $url = trim((string)($url ?? ''));
+    if ($url === '') {
+        $url = trim((string)($default ?? ''));
+    }
+    if ($url === '') {
+        return '';
+    }
+
+    $parsed = wp_parse_url($url);
+    if (!$parsed || empty($parsed['host'])) {
+        return $url;
+    }
+
+    $scheme = $parsed['scheme'] ?? 'http';
+    $host = $parsed['host'];
+    $port = isset($parsed['port']) ? (int)$parsed['port'] : null;
+    $path = isset($parsed['path']) ? rtrim($parsed['path'], '/') : '';
+    $query = isset($parsed['query']) ? '?' . $parsed['query'] : '';
+    $fragment = isset($parsed['fragment']) ? '#' . $parsed['fragment'] : '';
+
+    if ($scheme === 'https' && nova_is_local_backend_host($host)) {
+        $scheme = 'http';
+    }
+
+    if (file_exists('/.dockerenv')) {
+        if (in_array($host, ['localhost', '127.0.0.1'], true)) {
+            $resolved = gethostbyname('host.docker.internal');
+            if ($resolved && $resolved !== 'host.docker.internal') {
+                $host = $resolved;
+            } else {
+                $gateway = nova_get_docker_gateway_ip();
+                if ($gateway) {
+                    $host = $gateway;
+                }
+            }
+        } elseif ($host === 'host.docker.internal') {
+            $resolved = gethostbyname($host);
+            if ($resolved && $resolved !== $host) {
+                $host = $resolved;
+            } else {
+                $gateway = nova_get_docker_gateway_ip();
+                if ($gateway) {
+                    $host = $gateway;
+                }
+            }
+        }
+    }
+
+    $port_suffix = $port !== null ? ':' . $port : '';
+    return $scheme . '://' . $host . $port_suffix . $path . $query . $fragment;
+}
+
+function nova_get_backend_setting(string $key, string $fallback = ''): string {
+    $settings = get_option('nova_ai_settings', []);
+    $value = $settings[$key] ?? '';
+    return nova_normalize_backend_url($value, $fallback);
+}
+
+function nova_get_backend_base(): string {
+    $settings = get_option('nova_ai_settings', []);
+    $internal = $settings['api_endpoint_internal'] ?? '';
+    $primary = $settings['api_endpoint'] ?? '';
+    return nova_normalize_backend_url($internal ?: $primary, NOVA_AI_BACKEND);
+}
+
+function nova_get_display_backend_base(): string {
+    return nova_get_backend_setting('api_endpoint', NOVA_AI_LOCAL_BACKEND);
+}
+
+function nova_get_mcp_base(): string {
+    $settings = get_option('nova_ai_settings', []);
+    $mcp = $settings['mcp_endpoint'] ?? '';
+    return nova_normalize_backend_url($mcp, NOVA_AI_LOCAL_BACKEND);
+}
+
+function nova_maybe_upgrade_legacy_backend_settings(): void {
+    $settings = get_option('nova_ai_settings', []);
+    if (!is_array($settings) || !$settings) {
+        return;
+    }
+
+    $updated = $settings;
+    foreach (['api_endpoint' => NOVA_AI_LOCAL_BACKEND, 'api_endpoint_internal' => NOVA_AI_BACKEND, 'mcp_endpoint' => NOVA_AI_LOCAL_BACKEND] as $key => $fallback) {
+        if (!array_key_exists($key, $updated)) {
+            continue;
+        }
+        $normalized = nova_normalize_backend_url($updated[$key], $fallback);
+        if ($normalized !== '' && $normalized !== $updated[$key]) {
+            $updated[$key] = $normalized;
+        }
+    }
+
+    if ($updated !== $settings) {
+        update_option('nova_ai_settings', $updated);
+    }
+}
+
+add_action('plugins_loaded', 'nova_maybe_upgrade_legacy_backend_settings', 1);
 
 /* ── FIX: Cloudflare Rocket Loader / WP Page Cache – exclude nova-ai.js ──── */
 add_filter('script_loader_tag', function (string $tag, string $handle): string {
@@ -92,7 +225,7 @@ add_action('rest_api_init', function () {
 function nova_proxy(string $path, string $method='GET', ?array $body=null): WP_REST_Response {
     $args = ['method'=>$method,'timeout'=>90,'headers'=>['Content-Type'=>'application/json']];
     if ($body !== null) $args['body'] = wp_json_encode($body);
-    $response = wp_remote_request(NOVA_AI_BACKEND.$path, $args);
+    $response = wp_remote_request(nova_get_backend_base().$path, $args);
     if (is_wp_error($response)) return new WP_REST_Response(['error'=>$response->get_error_message()], 502);
     $code = wp_remote_retrieve_response_code($response);
     $data = json_decode(wp_remote_retrieve_body($response), true) ?? ['raw'=>wp_remote_retrieve_body($response)];
@@ -102,8 +235,7 @@ function nova_proxy(string $path, string $method='GET', ?array $body=null): WP_R
 
 /* ── Frontend proxy callbacks ───────────────────────────────────────────────── */
 function nova_proxy_auth(string $path, string $method='GET', ?array $body=null): WP_REST_Response {
-    $s = get_option('nova_ai_settings', []);
-    $base = $s['api_endpoint_internal'] ?? $s['api_endpoint'] ?? 'http://172.18.0.1:9000';
+    $base = nova_get_backend_base();
     $url  = rtrim($base, '/') . $path;
     $args = ['method'=>$method, 'timeout'=>15, 'headers'=>[
         'Content-Type'=>'application/json',
@@ -231,8 +363,7 @@ function nova_auth_sync(WP_REST_Request $r): WP_REST_Response {
     }
 
     // Verify token via backend
-    $s = get_option('nova_ai_settings', []);
-    $base = $s['api_endpoint_internal'] ?? $s['api_endpoint'] ?? 'https://api.ailinux.me';
+    $base = nova_get_backend_base();
     $vr = wp_remote_get(rtrim($base, '/') . '/v1/auth/verify', [
         'headers' => ['Authorization' => 'Bearer ' . $token],
         'timeout' => 8,
@@ -321,7 +452,7 @@ function nova_proxy_article_chat(WP_REST_Request $r): WP_REST_Response {
     }
     $messages[] = ['role'=>'user','content'=>$message];
     $body = json_encode(['model'=>$model,'messages'=>$messages,'stream'=>false,'max_tokens'=>800]);
-    $resp = wp_remote_post(NOVA_AI_BACKEND.'/v1/frontend/dashboard/chat',
+    $resp = wp_remote_post(nova_get_backend_base().'/v1/frontend/dashboard/chat',
         ['body'=>$body,'headers'=>['Content-Type'=>'application/json'],'timeout'=>30]);
     if (is_wp_error($resp)) return new WP_REST_Response(['error'=>$resp->get_error_message()],502);
     return new WP_REST_Response(json_decode(wp_remote_retrieve_body($resp), true), wp_remote_retrieve_response_code($resp));
@@ -412,7 +543,7 @@ function nova_admin_mcp_tools(): WP_REST_Response {
         'headers' => ['Content-Type' => 'application/json'],
         'body'    => wp_json_encode(['jsonrpc' => '2.0', 'method' => 'tools/list', 'id' => 1]),
     ];
-    $response = wp_remote_request(NOVA_AI_BACKEND . '/v1/mcp', $args);
+    $response = wp_remote_request(nova_get_backend_base() . '/v1/mcp', $args);
     if (is_wp_error($response)) return new WP_REST_Response(['error' => $response->get_error_message()], 502);
     $body = json_decode(wp_remote_retrieve_body($response), true) ?? [];
     // Normalize JSON-RPC result → {tools: [...]} format admin.js expects
@@ -439,7 +570,7 @@ function nova_admin_mcp_call(WP_REST_Request $r): WP_REST_Response {
         'id'       => 1,
         'params'   => ['name' => $tool, 'arguments' => (object)$args],
     ]);
-    $resp = wp_remote_request(NOVA_AI_BACKEND . '/v1/mcp', [
+    $resp = wp_remote_request(nova_get_backend_base() . '/v1/mcp', [
         'method'  => 'POST',
         'timeout' => 60,
         'headers' => ['Content-Type' => 'application/json'],
@@ -491,7 +622,18 @@ function nova_admin_settings_set(WP_REST_Request $r): WP_REST_Response {
                 'default_model','discuss_button_enabled','widget_enabled','widget_position',
                 'widget_color','widget_title','widget_welcome','widget_icon'];
     foreach ($allowed as $k) {
-        if (array_key_exists($k, $params)) $s[$k] = sanitize_text_field((string)($params[$k]));
+        if (!array_key_exists($k, $params)) {
+            continue;
+        }
+        $value = sanitize_text_field((string)($params[$k]));
+        if ($k === 'api_endpoint') {
+            $value = nova_normalize_backend_url($value, NOVA_AI_LOCAL_BACKEND);
+        } elseif ($k === 'api_endpoint_internal') {
+            $value = nova_normalize_backend_url($value, NOVA_AI_BACKEND);
+        } elseif ($k === 'mcp_endpoint') {
+            $value = nova_normalize_backend_url($value, NOVA_AI_LOCAL_BACKEND);
+        }
+        $s[$k] = $value;
     }
     update_option('nova_ai_settings', $s);
     return new WP_REST_Response(['ok'=>true]);
@@ -544,7 +686,7 @@ add_action('admin_enqueue_scripts', function ($hook) {
     wp_localize_script('nova-ai-admin', 'novaAdminConfig', [
         'restUrl'     => rest_url('nova-ai/v1'),
         'nonce'       => wp_create_nonce('wp_rest'),
-        'apiEndpoint' => NOVA_AI_BACKEND,
+        'apiEndpoint' => nova_get_display_backend_base(),
         'version'     => NOVA_AI_VERSION,
     ]);
 });
@@ -557,7 +699,14 @@ function nova_render_admin_page(): void {
         $allowed = ['api_endpoint','default_model','discuss_button_enabled','widget_enabled',
                     'widget_position','widget_color','widget_title','widget_welcome'];
         foreach ($allowed as $k) {
-            if (isset($_POST[$k])) $settings[$k] = sanitize_text_field($_POST[$k]);
+            if (!isset($_POST[$k])) {
+                continue;
+            }
+            $value = sanitize_text_field($_POST[$k]);
+            if ($k === 'api_endpoint') {
+                $value = nova_normalize_backend_url($value, NOVA_AI_LOCAL_BACKEND);
+            }
+            $settings[$k] = $value;
         }
         $settings['discuss_button_enabled'] = !empty($_POST['discuss_button_enabled']);
         $settings['widget_enabled']         = !empty($_POST['widget_enabled']);
@@ -596,7 +745,7 @@ function nova_render_admin_page(): void {
     </div>
     <div class="nova-stat-card card" style="padding:16px;min-width:180px;text-align:center">
         <div style="font-size:28px">🔗</div>
-        <small><?= esc_html(NOVA_AI_BACKEND) ?></small>
+        <small><?= esc_html(nova_get_backend_base()) ?></small>
     </div>
 </div>
 <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px">
@@ -623,8 +772,8 @@ function nova_render_admin_page(): void {
 <?php wp_nonce_field('nova_ai_settings'); ?>
 <table class="form-table">
 <tr><th>Backend API URL</th><td>
-    <input type="text" name="api_endpoint" class="regular-text" value="<?= esc_attr($settings['api_endpoint'] ?? NOVA_AI_BACKEND) ?>">
-    <p class="description">Intern: <?= esc_html(NOVA_AI_BACKEND) ?></p>
+    <input type="text" name="api_endpoint" class="regular-text" value="<?= esc_attr($settings['api_endpoint'] ?? nova_get_display_backend_base()) ?>">
+    <p class="description">Intern: <?= esc_html(nova_get_backend_base()) ?></p>
 </td></tr>
 <tr><th>Standard-Modell</th><td>
     <input type="text" name="default_model" class="regular-text" value="<?= esc_attr($settings['default_model'] ?? '') ?>" placeholder="groq/llama-3.3-70b-versatile">
@@ -743,8 +892,6 @@ add_shortcode('ailinux_ai_playground', function ($atts): string {
     <button class="nova-tab active" data-tab="nova-panel-chat">Chat</button>
     <button class="nova-tab" data-tab="nova-panel-vision">Vision Analyse</button>
     <button class="nova-tab" data-tab="nova-panel-media">Media Generation</button>
-    <button class="nova-tab" data-tab="nova-panel-account">&#128100; My Account</button>
-
   </div>
   <div class="nova-panel active" id="nova-panel-chat">
     <div class="nova-form-row-inline">
@@ -887,16 +1034,26 @@ add_shortcode('ailinux_ai_playground', function ($atts): string {
     <?php return ob_get_clean();
 });
 
-/* ── Shortcode: Downloads ───────────────────────────────────────────────────── */
+/* ── Shortcode: Downloads (File Browser) ────────────────────────────────────── */
 add_shortcode('ailinux_downloads', function ($atts): string {
     $label = esc_attr($atts['label'] ?? 'AILINUX DOWNLOADS');
     $title = esc_html($atts['title'] ?? 'Downloads');
-    $desc  = esc_html($atts['desc']  ?? 'Mehr Metadaten, mehr Übersicht.');
-    $raw   = wp_remote_get(NOVA_AI_BACKEND.'/v1/frontend/dashboard/downloads', ['timeout'=>10]);
-    $files = []; $total = 0;
+    $desc  = esc_html($atts['desc']  ?? 'Dateien & Pakete zum Download.');
+    $raw   = wp_remote_get(nova_get_backend_base().'/v1/frontend/dashboard/downloads', ['timeout'=>10]);
+    $tree  = null;
     if (!is_wp_error($raw)) {
         $body = json_decode(wp_remote_retrieve_body($raw), true);
-        if (isset($body['files']) && is_array($body['files'])) { $files = $body['files']; $total = $body['total_bytes'] ?? 0; }
+        if (!empty($body['ok'])) $tree = $body;
+    }
+    $total_files = 0; $total_bytes = 0;
+    if ($tree) {
+        $total_bytes = (int)($tree['total_bytes'] ?? 0);
+        $count_all = function($node) use (&$count_all) {
+            $c = count($node['files'] ?? []);
+            foreach (($node['folders'] ?? []) as $f) $c += $count_all($f);
+            return $c;
+        };
+        $total_files = $count_all($tree);
     }
     $fmt = function(int $b): string {
         if ($b >= 1073741824) return round($b/1073741824,1).' GB';
@@ -905,54 +1062,387 @@ add_shortcode('ailinux_downloads', function ($atts): string {
         return $b.' B';
     };
     ob_start(); ?>
-<div class="nova-downloads-shell" data-nova-theme="auto">
-  <div class="nova-hero">
-    <div class="nova-hero-label"><?= $label ?></div>
-    <h2 class="nova-hero-title"><?= $title ?></h2>
-    <p class="nova-hero-desc"><?= $desc ?></p>
-    <div class="nova-hero-badges">
-      <?php if (!empty($files)): ?>
-        <span class="nova-badge">Dateien: <?= count($files) ?></span>
-        <?php if ($total > 0): ?><span class="nova-badge">Gesamt: <?= $fmt($total) ?></span><?php endif; ?>
+<div class="nova-dl-wrap" data-nova-theme="auto">
+
+  <?php /* ── Hero header ── */ ?>
+  <div class="nova-dl-hero">
+    <div class="nova-dl-hero__label"><?= $label ?></div>
+    <h2 class="nova-dl-hero__title"><?= $title ?></h2>
+    <p class="nova-dl-hero__desc"><?= $desc ?></p>
+    <?php if ($tree): ?>
+    <div class="nova-dl-hero__stats">
+      <span class="nova-dl-stat"><strong><?= $total_files ?></strong> Dateien</span>
+      <span class="nova-dl-stat"><strong><?= count($tree['folders'] ?? []) ?></strong> Ordner</span>
+      <?php if ($total_bytes > 0): ?>
+      <span class="nova-dl-stat"><strong><?= $fmt($total_bytes) ?></strong> gesamt</span>
       <?php endif; ?>
     </div>
+    <?php endif; ?>
   </div>
-  <?php if (empty($files)): ?>
-    <div class="nova-status-bar warn" style="margin:16px"><span class="nova-status-icon">⚠️</span> Backend nicht erreichbar.</div>
+
+  <?php if (!$tree): ?>
+    <div class="nova-dl-error">⚠ Backend nicht erreichbar – bitte später erneut versuchen.</div>
   <?php else: ?>
-  <div class="nova-toolbar">
-    <button class="nova-tab active" data-tab="nova-downloads-panel">📂 Downloads</button>
-    <button class="nova-tab" data-tab="nova-panel-account">&#128100; Mein Account</button>
-  </div>
-  <div class="nova-panel active" id="nova-downloads-panel" style="padding-top:0">
-    <div class="nova-table-wrap">
-      <table class="nova-table">
-        <thead><tr><th data-sort="0">Datei</th><th data-sort="1">Typ</th><th data-sort="2">Größe</th><th data-sort="3">SHA1</th><th data-sort="4">Geändert</th><th data-sort="5">Link</th></tr></thead>
-        <tbody>
-          <?php foreach ($files as $f): ?>
-          <tr>
-            <td title="<?= esc_attr($f['name']??'') ?>"><?= esc_html($f['name']??'—') ?></td>
-            <td><?= esc_html(strtoupper($f['type']??'—')) ?></td>
-            <td><?= esc_html($fmt((int)($f['size']??0))) ?></td>
-            <td title="<?= esc_attr($f['sha1']??'') ?>"><?= esc_html(substr($f['sha1']??'—',0,8)) ?>…</td>
-            <td><?= esc_html($f['modified']??'—') ?></td>
-            <td><?php if (!empty($f['url'])): ?><a class="nova-dl-link" href="<?= esc_url($f['url']) ?>" download>↓ Download</a><?php else: ?>—<?php endif; ?></td>
-          </tr>
-          <?php endforeach; ?>
-        </tbody>
-      </table>
-    </div>
-  </div>
-  <div class="nova-panel" id="nova-panel-account">
-    <div style="padding:1.5rem 0">
-      <div class="nova-account-container" id="nova-account-panel">
-        <div style="text-align:center;padding:2rem;color:#94a3b8">
-          <div style="font-size:2rem;margin-bottom:.5rem">&#128100;</div>
-          <div>Lade Account…</div>
-        </div>
-      </div>
-    </div>
-  </div>
+
+  <?php /* ── Breadcrumb ── */ ?>
+  <nav class="nova-dl-crumb" id="nova-dl-crumb" aria-label="Verzeichnis-Navigation"></nav>
+
+  <?php /* ── Card grid ── */ ?>
+  <div class="nova-dl-grid" id="nova-dl-grid"></div>
+
+  <style>
+  /* ── Downloads Shortcode Styles ─────────────────────────── */
+  .nova-dl-wrap {
+    font-family: var(--font-sans, system-ui, sans-serif);
+    width: 100%;
+    color: var(--text, #e8edf2);
+  }
+  /* Hero */
+  .nova-dl-hero {
+    background: linear-gradient(135deg, var(--bg-1, #131822) 0%, var(--bg-2, #1b2330) 100%);
+    border: 1px solid var(--line, #263040);
+    border-radius: 16px;
+    padding: clamp(20px, 4vw, 40px);
+    margin-bottom: 28px;
+    text-align: center;
+  }
+  .nova-dl-hero__label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--accent-active, #3aa0ff);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .nova-dl-hero__title {
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    font-weight: 700;
+    margin: 0 0 10px;
+    color: var(--text, #e8edf2);
+  }
+  .nova-dl-hero__desc {
+    color: var(--muted, #a9b3c0);
+    font-size: 1rem;
+    margin: 0 0 18px;
+    max-width: 56ch;
+    margin-inline: auto;
+  }
+  .nova-dl-hero__stats {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+  .nova-dl-stat {
+    background: rgba(58,160,255,.12);
+    border: 1px solid rgba(58,160,255,.25);
+    color: var(--text, #e8edf2);
+    border-radius: 999px;
+    padding: 5px 14px;
+    font-size: 0.85rem;
+  }
+  .nova-dl-stat strong { color: var(--accent-active, #3aa0ff); }
+  /* Error */
+  .nova-dl-error {
+    background: rgba(255,80,80,.1);
+    border: 1px solid rgba(255,80,80,.3);
+    color: #ff8080;
+    border-radius: 10px;
+    padding: 16px 20px;
+    font-size: 0.95rem;
+  }
+  /* Breadcrumb */
+  .nova-dl-crumb {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.88rem;
+    color: var(--muted, #a9b3c0);
+    margin-bottom: 18px;
+    min-height: 28px;
+  }
+  .nova-dl-crumb a {
+    color: var(--accent-active, #3aa0ff);
+    text-decoration: none;
+    padding: 3px 8px;
+    border-radius: 6px;
+    transition: background .15s;
+  }
+  .nova-dl-crumb a:hover { background: rgba(58,160,255,.12); }
+  .nova-dl-crumb-sep { opacity: .35; margin: 0 2px; }
+  .nova-dl-crumb-cur { font-weight: 600; color: var(--text, #e8edf2); padding: 3px 8px; }
+  /* Card grid */
+  .nova-dl-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+    gap: 14px;
+  }
+  .nova-dl-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: var(--bg-1, #131822);
+    border: 1px solid var(--line, #263040);
+    border-radius: 12px;
+    padding: 16px;
+    cursor: pointer;
+    transition: border-color .18s, box-shadow .18s, transform .15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .nova-dl-card:hover {
+    border-color: var(--accent-active, #3aa0ff);
+    box-shadow: 0 4px 20px rgba(58,160,255,.15);
+    transform: translateY(-2px);
+  }
+  .nova-dl-card.is-file { cursor: default; }
+  .nova-dl-card__icon {
+    font-size: 2rem;
+    line-height: 1;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .nova-dl-card__body {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .nova-dl-card__name {
+    font-weight: 600;
+    font-size: 0.94rem;
+    word-break: break-word;
+    color: var(--text, #e8edf2);
+  }
+  .nova-dl-card__name a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .nova-dl-card__name a:hover { color: var(--accent-active, #3aa0ff); }
+  /* AI description */
+  .nova-dl-card__desc {
+    font-size: 0.8rem;
+    color: var(--muted, #a9b3c0);
+    line-height: 1.4;
+    margin: 0;
+  }
+  .nova-dl-ai-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--accent-active, #3aa0ff);
+    border: 1px solid currentColor;
+    border-radius: 4px;
+    padding: 1px 5px;
+    margin-right: 5px;
+    vertical-align: middle;
+    opacity: .75;
+    white-space: nowrap;
+  }
+  /* Meta row */
+  .nova-dl-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 0.75rem;
+    color: var(--muted, #a9b3c0);
+    opacity: .7;
+    margin-top: 2px;
+  }
+  .nova-dl-sha {
+    font-family: ui-monospace, monospace;
+    font-size: 0.68rem;
+    opacity: .55;
+    word-break: break-all;
+  }
+  /* Action button */
+  .nova-dl-card__action {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+  .nova-dl-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background .15s, color .15s;
+    border: 1px solid var(--line, #263040);
+    background: var(--bg-2, #1b2330);
+    color: var(--accent-active, #3aa0ff);
+    cursor: pointer;
+    font-family: inherit;
+    flex-shrink: 0;
+  }
+  .nova-dl-btn:hover {
+    background: var(--accent-active, #3aa0ff);
+    color: #0e1116;
+    border-color: var(--accent-active, #3aa0ff);
+  }
+  /* Back card */
+  .nova-dl-card.is-back {
+    border-style: dashed;
+    opacity: .7;
+  }
+  .nova-dl-card.is-back:hover { opacity: 1; }
+  /* Light mode */
+  html[data-theme='light'] .nova-dl-hero {
+    background: linear-gradient(135deg, #f5f7fb, #f0f4ff);
+    border-color: #d7dee9;
+  }
+  html[data-theme='light'] .nova-dl-hero__title { color: #0f141b; }
+  html[data-theme='light'] .nova-dl-card {
+    background: #fff;
+    border-color: #d7dee9;
+  }
+  html[data-theme='light'] .nova-dl-card__name { color: #0f141b; }
+  html[data-theme='light'] .nova-dl-btn {
+    background: #f0f4ff;
+    border-color: #d7dee9;
+    color: #2f7df4;
+  }
+  /* Responsive */
+  @media (max-width: 480px) {
+    .nova-dl-grid { gap: 10px; }
+    .nova-dl-card { padding: 12px; gap: 10px; }
+    .nova-dl-card__icon { font-size: 1.6rem; }
+  }
+  </style>
+
+  <script>
+  (function(){
+    var TREE = <?= json_encode(['files'=>$tree['files']??[],'folders'=>$tree['folders']??[]], JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES) ?>;
+    var pathStack = [];
+
+    function fmt(b) {
+      b = parseInt(b)||0;
+      if (b >= 1073741824) return (b/1073741824).toFixed(1)+' GB';
+      if (b >= 1048576)    return (b/1048576).toFixed(1)+' MB';
+      if (b >= 1024)       return (b/1024).toFixed(1)+' KB';
+      return b+' B';
+    }
+    function esc(s) {
+      var d = document.createElement('div');
+      d.textContent = String(s||'');
+      return d.innerHTML;
+    }
+    function getNode(path) {
+      var node = TREE;
+      for (var i = 0; i < path.length; i++) {
+        var found = null;
+        for (var j = 0; j < (node.folders||[]).length; j++) {
+          if (node.folders[j].name === path[i]) { found = node.folders[j]; break; }
+        }
+        if (!found) return TREE;
+        node = found;
+      }
+      return node;
+    }
+
+    function makeCard(icon, name, descHtml, metaHtml, actionHtml, extraClass, clickFn) {
+      var card = document.createElement('div');
+      card.className = 'nova-dl-card ' + (extraClass||'');
+      card.innerHTML =
+        '<div class="nova-dl-card__icon">'+icon+'</div>'
+        +'<div class="nova-dl-card__body">'
+          +'<div class="nova-dl-card__name">'+name+'</div>'
+          +(descHtml ? '<p class="nova-dl-card__desc">'+descHtml+'</p>' : '')
+          +(metaHtml ? '<div class="nova-dl-card__meta">'+metaHtml+'</div>' : '')
+        +'</div>'
+        +(actionHtml ? '<div class="nova-dl-card__action">'+actionHtml+'</div>' : '');
+      if (clickFn) card.addEventListener('click', clickFn);
+      return card;
+    }
+
+    function render() {
+      var node = getNode(pathStack);
+      var crumb = document.getElementById('nova-dl-crumb');
+      var grid  = document.getElementById('nova-dl-grid');
+
+      /* ── Breadcrumb ── */
+      var bcHtml = '<a href="#" data-nav="-1">🏠 Root</a>';
+      for (var i = 0; i < pathStack.length; i++) {
+        bcHtml += '<span class="nova-dl-crumb-sep">›</span>'
+                + '<a href="#" data-nav="'+i+'">'+esc(pathStack[i])+'</a>';
+      }
+      if (pathStack.length > 0) {
+        bcHtml += '<span class="nova-dl-crumb-sep">›</span>'
+                + '<span class="nova-dl-crumb-cur">'+esc(pathStack[pathStack.length-1])+'</span>';
+      }
+      crumb.innerHTML = bcHtml;
+      crumb.querySelectorAll('a[data-nav]').forEach(function(a){
+        a.addEventListener('click', function(e){
+          e.preventDefault();
+          var idx = parseInt(this.getAttribute('data-nav'));
+          pathStack = idx < 0 ? [] : pathStack.slice(0, idx+1);
+          render();
+        });
+      });
+
+      /* ── Grid ── */
+      grid.innerHTML = '';
+
+      /* Back button */
+      if (pathStack.length > 0) {
+        grid.appendChild(makeCard(
+          '↩', '<em>Zurück</em>', '', '', '', 'is-back',
+          function(){ pathStack.pop(); render(); }
+        ));
+      }
+
+      /* Folders */
+      (node.folders||[]).forEach(function(f){
+        var desc = f.description
+          ? '<span class="nova-dl-ai-badge">✦ KI</span>'+esc(f.description)
+          : '';
+        var meta = (f.file_count != null ? '<span>'+f.file_count+' Dateien</span>' : '')
+                 + (f.total_size_formatted || f.total_size ? '<span>'+(f.total_size_formatted||fmt(f.total_size))+'</span>' : '');
+        grid.appendChild(makeCard(
+          f.icon||'📁',
+          esc(f.name),
+          desc, meta,
+          '<button class="nova-dl-btn" title="Öffnen">›</button>',
+          'is-folder',
+          function(){ pathStack.push(f.name); render(); }
+        ));
+      });
+
+      /* Files */
+      (node.files||[]).forEach(function(f){
+        var nameHtml = f.url
+          ? '<a href="'+esc(f.url)+'" download onclick="event.stopPropagation()">'+esc(f.name)+'</a>'
+          : esc(f.name);
+        var desc = f.description
+          ? '<span class="nova-dl-ai-badge">✦ KI</span>'+esc(f.description)
+          : '';
+        var meta = '<span>'+(f.size_formatted||fmt(f.size||0))+'</span>'
+                 + (f.modified ? '<span>'+esc(f.modified)+'</span>' : '')
+                 + (f.sha1 ? '<span class="nova-dl-sha">SHA1: '+esc(f.sha1.substring(0,12))+'…</span>' : '');
+        var action = f.url
+          ? '<a class="nova-dl-btn" href="'+esc(f.url)+'" download onclick="event.stopPropagation()" title="Herunterladen">↓</a>'
+          : '';
+        grid.appendChild(makeCard(f.icon||'📄', nameHtml, desc, meta, action, 'is-file', null));
+      });
+
+      /* Empty */
+      if (!node.folders?.length && !node.files?.length && pathStack.length === 0) {
+        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted,#a9b3c0)">📂 Keine Dateien verfügbar.</div>';
+      } else if (!node.folders?.length && !node.files?.length) {
+        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted,#a9b3c0)">📂 Leerer Ordner.</div>';
+      }
+    }
+    render();
+  })();
+  </script>
   <?php endif; ?>
 </div>
     <?php return ob_get_clean();

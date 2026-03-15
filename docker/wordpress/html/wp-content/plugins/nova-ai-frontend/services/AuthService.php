@@ -365,6 +365,18 @@ HTML;
             'permission_callback' => '__return_true',
         ]);
 
+        register_rest_route('nova-ai/v1', '/auth/profile', [
+            'methods'             => 'POST',
+            'callback'            => [$this, 'api_update_profile'],
+            'permission_callback' => '__return_true',
+        ]);
+
+        register_rest_route('nova-ai/v1', '/auth/profile', [
+            'methods'             => 'GET',
+            'callback'            => [$this, 'api_get_profile'],
+            'permission_callback' => '__return_true',
+        ]);
+
         // Admin endpoints (nova admin only)
         register_rest_route('nova-ai/v1', '/admin/users', [
             'methods'             => 'GET',
@@ -934,6 +946,71 @@ HTML;
     public function add_auth_menu_items(string $items, $args): string {
         if ($args->theme_location !== 'primary') return $items;
         return $items . '<li class="menu-item ailinux-menu-auth">' . do_shortcode('[ailinux_auth_button]') . '</li>';
+    }
+
+    /**
+     * GET /auth/profile — return current WP user profile data
+     */
+    public function api_get_profile(\WP_REST_Request $request): \WP_REST_Response {
+        $token = sanitize_text_field($request->get_param('token') ?? '');
+        $user  = null;
+
+        // Try token-based lookup first, then WP session
+        if ($token) {
+            $users = get_users(['meta_key' => 'nova_session_token', 'meta_value' => $token, 'number' => 1]);
+            if (!empty($users)) $user = $users[0];
+        }
+        if (!$user && is_user_logged_in()) {
+            $user = wp_get_current_user();
+        }
+        if (!$user) {
+            return new \WP_REST_Response(['error' => 'Not authenticated'], 401);
+        }
+
+        $tier        = get_user_meta($user->ID, 'nova_tier', true) ?: 'free';
+        $entitlements = (array)(get_user_meta($user->ID, 'nova_entitlements', true) ?: []);
+        $purchases   = (array)(get_user_meta($user->ID, 'nova_purchases', true) ?: []);
+        $client_id   = get_user_meta($user->ID, 'nova_client_id', true) ?: '';
+
+        return new \WP_REST_Response([
+            'ok'           => true,
+            'id'           => $user->ID,
+            'email'        => $user->user_email,
+            'display_name' => $user->display_name,
+            'tier'         => $tier,
+            'entitlements' => $entitlements,
+            'purchases'    => $purchases,
+            'client_id'    => $client_id,
+            'can_admin'    => user_can($user->ID, 'manage_options'),
+        ], 200);
+    }
+
+    /**
+     * POST /auth/profile — update WP user profile fields
+     */
+    public function api_update_profile(\WP_REST_Request $request): \WP_REST_Response {
+        $token        = sanitize_text_field($request->get_param('token') ?? '');
+        $display_name = sanitize_text_field($request->get_param('display_name') ?? '');
+        $user         = null;
+
+        if ($token) {
+            $users = get_users(['meta_key' => 'nova_session_token', 'meta_value' => $token, 'number' => 1]);
+            if (!empty($users)) $user = $users[0];
+        }
+        if (!$user && is_user_logged_in()) {
+            $user = wp_get_current_user();
+        }
+        if (!$user) {
+            return new \WP_REST_Response(['error' => 'Not authenticated'], 401);
+        }
+
+        $updated = [];
+        if ($display_name !== '') {
+            wp_update_user(['ID' => $user->ID, 'display_name' => $display_name]);
+            $updated[] = 'display_name';
+        }
+
+        return new \WP_REST_Response(['ok' => true, 'updated' => $updated], 200);
     }
 }
 

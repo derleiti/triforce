@@ -66,6 +66,15 @@ class Settings(BaseSettings):
     mcp_oauth_user: Optional[str] = Field(default=None, validation_alias="MCP_OAUTH_USER")
     mcp_oauth_pass: Optional[str] = Field(default=None, validation_alias="MCP_OAUTH_PASS")
 
+    # MCP Mesh WebSocket
+    mcp_ws_host: str = Field(default="::", validation_alias="MCP_WS_HOST")
+    mcp_ws_port: int = Field(default=58642, validation_alias="MCP_WS_PORT")
+    mcp_ws_public_host: Optional[str] = Field(default=None, validation_alias="MCP_WS_PUBLIC_HOST")
+    mcp_ws_public_port: int = Field(default=58642, validation_alias="MCP_WS_PUBLIC_PORT")
+    mcp_ws_enable_ipv6: bool = Field(default=True, validation_alias="MCP_WS_ENABLE_IPV6")
+    mcp_endpoint: Optional[str] = Field(default=None, validation_alias="MCP_ENDPOINT")
+    federation_nodes_file: str = Field(default="config/federation_nodes.json", validation_alias="FEDERATION_NODES_FILE")
+
     # GPT-OSS
     gpt_oss_api_key: str | None = Field(default=None, validation_alias="GPT_OSS_API_KEY")
     gpt_oss_base_url: AnyHttpUrl | None = Field(default=None, validation_alias="GPT_OSS_BASE_URL")
@@ -75,6 +84,10 @@ class Settings(BaseSettings):
         default=None,
         validation_alias=AliasChoices("GOOGLE_AI_STUDIO_KEY","GEMINI_API_KEY","GOOGLE_GEMINI_KEY")
     )
+    google_url: Optional[str] = Field(default=None, validation_alias="GOOGLE_URL")
+    google_user: Optional[str] = Field(default=None, validation_alias="GOOGLE_USER")
+    google_pass: Optional[str] = Field(default=None, validation_alias="GOOGLE_PASS")
+    gemini_agent_id: Optional[str] = Field(default=None, validation_alias="GEMINI_AGENT_ID")
     # Mistral
     mistral_api_key: str | None = Field(default=None, validation_alias="MISTRAL_API_KEY")
     mistral_organisation_id: str | None = Field(default=None, validation_alias="MISTRAL_ORG_ID")
@@ -84,6 +97,10 @@ class Settings(BaseSettings):
     anthropic_api_key: str | None = Field(default=None, validation_alias="ANTHROPIC_API_KEY")
     anthropic_timeout_ms: int = Field(default=120000, validation_alias="ANTHROPIC_TIMEOUT_MS")
     anthropic_max_tokens: int = Field(default=8192, validation_alias="ANTHROPIC_MAX_TOKENS")
+    claude_url: Optional[str] = Field(default=None, validation_alias=AliasChoices("CLAUDE_URL", "NOVA_CLAUDE_URL"))
+    claude_user: Optional[str] = Field(default=None, validation_alias=AliasChoices("CLAUDE_USER", "NOVA_CLAUDE_USER"))
+    claude_pass: Optional[str] = Field(default=None, validation_alias=AliasChoices("CLAUDE_PASS", "NOVA_CLAUDE_PASS"))
+    claude_agent_id: Optional[str] = Field(default=None, validation_alias=AliasChoices("CLAUDE_AGENT_ID", "NOVA_CLAUDE_AGENT_ID"))
 
     # Hugging Face Inference API (v2.80)
     huggingface_api_key: str | None = Field(
@@ -155,6 +172,25 @@ class Settings(BaseSettings):
 
     # OpenAI compatibility
     openai_model_aliases: Dict[str, str] = Field(default_factory=dict, validation_alias="OPENAI_MODEL_ALIASES")
+    chatgpt_url: Optional[str] = Field(default=None, validation_alias="CHATGPT_URL")
+    chatgpt_user: Optional[str] = Field(default=None, validation_alias="CHATGPT_USER")
+    chatgpt_pass: Optional[str] = Field(default=None, validation_alias="CHATGPT_PASS")
+    nova_chatgpt_url: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_CHATGPT_URL", "CHATGPT_URL"))
+    nova_chatgpt_user: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_CHATGPT_USER", "CHATGPT_USER"))
+    nova_chatgpt_pass: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_CHATGPT_PASS", "CHATGPT_PASS"))
+    nova_chatgpt_agent_id: Optional[str] = Field(default=None, validation_alias="NOVA_CHATGPT_AGENT_ID")
+    nova_google_url: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_GOOGLE_URL", "GOOGLE_URL"))
+    nova_google_user: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_GOOGLE_USER", "GOOGLE_USER"))
+    nova_google_pass: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_GOOGLE_PASS", "GOOGLE_PASS"))
+    nova_gemini_agent_id: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_GEMINI_AGENT_ID", "GEMINI_AGENT_ID"))
+    nova_claude_url: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_CLAUDE_URL", "CLAUDE_URL"))
+    nova_claude_user: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_CLAUDE_USER", "CLAUDE_USER"))
+    nova_claude_pass: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_CLAUDE_PASS", "CLAUDE_PASS"))
+    nova_claude_agent_id: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_CLAUDE_AGENT_ID", "CLAUDE_AGENT_ID"))
+    nova_mistral_url: Optional[str] = Field(default=None, validation_alias="NOVA_MISTRAL_URL")
+    nova_mistral_user: Optional[str] = Field(default=None, validation_alias="NOVA_MISTRAL_USER")
+    nova_mistral_pass: Optional[str] = Field(default=None, validation_alias="NOVA_MISTRAL_PASS")
+    nova_mistral_agent_id: Optional[str] = Field(default=None, validation_alias="NOVA_MISTRAL_AGENT_ID")
 
     # n8n (WordPress automation bridge)
     enable_n8n: bool = Field(default=False, validation_alias="ENABLE_N8N")

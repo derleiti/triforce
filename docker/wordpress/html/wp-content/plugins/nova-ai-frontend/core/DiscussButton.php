@@ -22,7 +22,7 @@ class DiscussButton {
     
     private function get_overlay() {
         ob_start();
-        include NOV_AI_PLUGIN_DIR . "templates/discuss-overlay.php";
+        include NOVA_AI_PLUGIN_DIR . "templates/discuss-overlay.php";
         return ob_get_clean();
     }
 }

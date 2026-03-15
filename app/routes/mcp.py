@@ -4,6 +4,7 @@ from .widget_handlers import handle_weather, handle_crypto_prices, handle_stock_
 import base64
 import logging
 from datetime import datetime, timezone
+from uuid import uuid4
 
 # Logger für MCP Routes
 logger = logging.getLogger("ailinux.mcp.routes")
@@ -28,6 +29,7 @@ from ..services.mcp_filter import MESH_FILTER_TOOLS, MESH_FILTER_HANDLERS
 # New Client-Server Architecture
 from ..services.api_vault import VAULT_HANDLERS
 from ..services.chat_router import CHAT_ROUTER_HANDLERS
+from ..services.nova_chat_agent import nova_chat_agent_service
 from ..services.task_spawner import TASK_SPAWNER_HANDLERS
 from ..services.init_service import INIT_TOOLS, INIT_HANDLERS, init_service, loadbalancer, mcp_brain
 from ..services.gemini_model_init import MODEL_INIT_TOOLS, MODEL_INIT_HANDLERS, gemini_model_init
@@ -79,8 +81,66 @@ _EXTRA_TOOL_SCHEMAS = [
     {"name":"agent_task_status","description":"Task-Status abfragen (id optional, state-Filter, limit)","inputSchema":{"type":"object","properties":{"id":{"type":"string"},"state":{"type":"string"},"limit":{"type":"integer"}}}},
     {"name":"agent_skill_list","description":"Alle Agents mit Skill-Rankings anzeigen (skill, type, top)","inputSchema":{"type":"object","properties":{"skill":{"type":"string"},"type":{"type":"string"},"top":{"type":"integer"}}}},
     {"name":"agent_skill_update","description":"Skill-Score eines Agents updaten (model, skill, score/delta/success)","inputSchema":{"type":"object","required":["model","skill"],"properties":{"model":{"type":"string"},"skill":{"type":"string"},"score":{"type":"integer"},"delta":{"type":"integer"},"success":{"type":"boolean"}}}},
+    # Group Chat (Multi-AI Orchestration) — Added 2026-03-15
+    {"name":"group_chat_create","description":"Neue Multi-AI Group Chat Session erstellen. Gemini Lead + Claude-Web + ChatGPT-Web + Coding Agents.","inputSchema":{"type":"object","required":["topic"],"properties":{"topic":{"type":"string","description":"Thema/Aufgabe"},"participants":{"type":"array","items":{"type":"string"}}}}},
+    {"name":"group_chat_ask","description":"Frage an die AI-Gruppe stellen. Gemini Lead analysiert und erstellt Sub-Tasks fuer Web-AIs.","inputSchema":{"type":"object","required":["session_id"],"properties":{"session_id":{"type":"string"},"question":{"type":"string"}}}},
+    {"name":"group_chat_message","description":"Nachricht in den Group Chat posten. Wird von Claude-Web/ChatGPT-Web via MCP genutzt.","inputSchema":{"type":"object","required":["session_id","sender","content"],"properties":{"session_id":{"type":"string"},"sender":{"type":"string"},"content":{"type":"string"},"type":{"type":"string","enum":["response","code_result","review"]}}}},
+    {"name":"group_chat_read","description":"Nachrichten aus dem Group Chat lesen. Zeigt Sub-Tasks, Antworten und Status.","inputSchema":{"type":"object","required":["session_id"],"properties":{"session_id":{"type":"string"},"since":{"type":"string"},"for_participant":{"type":"string"},"limit":{"type":"integer"}}}},
+    {"name":"group_chat_status","description":"Status einer Group Chat Session anzeigen.","inputSchema":{"type":"object","required":["session_id"],"properties":{"session_id":{"type":"string"}}}},
+    {"name":"group_chat_list","description":"Alle aktiven Group Chat Sessions auflisten.","inputSchema":{"type":"object","properties":{"active_only":{"type":"boolean"}}}},
+    {"name":"group_chat_consolidate","description":"Gemini Lead konsolidiert alle Web-AI Antworten zu Zusammenfassung + Coding-Prompt.","inputSchema":{"type":"object","required":["session_id"],"properties":{"session_id":{"type":"string"}}}},
+    {"name":"group_chat_assign","description":"Coding-Task an Agent zuweisen. CLI-Agents fuehren sofort aus, Web-Agents lesen via group_chat_read.","inputSchema":{"type":"object","required":["session_id"],"properties":{"session_id":{"type":"string"},"coder":{"type":"string"},"context":{"type":"string"}}}},
+    # Swarm Broadcast (631 Model Collective Intelligence) — Added 2026-03-15
+    {"name":"swarm_broadcast","description":"Sende Prompt an ALLE 631+ AI-Modelle. Sammelt Antworten parallel, bewertet Qualitaet, gibt Top-Ergebnisse.","inputSchema":{"type":"object","required":["question"],"properties":{"question":{"type":"string"},"max_tokens":{"type":"integer"},"top_n":{"type":"integer"},"skip_providers":{"type":"array","items":{"type":"string"}},"only_providers":{"type":"array","items":{"type":"string"}}}}},
+    {"name":"swarm_status","description":"Status einer Swarm-Broadcast Session.","inputSchema":{"type":"object","required":["session_id"],"properties":{"session_id":{"type":"string"}}}},
+    {"name":"swarm_top_results","description":"Top-Ergebnisse einer Swarm-Session nach Quality-Score.","inputSchema":{"type":"object","required":["session_id"],"properties":{"session_id":{"type":"string"},"limit":{"type":"integer"}}}},
+    {"name":"swarm_consolidated","description":"Konsolidierter Prompt aus Top-Ergebnissen fuer Gemini Lead oder Coding-Agent.","inputSchema":{"type":"object","required":["session_id"],"properties":{"session_id":{"type":"string"}}}},
+    # WordPress CMS Tools
+    {"name":"wp_publish_post","description":"Create and publish a WordPress blog post on ailinux.me","inputSchema":{"type":"object","required":["title","content"],"properties":{"title":{"type":"string"},"content":{"type":"string"},"status":{"type":"string","enum":["publish","draft"]},"excerpt":{"type":"string"}}}},
+    {"name":"wp_list_posts","description":"List WordPress posts by status","inputSchema":{"type":"object","properties":{"status":{"type":"string","default":"publish"},"per_page":{"type":"integer","default":10}}}},
+    {"name":"wp_update_post","description":"Update an existing WordPress post","inputSchema":{"type":"object","required":["post_id"],"properties":{"post_id":{"type":"integer"},"title":{"type":"string"},"content":{"type":"string"},"status":{"type":"string"}}}},
+    {"name":"wp_delete_post","description":"Delete a WordPress post permanently","inputSchema":{"type":"object","required":["post_id"],"properties":{"post_id":{"type":"integer"}}}},
+    {"name":"wp_create_page","description":"Create a WordPress page","inputSchema":{"type":"object","required":["title","content"],"properties":{"title":{"type":"string"},"content":{"type":"string"},"status":{"type":"string","default":"publish"}}}},
+    {"name":"wp_multi_ai_post","description":"Create multiple blog posts — each AI provider writes their perspective. Creates CLAUDE's Take, GEMINI's Take, etc.","inputSchema":{"type":"object","required":["topic"],"properties":{"topic":{"type":"string"},"providers":{"type":"array","items":{"type":"string"},"default":["claude","chatgpt","gemini","mistral"]},"publish":{"type":"boolean","default":True}}}},
+    # Browser / Web Browsing Tools (Playwright)
+    {"name":"browser_navigate","description":"Navigate to URL, extract text + screenshot. AI can see and interact with the page.","inputSchema":{"type":"object","required":["url"],"properties":{"url":{"type":"string"},"screenshot":{"type":"boolean","default":True},"extract_text":{"type":"boolean","default":True}}}},
+    {"name":"browser_click","description":"Click element on current page by CSS selector or visible text","inputSchema":{"type":"object","properties":{"selector":{"type":"string"},"text":{"type":"string"}}}},
+    {"name":"browser_type","description":"Type text into input field. Can submit with Enter.","inputSchema":{"type":"object","required":["selector","text"],"properties":{"selector":{"type":"string"},"text":{"type":"string"},"submit":{"type":"boolean","default":False}}}},
+    {"name":"browser_screenshot","description":"Take screenshot of current browser page","inputSchema":{"type":"object","properties":{"full_page":{"type":"boolean","default":False}}}},
+    {"name":"browser_search","description":"Search the web and return structured results","inputSchema":{"type":"object","required":["query"],"properties":{"query":{"type":"string"},"engine":{"type":"string","enum":["google","duckduckgo","searxng"],"default":"duckduckgo"}}}},
+    {"name":"browser_close","description":"Close browser session","inputSchema":{"type":"object","properties":{}}},
 ]
 from ..mcp.flarum_tools import FLARUM_TOOL_HANDLERS, FLARUM_TOOL_NAMES
+from ..mcp.handlers_group_chat import GROUP_CHAT_HANDLERS
+from ..mcp.handlers_swarm import SWARM_HANDLERS
+try:
+    from ..mcp.handlers_wordpress import WORDPRESS_HANDLERS, WORDPRESS_TOOL_SCHEMAS
+except Exception as e:
+    print(f"WP handlers import failed: {e}")
+    WORDPRESS_HANDLERS = {}
+    WORDPRESS_TOOL_SCHEMAS = []
+try:
+    from ..mcp.handlers_browser import BROWSER_HANDLERS, BROWSER_TOOL_SCHEMAS
+except Exception as e:
+    print(f"Browser handlers import failed: {e}")
+    BROWSER_HANDLERS = {}
+    BROWSER_TOOL_SCHEMAS = []
+try:
+    from ..mcp.handlers_redis import REDIS_HANDLERS, REDIS_TOOL_SCHEMAS
+except Exception as e:
+    print(f"Redis handlers import failed: {e}")
+    REDIS_HANDLERS = {}
+    REDIS_TOOL_SCHEMAS = []
+try:
+    from ..services.model_performance import PERFORMANCE_HANDLERS, PERFORMANCE_TOOL_SCHEMAS
+except Exception as e:
+    print(f"Performance tracker import failed: {e}")
+    PERFORMANCE_HANDLERS = {}
+    PERFORMANCE_TOOL_SCHEMAS = []
+except Exception as e:
+    print(f"Browser handlers import failed: {e}")
+    BROWSER_HANDLERS = {}
+    BROWSER_TOOL_SCHEMAS = []
 from ..mcp.tool_registry_v3 import (
     get_all_tools as registry_v3_get_all_tools,
     get_tool_by_name as registry_v3_get_tool,
@@ -99,6 +159,15 @@ from ..mcp.tool_registry_v4 import (
     TOOL_ALIASES,
     resolve_alias_reverse,
 )
+
+from ..mcp.runtime_registry import get_runtime_registry
+from ..mcp.tool_registry_unified import (
+    get_unified_tools,
+    decorate_tools,
+    get_inventory_map,
+    filter_tools_by_inventory,
+    resolve_tool_name_for_call,
+)
 from ..mcp.handlers_v4 import (
     handler_registry,
     init_handlers as init_v4_handlers,
@@ -108,14 +177,17 @@ from ..mcp.handlers_v4 import (
 from ..services.compatibility_layer import compatibility_layer
 from ..services.system_control import system_control, HOTRELOAD_TOOLS, HOTRELOAD_HANDLERS
 from ..services.memory_index import MEMORY_INDEX_TOOLS, MEMORY_INDEX_HANDLERS, memory_index
-from ..services.mcp_debugger import mcp_debugger
+from ..services.mcp_debugger import mcp_debugger, handle_debug_action
 from ..services.llm_compat import LLM_COMPAT_TOOLS, LLM_COMPAT_HANDLERS, llm_compat
+from ..policy.mcp_host_policy import should_convert_to_proposal, build_proposal_response
+from ..policy import mcp_proposals
 from ..services.init_service import compact_init
-from ..utils.mcp_auth import AUTH_ENABLED, require_mcp_auth
+from ..utils.mcp_auth import AUTH_ENABLED, get_oauth_metadata, require_mcp_auth
 import logging
 
 mcp_logger = logging.getLogger("ailinux.mcp")
 
+public_router = APIRouter()
 router = APIRouter(dependencies=[Depends(require_mcp_auth)])
 
 
@@ -1393,6 +1465,75 @@ async def codebase_backup_endpoint(
     })
 
 
+@router.post("/mcp_write_fallback", tags=["Internal"], include_in_schema=False)
+@router.post("/mcp_write_fallback/", tags=["Internal"], include_in_schema=False)
+async def mcp_write_fallback_store_endpoint(
+    request: Request,
+) -> Dict[str, Any]:
+    """
+    Persist a denied MCP write request for later execution.
+    Requires a server-side token via X-Internal-Token.
+    """
+    expected = os.getenv("MCP_INTERNAL_WRITE_TOKEN", "").strip()
+    supplied = request.headers.get("X-Internal-Token", "").strip()
+
+    if not expected:
+        raise HTTPException(status_code=503, detail="Internal write fallback not configured")
+    if not supplied or supplied != expected:
+        raise HTTPException(status_code=401, detail="Invalid internal write token")
+
+    try:
+        body = await request.json()
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=f"Invalid JSON body: {exc}")
+
+    tool_name = body.get("tool_name", "")
+    arguments = body.get("arguments", {}) or {}
+    reason = body.get("reason", "write_permission_denied")
+
+    if not tool_name:
+        raise HTTPException(status_code=400, detail="'tool_name' is required")
+    if not isinstance(arguments, dict):
+        raise HTTPException(status_code=400, detail="'arguments' must be an object")
+
+    entry = await _store_mcp_write_fallback(
+        tool_name=tool_name,
+        arguments=arguments,
+        reason=reason,
+        request_meta=body.get("request_meta", {}) or {},
+    )
+    return {
+        "fallback_id": entry["fallback_id"],
+        "status": entry["status"],
+        "stored_at": entry["created_at"],
+        "tool_name": entry["tool_name"],
+        "original_tool_name": entry["original_tool_name"],
+        "write_path": "mcp_write_fallback_store",
+    }
+
+
+@router.post("/mcp/trigger_mcp_write_fallback", tags=["Internal"], include_in_schema=False)
+@router.post("/mcp/trigger_mcp_write_fallback/", tags=["Internal"], include_in_schema=False)
+async def trigger_mcp_write_fallback_endpoint(request: Request) -> Dict[str, Any]:
+    """Trigger a stored MCP write fallback entry."""
+    try:
+        body = await request.json()
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=f"Invalid JSON body: {exc}")
+
+    fallback_id = body.get("fallback_id", "")
+    if not fallback_id:
+        raise HTTPException(status_code=400, detail="'fallback_id' is required")
+
+    try:
+        result = await _execute_mcp_write_fallback(fallback_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+    result["trigger_path"] = "mcp_write_fallback_tool"
+    return result
+
+
 @router.get("/codebase/routes", tags=["Codebase"], summary="Get all API routes")
 async def codebase_routes_endpoint() -> Dict[str, Any]:
     """Returns all API routes with methods and handlers."""
@@ -1528,66 +1669,76 @@ async def handle_initialize(params: Dict[str, Any], request: Optional[Request] =
     }
 
 
-async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
-    """MCP tools/list method - returns optimized tools from registry v4.
-    
-    v4 reduced from 134 to 52 tools for better AI usability.
-    Old tool names still work via TOOL_ALIASES.
-    """
-    # Check if client wants legacy (v3) tools
+async def handle_tools_list(params: Dict[str, Any], request: Optional[Request] = None) -> Dict[str, Any]:
+    """MCP tools/list method - unified inventory/alias aware registry."""
     use_legacy = params.get("legacy", False) or params.get("v3", False)
-    
+
     if use_legacy:
         tools = [_normalize_tool_schema(tool) for tool in registry_v3_get_all_tools()]
         return {"tools": tools, "version": "v3", "count": len(tools)}
-    
-    tools = [_normalize_tool_schema(tool) for tool in registry_v4_get_all_tools()]
-    
-    from ..mcp.structured_admin import STRUCTURED_ADMIN_TOOLS
-    tools.extend(_normalize_tool_schema(tool) for tool in STRUCTURED_ADMIN_TOOLS)
-    
-    # v2.84: Add V4 alias tools (search, fetch, models, etc.)
-    from .mcp_remote import _inject_annotations, _V4_ALIAS_TOOLS
-    tools.extend(_normalize_tool_schema(tool) for tool in _V4_ALIAS_TOOLS)
-    
-    # Deduplicate by name (spread imports may overlap with _V4_ALIAS_TOOLS)
-    seen = set()
-    deduped = []
-    for t in tools:
-        name = t.get("name", "")
-        if name not in seen:
-            seen.add(name)
-            deduped.append(t)
-    tools = deduped
-    
-    tools = _inject_annotations(tools)
 
-    # 2026-03-11: Inject Mail + WordPress MCP tools from v5 registry
+    include_links = bool(params.get("include_links", False))
+    include_aliases = bool(params.get("include_aliases", False))
+    include_examples = bool(params.get("include_examples", False))
+    inventory = str(params.get("inventory", "all")).strip().lower()
+    runtime_registry = get_runtime_registry()
+    node_id = params.get("node_id")
+
+    runtime_tools = runtime_registry.list_tools(
+        include_aliases=include_aliases,
+        inventory=inventory,
+        node_id=node_id,
+    )
+    if runtime_tools:
+        runtime_tools = [_normalize_tool_schema(tool) for tool in runtime_tools]
+        runtime_tools = decorate_tools(
+            runtime_tools,
+            include_links=include_links,
+            include_aliases=include_aliases,
+            include_examples=include_examples,
+        )
+        return {
+            "tools": runtime_tools,
+            "count": len(runtime_tools),
+            "inventory": runtime_registry.get_inventory_map(node_id=node_id),
+            "version": "runtime",
+            "nodes": runtime_registry.health_report().get("nodes", {}),
+        }
+
+    tools = get_unified_tools(extra_tools=_EXTRA_TOOL_SCHEMAS + WORDPRESS_TOOL_SCHEMAS + BROWSER_TOOL_SCHEMAS + PERFORMANCE_TOOL_SCHEMAS + REDIS_TOOL_SCHEMAS)
+
+    from ..mcp.structured_admin import STRUCTURED_ADMIN_TOOLS
+    existing = {t.get("name") for t in tools}
+    for tool in STRUCTURED_ADMIN_TOOLS:
+        if tool.get("name") not in existing:
+            tools.append(tool)
+            existing.add(tool.get("name"))
+
     try:
         from ..mcp.tool_registry_v5 import V5_TOOLS
-        mail_wp_names = {"mail_inbox","mail_read","mail_send","mail_mark_seen","wp_list_drafts","wp_create_draft","wp_update_post"}
-        mail_wp_names |= FLARUM_TOOL_NAMES
-        mail_wp_names |= set(NOTIFY_TOOL_NAMES)
-        mail_wp_names |= set(TLA_TOOL_NAMES)
-        existing = {t.get("name") for t in tools}
-        for t in V5_TOOLS:
-            if t.get("name") in mail_wp_names and t.get("name") not in existing:
-                tools.append(_normalize_tool_schema(t))
+        for tool in V5_TOOLS:
+            if tool.get("name") not in existing:
+                tools.append(tool)
+                existing.add(tool.get("name"))
     except Exception:
         pass
 
-    # 2026-03-11: Direkt-Inject Flarum/Notify/TLA aus inline Schemas
-    _existing = {t.get("name") for t in tools}
-    for _t in _EXTRA_TOOL_SCHEMAS:
-        if _t["name"] not in _existing:
-            tools.append(_normalize_tool_schema(_t))
-            _existing.add(_t["name"])
+    if inventory not in ("", "all", "*"):
+        tools = filter_tools_by_inventory(tools, inventory)
+
+    tools = [_normalize_tool_schema(tool) for tool in tools]
+    tools = decorate_tools(
+        tools,
+        include_links=include_links,
+        include_aliases=include_aliases,
+        include_examples=include_examples,
+    )
 
     return {
-        "tools": tools, 
-        "version": "v4", 
+        "tools": tools,
         "count": len(tools),
-        "note": "Optimized from 134 to 52 tools. Use legacy=true for v3."
+        "inventory": get_inventory_map(tools),
+        "version": "unified",
     }
 
 
@@ -1991,6 +2142,35 @@ async def _handle_tools_list_LEGACY(params: Dict[str, Any]) -> Dict[str, Any]:
             },
         },
         {
+            "name": "mcp_write_fallback",
+            "description": "Trigger a previously stored MCP write fallback entry and execute the pending file write.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "fallback_id": {"type": "string", "description": "Stored fallback ID from /v1/mcp_write_fallback"},
+                },
+                "required": ["fallback_id"],
+            },
+        },
+        {
+            "name": "nova_chat_agent",
+            "description": "Internal Nova chat router for provider accounts such as ChatGPT, Gemini, Claude, and Mistral.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "action": {"type": "string", "enum": ["chat", "accounts"], "default": "chat"},
+                    "provider": {"type": "string", "enum": ["auto", "chatgpt", "gemini", "claude", "mistral"], "default": "auto"},
+                    "message": {"type": "string"},
+                    "messages": {"type": "array", "items": {"type": "object"}},
+                    "system": {"type": "string"},
+                    "model": {"type": "string"},
+                    "temperature": {"type": "number", "default": 0.4},
+                    "max_tokens": {"type": "integer", "default": 1200},
+                    "timeout": {"type": "integer", "default": 120}
+                }
+            }
+        },
+        {
             "name": "codebase_backup",
             "description": "Create or restore backups of codebase files",
             "inputSchema": {
@@ -2177,6 +2357,62 @@ async def handle_debug_mcp_request(params: Dict[str, Any]) -> Dict[str, Any]:
         params.get("method", ""), params.get("params", {})
     )
 
+
+async def handle_mcp_write_fallback(params: Dict[str, Any]) -> Dict[str, Any]:
+    """Execute a stored MCP write fallback entry."""
+    fallback_id = params.get("fallback_id", "")
+    if not fallback_id:
+        raise ValueError("'fallback_id' parameter is required")
+    return await _execute_mcp_write_fallback(fallback_id)
+
+
+async def handle_nova_chat_agent(params: Dict[str, Any]) -> Dict[str, Any]:
+    action = str(params.get("action", "chat")).strip().lower() or "chat"
+    if action == "accounts":
+        return nova_chat_agent_service.list_accounts()
+
+    return await nova_chat_agent_service.chat(
+        provider=str(params.get("provider", "auto")),
+        message=str(params.get("message", "")),
+        messages=params.get("messages"),
+        system=str(params.get("system", "")),
+        model=params.get("model"),
+        temperature=float(params.get("temperature", 0.4)),
+        max_tokens=int(params.get("max_tokens", 1200)),
+        timeout=int(params.get("timeout", 120)),
+    )
+
+
+def _extract_policy_context(params: Dict[str, Any]) -> tuple[Dict[str, Any], Dict[str, Any], Optional[str], Optional[str]]:
+    arguments = params.get("arguments", {})
+    if not isinstance(arguments, dict):
+        arguments = {}
+
+    request_meta = arguments.get("_request_meta", {}) or {}
+    node_id = arguments.get("_node_id")
+    tier = arguments.get("_tier")
+
+    sanitized_arguments = dict(arguments)
+    for key in ("_request_meta", "_node_id", "_tier"):
+        sanitized_arguments.pop(key, None)
+
+    return request_meta, sanitized_arguments, node_id, tier
+
+
+async def handle_tool_introspect(params: Dict[str, Any]) -> Dict[str, Any]:
+    """Inspect canonical runtime tool metadata and policy decision."""
+    name = params.get("name")
+    if not name:
+        raise ValueError("'name' parameter is required")
+
+    runtime_registry = get_runtime_registry()
+    return runtime_registry.introspect_tool(
+        name,
+        node_id=params.get("node_id"),
+        request_meta=params.get("_request_meta", {}),
+        tier=params.get("tier"),
+    )
+
 async def handle_restart_backend(params: Dict[str, Any]) -> Dict[str, Any]:
     """Handle restart_backend tool."""
     return await system_control.restart_backend(params.get("delay", 2))
@@ -2234,23 +2470,160 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
     """MCP tools/call method - executes a tool."""
     from ..utils.tool_normalizer import normalize_tool_name
     raw_tool_name = params.get("name", "")
-    tool_name = normalize_tool_name(raw_tool_name)  # Normalize link_<id> paths etc.
-    arguments = params.get("arguments", {})
+    normalized_tool_name = normalize_tool_name(raw_tool_name)
+    tool_name = resolve_tool_name_for_call(normalized_tool_name)
 
     if not tool_name:
         raise ValueError("'name' parameter is required for tools/call")
 
-    # NOVA-PATCH: Zentrale Normalisierung vor allem anderen
-    canonical_name = tool_name  # v2.85: preserve for telemetry
-    try:
-        from ..utils.tool_normalizer import normalize_tool_name as _normalize, CANONICAL_MAP
-        tool_name = _normalize(tool_name)
-        canonical_name = tool_name  # canonical v4 name (before handler resolution)
-        # v4-Namen direkt auflösen (canonical_map hat keine Kollisionen)
-        tool_name = CANONICAL_MAP.get(tool_name, tool_name)
-    except ImportError:
-        # Fallback: alter resolve_alias_reverse
-        tool_name = resolve_alias_reverse(tool_name) if tool_name else tool_name
+    canonical_name = tool_name
+    request_meta, sanitized_arguments, node_id, tier = _extract_policy_context(params)
+
+    proposal = None
+    if should_convert_to_proposal and should_convert_to_proposal(canonical_name):
+        proposal = build_proposal_response(canonical_name, sanitized_arguments)
+        proposal["fallback_strategy"] = {
+            "available": True,
+            "type": "persistent_mcp_write_fallback",
+            "description": "If direct write execution is blocked by host policy, store the request and execute it via internal fallback.",
+            "result_contract": {
+                "success_field": "tool_output.ok",
+                "result_field": "tool_output.result",
+                "error_field": "tool_output.message",
+            },
+        }
+
+    runtime_registry = get_runtime_registry()
+    entry = runtime_registry.resolve_entry(canonical_name)
+    runtime_handler = None
+
+    if entry:
+        client_profile = runtime_registry.resolve_client_profile(
+            node_id=node_id,
+            request_meta=request_meta,
+            tier=tier,
+        )
+        policy = runtime_registry.evaluate_policy(
+            entry,
+            client_profile=client_profile,
+            arguments=sanitized_arguments,
+        )
+
+        if policy.get("decision") != "allow":
+            user_agent = str((request_meta or {}).get("user_agent") or "").lower()
+            openai_client = any(token in user_agent for token in {"chatgpt", "openai"})
+            fallback_eligible = canonical_name in {
+                "code_edit",
+                "code_patch",
+                "notify_send",
+                "mail_send",
+                "service_control",
+                "container_control",
+                "restart",
+            }
+
+            if (
+                policy.get("decision") == "preview_only"
+                and openai_client
+                and fallback_eligible
+            ):
+                try:
+                    stored = await _store_mcp_write_fallback(
+                        tool_name=canonical_name,
+                        arguments=sanitized_arguments,
+                        reason=policy.get("reason", "write_permission_denied"),
+                        request_meta=request_meta,
+                    )
+                    delegated = await handle_mcp_write_fallback(
+                        {"fallback_id": stored["fallback_id"]}
+                    )
+                    delegated["policy_notice"] = (
+                        "Direct MCP write was blocked by runtime policy. "
+                        "The request was stored under /v1/mcp_write_fallback and "
+                        "executed via /v1/mcp/trigger_mcp_write_fallback using the "
+                        "mcp_write_fallback tool."
+                    )
+                    delegated["ai_hint"] = {
+                        "status": delegated.get("status"),
+                        "fallback_id": delegated.get("fallback_id"),
+                        "tool_name": delegated.get("tool_name"),
+                        "delegated_from": delegated.get("delegated_from"),
+                        "tool_output": delegated.get("tool_output"),
+                        "next_action": (
+                            "Inspect tool_output.ok. If false, surface tool_output.message to the user. "
+                            "If true, use tool_output.result as the effective write result."
+                        ),
+                    }
+                    if proposal is not None:
+                        delegated["proposal"] = proposal
+                    return {
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": json.dumps(delegated, separators=(",", ":")),
+                            }
+                        ],
+                        "isError": False,
+                    }
+                except Exception as fallback_exc:
+                    mcp_logger.error(
+                        f"MCP_WRITE_FALLBACK_FAILED | tool={canonical_name} | {fallback_exc}"
+                    )
+
+            blocked = runtime_registry.build_policy_response(
+                entry,
+                client_profile=client_profile,
+                policy=policy,
+                arguments=sanitized_arguments,
+            )
+            if proposal is not None:
+                blocked["proposal"] = proposal
+                blocked["fallback_strategy"] = proposal.get("fallback_strategy")
+            try:
+                from ..mcp.structured_admin import mcp_telemetry, record_mcp_call
+                record_mcp_call(
+                    canonical_name,
+                    0.0,
+                    "blocked",
+                    "mcp_runtime_policy",
+                    error=policy.get("reason"),
+                )
+                mcp_telemetry.record(
+                    canonical_name,
+                    0.0,
+                    success=False,
+                    error=policy.get("reason"),
+                )
+            except Exception:
+                pass
+
+            return {
+                "content": [
+                    {"type": "text", "text": json.dumps(blocked, separators=(',', ':'))}
+                ],
+                "isError": True,
+            }
+
+        runtime_handler = entry.handler
+
+    if runtime_handler:
+        import time as _time_runtime
+        _t0_runtime = _time_runtime.time()
+        result = await runtime_handler(sanitized_arguments)
+        _latency_runtime = (_time_runtime.time() - _t0_runtime) * 1000
+        try:
+            from ..mcp.structured_admin import mcp_telemetry, record_mcp_call
+            _rchars_rt = len(json.dumps(result, separators=(',',':'))) if result else 0
+            mcp_telemetry.record(canonical_name, _latency_runtime, success=True, response_chars=_rchars_rt)
+            record_mcp_call(canonical_name, _latency_runtime, "success", "mcp_runtime", result_size=_rchars_rt)
+        except Exception:
+            pass
+        return {
+            "content": [
+                {"type": "text", "text": json.dumps(result, separators=(',',':'))}
+            ],
+            "isError": False,
+        }
 
     # Map tool names to internal handlers (v3 + v4 Namen explizit)
     tool_map = {
@@ -2323,9 +2696,20 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
         # System & Compatibility
         "check_compatibility": handle_check_compatibility,
         "debug_mcp_request": handle_debug_mcp_request,
+        "mcp_write_fallback": handle_mcp_write_fallback,
+        "nova_chat_agent": handle_nova_chat_agent,
+        "tool_introspect": handle_tool_introspect,
             "restart_backend": handle_restart_backend,
             "restart_agent": handle_restart_agent,
             "execute_mcp_tool": handle_execute_mcp_tool,
+        "notify_prepare": handle_notify_prepare,
+        "mail_prepare": handle_mail_prepare,
+        "service_change_prepare": handle_service_change_prepare,
+        "container_change_prepare": handle_container_change_prepare,
+        "code_edit_preview": handle_code_edit_preview,
+        "code_patch_preview": handle_code_patch_preview,
+        "shell_plan": handle_shell_plan,
+        "restart_plan": handle_restart_plan,
         }
     # Merge with dynamic handlers from services
     tool_map.update(OLLAMA_HANDLERS)
@@ -2368,7 +2752,7 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
         try:
             import time as _time_v4
             _t0_v4 = _time_v4.time()
-            v4_result = await call_v4_tool(tool_name, arguments)
+            v4_result = await call_v4_tool(tool_name, sanitized_arguments)
             _lat_v4 = (_time_v4.time() - _t0_v4) * 1000
             try:
                 from ..mcp.structured_admin import mcp_telemetry, record_mcp_call
@@ -2398,7 +2782,7 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
 
     import time as _time_inner
     _t0 = _time_inner.time()
-    result = await handler(arguments)
+    result = await handler(sanitized_arguments)
     _latency = (_time_inner.time() - _t0) * 1000
     
     # v2.85: Telemetry recording for unified handler
@@ -2416,6 +2800,32 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
         ],
         "isError": False,
     }
+
+
+
+async def handle_notify_prepare(params: Dict[str, Any]) -> Dict[str, Any]:
+    return mcp_proposals.notify_prepare(**params)
+
+async def handle_mail_prepare(params: Dict[str, Any]) -> Dict[str, Any]:
+    return mcp_proposals.mail_prepare(**params)
+
+async def handle_service_change_prepare(params: Dict[str, Any]) -> Dict[str, Any]:
+    return mcp_proposals.service_change_prepare(**params)
+
+async def handle_container_change_prepare(params: Dict[str, Any]) -> Dict[str, Any]:
+    return mcp_proposals.container_change_prepare(**params)
+
+async def handle_code_edit_preview(params: Dict[str, Any]) -> Dict[str, Any]:
+    return mcp_proposals.code_edit_preview(**params)
+
+async def handle_code_patch_preview(params: Dict[str, Any]) -> Dict[str, Any]:
+    return mcp_proposals.code_patch_preview(**params)
+
+async def handle_shell_plan(params: Dict[str, Any]) -> Dict[str, Any]:
+    return mcp_proposals.shell_plan(**params)
+
+async def handle_restart_plan(params: Dict[str, Any]) -> Dict[str, Any]:
+    return mcp_proposals.restart_plan(**params)
 
 
 # ============================================================================
@@ -2689,6 +3099,7 @@ async def handle_codebase_file(params: Dict[str, Any]) -> Dict[str, Any]:
 
 BACKUP_DIR = BACKEND_ROOT / ".backups"
 EDIT_LOG_FILE = BACKEND_ROOT / ".edit_log.jsonl"
+MCP_WRITE_FALLBACK_FILE = BACKEND_ROOT / ".mcp_write_fallbacks.json"
 
 # Edit-specific sensitive paths
 EDIT_FORBIDDEN_PATHS = {
@@ -2739,6 +3150,221 @@ def _log_edit(action: str, path: str, details: Dict[str, Any]):
 
     with open(EDIT_LOG_FILE, "a") as f:
         f.write(json.dumps(log_entry) + "\n")
+
+
+def _load_mcp_write_fallbacks() -> Dict[str, Dict[str, Any]]:
+    if not MCP_WRITE_FALLBACK_FILE.exists():
+        return {}
+    try:
+        data = json.loads(MCP_WRITE_FALLBACK_FILE.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+    if isinstance(data, dict):
+        return data
+    return {}
+
+
+def _save_mcp_write_fallbacks(entries: Dict[str, Dict[str, Any]]) -> None:
+    MCP_WRITE_FALLBACK_FILE.write_text(
+        json.dumps(entries, indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
+
+
+def _normalize_mcp_write_fallback_payload(tool_name: str, arguments: Dict[str, Any]) -> tuple[str, Dict[str, Any]]:
+    payload = dict(arguments)
+
+    if tool_name == "code_patch":
+        payload = {
+            "path": payload.get("path", "app/main.py"),
+            "mode": "replace",
+            "old_text": payload.get("old_text"),
+            "new_text": payload.get("new_text"),
+            "dry_run": payload.get("dry_run", False),
+            "create_backup": payload.get("create_backup", True),
+        }
+        tool_name = "code_edit"
+
+    elif tool_name in {"code_edit", "codebase_edit"}:
+        payload = {
+            "path": payload.get("path"),
+            "mode": payload.get("mode"),
+            "old_text": payload.get("old_text"),
+            "new_text": payload.get("new_text"),
+            "line_number": payload.get("line_number"),
+            "start_line": payload.get("start_line"),
+            "end_line": payload.get("end_line"),
+            "dry_run": payload.get("dry_run", False),
+            "create_backup": payload.get("create_backup", True),
+        }
+
+    elif tool_name == "notify_send":
+        payload = {
+            "title": payload.get("title", ""),
+            "body": payload.get("body", ""),
+            "source": payload.get("source", "mcp"),
+            "priority": payload.get("priority", "normal"),
+            "tags": payload.get("tags", []),
+            "action_url": payload.get("action_url"),
+            "auto_resolve": payload.get("auto_resolve", False),
+        }
+
+    elif tool_name == "mail_send":
+        payload = {
+            "to": payload.get("to", ""),
+            "subject": payload.get("subject", ""),
+            "body": payload.get("body", ""),
+            "cc": payload.get("cc"),
+            "reply_to": payload.get("reply_to"),
+        }
+
+    elif tool_name == "service_control":
+        payload = {
+            "action": payload.get("action"),
+            "service": payload.get("service"),
+            "lines": payload.get("lines"),
+        }
+
+    elif tool_name == "container_control":
+        payload = {
+            "action": payload.get("action"),
+            "container": payload.get("container"),
+            "lines": payload.get("lines"),
+        }
+
+    elif tool_name == "restart":
+        payload = {
+            "target": payload.get("target"),
+        }
+
+    return tool_name, payload
+
+
+async def _store_mcp_write_fallback(
+    tool_name: str,
+    arguments: Dict[str, Any],
+    reason: str,
+    request_meta: Optional[Dict[str, Any]] = None,
+) -> Dict[str, Any]:
+    normalized_tool_name, normalized_arguments = _normalize_mcp_write_fallback_payload(
+        tool_name,
+        arguments,
+    )
+    fallback_id = uuid4().hex
+    entries = _load_mcp_write_fallbacks()
+    entries[fallback_id] = {
+        "fallback_id": fallback_id,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "status": "pending",
+        "tool_name": normalized_tool_name,
+        "original_tool_name": tool_name,
+        "arguments": normalized_arguments,
+        "reason": reason,
+        "request_meta": request_meta or {},
+    }
+    _save_mcp_write_fallbacks(entries)
+    return entries[fallback_id]
+
+
+async def _execute_mcp_write_fallback(fallback_id: str) -> Dict[str, Any]:
+    entries = _load_mcp_write_fallbacks()
+    entry = entries.get(fallback_id)
+    if not entry:
+        raise ValueError(f"Fallback entry not found: {fallback_id}")
+
+    if entry.get("status") == "applied":
+        return {
+            "fallback_id": fallback_id,
+            "status": "already_applied",
+            "tool_name": entry.get("tool_name"),
+            "delegated_from": entry.get("original_tool_name", entry.get("tool_name")),
+            "result": entry.get("result"),
+            "tool_output": entry.get("tool_output"),
+        }
+
+    tool_name = entry.get("tool_name", "")
+    arguments = entry.get("arguments", {}) or {}
+
+    fallback_handlers = {
+        "code_edit": handle_codebase_edit,
+        "codebase_edit": handle_codebase_edit,
+        "notify_send": NOTIFY_TOOL_HANDLERS.get("notify_send"),
+        "mail_send": MCP_HANDLERS.get("mail_send"),
+        "service_control": STRUCTURED_ADMIN_HANDLERS.get("service_control"),
+        "container_control": STRUCTURED_ADMIN_HANDLERS.get("container_control"),
+        "restart": handle_restart_backend if arguments.get("target") == "backend" else handle_restart_agent,
+    }
+
+    handler = fallback_handlers.get(tool_name)
+
+    if not handler:
+        entry["status"] = "failed"
+        entry["failed_at"] = datetime.now(timezone.utc).isoformat()
+        entry["error"] = f"Unsupported fallback tool: {tool_name}"
+        entries[fallback_id] = entry
+        _save_mcp_write_fallbacks(entries)
+        return {
+            "fallback_id": fallback_id,
+            "status": "failed",
+            "tool_name": tool_name,
+            "delegated_from": entry.get("original_tool_name", tool_name),
+            "error": entry["error"],
+            "tool_output": {
+                "ok": False,
+                "error_type": "unsupported_fallback_tool",
+                "message": entry["error"],
+            },
+        }
+
+    try:
+        if tool_name == "restart" and arguments.get("target") != "backend":
+            result = await handler({"agent_id": arguments.get("target", "")})
+        else:
+            result = await handler(arguments)
+
+        entry["status"] = "applied"
+        entry["applied_at"] = datetime.now(timezone.utc).isoformat()
+        entry["result"] = result
+        entry["tool_output"] = {
+            "ok": True,
+            "tool": tool_name,
+            "delegated_from": entry.get("original_tool_name", tool_name),
+            "result": result,
+        }
+        entries[fallback_id] = entry
+        _save_mcp_write_fallbacks(entries)
+
+        return {
+            "fallback_id": fallback_id,
+            "status": "applied",
+            "tool_name": tool_name,
+            "delegated_from": entry.get("original_tool_name", tool_name),
+            "result": result,
+            "tool_output": entry["tool_output"],
+        }
+
+    except Exception as exc:
+        entry["status"] = "failed"
+        entry["failed_at"] = datetime.now(timezone.utc).isoformat()
+        entry["error"] = str(exc)
+        entry["tool_output"] = {
+            "ok": False,
+            "tool": tool_name,
+            "delegated_from": entry.get("original_tool_name", tool_name),
+            "error_type": exc.__class__.__name__,
+            "message": str(exc),
+        }
+        entries[fallback_id] = entry
+        _save_mcp_write_fallbacks(entries)
+
+        return {
+            "fallback_id": fallback_id,
+            "status": "failed",
+            "tool_name": tool_name,
+            "delegated_from": entry.get("original_tool_name", tool_name),
+            "error": str(exc),
+            "tool_output": entry["tool_output"],
+        }
 
 
 async def handle_codebase_edit(params: Dict[str, Any]) -> Dict[str, Any]:
@@ -3590,6 +4216,9 @@ MCP_HANDLERS: Dict[str, Handler] = {
     "prompts/get": handle_prompts_render,  # prompts/get maps to render
     "resources/list": handle_resources_list_mcp,
     "resources/read": handle_resources_read_mcp,
+    "mcp_write_fallback": handle_mcp_write_fallback,
+    "nova_chat_agent": handle_nova_chat_agent,
+    "tool_introspect": handle_tool_introspect,
 
     # Original handlers
     "crawl_url": handle_crawl_url,
@@ -3693,8 +4322,16 @@ MCP_HANDLERS.update(AGENT_ROUTER_HANDLERS)         # agent_task_create, agent_sk
 MCP_HANDLERS.update(LLM_COMPAT_HANDLERS)
 MCP_HANDLERS.update(HOTRELOAD_HANDLERS)
 MCP_HANDLERS.update(MEMORY_INDEX_HANDLERS)
+MCP_HANDLERS.update(GROUP_CHAT_HANDLERS)     # group_chat_create, _ask, _message, _read, _status, _list, _consolidate, _assign
+MCP_HANDLERS.update(SWARM_HANDLERS)          # swarm_broadcast, swarm_status, swarm_top_results, swarm_consolidated
+MCP_HANDLERS.update(WORDPRESS_HANDLERS)      # wp_publish_post, wp_list_posts, wp_update_post, wp_delete_post, wp_create_page, wp_multi_ai_post
+MCP_HANDLERS.update(BROWSER_HANDLERS)
+MCP_HANDLERS.update(REDIS_HANDLERS)          # cache_stats_v4, cache_invalidate_v4, redis_cleanup
+MCP_HANDLERS.update(PERFORMANCE_HANDLERS)    # model_performance, model_recommend
 
 # Register all handlers with the tool_registry_v3
+MCP_HANDLERS["debug"] = handle_debug_action
+
 register_handlers_from_dict(MCP_HANDLERS)
 
 mcp_logger.info(f"MCP Handlers registered: {len(MCP_HANDLERS)} handlers, {registry_v3_tool_count()} tools in registry v3")
@@ -3937,6 +4574,19 @@ async def mcp_messages_handler(request: Request, session_id: Optional[str] = Non
         params = body.get("params", {})
         req_id = body.get("id")
 
+        if method == "tools/call" and isinstance(params, dict):
+            params = dict(params)
+            arguments = params.get("arguments", {})
+            if not isinstance(arguments, dict):
+                arguments = {}
+            arguments = dict(arguments)
+            arguments["_request_meta"] = {
+                "user_agent": request.headers.get("user-agent", ""),
+            }
+            if session_id:
+                arguments["_node_id"] = session_id
+            params["arguments"] = arguments
+
         if jsonrpc_version != "2.0":
             error_msg = "jsonrpc field must be '2.0'"
             return JSONResponse(
@@ -4078,6 +4728,19 @@ async def _process_mcp_request(
     method = body.get("method")
     params = body.get("params", {})
     req_id = body.get("id")
+
+    if method == "tools/call" and isinstance(params, dict):
+        params = dict(params)
+        arguments = params.get("arguments", {})
+        if not isinstance(arguments, dict):
+            arguments = {}
+        arguments = dict(arguments)
+        arguments["_request_meta"] = {
+            "user_agent": request.headers.get("user-agent", ""),
+        }
+        if session_id:
+            arguments["_node_id"] = session_id
+        params["arguments"] = arguments
 
     # Validate JSON-RPC version
     if jsonrpc_version != "2.0":
@@ -4440,26 +5103,18 @@ async def mcp_delete_session(request: Request):
 # ChatGPT sucht diese Endpoints BEVOR es MCP verbindet
 # ============================================================================
 
-@router.get("/.well-known/oauth-authorization-server", include_in_schema=False)
-@router.get("/.well-known/oauth-authorization-server/", include_in_schema=False)
+@public_router.get("/.well-known/oauth-authorization-server", include_in_schema=False)
+@public_router.get("/.well-known/oauth-authorization-server/", include_in_schema=False)
 async def oauth_authorization_server_metadata(request: Request):
     """OAuth 2.0 Authorization Server Metadata - ChatGPT requirement"""
     base = str(request.base_url).rstrip("/")
-    return JSONResponse({
-        "issuer": base,
-        "authorization_endpoint": f"{base}/v1/mcp/authorize",
-        "token_endpoint": f"{base}/v1/mcp/token",
-        "registration_endpoint": f"{base}/v1/mcp/register",
-        "response_types_supported": ["code"],
-        "grant_types_supported": ["authorization_code", "client_credentials"],
-        "token_endpoint_auth_methods_supported": ["client_secret_basic", "none"],
-        "scopes_supported": ["mcp"],
-        "code_challenge_methods_supported": ["S256"],
-    })
+    metadata = get_oauth_metadata(base)
+    metadata["response_types_supported"] = ["code"]
+    return JSONResponse(metadata)
 
 
-@router.get("/.well-known/mcp", include_in_schema=False)
-@router.get("/.well-known/mcp/", include_in_schema=False)
+@public_router.get("/.well-known/mcp", include_in_schema=False)
+@public_router.get("/.well-known/mcp/", include_in_schema=False)
 async def mcp_discovery(request: Request):
     """MCP Server Discovery - ChatGPT/Claude"""
     base = str(request.base_url).rstrip("/")
