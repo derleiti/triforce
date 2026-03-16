@@ -327,8 +327,7 @@ async def lifespan(app: FastAPI):
             except Exception as _e:
                 logger.warning(f"Core-Agent-Init fehlgeschlagen (nicht kritisch): {_e}")
 
-        import asyncio as _asyncio2
-        _asyncio2.create_task(_init_core_agents())
+        pass  # _init_core_agents deaktiviert -- agents muessen tool-restriction bekommen
 
     except Exception as e:
         logger.warning(f"Task Scheduler/Spawner init failed: {e}")
