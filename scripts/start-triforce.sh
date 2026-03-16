@@ -11,6 +11,10 @@ if [ -f "$REPO_DIR/config/triforce.env" ]; then
     set +a
 fi
 
+# __pycache__ clear vor Start (verhindert stale bytecode nach git pull)
+echo "[TRIFORCE] Clearing __pycache__..."
+find "$REPO_DIR/app" -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+
 "$REPO_DIR/scripts/detect-hardware.sh"
 
 if [ -f "/run/triforce/hw.env" ]; then
