@@ -2483,6 +2483,23 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
     canonical_name = tool_name
     request_meta, sanitized_arguments, node_id, tier = _extract_policy_context(params)
 
+    # ── Tier-1 Tool-Guard ─────────────────────────────────────────────────────
+    # System-Agents (tier=1) dürfen NUR explizit erlaubte Tools aufrufen.
+    # Diese Restriction ist HART — kein Fallback, kein Bypass möglich.
+    if tier == 1 or tier == "1":
+        from ..services.agent_spawner import SYSTEM_AGENT_ALLOWED_TOOLS
+        canonical_for_check = normalize_tool_name(tool_name) if tool_name else tool_name
+        if canonical_for_check not in SYSTEM_AGENT_ALLOWED_TOOLS:
+            logger.warning(
+                f"TIER1_BLOCK | Tool '{canonical_for_check}' von Tier-1-Agent blockiert"
+            )
+            return {
+                "error": f"Tool '{canonical_for_check}' ist für System-Agents (Tier 1) nicht erlaubt.",
+                "allowed_tools": sorted(SYSTEM_AGENT_ALLOWED_TOOLS),
+                "hint": "Spawne einen Worker-Agent (Tier 2) via agent_spawn_worker für schreibende Operationen.",
+            }
+    # ─────────────────────────────────────────────────────────────────────────
+
     proposal = None
     if should_convert_to_proposal and should_convert_to_proposal(canonical_name):
         proposal = build_proposal_response(canonical_name, sanitized_arguments)
