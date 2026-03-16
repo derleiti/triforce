@@ -86,25 +86,52 @@ async def _fetch_url(url: str) -> str:
 
 
 async def _llm_answer(prompt: str, lang: str = "de") -> str:
-    """Schneller LLM-Call via nova_chat_agent (kein Agent-Spawn)."""
+    """Schneller LLM-Call direkt via chat_service (Ollama/Groq Fallback)."""
+    sys_prompt = (
+        "Du bist Nova, ein hilfreicher KI-Assistent von AILinux. "
+        "Antworte präzise und auf Deutsch." if lang == "de" else
+        "You are Nova, a helpful AI assistant by AILinux. Be concise."
+    )
+    messages = [
+        {"role": "system", "content": sys_prompt},
+        {"role": "user", "content": prompt},
+    ]
+    # Primär: Groq via chat_router (schnell, kostenlos, kein Agent-Spawn)
     try:
-        from app.services.nova_chat_agent import nova_chat_agent_service
-        sys_prompt = (
-            "Du bist Nova, ein hilfreicher KI-Assistent von AILinux. "
-            "Antworte präzise und auf Deutsch." if lang == "de" else
-            "You are Nova, a helpful AI assistant by AILinux. Be concise."
-        )
-        result = await nova_chat_agent_service.chat(
-            provider="auto",
-            message=prompt,
-            system=sys_prompt,
+        from app.services.chat_router import ChatRouter
+        router = ChatRouter()
+        answer = await router.chat(
+            model="llama-3.3-70b-versatile",
+            messages=messages,
             max_tokens=800,
-            timeout=30,
         )
-        return result.get("response", result.get("content", result.get("text", ""))).strip()
+        if answer and not answer.startswith("error"):
+            return answer.strip()
     except Exception as e:
-        logger.warning(f"playground llm: {e}")
-        return ""
+        logger.debug(f"playground groq: {e}")
+
+    # Fallback: Ollama direkt
+    try:
+        import aiohttp
+        payload = {
+            "model": "qwen3:8b",
+            "messages": messages,
+            "stream": False,
+            "options": {"num_predict": 800, "temperature": 0.4},
+        }
+        async with aiohttp.ClientSession() as s:
+            async with s.post(
+                "http://localhost:11434/api/chat",
+                json=payload,
+                timeout=aiohttp.ClientTimeout(total=30)
+            ) as resp:
+                if resp.status == 200:
+                    data = await resp.json()
+                    return data.get("message", {}).get("content", "").strip()
+    except Exception as e:
+        logger.warning(f"playground ollama fallback: {e}")
+
+    return ""
 
 
 # ---------------------------------------------------------------------------
