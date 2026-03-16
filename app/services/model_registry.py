@@ -121,6 +121,14 @@ def detect_capabilities(model_name: str, supported_methods: List[str] = None) ->
     if not capabilities:
         capabilities.append("chat")
 
+    # Ollama-Modelle können immer chatten — egal ob reasoning/code/vision erkannt
+    # detect_capabilities() wurde ursprünglich für Gemini gebaut, Ollama braucht
+    # immer "chat" als Basis-Capability.
+    if supported_methods is None and "chat" not in capabilities:
+        # Kein supported_methods → Ollama oder unbekannter Provider
+        # Bei Gemini wird supported_methods immer übergeben
+        capabilities.append("chat")
+
     # Map capabilities to roles
     for cap in capabilities:
         role = CAPABILITY_TO_ROLE.get(cap)
