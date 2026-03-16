@@ -541,6 +541,24 @@ class AgentSpawner:
             tags     = notif.get("tags", [])
             notif_id = notif.get("id", "")
 
+            # Deploy-Pipeline: deploy_ready tag -> sofort triggern
+            try:
+                from app.services.nova_deploy_pipeline import watch_for_deploy_ready
+                if await watch_for_deploy_ready(title, body, tags):
+                    mark_resolved(notif_id)
+                    continue
+            except Exception as _dpe:
+                logger.debug(f"deploy_pipeline hook: {_dpe}")
+
+            # Deploy-Pipeline: deploy_ready tag -> sofort triggern
+            try:
+                from app.services.nova_deploy_pipeline import watch_for_deploy_ready
+                if await watch_for_deploy_ready(title, body, tags):
+                    mark_resolved(notif_id)
+                    continue
+            except Exception as _dpe:
+                logger.debug(f"deploy_pipeline hook: {_dpe}")
+
             # Nur HIGH + CRITICAL
             if prio not in ("high", "critical"):
                 continue
