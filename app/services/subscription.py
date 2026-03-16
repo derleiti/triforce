@@ -1,7 +1,7 @@
 """
-AILinux Subscription v2.0
-DEMO = no login, limited tools/context
-SUBSCRIBER = 30EUR/month, weekly quota
+AILinux Subscription v2.1
+FREE       = Ollama + Free-Tier (Gemini, Groq) — grosszuegiges Limit
+SUBSCRIBER = 35EUR/month — alle Modelle + Swarm + Federation-Zugang
 """
 from __future__ import annotations
 import logging, os
@@ -23,13 +23,24 @@ class PlanType(str, Enum):
     DEMO       = "demo"
     SUBSCRIBER = "subscriber"
 
-WEEKLY_LIMITS  = {PlanType.DEMO: 5_000,  PlanType.SUBSCRIBER: 500_000}
-CONTEXT_LIMITS = {PlanType.DEMO: 2_048,  PlanType.SUBSCRIBER: 32_768}
+# Woechentliche Token-Limits — grosszuegig, Schutz gegen API-Scraper
+WEEKLY_LIMITS = {
+    PlanType.DEMO:       200_000,    # ~40 normale Gespraeche/Woche
+    PlanType.SUBSCRIBER: 5_000_000,  # praktisch unlimitiert
+}
+CONTEXT_LIMITS = {PlanType.DEMO: 8_192, PlanType.SUBSCRIBER: 128_000}
+
+# Free darf alle normalen Tools — gesperrt sind nur:
+# Federation-Nodes (kostet Remote-Ressourcen) und Swarm-Koordination
 DEMO_BLOCKED_TOOLS = {
-    "bash_exec","tristar_shell_exec","codebase_edit","codebase_create",
-    "file_write","restart_service","restart_backend","restart_agent",
-    "cli-agents_call","cli-agents_broadcast","cli-agents_start",
-    "memory_store","tristar_memory_store","evolve","hotreload",
+    # Federation — nur Subscriber
+    "remote_admin", "remote_exec", "remote_task",
+    # Swarm ueber Federation
+    "mesh_task", "queue_research", "queue_broadcast",
+    "group_chat_create", "group_chat_consolidate",
+    "agent_broadcast", "swarm_broadcast",
+    # Systemaenderungen
+    "restart", "service_control", "package_manager",
 }
 
 def _iso_week_key(dt): return dt.strftime("%G-W%V")
