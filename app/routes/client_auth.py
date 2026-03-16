@@ -865,12 +865,13 @@ async def forgot_password(request: PasswordResetRequestModel):
 
         reset_url = f"https://login.ailinux.me/?reset_token={token}"
 
-        # Mail via MCP mail_send Handler senden
+        # Mail via internen MCP-HTTP-Call senden (MCP_HANDLERS dict erst zur Laufzeit gefüllt)
         try:
-            from app.routes.mcp import MCP_HANDLERS
-            mail_handler = MCP_HANDLERS.get("mail_send")
-            if mail_handler:
-                await mail_handler({
+            import aiohttp, base64 as _b64
+            _auth = _b64.b64encode(b"zombie:e9F8DuKbH-").decode()
+            _payload = {
+                "jsonrpc": "2.0", "id": 1, "method": "tools/call",
+                "params": {"name": "mail_send", "arguments": {
                     "to": email,
                     "subject": "AILinux – Passwort zurücksetzen",
                     "body": (
@@ -883,8 +884,19 @@ async def forgot_password(request: PasswordResetRequestModel):
                         f"nova@ailinux.me | https://ailinux.me"
                     ),
                     "reply_to": "nova@ailinux.me",
-                })
-                logger.info(f"Password reset mail sent to {email}")
+                }}
+            }
+            async with aiohttp.ClientSession() as session:
+                async with session.post(
+                    "http://localhost:9000/v1/mcp",
+                    json=_payload,
+                    headers={"Content-Type": "application/json",
+                             "Authorization": f"Basic {_auth}"},
+                    timeout=aiohttp.ClientTimeout(total=15)
+                ) as resp:
+                    _r = await resp.json()
+                    _content = _r.get("result", {}).get("content", [{}])[0].get("text", "")
+                    logger.info(f"Password reset mail sent to {email}: {_content[:100]}")
         except Exception as e:
             logger.warning(f"Reset mail failed: {e}")
 
