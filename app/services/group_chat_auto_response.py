@@ -40,7 +40,7 @@ API_AGENT_MODELS: Dict[str, str] = {
     "cerebras-api": "cerebras/llama3.1-8b",
     "ollama-qwen": "qwen3-coder:480b-cloud",
     "ollama-kimi": "kimi-k2-thinking:cloud",
-    "openrouter-api": "openrouter/mistralai/mistral-small-latest",
+    "openrouter-api": "openrouter/meta-llama/llama-3.3-70b-instruct",
 }
 
 # Which agents use Ollama directly (vs cloud API proxy)
