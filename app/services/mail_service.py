@@ -195,11 +195,12 @@ def mail_send(
     context.check_hostname = False
     context.verify_mode = ssl.CERT_NONE
 
+    ehlo_name = s.mail_hostname or "mail.ailinux.me"
     with smtplib.SMTP(host, port, timeout=8) as server:
+        server.ehlo(ehlo_name)
         if use_starttls:
             server.starttls(context=context)
-        # FIX S16-SMTP-AUTH: docker-mailserver hat smtpd_sasl_auth_enable=no
-        # → login() nur aufrufen wenn Credentials vorhanden, sonst trusted relay (mynetworks)
+            server.ehlo(ehlo_name)
         if user and password:
             server.login(user, password)
         server.send_message(msg)
