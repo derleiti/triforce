@@ -2500,6 +2500,36 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
             }
     # ─────────────────────────────────────────────────────────────────────────
 
+    # ── IP-Guard Layer 2 ─────────────────────────────────────────────────────
+    # Docker-interne IPs (172.18-20.x) dürfen NIEMALS systemverändernde
+    # Tools aufrufen — unabhängig vom Tier. Verhindert Agent→Shell→Restart.
+    _DANGEROUS_TOOLS = frozenset({
+        "shell", "task_runner", "custom_exec", "custom_binary",
+        "service_control", "container_control", "package_manager",
+        "restart", "binary_exec", "code_edit", "code_patch", "file_ops",
+        "git", "git_ops",
+    })
+    _caller_ip = str((request_meta or {}).get("client_ip", "")
+                     or (request_meta or {}).get("ip", ""))
+    _canonical_g = normalize_tool_name(tool_name) if tool_name else (tool_name or "")
+    if (
+        (_caller_ip.startswith("172.18.") or
+         _caller_ip.startswith("172.19.") or
+         _caller_ip.startswith("172.20."))
+        and _canonical_g in _DANGEROUS_TOOLS
+    ):
+        logger.warning(
+            f"IP_GUARD_BLOCK | '{_canonical_g}' von Docker-IP {_caller_ip} blockiert"
+        )
+        return {
+            "error": (
+                f"Tool '{_canonical_g}' ist für interne Docker-Clients gesperrt. "
+                "Systemverändernde Operationen sind von dieser Quelle nicht erlaubt."
+            ),
+            "blocked_ip": _caller_ip,
+        }
+    # ─────────────────────────────────────────────────────────────────────────
+
     proposal = None
     if should_convert_to_proposal and should_convert_to_proposal(canonical_name):
         proposal = build_proposal_response(canonical_name, sanitized_arguments)
