@@ -348,6 +348,30 @@ WICHTIG: git add + commit IMMER vor service_control restart.
 Session: {session_id}
 """,
 
+    "swarm_coordinator": """\
+Du bist ein Swarm-Koordinations-Agent. Du leitest parallele Multi-Agent-Operationen.
+
+AUFTRAG:
+{context}
+
+WORKFLOW:
+1. Aufgabe in Teil-Tasks zerlegen
+2. Passende Agents via agent_broadcast oder mehrfach agent_spawn_worker spawnen
+3. Ergebnisse via agent_chat_read sammeln
+4. Konsolidiertes Ergebnis via notify_send melden
+
+BEFUGNISSE:
+\u2705 agent_broadcast, agent_call, agent_spawn_worker
+\u2705 Alle readonly-Operationen
+\u2705 group_chat_create / group_chat_ask für Koordination
+
+VERBOTEN:
+\u274c Direkte Code-Editierung oder Shell
+\u274c Service-Restarts
+
+Session: {session_id}
+""",
+
     "code_patcher": """\
 Du bist ein Code-Patcher Worker-Agent.
 
@@ -376,6 +400,8 @@ SYSTEM_PROMPTS = {
     "marketing_agent":  WORKER_AGENT_PROMPTS["marketing_agent"],
     "research_agent":   WORKER_AGENT_PROMPTS["research_agent"],
     "content_agent":    WORKER_AGENT_PROMPTS["content_agent"],
+    "swarm_coordinator": WORKER_AGENT_PROMPTS["swarm_coordinator"],
+    "swarm_needed":      WORKER_AGENT_PROMPTS["swarm_coordinator"],
     "implementation_agent": WORKER_AGENT_PROMPTS["implementation_agent"],
     "user_specialist":  """\
 Du bist ein spezialisierter Agent für diese Session.
@@ -596,6 +622,11 @@ class AgentSpawner:
                                     "disk full", "oom", "crashed")):
             return "system_error"
 
+        # Swarm / Multi-Agent Koordination
+        if any(k in text for k in ("swarm", "koordination", "multi-agent", "parallel tasks",
+                                    "agent koordin", "swarm needed")):
+            return "swarm_needed"
+
         # HIGH ohne spezifischen Match → ops
         if "critical" in text:
             return "ops_handler"
@@ -782,6 +813,20 @@ class AgentSpawner:
                 "   Commit-Format: fix(<modul>): <beschreibung> — research-approved by zombie\n"
                 "7. notify_send → Ergebnis melden: Datei, was geändert, Test-Output"
             ),
+            "swarm_coordinator": (
+                f"SWARM-KOORDINATION:\n\n{context[:2000]}\n\n"
+                "1. Aufgabe analysieren und in Teilaufgaben zerlegen\n"
+                "2. Teil-Agents spawnen (agent_spawn_worker oder agent_broadcast)\n"
+                "3. Ergebnisse via agent_chat_read einsammeln\n"
+                "4. Konsolidiertes Ergebnis via notify_send melden"
+            ),
+            "swarm_needed": (
+                f"SWARM-KOORDINATION:\n\n{context[:2000]}\n\n"
+                "1. Aufgabe analysieren und in Teilaufgaben zerlegen\n"
+                "2. Teil-Agents spawnen (agent_spawn_worker oder agent_broadcast)\n"
+                "3. Ergebnisse via agent_chat_read einsammeln\n"
+                "4. Konsolidiertes Ergebnis via notify_send melden"
+            ),
         }
         return prompts.get(issue_type, f"AUFGABE:\n\n{context[:2000]}")
 
@@ -797,6 +842,8 @@ class AgentSpawner:
             "support_agent":        "claude-mcp",
             "marketing_agent":      "claude-mcp",
             "content_agent":        "gemini-mcp",
+            "swarm_coordinator":   "gemini-mcp",
+            "swarm_needed":        "gemini-mcp",
             "user_specialist":      "claude-mcp",
         }
         return mapping.get(issue_type, "claude-mcp")
