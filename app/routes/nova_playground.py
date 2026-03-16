@@ -101,7 +101,7 @@ async def _llm_answer(prompt: str, lang: str = "de") -> str:
             max_tokens=800,
             timeout=30,
         )
-        return result.get("content", result.get("text", "")).strip()
+        return result.get("response", result.get("content", result.get("text", ""))).strip()
     except Exception as e:
         logger.warning(f"playground llm: {e}")
         return ""
