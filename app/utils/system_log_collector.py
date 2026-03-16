@@ -347,7 +347,7 @@ class SystemLogCollector:
                         ("triforce.*failed","TriForce Failed","critical"),
                         ("service.*entered failed","Service Failed","critical"),
                         ("docker.*failed","Docker Failed","critical"),
-                        ("Traceback \(most recent","Python Traceback","high"),
+                        (r"Traceback \(most recent","Python Traceback","high"),
                         ("connection refused","Connection Refused","high"),
                         ("authentication failure","Auth Failure","high"),
                         ("invalid user.*from","Invalid Login","high"),
