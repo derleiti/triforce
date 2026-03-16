@@ -18,7 +18,16 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 # ── Config ────────────────────────────────────────────────────────────────────
-FLARUM_API      = "http://172.19.0.3:8888/api"
+import subprocess as _sp
+def _flarum_ip():
+    try:
+        r = _sp.check_output(["docker","inspect","flarum","--format",
+            "{{range .NetworkSettings.Networks}}{{.IPAddress}} {{end}}"],
+            stderr=_sp.DEVNULL).decode().split()[0]
+        return r
+    except Exception:
+        return "172.19.0.4"
+FLARUM_API = f"http://{_flarum_ip()}:8888/api"
 FLARUM_TOKEN    = "b799c9a01a24b3eb22c2b1a92cc21f622c6f6f24"
 NOVA_USER_ID    = 4
 

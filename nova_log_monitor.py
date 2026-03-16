@@ -95,6 +95,17 @@ IGNORE_PATTERNS = [
     r"drkonqi-coredump-launcher",  # KDE Desktop Noise — kein Server-Event
     r"mcp\.notifications.*NOTIFY",  # TriForce INFO-Logs die WARNING im Body haben
     r"\|NOTIFY \|",                # Notification-Log-Zeilen generell filtern
+    r"AUTH_BYPASS",                  # Interne MCP-Auth — kein Sicherheitsproblem
+    r"trusted_internal_bypass",      # Doppel-Filter AUTH_BYPASS
+    r"heartbeat_ack",                # Federation Heartbeats — normaler Betrieb
+    r"Raw WS message.*heartbeat",    # WS-Heartbeat-Frames
+    r"Reconnecting to .* in 30s",    # Federation-Reconnect — erwartet
+    r"federation\.ws.*Connecting",   # Federation-Verbindungsversuche
+    r"TOOL_CALL_OK",                 # Erfolgreiche MCP-Tool-Calls — kein Alert
+    r"uvicorn\.access.*200",         # Normale HTTP 200 Responses
+    r"model_registry.*Discovered",   # Model-Discovery — Startup-Normal
+    r"Hardware.*Auto-Detection",     # Hardware-Detect beim Start
+    r"TriForce Logging v",           # Startup-Logs
 ]
 
 # ── MCP Client ────────────────────────────────────────────────────────────────
