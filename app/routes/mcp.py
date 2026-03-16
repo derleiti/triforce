@@ -2505,37 +2505,9 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
             }
     # ─────────────────────────────────────────────────────────────────────────
 
-    # ── IP-Guard Layer 2 ─────────────────────────────────────────────────────
-    # Docker-interne IPs (172.18-20.x) dürfen NIEMALS systemverändernde
-    # Tools aufrufen — unabhängig vom Tier. Verhindert Agent→Shell→Restart.
-    # IP-Guard: nur echte Shell/Restart-Tools blockieren
-    # git_ops, code_edit, file_ops, task_runner bleiben erlaubt
-    _DANGEROUS_TOOLS = frozenset({
-        "shell",            # bash-Zugriff → killt Backend
-        "service_control",  # systemd restart/stop
-        "custom_exec",      # template-Shell
-    })
-    # IP aus ContextVar (gesetzt beim HTTP-Request-Eingang) — zuverlässiger als request_meta
-    _caller_ip = _request_ip.get("") or str((request_meta or {}).get("client_ip", "")
-                     or (request_meta or {}).get("ip", ""))
-    _canonical_g = normalize_tool_name(tool_name) if tool_name else (tool_name or "")
-    if (
-        (_caller_ip.startswith("172.18.") or
-         _caller_ip.startswith("172.19.") or
-         _caller_ip.startswith("172.20."))
-        and _canonical_g in _DANGEROUS_TOOLS
-    ):
-        logger.warning(
-            f"IP_GUARD_BLOCK | '{_canonical_g}' von Docker-IP {_caller_ip} blockiert"
-        )
-        return {
-            "error": (
-                f"Tool '{_canonical_g}' ist für interne Docker-Clients gesperrt. "
-                "Systemverändernde Operationen sind von dieser Quelle nicht erlaubt."
-            ),
-            "blocked_ip": _caller_ip,
-        }
-    # ─────────────────────────────────────────────────────────────────────────
+    # IP-Guard entfernt (2026-03-16):
+    # Apache (172.18.x) ist Reverse-Proxy fuer externe Requests (api.ailinux.me).
+    # Docker-IP != externer Client — Auth-Layer reicht.
 
     proposal = None
     if should_convert_to_proposal and should_convert_to_proposal(canonical_name):
