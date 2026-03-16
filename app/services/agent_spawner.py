@@ -319,7 +319,7 @@ class AgentSpawner:
         Loop-Schutz: Spawn-Fehler erzeugen KEINE Notifications.
         """
         logger.info("Notification-Watcher gestartet (Startup-Delay: 120s)")
-        await asyncio.sleep(120)  # Warten bis MCP_HANDLERS komplett populiert
+        await asyncio.sleep(30)   # Warten bis MCP_HANDLERS komplett populiert
 
         while True:
             try:
@@ -646,3 +646,159 @@ def get_agent_spawner() -> AgentSpawner:
     if _spawner_instance is None:
         _spawner_instance = AgentSpawner()
     return _spawner_instance
+
+
+# =============================================================================
+# MCP Tool: agent_spawn_worker
+# Tier-1 Agents rufen das auf um Tier-2 Workers zu spawnen
+# =============================================================================
+
+SPAWN_WORKER_TOOL = {
+    "name": "agent_spawn_worker",
+    "description": (
+        "Spawnt einen Worker-Agent (Tier 2) mit vollen Dateisystem/Shell-Rechten "
+        "für schreibende Operationen. Nur für Tier-1 System-Agents. "
+        "worker_type: bug_fixer | ops_worker | code_patcher | support_worker. "
+        "task: Präziser Auftrag was der Worker tun soll."
+    ),
+    "inputSchema": {
+        "type": "object",
+        "properties": {
+            "worker_type": {
+                "type": "string",
+                "enum": ["bug_fixer", "ops_worker", "code_patcher", "support_worker"],
+                "description": "Typ des Worker-Agents",
+            },
+            "task": {
+                "type": "string",
+                "description": "Konkreter Arbeitsauftrag für den Worker",
+            },
+            "context": {
+                "type": "string",
+                "description": "Zusätzlicher Kontext (Logs, Fehlermeldungen etc.)",
+                "default": "",
+            },
+        },
+        "required": ["worker_type", "task"],
+    },
+}
+
+AGENT_SESSION_TOOL = {
+    "name": "agent_session_list",
+    "description": "Listet alle aktiven Spawn-Sessions (Tier-1 und Tier-2) mit Status.",
+    "inputSchema": {"type": "object", "properties": {}},
+}
+
+AGENT_SESSION_SEND_TOOL = {
+    "name": "agent_session_send",
+    "description": "Sendet eine Nachricht an eine aktive Spawn-Session (Reconnect).",
+    "inputSchema": {
+        "type": "object",
+        "properties": {
+            "session_id": {"type": "string", "description": "Session-ID"},
+            "message":    {"type": "string", "description": "Nachricht"},
+        },
+        "required": ["session_id", "message"],
+    },
+}
+
+AGENT_SPAWNER_TOOLS = [SPAWN_WORKER_TOOL, AGENT_SESSION_TOOL, AGENT_SESSION_SEND_TOOL]
+
+
+async def handle_agent_spawner_tool(name: str, args: dict) -> dict:
+    """Dispatcher für agent_spawn_worker, agent_session_* Tools."""
+    spawner = get_agent_spawner()
+
+    if name == "agent_spawn_worker":
+        worker_type = args.get("worker_type", "ops_worker")
+        task        = args.get("task", "")
+        context     = args.get("context", "")
+        if not task:
+            return {"error": "task ist required"}
+        full_context = f"AUFTRAG:\n{task}\n\nKONTEXT:\n{context[:2000]}" if context else task
+        result = await spawner.spawn_for_issue(
+            issue_type=worker_type,
+            context=full_context,
+            source="tier1_agent",
+        )
+        return {
+            **result,
+            "message": f"Worker '{worker_type}' gespawnt — Session: {result.get('session_id')}",
+        }
+
+    elif name == "agent_session_list":
+        sessions = spawner.list_sessions()
+        if not sessions:
+            return {"sessions": [], "message": "Keine aktiven Sessions."}
+        lines = ["## Aktive Agent-Sessions\n"]
+        for s in sessions:
+            tier = "Tier-1 System" if s.get("tier") == 1 else "Tier-2 Worker"
+            lines.append(
+                f"- **`{s['session_id']}`** [{tier}] "
+                f"`{s.get('agent_id')}` | {s.get('issue_type')} | "
+                f"Status: {s.get('status')} | "
+                f"{round(s.get('age_minutes', 0), 1)}min alt"
+            )
+        return {"sessions": sessions, "markdown": "\n".join(lines)}
+
+    elif name == "agent_session_send":
+        session_id = args.get("session_id", "")
+        message    = args.get("message", "")
+        if not session_id or not message:
+            return {"error": "session_id und message required"}
+        return await spawner.send_to_session(session_id, message)
+
+    return {"error": f"Unbekanntes Tool: {name}"}
+
+
+async def init_system_agents() -> dict:
+    """
+    Initialisiert Tier-1 System-Agents mit ihren System-Prompts.
+    Wird beim Backend-Start aufgerufen (nach MCP_HANDLERS populiert).
+    Kern-Agents bekommen ihr System-Prompt als erste Nachricht.
+    """
+    import asyncio
+    spawner = get_agent_spawner()
+    results = {}
+
+    for agent_id in ("claude-mcp", "gemini-mcp", "codex-mcp"):
+        try:
+            prompt_template = SYSTEM_AGENT_PROMPTS.get(agent_id, "")
+            if not prompt_template:
+                continue
+
+            session_id = f"sys-{agent_id}"
+            system_prompt = prompt_template.format(
+                session_id=session_id,
+                context="System-Start — bereit für Aufgaben.",
+                custom_prompt="",
+                topic="system_agent",
+            )
+
+            from app.routes.mcp import MCP_HANDLERS
+            agent_call = (MCP_HANDLERS.get("agent_call") or
+                          MCP_HANDLERS.get("cli-agents_call"))
+            if not agent_call:
+                results[agent_id] = "agent_call handler nicht verfügbar"
+                continue
+
+            # System-Prompt als Init-Nachricht senden
+            init_msg = (
+                f"[SYSTEM_INIT]\n{system_prompt}\n[/SYSTEM_INIT]\n\n"
+                f"Bestätige mit 'BEREIT' und nenne deine Hauptaufgaben."
+            )
+            result = await asyncio.wait_for(
+                agent_call({"agent_id": agent_id, "message": init_msg}),
+                timeout=30,
+            )
+            results[agent_id] = "initialisiert" if not result.get("error") else result.get("error")
+            logger.info(f"System-Agent {agent_id} initialisiert: {results[agent_id]}")
+
+        except asyncio.TimeoutError:
+            results[agent_id] = "timeout (agent nicht gestartet)"
+            logger.debug(f"System-Agent {agent_id}: timeout bei Init — OK wenn nicht gestartet")
+        except Exception as e:
+            results[agent_id] = f"error: {str(e)[:80]}"
+            logger.debug(f"System-Agent {agent_id} Init-Fehler (ignoriert): {e}")
+
+    return results

@@ -114,6 +114,7 @@ from ..mcp.flarum_tools import FLARUM_TOOL_HANDLERS, FLARUM_TOOL_NAMES
 from ..mcp.handlers_group_chat import GROUP_CHAT_HANDLERS
 from ..mcp.handlers_agent_chat import AGENT_CHAT_TOOLS, handle_agent_chat_tool
 from ..mcp.handlers_user_chat import USER_CHAT_TOOLS, handle_user_chat_tool
+from ..services.agent_spawner import AGENT_SPAWNER_TOOLS, handle_agent_spawner_tool
 from ..mcp.handlers_scheduler import SCHEDULER_TOOLS, handle_scheduler_tool
 from ..mcp.handlers_swarm import SWARM_HANDLERS
 try:
@@ -4330,6 +4331,8 @@ for _act in [t["name"] for t in AGENT_CHAT_TOOLS]:
     MCP_HANDLERS[_act] = lambda p, _n=_act: handle_agent_chat_tool(_n, p)
 for _uct in [t["name"] for t in USER_CHAT_TOOLS]:
     MCP_HANDLERS[_uct] = lambda p, _n=_uct: handle_user_chat_tool(_n, p)
+for _ast in [t["name"] for t in AGENT_SPAWNER_TOOLS]:
+    MCP_HANDLERS[_ast] = lambda p, _n=_ast: handle_agent_spawner_tool(_n, p)
 for _sct in [t["name"] for t in SCHEDULER_TOOLS]:
     MCP_HANDLERS[_sct] = lambda p, _n=_sct: handle_scheduler_tool(_n, p)
 MCP_HANDLERS.update(SWARM_HANDLERS)          # swarm_broadcast, swarm_status, swarm_top_results, swarm_consolidated
