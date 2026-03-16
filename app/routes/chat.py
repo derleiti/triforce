@@ -77,11 +77,6 @@ async def _chat_generator(payload: ChatRequest) -> AsyncGenerator[str, None]:
             if _HAS_PERF_MONITOR:
                 latency_ms = (perf_counter() - model_start) * 1000
                 perf_monitor.record_model(payload.model, latency_ms, error=error_occurred)
-            # Dynamic Router: track latency for intelligent model selection
-            if _dynamic_router:
-                _latency = (perf_counter() - model_start) * 1000
-                import asyncio
-                asyncio.create_task(_dynamic_router.record(payload.model, _latency, error=error_occurred))
             # Dynamic Router — track latency per model for intelligent routing
             if _HAS_ROUTER:
                 try:
