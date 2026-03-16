@@ -7,6 +7,7 @@ Provides:
 """
 from __future__ import annotations
 
+import os
 import email
 import imaplib
 import smtplib
@@ -199,7 +200,7 @@ def mail_send(
     context.check_hostname = False
     context.verify_mode = ssl.CERT_NONE
 
-    ehlo_name = s.mail_hostname or "mail.ailinux.me"
+    ehlo_name = getattr(s, "mail_hostname", None) or os.environ.get("MAIL_HOSTNAME", "mail.ailinux.me")
     with smtplib.SMTP(host, port, timeout=8) as server:
         server.ehlo(ehlo_name)
         if use_starttls:
