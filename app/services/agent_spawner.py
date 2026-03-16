@@ -199,6 +199,15 @@ class AgentSpawner:
 
                 # Noise-Filter: keine Agent-Spawn-eigenen Notifications
                 if any(t in tags for t in ("agent-spawn", "scheduler", "init", "auto")):
+                    mark_resolved(notif_id)  # Auch resolved markieren
+                    continue
+                # Nicht auf eigene Fehler-Notifications reagieren
+                if "fehlgeschlagen" in title or "Agent-Spawn" in title:
+                    mark_resolved(notif_id)
+                    continue
+                # Nicht auf reine Log-Monitor Triforce-Warnings reagieren (kein echter Context)
+                if "[TRIFORCE]" in title and "ERROR" not in title:
+                    mark_resolved(notif_id)
                     continue
 
                 # Error-Klassifizierung für System-Prompt
@@ -373,7 +382,7 @@ class AgentSpawner:
             )
 
             result = await agent_call({
-                "agent_id": session.agent_id,
+                "agent": session.agent_id,
                 "message": init_message,
             })
             session.messages.append({"role": "system_init", "content": init_message, "result": str(result)[:200]})
@@ -387,7 +396,7 @@ class AgentSpawner:
             investigation_prompt = self._build_investigation_prompt(session.issue_type, initial_context)
 
             result2 = await agent_call({
-                "agent_id": session.agent_id,
+                "agent": session.agent_id,
                 "message": investigation_prompt,
             })
             session.messages.append({
@@ -405,12 +414,13 @@ class AgentSpawner:
             logger.error(f"Spawn failed for session {session.session_id}: {e}")
             try:
                 from app.mcp.notification_manager import get_notifications, mark_resolved, create_notification
+                # Fehler-Notification mit niedrigerer Prio damit Watcher sie nicht nochmal aufgreift
                 create_notification({
                     "title": f"❌ Agent-Spawn fehlgeschlagen: {session.agent_id}",
                     "body": str(e)[:200],
                     "source": "agent",
-                    "priority": "high",
-                    "tags": ["agent-spawn", "error"],
+                    "priority": "normal",  # NICHT high — sonst triggert Watcher erneut
+                    "tags": ["agent-spawn", "error", "auto"],  # "auto" = Watcher-Filter
                 })
             except Exception:
                 pass
@@ -477,7 +487,7 @@ class AgentSpawner:
         if not agent_call:
             return {"error": "agent_call handler nicht verfügbar"}
 
-        result = await agent_call({"agent_id": session.agent_id, "message": message})
+        result = await agent_call({"agent": session.agent_id, "message": message})
         session.messages.append({"role": "user", "content": message, "result": str(result)[:500]})
         session.last_active = time.time()
 
