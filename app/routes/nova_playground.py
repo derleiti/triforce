@@ -96,16 +96,16 @@ async def _llm_answer(prompt: str, lang: str = "de") -> str:
         {"role": "system", "content": sys_prompt},
         {"role": "user", "content": prompt},
     ]
-    # Primär: Groq via chat_router (schnell, kostenlos, kein Agent-Spawn)
+    # Primär: Groq via APIProxy (schnell, kostenlos, kein Agent-Spawn)
     try:
-        from app.services.chat_router import ChatRouter
-        router = ChatRouter()
-        answer = await router.chat(
-            model="llama-3.3-70b-versatile",
+        from app.services.chat_router import APIProxy
+        proxy = APIProxy()
+        answer = await proxy.chat(
+            model="groq/llama-3.3-70b-versatile",
             messages=messages,
             max_tokens=800,
         )
-        if answer and not answer.startswith("error"):
+        if answer and len(answer) > 5:
             return answer.strip()
     except Exception as e:
         logger.debug(f"playground groq: {e}")
