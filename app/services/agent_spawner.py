@@ -705,11 +705,19 @@ class AgentSpawner:
 
             investigation = self._build_investigation_prompt(session.issue_type, initial_context)
             result2 = await agent_call({"agent_id": session.agent_id, "message": investigation})
+            response_text = str(result2) if result2 else ""
             session.messages.append({"role": "investigation", "content": investigation,
-                                      "result": str(result2)[:500]})
+                                      "result": response_text[:500]})
+            session.last_response = response_text  # für Content-Engine abrufbar
             session.status   = "working"
             session.last_active = time.time()
             logger.info(f"Session {session.session_id}: Auftrag gesendet, Agent arbeitet")
+
+            # TASK_COMPLETE Signal — Agent hat Aufgabe abgeschlossen
+            if "TASK_COMPLETE" in response_text:
+                session.task_done = True
+                session.status    = "completed"
+                logger.info(f"Session {session.session_id}: TASK_COMPLETE — Agent beendet sich")
 
         except Exception as e:
             session.status = f"error: {e}"
