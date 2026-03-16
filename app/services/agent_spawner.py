@@ -1,23 +1,23 @@
 """
-TriForce Agent Spawner
-=======================
-Reaktiver Agent-Spawner — wird getriggert wenn:
-  - Notifier einen Error/Bug findet
-  - Task Scheduler kritische Probleme erkennt
-  - User explizit einen spezialisierten Agent anfordert
+Agent Spawner v2.0
+==================
+Zwei-Ebenen Agent-Architektur:
 
-Spawn-Flow:
-  1. Issue erkannt (Fehler, Bug, Support-Anfrage)
-  2. System-Prompt aus Issue-Kontext generieren
-  3. Agent starten (claude-mcp für Ops/Bugs, codex-mcp für Code-Analyse)
-  4. Kurzer Sleep (Agent-Init abwarten)
-  5. Untersuchungs-Prompt automatisch senden
-  6. Agent arbeitet autonom, Ergebnis landet als Notification
+TIER 1 — System-Agents (claude-mcp, gemini-mcp, codex-mcp)
+  - Starten mit vorgefertigtem System-Prompt + definierten Befugnissen
+  - Dürfen: lesen, analysieren, kommunizieren, Notifications senden, Agents spawnen
+  - Dürfen NICHT: direkt Dateisystem schreiben, Shell ausführen, Services restarten
+  - Zweck: Notifications abarbeiten, Emails, Forum-Support, Koordination
 
-Session-Persistenz:
-  - Gespawnte Sessions bleiben 30min am Leben
-  - Reconnect möglich solange Session aktiv
-  - Context wird zwischen Turns gehalten
+TIER 2 — Worker-Agents (gespawnt on-demand)
+  - Volle Rechte: code_edit, code_patch, shell, git_ops, service_control
+  - Werden von Tier-1 gespawnt wenn schreibende Operationen nötig sind
+  - Session-Timeout: 30min, dann auto-kill
+
+Loop-Schutz:
+  - Spawn-Fehler erzeugen KEINE Notifications (würde Watcher-Loop triggern)
+  - Cooldown: 5min pro issue_type
+  - Startup-Delay: 120s damit MCP_HANDLERS vollständig populiert ist
 """
 from __future__ import annotations
 
@@ -26,99 +26,242 @@ import logging
 import time
 import uuid
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
 logger = logging.getLogger("ailinux.agent_spawner")
 
-# ──────────────────────────────────────────────────────────────────────────────
-# System-Prompt Templates
-# ──────────────────────────────────────────────────────────────────────────────
-SYSTEM_PROMPTS = {
-    "bug_hunter": """Du bist ein spezialisierter Bug-Hunter Agent im TriForce-System.
-Deine Aufgabe: Den gemeldeten Fehler analysieren und beheben.
+# =============================================================================
+# Permission-Definitionen
+# =============================================================================
 
-KONTEXT:
+# System-Agents: NUR diese Tools erlaubt (readonly + spawn + communicate)
+SYSTEM_AGENT_ALLOWED_TOOLS = {
+    # Lesen + Analysieren
+    "safe_probe", "log_viewer", "logs", "logs_errors",
+    "code_read", "code_search", "code_tree", "dev_analyze", "dev_links",
+    "memory_search", "agent_chat_read", "agent_chat_list",
+    # Kommunizieren
+    "notify_send", "notify_list", "notify_read",
+    "mail_inbox", "mail_read", "mail_send",
+    "flarum_discussions", "flarum_discussion_get", "flarum_post_create",
+    "flarum_posts", "flarum_tags",
+    # System-Status (readonly)
+    "health", "status", "service_status", "container_status",
+    "system_info", "agents", "agent_review",
+    # Agents spawnen (Tier 1 → Tier 2)
+    "agent_spawn_worker",
+    # Kommunikation zwischen Agents
+    "agent_call", "agent_broadcast",
+    # Group Chat
+    "group_chat_create", "group_chat_ask", "group_chat_read", "group_chat_status",
+}
+
+# Worker-Agents: Volle Rechte
+WORKER_AGENT_ALLOWED_TOOLS = None  # None = alle Tools
+
+# =============================================================================
+# System-Prompts mit expliziten Befugnissen
+# =============================================================================
+
+SYSTEM_AGENT_PROMPTS = {
+    "claude-mcp": """\
+Du bist claude-mcp, der Operations-Agent des TriForce-Systems.
+
+IDENTITÄT & ROLLE:
+Du bist ein permanenter System-Agent. Du läufst kontinuierlich und verarbeitest
+Aufgaben aus der Notification-Queue, bearbeitest eingehende Emails und Forum-Support.
+
+DEINE BEFUGNISSE (was du DARF tust):
+✅ Notifications lesen und als resolved markieren (notify_list, notify_read)
+✅ Emails lesen und beantworten (mail_inbox, mail_read, mail_send)
+✅ Forum-Posts lesen und Support-Antworten schreiben (flarum_*)
+✅ System-Status prüfen (safe_probe, log_viewer, status)
+✅ Code lesen und analysieren (code_read, code_search, dev_analyze)
+✅ Andere Agents aufrufen (agent_call, agent_broadcast)
+✅ Worker-Agent spawnen für schreibende Operationen (agent_spawn_worker)
+✅ Notifications erstellen (notify_send)
+✅ Group-Chats moderieren (group_chat_*)
+
+VERBOTEN — das darfst du NICHT direkt ausführen:
+❌ Dateisystem schreiben (code_edit, code_patch, file_ops write)
+❌ Shell-Befehle (shell, task_runner, binary_exec)
+❌ Services neustarten (service_control, container_control)
+❌ Git-Operationen (git, git_ops)
+
+WENN SCHREIBZUGRIFF NÖTIG IST:
+→ Spawne einen Worker-Agent via agent_spawn_worker mit dem konkreten Fix-Auftrag.
+→ Der Worker hat volle Rechte und führt den Fix aus.
+→ Du überwachst das Ergebnis und bestätigst via notify_send.
+
+ARBEITSWEISE:
+1. Neue HIGH/CRITICAL Notifications? → Analysiere, entscheide ob Fix nötig
+2. Fix nötig? → Worker spawnen mit präzisem Auftrag
+3. Email eingegangen? → Lesen, professionell antworten
+4. Forum-Support? → Hilfreich antworten, bei technischen Problemen eskalieren
+5. Immer: Bearbeitete Items als resolved markieren
+
+SESSION: {session_id}
+KONTEXT: {context}
+""",
+
+    "gemini-mcp": """\
+Du bist gemini-mcp, der Lead-Koordinationsagent des TriForce-Systems.
+
+IDENTITÄT & ROLLE:
+Du koordinierst Multi-Agent-Tasks, leitest Swarm-Operationen und erkennst
+systematische Probleme im System. Du delegierst Arbeit an spezialisierte Agents.
+
+DEINE BEFUGNISSE:
+✅ Alle readonly-Operationen (lesen, analysieren, Status prüfen)
+✅ Agents koordinieren und beauftragen (agent_call, agent_broadcast)
+✅ Worker-Agents spawnen (agent_spawn_worker)
+✅ Group-Chats starten und moderieren
+✅ Notifications und Emails verwalten
+✅ Swarm-Operationen koordinieren
+
+VERBOTEN:
+❌ Direkte Schreiboperationen (Code, Dateien, Shell, Git)
+❌ Services direkt neustarten
+
+SPEZIALITÄT — Feature-Erkennung:
+Analysiere regelmäßig Logs und Notifications auf Muster:
+- Wiederkehrende Fehler → systematisches Problem → Worker spawnen
+- Neue Patterns → codex-mcp zur Code-Analyse beauftragen
+- Performance-Degradation → ops-Worker spawnen
+
+SESSION: {session_id}
+KONTEXT: {context}
+""",
+
+    "codex-mcp": """\
+Du bist codex-mcp, der Code-Analyse-Agent des TriForce-Systems.
+
+IDENTITÄT & ROLLE:
+Du analysierst Code, erkennst Bugs und Verbesserungspotenzial, erstellst
+präzise Fix-Aufträge für Worker-Agents.
+
+DEINE BEFUGNISSE:
+✅ Code lesen und analysieren (code_read, code_search, dev_analyze, dev_links)
+✅ Debugging (dev_debug, dev_lint)
+✅ Code-Zusammenfassungen erstellen (dev_summarize)
+✅ Worker-Agent mit präzisem Patch-Auftrag spawnen
+✅ Findings via notify_send kommunizieren
+
+VERBOTEN:
+❌ Direkte Code-Änderungen (code_edit, code_patch)
+❌ Shell, Git, Services
+
+ARBEITSWEISE:
+1. Code-Problem beschrieben? → code_read + dev_analyze
+2. Root Cause gefunden? → präzisen Patch-Auftrag formulieren
+3. Worker spawnen: agent_spawn_worker(type="bug_fixer", task="...")
+4. Ergebnis als Notification senden
+
+SESSION: {session_id}
+KONTEXT: {context}
+""",
+}
+
+# Worker-Prompts — volle Rechte, klarer Auftrag
+WORKER_AGENT_PROMPTS = {
+    "bug_fixer": """\
+Du bist ein Bug-Fixer Worker-Agent. Du hast VOLLE RECHTE auf das System.
+
+AUFTRAG:
 {context}
 
 VORGEHEN:
-1. Lies den Fehler/Traceback genau durch
-2. Lokalisiere die betroffene Datei(en) via code_read oder code_search
-3. Analysiere die Root Cause
-4. Schlage einen konkreten Fix vor oder wende ihn direkt an (code_edit/code_patch)
-5. Teste den Fix wenn möglich
-6. Erstelle eine Zusammenfassung als Notification via notify_send
+1. code_read / code_search → Problem lokalisieren
+2. dev_debug → Root Cause verstehen
+3. code_edit oder code_patch → Fix implementieren
+4. git_ops action=add_all → Änderungen stagen
+5. git_ops action=commit message="fix: ..." → Committen
+6. git_ops action=push → Pushen
+7. notify_send → Ergebnis melden (priority: normal, tags: ["worker-result"])
 
-WICHTIG: Commit IMMER vor Restart. Nutze git_ops action=commit dann git_ops action=push.
-Sei präzise und effizient. Kein Padding.""",
-
-    "code_analyst": """Du bist ein Code-Analyse Agent für das TriForce-System.
-Führe eine gründliche Code-Analyse des angegebenen Problems durch.
-
-KONTEXT:
-{context}
-
-VORGEHEN:
-1. Nutze dev_analyze für statische Analyse
-2. Prüfe dev_links für broken imports/references
-3. Schaue dev_debug für spezifische Fehler
-4. Erstelle einen strukturierten Bericht
-5. Priorisiere Findings nach Severity
-6. Sende Zusammenfassung via notify_send (priority: high wenn kritisch)""",
-
-    "ops_handler": """Du bist ein Operations-Handler Agent für das TriForce-System.
-Bearbeite die eingegangene Aufgabe/den gemeldeten Fehler.
-
-KONTEXT:
-{context}
-
-VORGEHEN:
-1. Analysiere was gemeldet wurde
-2. Prüfe den aktuellen System-Status (safe_probe action=overview)
-3. Führe notwendige Maßnahmen durch
-4. Dokumentiere was du getan hast
-5. Erstelle eine Abschluss-Notification via notify_send
-
-Für Emails: Antworte professionell via mail_send.
-Für Forum-Posts: Nutze flarum_post_create für Support-Antworten.
-Für kritische Fehler: Nutze notify_send mit priority=critical.""",
-
-    "user_specialist": """Du bist ein spezialisierter Agent für diese Session.
-{custom_prompt}
-
-KONTEXT:
-Topic: {topic}
+WICHTIG: Commit IMMER vor Restart. Kein Restart ohne vorherigen Commit+Push.
 Session: {session_id}
+""",
 
-Nutze alle verfügbaren MCP-Tools um dem User bestmöglich zu helfen.
-Halte den Kontext dieser Session im Gedächtnis.""",
+    "ops_worker": """\
+Du bist ein Ops Worker-Agent. Du hast VOLLE RECHTE auf das System.
 
-    "support_handler": """Du bist der Support-Agent von AILinux/TriForce.
-Ein Nutzer hat eine Anfrage gestellt.
-
-ANFRAGE:
+AUFTRAG:
 {context}
 
 VORGEHEN:
-1. Lies die Anfrage sorgfältig
-2. Prüfe ob du selbst antworten kannst
-3. Wenn ja: Antworte hilfreich und konkret via flarum_post_create oder mail_send
-4. Wenn technisches Problem: Eskaliere via notify_send (priority: high)
-5. Dokumentiere die Bearbeitung
+1. safe_probe action=overview → aktuellen Status prüfen
+2. log_viewer → relevante Logs analysieren
+3. Notwendige Maßnahmen durchführen (shell, service_control etc.)
+4. Ergebnis via notify_send melden (tags: ["worker-result"])
 
-Sei freundlich, klar und hilfreich.""",
+Session: {session_id}
+""",
+
+    "code_patcher": """\
+Du bist ein Code-Patcher Worker-Agent. Du hast VOLLE RECHTE.
+
+AUFTRAG (präziser Patch-Auftrag von codex-mcp):
+{context}
+
+VORGEHEN:
+1. code_read → betroffene Datei lesen
+2. code_edit oder code_patch → Patch anwenden
+3. dev_lint → Syntax prüfen
+4. git_ops commit+push
+5. notify_send → Ergebnis (tags: ["worker-result", "patch"])
+
+Session: {session_id}
+""",
+
+    "support_worker": """\
+Du bist ein Support Worker-Agent.
+
+AUFTRAG:
+{context}
+
+VORGEHEN:
+1. Anfrage analysieren
+2. Bei Forum-Post: flarum_post_create mit hilfreicher Antwort
+3. Bei Email: mail_send mit professioneller Antwort
+4. Bei technischem Problem: Analyse + notify_send (priority: high)
+
+Session: {session_id}
+""",
+}
+
+# Legacy-Prompts für Rückwärtskompatibilität
+SYSTEM_PROMPTS = {
+    "bug_hunter":      WORKER_AGENT_PROMPTS["bug_fixer"],
+    "code_analyst":    SYSTEM_AGENT_PROMPTS["codex-mcp"],
+    "ops_handler":     WORKER_AGENT_PROMPTS["ops_worker"],
+    "user_specialist": """\
+Du bist ein spezialisierter Agent für diese Session.
+{custom_prompt}
+Topic: {topic} | Session: {session_id}
+Nutze alle verfügbaren MCP-Tools um zu helfen.
+""",
+    "support_handler": WORKER_AGENT_PROMPTS["support_worker"],
+    "system_error":    WORKER_AGENT_PROMPTS["ops_worker"],
 }
 
 
+# =============================================================================
+# Session
+# =============================================================================
+
 class SpawnedSession:
-    def __init__(self, session_id: str, agent_id: str, issue_type: str, prompt: str):
-        self.session_id = session_id
-        self.agent_id = agent_id
-        self.issue_type = issue_type
+    def __init__(self, session_id: str, agent_id: str, issue_type: str,
+                 prompt: str, tier: int = 2):
+        self.session_id  = session_id
+        self.agent_id    = agent_id
+        self.issue_type  = issue_type
         self.system_prompt = prompt
-        self.created_at = time.time()
+        self.tier        = tier   # 1=system-agent, 2=worker
+        self.created_at  = time.time()
         self.last_active = time.time()
         self.messages: List[Dict] = []
-        self.status = "spawning"
+        self.status      = "spawning"
 
     @property
     def age_minutes(self) -> float:
@@ -130,43 +273,53 @@ class SpawnedSession:
 
     def to_dict(self) -> Dict:
         return {
-            "session_id": self.session_id,
-            "agent_id": self.agent_id,
-            "issue_type": self.issue_type,
-            "status": self.status,
-            "age_minutes": round(self.age_minutes, 1),
+            "session_id":    self.session_id,
+            "agent_id":      self.agent_id,
+            "issue_type":    self.issue_type,
+            "tier":          self.tier,
+            "status":        self.status,
+            "age_minutes":   round(self.age_minutes, 1),
             "message_count": len(self.messages),
-            "expired": self.expired,
-            "created_at": datetime.fromtimestamp(self.created_at, tz=timezone.utc).isoformat(),
+            "expired":       self.expired,
+            "created_at":    datetime.fromtimestamp(
+                self.created_at, tz=timezone.utc).isoformat(),
         }
 
 
+# =============================================================================
+# AgentSpawner
+# =============================================================================
+
 class AgentSpawner:
+    # Cooldown pro issue_type — verhindert Spawn-Loops
+    _last_spawn_time: Dict[str, float] = {}
+    SPAWN_COOLDOWN_S = 300  # 5 Minuten
+
     def __init__(self):
-        self._sessions: Dict[str, SpawnedSession] = {}
-        self._cleanup_task: Optional[asyncio.Task] = None
-        self._watcher_task: Optional[asyncio.Task] = None
+        self._sessions:      Dict[str, SpawnedSession] = {}
+        self._cleanup_task:  Optional[asyncio.Task]    = None
+        self._watcher_task:  Optional[asyncio.Task]    = None
 
     def start(self):
-        self._cleanup_task    = asyncio.create_task(self._cleanup_loop())
-        self._watcher_task    = asyncio.create_task(self._notification_watcher())
+        self._cleanup_task = asyncio.create_task(self._cleanup_loop())
+        self._watcher_task = asyncio.create_task(self._notification_watcher())
         logger.info("AgentSpawner gestartet: Cleanup + Notification-Watcher aktiv")
 
     async def stop(self):
-        for task in (self._cleanup_task, getattr(self, "_watcher_task", None)):
+        for task in (self._cleanup_task, self._watcher_task):
             if task:
                 task.cancel()
 
-    # ── Notification Watcher ──────────────────────────────────────────────────
+    # ── Notification Watcher ─────────────────────────────────────────────────
 
     async def _notification_watcher(self):
         """
-        Überwacht die Notification-Queue alle 60s.
-        Bei HIGH/CRITICAL Errors → Agent spawnen der das Problem untersucht.
-        Bereits bearbeitete Notifications werden resolved um Loop zu vermeiden.
+        Überwacht Notification-Queue alle 60s.
+        Spawnt Worker-Agents für HIGH/CRITICAL Issues.
+        Loop-Schutz: Spawn-Fehler erzeugen KEINE Notifications.
         """
-        logger.info("Notification-Watcher gestartet (Intervall: 60s)")
-        await asyncio.sleep(120)  # Loop-Fix: längerer Startup-Delay
+        logger.info("Notification-Watcher gestartet (Startup-Delay: 120s)")
+        await asyncio.sleep(120)  # Warten bis MCP_HANDLERS komplett populiert
 
         while True:
             try:
@@ -174,163 +327,161 @@ class AgentSpawner:
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                logger.debug(f"Notification-Watcher error: {e}")
+                logger.debug(f"Notification-Watcher Fehler (ignoriert): {e}")
             await asyncio.sleep(60)
 
     async def _process_pending_notifications(self):
-        """Liest ungelesene HIGH/CRITICAL Notifications und spawnt ggf. Agents."""
+        """Verarbeitet ungelesene HIGH/CRITICAL Notifications."""
         try:
-            from app.mcp.notification_manager import get_notifications, mark_resolved, create_notification
+            from app.mcp.notification_manager import (
+                get_notifications, mark_resolved
+            )
+        except Exception:
+            return
 
-            entries = get_notifications(unread_only=True, limit=20)
-            if not entries:
-                return
+        entries = get_notifications(unread_only=True, limit=20)
+        if not entries:
+            return
 
-            for notif in entries:
-                prio     = notif.get("priority", "normal")
-                title    = notif.get("title", "")
-                body     = notif.get("body", "")
-                tags     = notif.get("tags", [])
-                notif_id = notif.get("id", "")
+        for notif in entries:
+            prio     = notif.get("priority", "normal")
+            title    = notif.get("title", "")
+            body     = notif.get("body", "")
+            tags     = notif.get("tags", [])
+            notif_id = notif.get("id", "")
 
-                # Nur HIGH + CRITICAL → spawn
-                if prio not in ("high", "critical"):
-                    continue
+            # Nur HIGH + CRITICAL
+            if prio not in ("high", "critical"):
+                continue
 
-                # Noise-Filter: keine Agent-Spawn-eigenen Notifications
-                if any(t in tags for t in ("agent-spawn", "scheduler", "init", "auto")):
-                    mark_resolved(notif_id)  # Auch resolved markieren
-                    continue
-                # Nicht auf eigene Fehler-Notifications reagieren
-                if "fehlgeschlagen" in title or "Agent-Spawn" in title:
-                    mark_resolved(notif_id)
-                    continue
-                # Nicht auf reine Log-Monitor Triforce-Warnings reagieren (kein echter Context)
-                if "[TRIFORCE]" in title and "ERROR" not in title:
-                    mark_resolved(notif_id)
-                    continue
+            # ── Loop-Guard: Noise + System-Spam filtern ──
+            skip_tags = {
+                "agent-spawn", "scheduler", "init", "auto", "error",
+                "log-monitor", "triforce", "warning", "worker-result",
+            }
+            if tags and any(t in skip_tags for t in tags):
+                mark_resolved(notif_id)
+                continue
 
-                # Error-Klassifizierung für System-Prompt
-                context = f"Notification: {title}\n\nDetails: {body[:1000]}"
-                issue_type = self._classify_notification(title, body, tags)
+            # Spawn-eigene Notifications direkt resolven
+            if any(kw in title.lower() for kw in
+                   ("fehlgeschlagen", "spawn", "agent-spawn", "worker")):
+                mark_resolved(notif_id)
+                continue
 
-                if issue_type:
-                    logger.info(f"Notification-Watcher: Spawne Agent für '{issue_type}' | {title[:60]}")
-                    await self.spawn_for_issue(
-                        issue_type=issue_type,
-                        context=context,
-                        source=f"notification:{notif_id}",
-                    )
-                    # Als resolved markieren damit wir nicht doppelt spawnen
-                    try:
-                        mark_resolved(notif_id)
-                    except Exception:
-                        pass
+            # Cooldown-Check
+            issue_type = self._classify_notification(title, body, tags)
+            if not issue_type:
+                mark_resolved(notif_id)
+                continue
 
-        except Exception as e:
-            logger.debug(f"_process_pending_notifications: {e}")
+            now = time.time()
+            last = self.__class__._last_spawn_time.get(issue_type, 0)
+            if now - last < self.SPAWN_COOLDOWN_S:
+                logger.debug(f"Cooldown aktiv für '{issue_type}' ({int(now-last)}s) — skip")
+                continue  # NICHT resolven — nächste Runde nochmal prüfen
+
+            # Spawn
+            self.__class__._last_spawn_time[issue_type] = now
+            context = f"Notification: {title}\n\nDetails: {body[:1000]}"
+            logger.info(
+                f"Notification-Watcher: Spawne Worker für '{issue_type}' | {title[:60]}"
+            )
+            await self.spawn_for_issue(
+                issue_type=issue_type,
+                context=context,
+                source=f"notification:{notif_id}",
+            )
+            mark_resolved(notif_id)
 
     def _classify_notification(self, title: str, body: str, tags: list) -> Optional[str]:
-        """Klassifiziert eine Notification → Issue-Typ für den Agent-System-Prompt."""
+        """Klassifiziert Notification → issue_type für Worker-Spawn."""
         text = (title + " " + body).lower()
-
-        # Code/Backend Fehler → Bug-Hunter
-        if any(kw in text for kw in [
-            "traceback", "exception", "importerror", "syntaxerror",
-            "nameerror", "attributeerror", "typeerror", "valueerror",
-            "500", "internal server error", "crash", "crashed",
-        ]):
+        # Code/Bug-Fehler → Bug-Fixer
+        if any(k in text for k in ("traceback", "syntaxerror", "importerror",
+                                    "nameerror", "typeerror", "exception", "bug")):
             return "bug_hunter"
-
-        # Service down → Ops-Handler
-        if any(kw in text for kw in [
-            "service failed", "connection refused", "connection error",
-            "down", "unreachable", "timeout", "failed to start",
-            "triforce.*failed", "restart", "stopped unexpectedly",
-        ]):
+        # System/Service-Fehler → Ops-Worker
+        if any(k in text for k in ("service failed", "connection refused",
+                                    "connection error", "disk", "memory")):
             return "system_error"
-
-        # Forum / Support → Support-Handler
-        if any(t in tags for t in ("forum", "flarum")):
-            return "forum_support"
-
-        # Mail → Mail-Handler
-        if any(t in tags for t in ("mail", "email")):
-            return "mail_handler"
-
-        # Kritische Fehler ohne klare Kategorie
-        if "critical" in tags or "error" in (title + body).lower():
+        # Support-Anfragen
+        if any(k in text for k in ("support", "flarum", "forum", "email", "mail")):
+            return "support_handler"
+        # Allgemeine High-Prio → Ops
+        if "critical" in text or "error" in text:
             return "ops_handler"
+        return None
 
-        return None  # Nichts spawnen
-
-    # ── Core Spawn ────────────────────────────────────────────────────────────
+    # ── Spawn für Issue (Worker-Agent) ────────────────────────────────────────
 
     async def spawn_for_issue(
         self,
         issue_type: str,
-        context: str,
-        source: str = "auto",
-        agent_id: Optional[str] = None,
+        context:    str,
+        source:     str = "auto",
+        agent_id:   Optional[str] = None,
     ) -> Dict:
-        """
-        Haupteingang — spawnt Agent für ein erkanntes Problem.
-
-        issue_type: bug_hunter | code_analyst | ops_handler | support_handler
-        context: Fehler-Text, Traceback, Support-Anfrage etc.
-        """
-        # Agent wählen wenn nicht vorgegeben
+        """Spawnt einen Worker-Agent (Tier 2) für ein erkanntes Problem."""
         if not agent_id:
             agent_id = self._select_agent(issue_type)
 
         session_id = f"spawn-{uuid.uuid4().hex[:8]}"
 
-        # System-Prompt aus Template bauen
-        template = SYSTEM_PROMPTS.get(issue_type, SYSTEM_PROMPTS["ops_handler"])
+        # Worker-Prompt wählen
+        worker_type = {
+            "bug_hunter": "bug_fixer",
+            "code_analyst": "code_patcher",
+            "ops_handler": "ops_worker",
+            "system_error": "ops_worker",
+            "support_handler": "support_worker",
+        }.get(issue_type, "ops_worker")
+
+        template = WORKER_AGENT_PROMPTS.get(worker_type, WORKER_AGENT_PROMPTS["ops_worker"])
         system_prompt = template.format(
             context=context[:3000],
-            topic=issue_type,
             session_id=session_id,
+            topic=issue_type,
             custom_prompt="",
         )
 
-        session = SpawnedSession(session_id, agent_id, issue_type, system_prompt)
+        session = SpawnedSession(session_id, agent_id, issue_type, system_prompt, tier=2)
         self._sessions[session_id] = session
 
-        logger.info(f"Spawning agent {agent_id} for issue_type={issue_type} source={source}")
+        logger.info(f"Spawning worker {agent_id} ({worker_type}) | issue={issue_type} source={source}")
 
-        # Notification: Agent wurde gespawnt
+        # Spawn-Notification (niedrige Prio, nicht HIGH → kein Watcher-Trigger)
         try:
+            from app.mcp.notification_manager import create_notification
             create_notification({
-                "title": f"🤖 Agent gespawnt: {agent_id}",
-                "body": f"Issue: {issue_type} | Source: {source} | Session: {session_id}",
-                "source": "agent",
-                "priority": "normal",
-                "tags": ["agent-spawn", issue_type],
+                "title":    f"🤖 Worker gespawnt: {agent_id}",
+                "body":     f"Issue: {issue_type} | Source: {source} | Session: {session_id}",
+                "source":   "agent",
+                "priority": "low",
+                "tags":     ["agent-spawn", issue_type, "auto"],
+                "auto_resolve": True,
             })
         except Exception:
             pass
 
-        # Agent starten und Untersuchungs-Prompt senden
         asyncio.create_task(self._spawn_and_send(session, context, source))
-
         return {
             "session_id": session_id,
-            "agent_id": agent_id,
+            "agent_id":   agent_id,
             "issue_type": issue_type,
-            "status": "spawning",
+            "tier":       2,
+            "status":     "spawning",
         }
 
     async def spawn_for_user(
         self,
-        topic: str,
+        topic:         str,
         custom_prompt: str,
-        agent_id: str = "claude-mcp",
-        model_id: Optional[str] = None,
+        agent_id:      str = "claude-mcp",
+        model_id:      Optional[str] = None,
     ) -> Dict:
-        """User-getriggerter Spawn mit custom System-Prompt."""
+        """User-getriggerter Spawn mit custom System-Prompt (Tier 2)."""
         session_id = f"user-{uuid.uuid4().hex[:8]}"
-
         template = SYSTEM_PROMPTS["user_specialist"]
         system_prompt = template.format(
             custom_prompt=custom_prompt,
@@ -338,144 +489,114 @@ class AgentSpawner:
             session_id=session_id,
             context="",
         )
-
-        session = SpawnedSession(session_id, agent_id, "user_specialist", system_prompt)
+        session = SpawnedSession(session_id, agent_id, "user_specialist",
+                                 system_prompt, tier=2)
         if model_id:
-            session.model_id = model_id
+            session.model_id = model_id  # type: ignore
         self._sessions[session_id] = session
 
         asyncio.create_task(self._spawn_and_send(
-            session,
-            f"Du wurdest für folgendes Thema gestartet: {topic}",
-            "user",
+            session, f"Du wurdest für folgendes Thema gestartet: {topic}", "user"
         ))
-
         return {
             "session_id": session_id,
-            "agent_id": agent_id,
-            "topic": topic,
-            "status": "spawning",
-            "message": f"Agent {agent_id} wird gestartet. Session-ID: {session_id}",
+            "agent_id":   agent_id,
+            "topic":      topic,
+            "tier":       2,
+            "status":     "spawning",
         }
 
-    # ── Spawn & Send Flow ─────────────────────────────────────────────────────
+    # ── Kern: Spawn + Send ────────────────────────────────────────────────────
 
-    async def _spawn_and_send(self, session: SpawnedSession, initial_context: str, source: str):
+    async def _spawn_and_send(
+        self, session: SpawnedSession, initial_context: str, source: str
+    ):
         """
-        Spawn-Flow:
-        1. Agent starten via agent_call mit System-Prompt
-        2. Kurzer Sleep (Init abwarten)
-        3. Untersuchungs-Prompt senden
+        Spawnt den CLI-Agent via agent_call und sendet den initialen Prompt.
+        Loop-Schutz: Fehler werden NUR geloggt, KEINE Notification erstellt.
         """
         try:
-            # Startup-Guard: MCP_HANDLERS braucht ~3s nach Startup zum Populieren
+            # Startup-Guard: MCP_HANDLERS braucht Zeit zum Populieren
             await asyncio.sleep(2)
 
             from app.routes.mcp import MCP_HANDLERS
-            agent_call = MCP_HANDLERS.get("agent_call") or MCP_HANDLERS.get("cli-agents_call")
+            agent_call = (MCP_HANDLERS.get("agent_call") or
+                          MCP_HANDLERS.get("cli-agents_call"))
             if not agent_call:
-                raise RuntimeError("agent_call handler not found (tried: agent_call, cli-agents_call)")
+                raise RuntimeError("agent_call handler not found")
 
-            # Sicherheits-Check: agent_id muss gesetzt sein
             if not session.agent_id:
                 raise ValueError(f"agent_id nicht gesetzt für Session {session.session_id}")
 
-            # Schritt 1: Agent starten mit System-Prompt als erstem Message
-            init_message = (
+            # Init-Message mit System-Prompt
+            init_msg = (
                 f"[SYSTEM_PROMPT]\n{session.system_prompt}\n[/SYSTEM_PROMPT]\n\n"
-                f"Session-ID: {session.session_id}\n"
-                f"Du wurdest automatisch für folgende Aufgabe gestartet: {session.issue_type}\n"
-                f"Bestätige mit 'BEREIT' und warte auf die Untersuchungs-Anweisung."
+                f"Session: {session.session_id} | Tier: {session.tier}\n"
+                f"Bestätige mit 'BEREIT' und warte auf den Auftrag."
             )
-
-            result = await agent_call({
-                "agent": session.agent_id,
-                "message": init_message,
+            result = await agent_call({"agent_id": session.agent_id, "message": init_msg})
+            session.messages.append({
+                "role": "system_init", "content": init_msg, "result": str(result)[:200]
             })
-            session.messages.append({"role": "system_init", "content": init_message, "result": str(result)[:200]})
             session.status = "initialized"
-            logger.info(f"Session {session.session_id}: Agent {session.agent_id} initialisiert")
+            logger.info(f"Session {session.session_id}: {session.agent_id} initialisiert")
 
-            # Schritt 2: Sleep — Agent braucht Moment zum Hochfahren
             await asyncio.sleep(3)
 
-            # Schritt 3: Eigentlichen Untersuchungs-Prompt senden
-            investigation_prompt = self._build_investigation_prompt(session.issue_type, initial_context)
-
+            # Eigentlicher Auftrag
+            investigation = self._build_investigation_prompt(
+                session.issue_type, initial_context
+            )
             result2 = await agent_call({
-                "agent": session.agent_id,
-                "message": investigation_prompt,
+                "agent_id": session.agent_id, "message": investigation
             })
             session.messages.append({
-                "role": "investigation",
-                "content": investigation_prompt,
+                "role": "investigation", "content": investigation,
                 "result": str(result2)[:500],
             })
             session.status = "working"
             session.last_active = time.time()
-
-            logger.info(f"Session {session.session_id}: Investigation-Prompt gesendet, Agent arbeitet")
+            logger.info(f"Session {session.session_id}: Auftrag gesendet, Agent arbeitet")
 
         except Exception as e:
             session.status = f"error: {e}"
-            logger.error(f"Spawn failed for session {session.session_id}: {e}")
-            try:
-                from app.mcp.notification_manager import get_notifications, mark_resolved, create_notification
-                # Fehler-Notification mit niedrigerer Prio damit Watcher sie nicht nochmal aufgreift
-                create_notification({
-                    "title": f"❌ Agent-Spawn fehlgeschlagen: {session.agent_id}",
-                    "body": str(e)[:200],
-                    "source": "agent",
-                    "priority": "normal",  # NICHT high — sonst triggert Watcher erneut
-                    "tags": ["agent-spawn", "error", "auto"],  # "auto" = Watcher-Filter
-                })
-            except Exception:
-                pass
+            # !! KEIN notify_send hier — würde Watcher-Loop triggern !!
+            logger.warning(f"Spawn-Error (silent) [{session.session_id}]: {e}")
 
     def _build_investigation_prompt(self, issue_type: str, context: str) -> str:
-        """Baut den konkreten Untersuchungs-Prompt basierend auf Issue-Typ."""
-        if issue_type == "bug_hunter":
-            return (
-                f"STARTE JETZT DIE BUG-ANALYSE:\n\n"
-                f"Fehler-Details:\n{context[:2000]}\n\n"
-                f"1. Lokalisiere die betroffene Datei(en)\n"
-                f"2. Analysiere Root Cause\n"
-                f"3. Entwickle und implementiere Fix\n"
-                f"4. Committe und pushe\n"
-                f"5. Sende Abschluss-Notification\n\n"
-                f"Los geht's — du hast alle MCP-Tools zur Verfügung."
-            )
-        elif issue_type == "code_analyst":
-            return (
-                f"STARTE CODE-ANALYSE:\n\n"
-                f"Zu analysierende Komponente:\n{context[:2000]}\n\n"
-                f"Nutze dev_analyze, dev_links und dev_debug.\n"
-                f"Erstelle einen priorisierten Befund-Report als notify_send."
-            )
-        elif issue_type == "support_handler":
-            return (
-                f"BEARBEITE DIESE SUPPORT-ANFRAGE:\n\n"
-                f"{context[:2000]}\n\n"
-                f"Antworte dem Nutzer direkt und hilfreich.\n"
-                f"Nutze flarum_post_create oder mail_send je nach Quelle."
-            )
-        else:  # ops_handler, default
-            return (
-                f"STARTE AUFGABE:\n\n"
-                f"{context[:2000]}\n\n"
-                f"Analysiere die Situation, ergreife notwendige Maßnahmen,\n"
-                f"und sende einen Abschlussbericht via notify_send."
-            )
+        """Baut den Untersuchungs-Prompt für den Worker."""
+        prompts = {
+            "bug_hunter": (
+                f"STARTE BUG-ANALYSE:\n\n{context[:2000]}\n\n"
+                "1. Datei lokalisieren\n2. Root Cause analysieren\n"
+                "3. Fix implementieren\n4. commit+push\n5. notify_send mit Ergebnis"
+            ),
+            "system_error": (
+                f"SYSTEM-PROBLEM PRÜFEN:\n\n{context[:2000]}\n\n"
+                "1. safe_probe overview\n2. Relevante Logs prüfen\n"
+                "3. Problem beheben\n4. notify_send mit Ergebnis"
+            ),
+            "support_handler": (
+                f"SUPPORT-ANFRAGE:\n\n{context[:2000]}\n\n"
+                "1. Anfrage verstehen\n2. Passende Antwort formulieren\n"
+                "3. flarum_post_create oder mail_send\n4. notify_send bestätigen"
+            ),
+            "ops_handler": (
+                f"OPS-AUFGABE:\n\n{context[:2000]}\n\n"
+                "Führe die notwendigen Maßnahmen durch und melde das Ergebnis."
+            ),
+        }
+        return prompts.get(issue_type, f"AUFGABE:\n\n{context[:2000]}")
 
     def _select_agent(self, issue_type: str) -> str:
-        """Wählt den passenden Agent für den Issue-Typ."""
+        """Wählt den passenden CLI-Agent für den Issue-Typ."""
         mapping = {
-            "bug_hunter": "claude-mcp",
-            "code_analyst": "codex-mcp",
-            "ops_handler": "claude-mcp",
+            "bug_hunter":     "codex-mcp",
+            "code_analyst":   "codex-mcp",
+            "ops_handler":    "claude-mcp",
             "support_handler": "claude-mcp",
             "user_specialist": "claude-mcp",
-            "system_error": "claude-mcp",
+            "system_error":   "claude-mcp",
         }
         return mapping.get(issue_type, "claude-mcp")
 
@@ -490,34 +611,31 @@ class AgentSpawner:
             return {"error": f"Session {session_id} ist abgelaufen (>30min)"}
 
         from app.routes.mcp import MCP_HANDLERS
-        agent_call = MCP_HANDLERS.get("agent_call") or MCP_HANDLERS.get("cli-agents_call")
+        agent_call = (MCP_HANDLERS.get("agent_call") or
+                      MCP_HANDLERS.get("cli-agents_call"))
         if not agent_call:
             return {"error": "agent_call handler nicht verfügbar"}
 
-        result = await agent_call({"agent": session.agent_id, "message": message})
-        session.messages.append({"role": "user", "content": message, "result": str(result)[:500]})
+        result = await agent_call({"agent_id": session.agent_id, "message": message})
+        session.messages.append({"role": "user", "content": message, "result": str(result)[:200]})
         session.last_active = time.time()
-
-        return {
-            "session_id": session_id,
-            "agent_id": session.agent_id,
-            "result": result,
-        }
+        return {"session_id": session_id, "result": result}
 
     def list_sessions(self) -> List[Dict]:
         return [s.to_dict() for s in self._sessions.values()]
 
-    def get_session(self, session_id: str) -> Optional[SpawnedSession]:
-        return self._sessions.get(session_id)
+    def get_session(self, session_id: str) -> Optional[Dict]:
+        s = self._sessions.get(session_id)
+        return s.to_dict() if s else None
 
     async def _cleanup_loop(self):
-        """Expired Sessions aufräumen alle 5 Minuten."""
+        """Bereinigt abgelaufene Sessions alle 10 Minuten."""
         while True:
-            await asyncio.sleep(300)
+            await asyncio.sleep(600)
             expired = [sid for sid, s in self._sessions.items() if s.expired]
             for sid in expired:
+                logger.debug(f"Session {sid} abgelaufen — bereinigt")
                 del self._sessions[sid]
-                logger.debug(f"Session {sid} abgelaufen und entfernt")
 
 
 # Singleton
