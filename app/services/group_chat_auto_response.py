@@ -29,13 +29,16 @@ logger = logging.getLogger("ailinux.group_chat.auto_response")
 
 # Model mapping for auto-responding API agents
 API_AGENT_MODELS: Dict[str, str] = {
-    "mistral-api": "mistral/mistral-large-latest",
-    "groq-api": "groq/llama-3.3-70b-versatile",
-    "cerebras-api": "cerebras/llama-3.3-70b",
-    "ollama-qwen": "ollama/qwen3:8b",
-    "ollama-kimi": "ollama/kimi-k2-thinking:cloud",
-    "openrouter-api": "openrouter/meta-llama/llama-3.3-70b-instruct",
+    "mistral-api": "mistral/mistral-small-latest",
+    "groq-api": "groq/llama-3.1-8b-instant",
+    "cerebras-api": "cerebras/llama3.1-8b",
+    "ollama-qwen": "qwen3-coder:480b-cloud",
+    "ollama-kimi": "kimi-k2-thinking:cloud",
+    "openrouter-api": "openrouter/mistralai/mistral-small-latest",
 }
+
+# Which agents use Ollama directly (vs cloud API proxy)
+OLLAMA_AGENTS = {"ollama-qwen", "ollama-kimi"}
 
 # Timeout per provider (seconds)
 PROVIDER_TIMEOUTS: Dict[str, int] = {
@@ -88,22 +91,36 @@ Antworte konkret und praxisnah. Max 500 Wörter. Wenn Code gefragt ist, gib Pyth
 
 
 async def _query_agent_model(agent_id: str, model: str, prompt: str, timeout: int) -> str:
-    """Fragt ein Modell via generate_response ab."""
+    """Fragt ein Modell via chat_router oder Ollama direkt ab."""
     try:
-        from app.services.chat import generate_response
-        response = await asyncio.wait_for(
-            generate_response(
-                message=prompt,
-                model=model,
-                temperature=0.4,
-                max_tokens=2048,
-            ),
-            timeout=timeout,
-        )
-        return response
+        if agent_id in OLLAMA_AGENTS:
+            # Ollama: direkt via aiohttp
+            import aiohttp
+            async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=timeout)) as http_session:
+                async with http_session.post(
+                    "http://localhost:11434/api/chat",
+                    json={"model": model, "messages": [{"role": "user", "content": prompt}], "stream": False},
+                ) as resp:
+                    if resp.status != 200:
+                        raise RuntimeError(f"Ollama HTTP {resp.status}")
+                    data = await resp.json()
+                    return data.get("message", {}).get("content", "")
+        else:
+            # Cloud API via chat_router proxy
+            from app.services.chat_router import api_proxy
+            response = await asyncio.wait_for(
+                api_proxy.chat(
+                    model=model,
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0.4,
+                    max_tokens=2048,
+                ),
+                timeout=timeout,
+            )
+            return response if isinstance(response, str) else str(response)
     except asyncio.TimeoutError:
         logger.warning(f"Auto-response timeout for {agent_id} ({model}) after {timeout}s")
-        return f"[TIMEOUT nach {timeout}s - {agent_id} hat nicht rechtzeitig geantwortet]"
+        return f"[TIMEOUT nach {timeout}s - {agent_id}]"
     except Exception as e:
         logger.error(f"Auto-response error for {agent_id}: {e}")
         return f"[ERROR: {agent_id} - {str(e)[:200]}]"
