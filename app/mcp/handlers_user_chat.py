@@ -158,24 +158,36 @@ def _build_context_messages(session: Dict, new_user_msg: str) -> List[Dict]:
 
 
 async def _query_model(model_id: str, messages: List[Dict], timeout: int = 30) -> str:
-    """Einzelnes Modell abfragen."""
+    """Einzelnes Modell abfragen — direkt via HTTP."""
+    import httpx
+    provider = model_id.split("/")[0] if "/" in model_id else "unknown"
+    model_name = model_id.split("/", 1)[1] if "/" in model_id else model_id
+
     try:
-        from app.services.chat_router import handle_chat_smart
-        result = await asyncio.wait_for(
-            handle_chat_smart({
-                "messages": messages,
-                "model": model_id,
-                "temperature": 0.7,
-                "max_tokens": 1024,
-                "stream": False,
-            }),
-            timeout=timeout,
-        )
-        if isinstance(result, dict):
-            return result.get("content") or result.get("text") or str(result)
-        return str(result)
+        async with httpx.AsyncClient(timeout=timeout) as client:
+            # Ollama — direkt via /api/chat (Cloud-Stubs laufen intern über Ollama)
+            if provider == "ollama":
+                r = await client.post(
+                    "http://localhost:11434/api/chat",
+                    json={"model": model_name, "messages": messages, "stream": False},
+                )
+                if r.status_code == 200:
+                    return r.json().get("message", {}).get("content", "") or "[leer]"
+                return f"[Ollama {r.status_code}: {r.text[:100]}]"
+
+            # Alle anderen Provider — über TriForce /v1/chat/completions
+            r = await client.post(
+                "http://localhost:9000/v1/chat/completions",
+                json={"model": model_id, "messages": messages,
+                      "max_tokens": 1024, "temperature": 0.7, "stream": False},
+            )
+            d = r.json()
+            return (d.get("text") or
+                    d.get("choices", [{}])[0].get("message", {}).get("content") or
+                    d.get("content") or f"[Fehler: {str(d)[:100]}]")
+
     except asyncio.TimeoutError:
-        return f"[TIMEOUT: {model_id} hat nicht rechtzeitig geantwortet]"
+        return f"[TIMEOUT: {model_id}]"
     except Exception as e:
         return f"[FEHLER: {model_id} — {str(e)[:150]}]"
 
