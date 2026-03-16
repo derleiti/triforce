@@ -405,6 +405,8 @@ class APIProxy:
             result = await self._groq_chat(api_key, model_id, messages, temperature, max_tokens)
         elif provider == "cerebras":
             result = await self._cerebras_chat(api_key, model_id, messages, temperature, max_tokens)
+        elif provider == "openrouter":
+            result = await self._openrouter_chat(api_key, model_id, messages, temperature, max_tokens)
         else:
             raise RuntimeError(f"Unknown provider: {provider}")
         
@@ -568,6 +570,33 @@ class APIProxy:
                 if resp.status != 200:
                     error = await resp.text()
                     raise RuntimeError(f"Cerebras API error: {error}")
+                data = await resp.json()
+                return data["choices"][0]["message"]["content"]
+
+
+    async def _openrouter_chat(self, api_key: str, model: str, messages: list, temp: float, max_tokens: int) -> str:
+        """OpenRouter API Call (OpenAI-compatible)"""
+        from ..utils.model_helpers import strip_provider_prefix
+        model_id = strip_provider_prefix(model)
+        async with aiohttp.ClientSession(timeout=self.timeout) as session:
+            async with session.post(
+                "https://openrouter.ai/api/v1/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {api_key}",
+                    "Content-Type": "application/json",
+                    "HTTP-Referer": "https://api.ailinux.me",
+                    "X-Title": "AILinux TriForce",
+                },
+                json={
+                    "model": model_id,
+                    "messages": messages,
+                    "temperature": temp,
+                    "max_tokens": max_tokens
+                }
+            ) as resp:
+                if resp.status != 200:
+                    error = await resp.text()
+                    raise RuntimeError(f"OpenRouter API error: {error}")
                 data = await resp.json()
                 return data["choices"][0]["message"]["content"]
 
