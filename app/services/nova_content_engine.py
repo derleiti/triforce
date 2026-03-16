@@ -122,20 +122,34 @@ async def _generate(topic: str, platform: str) -> Optional[dict]:
     except Exception as e:
         logger.error(f"content_engine._generate: {e}"); return None
 
+async def _mcp(name: str, args: dict):
+    """Direkter MCP-Tool-Call ohne handler import."""
+    try:
+        from app.mcp.structured_admin import TOOL_HANDLERS
+        fn = TOOL_HANDLERS.get(name)
+        if fn:
+            return await fn(args)
+    except Exception as e:
+        logger.warning(f"content_engine._mcp({name}): {e}")
+    return None
+
 async def post_to_wordpress() -> bool:
     topic = _pick_topic()
     logger.info(f"content_engine: WP → {topic}")
     try:
-        from ..mcp.structured_admin import handler as h
         data = await _generate(topic, "wordpress")
         if not data or not data.get("title"): return False
         title, content = data["title"], data["content"]
         if _already_posted(title): return False
-        res = await h({"method":"tools/call","params":{"name":"wp_create_draft","arguments":{"title":title,"content":content,"status":"publish"}}})
+        res = await _mcp("wp_create_draft", {"title": title, "content": content, "status": "publish"})
         if res and not res.get("error"):
             _mark_posted(title); _mark_posted(topic)
             logger.info(f"content_engine: WP published — {title}")
-            await h({"method":"tools/call","params":{"name":"notify_send","arguments":{"title":f"📝 WP: {title[:60]}","body":f"Topic: {topic}","source":"system","priority":"low","auto_resolve":True}}})
+            try:
+                from app.mcp.notification_manager import create_notification
+                create_notification({"title": f"📝 WP: {title[:60]}", "body": f"Topic: {topic}",
+                                     "source": "system", "priority": "low"})
+            except Exception: pass
             return True
         logger.error(f"content_engine: WP fail: {res}"); return False
     except Exception as e:
@@ -145,23 +159,26 @@ async def post_to_flarum() -> bool:
     topic = _pick_topic()
     logger.info(f"content_engine: Flarum → {topic}")
     try:
-        from ..mcp.structured_admin import handler as h
         data = await _generate(topic, "flarum")
         if not data or not data.get("title"): return False
         title, content = data["title"], data["content"]
         if _already_posted(title): return False
         tag_ids = []
         try:
-            tr = await h({"method":"tools/call","params":{"name":"flarum_tags","arguments":{}}})
+            tr = await _mcp("flarum_tags", {})
             for t in ((tr.get("result") or []) if tr else []):
-                if any(pt.lower() in t.get("slug","").lower() for pt in data.get("tags",[])):
+                if any(pt.lower() in t.get("slug", "").lower() for pt in data.get("tags", [])):
                     tag_ids.append(t["id"])
         except: pass
-        res = await h({"method":"tools/call","params":{"name":"flarum_discussion_create","arguments":{"title":title,"content":content,"tags":tag_ids[:3]}}})
+        res = await _mcp("flarum_discussion_create", {"title": title, "content": content, "tags": tag_ids[:3]})
         if res and not res.get("error"):
             _mark_posted(title); _mark_posted(topic)
             logger.info(f"content_engine: Flarum posted — {title}")
-            await h({"method":"tools/call","params":{"name":"notify_send","arguments":{"title":f"💬 Forum: {title[:60]}","body":f"Topic: {topic}","source":"system","priority":"low","auto_resolve":True}}})
+            try:
+                from app.mcp.notification_manager import create_notification
+                create_notification({"title": f"💬 Forum: {title[:60]}", "body": f"Topic: {topic}",
+                                     "source": "system", "priority": "low"})
+            except Exception: pass
             return True
         logger.error(f"content_engine: Flarum fail: {res}"); return False
     except Exception as e:
