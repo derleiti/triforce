@@ -287,6 +287,18 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning(f"Redis Auto-Cleanup init failed: {e}")
 
+    # Task Scheduler + Agent Spawner als Background-Tasks starten
+    try:
+        from .services.task_scheduler import get_task_scheduler
+        from .services.agent_spawner import get_agent_spawner
+        _scheduler = get_task_scheduler()
+        _spawner = get_agent_spawner()
+        _scheduler.start()
+        _spawner.start()
+        logger.info("Task Scheduler + Agent Spawner gestartet")
+    except Exception as e:
+        logger.warning(f"Task Scheduler/Spawner init failed: {e}")
+
     # Group Chat Recovery: re-trigger auto-response for sessions waiting before restart
     try:
         from .services.group_chat import group_chat
