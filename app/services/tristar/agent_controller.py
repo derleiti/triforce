@@ -882,15 +882,38 @@ class AgentController:
                     "--allowedTools", "Read,Bash",
                 ]
             elif agent_type == AgentType.CLAUDE:
-                cmd = [
-                    "bash", "-c",
-                    f"echo {safe_msg} | {TRIFORCE_BIN}/claude-triforce -p --output-format text 2>&1"
-                ]
+                # Tier-1 System-Agents: restricted tools (kein Write/Shell/Git)
+                # Tier-2 Worker-Agents: volle Rechte (session_id beginnt mit "spawn-")
+                is_tier1 = instance.config.system_prompt_source in ("triforce", "custom") and \
+                           not getattr(instance, "_is_worker", False)
+                if is_tier1 and agent_id in ("claude-mcp", "gemini-mcp", "codex-mcp"):
+                    allowed = "Read,LS,Glob,Grep,Cat,WebSearch,WebFetch,mcp__triforce__notify_send,mcp__triforce__notify_list,mcp__triforce__notify_read,mcp__triforce__agent_spawn_worker,mcp__triforce__agent_call,mcp__triforce__agent_broadcast,mcp__triforce__safe_probe,mcp__triforce__log_viewer,mcp__triforce__code_read,mcp__triforce__code_search,mcp__triforce__mail_inbox,mcp__triforce__mail_read,mcp__triforce__mail_send,mcp__triforce__flarum_discussions,mcp__triforce__flarum_discussion_get,mcp__triforce__flarum_post_create,mcp__triforce__flarum_posts,mcp__triforce__health,mcp__triforce__status,mcp__triforce__group_chat_create,mcp__triforce__group_chat_ask,mcp__triforce__group_chat_read,mcp__triforce__group_chat_status,mcp__triforce__memory_search,mcp__triforce__memory_store"
+                    cmd = [
+                        "bash", "-c",
+                        f"echo {safe_msg} | {TRIFORCE_BIN}/claude-triforce -p "
+                        f"--output-format text "
+                        f"--allowedTools {shlex.quote(allowed)} "
+                        f"--permission-mode default 2>&1"
+                    ]
+                else:
+                    cmd = [
+                        "bash", "-c",
+                        f"echo {safe_msg} | {TRIFORCE_BIN}/claude-triforce -p --output-format text 2>&1"
+                    ]
             elif agent_type == AgentType.CODEX:
-                cmd = [
-                    "bash", "-c",
-                    f"echo {safe_msg} | {TRIFORCE_BIN}/codex-triforce exec - --full-auto 2>&1"
-                ]
+                # Tier-1: kein --full-auto (kein Write)
+                is_tier1_codex = agent_id in ("claude-mcp", "gemini-mcp", "codex-mcp") and                                   not getattr(instance, "_is_worker", False)
+                if is_tier1_codex:
+                    cmd = [
+                        "bash", "-c",
+                        f"echo {safe_msg} | {TRIFORCE_BIN}/codex-triforce exec - "
+                        f"--approval-mode suggest-only 2>&1"
+                    ]
+                else:
+                    cmd = [
+                        "bash", "-c",
+                        f"echo {safe_msg} | {TRIFORCE_BIN}/codex-triforce exec - --full-auto 2>&1"
+                    ]
             elif agent_type == AgentType.GEMINI:
                 prompt_dir = Path("/var/tristar/agents/runtime-prompts")
                 prompt_dir.mkdir(parents=True, exist_ok=True)
@@ -906,10 +929,18 @@ class AgentController:
 
                 call_prompt_file.write_text(full_prompt, encoding="utf-8")
 
-                cmd = [
-                    "bash", "-c",
-                    f'{TRIFORCE_BIN}/gemini-triforce --yolo -p "$(cat {shlex.quote(str(call_prompt_file))})" 2>&1'
-                ]
+                is_tier1_gemini = agent_id in ("claude-mcp", "gemini-mcp", "codex-mcp") and                                    not getattr(instance, "_is_worker", False)
+                if is_tier1_gemini:
+                    # Tier-1: kein --yolo (kein unkontrollierter Write-Zugriff)
+                    cmd = [
+                        "bash", "-c",
+                        f'{TRIFORCE_BIN}/gemini-triforce -p "$(cat {shlex.quote(str(call_prompt_file))})" 2>&1'
+                    ]
+                else:
+                    cmd = [
+                        "bash", "-c",
+                        f'{TRIFORCE_BIN}/gemini-triforce --yolo -p "$(cat {shlex.quote(str(call_prompt_file))})" 2>&1'
+                    ]
             elif agent_type == AgentType.OPENCODE:
                 # WICHTIG: Sauberes Workspace ohne CLAUDE.md um unerwartete Task-Ausführung zu vermeiden
                 opencode_workspace = "/var/tristar/agents/opencode-workspace"
