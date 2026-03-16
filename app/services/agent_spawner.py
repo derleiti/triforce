@@ -299,6 +299,7 @@ class AgentSpawner:
         self._sessions:      Dict[str, SpawnedSession] = {}
         self._cleanup_task:  Optional[asyncio.Task]    = None
         self._watcher_task:  Optional[asyncio.Task]    = None
+        self._bootstrap_cooldowns: Dict[str, float]        = {}
 
     def start(self):
         self._cleanup_task = asyncio.create_task(self._cleanup_loop())
@@ -324,6 +325,8 @@ class AgentSpawner:
         while True:
             try:
                 await self._process_pending_notifications()
+                # Adaptive Bootstrap nach jedem Watcher-Run
+                await _adaptive_agent_bootstrap(self)
             except asyncio.CancelledError:
                 break
             except Exception as e:
@@ -802,3 +805,181 @@ async def init_system_agents() -> dict:
             logger.debug(f"System-Agent {agent_id} Init-Fehler (ignoriert): {e}")
 
     return results
+
+
+# =============================================================================
+# Adaptive Agent Bootstrap
+# Analysiert Queue-Tiefe + Priority-Verteilung → entscheidet welche Agents
+# hochgezogen werden, ohne die Message-Queue zu überlasten
+# =============================================================================
+
+# Bootstrap-Regeln: ab welcher Queue-Tiefe/Priority welcher Agent startet
+BOOTSTRAP_RULES = [
+    {
+        # Einzelne CRITICAL → sofort claude-mcp (Ops)
+        "condition": lambda stats: stats["critical"] >= 1,
+        "agent": "claude-mcp",
+        "reason": "CRITICAL Notification in Queue",
+        "cooldown_key": "claude_critical",
+        "cooldown_s": 300,
+    },
+    {
+        # 3+ HIGH + Queue wächst → claude-mcp (Ops)
+        "condition": lambda stats: stats["high"] >= 3 and stats["queue_growing"],
+        "agent": "claude-mcp",
+        "reason": f"Queue wächst: 3+ HIGH Notifications",
+        "cooldown_key": "claude_high_bulk",
+        "cooldown_s": 600,
+    },
+    {
+        # Code-Fehler erkannt → codex-mcp
+        "condition": lambda stats: stats["has_code_error"],
+        "agent": "codex-mcp",
+        "reason": "Code-Fehler in Notifications erkannt",
+        "cooldown_key": "codex_code_error",
+        "cooldown_s": 600,
+    },
+    {
+        # Forum/Email-Backlog → claude-mcp (Support)
+        "condition": lambda stats: stats["support_count"] >= 2,
+        "agent": "claude-mcp",
+        "reason": "Support-Backlog (Forum/Email)",
+        "cooldown_key": "claude_support",
+        "cooldown_s": 900,
+    },
+]
+
+# Queue-Tiefe aus letztem Check (für "growing" Erkennung)
+_last_queue_size: int = 0
+
+
+async def _adaptive_agent_bootstrap(spawner: "AgentSpawner") -> None:
+    """
+    Analysiert die Notification-Queue und bootstrapt Kern-Agents adaptiv.
+
+    Regeln:
+    - CRITICAL ≥ 1      → claude-mcp sofort
+    - HIGH ≥ 3 + wächst → claude-mcp
+    - Code-Fehler        → codex-mcp
+    - Support-Backlog    → claude-mcp (Support-Modus)
+
+    Queue-Schutz: Agents bekommen KEINE direkten Aufgaben hier —
+    sie lesen selbst aus notify_list wenn sie aktiv sind.
+    """
+    global _last_queue_size
+
+    try:
+        from app.mcp.notification_manager import get_notifications
+    except Exception:
+        return
+
+    entries = get_notifications(unread_only=True, limit=50)
+    if not entries:
+        _last_queue_size = 0
+        return
+
+    # Queue-Statistiken berechnen
+    critical = sum(1 for e in entries if e.get("priority") == "critical")
+    high     = sum(1 for e in entries if e.get("priority") == "high")
+    normal   = sum(1 for e in entries if e.get("priority") == "normal")
+    total    = len(entries)
+
+    # Code-Fehler-Erkennung
+    code_keywords = ("traceback", "syntaxerror", "importerror", "nameerror",
+                     "typeerror", "exception at line")
+    has_code_error = any(
+        any(kw in (e.get("body", "") + e.get("title", "")).lower()
+            for kw in code_keywords)
+        for e in entries
+        if e.get("priority") in ("high", "critical")
+    )
+
+    # Support-Backlog-Erkennung
+    support_keywords = ("flarum", "forum", "email", "support", "anfrage")
+    support_count = sum(
+        1 for e in entries
+        if any(kw in (e.get("title", "") + e.get("body", "")).lower()
+               for kw in support_keywords)
+    )
+
+    # Queue wächst?
+    queue_growing = total > _last_queue_size + 2
+    _last_queue_size = total
+
+    stats = {
+        "critical": critical,
+        "high": high,
+        "normal": normal,
+        "total": total,
+        "has_code_error": has_code_error,
+        "support_count": support_count,
+        "queue_growing": queue_growing,
+    }
+
+    logger.debug(
+        f"Queue-Stats: {total} total | {critical} critical | {high} high | "
+        f"code_error={has_code_error} | support={support_count} | growing={queue_growing}"
+    )
+
+    now = time.time()
+
+    for rule in BOOTSTRAP_RULES:
+        try:
+            if not rule["condition"](stats):
+                continue
+
+            # Cooldown prüfen
+            ck = rule["cooldown_key"]
+            last = spawner._bootstrap_cooldowns.get(ck, 0)
+            if now - last < rule["cooldown_s"]:
+                logger.debug(f"Bootstrap-Cooldown für '{ck}' aktiv — skip")
+                continue
+
+            spawner._bootstrap_cooldowns[ck] = now
+            agent_id = rule["agent"]
+            reason   = rule["reason"]
+
+            logger.info(
+                f"Adaptive Bootstrap: starte {agent_id} | Grund: {reason} | "
+                f"Queue: {total} ({critical}c/{high}h)"
+            )
+
+            # System-Prompt aus SYSTEM_AGENT_PROMPTS
+            prompt_template = SYSTEM_AGENT_PROMPTS.get(agent_id, "")
+            if not prompt_template:
+                continue
+
+            session_id = f"boot-{agent_id}-{uuid.uuid4().hex[:6]}"
+            system_prompt = prompt_template.format(
+                session_id=session_id,
+                context=(
+                    f"Bootstrap-Grund: {reason}\n"
+                    f"Queue: {total} Notifications ({critical} critical, {high} high)\n"
+                    f"Deine erste Aufgabe: notify_list aufrufen und HIGH/CRITICAL Notifications abarbeiten."
+                ),
+                custom_prompt="",
+                topic="adaptive_bootstrap",
+            )
+
+            # Agent via MCP starten
+            from app.routes.mcp import MCP_HANDLERS
+            agent_call = (MCP_HANDLERS.get("agent_call") or
+                          MCP_HANDLERS.get("cli-agents_call"))
+            if not agent_call:
+                logger.debug("Bootstrap: agent_call nicht verfügbar")
+                continue
+
+            init_msg = (
+                f"[BOOTSTRAP]\n{system_prompt}\n[/BOOTSTRAP]\n\n"
+                f"Queue-Status: {total} Notifications. Starte mit notify_list."
+            )
+            await asyncio.wait_for(
+                agent_call({"agent_id": agent_id, "message": init_msg}),
+                timeout=15,
+            )
+            logger.info(f"Bootstrap {agent_id} gesendet — Session: {session_id}")
+
+        except asyncio.TimeoutError:
+            logger.debug(f"Bootstrap {rule['agent']}: timeout (agent nicht aktiv) — OK")
+        except Exception as e:
+            logger.debug(f"Bootstrap-Fehler für {rule['agent']}: {e}")

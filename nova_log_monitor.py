@@ -106,6 +106,31 @@ IGNORE_PATTERNS = [
     r"model_registry.*Discovered",   # Model-Discovery — Startup-Normal
     r"Hardware.*Auto-Detection",     # Hardware-Detect beim Start
     r"TriForce Logging v",           # Startup-Logs
+    # uvicorn komplett raus — nur echte HTTP-Errors sind relevant
+    r"uvicorn\.error",          # alles von uvicorn.error (Bootup, Shutdown, WS)
+    r"uvicorn\.access",         # HTTP Access-Log
+    r"Started server process",
+    r"Waiting for application",
+    r"Application startup",
+    r"Application shutdown",
+    r"Finished server process",
+    r"Uvicorn running on",
+    r"Shutting down",
+    r"Waiting for connections",
+    r"connection open",
+    r"connection closed",
+    r"FutureWarning",            # Python-Deprecation-Warnings
+    r"SSE_CONNECT",              # MCP-Client SSE-Verbindungen
+    r"SSE_DISCONNECT",
+    r"TOOL_CALL_OK",
+    r"TOOL_CALL_START",
+    r"FutureWarning",                        # Python FutureWarning beim Import
+    r"detect-hardware.*wrote",               # hw.env Schreib-Info beim Start
+    r"Arrow Lake.*AVX-512",                  # Hardware-Erkennung
+    r"Hardware Acceleration v",              # Hardware-Init
+    r"Federation Load Balancer ready",       # Federation Normal-Start
+    r"Federation Manager started",           # Federation Normal-Start
+    r"system\.collector.*initialized",       # Log-Collector Init
 ]
 
 # ── MCP Client ────────────────────────────────────────────────────────────────
