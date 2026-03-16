@@ -450,6 +450,11 @@ def create_app() -> FastAPI:
         "/v1/.well-known/oauth-authorization-server/",
         "/v1/mcp/.well-known/mcp.json",
     }
+    # Nova Frontend routes are public (WP plugin calls these via Apache with X-Forwarded-For)
+    public_auth_exempt_prefixes = (
+        "/v1/frontend/dashboard/",
+        "/v1/wordpress/",
+    )
 
     @app.middleware("http")
     async def central_auth_middleware(request: Request, call_next):
@@ -459,7 +464,11 @@ def create_app() -> FastAPI:
         path = request.url.path
 
         needs_auth = (
-            (path.startswith("/v1") and path not in public_auth_exempt_paths)
+            (
+                path.startswith("/v1")
+                and path not in public_auth_exempt_paths
+                and not any(path.startswith(p) for p in public_auth_exempt_prefixes)
+            )
             or path.startswith("/mcp")
         )
 

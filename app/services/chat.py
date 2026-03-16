@@ -330,6 +330,7 @@ async def _get_initial_response(
     messages: List[dict[str, str]],
     temperature: Optional[float],
     settings,
+    no_fallback: bool = False,
 ) -> str:
     chunks = []
     if model.provider == "ollama":
@@ -595,7 +596,7 @@ async def stream_chat(
         logger.warning(f"MCP Filter error (non-fatal): {mcp_exc}")
 
     # Get initial response
-    initial_response = await _get_initial_response(model, request_model, formatted_messages, temperature, settings)
+    initial_response = await _get_initial_response(model, request_model, formatted_messages, temperature, settings, no_fallback=no_fallback)
 
     # Check for uncertainty (web search)
     if any(phrase in initial_response.lower() for phrase in UNCERTAINTY_PHRASES):
