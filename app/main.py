@@ -458,6 +458,8 @@ def create_app() -> FastAPI:
         "/v1/auth/logout",
         "/v1/client/login",
         "/v1/client/register",
+        "/v1/auth/forgot-password",
+        "/v1/auth/reset-password",
     }
     # Nova Frontend routes are public (WP plugin calls these via Apache with X-Forwarded-For)
     public_auth_exempt_prefixes = (

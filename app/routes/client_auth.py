@@ -824,3 +824,100 @@ async def client_handshake(authorization: str = Header(None)):
         "tool_count":    len(tools),
         "quota":         quota.to_api(),
     }
+
+
+# =============================================================================
+# Password Reset (Forgot Password)
+# =============================================================================
+
+# In-Memory Reset-Token Store (Redis wäre besser, reicht für jetzt)
+_RESET_TOKENS: Dict[str, dict] = {}  # token → {email, expires}
+
+
+class PasswordResetRequestModel(BaseModel):
+    email: str = Field(..., description="E-Mail-Adresse des Accounts")
+
+
+class PasswordResetModel(BaseModel):
+    token: str = Field(..., description="Reset-Token aus der E-Mail")
+    new_password: str = Field(..., min_length=6, description="Neues Passwort (min 6 Zeichen)")
+
+
+@router.post("/forgot-password")
+async def forgot_password(request: PasswordResetRequestModel):
+    """
+    Passwort-Reset anfordern — sendet E-Mail mit Reset-Link an nova@ailinux.me.
+    Gibt immer 200 zurück (kein User-Enumeration).
+    """
+    email = request.email.lower().strip()
+
+    # Prüfe ob User existiert (still, kein 404)
+    USER_REGISTRY.update(load_users_from_file())
+    user = USER_REGISTRY.get(email)
+
+    if user:
+        # Reset-Token generieren (1h gültig)
+        token = secrets.token_urlsafe(32)
+        _RESET_TOKENS[token] = {
+            "email": email,
+            "expires": (datetime.now(timezone.utc) + timedelta(hours=1)).timestamp()
+        }
+
+        reset_url = f"https://login.ailinux.me/?reset_token={token}"
+
+        # Mail via MCP mail_send Handler senden
+        try:
+            from app.routes.mcp import MCP_HANDLERS
+            mail_handler = MCP_HANDLERS.get("mail_send")
+            if mail_handler:
+                await mail_handler({
+                    "to": email,
+                    "subject": "AILinux – Passwort zurücksetzen",
+                    "body": (
+                        f"Hallo,\n\n"
+                        f"du hast einen Passwort-Reset für deinen AILinux-Account ({email}) angefordert.\n\n"
+                        f"Klicke auf diesen Link um ein neues Passwort zu setzen (gültig 1 Stunde):\n"
+                        f"{reset_url}\n\n"
+                        f"Falls du das nicht warst, ignoriere diese E-Mail.\n\n"
+                        f"– Nova / AILinux Team\n"
+                        f"nova@ailinux.me | https://ailinux.me"
+                    ),
+                    "reply_to": "nova@ailinux.me",
+                })
+                logger.info(f"Password reset mail sent to {email}")
+        except Exception as e:
+            logger.warning(f"Reset mail failed: {e}")
+
+    return {"ok": True, "message": "Falls ein Account mit dieser E-Mail existiert, wurde ein Reset-Link gesendet."}
+
+
+@router.post("/reset-password")
+async def reset_password(request: PasswordResetModel):
+    """
+    Passwort mit Reset-Token setzen.
+    """
+    token_data = _RESET_TOKENS.get(request.token)
+    if not token_data:
+        raise HTTPException(400, "Ungültiger oder abgelaufener Reset-Token")
+
+    if datetime.now(timezone.utc).timestamp() > token_data["expires"]:
+        del _RESET_TOKENS[request.token]
+        raise HTTPException(400, "Reset-Token abgelaufen (gültig 1 Stunde)")
+
+    email = token_data["email"]
+
+    # Neues Passwort speichern
+    USER_REGISTRY.update(load_users_from_file())
+    user = USER_REGISTRY.get(email)
+    if not user:
+        raise HTTPException(404, "User nicht gefunden")
+
+    user["password_hash"] = hash_secret(request.new_password)
+    save_user_to_file(email, user)
+    USER_REGISTRY[email] = user
+
+    # Token invalidieren
+    del _RESET_TOKENS[request.token]
+
+    logger.info(f"Password reset successful for {email}")
+    return {"ok": True, "message": "Passwort erfolgreich geändert. Du kannst dich jetzt einloggen."}

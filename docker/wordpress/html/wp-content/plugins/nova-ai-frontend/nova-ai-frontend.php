@@ -1449,6 +1449,9 @@ add_shortcode('ailinux_downloads', function ($atts): string {
 });
 
 /* ── AccountSuiteService ─────────────────────────────────────────────────────── */
+require_once NOVA_AI_PLUGIN_DIR . 'services/AuthService.php';
+\NovAI\Services\AuthService::instance();
+
 require_once NOVA_AI_PLUGIN_DIR . 'services/AccountSuiteService.php';
 \NovAI\Services\AccountSuiteService::instance();
 
