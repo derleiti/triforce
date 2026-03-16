@@ -279,7 +279,7 @@ class TaskScheduler:
             logger.debug(f"notify_if_new error: {e}")
 
     # Cooldown für Scheduler-Spawns: 10 Minuten
-    _scheduler_spawn_cooldown: Dict[str, float] = {}
+    _scheduler_spawn_cooldown: dict = {}
     SCHEDULER_SPAWN_COOLDOWN_S = 600
 
     async def _spawn_if_critical(self, task: ScheduledTask, result: Any):
