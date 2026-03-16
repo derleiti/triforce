@@ -287,6 +287,14 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning(f"Redis Auto-Cleanup init failed: {e}")
 
+    # Group Chat Recovery: re-trigger auto-response for sessions waiting before restart
+    try:
+        from .services.group_chat import group_chat
+        group_chat._schedule_recovery()
+        logger.info("Group Chat recovery scheduled")
+    except Exception as e:
+        logger.warning(f"Group Chat recovery init failed: {e}")
+
     yield
 
     # Clean up resources on shutdown

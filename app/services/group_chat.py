@@ -1108,12 +1108,15 @@ Format:
                 logger.error(f"Failed to load session {filepath}: {e}")
 
     def _schedule_recovery(self):
-        """Re-trigger auto-response for sessions that were waiting when backend restarted."""
+        """Re-trigger auto-response for sessions that were waiting when backend restarted.
+        Called by app startup event after event loop is running.
+        """
         waiting = [s for s in self.sessions.values()
                    if s.phase == SessionPhase.WAITING_RESPONSES and s.pending_responses]
         if not waiting:
+            logger.debug("Recovery: no waiting sessions found")
             return
-        logger.info(f"Recovery: {len(waiting)} waiting sessions found, scheduling auto-response")
+        logger.info(f"Recovery: {len(waiting)} waiting sessions — scheduling auto-response")
         async def _recover_all():
             for session in waiting:
                 api_pending = {pid for pid in session.pending_responses
@@ -1126,7 +1129,12 @@ Format:
                         logger.info(f"Recovery completed for {session.id}")
                     except Exception as e:
                         logger.error(f"Recovery failed for {session.id}: {e}")
-        asyncio.ensure_future(_recover_all())
+        try:
+            loop = asyncio.get_running_loop()
+            loop.create_task(_recover_all())
+        except RuntimeError:
+            # No running loop yet — log for startup hook to call later
+            logger.warning("Recovery deferred: no running event loop at import time")
 
 
 # =============================================================================
