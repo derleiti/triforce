@@ -46,6 +46,7 @@ from .routes.client_ai_search import router as client_ai_search_router
 from .routes.federation import router as federation_router
 from .routes.nova_frontend import router as nova_frontend_router
 from .routes.nova_chat_agent import router as nova_chat_agent_router
+from .routes.nova_playground import router as nova_playground_router
 # BUG-006 FIX 2026-03-10: user_api war nie in main.py registriert
 from .routes.user_api import router as user_api_router
 # BUG-013 FIX 2026-03-10: support + tiers waren definiert aber nie registriert
@@ -615,6 +616,7 @@ def create_app() -> FastAPI:
     app.include_router(vision_router, tags=["Vision"])
     app.include_router(nova_frontend_router, prefix="/v1", tags=["Nova Frontend"])
     app.include_router(nova_chat_agent_router, prefix="/v1", tags=["Nova Chat Agent"])
+    app.include_router(nova_playground_router, prefix="/v1", tags=["Nova Playground"])
     # BUG-006 FIX 2026-03-10: User API Router registrieren
     app.include_router(user_api_router, prefix="/v1", tags=["User API"])
     app.include_router(client_chat_router, prefix="/v1", tags=["Client Chat"])
