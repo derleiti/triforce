@@ -1158,7 +1158,7 @@ V5_ALIASES: Dict[str, str] = {
     "codebase.edit": "code_edit",
     "file_write": "code_edit",
     "triforce_write": "code_edit",
-    "delta_sync_v4": "code_edit",
+    # delta_sync_v4 hat eigenen Handler — kein Alias auf code_edit (Bug-Fix 2026-03-16)
     "ram_patch_apply": "code_patch",
     "codebase_create": "code_edit",
     "codebase.create": "code_edit",
