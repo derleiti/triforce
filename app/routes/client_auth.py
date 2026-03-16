@@ -865,38 +865,29 @@ async def forgot_password(request: PasswordResetRequestModel):
 
         reset_url = f"https://login.ailinux.me/?reset_token={token}"
 
-        # Mail via internen MCP-HTTP-Call senden (MCP_HANDLERS dict erst zur Laufzeit gefüllt)
+        # Mail direkt via mail_service.mail_send (SMTP)
         try:
-            import aiohttp, base64 as _b64
-            _auth = _b64.b64encode(b"zombie:e9F8DuKbH-").decode()
-            _payload = {
-                "jsonrpc": "2.0", "id": 1, "method": "tools/call",
-                "params": {"name": "mail_send", "arguments": {
-                    "to": email,
-                    "subject": "AILinux – Passwort zurücksetzen",
-                    "body": (
-                        f"Hallo,\n\n"
-                        f"du hast einen Passwort-Reset für deinen AILinux-Account ({email}) angefordert.\n\n"
-                        f"Klicke auf diesen Link um ein neues Passwort zu setzen (gültig 1 Stunde):\n"
-                        f"{reset_url}\n\n"
-                        f"Falls du das nicht warst, ignoriere diese E-Mail.\n\n"
-                        f"– Nova / AILinux Team\n"
-                        f"nova@ailinux.me | https://ailinux.me"
-                    ),
-                    "reply_to": "nova@ailinux.me",
-                }}
-            }
-            async with aiohttp.ClientSession() as session:
-                async with session.post(
-                    "http://localhost:9000/v1/mcp",
-                    json=_payload,
-                    headers={"Content-Type": "application/json",
-                             "Authorization": f"Basic {_auth}"},
-                    timeout=aiohttp.ClientTimeout(total=15)
-                ) as resp:
-                    _r = await resp.json()
-                    _content = _r.get("result", {}).get("content", [{}])[0].get("text", "")
-                    logger.info(f"Password reset mail sent to {email}: {_content[:100]}")
+            import asyncio as _aio
+            from app.services.mail_service import mail_send as _mail_send
+            _body = (
+                f"Hallo,\n\n"
+                f"du hast einen Passwort-Reset für deinen AILinux-Account ({email}) angefordert.\n\n"
+                f"Klicke auf diesen Link um ein neues Passwort zu setzen (gültig 1 Stunde):\n"
+                f"{reset_url}\n\n"
+                f"Falls du das nicht warst, ignoriere diese E-Mail.\n\n"
+                f"– Nova / AILinux Team\n"
+                f"nova@ailinux.me | https://ailinux.me"
+            )
+            # mail_send ist sync — in threadpool ausführen
+            result = await _aio.get_event_loop().run_in_executor(
+                None, lambda: _mail_send(
+                    to=email,
+                    subject="AILinux – Passwort zurücksetzen",
+                    body=_body,
+                    reply_to="nova@ailinux.me",
+                )
+            )
+            logger.info(f"Password reset mail sent to {email}: {result}")
         except Exception as e:
             logger.warning(f"Reset mail failed: {e}")
 
