@@ -54,32 +54,53 @@ class PlaygroundResponse(BaseModel):
 # ---------------------------------------------------------------------------
 
 async def _web_search(query: str, max_results: int = 3) -> list[dict]:
-    """Ruft search-MCP-Handler auf, gibt Liste von {title, url, snippet} zurück."""
+    """SearXNG lokal → Liste von {title, url, snippet}."""
+    import aiohttp, urllib.parse
     try:
-        from app.routes.mcp import MCP_HANDLERS
-        handler = MCP_HANDLERS.get("search") or MCP_HANDLERS.get("web_search")
-        if not handler:
-            return []
-        result = await handler({"query": query, "max_results": max_results})
-        if isinstance(result, dict):
-            return result.get("results", result.get("items", []))
-        return []
+        params = urllib.parse.urlencode({
+            "q": query, "format": "json",
+            "engines": "google,duckduckgo,bing",
+            "language": "de-DE",
+        })
+        async with aiohttp.ClientSession() as s:
+            async with s.get(
+                f"http://localhost:8888/search?{params}",
+                timeout=aiohttp.ClientTimeout(total=10)
+            ) as resp:
+                if resp.status != 200:
+                    return []
+                data = await resp.json(content_type=None)
+                results = []
+                for r in data.get("results", [])[:max_results]:
+                    results.append({
+                        "title":   r.get("title", ""),
+                        "url":     r.get("url", ""),
+                        "snippet": r.get("content", "")[:400],
+                    })
+                return results
     except Exception as e:
-        logger.debug(f"playground search: {e}")
+        logger.debug(f"playground searxng: {e}")
         return []
 
 
 async def _fetch_url(url: str) -> str:
-    """Crawlt URL, gibt Text-Content zurück (max 4000 Zeichen)."""
+    """Holt URL-Content direkt via aiohttp + simple HTML-Stripping."""
+    import aiohttp, re
+    headers = {"User-Agent": "Mozilla/5.0 (Nova-Playground/1.0; +https://ailinux.me)"}
     try:
-        from app.routes.mcp import MCP_HANDLERS
-        handler = MCP_HANDLERS.get("fetch") or MCP_HANDLERS.get("crawl")
-        if not handler:
-            return ""
-        result = await handler({"url": url, "max_length": 4000})
-        if isinstance(result, dict):
-            return result.get("content", result.get("text", ""))[:4000]
-        return str(result)[:4000]
+        async with aiohttp.ClientSession() as s:
+            async with s.get(url, headers=headers, timeout=aiohttp.ClientTimeout(total=15),
+                             allow_redirects=True, max_redirects=5) as resp:
+                if resp.status != 200:
+                    return ""
+                html = await resp.text(errors="replace")
+        # Einfaches HTML-Stripping
+        text = re.sub(r"<script[^>]*>.*?</script>", " ", html, flags=re.DOTALL | re.IGNORECASE)
+        text = re.sub(r"<style[^>]*>.*?</style>",  " ", text,  flags=re.DOTALL | re.IGNORECASE)
+        text = re.sub(r"<[^>]+>", " ", text)
+        text = re.sub(r"[ \t]+", " ", text)
+        text = re.sub(r"\n{3,}", "\n\n", text)
+        return text.strip()[:4000]
     except Exception as e:
         logger.debug(f"playground fetch: {e}")
         return ""
