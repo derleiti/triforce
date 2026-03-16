@@ -390,15 +390,22 @@ class GroupChatOrchestrator:
                 )
 
             # Warte auf Antworten der Web-AIs
-            web_agents = [pid for pid, p in session.participants.items()
-                         if p.role == ParticipantRole.WEB_ANALYST]
-            session.pending_responses = set(web_agents)
+            # Include ALL agents that can auto-respond (API, Ollama, MCP)
+            # Exclude: gemini-lead (coordinator), CLI agents (no chat API)
+            respondable = [pid for pid, p in session.participants.items()
+                          if p.connection in ("mcp", "api", "ollama")
+                          and pid != "gemini-lead"]
+            session.pending_responses = set(respondable)
             session.phase = SessionPhase.WAITING_RESPONSES
 
             self._save_session(session)
 
             # Fire auto-response for API/Ollama agents as background task
-            asyncio.ensure_future(self.auto_respond_agents(session_id))
+            try:
+                from app.services.group_chat_auto_response import auto_collect_api_responses
+                asyncio.ensure_future(auto_collect_api_responses(session_id))
+            except ImportError:
+                asyncio.ensure_future(self.auto_respond_agents(session_id))
 
             return {
                 "session_id": session_id,
@@ -1100,9 +1107,31 @@ Format:
             except Exception as e:
                 logger.error(f"Failed to load session {filepath}: {e}")
 
+    def _schedule_recovery(self):
+        """Re-trigger auto-response for sessions that were waiting when backend restarted."""
+        waiting = [s for s in self.sessions.values()
+                   if s.phase == SessionPhase.WAITING_RESPONSES and s.pending_responses]
+        if not waiting:
+            return
+        logger.info(f"Recovery: {len(waiting)} waiting sessions found, scheduling auto-response")
+        async def _recover_all():
+            for session in waiting:
+                api_pending = {pid for pid in session.pending_responses
+                               if session.participants.get(pid) and
+                               session.participants[pid].connection in ("api", "ollama")}
+                if api_pending:
+                    try:
+                        from app.services.group_chat_auto_response import auto_collect_api_responses
+                        await auto_collect_api_responses(session.id)
+                        logger.info(f"Recovery completed for {session.id}")
+                    except Exception as e:
+                        logger.error(f"Recovery failed for {session.id}: {e}")
+        asyncio.ensure_future(_recover_all())
+
 
 # =============================================================================
 # Singleton
 # =============================================================================
 
 group_chat = GroupChatOrchestrator()
+group_chat._schedule_recovery()
