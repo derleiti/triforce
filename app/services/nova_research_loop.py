@@ -72,7 +72,7 @@ async def handle_research_reply(subject: str, reply_body: str, sender: str) -> N
         return
     decision = parse_reply(reply_body)
     try:
-        from ..mcp.structured_admin import handler as h
+        from ..mcp.notification_manager import create_notification as _cn
         if decision == "implement":
             logger.info(f"research_loop: APPROVED — {subject}")
             from .agent_spawner import get_agent_spawner
@@ -84,41 +84,31 @@ async def handle_research_reply(subject: str, reply_body: str, sender: str) -> N
             sid = await get_agent_spawner().spawn_for_issue(
                 issue_type="implementation_agent", context=ctx, source="research_loop"
             )
-            await h({"method":"tools/call","params":{"name":"notify_send","arguments":{
-                "title": f"🔨 Implementation: {short}",
-                "body": f"Session: {sid}",
-                "source":"system","priority":"normal","tags":["research","implementation"],
-            }}})
+            _cn({"title": f"🔨 Implementation: {short}",
+                 "body": f"Session: {sid}", "source": "system",
+                 "priority": "normal", "tags": ["research", "implementation"]})
         elif decision == "skip":
             logger.info(f"research_loop: SKIPPED — {subject}")
             _mark_sent(subject)
-            await h({"method":"tools/call","params":{"name":"notify_send","arguments":{
-                "title": f"⏭️ Research skipped: {subject[:60]}",
-                "body": "Archiviert — 3 Tage Cooldown.",
-                "source":"system","priority":"low","auto_resolve":True,
-            }}})
+            _cn({"title": f"⏭️ Research skipped: {subject[:60]}",
+                 "body": "Archiviert — 3 Tage Cooldown.",
+                 "source": "system", "priority": "low"})
         else:
             logger.info(f"research_loop: Keine klare Entscheidung in Reply für: {subject}")
     except Exception as e:
         logger.error(f"research_loop.handle_research_reply: {e}")
 
 async def handle_admin_mail(subject: str, body: str) -> None:
-    """Mails von admin@ → Forum-Proposal."""
+    """Mails von admin@ → Notification (Forum-Proposal muss manuell umgesetzt werden)."""
     try:
-        from ..mcp.structured_admin import handler as h
-        content = (
-            f"**📬 Admin Proposal**\n\n**Betreff:** {subject}\n\n"
-            f"**Inhalt:**\n{body[:1000]}\n\n---\n"
-            "*Automatisch erstellter Vorschlag. Zombie entscheidet.*"
-        )
-        await h({"method":"tools/call","params":{"name":"flarum_discussion_create","arguments":{
-            "title": f"[PROPOSAL] {subject[:80]}", "content": content,
-        }}})
-        await h({"method":"tools/call","params":{"name":"notify_send","arguments":{
+        from ..mcp.notification_manager import create_notification
+        create_notification({
             "title": f"📬 Admin-Proposal: {subject[:60]}",
-            "body": "Neuer Vorschlag im Forum. Deine Entscheidung.",
-            "source":"system","priority":"normal","tags":["admin","proposal"],
-        }}})
+            "body": f"Von: admin@ailinux.me\n\n{body[:500]}",
+            "source": "system", "priority": "normal",
+            "tags": ["admin", "proposal"],
+        })
+        logger.info(f"research_loop: Admin-Mail als Notification weitergeleitet: {subject[:60]}")
     except Exception as e:
         logger.error(f"research_loop.handle_admin_mail: {e}")
 
@@ -150,8 +140,10 @@ async def check_mail_replies() -> None:
     if time.time() - _last_mail_check < MAIL_CHECK_INTERVAL: return
     _last_mail_check = time.time()
     try:
-        from ..mcp.structured_admin import handler as h
-        res = await h({"method":"tools/call","params":{"name":"mail_inbox","arguments":{"limit":20}}})
+        from app.routes.mcp import MCP_HANDLERS
+        mail_inbox = MCP_HANDLERS.get("mail_inbox")
+        if not mail_inbox: return
+        res = await mail_inbox({"limit": 20})
         if not res or res.get("error"): return
         for mail in (res.get("result") or {}).get("messages", []):
             uid = str(mail.get("uid",""))
@@ -160,20 +152,26 @@ async def check_mail_replies() -> None:
             sender  = mail.get("from","")
             # Research-Reply
             if "[research]" in subject.lower() and not mail.get("seen", True):
-                rr = await h({"method":"tools/call","params":{"name":"mail_read","arguments":{"uid":uid}}})
+                mail_read = MCP_HANDLERS.get("mail_read")
+                if not mail_read: continue
+                rr = await mail_read({"uid": uid})
                 if rr and not rr.get("error"):
                     body = (rr.get("result") or {}).get("body","")
                     await handle_research_reply(subject, body, sender)
                     _processed_uids.add(uid)
-                    await h({"method":"tools/call","params":{"name":"mail_mark_seen","arguments":{"uid":uid}}})
+                    mark_seen = MCP_HANDLERS.get("mail_mark_seen")
+                    if mark_seen: await mark_seen({"uid": uid})
             # Admin-Proposal
             elif sender.lower() == "admin@ailinux.me" and not mail.get("seen", True):
-                rr = await h({"method":"tools/call","params":{"name":"mail_read","arguments":{"uid":uid}}})
+                mail_read = MCP_HANDLERS.get("mail_read")
+                if not mail_read: continue
+                rr = await mail_read({"uid": uid})
                 if rr and not rr.get("error"):
                     body = (rr.get("result") or {}).get("body","")
                     await handle_admin_mail(subject, body)
                     _processed_uids.add(uid)
-                    await h({"method":"tools/call","params":{"name":"mail_mark_seen","arguments":{"uid":uid}}})
+                    mark_seen = MCP_HANDLERS.get("mail_mark_seen")
+                    if mark_seen: await mark_seen({"uid": uid})
     except Exception as e:
         logger.error(f"research_loop.check_mail_replies: {e}")
 
