@@ -145,13 +145,115 @@ class AgentSpawner:
     def __init__(self):
         self._sessions: Dict[str, SpawnedSession] = {}
         self._cleanup_task: Optional[asyncio.Task] = None
+        self._watcher_task: Optional[asyncio.Task] = None
 
     def start(self):
-        self._cleanup_task = asyncio.create_task(self._cleanup_loop())
+        self._cleanup_task    = asyncio.create_task(self._cleanup_loop())
+        self._watcher_task    = asyncio.create_task(self._notification_watcher())
+        logger.info("AgentSpawner gestartet: Cleanup + Notification-Watcher aktiv")
 
     async def stop(self):
-        if self._cleanup_task:
-            self._cleanup_task.cancel()
+        for task in (self._cleanup_task, getattr(self, "_watcher_task", None)):
+            if task:
+                task.cancel()
+
+    # ── Notification Watcher ──────────────────────────────────────────────────
+
+    async def _notification_watcher(self):
+        """
+        Überwacht die Notification-Queue alle 60s.
+        Bei HIGH/CRITICAL Errors → Agent spawnen der das Problem untersucht.
+        Bereits bearbeitete Notifications werden resolved um Loop zu vermeiden.
+        """
+        logger.info("Notification-Watcher gestartet (Intervall: 60s)")
+        await asyncio.sleep(15)  # Startup-Delay damit Backend fertig lädt
+
+        while True:
+            try:
+                await self._process_pending_notifications()
+            except asyncio.CancelledError:
+                break
+            except Exception as e:
+                logger.debug(f"Notification-Watcher error: {e}")
+            await asyncio.sleep(60)
+
+    async def _process_pending_notifications(self):
+        """Liest ungelesene HIGH/CRITICAL Notifications und spawnt ggf. Agents."""
+        try:
+            from app.mcp.notification_manager import get_notifications, mark_resolved, create_notification
+
+            entries = get_notifications(unread_only=True, limit=20)
+            if not entries:
+                return
+
+            for notif in entries:
+                prio     = notif.get("priority", "normal")
+                title    = notif.get("title", "")
+                body     = notif.get("body", "")
+                tags     = notif.get("tags", [])
+                notif_id = notif.get("id", "")
+
+                # Nur HIGH + CRITICAL → spawn
+                if prio not in ("high", "critical"):
+                    continue
+
+                # Noise-Filter: keine Agent-Spawn-eigenen Notifications
+                if any(t in tags for t in ("agent-spawn", "scheduler", "init", "auto")):
+                    continue
+
+                # Error-Klassifizierung für System-Prompt
+                context = f"Notification: {title}\n\nDetails: {body[:1000]}"
+                issue_type = self._classify_notification(title, body, tags)
+
+                if issue_type:
+                    logger.info(f"Notification-Watcher: Spawne Agent für '{issue_type}' | {title[:60]}")
+                    await self.spawn_for_issue(
+                        issue_type=issue_type,
+                        context=context,
+                        source=f"notification:{notif_id}",
+                    )
+                    # Als resolved markieren damit wir nicht doppelt spawnen
+                    try:
+                        mark_resolved(notif_id)
+                    except Exception:
+                        pass
+
+        except Exception as e:
+            logger.debug(f"_process_pending_notifications: {e}")
+
+    def _classify_notification(self, title: str, body: str, tags: list) -> Optional[str]:
+        """Klassifiziert eine Notification → Issue-Typ für den Agent-System-Prompt."""
+        text = (title + " " + body).lower()
+
+        # Code/Backend Fehler → Bug-Hunter
+        if any(kw in text for kw in [
+            "traceback", "exception", "importerror", "syntaxerror",
+            "nameerror", "attributeerror", "typeerror", "valueerror",
+            "500", "internal server error", "crash", "crashed",
+        ]):
+            return "bug_hunter"
+
+        # Service down → Ops-Handler
+        if any(kw in text for kw in [
+            "service failed", "connection refused", "connection error",
+            "down", "unreachable", "timeout", "failed to start",
+            "triforce.*failed", "restart", "stopped unexpectedly",
+        ]):
+            return "system_error"
+
+        # Forum / Support → Support-Handler
+        if any(t in tags for t in ("forum", "flarum")):
+            return "forum_support"
+
+        # Mail → Mail-Handler
+        if any(t in tags for t in ("mail", "email")):
+            return "mail_handler"
+
+        # Kritische Fehler ohne klare Kategorie
+        if "critical" in tags or "error" in (title + body).lower():
+            return "ops_handler"
+
+        return None  # Nichts spawnen
 
     # ── Core Spawn ────────────────────────────────────────────────────────────
 
@@ -190,8 +292,7 @@ class AgentSpawner:
 
         # Notification: Agent wurde gespawnt
         try:
-            from app.mcp.notification_manager import notification_manager
-            await notification_manager.add({
+            create_notification({
                 "title": f"🤖 Agent gespawnt: {agent_id}",
                 "body": f"Issue: {issue_type} | Source: {source} | Session: {session_id}",
                 "source": "agent",
@@ -259,9 +360,9 @@ class AgentSpawner:
         """
         try:
             from app.routes.mcp import MCP_HANDLERS
-            agent_call = MCP_HANDLERS.get("agent_call")
+            agent_call = MCP_HANDLERS.get("agent_call") or MCP_HANDLERS.get("cli-agents_call")
             if not agent_call:
-                raise RuntimeError("agent_call handler not found")
+                raise RuntimeError("agent_call handler not found (tried: agent_call, cli-agents_call)")
 
             # Schritt 1: Agent starten mit System-Prompt als erstem Message
             init_message = (
@@ -303,8 +404,8 @@ class AgentSpawner:
             session.status = f"error: {e}"
             logger.error(f"Spawn failed for session {session.session_id}: {e}")
             try:
-                from app.mcp.notification_manager import notification_manager
-                await notification_manager.add({
+                from app.mcp.notification_manager import get_notifications, mark_resolved, create_notification
+                create_notification({
                     "title": f"❌ Agent-Spawn fehlgeschlagen: {session.agent_id}",
                     "body": str(e)[:200],
                     "source": "agent",
@@ -372,7 +473,7 @@ class AgentSpawner:
             return {"error": f"Session {session_id} ist abgelaufen (>30min)"}
 
         from app.routes.mcp import MCP_HANDLERS
-        agent_call = MCP_HANDLERS.get("agent_call")
+        agent_call = MCP_HANDLERS.get("agent_call") or MCP_HANDLERS.get("cli-agents_call")
         if not agent_call:
             return {"error": "agent_call handler nicht verfügbar"}
 
