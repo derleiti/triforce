@@ -27,6 +27,12 @@ from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger("ailinux.group_chat.auto_response")
 
+# Bus für Live-Streaming an MCP-Clients
+try:
+    from app.mcp.group_chat_bus import gc_bus as _gc_bus
+except Exception:
+    _gc_bus = None
+
 # Model mapping for auto-responding API agents
 API_AGENT_MODELS: Dict[str, str] = {
     "mistral-api": "mistral/mistral-small-latest",
@@ -168,6 +174,18 @@ async def auto_collect_api_responses(session_id: str) -> Dict[str, Any]:
             msg_type="response",
             metadata={"model": model, "auto_response": True},
         )
+        # Live-Push an alle SSE-Subscriber
+        if _gc_bus:
+            try:
+                await _gc_bus.publish(
+                    session_id=session_id,
+                    sender=agent_id,
+                    content=response,
+                    msg_type="response",
+                    metadata={"model": model, "auto_response": True},
+                )
+            except Exception as _bus_err:
+                logger.debug(f"Bus publish failed (non-fatal): {_bus_err}")
         results[agent_id] = {
             "status": "ok" if not response.startswith("[") else "error",
             "model": model,
