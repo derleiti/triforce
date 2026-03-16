@@ -178,7 +178,11 @@ def mail_send(
             code="smtp_unconfigured",
         )
 
+    import uuid as _uuid
+    from email.utils import formatdate as _fmtdate
     msg = EmailMessage()
+    msg["Message-ID"] = f"<{_uuid.uuid4()}@ailinux.me>"
+    msg["Date"] = _fmtdate(localtime=True)
     msg["Subject"] = subject
     msg["From"] = f"{from_name} <{from_addr}>"
     msg["To"] = to
