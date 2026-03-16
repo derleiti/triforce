@@ -191,6 +191,11 @@ import logging
 
 mcp_logger = logging.getLogger("ailinux.mcp")
 
+# ── IP-Guard ContextVar (wird beim Request-Eingang gesetzt) ──────────────
+from contextvars import ContextVar
+_request_ip: ContextVar[str] = ContextVar("_request_ip", default="")
+
+
 public_router = APIRouter()
 router = APIRouter(dependencies=[Depends(require_mcp_auth)])
 
@@ -2509,7 +2514,8 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
         "restart", "binary_exec", "code_edit", "code_patch", "file_ops",
         "git", "git_ops",
     })
-    _caller_ip = str((request_meta or {}).get("client_ip", "")
+    # IP aus ContextVar (gesetzt beim HTTP-Request-Eingang) — zuverlässiger als request_meta
+    _caller_ip = _request_ip.get("") or str((request_meta or {}).get("client_ip", "")
                      or (request_meta or {}).get("ip", ""))
     _canonical_g = normalize_tool_name(tool_name) if tool_name else (tool_name or "")
     if (
@@ -4987,6 +4993,7 @@ async def mcp_unified_endpoint(request: Request):
 
     _log = logging.getLogger("ailinux.mcp.unified")
     client_ip = request.client.host if request.client else "unknown"
+    _request_ip.set(client_ip)  # IP-Guard ContextVar setzen
 
     # Get headers
     accept_header = request.headers.get("Accept", "application/json")

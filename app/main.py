@@ -344,20 +344,21 @@ async def lifespan(app: FastAPI):
     # ── Nova Engines ──────────────────────────────────────────────────────────
     # Content-Engine (WP alle 1h, Flarum alle 2h), Research-Loop (täglich)
     try:
+        import asyncio as _asyncio_nova
         from .services.nova_content_engine import start_content_engine
         from .services.nova_research_loop import research_loop_tick
         start_content_engine()
 
         async def _research_loop():
-            await asyncio.sleep(120)  # 2min Startup-Delay
+            await _asyncio_nova.sleep(120)  # 2min Startup-Delay
             while True:
                 try:
                     await research_loop_tick()
                 except Exception as _re:
                     logger.error(f"research_loop_tick error: {_re}")
-                await asyncio.sleep(300)
+                await _asyncio_nova.sleep(300)
 
-        asyncio.create_task(_research_loop())
+        _asyncio_nova.create_task(_research_loop())
         logger.info("Nova Engines gestartet: Content-Engine + Research-Loop")
     except Exception as _ne:
         logger.warning(f"Nova Engines init failed (nicht kritisch): {_ne}")
