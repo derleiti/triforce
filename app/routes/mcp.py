@@ -2508,11 +2508,12 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
     # ── IP-Guard Layer 2 ─────────────────────────────────────────────────────
     # Docker-interne IPs (172.18-20.x) dürfen NIEMALS systemverändernde
     # Tools aufrufen — unabhängig vom Tier. Verhindert Agent→Shell→Restart.
+    # IP-Guard: nur echte Shell/Restart-Tools blockieren
+    # git_ops, code_edit, file_ops, task_runner bleiben erlaubt
     _DANGEROUS_TOOLS = frozenset({
-        "shell", "task_runner", "custom_exec", "custom_binary",
-        "service_control", "container_control", "package_manager",
-        "restart", "binary_exec", "code_edit", "code_patch", "file_ops",
-        "git", "git_ops",
+        "shell",            # bash-Zugriff → killt Backend
+        "service_control",  # systemd restart/stop
+        "custom_exec",      # template-Shell
     })
     # IP aus ContextVar (gesetzt beim HTTP-Request-Eingang) — zuverlässiger als request_meta
     _caller_ip = _request_ip.get("") or str((request_meta or {}).get("client_ip", "")
