@@ -166,7 +166,7 @@ class AgentSpawner:
         Bereits bearbeitete Notifications werden resolved um Loop zu vermeiden.
         """
         logger.info("Notification-Watcher gestartet (Intervall: 60s)")
-        await asyncio.sleep(15)  # Startup-Delay damit Backend fertig lädt
+        await asyncio.sleep(120)  # Loop-Fix: längerer Startup-Delay
 
         while True:
             try:
@@ -368,10 +368,17 @@ class AgentSpawner:
         3. Untersuchungs-Prompt senden
         """
         try:
+            # Startup-Guard: MCP_HANDLERS braucht ~3s nach Startup zum Populieren
+            await asyncio.sleep(2)
+
             from app.routes.mcp import MCP_HANDLERS
             agent_call = MCP_HANDLERS.get("agent_call") or MCP_HANDLERS.get("cli-agents_call")
             if not agent_call:
                 raise RuntimeError("agent_call handler not found (tried: agent_call, cli-agents_call)")
+
+            # Sicherheits-Check: agent_id muss gesetzt sein
+            if not session.agent_id:
+                raise ValueError(f"agent_id nicht gesetzt für Session {session.session_id}")
 
             # Schritt 1: Agent starten mit System-Prompt als erstem Message
             init_message = (
