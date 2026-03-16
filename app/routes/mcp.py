@@ -4055,7 +4055,7 @@ async def handle_cli_agents_call(params: Dict[str, Any]) -> Dict[str, Any]:
     """Send a message to a CLI agent."""
     from ..services.tristar.agent_controller import agent_controller
 
-    agent_id = params.get("agent_id")
+    agent_id = params.get("agent_id") or params.get("agent")  # dual-key support
     message = params.get("message")
 
     if not agent_id:
