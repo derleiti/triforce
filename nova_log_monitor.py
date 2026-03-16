@@ -131,6 +131,11 @@ IGNORE_PATTERNS = [
     r"Federation Load Balancer ready",       # Federation Normal-Start
     r"Federation Manager started",           # Federation Normal-Start
     r"system\.collector.*initialized",       # Log-Collector Init
+    r"No certificates.*running without TLS",   # MCP WS ohne TLS — bekannt, kein Problem
+    r"mcp_ws_server.*No certificates",          # Doppel-Filter
+    r"Connection to zombie-pc closed.*4003",    # Bekannter Token-Mismatch bis Rotation
+    r"Invalid token for peer: hetzner",         # zombie-pc 4003 Detail
+    r"Finished server process",                 # Uvicorn-Shutdown
 ]
 
 # ── MCP Client ────────────────────────────────────────────────────────────────
