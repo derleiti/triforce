@@ -1678,30 +1678,8 @@ async def handle_initialize(params: Dict[str, Any], request: Optional[Request] =
     }
 
 
-def _filter_tools_by_tier(tools, auth_user: str):
-    """Externe Clients sehen keine System/Admin-Tools — nur client-safe Inventory."""
-    if auth_user in ("internal", "zombie", "admin"):
-        return tools  # intern = alles sichtbar
-    _HIDDEN_EXTERNAL = frozenset({
-        "shell", "task_runner", "custom_exec", "custom_binary",
-        "service_control", "container_control", "package_manager",
-        "remote_admin", "remote_exec", "remote_task",
-        "binary_exec", "restart", "git_ops", "git",
-        "file_ops", "code_edit", "code_patch",
-        "vault_add", "vault_remove_key", "vault_unlock",
-        "config_set", "prompt_set",
-        "agent_spawn", "agent_spawn_worker", "agent_start", "agent_stop",
-    })
-    return [t for t in tools if t.get("name", "") not in _HIDDEN_EXTERNAL]
-
-
 async def handle_tools_list(params: Dict[str, Any], request: Optional[Request] = None) -> Dict[str, Any]:
     """MCP tools/list method - unified inventory/alias aware registry."""
-    # Auth-User → entscheidet Tool-Sichtbarkeit
-    _auth_user = "unknown"
-    if request:
-        _auth_user = getattr(request.state, "mcp_auth_user", "unknown") or "unknown"
-
     use_legacy = params.get("legacy", False) or params.get("v3", False)
 
     if use_legacy:
@@ -1728,7 +1706,6 @@ async def handle_tools_list(params: Dict[str, Any], request: Optional[Request] =
             include_aliases=include_aliases,
             include_examples=include_examples,
         )
-        runtime_tools = _filter_tools_by_tier(runtime_tools, _auth_user)
         return {
             "tools": runtime_tools,
             "count": len(runtime_tools),
@@ -1766,7 +1743,6 @@ async def handle_tools_list(params: Dict[str, Any], request: Optional[Request] =
         include_examples=include_examples,
     )
 
-    tools = _filter_tools_by_tier(tools, _auth_user)
     return {
         "tools": tools,
         "count": len(tools),
