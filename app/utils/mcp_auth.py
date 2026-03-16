@@ -362,7 +362,7 @@ async def require_mcp_auth(request: Request) -> str:
         has_forwarding_context = bool(forwarded_for or forwarded_host)
 
         if any(client_ip.startswith(p) for p in _TRUSTED_INTERNAL_PREFIXES) and not has_forwarding_context:
-            logger.warning(
+            logger.debug(
                 f"AUTH_BYPASS | IP: {client_ip} | Method: trusted_internal_bypass | Path: {request.url.path}"
             )
             request.state.mcp_auth_user = "internal"
