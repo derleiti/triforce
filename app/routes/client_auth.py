@@ -878,16 +878,22 @@ async def forgot_password(request: PasswordResetRequestModel):
                 f"– Nova / AILinux Team\n"
                 f"nova@ailinux.me | https://ailinux.me"
             )
-            # mail_send ist sync — in threadpool ausführen
-            result = await _aio.get_event_loop().run_in_executor(
-                None, lambda: _mail_send(
-                    to=email,
-                    subject="AILinux – Passwort zurücksetzen",
-                    body=_body,
-                    reply_to="nova@ailinux.me",
+            # mail_send ist sync — in threadpool mit Timeout
+            try:
+                result = await _aio.wait_for(
+                    _aio.get_event_loop().run_in_executor(
+                        None, lambda: _mail_send(
+                            to=email,
+                            subject="AILinux – Passwort zurücksetzen",
+                            body=_body,
+                            reply_to="nova@ailinux.me",
+                        )
+                    ),
+                    timeout=10.0
                 )
-            )
-            logger.info(f"Password reset mail sent to {email}: {result}")
+                logger.info(f"Password reset mail sent to {email}: {result}")
+            except _aio.TimeoutError:
+                logger.warning(f"Reset mail timeout for {email} — mail queued anyway")
         except Exception as e:
             logger.warning(f"Reset mail failed: {e}")
 

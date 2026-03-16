@@ -195,7 +195,7 @@ def mail_send(
     context.check_hostname = False
     context.verify_mode = ssl.CERT_NONE
 
-    with smtplib.SMTP(host, port) as server:
+    with smtplib.SMTP(host, port, timeout=8) as server:
         if use_starttls:
             server.starttls(context=context)
         # FIX S16-SMTP-AUTH: docker-mailserver hat smtpd_sasl_auth_enable=no
