@@ -390,10 +390,11 @@ class GroupChatOrchestrator:
                 )
 
             # Warte auf Antworten der Web-AIs
-            # Include ALL agents that can auto-respond (API, Ollama, MCP)
-            # Exclude: gemini-lead (coordinator), CLI agents (no chat API)
+            # Only API/Ollama agents are auto-respondable.
+            # MCP web-agents (claude-web, chatgpt-web) can post manually
+            # but must NOT block auto-consolidation.
             respondable = [pid for pid, p in session.participants.items()
-                          if p.connection in ("mcp", "api", "ollama")
+                          if p.connection in ("api", "ollama")
                           and pid != "gemini-lead"]
             session.pending_responses = set(respondable)
             session.phase = SessionPhase.WAITING_RESPONSES
