@@ -373,7 +373,7 @@ class AgentSpawner:
             )
 
             result = await agent_call({
-                "agent": session.agent_id,
+                "agent_id": session.agent_id,
                 "message": init_message,
             })
             session.messages.append({"role": "system_init", "content": init_message, "result": str(result)[:200]})
@@ -387,7 +387,7 @@ class AgentSpawner:
             investigation_prompt = self._build_investigation_prompt(session.issue_type, initial_context)
 
             result2 = await agent_call({
-                "agent": session.agent_id,
+                "agent_id": session.agent_id,
                 "message": investigation_prompt,
             })
             session.messages.append({
@@ -477,7 +477,7 @@ class AgentSpawner:
         if not agent_call:
             return {"error": "agent_call handler nicht verfügbar"}
 
-        result = await agent_call({"agent": session.agent_id, "message": message})
+        result = await agent_call({"agent_id": session.agent_id, "message": message})
         session.messages.append({"role": "user", "content": message, "result": str(result)[:500]})
         session.last_active = time.time()
 
