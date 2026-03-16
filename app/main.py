@@ -296,6 +296,40 @@ async def lifespan(app: FastAPI):
         _scheduler.start()
         _spawner.start()
         logger.info("Task Scheduler + Agent Spawner gestartet")
+
+        # Kern-Agents initialisieren (nach Delay damit MCP_HANDLERS ready)
+        async def _init_core_agents():
+            await asyncio.sleep(15)  # MCP_HANDLERS brauchen ~10s
+            try:
+                from .services.agent_spawner import (
+                    SYSTEM_AGENT_PROMPTS, init_system_agents
+                )
+                from .services.tristar.agent_controller import agent_controller
+                await agent_controller._ensure_initialized()
+
+                for agent_id in ("claude-mcp", "gemini-mcp", "codex-mcp"):
+                    prompt_tpl = SYSTEM_AGENT_PROMPTS.get(agent_id, "")
+                    if not prompt_tpl:
+                        continue
+                    prompt = prompt_tpl.format(
+                        session_id=f"sys-{agent_id}",
+                        context="System-Start — bereit für Aufgaben.",
+                        custom_prompt="", topic="system_agent",
+                    )
+                    try:
+                        await agent_controller.update_system_prompt(agent_id, prompt)
+                        result = await agent_controller.start_agent(agent_id)
+                        logger.info(
+                            f"Kern-Agent {agent_id}: {result.get('status','?')}"
+                        )
+                    except Exception as _ae:
+                        logger.debug(f"Kern-Agent {agent_id} init skip: {_ae}")
+
+            except Exception as _e:
+                logger.warning(f"Core-Agent-Init fehlgeschlagen (nicht kritisch): {_e}")
+
+        asyncio.create_task(_init_core_agents())
+
     except Exception as e:
         logger.warning(f"Task Scheduler/Spawner init failed: {e}")
 
