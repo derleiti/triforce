@@ -347,6 +347,8 @@ async def lifespan(app: FastAPI):
         import asyncio as _asyncio_nova
         from .services.nova_content_engine import start_content_engine
         from .services.nova_research_loop import research_loop_tick
+        from .services.nova_deploy_pipeline import deploy_pipeline_tick
+        from .services.nova_deploy_pipeline import deploy_pipeline_tick
         start_content_engine()
 
         async def _research_loop():
@@ -354,9 +356,10 @@ async def lifespan(app: FastAPI):
             while True:
                 try:
                     await research_loop_tick()
+                    await deploy_pipeline_tick()
                 except Exception as _re:
                     logger.error(f"research_loop_tick error: {_re}")
-                await _asyncio_nova.sleep(300)
+                await _asyncio_nova.sleep(1800)  # alle 30min
 
         _asyncio_nova.create_task(_research_loop())
         logger.info("Nova Engines gestartet: Content-Engine + Research-Loop")
