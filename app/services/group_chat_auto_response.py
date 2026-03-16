@@ -174,6 +174,18 @@ async def auto_collect_api_responses(session_id: str) -> Dict[str, Any]:
             msg_type="response",
             metadata={"model": model, "auto_response": True},
         )
+        # ChatLog: AI-Output loggen (kein User-Input)
+        try:
+            from app.services.agent_chat_logger import get_chat_logger
+            get_chat_logger().log_message(
+                session_id=session_id,
+                agent_id=agent_id,
+                content=response,
+                model=model,
+                msg_type="response",
+            )
+        except Exception as _log_err:
+            logger.debug(f"ChatLog write skipped: {_log_err}")
         # Live-Push an alle SSE-Subscriber
         if _gc_bus:
             try:

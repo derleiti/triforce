@@ -320,6 +320,17 @@ class GroupChatOrchestrator:
         self.sessions[session_id] = session
         self._save_session(session)
 
+        # ChatLog: Session-Start loggen
+        try:
+            from app.services.agent_chat_logger import get_chat_logger
+            get_chat_logger().log_session_start(
+                session_id=session_id,
+                topic=topic,
+                participants=list(session.participants.keys()),
+            )
+        except Exception as _log_err:
+            logger.debug(f"ChatLog session_start skipped: {_log_err}")
+
         logger.info(f"Group Chat erstellt: {session_id} | Topic: {topic}")
         return session
 

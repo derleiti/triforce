@@ -112,6 +112,7 @@ _EXTRA_TOOL_SCHEMAS = [
 ]
 from ..mcp.flarum_tools import FLARUM_TOOL_HANDLERS, FLARUM_TOOL_NAMES
 from ..mcp.handlers_group_chat import GROUP_CHAT_HANDLERS
+from ..mcp.handlers_agent_chat import AGENT_CHAT_TOOLS, handle_agent_chat_tool
 from ..mcp.handlers_swarm import SWARM_HANDLERS
 try:
     from ..mcp.handlers_wordpress import WORDPRESS_HANDLERS, WORDPRESS_TOOL_SCHEMAS
@@ -4323,6 +4324,8 @@ MCP_HANDLERS.update(LLM_COMPAT_HANDLERS)
 MCP_HANDLERS.update(HOTRELOAD_HANDLERS)
 MCP_HANDLERS.update(MEMORY_INDEX_HANDLERS)
 MCP_HANDLERS.update(GROUP_CHAT_HANDLERS)     # group_chat_create, _ask, _message, _read, _status, _list, _consolidate, _assign
+for _act in [t["name"] for t in AGENT_CHAT_TOOLS]:
+    MCP_HANDLERS[_act] = lambda p, _n=_act: handle_agent_chat_tool(_n, p)
 MCP_HANDLERS.update(SWARM_HANDLERS)          # swarm_broadcast, swarm_status, swarm_top_results, swarm_consolidated
 MCP_HANDLERS.update(WORDPRESS_HANDLERS)      # wp_publish_post, wp_list_posts, wp_update_post, wp_delete_post, wp_create_page, wp_multi_ai_post
 MCP_HANDLERS.update(BROWSER_HANDLERS)

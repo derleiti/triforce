@@ -1473,6 +1473,56 @@ V5_TOOLS += [
         }},
     },
     {
+        "name": "agent_chat_list",
+        "description": "Listet alle aktiven verschlüsselten Agent-Chat-Log-Sessions mit Alter und Größe.",
+        "inputSchema": {"type": "object", "properties": {}},
+        "x_inventory": "group_chat",
+    },
+    {
+        "name": "agent_chat_read",
+        "description": "Liest eine Agent-Chat-Session als formatiertes Markdown. session_id='latest' für neueste Session. last_n=N für letzte N Einträge.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "session_id": {"type": "string", "description": "Session-ID oder 'latest'"},
+                "last_n": {"type": "integer", "description": "Letzte N Einträge (0=alle)", "default": 0},
+            },
+            "required": ["session_id"],
+        },
+        "x_inventory": "group_chat",
+    },
+    {
+        "name": "agent_chat_stream",
+        "description": "Polling-Stream: Neue Agent-Chat-Einträge seit offset abrufen. offset=0 beim ersten Aufruf, dann neuen offset weiterverwenden.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "session_id": {"type": "string", "description": "Session-ID oder 'latest'"},
+                "offset": {"type": "integer", "description": "Letzter bekannter Offset", "default": 0},
+            },
+            "required": ["session_id"],
+        },
+        "x_inventory": "group_chat",
+    },
+    {
+        "name": "agent_chat_summary",
+        "description": "Erstellt eine KI-Zusammenfassung (via Groq) einer abgeschlossenen Agent-Chat-Session.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "session_id": {"type": "string", "description": "Session-ID"},
+            },
+            "required": ["session_id"],
+        },
+        "x_inventory": "group_chat",
+    },
+    {
+        "name": "agent_chat_cleanup",
+        "description": "Löscht alle Agent-Chat-Logs älter als 2 Stunden.",
+        "inputSchema": {"type": "object", "properties": {}},
+        "x_inventory": "group_chat",
+    },
+    {
         "name": "group_chat_list",
         "description": "Liste aller aktiven Group Chat Sessions.",
         "inputSchema": {"type": "object", "properties": {
