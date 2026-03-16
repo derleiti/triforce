@@ -41,13 +41,13 @@ DEFAULT_TASKS = [
     {
         "id": "notify-process",
         "name": "Notification Queue Processor",
-        "interval_seconds": 120,        # alle 2 Minuten
+        "interval_seconds": 300,        # alle 5 Minuten (erhöht für Stabilität)
         "type": "mcp_tool",
         "tool": "notify_list",
         "args": {"unread_only": True, "priority": "high"},
         "enabled": True,
-        "description": "Prüft offene High/Critical Notifications und delegiert an claude-mcp",
-        "on_result": "spawn_agent_if_critical",
+        "description": "Prüft offene Notifications — Spawn nur via AgentSpawner Watcher",
+        "on_result": "log_only",        # KEIN spawn — AgentSpawner-Watcher übernimmt das
     },
     {
         "id": "mail-check",
@@ -63,13 +63,13 @@ DEFAULT_TASKS = [
     {
         "id": "system-health",
         "name": "System Health Check",
-        "interval_seconds": 180,        # alle 3 Minuten
+        "interval_seconds": 600,        # alle 10 Minuten
         "type": "mcp_tool",
         "tool": "safe_probe",
         "args": {"action": "overview"},
         "enabled": True,
-        "description": "Systemgesundheit prüfen, bei kritischen Problemen Agent spawnen",
-        "on_result": "spawn_agent_if_critical",
+        "description": "Systemgesundheit prüfen — nur loggen, kein Auto-Spawn",
+        "on_result": "log_only",        # KEIN spawn — verhindert Loop
     },
     {
         "id": "wp-changelog",
@@ -278,22 +278,37 @@ class TaskScheduler:
         except Exception as e:
             logger.debug(f"notify_if_new error: {e}")
 
+    # Cooldown für Scheduler-Spawns: 10 Minuten
+    _scheduler_spawn_cooldown: Dict[str, float] = {}
+    SCHEDULER_SPAWN_COOLDOWN_S = 600
+
     async def _spawn_if_critical(self, task: ScheduledTask, result: Any):
-        """Agent spawnen wenn kritische Probleme gefunden."""
+        """Agent spawnen nur bei echten kritischen Problemen — mit Cooldown."""
         try:
             result_str = json.dumps(result) if isinstance(result, dict) else str(result)
-            has_critical = any(
-                kw in result_str.lower()
-                for kw in ["critical", "error", "failed", "exception", "traceback", "down", "crashed"]
+            # Nur bei expliziten Fehler-Signalen spawnen — nicht bei "error" als Wort
+            CRITICAL_SIGNALS = ["traceback", "exception", "crashed", "service failed",
+                                 "connection refused", "disk full", "oom killed"]
+            has_critical = any(kw in result_str.lower() for kw in CRITICAL_SIGNALS)
+            if not has_critical:
+                return
+
+            # Cooldown-Check
+            import time
+            now = time.time()
+            last = self.__class__._scheduler_spawn_cooldown.get(task.id, 0)
+            if now - last < self.SCHEDULER_SPAWN_COOLDOWN_S:
+                logger.debug(f"Scheduler-Spawn Cooldown für '{task.id}' — skip")
+                return
+            self.__class__._scheduler_spawn_cooldown[task.id] = now
+
+            from app.services.agent_spawner import get_agent_spawner
+            spawner = get_agent_spawner()
+            await spawner.spawn_for_issue(
+                issue_type="system_error",
+                context=result_str[:2000],
+                source=f"scheduler:{task.id}",
             )
-            if has_critical:
-                from app.services.agent_spawner import get_agent_spawner
-                spawner = get_agent_spawner()
-                await spawner.spawn_for_issue(
-                    issue_type="system_error",
-                    context=result_str[:2000],
-                    source=f"scheduler:{task.id}",
-                )
         except Exception as e:
             logger.debug(f"spawn_if_critical error: {e}")
 
