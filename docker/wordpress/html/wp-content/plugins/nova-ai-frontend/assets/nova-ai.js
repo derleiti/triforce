@@ -297,8 +297,19 @@
       .replace(/\[(.+?)\]\((https?:\/\/[^\)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
     // FIX: group consecutive <li> into a single <ul>
     s = s.replace(/(<li>.*?<\/li>\s*)+/gs, function(m) { return '<ul>' + m + '</ul>'; });
-    // FIX: proper paragraph wrapping (code blocks excluded via placeholders)
-    s = '<p>' + s.replace(/\n{2,}/g, '</p><p>').replace(/\n/g, '<br>') + '</p>';
+    // FIX: block-aware paragraph wrapping
+    var _blockRe = /^(<h[1-6]>|<ul>|<\/ul>|<li>|<\/li>|<blockquote>|<\/blockquote>|<pre>|<\/pre>)/;
+    var _lines = s.split('\n'), _result = [], _para = [];
+    _lines.forEach(function(line) {
+      if (_blockRe.test(line.trim())) {
+        if (_para.length) { _result.push('<p>' + _para.join('<br>') + '</p>'); _para = []; }
+        _result.push(line);
+      } else if (line.trim() === '') {
+        if (_para.length) { _result.push('<p>' + _para.join('<br>') + '</p>'); _para = []; }
+      } else { _para.push(line); }
+    });
+    if (_para.length) _result.push('<p>' + _para.join('<br>') + '</p>');
+    s = _result.join('\n');
     // Re-inject code blocks unmodified
     codeBlocks.forEach(function(block, i) { s = s.split('\x00CODEBLOCK'+i+'\x00').join(block); });
     return s;
@@ -630,8 +641,19 @@
       .replace(/^[-*] (.+)$/gm, '<li>$1</li>');
     // wrap consecutive li elements
     s = s.replace(/(<li>.*?<\/li>\s*)+/gs, m => '<ul>' + m + '</ul>');
-    // nl→br only runs on non-code-block content (code blocks are placeholders here)
-    s = s.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>');
+    // FIX: block-aware paragraph wrapping (mirrors renderMarkdown fix)
+    var _bRe = /^(<\/?h[1-6]>|<\/?ul>|<\/?li>|<\/?blockquote>|<\/?pre>)/;
+    var _ls = s.split('\n'), _res = [], _buf = [];
+    _ls.forEach(function(line) {
+      if (_bRe.test(line.trim())) {
+        if (_buf.length) { _res.push('<p>' + _buf.join('<br>') + '</p>'); _buf = []; }
+        _res.push(line);
+      } else if (line.trim() === '') {
+        if (_buf.length) { _res.push('<p>' + _buf.join('<br>') + '</p>'); _buf = []; }
+      } else { _buf.push(line); }
+    });
+    if (_buf.length) _res.push('<p>' + _buf.join('<br>') + '</p>');
+    s = _res.join('\n');
     // Re-inject code blocks unmodified
     blocks.forEach(function(block, i) { s = s.split('\x00RMDCB' + i + '\x00').join(block); });
     return s;
