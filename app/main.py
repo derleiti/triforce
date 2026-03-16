@@ -450,11 +450,22 @@ def create_app() -> FastAPI:
         "/v1/.well-known/oauth-authorization-server",
         "/v1/.well-known/oauth-authorization-server/",
         "/v1/mcp/.well-known/mcp.json",
+        # Auth-Endpunkte — müssen ohne Token erreichbar sein
+        "/v1/auth/login",
+        "/v1/auth/register",
+        "/v1/auth/verify",
+        "/v1/auth/refresh",
+        "/v1/auth/logout",
+        "/v1/client/login",
+        "/v1/client/register",
     }
     # Nova Frontend routes are public (WP plugin calls these via Apache with X-Forwarded-For)
     public_auth_exempt_prefixes = (
         "/v1/frontend/dashboard/",
         "/v1/wordpress/",
+        "/v1/nova/playground",   # Playground — kein Login nötig
+        "/v1/auth/",             # Alle Auth-Sub-Routen
+        "/v1/client/auth",       # Client-Auth
     )
 
     @app.middleware("http")
