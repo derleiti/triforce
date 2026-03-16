@@ -4008,7 +4008,7 @@ async def handle_cli_agents_start(params: Dict[str, Any]) -> Dict[str, Any]:
     """Start a CLI agent subprocess."""
     from ..services.tristar.agent_controller import agent_controller
 
-    agent_id = params.get("agent_id")
+    agent_id = params.get("agent_id") or params.get("agent")
     if not agent_id:
         raise ValueError("'agent_id' parameter is required")
 
@@ -4023,7 +4023,7 @@ async def handle_cli_agents_stop(params: Dict[str, Any]) -> Dict[str, Any]:
     """Stop a CLI agent subprocess."""
     from ..services.tristar.agent_controller import agent_controller
 
-    agent_id = params.get("agent_id")
+    agent_id = params.get("agent_id") or params.get("agent")
     if not agent_id:
         raise ValueError("'agent_id' parameter is required")
 
@@ -4040,7 +4040,7 @@ async def handle_cli_agents_restart(params: Dict[str, Any]) -> Dict[str, Any]:
     """Restart a CLI agent."""
     from ..services.tristar.agent_controller import agent_controller
 
-    agent_id = params.get("agent_id")
+    agent_id = params.get("agent_id") or params.get("agent")
     if not agent_id:
         raise ValueError("'agent_id' parameter is required")
 
@@ -4090,7 +4090,7 @@ async def handle_cli_agents_output(params: Dict[str, Any]) -> Dict[str, Any]:
     """Get output buffer for a CLI agent."""
     from ..services.tristar.agent_controller import agent_controller
 
-    agent_id = params.get("agent_id")
+    agent_id = params.get("agent_id") or params.get("agent")
     if not agent_id:
         raise ValueError("'agent_id' parameter is required")
 
