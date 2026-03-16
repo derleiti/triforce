@@ -40,16 +40,51 @@ TOPIC_POOL = [
 ]
 
 _posted_hashes: set = set()
+_REDIS_KEY = "nova:content_engine:posted_hashes"
+_redis_ok = False
+
+async def _redis_load():
+    global _redis_ok
+    try:
+        import redis.asyncio as _redis
+        r = _redis.from_url("redis://localhost:6379/0")
+        raw = await r.smembers(_REDIS_KEY)
+        _posted_hashes.update(h.decode() if isinstance(h, bytes) else h for h in raw)
+        await r.aclose()
+        _redis_ok = True
+        logger.info(f"content_engine: {len(_posted_hashes)} Hashes aus Redis geladen")
+    except Exception as e:
+        logger.warning(f"content_engine: Redis Fallback ({e})")
+
+async def _redis_save(h: str):
+    if not _redis_ok:
+        return
+    try:
+        import redis.asyncio as _redis
+        r = _redis.from_url("redis://localhost:6379/0")
+        await r.sadd(_REDIS_KEY, h)
+        await r.expire(_REDIS_KEY, 86400 * 30)
+        await r.aclose()
+    except Exception:
+        pass
 
 def _topic_hash(t): return hashlib.sha1(t.lower().encode()).hexdigest()[:12]
 def _already_posted(t): return _topic_hash(t) in _posted_hashes
+
+async def _mark_posted_async(t):
+    h = _topic_hash(t)
+    _posted_hashes.add(h)
+    await _redis_save(h)
+    if len(_posted_hashes) > 500:
+        _posted_hashes.discard(next(iter(_posted_hashes)))
+
 def _mark_posted(t):
     _posted_hashes.add(_topic_hash(t))
-    if len(_posted_hashes) > 200:
-        _posted_hashes.discard(next(iter(_posted_hashes)))
+
 def _pick_topic():
     av = [t for t in TOPIC_POOL if not _already_posted(t)]
     if not av:
+        logger.info("content_engine: Alle Topics gepostet — Reset")
         _posted_hashes.clear(); av = TOPIC_POOL[:]
     return random.choice(av)
 
@@ -152,6 +187,7 @@ def start_content_engine():
     logger.info("content_engine: gestartet — WP 1h / Flarum 2h")
 
 async def _loop():
+    await _redis_load()  # Doppelpost-Hashes aus Redis
     await asyncio.sleep(300)
     while True:
         try: await content_engine_tick()
