@@ -339,19 +339,19 @@ class SystemLogCollector:
                     # ── LOG → NOTIFY BRIDGE ──────────────────────────────
                     # Kritische Signale direkt an Notifier → AgentSpawner
                     CRITICAL = [
-                        ("kernel panic","Kernel Panic","critical"),
-                        ("oom-killer","OOM Killer","critical"),
-                        ("out of memory","Out of Memory","critical"),
-                        ("no space left","Disk Full","critical"),
-                        ("segfault","Segmentation Fault","critical"),
-                        ("triforce.*failed","TriForce Failed","critical"),
-                        ("service.*entered failed","Service Failed","critical"),
-                        ("docker.*failed","Docker Failed","critical"),
-                        (rr"Traceback \(most recent","Python Traceback","high"),
-                        ("connection refused","Connection Refused","high"),
-                        ("authentication failure","Auth Failure","high"),
-                        ("invalid user.*from","Invalid Login","high"),
-                        ("certificate.*expired","Certificate Expired","high"),
+                        ("kernel panic", "Kernel Panic", "critical"),
+                        ("oom-killer", "OOM Killer", "critical"),
+                        ("out of memory", "Out of Memory", "critical"),
+                        ("no space left", "Disk Full", "critical"),
+                        ("segfault", "Segmentation Fault", "critical"),
+                        ("triforce.*failed", "TriForce Failed", "critical"),
+                        ("service.*entered failed", "Service Failed", "critical"),
+                        ("docker.*failed", "Docker Failed", "critical"),
+                        (r"Traceback \(most recent", "Python Traceback", "high"),
+                        ("connection refused", "Connection Refused", "high"),
+                        ("authentication failure", "Auth Failure", "high"),
+                        ("invalid user.*from", "Invalid Login", "high"),
+                        ("certificate.*expired", "Certificate Expired", "high"),
                     ]
                     import re as _re, time as _time
                     _cooldown = getattr(self, "_notify_cooldown", {})
@@ -364,9 +364,16 @@ class SystemLogCollector:
                                     _cooldown[key] = _time.time()
                                     try:
                                         from app.mcp.notification_manager import create_notification
-                                        create_notification({"title":f"{'🚨' if prio=='critical' else '⚠️'} [journald] {signal}","body":line.strip()[:600],"source":"system","priority":prio,"tags":["log-monitor","journald",signal.lower().replace(" ","-")]})
+                                        create_notification({
+                                            "title": f"{'🚨' if prio == 'critical' else '⚠️'} [journald] {signal}",
+                                            "body": line.strip()[:600],
+                                            "source": "system",
+                                            "priority": prio,
+                                            "tags": ["log-monitor", "journald", signal.lower().replace(" ", "-")]
+                                        })
                                         logger.info(f"log_notify: [{prio}] {signal}")
-                                    except Exception: pass
+                                    except Exception:
+                                        pass
                                 break
 
             except asyncio.CancelledError:
