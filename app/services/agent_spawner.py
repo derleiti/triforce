@@ -319,7 +319,7 @@ class AgentSpawner:
         Spawnt Worker-Agents für HIGH/CRITICAL Issues.
         Loop-Schutz: Spawn-Fehler erzeugen KEINE Notifications.
         """
-        logger.info("Notification-Watcher gestartet (Startup-Delay: 120s)")
+        logger.info("Notification-Watcher gestartet (Startup-Delay: 30s)")
         await asyncio.sleep(30)   # Warten bis MCP_HANDLERS komplett populiert
 
         while True:

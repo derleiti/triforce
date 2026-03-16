@@ -299,11 +299,10 @@ async def lifespan(app: FastAPI):
 
         # Kern-Agents initialisieren (nach Delay damit MCP_HANDLERS ready)
         async def _init_core_agents():
-            await asyncio.sleep(15)  # MCP_HANDLERS brauchen ~10s
+            import asyncio as _asyncio  # explizit um UnboundLocalError zu vermeiden
+            await _asyncio.sleep(15)  # MCP_HANDLERS brauchen ~10s
             try:
-                from .services.agent_spawner import (
-                    SYSTEM_AGENT_PROMPTS, init_system_agents
-                )
+                from .services.agent_spawner import SYSTEM_AGENT_PROMPTS
                 from .services.tristar.agent_controller import agent_controller
                 await agent_controller._ensure_initialized()
 
@@ -328,7 +327,8 @@ async def lifespan(app: FastAPI):
             except Exception as _e:
                 logger.warning(f"Core-Agent-Init fehlgeschlagen (nicht kritisch): {_e}")
 
-        asyncio.create_task(_init_core_agents())
+        import asyncio as _asyncio2
+        _asyncio2.create_task(_init_core_agents())
 
     except Exception as e:
         logger.warning(f"Task Scheduler/Spawner init failed: {e}")
