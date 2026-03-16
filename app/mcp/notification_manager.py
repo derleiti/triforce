@@ -294,3 +294,171 @@ NOTIFY_TOOL_HANDLERS = {
 }
 
 NOTIFY_TOOL_NAMES = list(NOTIFY_TOOL_HANDLERS.keys())
+
+
+# =============================================================================
+# Load-based Agent Bootstrap
+# =============================================================================
+# Regeln:
+#   < 3 unresolved HIGH+  → nichts, Watcher reicht
+#   3–9                   → 1 ops_worker
+#   10–19                 → claude-mcp bootstrappen
+#   20–49                 → claude-mcp + gemini-mcp
+#   ≥ 50                  → alle 3 Kern-Agents + 3 Worker
+#
+# Rate-Gate: max N Tasks pro Agent pro Minute
+# Queue: wenn Gate voll → gepuffert, nächste Minute abgearbeitet
+# =============================================================================
+
+# Cooldown zwischen Bootstraps (10 Minuten)
+_BOOTSTRAP_COOLDOWN = 600
+_last_bootstrap: Dict[str, float] = {}
+
+# Rate-Gate: max Tasks pro Agent pro Minute
+AGENT_RATE_GATE: Dict[str, Dict] = {
+    "claude-mcp":  {"max_per_min": 5,  "timestamps": collections.deque()},
+    "gemini-mcp":  {"max_per_min": 3,  "timestamps": collections.deque()},
+    "codex-mcp":   {"max_per_min": 5,  "timestamps": collections.deque()},
+}
+
+# Ausstehende Nachrichten pro Agent (Buffer wenn Gate voll)
+_agent_queue: Dict[str, collections.deque] = {
+    k: collections.deque(maxlen=50) for k in AGENT_RATE_GATE
+}
+
+
+def _count_pending_high() -> int:
+    """Anzahl ungelesener HIGH+ Notifications."""
+    entries = get_notifications(unread_only=True, limit=100)
+    return sum(1 for e in entries if e.get("priority") in ("high", "critical"))
+
+
+def _rate_gate_allow(agent_id: str) -> bool:
+    """True wenn Agent jetzt eine Nachricht empfangen darf."""
+    gate = AGENT_RATE_GATE.get(agent_id)
+    if not gate:
+        return True
+    now = _time.time()
+    ts = gate["timestamps"]
+    # Alte Einträge (> 60s) entfernen
+    while ts and now - ts[0] > 60:
+        ts.popleft()
+    if len(ts) < gate["max_per_min"]:
+        ts.append(now)
+        return True
+    return False
+
+
+async def _send_to_agent(agent_id: str, message: str) -> bool:
+    """Nachricht an Kern-Agent senden — mit Rate-Gate."""
+    if _rate_gate_allow(agent_id):
+        try:
+            from app.routes.mcp import MCP_HANDLERS
+            agent_call = MCP_HANDLERS.get("agent_call") or MCP_HANDLERS.get("cli-agents_call")
+            if agent_call:
+                await asyncio.wait_for(
+                    agent_call({"agent_id": agent_id, "message": message}),
+                    timeout=15,
+                )
+                return True
+        except Exception as e:
+            logger.debug(f"_send_to_agent {agent_id}: {e}")
+    else:
+        # Gate voll → in Queue puffern
+        _agent_queue[agent_id].append(message)
+        logger.debug(f"Rate-Gate voll für {agent_id} — gepuffert ({len(_agent_queue[agent_id])})")
+    return False
+
+
+async def assess_load_and_bootstrap(new_notification: Dict) -> None:
+    """
+    Wird nach create_notification() aufgerufen.
+    Entscheidet ob/welche Agents gebootstrappt werden.
+    """
+    prio = new_notification.get("priority", "normal")
+    if prio not in ("high", "critical"):
+        return  # Low/Normal-Notifications → kein Bootstrap nötig
+
+    pending = _count_pending_high()
+    now = _time.time()
+
+    # ── Level 0: < 3 pending → Watcher reicht ──────────────────────────────
+    if pending < 3:
+        return
+
+    # ── Kurzinfo für alle Bootstrap-Messages ───────────────────────────────
+    title = new_notification.get("title", "")
+    body  = new_notification.get("body", "")
+    brief = f"[LOAD-BOOTSTRAP | {pending} pending HIGH+]\nNeuste: {title}\n{body[:200]}"
+
+    # ── Level 1: 3–9 pending → 1 ops_worker ────────────────────────────────
+    if pending < 10:
+        last = _last_bootstrap.get("worker", 0)
+        if now - last < _BOOTSTRAP_COOLDOWN:
+            return
+        _last_bootstrap["worker"] = now
+        try:
+            from app.services.agent_spawner import get_agent_spawner
+            spawner = get_agent_spawner()
+            asyncio.create_task(spawner.spawn_for_issue(
+                issue_type="ops_handler",
+                context=brief,
+                source="load_bootstrap:level1",
+            ))
+            logger.info(f"Load-Bootstrap L1: 1 ops_worker gespawnt ({pending} pending)")
+        except Exception as e:
+            logger.debug(f"Load-Bootstrap L1 error: {e}")
+        return
+
+    # ── Level 2: 10–19 pending → claude-mcp bootstrappen ───────────────────
+    if pending < 20:
+        last = _last_bootstrap.get("claude-mcp", 0)
+        if now - last < _BOOTSTRAP_COOLDOWN:
+            return
+        _last_bootstrap["claude-mcp"] = now
+        task_msg = (
+            f"[LOAD-ALERT] {pending} unbearbeitete HIGH-Notifications.\n"
+            f"Bitte notify_list aufrufen und die wichtigsten bearbeiten.\n"
+            f"Neuste: {title}"
+        )
+        asyncio.create_task(_send_to_agent("claude-mcp", task_msg))
+        logger.info(f"Load-Bootstrap L2: claude-mcp aktiviert ({pending} pending)")
+        return
+
+    # ── Level 3: 20–49 pending → claude-mcp + gemini-mcp ───────────────────
+    if pending < 50:
+        for agent_id in ("claude-mcp", "gemini-mcp"):
+            last = _last_bootstrap.get(agent_id, 0)
+            if now - last >= _BOOTSTRAP_COOLDOWN:
+                _last_bootstrap[agent_id] = now
+                asyncio.create_task(_send_to_agent(
+                    agent_id,
+                    f"[LOAD-ALERT L3] {pending} HIGH+ Notifications pending. "
+                    f"Koordiniert bearbeiten. {agent_id}: notify_list abrufen und delegieren."
+                ))
+        logger.info(f"Load-Bootstrap L3: claude+gemini aktiviert ({pending} pending)")
+        return
+
+    # ── Level 4: ≥ 50 pending → alle 3 Kern-Agents + 2 Worker ─────────────
+    last = _last_bootstrap.get("swarm", 0)
+    if now - last < _BOOTSTRAP_COOLDOWN:
+        return
+    _last_bootstrap["swarm"] = now
+
+    for agent_id in ("claude-mcp", "gemini-mcp", "codex-mcp"):
+        asyncio.create_task(_send_to_agent(
+            agent_id,
+            f"[SWARM-ALERT L4] {pending} pending HIGH+! Sofort notify_list bearbeiten."
+        ))
+    try:
+        from app.services.agent_spawner import get_agent_spawner
+        spawner = get_agent_spawner()
+        for wtype in ("ops_worker", "ops_worker"):
+            asyncio.create_task(spawner.spawn_for_issue(
+                issue_type=wtype,
+                context=f"Swarm-Mode: {pending} unbearbeitete Notifications.\n{brief}",
+                source="load_bootstrap:level4_swarm",
+            ))
+    except Exception as e:
+        logger.debug(f"Load-Bootstrap L4 worker error: {e}")
+    logger.info(f"Load-Bootstrap L4 SWARM: alle Agents aktiviert ({pending} pending)")
