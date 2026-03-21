@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, BackgroundTasks, Request, HTTPException
+from fastapi import APIRouter, Depends, BackgroundTasks, Request, HTTPException, Header
 from typing import Dict, Any, Optional
 from app.services.orchestrator import OrchestratorService, CrawlerManager, ChatService, WordPressService
 # Annahme: Abhängigkeiten für Orchestrator-Service
