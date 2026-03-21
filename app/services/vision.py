@@ -758,18 +758,22 @@ async def _analyze_cloudflare_vision(
         # license agreement via sending "agree" as first prompt. Auto-agree on 403.
         for _attempt in range(2):
             r = await client.post(url, json=body, headers=headers)
+            # Check for Model Agreement requirement (can be 403, 400, or even 200 with errors)
+            _resp_text = ""
+            try:
+                _resp_json = r.json()
+                _resp_text = str(_resp_json.get("errors", _resp_json))[:500]
+            except Exception:
+                _resp_text = r.text[:500]
+            if "Model Agreement" in _resp_text and _attempt == 0:
+                logger.info("Cloudflare: auto-agreeing to model license for %s", cf_model)
+                agree_body = {"messages": [{"role": "user", "content": "agree"}], "max_tokens": 10}
+                _agree_r = await client.post(url, json=agree_body, headers=headers)
+                logger.info("Cloudflare: agree response status=%d", _agree_r.status_code)
+                continue
             if r.status_code == 403:
-                try:
-                    err_body = r.json()
-                    msg = str(err_body.get("errors", err_body))[:400]
-                except Exception:
-                    msg = r.text[:400]
-                if "Model Agreement" in msg and _attempt == 0:
-                    agree_body = {"messages": [{"role": "user", "content": "agree"}], "max_tokens": 10}
-                    await client.post(url, json=agree_body, headers=headers)
-                    continue
                 raise api_error(
-                    f"Cloudflare Vision Fehler: {msg}",
+                    f"Cloudflare Vision Fehler: {_resp_text[:300]}",
                     status_code=r.status_code, code="cloudflare_vision_error",
                 )
             if r.status_code >= 400:
