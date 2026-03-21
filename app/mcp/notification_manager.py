@@ -505,6 +505,27 @@ _DEFAULT_TASK_PROMPT = (
     "TOOLS: notify_read, notify_send"
 )
 
+# -- Admin Safety Gate --
+# Only these senders may trigger agents with code-write access (code_edit, git_ops, shell)
+# All other external senders are downgraded to support_agent (read-only)
+ADMIN_SENDERS = {
+    "admin@ailinux.me",
+    "markus@ailinux.me",
+    "zombie@ailinux.me",
+    "nova@ailinux.me",       # internal system mail
+}
+
+# Issue types that have code-write or system-admin capabilities
+WRITE_ISSUE_TYPES = {
+    "bug_hunter",            # code_edit, git_ops
+    "ops_handler",           # shell, service_control
+    "implementation_agent",  # code_edit, code_patch, git_ops
+    "code_patcher",          # code_edit, code_patch, git_ops
+}
+
+# External sources that require sender verification
+EXTERNAL_SOURCES = {SRC_MAIL, SRC_FORUM, SRC_WORDPRESS}
+
 ISSUE_MAP = {
     "ops.error": "bug_hunter", "ops.repeated_error": "bug_hunter",
     "ops.service_down": "ops_handler", "support.general": "support_agent",
@@ -580,6 +601,25 @@ async def _dispatch_event(event: Dict) -> None:
     )
 
     issue_type = ISSUE_MAP.get(event_type, "ops_handler")
+
+    # ── ADMIN SAFETY GATE ──────────────────────────────────────────────
+    # External events (mail, forum, WP) with non-admin sender are NEVER
+    # allowed to spawn agents with code-write access. Hard code gate.
+    if source in EXTERNAL_SOURCES and issue_type in WRITE_ISSUE_TYPES:
+        sender = metadata.get("from", metadata.get("author", "")).lower()
+        # Extract email from "Name <email>" format
+        if "<" in sender and ">" in sender:
+            sender = sender.split("<")[1].split(">")[0].strip()
+        sender = sender.strip()
+        if sender not in ADMIN_SENDERS:
+            old_type = issue_type
+            issue_type = "support_agent"  # downgrade to read-only
+            agent_id = "claude-mcp"       # support agent
+            logger.warning(
+                f"SAFETY: downgraded {old_type} -> support_agent | "
+                f"sender={sender} not in ADMIN_SENDERS | event={event_id}"
+            )
+
     try:
         from app.services.agent_spawner import get_agent_spawner
         spawner = get_agent_spawner()
