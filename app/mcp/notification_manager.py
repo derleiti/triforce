@@ -753,7 +753,7 @@ async def _dispatch_event(event: Dict) -> None:
         # Check if recent spawns all failed (quota exhaustion indicator)
         from app.services.agent_spawner import get_agent_spawner
         spawner = get_agent_spawner()
-        recent_fails = sum(1 for s in spawner.sessions.values()
+        recent_fails = sum(1 for s in spawner._sessions.values()
                            if s.get("last_response") and
                            any(kw in str(s.get("last_response",""))
                                for kw in ("QuotaError", "usage limit", "API usage limits", "QUOTA_EXHAUSTED")))
