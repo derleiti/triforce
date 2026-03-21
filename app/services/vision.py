@@ -159,15 +159,34 @@ async def analyze(
         elif len(resolved_bytes) >= 12 and resolved_bytes[:4] == b"RIFF" and resolved_bytes[8:12] == b"WEBP":
             resolved_type = "image/webp"
         _persist_temp_file(resolved_bytes, filename)
-        return await _analyze_with_anthropic_data(
-            request_model,
-            prompt,
-            resolved_bytes,
-            content_type=resolved_type,
-            api_key=settings.anthropic_api_key,
-            max_tokens=settings.anthropic_max_tokens,
-            timeout=settings.anthropic_timeout_ms / 1000.0,
-        )
+        try:
+            return await _analyze_with_anthropic_data(
+                request_model,
+                prompt,
+                resolved_bytes,
+                content_type=resolved_type,
+                api_key=settings.anthropic_api_key,
+                max_tokens=settings.anthropic_max_tokens,
+                timeout=settings.anthropic_timeout_ms / 1000.0,
+            )
+        except Exception as _anth_err:
+            _err_str = str(_anth_err)
+            if "usage limit" in _err_str.lower() or "rate" in _err_str.lower() or "429" in _err_str:
+                logger.warning("Anthropic vision rate-limited — falling back to Gemini: %s", _err_str)
+                if settings.gemini_api_key:
+                    if image_url:
+                        return await _analyze_with_gemini_url(
+                            "gemini/gemini-2.0-flash", prompt, image_url,
+                            api_key=settings.gemini_api_key,
+                        )
+                    else:
+                        return await _analyze_with_gemini_data(
+                            "gemini/gemini-2.0-flash", prompt,
+                            resolved_bytes,
+                            api_key=settings.gemini_api_key,
+                        )
+                logger.error("Anthropic rate-limited and no Gemini API key for fallback")
+            raise
 
     # ── OpenAI-compat providers (openrouter, github, groq, mistral, cerebras) ──
     if model.provider in _OPENAI_COMPAT_VISION_PROVIDERS:
