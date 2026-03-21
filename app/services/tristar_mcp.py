@@ -90,8 +90,9 @@ class TriStarMCPService:
         # Parse logs
         for log_file in log_files[:10]:  # Limit files
             try:
+                from collections import deque
                 with open(log_file, "r", encoding="utf-8", errors="ignore") as f:
-                    lines = f.readlines()[-limit:]
+                    lines = list(deque(f, maxlen=limit))
                     for line in lines:
                         line = line.strip()
                         if not line:
@@ -122,19 +123,20 @@ class TriStarMCPService:
 
     async def get_agent_logs(self, agent_id: str, lines: int = 50) -> Dict[str, Any]:
         """Get logs for a specific agent via journalctl."""
-        import subprocess
+        import asyncio
 
         try:
-            # Try systemd journal first
-            result = subprocess.run(
-                ["journalctl", "-u", f"{agent_id}.service", "-n", str(lines), "--no-pager", "-o", "json"],
-                capture_output=True,
-                text=True,
-                timeout=10,
+            # Try systemd journal first (async to avoid blocking event loop)
+            proc = await asyncio.create_subprocess_exec(
+                "journalctl", "-u", f"{agent_id}.service", "-n", str(lines), "--no-pager", "-o", "json",
+                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
             )
-            if result.returncode == 0:
+            stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=10)
+            result_stdout = stdout.decode() if stdout else ""
+            result_returncode = proc.returncode
+            if result_returncode == 0:
                 entries = []
-                for line in result.stdout.strip().split("\n"):
+                for line in result_stdout.strip().split("\n"):
                     if line:
                         try:
                             entries.append(json.loads(line))
@@ -517,29 +519,27 @@ class TriStarMCPService:
             "codex-mcp": None,
         }
 
-        def _is_active(unit: str) -> str:
+        async def _is_active(unit: str) -> str:
             try:
-                result = subprocess.run(
-                    ["systemctl", "is-active", f"{unit}.service"],
-                    capture_output=True,
-                    text=True,
-                    timeout=5,
+                proc = await asyncio.create_subprocess_exec(
+                    "systemctl", "is-active", f"{unit}.service",
+                    stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
                 )
-                out = (result.stdout or "").strip()
+                stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=5)
+                out = (stdout.decode() if stdout else "").strip()
                 if out:
                     return out
-                # If stdout is empty, fall back to stderr
-                return (result.stderr or "").strip() or "unknown"
+                return (stderr.decode() if stderr else "").strip() or "unknown"
             except Exception:
                 return "unknown"
 
         # Primary services
         for key, unit in service_map.items():
-            status["services"][key] = _is_active(unit)
+            status["services"][key] = await _is_active(unit)
 
         # Legacy service keys
         for legacy_key, unit in legacy_aliases.items():
-            status["services"][legacy_key] = _is_active(unit) if unit else "not_applicable"
+            status["services"][legacy_key] = await _is_active(unit) if unit else "not_applicable"
 
         # Check directories
         for name, path in [

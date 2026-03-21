@@ -2455,6 +2455,29 @@ async def mcp_rpc_endpoint(request: Request):
             )
 
         runtime_registry = get_runtime_registry()
+
+        # Enforce runtime policy (classification, min_tier, preview_only)
+        _tool_entry = runtime_registry.get_entry(tool_name)
+        if _tool_entry:
+            _client_profile = runtime_registry.resolve_client_profile(
+                request_meta={"source_ip": request.client.host if request.client else ""},
+                tier=_account_role,
+            )
+            _policy = runtime_registry.evaluate_policy(_tool_entry, client_profile=_client_profile, arguments=arguments)
+            if _policy.get("decision") not in ("allow", "preview_only"):
+                _reason = _policy.get("reason", "blocked by runtime policy")
+                return JSONResponse(
+                    content={
+                        "jsonrpc": "2.0",
+                        "result": {
+                            "content": [{"type": "text", "text": f"Blocked: {_reason}"}],
+                            "isError": True
+                        },
+                        "id": req_id
+                    },
+                    headers=response_headers
+                )
+
         handler = runtime_registry.get_handler(tool_name) or TOOL_HANDLERS.get(tool_name)
         if not handler:
             return JSONResponse(

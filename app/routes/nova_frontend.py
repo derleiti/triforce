@@ -8,11 +8,18 @@ import re
 from typing import Any, Dict, List, Optional
 
 import httpx
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, Form, Header, HTTPException, UploadFile
 from pydantic import BaseModel
 
 # BUG-005 FIX 2026-03-10: prefix /v1 wird jetzt konsistent über main.py gesetzt
-router = APIRouter(prefix="/frontend/dashboard", tags=["nova-frontend"])
+import os as _os_nf
+
+def _require_nova_auth(x_internal_key: str = Header(default="")):
+    expected = _os_nf.environ.get("INTERNAL_API_KEY", "")
+    if not expected or x_internal_key != expected:
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+router = APIRouter(prefix="/frontend/dashboard", tags=["nova-frontend"], dependencies=[Depends(_require_nova_auth)])
 logger = logging.getLogger("ailinux.nova_frontend")
 
 def _base_url() -> str:
