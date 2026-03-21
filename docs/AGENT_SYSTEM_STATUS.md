@@ -1,16 +1,107 @@
 # Agent System Status
 
-**Last Updated:** 2026-01-02
+**Last Updated:** 2026-03-21
 
 ## Overview
 
 | Component | Status | Description |
 |-----------|--------|-------------|
 | REST API | ✅ Working | `/v1/agents/cli/*` endpoints |
-| MCP Tools | ✅ Working | `agents`, `agent_start`, `agent_stop`, `agent_call` |
-| Wrapper Scripts | ✅ Created | `/home/zombie/triforce/triforce/bin/` |
+| MCP Tools | ✅ Working | `agents`, `agent_start`, `agent_stop`, `agent_call`, `agent_broadcast` |
 | Agent Controller | ✅ Working | `app/services/tristar/agent_controller.py` |
+| Agent Spawner | ✅ Working | `app/services/agent_spawner.py` (Tier 2 workers) |
+| Notification Manager v2 | ✅ Working | `app/mcp/notification_manager.py` (event-driven orchestrator) |
 | Unified Logging | ✅ Active | `logs/unified.log` + stdout |
+| Wrapper Scripts | ✅ Created | `/home/zombie/triforce/triforce/bin/` |
+
+## Tier 1 — Core Agents (Permanent)
+
+| Agent ID | Type | Role |
+|----------|------|------|
+| `claude-mcp` | Claude Code | Ops-Koordination, Support-Triage, Mail/Forum-Verarbeitung |
+| `gemini-mcp` | Google Gemini | Lead-Koordination, Mustererkennung, Swarm-Steuerung |
+| `codex-mcp` | OpenAI Codex | Code-Analyse, Research, technische Proposals |
+| `opencode-mcp` | OpenCode | Workflow-Härtung, CLI/Wrapper-Probleme |
+
+**Note:** `_init_core_agents` is currently disabled in main.py. Core agents are started on-demand by the notification manager dispatch or manual `agent_start`.
+
+## Tier 2 — Worker Agents (Spawned on Demand)
+
+| Worker Type | Used For | Spawned By |
+|-------------|----------|------------|
+| `bug_fixer` / `bug_hunter` | Python tracebacks, code bugs | Notifier: ops.error, support.bug_report |
+| `ops_worker` / `ops_handler` | System issues, service crashes | Notifier: ops.service_down, incidents |
+| `support_agent` | User support, forum replies | Notifier: mail.support, forum.question |
+| `marketing_agent` | WP posts, community content | Task scheduler |
+| `research_agent` | Codebase analysis, findings | Notifier: mail.research |
+| `content_agent` | Automated blog/forum posts | Task scheduler |
+| `implementation_agent` | Code patches (research-approved) | Manual or research pipeline |
+| `swarm_coordinator` | Multi-agent coordination | Load-based or manual |
+
+## Notification-Driven Dispatch
+
+The Notification Manager v2 automatically dispatches agents based on event type:
+
+```
+New mail arrives → mail poller (5min) → classify → support.login (HIGH)
+  → dispatch → claude-mcp/support_agent
+  → System-Prompt + Task-Prompt with mail uid + workflow steps
+  → Agent works (5min timeout) → notify_read(resolve=true) → TASK_COMPLETE
+  → cleanup loop removes session
+```
+
+See `docs/NOTIFICATION_SYSTEM.md` for full architecture.
+
+### Event-to-Agent Mapping
+
+| Event | Agent | Worker |
+|-------|-------|--------|
+| `ops.error` | codex-mcp | bug_hunter |
+| `ops.repeated_error` | gemini-mcp | bug_hunter |
+| `ops.service_down` | codex-mcp | ops_handler |
+| `support.login` | claude-mcp | support_agent |
+| `support.bug_report` | codex-mcp | bug_hunter |
+| `forum.question` | claude-mcp | support_agent |
+| `mail.support` | claude-mcp | support_agent |
+| `mail.research` | codex-mcp | research_agent |
+| `incident.auth` | codex-mcp | ops_handler |
+| `incident.service` | gemini-mcp | ops_handler |
+
+## Agent Session Lifecycle
+
+1. **Spawn:** `spawn_for_issue(issue_type, context, timeout_seconds=300)`
+2. **Init:** System-Prompt (role + permissions) sent to agent
+3. **Task:** Task-Prompt (specific tools + steps) + Investigation-Prompt sent
+4. **Working:** Agent executes tools autonomously
+5. **Complete:** Agent calls `notify_read(resolve=true)` + responds `TASK_COMPLETE`
+6. **Expire:** 5min inactivity → session marked expired
+7. **Cleanup:** Every 10min, expired/done sessions removed
+
+Default timeout: 30min (scheduler tasks), 5min (notifier tasks).
+
+## MCP Tools
+
+### Agent Management
+| Tool | Description |
+|------|-------------|
+| `agents` | List all CLI agents with status |
+| `agent_call` | Send message to specific agent |
+| `agent_start` | Start/restart a CLI agent |
+| `agent_stop` | Stop a CLI agent |
+| `agent_broadcast` | Message to all agents |
+| `agent_spawn_worker` | Spawn Tier 2 worker |
+| `agent_spawn_status` | List active spawned sessions |
+| `agent_session_list` | Detailed session list |
+| `agent_session_send` | Send message to specific session |
+
+### Notification Management
+| Tool | Description |
+|------|-------------|
+| `notify_list` | List notifications (filterable) |
+| `notify_read` | Mark notification as read/resolved |
+| `notify_clear` | Delete resolved notifications |
+| `notify_send` | Create manual notification |
+| `notify_status` | Manager stats + poller health |
 
 ## REST API Endpoints
 
@@ -22,136 +113,13 @@ POST /v1/agents/cli/{agent_id}/stop    - Stop agent
 POST /v1/agents/cli/{agent_id}/call    - Send message to agent
 ```
 
-### Agent IDs
+## Files
 
-| ID | Type | Description |
-|----|------|-------------|
-| `claude-mcp` | Claude Code | Autonomous coding agent |
-| `codex-mcp` | OpenAI Codex | Full-auto mode |
-| `gemini-mcp` | Google Gemini | YOLO mode coordinator |
-| `opencode-mcp` | OpenCode | Auto-mode execution |
-
-### Examples
-
-```bash
-# Start agent
-curl -X POST "https://api.ailinux.me/v1/agents/cli/claude-mcp/start" \
-  -H "Authorization: Bearer <token>"
-
-# Send message
-curl -X POST "https://api.ailinux.me/v1/agents/cli/claude-mcp/call" \
-  -H "Authorization: Bearer <token>" \
-  -H "Content-Type: application/json" \
-  -d '{"message":"Analyze this code"}'
-
-# Stop agent
-curl -X POST "https://api.ailinux.me/v1/agents/cli/claude-mcp/stop" \
-  -H "Authorization: Bearer <token>"
-```
-
-## MCP Tools
-
-Registered in `app/mcp/handlers_v4.py`:
-
-| Tool | Description | Status |
-|------|-------------|--------|
-| `agents` | List all agents | ✅ Working |
-| `agent_call` | Send message to agent | ✅ Working |
-| `agent_start` | Start agent | ✅ Working |
-| `agent_stop` | Stop agent | ✅ Working |
-| `agent_broadcast` | Message to all agents | ✅ Working |
-
-### MCP Tool Usage
-
-```bash
-curl -X POST "https://api.ailinux.me/v1/mcp" \
-  -H "Authorization: Basic <credentials>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "jsonrpc": "2.0",
-    "method": "tools/call",
-    "params": {"name": "agents", "arguments": {}},
-    "id": "1"
-  }'
-```
-
-## Wrapper Scripts
-
-Located in `/home/zombie/triforce/triforce/bin/`:
-
-| Script | Target |
-|--------|--------|
-| `claude-triforce` | `~/.npm-global/bin/claude` |
-| `codex-triforce` | `~/.npm-global/bin/codex` |
-| `gemini-triforce` | `~/.npm-global/bin/gemini` |
-| `opencode-triforce` | `~/.npm-global/bin/opencode` |
-
-Each script sets:
-- `HOME=/home/zombie`
-- `PATH` with npm-global/bin
-- `NODE_PATH` for modules
-
-## Agent MCP Connectivity
-
-Claude-MCP agent has access to 13+ MCP tools:
-
-```
-mcp__ailinux-mcp__acknowledge_policy
-mcp__ailinux-mcp__ollama_health
-mcp__ailinux-mcp__tristar_status
-mcp__ailinux-mcp__triforce_logs_recent
-mcp__ailinux-mcp__triforce_logs_errors
-mcp__ailinux-mcp__mcp_brain_status
-mcp__ailinux-mcp__quick_smart_search
-mcp__ailinux-mcp__ollama_list
-mcp__ailinux-mcp__ollama_ps
-mcp__ailinux-mcp__cli-agents_list
-mcp__ailinux-mcp__queue_status
-mcp__ailinux-mcp__codebase_structure
-mcp__ailinux-mcp__codebase_search
-```
-
-## Unified Logging
-
-All agent activity is logged to:
-- **File:** `/home/zombie/triforce/logs/unified.log`
-- **Stdout:** `journalctl -u triforce`
-
-Log format:
-```
-YYYY-MM-DD HH:MM:SS|LEVEL  |COMPONENT               |MESSAGE
-```
-
-## Architecture
-
-```
-MCP Tools → handlers_v4.py → agent_controller.py → Wrapper Scripts → CLI Binaries
-                                                          ↓
-                                                    ~/.npm-global/bin/
-                                                    ├── claude
-                                                    ├── codex
-                                                    ├── gemini
-                                                    └── opencode
-```
-
-## Fix History
-
-### 2026-01-02
-
-1. **handlers_v4.py**: Connected stub implementations to real agent_controller
-2. **Wrapper Scripts**: Created 4 scripts for agent CLIs
-3. **Unified Logger**: Added centralized logging (v2.0)
-4. **MCP Connectivity**: Verified full MCP tool access for Claude-MCP agent
-
-### Files Modified
-
-- `app/mcp/handlers_v4.py` - Agent handlers connected
-- `app/main.py` - Unified logger integration
-- `app/utils/unified_logger.py` - New file
-
-### Files Created
-
-- `triforce/bin/claude-triforce`
-- `triforce/bin/codex-triforce`
-- `triforce/bin/gemini-triforce`
-- `triforce/bin/opencode-triforce`
+| File | Purpose |
+|------|---------|
+| `app/services/agent_spawner.py` | Tier 2 spawner, session management, cleanup |
+| `app/services/tristar/agent_controller.py` | Tier 1 agent controller |
+| `app/mcp/notification_manager.py` | Event-driven orchestrator (v2) |
+| `app/mcp/handlers_scheduler.py` | MCP tool handlers for spawn/session tools |
+| `app/services/task_scheduler.py` | Scheduled tasks (mail/forum handlers disabled since v2) |
+| `config/agents/` | Agent configuration files |
