@@ -267,6 +267,7 @@ class AgentType(str, Enum):
     CODEX = "codex"
     GEMINI = "gemini"
     OPENCODE = "opencode"
+    API = "api"  # API-based agent (no CLI subprocess)
 
 
 @dataclass
@@ -393,6 +394,31 @@ DEFAULT_AGENTS: List[Dict[str, Any]] = [
             "PATH": f"{TRIFORCE_BIN}:{CLI_BIN}:/usr/local/bin:/usr/bin:/bin",
             "OPENCODE_DISABLE_TELEMETRY": "1",
         },
+    },
+    # ── API-based Agents (no CLI subprocess, direct LLM API calls) ──
+    {
+        "agent_id": "api-groq",
+        "agent_type": "api",
+        "name": "Groq API Agent (Llama 3.3 70B)",
+        "description": "API-basierter Agent via Groq — schnell, kein CLI nötig",
+        "command": [],  # no subprocess
+        "env": {"API_MODEL": "groq/llama-3.3-70b-versatile,groq/llama-3.1-70b-versatile"},
+    },
+    {
+        "agent_id": "api-openrouter",
+        "agent_type": "api",
+        "name": "OpenRouter API Agent (Llama 3.3 Free)",
+        "description": "API-basierter Agent via OpenRouter Free Tier",
+        "command": [],
+        "env": {"API_MODEL": "openrouter/meta-llama/llama-3.3-70b-instruct:free"},
+    },
+    {
+        "agent_id": "api-ollama-cloud",
+        "agent_type": "api",
+        "name": "Ollama Cloud API Agent (Kimi K2.5 / GLM-5)",
+        "description": "API-basierter Agent via Ollama Cloud Models",
+        "command": [],
+        "env": {"API_MODEL": "ollama/kimi-k2.5:cloud,ollama/glm-5:cloud,ollama/qwen3-coder:480b-cloud"},
     },
 ]
 
@@ -842,12 +868,43 @@ class AgentController:
             await asyncio.sleep(3)  # Warte auf Start
             instance = self.agents.get(agent_id)
 
-        if not instance or not instance.process:
+        if not instance:
+            return {
+                "agent_id": agent_id,
+                "status": "error",
+                "error": "Agent instance not available",
+            }
+        # API agents don't need a subprocess
+        if instance.config.agent_type != AgentType.API and not instance.process:
             return {
                 "agent_id": agent_id,
                 "status": "error",
                 "error": "Agent process not available",
             }
+
+        # API-based agents: no subprocess, direct API call
+        if instance.config.agent_type == AgentType.API:
+            try:
+                from app.services.api_agent import run_api_agent_with_fallback
+                api_model = instance.config.env.get("API_MODEL", "")
+                api_models = [m.strip() for m in api_model.split(",") if m.strip()] if api_model else None
+                result = await run_api_agent_with_fallback(
+                    task=message,
+                    models=api_models,
+                    timeout=timeout,
+                )
+                return {
+                    "agent_id": agent_id,
+                    "status": result.get("status", "error"),
+                    "response": result.get("response", ""),
+                    "model": result.get("model", ""),
+                    "turns": result.get("turns", 0),
+                    "tools_called": result.get("tools_called", []),
+                    "exit_code": 0 if result.get("status") == "completed" else 1,
+                    "fallback_used": False,
+                }
+            except Exception as e:
+                return {"agent_id": agent_id, "status": "error", "response": str(e), "exit_code": 1}
 
         # Für interaktive CLI-Agenten: Starte neuen Prozess mit Nachricht
         # Die MCP-Server-Prozesse sind nicht interaktiv, daher nutzen wir
@@ -995,8 +1052,14 @@ class AgentController:
                     fallback_agent = "ollama-codex-mcp"
                     fallback_reason = "ollama_claude_quota_to_codex"
                 elif _is_quota and agent_id == "ollama-codex-mcp":
-                    fallback_agent = "ollama-openclaw-mcp"
-                    fallback_reason = "ollama_codex_quota_to_openclaw"
+                    fallback_agent = "api-groq"
+                    fallback_reason = "ollama_codex_to_api_groq"
+                elif _is_quota and agent_id == "ollama-openclaw-mcp":
+                    fallback_agent = "api-groq"
+                    fallback_reason = "ollama_openclaw_to_api_groq"
+                elif _is_quota and agent_id == "api-groq":
+                    fallback_agent = "api-ollama-cloud"
+                    fallback_reason = "api_groq_to_ollama_cloud"
                 elif agent_id == "opencode-mcp" and "sdk.languagemodel is not a function" in lower_response:
                     fallback_agent = "ollama-codex-mcp"
                     fallback_reason = "opencode_sdk_missing"
