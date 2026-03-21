@@ -1042,12 +1042,17 @@ class AgentController:
                 )
                 response = stdout.decode("utf-8", errors="replace").strip()
 
-                # Bekannte Agent-Fehler erkennen und auf robusten Fallback routen
+                # ── Fallback-Chain (multi-hop, max 3) ──────────────────
+                # Chain: CLI → ollama-cloud → api-groq → api-cerebras
+                import re as _re_fb
+                _fb_depth = len(_re_fb.findall(r"\[fallback-from:", message))
+                _MAX_FALLBACK_DEPTH = 3
+
                 fallback_agent = None
                 fallback_reason = None
                 lower_response = response.lower()
 
-                # Quota/limit detection patterns
+                # Detect: quota errors, crashes, garbage output
                 _is_quota = any(kw in lower_response for kw in (
                     "quotaerror", "quota_exhausted", "usage limit",
                     "api usage limits", "credit balance is too low",
@@ -1055,34 +1060,34 @@ class AgentController:
                     "no capacity available", "status 429", "rate limit",
                     "you've hit your usage limit", "you have reached your specified api usage limits",
                 ))
+                _is_crash = process.returncode != 0
+                _is_garbage = any(g in lower_response for g in (
+                    "<|tool_call_begin|>", "<|tool_calls_section_end|>",
+                    "functions.ailinux", "invalid tool",
+                ))
+                _needs_fallback = _is_quota or _is_crash or _is_garbage
 
-                if _is_quota and agent_id == "claude-mcp":
-                    fallback_agent = "ollama-claude-mcp"  # kimi-k2.5:cloud
-                    fallback_reason = "claude_quota_to_ollama"
-                elif _is_quota and agent_id == "codex-mcp":
-                    fallback_agent = "ollama-codex-mcp"  # qwen3-coder:480b-cloud
-                    fallback_reason = "codex_quota_to_ollama"
-                elif _is_quota and agent_id == "gemini-mcp":
-                    fallback_agent = "ollama-openclaw-mcp"  # glm-5:cloud
-                    fallback_reason = "gemini_quota_to_ollama"
-                elif _is_quota and agent_id == "ollama-claude-mcp":
-                    fallback_agent = "ollama-codex-mcp"
-                    fallback_reason = "ollama_claude_quota_to_codex"
-                elif _is_quota and agent_id == "ollama-codex-mcp":
-                    fallback_agent = "api-groq"
-                    fallback_reason = "ollama_codex_to_api_groq"
-                elif _is_quota and agent_id == "ollama-openclaw-mcp":
-                    fallback_agent = "api-groq"
-                    fallback_reason = "ollama_openclaw_to_api_groq"
-                elif _is_quota and agent_id == "api-groq":
-                    fallback_agent = "api-cerebras"
-                    fallback_reason = "api_groq_to_cerebras"
-                elif agent_id == "opencode-mcp" and "sdk.languagemodel is not a function" in lower_response:
-                    fallback_agent = "ollama-codex-mcp"
-                    fallback_reason = "opencode_sdk_missing"
+                # Ordered fallback map (openclaw removed)
+                _FALLBACK_NEXT = {
+                    "claude-mcp": ("ollama-claude-mcp", "claude_to_ollama"),
+                    "codex-mcp": ("ollama-codex-mcp", "codex_to_ollama"),
+                    "gemini-mcp": ("ollama-claude-mcp", "gemini_to_ollama"),
+                    "ollama-claude-mcp": ("api-groq", "ollama_to_groq"),
+                    "ollama-codex-mcp": ("api-groq", "ollama_to_groq"),
+                    "ollama-openclaw-mcp": ("api-groq", "ollama_to_groq"),
+                    "api-groq": ("api-cerebras", "groq_to_cerebras"),
+                    "opencode-mcp": ("ollama-codex-mcp", "opencode_to_ollama"),
+                }
 
-                # Einmaliger Fallback, um Schleifen zu vermeiden
-                if fallback_agent and "[fallback-from:" not in message:
+                if _needs_fallback and agent_id in _FALLBACK_NEXT:
+                    fallback_agent, fallback_reason = _FALLBACK_NEXT[agent_id]
+                    if _is_garbage:
+                        fallback_reason += "_garbage"
+                    elif _is_crash:
+                        fallback_reason += f"_crash_{process.returncode}"
+
+                # Multi-hop guard (max depth, not single-hop)
+                if fallback_agent and _fb_depth < _MAX_FALLBACK_DEPTH:
                     fallback_message = (
                         f"[fallback-from:{agent_id}] "
                         f"Der ursprüngliche Agent ist aktuell nicht nutzbar. "
