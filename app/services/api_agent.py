@@ -22,7 +22,7 @@ PROVIDERS = {
     "groq": {
         "base_url": "https://api.groq.com/openai/v1",
         "env_key": "GROQ_API_KEY",
-        "models": ["llama-3.3-70b-versatile", "llama-3.1-70b-versatile"],
+        "models": ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"],
     },
     "openrouter": {
         "base_url": "https://openrouter.ai/api/v1",
@@ -39,13 +39,12 @@ PROVIDERS = {
 # Default tools
 DEFAULT_AGENT_TOOLS = [
     "mail_inbox", "mail_read", "mail_send", "mail_mark_seen",
-    "notify_send", "notify_list", "notify_read",
-    # V5 names → old handler names resolved via alias map
+    "notify_send", "notify_list", "notify_read", "notify_status",
     "code_read", "code_search", "code_tree",
     "memory_search", "memory_store",
-    "safe_probe",
+    "health", "status",
     "flarum_discussions", "flarum_discussion_get", "flarum_post_create",
-    "search", "fetch",
+    "search",
 ]
 
 MODEL_PRIORITY = [
