@@ -119,6 +119,13 @@ def _get_all_handlers() -> Dict:
     except Exception:
         pass
     try:
+        from app.routes.mcp_remote import TOOL_HANDLERS as REMOTE_HANDLERS
+        for k, v in REMOTE_HANDLERS.items():
+            if k not in handlers:
+                handlers[k] = v
+    except Exception:
+        pass
+    try:
         from app.routes.mcp import MCP_HANDLERS
         for k, v in MCP_HANDLERS.items():
             if k not in handlers:
