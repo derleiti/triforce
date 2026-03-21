@@ -555,31 +555,38 @@ async def _cloud_mail_fallback(event: Dict) -> bool:
         msg = mail_read(uid)
         body = msg.get("body", "")[:2000]
 
-        # Use Groq cloud API directly (internal proxy returns SSE, not JSON)
+        # Use cloud API — try Groq, Cerebras, OpenRouter
         import httpx, os as _os_cf
-        groq_key = _os_cf.environ.get("GROQ_API_KEY", "")
-        if not groq_key:
-            logger.warning("cloud_fallback: no GROQ_API_KEY")
-            return False
+        _CF_PROVIDERS = [
+            ("https://api.groq.com/openai/v1/chat/completions", _os_cf.environ.get("GROQ_API_KEY", ""), "llama-3.3-70b-versatile"),
+            ("https://api.cerebras.ai/v1/chat/completions", _os_cf.environ.get("CEREBRAS_API_KEY", ""), "llama-3.3-70b"),
+            ("https://openrouter.ai/api/v1/chat/completions", _os_cf.environ.get("OPENROUTER_API_KEY", ""), "meta-llama/llama-3.3-70b-instruct:free"),
+        ]
+        _cf_messages = [
+            {"role": "system", "content": (
+                "Du bist Nova, der KI-Assistent von AILinux. "
+                "Antworte kurz, freundlich und hilfreich auf die folgende E-Mail. "
+                "Unterschreibe mit: Nova AI — ailinux.me"
+            )},
+            {"role": "user", "content": f"Betreff: {subject}\n\n{body}"}
+        ]
+        reply_text = ""
         async with httpx.AsyncClient(timeout=30) as client:
-            r = await client.post("https://api.groq.com/openai/v1/chat/completions",
-                headers={"Authorization": f"Bearer {groq_key}", "Content-Type": "application/json"},
-                json={
-                    "model": "llama-3.3-70b-versatile",
-                    "messages": [
-                        {"role": "system", "content": (
-                            "Du bist Nova, der KI-Assistent von AILinux. "
-                            "Antworte kurz, freundlich und hilfreich auf die folgende E-Mail. "
-                            "Unterschreibe mit: Nova AI — ailinux.me"
-                        )},
-                        {"role": "user", "content": f"Betreff: {subject}\n\n{body}"}
-                    ],
-                    "max_tokens": 500, "temperature": 0.7,
-                })
-            if r.status_code != 200:
-                logger.warning(f"cloud_fallback: Groq {r.status_code}: {r.text[:200]}")
-                return False
-            reply_text = r.json().get("choices", [{}])[0].get("message", {}).get("content", "")
+            for url, key, model in _CF_PROVIDERS:
+                if not key:
+                    continue
+                try:
+                    r = await client.post(url,
+                        headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+                        json={"model": model, "messages": _cf_messages, "max_tokens": 500, "temperature": 0.7})
+                    if r.status_code == 200:
+                        reply_text = r.json().get("choices", [{}])[0].get("message", {}).get("content", "")
+                        if reply_text:
+                            logger.info(f"cloud_fallback: success via {model}")
+                            break
+                    logger.info(f"cloud_fallback: {model} returned {r.status_code}, trying next")
+                except Exception as _e:
+                    logger.info(f"cloud_fallback: {model} failed: {_e}, trying next")
             if not reply_text:
                 return False
 
@@ -632,38 +639,39 @@ async def _direct_mail_reply(event: Dict) -> bool:
         except Exception:
             mail_body = body[:3000]
 
-        # Generate reply via Groq API directly (internal proxy streams SSE, not JSON)
+        # Generate reply via cloud API — try Groq, Cerebras, OpenRouter in order
         import os as _os_dm
-        groq_key = _os_dm.environ.get("GROQ_API_KEY", "")
-        if not groq_key:
-            logger.warning("direct_mail_reply: no GROQ_API_KEY")
-            return False
+        _PROVIDERS = [
+            ("https://api.groq.com/openai/v1/chat/completions", _os_dm.environ.get("GROQ_API_KEY", ""), "llama-3.3-70b-versatile"),
+            ("https://api.cerebras.ai/v1/chat/completions", _os_dm.environ.get("CEREBRAS_API_KEY", ""), "llama-3.3-70b"),
+            ("https://openrouter.ai/api/v1/chat/completions", _os_dm.environ.get("OPENROUTER_API_KEY", ""), "meta-llama/llama-3.3-70b-instruct:free"),
+        ]
+        messages = [
+            {"role": "system", "content": (
+                "Du bist Nova, der KI-Assistent von AILinux (ailinux.me). "
+                "Antworte freundlich, kompetent und auf Deutsch. "
+                "Halte dich kurz (max 200 Worte). "
+                "Erwähne bei technischen Fragen die Docs unter docs.ailinux.me."
+            )},
+            {"role": "user", "content": f"Betreff: {subject}\n\n{mail_body}"}
+        ]
+        reply_text = ""
         async with httpx.AsyncClient(timeout=30.0) as client:
-            resp = await client.post(
-                "https://api.groq.com/openai/v1/chat/completions",
-                headers={"Authorization": f"Bearer {groq_key}", "Content-Type": "application/json"},
-                json={
-                    "model": "llama-3.3-70b-versatile",
-                    "messages": [
-                        {"role": "system", "content": (
-                            "Du bist Nova, der KI-Assistent von AILinux (ailinux.me). "
-                            "Antworte freundlich, kompetent und auf Deutsch. "
-                            "Halte dich kurz (max 200 Worte). "
-                            "Erwähne bei technischen Fragen die Docs unter docs.ailinux.me."
-                        )},
-                        {"role": "user", "content": f"Betreff: {subject}\n\n{mail_body}"}
-                    ],
-                    "max_tokens": 500, "temperature": 0.7,
-                },
-            )
-            if resp.status_code != 200:
-                logger.warning(f"direct_mail_reply: Groq returned {resp.status_code}: {resp.text[:200]}")
-                return False
-            data = resp.json()
-            reply_text = (
-                data.get("choices", [{}])[0].get("message", {}).get("content") or
-                ""
-            )
+            for url, key, model in _PROVIDERS:
+                if not key:
+                    continue
+                try:
+                    resp = await client.post(url,
+                        headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+                        json={"model": model, "messages": messages, "max_tokens": 500, "temperature": 0.7})
+                    if resp.status_code == 200:
+                        reply_text = resp.json().get("choices", [{}])[0].get("message", {}).get("content", "")
+                        if reply_text and len(reply_text) > 10:
+                            logger.info(f"direct_mail_reply: success via {model}")
+                            break
+                    logger.info(f"direct_mail_reply: {model} returned {resp.status_code}, trying next")
+                except Exception as _e:
+                    logger.info(f"direct_mail_reply: {model} failed: {_e}, trying next")
 
         if not reply_text or len(reply_text) < 10:
             return False
