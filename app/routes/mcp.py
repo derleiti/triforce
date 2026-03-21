@@ -4664,6 +4664,9 @@ async def mcp_messages_handler(request: Request, session_id: Optional[str] = Non
             arguments = dict(arguments)
             arguments["_request_meta"] = {
                 "user_agent": request.headers.get("user-agent", ""),
+                "source_ip": request.client.host if request.client else "",
+                "auth_method": getattr(request.state, "auth_method", "") if hasattr(request, "state") else "",
+                "user": getattr(request.state, "mcp_auth_user", "") if hasattr(request, "state") else "",
             }
             if session_id:
                 arguments["_node_id"] = session_id
@@ -4819,6 +4822,9 @@ async def _process_mcp_request(
         arguments = dict(arguments)
         arguments["_request_meta"] = {
             "user_agent": request.headers.get("user-agent", ""),
+            "source_ip": request.client.host if request.client else "",
+            "auth_method": getattr(request.state, "auth_method", "") if hasattr(request, "state") else "",
+            "user": getattr(request.state, "mcp_auth_user", "") if hasattr(request, "state") else "",
         }
         if session_id:
             arguments["_node_id"] = session_id

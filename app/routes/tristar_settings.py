@@ -7,7 +7,7 @@ from __future__ import annotations
 import logging
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, HTTPException, Depends, Query
+from fastapi import APIRouter, HTTPException, Depends, Query, Header
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pydantic import BaseModel, Field
 import secrets
@@ -16,7 +16,14 @@ from ..config import get_settings
 from ..services.tristar.settings_controller import settings_controller
 
 logger = logging.getLogger(__name__)
-router = APIRouter(prefix="/tristar/settings", tags=["TriStar Settings"])
+import os as _os_ts
+
+def _require_ts_auth(x_internal_key: str = Header(default="")):
+    expected = _os_ts.environ.get("INTERNAL_API_KEY", "")
+    if not expected or x_internal_key != expected:
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+router = APIRouter(prefix="/tristar/settings", tags=["TriStar Settings"], dependencies=[Depends(_require_ts_auth)])
 
 # Security
 security = HTTPBasic()

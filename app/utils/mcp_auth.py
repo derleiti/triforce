@@ -370,6 +370,7 @@ async def require_mcp_auth(request: Request) -> str:
                 f"AUTH_BYPASS | IP: {client_ip} | Method: trusted_internal_bypass | Path: {request.url.path}"
             )
             request.state.mcp_auth_user = "internal"
+            request.state.auth_method = "internal"
             return "internal"
     
     # External request (port 9100) → requires auth
@@ -385,6 +386,7 @@ async def require_mcp_auth(request: Request) -> str:
         if is_valid_token(token):
             logger.debug(f"AUTH_OK | IP: {client_ip} | Method: bearer")
             request.state.mcp_auth_user = "oauth_client"
+            request.state.auth_method = "bearer"
             return "oauth_client"
         else:
             logger.warning(f"AUTH_FAIL | IP: {client_ip} | Reason: invalid_bearer")
@@ -396,6 +398,7 @@ async def require_mcp_auth(request: Request) -> str:
         if _validate_credentials(username, password):
             logger.debug(f"AUTH_OK | IP: {client_ip} | Method: basic | User: {username}")
             request.state.mcp_auth_user = username
+            request.state.auth_method = "basic"
             return username
         else:
             logger.warning(f"AUTH_FAIL | IP: {client_ip} | Reason: invalid_basic")

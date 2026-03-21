@@ -19,7 +19,8 @@ from datetime import datetime, timezone
 import logging
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, HTTPException, Query, BackgroundTasks
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, BackgroundTasks
+import os as _os
 from pydantic import BaseModel, Field
 
 from ..services.tristar import (
@@ -30,7 +31,12 @@ from ..services.tristar import (
     ChainState,
 )
 
-router = APIRouter(prefix="/tristar", tags=["TriStar"])
+def _require_tristar_auth(x_internal_key: str = Header(default="")):
+    expected = _os.environ.get("INTERNAL_API_KEY", "")
+    if not expected or x_internal_key != expected:
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+router = APIRouter(prefix="/tristar", tags=["TriStar"], dependencies=[Depends(_require_tristar_auth)])
 logger = logging.getLogger("ailinux.tristar")
 
 

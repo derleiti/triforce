@@ -292,11 +292,10 @@ class RuntimeToolRegistry:
         if tier_lower in ("pro", "paid", "subscriber"):
             return "authenticated"
 
-        # Fallback: if request_meta has no source_ip (not yet injected),
-        # and caller passed auth (require_mcp_auth validated), grant full.
-        # This preserves backward compat until source_ip injection is added.
-        if not source_ip and not auth_method:
-            return "internal_full"
+        # Fallback: source_ip is now injected from FastAPI request.
+        # If still empty (legacy/internal code path), default to authenticated.
+        if not source_ip:
+            return "authenticated"
 
         return "restricted"
 
