@@ -711,6 +711,33 @@ def get_stats() -> Dict:
 
 _last_seen: Dict[str, set] = {"mail": set(), "forum": set(), "wp": set()}
 
+# Redis-backed seen tracking (survives restarts)
+_SEEN_TTL = 604800  # 7 days
+
+async def _seen_check(source: str, key: str) -> bool:
+    """Check if key was already seen. Uses Redis if available, else in-memory."""
+    r = await _get_redis()
+    if r:
+        try:
+            return await r.sismember(f"notify:seen:{source}", key)
+        except Exception:
+            pass
+    return key in _last_seen.get(source, set())
+
+async def _seen_add(source: str, key: str):
+    """Mark key as seen in Redis + memory."""
+    _last_seen.setdefault(source, set()).add(key)
+    if len(_last_seen[source]) > 200:
+        _last_seen[source] = set(list(_last_seen[source])[-100:])
+    r = await _get_redis()
+    if r:
+        try:
+            rkey = f"notify:seen:{source}"
+            await r.sadd(rkey, key)
+            await r.expire(rkey, _SEEN_TTL)
+        except Exception:
+            pass
+
 
 async def _poll_mail():
     await asyncio.sleep(60)
@@ -719,11 +746,11 @@ async def _poll_mail():
             from app.services.mail_service import mail_inbox
             for msg in mail_inbox(limit=10, folder="INBOX"):
                 uid = str(msg.get("uid",""))
-                if not uid or uid in _last_seen["mail"] or msg.get("seen"):
+                if not uid or msg.get("seen"):
                     continue
-                _last_seen["mail"].add(uid)
-                if len(_last_seen["mail"]) > 200:
-                    _last_seen["mail"] = set(list(_last_seen["mail"])[-100:])
+                if await _seen_check("mail", uid):
+                    continue
+                await _seen_add("mail", uid)
                 subject = msg.get("subject","(kein Betreff)")
                 sender = msg.get("from","unknown")
                 snippet = msg.get("snippet", msg.get("body",""))[:500]
@@ -747,14 +774,12 @@ async def _poll_forum():
                 did = str(disc.get("id",""))
                 lp = disc.get("lastPostNumber") or disc.get("commentCount") or 0
                 key = f"{did}:{lp}"
-                if key in _last_seen["forum"]:
+                if await _seen_check("forum", key):
                     continue
-                _last_seen["forum"].add(key)
-                if len(_last_seen["forum"]) > 200:
-                    _last_seen["forum"] = set(list(_last_seen["forum"])[-100:])
+                await _seen_add("forum", key)
                 title = disc.get("title","(kein Titel)")
                 author = disc.get("user",{}).get("username","unknown") if isinstance(disc.get("user"),dict) else "unknown"
-                if author in ("ailinux-nova-ai","nova","admin","system"):
+                if author in ("ailinux-nova-ai","nova-ai","nova","admin","system","zombie"):
                     continue
                 pc = disc.get("commentCount",0)
                 await create_event(
@@ -789,11 +814,9 @@ async def _poll_wordpress():
                 if resp.status_code == 200:
                     for c in resp.json():
                         cid = str(c.get("id",""))
-                        if cid in _last_seen["wp"]:
+                        if await _seen_check("wp", cid):
                             continue
-                        _last_seen["wp"].add(cid)
-                        if len(_last_seen["wp"]) > 200:
-                            _last_seen["wp"] = set(list(_last_seen["wp"])[-100:])
+                        await _seen_add("wp", cid)
                         author = c.get("author_name","unknown")
                         content = c.get("content",{}).get("rendered","")[:300]
                         await create_event(
