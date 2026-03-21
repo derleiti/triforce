@@ -16,7 +16,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect, Query
+from fastapi import Depends, Header, APIRouter, HTTPException, WebSocket, WebSocketDisconnect, Query
 from pydantic import BaseModel, Field
 
 from ..services.triforce import (
@@ -30,7 +30,14 @@ from ..services.triforce import (
 from ..services.triforce.tool_registry import get_tool_index_summary, get_tools_for_llm
 from ..services.triforce.llm_mesh import get_llm_status, get_available_llms, MODEL_ALIASES
 
-router = APIRouter(prefix="/triforce", tags=["TriForce"])
+import os as _os_tf
+
+def _require_triforce_auth(x_internal_key: str = Header(default="")):
+    expected = _os_tf.environ.get("INTERNAL_API_KEY", "")
+    if not expected or x_internal_key != expected:
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+router = APIRouter(prefix="/triforce", tags=["TriForce"], dependencies=[Depends(_require_triforce_auth)])
 
 
 # ============================================================================

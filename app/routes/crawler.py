@@ -16,7 +16,14 @@ from ..schemas import (
 from ..services.crawler.manager import crawler_manager
 from ..services.crawler.user_crawler import user_crawler
 
-router = APIRouter()
+import os as _os_cw
+
+def _require_crawler_auth(x_internal_key: str = Header(default="")):
+    expected = _os_cw.environ.get("INTERNAL_API_KEY", "")
+    if not expected or x_internal_key != expected:
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+router = APIRouter(dependencies=[Depends(_require_crawler_auth)])
 
 class CrawlerSearchRequest(BaseModel):
     query: str

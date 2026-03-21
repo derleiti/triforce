@@ -9,7 +9,7 @@ Ermöglicht Clients, ihre Rechenleistung dem Netzwerk zur Verfügung zu stellen.
 import logging
 from typing import Any, List
 
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, HTTPException, Query
+from fastapi import Depends, Header, APIRouter, WebSocket, WebSocketDisconnect, HTTPException, Query
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
@@ -18,7 +18,14 @@ from ..services.distributed_compute import (
     TaskPriority,
 )
 
-router = APIRouter(prefix="/v1/distributed", tags=["Distributed Compute"])
+import os as _os_dc
+
+def _require_dc_auth(x_internal_key: str = Header(default="")):
+    expected = _os_dc.environ.get("INTERNAL_API_KEY", "")
+    if not expected or x_internal_key != expected:
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+router = APIRouter(prefix="/v1/distributed", tags=["Distributed Compute"], dependencies=[Depends(_require_dc_auth)])
 logger = logging.getLogger("ailinux.distributed_compute")
 
 
