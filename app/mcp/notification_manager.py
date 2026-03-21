@@ -962,7 +962,8 @@ async def _poll_forum():
                     action_url=f"https://forum.ailinux.me/d/{did}",
                 )
         except Exception as e:
-            logger.debug(f"Forum poller error: {e}")
+            logger.warning(f"Forum poller error: {e}")
+        logger.info(f"Forum poll cycle done, seen={len(_last_seen.get('forum', set()))}")
         await asyncio.sleep(FORUM_POLL_INTERVAL)
 
 
@@ -998,7 +999,8 @@ async def _poll_wordpress():
                             metadata={"comment_id": cid, "post_id": c.get("post"), "author": author},
                         )
         except Exception as e:
-            logger.debug(f"WordPress poller error: {e}")
+            logger.warning(f"WordPress poller error: {e}")
+        logger.info(f"WP poll cycle done, seen={len(_last_seen.get('wp', set()))}")
         await asyncio.sleep(WP_POLL_INTERVAL)
 
 
