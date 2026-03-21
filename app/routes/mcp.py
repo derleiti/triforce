@@ -52,6 +52,7 @@ from ..mcp.dev_tools import DEV_TOOL_HANDLERS, DEV_TOOL_NAMES
 from ..mcp.doc_browser import DOC_TOOL_HANDLERS, DOC_TOOL_NAMES
 from ..mcp.flarum_tools import FLARUM_TOOL_HANDLERS, FLARUM_TOOL_NAMES
 from ..mcp.notification_manager import NOTIFY_TOOL_HANDLERS, NOTIFY_TOOL_NAMES
+from ..mcp.mail_tools import MAIL_TOOL_HANDLERS, MAIL_TOOL_NAMES
 from ..mcp.tla_workflow import TLA_TOOL_HANDLERS, TLA_TOOL_NAMES
 from ..mcp.agent_router import AGENT_ROUTER_HANDLERS, AGENT_ROUTER_TOOL_NAMES
 # ── Inline-Schemas für tools/list (kein V5-Import nötig) ─────────────────────
@@ -4397,6 +4398,7 @@ for _sct in [t["name"] for t in SCHEDULER_TOOLS]:
     MCP_HANDLERS[_sct] = lambda p, _n=_sct: handle_scheduler_tool(_n, p)
 MCP_HANDLERS.update(SWARM_HANDLERS)          # swarm_broadcast, swarm_status, swarm_top_results, swarm_consolidated
 MCP_HANDLERS.update(WORDPRESS_HANDLERS)      # wp_publish_post, wp_list_posts, wp_update_post, wp_delete_post, wp_create_page, wp_multi_ai_post
+MCP_HANDLERS.update(MAIL_TOOL_HANDLERS)      # mail_inbox, mail_read, mail_send, mail_mark_seen
 MCP_HANDLERS.update(BROWSER_HANDLERS)
 MCP_HANDLERS.update(REDIS_HANDLERS)          # cache_stats_v4, cache_invalidate_v4, redis_cleanup
 MCP_HANDLERS.update(PERFORMANCE_HANDLERS)    # model_performance, model_recommend
