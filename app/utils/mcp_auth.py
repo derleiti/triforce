@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import os
 import logging
+import os
 import secrets
 import hashlib
 import base64
@@ -356,7 +357,10 @@ async def require_mcp_auth(request: Request) -> str:
     else:
         # 2. Nur explizit vertrauenswürdige interne Quellen dürfen ohne Login durch.
         #    Öffentliche Direktzugriffe ohne Proxy-Header werden NICHT mehr gebypasst.
+        _force_auth = os.environ.get("FORCE_AUTH", "").lower() in ("1", "true", "yes")
         _TRUSTED_INTERNAL_PREFIXES = (
+            "127.", "::1", "10.10.", "172.17.", "172.18.", "172.19.", "172.20.",
+        ) if _force_auth else (
             "127.", "::1", "10.10.", "172.18.", "172.19.", "192.168.",
         )
         has_forwarding_context = bool(forwarded_for or forwarded_host)

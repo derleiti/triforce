@@ -136,12 +136,23 @@ class AuthMiddleware(BaseHTTPMiddleware):
             except ValueError:
                 pass
 
+        # FORCE_AUTH mode: nodes without Apache proxy require auth for all non-internal IPs
+        _force_auth = os.environ.get("FORCE_AUTH", "").lower() in ("1", "true", "yes")
+        _INTERNAL_PREFIXES = ("127.", "::1", "10.10.", "172.17.", "172.18.", "172.19.", "172.20.")
+
         if forwarded_port != AUTH_REQUIRED_PORT:
-            # Internal / direct access → bypass
-            logger.debug(
-                f"AUTH_BYPASS | IP: {client_ip} | X-Fwd-Port: {forwarded_port_str or 'none'} | Path: {path}"
-            )
-            return await call_next(request)
+            if _force_auth and not any(client_ip.startswith(p) for p in _INTERNAL_PREFIXES):
+                # FORCE_AUTH: non-internal IP without Apache proxy → require auth
+                logger.debug(
+                    f"AUTH_CHECK | IP: {client_ip} | FORCE_AUTH=true | Path: {path}"
+                )
+                # Fall through to auth check below
+            else:
+                # Internal / direct access → bypass
+                logger.debug(
+                    f"AUTH_BYPASS | IP: {client_ip} | X-Fwd-Port: {forwarded_port_str or 'none'} | Path: {path}"
+                )
+                return await call_next(request)
 
         # === External request via Apache (X-Forwarded-Port: 9100) ===
         # Optional: verify rotating HMAC proxy token (only if header is present)
