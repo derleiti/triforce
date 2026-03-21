@@ -538,6 +538,134 @@ ISSUE_MAP = {
 }
 
 
+async def _cloud_mail_fallback(event: Dict) -> bool:
+    """Fallback: reply to mail events via Groq cloud API when CLI agents are exhausted."""
+    metadata = event.get("metadata", {})
+    uid = metadata.get("uid", "")
+    sender = metadata.get("from", "")
+    subject = metadata.get("subject", "")
+    if not uid or not sender:
+        return False
+    try:
+        from app.services.mail_service import mail_read, mail_send
+        msg = mail_read(uid)
+        body = msg.get("body", "")[:2000]
+
+        # Use Groq cloud API (verified working, fast)
+        import httpx
+        async with httpx.AsyncClient(timeout=30) as client:
+            r = await client.post("http://localhost:9000/v1/chat/completions", json={
+                "model": "groq/llama-3.3-70b-versatile",
+                "messages": [
+                    {"role": "system", "content": (
+                        "Du bist Nova, der KI-Assistent von AILinux. "
+                        "Antworte kurz, freundlich und hilfreich auf die folgende E-Mail. "
+                        "Unterschreibe mit: Nova AI — ailinux.me"
+                    )},
+                    {"role": "user", "content": f"Betreff: {subject}\n\n{body}"}
+                ],
+                "max_tokens": 500, "temperature": 0.7, "stream": False,
+            })
+            if r.status_code != 200:
+                return False
+            reply_text = r.json().get("text", "")
+            if not reply_text:
+                return False
+
+        # Extract reply-to email
+        reply_to = sender
+        if "<" in reply_to and ">" in reply_to:
+            reply_to = reply_to.split("<")[1].split(">")[0].strip()
+
+        # Don't reply to ourselves
+        if "nova@ailinux.me" in reply_to.lower():
+            return False
+
+        mail_send(to=reply_to, subject=f"Re: {subject}", body=reply_text)
+        logger.info(f"CLOUD_FALLBACK: replied to {reply_to} re: {subject[:40]}")
+        return True
+    except Exception as e:
+        logger.warning(f"Cloud mail fallback failed: {e}")
+        return False
+
+
+
+async def _direct_mail_reply(event: Dict) -> bool:
+    """Fallback: Reply to mail events directly via Groq API when CLI agents are unavailable."""
+    metadata = event.get("metadata", {})
+    uid = metadata.get("uid", "")
+    sender = metadata.get("from", "")
+    subject = metadata.get("subject", "")
+    body = event.get("body", "")
+
+    if not uid or not sender:
+        return False
+
+    # Extract reply-to address
+    reply_to = sender
+    if "<" in reply_to and ">" in reply_to:
+        reply_to = reply_to.split("<")[1].split(">")[0].strip()
+
+    # Don't reply to self
+    if reply_to.lower() in ("nova@ailinux.me", "noreply@ailinux.me"):
+        return False
+
+    try:
+        import httpx
+
+        # Read full mail body
+        try:
+            from app.services.mail_service import mail_read
+            full = mail_read(uid)
+            mail_body = full.get("body", body)[:3000]
+        except Exception:
+            mail_body = body[:3000]
+
+        # Generate reply via Groq (fast, free-ish)
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            resp = await client.post(
+                "http://localhost:9000/v1/chat/completions",
+                json={
+                    "model": "groq/llama-3.3-70b-versatile",
+                    "messages": [
+                        {"role": "system", "content": (
+                            "Du bist Nova, der KI-Assistent von AILinux (ailinux.me). "
+                            "Antworte freundlich, kompetent und auf Deutsch. "
+                            "Halte dich kurz (max 200 Worte). "
+                            "Erwähne bei technischen Fragen die Docs unter docs.ailinux.me."
+                        )},
+                        {"role": "user", "content": f"Betreff: {subject}\n\n{mail_body}"}
+                    ],
+                    "max_tokens": 500, "temperature": 0.7, "stream": False,
+                },
+            )
+            if resp.status_code != 200:
+                logger.warning(f"direct_mail_reply: Groq returned {resp.status_code}")
+                return False
+            data = resp.json()
+            reply_text = (
+                data.get("text") or
+                data.get("choices", [{}])[0].get("message", {}).get("content") or
+                ""
+            )
+
+        if not reply_text or len(reply_text) < 10:
+            return False
+
+        # Send reply
+        from app.services.mail_service import mail_send
+        mail_send(
+            to=reply_to,
+            subject=f"Re: {subject}",
+            body=reply_text,
+        )
+        logger.info(f"DIRECT_MAIL_REPLY: replied to {reply_to} re: {subject[:40]}")
+        return True
+
+    except Exception as e:
+        logger.warning(f"direct_mail_reply failed: {e}")
+        return False
+
 async def _dispatch_event(event: Dict) -> None:
     """Dispatch event to the appropriate agent with task-specific prompt."""
     event_type = event.get("event_type", "")
@@ -620,6 +748,21 @@ async def _dispatch_event(event: Dict) -> None:
                 f"sender={sender} not in ADMIN_SENDERS | event={event_id}"
             )
 
+    # For mail events: try cloud fallback first if agents are likely exhausted
+    if source == SRC_MAIL and metadata.get("uid"):
+        # Check if recent spawns all failed (quota exhaustion indicator)
+        from app.services.agent_spawner import get_agent_spawner
+        spawner = get_agent_spawner()
+        recent_fails = sum(1 for s in spawner.sessions.values()
+                           if s.get("last_response") and
+                           any(kw in str(s.get("last_response",""))
+                               for kw in ("QuotaError", "usage limit", "API usage limits", "QUOTA_EXHAUSTED")))
+        if recent_fails >= 2:
+            logger.info(f"DISPATCH: {recent_fails} recent quota failures, using cloud fallback for mail")
+            if await _cloud_mail_fallback(event):
+                _mark_dispatched(event_id, "cloud-fallback", None)
+                return
+
     try:
         from app.services.agent_spawner import get_agent_spawner
         spawner = get_agent_spawner()
@@ -631,8 +774,33 @@ async def _dispatch_event(event: Dict) -> None:
         sid = result.get("session_id") if isinstance(result, dict) else None
         logger.info(f"DISPATCH: {event_type} -> {agent_id}/{issue_type} (session={sid})")
         _mark_dispatched(event_id, agent_id, sid)
+
+        # Schedule fallback direct-reply for mail events (fires after 90s if agent didn't reply)
+        if source == SRC_MAIL and event.get("metadata", {}).get("uid"):
+            async def _delayed_mail_fallback():
+                await asyncio.sleep(90)
+                # Check if agent actually sent a reply (look for outgoing mail)
+                try:
+                    from app.services.mail_service import mail_inbox
+                    sent = mail_inbox(limit=5, folder="Sent")
+                    subject = event.get("metadata", {}).get("subject", "")
+                    replied = any(f"Re: {subject}" in m.get("subject", "") for m in sent)
+                    if not replied:
+                        logger.info(f"DISPATCH_FALLBACK: agent didn't reply to mail {event_id}, trying direct")
+                        await _direct_mail_reply(event)
+                except Exception as e:
+                    logger.debug(f"mail fallback check: {e}")
+                    await _direct_mail_reply(event)
+            asyncio.create_task(_delayed_mail_fallback())
+
     except Exception as e:
         logger.error(f"DISPATCH error for {event_type}: {e}")
+        # Immediate fallback for mail events if spawn fails entirely
+        if source == SRC_MAIL and event.get("metadata", {}).get("uid"):
+            await _direct_mail_reply(event)
+        # Fallback: if this was a mail event and agent dispatch failed, try cloud reply
+        if source == SRC_MAIL and metadata.get("uid"):
+            await _cloud_mail_fallback(event)
 
 
 def _mark_dispatched(event_id: str, agent_id: str, session_id: str = None):
