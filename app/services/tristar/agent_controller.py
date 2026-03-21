@@ -404,7 +404,7 @@ DEFAULT_AGENTS: List[Dict[str, Any]] = [
         "name": "Groq API Agent (Llama 3.3 70B)",
         "description": "API-basierter Agent via Groq — schnell, kein CLI nötig",
         "command": [],  # no subprocess
-        "env": {"API_MODEL": "groq/llama-3.3-70b-versatile,groq/llama-3.1-70b-versatile"},
+        "env": {"API_MODEL": "groq/llama-3.3-70b-versatile,groq/llama-3.3-70b-specdec"},
     },
     {
         "agent_id": "api-openrouter",
