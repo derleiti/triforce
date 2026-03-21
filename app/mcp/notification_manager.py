@@ -1,28 +1,30 @@
-import collections
 """
-Nova Notification Manager v1.0
-================================
-Zentraler Benachrichtigungs-Hub für den TriForce MCP Server.
+Nova Notification Manager v2.0
+=================================
+Event-driven orchestrator for TriForce / AILinux.
 
-Sammelt, verwaltet und dispatcht Notifications aus allen Quellen:
-  - System-Events (Service-Status, Fehler, Ressourcen)
-  - Agent-Antworten (claude-mcp, gemini-mcp, codex-mcp)
-  - Forum-Aktivität (Flarum neue Posts, Mentions)
-  - Mail (nova@ailinux.me Posteingang)
-  - MCP-Tool-Ergebnisse (wichtige Callbacks)
+Architecture:
+  Source Pollers (mail, forum, WP, system) -> Normalize -> Deduplicate -> Classify
+  -> Dispatch -> Agent Spawn -> Structured Result -> Auto-Shutdown
+
+Storage: Redis (fast, TTL, dedup) with JSON-file fallback
+Dedup:   Fingerprint-based (SHA1 of source + event_type + key content)
+Agents:  Spawn on event, 5min inactivity timeout, structured result collection
 
 MCP Tools:
-  notify_list    - Alle offenen Notifications anzeigen
-  notify_read    - Einzelne Notification als gelesen markieren
-  notify_clear   - Erledigte Notifications löschen
-  notify_send    - Neue Notification manuell erstellen
-  notify_status  - Manager-Status + Statistiken
+  notify_list    - List open notifications (filtered)
+  notify_read    - Mark notification as read/resolved
+  notify_clear   - Delete resolved notifications
+  notify_send    - Create manual notification
+  notify_status  - Manager stats + poller health
 """
 
+import asyncio
+import collections
+import hashlib
 import json
-import os
-import tempfile
 import logging
+import os
 import time
 import uuid
 from datetime import datetime, timezone
@@ -34,22 +36,122 @@ logger = logging.getLogger("ailinux.mcp.notifications")
 STORE_FILE = Path("/var/lib/triforce/notifications.json")
 MAX_ENTRIES = 500
 
-# Prioritäten
-PRIO_LOW      = "low"
-PRIO_NORMAL   = "normal"
-PRIO_HIGH     = "high"
+PRIO_LOW = "low"
+PRIO_NORMAL = "normal"
+PRIO_HIGH = "high"
 PRIO_CRITICAL = "critical"
 
-# Quellen
-SRC_SYSTEM  = "system"
-SRC_AGENT   = "agent"
-SRC_FORUM   = "forum"
-SRC_MAIL    = "mail"
-SRC_MCP     = "mcp"
-SRC_MANUAL  = "manual"
+SRC_SYSTEM = "system"
+SRC_AGENT = "agent"
+SRC_FORUM = "forum"
+SRC_MAIL = "mail"
+SRC_MCP = "mcp"
+SRC_MANUAL = "manual"
+SRC_WORDPRESS = "wordpress"
+
+MAIL_POLL_INTERVAL = 300
+FORUM_POLL_INTERVAL = 300
+WP_POLL_INTERVAL = 600
+DEDUP_WINDOW_ERROR = 3600
+DEDUP_WINDOW_CONTENT = 86400
+DISPATCH_AGENT_TIMEOUT = 300
+
+EVENT_TYPES = {
+    "ops.error":            {"agent": "codex-mcp",   "priority": "high"},
+    "ops.repeated_error":   {"agent": "gemini-mcp",  "priority": "high"},
+    "ops.service_down":     {"agent": "codex-mcp",   "priority": "critical"},
+    "ops.performance":      {"agent": "codex-mcp",   "priority": "normal"},
+    "support.general":      {"agent": "claude-mcp",  "priority": "normal"},
+    "support.install":      {"agent": "claude-mcp",  "priority": "normal"},
+    "support.login":        {"agent": "claude-mcp",  "priority": "high"},
+    "support.bug_report":   {"agent": "codex-mcp",   "priority": "high"},
+    "support.feature_req":  {"agent": "gemini-mcp",  "priority": "low"},
+    "forum.question":       {"agent": "claude-mcp",  "priority": "normal"},
+    "forum.support":        {"agent": "claude-mcp",  "priority": "normal"},
+    "forum.feedback":       {"agent": None,          "priority": "low"},
+    "forum.spam":           {"agent": None,          "priority": "low"},
+    "mail.support":         {"agent": "claude-mcp",  "priority": "normal"},
+    "mail.research":        {"agent": "codex-mcp",   "priority": "normal"},
+    "mail.spam":            {"agent": None,          "priority": "low"},
+    "wp.comment":           {"agent": "claude-mcp",  "priority": "low"},
+    "wp.update":            {"agent": None,          "priority": "low"},
+    "incident.auth":        {"agent": "codex-mcp",   "priority": "critical"},
+    "incident.service":     {"agent": "gemini-mcp",  "priority": "critical"},
+}
+
+_CLASSIFY_RULES = [
+    (["traceback", "syntaxerror", "importerror", "nameerror", "typeerror",
+      "exception", "attributeerror", "keyerror"], "ops.error", 1),
+    (["service failed", "connection refused", "crashed", "oom", "disk full",
+      "killed", "segfault"], "ops.service_down", 1),
+    (["password", "passwort", "login", "zugang", "account", "anmeldung",
+      "auth failed", "401", "403"], "support.login", 1),
+    (["install", "installation", "setup", "einrichtung", "dependencies",
+      "requirements"], "support.install", 1),
+    (["bug", "fehler", "broken", "kaputt", "doesn\'t work", "funktioniert nicht",
+      "crash"], "support.bug_report", 1),
+    (["feature", "wunsch", "request", "vorschlag", "idee", "suggestion"],
+     "support.feature_req", 1),
+    (["research", "[research]", "forschung"], "mail.research", 1),
+    (["spam", "viagra", "casino", "lottery", "click here", "unsubscribe"],
+     "forum.spam", 2),
+]
 
 
-# ── Storage ───────────────────────────────────────────────────────────────────
+# -- Redis Helper --
+
+_redis = None
+
+async def _get_redis():
+    global _redis
+    if _redis is not None:
+        try:
+            await _redis.ping()
+            return _redis
+        except Exception:
+            _redis = None
+    try:
+        import redis.asyncio as aioredis
+        _redis = aioredis.from_url("redis://localhost:6379/0", decode_responses=True)
+        await _redis.ping()
+        return _redis
+    except Exception:
+        return None
+
+
+# -- Fingerprint & Dedup --
+
+def _fingerprint(source: str, event_type: str, content: str) -> str:
+    raw = f"{source}:{event_type}:{content[:500]}".lower()
+    return hashlib.sha1(raw.encode()).hexdigest()[:16]
+
+
+async def _is_duplicate(fingerprint: str, window: int) -> bool:
+    r = await _get_redis()
+    if r is None:
+        return False
+    key = f"notify:dedup:{fingerprint}"
+    try:
+        count = await r.incr(key)
+        if count == 1:
+            await r.expire(key, window)
+        return count > 1
+    except Exception:
+        return False
+
+
+async def _get_dedup_count(fingerprint: str) -> int:
+    r = await _get_redis()
+    if r is None:
+        return 0
+    try:
+        val = await r.get(f"notify:dedup:{fingerprint}")
+        return int(val) if val else 0
+    except Exception:
+        return 0
+
+
+# -- Storage --
 
 def _load() -> List[Dict]:
     try:
@@ -61,13 +163,12 @@ def _load() -> List[Dict]:
         logger.error(f"Notify load error: {e}")
         return []
 
+
 def _save(entries: List[Dict]):
     try:
         STORE_FILE.parent.mkdir(parents=True, exist_ok=True)
-        # Max-Größe: älteste zuerst raus
         if len(entries) > MAX_ENTRIES:
             entries = entries[-MAX_ENTRIES:]
-        # Atomic write — verhindert korrupte JSON bei Crash
         _tmp = STORE_FILE.with_suffix(".tmp")
         _tmp.write_text(json.dumps(entries, indent=2, ensure_ascii=False))
         os.replace(_tmp, STORE_FILE)
@@ -75,71 +176,205 @@ def _save(entries: List[Dict]):
         logger.error(f"Notify save error: {e}")
 
 
-# ── Core API ──────────────────────────────────────────────────────────────────
+# -- Classification --
 
-def create_notification(
-    title: str,
-    body: str = "",
-    source: str = SRC_MANUAL,
-    priority: str = PRIO_NORMAL,
-    tags: List[str] = None,
-    action_url: str = "",
-    metadata: Dict = None,
-    auto_resolve: bool = False,
-) -> Dict:
-    """Erstellt eine neue Notification und speichert sie."""
+def classify_event(source: str, title: str, body: str, tags: List[str] = None) -> str:
+    text = f"{title} {body}".lower()
+    tags_lower = [t.lower() for t in (tags or [])]
+    if "research" in tags_lower:
+        return "mail.research"
+    if "spam" in tags_lower:
+        return "forum.spam" if source == SRC_FORUM else "mail.spam"
+    source_defaults = {
+        SRC_FORUM: "forum.question",
+        SRC_MAIL: "mail.support",
+        SRC_WORDPRESS: "wp.comment",
+        SRC_SYSTEM: "ops.error",
+    }
+    for keywords, event_type, min_match in _CLASSIFY_RULES:
+        matches = sum(1 for kw in keywords if kw in text)
+        if matches >= min_match:
+            return event_type
+    return source_defaults.get(source, "support.general")
+
+
+# -- Core API --
+
+async def create_event(
+    title: str, body: str = "", source: str = SRC_MANUAL,
+    priority: str = None, risk: str = "low", tags: List[str] = None,
+    action_url: str = "", metadata: Dict = None,
+    auto_resolve: bool = False, event_type: str = None,
+    correlation_id: str = None,
+) -> Optional[Dict]:
+    if not event_type:
+        event_type = classify_event(source, title, body, tags)
+    if not priority:
+        rule = EVENT_TYPES.get(event_type, {})
+        priority = rule.get("priority", PRIO_NORMAL)
+    fp = _fingerprint(source, event_type, f"{title}{body[:200]}")
+    window = DEDUP_WINDOW_ERROR if source == SRC_SYSTEM else DEDUP_WINDOW_CONTENT
+    if await _is_duplicate(fp, window):
+        count = await _get_dedup_count(fp)
+        if source == SRC_SYSTEM and count >= 5 and event_type == "ops.error":
+            event_type = "ops.repeated_error"
+            priority = PRIO_HIGH
+            logger.info(f"DEDUP: {fp} seen {count}x -> promoted to ops.repeated_error")
+        else:
+            logger.debug(f"DEDUP: skipped {fp} (seen {count}x)")
+            return None
     entry = {
-        "id": str(uuid.uuid4())[:8],
-        "title": title,
-        "body": body,
-        "source": source,
-        "priority": priority,
-        "tags": tags or [],
-        "action_url": action_url,
-        "metadata": metadata or {},
+        "id": str(uuid.uuid4())[:8], "title": title, "body": body,
+        "source": source, "event_type": event_type, "priority": priority,
+        "risk": risk, "tags": tags or [], "action_url": action_url,
+        "metadata": metadata or {}, "fingerprint": fp,
+        "correlation_id": correlation_id or "",
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "read": False,
-        "resolved": auto_resolve,
+        "read": False, "resolved": auto_resolve,
+        "dispatched": False, "dispatch_result": None,
     }
     entries = _load()
     entries.append(entry)
     _save(entries)
-    logger.info(f"NOTIFY | [{priority.upper()}] [{source}] {title}")
+    logger.info(f"EVENT | [{priority.upper()}] [{source}] [{event_type}] {title}")
+    if not auto_resolve:
+        asyncio.create_task(_dispatch_event(entry))
     return entry
 
 
-def get_notifications(
-    unread_only: bool = False,
-    source: str = None,
-    priority: str = None,
-    limit: int = 50,
-) -> List[Dict]:
+def create_notification(data_or_title=None, **kwargs) -> Dict:
+    """Backward-compatible sync wrapper."""
+    if isinstance(data_or_title, dict):
+        kwargs.update(data_or_title)
+        data_or_title = kwargs.pop("title", "")
+    title = data_or_title or kwargs.pop("title", "")
+    try:
+        loop = asyncio.get_running_loop()
+        loop.create_task(create_event(title=title, **kwargs))
+    except RuntimeError:
+        pass
+    return {"title": title, "status": "queued"}
+
+
+# -- Dispatch Engine --
+
+_AGENT_RATE = {
+    "claude-mcp":  {"max_per_min": 5, "timestamps": collections.deque()},
+    "gemini-mcp":  {"max_per_min": 3, "timestamps": collections.deque()},
+    "codex-mcp":   {"max_per_min": 5, "timestamps": collections.deque()},
+}
+_DISPATCH_COOLDOWN: Dict[str, float] = {}
+DISPATCH_COOLDOWN_S = 120
+
+
+def _rate_ok(agent_id: str) -> bool:
+    gate = _AGENT_RATE.get(agent_id)
+    if not gate:
+        return True
+    now = time.time()
+    ts = gate["timestamps"]
+    while ts and now - ts[0] > 60:
+        ts.popleft()
+    if len(ts) < gate["max_per_min"]:
+        ts.append(now)
+        return True
+    return False
+
+
+async def _dispatch_event(event: Dict) -> None:
+    event_type = event.get("event_type", "")
+    priority = event.get("priority", "normal")
+    event_id = event.get("id", "")
+    if priority not in (PRIO_HIGH, PRIO_CRITICAL):
+        return
+    rule = EVENT_TYPES.get(event_type, {})
+    agent_id = rule.get("agent")
+    if not agent_id:
+        return
+    now = time.time()
+    last = _DISPATCH_COOLDOWN.get(event_type, 0)
+    if now - last < DISPATCH_COOLDOWN_S:
+        return
+    _DISPATCH_COOLDOWN[event_type] = now
+    if not _rate_ok(agent_id):
+        return
+    title = event.get("title", "")
+    body = event.get("body", "")
+    source = event.get("source", "")
+    context = (
+        f"[EVENT] type={event_type} priority={priority} source={source}\n"
+        f"Title: {title}\n"
+        f"Body: {body[:1500]}\n\n"
+        f"AUFGABE: Analysiere dieses Event und fuehre die noetige Aktion aus.\n"
+        f"Wenn erledigt: notify_read mit id=\'{event_id}\' und resolve=true aufrufen."
+    )
+    ISSUE_MAP = {
+        "ops.error": "bug_hunter", "ops.repeated_error": "bug_hunter",
+        "ops.service_down": "ops_handler", "support.general": "support_agent",
+        "support.login": "support_agent", "support.install": "support_agent",
+        "support.bug_report": "bug_hunter", "support.feature_req": "research_agent",
+        "forum.question": "support_agent", "forum.support": "support_agent",
+        "mail.support": "support_agent", "mail.research": "research_agent",
+        "incident.auth": "ops_handler", "incident.service": "ops_handler",
+    }
+    issue_type = ISSUE_MAP.get(event_type, "ops_handler")
+    try:
+        from app.services.agent_spawner import get_agent_spawner
+        spawner = get_agent_spawner()
+        result = await spawner.spawn_for_issue(
+            issue_type=issue_type, context=context,
+            source=f"notifier:{event_id}", agent_id=agent_id,
+        )
+        sid = result.get("session_id") if isinstance(result, dict) else None
+        logger.info(f"DISPATCH: {event_type} -> {agent_id} (session={sid})")
+        _mark_dispatched(event_id, agent_id, sid)
+    except Exception as e:
+        logger.error(f"DISPATCH error for {event_type}: {e}")
+
+
+def _mark_dispatched(event_id: str, agent_id: str, session_id: str = None):
     entries = _load()
-    # Neueste zuerst
-    entries = list(reversed(entries))
+    for e in entries:
+        if e["id"] == event_id:
+            e["dispatched"] = True
+            e["dispatch_result"] = {
+                "agent": agent_id, "session_id": session_id,
+                "dispatched_at": datetime.now(timezone.utc).isoformat(),
+            }
+            break
+    _save(entries)
+
+
+# -- CRUD --
+
+def get_notifications(unread_only=False, source=None, priority=None,
+                      event_type=None, limit=50) -> List[Dict]:
+    entries = list(reversed(_load()))
     if unread_only:
         entries = [e for e in entries if not e.get("read") and not e.get("resolved")]
     if source:
         entries = [e for e in entries if e.get("source") == source]
     if priority:
         entries = [e for e in entries if e.get("priority") == priority]
+    if event_type:
+        entries = [e for e in entries if e.get("event_type", "").startswith(event_type)]
     return entries[:limit]
 
 
-def mark_read(notification_id: str) -> bool:
+def mark_read(nid: str) -> bool:
     entries = _load()
     for e in entries:
-        if e["id"] == notification_id:
+        if e["id"] == nid:
             e["read"] = True
             _save(entries)
             return True
     return False
 
 
-def mark_resolved(notification_id: str) -> bool:
+def mark_resolved(nid: str) -> bool:
     entries = _load()
     for e in entries:
-        if e["id"] == notification_id:
+        if e["id"] == nid:
             e["read"] = True
             e["resolved"] = True
             _save(entries)
@@ -158,308 +393,221 @@ def clear_resolved() -> int:
 def get_stats() -> Dict:
     entries = _load()
     unread = sum(1 for e in entries if not e.get("read") and not e.get("resolved"))
-    by_source = {}
-    by_priority = {}
+    by_src, by_prio, by_type = {}, {}, {}
     for e in entries:
-        s = e.get("source", "unknown")
-        p = e.get("priority", "normal")
-        by_source[s] = by_source.get(s, 0) + 1
-        by_priority[p] = by_priority.get(p, 0) + 1
-    return {
-        "total": len(entries),
-        "unread": unread,
-        "by_source": by_source,
-        "by_priority": by_priority,
-        "store_file": str(STORE_FILE),
-    }
+        s, p, t = e.get("source","?"), e.get("priority","?"), e.get("event_type","?")
+        by_src[s] = by_src.get(s,0)+1
+        by_prio[p] = by_prio.get(p,0)+1
+        by_type[t] = by_type.get(t,0)+1
+    return {"total": len(entries), "unread": unread, "by_source": by_src,
+            "by_priority": by_prio, "by_event_type": by_type,
+            "store_file": str(STORE_FILE)}
 
 
-# ── MCP Tool Handlers ─────────────────────────────────────────────────────────
+# -- Source Pollers --
+
+_last_seen: Dict[str, set] = {"mail": set(), "forum": set(), "wp": set()}
+
+
+async def _poll_mail():
+    await asyncio.sleep(60)
+    while True:
+        try:
+            from app.services.mail_service import mail_inbox
+            for msg in mail_inbox(limit=10, folder="INBOX"):
+                uid = str(msg.get("uid",""))
+                if not uid or uid in _last_seen["mail"] or msg.get("seen"):
+                    continue
+                _last_seen["mail"].add(uid)
+                if len(_last_seen["mail"]) > 200:
+                    _last_seen["mail"] = set(list(_last_seen["mail"])[-100:])
+                subject = msg.get("subject","(kein Betreff)")
+                sender = msg.get("from","unknown")
+                snippet = msg.get("snippet", msg.get("body",""))[:500]
+                await create_event(
+                    title=f"Mail: {subject}", body=f"Von: {sender}\n\n{snippet}",
+                    source=SRC_MAIL, tags=["mail","inbox"],
+                    metadata={"uid": uid, "from": sender, "subject": subject},
+                )
+        except Exception as e:
+            logger.debug(f"Mail poller error: {e}")
+        await asyncio.sleep(MAIL_POLL_INTERVAL)
+
+
+async def _poll_forum():
+    await asyncio.sleep(90)
+    while True:
+        try:
+            from app.mcp.flarum_tools import handle_flarum_discussions
+            result = await handle_flarum_discussions({"limit": 10, "sort": "-lastPostedAt"})
+            for disc in result.get("discussions", []):
+                did = str(disc.get("id",""))
+                lp = disc.get("lastPostNumber", 0)
+                key = f"{did}:{lp}"
+                if key in _last_seen["forum"]:
+                    continue
+                _last_seen["forum"].add(key)
+                if len(_last_seen["forum"]) > 200:
+                    _last_seen["forum"] = set(list(_last_seen["forum"])[-100:])
+                title = disc.get("title","(kein Titel)")
+                author = disc.get("user",{}).get("username","unknown") if isinstance(disc.get("user"),dict) else "unknown"
+                if author in ("ailinux-nova-ai","nova","admin","system"):
+                    continue
+                pc = disc.get("commentCount",0)
+                await create_event(
+                    title=f"Forum: {title}", body=f"Von: {author} | Posts: {pc} | #{did}",
+                    source=SRC_FORUM, tags=["forum","discussion"],
+                    metadata={"discussion_id": did, "author": author, "last_post_number": lp},
+                    action_url=f"https://forum.ailinux.me/d/{did}",
+                )
+        except Exception as e:
+            logger.debug(f"Forum poller error: {e}")
+        await asyncio.sleep(FORUM_POLL_INTERVAL)
+
+
+async def _poll_wordpress():
+    await asyncio.sleep(120)
+    while True:
+        try:
+            import httpx
+            from app.config import get_settings
+            s = get_settings()
+            wp_user = getattr(s, "wp_api_user", "") or "ailinux-nova-ai"
+            wp_pass = getattr(s, "wp_api_pass", "") or os.getenv("WP_APP_PASSWORD", "")
+            if not wp_pass:
+                await asyncio.sleep(WP_POLL_INTERVAL)
+                continue
+            async with httpx.AsyncClient(timeout=15) as client:
+                resp = await client.get(
+                    "https://ailinux.me/wp-json/wp/v2/comments",
+                    params={"per_page": 5, "orderby": "date_gmt", "order": "desc"},
+                    auth=(wp_user, wp_pass),
+                )
+                if resp.status_code == 200:
+                    for c in resp.json():
+                        cid = str(c.get("id",""))
+                        if cid in _last_seen["wp"]:
+                            continue
+                        _last_seen["wp"].add(cid)
+                        if len(_last_seen["wp"]) > 200:
+                            _last_seen["wp"] = set(list(_last_seen["wp"])[-100:])
+                        author = c.get("author_name","unknown")
+                        content = c.get("content",{}).get("rendered","")[:300]
+                        await create_event(
+                            title=f"WP Kommentar von {author}", body=content,
+                            source=SRC_WORDPRESS, tags=["wordpress","comment"],
+                            metadata={"comment_id": cid, "post_id": c.get("post"), "author": author},
+                        )
+        except Exception as e:
+            logger.debug(f"WordPress poller error: {e}")
+        await asyncio.sleep(WP_POLL_INTERVAL)
+
+
+# -- Poller Lifecycle --
+
+_poller_tasks: List[asyncio.Task] = []
+_poller_status: Dict[str, str] = {}
+
+
+def start_pollers():
+    global _poller_tasks
+    for name, coro in [("mail",_poll_mail),("forum",_poll_forum),("wordpress",_poll_wordpress)]:
+        task = asyncio.create_task(coro())
+        task.set_name(f"poller:{name}")
+        _poller_tasks.append(task)
+        _poller_status[name] = "running"
+        logger.info(f"Poller started: {name}")
+
+
+async def stop_pollers():
+    for t in _poller_tasks:
+        t.cancel()
+    for t in _poller_tasks:
+        try: await t
+        except asyncio.CancelledError: pass
+    _poller_tasks.clear()
+    logger.info("All pollers stopped")
+
+
+# -- MCP Tool Handlers --
 
 async def handle_notify_list(params: Dict[str, Any]) -> Dict:
-    """
-    Listet Notifications.
-    params:
-      unread_only (bool)   - Nur ungelesene (default: true)
-      source      (str)    - Filter: system|agent|forum|mail|mcp|manual
-      priority    (str)    - Filter: low|normal|high|critical
-      limit       (int)    - Max Einträge (default: 50)
-    """
     try:
         result = get_notifications(
             unread_only=params.get("unread_only", True),
-            source=params.get("source"),
-            priority=params.get("priority"),
+            source=params.get("source"), priority=params.get("priority"),
+            event_type=params.get("event_type"),
             limit=int(params.get("limit", 50)),
         )
-        return {
-            "count": len(result),
-            "notifications": result,
-        }
+        return {"count": len(result), "notifications": result}
     except Exception as e:
         return {"error": str(e)}
 
 
 async def handle_notify_read(params: Dict[str, Any]) -> Dict:
-    """
-    Markiert Notification als gelesen oder erledigt.
-    params:
-      id       (str)  - Notification-ID (required)
-      resolve  (bool) - Als erledigt markieren + aus Liste entfernen (default: false)
-    """
     try:
         nid = params.get("id", "")
         if not nid:
-            return {"error": "Parameter 'id' fehlt"}
-        resolve = params.get("resolve", False)
-        if resolve:
-            ok = mark_resolved(nid)
-            return {"success": ok, "action": "resolved", "id": nid}
-        else:
-            ok = mark_read(nid)
-            return {"success": ok, "action": "read", "id": nid}
+            return {"error": "Parameter \'id\' fehlt"}
+        if params.get("resolve", False):
+            return {"success": mark_resolved(nid), "action": "resolved", "id": nid}
+        return {"success": mark_read(nid), "action": "read", "id": nid}
     except Exception as e:
         return {"error": str(e)}
 
 
 async def handle_notify_clear(params: Dict[str, Any]) -> Dict:
-    """
-    Löscht erledigte Notifications.
-    params:
-      all (bool) - Alle (auch ungelesene) löschen (default: false)
-    """
     try:
         if params.get("all", False):
             entries = _load()
-            count = len(entries)
             _save([])
-            return {"deleted": count, "action": "all_cleared"}
-        count = clear_resolved()
-        return {"deleted": count, "action": "resolved_cleared"}
+            return {"deleted": len(entries), "action": "all_cleared"}
+        return {"deleted": clear_resolved(), "action": "resolved_cleared"}
     except Exception as e:
         return {"error": str(e)}
 
 
 async def handle_notify_send(params: Dict[str, Any]) -> Dict:
-    """
-    Erstellt eine manuelle Notification (z.B. von Agents oder System).
-    params:
-      title      (str)  - Titel (required)
-      body       (str)  - Nachrichtentext
-      source     (str)  - system|agent|forum|mail|mcp|manual
-      priority   (str)  - low|normal|high|critical
-      tags       (list) - Tags z.B. ["deploy", "error"]
-      action_url (str)  - Link zur Quelle
-      auto_resolve (bool) - Sofort als erledigt markieren
-    """
     try:
         title = params.get("title", "").strip()
         if not title:
-            return {"error": "Parameter 'title' fehlt"}
-        entry = create_notification(
-            title=title,
-            body=params.get("body", ""),
+            return {"error": "Parameter \'title\' fehlt"}
+        entry = await create_event(
+            title=title, body=params.get("body",""),
             source=params.get("source", SRC_MANUAL),
-            priority=params.get("priority", PRIO_NORMAL),
-            tags=params.get("tags", []),
-            action_url=params.get("action_url", ""),
-            metadata=params.get("metadata", {}),
+            priority=params.get("priority"),
+            event_type=params.get("event_type"),
+            tags=params.get("tags",[]),
+            action_url=params.get("action_url",""),
+            metadata=params.get("metadata",{}),
             auto_resolve=params.get("auto_resolve", False),
         )
+        if entry is None:
+            return {"success": True, "action": "deduplicated"}
         return {"success": True, "notification": entry}
     except Exception as e:
         return {"error": str(e)}
 
 
 async def handle_notify_status(params: Dict[str, Any]) -> Dict:
-    """Gibt Manager-Status und Statistiken zurück."""
     try:
         return {
-            "status": "ok",
-            "stats": get_stats(),
-            "store": str(STORE_FILE),
-            "max_entries": MAX_ENTRIES,
+            "status": "ok", "stats": get_stats(),
+            "pollers": {n: {"status": s, "seen": len(_last_seen.get(n,set()))}
+                       for n, s in _poller_status.items()},
+            "dispatch_rules": len(EVENT_TYPES),
+            "dedup_windows": {"error_s": DEDUP_WINDOW_ERROR, "content_s": DEDUP_WINDOW_CONTENT},
+            "store": str(STORE_FILE), "max_entries": MAX_ENTRIES,
         }
     except Exception as e:
         return {"error": str(e)}
 
 
-# ── Handler Registry ──────────────────────────────────────────────────────────
-
 NOTIFY_TOOL_HANDLERS = {
-    "notify_list":   handle_notify_list,
-    "notify_read":   handle_notify_read,
-    "notify_clear":  handle_notify_clear,
-    "notify_send":   handle_notify_send,
+    "notify_list": handle_notify_list,
+    "notify_read": handle_notify_read,
+    "notify_clear": handle_notify_clear,
+    "notify_send": handle_notify_send,
     "notify_status": handle_notify_status,
 }
-
 NOTIFY_TOOL_NAMES = list(NOTIFY_TOOL_HANDLERS.keys())
-
-
-# =============================================================================
-# Load-based Agent Bootstrap
-# =============================================================================
-# Regeln:
-#   < 3 unresolved HIGH+  → nichts, Watcher reicht
-#   3–9                   → 1 ops_worker
-#   10–19                 → claude-mcp bootstrappen
-#   20–49                 → claude-mcp + gemini-mcp
-#   ≥ 50                  → alle 3 Kern-Agents + 3 Worker
-#
-# Rate-Gate: max N Tasks pro Agent pro Minute
-# Queue: wenn Gate voll → gepuffert, nächste Minute abgearbeitet
-# =============================================================================
-
-# Cooldown zwischen Bootstraps (10 Minuten)
-_BOOTSTRAP_COOLDOWN = 600
-_last_bootstrap: Dict[str, float] = {}
-
-# Rate-Gate: max Tasks pro Agent pro Minute
-AGENT_RATE_GATE: Dict[str, Dict] = {
-    "claude-mcp":  {"max_per_min": 5,  "timestamps": collections.deque()},
-    "gemini-mcp":  {"max_per_min": 3,  "timestamps": collections.deque()},
-    "codex-mcp":   {"max_per_min": 5,  "timestamps": collections.deque()},
-}
-
-# Ausstehende Nachrichten pro Agent (Buffer wenn Gate voll)
-_agent_queue: Dict[str, collections.deque] = {
-    k: collections.deque(maxlen=50) for k in AGENT_RATE_GATE
-}
-
-
-def _count_pending_high() -> int:
-    """Anzahl ungelesener HIGH+ Notifications."""
-    entries = get_notifications(unread_only=True, limit=100)
-    return sum(1 for e in entries if e.get("priority") in ("high", "critical"))
-
-
-def _rate_gate_allow(agent_id: str) -> bool:
-    """True wenn Agent jetzt eine Nachricht empfangen darf."""
-    gate = AGENT_RATE_GATE.get(agent_id)
-    if not gate:
-        return True
-    now = _time.time()
-    ts = gate["timestamps"]
-    # Alte Einträge (> 60s) entfernen
-    while ts and now - ts[0] > 60:
-        ts.popleft()
-    if len(ts) < gate["max_per_min"]:
-        ts.append(now)
-        return True
-    return False
-
-
-async def _send_to_agent(agent_id: str, message: str) -> bool:
-    """Nachricht an Kern-Agent senden — mit Rate-Gate."""
-    if _rate_gate_allow(agent_id):
-        try:
-            from app.routes.mcp import MCP_HANDLERS
-            agent_call = MCP_HANDLERS.get("agent_call") or MCP_HANDLERS.get("cli-agents_call")
-            if agent_call:
-                await asyncio.wait_for(
-                    agent_call({"agent_id": agent_id, "message": message}),
-                    timeout=15,
-                )
-                return True
-        except Exception as e:
-            logger.debug(f"_send_to_agent {agent_id}: {e}")
-    else:
-        # Gate voll → in Queue puffern
-        _agent_queue[agent_id].append(message)
-        logger.debug(f"Rate-Gate voll für {agent_id} — gepuffert ({len(_agent_queue[agent_id])})")
-    return False
-
-
-async def assess_load_and_bootstrap(new_notification: Dict) -> None:
-    """
-    Wird nach create_notification() aufgerufen.
-    Entscheidet ob/welche Agents gebootstrappt werden.
-    """
-    prio = new_notification.get("priority", "normal")
-    if prio not in ("high", "critical"):
-        return  # Low/Normal-Notifications → kein Bootstrap nötig
-
-    pending = _count_pending_high()
-    now = _time.time()
-
-    # ── Level 0: < 3 pending → Watcher reicht ──────────────────────────────
-    if pending < 3:
-        return
-
-    # ── Kurzinfo für alle Bootstrap-Messages ───────────────────────────────
-    title = new_notification.get("title", "")
-    body  = new_notification.get("body", "")
-    brief = f"[LOAD-BOOTSTRAP | {pending} pending HIGH+]\nNeuste: {title}\n{body[:200]}"
-
-    # ── Level 1: 3–9 pending → 1 ops_worker ────────────────────────────────
-    if pending < 10:
-        last = _last_bootstrap.get("worker", 0)
-        if now - last < _BOOTSTRAP_COOLDOWN:
-            return
-        _last_bootstrap["worker"] = now
-        try:
-            from app.services.agent_spawner import get_agent_spawner
-            spawner = get_agent_spawner()
-            asyncio.create_task(spawner.spawn_for_issue(
-                issue_type="ops_handler",
-                context=brief,
-                source="load_bootstrap:level1",
-            ))
-            logger.info(f"Load-Bootstrap L1: 1 ops_worker gespawnt ({pending} pending)")
-        except Exception as e:
-            logger.debug(f"Load-Bootstrap L1 error: {e}")
-        return
-
-    # ── Level 2: 10–19 pending → claude-mcp bootstrappen ───────────────────
-    if pending < 20:
-        last = _last_bootstrap.get("claude-mcp", 0)
-        if now - last < _BOOTSTRAP_COOLDOWN:
-            return
-        _last_bootstrap["claude-mcp"] = now
-        task_msg = (
-            f"[LOAD-ALERT] {pending} unbearbeitete HIGH-Notifications.\n"
-            f"Bitte notify_list aufrufen und die wichtigsten bearbeiten.\n"
-            f"Neuste: {title}"
-        )
-        asyncio.create_task(_send_to_agent("claude-mcp", task_msg))
-        logger.info(f"Load-Bootstrap L2: claude-mcp aktiviert ({pending} pending)")
-        return
-
-    # ── Level 3: 20–49 pending → claude-mcp + gemini-mcp ───────────────────
-    if pending < 50:
-        for agent_id in ("claude-mcp", "gemini-mcp"):
-            last = _last_bootstrap.get(agent_id, 0)
-            if now - last >= _BOOTSTRAP_COOLDOWN:
-                _last_bootstrap[agent_id] = now
-                asyncio.create_task(_send_to_agent(
-                    agent_id,
-                    f"[LOAD-ALERT L3] {pending} HIGH+ Notifications pending. "
-                    f"Koordiniert bearbeiten. {agent_id}: notify_list abrufen und delegieren."
-                ))
-        logger.info(f"Load-Bootstrap L3: claude+gemini aktiviert ({pending} pending)")
-        return
-
-    # ── Level 4: ≥ 50 pending → alle 3 Kern-Agents + 2 Worker ─────────────
-    last = _last_bootstrap.get("swarm", 0)
-    if now - last < _BOOTSTRAP_COOLDOWN:
-        return
-    _last_bootstrap["swarm"] = now
-
-    for agent_id in ("claude-mcp", "gemini-mcp", "codex-mcp"):
-        asyncio.create_task(_send_to_agent(
-            agent_id,
-            f"[SWARM-ALERT L4] {pending} pending HIGH+! Sofort notify_list bearbeiten."
-        ))
-    try:
-        from app.services.agent_spawner import get_agent_spawner
-        spawner = get_agent_spawner()
-        for wtype in ("ops_worker", "ops_worker"):
-            asyncio.create_task(spawner.spawn_for_issue(
-                issue_type=wtype,
-                context=f"Swarm-Mode: {pending} unbearbeitete Notifications.\n{brief}",
-                source="load_bootstrap:level4_swarm",
-            ))
-    except Exception as e:
-        logger.debug(f"Load-Bootstrap L4 worker error: {e}")
-    logger.info(f"Load-Bootstrap L4 SWARM: alle Agents aktiviert ({pending} pending)")

@@ -367,10 +367,25 @@ async def lifespan(app: FastAPI):
     except Exception as _ne:
         logger.warning(f"Nova Engines init failed (nicht kritisch): {_ne}")
 
+    # ── Notification Pollers ──────────────────────────────────────────────
+    try:
+        from .mcp.notification_manager import start_pollers
+        start_pollers()
+        logger.info("Notification Pollers gestartet (Mail/Forum/WordPress)")
+    except Exception as _np:
+        logger.warning(f"Notification Pollers init failed: {_np}")
+
     yield
 
     # Clean up resources on shutdown
     await registry.stop_periodic_refresh()
+
+    # Stop Notification Pollers
+    try:
+        from .mcp.notification_manager import stop_pollers
+        await stop_pollers()
+    except Exception:
+        pass
 
     # Stop TriForce Central Logger
     if _HAS_TRIFORCE_LOGGING:

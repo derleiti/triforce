@@ -525,6 +525,9 @@ class AgentSpawner:
             await asyncio.sleep(60)
 
     async def _process_pending_notifications(self):
+        # v2: Notification dispatch is now handled by notification_manager.py pollers + dispatch engine
+        # This method is kept as no-op for backward compat
+        return
         try:
             from app.mcp.notification_manager import get_notifications, mark_resolved
         except Exception:
