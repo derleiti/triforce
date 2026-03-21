@@ -11,6 +11,7 @@ defined('ABSPATH') || exit;
 
 define('NOVA_AI_BACKEND',     'http://172.18.0.1:9000');
 define('NOVA_AI_LOCAL_BACKEND', 'http://localhost:9000');
+define('NOVA_AI_INTERNAL_KEY',  '7dffc1818b9ee6d35b075b8922d6eecb3c9a5b9bfdf94df6');
 define('NOVA_AI_VERSION',     '6.5.0');
 define('NOVA_AI_PLUGIN_URL',  plugin_dir_url(__FILE__));
 define('NOVA_AI_PLUGIN_DIR',  plugin_dir_path(__FILE__));
@@ -223,7 +224,7 @@ add_action('rest_api_init', function () {
 
 /* ── Core proxy helper ──────────────────────────────────────────────────────── */
 function nova_proxy(string $path, string $method='GET', ?array $body=null): WP_REST_Response {
-    $args = ['method'=>$method,'timeout'=>90,'headers'=>['Content-Type'=>'application/json']];
+    $args = ['method'=>$method,'timeout'=>90,'headers'=>['Content-Type'=>'application/json','X-Internal-Key'=>NOVA_AI_INTERNAL_KEY]];
     if ($body !== null) $args['body'] = wp_json_encode($body);
     $response = wp_remote_request(nova_get_backend_base().$path, $args);
     if (is_wp_error($response)) return new WP_REST_Response(['error'=>$response->get_error_message()], 502);

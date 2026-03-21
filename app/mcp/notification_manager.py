@@ -225,9 +225,13 @@ async def create_event(
     if await _is_duplicate(fp, window):
         count = await _get_dedup_count(fp)
         if source == SRC_SYSTEM and count >= 5 and event_type == "ops.error":
-            event_type = "ops.repeated_error"
-            priority = PRIO_HIGH
-            logger.info(f"DEDUP: {fp} seen {count}x -> promoted to ops.repeated_error")
+            if count == 5:  # promote once, then suppress all further duplicates
+                event_type = "ops.repeated_error"
+                priority = PRIO_HIGH
+                logger.info(f"DEDUP: {fp} seen {count}x -> promoted to ops.repeated_error")
+            else:
+                logger.debug(f"DEDUP: {fp} seen {count}x -> suppressed (already promoted)")
+                return None
         else:
             logger.debug(f"DEDUP: skipped {fp} (seen {count}x)")
             return None
