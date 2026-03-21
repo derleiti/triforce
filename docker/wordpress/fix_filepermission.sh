@@ -149,6 +149,7 @@ if [[ $errors -eq 0 ]]; then
     echo -e "${GREEN}   ✓ Alle Berechtigungen korrekt!${NC}"
 fi
 
+
 # =====================================
 # DONE
 # =====================================

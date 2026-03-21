@@ -13,7 +13,8 @@ import logging
 from datetime import datetime
 
 from ..services.user_tiers import (
-    tier_service, UserTier, FREE_MODELS_OLLAMA, LOCAL_FALLBACK_MODEL
+    tier_service, UserTier, FREE_MODELS_OLLAMA, LOCAL_FALLBACK_MODEL,
+    has_full_access, normalize_tier, is_free_tier,
 )
 from ..services.model_registry import registry
 from ..services.model_availability import availability_service
@@ -99,7 +100,7 @@ def get_user_and_tier_from_headers(
         return x_user_id, tier
     
     # 3. Guest
-    return "anonymous", UserTier.GUEST
+    return "anonymous", UserTier.FREE
 
 
 # Legacy wrapper for compatibility
@@ -349,12 +350,12 @@ async def client_chat(
 
     # User-ID ermitteln (Token hat Priorität)
     user_id, tier = get_user_and_tier_from_headers(authorization, x_user_id)
-    effective_tier = UserTier.ENTERPRISE if DEMO_MODE else tier
-    tier_out = 'demo' if DEMO_MODE else tier.value
+    effective_tier = UserTier.SUBSCRIPTION if DEMO_MODE else normalize_tier(tier.value if hasattr(tier, 'value') else str(tier))
+    tier_out = 'demo' if DEMO_MODE else effective_tier.value
 
-    # DEMO_MODE: disable tier gating (treat everyone as enterprise)
+    # DEMO_MODE: disable tier gating (treat everyone as subscription)
     if DEMO_MODE:
-        tier = UserTier.ENTERPRISE
+        tier = UserTier.SUBSCRIPTION
     logger.debug(f"Chat request: user={user_id}, auth={'yes' if authorization else 'no'}")
 
 
@@ -388,7 +389,7 @@ async def client_chat(
 
     # === GUEST / REGISTERED: Nur Ollama ===
 
-    if (not DEMO_MODE) and tier in (UserTier.GUEST, UserTier.REGISTERED):
+    if (not DEMO_MODE) and is_free_tier(tier):
 
         # Erzwinge Ollama-Prefix
 
@@ -463,7 +464,7 @@ async def client_chat(
 
             # Cloud-Modelle: Token-Limit prüfen (außer Enterprise)
 
-            if effective_tier != UserTier.ENTERPRISE:
+            if not has_full_access(effective_tier):
 
                 limit_check = tier_service.check_token_limit(user_id, model)
 
@@ -575,12 +576,12 @@ async def client_chat(
 
     # Prüfen ob Ollama unlimited (Pro/Enterprise mit Ollama-Modell)
     is_ollama = tier_service.is_ollama_model(model) or backend == "ollama"
-    is_unlimited = (effective_tier in (UserTier.PRO, UserTier.ENTERPRISE) and is_ollama) or effective_tier == UserTier.ENTERPRISE
+    is_unlimited = has_full_access(effective_tier) or (has_full_access(effective_tier) and is_ollama)
 
-    # Tokens tracken - NUR bei erfolgreicher Operation und NICHT für unlimited Ollama
+    # Tokens tracken - NUR bei erfolgreicher Operation und NICHT für unlimited
     if (not DEMO_MODE) and tokens and user_id != "anonymous" and response_text:
-        # Pro mit Ollama = nicht tracken (unlimited)
-        if not (effective_tier == UserTier.PRO and is_ollama):
+        # Subscription = nicht tracken (unlimited)
+        if not has_full_access(effective_tier):
             tier_service.track_tokens(user_id, tokens, model)
 
     return ChatResponse(
@@ -615,7 +616,7 @@ async def get_client_models(
     
     config = tier_service.get_tier_info(tier)
 
-    if (not DEMO_MODE) and tier in (UserTier.GUEST, UserTier.REGISTERED):
+    if (not DEMO_MODE) and is_free_tier(tier):
         # Guest/Registered: Nur Ollama Modelle
         models = FREE_MODELS_OLLAMA
         backend = "ollama"
@@ -640,7 +641,7 @@ async def get_client_models(
         model_count=len(models),
         models=models,
         backend=backend,
-      upgrade_available=(False if DEMO_MODE else (tier in (UserTier.GUEST, UserTier.REGISTERED)))
+      upgrade_available=(False if DEMO_MODE else is_free_tier(tier))
     )
 
 
@@ -675,7 +676,7 @@ async def get_client_tier(
         }
 
     info = tier_service.get_tier_info(tier)
-    info["backend"] = "ollama" if tier == UserTier.GUEST else "openrouter"
+    info["backend"] = "ollama" if is_free_tier(tier) else "openrouter"
     info["user_id"] = user_id  # Für Debug
     return info
 
@@ -709,7 +710,7 @@ async def analyze_file(
     messages = [{"role": "user", "content": prompt}]
 
     # Free: Ollama, Pro+: OpenRouter
-    if tier == UserTier.GUEST:
+    if is_free_tier(tier):
         result = await call_ollama(model, messages)
         backend = "ollama"
     else:

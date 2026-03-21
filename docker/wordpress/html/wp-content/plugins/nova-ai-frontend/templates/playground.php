@@ -55,7 +55,7 @@ $height = $atts["height"] ?? "auto";
             <div class="nova-welcome">
                 <div class="nova-welcome-icon">✨</div>
                 <h3>Nova AI Chat</h3>
-                <p>Powered by 115+ AI Models via TriForce Backend</p>
+                <p>Powered by 617+ AI Models via TriForce Backend</p>
             </div>
         </div>
         <div class="nova-foot">

@@ -251,7 +251,7 @@ class RuntimeToolRegistry:
                 continue
             if inventory and inventory not in {"all", "*", ""} and entry.inventory != inventory:
                 continue
-            if tier in {"free", "demo"} and entry.min_tier != "free":
+            if tier in {"free", "demo", "software"} and entry.min_tier != "free":
                 continue
             if profile == "restricted" and not entry.read_only:
                 continue

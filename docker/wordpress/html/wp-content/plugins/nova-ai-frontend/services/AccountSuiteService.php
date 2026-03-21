@@ -182,7 +182,7 @@ class AccountSuiteService {
         <div class="nas-card nas-card-tier">
           <div class="nas-card-label">Aktueller Plan</div>
           <div class="nas-card-value"><span class="nas-tier-badge nas-tier-<?= esc_attr($tier) ?>"><?= esc_html(strtoupper($tier)) ?></span></div>
-          <?php if ($tier==='free'): ?><a href="https://ailinux.me/shop" class="nas-upgrade-link">⬆ Upgrade auf Pro</a><?php endif; ?>
+          <?php if ($tier==='free'): ?><a href="https://ailinux.me/shop" class="nas-upgrade-link">⬆ Upgrade auf Subscriber (35€/mo)</a><?php endif; ?>
         </div>
         <div class="nas-card"><div class="nas-card-label">E-Mail</div><div class="nas-card-value" style="font-size:.9rem;word-break:break-all"><?= esc_html($user->user_email) ?></div></div>
         <div class="nas-card"><div class="nas-card-label">Client-ID</div><div class="nas-card-value" id="nas-client-id-val" style="font-size:.85rem">Lade…</div></div>
@@ -205,9 +205,8 @@ class AccountSuiteService {
         <div class="nas-cards" id="nas-sub-cards"></div>
         <h3 style="margin:2rem 0 1rem">Plan wechseln</h3>
         <div class="nas-plan-grid">
-          <div class="nas-plan-card"><div class="nas-plan-name">Free</div><div class="nas-plan-price">0 €/mo</div><ul class="nas-plan-features"><li>✅ 33+ lokale Modelle</li><li>✅ Chat &amp; Vision</li><li>✅ MCP Tools</li></ul></div>
-          <div class="nas-plan-card nas-plan-featured"><div class="nas-plan-badge">⭐ Empfohlen</div><div class="nas-plan-name">Pro</div><div class="nas-plan-price">17,99 €/mo</div><ul class="nas-plan-features"><li>✅ 609+ Modelle</li><li>✅ Media Generation</li><li>✅ Priority Support</li><li>✅ Erw. MCP Tools</li></ul><a href="https://ailinux.me/shop" class="nas-btn-primary">Upgraden</a></div>
-          <div class="nas-plan-card"><div class="nas-plan-name">Unlimited</div><div class="nas-plan-price">59,99 €/mo</div><ul class="nas-plan-features"><li>✅ Alles in Pro</li><li>✅ API-Zugang</li><li>✅ Unbegrenzte Agents</li></ul><a href="https://ailinux.me/shop" class="nas-btn-outline">Mehr</a></div>
+          <div class="nas-plan-card"><div class="nas-plan-name">Free</div><div class="nas-plan-price">0 €/mo</div><ul class="nas-plan-features"><li>✅ Ollama + Groq + Gemini</li><li>✅ Chat, Vision, MCP Tools</li><li>✅ Nova Playground</li><li>✅ 200k Token/Woche</li></ul></div>
+          <div class="nas-plan-card nas-plan-featured"><div class="nas-plan-badge">⭐ Empfohlen</div><div class="nas-plan-name">Subscriber</div><div class="nas-plan-price">35 €/mo</div><ul class="nas-plan-features"><li>✅ 600+ Modelle (inkl. GPT-4o, Claude)</li><li>✅ Swarm Intelligence</li><li>✅ Federation-Zugang</li><li>✅ Multi-Agent Tasks</li><li>✅ 5M Token/Woche</li></ul><a href="https://ailinux.me/shop" class="nas-btn-primary">Jetzt abonnieren</a></div>
         </div>
         <div id="nas-cancel-section" style="display:none;margin-top:2rem;padding-top:1.5rem;border-top:1px solid #2a2a3a">
           <h3 style="color:#ef4444;margin-bottom:.5rem">Abo kündigen</h3>

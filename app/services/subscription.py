@@ -1,7 +1,8 @@
 """
-AILinux Subscription v2.1
-FREE       = Ollama + Free-Tier (Gemini, Groq) — grosszuegiges Limit
-SUBSCRIBER = 35EUR/month — alle Modelle + Swarm + Federation-Zugang
+AILinux Subscription v3.0 — Swarm Edition
+FREE         = Ollama + Free-Tier — grosszuegiges Limit
+SUBSCRIPTION = 35EUR/month — alle 600+ Modelle + Swarm CLI
+SOFTWARE     = Einzelkauf-Produkte (Copa OCR etc.) — einmal bezahlt, inkl. Updates
 """
 from __future__ import annotations
 import logging, os
@@ -20,20 +21,30 @@ except Exception as _e:
     _redis = None
 
 class PlanType(str, Enum):
-    DEMO       = "demo"
-    SUBSCRIBER = "subscriber"
+    FREE         = "free"
+    SUBSCRIPTION = "subscription"
+    SOFTWARE     = "software"
+    # Legacy aliases
+    DEMO         = "free"
+    SUBSCRIBER   = "subscription"
 
 # Woechentliche Token-Limits — grosszuegig, Schutz gegen API-Scraper
 WEEKLY_LIMITS = {
-    PlanType.DEMO:       200_000,    # ~40 normale Gespraeche/Woche
-    PlanType.SUBSCRIBER: 5_000_000,  # praktisch unlimitiert
+    PlanType.FREE:         200_000,    # ~40 normale Gespraeche/Woche
+    PlanType.SUBSCRIPTION: 5_000_000,  # praktisch unlimitiert
+    PlanType.SOFTWARE:     200_000,    # wie free (Einzelkauf = kein Abo)
 }
-CONTEXT_LIMITS = {PlanType.DEMO: 8_192, PlanType.SUBSCRIBER: 128_000}
+CONTEXT_LIMITS = {
+    PlanType.FREE: 8_192,
+    PlanType.SUBSCRIPTION: 128_000,
+    PlanType.SOFTWARE: 8_192,
+}
 
 # Free darf alle normalen Tools — gesperrt sind nur:
 # Federation-Nodes (kostet Remote-Ressourcen) und Swarm-Koordination
-DEMO_BLOCKED_TOOLS = {
-    # Federation — nur Subscriber
+# Tools gesperrt fuer free/software (brauchen Server-Ressourcen)
+FREE_BLOCKED_TOOLS = {
+    # Federation — nur Subscription
     "remote_admin", "remote_exec", "remote_task",
     # Swarm ueber Federation
     "mesh_task", "queue_research", "queue_broadcast",
@@ -42,6 +53,8 @@ DEMO_BLOCKED_TOOLS = {
     # Systemaenderungen
     "restart", "service_control", "package_manager",
 }
+# Backward compat
+DEMO_BLOCKED_TOOLS = FREE_BLOCKED_TOOLS
 
 def _iso_week_key(dt): return dt.strftime("%G-W%V")
 def _week_reset_ts():
@@ -93,7 +106,9 @@ class SubscriptionService:
         return self.get_quota(user_id, plan).remaining >= est
 
     def is_tool_allowed(self, tool_name, plan):
-        return not (plan == PlanType.DEMO and tool_name in DEMO_BLOCKED_TOOLS)
+        if plan == PlanType.SUBSCRIPTION:
+            return True  # Subscriber duerfen alles
+        return tool_name not in FREE_BLOCKED_TOOLS
 
     def get_context_limit(self, plan):
         return CONTEXT_LIMITS[plan]
@@ -103,15 +118,19 @@ subscription_service = SubscriptionService()
 def tier_to_plan(tier_str):
     """
     Mappt beliebigen Tier/Role-String auf PlanType.
-    Fail-safe: Unbekannt -> DEMO (kein Abo annehmen).
+    Fail-safe: Unbekannt -> FREE.
     Quelle der Wahrheit fuer alle Komponenten.
     """
     t = (tier_str or "").strip().lower()
-    _subscriber = {"enterprise", "pro", "registered", "subscriber", "paid", "admin", "superuser", "premium"}
-    _demo = {"demo", "free", "guest", "anonymous", "trial", ""}
-    if t in _subscriber:
-        return PlanType.SUBSCRIBER
-    if t in _demo:
-        return PlanType.DEMO
-    logger.warning(f"Unknown tier string '{tier_str}', defaulting to DEMO")
-    return PlanType.DEMO
+    _subscription = {"enterprise", "pro", "subscriber", "paid", "admin",
+                     "superuser", "premium", "subscription", "unlimited"}
+    _software = {"software"}
+    _free = {"demo", "free", "guest", "anonymous", "trial", "registered", ""}
+    if t in _subscription:
+        return PlanType.SUBSCRIPTION
+    if t in _software:
+        return PlanType.SOFTWARE
+    if t in _free:
+        return PlanType.FREE
+    logger.warning(f"Unknown tier string '{tier_str}', defaulting to FREE")
+    return PlanType.FREE

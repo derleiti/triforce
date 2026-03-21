@@ -26,7 +26,7 @@ import uuid
 from datetime import datetime
 from enum import Enum
 
-from ..services.user_tiers import tier_service, UserTier
+from ..services.user_tiers import tier_service, UserTier, has_full_access, is_free_tier, normalize_tier
 from ..services.subscription import tier_to_plan, PlanType, subscription_service
 from ..routes.client_auth import decode_jwt_token
 
@@ -341,19 +341,10 @@ async def websocket_connect(
     
     # Tier: PRIORITAET -> JWT role claim > Query-Param > Vault-Lookup
     # JWT role ist die einzige verlässliche Quelle (kommt vom Login-Server)
-    tier_mapping = {
-        "free": UserTier.GUEST,
-        "guest": UserTier.GUEST,
-        "registered": UserTier.REGISTERED,
-        "pro": UserTier.PRO,
-        "enterprise": UserTier.ENTERPRISE,
-        "admin": UserTier.ENTERPRISE,
-        "subscriber": UserTier.ENTERPRISE,
-    }
     jwt_role = payload.get("role") or payload.get("tier") or ""
     tier_source = jwt_role or tier or ""
-    if tier_source and tier_source.lower() in tier_mapping:
-        resolved_tier = tier_mapping[tier_source.lower()]
+    if tier_source:
+        resolved_tier = normalize_tier(tier_source)
     else:
         resolved_tier = tier_service.get_user_tier(resolved_user_id)
     
@@ -373,7 +364,7 @@ async def websocket_connect(
 
     logger.info(f"Client connected: {client_id} ({resolved_tier.value})")
 
-    # Willkommensnachricht: plan (DEMO/SUBSCRIBER) + tier (legacy) fuer Abwaertskompatibilitaet
+    # Willkommensnachricht: plan + tier
     await websocket.send_json({
         "jsonrpc": "2.0",
         "method": "connected",
@@ -382,7 +373,7 @@ async def websocket_connect(
             "session_id": session_id,
             "user_id": resolved_user_id,
             "plan": resolved_plan.value,
-            "is_paid": resolved_plan == PlanType.SUBSCRIBER,
+            "is_paid": resolved_plan == PlanType.SUBSCRIPTION,
             "tier": resolved_tier.value,
             "context_limit": subscription_service.get_context_limit(resolved_plan),
             "available_tools": list(CLIENT_SIDE_TOOLS.keys()),
@@ -556,8 +547,8 @@ async def call_client_tool(
         raise HTTPException(400, f"Unbekanntes Client-Tool: {request.tool}")
 
     # Enterprise Tier für Dateisystem-Zugriff
-    if connection.tier == UserTier.FREE and request.tool in ["client_file_write", "client_shell_exec"]:
-        raise HTTPException(403, f"Tool '{request.tool}' erfordert Pro oder Enterprise Tier")
+    if is_free_tier(connection.tier) and request.tool in ["client_file_write", "client_shell_exec"]:
+        raise HTTPException(403, f"Tool '{request.tool}' erfordert Subscription")
 
     start_time = datetime.now()
 
@@ -647,8 +638,8 @@ Verfügbare Tools:
 - client_file_read: Datei lesen
 - client_file_list: Verzeichnis auflisten
 - client_codebase_search: Code durchsuchen
-{"- client_file_write: Datei schreiben (Enterprise)" if tier == UserTier.ENTERPRISE else ""}
-{"- client_shell_exec: Shell-Befehl ausführen (Enterprise)" if tier == UserTier.ENTERPRISE else ""}
+{"- client_file_write: Datei schreiben" if has_full_access(tier) else ""}
+{"- client_shell_exec: Shell-Befehl ausführen" if has_full_access(tier) else ""}
 
 Wenn der Benutzer nach Dateien fragt oder Code-Hilfe benötigt,
 nutze die Tools um die relevanten Dateien zu lesen.
@@ -665,7 +656,7 @@ Benutzer-Tier: {tier.value}
     ]
 
     # Erste Antwort
-    if tier == UserTier.FREE:
+    if is_free_tier(tier):
         result = await call_ollama(model, messages)
     else:
         result = await call_openrouter(model, messages)

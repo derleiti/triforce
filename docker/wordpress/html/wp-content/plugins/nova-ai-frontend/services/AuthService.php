@@ -358,6 +358,12 @@ HTML;
             'callback'            => [$this, 'api_sync_user'],
             'permission_callback' => '__return_true',
         ]);
+        // GET: Browser-basierter WP-Login (setzt Cookie cross-domain via Redirect)
+        register_rest_route('nova-ai/v1', '/auth/wp-login', [
+            'methods'             => 'GET',
+            'callback'            => [$this, 'api_wp_login_redirect'],
+            'permission_callback' => '__return_true',
+        ]);
 
         register_rest_route('nova-ai/v1', '/auth/logout', [
             'methods'             => 'POST',
@@ -748,11 +754,13 @@ HTML;
     // =========================================================================
 
     public function enqueue_auth_scripts(): void {
+        $plugin_url = defined('NOV_AI_PLUGIN_URL') ? NOV_AI_PLUGIN_URL : plugin_dir_url(dirname(__FILE__));
+        $plugin_ver = defined('NOV_AI_VERSION')    ? NOV_AI_VERSION    : '1.0.0';
         wp_enqueue_script(
             'ailinux-auth',
-            NOV_AI_PLUGIN_URL . 'assets/js/auth.js',
+            $plugin_url . 'assets/js/auth.js',
             ['jquery'],
-            NOV_AI_VERSION,
+            $plugin_ver,
             true
         );
 
@@ -1012,6 +1020,51 @@ HTML;
 
         return new \WP_REST_Response(['ok' => true, 'updated' => $updated], 200);
     }
+
+    /**
+     * GET /wp-json/nova-ai/v1/auth/wp-login?token=...&email=...&tier=...&redirect=...
+     * Setzt WP-Auth-Cookie und redirectet — löst Cross-Domain SameSite Problem.
+     * Browser navigiert direkt auf ailinux.me, daher Cookie korrekt gesetzt.
+     */
+    public function api_wp_login_redirect(\WP_REST_Request $request) {
+        $token     = sanitize_text_field($request->get_param('token'));
+        $email     = sanitize_email($request->get_param('email'));
+        $tier      = sanitize_text_field($request->get_param('tier') ?: 'free');
+        $name      = sanitize_text_field($request->get_param('name') ?: '');
+        $redirect  = esc_url_raw($request->get_param('redirect') ?: home_url('/'));
+        $client_id = sanitize_text_field($request->get_param('client_id') ?: '');
+
+        if (!$token || !$email) {
+            wp_redirect(home_url('/') . '?login_error=missing_params');
+            exit;
+        }
+
+        $verified = $this->verify_ailinux_token($email, $token);
+        if (!$verified) {
+            wp_redirect(home_url('/') . '?login_error=invalid_token');
+            exit;
+        }
+
+        $user_id = $this->ensure_wp_user($email, $name);
+        if (is_wp_error($user_id)) {
+            wp_redirect(home_url('/') . '?login_error=user_error');
+            exit;
+        }
+
+        $verified_tier = $this->extract_ailinux_field($verified, ['tier', 'plan', 'subscription']);
+        update_user_meta($user_id, 'nova_tier',          self::normalize_tier_value($verified_tier ?: $tier));
+        update_user_meta($user_id, 'nova_session_token', $token);
+        update_user_meta($user_id, 'nova_ailinux_email', $email);
+        if ($client_id) update_user_meta($user_id, 'nova_client_id', $client_id);
+
+        wp_set_current_user($user_id);
+        wp_set_auth_cookie($user_id, true);
+
+        $safe = (strpos($redirect, home_url()) === 0) ? $redirect : home_url('/');
+        wp_redirect($safe);
+        exit;
+    }
+
 }
 
 // =========================================================================
@@ -1019,4 +1072,4 @@ HTML;
 // =========================================================================
 add_action('init', function () {
     AuthService::instance();
-}, 5);
+});

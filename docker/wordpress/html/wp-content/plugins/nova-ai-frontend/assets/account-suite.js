@@ -9,10 +9,10 @@ const TIER_LABELS={free:'FREE',pro:'PRO',enterprise:'ENTERPRISE',unlimited:'UNLI
 const TIER_CLASS={free:'nas-tier-free',pro:'nas-tier-pro',enterprise:'nas-tier-enterprise',unlimited:'nas-tier-unlimited',admin:'nas-tier-admin',paid:'nas-tier-paid'};
 const TIER_FEATURES={
   free:['33+ lokale Modelle (Ollama)','Chat & Vision Analyse','Community Support','AILinux Beta-Zugang'],
-  paid:['609+ AI-Modelle (9 Provider)','Media Generation (Bild & Video)','Priority Support','Vollständige MCP Tools','Unbegrenzte API-Zugriffe'],
-  pro:['609+ AI-Modelle (9 Provider)','Media Generation (Bild & Video)','Priority Support','Vollständige MCP Tools','Unbegrenzte API-Zugriffe'],
-  enterprise:['Alle 609+ Modelle','Voller Admin-Zugriff','134 MCP Tools','System-Kontrolle','Vault & CLI-Agents','Dedicated Support'],
-  admin:['Alle 609+ Modelle','Voller Admin-Zugriff','134 MCP Tools','System-Kontrolle','Vault & CLI-Agents','Dedicated Support'],
+  paid:['617+ AI-Modelle (9 Provider)','Media Generation (Bild & Video)','Priority Support','Vollständige MCP Tools','Unbegrenzte API-Zugriffe'],
+  pro:['617+ AI-Modelle (9 Provider)','Media Generation (Bild & Video)','Priority Support','Vollständige MCP Tools','Unbegrenzte API-Zugriffe'],
+  enterprise:['Alle 617+ Modelle','Voller Admin-Zugriff','288+ MCP Tools','System-Kontrolle','Vault & CLI-Agents','Dedicated Support'],
+  admin:['Alle 617+ Modelle','Voller Admin-Zugriff','288+ MCP Tools','System-Kontrolle','Vault & CLI-Agents','Dedicated Support'],
   unlimited:['Alles in Pro','Unbegrenzte Agents','Codebase Tools','Dedicated Support']
 };
 function tierLabel(t){return TIER_LABELS[t?.toLowerCase()]||t?.toUpperCase()||'FREE'}

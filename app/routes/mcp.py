@@ -541,7 +541,30 @@ async def handle_llm_invoke(params: Dict[str, Any]) -> Dict[str, Any]:
     
     if not model_id:
         model_id = "gemini/gemini-2.0-flash"
-    
+
+    # ── Free-Tier Model Filter ─────────────────────────────────────────────
+    # Free-User dürfen nur Ollama + Groq + Gemini Free nutzen.
+    # Wird aus dem Request-Kontext gelesen (MCP setzt _caller_tier via middleware).
+    _caller_tier = params.get("_caller_tier", "")
+    if not _caller_tier:
+        # Fallback: aus Request-State wenn verfügbar
+        try:
+            from starlette.requests import Request as _Req
+            import contextvars as _cv
+            _req_ctx = _cv.copy_context()
+        except Exception:
+            pass
+
+    _FREE_BLOCKED_PROVIDERS = {"anthropic", "openai", "azure", "mistral", "cohere"}
+    _is_free = str(_caller_tier).lower() in {"free", "demo", "guest", "anonymous", "trial", "", "software"}
+
+    if _is_free and "/" in str(model_id):
+        _provider = model_id.split("/")[0].lower()
+        if _provider in _FREE_BLOCKED_PROVIDERS:
+            # Fallback auf schnelles kostenloses Modell
+            model_id = "gemini/gemini-2.0-flash"
+            logger.info(f"Free-tier: model redirected → {model_id}")
+
     # Auto-prefix: wenn kein Provider angegeben, versuche bekannte Prefixe
     if "/" not in model_id:
         for prefix in ["gemini", "ollama", "mistral", "groq", "anthropic", "openrouter"]:
@@ -2509,6 +2532,15 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
     # Apache (172.18.x) ist Reverse-Proxy fuer externe Requests (api.ailinux.me).
     # Docker-IP != externer Client — Auth-Layer reicht.
 
+    # ── Swarm Tool-Policy: memory_store + vault nur für Admin ──
+    from ..services.user_tiers import is_tool_allowed_for_role
+    _swarm_role = (request_meta or {}).get("account_role", "admin")
+    if not is_tool_allowed_for_role(canonical_name, _swarm_role):
+        return {
+            "error": f"Tool '{canonical_name}' ist nur für Admins verfügbar.",
+            "account_role": _swarm_role,
+        }
+
     proposal = None
     if should_convert_to_proposal and should_convert_to_proposal(canonical_name):
         proposal = build_proposal_response(canonical_name, sanitized_arguments)
@@ -2974,7 +3006,9 @@ import logging
 _mcp_logger = logging.getLogger("ailinux.mcp.security")
 
 BACKEND_ROOT = Path("/home/zombie/triforce")
-ALLOWED_EXTENSIONS = {".py", ".md", ".json", ".yaml", ".yml", ".toml", ".txt", ".env.example", ".js", ".ts", ".jsx", ".tsx", ".sh", ".html", ".css", ".conf", ".ini", ".cfg"}
+ALLOWED_EXTENSIONS = {".py", ".md", ".json", ".yaml", ".yml", ".toml", ".txt", ".env.example", ".js", ".ts", ".jsx", ".tsx", ".sh", ".html", ".css", ".conf", ".ini", ".cfg", ".xml", ".csv", ".sql", ".log", ".rst", ".patch", ".diff"}
+# Dateien ohne Extension die erlaubt sind (VERSION, Makefile, Dockerfile, etc.)
+ALLOWED_EXTENSIONLESS = {"VERSION", "Makefile", "Dockerfile", "LICENSE", "CHANGELOG", "README", "PKGBUILD", "Procfile", "Gemfile", "Rakefile", ".gitignore", ".dockerignore", ".env"}
 
 # Sensitive paths that should never be accessed
 BLOCKED_PATHS = {
@@ -3066,7 +3100,7 @@ async def handle_codebase_structure(params: Dict[str, Any]) -> Dict[str, Any]:
                     continue
                 if item.is_file() and not include_files:
                     continue
-                if item.is_file() and item.suffix not in ALLOWED_EXTENSIONS:
+                if item.is_file() and item.suffix not in ALLOWED_EXTENSIONS and item.name not in ALLOWED_EXTENSIONLESS:
                     continue
                 filtered_items.append(item)
 
@@ -3104,7 +3138,7 @@ async def handle_codebase_file(params: Dict[str, Any]) -> Dict[str, Any]:
     if not safe_path or not safe_path.exists():
         raise ValueError(f"File not found: {file_path}")
 
-    if safe_path.suffix not in ALLOWED_EXTENSIONS:
+    if safe_path.suffix not in ALLOWED_EXTENSIONS and safe_path.name not in ALLOWED_EXTENSIONLESS:
         raise ValueError(f"File type not allowed: {safe_path.suffix}")
 
     if safe_path.stat().st_size > 500_000:  # 500KB limit
@@ -3418,7 +3452,7 @@ async def handle_codebase_edit(params: Dict[str, Any]) -> Dict[str, Any]:
     if not safe_path.exists():
         raise ValueError(f"File not found: {file_path}")
 
-    if safe_path.suffix not in ALLOWED_EXTENSIONS:
+    if safe_path.suffix not in ALLOWED_EXTENSIONS and safe_path.name not in ALLOWED_EXTENSIONLESS:
         raise ValueError(f"File type not allowed for editing: {safe_path.suffix}")
 
     # Read current content
@@ -3561,7 +3595,7 @@ async def handle_codebase_create(params: Dict[str, Any]) -> Dict[str, Any]:
     if safe_path.exists():
         raise ValueError(f"File already exists: {file_path}. Use codebase.edit to modify.")
 
-    if safe_path.suffix not in ALLOWED_EXTENSIONS:
+    if safe_path.suffix not in ALLOWED_EXTENSIONS and safe_path.name not in ALLOWED_EXTENSIONLESS:
         raise ValueError(f"File type not allowed: {safe_path.suffix}")
 
     # Use template if specified

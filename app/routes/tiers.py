@@ -1,6 +1,6 @@
 """
 AILinux Tier & Subscription API Routes v4.1
-FREE / PAID only — 35 €/month subscription
+FREE / SUBSCRIPTION / SOFTWARE — Swarm Edition
 FIX BE#19 2026-03-11: model_count: Union[int, str] statt object — kein Pydantic ResponseValidationError
 """
 from fastapi import APIRouter, HTTPException, Header, Depends
@@ -19,7 +19,7 @@ from pathlib import Path
 
 from ..services.user_tiers import (
     tier_service, UserTier, TIER_CONFIGS, normalize_tier,
-    FREE_MODELS, OLLAMA_MODELS,
+    FREE_MODELS, OLLAMA_MODELS, has_full_access,
 )
 
 router = APIRouter(prefix="/tiers", tags=["Tiers & Pricing"])
@@ -147,7 +147,7 @@ async def get_free_models():
 @router.get("/models/all", response_model=ModelListResponse)
 async def get_all_models():
     """Alle Modelle (nur für PAID) — FIX BE#19: war 'all' String → -1 als Sentinel"""
-    return {"tier": "paid", "model_count": -1, "models": "all"}
+    return {"tier": "subscription", "model_count": -1, "models": "all"}
 
 
 @router.post("/check-model")
@@ -158,7 +158,7 @@ async def check_model_access(user_id: str, model: str):
     result = {"user_id": user_id, "model": model, "allowed": allowed, "user_tier": tier.value}
     if not allowed:
         result["upgrade_required"] = True
-        result["message"] = f"'{model}' erfordert AILinux Pro (35€/Monat). Aktuell: {tier.value}"
+        result["message"] = f"'{model}' erfordert Swarm Subscription (35€/Monat). Aktuell: {tier.value}"
         result["upgrade_url"] = "https://ailinux.me/shop"
     return result
 
@@ -173,12 +173,12 @@ async def subscribe(req: SubscribeRequest, _: None = Depends(_require_internal_k
     """
     expires = datetime.now() + timedelta(days=30 * req.duration_months)
 
-    tier_service.set_user_tier(req.user_id, UserTier("paid"), expires)
+    tier_service.set_user_tier(req.user_id, UserTier("subscription"), expires)
 
     sub_data = {
         "user_id": req.user_id,
         "email": req.email or "",
-        "tier": "paid",
+        "tier": "subscription",
         "status": "active",
         "payment_provider": req.payment_provider or "lemonsqueezy",
         "payment_ref": req.payment_ref or "",
@@ -192,10 +192,10 @@ async def subscribe(req: SubscribeRequest, _: None = Depends(_require_internal_k
     return {
         "success": True,
         "user_id": req.user_id,
-        "tier": "paid",
-        "tier_name": "AILinux Pro",
+        "tier": "subscription",
+        "tier_name": "Swarm Subscription",
         "expires": expires.isoformat(),
-        "message": "Willkommen bei AILinux Pro! 🎉",
+        "message": "Willkommen bei Swarm! 🎉",
     }
 
 
@@ -203,7 +203,7 @@ async def subscribe(req: SubscribeRequest, _: None = Depends(_require_internal_k
 async def cancel_subscription(req: CancelRequest, _: None = Depends(_require_internal_key)):
     """Subscription kündigen — User wird am Ablaufdatum auf FREE gesetzt."""
     sub = _load_sub(req.user_id)
-    if not sub or sub.get("tier") != "paid":
+    if not sub or sub.get("tier") not in ("paid", "subscription"):
         raise HTTPException(404, "Keine aktive Subscription gefunden")
 
     sub["status"] = "cancelled"
@@ -240,7 +240,7 @@ async def get_subscription_status(user_id: str):
         try:
             if datetime.fromisoformat(expires_at) < datetime.now():
                 is_expired = True
-                if tier == UserTier("paid"):
+                if has_full_access(tier):
                     tier_service.set_user_tier(user_id, UserTier("free"))
         except ValueError:
             pass

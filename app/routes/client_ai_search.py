@@ -194,7 +194,7 @@ async def client_ai_search(
     package = _build_optimized_query(request)
     user_id, tier = get_user_and_tier_from_headers(authorization, x_user_id)
     if tier is None:
-        tier = UserTier.GUEST
+        tier = UserTier.FREE
     max_results = min(MAX_RESULTS_CAP, max(5, int(request.rank_limit)))
     search_data = await multi_search_extended(
         query=package["optimized_query"],

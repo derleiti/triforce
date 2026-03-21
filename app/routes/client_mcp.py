@@ -13,7 +13,7 @@ import os
 import logging
 from pathlib import Path
 
-from ..services.user_tiers import tier_service, UserTier
+from ..services.user_tiers import tier_service, UserTier, has_full_access, is_free_tier
 from ..services.subscription import subscription_service, PlanType, tier_to_plan, DEMO_BLOCKED_TOOLS
 from ..services.user_system.user_manager import user_manager
 from ..routes.client_auth import decode_jwt_token, CLIENT_REGISTRY
@@ -75,7 +75,7 @@ def get_tools_for_tier(tier: UserTier, node_id: Optional[str] = None) -> List[st
     if tools:
         return tools
     plan = tier_to_plan(tier_name)
-    if plan == PlanType.DEMO:
+    if plan in (PlanType.FREE, PlanType.SOFTWARE):
         return FREE_TIER_TOOLS
     return ENTERPRISE_TIER_TOOLS
 
@@ -354,8 +354,8 @@ async def get_client_permissions(ctx: Dict = Depends(get_client_context)):
             "bash_exec": ctx["allow_bash"],
         },
         "upgrade_info": {
-            "can_upgrade": tier != UserTier.ENTERPRISE,
-            "next_tier": "pro" if tier == UserTier.FREE else "enterprise",
+            "can_upgrade": not has_full_access(tier),
+            "next_tier": "subscription" if is_free_tier(tier) else None,
             "benefits": _get_upgrade_benefits(tier)
         }
     }
@@ -363,19 +363,13 @@ async def get_client_permissions(ctx: Dict = Depends(get_client_context)):
 
 def _get_upgrade_benefits(current_tier: UserTier) -> List[str]:
     """Zeigt Vorteile des nächsten Tiers"""
-    if current_tier == UserTier.FREE:
+    if is_free_tier(current_tier):
         return [
-            "Web-Search & Smart-Search",
-            "Codebase-Analyse",
-            "Memory-Funktionen",
-            "Alle Cloud-KI-Modelle (Claude, GPT, Grok)",
-        ]
-    elif current_tier == UserTier.PRO:
-        return [
-            "Dateisystem Lesen/Schreiben",
-            "Shell-Zugriff",
-            "Admin-Tools",
+            "600+ AI Models (Claude, GPT, Gemini, Mistral, ...)",
+            "Swarm CLI Vollzugang",
+            "Alle MCP Tools",
             "Priority Queue",
+            "Priority Support",
         ]
     return []
 
@@ -396,7 +390,7 @@ async def grant_file_access(
 
     Nur für Enterprise-Tier oder Admin-Clients
     """
-    if ctx["tier"] != UserTier.ENTERPRISE:
+    if not has_full_access(ctx["tier"]):
         raise HTTPException(403, "Enterprise Tier erforderlich")
 
     # User für target_client finden
@@ -439,7 +433,7 @@ async def grant_bash_access(
     """
     Admin: Gewährt/entzieht Shell-Zugriff für einen Client
     """
-    if ctx["tier"] != UserTier.ENTERPRISE:
+    if not has_full_access(ctx["tier"]):
         raise HTTPException(403, "Enterprise Tier erforderlich")
 
     parts = target_client_id.split("_")

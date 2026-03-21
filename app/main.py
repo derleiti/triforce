@@ -366,8 +366,6 @@ async def lifespan(app: FastAPI):
         logger.info("Nova Engines gestartet: Content-Engine + Research-Loop")
     except Exception as _ne:
         logger.warning(f"Nova Engines init failed (nicht kritisch): {_ne}")
-    except Exception as e:
-        logger.warning(f"Group Chat recovery init failed: {e}")
 
     yield
 

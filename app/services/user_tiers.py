@@ -19,13 +19,15 @@ from pathlib import Path
 
 class UserTier(str, Enum):
     FREE = "free"
-    PAID = "paid"
+    SUBSCRIPTION = "subscription"  # Monatlich kündbar, Swarm-Vollzugang
+    SOFTWARE = "software"          # Einzelkauf-Produkte (Copa etc.)
 
     # Backward-compat aliases — all resolve via normalize_tier()
     GUEST      = "guest"
     REGISTERED = "registered"
     PRO        = "pro"
     ENTERPRISE = "enterprise"
+    PAID       = "paid"
 
 
 # ─── Map legacy values to canonical tier ─────────────────────────────────────
@@ -33,23 +35,40 @@ _LEGACY_TO_CANONICAL: Dict[str, str] = {
     "guest":         "free",
     "registered":    "free",
     "free":          "free",
-    "pro":           "paid",
-    "enterprise":    "paid",
-    "admin":         "paid",   # FIX S20: admin tier maps to paid access
-    "nova_beta":     "paid",
-    "tier1":         "paid",
-    "tier2":         "paid",
-    "tier3":         "paid",
-    "nova_lifetime": "paid",
-    "unlimited":     "paid",
-    "paid":          "paid",
+    "pro":           "subscription",
+    "enterprise":    "subscription",
+    "admin":         "subscription",
+    "nova_beta":     "subscription",
+    "tier1":         "subscription",
+    "tier2":         "subscription",
+    "tier3":         "subscription",
+    "nova_lifetime": "subscription",
+    "unlimited":     "subscription",
+    "paid":          "subscription",
+    "subscription":  "subscription",
+    "software":      "software",
 }
 
 
 def normalize_tier(raw: str) -> UserTier:
-    """Always returns FREE or PAID. Falls back to FREE for unknown values."""
+    """Always returns FREE, SUBSCRIPTION, or SOFTWARE. Falls back to FREE."""
     canonical = _LEGACY_TO_CANONICAL.get((raw or "").lower(), "free")
     return UserTier(canonical)
+
+
+def has_full_access(tier) -> bool:
+    """True wenn Tier vollen Modell-Zugang hat (Subscription oder Admin).
+    Akzeptiert UserTier, str, oder jeden Legacy-Wert.
+    Ersetzt alle alten Checks wie: tier == UserTier.ENTERPRISE / PRO / PAID
+    """
+    raw = tier.value if hasattr(tier, "value") else str(tier)
+    return normalize_tier(raw) == UserTier.SUBSCRIPTION
+
+
+def is_free_tier(tier) -> bool:
+    """True wenn Tier nur Ollama-Modelle hat (Free oder Software ohne Abo)."""
+    raw = tier.value if hasattr(tier, "value") else str(tier)
+    return normalize_tier(raw) in (UserTier.FREE, UserTier.SOFTWARE)
 
 
 @dataclass
@@ -169,35 +188,53 @@ TIER_CONFIGS: Dict[str, TierConfig] = {
         cli_agents=True,
         priority_queue=False,
         support_level="community",
-        daily_token_limit=0,         # Ollama = unlimited
+        daily_token_limit=0,
         ollama_unlimited=True,
         features=[
             f"{len(OLLAMA_MODELS)} Ollama + Small Models",
             "Unlimited Ollama Tokens",
             "MCP Tools ✓",
-            "AILinux Client ✓",
             "Community Support",
             "🐻 Brumo dabei",
         ],
     ),
-    "paid": TierConfig(
-        name="paid",
-        display_name="AILinux Pro",
+    "subscription": TierConfig(
+        name="subscription",
+        display_name="Swarm Subscription",
         price_monthly=35.0,
         models="all",
         mcp_access=True,
         cli_agents=True,
         priority_queue=True,
         support_level="priority",
-        daily_token_limit=0,         # Unlimited
+        daily_token_limit=0,
         ollama_unlimited=True,
         features=[
             "600+ AI Models",
             "Unlimited Tokens",
-            "Priority Queue ✓",
+            "Swarm CLI ✓",
             "All MCP Tools ✓",
-            "Full AILinux Client ✓",
+            "Priority Queue ✓",
             "Priority Support",
+            "🐻 Brumo dabei",
+        ],
+    ),
+    "software": TierConfig(
+        name="software",
+        display_name="Software License",
+        price_monthly=0.0,  # Einmalkauf, keine monatliche Gebühr
+        models="ollama_only",
+        mcp_access=True,
+        cli_agents=True,
+        priority_queue=False,
+        support_level="community",
+        daily_token_limit=0,
+        ollama_unlimited=True,
+        features=[
+            "Gekaufte Software inkl. Updates",
+            f"{len(OLLAMA_MODELS)} Ollama + Small Models",
+            "MCP Tools ✓",
+            "Community Support",
             "🐻 Brumo dabei",
         ],
     ),
@@ -272,7 +309,7 @@ class UserTierService:
         }
 
     def get_all_tiers(self) -> List[Dict]:
-        return [self.get_tier_info(UserTier(t)) for t in ("free", "paid")]
+        return [self.get_tier_info(UserTier(t)) for t in ("free", "subscription", "software")]
 
     # ── Model access ─────────────────────────────────────────────────────────
 
@@ -351,6 +388,44 @@ class UserTierService:
             "unlimited": True,
             "ollama_unlimited": True,
         }
+
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# Swarm Tool-Policy — Einfach
+# ═══════════════════════════════════════════════════════════════════════
+# ALLE Tools sind für ALLE verfügbar (Admin, ChatGPT, Claude, Swarm-Client).
+# Einzige Ausnahmen: memory_store und vault_* → nur Admin.
+#
+# Bei Swarm-Clients: Output wird lokal auf dem Client gespeichert,
+# nicht auf dem Server-Dateisystem. Das regelt der swarm CLI Client-seitig.
+
+# Tools die NUR für Admins sind (Schreibzugriff auf sensitive Server-Daten)
+ADMIN_ONLY_TOOLS: set = {
+    "memory_store",      # Server-Memory schreiben
+    "vault_add",         # Secrets schreiben
+    "vault_remove_key",  # Secrets löschen
+    "vault_unlock",      # Vault entsperren
+    "vault_lock",        # Vault sperren
+}
+
+
+def is_tool_allowed_for_role(tool_name: str, account_role: str) -> bool:
+    """Prüft ob ein Tool für eine Rolle erlaubt ist.
+    Alle Tools offen — ausser memory_store und vault_* für Clients.
+    """
+    if account_role == "admin":
+        return True
+    return tool_name not in ADMIN_ONLY_TOOLS
+
+
+def get_tool_mode(tool_name: str, account_role: str) -> str:
+    """Bestimmt ob Tool erlaubt oder geblockt ist.
+    Returns: "admin" (erlaubt) oder "blocked"
+    """
+    if is_tool_allowed_for_role(tool_name, account_role):
+        return "admin"
+    return "blocked"
 
 
 tier_service = UserTierService()

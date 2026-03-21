@@ -1,0 +1,12 @@
+[Unit]
+Description=TriForce Federation Token Rotation
+After=network.target triforce.service
+Requires=triforce.service
+
+[Service]
+Type=oneshot
+User=zombie
+WorkingDirectory=/home/zombie/triforce
+ExecStart=/home/zombie/triforce/scripts/federation-token-rotate.sh
+StandardOutput=journal
+StandardError=journal

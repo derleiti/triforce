@@ -96,6 +96,8 @@ ALLOWED_EXTENSIONS = {
     ".hs", ".lhs", ".ml", ".mli", ".fs", ".fsi", ".fsx",  # Functional
     ".coffee", ".litcoffee",  # CoffeeScript
 }
+# Dateien ohne Extension die erlaubt sind
+ALLOWED_EXTENSIONLESS = {"VERSION", "Makefile", "Dockerfile", "LICENSE", "CHANGELOG", "README", "PKGBUILD", "Procfile", "Gemfile", "Rakefile", ".gitignore", ".dockerignore", ".env", ".editorconfig"}
 BLOCKED_PATHS = {
     ".env", ".git", ".ssh", "secrets", "credentials",
     "__pycache__", ".venv", "node_modules", ".claude",
@@ -901,7 +903,7 @@ async def handle_codebase_structure(params: Dict[str, Any]) -> Dict[str, Any]:
                     continue
                 if item.is_file() and not include_files:
                     continue
-                if item.is_file() and item.suffix not in ALLOWED_EXTENSIONS:
+                if item.is_file() and item.suffix not in ALLOWED_EXTENSIONS and item.name not in ALLOWED_EXTENSIONLESS:
                     continue
                 filtered_items.append(item)
 
@@ -938,7 +940,7 @@ async def handle_codebase_file(params: Dict[str, Any]) -> Dict[str, Any]:
     if not safe_path or not safe_path.exists():
         raise ValueError(f"File not found: {file_path}")
 
-    if safe_path.suffix not in ALLOWED_EXTENSIONS:
+    if safe_path.suffix not in ALLOWED_EXTENSIONS and safe_path.name not in ALLOWED_EXTENSIONLESS:
         raise ValueError(f"File type not allowed: {safe_path.suffix}")
 
     if safe_path.stat().st_size > 500_000:  # 500KB limit
@@ -974,7 +976,7 @@ async def handle_codebase_search(params: Dict[str, Any]) -> Dict[str, Any]:
     for py_file in safe_root.rglob(file_pattern):
         if "__pycache__" in str(py_file):
             continue
-        if py_file.suffix not in ALLOWED_EXTENSIONS:
+        if py_file.suffix not in ALLOWED_EXTENSIONS and py_file.name not in ALLOWED_EXTENSIONLESS:
             continue
 
         try:
@@ -1146,7 +1148,7 @@ async def handle_codebase_edit(params: Dict[str, Any]) -> Dict[str, Any]:
     if not safe_path.exists():
         raise ValueError(f"File not found: {file_path}")
 
-    if safe_path.suffix not in ALLOWED_EXTENSIONS:
+    if safe_path.suffix not in ALLOWED_EXTENSIONS and safe_path.name not in ALLOWED_EXTENSIONLESS:
         raise ValueError(f"File type not allowed for editing: {safe_path.suffix}")
 
     try:

@@ -2345,46 +2345,26 @@ async def mcp_rpc_endpoint(request: Request):
 
     elif method == "tools/list":
         runtime_registry = get_runtime_registry()
-        tools_result = runtime_registry.list_tools(remote_only=True)
+
+        # ALLE Tools für ALLE — kein Filter, kein remote_only
+        tools_result = runtime_registry.list_tools(remote_only=False)
         if not tools_result:
             tools_result = get_tools() + _V4_ALIAS_TOOLS
 
-        # Filter tools by default to reduce token count (85 tools = 28K tokens!)
-        # Use X-TriForce-All: true header to get all tools
-        show_all = request.headers.get("X-TriForce-All", "").lower() == "true"
-        if not show_all:
-            # Essential tools only (reduces to ~15 tools, ~5K tokens)
-            essential_tools = [
-                # Core
-                "chat", "models", "search", "fetch", "specialist", "health", "status",
-                # Agent Control
-                "agents", "agent_call", "agent_broadcast",
-                # Codebase
-                "code_tree", "code_read", "code_search",
-                # Memory
-                "memory_search", "memory_store",
-                # AI Access
-                "gemini_research", "gemini_quick", "ollama_list", "ollama_run",
-                # v2.82 Read-Only Diagnostics
-                "safe_probe", "agent_review", "service_status",
-                "container_status", "file_read", "remote_status",
-                "system_info", "log_viewer", "network_info", "process_control",
-                "mcp_telemetry", "mcp_analytics",
-                # Admin (write-capable)
-                "shell", "task_runner", "binary_exec", "custom_exec",
-                "service_control", "container_control", "file_ops",
-                "package_manager", "remote_admin",
-                "code_edit", "code_patch",
-                "remote_hosts", "binary_list", "template_list", "task_reference",
-                "config", "config_set",
-                "crawl",
-                # Extended Search
-                "smart_search", "multi_search",
-            ]
-            tools_result = [t for t in tools_result if t.get("name") in essential_tools]
-
         # Inject MCP annotations for ChatGPT compatibility
         tools_result = _inject_annotations(tools_result)
+
+        # Einzige Einschränkung: memory_store + vault für non-admin Swarm-Clients
+        _auth_header = request.headers.get("Authorization", "")
+        if _auth_header.startswith("Bearer ") and "." in _auth_header[7:]:
+            try:
+                from .client_auth import decode_jwt_token
+                from ..services.user_tiers import ADMIN_ONLY_TOOLS
+                _jwt_payload = decode_jwt_token(_auth_header[7:].strip())
+                if _jwt_payload.get("account_role") == "client":
+                    tools_result = [t for t in tools_result if t.get("name", "") not in ADMIN_ONLY_TOOLS]
+            except Exception:
+                pass
 
         latency_ms = (_time.time() - start_time) * 1000
         await multi_logger.log_mcp(method, params, {"tools_count": len(tools_result)}, latency_ms)
@@ -2401,6 +2381,24 @@ async def mcp_rpc_endpoint(request: Request):
         from ..utils.tool_normalizer import normalize_tool_name as _norm_tool
         tool_name = _norm_tool(params.get("name", ""))
         arguments = params.get("arguments", {})
+
+        # ── Swarm Tool-Policy: memory_store + vault nur für Admin ──
+        from ..services.user_tiers import is_tool_allowed_for_role
+        _account_role = getattr(request.state, "account_role", "admin")
+        # Basic Auth (internal/oauth_client) = admin
+        _auth_user = getattr(request.state, "mcp_auth_user", "internal")
+        if _auth_user in ("internal", "oauth_client", MCP_AUTH_USER):
+            _account_role = "admin"
+
+        if not is_tool_allowed_for_role(tool_name, _account_role):
+            return JSONResponse(
+                content={
+                    "jsonrpc": "2.0",
+                    "error": {"code": -32600, "message": f"Tool '{tool_name}' ist nur für Admins verfügbar."},
+                    "id": req_id
+                },
+                headers=response_headers
+            )
 
         runtime_registry = get_runtime_registry()
         handler = runtime_registry.get_handler(tool_name) or TOOL_HANDLERS.get(tool_name)

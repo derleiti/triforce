@@ -1,0 +1,11 @@
+[Unit]
+Description=TriForce Federation Token Rotation (täglich 03:00)
+Requires=triforce-federation-rotate.service
+
+[Timer]
+OnCalendar=*-*-* 03:00:00
+Persistent=true
+RandomizedDelaySec=300
+
+[Install]
+WantedBy=timers.target
