@@ -390,8 +390,8 @@ class FederationLoadBalancer:
                         token = payload.get("token", "")
                         
                         # Verify token against vault
-                        from .federation_vault import FederationVault
-                        vault = FederationVault()
+                        from .federation_vault import get_federation_vault
+                        vault = get_federation_vault()
                         if not vault.verify_token(peer_id, token):
                             logger.warning(f"HELLO rejected: invalid token for node {peer_id}")
                             await websocket.close(4001, "Authentication failed")

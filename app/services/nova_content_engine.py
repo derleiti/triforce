@@ -106,7 +106,9 @@ async def _generate(topic: str, platform: str) -> Optional[dict]:
             "Respond ONLY with JSON (no backticks): "
             '{"title":"...","content":"...","tags":["t1","t2"]}'
         )
-        sid = await spawner.spawn_for_issue(issue_type="content_agent", context=prompt, source="content_engine")
+        result = await spawner.spawn_for_issue(issue_type="content_agent", context=prompt, source="content_engine")
+        if not result: return None
+        sid = result.get("session_id") if isinstance(result, dict) else result
         if not sid: return None
         for _ in range(36):
             await asyncio.sleep(5)
