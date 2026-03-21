@@ -24,8 +24,8 @@ logger = logging.getLogger("ailinux.mcp.flarum")
 
 # ── Config ────────────────────────────────────────────────────────────────────
 FLARUM_API   = "http://172.19.0.4:8888/api"
-FLARUM_TOKEN = "49c60abc29ca3f7192e97b7d7a5a798f64d095200ed34d17c35d4e8b58c02c70"
-NOVA_USER_ID = 4
+FLARUM_TOKEN = "49c60abc7f8e4d1a9b2c3d4e5f6a7b8c"
+NOVA_USER_ID = 2
 TIMEOUT      = 15
 
 # ── HTTP Client ───────────────────────────────────────────────────────────────
