@@ -2397,6 +2397,17 @@ async def mcp_rpc_endpoint(request: Request):
         # Inject MCP annotations for ChatGPT compatibility
         tools_result = _inject_annotations(tools_result)
 
+        # Cap tools for agents with function declaration limits (Gemini API: max 512)
+        # CLI agents add ~50-100 built-in tools, so cap MCP tools at 400
+        _user_agent = request.headers.get("user-agent", "").lower()
+        _max_tools = 400  # default safe cap
+        if "gemini" in _user_agent or "google" in _user_agent:
+            _max_tools = 250  # Gemini CLI adds ~200+ built-in tools
+        if len(tools_result) > _max_tools:
+            # Prioritize: keep tools with shorter names (core tools) over aliases
+            tools_result = sorted(tools_result, key=lambda t: len(t.get("name", "")))[:_max_tools]
+            logger.info(f"tools/list capped to {_max_tools} (was {len(tools_result) + (len(tools_result) - _max_tools)})")
+
         # Einzige Einschränkung: memory_store + vault für non-admin Swarm-Clients
         _auth_header = request.headers.get("Authorization", "")
         if _auth_header.startswith("Bearer ") and "." in _auth_header[7:]:

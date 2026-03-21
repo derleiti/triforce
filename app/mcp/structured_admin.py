@@ -227,7 +227,7 @@ logger.info(f"Structured Admin API loaded: {len(STRUCTURED_ADMIN_TOOLS)} tools")
 
 FEDERATION_NODES = {
     "hetzner": {"host": "10.10.0.1", "user": "zombie", "port": 22},
-    "backup":  {"host": "10.10.0.3", "user": "zombie", "port": 22},
+    "backup":  {"host": "10.10.0.3", "user": "backupuser", "port": 22},
     "zombie-pc": {"host": "10.10.0.2", "user": "zombie", "port": 22},
 }
 
@@ -467,7 +467,7 @@ logger.info(f"Structured Admin API extended: {len(STRUCTURED_ADMIN_TOOLS)} total
 # Known hosts from federation config (SSH via WireGuard VPN)
 REMOTE_HOSTS = {
     "hetzner": {"ip": "10.10.0.1", "user": "zombie", "desc": "Hetzner EX63 Master"},
-    "backup":  {"ip": "10.10.0.3", "user": "zombie", "desc": "Backup VPS Hub"},
+    "backup":  {"ip": "10.10.0.3", "user": "backupuser", "desc": "Backup VPS Hub"},
     "zombie-pc": {"ip": "10.10.0.2", "user": "zombie", "desc": "Home PC Hub"},
 }
 
