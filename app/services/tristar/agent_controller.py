@@ -457,9 +457,9 @@ class AgentController:
         if not self.agents:
             await self._register_default_agents()
         else:
-            # Always register API agents (they don't come from agents.json)
+            # Always register/update API agents from code (overrides stale agents.json)
             for agent_data in DEFAULT_AGENTS:
-                if agent_data.get("agent_type") == "api" and agent_data["agent_id"] not in self.agents:
+                if agent_data.get("agent_type") == "api":
                     config = AgentConfig(
                         agent_id=agent_data["agent_id"],
                         agent_type=AgentType.API,
@@ -469,6 +469,7 @@ class AgentController:
                     )
                     self.agents[config.agent_id] = AgentInstance(config=config)
                     logger.info(f"Registered API agent: {config.agent_id}")
+            await self._save_configs()
 
         # Starte Health Monitor
         self._monitor_task = asyncio.create_task(self._health_monitor())

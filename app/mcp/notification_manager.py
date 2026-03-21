@@ -758,8 +758,8 @@ async def _dispatch_event(event: Dict) -> None:
         from app.services.agent_spawner import get_agent_spawner
         spawner = get_agent_spawner()
         recent_fails = sum(1 for s in spawner._sessions.values()
-                           if s.get("last_response") and
-                           any(kw in str(s.get("last_response",""))
+                           if getattr(s, "last_response", None) and
+                           any(kw in str(getattr(s, "last_response", ""))
                                for kw in ("QuotaError", "usage limit", "API usage limits", "QUOTA_EXHAUSTED")))
         if recent_fails >= 2:
             logger.info(f"DISPATCH: {recent_fails} recent quota failures, using cloud fallback for mail")
