@@ -75,7 +75,7 @@ async def get_cli_agent(agent_id: str):
 
 
 @router.post("/cli/{agent_id}/start", response_model=CLIAgentActionResponse, summary="Start CLI Agent")
-async def start_cli_agent(agent_id: str):
+async def start_cli_agent(agent_id: str, _auth: None = Depends(_require_agent_admin)):
     """Start a CLI agent subprocess."""
     from ..services.tristar.agent_controller import agent_controller
     
@@ -92,7 +92,7 @@ async def start_cli_agent(agent_id: str):
 
 
 @router.post("/cli/{agent_id}/stop", response_model=CLIAgentActionResponse, summary="Stop CLI Agent")
-async def stop_cli_agent(agent_id: str):
+async def stop_cli_agent(agent_id: str, _auth: None = Depends(_require_agent_admin)):
     """Stop a running CLI agent."""
     from ..services.tristar.agent_controller import agent_controller
     
@@ -109,7 +109,7 @@ async def stop_cli_agent(agent_id: str):
 
 
 @router.post("/cli/{agent_id}/call", summary="Call CLI Agent")
-async def call_cli_agent(agent_id: str, payload: Dict[str, Any]):
+async def call_cli_agent(agent_id: str, payload: Dict[str, Any], _auth: None = Depends(_require_agent_admin)):
     """Send a message to a CLI agent and get response."""
     from ..services.tristar.agent_controller import agent_controller
     
@@ -164,6 +164,7 @@ async def invoke_tool(
     tool_name: str,
     payload: Dict[str, Any],
     ailinux_client: Optional[str] = Header(None, alias="X-AILinux-Client"),
+    _auth: None = Depends(_require_agent_admin),
 ):
     try:
         result = await agents_service.invoke_tool(tool_name, payload, default_requested_by=ailinux_client)

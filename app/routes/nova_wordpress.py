@@ -301,7 +301,7 @@ def get_wp_settings():
 
 
 @router.post("/settings/email")
-def update_email_settings(body: EmailSettings):
+def update_email_settings(body: EmailSettings, _auth: None = Depends(_require_wp_admin)):
     """Admin-Email + MailPoet Absender konfigurieren."""
     results = {}
 
