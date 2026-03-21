@@ -440,14 +440,17 @@ class SpawnedSession:
 
     def to_dict(self) -> Dict:
         return {
-            "session_id":  self.session_id,
-            "agent_id":    self.agent_id,
-            "issue_type":  self.issue_type,
-            "tier":        self.tier,
-            "status":      self.status,
-            "age_minutes": round(self.age_minutes, 1),
-            "task_done":   self.task_done,
-            "msg_count":   len(self.messages),
+            "session_id":    self.session_id,
+            "agent_id":      self.agent_id,
+            "issue_type":    self.issue_type,
+            "tier":          self.tier,
+            "status":        self.status,
+            "age_minutes":   round(self.age_minutes, 1),
+            "task_done":     self.task_done,
+            "expired":       self.expired,
+            "msg_count":     len(self.messages),
+            "message_count": len(self.messages),
+            "timeout_seconds": getattr(self, "timeout_seconds", None),
         }
 
 
