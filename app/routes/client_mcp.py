@@ -132,10 +132,11 @@ def check_path_allowed(path: str, allowed_paths: List[str]) -> bool:
     except Exception:
         return False
 
-    # Prüfe gegen allowed_paths
+    # Prüfe gegen allowed_paths (parent-check, kein Prefix-Bypass)
+    normalized_path = Path(normalized)
     for allowed in allowed_paths:
-        allowed_resolved = str(Path(allowed).resolve())
-        if normalized.startswith(allowed_resolved):
+        allowed_path = Path(allowed).resolve()
+        if normalized_path == allowed_path or allowed_path in normalized_path.parents:
             return True
 
     return False

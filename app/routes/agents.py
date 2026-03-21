@@ -2,13 +2,20 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Header, Query
+from fastapi import APIRouter, Depends, Header, HTTPException, Query
 from pydantic import BaseModel, ValidationError
 
 from ..services import agents as agents_service
 from ..utils.errors import api_error
 import logging
 logger = logging.getLogger(__name__)
+
+import os as _os
+
+def _require_agent_admin(x_internal_key: str = Header(default="")):
+    expected = _os.environ.get("INTERNAL_API_KEY", "")
+    if not expected or x_internal_key != expected:
+        raise HTTPException(status_code=403, detail="Forbidden")
 
 router = APIRouter(prefix="/agents", tags=["agents"])
 
@@ -80,7 +87,8 @@ async def start_cli_agent(agent_id: str):
             message=f"Agent {agent_id} started"
         )
     except Exception as e:
-        raise api_error(str(e), status_code=500, code="agent_start_failed")
+        logger.error("agent_start %s failed: %s", agent_id, e, exc_info=True)
+        raise api_error("Agent start failed", status_code=500, code="agent_start_failed")
 
 
 @router.post("/cli/{agent_id}/stop", response_model=CLIAgentActionResponse, summary="Stop CLI Agent")
@@ -96,7 +104,8 @@ async def stop_cli_agent(agent_id: str):
             message=f"Agent {agent_id} stopped"
         )
     except Exception as e:
-        raise api_error(str(e), status_code=500, code="agent_stop_failed")
+        logger.error("agent_stop %s failed: %s", agent_id, e, exc_info=True)
+        raise api_error("Agent stop failed", status_code=500, code="agent_stop_failed")
 
 
 @router.post("/cli/{agent_id}/call", summary="Call CLI Agent")

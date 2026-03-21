@@ -270,10 +270,35 @@ class RuntimeToolRegistry:
         profile = node_registry.get_profile(node_id)
         if profile == "restricted":
             return "restricted"
-        # All authenticated clients (Bearer token or Basic Auth) get full access.
-        # require_mcp_auth already blocks unauthenticated requests before
-        # reaching this point, so any caller here is verified.
-        return "internal_full"
+
+        # Check if request is from internal/trusted source
+        source_ip = (request_meta or {}).get("source_ip", "")
+        auth_method = (request_meta or {}).get("auth_method", "")
+        user = (request_meta or {}).get("user", "")
+
+        # Internal: localhost, WireGuard mesh, Docker bridge
+        if source_ip and (
+            source_ip in ("127.0.0.1", "::1", "10.10.0.1", "10.10.0.2", "10.10.0.3")
+            or source_ip.startswith("172.18.") or source_ip.startswith("172.19.")
+        ):
+            return "internal_full"
+        if auth_method == "basic" and user in ("zombie", "admin"):
+            return "internal_full"
+
+        # Tier-based access
+        tier_lower = (tier or "free").lower()
+        if tier_lower in ("unlimited", "admin"):
+            return "internal_full"
+        if tier_lower in ("pro", "paid", "subscriber"):
+            return "authenticated"
+
+        # Fallback: if request_meta has no source_ip (not yet injected),
+        # and caller passed auth (require_mcp_auth validated), grant full.
+        # This preserves backward compat until source_ip injection is added.
+        if not source_ip and not auth_method:
+            return "internal_full"
+
+        return "restricted"
 
     def evaluate_policy(self, entry: RuntimeToolEntry, *, client_profile: str, arguments: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         classification = entry.classification

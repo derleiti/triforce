@@ -203,11 +203,15 @@ async def handle_group_chat_message(params: Dict[str, Any]) -> Dict[str, Any]:
 async def handle_group_chat_read(params: Dict[str, Any]) -> Dict[str, Any]:
     from app.services.group_chat import group_chat
     session_id = params.get("session_id", "")
+    try:
+        limit = max(1, min(int(params.get("limit", 50)), 500))
+    except (TypeError, ValueError):
+        limit = 50
     return group_chat.read_messages(
         session_id,
         since=params.get("since"),
         for_participant=params.get("for_participant"),
-        limit=params.get("limit", 50),
+        limit=limit,
     )
 
 
@@ -234,10 +238,13 @@ async def handle_group_chat_consolidate(params: Dict[str, Any]) -> Dict[str, Any
 
 
 async def handle_group_chat_assign(params: Dict[str, Any]) -> Dict[str, Any]:
-    from app.services.group_chat import group_chat
+    from app.services.group_chat import group_chat, DEFAULT_PARTICIPANTS
     session_id = params.get("session_id", "")
-    coder = params.get("coder", "auto")
+    coder = str(params.get("coder", "auto")).strip()
     context = params.get("context", "")
+    ALLOWED_CODERS = {"auto", "claude-mcp", "codex-mcp", "gemini-mcp", "claude-web", "chatgpt-web"}
+    if coder not in ALLOWED_CODERS and coder not in DEFAULT_PARTICIPANTS:
+        return {"error": f"Invalid coder: {coder}. Allowed: {', '.join(sorted(ALLOWED_CODERS))}"}
     return await group_chat.assign_coding_task(session_id, coder, context)
 
 

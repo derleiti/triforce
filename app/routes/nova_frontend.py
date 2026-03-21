@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import base64
 import json
+import logging
 import os
 import re
 from typing import Any, Dict, List, Optional
@@ -12,6 +13,7 @@ from pydantic import BaseModel
 
 # BUG-005 FIX 2026-03-10: prefix /v1 wird jetzt konsistent über main.py gesetzt
 router = APIRouter(prefix="/frontend/dashboard", tags=["nova-frontend"])
+logger = logging.getLogger("ailinux.nova_frontend")
 
 def _base_url() -> str:
     return (
@@ -319,7 +321,8 @@ async def _image_proxy(req: ImageRequest) -> Dict[str, Any]:
                     if idata and idata.get("data"):
                         result_images.append({"b64_json": idata["data"], "content_type": idata.get("mimeType", "image/png")})
             if not result_images:
-                raise HTTPException(status_code=500, detail=f"Gemini native image: keine Bilder in Antwort. Raw: {str(rdata)[:300]}")
+                logger.error("Gemini native image returned no image payload: %s", str(rdata)[:300])
+                raise HTTPException(status_code=500, detail="Gemini native image generation failed")
             return {"ok": True, "mode": "media_image", "provider": "google_native",
                     "result": {"data": result_images}}
 
@@ -369,7 +372,8 @@ async def _image_proxy(req: ImageRequest) -> Dict[str, Any]:
                 if b64:
                     result_images.append({"b64_json": b64, "content_type": "image/png"})
             if not result_images:
-                raise HTTPException(status_code=500, detail=f"Gemini Imagen: keine Bilder in Antwort. Raw: {str(rdata)[:300]}")
+                logger.error("Gemini Imagen returned no image payload: %s", str(rdata)[:300])
+                raise HTTPException(status_code=500, detail="Gemini Imagen generation failed")
             return {"ok": True, "mode": "media_image", "provider": "google",
                     "result": {"data": result_images}}
 
@@ -532,7 +536,8 @@ async def _video_proxy(req: VideoRequest) -> Dict[str, Any]:
                 raise HTTPException(status_code=r.status_code, detail=f"Veo API Fehler: {err_msg}")
             op_name = rdata.get("name", "")
             if not op_name:
-                raise HTTPException(status_code=500, detail=f"Veo: kein operation name. Response: {str(rdata)[:300]}")
+                logger.error("Veo returned no operation name: %s", str(rdata)[:300])
+                raise HTTPException(status_code=500, detail="Veo video generation failed")
             import asyncio as _asyncio
             for _ in range(24):  # 24 × 5s = 120s
                 await _asyncio.sleep(5)
@@ -545,10 +550,12 @@ async def _video_proxy(req: VideoRequest) -> Dict[str, Any]:
                     resp_data = poll_data.get("response", {})
                     videos = resp_data.get("generatedVideos", [])
                     if not videos:
-                        raise HTTPException(status_code=500, detail=f"Veo: keine Videos. Raw: {str(poll_data)[:300]}")
+                        logger.error("Veo returned no generated videos: %s", str(poll_data)[:300])
+                        raise HTTPException(status_code=500, detail="Veo video generation failed")
                     video_uri = videos[0].get("video", {}).get("uri", "")
                     if not video_uri:
-                        raise HTTPException(status_code=500, detail="Veo: kein video URI")
+                        logger.error("Veo returned no video URI: %s", str(poll_data)[:300])
+                        raise HTTPException(status_code=500, detail="Veo video generation failed")
                     dl = await client.get(video_uri, params={"key": key})
                     import base64 as _b64
                     b64 = _b64.b64encode(dl.content).decode()
@@ -795,4 +802,5 @@ async def downloads_descriptions_set(data: Dict[str, Any]) -> Dict[str, Any]:
             _json.dump(descs, f, indent=2, ensure_ascii=False)
         return {"ok": True}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error("Saving download descriptions failed: %s", e, exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal server error") from e

@@ -261,7 +261,7 @@ async def get_subscription_status(user_id: str):
 # ─── Purchase Routes ──────────────────────────────────────────────────────────
 
 @router.post("/purchase")
-async def record_purchase(req: PurchaseRequest):
+async def record_purchase(req: PurchaseRequest, _: None = Depends(_require_internal_key)):
     """Digitalen Kauf aufzeichnen (nach Zahlungsbestätigung)"""
     purchases = _load_purchases(req.user_id)
     purchase = {
@@ -285,7 +285,7 @@ async def record_purchase(req: PurchaseRequest):
 
 
 @router.get("/purchases/{user_id}")
-async def get_purchases(user_id: str):
+async def get_purchases(user_id: str, _: None = Depends(_require_internal_key)):
     """Alle Käufe eines Users"""
     return {
         "user_id": user_id,
@@ -297,7 +297,7 @@ async def get_purchases(user_id: str):
 # ─── Admin upgrade (kept for compatibility) ───────────────────────────────────
 
 @router.post("/user/upgrade")
-async def upgrade_user_tier_admin(body: dict):
+async def upgrade_user_tier_admin(body: dict, _: None = Depends(_require_internal_key)):
     """Admin: Tier manuell setzen (free|paid)"""
     user_id = body.get("user_id", "")
     raw_tier = body.get("tier", "free")

@@ -25,6 +25,19 @@ from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger("ailinux.user_chat")
 
+# Limits
+MAX_MODELS_INTERACTIVE = 5
+MAX_MODELS_SWARM = 15
+MAX_HISTORY_MESSAGES = 60     # after this, oldest entries get trimmed
+MAX_CONCURRENT_QUERIES = 4    # semaphore for parallel model queries
+_QUERY_SEM: Optional[asyncio.Semaphore] = None
+
+def _get_sem() -> asyncio.Semaphore:
+    global _QUERY_SEM
+    if _QUERY_SEM is None:
+        _QUERY_SEM = asyncio.Semaphore(MAX_CONCURRENT_QUERIES)
+    return _QUERY_SEM
+
 # In-Memory Store für aktive User-Chat-Sessions
 _USER_CHAT_SESSIONS: Dict[str, Dict] = {}
 
@@ -131,7 +144,7 @@ def _resolve_session(session_id: str) -> Optional[str]:
 
 
 def _build_context_messages(session: Dict, new_user_msg: str) -> List[Dict]:
-    """Baut den kompletten Chat-Verlauf als messages-Array auf."""
+    """Baut den Chat-Verlauf als messages-Array auf (mit History-Trimming)."""
     messages = []
     # System-Prompt mit Topic
     messages.append({
@@ -139,15 +152,23 @@ def _build_context_messages(session: Dict, new_user_msg: str) -> List[Dict]:
         "content": (
             f"Du bist Teil eines Multi-KI-Group-Chats zum Thema: {session['topic']}\n"
             f"Andere teilnehmende Modelle: {', '.join(session['model_ids'])}\n"
-            f"Antworte präzise. Du siehst den vollständigen Chatverlauf aller Teilnehmer."
+            f"Antworte präzise. Du siehst den Chatverlauf aller Teilnehmer."
         )
     })
-    # Bisheriger Verlauf
-    for entry in session["history"]:
+    # Bisheriger Verlauf — trimmed to last MAX_HISTORY_MESSAGES entries
+    history = session["history"]
+    if len(history) > MAX_HISTORY_MESSAGES:
+        trimmed = len(history) - MAX_HISTORY_MESSAGES
+        messages.append({
+            "role": "system",
+            "content": f"[{trimmed} ältere Nachrichten ausgeblendet]"
+        })
+        history = history[-MAX_HISTORY_MESSAGES:]
+
+    for entry in history:
         if entry["role"] == "user":
             messages.append({"role": "user", "content": entry["content"]})
         else:
-            # KI-Antworten als assistant-Messages mit Label
             messages.append({
                 "role": "assistant",
                 "content": f"[{entry['model_id']}]: {entry['content']}"
@@ -272,12 +293,43 @@ async def handle_user_chat_tool(name: str, args: Dict[str, Any]) -> Dict[str, An
         }
 
     elif name == "user_group_chat_start":
-        model_ids = args.get("model_ids", [])
+        raw_model_ids = args.get("model_ids", [])
         topic = args.get("topic", "Allgemeiner Chat")
         mode = args.get("mode", "interactive")
 
-        if not model_ids:
+        if not raw_model_ids:
             return {"error": "Keine Modelle angegeben. Nutze model_picker um Modelle auszuwählen."}
+
+        # Deduplicate while preserving order
+        seen = set()
+        model_ids = []
+        for mid in raw_model_ids:
+            mid = str(mid).strip()
+            if mid and mid not in seen:
+                seen.add(mid)
+                model_ids.append(mid)
+
+        if not model_ids:
+            return {"error": "Keine gültigen Modelle nach Bereinigung."}
+
+        # Enforce limits
+        limit = MAX_MODELS_INTERACTIVE if mode == "interactive" else MAX_MODELS_SWARM
+        if len(model_ids) > limit:
+            return {"error": f"Maximal {limit} Modelle im {mode}-Modus erlaubt, {len(model_ids)} angegeben."}
+
+        # Validate model IDs exist in registry
+        try:
+            from app.services.model_registry import get_model_registry
+            registry = get_model_registry()
+            invalid = []
+            for mid in model_ids:
+                info = await registry.get_model(mid)
+                if not info:
+                    invalid.append(mid)
+            if invalid:
+                return {"error": f"Unbekannte Modelle: {', '.join(invalid)}. Nutze model_picker für gültige IDs."}
+        except Exception as e:
+            logger.warning(f"Model validation skipped: {e}")
 
         session_id = f"uc-{uuid.uuid4().hex[:8]}"
         _USER_CHAT_SESSIONS[session_id] = {
@@ -336,33 +388,35 @@ async def handle_user_chat_tool(name: str, args: Dict[str, Any]) -> Dict[str, An
             "turn": turn,
         })
 
-        # Alle KIs sequenziell abfragen — jede bekommt kompletten Verlauf
+        # KIs parallel abfragen mit Semaphore-Limit
+        context = _build_context_messages(session, message)
         responses = []
         parts = [f"## Turn {turn} — User\n> {message}\n"]
 
-        for model_id in session["model_ids"]:
-            context = _build_context_messages(session, message)
-            # User-Message ist schon im context, hier nochmal ohne die letzte
-            context_without_last = context[:-1]  # letzten user-eintrag weglassen
-            # (ist schon im _build_context_messages drin)
+        sem = _get_sem()
 
-            provider = model_id.split("/")[0] if "/" in model_id else "unknown"
+        async def _bounded_query(mid: str) -> Dict:
+            provider = mid.split("/")[0] if "/" in mid else "unknown"
             timeout = 120 if provider == "ollama" else 45
+            async with sem:
+                text = await _query_model(mid, context, timeout)
+            return {"model_id": mid, "content": text}
 
-            response_text = await _query_model(model_id, context, timeout)
+        tasks = [_bounded_query(mid) for mid in session["model_ids"]]
+        results = await asyncio.gather(*tasks, return_exceptions=True)
 
-            # In History speichern
+        for result in results:
+            if isinstance(result, Exception):
+                result = {"model_id": "?", "content": f"[FEHLER: {result}]"}
+            responses.append(result)
             session["history"].append({
                 "role": "assistant",
-                "model_id": model_id,
-                "content": response_text,
+                "model_id": result["model_id"],
+                "content": result["content"],
                 "turn": turn,
             })
-            responses.append({"model_id": model_id, "content": response_text})
-
-            # Markdown für den Stream
-            short_id = model_id.split("/")[-1] if "/" in model_id else model_id
-            parts.append(f"\n### 🤖 {short_id}\n{response_text}")
+            short_id = result["model_id"].split("/")[-1] if "/" in result["model_id"] else result["model_id"]
+            parts.append(f"\n### 🤖 {short_id}\n{result['content']}")
 
             # ChatLog: nur AI-Output loggen
             try:

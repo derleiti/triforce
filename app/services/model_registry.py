@@ -1031,9 +1031,15 @@ class ModelRegistry:
             elif task_name == "Translation":
                 capabilities.append("translation")
                 roles.append("translator")
+            elif task_name == "Summarization":
+                capabilities.append("summarization")
+                roles.append("summarizer")
+            elif task_name == "Text Classification":
+                capabilities.append("classification")
+                roles.append("classifier")
             else:
-                capabilities.append("chat")
-                roles.append("assistant")
+                # Unknown task type - skip, do NOT default to chat
+                continue
 
             models.append(ModelInfo(
                 id=f"cloudflare/{model_id}",

@@ -187,33 +187,35 @@ class ServerFederation:
                 await asyncio.sleep(5)
 
     async def _check_all_nodes(self):
-        for _, node in self.nodes.items():
-            await self._check_node(node)
+        if not self.nodes:
+            return
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            tasks = [self._check_node(node, client) for node in self.nodes.values()]
+            await asyncio.gather(*tasks, return_exceptions=True)
 
-    async def _check_node(self, node: FederationNode):
+    async def _check_node(self, node: FederationNode, client: httpx.AsyncClient):
         started = time.time()
         try:
-            async with httpx.AsyncClient(timeout=10.0) as client:
-                headers = {}
-                if node.secret_key:
-                    headers["X-Federation-Key"] = node.secret_key
+            headers = {}
+            if node.secret_key:
+                headers["X-Federation-Key"] = node.secret_key
 
-                response = await client.get(f"{node.base_url}/health", headers=headers)
+            response = await client.get(f"{node.base_url}/health", headers=headers)
 
-                if response.status_code == 200:
-                    node.status = NodeStatus.HEALTHY
-                    node.last_heartbeat = datetime.now()
-                    node.consecutive_failures = 0
-                    node.avg_latency_ms = (time.time() - started) * 1000.0
+            if response.status_code == 200:
+                node.status = NodeStatus.HEALTHY
+                node.last_heartbeat = datetime.now()
+                node.consecutive_failures = 0
+                node.avg_latency_ms = (time.time() - started) * 1000.0
 
-                    try:
-                        data = response.json()
-                        if "models" in data and isinstance(data["models"], list):
-                            node.models = data["models"]
-                    except Exception:
-                        pass
-                else:
-                    await self._handle_node_failure(node, f"HTTP {response.status_code}")
+                try:
+                    data = response.json()
+                    if "models" in data and isinstance(data["models"], list):
+                        node.models = data["models"]
+                except Exception:
+                    pass
+            else:
+                await self._handle_node_failure(node, f"HTTP {response.status_code}")
         except Exception as e:
             await self._handle_node_failure(node, str(e))
 

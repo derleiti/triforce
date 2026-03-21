@@ -3,13 +3,20 @@ Performance Monitor v2.0
 Redis-basiertes Latenz-Tracking für alle Endpoints und LLM-Calls.
 Shared across all Uvicorn workers.
 """
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Header, HTTPException, Request
 from fastapi.responses import JSONResponse
 from typing import Optional
 from time import perf_counter
 import statistics
 import json
 import redis
+
+import os as _os
+
+def _require_perf_admin(x_internal_key: str = Header(default="")):
+    expected = _os.environ.get("INTERNAL_API_KEY", "")
+    if not expected or x_internal_key != expected:
+        raise HTTPException(status_code=403, detail="Forbidden")
 
 router = APIRouter(prefix="/perf", tags=["Performance Monitor"])
 
@@ -120,7 +127,8 @@ class RedisPerfMonitor:
     def _get_all_stats(self, type: str) -> list:
         try:
             pattern = f"{REDIS_PREFIX}{type}:*"
-            keys = [k for k in self.redis.keys(pattern) if not k.endswith(":latencies")]
+            keys = [k for k in self.redis.scan_iter(match=pattern, count=100)
+                    if not k.endswith(":latencies")]
             return [s for s in (self._get_stats(k) for k in keys) if s]
         except Exception:
             return []
@@ -148,9 +156,14 @@ class RedisPerfMonitor:
     
     def reset(self):
         try:
-            keys = self.redis.keys(f"{REDIS_PREFIX}*")
-            if keys:
-                self.redis.delete(*keys)
+            cursor, batch = 0, []
+            for key in self.redis.scan_iter(match=f"{REDIS_PREFIX}*", count=100):
+                batch.append(key)
+                if len(batch) >= 100:
+                    self.redis.unlink(*batch)
+                    batch.clear()
+            if batch:
+                self.redis.unlink(*batch)
         except Exception:
             pass
 
@@ -306,14 +319,14 @@ async def perf_endpoints():
 
 
 @router.post("/reset")
-async def perf_reset():
+async def perf_reset(_: None = Depends(_require_perf_admin)):
     """Stats zurücksetzen."""
     monitor.reset()
     return {"status": "reset", "message": "Alle Performance-Daten gelöscht"}
 
 
 @router.post("/toggle")
-async def perf_toggle(enabled: Optional[bool] = None):
+async def perf_toggle(enabled: Optional[bool] = None, _: None = Depends(_require_perf_admin)):
     """Performance-Monitoring ein/ausschalten."""
     if enabled is not None:
         monitor.enabled = enabled

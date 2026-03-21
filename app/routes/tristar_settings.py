@@ -384,7 +384,10 @@ async def update_api_key(
         result = await settings_controller.set_api_key(update.key_name, update.value, modified_by=user)
         return {"success": True, "api_keys": result}
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)[:200])
+    except Exception as e:
+        logger.error("Unexpected error: %s", e, exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal server error") from e
 
 
 @router.put("/api-keys")

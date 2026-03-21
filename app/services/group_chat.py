@@ -306,6 +306,10 @@ class GroupChatOrchestrator:
             for pid in participants:
                 if pid in DEFAULT_PARTICIPANTS:
                     session.participants[pid] = DEFAULT_PARTICIPANTS[pid]
+            if not session.participants:
+                raise ValueError(
+                    f"No valid participants. Allowed: {', '.join(sorted(DEFAULT_PARTICIPANTS.keys()))}"
+                )
         else:
             session.participants = dict(DEFAULT_PARTICIPANTS)
 
@@ -632,7 +636,11 @@ Format: Problem → Lösung → Code-Skizze (wenn relevant)."""
                        if m.addressed_to is None or m.addressed_to == for_participant
                        or m.addressed_to == "all"]
 
-        # Limit
+        # Limit (safe coercion)
+        try:
+            limit = max(1, min(int(limit), 500))
+        except (TypeError, ValueError):
+            limit = 50
         messages = messages[-limit:]
 
         return {

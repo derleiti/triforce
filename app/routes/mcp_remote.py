@@ -24,6 +24,7 @@ Endpoints:
 from __future__ import annotations
 
 import json
+import logging
 import uuid
 import secrets
 from datetime import datetime, timezone
@@ -73,6 +74,14 @@ from ..utils.mcp_auth import (
 )
 
 router = APIRouter(tags=["MCP Remote Server"])
+logger = logging.getLogger("ailinux.mcp_remote")
+
+
+def _public_tool_error_message(tool_name: str) -> str:
+    """Return a client-safe MCP tool error without leaking internal exception text."""
+    if tool_name:
+        return f"Tool '{tool_name}' failed. See server logs for details."
+    return "Tool execution failed. See server logs for details."
 
 
 # NOTE: OAuth metadata endpoints are now in oauth_service.py
@@ -183,7 +192,11 @@ async def auto_authorize(request: Request):
     from ..utils.mcp_auth import store_auth_code
 
     try:
-        data = await request.json()
+        try:
+            data = await request.json()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail="Invalid JSON body") from exc
+
         auth_url = data.get("auth_url")
         username = data.get("username")
         password = data.get("password")
@@ -220,6 +233,22 @@ async def auto_authorize(request: Request):
             user=username,
         )
 
+        # --- SSRF Protection: only allow localhost callbacks ---
+        from urllib.parse import urlparse as _urlparse
+        parsed_redirect = _urlparse(redirect_uri)
+        allowed_hosts = {"127.0.0.1", "localhost", "[::1]", "::1"}
+        if parsed_redirect.hostname not in allowed_hosts:
+            logger.warning(
+                "SSRF blocked: auto_authorize redirect_uri host=%s (allowed: %s)",
+                parsed_redirect.hostname, allowed_hosts,
+            )
+            raise HTTPException(
+                status_code=400,
+                detail="redirect_uri must point to localhost (127.0.0.1, localhost, or [::1])",
+            )
+        if parsed_redirect.scheme not in ("http", "https"):
+            raise HTTPException(status_code=400, detail="redirect_uri must use http or https scheme")
+
         # Construct Callback URL
         callback_params = {"code": code, "state": state}
         callback_url = f"{redirect_uri}?{urlencode(callback_params)}"
@@ -227,13 +256,15 @@ async def auto_authorize(request: Request):
         # Perform the callback (HIT the CLI tool's local server)
         import httpx
         async with httpx.AsyncClient(timeout=5.0) as client:
-            # CLI tools usually expect a GET request to their callback
             await client.get(callback_url)
 
         return {"status": "success", "callback_url": callback_url}
 
+    except HTTPException:
+        raise
     except Exception as e:
-        return JSONResponse(status_code=500, content={"error": str(e)})
+        logger.error("Auto authorize failed: %s", e, exc_info=True)
+        return JSONResponse(status_code=500, content={"error": "Internal server error"})
 
 
 # NOTE: /token endpoint is now handled by oauth_service.py
@@ -2284,9 +2315,21 @@ async def mcp_rpc_endpoint(request: Request):
             }
         )
 
+    if not isinstance(body, dict):
+        return JSONResponse(
+            status_code=400,
+            content={
+                "jsonrpc": "2.0",
+                "error": {"code": -32600, "message": "Invalid Request: body must be a JSON object"},
+                "id": None
+            }
+        )
+
     jsonrpc = body.get("jsonrpc")
     method = body.get("method")
     params = body.get("params", {})
+    if not isinstance(params, dict):
+        params = {}
     req_id = body.get("id")
     # Log the incoming MCP request
     _log.info(f"MCP request: method={method}")
@@ -2481,7 +2524,7 @@ async def mcp_rpc_endpoint(request: Request):
                     "jsonrpc": "2.0",
                     "result": {
                         "content": [
-                            {"type": "text", "text": f"Error: {str(exc)}"}
+                            {"type": "text", "text": _public_tool_error_message(tool_name)}
                         ],
                         "isError": True
                     },
@@ -2592,9 +2635,21 @@ async def _handle_agent_mcp_call(agent_id: str, request: Request):
             }
         )
 
+    if not isinstance(body, dict):
+        return JSONResponse(
+            status_code=400,
+            content={
+                "jsonrpc": "2.0",
+                "error": {"code": -32600, "message": "Invalid Request: body must be a JSON object"},
+                "id": None
+            }
+        )
+
     jsonrpc = body.get("jsonrpc")
     method = body.get("method")
     params = body.get("params", {})
+    if not isinstance(params, dict):
+        params = {}
     req_id = body.get("id")
 
     if jsonrpc != "2.0":

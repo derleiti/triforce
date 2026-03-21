@@ -125,14 +125,22 @@ async def _generate(topic: str, platform: str) -> Optional[dict]:
         logger.error(f"content_engine._generate: {e}"); return None
 
 async def _mcp(name: str, args: dict):
-    """Direkter MCP-Tool-Call ohne handler import."""
+    """Direkter MCP-Tool-Call via Handler-Registry."""
     try:
-        from app.mcp.structured_admin import TOOL_HANDLERS
-        fn = TOOL_HANDLERS.get(name)
+        from app.mcp.structured_admin import STRUCTURED_ADMIN_HANDLERS
+        fn = STRUCTURED_ADMIN_HANDLERS.get(name)
         if fn:
             return await fn(args)
     except Exception as e:
         logger.warning(f"content_engine._mcp({name}): {e}")
+    # Fallback: try MCP_HANDLERS from routes
+    try:
+        from app.routes.mcp import MCP_HANDLERS
+        fn = MCP_HANDLERS.get(name)
+        if fn:
+            return await fn(args)
+    except Exception as e2:
+        logger.warning(f"content_engine._mcp fallback({name}): {e2}")
     return None
 
 async def post_to_wordpress() -> bool:

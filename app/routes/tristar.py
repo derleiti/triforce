@@ -16,6 +16,7 @@ Provides endpoints for the TriStar Chain Orchestration System:
 from __future__ import annotations
 
 from datetime import datetime, timezone
+import logging
 from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, HTTPException, Query, BackgroundTasks
@@ -30,6 +31,7 @@ from ..services.tristar import (
 )
 
 router = APIRouter(prefix="/tristar", tags=["TriStar"])
+logger = logging.getLogger("ailinux.tristar")
 
 
 # ============================================================================
@@ -643,7 +645,8 @@ async def agents_call(agent_id: str, request: AgentCallRequest) -> Dict[str, Any
     response = await mcp_router.route_request(router_request)
 
     if not response.success:
-        raise HTTPException(500, response.error or "Agent call failed")
+        logger.error("TriStar agent call failed for %s: %s", agent_id, response.error)
+        raise HTTPException(500, "Agent call failed")
 
     return {
         "agent_id": response.agent_id,

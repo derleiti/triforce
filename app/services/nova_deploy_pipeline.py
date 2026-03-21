@@ -25,7 +25,6 @@ async def snapshot_production() -> bool:
 async def deploy_to_production(commit_info: str = "") -> dict:
     try:
         from .agent_spawner import get_agent_spawner
-        from ..mcp.structured_admin import handler as h
         short = (commit_info[:60] or "latest").strip()
         asyncio.create_task(snapshot_production()); await asyncio.sleep(3)
         result = await get_agent_spawner().spawn_for_issue(issue_type="ops_worker",
@@ -41,9 +40,12 @@ async def deploy_to_production(commit_info: str = "") -> dict:
             f"sudo systemctl restart triforce && "
             f"notify_send '🚨 Deploy FAILED+Rollback: {short}' priority=critical tags=[deploy,rollback]\n"
             "5. TASK_COMPLETE"))
-        await h({"method":"tools/call","params":{"name":"notify_send","arguments":{
-            "title":f"🚀 Deploy gestartet: {short}","body":f"Session: {result.get('session_id','queued')}",
-            "source":"system","priority":"high","tags":["deploy","production"]}}})
+        from app.mcp.notification_manager import create_event
+        await create_event(
+            title=f"Deploy gestartet: {short}",
+            body=f"Session: {result.get('session_id','queued')}",
+            source="system", priority="high", tags=["deploy","production"],
+        )
         return {"status":"started","session_id":result.get("session_id")}
     except Exception as e:
         logger.error(f"deploy_to_production: {e}"); return {"status":"error","error":str(e)}
@@ -56,11 +58,14 @@ async def watch_for_deploy_ready(title: str, body: str, tags: list) -> bool:
 async def check_production_health() -> bool:
     global _prod_fail_count, _backup_active
     try:
-        from ..mcp.structured_admin import handler as h
-        res = await h({"method":"tools/call","params":{"name":"remote_exec","arguments":{"node":"hetzner","command":"uptime"}}})
+        from app.mcp.structured_admin import handle_remote_exec
+        res = await handle_remote_exec({"node": "hetzner", "command": "uptime"})
         if res and not res.get("error"):
             if _backup_active: await _deactivate_backup()
             _prod_fail_count = 0; return True
+    except ImportError as e:
+        logger.error(f"deploy_pipeline: ImportError in health check (not a prod failure): {e}")
+        return True
     except Exception: pass
     _prod_fail_count += 1
     logger.warning(f"deploy_pipeline: Production unreachable ({_prod_fail_count}/3)")
@@ -71,16 +76,25 @@ async def _activate_backup():
     global _backup_active; _backup_active = True
     logger.critical("deploy_pipeline: Production DOWN — Backup aktiviert")
     try:
-        from ..mcp.structured_admin import handler as h
-        await h({"method":"tools/call","params":{"name":"notify_send","arguments":{"title":"🚨 PRODUCTION DOWN — Backup übernimmt","body":"Production 3x nicht erreichbar. Backup (letzte Snapshot-Version) übernimmt.","source":"system","priority":"critical","tags":["production","backup","failover"]}}})
-        await h({"method":"tools/call","params":{"name":"remote_exec","arguments":{"node":"backup","command":"restart_triforce"}}})
+        from app.mcp.notification_manager import create_event
+        await create_event(
+            title="PRODUCTION DOWN - Backup uebernimmt",
+            body="Production 3x nicht erreichbar. Backup (letzte Snapshot-Version) uebernimmt.",
+            source="system", priority="critical", tags=["production", "backup", "failover"],
+        )
+        from app.mcp.structured_admin import handle_remote_exec
+        await handle_remote_exec({"node": "backup", "command": "restart_triforce"})
     except Exception as e: logger.error(f"_activate_backup: {e}")
 
 async def _deactivate_backup():
     global _backup_active, _prod_fail_count; _backup_active = False; _prod_fail_count = 0
     try:
-        from ..mcp.structured_admin import handler as h
-        await h({"method":"tools/call","params":{"name":"notify_send","arguments":{"title":"✅ Production wieder online","body":"Failover beendet.","source":"system","priority":"high","tags":["production","recovery"]}}})
+        from app.mcp.notification_manager import create_event
+        await create_event(
+            title="Production wieder online",
+            body="Failover beendet.",
+            source="system", priority="high", tags=["production", "recovery"],
+        )
     except Exception as e: logger.error(f"_deactivate_backup: {e}")
 
 async def deploy_pipeline_tick():

@@ -24,7 +24,9 @@ CONTAINERS = ["triforce-wordpress","triforce-mysql","triforce-redis","triforce-s
               "triforce-n8n","triforce-mailserver","triforce-flarum","triforce-repo","ollama"]
 
 def _ok_path(p, allowed):
-    try: return any(str(Path(p).resolve()).startswith(a) for a in allowed)
+    try:
+        resolved = Path(p).resolve()
+        return any(resolved == Path(a) or Path(a) in resolved.parents for a in allowed)
     except: return False
 
 async def _run(cmd, timeout=30):

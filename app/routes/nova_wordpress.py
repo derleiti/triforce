@@ -3,14 +3,23 @@ WordPress MCP Routes — TriForce Backend
 WP-CLI-basierte Verwaltung via Docker exec (wordpress_fpm Container)
 Posts, Pages, Media, Users, Settings, Stats
 """
+import logging
 import subprocess
 import json
 import re
-from fastapi import APIRouter, HTTPException
+from fastapi import Depends, Header, APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional, List, Any
 
+import os as _os_wp
+
+def _require_wp_admin(x_internal_key: str = Header(default="")):
+    expected = _os_wp.environ.get("INTERNAL_API_KEY", "")
+    if not expected or x_internal_key != expected:
+        raise HTTPException(status_code=403, detail="Forbidden")
+
 router = APIRouter(prefix="/v1/wordpress", tags=["wordpress"])
+logger = logging.getLogger("ailinux.wordpress.routes")
 
 WP_CONTAINER = "wordpress_fpm"
 WP_PATH = "/var/www/html"
@@ -43,7 +52,8 @@ def wp(cmd: str, json_output: bool = True) -> Any:
     except subprocess.TimeoutExpired:
         raise HTTPException(status_code=504, detail="WP-CLI timeout")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error("WP helper command failed: %s", e, exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal server error") from e
 
 
 def wp_raw(cmd: str) -> str:
@@ -98,7 +108,7 @@ def list_posts(status: str = "any", limit: int = 20, post_type: str = "post"):
 
 
 @router.post("/posts")
-def create_post(body: PostCreate):
+def create_post(body: PostCreate, _auth: None = Depends(_require_wp_admin)):
     """Neuen Post oder Page erstellen."""
     # Titel + Content escapen
     title = body.title.replace('"', '\\"')
@@ -126,7 +136,8 @@ def create_post(body: PostCreate):
             break
 
     if not post_id:
-        raise HTTPException(500, f"Post konnte nicht erstellt werden: {result}")
+        logger.error("WP post creation returned no post_id. Raw result: %s", result)
+        raise HTTPException(500, "Post konnte nicht erstellt werden")
 
     # Tags + Kategorien nachträglich setzen
     if body.categories:
@@ -138,7 +149,7 @@ def create_post(body: PostCreate):
 
 
 @router.put("/posts/{post_id}")
-def update_post(post_id: int, body: PostUpdate):
+def update_post(post_id: int, body: PostUpdate, _auth: None = Depends(_require_wp_admin)):
     """Post aktualisieren."""
     cmd_parts = [f"post update {post_id}"]
     if body.title:
@@ -156,7 +167,7 @@ def update_post(post_id: int, body: PostUpdate):
 
 
 @router.delete("/posts/{post_id}")
-def delete_post(post_id: int, force: bool = False):
+def delete_post(post_id: int, force: bool = False, _auth: None = Depends(_require_wp_admin)):
     """Post löschen (Trash oder force-delete)."""
     cmd = f"post delete {post_id}" + (" --force" if force else "")
     result = wp_raw(cmd)
@@ -164,7 +175,7 @@ def delete_post(post_id: int, force: bool = False):
 
 
 @router.post("/posts/{post_id}/publish")
-def publish_post(post_id: int):
+def publish_post(post_id: int, _auth: None = Depends(_require_wp_admin)):
     """Post direkt veröffentlichen."""
     result = wp_raw(f"post update {post_id} --post_status=publish")
     ok = "Success" in result or "Updated" in result
@@ -193,7 +204,7 @@ def list_pages(status: str = "any", limit: int = 50):
 
 
 @router.post("/pages")
-def create_page(body: PageCreate):
+def create_page(body: PageCreate, _auth: None = Depends(_require_wp_admin)):
     """Neue Page erstellen."""
     # Wiederverwendung der Post-Route
     post_body = PostCreate(

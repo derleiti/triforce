@@ -906,8 +906,7 @@ class AgentController:
                 if is_tier1_codex:
                     cmd = [
                         "bash", "-c",
-                        f"echo {safe_msg} | {TRIFORCE_BIN}/codex-triforce exec - "
-                        f"--approval-mode suggest-only 2>&1"
+                        f"echo {safe_msg} | {TRIFORCE_BIN}/codex-triforce exec - 2>&1"
                     ]
                 else:
                     cmd = [

@@ -44,14 +44,32 @@ async def _fallback_to_ollama(
     original_error: Exception,
     fallback_model: str | None = None,
 ) -> AsyncGenerator[str, None]:
-    """Unified fallback logic - streams from Ollama when primary provider fails."""
+    """Unified fallback logic - tries Ollama first, then OpenRouter as secondary."""
     settings = get_settings()
     model = fallback_model or settings.ollama_fallback_model
     logger.warning("%s failed (%s), falling back to %s", original_provider, original_error, model)
-    async for chunk in _stream_ollama(
-        model, messages, temperature=temperature, stream=True, timeout=timeout
-    ):
-        yield chunk
+    try:
+        async for chunk in _stream_ollama(
+            model, messages, temperature=temperature, stream=True, timeout=timeout
+        ):
+            yield chunk
+    except Exception as ollama_err:
+        # Ollama fallback also failed - try OpenRouter as last resort
+        or_key = getattr(settings, "openrouter_api_key", None)
+        if or_key:
+            or_model = "meta-llama/llama-3.3-70b-instruct:free"
+            logger.warning("Ollama fallback also failed (%s), trying OpenRouter %s", ollama_err, or_model)
+            async for chunk in _stream_openai_compatible(
+                or_model, messages,
+                base_url="https://openrouter.ai/api/v1",
+                api_key=or_key,
+                extra_headers={"HTTP-Referer": "https://ailinux.me", "X-Title": "AILinux Nova"},
+                temperature=temperature, stream=True, timeout=timeout,
+                provider="openrouter",
+            ):
+                yield chunk
+        else:
+            raise
 
 STRUCTURE_PROMPT_MARKER = "nova_format_guideline"
 STRUCTURE_PROMPT = (
@@ -113,8 +131,8 @@ GEMINI_MODEL_ALIASES = {
 OLLAMA_MODEL_ALIASES = {
     "gpt-oss:cloud/120b": "gpt-oss:120b-cloud",
     "gpt-oss:cloud/20b": "gpt-oss:20b-cloud",
-    "llama3.2:latest": "gpt-oss:20b-cloud",
-    "llama3.2": "gpt-oss:20b-cloud",
+    "llama3.2:latest": "qwen3:8b",
+    "llama3.2": "qwen3:8b",
 }
 
 ANTHROPIC_MODEL_ALIASES = {

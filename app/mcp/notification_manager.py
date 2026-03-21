@@ -58,25 +58,25 @@ DISPATCH_AGENT_TIMEOUT = 300
 
 EVENT_TYPES = {
     "ops.error":            {"agent": "codex-mcp",   "priority": "high"},
-    "ops.repeated_error":   {"agent": "gemini-mcp",  "priority": "high"},
+    "ops.repeated_error":   {"agent": "codex-mcp",  "priority": "high"},
     "ops.service_down":     {"agent": "codex-mcp",   "priority": "critical"},
     "ops.performance":      {"agent": "codex-mcp",   "priority": "normal"},
-    "support.general":      {"agent": "claude-mcp",  "priority": "normal"},
-    "support.install":      {"agent": "claude-mcp",  "priority": "normal"},
-    "support.login":        {"agent": "claude-mcp",  "priority": "high"},
+    "support.general":      {"agent": "codex-mcp",  "priority": "high"},
+    "support.install":      {"agent": "codex-mcp",   "priority": "high"},
+    "support.login":        {"agent": "codex-mcp",  "priority": "high"},
     "support.bug_report":   {"agent": "codex-mcp",   "priority": "high"},
-    "support.feature_req":  {"agent": "gemini-mcp",  "priority": "low"},
-    "forum.question":       {"agent": "claude-mcp",  "priority": "normal"},
-    "forum.support":        {"agent": "claude-mcp",  "priority": "normal"},
+    "support.feature_req":  {"agent": "codex-mcp",   "priority": "normal"},
+    "forum.question":       {"agent": "codex-mcp",  "priority": "high"},
+    "forum.support":        {"agent": "codex-mcp",  "priority": "high"},
     "forum.feedback":       {"agent": None,          "priority": "low"},
     "forum.spam":           {"agent": None,          "priority": "low"},
-    "mail.support":         {"agent": "claude-mcp",  "priority": "normal"},
-    "mail.research":        {"agent": "codex-mcp",   "priority": "normal"},
+    "mail.support":         {"agent": "codex-mcp",  "priority": "high"},
+    "mail.research":        {"agent": "codex-mcp",  "priority": "high"},
     "mail.spam":            {"agent": None,          "priority": "low"},
-    "wp.comment":           {"agent": "claude-mcp",  "priority": "low"},
+    "wp.comment":           {"agent": "codex-mcp",   "priority": "low"},
     "wp.update":            {"agent": None,          "priority": "low"},
     "incident.auth":        {"agent": "codex-mcp",   "priority": "critical"},
-    "incident.service":     {"agent": "gemini-mcp",  "priority": "critical"},
+    "incident.service":     {"agent": "codex-mcp",   "priority": "critical"},
 }
 
 _CLASSIFY_RULES = [
@@ -895,18 +895,50 @@ async def handle_notify_clear(params: Dict[str, Any]) -> Dict:
 
 async def handle_notify_send(params: Dict[str, Any]) -> Dict:
     try:
-        title = params.get("title", "").strip()
+        # --- Input validation ---
+        VALID_SOURCES = {SRC_SYSTEM, SRC_AGENT, SRC_FORUM, SRC_MAIL, SRC_MCP, SRC_MANUAL, SRC_WORDPRESS}
+        VALID_PRIORITIES = {PRIO_LOW, PRIO_NORMAL, PRIO_HIGH, PRIO_CRITICAL, None}
+        MAX_TITLE = 300
+        MAX_BODY = 10_000
+        MAX_METADATA_SIZE = 5_000
+
+        title = str(params.get("title", "")).strip()[:MAX_TITLE]
         if not title:
-            return {"error": "Parameter \'title\' fehlt"}
+            return {"error": "Parameter 'title' fehlt"}
+
+        body = str(params.get("body", ""))[:MAX_BODY]
+
+        source = str(params.get("source", SRC_MANUAL)).strip()
+        if source not in VALID_SOURCES:
+            return {"error": f"Invalid source: {source}. Allowed: {', '.join(sorted(VALID_SOURCES))}"}
+
+        priority = params.get("priority")
+        if priority is not None:
+            priority = str(priority).strip().lower()
+            if priority not in VALID_PRIORITIES:
+                return {"error": f"Invalid priority: {priority}. Allowed: low, normal, high, critical"}
+
+        tags = params.get("tags", [])
+        if not isinstance(tags, list):
+            tags = [str(tags)] if tags else []
+        tags = [str(t).strip()[:50] for t in tags[:20]]
+
+        metadata = params.get("metadata", {})
+        if not isinstance(metadata, dict):
+            metadata = {}
+        import json as _json
+        if len(_json.dumps(metadata, default=str)) > MAX_METADATA_SIZE:
+            return {"error": f"metadata too large (max {MAX_METADATA_SIZE} chars serialized)"}
+
+        action_url = str(params.get("action_url", ""))[:500]
+        auto_resolve = bool(params.get("auto_resolve", False))
+
         entry = await create_event(
-            title=title, body=params.get("body",""),
-            source=params.get("source", SRC_MANUAL),
-            priority=params.get("priority"),
+            title=title, body=body,
+            source=source, priority=priority,
             event_type=params.get("event_type"),
-            tags=params.get("tags",[]),
-            action_url=params.get("action_url",""),
-            metadata=params.get("metadata",{}),
-            auto_resolve=params.get("auto_resolve", False),
+            tags=tags, action_url=action_url,
+            metadata=metadata, auto_resolve=auto_resolve,
         )
         if entry is None:
             return {"success": True, "action": "deduplicated"}

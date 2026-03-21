@@ -451,6 +451,7 @@ class SpawnedSession:
             "msg_count":     len(self.messages),
             "message_count": len(self.messages),
             "timeout_seconds": getattr(self, "timeout_seconds", None),
+            "last_response": getattr(self, "last_response", None),
         }
 
 

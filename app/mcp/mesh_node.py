@@ -227,7 +227,9 @@ class MeshNode:
         # Parse address
         if "://" not in address:
             address = f"ws://{address}"
-        ws_url = f"{address}/mesh?node_id={self.node_id}&port={self.listen_port}"
+        import os as _os
+        _mesh_token = _os.environ.get("FEDERATION_SECRET", "")
+        ws_url = f"{address}/mesh?node_id={self.node_id}&port={self.listen_port}&token={_mesh_token}"
         
         try:
             ws = await self._client_session.ws_connect(ws_url, heartbeat=30)
@@ -291,7 +293,16 @@ class MeshNode:
         
         remote_id = request.query.get("node_id", "")
         remote_port = request.query.get("port", "")
-        
+        mesh_token = request.query.get("token", "")
+
+        # Validate mesh token
+        import os as _os
+        expected = _os.environ.get("FEDERATION_SECRET", "")
+        if expected and mesh_token != expected:
+            logger.warning(f"Rejected unauthenticated mesh peer: {remote_id} from {request.remote}")
+            await ws.close(code=4003, message=b"Forbidden: invalid mesh token")
+            return ws
+
         logger.info(f"Incoming connection from {remote_id}")
         
         peer = None

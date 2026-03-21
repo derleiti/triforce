@@ -35,6 +35,14 @@ logger = logging.getLogger("ailinux.user_api")
 
 router = APIRouter()
 
+import os as _os
+
+def _require_user_api_key(x_internal_key: str = Header(default="")):
+    """Require internal key for user management operations."""
+    expected = _os.environ.get("INTERNAL_API_KEY", "")
+    if not expected or x_internal_key != expected:
+        raise HTTPException(status_code=403, detail="Forbidden: invalid internal key")
+
 # ============================================================================
 # Pydantic Models
 # ============================================================================
@@ -94,12 +102,13 @@ def _get_webhook_secret() -> str:
 async def verify_webhook_signature(request: Request, x_webhook_signature: str = Header(None)) -> bool:
     """
     Verifiziert WordPress Webhook Signatur mittels HMAC-SHA256.
+    Raises HTTPException(403) on failure. Use as Depends().
 
     WordPress sendet: X-Webhook-Signature: sha256=<hex_digest>
     """
     if not x_webhook_signature:
         logger.warning("Webhook request without signature")
-        return False
+        raise HTTPException(status_code=403, detail="Missing webhook signature")
 
     webhook_secret = _get_webhook_secret()
 
@@ -123,7 +132,8 @@ async def verify_webhook_signature(request: Request, x_webhook_signature: str = 
     is_valid = hmac.compare_digest(expected_sig, provided_sig)
 
     if not is_valid:
-        logger.warning("Invalid webhook signature")
+        logger.warning("Invalid webhook signature from %s", request.client.host if request.client else "?")
+        raise HTTPException(status_code=403, detail="Invalid webhook signature")
 
     return is_valid
 
@@ -133,7 +143,7 @@ async def verify_webhook_signature(request: Request, x_webhook_signature: str = 
 # ============================================================================
 
 @router.post("/webhook/user-created")
-async def webhook_user_created(payload: WebhookPayload):
+async def webhook_user_created(payload: WebhookPayload, _sig: bool = Depends(verify_webhook_signature)):
     """
     WordPress ruft diesen Endpoint auf wenn ein neuer User registriert wird.
     
@@ -161,11 +171,14 @@ async def webhook_user_created(payload: WebhookPayload):
         return {"success": True, "user": result}
         
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)[:200])
+    except Exception as e:
+        logger.error("Unexpected error: %s", e, exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal server error") from e
 
 
 @router.post("/webhook/payment-success")
-async def webhook_payment_success(payload: WebhookPayload):
+async def webhook_payment_success(payload: WebhookPayload, _sig: bool = Depends(verify_webhook_signature)):
     """
     WordPress ruft diesen Endpoint auf bei erfolgreicher Zahlung.
     
@@ -202,11 +215,14 @@ async def webhook_payment_success(payload: WebhookPayload):
             raise HTTPException(status_code=404, detail="User not found")
             
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)[:200])
+    except Exception as e:
+        logger.error("Unexpected error: %s", e, exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal server error") from e
 
 
 @router.post("/webhook/subscription-cancelled")
-async def webhook_subscription_cancelled(payload: WebhookPayload):
+async def webhook_subscription_cancelled(payload: WebhookPayload, _sig: bool = Depends(verify_webhook_signature)):
     """Downgrade auf Free bei Abo-Kündigung"""
     try:
         success = await user_manager.upgrade_tier(
@@ -221,7 +237,8 @@ async def webhook_subscription_cancelled(payload: WebhookPayload):
             raise HTTPException(status_code=404, detail="User not found")
             
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error("Subscription cancellation failed for %s: %s", payload.user_id, e, exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal server error") from e
 
 
 # ============================================================================
@@ -229,7 +246,7 @@ async def webhook_subscription_cancelled(payload: WebhookPayload):
 # ============================================================================
 
 @router.post("/users/create")
-async def create_user(request: UserCreateRequest):
+async def create_user(request: UserCreateRequest, _auth: None = Depends(_require_user_api_key)):
     """Erstellt neuen User (Admin oder WordPress)"""
     try:
         result = await user_manager.create_user(
@@ -240,7 +257,10 @@ async def create_user(request: UserCreateRequest):
         )
         return result
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)[:200])
+    except Exception as e:
+        logger.error("Unexpected error: %s", e, exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal server error") from e
 
 
 @router.get("/users/{user_id}")
@@ -268,7 +288,7 @@ async def get_user_quota(user_id: str):
 
 
 @router.post("/users/{user_id}/upgrade")
-async def upgrade_user(user_id: str, request: UserUpgradeRequest):
+async def upgrade_user(user_id: str, request: UserUpgradeRequest, _auth: None = Depends(_require_user_api_key)):
     """Upgraded User Tier"""
     try:
         expires = None
@@ -286,7 +306,10 @@ async def upgrade_user(user_id: str, request: UserUpgradeRequest):
         raise HTTPException(status_code=404, detail="User not found")
         
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)[:200])
+    except Exception as e:
+        logger.error("Unexpected error: %s", e, exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal server error") from e
 
 
 # ============================================================================
@@ -294,7 +317,7 @@ async def upgrade_user(user_id: str, request: UserUpgradeRequest):
 # ============================================================================
 
 @router.post("/users/{user_id}/devices")
-async def register_device(user_id: str, request: DeviceRegisterRequest):
+async def register_device(user_id: str, request: DeviceRegisterRequest, _auth: None = Depends(_require_user_api_key)):
     """Registriert neues Gerät"""
     try:
         result = await user_manager.register_device(
@@ -304,7 +327,10 @@ async def register_device(user_id: str, request: DeviceRegisterRequest):
         )
         return result
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)[:200])
+    except Exception as e:
+        logger.error("Unexpected error: %s", e, exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal server error") from e
 
 
 @router.get("/users/{user_id}/devices")
@@ -330,7 +356,7 @@ async def list_devices(user_id: str):
 
 
 @router.delete("/users/{user_id}/devices/{device_id}")
-async def revoke_device(user_id: str, device_id: str):
+async def revoke_device(user_id: str, device_id: str, _auth: None = Depends(_require_user_api_key)):
     """Deaktiviert ein Gerät"""
     user = await user_manager.get_user(user_id)
     if not user:
@@ -359,7 +385,7 @@ async def get_settings(user_id: str):
 
 
 @router.post("/users/{user_id}/settings")
-async def sync_settings(user_id: str, request: SettingsSyncRequest):
+async def sync_settings(user_id: str, request: SettingsSyncRequest, _auth: None = Depends(_require_user_api_key)):
     """Synchronisiert Settings (Client → Server)"""
     try:
         settings = await user_manager.sync_settings(
@@ -369,7 +395,10 @@ async def sync_settings(user_id: str, request: SettingsSyncRequest):
         )
         return settings.to_dict()
     except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=404, detail=str(e)[:200])
+    except Exception as e:
+        logger.error("Unexpected error: %s", e, exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal server error") from e
 
 
 # ============================================================================
@@ -390,7 +419,7 @@ async def list_credentials(user_id: str):
 
 
 @router.post("/users/{user_id}/credentials")
-async def set_credential(user_id: str, request: CredentialSetRequest):
+async def set_credential(user_id: str, request: CredentialSetRequest, _auth: None = Depends(_require_user_api_key)):
     """Speichert API Key für Provider"""
     user = await user_manager.get_user(user_id)
     if not user:
@@ -404,7 +433,7 @@ async def set_credential(user_id: str, request: CredentialSetRequest):
 
 
 @router.delete("/users/{user_id}/credentials/{provider}")
-async def remove_credential(user_id: str, provider: str):
+async def remove_credential(user_id: str, provider: str, _auth: None = Depends(_require_user_api_key)):
     """Entfernt API Key"""
     user = await user_manager.get_user(user_id)
     if not user:
@@ -513,14 +542,14 @@ async def get_auth_token(
 # ============================================================================
 
 @router.get("/admin/users")
-async def list_all_users(active_only: bool = True):
+async def list_all_users(active_only: bool = True, _auth: None = Depends(_require_user_api_key)):
     """Listet alle User (Admin-Endpoint)"""
     users = await user_manager.list_users(active_only=active_only)
     return {"users": users, "count": len(users)}
 
 
 @router.get("/admin/stats")
-async def get_admin_stats():
+async def get_admin_stats(_auth: None = Depends(_require_user_api_key),):
     """Statistiken über alle User"""
     all_users = await user_manager.list_users(active_only=False)
     

@@ -207,6 +207,14 @@ def _estimate_tokens(text: str) -> int:
     return max(1, len(text.split()))
 
 
+def _public_mcp_error_message(method: str | None, params: Any) -> str:
+    """Return a client-safe error message for MCP failures."""
+    if method == "tools/call" and isinstance(params, dict):
+        tool_name = params.get("name") or "unknown"
+        return f"Tool '{tool_name}' failed. See server logs for details."
+    return "Internal error"
+
+
 def _ensure_schema_items(schema: Any) -> Any:
     """Recursively ensure JSON schema arrays always define an items schema."""
     if isinstance(schema, dict):
@@ -4777,7 +4785,7 @@ async def mcp_messages_handler(request: Request, session_id: Optional[str] = Non
         error_msg = str(exc)
         mcp_logger.error(f"MCP_ERROR | Session: {session_id} | Error: {error_msg}")
         return JSONResponse(
-            content={"jsonrpc": "2.0", "error": {"code": -32000, "message": "Internal error", "data": error_msg}, "id": None},
+            content={"jsonrpc": "2.0", "error": {"code": -32000, "message": _public_mcp_error_message(method, params)}, "id": None},
             status_code=500
         )
 
@@ -4963,7 +4971,7 @@ async def _process_mcp_request(
                 pass
         return {
             "jsonrpc": "2.0",
-            "error": {"code": -32000, "message": str(e)},
+            "error": {"code": -32000, "message": _public_mcp_error_message(method, params)},
             "id": req_id
         }
 
