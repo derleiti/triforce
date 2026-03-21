@@ -877,7 +877,9 @@ class AgentController:
         if not instance:
             raise ValueError(f"Agent not found: {agent_id}")
 
-        if instance.status != AgentStatus.RUNNING:
+        if instance.config.agent_type == AgentType.API:
+            pass  # API agents don't need a running process
+        elif instance.status != AgentStatus.RUNNING:
             # Starte Agent wenn nicht laufend
             await self.start_agent(agent_id)
             await asyncio.sleep(3)  # Warte auf Start
