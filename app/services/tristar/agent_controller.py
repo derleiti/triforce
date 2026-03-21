@@ -973,23 +973,33 @@ class AgentController:
                 fallback_reason = None
                 lower_response = response.lower()
 
-                if agent_id == "claude-mcp" and "credit balance is too low" in lower_response:
-                    fallback_agent = "codex-mcp"
-                    fallback_reason = "claude_credit_balance_too_low"
-                elif agent_id == "ollama-claude-mcp" and "credit balance is too low" in lower_response:
+                # Quota/limit detection patterns
+                _is_quota = any(kw in lower_response for kw in (
+                    "quotaerror", "quota_exhausted", "usage limit",
+                    "api usage limits", "credit balance is too low",
+                    "resource_exhausted", "model_capacity_exhausted",
+                    "no capacity available", "status 429", "rate limit",
+                    "you've hit your usage limit", "you have reached your specified api usage limits",
+                ))
+
+                if _is_quota and agent_id == "claude-mcp":
+                    fallback_agent = "ollama-claude-mcp"  # kimi-k2.5:cloud
+                    fallback_reason = "claude_quota_to_ollama"
+                elif _is_quota and agent_id == "codex-mcp":
+                    fallback_agent = "ollama-codex-mcp"  # qwen3-coder:480b-cloud
+                    fallback_reason = "codex_quota_to_ollama"
+                elif _is_quota and agent_id == "gemini-mcp":
+                    fallback_agent = "ollama-openclaw-mcp"  # glm-5:cloud
+                    fallback_reason = "gemini_quota_to_ollama"
+                elif _is_quota and agent_id == "ollama-claude-mcp":
                     fallback_agent = "ollama-codex-mcp"
-                    fallback_reason = "ollama_claude_credit_balance_too_low"
+                    fallback_reason = "ollama_claude_quota_to_codex"
+                elif _is_quota and agent_id == "ollama-codex-mcp":
+                    fallback_agent = "ollama-openclaw-mcp"
+                    fallback_reason = "ollama_codex_quota_to_openclaw"
                 elif agent_id == "opencode-mcp" and "sdk.languagemodel is not a function" in lower_response:
-                    fallback_agent = "codex-mcp"
-                    fallback_reason = "opencode_sdk_language_model_missing"
-                elif agent_id == "gemini-mcp" and (
-                    "resource_exhausted" in lower_response
-                    or "model_capacity_exhausted" in lower_response
-                    or "no capacity available" in lower_response
-                    or "status 429" in lower_response
-                ):
-                    fallback_agent = "codex-mcp"
-                    fallback_reason = "gemini_capacity_exhausted"
+                    fallback_agent = "ollama-codex-mcp"
+                    fallback_reason = "opencode_sdk_missing"
 
                 # Einmaliger Fallback, um Schleifen zu vermeiden
                 if fallback_agent and "[fallback-from:" not in message:
