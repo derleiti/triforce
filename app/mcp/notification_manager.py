@@ -555,24 +555,31 @@ async def _cloud_mail_fallback(event: Dict) -> bool:
         msg = mail_read(uid)
         body = msg.get("body", "")[:2000]
 
-        # Use Groq cloud API (verified working, fast)
-        import httpx
+        # Use Groq cloud API directly (internal proxy returns SSE, not JSON)
+        import httpx, os as _os_cf
+        groq_key = _os_cf.environ.get("GROQ_API_KEY", "")
+        if not groq_key:
+            logger.warning("cloud_fallback: no GROQ_API_KEY")
+            return False
         async with httpx.AsyncClient(timeout=30) as client:
-            r = await client.post("http://localhost:9000/v1/chat/completions", json={
-                "model": "groq/llama-3.3-70b-versatile",
-                "messages": [
-                    {"role": "system", "content": (
-                        "Du bist Nova, der KI-Assistent von AILinux. "
-                        "Antworte kurz, freundlich und hilfreich auf die folgende E-Mail. "
-                        "Unterschreibe mit: Nova AI — ailinux.me"
-                    )},
-                    {"role": "user", "content": f"Betreff: {subject}\n\n{body}"}
-                ],
-                "max_tokens": 500, "temperature": 0.7, "stream": False,
-            })
+            r = await client.post("https://api.groq.com/openai/v1/chat/completions",
+                headers={"Authorization": f"Bearer {groq_key}", "Content-Type": "application/json"},
+                json={
+                    "model": "llama-3.3-70b-versatile",
+                    "messages": [
+                        {"role": "system", "content": (
+                            "Du bist Nova, der KI-Assistent von AILinux. "
+                            "Antworte kurz, freundlich und hilfreich auf die folgende E-Mail. "
+                            "Unterschreibe mit: Nova AI — ailinux.me"
+                        )},
+                        {"role": "user", "content": f"Betreff: {subject}\n\n{body}"}
+                    ],
+                    "max_tokens": 500, "temperature": 0.7,
+                })
             if r.status_code != 200:
+                logger.warning(f"cloud_fallback: Groq {r.status_code}: {r.text[:200]}")
                 return False
-            reply_text = r.json().get("text", "")
+            reply_text = r.json().get("choices", [{}])[0].get("message", {}).get("content", "")
             if not reply_text:
                 return False
 
@@ -625,12 +632,18 @@ async def _direct_mail_reply(event: Dict) -> bool:
         except Exception:
             mail_body = body[:3000]
 
-        # Generate reply via Groq (fast, free-ish)
+        # Generate reply via Groq API directly (internal proxy streams SSE, not JSON)
+        import os as _os_dm
+        groq_key = _os_dm.environ.get("GROQ_API_KEY", "")
+        if not groq_key:
+            logger.warning("direct_mail_reply: no GROQ_API_KEY")
+            return False
         async with httpx.AsyncClient(timeout=30.0) as client:
             resp = await client.post(
-                "http://localhost:9000/v1/chat/completions",
+                "https://api.groq.com/openai/v1/chat/completions",
+                headers={"Authorization": f"Bearer {groq_key}", "Content-Type": "application/json"},
                 json={
-                    "model": "groq/llama-3.3-70b-versatile",
+                    "model": "llama-3.3-70b-versatile",
                     "messages": [
                         {"role": "system", "content": (
                             "Du bist Nova, der KI-Assistent von AILinux (ailinux.me). "
@@ -640,15 +653,14 @@ async def _direct_mail_reply(event: Dict) -> bool:
                         )},
                         {"role": "user", "content": f"Betreff: {subject}\n\n{mail_body}"}
                     ],
-                    "max_tokens": 500, "temperature": 0.7, "stream": False,
+                    "max_tokens": 500, "temperature": 0.7,
                 },
             )
             if resp.status_code != 200:
-                logger.warning(f"direct_mail_reply: Groq returned {resp.status_code}")
+                logger.warning(f"direct_mail_reply: Groq returned {resp.status_code}: {resp.text[:200]}")
                 return False
             data = resp.json()
             reply_text = (
-                data.get("text") or
                 data.get("choices", [{}])[0].get("message", {}).get("content") or
                 ""
             )
