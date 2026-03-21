@@ -743,7 +743,7 @@ async def _poll_mail():
     await asyncio.sleep(60)
     while True:
         try:
-            from app.services.mail_service import mail_inbox
+            from app.services.mail_service import mail_inbox, mail_mark_seen
             for msg in mail_inbox(limit=10, folder="INBOX"):
                 uid = str(msg.get("uid",""))
                 if not uid or msg.get("seen"):
@@ -759,6 +759,11 @@ async def _poll_mail():
                     source=SRC_MAIL, tags=["mail","inbox"],
                     metadata={"uid": uid, "from": sender, "subject": subject},
                 )
+                # Mark as seen in IMAP so it doesn't get reprocessed after restart
+                try:
+                    mail_mark_seen(uid)
+                except Exception:
+                    pass  # Non-critical — _seen_check is the primary dedup
         except Exception as e:
             logger.debug(f"Mail poller error: {e}")
         await asyncio.sleep(MAIL_POLL_INTERVAL)
