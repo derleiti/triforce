@@ -705,7 +705,7 @@ async def _poll_forum():
             result = await handle_flarum_discussions({"limit": 10, "sort": "-lastPostedAt"})
             for disc in result.get("discussions", []):
                 did = str(disc.get("id",""))
-                lp = disc.get("lastPostNumber", 0)
+                lp = disc.get("lastPostNumber") or disc.get("commentCount") or 0
                 key = f"{did}:{lp}"
                 if key in _last_seen["forum"]:
                     continue

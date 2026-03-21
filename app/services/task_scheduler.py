@@ -384,6 +384,8 @@ class TaskScheduler:
             await self._notify_if_new(task, result)
 
     async def _check_new_forum_posts(self, result: Any):
+        # v2: Forum processing moved to notification_manager.py pollers
+        return
         """Neue Flarum-Posts → Support-Agent spawnen."""
         try:
             if not isinstance(result, dict):
@@ -422,6 +424,8 @@ class TaskScheduler:
             logger.debug(f"_check_new_forum_posts Fehler: {e}")
 
     async def _process_mail(self, result: Any):
+        # v2: Mail processing moved to notification_manager.py pollers
+        return
         """
         Eingehende Mails verarbeiten.
         Mail-Guard:
