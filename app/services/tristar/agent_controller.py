@@ -415,12 +415,12 @@ DEFAULT_AGENTS: List[Dict[str, Any]] = [
         "env": {"API_MODEL": "openrouter/meta-llama/llama-3.3-70b-instruct:free"},
     },
     {
-        "agent_id": "api-ollama-cloud",
+        "agent_id": "api-cerebras",
         "agent_type": "api",
-        "name": "Ollama Cloud API Agent (Kimi K2.5 / GLM-5)",
-        "description": "API-basierter Agent via Ollama Cloud Models",
+        "name": "Cerebras API Agent (Llama 3.3 70B)",
+        "description": "API-basierter Agent via Cerebras — ultra-fast inference",
         "command": [],
-        "env": {"API_MODEL": "ollama/kimi-k2.5:cloud,ollama/glm-5:cloud,ollama/qwen3-coder:480b-cloud"},
+        "env": {"API_MODEL": "cerebras/llama-3.3-70b"},
     },
 ]
 
@@ -1075,8 +1075,8 @@ class AgentController:
                     fallback_agent = "api-groq"
                     fallback_reason = "ollama_openclaw_to_api_groq"
                 elif _is_quota and agent_id == "api-groq":
-                    fallback_agent = "api-ollama-cloud"
-                    fallback_reason = "api_groq_to_ollama_cloud"
+                    fallback_agent = "api-cerebras"
+                    fallback_reason = "api_groq_to_cerebras"
                 elif agent_id == "opencode-mcp" and "sdk.languagemodel is not a function" in lower_response:
                     fallback_agent = "ollama-codex-mcp"
                     fallback_reason = "opencode_sdk_missing"

@@ -49,8 +49,8 @@ DEFAULT_AGENT_TOOLS = [
 
 MODEL_PRIORITY = [
     "groq/llama-3.3-70b-versatile",
+    "groq/llama-3.3-70b-specdec",
     "cerebras/llama-3.3-70b",
-    "openrouter/meta-llama/llama-3.3-70b-instruct:free",
 ]
 
 
