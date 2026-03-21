@@ -114,6 +114,17 @@ async def analyze(
             resolved_bytes,
         )
 
+    # === Federation Proxy: route cloud vision through master if no local API key ===
+    if model.provider not in ("ollama",):
+        import os as _os
+        _node_id = _os.getenv("FEDERATION_NODE_ID", "")
+        if _node_id not in ("hetzner", ""):
+            from .api_vault import api_vault as _av
+            _provider_key = _av.get_key(model.provider)
+            if not _provider_key:
+                logger.info("Federation vision proxy: routing %s through master (no local key)", request_model)
+                return await _federation_proxy_vision(request_model, prompt, image_url, image_bytes, content_type)
+
     if model.provider == "gemini":
         settings = get_settings()
         if not settings.gemini_api_key:
@@ -783,3 +794,49 @@ async def _analyze_cloudflare_vision(
         if choices:
             return choices[0].get("message", {}).get("content", "")
         return str(result)[:500]
+
+
+# === Federation Vision Proxy ================================================
+async def _federation_proxy_vision(
+    model: str, prompt: str,
+    image_url: Optional[str] = None,
+    image_bytes: Optional[bytes] = None,
+    content_type: Optional[str] = None,
+) -> str:
+    """Proxy vision request through federation master (hetzner) via WireGuard."""
+    import base64 as _b64
+    master_url = "http://10.10.0.1:9000"
+    import os as _os2
+    _creds = _os2.getenv("FEDERATION_BASIC_AUTH", "")
+    if not _creds:
+        raise api_error("Federation proxy not configured (FEDERATION_BASIC_AUTH missing)", status_code=503, code="proxy_not_configured")
+    basic_auth = _b64.b64encode(_creds.encode()).decode()
+
+    if image_url:
+        # URL-based: simple JSON POST
+        payload = {"model": model, "prompt": prompt, "image_url": image_url}
+        async with httpx.AsyncClient(timeout=httpx.Timeout(120)) as client:
+            resp = await client.post(
+                f"{master_url}/v1/images/analyze",
+                headers={"Authorization": f"Basic {basic_auth}", "Content-Type": "application/json"},
+                json=payload,
+            )
+            if resp.status_code != 200:
+                raise api_error(f"Federation vision proxy error: {resp.text[:300]}", status_code=resp.status_code, code="federation_proxy_error")
+            return resp.json().get("text", "")
+    elif image_bytes:
+        # Upload-based: multipart
+        files = {"file": ("image.jpg", image_bytes, content_type or "image/jpeg")}
+        data = {"model": model, "prompt": prompt}
+        async with httpx.AsyncClient(timeout=httpx.Timeout(120)) as client:
+            resp = await client.post(
+                f"{master_url}/v1/images/analyze/upload",
+                headers={"Authorization": f"Basic {basic_auth}"},
+                files=files,
+                data=data,
+            )
+            if resp.status_code != 200:
+                raise api_error(f"Federation vision proxy error: {resp.text[:300]}", status_code=resp.status_code, code="federation_proxy_error")
+            return resp.json().get("text", "")
+    else:
+        raise api_error("No image data for federation proxy", status_code=422, code="missing_image")

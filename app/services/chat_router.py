@@ -389,7 +389,8 @@ class APIProxy:
         api_key = api_vault.get_key(provider)
         
         if not api_key:
-            raise RuntimeError(f"No API key for provider: {provider}")
+            # Federation-Proxy: route through master node if we're not the master
+            return await self._federation_proxy_chat(model, messages, temperature, max_tokens)
         
         # Provider-spezifische Implementierung
         result = None
@@ -599,6 +600,56 @@ class APIProxy:
                     raise RuntimeError(f"OpenRouter API error: {error}")
                 data = await resp.json()
                 return data["choices"][0]["message"]["content"]
+
+    async def _federation_proxy_chat(
+        self, model: str, messages: list, temp: float, max_tokens: int
+    ) -> str:
+        """Proxy chat request through federation master (hetzner) when no local API key."""
+        import os, json as _json, base64
+        node_id = os.getenv("FEDERATION_NODE_ID", "")
+        if node_id in ("hetzner", ""):
+            raise RuntimeError(f"No API key for provider: {model.split('/')[0]} (master node, no fallback)")
+        
+        master_url = "http://10.10.0.1:9000"
+        fed_token = os.getenv("FEDERATION_TOKEN", "")
+        _creds = os.getenv("FEDERATION_BASIC_AUTH", "")
+        if not _creds:
+            raise RuntimeError(f"No API key for provider: {model.split('/')[0]} (no FEDERATION_BASIC_AUTH for proxy)")
+        basic_auth = base64.b64encode(_creds.encode()).decode()
+        
+        import logging
+        logging.getLogger("ailinux.chat_router").info(
+            "Federation proxy: routing %s through master (%s)", model, master_url
+        )
+        
+        payload = {
+            "model": model,
+            "messages": messages,
+            "temperature": temp,
+            "max_tokens": max_tokens,
+            "stream": False,
+        }
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Basic {basic_auth}",
+        }
+        
+        async with aiohttp.ClientSession(timeout=self.timeout) as session:
+            async with session.post(
+                f"{master_url}/v1/chat/completions",
+                headers=headers,
+                json=payload,
+            ) as resp:
+                if resp.status != 200:
+                    error = await resp.text()
+                    raise RuntimeError(f"Federation proxy error ({resp.status}): {error[:500]}")
+                data = await resp.json()
+                # OpenAI-compat format
+                choices = data.get("choices", [])
+                if choices:
+                    return choices[0].get("message", {}).get("content", "")
+                # Fallback: direct text
+                return data.get("text", data.get("content", str(data)))
 
 
 # Singletons
