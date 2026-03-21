@@ -431,7 +431,8 @@ class SpawnedSession:
 
     @property
     def expired(self) -> bool:
-        return (time.time() - self.last_active) > AGENT_TIMEOUT_SECONDS
+        timeout = getattr(self, "timeout_seconds", AGENT_TIMEOUT_SECONDS)
+        return (time.time() - self.last_active) > timeout
 
     @property
     def age_minutes(self) -> float:
@@ -662,6 +663,7 @@ class AgentSpawner:
         context:    str,
         source:     str = "auto",
         agent_id:   Optional[str] = None,
+        timeout_seconds: int = None,
     ) -> Dict:
         if not agent_id:
             agent_id = self._select_agent(issue_type)
@@ -681,6 +683,8 @@ class AgentSpawner:
         )
 
         session = SpawnedSession(session_id, agent_id, issue_type, system_prompt, tier=2)
+        if timeout_seconds:
+            session.timeout_seconds = timeout_seconds
         self._sessions[session_id] = session
 
         logger.info(f"Spawning {agent_id} (tier=2) | type={issue_type} | src={source}")

@@ -122,7 +122,15 @@ async def _get_redis():
 # -- Fingerprint & Dedup --
 
 def _fingerprint(source: str, event_type: str, content: str) -> str:
-    raw = f"{source}:{event_type}:{content[:500]}".lower()
+    import re
+    # Normalize: strip timestamps, PIDs, session IDs, line numbers for stable dedup
+    normalized = content[:500]
+    normalized = re.sub(r"\d{4}-\d{2}-\d{2}[Tt ]\d{2}:\d{2}:\d{2}[^\s]*", "", normalized)  # timestamps
+    normalized = re.sub(r"\[\d+\]", "", normalized)  # PIDs like [581770]
+    normalized = re.sub(r"[Ss]pawn-[a-fA-F0-9]+", "spawn-X", normalized)  # session IDs
+    normalized = re.sub(r"id=[a-fA-F0-9-]{6,}", "id=X", normalized)  # notification IDs
+    normalized = re.sub(r"\s+", " ", normalized).strip().lower()  # collapse whitespace + lowercase
+    raw = f"{source}:{event_type}:{normalized}"
     return hashlib.sha1(raw.encode()).hexdigest()[:16]
 
 
@@ -514,6 +522,19 @@ async def _dispatch_event(event: Dict) -> None:
     event_type = event.get("event_type", "")
     priority = event.get("priority", "normal")
     event_id = event.get("id", "")
+    tags = event.get("tags", [])
+
+    # Skip dispatch for internal/noise events
+    SKIP_TAGS = {"agent-spawn", "scheduler", "auto", "log-monitor", "init",
+                 "triforce", "warning", "worker-result", "error"}
+    if tags and any(t in SKIP_TAGS for t in tags):
+        return
+
+    # Skip agent-spawn notifications (would create feedback loops)
+    title = event.get("title", "")
+    if any(kw in title.lower() for kw in ("agent gespawnt", "gespawnt:", "spawn", "worker-result")):
+        return
+
     if priority not in (PRIO_HIGH, PRIO_CRITICAL):
         return
     rule = EVENT_TYPES.get(event_type, {})
@@ -565,6 +586,7 @@ async def _dispatch_event(event: Dict) -> None:
         result = await spawner.spawn_for_issue(
             issue_type=issue_type, context=context,
             source=f"notifier:{event_id}", agent_id=agent_id,
+            timeout_seconds=DISPATCH_AGENT_TIMEOUT,  # 5min auto-shutdown
         )
         sid = result.get("session_id") if isinstance(result, dict) else None
         logger.info(f"DISPATCH: {event_type} -> {agent_id}/{issue_type} (session={sid})")
