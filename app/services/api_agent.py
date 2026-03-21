@@ -40,9 +40,10 @@ PROVIDERS = {
 DEFAULT_AGENT_TOOLS = [
     "mail_inbox", "mail_read", "mail_send", "mail_mark_seen",
     "notify_send", "notify_list", "notify_read",
+    # V5 names → old handler names resolved via alias map
     "code_read", "code_search", "code_tree",
     "memory_search", "memory_store",
-    "health", "status", "safe_probe",
+    "safe_probe",
     "flarum_discussions", "flarum_discussion_get", "flarum_post_create",
     "search", "fetch",
 ]
@@ -130,6 +131,14 @@ def _get_all_handlers() -> Dict:
         for k, v in MCP_HANDLERS.items():
             if k not in handlers:
                 handlers[k] = v
+    except Exception:
+        pass
+    # Apply V5 aliases: register handlers under canonical V5 names
+    try:
+        from app.mcp.tool_registry_v5 import V5_ALIASES
+        for old_name, canon_name in V5_ALIASES.items():
+            if canon_name not in handlers and old_name in handlers:
+                handlers[canon_name] = handlers[old_name]
     except Exception:
         pass
     return handlers
