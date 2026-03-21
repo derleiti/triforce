@@ -326,7 +326,7 @@ async def perf_reset(_: None = Depends(_require_perf_admin)):
 
 
 @router.post("/toggle")
-async def perf_toggle(enabled: Optional[bool] = None):
+async def perf_toggle(enabled: Optional[bool] = None, _: None = Depends(_require_perf_admin)):
     """Performance-Monitoring ein/ausschalten."""
     if enabled is not None:
         monitor.enabled = enabled
