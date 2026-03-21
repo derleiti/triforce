@@ -95,9 +95,12 @@ $height = $atts["height"] ?? "auto";
                 <input type="text" id="vision-url" placeholder="Or paste image URL..." aria-label="Image URL">
                 <div class="nova-select-wrap">
                     <select id="vision-model" aria-label="Vision model selection" size="10" class="nova-select-scroll">
-                        <option value="gemini/gemini-2.0-flash">Gemini 2.0 Flash</option>
+                        <option value="gemini/gemini-2.0-flash" selected>Gemini 2.0 Flash</option>
+                        <option value="gemini/gemini-2.5-flash-preview-04-17">Gemini 2.5 Flash</option>
+                        <option value="openrouter/google/gemini-2.5-pro-preview-03-25">Gemini 2.5 Pro (OR)</option>
                         <option value="gemini/gemini-1.5-pro">Gemini 1.5 Pro</option>
                         <option value="anthropic/claude-3.5-sonnet">Claude 3.5 Sonnet</option>
+                        <option value="cloudflare/@cf/meta/llama-3.2-11b-vision-instruct">Llama 3.2 Vision (CF)</option>
                     </select>
                 </div>
             </div>
