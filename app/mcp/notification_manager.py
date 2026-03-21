@@ -281,7 +281,236 @@ def _rate_ok(agent_id: str) -> bool:
     return False
 
 
+# -- Task-Specific Prompts per Event Type --
+
+TASK_PROMPTS = {
+    "mail.support": (
+        "SUPPORT-MAIL BEARBEITEN\n"
+        "Du hast eine neue Support-Mail erhalten.\n\n"
+        "VORGEHEN:\n"
+        "1. mail_read mit uid={uid} aufrufen um die vollstaendige Mail zu lesen\n"
+        "2. Anliegen analysieren und klassifizieren\n"
+        "3. Bei Account-/Login-Problem: NICHT selbst aendern, sondern Rueckfrage-Mail senden\n"
+        "4. Bei technischer Frage: Loesung recherchieren (web_search falls noetig)\n"
+        "5. Antwort verfassen und via mail_send an den Absender senden\n"
+        "6. notify_read mit id='{event_id}' und resolve=true aufrufen\n"
+        "7. Antworte mit TASK_COMPLETE\n\n"
+        "TOOLS: mail_read, mail_send, web_search, notify_read\n"
+        "SICHERHEIT: Keine Passwort-Resets, keine Account-Aenderungen ohne Zombie-Freigabe"
+    ),
+    "mail.research": (
+        "RESEARCH-MAIL VERARBEITEN\n"
+        "Eine Research-Anfrage ist eingegangen.\n\n"
+        "VORGEHEN:\n"
+        "1. mail_read mit uid={uid} aufrufen um den vollen Inhalt zu lesen\n"
+        "2. Thema identifizieren und Codebase durchsuchen (code_search, code_read)\n"
+        "3. Web-Recherche fuer Best Practices (web_search)\n"
+        "4. Findings als strukturierte Mail senden:\n"
+        "   Betreff: [RESEARCH] <Thema>\n"
+        "   Format: FINDING / DATEI / PROBLEM / VORSCHLAG / RISIKO / AUFWAND\n"
+        "5. Findings in memory_store speichern\n"
+        "6. notify_read mit id='{event_id}' und resolve=true\n"
+        "7. Antworte mit TASK_COMPLETE\n\n"
+        "TOOLS: mail_read, code_search, code_read, dev_analyze, web_search, "
+        "mail_send, memory_store, notify_read"
+    ),
+    "forum.question": (
+        "FORUM-FRAGE BEANTWORTEN\n"
+        "Ein neuer Beitrag im AILinux-Forum braucht eine Antwort.\n\n"
+        "VORGEHEN:\n"
+        "1. flarum_discussion_get mit id={discussion_id} aufrufen fuer den vollen Thread\n"
+        "2. Frage analysieren — ist es Support, Bug-Report, Feature-Request oder Diskussion?\n"
+        "3. Bei technischer Frage: Loesung recherchieren\n"
+        "4. Hilfreiche Erstantwort formulieren — freundlich, konkret, mit naechsten Schritten\n"
+        "5. Antwort posten via flarum_post_create (discussion_id={discussion_id})\n"
+        "6. Bei Security-/Account-Thema: NICHT im Forum loesen, stattdessen auf nova@ailinux.me verweisen\n"
+        "7. notify_read mit id='{event_id}' und resolve=true\n"
+        "8. Antworte mit TASK_COMPLETE\n\n"
+        "TOOLS: flarum_discussion_get, flarum_post_create, web_search, notify_read\n"
+        "STIL: Deutsch, freundlich, keine internen Details preisgeben"
+    ),
+    "forum.support": (
+        "FORUM-SUPPORT-ANFRAGE\n"
+        "Ein User braucht Hilfe im Forum.\n\n"
+        "VORGEHEN:\n"
+        "1. flarum_discussion_get mit id={discussion_id} — vollen Thread lesen\n"
+        "2. Problem verstehen, ggf. nach Logs/Version/OS fragen\n"
+        "3. Bekannte Loesung anbieten oder Workaround vorschlagen\n"
+        "4. flarum_post_create mit hilfreicher Antwort\n"
+        "5. Bei komplexem Bug: Zusaetzlich notify_send mit priority=high und tags=[bug_report]\n"
+        "6. notify_read mit id='{event_id}' und resolve=true\n"
+        "7. Antworte mit TASK_COMPLETE\n\n"
+        "TOOLS: flarum_discussion_get, flarum_post_create, web_search, notify_read, notify_send"
+    ),
+    "ops.error": (
+        "SYSTEM-ERROR ANALYSIEREN\n"
+        "Ein Fehler wurde im System erkannt.\n\n"
+        "VORGEHEN:\n"
+        "1. log_viewer source=errors aufrufen fuer aktuelle Fehlerlogs\n"
+        "2. Fehler identifizieren: welche Komponente, welcher Stacktrace\n"
+        "3. code_search nach dem Fehler-Pattern in der Codebase\n"
+        "4. Root Cause bestimmen\n"
+        "5. Wenn einfacher Fix: code_edit anwenden, dev_lint pruefen\n"
+        "6. Wenn komplex: notify_send an zombie mit priority=high und Analyse-Zusammenfassung\n"
+        "7. notify_read mit id='{event_id}' und resolve=true\n"
+        "8. Antworte mit TASK_COMPLETE\n\n"
+        "TOOLS: log_viewer, code_search, code_read, code_edit, dev_lint, dev_debug, "
+        "notify_read, notify_send\n"
+        "WICHTIG: git add + commit VOR jedem restart. Kein service_control ohne Zombie-OK."
+    ),
+    "ops.repeated_error": (
+        "WIEDERKEHRENDER FEHLER — MUSTER-ANALYSE\n"
+        "Dieser Fehler tritt wiederholt auf (5+ mal in 1 Stunde).\n\n"
+        "VORGEHEN:\n"
+        "1. log_viewer source=errors — die letzten 200 Zeilen\n"
+        "2. Fehler-Muster identifizieren: gleiche Exception? gleiche Route? gleicher Service?\n"
+        "3. Korrelation pruefen: Haengt es mit einem kuerzlichen Deploy zusammen?\n"
+        "4. code_search nach dem Fehler-Pattern\n"
+        "5. Strukturierte Analyse erstellen mit:\n"
+        "   - Fehler-Fingerprint\n"
+        "   - Haeufigkeit und Zeitfenster\n"
+        "   - Betroffene Komponente\n"
+        "   - Vermutete Root Cause\n"
+        "   - Vorgeschlagener Fix\n"
+        "6. mail_send Analyse an nova@ailinux.me mit Betreff [INCIDENT] <Fehler>\n"
+        "7. notify_read mit id='{event_id}' und resolve=true\n"
+        "8. Antworte mit TASK_COMPLETE\n\n"
+        "TOOLS: log_viewer, code_search, code_read, dev_analyze, mail_send, "
+        "memory_store, notify_read"
+    ),
+    "ops.service_down": (
+        "SERVICE DOWN — SOFORT-DIAGNOSE\n"
+        "Ein kritischer Service ist ausgefallen.\n\n"
+        "VORGEHEN:\n"
+        "1. safe_probe overview — Gesamtstatus\n"
+        "2. service_status fuer betroffenen Service\n"
+        "3. log_viewer source=errors — letzte 100 Zeilen\n"
+        "4. Ursache identifizieren (OOM? Config-Fehler? Dependency?)\n"
+        "5. notify_send an zombie mit priority=critical und Diagnose\n"
+        "6. KEIN eigenstaendiger restart ohne Zombie-Freigabe\n"
+        "7. notify_read mit id='{event_id}' und resolve=true\n"
+        "8. Antworte mit TASK_COMPLETE\n\n"
+        "TOOLS: safe_probe, service_status, log_viewer, container_status, notify_send, notify_read\n"
+        "VERBOTEN: service_control restart ohne explizite Freigabe"
+    ),
+    "support.login": (
+        "LOGIN-/ACCOUNT-PROBLEM\n"
+        "Ein User hat ein Login- oder Account-Problem.\n\n"
+        "VORGEHEN:\n"
+        "1. Event-Details lesen und Problem klassifizieren\n"
+        "2. Bei Mail-Quelle: mail_read fuer den vollen Inhalt\n"
+        "3. Bei Forum-Quelle: flarum_discussion_get\n"
+        "4. SICHERHEITSREGELN:\n"
+        "   - KEIN Passwort-Reset ohne 3-Felder-Verifikation\n"
+        "   - KEINE Mail-Aenderung ohne Zugriff auf alte Mail\n"
+        "   - Bei Unsicherheit: Eskalation an admin@ailinux.me\n"
+        "5. Antwort mit naechsten Schritten an User senden\n"
+        "6. notify_read mit id='{event_id}' und resolve=true\n"
+        "7. Antworte mit TASK_COMPLETE\n\n"
+        "TOOLS: mail_read, mail_send, flarum_discussion_get, flarum_post_create, notify_read\n"
+        "VERBOTEN: Passwort-Reset, Account-Uebernahme, 2FA-Entfernung ohne Zombie-OK"
+    ),
+    "support.bug_report": (
+        "BUG-REPORT TRIAGE\n"
+        "Ein Bug wurde gemeldet.\n\n"
+        "VORGEHEN:\n"
+        "1. Bug-Details lesen (Mail/Forum)\n"
+        "2. Reproduzierbarkeit einschaetzen\n"
+        "3. code_search nach relevantem Code\n"
+        "4. Wenn Root Cause klar: code_edit Fix anwenden + dev_lint\n"
+        "5. Wenn unklar: Rueckfrage an User (Logs? Version? Repro-Steps?)\n"
+        "6. git_ops commit + push bei Fix\n"
+        "7. User ueber Fix informieren (mail_send oder flarum_post_create)\n"
+        "8. notify_read mit id='{event_id}' und resolve=true\n"
+        "9. Antworte mit TASK_COMPLETE\n\n"
+        "TOOLS: mail_read, flarum_discussion_get, code_search, code_read, code_edit, "
+        "dev_lint, dev_debug, git_ops, mail_send, flarum_post_create, notify_read"
+    ),
+    "support.install": (
+        "INSTALLATIONS-HILFE\n"
+        "Ein User braucht Hilfe bei der Installation.\n\n"
+        "VORGEHEN:\n"
+        "1. Anfrage lesen — welches Produkt, welches OS, welcher Schritt\n"
+        "2. Passende Doku-Sektion finden oder web_search\n"
+        "3. Schritt-fuer-Schritt Anleitung formulieren\n"
+        "4. Antwort senden (mail_send oder flarum_post_create)\n"
+        "5. notify_read mit id='{event_id}' und resolve=true\n"
+        "6. Antworte mit TASK_COMPLETE\n\n"
+        "TOOLS: mail_read, flarum_discussion_get, web_search, mail_send, "
+        "flarum_post_create, notify_read"
+    ),
+    "incident.auth": (
+        "AUTH-INCIDENT — SICHERHEITSVORFALL\n"
+        "Moeglicherweise ein Sicherheitsvorfall im Auth-System.\n\n"
+        "VORGEHEN:\n"
+        "1. log_viewer source=auth — letzte 200 Zeilen\n"
+        "2. Muster erkennen: Brute-Force? Token-Leak? Session-Hijack?\n"
+        "3. Betroffene Accounts/IPs identifizieren\n"
+        "4. SOFORT notify_send an zombie mit priority=critical\n"
+        "5. mail_send Incident-Report an nova@ailinux.me\n"
+        "6. KEINE eigenstaendigen Sperren oder Aenderungen\n"
+        "7. notify_read mit id='{event_id}' und resolve=true\n"
+        "8. Antworte mit TASK_COMPLETE\n\n"
+        "TOOLS: log_viewer, safe_probe, mail_send, notify_send, notify_read\n"
+        "VERBOTEN: Account-Sperren, IP-Bans, Config-Aenderungen ohne Zombie-OK"
+    ),
+    "incident.service": (
+        "SERVICE-INCIDENT — KRITISCH\n"
+        "Mehrere Systeme oder ein kritischer Service sind betroffen.\n\n"
+        "VORGEHEN:\n"
+        "1. safe_probe overview — Gesamtstatus aller Services\n"
+        "2. container_status action=list — Docker-Container pruefen\n"
+        "3. service_status fuer triforce, redis, ollama\n"
+        "4. log_viewer source=errors + source=triforce\n"
+        "5. Korrelation: Was ist gleichzeitig ausgefallen?\n"
+        "6. Strukturierten Incident-Report erstellen\n"
+        "7. notify_send an zombie mit priority=critical + voller Diagnose\n"
+        "8. notify_read mit id='{event_id}' und resolve=true\n"
+        "9. Antworte mit TASK_COMPLETE\n\n"
+        "TOOLS: safe_probe, container_status, service_status, log_viewer, "
+        "notify_send, notify_read"
+    ),
+    "wp.comment": (
+        "WORDPRESS-KOMMENTAR PRUEFEN\n"
+        "Ein neuer Kommentar auf ailinux.me.\n\n"
+        "VORGEHEN:\n"
+        "1. Kommentar-Inhalt analysieren\n"
+        "2. Spam-Check: Enthaelt Links zu Casinos/Pharma/etc.?\n"
+        "3. Bei Spam: Ignorieren (auto-resolve)\n"
+        "4. Bei echtem Kommentar: Wenn Frage, hilfreiche Antwort formulieren\n"
+        "5. notify_read mit id='{event_id}' und resolve=true\n"
+        "6. Antworte mit TASK_COMPLETE\n\n"
+        "TOOLS: web_search, notify_read"
+    ),
+}
+
+# Default fallback for unmapped event types
+_DEFAULT_TASK_PROMPT = (
+    "EVENT VERARBEITEN\n"
+    "Ein neues Event ist eingegangen.\n\n"
+    "VORGEHEN:\n"
+    "1. Event-Details analysieren\n"
+    "2. Passende Aktion bestimmen\n"
+    "3. Aktion ausfuehren\n"
+    "4. notify_read mit id='{event_id}' und resolve=true\n"
+    "5. Antworte mit TASK_COMPLETE\n\n"
+    "TOOLS: notify_read, notify_send"
+)
+
+ISSUE_MAP = {
+    "ops.error": "bug_hunter", "ops.repeated_error": "bug_hunter",
+    "ops.service_down": "ops_handler", "support.general": "support_agent",
+    "support.login": "support_agent", "support.install": "support_agent",
+    "support.bug_report": "bug_hunter", "support.feature_req": "research_agent",
+    "forum.question": "support_agent", "forum.support": "support_agent",
+    "mail.support": "support_agent", "mail.research": "research_agent",
+    "incident.auth": "ops_handler", "incident.service": "ops_handler",
+    "wp.comment": "support_agent",
+}
+
+
 async def _dispatch_event(event: Dict) -> None:
+    """Dispatch event to the appropriate agent with task-specific prompt."""
     event_type = event.get("event_type", "")
     priority = event.get("priority", "normal")
     event_id = event.get("id", "")
@@ -298,25 +527,37 @@ async def _dispatch_event(event: Dict) -> None:
     _DISPATCH_COOLDOWN[event_type] = now
     if not _rate_ok(agent_id):
         return
+
     title = event.get("title", "")
     body = event.get("body", "")
     source = event.get("source", "")
-    context = (
-        f"[EVENT] type={event_type} priority={priority} source={source}\n"
-        f"Title: {title}\n"
-        f"Body: {body[:1500]}\n\n"
-        f"AUFGABE: Analysiere dieses Event und fuehre die noetige Aktion aus.\n"
-        f"Wenn erledigt: notify_read mit id=\'{event_id}\' und resolve=true aufrufen."
+    metadata = event.get("metadata", {})
+
+    # Build task-specific prompt with event data
+    task_template = TASK_PROMPTS.get(event_type, _DEFAULT_TASK_PROMPT)
+    task_prompt = task_template.format(
+        event_id=event_id,
+        uid=metadata.get("uid", ""),
+        discussion_id=metadata.get("discussion_id", ""),
+        comment_id=metadata.get("comment_id", ""),
+        author=metadata.get("author", ""),
+        subject=metadata.get("subject", ""),
     )
-    ISSUE_MAP = {
-        "ops.error": "bug_hunter", "ops.repeated_error": "bug_hunter",
-        "ops.service_down": "ops_handler", "support.general": "support_agent",
-        "support.login": "support_agent", "support.install": "support_agent",
-        "support.bug_report": "bug_hunter", "support.feature_req": "research_agent",
-        "forum.question": "support_agent", "forum.support": "support_agent",
-        "mail.support": "support_agent", "mail.research": "research_agent",
-        "incident.auth": "ops_handler", "incident.service": "ops_handler",
-    }
+
+    context = (
+        f"[EVENT] type={event_type} | priority={priority} | source={source}\n"
+        f"Title: {title}\n"
+        f"Body: {body[:2000]}\n\n"
+        f"--- TASK ---\n"
+        f"{task_prompt}\n\n"
+        f"--- REGELN ---\n"
+        f"- Du bist ein autonomer Agent. Fuehre die Aufgabe selbststaendig aus.\n"
+        f"- Nutze NUR die oben genannten Tools.\n"
+        f"- Wenn du fertig bist, rufe notify_read(id='{event_id}', resolve=true) auf.\n"
+        f"- Beende deine Antwort mit TASK_COMPLETE.\n"
+        f"- Bei Unsicherheit oder fehlenden Daten: notify_send an zombie mit Zusammenfassung."
+    )
+
     issue_type = ISSUE_MAP.get(event_type, "ops_handler")
     try:
         from app.services.agent_spawner import get_agent_spawner
@@ -326,7 +567,7 @@ async def _dispatch_event(event: Dict) -> None:
             source=f"notifier:{event_id}", agent_id=agent_id,
         )
         sid = result.get("session_id") if isinstance(result, dict) else None
-        logger.info(f"DISPATCH: {event_type} -> {agent_id} (session={sid})")
+        logger.info(f"DISPATCH: {event_type} -> {agent_id}/{issue_type} (session={sid})")
         _mark_dispatched(event_id, agent_id, sid)
     except Exception as e:
         logger.error(f"DISPATCH error for {event_type}: {e}")
