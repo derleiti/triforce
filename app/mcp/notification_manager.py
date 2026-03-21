@@ -34,7 +34,7 @@ from typing import Any, Dict, List, Optional
 logger = logging.getLogger("ailinux.mcp.notifications")
 
 STORE_FILE = Path("/var/lib/triforce/notifications.json")
-MAX_ENTRIES = 500
+MAX_ENTRIES = 1000
 
 PRIO_LOW = "low"
 PRIO_NORMAL = "normal"
@@ -941,24 +941,41 @@ async def _poll_forum():
     await asyncio.sleep(90)
     while True:
         try:
-            from app.mcp.flarum_tools import handle_flarum_discussions
+            from app.mcp.flarum_tools import handle_flarum_discussions, handle_flarum_posts
             result = await handle_flarum_discussions({"limit": 10, "sort": "-lastPostedAt"})
             for disc in result.get("discussions", []):
                 did = str(disc.get("id",""))
-                lp = disc.get("lastPostNumber") or disc.get("commentCount") or 0
-                key = f"{did}:{lp}"
+                # API returns snake_case: comment_count, last_posted_at (not camelCase)
+                pc = disc.get("comment_count") or disc.get("commentCount") or 0
+                lp_at = disc.get("last_posted_at", "")
+                key = f"{did}:{pc}:{lp_at[:16]}"  # dedup by discussion + comment count + timestamp
                 if await _seen_check("forum", key):
                     continue
                 await _seen_add("forum", key)
                 title = disc.get("title","(kein Titel)")
-                author = disc.get("user",{}).get("username","unknown") if isinstance(disc.get("user"),dict) else "unknown"
-                if author in ("ailinux-nova-ai","nova-ai","nova","admin","system","zombie"):
+
+                # Check latest post author via author_id
+                author = "unknown"
+                author_id = None
+                try:
+                    posts_result = await handle_flarum_posts({"limit": 5})
+                    for p in posts_result.get("posts", []):
+                        if str(p.get("discussion_id","")) == did:
+                            author_id = p.get("author_id")
+                            break
+                except Exception:
+                    pass
+
+                # Known admin author IDs (zombie=1, nova-ai=2)
+                ADMIN_AUTHOR_IDS = {"1", "2"}
+                if str(author_id) in ADMIN_AUTHOR_IDS:
                     continue
-                pc = disc.get("commentCount",0)
+                if author_id:
+                    author = f"user#{author_id}"
                 await create_event(
                     title=f"Forum: {title}", body=f"Von: {author} | Posts: {pc} | #{did}",
                     source=SRC_FORUM, tags=["forum","discussion"],
-                    metadata={"discussion_id": did, "author": author, "last_post_number": lp},
+                    metadata={"discussion_id": did, "author": author, "comment_count": pc},
                     action_url=f"https://forum.ailinux.me/d/{did}",
                 )
         except Exception as e:
