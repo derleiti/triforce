@@ -229,8 +229,10 @@ def validate_command(command: List[str]) -> bool:
     Security: Prevents arbitrary command execution via agents.json manipulation.
     Only allows known CLI agent binaries and their wrappers.
     """
-    if not command or not isinstance(command, list):
+    if not isinstance(command, list):
         return False
+    if not command:  # empty command is valid for API agents
+        return True
 
     executable = command[0]
 
@@ -492,8 +494,8 @@ class AgentController:
                 for agent_id, agent_data in data.items():
                     command = agent_data.get("command", [])
 
-                    # SECURITY: Validate command against whitelist
-                    if not validate_command(command):
+                    # SECURITY: Validate command against whitelist (skip for API agents)
+                    if agent_data.get("agent_type") != "api" and not validate_command(command):
                         logger.error(
                             f"SECURITY: Skipping agent '{agent_id}' - "
                             f"command not in whitelist: {command}"
