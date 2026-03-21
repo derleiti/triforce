@@ -22,7 +22,7 @@ PROVIDERS = {
     "groq": {
         "base_url": "https://api.groq.com/openai/v1",
         "env_key": "GROQ_API_KEY",
-        "models": ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"],
+        "models": ["llama-3.3-70b-versatile", "llama-3.3-70b-specdec"],
     },
     "openrouter": {
         "base_url": "https://openrouter.ai/api/v1",
