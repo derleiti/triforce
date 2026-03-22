@@ -1,5 +1,10 @@
-#!/bin/bash
-export HOME=/home/zombie
-export PATH="/home/zombie/.npm-global/bin:/usr/local/bin:/usr/bin:/bin"
-export NODE_PATH="/home/zombie/.npm-global/lib/node_modules"
-exec /home/zombie/.npm-global/bin/gemini "$@"
+#!/usr/bin/env bash
+# gemini-triforce v2.0 — Gemini CLI mit TriForce API Keys
+source "$(dirname "$0")/triforce-env.sh"
+
+# Gemini nutzt GEMINI_API_KEY aus env (via triforce-env.sh geladen)
+# Agent-spezifisches Config-Dir
+export XDG_CONFIG_HOME="/home/zombie/triforce/config/agents/gemini"
+
+_log_agent_start "gemini" "gemini-2.5-flash" "$@"
+exec gemini "$@"

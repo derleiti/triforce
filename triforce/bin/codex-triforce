@@ -1,5 +1,20 @@
-#!/bin/bash
-export HOME=/home/zombie
-export PATH="/home/zombie/.npm-global/bin:/usr/local/bin:/usr/bin:/bin"
-export NODE_PATH="/home/zombie/.npm-global/lib/node_modules"
-exec /home/zombie/.npm-global/bin/codex "$@"
+#!/usr/bin/env bash
+# codex-triforce v2.0 — OpenAI Codex mit TriForce MCP + API Keys
+source "$(dirname "$0")/triforce-env.sh"
+
+# Default Model (überschreibbar via CODEX_MODEL env)
+DEFAULT_MODEL="${CODEX_MODEL:-gpt-5.4}"
+
+# Prüfe ob --model in den Args ist
+HAS_MODEL=false
+for arg in "$@"; do
+  [[ "$arg" == "--model" || "$arg" == "-m" ]] && HAS_MODEL=true
+done
+
+if $HAS_MODEL; then
+  _log_agent_start "codex" "custom" "$@"
+  exec codex "$@"
+else
+  _log_agent_start "codex" "$DEFAULT_MODEL" "$@"
+  exec codex --model "$DEFAULT_MODEL" "$@"
+fi

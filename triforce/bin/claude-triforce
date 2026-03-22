@@ -1,5 +1,20 @@
-#!/bin/bash
-export HOME=/home/zombie
-export PATH="/home/zombie/.npm-global/bin:/usr/local/bin:/usr/bin:/bin"
-export NODE_PATH="/home/zombie/.npm-global/lib/node_modules"
-exec /home/zombie/.npm-global/bin/claude "$@"
+#!/usr/bin/env bash
+# claude-triforce v2.0 — Claude Code mit TriForce MCP + API Keys
+source "$(dirname "$0")/triforce-env.sh"
+
+# Default Model (überschreibbar via CLAUDE_MODEL env)
+DEFAULT_MODEL="${CLAUDE_MODEL:-claude-sonnet-4-20250514}"
+
+# Prüfe ob --model in den Args ist
+HAS_MODEL=false
+for arg in "$@"; do
+  [[ "$arg" == "--model" || "$arg" == "-m" ]] && HAS_MODEL=true
+done
+
+if $HAS_MODEL; then
+  _log_agent_start "claude" "custom" "$@"
+  exec claude "$@"
+else
+  _log_agent_start "claude" "$DEFAULT_MODEL" "$@"
+  exec claude --model "$DEFAULT_MODEL" "$@"
+fi

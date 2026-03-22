@@ -1,5 +1,20 @@
-#!/bin/bash
-export HOME=/home/zombie
-export PATH="/home/zombie/.npm-global/bin:/usr/local/bin:/usr/bin:/bin"
-export NODE_PATH="/home/zombie/.npm-global/lib/node_modules"
-exec /home/zombie/.npm-global/bin/opencode "$@"
+#!/usr/bin/env bash
+# opencode-triforce v2.0 — OpenCode mit TriForce MCP + OpenRouter Fallback
+source "$(dirname "$0")/triforce-env.sh"
+
+# Default Model: OpenRouter Free (wenn kein -m angegeben)
+DEFAULT_MODEL="${OPENCODE_MODEL:-openrouter/nvidia/nemotron-3-super-120b-a12b:free}"
+
+# Prüfe ob -m/--model in den Args ist
+HAS_MODEL=false
+for arg in "$@"; do
+  [[ "$arg" == "-m" || "$arg" == "--model" ]] && HAS_MODEL=true
+done
+
+if $HAS_MODEL; then
+  _log_agent_start "opencode" "custom" "$@"
+  exec opencode "$@"
+else
+  _log_agent_start "opencode" "$DEFAULT_MODEL" "$@"
+  exec opencode -m "$DEFAULT_MODEL" "$@"
+fi
