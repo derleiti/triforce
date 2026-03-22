@@ -442,7 +442,7 @@ DEFAULT_AGENTS: List[Dict[str, Any]] = [
         "name": "Groq API Agent (Llama 3.3 70B)",
         "description": "API-basierter Agent via Groq — schnell, kein CLI nötig",
         "command": [],  # no subprocess
-        "env": {"API_MODEL": "groq/llama-3.3-70b-versatile,groq/llama-3.3-70b-specdec"},
+        "env": {"API_MODEL": "groq/llama-3.3-70b-versatile"},
     },
     {
         "agent_id": "api-openrouter",
@@ -495,19 +495,24 @@ class AgentController:
         if not self.agents:
             await self._register_default_agents()
         else:
-            # Always register/update API agents from code (overrides stale agents.json)
+            # Sync ALL new agents from DEFAULT_AGENTS (not just API-type)
+            new_count = 0
             for agent_data in DEFAULT_AGENTS:
-                if agent_data.get("agent_type") == "api":
+                aid = agent_data["agent_id"]
+                if aid not in self.agents or agent_data.get("agent_type") == "api":
                     config = AgentConfig(
-                        agent_id=agent_data["agent_id"],
-                        agent_type=AgentType.API,
+                        agent_id=aid,
+                        agent_type=AgentType(agent_data["agent_type"]),
                         name=agent_data["name"],
                         command=agent_data.get("command", []),
                         env=agent_data.get("env", {}),
                     )
                     self.agents[config.agent_id] = AgentInstance(config=config)
-                    logger.info(f"Registered API agent: {config.agent_id}")
-            await self._save_configs()
+                    new_count += 1
+                    logger.info(f"Synced agent from defaults: {aid}")
+            if new_count:
+                await self._save_configs()
+                logger.info(f"Synced {new_count} agents from DEFAULT_AGENTS")
 
         # Starte Health Monitor
         self._monitor_task = asyncio.create_task(self._health_monitor())
