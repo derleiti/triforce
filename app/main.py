@@ -360,7 +360,7 @@ async def lifespan(app: FastAPI):
                     await deploy_pipeline_tick()
                 except Exception as _re:
                     logger.error(f"research_loop_tick error: {_re}")
-                await _asyncio_nova.sleep(1800)  # alle 30min
+                await _asyncio_nova.sleep(300)  # alle 5min
 
         _asyncio_nova.create_task(_research_loop())
         logger.info("Nova Engines gestartet: Content-Engine + Research-Loop")

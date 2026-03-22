@@ -99,16 +99,35 @@ async def handle_research_reply(subject: str, reply_body: str, sender: str) -> N
         logger.error(f"research_loop.handle_research_reply: {e}")
 
 async def handle_admin_mail(subject: str, body: str) -> None:
-    """Mails von admin@ → Notification (Forum-Proposal muss manuell umgesetzt werden)."""
+    """Mails von admin@ → Agent-Reply via opencode-fast + Notification."""
     try:
         from ..mcp.notification_manager import create_notification
         create_notification({
-            "title": f"📬 Admin-Proposal: {subject[:60]}",
+            "title": f"📬 Admin-Mail: {subject[:60]}",
             "body": f"Von: admin@ailinux.me\n\n{body[:500]}",
             "source": "system", "priority": "normal",
-            "tags": ["admin", "proposal"],
+            "tags": ["admin", "mail"],
         })
-        logger.info(f"research_loop: Admin-Mail als Notification weitergeleitet: {subject[:60]}")
+        logger.info(f"research_loop: Admin-Mail empfangen: {subject[:60]}")
+
+        # Agent-Reply: spawne opencode-fast für schnelle Antwort
+        from .agent_spawner import get_agent_spawner
+        spawner = get_agent_spawner()
+        reply_task = (
+            f"Du hast eine Mail von admin@ailinux.me erhalten.\n"
+            f"Betreff: {subject}\n"
+            f"Inhalt: {body[:2000]}\n\n"
+            f"AUFGABE: Analysiere die Mail und antworte kurz und hilfreich.\n"
+            f"Nutze: mail_send(to=\"admin@ailinux.me\", "
+            f"subject=\"Re: {subject[:80]}\", body=\"<deine Antwort>\")\n"
+            f"Dann: TASK_COMPLETE"
+        )
+        await spawner.spawn_for_issue(
+            issue_type="support_handler",
+            context=reply_task,
+            source="admin_mail_reply",
+        )
+        logger.info(f"research_loop: Agent-Reply gestartet für: {subject[:60]}")
     except Exception as e:
         logger.error(f"research_loop.handle_admin_mail: {e}")
 
