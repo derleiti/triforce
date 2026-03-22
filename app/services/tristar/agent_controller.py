@@ -439,8 +439,8 @@ DEFAULT_AGENTS: List[Dict[str, Any]] = [
     {
         "agent_id": "ollama-claude-mcp",
         "agent_type": "claude",
-        "name": "Ollama Claude Agent (kimi-k2-thinking 1T)",
-        "description": "Claude Code via ollama launch claude — Reasoning mit 1T Thinking-Modell",
+        "name": "Ollama Claude Agent (Kimi K2 Thinking 1T)",
+        "description": "Claude Code via ollama launch claude — Kimi K2 1T. --bare skippt API-Limit",
         "command": [f"{TRIFORCE_BIN}/ollama-claude-triforce"],
         "env": {
             "PATH": f"{TRIFORCE_BIN}:{CLI_BIN}:/usr/local/bin:/usr/bin:/bin",
@@ -451,8 +451,8 @@ DEFAULT_AGENTS: List[Dict[str, Any]] = [
     {
         "agent_id": "ollama-codex-mcp",
         "agent_type": "codex",
-        "name": "Ollama Codex Agent (qwen3-coder 480B)",
-        "description": "Codex CLI via ollama launch codex — Code-Tasks mit 480B MoE Coder",
+        "name": "Ollama Codex Agent (Qwen3 Coder 480B)",
+        "description": "Codex CLI via ollama launch codex — Qwen3 480B. --full-auto",
         "command": [f"{TRIFORCE_BIN}/ollama-codex-triforce"],
         "env": {
             "PATH": f"{TRIFORCE_BIN}:{CLI_BIN}:/usr/local/bin:/usr/bin:/bin",
@@ -462,8 +462,8 @@ DEFAULT_AGENTS: List[Dict[str, Any]] = [
     {
         "agent_id": "ollama-openclaw-mcp",
         "agent_type": "opencode",
-        "name": "Ollama OpenClaw Agent (deepseek-v3.2 671B)",
-        "description": "OpenClaw via ollama launch openclaw — General Agent mit 671B DeepSeek",
+        "name": "Ollama OpenClaw Agent (DeepSeek V3.2 671B)",
+        "description": "OpenClaw via ollama launch openclaw — DeepSeek V3.2 671B Cloud",
         "command": [f"{TRIFORCE_BIN}/ollama-openclaw-triforce"],
         "env": {
             "PATH": f"{TRIFORCE_BIN}:{CLI_BIN}:/usr/local/bin:/usr/bin:/bin",
