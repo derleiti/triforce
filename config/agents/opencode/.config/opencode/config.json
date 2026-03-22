@@ -28,9 +28,18 @@
     }
   },
 
+  "mcp": {
+    "triforce": {
+      "type": "remote",
+      "url": "http://localhost:9000/v1/mcp",
+      "enabled": true
+    }
+  },
+
   "permission": {
     "edit": "allow",
     "bash": "allow",
-    "webfetch": "allow"
+    "webfetch": "allow",
+    "mcp": "allow"
   }
 }
