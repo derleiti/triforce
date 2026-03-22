@@ -18,3 +18,11 @@
 # Cookies: ailinux_theme (dark/light), ailinux_width (normal/wide)
 # Expiry: 365 days, SameSite=Lax, path=/
 # Width toggle: full-width content, wider header/footer, wider AI panel
+
+# Discuss AI: Curated Model List with Groups — 2026-03-22
+# Problem: /v1/models returns 612 models — unusable in dropdown
+# Fix: Curated list with 5 groups, ~20 best models
+# Groups: Empfohlen (5), Code (4), Reasoning (4), Schnell (4), Cloud (4)
+# Fetches /v1/models, filters against CURATED list, uses optgroups
+# Fallback: 14 hardcoded models if API fails
+# Display: clean names without ollama/ prefix and :cloud suffix
