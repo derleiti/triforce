@@ -861,10 +861,10 @@ class AgentSpawner:
 
     def _select_agent(self, issue_type: str) -> str:
         mapping = {
-            "bug_hunter":           "codex-mcp",
-            "code_analyst":         "codex-mcp",
-            "research_agent":       "codex-mcp",
-            "implementation_agent": "codex-mcp",
+            "bug_hunter":           "opencode-coder",
+            "code_analyst":         "opencode-coder",
+            "research_agent":       "opencode-reasoning",
+            "implementation_agent": "opencode-coder",
             "ops_handler":          "claude-mcp",
             "system_error":         "claude-mcp",
             "support_handler":      "claude-mcp",

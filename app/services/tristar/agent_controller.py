@@ -197,6 +197,10 @@ ALLOWED_COMMAND_EXECUTABLES = frozenset([
     "/home/zombie/triforce/triforce/bin/ollama-claude-triforce",
     "/home/zombie/triforce/triforce/bin/ollama-codex-triforce",
     "/home/zombie/triforce/triforce/bin/ollama-openclaw-triforce",
+    # OpenRouter Free-Tier Shortcuts (v2.0)
+    "/home/zombie/triforce/triforce/bin/opencode-coder",
+    "/home/zombie/triforce/triforce/bin/opencode-reasoning",
+    "/home/zombie/triforce/triforce/bin/opencode-fast",
     # Legacy paths (backwards compatibility)
     "/home/zombie/triforce/bin/claude-triforce",
     "/home/zombie/triforce/bin/codex-triforce",
@@ -397,7 +401,41 @@ DEFAULT_AGENTS: List[Dict[str, Any]] = [
             "OPENCODE_DISABLE_TELEMETRY": "1",
         },
     },
-    # ── API-based Agents (no CLI subprocess, direct LLM API calls) ──
+    # ── OpenRouter Free-Tier Agents (v2.0 — kein Budget-Kill) ──
+    {
+        "agent_id": "opencode-coder",
+        "agent_type": "opencode",
+        "name": "OpenCode Coder (Qwen3 Coder Free)",
+        "description": "Code-Tasks via OpenRouter/Qwen3-Coder — kostenlos",
+        "command": [f"{TRIFORCE_BIN}/opencode-coder", "run"],
+        "env": {
+            "PATH": f"{TRIFORCE_BIN}:{CLI_BIN}:/usr/local/bin:/usr/bin:/bin",
+            "OPENCODE_DISABLE_TELEMETRY": "1",
+        },
+    },
+    {
+        "agent_id": "opencode-reasoning",
+        "agent_type": "opencode",
+        "name": "OpenCode Reasoning (Hermes 405B Free)",
+        "description": "Reasoning/Audit via OpenRouter/Hermes-405B — kostenlos",
+        "command": [f"{TRIFORCE_BIN}/opencode-reasoning", "run"],
+        "env": {
+            "PATH": f"{TRIFORCE_BIN}:{CLI_BIN}:/usr/local/bin:/usr/bin:/bin",
+            "OPENCODE_DISABLE_TELEMETRY": "1",
+        },
+    },
+    {
+        "agent_id": "opencode-fast",
+        "agent_type": "opencode",
+        "name": "OpenCode Fast (Llama 3.3 70B Free)",
+        "description": "Schnelle Tasks via OpenRouter/Llama-70B — kostenlos",
+        "command": [f"{TRIFORCE_BIN}/opencode-fast", "run"],
+        "env": {
+            "PATH": f"{TRIFORCE_BIN}:{CLI_BIN}:/usr/local/bin:/usr/bin:/bin",
+            "OPENCODE_DISABLE_TELEMETRY": "1",
+        },
+    },
+        # ── API-based Agents (no CLI subprocess, direct LLM API calls) ──
     {
         "agent_id": "api-groq",
         "agent_type": "api",
