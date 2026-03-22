@@ -4133,7 +4133,7 @@ async def handle_cli_agents_call(params: Dict[str, Any]) -> Dict[str, Any]:
     if not message:
         raise ValueError("'message' parameter is required")
 
-    timeout = params.get("timeout", 120)
+    timeout = params.get("timeout", 600)
 
     try:
         result = await agent_controller.call_agent(agent_id, message, timeout=timeout)
