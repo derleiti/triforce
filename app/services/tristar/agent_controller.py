@@ -416,8 +416,8 @@ DEFAULT_AGENTS: List[Dict[str, Any]] = [
     {
         "agent_id": "opencode-reasoning",
         "agent_type": "opencode",
-        "name": "OpenCode Reasoning (Hermes 405B Free)",
-        "description": "Reasoning/Audit via OpenRouter/Hermes-405B — kostenlos",
+        "name": "OpenCode Reasoning (GPT-OSS-120B Free)",
+        "description": "Reasoning/Audit via OpenRouter/GPT-OSS-120B — kostenlos",
         "command": [f"{TRIFORCE_BIN}/opencode-reasoning", "run"],
         "env": {
             "PATH": f"{TRIFORCE_BIN}:{CLI_BIN}:/usr/local/bin:/usr/bin:/bin",
@@ -427,15 +427,49 @@ DEFAULT_AGENTS: List[Dict[str, Any]] = [
     {
         "agent_id": "opencode-fast",
         "agent_type": "opencode",
-        "name": "OpenCode Fast (Llama 3.3 70B Free)",
-        "description": "Schnelle Tasks via OpenRouter/Llama-70B — kostenlos",
+        "name": "OpenCode Fast (Step 3.5 Flash 1M Free)",
+        "description": "Schnelle Tasks via OpenRouter/Step-3.5-Flash — 1M Context, kostenlos",
         "command": [f"{TRIFORCE_BIN}/opencode-fast", "run"],
         "env": {
             "PATH": f"{TRIFORCE_BIN}:{CLI_BIN}:/usr/local/bin:/usr/bin:/bin",
             "OPENCODE_DISABLE_TELEMETRY": "1",
         },
     },
-        # ── API-based Agents (no CLI subprocess, direct LLM API calls) ──
+    # ── Ollama Cloud Agents (via ollama launch <integration>) ──
+    {
+        "agent_id": "ollama-claude-mcp",
+        "agent_type": "claude",
+        "name": "Ollama Claude Agent (kimi-k2-thinking 1T)",
+        "description": "Claude Code via ollama launch claude — Reasoning mit 1T Thinking-Modell",
+        "command": [f"{TRIFORCE_BIN}/ollama-claude-triforce"],
+        "env": {
+            "PATH": f"{TRIFORCE_BIN}:{CLI_BIN}:/usr/local/bin:/usr/bin:/bin",
+            "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+            "DISABLE_TELEMETRY": "1",
+        },
+    },
+    {
+        "agent_id": "ollama-codex-mcp",
+        "agent_type": "codex",
+        "name": "Ollama Codex Agent (qwen3-coder 480B)",
+        "description": "Codex CLI via ollama launch codex — Code-Tasks mit 480B MoE Coder",
+        "command": [f"{TRIFORCE_BIN}/ollama-codex-triforce"],
+        "env": {
+            "PATH": f"{TRIFORCE_BIN}:{CLI_BIN}:/usr/local/bin:/usr/bin:/bin",
+            "CODEX_DISABLE_TELEMETRY": "1",
+        },
+    },
+    {
+        "agent_id": "ollama-openclaw-mcp",
+        "agent_type": "opencode",
+        "name": "Ollama OpenClaw Agent (deepseek-v3.2 671B)",
+        "description": "OpenClaw via ollama launch openclaw — General Agent mit 671B DeepSeek",
+        "command": [f"{TRIFORCE_BIN}/ollama-openclaw-triforce"],
+        "env": {
+            "PATH": f"{TRIFORCE_BIN}:{CLI_BIN}:/usr/local/bin:/usr/bin:/bin",
+        },
+    },
+            # ── API-based Agents (no CLI subprocess, direct LLM API calls) ──
     {
         "agent_id": "api-groq",
         "agent_type": "api",
@@ -459,6 +493,14 @@ DEFAULT_AGENTS: List[Dict[str, Any]] = [
         "description": "API-basierter Agent via Cerebras — ultra-fast inference",
         "command": [],
         "env": {"API_MODEL": "cerebras/llama-3.3-70b"},
+    },
+    {
+        "agent_id": "api-ollama-cloud",
+        "agent_type": "api",
+        "name": "Ollama Cloud API Agent (Multi-Model)",
+        "description": "API-basiert via Ollama Cloud: Kimi K2, Qwen3 Coder, DeepSeek V3.2, GLM-5",
+        "command": [],
+        "env": {"API_MODEL": "ollama/kimi-k2-thinking:cloud,ollama/qwen3-coder:480b-cloud,ollama/deepseek-v3.2:cloud,ollama/glm-5:cloud"},
     },
 ]
 
