@@ -7,6 +7,9 @@ from __future__ import annotations
 import json, base64, os
 from typing import Any, Dict
 
+# Default featured image: Brumo datacenter (Media ID 97318)
+DEFAULT_FEATURED_MEDIA = 97318
+
 # Internal WordPress API via curl (bypasses Cloudflare)
 async def _wp_api(method: str, endpoint: str, data: dict = None) -> dict:
     """Call WordPress REST API via local HTTPS (bypass Cloudflare)."""
@@ -45,7 +48,8 @@ async def handle_wp_publish_post(arguments: Dict[str, Any]) -> str:
     category = arguments.get("category", "")
     author_name = arguments.get("author_name", "")
     
-    data = {"title": title, "content": content, "status": status}
+    featured = arguments.get("featured_media", DEFAULT_FEATURED_MEDIA)
+    data = {"title": title, "content": content, "status": status, "featured_media": featured}
     if excerpt:
         data["excerpt"] = excerpt
     
@@ -222,7 +226,8 @@ async def handle_wp_create_draft(arguments: Dict[str, Any]) -> str:
     content = arguments.get("content", "")
     categories = arguments.get("categories", [])
     
-    data = {"title": title, "content": content, "status": "draft"}
+    featured = arguments.get("featured_media", DEFAULT_FEATURED_MEDIA)
+    data = {"title": title, "content": content, "status": "draft", "featured_media": featured}
     if categories:
         data["categories"] = categories
     
