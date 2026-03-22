@@ -908,7 +908,7 @@ class AgentController:
         self,
         agent_id: str,
         message: str,
-        timeout: int = 120,
+        timeout: int = 600,
     ) -> Dict[str, Any]:
         """
         Sendet eine Nachricht an einen Agenten und wartet auf Antwort.
