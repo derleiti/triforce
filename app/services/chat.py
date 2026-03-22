@@ -660,17 +660,21 @@ async def stream_chat(
                     yield chunk
             elif model.provider == "gpt-oss":
                 if not settings.gpt_oss_api_key:
-                    raise api_error("GPT-OSS support is not configured", status_code=503, code="gpt_oss_unavailable")
-                async for chunk in _stream_gpt_oss(
-                    model.id,
-                    augmented_messages,
-                    api_key=settings.gpt_oss_api_key,
-                    base_url=settings.gpt_oss_base_url,
-                    temperature=temperature,
-                    stream=stream,
-                    timeout=int(settings.request_timeout),
-                ):
-                    yield chunk
+                    # No native GPT-OSS API → route via ollama cloud
+                    logger.info(f"gpt-oss: no API key, routing {model.id} via ollama (non-stream)")
+                    async for chunk in _stream_ollama(model.id, augmented_messages, temperature, settings.request_timeout):
+                        yield chunk
+                else:
+                    async for chunk in _stream_gpt_oss(
+                        model.id,
+                        augmented_messages,
+                        api_key=settings.gpt_oss_api_key,
+                        base_url=settings.gpt_oss_base_url,
+                        temperature=temperature,
+                        stream=stream,
+                        timeout=int(settings.request_timeout),
+                    ):
+                        yield chunk
             elif model.provider == "anthropic":
                 if not settings.anthropic_api_key:
                     raise api_error("Anthropic Claude support is not configured", status_code=503, code="anthropic_unavailable")
