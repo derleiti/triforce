@@ -381,9 +381,10 @@ async def require_mcp_auth(request: Request) -> str:
             request.state.auth_method = "internal"
             return "internal"
     
-    # WordPress Nova-AI frontend with forwarding headers → still nova-frontend
-    if client_ip.startswith("172.18.0.") and not forwarded_port:
-        logger.debug(f"AUTH_BYPASS | IP: {client_ip} | Method: nova_frontend_forwarded")
+    # WordPress Nova-AI frontend: 172.18.0.x is ALWAYS the WP Docker container
+    # Only exception: X-Forwarded-Port 9100 = external request proxied through Apache
+    if client_ip.startswith("172.18.0.") and forwarded_port != "9100":
+        logger.debug(f"AUTH_BYPASS | IP: {client_ip} | Method: nova_frontend_forwarded | X-Fwd-Port: {forwarded_port}")
         request.state.mcp_auth_user = "nova-frontend"
         request.state.auth_method = "nova-frontend"
         return "nova-frontend"
