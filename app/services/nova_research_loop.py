@@ -176,7 +176,7 @@ async def check_mail_replies() -> None:
             subject = mail.get("subject","")
             sender  = mail.get("from","")
             # Research-Reply
-            if "[research]" in subject.lower() and not mail.get("seen", True):
+            if "[research]" in subject.lower():
                 mail_read = MCP_HANDLERS.get("mail_read")
                 if not mail_read: continue
                 rr = await mail_read({"uid": uid})
@@ -187,7 +187,7 @@ async def check_mail_replies() -> None:
                     mark_seen = MCP_HANDLERS.get("mail_mark_seen")
                     if mark_seen: await mark_seen({"uid": uid})
             # Admin-Proposal
-            elif "admin@ailinux.me" in sender.lower() and not mail.get("seen", True):
+            elif "admin@ailinux.me" in sender.lower():
                 mail_read = MCP_HANDLERS.get("mail_read")
                 if not mail_read: continue
                 rr = await mail_read({"uid": uid})
