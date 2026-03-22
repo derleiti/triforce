@@ -1155,17 +1155,17 @@ class AgentController:
 
                 # Ordered fallback map v2.0 — OpenRouter Free als letzte Stufe
                 _FALLBACK_NEXT = {
-                    "claude-mcp": ("opencode-reasoning", "claude→GPT-OSS-120B"),
-                    "codex-mcp": ("opencode-coder", "codex→Qwen3-Coder-480B"),
-                    "gemini-mcp": ("opencode-fast", "gemini→Step3.5-Flash-1M"),
-                    "ollama-claude-mcp": ("opencode-reasoning", "ollama-claude→GPT-OSS-120B"),
-                    "ollama-codex-mcp": ("opencode-coder", "ollama-codex→Qwen3-Coder-480B"),
-                    "ollama-openclaw-mcp": ("opencode-fast", "ollama-openclaw→Step3.5-Flash-1M"),
+                    "claude-mcp": ("opencode-reasoning", "claude→GPT-OSS-120B(OpenRouter-Free)"),
+                    "codex-mcp": ("opencode-coder", "codex→Qwen3-Coder-480B(OpenRouter-Free)"),
+                    "gemini-mcp": ("opencode-fast", "gemini→Step3.5-Flash-1M(OpenRouter-Free)"),
+                    "ollama-claude-mcp": ("opencode-reasoning", "ollama-claude→GPT-OSS-120B(OpenRouter-Free)"),
+                    "ollama-codex-mcp": ("opencode-coder", "ollama-codex→Qwen3-Coder-480B(OpenRouter-Free)"),
+                    "ollama-openclaw-mcp": ("opencode-fast", "ollama-openclaw→Step3.5-Flash-1M(OpenRouter-Free)"),
                     "api-groq": ("api-openrouter", "groq→Llama-3.3-70B-OpenRouter"),
                     "api-cerebras": ("api-openrouter", "cerebras→Llama-3.3-70B-OpenRouter"),
-                    "opencode-mcp": ("opencode-fast", "opencode→Step3.5-Flash-1M"),
-                    "opencode-coder": ("opencode-reasoning", "coder→GPT-OSS-120B"),
-                    "opencode-reasoning": ("opencode-fast", "reasoning→Step3.5-Flash-1M"),
+                    "opencode-mcp": ("opencode-fast", "opencode→Step3.5-Flash-1M(OpenRouter-Free)"),
+                    "opencode-coder": ("opencode-reasoning", "coder→GPT-OSS-120B(OpenRouter-Free)"),
+                    "opencode-reasoning": ("opencode-fast", "reasoning→Step3.5-Flash-1M(OpenRouter-Free)"),
                     "opencode-fast": ("api-openrouter", "fast→Llama-3.3-70B-API"),
                 }
 
