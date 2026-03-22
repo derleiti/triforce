@@ -33,6 +33,14 @@
       "type": "remote",
       "url": "http://localhost:9000/v1/mcp",
       "enabled": true
+    },
+    "triforce-external": {
+      "type": "remote",
+      "url": "https://api.ailinux.me/v1/mcp",
+      "headers": {
+        "Authorization": "Basic em9tYmllOmU5RjhEdUtiSC0="
+      },
+      "enabled": false
     }
   },
 
