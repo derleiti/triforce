@@ -1111,16 +1111,20 @@ class AgentController:
                 ))
                 _needs_fallback = _is_quota or _is_crash or _is_garbage
 
-                # Ordered fallback map (openclaw removed)
+                # Ordered fallback map v2.0 — OpenRouter Free als letzte Stufe
                 _FALLBACK_NEXT = {
-                    "claude-mcp": ("ollama-claude-mcp", "claude_to_ollama"),
-                    "codex-mcp": ("ollama-codex-mcp", "codex_to_ollama"),
-                    "gemini-mcp": ("ollama-claude-mcp", "gemini_to_ollama"),
-                    "ollama-claude-mcp": ("api-groq", "ollama_to_groq"),
-                    "ollama-codex-mcp": ("api-groq", "ollama_to_groq"),
-                    "ollama-openclaw-mcp": ("api-groq", "ollama_to_groq"),
-                    "api-groq": ("api-cerebras", "groq_to_cerebras"),
-                    "opencode-mcp": ("ollama-codex-mcp", "opencode_to_ollama"),
+                    "claude-mcp": ("opencode-reasoning", "claude_to_openrouter"),
+                    "codex-mcp": ("opencode-coder", "codex_to_openrouter"),
+                    "gemini-mcp": ("opencode-fast", "gemini_to_openrouter"),
+                    "ollama-claude-mcp": ("opencode-reasoning", "ollama_to_openrouter"),
+                    "ollama-codex-mcp": ("opencode-coder", "ollama_to_openrouter"),
+                    "ollama-openclaw-mcp": ("opencode-fast", "ollama_to_openrouter"),
+                    "api-groq": ("api-openrouter", "groq_to_openrouter"),
+                    "api-cerebras": ("api-openrouter", "cerebras_to_openrouter"),
+                    "opencode-mcp": ("opencode-fast", "opencode_to_fast"),
+                    "opencode-coder": ("opencode-reasoning", "coder_to_reasoning"),
+                    "opencode-reasoning": ("opencode-fast", "reasoning_to_fast"),
+                    "opencode-fast": ("api-openrouter", "fast_to_api"),
                 }
 
                 if _needs_fallback and agent_id in _FALLBACK_NEXT:

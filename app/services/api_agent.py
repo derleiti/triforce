@@ -22,12 +22,12 @@ PROVIDERS = {
     "groq": {
         "base_url": "https://api.groq.com/openai/v1",
         "env_key": "GROQ_API_KEY",
-        "models": ["llama-3.3-70b-versatile", "llama-3.3-70b-specdec"],
+        "models": ["llama-3.3-70b-versatile"],
     },
     "openrouter": {
         "base_url": "https://openrouter.ai/api/v1",
         "env_key": "OPENROUTER_API_KEY",
-        "models": ["meta-llama/llama-3.3-70b-instruct:free"],
+        "models": ["meta-llama/llama-3.3-70b-instruct:free", "nvidia/nemotron-3-super-120b-a12b:free", "qwen/qwen3-coder:free"],
     },
     "cerebras": {
         "base_url": "https://api.cerebras.ai/v1",
@@ -49,8 +49,9 @@ DEFAULT_AGENT_TOOLS = [
 
 MODEL_PRIORITY = [
     "groq/llama-3.3-70b-versatile",
-    "groq/llama-3.3-70b-specdec",
     "cerebras/llama-3.3-70b",
+    "openrouter/meta-llama/llama-3.3-70b-instruct:free",
+    "openrouter/nvidia/nemotron-3-super-120b-a12b:free",
 ]
 
 
