@@ -519,7 +519,7 @@ import time as _time
 
 FEDERATION_NODES = {
     "hetzner": {"ip": "10.10.0.1", "port": 9000, "cores": 20, "ram": 62, "gpu": None, "role": "master", "name": "Hetzner EX63"},
-    "backup": {"ip": "10.10.0.3", "port": 9100, "cores": 28, "ram": 64, "gpu": None, "role": "hub", "name": "Backup VPS"},
+    "backup": {"ip": "10.10.0.3", "port": 9000, "cores": 28, "ram": 64, "gpu": None, "role": "hub", "name": "Backup VPS"},
     "zombie-pc": {"ip": "10.10.0.2", "port": 9000, "cores": 16, "ram": 30, "gpu": "RX 6800 XT", "role": "hub", "name": "Zombie PC"}
 }
 

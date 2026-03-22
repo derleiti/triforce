@@ -153,6 +153,28 @@ _last_mail_check = 0.0
 _last_scan = 0.0
 MAIL_CHECK_INTERVAL = 300
 SCAN_INTERVAL = 86400
+REDIS_KEY_PROCESSED_UIDS = "nova:mail:processed_uids"
+
+def _load_processed_uids_from_redis() -> set:
+    """Load processed mail UIDs from Redis for persistence across restarts."""
+    try:
+        import redis
+        r = redis.Redis(host="localhost", port=6379, db=0, decode_responses=True)
+        members = r.smembers(REDIS_KEY_PROCESSED_UIDS)
+        return set(members) if members else set()
+    except Exception as e:
+        logger.warning(f"Redis load _processed_uids failed: {e}")
+        return set()
+
+def _save_uid_to_redis(uid: str) -> None:
+    """Persist a processed UID to Redis."""
+    try:
+        import redis
+        r = redis.Redis(host="localhost", port=6379, db=0, decode_responses=True)
+        r.sadd(REDIS_KEY_PROCESSED_UIDS, uid)
+        r.expire(REDIS_KEY_PROCESSED_UIDS, 604800)  # 7 days TTL
+    except Exception:
+        pass
 
 async def check_mail_replies() -> None:
     global _last_mail_check
@@ -168,11 +190,18 @@ async def check_mail_replies() -> None:
         if not res or res.get("error"):
             logger.debug(f"check_mail_replies: no result or error: {res}")
             return
-        # Seed _processed_uids on first run with all existing UIDs
+        # Seed _processed_uids: first try Redis, then fallback to current inbox
         if not _processed_uids:
-            for m in res.get("messages", []):
-                _processed_uids.add(str(m.get("uid", "")))
-            logger.info(f"check_mail_replies: seeded {len(_processed_uids)} existing UIDs")
+            redis_uids = _load_processed_uids_from_redis()
+            if redis_uids:
+                _processed_uids.update(redis_uids)
+                logger.info(f"check_mail_replies: loaded {len(redis_uids)} UIDs from Redis")
+            else:
+                for m in res.get("messages", []):
+                    uid = str(m.get("uid", ""))
+                    _processed_uids.add(uid)
+                    _save_uid_to_redis(uid)
+                logger.info(f"check_mail_replies: seeded {len(_processed_uids)} existing UIDs to Redis")
             return
         new_mails = [m for m in res.get("messages", []) if str(m.get("uid","")) not in _processed_uids]
         logger.info(f"check_mail_replies: {len(new_mails)} new mails found")
@@ -190,6 +219,7 @@ async def check_mail_replies() -> None:
                     body = rr.get("body","")
                     await handle_research_reply(subject, body, sender)
                     _processed_uids.add(uid)
+                    _save_uid_to_redis(uid)
                     mark_seen = MCP_HANDLERS.get("mail_mark_seen")
                     if mark_seen: await mark_seen({"uid": uid})
             # Admin-Proposal
@@ -201,6 +231,7 @@ async def check_mail_replies() -> None:
                     body = rr.get("body","")
                     await handle_admin_mail(subject, body)
                     _processed_uids.add(uid)
+                    _save_uid_to_redis(uid)
                     mark_seen = MCP_HANDLERS.get("mail_mark_seen")
                     if mark_seen: await mark_seen({"uid": uid})
     except Exception as e:

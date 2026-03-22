@@ -366,6 +366,14 @@ async def require_mcp_auth(request: Request) -> str:
         has_forwarding_context = bool(forwarded_for or forwarded_host)
 
         if any(client_ip.startswith(p) for p in _TRUSTED_INTERNAL_PREFIXES) and not has_forwarding_context:
+            # WordPress Nova-AI frontend: restricted to search/crawl tools only
+            if client_ip.startswith("172.18.0."):
+                logger.debug(
+                    f"AUTH_BYPASS | IP: {client_ip} | Method: nova_frontend | Path: {request.url.path}"
+                )
+                request.state.mcp_auth_user = "nova-frontend"
+                request.state.auth_method = "nova-frontend"
+                return "nova-frontend"
             logger.debug(
                 f"AUTH_BYPASS | IP: {client_ip} | Method: trusted_internal_bypass | Path: {request.url.path}"
             )
@@ -373,6 +381,13 @@ async def require_mcp_auth(request: Request) -> str:
             request.state.auth_method = "internal"
             return "internal"
     
+    # WordPress Nova-AI frontend with forwarding headers → still nova-frontend
+    if client_ip.startswith("172.18.0.") and not forwarded_port:
+        logger.debug(f"AUTH_BYPASS | IP: {client_ip} | Method: nova_frontend_forwarded")
+        request.state.mcp_auth_user = "nova-frontend"
+        request.state.auth_method = "nova-frontend"
+        return "nova-frontend"
+
     # External request (port 9100) → requires auth
     logger.debug(f"AUTH_CHECK | IP: {client_ip} | X-Fwd-Port: {forwarded_port}")
     

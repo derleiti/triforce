@@ -2541,6 +2541,27 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
     # Apache (172.18.x) ist Reverse-Proxy fuer externe Requests (api.ailinux.me).
     # Docker-IP != externer Client — Auth-Layer reicht.
 
+    # ── Nova-Frontend Tool-Guard (WordPress @ 172.18.0.x) ────────────
+    # Darf nur search/crawl Tools für User-Recherche nutzen.
+    _NOVA_FRONTEND_ALLOWED_TOOLS = {
+        "search", "crawl", "crawl_site", "crawl_status",
+        "image_search", "fetch", "api_search",
+        "memory_search", "doc_search",
+        "flarum_discussions", "flarum_discussion_get", "flarum_posts",
+        "wp_list_posts", "wp_list_drafts",
+        "models", "health", "status",
+    }
+    _auth_user = (request_meta or {}).get("user", "")
+    if _auth_user == "nova-frontend":
+        from ..utils.tool_normalizer import normalize_tool_name as _nfn
+        _check_name = _nfn(canonical_name) if canonical_name else canonical_name
+        if _check_name not in _NOVA_FRONTEND_ALLOWED_TOOLS:
+            logger.warning(f"NOVA_FRONTEND_BLOCKED | tool={canonical_name} | allowed={list(_NOVA_FRONTEND_ALLOWED_TOOLS)[:5]}...")
+            return {
+                "content": [{"type": "text", "text": f"Tool '{canonical_name}' is not available for the Nova web frontend. Allowed: search, crawl, fetch."}],
+                "isError": True,
+            }
+
     # ── Swarm Tool-Policy: memory_store + vault nur für Admin ──
     from ..services.user_tiers import is_tool_allowed_for_role
     _swarm_role = (request_meta or {}).get("account_role", "admin")
