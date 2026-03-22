@@ -214,6 +214,48 @@ Format in HTML with <h2>, <p>, <ul> tags. No intro like "As an AI..."."""
     })
 
 
+
+
+async def handle_wp_create_draft(arguments: Dict[str, Any]) -> str:
+    """Create a WordPress draft post."""
+    title = arguments.get("title", "")
+    content = arguments.get("content", "")
+    categories = arguments.get("categories", [])
+    
+    data = {"title": title, "content": content, "status": "draft"}
+    if categories:
+        data["categories"] = categories
+    
+    result = await _wp_api("POST", "posts", data)
+    
+    if "id" in result:
+        return json.dumps({
+            "success": True,
+            "post_id": result["id"],
+            "status": "draft",
+            "link": result.get("link"),
+            "title": result.get("title", {}).get("rendered", title)
+        })
+    return json.dumps({"success": False, "error": result})
+
+
+async def handle_wp_list_drafts(arguments: Dict[str, Any]) -> str:
+    """List WordPress draft posts."""
+    per_page = arguments.get("per_page", 20)
+    result = await _wp_api("GET", f"posts?status=draft&per_page={per_page}")
+    
+    if isinstance(result, list):
+        posts = [{"id": p["id"], "title": p.get("title", {}).get("rendered", ""),
+                  "date": p.get("date"), "link": p.get("link")} for p in result]
+        return json.dumps({"drafts": posts, "count": len(posts)})
+    return json.dumps({"error": result})
+
+
+async def handle_create_post(arguments: Dict[str, Any]) -> str:
+    """Create a WordPress post (alias for wp_publish_post with configurable status)."""
+    return await handle_wp_publish_post(arguments)
+
+
 # Handler registry
 WORDPRESS_HANDLERS = {
     "wp_publish_post": handle_wp_publish_post,
@@ -222,6 +264,9 @@ WORDPRESS_HANDLERS = {
     "wp_delete_post": handle_wp_delete_post,
     "wp_create_page": handle_wp_create_page,
     "wp_multi_ai_post": handle_wp_multi_ai_post,
+    "wp_create_draft": handle_wp_create_draft,
+    "wp_list_drafts": handle_wp_list_drafts,
+    "create_post": handle_create_post,
 }
 
 # Tool schemas
