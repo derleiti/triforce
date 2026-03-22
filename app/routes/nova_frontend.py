@@ -611,7 +611,13 @@ async def config() -> Dict[str, Any]:
 async def models() -> Dict[str, Any]:
     raw = await _get_models()
     items = [_categorize(m) for m in raw]
-    items.sort(key=lambda x: (not x["backend_supported"], x["provider"], x["name"].lower()))
+    # Mark paused providers (Anthropic API limit until 2026-04-01)
+    _PAUSED_PROVIDERS = {"anthropic"}  # Remove from set when API resumes
+    for m in items:
+        if m.get("provider") in _PAUSED_PROVIDERS:
+            m["name"] = m["name"] + " ⏸ (paused)"
+            m["paused"] = True
+    items.sort(key=lambda x: (x.get("paused", False), not x["backend_supported"], x["provider"], x["name"].lower()))
     return {
         "ok": True,
         "count": len(items),

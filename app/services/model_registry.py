@@ -273,9 +273,23 @@ class ModelRegistry:
     async def get_model(self, model_id: str) -> Optional[ModelInfo]:
         canonical_id = self._normalize_id(model_id)
         models = await self.list_models()
+        # Direct match
         for entry in models:
             if entry.id == canonical_id:
                 return entry
+        # Try with provider prefixes (ollama/gemini/groq/etc.)
+        _PREFIXES = ["ollama/", "gemini/", "groq/", "openrouter/", "anthropic/", "mistral/", "cloudflare/", "github/"]
+        for prefix in _PREFIXES:
+            prefixed = f"{prefix}{canonical_id}"
+            for entry in models:
+                if entry.id == prefixed:
+                    return entry
+        # Try without prefix (if model_id has one)
+        if "/" in canonical_id:
+            bare = canonical_id.split("/", 1)[1]
+            for entry in models:
+                if entry.id.endswith(f"/{bare}"):
+                    return entry
         return None
 
     async def _discover_ollama(self) -> List[ModelInfo]:

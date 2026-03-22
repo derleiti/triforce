@@ -72,6 +72,7 @@ async def _fallback_to_ollama(
     # If specific fallback model requested, try it first
     if fallback_model:
         try:
+            yield f"[⚡ Fallback: {fallback_model}]\n\n"
             async for chunk in _stream_ollama(
                 fallback_model, messages, temperature=temperature, stream=True, timeout=timeout
             ):
@@ -86,6 +87,7 @@ async def _fallback_to_ollama(
         try:
             if provider == "ollama":
                 logger.info("Fallback cascade: trying ollama/%s", model)
+                yield f"[⚡ Fallback: {model}]\n\n"
                 async for chunk in _stream_ollama(
                     model, messages, temperature=temperature, stream=True, timeout=timeout
                 ):
@@ -96,6 +98,7 @@ async def _fallback_to_ollama(
                 if not or_key:
                     continue
                 logger.info("Fallback cascade: trying openrouter/%s", model)
+                yield f"[⚡ Fallback: {model}]\n\n"
                 async for chunk in _stream_openai_compatible(
                     model, messages,
                     base_url="https://openrouter.ai/api/v1",
