@@ -151,7 +151,7 @@ async def post_to_wordpress() -> bool:
         if not data or not data.get("title"): return False
         title, content = data["title"], data["content"]
         if _already_posted(title): return False
-        res = await _mcp("wp_create_draft", {"title": title, "content": content, "status": "publish"})
+        res = await _mcp("wp_publish_post", {"title": title, "content": content, "status": "publish"})
         if res and not res.get("error"):
             _mark_posted(title); _mark_posted(topic)
             logger.info(f"content_engine: WP published — {title}")
