@@ -105,8 +105,8 @@ async def handle_admin_mail(subject: str, body: str) -> None:
         create_notification({
             "title": f"📬 Admin-Mail: {subject[:60]}",
             "body": f"Von: admin@ailinux.me\n\n{body[:500]}",
-            "source": "system", "priority": "normal",
-            "tags": ["admin", "mail"],
+            "source": "system", "priority": "high",
+            "tags": ["admin", "mail", "urgent"],
         })
         logger.info(f"research_loop: Admin-Mail empfangen: {subject[:60]}")
 
