@@ -405,26 +405,29 @@ async def _get_initial_response(
                 chunks.append(chunk)
     elif model.provider == "gpt-oss":
         if not settings.gpt_oss_api_key or not settings.gpt_oss_base_url:
-            raise api_error("GPT-OSS support is not configured (missing API key or base URL)", status_code=503, code="gpt_oss_unavailable")
-        try:
-            async for chunk in _stream_gpt_oss(
-                model.id,
-                messages,
-                api_key=settings.gpt_oss_api_key,
-                base_url=settings.gpt_oss_base_url,
-                temperature=temperature,
-                stream=True,
-                timeout=int(settings.request_timeout),
-            ):
+            # No native GPT-OSS API → route directly through ollama cloud
+            logger.info(f"gpt-oss: no API key, routing {model.id} via ollama cloud")
+            async for chunk in _stream_ollama(model.id, messages, temperature, settings.request_timeout):
                 chunks.append(chunk)
-        except Exception as exc:
-            # PATCH v2.82: No Ollama fallback for config/auth errors
-            _emsg = str(exc).lower()
-            if any(kw in _emsg for kw in ("api key", "unauthorized", "403", "401", "not configured", "forbidden")):
-                raise
-            if no_fallback: raise
-            async for chunk in _fallback_to_ollama(messages, temperature, settings.request_timeout, "GPT-OSS", exc):
-                chunks.append(chunk)
+        else:
+            try:
+                async for chunk in _stream_gpt_oss(
+                    model.id,
+                    messages,
+                    api_key=settings.gpt_oss_api_key,
+                    base_url=settings.gpt_oss_base_url,
+                    temperature=temperature,
+                    stream=True,
+                    timeout=int(settings.request_timeout),
+                ):
+                    chunks.append(chunk)
+            except Exception as exc:
+                _emsg = str(exc).lower()
+                if any(kw in _emsg for kw in ("api key", "unauthorized", "403", "401", "not configured", "forbidden")):
+                    raise
+                if no_fallback: raise
+                async for chunk in _fallback_to_ollama(messages, temperature, settings.request_timeout, "GPT-OSS", exc):
+                    chunks.append(chunk)
     elif model.provider == "anthropic":
         if not settings.anthropic_api_key:
             raise api_error("Anthropic Claude support is not configured", status_code=503, code="anthropic_unavailable")

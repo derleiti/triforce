@@ -371,7 +371,7 @@ SPECIALISTS: Dict[str, ModelSpecialist] = {
     "gpt-oss": ModelSpecialist(
         id="gpt-oss:20b-cloud",
         name="GPT-OSS 20B",
-        provider="gpt-oss",
+        provider="ollama",
         description="German-focused open-source model",
         capabilities={
             SpecialistCapability.GERMAN_LANGUAGE,

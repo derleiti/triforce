@@ -1130,8 +1130,8 @@ class ModelRegistry:
         if settings.gpt_oss_api_key:
             hosted.extend([
                 ModelInfo(id="gpt-oss:cloud/120b", provider="ollama", capabilities=["chat"], roles=["assistant"]),
-                ModelInfo(id="gpt-oss:120b-cloud", provider="gpt-oss", capabilities=["chat"], roles=["assistant"]),
-                ModelInfo(id="gpt-oss:20b-cloud", provider="gpt-oss", capabilities=["chat"], roles=["assistant"]),
+                ModelInfo(id="gpt-oss:120b-cloud", provider="ollama", capabilities=["chat"], roles=["assistant"]),
+                ModelInfo(id="gpt-oss:20b-cloud", provider="ollama", capabilities=["chat"], roles=["assistant"]),
             ])
 
         if settings.anthropic_api_key:
