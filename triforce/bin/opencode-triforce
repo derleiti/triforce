@@ -3,7 +3,7 @@
 source "$(dirname "$0")/triforce-env.sh"
 
 # Default Model: OpenRouter Free (wenn kein -m angegeben)
-DEFAULT_MODEL="${OPENCODE_MODEL:-openrouter/nvidia/nemotron-3-super-120b-a12b:free}"
+DEFAULT_MODEL="${OPENCODE_MODEL:-openrouter/meta-llama/llama-3.3-70b-instruct:free}"
 
 # Prüfe ob -m/--model in den Args ist
 HAS_MODEL=false
