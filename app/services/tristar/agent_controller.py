@@ -1155,18 +1155,18 @@ class AgentController:
 
                 # Ordered fallback map v2.0 — OpenRouter Free als letzte Stufe
                 _FALLBACK_NEXT = {
-                    "claude-mcp": ("opencode-reasoning", "claude_to_openrouter"),
-                    "codex-mcp": ("opencode-coder", "codex_to_openrouter"),
-                    "gemini-mcp": ("opencode-fast", "gemini_to_openrouter"),
-                    "ollama-claude-mcp": ("opencode-reasoning", "ollama_to_openrouter"),
-                    "ollama-codex-mcp": ("opencode-coder", "ollama_to_openrouter"),
-                    "ollama-openclaw-mcp": ("opencode-fast", "ollama_to_openrouter"),
-                    "api-groq": ("api-openrouter", "groq_to_openrouter"),
-                    "api-cerebras": ("api-openrouter", "cerebras_to_openrouter"),
-                    "opencode-mcp": ("opencode-fast", "opencode_to_fast"),
-                    "opencode-coder": ("opencode-reasoning", "coder_to_reasoning"),
-                    "opencode-reasoning": ("opencode-fast", "reasoning_to_fast"),
-                    "opencode-fast": ("api-openrouter", "fast_to_api"),
+                    "claude-mcp": ("opencode-reasoning", "claude→GPT-OSS-120B"),
+                    "codex-mcp": ("opencode-coder", "codex→Qwen3-Coder-480B"),
+                    "gemini-mcp": ("opencode-fast", "gemini→Step3.5-Flash-1M"),
+                    "ollama-claude-mcp": ("opencode-reasoning", "ollama-claude→GPT-OSS-120B"),
+                    "ollama-codex-mcp": ("opencode-coder", "ollama-codex→Qwen3-Coder-480B"),
+                    "ollama-openclaw-mcp": ("opencode-fast", "ollama-openclaw→Step3.5-Flash-1M"),
+                    "api-groq": ("api-openrouter", "groq→Llama-3.3-70B-OpenRouter"),
+                    "api-cerebras": ("api-openrouter", "cerebras→Llama-3.3-70B-OpenRouter"),
+                    "opencode-mcp": ("opencode-fast", "opencode→Step3.5-Flash-1M"),
+                    "opencode-coder": ("opencode-reasoning", "coder→GPT-OSS-120B"),
+                    "opencode-reasoning": ("opencode-fast", "reasoning→Step3.5-Flash-1M"),
+                    "opencode-fast": ("api-openrouter", "fast→Llama-3.3-70B-API"),
                 }
 
                 if _needs_fallback and agent_id in _FALLBACK_NEXT:
@@ -1184,7 +1184,7 @@ class AgentController:
                         f"Bearbeite stattdessen diese Aufgabe:\n\n{message}"
                     )
                     logger.warning(
-                        f"Agent fallback triggered: {agent_id} -> {fallback_agent}"
+                        f"Agent fallback triggered: {agent_id} -> {fallback_agent} [{fallback_reason}]"
                     )
                     fallback_result = await self.call_agent(
                         fallback_agent,
