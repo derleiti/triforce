@@ -6,3 +6,15 @@
 # IDs fixed: ai-send→ai-discuss-send, ai-input→ai-discuss-input, ai-output→ai-discuss-chat
 # Default model: llama4:latest → gpt-oss:120b-cloud
 # 14 fallback models added for when /v1/models fails
+
+# Theme Selector: Dark/Light + Wide Layout — 2026-03-22
+# Deployed directly to Docker containers (wordpress_fpm)
+# Files changed in both themes (ailinux-nova-dark + dev):
+#   assets/js/color-mode.js — cookie persistence (was localStorage)
+#   dist/colorMode.js — same
+#   header.php — added width-toggle button
+#   css/global-theme-fixes.css — [data-width="wide"] CSS rules
+#
+# Cookies: ailinux_theme (dark/light), ailinux_width (normal/wide)
+# Expiry: 365 days, SameSite=Lax, path=/
+# Width toggle: full-width content, wider header/footer, wider AI panel
