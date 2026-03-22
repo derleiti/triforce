@@ -168,9 +168,15 @@ async def check_mail_replies() -> None:
         if not res or res.get("error"):
             logger.debug(f"check_mail_replies: no result or error: {res}")
             return
-        unseen = [m for m in res.get("messages", []) if not m.get("seen", True)]
-        logger.info(f"check_mail_replies: {len(unseen)} unseen mails found")
-        for mail in res.get("messages", []):
+        # Seed _processed_uids on first run with all existing UIDs
+        if not _processed_uids:
+            for m in res.get("messages", []):
+                _processed_uids.add(str(m.get("uid", "")))
+            logger.info(f"check_mail_replies: seeded {len(_processed_uids)} existing UIDs")
+            return
+        new_mails = [m for m in res.get("messages", []) if str(m.get("uid","")) not in _processed_uids]
+        logger.info(f"check_mail_replies: {len(new_mails)} new mails found")
+        for mail in new_mails:
             uid = str(mail.get("uid",""))
             if uid in _processed_uids: continue
             subject = mail.get("subject","")
