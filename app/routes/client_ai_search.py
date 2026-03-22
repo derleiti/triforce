@@ -18,7 +18,7 @@ from ..services.multi_search import multi_search_extended
 
 router = APIRouter(prefix="/client", tags=["Client AI Search"])
 
-DEFAULT_SEARCH_MODEL = os.getenv("PRIVATE_SEARCH_MODEL", "ollama/deepseek-v3.1:671b-cloud")
+DEFAULT_SEARCH_MODEL = os.getenv("PRIVATE_SEARCH_MODEL", "ollama/deepseek-v3.2:cloud")
 MAX_RESULTS_CAP = 150
 
 STOPWORDS = {

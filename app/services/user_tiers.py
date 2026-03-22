@@ -121,7 +121,7 @@ OLLAMA_MODELS: List[str] = [
     "ollama/nomic-embed-text:latest",
     "ollama/mxbai-embed-large:latest",
     # ── Ollama Cloud-Proxy models ─────────────────────────────────────────────
-    "ollama/deepseek-v3.1:671b-cloud",
+    "ollama/deepseek-v3.2:cloud",
     "ollama/deepseek-v3.2:cloud",
     "ollama/qwen3-coder:480b-cloud",
     "ollama/qwen3-vl:235b-cloud",

@@ -36,6 +36,26 @@ logger = __import__("logging").getLogger("ailinux.chat")
 # =============================================================================
 
 
+# ── Nova Fallback Cascade v2.0 ──────────────────────────────────────────
+# Tries multiple models in order until one responds.
+# Guarantees an answer for Nova-AI-Frontend users.
+NOVA_FALLBACK_CASCADE = [
+    # 1. Ollama Cloud models (free, high quality)
+    ("ollama", "deepseek-v3.2:cloud"),
+    ("ollama", "kimi-k2-thinking:cloud"),
+    ("ollama", "glm-5:cloud"),
+    ("ollama", "qwen3-coder:480b-cloud"),
+    ("ollama", "gpt-oss:120b-cloud"),
+    # 2. OpenRouter Free models (rate-limited but reliable)
+    ("openrouter", "openai/gpt-oss-120b:free"),
+    ("openrouter", "stepfun/step-3.5-flash:free"),
+    ("openrouter", "mistralai/mistral-small-3.1-24b-instruct:free"),
+    # 3. Local Ollama (always available, no network needed)
+    ("ollama", "glm-4.7-flash:latest"),
+    # 4. Tiny local fallback (last resort, 5GB)
+    ("ollama", "qwen3:8b"),
+]
+
 async def _fallback_to_ollama(
     messages: List[dict[str, str]],
     temperature: Optional[float],
@@ -44,32 +64,56 @@ async def _fallback_to_ollama(
     original_error: Exception,
     fallback_model: str | None = None,
 ) -> AsyncGenerator[str, None]:
-    """Unified fallback logic - tries Ollama first, then OpenRouter as secondary."""
+    """Deep fallback cascade — tries Ollama Cloud → OpenRouter Free → Local Ollama.
+    Guarantees a response for Nova-AI-Frontend users."""
     settings = get_settings()
-    model = fallback_model or settings.ollama_fallback_model
-    logger.warning("%s failed (%s), falling back to %s", original_provider, original_error, model)
-    try:
-        async for chunk in _stream_ollama(
-            model, messages, temperature=temperature, stream=True, timeout=timeout
-        ):
-            yield chunk
-    except Exception as ollama_err:
-        # Ollama fallback also failed - try OpenRouter as last resort
-        or_key = getattr(settings, "openrouter_api_key", None)
-        if or_key:
-            or_model = "meta-llama/llama-3.3-70b-instruct:free"
-            logger.warning("Ollama fallback also failed (%s), trying OpenRouter %s", ollama_err, or_model)
-            async for chunk in _stream_openai_compatible(
-                or_model, messages,
-                base_url="https://openrouter.ai/api/v1",
-                api_key=or_key,
-                extra_headers={"HTTP-Referer": "https://ailinux.me", "X-Title": "AILinux Nova"},
-                temperature=temperature, stream=True, timeout=timeout,
-                provider="openrouter",
+    logger.warning("%s failed (%s), starting fallback cascade", original_provider, original_error)
+
+    # If specific fallback model requested, try it first
+    if fallback_model:
+        try:
+            async for chunk in _stream_ollama(
+                fallback_model, messages, temperature=temperature, stream=True, timeout=timeout
             ):
                 yield chunk
-        else:
-            raise
+            return  # Success — exit cascade
+        except Exception as e:
+            logger.warning("Specific fallback %s failed: %s", fallback_model, e)
+
+    # Walk through the cascade
+    last_error = original_error
+    for provider, model in NOVA_FALLBACK_CASCADE:
+        try:
+            if provider == "ollama":
+                logger.info("Fallback cascade: trying ollama/%s", model)
+                async for chunk in _stream_ollama(
+                    model, messages, temperature=temperature, stream=True, timeout=timeout
+                ):
+                    yield chunk
+                return  # Success
+            elif provider == "openrouter":
+                or_key = getattr(settings, "openrouter_api_key", None)
+                if not or_key:
+                    continue
+                logger.info("Fallback cascade: trying openrouter/%s", model)
+                async for chunk in _stream_openai_compatible(
+                    model, messages,
+                    base_url="https://openrouter.ai/api/v1",
+                    api_key=or_key,
+                    extra_headers={"HTTP-Referer": "https://ailinux.me", "X-Title": "AILinux Nova"},
+                    temperature=temperature, stream=True, timeout=timeout,
+                    provider="openrouter",
+                ):
+                    yield chunk
+                return  # Success
+        except Exception as e:
+            last_error = e
+            logger.warning("Fallback cascade: %s/%s failed: %s", provider, model, e)
+            continue
+
+    # All failed — raise last error
+    logger.error("Fallback cascade exhausted — all %d models failed", len(NOVA_FALLBACK_CASCADE))
+    raise last_error
 
 STRUCTURE_PROMPT_MARKER = "nova_format_guideline"
 STRUCTURE_PROMPT = (

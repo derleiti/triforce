@@ -150,14 +150,14 @@ class ModelsResponse(BaseModel):
 
 def get_default_ollama_model() -> str:
     """Default Ollama-Modell für alle Tiers (Cloud-Proxy)"""
-    return "deepseek-v3.1:671b-cloud"
+    return "deepseek-v3.2:cloud"
 
 
 def get_default_model(tier: UserTier) -> str:
     """Default-Modell basierend auf Tier - ALLE nutzen Ollama Cloud-Proxy"""
     # Alle Tiers nutzen Ollama Cloud-Proxy (kostenlos, lokal gehostet)
     # OpenRouter Free-Modelle brauchen trotzdem Credits
-    return "ollama/deepseek-v3.1:671b-cloud"
+    return "ollama/deepseek-v3.2:cloud"
 
 
 def normalize_ollama_model(model: str) -> str:
@@ -321,7 +321,7 @@ async def call_openrouter(
             availability_service.mark_error(model, 402, "Payment Required")
             # Fallback zu Ollama (kostenlos)
             return await call_ollama(
-                model="ollama/deepseek-v3.1:671b-cloud",
+                model="ollama/deepseek-v3.2:cloud",
                 messages=messages,
                 temperature=temperature,
                 max_tokens=max_tokens
@@ -425,7 +425,7 @@ async def client_chat(
 
         if not tier_service.is_model_allowed(user_id, model):
 
-            model = "ollama/deepseek-v3.1:671b-cloud"
+            model = "ollama/deepseek-v3.2:cloud"
 
             logger.warning(f"Model nicht erlaubt für {tier.value}, Fallback: {model}")
 
