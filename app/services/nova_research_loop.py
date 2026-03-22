@@ -161,10 +161,16 @@ async def check_mail_replies() -> None:
     try:
         from app.routes.mcp import MCP_HANDLERS
         mail_inbox = MCP_HANDLERS.get("mail_inbox")
-        if not mail_inbox: return
+        if not mail_inbox:
+            logger.debug("check_mail_replies: mail_inbox handler not found")
+            return
         res = await mail_inbox({"limit": 20})
-        if not res or res.get("error"): return
-        for mail in (res.get("result") or {}).get("messages", []):
+        if not res or res.get("error"):
+            logger.debug(f"check_mail_replies: no result or error: {res}")
+            return
+        unseen = [m for m in res.get("messages", []) if not m.get("seen", True)]
+        logger.info(f"check_mail_replies: {len(unseen)} unseen mails found")
+        for mail in res.get("messages", []):
             uid = str(mail.get("uid",""))
             if uid in _processed_uids: continue
             subject = mail.get("subject","")
@@ -175,18 +181,18 @@ async def check_mail_replies() -> None:
                 if not mail_read: continue
                 rr = await mail_read({"uid": uid})
                 if rr and not rr.get("error"):
-                    body = (rr.get("result") or {}).get("body","")
+                    body = rr.get("body","")
                     await handle_research_reply(subject, body, sender)
                     _processed_uids.add(uid)
                     mark_seen = MCP_HANDLERS.get("mail_mark_seen")
                     if mark_seen: await mark_seen({"uid": uid})
             # Admin-Proposal
-            elif sender.lower() == "admin@ailinux.me" and not mail.get("seen", True):
+            elif "admin@ailinux.me" in sender.lower() and not mail.get("seen", True):
                 mail_read = MCP_HANDLERS.get("mail_read")
                 if not mail_read: continue
                 rr = await mail_read({"uid": uid})
                 if rr and not rr.get("error"):
-                    body = (rr.get("result") or {}).get("body","")
+                    body = rr.get("body","")
                     await handle_admin_mail(subject, body)
                     _processed_uids.add(uid)
                     mark_seen = MCP_HANDLERS.get("mail_mark_seen")
