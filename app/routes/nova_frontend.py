@@ -200,14 +200,24 @@ async def _chat_proxy(payload: Dict[str, Any]) -> Dict[str, Any]:
         f"{_base_url()}/v1/chat/completions",
         f"{_base_url()}/chat/completions",
     ]
+    last_error = None
     async with httpx.AsyncClient(timeout=120.0) as client:
         for url in urls:
             try:
                 r = await client.post(url, json=payload)
                 if r.status_code == 200:
                     return r.json()
-            except Exception:
-                pass
+                # Non-200 but valid JSON → return error to frontend (not 502)
+                try:
+                    err_data = r.json()
+                    last_error = err_data
+                except Exception:
+                    last_error = {"error": {"message": f"Backend HTTP {r.status_code}", "code": "backend_error"}}
+            except Exception as e:
+                last_error = {"error": {"message": str(e), "code": "proxy_error"}}
+    # Return last error as JSON instead of raising 502
+    if last_error:
+        return last_error
     raise HTTPException(status_code=502, detail="chat proxy failed")
 
 async def _vision_proxy(model: str, prompt: str, image_url: Optional[str], image_base64: Optional[str], mime_type: str) -> Dict[str, Any]:
