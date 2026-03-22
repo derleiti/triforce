@@ -1324,20 +1324,14 @@ async def handle_crawl_status(arguments: Dict[str, Any]) -> Dict[str, Any]:
 
 
 async def handle_create_post(arguments: Dict[str, Any]) -> Dict[str, Any]:
-    """Create WordPress post."""
-    title = arguments.get("title")
-    content = arguments.get("content")
-    status = arguments.get("status", "draft")
-
-    if not title or not content:
-        raise ValueError("'title' and 'content' are required")
-
-    result = await wordpress_service.create_post(
-        title=title,
-        content=content,
-        status=status,
-    )
-    return result
+    """Create WordPress post (via local curl, bypasses Cloudflare)."""
+    from app.mcp.handlers_wordpress import handle_wp_publish_post
+    import json as _json
+    result_str = await handle_wp_publish_post(arguments)
+    try:
+        return _json.loads(result_str)
+    except Exception:
+        return {"result": result_str}
 
 
 async def handle_conversation(arguments: Dict[str, Any]) -> Dict[str, Any]:
