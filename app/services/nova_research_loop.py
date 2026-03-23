@@ -99,7 +99,11 @@ async def handle_research_reply(subject: str, reply_body: str, sender: str) -> N
         logger.error(f"research_loop.handle_research_reply: {e}")
 
 async def handle_admin_mail(subject: str, body: str) -> None:
-    """Mails von admin@ → Agent-Reply via opencode-fast + Notification."""
+    """Mails von admin@ → direkter Reply via generate_response + mail_send.
+
+    KEIN Agent-Subprocess mehr — verhindert Anthropic-API-Rate-Limit-Ausfall.
+    Nutzt internen Chat-Handler mit Fallback-Modellen (Ollama Cloud / OpenRouter).
+    """
     try:
         from ..mcp.notification_manager import create_notification
         create_notification({
@@ -110,24 +114,47 @@ async def handle_admin_mail(subject: str, body: str) -> None:
         })
         logger.info(f"research_loop: Admin-Mail empfangen: {subject[:60]}")
 
-        # Agent-Reply: spawne opencode-fast für schnelle Antwort
-        from .agent_spawner import get_agent_spawner
-        spawner = get_agent_spawner()
-        reply_task = (
-            f"Du hast eine Mail von admin@ailinux.me erhalten.\n"
-            f"Betreff: {subject}\n"
-            f"Inhalt: {body[:2000]}\n\n"
-            f"AUFGABE: Analysiere die Mail und antworte kurz und hilfreich.\n"
-            f"Nutze: mail_send(to=\"admin@ailinux.me\", "
-            f"subject=\"Re: {subject[:80]}\", body=\"<deine Antwort>\")\n"
-            f"Dann: TASK_COMPLETE"
-        )
-        await spawner.spawn_for_issue(
-            issue_type="support_handler",
-            context=reply_task,
-            source="admin_mail_reply",
-        )
-        logger.info(f"research_loop: Agent-Reply gestartet für: {subject[:60]}")
+        # Schritt 1: Antwort direkt generieren (kein Agent-Subprocess, kein API-Limit)
+        try:
+            from ..services.chat import generate_response
+            prompt = (
+                f"Du bist Nova, der KI-Assistent von AILinux.\n"
+                f"Du hast eine Mail von admin@ailinux.me erhalten.\n"
+                f"Betreff: {subject}\n"
+                f"Inhalt: {body[:2000]}\n\n"
+                f"Antworte kurz, hilfreich und auf Deutsch. Maximal 5 Sätze."
+            )
+            # Bevorzuge Ollama Cloud (kein API-Limit), Fallback automatisch via chat.py
+            reply_text = await generate_response(
+                prompt,
+                model="gpt-oss:cloud/120b",
+                temperature=0.4,
+                max_tokens=512,
+            )
+        except Exception as gen_err:
+            logger.warning(f"research_loop.handle_admin_mail: generate_response fehlgeschlagen ({gen_err}), nutze Fallback-Text")
+            reply_text = (
+                f"Hallo,\n\ndeine Mail wurde empfangen (Betreff: {subject[:80]}).\n"
+                f"Nova hat sie registriert und leitet sie weiter.\n\n"
+                f"— Nova / AILinux"
+            )
+
+        # Schritt 2: mail_send direkt via MCP_HANDLERS (kein HTTP, kein Auth-Problem)
+        try:
+            from app.routes.mcp import MCP_HANDLERS
+            mail_send = MCP_HANDLERS.get("mail_send")
+            if mail_send:
+                await mail_send({
+                    "to": "admin@ailinux.me",
+                    "subject": f"Re: {subject[:80]}",
+                    "body": reply_text,
+                })
+                logger.info(f"research_loop: Admin-Mail-Reply direkt gesendet für: {subject[:60]}")
+            else:
+                logger.warning("research_loop.handle_admin_mail: mail_send handler nicht in MCP_HANDLERS")
+        except Exception as send_err:
+            logger.error(f"research_loop.handle_admin_mail: mail_send fehlgeschlagen: {send_err}")
+
     except Exception as e:
         logger.error(f"research_loop.handle_admin_mail: {e}")
 
