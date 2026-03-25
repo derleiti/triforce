@@ -1118,7 +1118,10 @@ async def require_admin(authorization: str = Header(None)) -> dict:
 # =============================================================================
 
 @router.get("/client/handshake")
-async def client_handshake(authorization: str = Header(None)):
+async def client_handshake(
+    authorization: str = Header(None),
+    user_agent: str = Header(None, alias="User-Agent"),
+):
     """
     Client-Handshake beim Start.
     Gibt Plan, Quota, erlaubte Tools und Context-Limit zurueck.
@@ -1141,13 +1144,22 @@ async def client_handshake(authorization: str = Header(None)):
     quota = subscription_service.get_quota(user_id, plan)
 
     # Erlaubte Tools
-    from ..routes.client_mcp import get_tools_for_tier, FREE_TIER_TOOLS, ENTERPRISE_TIER_TOOLS
+    from ..routes.client_mcp import get_tools_for_tier, FREE_TIER_TOOLS, ENTERPRISE_TIER_TOOLS, CODING_SCOPE_TOOLS
     from ..services.user_tiers import UserTier
     try:
         tier_obj = UserTier(role)
     except ValueError:
         tier_obj = UserTier.FREE
     tools = get_tools_for_tier(tier_obj)
+
+    # Option A: User-Agent-basierter Scope für ai-coder Coding-Client
+    # ALLE User (inkl. Admin) bekommen READ-ONLY MCP-Scope.
+    # Execution (shell, code_edit etc.) läuft LOKAL auf der User-Maschine via subprocess.
+    _ua = (user_agent or "").lower()
+    if _ua.startswith("ai-coder"):
+        tools = [t for t in tools if t in CODING_SCOPE_TOOLS]
+        if not tools:
+            tools = CODING_SCOPE_TOOLS  # fallback
 
     return {
         "client_id":     client_id,

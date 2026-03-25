@@ -184,13 +184,24 @@ function ailinux_nova_dark_enqueue_assets() {
     }
     $default_model = get_theme_mod( 'ailinux_nova_dark_default_model', 'llama4:latest' );
 
-    wp_localize_script('ailinux-nova-dark-app', 'NOVA_API', [
-        'DISABLED'       => true, // Use Nova AI Plugin instead
+    // Pass WP login state to JS
+    $current_user = wp_get_current_user();
+    $wp_logged_in = is_user_logged_in();
+    wp_localize_script('ailinux-nova-dark-app', 'AILINUX_USER', [
+        'loggedIn'    => $wp_logged_in,
+        'displayName' => $wp_logged_in ? $current_user->display_name : '',
+        'email'       => $wp_logged_in ? $current_user->user_email : '',
+        'isAdmin'     => $wp_logged_in && current_user_can('manage_options'),
+        'logoutUrl'   => $wp_logged_in ? wp_logout_url( home_url('/') ) : '',
+    ]);
+
+        wp_localize_script('ailinux-nova-dark-app', 'NOVA_API', [
+        'DISABLED'       => false,
         'BASE'           => $api_base,
-        'CHAT_ENDPOINT'  => '/v1/chat/completions',
-        'MODELS_ENDPOINT'=> '/v1/models',
-        'HEALTH_ENDPOINT'=> '/health',
-        'DEFAULT_MODEL'  => $default_model,
+        'CHAT_ENDPOINT'  => '/v1/frontend/dashboard/chat',
+        'MODELS_ENDPOINT'=> '/wp-json/nova-ai/v1/models',
+        'HEALTH_ENDPOINT'=> '/v1/frontend/dashboard/health',
+        'DEFAULT_MODEL'  => 'gemini/gemini-2.5-flash',
     ]);
 
     wp_localize_script( 'ailinux-nova-dark-app', 'AILinuxNova', [
@@ -1085,3 +1096,33 @@ add_action('wp_enqueue_scripts', function() {
     wp_dequeue_script('ailinux-nova-dark-webgpu');
     wp_deregister_script('ailinux-nova-dark-webgpu');
 }, 99);
+
+// After WP logout: set shared cookie so login.ailinux.me auto-clears JWT
+add_action('wp_logout', function() {
+    // Cookie on .ailinux.me domain signals login.ailinux.me to clear JWT
+    setcookie('ailinux_logout', '1', [
+        'expires'  => time() + 300,
+        'path'     => '/',
+        'domain'   => '.ailinux.me',
+        'secure'   => true,
+        'httponly' => false,  // JS must read it
+        'samesite' => 'Lax',
+    ]);
+});
+add_filter('logout_redirect', function($redirect_to, $requested_redirect_to, $user) {
+    return home_url('/');
+}, 10, 3);
+
+// ── Auth status endpoint for login.ailinux.me sync ──────────────────────
+add_action('rest_api_init', function() {
+    register_rest_route('ailinux/v1', '/auth-status', [
+        'methods'             => 'GET',
+        'callback'            => function() {
+            return new WP_REST_Response([
+                'logged_in'    => is_user_logged_in(),
+                'display_name' => is_user_logged_in() ? wp_get_current_user()->display_name : '',
+            ], 200);
+        },
+        'permission_callback' => '__return_true',
+    ]);
+});

@@ -371,8 +371,15 @@ class AdaptiveCodeIlluminatorV4:
             except Exception as e:
                 return {"path": p, "status": "failed", "reason": str(e)}
 
-        # Load all files concurrently
-        results = await asyncio.gather(*[load_file(p) for p in paths])
+        # Load all files concurrently — mit Semaphore begrenzt auf 20 parallel + max 100 paths
+        MAX_PATHS = 100
+        if len(paths) > MAX_PATHS:
+            return {"error": f"Too many paths requested (max {MAX_PATHS}, got {len(paths)})"}
+        _sem = asyncio.Semaphore(20)
+        async def load_file_guarded(p):
+            async with _sem:
+                return await load_file(p)
+        results = await asyncio.gather(*[load_file_guarded(p) for p in paths])
 
         for r in results:
             if r["status"] == "loaded":

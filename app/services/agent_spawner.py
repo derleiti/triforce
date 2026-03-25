@@ -870,7 +870,7 @@ class AgentSpawner:
             "support_handler":      "claude-mcp",
             "support_agent":        "claude-mcp",
             "marketing_agent":      "claude-mcp",
-            "content_agent":        "gemini-mcp",
+            "content_agent":        "opencode-fast",
             "swarm_coordinator":   "gemini-mcp",
             "swarm_needed":        "gemini-mcp",
             "user_specialist":      "claude-mcp",

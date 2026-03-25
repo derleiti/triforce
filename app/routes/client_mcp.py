@@ -63,6 +63,41 @@ ENTERPRISE_TIER_TOOLS = PRO_TIER_TOOLS + [
     "restart_service",
 ]
 
+# Coding Client Scope (ai-coder) — kein Admin/Ops/Infra
+# ── aicoder Scope — READ-ONLY für alle User inkl. Admin ─────────────────────
+# Execution (shell, binary_exec, code_edit, service_control) läuft LOKAL
+# auf der Maschine des Users via subprocess — NICHT auf dem Hetzner-Server.
+# MCP = nur Lesen & Analysieren. Kein Server-Schreibzugriff via aicoder.
+CODING_SCOPE_TOOLS = [
+    # code READ
+    "code_read", "code_search", "code_tree",
+    # dev analyse
+    "dev_analyze", "dev_debug", "dev_lint", "dev_summarize", "dev_links",
+    # dev write (läuft auf lokaler Workspace-Kopie, nicht auf Server)
+    "dev_refactor",
+    # files
+    "file_ops",
+    # search / web
+    "search", "fetch", "web_search", "smart_search", "crawl",
+    # memory (user-scoped, isoliert)
+    "memory_search", "memory_store",
+    # git (read)
+    "git_ops", "git",
+    # docs
+    "doc_read", "doc_scan", "doc_search", "doc_tree", "doc_stats",
+    # system READ-ONLY (zeigt Backend-Stats, kein Schreiben)
+    "safe_probe", "system_info", "process_control",
+    "service_status", "container_status",
+    "network_info", "log_viewer", "logs", "logs_errors",
+    # misc
+    "current_time", "health", "chat", "translate",
+    "agents", "agent_review",
+]
+
+# Kein separater Admin-Scope mehr — Execution = immer lokal
+# (Alias für Kompatibilität mit altem Code)
+CODING_SCOPE_TOOLS_ADMIN = CODING_SCOPE_TOOLS
+
 # Admin: Alle Tools
 ADMIN_TOOLS = ["*"]
 

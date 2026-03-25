@@ -91,6 +91,20 @@ async def start_cli_agent(agent_id: str, _auth: None = Depends(_require_agent_ad
         raise api_error("Agent start failed", status_code=500, code="agent_start_failed")
 
 
+@router.post("/cli/register", summary="Register new CLI Agent")
+async def register_cli_agent(agent_data: Dict[str, Any], _auth: None = Depends(_require_agent_admin)):
+    """Dynamisch einen neuen CLI Agent registrieren und in agents.json persistieren."""
+    from ..services.tristar.agent_controller import agent_controller
+    try:
+        result = await agent_controller.register_agent(agent_data)
+        return {"success": True, "agent": result}
+    except ValueError as e:
+        raise api_error(str(e), status_code=400, code="agent_register_invalid")
+    except Exception as e:
+        logger.error("agent_register failed: %s", e, exc_info=True)
+        raise api_error("Agent register failed", status_code=500, code="agent_register_failed")
+
+
 @router.post("/cli/{agent_id}/stop", response_model=CLIAgentActionResponse, summary="Stop CLI Agent")
 async def stop_cli_agent(agent_id: str, _auth: None = Depends(_require_agent_admin)):
     """Stop a running CLI agent."""
@@ -114,8 +128,11 @@ async def call_cli_agent(agent_id: str, payload: Dict[str, Any], _auth: None = D
     from ..services.tristar.agent_controller import agent_controller
     
     message = payload.get("message", "")
-    timeout = payload.get("timeout", 120)
-    
+    try:
+        timeout = max(5, min(int(payload.get("timeout", 120)), 600))
+    except (TypeError, ValueError):
+        timeout = 120
+
     if not message:
         raise api_error("'message' is required", status_code=400, code="missing_message")
     

@@ -348,13 +348,33 @@ async def run_api_agent(
 
 
 async def run_api_agent_with_fallback(task: str, models: Optional[List[str]] = None, **kwargs) -> Dict[str, Any]:
-    """Try multiple models in order until one succeeds."""
+    """Try multiple models in order until one succeeds and expose fallback metadata."""
     model_list = models or MODEL_PRIORITY
     last_error = None
-    for model in model_list:
+    attempted_models: List[str] = []
+    primary_model = model_list[0] if model_list else None
+    for idx, model in enumerate(model_list):
+        attempted_models.append(model)
         result = await run_api_agent(model=model, task=task, **kwargs)
         if result["status"] in ("completed", "max_turns"):
+            result["primary_model"] = primary_model or model
+            result["attempted_models"] = attempted_models.copy()
+            result["fallback_used"] = idx > 0
+            result["fallback_count"] = idx
+            if idx > 0:
+                result["fallback_from"] = primary_model or attempted_models[0]
+                result["fallback_to"] = model
             return result
         last_error = result
-        logger.info(f"API agent fallback: {model} → next...")
-    return last_error or {"status": "error", "response": "All models failed"}
+        logger.info(f"API agent fallback: {model} -> next...")
+    if last_error is None:
+        return {"status": "error", "response": "All models failed", "attempted_models": attempted_models, "fallback_used": False, "fallback_count": 0}
+    if isinstance(last_error, dict):
+        last_error["primary_model"] = primary_model
+        last_error["attempted_models"] = attempted_models.copy()
+        last_error["fallback_used"] = len(attempted_models) > 1
+        last_error["fallback_count"] = max(0, len(attempted_models) - 1)
+        if len(attempted_models) > 1:
+            last_error["fallback_from"] = primary_model or attempted_models[0]
+            last_error["fallback_to"] = attempted_models[-1]
+    return last_error

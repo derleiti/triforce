@@ -76,6 +76,67 @@ def _extract_body(msg: email.message.Message) -> str:
     return ""
 
 
+def _extract_addr(val: str) -> str:
+    return (parseaddr(_decode_header(val or ""))[1] or "").strip().lower()
+
+
+def _addr_domain(addr: str) -> str:
+    if "@" not in (addr or ""):
+        return ""
+    return addr.rsplit("@", 1)[1].strip().lower()
+
+
+def _mail_auth_summary(msg: email.message.Message) -> Dict[str, Any]:
+    from_addr = _extract_addr(msg.get("From", ""))
+    reply_to_addr = _extract_addr(msg.get("Reply-To", ""))
+    return_path_addr = _extract_addr(msg.get("Return-Path", ""))
+    auth_results = _decode_header(msg.get("Authentication-Results", ""))
+    received_spf = _decode_header(msg.get("Received-SPF", ""))
+    auth_blob = f"{auth_results}\n{received_spf}".lower()
+
+    dkim_pass = "dkim=pass" in auth_blob
+    spf_pass = "spf=pass" in auth_blob or received_spf.lower().startswith("pass")
+    dmarc_pass = "dmarc=pass" in auth_blob
+
+    from_domain = _addr_domain(from_addr)
+    reply_to_domain = _addr_domain(reply_to_addr)
+    return_path_domain = _addr_domain(return_path_addr)
+    internal_sender = from_domain == "ailinux.me"
+    aligned_path = return_path_domain == "ailinux.me" or reply_to_domain == "ailinux.me"
+    auth_verified = bool(internal_sender and (dkim_pass or spf_pass or dmarc_pass or aligned_path))
+
+    reasons = []
+    if internal_sender:
+        reasons.append("from=ailinux.me")
+    if aligned_path:
+        reasons.append("aligned-path")
+    if spf_pass:
+        reasons.append("spf=pass")
+    if dkim_pass:
+        reasons.append("dkim=pass")
+    if dmarc_pass:
+        reasons.append("dmarc=pass")
+
+    return {
+        "from_addr": from_addr,
+        "reply_to": _decode_header(msg.get("Reply-To", "")),
+        "reply_to_addr": reply_to_addr,
+        "return_path": _decode_header(msg.get("Return-Path", "")),
+        "return_path_addr": return_path_addr,
+        "authentication_results": auth_results[:500],
+        "received_spf": received_spf[:200],
+        "auth_flags": {
+            "spf_pass": spf_pass,
+            "dkim_pass": dkim_pass,
+            "dmarc_pass": dmarc_pass,
+            "internal_sender": internal_sender,
+            "aligned_path": aligned_path,
+        },
+        "auth_verified": auth_verified,
+        "auth_reason": ", ".join(reasons),
+    }
+
+
 # ─── Public API ────────────────────────────────────────────────────────────────
 
 def mail_inbox(limit: int = 20, folder: str = "INBOX") -> List[Dict[str, Any]]:
@@ -103,10 +164,21 @@ def mail_inbox(limit: int = 20, folder: str = "INBOX") -> List[Dict[str, Any]]:
             msg = email.message_from_bytes(header_data)
             seen = b"\\Seen" in meta_str
 
+            auth_meta = _mail_auth_summary(msg)
             messages.append({
                 "uid": uid.decode(),
                 "subject": _decode_header(msg.get("Subject", "(kein Betreff)")),
                 "from": _decode_header(msg.get("From", "")),
+                "from_addr": auth_meta["from_addr"],
+                "reply_to": auth_meta["reply_to"],
+                "reply_to_addr": auth_meta["reply_to_addr"],
+                "return_path": auth_meta["return_path"],
+                "return_path_addr": auth_meta["return_path_addr"],
+                "authentication_results": auth_meta["authentication_results"],
+                "received_spf": auth_meta["received_spf"],
+                "auth_flags": auth_meta["auth_flags"],
+                "auth_verified": auth_meta["auth_verified"],
+                "auth_reason": auth_meta["auth_reason"],
                 "date": msg.get("Date", ""),
                 "seen": seen,
             })
@@ -129,10 +201,21 @@ def mail_read(uid: str, folder: str = "INBOX") -> Dict[str, Any]:
         msg = email.message_from_bytes(msg_bytes)
         body = _extract_body(msg)
 
+        auth_meta = _mail_auth_summary(msg)
         return {
             "uid": uid,
             "subject": _decode_header(msg.get("Subject", "")),
             "from": _decode_header(msg.get("From", "")),
+            "from_addr": auth_meta["from_addr"],
+            "reply_to": auth_meta["reply_to"],
+            "reply_to_addr": auth_meta["reply_to_addr"],
+            "return_path": auth_meta["return_path"],
+            "return_path_addr": auth_meta["return_path_addr"],
+            "authentication_results": auth_meta["authentication_results"],
+            "received_spf": auth_meta["received_spf"],
+            "auth_flags": auth_meta["auth_flags"],
+            "auth_verified": auth_meta["auth_verified"],
+            "auth_reason": auth_meta["auth_reason"],
             "to": _decode_header(msg.get("To", "")),
             "date": msg.get("Date", ""),
             "body": body[:4000],  # Limit to 4000 chars for MCP safety

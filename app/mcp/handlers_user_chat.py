@@ -424,12 +424,12 @@ async def handle_user_chat_tool(name: str, args: Dict[str, Any]) -> Dict[str, An
                 get_chat_logger().log_message(
                     session_id=session_id,
                     agent_id=short_id,
-                    content=response_text,
-                    model=model_id,
+                    content=result["content"],
+                    model=result["model_id"],
                     msg_type="response",
                 )
-            except Exception:
-                pass
+            except Exception as _log_err:
+                logger.debug(f"ChatLog write skipped: {_log_err}")
 
         parts.append(f"\n---\n*{len(responses)} Modelle haben geantwortet. "
                      f"Nutze `user_group_chat_reply` für die nächste Runde.*")

@@ -1040,7 +1040,7 @@ add_shortcode('ailinux_downloads', function ($atts): string {
     $label = esc_attr($atts['label'] ?? 'AILINUX DOWNLOADS');
     $title = esc_html($atts['title'] ?? 'Downloads');
     $desc  = esc_html($atts['desc']  ?? 'Dateien & Pakete zum Download.');
-    $raw   = wp_remote_get(nova_get_backend_base().'/v1/frontend/dashboard/downloads', ['timeout'=>10]);
+    $raw   = wp_remote_get(nova_get_backend_base().'/v1/frontend/dashboard/downloads', ['timeout'=>10, 'headers'=>['X-Internal-Key' => defined('NOVA_AI_INTERNAL_KEY') ? NOVA_AI_INTERNAL_KEY : (get_option('nova_ai_settings', [])['internal_key'] ?? '')]]);
     $tree  = null;
     if (!is_wp_error($raw)) {
         $body = json_decode(wp_remote_retrieve_body($raw), true);

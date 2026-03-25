@@ -29,6 +29,12 @@ def _ok_path(p, allowed):
         return any(resolved == Path(a) or Path(a) in resolved.parents for a in allowed)
     except: return False
 
+def _preferred_shell() -> str:
+    for candidate in ("/bin/bash", "/usr/bin/bash", "bash", "/bin/sh", "/usr/bin/sh", "sh"):
+        if os.path.exists(candidate) or os.path.basename(candidate) in os.environ.get("PATH", ""):
+            return candidate
+    return "sh"
+
 async def _run(cmd, timeout=30):
     start=time.time()
     try:
@@ -723,7 +729,8 @@ async def handle_task_runner(a):
         # Execute via subprocess (list-based for simple commands, shell for complex)
         start = time.time()
         try:
-            cmd = ["sudo", "bash", "-c", decoded] if use_elevated else ["bash", "-c", decoded]
+            shell = _preferred_shell()
+            cmd = ["sudo", shell, "-c", decoded] if use_elevated else [shell, "-c", decoded]
             env = os.environ.copy()
             proc = await asyncio.create_subprocess_exec(
                 *cmd,
@@ -780,7 +787,7 @@ async def handle_task_runner(a):
         if key_test["success"] and "OK" in key_test["output"]:
             # Key auth works
             r = await _run(
-                ssh_base + ["-o", "BatchMode=yes", target, "bash", "-c", decoded],
+                ssh_base + ["-o", "BatchMode=yes", target, "sh", "-c", decoded],
                 timeout=timeout
             )
             r["auth_method"] = "key"
@@ -790,7 +797,7 @@ async def handle_task_runner(a):
             if not ssh_pass:
                 return {"error": "SSH key auth failed and SSH_FEDERATION_PASS not set in env"}
             r = await _run(
-                ["sshpass", "-p", ssh_pass] + ssh_base + [target, "bash", "-c", decoded],
+                ["sshpass", "-p", ssh_pass] + ssh_base + [target, "sh", "-c", decoded],
                 timeout=timeout
             )
             r["auth_method"] = "password"

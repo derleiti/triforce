@@ -44,8 +44,8 @@ chmod 640 "$APACHE_ENV_FILE"
 
 # Inject into running Apache container (if available)
 if docker ps --format '{{.Names}}' 2>/dev/null | grep -q "^${CONTAINER_NAME}$"; then
-    # Env is provided via runtime env file; a transient docker exec export would not persist.
-    # Reload Apache so it picks up the current token source without assuming bash exists in-container.
+    # Set env var in running container and send graceful restart
+    docker exec "$CONTAINER_NAME" bash -c "export PROXY_AUTH_TOKEN='$TOKEN'" 2>/dev/null || true
     # Use apachectl graceful to avoid downtime
     docker exec "$CONTAINER_NAME" apachectl graceful 2>/dev/null && \
         echo "[OK] Apache gracefully reloaded with new proxy token" || \

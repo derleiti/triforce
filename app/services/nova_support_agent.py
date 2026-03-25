@@ -18,7 +18,7 @@ Englisch ist — aber nie ignorieren, immer helfen.
 
 SUPPORT-FLOW:
 
-A) ALLGEMEINE FRAGEN → direkt beantworten, auf docs.ailinux.me verweisen.
+A) ALLGEMEINE FRAGEN → direkt beantworten, bei Bedarf auf ailinux.me oder forum.ailinux.me verweisen.
 
 B) USER EINGELOGGT → Profildaten aus Flarum/WP lesen, direkt helfen.
 

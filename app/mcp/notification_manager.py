@@ -61,16 +61,16 @@ EVENT_TYPES = {
     "ops.repeated_error":   {"agent": "codex-mcp",  "priority": "high"},
     "ops.service_down":     {"agent": "codex-mcp",   "priority": "critical"},
     "ops.performance":      {"agent": "codex-mcp",   "priority": "normal"},
-    "support.general":      {"agent": "codex-mcp",  "priority": "high"},
-    "support.install":      {"agent": "codex-mcp",   "priority": "high"},
-    "support.login":        {"agent": "codex-mcp",  "priority": "high"},
-    "support.bug_report":   {"agent": "codex-mcp",   "priority": "high"},
-    "support.feature_req":  {"agent": "codex-mcp",   "priority": "normal"},
-    "forum.question":       {"agent": "codex-mcp",  "priority": "high"},
-    "forum.support":        {"agent": "codex-mcp",  "priority": "high"},
+    "support.general":      {"agent": "claude-mcp", "priority": "high"},
+    "support.install":      {"agent": "claude-mcp", "priority": "high"},
+    "support.login":        {"agent": "claude-mcp", "priority": "high"},
+    "support.bug_report":   {"agent": "claude-mcp", "priority": "high"},
+    "support.feature_req":  {"agent": "claude-mcp", "priority": "normal"},
+    "forum.question":       {"agent": "claude-mcp", "priority": "high"},
+    "forum.support":        {"agent": "claude-mcp", "priority": "high"},
     "forum.feedback":       {"agent": None,          "priority": "low"},
     "forum.spam":           {"agent": None,          "priority": "low"},
-    "mail.support":         {"agent": "codex-mcp",  "priority": "high"},
+    "mail.support":         {"agent": "claude-mcp", "priority": "high"},
     "mail.research":        {"agent": "codex-mcp",  "priority": "high"},
     "mail.spam":            {"agent": None,          "priority": "low"},
     "wp.comment":           {"agent": "codex-mcp",   "priority": "low"},
@@ -84,6 +84,10 @@ _CLASSIFY_RULES = [
       "exception", "attributeerror", "keyerror"], "ops.error", 1),
     (["service failed", "connection refused", "crashed", "oom", "disk full",
       "killed", "segfault"], "ops.service_down", 1),
+    (["failed with result", "entered failed state", "service entered failed", "exit-code"],
+     "ops.service_down", 1),
+    (["keepalive ping timeout", "all connection attempts failed", "node ", " degraded "],
+     "ops.repeated_error", 1),
     (["password", "passwort", "login", "zugang", "account", "anmeldung",
       "auth failed", "401", "403"], "support.login", 1),
     (["install", "installation", "setup", "einrichtung", "dependencies",
@@ -96,6 +100,41 @@ _CLASSIFY_RULES = [
     (["spam", "viagra", "casino", "lottery", "click here", "unsubscribe"],
      "forum.spam", 2),
 ]
+
+
+def _is_internal_noise_event(source: str, title: str, body: str, tags: List[str] = None) -> bool:
+    """Suppress notifier self-ingest and housekeeping chatter."""
+    if source != SRC_SYSTEM:
+        return False
+
+    text = f"{title}\n{body}".lower()
+    tags_lower = {str(t).lower() for t in (tags or [])}
+
+    loop_markers = (
+        "mcp.notifications",
+        "|event|",
+        "event | [",
+        "notify_send",
+        "notify_status",
+        "notify_list",
+        "notify_read",
+        "log_notify:",
+        "[triforce] error:",
+        "[triforce] warning:",
+    )
+    if any(marker in text for marker in loop_markers):
+        return True
+
+    housekeeping_markers = (
+        "health-check",
+        "snapshot fällig",
+        "snapshot faellig",
+        "health probe received",
+    )
+    if ("scheduler" in tags_lower or "log-monitor" in tags_lower) and any(marker in text for marker in housekeeping_markers):
+        return True
+
+    return False
 
 
 # -- Redis Helper --
@@ -197,7 +236,7 @@ def classify_event(source: str, title: str, body: str, tags: List[str] = None) -
         SRC_FORUM: "forum.question",
         SRC_MAIL: "mail.support",
         SRC_WORDPRESS: "wp.comment",
-        SRC_SYSTEM: "ops.error",
+        SRC_SYSTEM: "ops.performance",
     }
     for keywords, event_type, min_match in _CLASSIFY_RULES:
         matches = sum(1 for kw in keywords if kw in text)
@@ -215,6 +254,10 @@ async def create_event(
     auto_resolve: bool = False, event_type: str = None,
     correlation_id: str = None,
 ) -> Optional[Dict]:
+    if _is_internal_noise_event(source, title, body, tags):
+        logger.debug("NOISE_GUARD: suppressed internal system/notifier event")
+        return None
+
     if not event_type:
         event_type = classify_event(source, title, body, tags)
     if not priority:
@@ -651,7 +694,7 @@ async def _direct_mail_reply(event: Dict) -> bool:
                 "Du bist Nova, der KI-Assistent von AILinux (ailinux.me). "
                 "Antworte freundlich, kompetent und auf Deutsch. "
                 "Halte dich kurz (max 200 Worte). "
-                "Erwähne bei technischen Fragen die Docs unter docs.ailinux.me."
+                "Verweise bei technischen Fragen auf ailinux.me oder forum.ailinux.me, aber nur wenn es hilfreich ist."
             )},
             {"role": "user", "content": f"Betreff: {subject}\n\n{mail_body}"}
         ]
@@ -758,18 +801,21 @@ async def _dispatch_event(event: Dict) -> None:
     # External events (mail, forum, WP) with non-admin sender are NEVER
     # allowed to spawn agents with code-write access. Hard code gate.
     if source in EXTERNAL_SOURCES and issue_type in WRITE_ISSUE_TYPES:
-        sender = metadata.get("from", metadata.get("author", "")).lower()
+        sender = metadata.get("from_addr") or metadata.get("from", metadata.get("author", "")).lower()
         # Extract email from "Name <email>" format
         if "<" in sender and ">" in sender:
             sender = sender.split("<")[1].split(">")[0].strip()
-        sender = sender.strip()
-        if sender not in ADMIN_SENDERS:
+        sender = sender.strip().lower()
+
+        auth_verified = bool(metadata.get("auth_verified", False)) if source == SRC_MAIL else True
+        if sender not in ADMIN_SENDERS or not auth_verified:
             old_type = issue_type
             issue_type = "support_agent"  # downgrade to read-only
             agent_id = "claude-mcp"       # support agent
             logger.warning(
                 f"SAFETY: downgraded {old_type} -> support_agent | "
-                f"sender={sender} not in ADMIN_SENDERS | event={event_id}"
+                f"sender={sender} admin={'yes' if sender in ADMIN_SENDERS else 'no'} "
+                f"auth_verified={'yes' if auth_verified else 'no'} | event={event_id}"
             )
 
     # For mail events: try cloud fallback first if agents are likely exhausted
@@ -949,7 +995,21 @@ async def _poll_mail():
                 await create_event(
                     title=f"Mail: {subject}", body=f"Von: {sender}\n\n{snippet}",
                     source=SRC_MAIL, tags=["mail","inbox"],
-                    metadata={"uid": uid, "from": sender, "subject": subject},
+                    metadata={
+                        "uid": uid,
+                        "from": sender,
+                        "from_addr": msg.get("from_addr", ""),
+                        "reply_to": msg.get("reply_to", ""),
+                        "reply_to_addr": msg.get("reply_to_addr", ""),
+                        "return_path": msg.get("return_path", ""),
+                        "return_path_addr": msg.get("return_path_addr", ""),
+                        "authentication_results": msg.get("authentication_results", ""),
+                        "received_spf": msg.get("received_spf", ""),
+                        "auth_flags": msg.get("auth_flags", {}),
+                        "auth_verified": msg.get("auth_verified", False),
+                        "auth_reason": msg.get("auth_reason", ""),
+                        "subject": subject,
+                    },
                 )
                 # Mark as seen in IMAP so it doesn't get reprocessed after restart
                 try:

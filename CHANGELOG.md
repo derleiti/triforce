@@ -2,6 +2,26 @@
 
 All notable changes to TriForce Backend.
 
+## [2.85.0-rc1] - 2026-03-25
+
+### Spring Overhaul — Provider & Model Updates
+
+#### Provider / Model Updates
+- **Anthropic**: Updated to Claude 4.6 series (`claude-opus-4-6`, `claude-sonnet-4-6`, `claude-haiku-4-5`); legacy 4.0 IDs mapped as aliases
+- **Gemini**: `gemini-3-pro-preview` (shutdown Mar 9) redirected to `gemini-3.1-pro-preview`; Gemini 1.5 series (retired/404) redirected to 2.5 equivalents; added Gemini 3.1-flash-lite, 3-flash
+- **Mistral**: Added `magistral-medium/small` (reasoning), `devstral/devstral-medium/small` (code agents), `ministral-14b`, `pixtral-large`, `mistral-ocr`, `nemo` as aliases; legacy `mixtral-8x7b` → `open-mistral-nemo`
+- **Groq**: Default model → `openai/gpt-oss-120b`; deprecated `kimi-k2-instruct` → `kimi-k2-instruct-0905`; `deepseek-r1-distill-llama-70b` removed
+- **Cerebras**: Default model → `llama-3.3-70b`
+- **Cloudflare**: Added `qwen3-30b-a3b-fp8`, `qwen2.5-coder-32b-instruct`, `mistral-small-3.1-24b-instruct`, `deepseek-r1-distill-qwen-32b` to fallback registry
+
+#### Codebase / Infra
+- Removed 96 `.bak`, `.BAD`, `.broken`, `.patch` files from `app/`
+- Cleaned root directory: removed debug logs, one-shot scripts, temp files
+- Moved utility scripts to `scripts/tools/` and `scripts/debug/`
+- Cleared all `__pycache__` directories
+- LemonSqueezy integration: API key wired, store ID 303381, Early Access product at €40/mo
+- Total models in registry: 625+
+
 ## [2.80] - 2026-01-02
 
 ### Added
