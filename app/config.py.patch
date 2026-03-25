@@ -1,9 +1,0 @@
-IMAP and WP App Password fields to add after line 203 (mail_rate_per_min):
-    mail_imap_host: Optional[str] = Field(default=None, validation_alias="MAIL_IMAP_HOST")
-    mail_imap_port: Optional[int] = Field(default=993, validation_alias="MAIL_IMAP_PORT")
-    mail_imap_user: Optional[str] = Field(default=None, validation_alias="MAIL_IMAP_USER")
-    mail_imap_pass: Optional[str] = Field(default=None, validation_alias="MAIL_IMAP_PASS")
-    mail_imap_ssl: Optional[bool] = Field(default=True, validation_alias="MAIL_IMAP_SSL")
-    mail_imap_folder: Optional[str] = Field(default="INBOX", validation_alias="MAIL_IMAP_FOLDER")
-    wordpress_app_user: Optional[str] = Field(default=None, validation_alias="WORDPRESS_APP_USER")
-    wordpress_app_password: Optional[str] = Field(default=None, validation_alias="WORDPRESS_APP_PASSWORD")

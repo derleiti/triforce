@@ -191,3 +191,19 @@ tests/
 
 # DKIM-Keys — private keys, never commit
 docker/mailserver/config/opendkim/
+
+# Temp/debug files
+*.bak
+*.bak.*
+*.BAD.*
+*.broken.*
+*.patch
+gather*.sh
+gather*.log
+verify_fix*.sh
+all-*.log
+*_debug_*.txt
+tmp_*.py
+upfix.sh
+bugreport.txt
+mcp_write_lock_*.txt
