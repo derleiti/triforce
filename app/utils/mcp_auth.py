@@ -173,7 +173,7 @@ def add_token(token: str, metadata: Optional[Dict] = None):
 
 
 def is_valid_token(token: str) -> bool:
-    """Check if a bearer token is valid."""
+    """Check if a bearer token is valid (MCP token or Client JWT)."""
     # Check in-memory tokens first
     if token in _ACTIVE_TOKENS:
         return True
@@ -191,6 +191,16 @@ def is_valid_token(token: str) -> bool:
             except Exception:
                 pass
         return True
+
+    # Fallback: accept valid Client JWT tokens (aicoder GUI/CLI users)
+    try:
+        from app.routes.client_auth import decode_jwt_token
+        payload = decode_jwt_token(token)
+        if payload.get("sub") or payload.get("email"):
+            return True
+    except Exception:
+        pass
+
     return False
 
 
@@ -375,12 +385,9 @@ async def require_mcp_auth(request: Request) -> str:
     
     # External request (port 9100) → requires auth
     logger.debug(f"AUTH_CHECK | IP: {client_ip} | X-Fwd-Port: {forwarded_port}")
-    
-    if not MCP_AUTH_USER or not MCP_AUTH_PASS:
-        logger.error("AUTH_ERROR | MCP_OAUTH_USER/PASS not configured")
-        raise _unauthorized("Server authentication not configured")
-    
-    # Method 1: Bearer Token
+
+    # Method 1: Bearer Token — prüfe ZUERST vor MCP_AUTH_USER/PASS Check
+    # Damit aicoder-GUI/CLI (Client-JWT) und Termux funktionieren
     if auth_header.lower().startswith("bearer "):
         token = auth_header[7:].strip()
         if is_valid_token(token):
