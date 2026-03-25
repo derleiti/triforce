@@ -53,7 +53,15 @@ def extract_user_and_tier_from_token(authorization: str = None) -> tuple:
         if not token:
             return None, None
         
-        payload = decode_jwt_token(token)
+        # Erst mit Expiry prüfen
+        try:
+            payload = decode_jwt_token(token)
+        except Exception:
+            # Token abgelaufen aber gültig signiert → Tier trotzdem lesen
+            import jwt as _jwt
+            from app.core.config import settings as _s
+            payload = _jwt.decode(token, _s.secret_key, algorithms=["HS256"],
+                                  options={"verify_exp": False})
         
         email = payload.get("email") or payload.get("sub")
         tier = payload.get("role") or payload.get("tier")
