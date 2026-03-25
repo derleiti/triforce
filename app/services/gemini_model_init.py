@@ -401,7 +401,7 @@ Rufe /mcp/init für vollständige Dokumentation ab."""
             if include_cli:
                 cli_tasks = [
                     self.init_cli_agent(agent_id)
-                    for agent_id in ["claude-mcp", "codex-mcp", "gemini-mcp", "mistral-mcp"]
+                    for agent_id in ["claude-mcp", "codex-mcp", "mistral-mcp"]
                 ]
                 cli_results = await asyncio.gather(*cli_tasks, return_exceptions=True)
                 results["cli_agents"] = [

@@ -1,0 +1,306 @@
+================================================================================
+TRIFORCE / AILINUX - VOLLSTÄNDIGER BUG REPORT
+Erstellt: 2026-03-10
+Scan: Automatischer Full-Scan der gesamten Codebase (/home/zombie/triforce/app)
+Methode: MCP code_search, file_read, AI-Analyse (Specialist)
+================================================================================
+
+LEGENDE:
+  [KRITISCH] Service-Ausfall / Datenverlust möglich
+  [HOCH]     Sicherheitsrisiko oder schwerwiegender Fehler
+  [MITTEL]   Logikfehler, verdeckter Fehler oder fehlende Funktion
+  [INFO]     Code-Qualität, Deprecation, Tech-Debt
+
+STATUS:
+  [FIXED]    Bereits behoben (aus heutiger Session)
+  [OFFEN]    Noch nicht behoben
+
+================================================================================
+SEKTION 1: BUGS AUS HEUTIGER SESSION (BEREITS GEFIXT)
+================================================================================
+
+BUG-001 [KRITISCH][FIXED] — time_up.log Crash-Loop (root-owned, 120MB)
+  Datei:  /home/zombie/triforce/time_up.log
+  Ursache: nova_frontend.py Import-Fehler → restart-Loop → Log wuchs auf 120MB
+           Datei gehörte root:root statt zombie:zombie
+  Fix:    sudo bash scripts/fix_time_up_log.sh (truncate + logrotate config)
+  Status: ✓ BEHOBEN — Log 3.7MB, keine Errors mehr
+
+BUG-002 [KRITISCH][FIXED] — NameError: tool_name / arguments in _process_mcp_request()
+  Datei:  app/routes/mcp.py ~Zeile 4095
+  Ursache: call_v4_tool(tool_name, arguments) verwendete undefinierte Variablen
+           im v4-Fallback-Scope (scope-leak aus äußerem try-Block)
+  Fix:    _v4_tool_name = params.get("name","") und _v4_arguments = params.get("arguments",{})
+          explizit aus params extrahiert vor dem call_v4_tool()-Aufruf
+  Status: ✓ BEHOBEN — Zeile 4099
+
+BUG-003 [HOCH][FIXED] — Doppelte Logger-Definition in app/main.py
+  Datei:  app/main.py Zeile 52 + 63
+  Ursache: logger = logging.getLogger("app.main") bei Zeile 52 wurde durch
+           logger = logging.getLogger(__name__) bei Zeile 63 überschrieben
+  Fix:    Zweite Definition entfernt
+  Status: ✓ BEHOBEN
+
+BUG-004 [MITTEL][FIXED] — Doppelter /mcp Endpoint undokumentiert (Architektur-Klarheit)
+  Datei:  app/main.py
+  Ursache: /mcp (kein prefix) = Claude.ai Remote Connector
+           /v1/mcp (mit prefix) = Interner lokaler MCP Endpoint
+           Kein Kommentar → verwirrend für Entwickler
+  Fix:    Erklärender Kommentarblock in main.py vor mcp_remote_router eingefügt
+  Status: ✓ BEHOBEN (Dokumentation)
+
+BUG-005 [MITTEL][FIXED] — nova_frontend.py hardcoded /v1 prefix
+  Datei:  app/routes/nova_frontend.py + app/main.py
+  Ursache: router = APIRouter(prefix="/v1/frontend/dashboard") — /v1 war doppelt
+           (einmal in der Datei, einmal über main.py include_router prefix="/v1")
+  Fix:    nova_frontend.py auf prefix="/frontend/dashboard" geändert
+          main.py include_router mit prefix="/v1"
+  Status: ✓ BEHOBEN
+
+BUG-006 [HOCH][FIXED] — user_api.py Router nie in main.py registriert
+  Datei:  app/routes/user_api.py (existierte, aber unerreichbar)
+  Ursache: Router mit WordPress-Webhook, Client-SDK, Device-Management-Endpoints
+           war nie via include_router registriert → alle /v1/users/* Endpoints 404
+  Fix:    Import + app.include_router(user_api_router, prefix="/v1") in main.py
+  Status: ✓ BEHOBEN
+
+================================================================================
+SEKTION 2: NEUE BUGS AUS FULL-SCAN (OFFEN)
+================================================================================
+
+BUG-007 [HOCH][OFFEN] — hmac.new() deprecated / falsche API in 6 Dateien
+  Dateien:
+    app/routes/user_api.py        Zeile 98, 481
+    app/routes/client_auth.py     Zeile 130, 147
+    app/services/server_federation.py  Zeile 360, 392
+  Ursache: hmac.new() ist in Python 3 nicht die empfohlene API.
+           Korrekt ist: hmac.new(key, msg, digestmod) (Python3 Alias für hmac.HMAC)
+           Die aktuelle Verwendung funktioniert noch, ist aber deprecated-style
+           und könnte in zukünftigen Python-Versionen entfernt werden.
+           WICHTIGER: Der Code übergibt die Parameter korrekt, aber ohne
+           explizite digestmod-Benennung → fragil.
+  Beispiel (user_api.py:98):
+    expected_sig = hmac.new(
+        webhook_secret.encode('utf-8'),
+        body,
+        hashlib.sha256
+    ).hexdigest()
+  Fix:
+    expected_sig = hmac.new(
+        webhook_secret.encode('utf-8'),
+        body,
+        digestmod=hashlib.sha256  # <- expliziter keyword-Arg
+    ).hexdigest()
+  Alle 6 Stellen anpassen (digestmod= als keyword arg)
+  Impact: Niedrig aktuell, mittel langfristig (Python-Upgrade-Risiko)
+
+BUG-008 [HOCH][FIXED] — Doppelte Funktionsdefinitionen in structured_admin_py
+  Datei:  app/mcp/structured_admin.py
+  Ursache: handle_binary_list, handle_template_list, handle_task_reference
+           sind ZWEIMAL definiert:
+           - Erste Definition: Zeile ~1753 (mit Docstrings, korrekter task_reference-Logik)
+           - Zweite Definition: Zeile ~1833 (ohne Docstrings, unterschiedliche task_reference-Logik!)
+           Python überschreibt die erste Definition still durch die zweite.
+           Die zweite Version hat ANDERE Fehlermeldungen als die erste.
+  Beispiel task_reference Unterschied:
+    Version 1 (Z.1769): "task_reference only supports: quick_reference, encode, decode. Got: {action}"
+    Version 2 (Z.1838): "task_reference: only quick_reference/encode/decode. Got: {action}"
+  Fix:    Zweite Doppeldefinition (ab Zeile ~1833) entfernen.
+          Nur die erste Version mit Docstrings behalten.
+  Impact: Unerwartetes Verhalten durch ungewollte Überschreibung — Debugging schwierig
+
+BUG-009 [MITTEL][OFFEN] — 16+ MCP-Tools in handlers_v4.py als Stubs registriert
+  Datei:  app/mcp/handlers_v4.py
+  Betroffene Tools (alle status="not_implemented"):
+    memory_store, memory_search, memory_clear
+    logs (logs_recent), logs_errors, logs_stats
+    restart, debug
+    evolve, evolve_history
+    gemini_research, gemini_coordinate, gemini_code_exec
+    mesh_status, mesh_task, mesh_agents
+  Ursache: Tools sind als MCP-Endpoints registriert und tauchen in tools/list auf,
+           liefern aber {"status": "not_implemented", "message": "... pending"} zurück.
+           Nutzer/Agents sehen diese Tools als verfügbar, sie funktionieren aber nicht.
+  Fix Optionen:
+    A) Tools implementieren (bevorzugt)
+    B) Aus STRUCTURED_ADMIN_HANDLERS/tools/list entfernen bis implementiert
+    C) annotations: {"hidden": true} setzen um aus Listings auszublenden
+  Impact: Mittel — confusing für Claude/Agents, die diese Tools aufrufen
+
+BUG-010 [HOCH][OFFEN] — Default-Passwort "changeme" in config.py
+  Datei:  app/config.py Zeile 63
+  Code:   tristar_gui_password: str = Field(default="changeme", ...)
+  Ursache: Wenn TRISTAR_GUI_PASSWORD nicht in .env gesetzt → TriStar GUI
+           ist mit Passwort "changeme" zugänglich
+  Fix:    Default auf None setzen, beim Start prüfen ob gesetzt, sonst Startup-Warning
+          oder: zufälliges Default generieren und beim ersten Start loggen
+  Impact: Hoch — direkter Sicherheitsrisiko wenn Port 8080/TriStar GUI erreichbar
+
+BUG-011 [HOCH][OFFEN] — Webhook-Secret Default unsicher in user_api.py
+  Datei:  app/routes/user_api.py Zeile 80
+  Code:   return os.environ.get("AILINUX_WEBHOOK_SECRET", "ailinux-webhook-secret-change-me")
+  Ursache: Wenn AILINUX_WEBHOOK_SECRET nicht gesetzt → bekannter Default-String
+           Angreifer können Webhook-Requests mit diesem bekannten Secret signieren
+  Fix:    Default entfernen, bei fehlendem ENV eine Exception/Warning werfen
+          oder: ValueError("AILINUX_WEBHOOK_SECRET must be set in environment")
+  Impact: Hoch — WordPress-Webhooks können gefälscht werden
+
+BUG-012 [HOCH][OFFEN] — JWT Secret pro-Request neu generiert in user_api.py
+  Datei:  app/routes/user_api.py Zeile 454
+  Code:   jwt_secret = os.environ.get("JWT_SECRET", secrets.token_hex(32))
+  Ursache: secrets.token_hex(32) wird bei JEDEM Aufruf der generate_jwt() Funktion
+           neu ausgeführt wenn JWT_SECRET nicht in ENV gesetzt ist.
+           → Jeder erzeugte JWT wird mit einem anderen Key signiert
+           → Alle JWTs werden sofort ungültig sobald ein anderer Request kommt
+           → Kompletter Authentifizierungs-Bypass möglich
+  Fix:    JWT_SECRET als Modul-Level-Variable setzen (einmal beim Import):
+          JWT_SECRET = os.environ.get("JWT_SECRET") or secrets.token_hex(32)
+          Oder besser: Startup-Fehler wenn nicht gesetzt
+  Impact: Kritisch für user_api JWT-Auth — alle Tokens ungültig nach erstem Request
+
+BUG-013 [MITTEL][OFFEN] — Nicht registrierte Router-Dateien (support, tiers)
+  Dateien:
+    app/routes/support.py     (prefix="/support", tags=["support"])
+    app/routes/tiers.py       (prefix=/tiers vermutlich)
+    app/routes/widget_handlers.py (keine APIRouter-Klasse, nur Handler-Funktionen)
+  Ursache: Diese Dateien existieren mit vollständigen Route-Definitionen,
+           sind aber NICHT in main.py via include_router registriert.
+           → /v1/support/* und /v1/tiers/* Endpoints sind nicht erreichbar (404)
+  Hinweis: widget_handlers.py definiert async Handler-Funktionen (kein Router)
+           → scheint für direkten Import durch andere Module gedacht, kein Bug
+  Fix:    support.py und tiers.py in main.py importieren und registrieren:
+          from .routes.support import router as support_router
+          from .routes.tiers import router as tiers_router
+          app.include_router(support_router, prefix="/v1", tags=["Support"])
+          app.include_router(tiers_router, prefix="/v1", tags=["Tiers"])
+  Impact: Mittel — Support- und Tier-Endpoints unerreichbar
+
+BUG-014 [MITTEL][OFFEN] — File Handle Leak in nova_frontend.py
+  Datei:  app/routes/nova_frontend.py Zeile 359
+  Code:   return open(p).read().strip()
+  Ursache: open() ohne with-Statement → File Handle wird erst beim GC geschlossen
+           Bei vielen Requests → File Descriptor Erschöpfung möglich
+  Fix:
+    with open(p) as f:
+        return f.read().strip()
+  Impact: Mittel — Ressourcenleak unter Last
+
+BUG-015 [MITTEL][OFFEN] — Hard Import google.generativeai ohne try/except in chat.py
+  Datei:  app/services/chat.py Zeile 16
+  Code:   import google.generativeai as genai
+  Ursache: Wird direkt (nicht optional) importiert.
+           Wenn google-generativeai nicht installiert → ImportError beim Start
+           → gesamter chat.py Service nicht ladbar → alle Chat-Endpoints 500
+  Vergleich: gemini_access.py macht es richtig mit try/except ImportError
+  Fix:
+    try:
+        import google.generativeai as genai
+        _HAS_GENAI = True
+    except ImportError:
+        genai = None
+        _HAS_GENAI = False
+  Impact: Mittel — Startup-Crash wenn Paket fehlt (sollte in requirements.txt sein,
+          aber defensives Coding ist besser)
+
+BUG-016 [INFO][OFFEN] — asyncio.get_event_loop() deprecated (Python 3.10+)
+  Dateien:
+    app/agents/base_agent.py       Zeile 90
+    app/mcp/mesh_hub.py            Zeile 303
+    app/mcp/mesh_node.py           Zeile 576
+    app/routes/mcp_node.py         Zeile 84
+    app/services/mcp_ws_server.py  Zeile 222
+    app/services/federation_websocket.py Zeile 494
+    app/services/multi_search.py   Zeile 720
+    app/services/vision.py         Zeile 191
+    app/utils/ramfirst_logger.py   Zeile 373
+    app/utils/performance.py       Zeile 74
+  Ursache: asyncio.get_event_loop() ist in Python 3.10+ deprecated wenn kein
+           laufender Event-Loop existiert. Korrekt: asyncio.get_running_loop()
+           in async-Kontext, oder asyncio.get_event_loop() nur in sync-Kontext
+  Fix:    In async-Funktionen: asyncio.get_running_loop()
+          In sync-Funktionen (wo nötig): asyncio.get_event_loop() behalten
+  Impact: Info/Niedrig — DeprecationWarning in Python 3.12+, Fehler in 3.14+
+
+BUG-017 [INFO][OFFEN] — Federation Route definiert aber nie genutzt (routes/federation.py)
+  Datei:  app/routes/federation.py
+  Ursache: Eigenständige federation.py mit eigenen /federation/* Endpoints existiert.
+           main.py importiert sie (Zeile 46) und registriert sie auch (Zeile 455).
+           Parallel dazu existiert app/api/federation.py mit anderem Inhalt.
+           Zwei Federation-Implementierungen nebeneinander → Konfusion
+  Impact: Info — funktioniert, aber architecturelle Unklarheit
+
+BUG-018 [INFO][OFFEN] — Doppelte container_control Patches in structured_admin.py
+  Datei:  app/mcp/structured_admin.py
+  Ursache: _patched_container_control (Zeile ~1720) und _patched_cc (Zeile ~1826)
+           patchen beide STRUCTURED_ADMIN_HANDLERS["container_control"].
+           Der zweite Patch überschreibt den ersten still.
+           Kommentar "handle_container_status referenziert handle_container_control
+           als global lookup" erklärt Intention teilweise, aber zwei Patches
+           für dieselbe Funktion ist unnötig komplex.
+  Impact: Info — funktioniert, aber Maintenance-Risiko
+
+================================================================================
+SEKTION 3: SECURITY SUMMARY
+================================================================================
+
+OFFENE SICHERHEITSPROBLEME (nach Priorität):
+  [KRITISCH] BUG-012: JWT_SECRET per-Request zufällig → Auth-Bypass
+  [HOCH]     BUG-010: TRISTAR_GUI_PASSWORD Default "changeme"
+  [HOCH]     BUG-011: WEBHOOK_SECRET Default bekannter String
+  [HOCH]     BUG-007: hmac.new() ohne explizites digestmod (robustheitsproblem)
+
+EMPFOHLENE SOFORTMASSNAHMEN:
+  1. JWT_SECRET in .env prüfen: grep JWT_SECRET /home/zombie/triforce/config/triforce.env
+  2. TRISTAR_GUI_PASSWORD in .env prüfen: grep TRISTAR_GUI_PASSWORD /home/zombie/triforce/config/triforce.env
+  3. AILINUX_WEBHOOK_SECRET in .env prüfen: grep AILINUX_WEBHOOK_SECRET /home/zombie/triforce/config/triforce.env
+
+================================================================================
+SEKTION 4: STATISTIK
+================================================================================
+
+Gesamt gefundene Bugs:     18
+  Bereits behoben (heute): 6  (BUG-001 bis BUG-006)
+  Noch offen:              12 (BUG-007 bis BUG-018)
+
+Nach Schweregrad (offen):
+  KRITISCH: 1  (BUG-012)
+  HOCH:     4  (BUG-007, BUG-008, BUG-010, BUG-011)
+  MITTEL:   5  (BUG-009, BUG-013, BUG-014, BUG-015, BUG-016)
+  INFO:     2  (BUG-017, BUG-018)
+
+Gescannte Dateien (relevant):
+  app/main.py, app/config.py
+  app/routes/*.py (30 Dateien)
+  app/services/*.py (50+ Dateien)
+  app/mcp/*.py (20 Dateien)
+  app/utils/*.py (18 Dateien)
+  app/agents/*.py
+
+================================================================================
+SEKTION 5: FIX-REIHENFOLGE (EMPFEHLUNG)
+================================================================================
+
+  SOFORT (Sicherheit):
+  1. BUG-012 — JWT_SECRET fix (user_api.py Zeile 454)
+  2. BUG-010 — TRISTAR_GUI_PASSWORD in .env prüfen/setzen
+  3. BUG-011 — AILINUX_WEBHOOK_SECRET in .env prüfen/setzen
+
+  KURZFRISTIG (Stabilität):
+  4. BUG-008 — Doppelte Funktionen in structured_admin.py entfernen
+  5. BUG-013 — support.py + tiers.py in main.py registrieren
+  6. BUG-014 — File-Handle-Leak in nova_frontend.py fixen
+  7. BUG-015 — google.generativeai Import in chat.py optional machen
+
+  MITTELFRISTIG (Code-Qualität):
+  8. BUG-007 — hmac.new() digestmod= keyword arg überall hinzufügen
+  9. BUG-009 — handlers_v4.py Stub-Tools implementieren oder ausblenden
+  10. BUG-016 — asyncio.get_event_loop() → get_running_loop() migrieren
+  11. BUG-018 — Doppelte container_control Patches bereinigen
+
+  LANGFRISTIG (Architektur):
+  12. BUG-017 — Federation-Architektur konsolidieren
+
+================================================================================
+Ende des Bug Reports — triforce/bugreport.txt
+Generiert: 2026-03-10 via MCP AI Debugger (Claude Sonnet 4.6)
+================================================================================

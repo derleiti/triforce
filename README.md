@@ -2,10 +2,10 @@
 
 <div align="center">
 
-![Version](https://img.shields.io/badge/version-2.85.0--rc1-blue)
+![Version](https://img.shields.io/badge/version-2.85.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![Models](https://img.shields.io/badge/models-625%2B-purple)
-![Providers](https://img.shields.io/badge/providers-9-orange)
+![Models](https://img.shields.io/badge/models-615%2B-purple)
+![Providers](https://img.shields.io/badge/providers-10-orange)
 ![Python](https://img.shields.io/badge/python-3.12-yellow)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.135.1-teal)
 

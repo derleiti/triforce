@@ -283,13 +283,6 @@ async def get_queue() -> Dict[str, Any]:
 @router.get("/queue/{command_id}", summary="Get MCP command status")
 async def get_command_status(command_id: str) -> Dict[str, Any]:
     """Holt den Status eines MCP Commands"""
-    # SECURITY: validate command_id — only alphanum, hyphen, underscore (max 64 chars)
-    import re as _re
-    from pathlib import Path as _Path
-    if not _re.fullmatch(r"[A-Za-z0-9_\-]{1,64}", command_id):
-        from fastapi import HTTPException
-        raise HTTPException(status_code=400, detail="Invalid command_id format")
-
     # Check in queue
     for cmd in mesh_coordinator._mcp_queue:
         if cmd.id == command_id:
@@ -299,15 +292,12 @@ async def get_command_status(command_id: str) -> Dict[str, Any]:
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
-    # Check persisted files — path traversal guard via resolve()
-    import json as _json
-    queue_root = _Path("/var/tristar/queue").resolve()
-    queue_file = (queue_root / f"{command_id}.json").resolve()
-    if not str(queue_file).startswith(str(queue_root) + "/"):
-        from fastapi import HTTPException
-        raise HTTPException(status_code=400, detail="Invalid command_id")
+    # Check persisted files
+    from pathlib import Path
+    queue_file = Path("/var/tristar/queue") / f"{command_id}.json"
     if queue_file.exists():
-        data = _json.loads(queue_file.read_text())
+        import json
+        data = json.loads(queue_file.read_text())
         return {
             "command": data,
             "in_queue": False,

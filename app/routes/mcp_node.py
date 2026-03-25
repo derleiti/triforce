@@ -887,12 +887,11 @@ async def list_support_tickets(
 
 
 @router.get("/support/ticket/{ticket_id}")
-async def get_support_ticket(ticket_id: str, authorization: str = Header(None)):
-    """Einzelnes Ticket abrufen — requires Authorization"""
-    if not authorization:
-        raise HTTPException(401, "Authorization required")
+async def get_support_ticket(ticket_id: str):
+    """Einzelnes Ticket abrufen"""
     if ticket_id not in SUPPORT_TICKETS:
         raise HTTPException(404, f"Ticket nicht gefunden: {ticket_id}")
+    
     return SUPPORT_TICKETS[ticket_id]
 
 

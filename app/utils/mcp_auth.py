@@ -388,21 +388,9 @@ async def require_mcp_auth(request: Request) -> str:
             request.state.mcp_auth_user = "oauth_client"
             request.state.auth_method = "bearer"
             return "oauth_client"
-
-        # Fallback: Client JWT Token (aicoder/ailinux-client login)
-        try:
-            from ..routes.client_auth import decode_jwt_token
-            payload = decode_jwt_token(token)
-            user = payload.get("sub", payload.get("email", "jwt_client"))
-            logger.debug(f"AUTH_OK | IP: {client_ip} | Method: client_jwt | User: {user}")
-            request.state.mcp_auth_user = user
-            request.state.auth_method = "client_jwt"
-            return user
-        except Exception:
-            pass
-
-        logger.warning(f"AUTH_FAIL | IP: {client_ip} | Reason: invalid_bearer")
-        raise _unauthorized("Invalid bearer token")
+        else:
+            logger.warning(f"AUTH_FAIL | IP: {client_ip} | Reason: invalid_bearer")
+            raise _unauthorized("Invalid bearer token")
     
     # Method 2: Basic Auth
     if auth_header.lower().startswith("basic "):

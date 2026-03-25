@@ -349,6 +349,7 @@ async def lifespan(app: FastAPI):
         from .services.nova_content_engine import start_content_engine
         from .services.nova_research_loop import research_loop_tick
         from .services.nova_deploy_pipeline import deploy_pipeline_tick
+        from .services.nova_deploy_pipeline import deploy_pipeline_tick
         start_content_engine()
 
         async def _research_loop():
@@ -453,13 +454,10 @@ def create_app() -> FastAPI:
 
     public_auth_exempt_paths = {
         "/health",
-        "/.well-known/mcp.json",
         "/.well-known/mcp",
         "/.well-known/mcp/",
         "/.well-known/oauth-authorization-server",
         "/.well-known/oauth-authorization-server/",
-        "/.well-known/openid-configuration",
-        "/.well-known/oauth-protected-resource",
         "/v1/.well-known/mcp",
         "/v1/.well-known/mcp/",
         "/v1/.well-known/oauth-authorization-server",
@@ -482,7 +480,7 @@ def create_app() -> FastAPI:
         "/v1/wordpress/",
         "/v1/nova/playground",   # Playground — kein Login nötig
         "/v1/auth/",             # Alle Auth-Sub-Routen
-        "/v1/client/",           # Client-Routen nutzen eigene JWT-Auth
+        "/v1/client/auth",       # Client-Auth
     )
 
     @app.middleware("http")

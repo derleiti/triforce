@@ -13,6 +13,13 @@ from fastapi import HTTPException
 from pydantic import AnyHttpUrl
 
 from ..utils.http_client import HttpClient
+# BUG-015 FIX 2026-03-10: Optional import — verhindert Startup-Crash wenn Paket fehlt
+try:
+    import google.generativeai as genai
+    _HAS_GENAI = True
+except ImportError:
+    genai = None  # type: ignore
+    _HAS_GENAI = False
 
 from ..config import get_settings
 from ..services.model_registry import ModelInfo
@@ -33,17 +40,20 @@ logger = __import__("logging").getLogger("ailinux.chat")
 # Tries multiple models in order until one responds.
 # Guarantees an answer for Nova-AI-Frontend users.
 NOVA_FALLBACK_CASCADE = [
-    # 1. Ollama Cloud models (primary fallback tier)
-    # Ordered by broad usefulness first, then more specialized options
-    ("ollama", "gpt-oss:120b-cloud"),
+    # 1. Ollama Cloud models (free, high quality)
     ("ollama", "deepseek-v3.2:cloud"),
     ("ollama", "kimi-k2-thinking:cloud"),
     ("ollama", "glm-5:cloud"),
     ("ollama", "qwen3-coder:480b-cloud"),
-    # 2. OpenRouter Free (absolute last fallback)
+    ("ollama", "gpt-oss:120b-cloud"),
+    # 2. OpenRouter Free models (rate-limited but reliable)
     ("openrouter", "openai/gpt-oss-120b:free"),
-    ("openrouter", "mistralai/mistral-small-3.1-24b-instruct:free"),
     ("openrouter", "stepfun/step-3.5-flash:free"),
+    ("openrouter", "mistralai/mistral-small-3.1-24b-instruct:free"),
+    # 3. Local Ollama (always available, no network needed)
+    ("ollama", "glm-4.7-flash:latest"),
+    # 4. Tiny local fallback (last resort, 5GB)
+    ("ollama", "qwen3:8b"),
 ]
 
 async def _fallback_to_ollama(
@@ -54,7 +64,7 @@ async def _fallback_to_ollama(
     original_error: Exception,
     fallback_model: str | None = None,
 ) -> AsyncGenerator[str, None]:
-    """Deep fallback cascade — tries Ollama Cloud → OpenRouter Free (last resort).
+    """Deep fallback cascade — tries Ollama Cloud → OpenRouter Free → Local Ollama.
     Guarantees a response for Nova-AI-Frontend users."""
     settings = get_settings()
     logger.warning("%s failed (%s), starting fallback cascade", original_provider, original_error)
@@ -118,9 +128,9 @@ STRUCTURE_PROMPT = (
 
 MISTRAL_MODEL_ALIASES = {
     # Legacy aliases
-    "mistral/open-mixtral-8x7b": "open-mistral-nemo",
-    "mistral/mixtral-8x7b": "open-mistral-nemo",
-    # Current generation
+    "mistral/open-mixtral-8x7b": "open-mixtral-8x7b",
+    "mistral/mixtral-8x7b": "open-mixtral-8x7b",
+    # Current generation (map to latest versions)
     "mistral/large": "mistral-large-latest",
     "mistral/medium": "mistral-medium-latest",
     "mistral/small": "mistral-small-latest",
@@ -130,67 +140,34 @@ MISTRAL_MODEL_ALIASES = {
     "medium": "mistral-medium-latest",
     "small": "mistral-small-latest",
     "tiny": "ministral-3b-latest",
-    # Reasoning models (new March 2026)
-    "mistral/magistral-medium": "magistral-medium-latest",
-    "mistral/magistral-small": "magistral-small-latest",
-    "magistral-medium": "magistral-medium-latest",
-    "magistral-small": "magistral-small-latest",
-    # Code/Agent models
-    "mistral/devstral": "devstral-latest",
-    "mistral/devstral-medium": "devstral-medium-latest",
-    "mistral/devstral-small": "devstral-small-latest",
-    "devstral": "devstral-latest",
-    "devstral-medium": "devstral-medium-latest",
-    "devstral-small": "devstral-small-latest",
     # Specialist models
     "mistral/codestral": "codestral-latest",
     "codestral": "codestral-latest",
-    "mistral/ocr": "mistral-ocr-latest",
-    "mistral-ocr": "mistral-ocr-latest",
     # Ministral models
-    "mistral/ministral-14b": "ministral-14b-latest",
     "mistral/ministral-8b": "ministral-8b-latest",
     "mistral/ministral-3b": "ministral-3b-latest",
-    "ministral-14b": "ministral-14b-latest",
     "ministral-8b": "ministral-8b-latest",
     "ministral-3b": "ministral-3b-latest",
-    # Pixtral (vision)
-    "mistral/pixtral-large": "pixtral-large-latest",
-    "pixtral-large": "pixtral-large-latest",
-    # Nemo (open)
-    "mistral/nemo": "open-mistral-nemo",
-    "nemo": "open-mistral-nemo",
 }
 
 GEMINI_MODEL_ALIASES = {
-    # Gemini 3.1 Models (Latest as of March 2026)
-    "gemini/gemini-3.1-pro": "gemini-3.1-pro-preview",
-    "gemini-3.1-pro": "gemini-3.1-pro-preview",
-    "gemini/gemini-3.1-flash-lite": "gemini-3.1-flash-lite-preview",
-    "gemini-3.1-flash-lite": "gemini-3.1-flash-lite-preview",
-    # Gemini 3 Models (gemini-3-pro-preview shutdown 9. März 2026 → 3.1)
-    "gemini/gemini-3-pro": "gemini-3.1-pro-preview",
-    "gemini-3-pro": "gemini-3.1-pro-preview",
-    "gemini/gemini-3-pro-preview": "gemini-3.1-pro-preview",
-    "gemini-3-pro-preview": "gemini-3.1-pro-preview",
-    "gemini/gemini-3-flash": "gemini-3-flash-preview",
-    "gemini-3-flash": "gemini-3-flash-preview",
-    # Gemini 2.5 Models (stable)
+    # Gemini 3 Models (Preview)
+    "gemini/gemini-3-pro": "gemini-3-pro-preview",
+    "gemini-3-pro": "gemini-3-pro-preview",
+    # Gemini 2.5 Models (use simple names, no preview suffix needed)
     "gemini/gemini-2.5-pro": "gemini-2.5-pro",
     "gemini/gemini-2.5-flash": "gemini-2.5-flash",
     "gemini/gemini-2.5-flash-lite": "gemini-2.5-flash-lite",
-    # Gemini 2.0 Models (deprecated June 1 2026 — still alive)
+    # Gemini 2.0 Models (use stable, not -exp)
     "gemini/gemini-2.0-flash": "gemini-2.0-flash",
     "gemini/gemini-2.0-flash-exp": "gemini-2.0-flash",  # Map exp to stable
-    "gemini-2.0-flash-exp": "gemini-2.0-flash",
+    "gemini-2.0-flash-exp": "gemini-2.0-flash",  # Map exp to stable
     "gemini/gemini-2.0-flash-lite": "gemini-2.0-flash-lite",
-    # Gemini 1.5 Models → RETIRED (404) — redirect to current equivalents
-    "gemini/gemini-1.5-flash": "gemini-2.5-flash-lite",
-    "gemini/gemini-1.5-flash-8b": "gemini-2.5-flash-lite",
-    "gemini/gemini-1.5-pro": "gemini-2.5-pro",
-    "gemini-1.5-flash": "gemini-2.5-flash-lite",
-    "gemini-1.5-pro": "gemini-2.5-pro",
-    # Legacy aliases (map to latest stable)
+    # Gemini 1.5 Models
+    "gemini/gemini-1.5-flash": "gemini-1.5-flash",
+    "gemini/gemini-1.5-flash-8b": "gemini-1.5-flash-8b",
+    "gemini/gemini-1.5-pro": "gemini-1.5-pro",
+    # Legacy aliases (map to latest stable 2.5)
     "gemini/gemini-pro": "gemini-2.5-flash",
     "gemini/pro": "gemini-2.5-flash",
     "gemini/gemini-pro-vision": "gemini-2.5-flash",
@@ -206,29 +183,19 @@ OLLAMA_MODEL_ALIASES = {
 }
 
 ANTHROPIC_MODEL_ALIASES = {
-    # Claude 4.6 Series (Latest as of March 2026)
-    "anthropic/claude-opus-4-6": "claude-opus-4-6",
-    "anthropic/claude-sonnet-4-6": "claude-sonnet-4-6",
-    "claude-opus-4-6": "claude-opus-4-6",
-    "claude-sonnet-4-6": "claude-sonnet-4-6",
-    # Claude 4.5 Series
-    "anthropic/claude-haiku-4-5": "claude-haiku-4-5-20251001",
-    "claude-haiku-4-5": "claude-haiku-4-5-20251001",
-    # Claude 4 Series (legacy IDs → map to 4.6)
-    "anthropic/claude-sonnet-4": "claude-sonnet-4-6",
-    "anthropic/claude-opus-4": "claude-opus-4-6",
-    "claude-sonnet-4": "claude-sonnet-4-6",
-    "claude-opus-4": "claude-opus-4-6",
-    "claude-sonnet-4-20250514": "claude-sonnet-4-6",
-    "claude-opus-4-20250514": "claude-opus-4-6",
-    # Claude 3.5 Series → map to 4.6 equivalents
-    "anthropic/claude-3.5-sonnet": "claude-sonnet-4-6",
-    "anthropic/claude-3.5-haiku": "claude-haiku-4-5-20251001",
-    "claude-3.5-sonnet": "claude-sonnet-4-6",
-    "claude-3.5-haiku": "claude-haiku-4-5-20251001",
-    "claude-3-5-sonnet": "claude-sonnet-4-6",
-    "claude-3-5-haiku": "claude-haiku-4-5-20251001",
-    # Claude 3 Series (still available)
+    # Claude 4 Series (Latest - use model IDs from Anthropic API)
+    "anthropic/claude-sonnet-4": "claude-sonnet-4-20250514",
+    "anthropic/claude-opus-4": "claude-opus-4-20250514",
+    "claude-sonnet-4": "claude-sonnet-4-20250514",
+    "claude-opus-4": "claude-opus-4-20250514",
+    # Claude 3.5 Series
+    "anthropic/claude-3.5-sonnet": "claude-sonnet-4-20250514",
+    "anthropic/claude-3.5-haiku": "claude-3-5-haiku-20241022",
+    "claude-3.5-sonnet": "claude-sonnet-4-20250514",
+    "claude-3.5-haiku": "claude-3-5-haiku-20241022",
+    "claude-3-5-sonnet": "claude-sonnet-4-20250514",
+    "claude-3-5-haiku": "claude-3-5-haiku-20241022",
+    # Claude 3 Series
     "anthropic/claude-3-opus": "claude-3-opus-20240229",
     "anthropic/claude-3-sonnet": "claude-3-sonnet-20240229",
     "anthropic/claude-3-haiku": "claude-3-haiku-20240307",
@@ -236,8 +203,8 @@ ANTHROPIC_MODEL_ALIASES = {
     "claude-3-sonnet": "claude-3-sonnet-20240229",
     "claude-3-haiku": "claude-3-haiku-20240307",
     # Legacy aliases (defaults to latest Sonnet)
-    "anthropic/claude": "claude-sonnet-4-6",
-    "claude": "claude-sonnet-4-6",
+    "anthropic/claude": "claude-sonnet-4-20250514",
+    "claude": "claude-sonnet-4-20250514",
 }
 
 # OpenAI-compatible providers (Groq, Cerebras, Together, Fireworks, OpenRouter)
@@ -1162,11 +1129,6 @@ async def _stream_gemini(
     stream: bool,
     timeout: float,
 ) -> AsyncGenerator[str, None]:
-    try:
-        import google.generativeai as genai  # type: ignore
-    except ImportError as exc:
-        raise api_error("google-generativeai package is not installed", status_code=503, code="gemini_unavailable") from exc
-
     genai.configure(api_key=api_key)
     # Map legacy model names to current models
     target_model = GEMINI_MODEL_ALIASES.get(model)

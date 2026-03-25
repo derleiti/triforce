@@ -131,7 +131,7 @@ class APIKeyConfig:
     # OpenRouter (300+ models, one API key, $5 free + free models)
     openrouter_api_key: str = ""
     openrouter_base_url: str = "https://openrouter.ai/api/v1"
-    openrouter_default_model: str = "openai/gpt-oss-120b:free"
+    openrouter_default_model: str = "meta-llama/llama-3.3-70b-instruct:free"
     openrouter_timeout_ms: int = 120000
 
     # Together AI ($25 free credits, 3 months unlimited FLUX.1)
@@ -184,7 +184,7 @@ class FallbackConfig:
     """Fallback and routing configuration"""
     # Provider fallback order (comma-separated)
     # groq/cerebras are fastest, gemini is most reliable
-    fallback_order: str = "ollama,mistral,anthropic,cohere,together,fireworks,huggingface,gemini,groq,cerebras,openrouter"
+    fallback_order: str = "gemini,groq,cerebras,ollama,mistral,cohere,openrouter,anthropic,together,fireworks,huggingface"
 
     # Enable automatic fallback on error
     auto_fallback_enabled: bool = True
@@ -199,10 +199,10 @@ class FallbackConfig:
     fallback_timeout: float = 30.0
 
     # Provider-specific fallback models
-    gemini_fallback_model: str = "ollama/gpt-oss:120b-cloud"
-    anthropic_fallback_model: str = "ollama/gpt-oss:120b-cloud"
-    ollama_fallback_model: str = "openrouter/openai/gpt-oss-120b:free"  # last resort when Ollama path itself fails
-    mistral_fallback_model: str = "ollama/gpt-oss:120b-cloud"
+    gemini_fallback_model: str = "ollama/qwen3:30b-cloud"
+    anthropic_fallback_model: str = "gemini/gemini-2.0-flash"
+    ollama_fallback_model: str = "gemini/gemini-2.0-flash"
+    mistral_fallback_model: str = "ollama/mistral:7b"
 
     # Circuit breaker settings
     circuit_breaker_enabled: bool = True

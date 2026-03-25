@@ -209,10 +209,7 @@ async def auto_collect_api_responses(session_id: str) -> Dict[str, Any]:
     for agent_id in api_pending:
         tasks.append(_query_and_post(agent_id))
 
-    gather_results = await asyncio.gather(*tasks, return_exceptions=True)
-    for _gr in gather_results:
-        if isinstance(_gr, Exception):
-            logger.warning("auto_response gather exception: %s", _gr)
+    await asyncio.gather(*tasks, return_exceptions=True)
 
     # Check ob alle pending beantwortet sind → Auto-Consolidation
     session = group_chat.get_session(session_id)  # Refresh

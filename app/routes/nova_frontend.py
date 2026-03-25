@@ -676,28 +676,10 @@ async def vision_upload(
 ) -> Dict[str, Any]:
     """Multipart file upload endpoint for vision analysis."""
     import base64 as _b64
-    MAX_UPLOAD_BYTES = 10 * 1024 * 1024  # 10 MB hard limit
-    ALLOWED_MAGIC = {
-        b"\xff\xd8\xff": "image/jpeg",
-        b"\x89PNG":       "image/png",
-        b"GIF8":           "image/gif",
-        b"RIFF":           "image/webp",  # webp starts with RIFF
-    }
-    # Read with size guard — read 1 byte more than limit to detect oversize
-    raw_bytes = await image_file.read(MAX_UPLOAD_BYTES + 1)
-    if not raw_bytes:
-        raise HTTPException(status_code=400, detail="Empty file upload")
-    if len(raw_bytes) > MAX_UPLOAD_BYTES:
-        raise HTTPException(status_code=413, detail="File too large (max 10 MB)")
-    # Magic-byte MIME detection (overrides client-supplied content_type)
-    detected_mime = None
-    for magic, mtype in ALLOWED_MAGIC.items():
-        if raw_bytes[:len(magic)] == magic:
-            detected_mime = mtype
-            break
-    if detected_mime is None:
-        raise HTTPException(status_code=415, detail="Unsupported image type")
-    mime = detected_mime
+    raw_bytes = await image_file.read()
+    mime = image_file.content_type or "image/jpeg"
+    if mime not in ("image/jpeg", "image/png", "image/gif", "image/webp"):
+        mime = "image/jpeg"
     b64 = _b64.b64encode(raw_bytes).decode()
     mdl = model or "gemini/gemini-2.5-flash"
     result = await _vision_proxy(mdl, prompt, None, b64, mime)
@@ -717,30 +699,11 @@ async def downloads() -> Dict[str, Any]:
     BUG-FIX 2026-03-11: was only scanning client-deploy/*.deb — now returns full tree with all filetypes.
     Supports custom descriptions via download_descriptions.json.
     """
-    import os as _os, hashlib, mimetypes as _mt, json as _json, datetime as _dt, time as _time
+    import os as _os, hashlib, mimetypes as _mt, json as _json, datetime as _dt
 
     WP_DOWNLOADS   = "/home/zombie/triforce/docker/wordpress/html/downloads"
     DESCRIPTIONS_F = "/home/zombie/triforce/docker/wordpress/html/wp-content/plugins/nova-ai-frontend/config/download_descriptions.json"
     BASE_URL       = "https://ailinux.me/downloads"
-
-    # Hash cache: avoid re-reading unchanged files each request
-    _HASH_CACHE: Dict[str, tuple] = getattr(downloads, "_hash_cache", {})
-    downloads._hash_cache = _HASH_CACHE
-
-    def _cached_sha1(path: str) -> str:
-        try:
-            mtime = _os.path.getmtime(path)
-            size  = _os.path.getsize(path)
-            key   = (path, mtime, size)
-            if key not in _HASH_CACHE:
-                h = hashlib.sha1()
-                with open(path, "rb") as _fh:
-                    for chunk in iter(lambda: _fh.read(65536), b""):
-                        h.update(chunk)
-                _HASH_CACHE[key] = h.hexdigest()
-            return _HASH_CACHE[key]
-        except Exception:
-            return ""
 
     desc_map: Dict[str, str] = {}
     try:
@@ -817,7 +780,7 @@ async def downloads() -> Dict[str, Any]:
                     "mime": mime,
                     "icon": TYPE_ICONS.get(ext, "📄"),
                     "modified": _dt.datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%d"),
-                    "sha1": _cached_sha1(full),
+                    "sha1": _sha1(full),
                     "url": f"{BASE_URL}/{rel}",
                     "description": desc_map.get(f"file:{rel}", ""),
                 })

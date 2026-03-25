@@ -197,7 +197,6 @@ ALLOWED_COMMAND_EXECUTABLES = frozenset([
     "/home/zombie/triforce/triforce/bin/ollama-claude-triforce",
     "/home/zombie/triforce/triforce/bin/ollama-codex-triforce",
     "/home/zombie/triforce/triforce/bin/ollama-openclaw-triforce",
-    "/home/zombie/triforce/triforce/bin/ollama-opencode-triforce",
     # OpenRouter Free-Tier Shortcuts (v2.0)
     "/home/zombie/triforce/triforce/bin/opencode-coder",
     "/home/zombie/triforce/triforce/bin/opencode-reasoning",
@@ -908,33 +907,6 @@ class AgentController:
         instance = self.agents.get(agent_id)
         return instance.to_dict() if instance else None
 
-    async def register_agent(self, agent_data: dict) -> dict:
-        """Registriert einen neuen Agent dynamisch und persistiert agents.json."""
-        await self._ensure_initialized()
-        agent_id = agent_data.get("agent_id")
-        if not agent_id:
-            raise ValueError("agent_id required")
-        command = agent_data.get("command", [])
-        if agent_data.get("agent_type") != "api" and not validate_command(command):
-            raise ValueError(f"Command not whitelisted: {command}")
-        config = AgentConfig(
-            agent_id=agent_id,
-            agent_type=AgentType(agent_data.get("agent_type", "claude")),
-            name=agent_data.get("name", agent_id),
-            command=command,
-            working_dir=agent_data.get("working_dir", "/home/zombie/triforce"),
-            env=agent_data.get("env", {}),
-            system_prompt=agent_data.get("system_prompt", ""),
-            system_prompt_source=agent_data.get("system_prompt_source", "triforce"),
-            mcp_enabled=agent_data.get("mcp_enabled", True),
-            mcp_port=agent_data.get("mcp_port"),
-            auto_restart=agent_data.get("auto_restart", True),
-        )
-        self.agents[agent_id] = AgentInstance(config=config)
-        await self._save_configs()
-        logger.info(f"Registered new agent: {agent_id}")
-        return self.agents[agent_id].to_dict()
-
     async def get_agent_output(self, agent_id: str, lines: int = 50) -> List[str]:
         """Gibt Output-Buffer zurück"""
         await self._ensure_initialized()
@@ -1029,15 +1001,10 @@ class AgentController:
                     "status": result.get("status", "error"),
                     "response": result.get("response", ""),
                     "model": result.get("model", ""),
-                    "primary_model": result.get("primary_model", result.get("model", "")),
-                    "attempted_models": result.get("attempted_models", []),
-                    "fallback_from": result.get("fallback_from"),
-                    "fallback_to": result.get("fallback_to"),
-                    "fallback_count": result.get("fallback_count", 0),
                     "turns": result.get("turns", 0),
                     "tools_called": result.get("tools_called", []),
                     "exit_code": 0 if result.get("status") == "completed" else 1,
-                    "fallback_used": bool(result.get("fallback_used", False)),
+                    "fallback_used": False,
                 }
             except Exception as e:
                 return {"agent_id": agent_id, "status": "error", "response": str(e), "exit_code": 1}
@@ -1190,16 +1157,16 @@ class AgentController:
                 _FALLBACK_NEXT = {
                     "claude-mcp": ("opencode-reasoning", "claude→GPT-OSS-120B(OpenRouter-Free)"),
                     "codex-mcp": ("opencode-coder", "codex→Qwen3-Coder-480B(OpenRouter-Free)"),
-                    "gemini-mcp": ("api-groq", "gemini→Groq-Llama-3.3-70B-API"),
+                    "gemini-mcp": ("opencode-fast", "gemini→Step3.5-Flash-1M(OpenRouter-Free)"),
                     "ollama-claude-mcp": ("opencode-reasoning", "ollama-claude→GPT-OSS-120B(OpenRouter-Free)"),
                     "ollama-codex-mcp": ("opencode-coder", "ollama-codex→Qwen3-Coder-480B(OpenRouter-Free)"),
-                    "ollama-openclaw-mcp": ("api-groq", "ollama-openclaw→Groq-Llama-3.3-70B-API"),
+                    "ollama-openclaw-mcp": ("opencode-fast", "ollama-openclaw→Step3.5-Flash-1M(OpenRouter-Free)"),
                     "api-groq": ("api-openrouter", "groq→Llama-3.3-70B-OpenRouter"),
                     "api-cerebras": ("api-openrouter", "cerebras→Llama-3.3-70B-OpenRouter"),
-                    "opencode-mcp": ("api-groq", "opencode→Groq-Llama-3.3-70B-API"),
+                    "opencode-mcp": ("opencode-fast", "opencode→Step3.5-Flash-1M(OpenRouter-Free)"),
                     "opencode-coder": ("opencode-reasoning", "coder→GPT-OSS-120B(OpenRouter-Free)"),
-                    "opencode-reasoning": ("api-groq", "reasoning→Groq-Llama-3.3-70B-API"),
-                    "opencode-fast": ("api-groq", "fast→Groq-Llama-3.3-70B-API"),
+                    "opencode-reasoning": ("opencode-fast", "reasoning→Step3.5-Flash-1M(OpenRouter-Free)"),
+                    "opencode-fast": ("api-openrouter", "fast→Llama-3.3-70B-API"),
                 }
 
                 if _needs_fallback and agent_id in _FALLBACK_NEXT:

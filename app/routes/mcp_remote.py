@@ -2220,12 +2220,15 @@ async def mcp_discovery(request: Request):
     }
 
 
-@router.get("/_legacy_mcp_disabled")
+@router.get("/mcp")
+@router.get("/mcp/")
+@router.get("/mcp/sse")
+@router.get("/sse")
 async def mcp_sse_endpoint(request: Request):
     """
     SSE endpoint for MCP communication.
     Claude.ai connects here to establish a session.
-    Legacy connect path disabled. Use /v1/mcp only.
+    Supports both /mcp and /mcp/ paths.
     """
     await require_mcp_auth(request)
 
@@ -2271,12 +2274,13 @@ async def mcp_sse_endpoint(request: Request):
 _mcp_sessions: Dict[str, datetime] = {}
 
 
-@router.post("/_legacy_mcp_disabled")
+@router.post("/mcp")
+@router.post("/mcp/")
 async def mcp_rpc_endpoint(request: Request):
     """
     JSON-RPC endpoint for MCP tool calls.
     Supports both regular JSON-RPC and Streamable HTTP transport.
-    Legacy connect path disabled. Use /v1/mcp only.
+    Supports both /mcp and /mcp/ paths.
     """
     import time as _time
     import logging
@@ -2857,10 +2861,7 @@ async def _handle_agent_mcp_call(agent_id: str, request: Request):
                         "id": req_id
                     }
                 )
-            try:
-                result = await agent_controller.call_agent(agent_id, message, timeout=max(5, min(int(arguments.get("timeout", 120)), 600)))
-            except Exception as _ace:
-                return JSONResponse(content={"jsonrpc": "2.0", "error": {"code": -32000, "message": str(_ace)}, "id": req_id})
+            result = await agent_controller.call_agent(agent_id, message, timeout=arguments.get("timeout", 120))
         elif tool_name == "agent/output":
             output = await agent_controller.get_agent_output(agent_id, arguments.get("lines", 50))
             result = {"agent_id": agent_id, "output": output, "lines": len(output)}

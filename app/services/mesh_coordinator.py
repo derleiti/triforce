@@ -383,28 +383,15 @@ Frage: Wie würdest du diese Aufgabe implementieren?
 Gib eine kurze Empfehlung (max 200 Wörter).
 """
 
-        # Poll all worker agents — parallel via asyncio.gather
-        async def _poll_one(agent_id: str, agent) -> tuple:
-            try:
-                response = await self._query_agent(agent, poll_question)
-                return agent_id, response
-            except Exception as e:
-                return agent_id, f"[Error: {e}]"
+        # Poll all worker agents
+        for agent_id, agent in self._agents.items():
+            if agent.role in [AgentRole.WORKER, AgentRole.REVIEWER]:
+                try:
+                    response = await self._query_agent(agent, poll_question)
+                    task.poll_responses[agent_id] = response
+                except Exception as e:
+                    task.poll_responses[agent_id] = f"[Error: {e}]"
 
-        poll_targets = [
-            (aid, ag) for aid, ag in self._agents.items()
-            if ag.role in [AgentRole.WORKER, AgentRole.REVIEWER]
-        ]
-        results = await asyncio.gather(
-            *[_poll_one(aid, ag) for aid, ag in poll_targets],
-            return_exceptions=True
-        )
-        for item in results:
-            if isinstance(item, tuple):
-                aid, resp = item
-                task.poll_responses[aid] = resp
-            else:
-                logger.warning(f"Poll gather exception: {item}")
         logger.info(f"Poll completed for task: {task.id} - {len(task.poll_responses)} responses")
 
     async def _query_agent(self, agent: MeshAgent, question: str) -> str:
@@ -476,12 +463,14 @@ Format: Strukturierter Plan als Text.
         """
         logger.info(f"Executing implementation for task: {task.id}")
 
-        async def _run_worker(worker_id: str):
+        for worker_id in task.assigned_workers:
             worker = self._agents.get(worker_id)
             if not worker or not worker.available:
-                return worker_id, None
+                continue
+
             worker.current_task = task.id
             worker.available = False
+
             try:
                 impl_prompt = f"""
 ## Implementiere folgende Aufgabe
@@ -496,29 +485,16 @@ Format: Strukturierter Plan als Text.
 - Schreibe sauberen, dokumentierten Code
 - Speichere Erkenntnisse in Memory
 """
+
                 result = await self._query_agent(worker, impl_prompt)
-                return worker_id, result
-            except Exception as e:
-                logger.warning(f"Worker {worker_id} execution error: {e}")
-                return worker_id, f"[Error: {e}]"
+
+                if task.result is None:
+                    task.result = {}
+                task.result[worker_id] = result
+
             finally:
                 worker.current_task = None
                 worker.available = True
-
-        # Alle Worker parallel ausführen
-        worker_results = await asyncio.gather(
-            *[_run_worker(wid) for wid in task.assigned_workers],
-            return_exceptions=True
-        )
-        if task.result is None:
-            task.result = {}
-        for item in worker_results:
-            if isinstance(item, tuple):
-                wid, res = item
-                if res is not None:
-                    task.result[wid] = res
-            else:
-                logger.warning(f"Worker gather exception: {item}")
 
     async def _review_implementation(self, task: MeshTask):
         """Reviewer prüfen die Implementierung"""
@@ -606,14 +582,12 @@ Gib ein kurzes Review mit Status: APPROVED / CHANGES_REQUESTED / REJECTED
 
         while self._running:
             try:
-                # Nur kurz locken um Queue zu prüfen — Sleep AUSSERHALB des Locks
-                cmd = None
                 async with self._lock:
-                    if self._mcp_queue:
-                        cmd = self._mcp_queue.pop(0)
-                if cmd is None:
-                    await asyncio.sleep(0.5)
-                    continue
+                    if not self._mcp_queue:
+                        await asyncio.sleep(0.5)
+                        continue
+
+                    cmd = self._mcp_queue.pop(0)
 
                 cmd.status = "executing"
                 logger.info(f"Executing MCP Command: {cmd.command}")

@@ -121,6 +121,14 @@ def detect_capabilities(model_name: str, supported_methods: List[str] = None) ->
     if not capabilities:
         capabilities.append("chat")
 
+    # Ollama-Modelle können immer chatten — egal ob reasoning/code/vision erkannt
+    # detect_capabilities() wurde ursprünglich für Gemini gebaut, Ollama braucht
+    # immer "chat" als Basis-Capability.
+    if supported_methods is None and "chat" not in capabilities:
+        # Kein supported_methods → Ollama oder unbekannter Provider
+        # Bei Gemini wird supported_methods immer übergeben
+        capabilities.append("chat")
+
     # Map capabilities to roles
     for cap in capabilities:
         role = CAPABILITY_TO_ROLE.get(cap)
@@ -265,9 +273,23 @@ class ModelRegistry:
     async def get_model(self, model_id: str) -> Optional[ModelInfo]:
         canonical_id = self._normalize_id(model_id)
         models = await self.list_models()
+        # Direct match
         for entry in models:
             if entry.id == canonical_id:
                 return entry
+        # Try with provider prefixes (ollama/gemini/groq/etc.)
+        _PREFIXES = ["ollama/", "gemini/", "groq/", "openrouter/", "anthropic/", "mistral/", "cloudflare/", "github/"]
+        for prefix in _PREFIXES:
+            prefixed = f"{prefix}{canonical_id}"
+            for entry in models:
+                if entry.id == prefixed:
+                    return entry
+        # Try without prefix (if model_id has one)
+        if "/" in canonical_id:
+            bare = canonical_id.split("/", 1)[1]
+            for entry in models:
+                if entry.id.endswith(f"/{bare}"):
+                    return entry
         return None
 
     async def _discover_ollama(self) -> List[ModelInfo]:
@@ -485,18 +507,15 @@ class ModelRegistry:
     def _gemini_fallback_models(self) -> List[ModelInfo]:
         """Fallback Gemini models if API discovery fails."""
         return [
-            # Gemini 3.1 Models (Latest as of March 2026)
-            ModelInfo(id="gemini/gemini-3.1-pro", provider="gemini", capabilities=["chat", "vision", "reasoning"], roles=["assistant", "vision_analyst", "reasoning_engine"]),
-            ModelInfo(id="gemini/gemini-3.1-flash-lite", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
-            # Gemini 3 Models
-            ModelInfo(id="gemini/gemini-3-flash", provider="gemini", capabilities=["chat", "vision", "reasoning"], roles=["assistant", "vision_analyst", "reasoning_engine"]),
-            # Gemini 2.5 Models (Stable)
+            # Gemini 2.5 Models (Latest Stable)
             ModelInfo(id="gemini/gemini-2.5-pro", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
             ModelInfo(id="gemini/gemini-2.5-flash", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
             ModelInfo(id="gemini/gemini-2.5-flash-lite", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
-            # Gemini 2.0 Models (deprecated June 2026 — still alive)
+            # Gemini 2.0 Models
             ModelInfo(id="gemini/gemini-2.0-flash", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
-            # Gemini 1.5 Models RETIRED — kept as aliases only in chat.py
+            # Gemini 1.5 Models
+            ModelInfo(id="gemini/gemini-1.5-flash", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
+            ModelInfo(id="gemini/gemini-1.5-pro", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
             # Imagen 4 (Image Generation)
             ModelInfo(id="gemini/imagen-4.0-generate-001", provider="gemini", capabilities=["image_gen"], roles=["image_generator"], api_method="predict"),
             ModelInfo(id="gemini/imagen-4.0-ultra-generate-001", provider="gemini", capabilities=["image_gen"], roles=["image_generator"], api_method="predict"),
@@ -603,11 +622,6 @@ class ModelRegistry:
             # Specialist models
             ModelInfo(id="mistral/codestral-latest", provider="mistral", capabilities=["chat", "code"], roles=["assistant", "code_assistant"]),
             ModelInfo(id="mistral/magistral-medium-latest", provider="mistral", capabilities=["chat", "reasoning"], roles=["assistant", "reasoning_engine"]),
-            ModelInfo(id="mistral/magistral-small-latest", provider="mistral", capabilities=["chat", "reasoning"], roles=["assistant", "reasoning_engine"]),
-            ModelInfo(id="mistral/devstral-latest", provider="mistral", capabilities=["chat", "code"], roles=["assistant", "code_assistant"]),
-            ModelInfo(id="mistral/devstral-medium-latest", provider="mistral", capabilities=["chat", "code"], roles=["assistant", "code_assistant"]),
-            ModelInfo(id="mistral/ministral-14b-latest", provider="mistral", capabilities=["chat"], roles=["assistant"]),
-            ModelInfo(id="mistral/pixtral-large-latest", provider="mistral", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
             ModelInfo(id="mistral/mistral-embed", provider="mistral", capabilities=["embedding"], roles=["embedder"]),
             ModelInfo(id="mistral/mistral-ocr-latest", provider="mistral", capabilities=["ocr", "vision"], roles=["document_reader", "vision_analyst"]),
         ]
@@ -659,24 +673,14 @@ class ModelRegistry:
         return self._groq_fallback_models()
 
     def _groq_fallback_models(self) -> List[ModelInfo]:
-        """Fallback Groq models if API discovery fails. Updated March 2026."""
+        """Fallback Groq models if API discovery fails."""
         return [
-            # Production models
             ModelInfo(id="groq/llama-3.3-70b-versatile", provider="groq", capabilities=["chat"], roles=["assistant"]),
+            ModelInfo(id="groq/llama-3.3-70b-specdec", provider="groq", capabilities=["chat"], roles=["assistant"]),
             ModelInfo(id="groq/llama-3.1-8b-instant", provider="groq", capabilities=["chat"], roles=["assistant"]),
-            # Llama 4
-            ModelInfo(id="groq/meta-llama/llama-4-scout-17b-16e-instruct", provider="groq", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
-            # GPT-OSS (OpenAI open-weight via Groq)
-            ModelInfo(id="groq/openai/gpt-oss-120b", provider="groq", capabilities=["chat", "reasoning"], roles=["assistant", "reasoning_engine"]),
-            ModelInfo(id="groq/openai/gpt-oss-20b", provider="groq", capabilities=["chat"], roles=["assistant"]),
-            # Kimi K2
-            ModelInfo(id="groq/moonshotai/kimi-k2-instruct-0905", provider="groq", capabilities=["chat", "reasoning"], roles=["assistant", "reasoning_engine"]),
-            # Qwen3
-            ModelInfo(id="groq/qwen/qwen3-32b", provider="groq", capabilities=["chat", "reasoning"], roles=["assistant", "reasoning_engine"]),
-            # Compound (Groq system with built-in tools)
-            ModelInfo(id="groq/groq/compound", provider="groq", capabilities=["chat", "function_calling"], roles=["assistant", "tool_user"]),
-            ModelInfo(id="groq/groq/compound-mini", provider="groq", capabilities=["chat", "function_calling"], roles=["assistant", "tool_user"]),
-            # Audio
+            ModelInfo(id="groq/llama-3.2-90b-vision-preview", provider="groq", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
+            ModelInfo(id="groq/mixtral-8x7b-32768", provider="groq", capabilities=["chat"], roles=["assistant"]),
+            ModelInfo(id="groq/gemma2-9b-it", provider="groq", capabilities=["chat"], roles=["assistant"]),
             ModelInfo(id="groq/whisper-large-v3", provider="groq", capabilities=["audio"], roles=["audio_processor"]),
             ModelInfo(id="groq/whisper-large-v3-turbo", provider="groq", capabilities=["audio"], roles=["audio_processor"]),
         ]
@@ -724,10 +728,12 @@ class ModelRegistry:
         return self._cerebras_fallback_models()
 
     def _cerebras_fallback_models(self) -> List[ModelInfo]:
-        """Fallback Cerebras models if API discovery fails. Updated March 2026."""
+        """Fallback Cerebras models if API discovery fails."""
         return [
+            ModelInfo(id="cerebras/llama3.1-70b", provider="cerebras", capabilities=["chat"], roles=["assistant"]),
             ModelInfo(id="cerebras/llama3.1-8b", provider="cerebras", capabilities=["chat"], roles=["assistant"]),
-            ModelInfo(id="cerebras/qwen-3-235b-a22b-instruct-2507", provider="cerebras", capabilities=["chat", "reasoning"], roles=["assistant", "reasoning_engine"]),
+            ModelInfo(id="cerebras/llama-3.3-70b", provider="cerebras", capabilities=["chat"], roles=["assistant"]),
+            ModelInfo(id="cerebras/qwen-3-32b", provider="cerebras", capabilities=["chat"], roles=["assistant"]),
         ]
 
     async def _discover_cohere(self) -> List[ModelInfo]:
@@ -1039,9 +1045,15 @@ class ModelRegistry:
             elif task_name == "Translation":
                 capabilities.append("translation")
                 roles.append("translator")
+            elif task_name == "Summarization":
+                capabilities.append("summarization")
+                roles.append("summarizer")
+            elif task_name == "Text Classification":
+                capabilities.append("classification")
+                roles.append("classifier")
             else:
-                capabilities.append("chat")
-                roles.append("assistant")
+                # Unknown task type - skip, do NOT default to chat
+                continue
 
             models.append(ModelInfo(
                 id=f"cloudflare/{model_id}",
@@ -1109,21 +1121,12 @@ class ModelRegistry:
         return models
 
     def _cloudflare_fallback_models(self) -> List[ModelInfo]:
-        """Fallback Cloudflare models if API discovery fails. Updated March 2026."""
+        """Fallback Cloudflare models if API discovery fails."""
         return [
-            # Llama 3.3 (primary, fastest)
             ModelInfo(id="cloudflare/@cf/meta/llama-3.3-70b-instruct-fp8-fast", provider="cloudflare", capabilities=["chat"], roles=["assistant"]),
-            # Vision
             ModelInfo(id="cloudflare/@cf/meta/llama-3.2-11b-vision-instruct", provider="cloudflare", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
-            # Qwen3 (new March 2026)
-            ModelInfo(id="cloudflare/@cf/qwen/qwen3-30b-a3b-fp8", provider="cloudflare", capabilities=["chat", "reasoning"], roles=["assistant", "reasoning_engine"]),
-            ModelInfo(id="cloudflare/@cf/qwen/qwen2.5-coder-32b-instruct", provider="cloudflare", capabilities=["chat", "code"], roles=["assistant", "code_assistant"]),
-            # Mistral (new March 2026)
-            ModelInfo(id="cloudflare/@cf/mistralai/mistral-small-3.1-24b-instruct", provider="cloudflare", capabilities=["chat"], roles=["assistant"]),
             ModelInfo(id="cloudflare/@cf/mistral/mistral-7b-instruct-v0.2", provider="cloudflare", capabilities=["chat"], roles=["assistant"]),
-            # DeepSeek
-            ModelInfo(id="cloudflare/@cf/deepseek-ai/deepseek-r1-distill-qwen-32b", provider="cloudflare", capabilities=["chat", "reasoning"], roles=["assistant", "reasoning_engine"]),
-            # Audio / Embedding / Image
+            ModelInfo(id="cloudflare/@cf/qwen/qwen1.5-14b-chat-awq", provider="cloudflare", capabilities=["chat"], roles=["assistant"]),
             ModelInfo(id="cloudflare/@cf/openai/whisper", provider="cloudflare", capabilities=["audio"], roles=["audio_processor"]),
             ModelInfo(id="cloudflare/@cf/stabilityai/stable-diffusion-xl-base-1.0", provider="cloudflare", capabilities=["image_gen"], roles=["image_generator"]),
             ModelInfo(id="cloudflare/@cf/baai/bge-base-en-v1.5", provider="cloudflare", capabilities=["embedding"], roles=["embedder"]),
@@ -1138,24 +1141,16 @@ class ModelRegistry:
         settings = self._settings
         hosted: List[ModelInfo] = []
 
-        # GPT-OSS: immer registriert (kein API-Key-Guard)
-        # Primary: Ollama Cloud | Fallback: OpenRouter free
-        hosted.extend([
-            ModelInfo(id="gpt-oss:cloud/120b", provider="ollama", capabilities=["chat","reasoning","code"], roles=["assistant","reasoning_engine","code_assistant"]),
-            ModelInfo(id="gpt-oss:120b-cloud", provider="ollama", capabilities=["chat","reasoning","code"], roles=["assistant","reasoning_engine","code_assistant"]),
-            ModelInfo(id="gpt-oss:20b-cloud", provider="ollama", capabilities=["chat","code"], roles=["assistant","code_assistant"]),
-            ModelInfo(id="openrouter/openai/gpt-oss-120b:free", provider="openrouter", capabilities=["chat","reasoning","code"], roles=["assistant","reasoning_engine","code_assistant"]),
-            ModelInfo(id="openrouter/openai/gpt-oss-20b:free", provider="openrouter", capabilities=["chat","code"], roles=["assistant","code_assistant"]),
-        ])
+        if settings.gpt_oss_api_key:
+            hosted.extend([
+                ModelInfo(id="gpt-oss:cloud/120b", provider="ollama", capabilities=["chat"], roles=["assistant"]),
+                ModelInfo(id="gpt-oss:120b-cloud", provider="ollama", capabilities=["chat"], roles=["assistant"]),
+                ModelInfo(id="gpt-oss:20b-cloud", provider="ollama", capabilities=["chat"], roles=["assistant"]),
+            ])
 
-        
         if settings.anthropic_api_key:
             hosted.extend([
                 # Claude 4 Series (Latest)
-                ModelInfo(id="anthropic/claude-opus-4-6", provider="anthropic", capabilities=["chat", "vision", "code", "reasoning"], roles=["assistant", "vision_analyst", "code_assistant", "reasoning_engine"]),
-                ModelInfo(id="anthropic/claude-sonnet-4-6", provider="anthropic", capabilities=["chat", "vision", "code"], roles=["assistant", "vision_analyst", "code_assistant"]),
-                ModelInfo(id="anthropic/claude-haiku-4-5", provider="anthropic", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
-                # Legacy aliases kept for backwards compat
                 ModelInfo(id="anthropic/claude-sonnet-4", provider="anthropic", capabilities=["chat", "vision", "code"], roles=["assistant", "vision_analyst", "code_assistant"]),
                 ModelInfo(id="anthropic/claude-opus-4", provider="anthropic", capabilities=["chat", "vision", "code", "reasoning"], roles=["assistant", "vision_analyst", "code_assistant", "reasoning_engine"]),
                 # Claude 3.5 Series
@@ -1164,7 +1159,7 @@ class ModelRegistry:
                 # Claude 3 Series
                 ModelInfo(id="anthropic/claude-3-opus", provider="anthropic", capabilities=["chat", "vision", "reasoning"], roles=["assistant", "vision_analyst", "reasoning_engine"]),
                 ModelInfo(id="anthropic/claude-3-sonnet", provider="anthropic", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
-                ModelInfo(id="anthropic/claude-3-haiku", provider="anthropic", capabilities=["chat"], roles=["assistant"]),
+                ModelInfo(id="anthropic/claude-3-haiku", provider="anthropic", capabilities=["chat", "vision"], roles=["assistant"]),
                 # Legacy aliases
                 ModelInfo(id="anthropic/claude", provider="anthropic", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
                 ModelInfo(id="claude", provider="anthropic", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
