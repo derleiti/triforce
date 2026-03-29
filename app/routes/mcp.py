@@ -1841,7 +1841,7 @@ async def _handle_tools_list_LEGACY(params: Dict[str, Any]) -> Dict[str, Any]:
             },
         },
         {
-            "name": "web_search",
+            "name": "search",
             "description": "Search the web via SearXNG (Bing, Brave, DDG, Startpage) + Wikipedia, Wiby, Grokipedia, AILinux News. Use this for any web search.",
             "inputSchema": {
                 "type": "object",
@@ -1851,77 +1851,6 @@ async def _handle_tools_list_LEGACY(params: Dict[str, Any]) -> Dict[str, Any]:
                     "lang": {"type": "string", "default": "de", "description": "Language code (de, en, etc.)"},
                 },
                 "required": ["query"],
-            },
-        },
-        # Extended Multi-Search Tools (v3.0)
-        {
-            "name": "multi_search",
-            "description": "Multi-Search v2.1: SearXNG (9 Engines: Google, Bing, DDG, Brave, GitHub, arXiv) + Wikipedia, Grokipedia, AILinux News, Wiby",
-            "inputSchema": {
-                "type": "object",
-                "properties": {
-                    "query": {"type": "string", "description": "Search query"},
-                    "max_results": {"type": "integer", "default": 50, "description": "Maximum results"},
-                    "lang": {"type": "string", "default": "de", "description": "Language code (de, en, etc.)"},
-                    "use_searxng": {"type": "boolean", "default": True},
-                    "use_ddg": {"type": "boolean", "default": True},
-                    "use_wiby": {"type": "boolean", "default": True},
-                    "use_wikipedia": {"type": "boolean", "default": True},
-                    "use_grokipedia": {"type": "boolean", "default": True},
-                    "use_ailinux_news": {"type": "boolean", "default": True},
-                },
-                "required": ["query"],
-            },
-        },
-        # Smart Search Tools (v4.0 - LLM-Powered)
-        {
-            "name": "smart_search",
-            "description": "🚀 AI-Powered Smart Search with LLM enhancement. Uses Cerebras (20x faster) for query expansion & ranking, Groq for summarization. Target latency: <1s",
-            "inputSchema": {
-                "type": "object",
-                "properties": {
-                    "query": {"type": "string", "description": "Search query"},
-                    "max_results": {"type": "integer", "default": 30, "description": "Maximum results"},
-                    "lang": {"type": "string", "default": "de", "description": "Language code"},
-                    "use_searxng": {"type": "boolean", "default": True},
-                    "use_ddg": {"type": "boolean", "default": True},
-                    "use_wikipedia": {"type": "boolean", "default": True},
-                    "use_grokipedia": {"type": "boolean", "default": True},
-                    "use_ailinux_news": {"type": "boolean", "default": True},
-                    "expand_query": {"type": "boolean", "default": True, "description": "Enable LLM query expansion (~50ms)"},
-                    "detect_intent": {"type": "boolean", "default": True, "description": "Enable intent detection (~30ms)"},
-                    "summarize": {"type": "boolean", "default": True, "description": "Enable result summarization (~300ms)"},
-                    "smart_rank": {"type": "boolean", "default": True, "description": "Enable LLM re-ranking (~80ms)"},
-                },
-                "required": ["query"],
-            },
-        },
-        {
-            "name": "quick_smart_search",
-            "description": "⚡ Quick Smart Search - Speed-optimized for <500ms. Query expansion only, fewer sources, no summarization.",
-            "inputSchema": {
-                "type": "object",
-                "properties": {
-                    "query": {"type": "string", "description": "Search query"},
-                    "max_results": {"type": "integer", "default": 15, "description": "Maximum results"},
-                    "lang": {"type": "string", "default": "de", "description": "Language code"},
-                },
-                "required": ["query"],
-            },
-        },
-        {
-            "name": "search_llm_config",
-            "description": "Configure or view LLM settings for smart search. Models: Cerebras (fast), Groq (quality), Gemini (fallback).",
-            "inputSchema": {
-                "type": "object",
-                "properties": {
-                    "action": {"type": "string", "enum": ["view", "configure"], "default": "view"},
-                    "fast_model": {"type": "string", "description": "Fast model ID (e.g., cerebras/llama-3.3-70b)"},
-                    "quality_model": {"type": "string", "description": "Quality model ID (e.g., groq/llama-3.3-70b-versatile)"},
-                    "enable_expansion": {"type": "boolean", "description": "Enable query expansion"},
-                    "enable_summary": {"type": "boolean", "description": "Enable summarization"},
-                    "enable_ranking": {"type": "boolean", "description": "Enable smart ranking"},
-                },
             },
         },
         {
@@ -1963,19 +1892,6 @@ async def _handle_tools_list_LEGACY(params: Dict[str, Any]) -> Dict[str, Any]:
             "inputSchema": {"type": "object", "properties": {}},
         },
         {
-            "name": "google_deep_search",
-            "description": "Deep Google search with up to 150 results using googlesearch-python.",
-            "inputSchema": {
-                "type": "object",
-                "properties": {
-                    "query": {"type": "string", "description": "Search query"},
-                    "num_results": {"type": "integer", "default": 150, "description": "Max results (up to 200)"},
-                    "lang": {"type": "string", "default": "de", "description": "Language code"}
-                },
-                "required": ["query"]
-            },
-        },
-        {
             "name": "current_time",
             "description": "Get current time with timezone support via WorldTimeAPI. Returns date, time, weekday in DE/EN.",
             "inputSchema": {
@@ -1994,30 +1910,6 @@ async def _handle_tools_list_LEGACY(params: Dict[str, Any]) -> Dict[str, Any]:
                 "properties": {
                     "region": {"type": "string", "description": "Filter by region (e.g., Europe, America, Asia)"}
                 }
-            },
-        },
-        {
-            "name": "ailinux_search",
-            "description": "Search AILinux.me News Archive (71+ pages, Tech/Media/Games) via WordPress REST API",
-            "inputSchema": {
-                "type": "object",
-                "properties": {
-                    "query": {"type": "string", "description": "Search query"},
-                    "num_results": {"type": "integer", "default": 20, "description": "Number of results"},
-                },
-                "required": ["query"],
-            },
-        },
-        {
-            "name": "grokipedia_search",
-            "description": "Search Grokipedia.com - xAI's Wikipedia-style knowledge base with 885K+ articles",
-            "inputSchema": {
-                "type": "object",
-                "properties": {
-                    "query": {"type": "string", "description": "Search query"},
-                    "num_results": {"type": "integer", "default": 5, "description": "Number of results"},
-                },
-                "required": ["query"],
             },
         },
         {
@@ -2720,6 +2612,7 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
     tool_map = {
         # === v4 kanonische Namen (NOVA-PATCH) ===
         "list_models": handle_models_list,          # v4: "models" → resolved oben
+        "search": handle_web_search,                  # v5: canonical search tool (SearXNG)
         "web_search": handle_web_search,             # v4: "search" → resolved oben
         "ask_specialist": handle_specialists_invoke, # v4: "specialist" → resolved oben
         "codebase_structure": handle_codebase_structure, # v4: "code_tree"
@@ -2744,17 +2637,17 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
         "crawl_url": handle_crawl_url,
         "web_search": handle_web_search,
         # Extended Multi-Search (v3.0 - Grokipedia + AILinux News)
-        "multi_search": handle_multi_search,
+        "multi_search": handle_web_search,  # alias → search (SearXNG)
         # Smart Search (v4.0 - LLM-Powered with Cerebras/Groq)
-        "smart_search": handle_smart_search,
-        "quick_smart_search": handle_quick_smart_search,
+        "smart_search": handle_web_search,  # alias → search (SearXNG)
+        "quick_smart_search": handle_web_search,  # alias → search (SearXNG)
         "search_llm_config": handle_search_llm_config,
         "search_health": handle_search_health,
         "weather": handle_weather,
         "crypto_prices": handle_crypto_prices,
         "stock_indices": handle_stock_indices,
         "market_overview": handle_market_overview,
-        "google_deep_search": handle_google_deep_search,
+        "google_deep_search": handle_web_search,  # alias → search (SearXNG)
         "current_time": handle_current_time,
         "list_timezones": handle_list_timezones,
         "ailinux_search": handle_ailinux_search,

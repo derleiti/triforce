@@ -635,7 +635,7 @@ def get_tools() -> List[Dict[str, Any]]:
         # =================================================================
         {
             "name": "web_search",
-            "description": "Search the web for information using AI-powered search",
+            "description": "Search the web via SearXNG (Bing, Brave, DDG, Startpage) + Wikipedia, Wiby, Grokipedia, AILinux News.",
             "inputSchema": {
                 "type": "object",
                 "properties": {
@@ -1455,16 +1455,32 @@ async def handle_api_docs(arguments: Dict[str, Any]) -> Dict[str, Any]:
 async def handle_web_search(arguments: Dict[str, Any]) -> Dict[str, Any]:
     """Handle web search via SearXNG Multi-Search (v2.85)."""
     from ..services.multi_search import multi_search
-
     query = arguments.get("query")
     if not query:
         raise ValueError("'query' is required")
-
     return await multi_search(
         query=query,
         max_results=arguments.get("max_results", 50),
         lang=arguments.get("lang", "de"),
     )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # ============================================================================
@@ -1781,7 +1797,7 @@ async def handle_fetch(arguments: Dict[str, Any]) -> Dict[str, Any]:
 _V4_ALIAS_TOOLS = [
     {
         "name": "search",
-        "description": "Search the web for information. Returns relevant results from multiple search engines.",
+        "description": "Search the web via SearXNG (Bing, Brave, DDG, Startpage) + Wikipedia, Wiby, Grokipedia, AILinux News.",
         "inputSchema": {
             "type": "object",
             "properties": {

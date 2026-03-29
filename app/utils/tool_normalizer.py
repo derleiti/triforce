@@ -121,7 +121,10 @@ CANONICAL_MAP: dict[str, str] = {
     "status"          : "tristar_status",
     # "health" → handlers_v4 registriert es direkt als "health", kein Remapping
     "models"          : "list_models",
-    "search"          : "web_search",
+    "web_search"      : "search",
+    "multi_search"    : "search",
+    "smart_search"    : "search",
+    "quick_smart_search" : "search",
     "specialist"      : "ask_specialist",
     "agents"          : "cli-agents_list",
     "agent_call"      : "cli-agents_call",
