@@ -9,6 +9,9 @@ Migration date: 2026-03-16
 from __future__ import annotations
 from typing import Any, Callable, Dict, List, Optional
 
+import warnings as _w
+_w.warn("tool_registry_v4 is deprecated — import from tool_registry_v5 directly", DeprecationWarning, stacklevel=2)
+
 from .tool_registry_v5 import (
     get_all_tools as get_all_tools,
     V5_ALIASES as TOOL_ALIASES,

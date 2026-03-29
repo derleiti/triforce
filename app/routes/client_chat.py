@@ -53,15 +53,13 @@ def extract_user_and_tier_from_token(authorization: str = None) -> tuple:
         if not token:
             return None, None
         
-        # Erst mit Expiry prüfen
+        # JWT mit Expiry-Check — abgelaufene Tokens werden NICHT akzeptiert
         try:
             payload = decode_jwt_token(token)
-        except Exception:
-            # Token abgelaufen aber gültig signiert → Tier trotzdem lesen
-            import jwt as _jwt
-            payload = _jwt.decode(token, JWT_SECRET.encode("utf-8"),
-                                  algorithms=[JWT_ALGORITHM],
-                                  options={"verify_exp": False})
+        except HTTPException as he:
+            # Token expired oder ungültig → kein Tier-Zugang
+            logger.warning(f"JWT rejected (expired/invalid): {he.detail}")
+            return None, None
         
         email = payload.get("email") or payload.get("sub")
         tier = payload.get("role") or payload.get("tier")
@@ -657,6 +655,30 @@ async def client_chat(
 
                 backend = "openrouter"
 
+
+            elif model.startswith("cloudflare/"):
+                # Cloudflare Workers AI — eigener Handler (nicht in api_proxy)
+                from ..config import get_settings as _gs
+                _s = _gs()
+                if not _s.cloudflare_account_id or not _s.cloudflare_api_token:
+                    raise HTTPException(503, "Cloudflare Workers AI nicht konfiguriert")
+                from ..services.chat import _stream_cloudflare
+                cf_model = model
+                cf_chunks = []
+                async for chunk in _stream_cloudflare(
+                    cf_model, messages,
+                    account_id=_s.cloudflare_account_id,
+                    api_token=_s.cloudflare_api_token,
+                    temperature=request.temperature,
+                    stream=True, timeout=30.0,
+                ):
+                    cf_chunks.append(chunk)
+                result = {
+                    "choices": [{"message": {"role": "assistant", "content": "".join(cf_chunks)}}],
+                    "usage": {"total_tokens": 0},
+                    "model_used": model,
+                }
+                backend = "cloudflare"
 
             elif model_prefix in _CHAT_ROUTER_PREFIXES:
 
