@@ -172,46 +172,24 @@ async def handle_browser_screenshot(arguments: Dict[str, Any]) -> str:
 
 
 async def handle_browser_search(arguments: Dict[str, Any]) -> str:
-    """Search the web and return results."""
+    """Search the web — routes through SearXNG multi_search for reliability.
+    Playwright browser search is unreliable (Google CAPTCHA, outdated selectors).
+    """
     query = arguments.get("query", "")
-    engine = arguments.get("engine", "google")
-    
     if not query:
         return json.dumps({"error": "query required"})
-    
-    urls = {
-        "google": f"https://www.google.com/search?q={query}",
-        "duckduckgo": f"https://html.duckduckgo.com/html/?q={query}",
-        "searxng": f"https://search.ailinux.me/search?q={query}&format=json"
-    }
-    
+
+    # Route directly through SearXNG multi_search (fast, reliable, no CAPTCHA)
     try:
-        page = await _ensure_browser()
-        url = urls.get(engine, urls["duckduckgo"])
-        await page.goto(url, wait_until="load", timeout=30000)
-        
-        # Extract search results
-        if engine == "duckduckgo":
-            results = await page.evaluate("""() => {
-                return Array.from(document.querySelectorAll('.result'))
-                    .slice(0, 10)
-                    .map(r => ({
-                        title: r.querySelector('.result__title')?.innerText || '',
-                        url: r.querySelector('.result__url')?.href || '',
-                        snippet: r.querySelector('.result__snippet')?.innerText || ''
-                    }));
-            }""")
-        else:
-            results = await page.evaluate("""() => {
-                return Array.from(document.querySelectorAll('div.g, .result'))
-                    .slice(0, 10)
-                    .map(r => ({
-                        title: r.querySelector('h3')?.innerText || r.querySelector('.result__title')?.innerText || '',
-                        snippet: r.querySelector('.VwiC3b')?.innerText || r.querySelector('.result__snippet')?.innerText || ''
-                    }));
-            }""")
-        
-        return json.dumps({"query": query, "engine": engine, "results": results})
+        from ..services.multi_search import multi_search
+        result = await multi_search(query=query, max_results=10, lang="de")
+        return json.dumps({
+            "query": query,
+            "engine": "searxng",
+            "results": result.get("results", [])[:10],
+            "total": result.get("total", 0),
+            "sources": result.get("sources", {}),
+        })
     except Exception as e:
         return json.dumps({"error": str(e), "query": query})
 
