@@ -1453,15 +1453,18 @@ async def handle_api_docs(arguments: Dict[str, Any]) -> Dict[str, Any]:
 
 
 async def handle_web_search(arguments: Dict[str, Any]) -> Dict[str, Any]:
-    """Handle web search."""
-    from ..services import web_search
+    """Handle web search via SearXNG Multi-Search (v2.85)."""
+    from ..services.multi_search import multi_search
 
     query = arguments.get("query")
     if not query:
         raise ValueError("'query' is required")
 
-    results = await web_search.search_web(query)
-    return {"results": results, "query": query}
+    return await multi_search(
+        query=query,
+        max_results=arguments.get("max_results", 50),
+        lang=arguments.get("lang", "de"),
+    )
 
 
 # ============================================================================

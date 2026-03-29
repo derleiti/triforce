@@ -361,27 +361,24 @@ async def handle_media_upload(params: Dict[str, Any]) -> Dict[str, Any]:
 
 
 async def handle_web_search(params: Dict[str, Any]) -> Dict[str, Any]:
-    """Search the web with pagination and language support (Multi-API)."""
-    from ..services.web_search import search_web
-    
+    """Search the web via SearXNG Multi-Search (v2.85 — replaces old DDG-only)."""
+    from ..services.multi_search import multi_search
+
     query = params.get("query")
     if not query:
         raise ValueError("'query' parameter is required for web_search")
-    
-    num_results = params.get("num_results", 50)
-    page = params.get("page", 1)
-    per_page = params.get("per_page", 50)
-    lang = params.get("lang", "de")  # Sprachparameter
-    
-    # Multi-API Web-Suche mit Sprachunterstützung
-    result = await search_web(
-        query, 
-        num_results=num_results,
-        page=page,
-        per_page=per_page,
-        lang=lang
+
+    result = await multi_search(
+        query=query,
+        max_results=params.get("max_results", params.get("num_results", 50)),
+        lang=params.get("lang", "de"),
+        use_searxng=True,
+        use_wikipedia=True,
+        use_wiby=True,
+        use_grokipedia=params.get("use_grokipedia", True),
+        use_ailinux_news=params.get("use_ailinux_news", True),
     )
-    
+
     return result
 
 
@@ -1845,11 +1842,13 @@ async def _handle_tools_list_LEGACY(params: Dict[str, Any]) -> Dict[str, Any]:
         },
         {
             "name": "web_search",
-            "description": "Search the web for information using AI-powered search",
+            "description": "Search the web via SearXNG (Bing, Brave, DDG, Startpage) + Wikipedia, Wiby, Grokipedia, AILinux News. Use this for any web search.",
             "inputSchema": {
                 "type": "object",
                 "properties": {
                     "query": {"type": "string", "description": "Search query"},
+                    "max_results": {"type": "integer", "default": 50, "description": "Maximum results (1-200)"},
+                    "lang": {"type": "string", "default": "de", "description": "Language code (de, en, etc.)"},
                 },
                 "required": ["query"],
             },
