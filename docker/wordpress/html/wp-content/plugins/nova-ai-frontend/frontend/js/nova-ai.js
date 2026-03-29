@@ -1,7 +1,7 @@
 /* ============================================================
-   NOVA AI FRONTEND — JS v6.2
+   NOVA AI FRONTEND — JS v6.3
    12 Themes (dark/light), WP-Theme-Sync, Claude.ai Chat,
-   Keyboard Shortcuts, Model Loader, Video Polling
+   Keyboard Shortcuts, Model Loader, Video Polling, Global Theme Picker
    ============================================================ */
 (function () {
   'use strict';
@@ -41,6 +41,12 @@
     });
     document.querySelectorAll('.nova-theme-option').forEach(o => o.classList.toggle('active', o.dataset.theme === theme));
     document.querySelectorAll('[data-nova-theme-label]').forEach(el => el.textContent = THEME_LABELS[theme] || 'Theme');
+    // Sync global header theme picker icon (sun/moon)
+    const modeNow = (theme && theme.startsWith('light')) ? 'light' : 'dark';
+    document.querySelectorAll('.nova-global-theme-btn').forEach(btn => {
+      btn.setAttribute('aria-pressed', modeNow === 'light' ? 'true' : 'false');
+      btn.title = modeNow === 'light' ? 'Dark Mode' : 'Light Mode (aktuell: ' + (THEME_LABELS[theme] || theme) + ')';
+    });
   }
   function initTheme() {
     const saved = localStorage.getItem('nova-theme');
@@ -62,9 +68,12 @@
   }
 
   // ── Theme-Picker ─────────────────────────────────────────────
-  function buildThemePicker(container) {
-    const picker = container.querySelector('.nova-theme-picker');
-    if (!picker) return;
+  function buildThemePicker(containerOrPicker) {
+    const picker = containerOrPicker.classList && containerOrPicker.classList.contains('nova-theme-picker')
+      ? containerOrPicker
+      : containerOrPicker.querySelector && containerOrPicker.querySelector('.nova-theme-picker');
+    if (!picker || picker.dataset.built) return;
+    picker.dataset.built = '1';
     const btn = picker.querySelector('.nova-theme-btn');
     const dd  = picker.querySelector('.nova-theme-dropdown');
     if (!dd) return;
@@ -89,7 +98,7 @@
     ro.innerHTML = '<span class="nova-theme-swatch" style="background:linear-gradient(135deg,#f00,#0f0,#00f)"></span>Zufälliges Theme';
     ro.addEventListener('click', () => { localStorage.removeItem('nova-theme'); applyTheme(rndTheme(detectMode())); dd.classList.remove('open'); });
     dd.appendChild(ro);
-    btn.addEventListener('click', e => { e.stopPropagation(); dd.classList.toggle('open'); });
+    if (btn) btn.addEventListener('click', e => { e.stopPropagation(); dd.classList.toggle('open'); });
     document.addEventListener('click', () => dd.classList.remove('open'));
   }
 
@@ -181,7 +190,7 @@
         const resp = await fetch(API + '/chat', {
           method: 'POST',
           headers: Object.assign({'Content-Type': 'application/json'}, nonceHeader()),
-          body: JSON.stringify({ model: modelSel?.value||'', system: sysSel?.value||'', messages }),
+          body: JSON.stringify({ model: modelSel?.value||'', messages: (sysSel?.value?.trim() ? [{role:'system',content:sysSel.value.trim()},...messages] : messages), stream: false }),
         });
         const data = await resp.json();
         typingEl.remove();
@@ -270,16 +279,40 @@
   // ── Markdown ─────────────────────────────────────────────────
   function renderMarkdown(text) {
     if (!text) return '';
-    return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-      .replace(/```(\w*)\n?([\s\S]*?)```/g, (_,lang,code) => `<pre><code class="lang-${lang}">${code.trim()}</code></pre>`)
+    // BUG-FIX 2026-03-11: protect code blocks from nl->br conversion
+    var codeBlocks = [];
+    var s = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    s = s.replace(/```(\w*)\n?([\s\S]*?)```/g, function(_,lang,code) {
+      var slot = '\x00CODEBLOCK' + codeBlocks.length + '\x00';
+      codeBlocks.push('<pre><code class="lang-'+lang+'">'+code.trim()+'</code></pre>');
+      return slot;
+    });
+    s = s
       .replace(/`([^`]+)`/g, '<code>$1</code>')
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*(.+?)\*/g, '<em>$1</em>')
       .replace(/^### (.+)$/gm, '<h3>$1</h3>').replace(/^## (.+)$/gm, '<h2>$1</h2>').replace(/^# (.+)$/gm, '<h1>$1</h1>')
-      .replace(/^[\-\*] (.+)$/gm, '<li>$1</li>').replace(/(<li>[\s\S]*?<\/li>)/g, '<ul>$1</ul>')
+      .replace(/^[\-\*] (.+)$/gm, '<li>$1</li>')
       .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
-      .replace(/\[(.+?)\]\((https?:\/\/[^\)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
-      .replace(/\n{2,}/g, '</p><p>').replace(/\n/g, '<br>');
+      .replace(/\[(.+?)\]\((https?:\/\/[^\)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+    // FIX: group consecutive <li> into a single <ul>
+    s = s.replace(/(<li>.*?<\/li>\s*)+/gs, function(m) { return '<ul>' + m + '</ul>'; });
+    // FIX: block-aware paragraph wrapping
+    var _blockRe = /^(<h[1-6]>|<ul>|<\/ul>|<li>|<\/li>|<blockquote>|<\/blockquote>|<pre>|<\/pre>)/;
+    var _lines = s.split('\n'), _result = [], _para = [];
+    _lines.forEach(function(line) {
+      if (_blockRe.test(line.trim())) {
+        if (_para.length) { _result.push('<p>' + _para.join('<br>') + '</p>'); _para = []; }
+        _result.push(line);
+      } else if (line.trim() === '') {
+        if (_para.length) { _result.push('<p>' + _para.join('<br>') + '</p>'); _para = []; }
+      } else { _para.push(line); }
+    });
+    if (_para.length) _result.push('<p>' + _para.join('<br>') + '</p>');
+    s = _result.join('\n');
+    // Re-inject code blocks unmodified
+    codeBlocks.forEach(function(block, i) { s = s.split('\x00CODEBLOCK'+i+'\x00').join(block); });
+    return s;
   }
 
   // ── Vision ──────────────────────────────────────────────────────────────────
@@ -574,9 +607,9 @@
     const badge = container.querySelector('.nova-health-badge,[data-health-badge]');
     if (!badge) return;
     try {
-      const resp = await fetch('/wp-json/nova-ai/v1/health');
+      const resp = await fetch(API + '/health', { headers: nonceHeader() });
       const json = await resp.json();
-      if (json.ok||json.status==='ok') {
+      if (json.ok||json.status==='ok'||json.status==='healthy') {
         badge.textContent='Backend: ok'; badge.className='nova-badge ok';
         const mb=container.querySelector('.nova-model-count,[data-model-count]');
         if(mb&&json.model_count) mb.textContent='Modelle: '+json.model_count;
@@ -588,12 +621,15 @@
   // Simple Markdown renderer (no external dep needed)
   function renderMd(text) {
     if (!text) return '';
+    // FIX 2026-03-11: protect code blocks from nl→br conversion using placeholder array
+    var blocks = [];
     var s = String(text)
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    // code blocks (multiline) - process first before other replacements
-    s = s.replace(/```[\s\S]*?```/g, function(m) {
-      var inner = m.replace(/^```\w*/, '').replace(/```$/, '').trim();
-      return '<pre><code>' + inner + '</code></pre>';
+    // Extract fenced code blocks to placeholders BEFORE any other processing
+    s = s.replace(/```(\w*)\n?([\s\S]*?)```/g, function(_, lang, code) {
+      var slot = '\x00RMDCB' + blocks.length + '\x00';
+      blocks.push('<pre><code' + (lang ? ' class="lang-' + lang + '"' : '') + '>' + code.trim() + '</code></pre>');
+      return slot;
     });
     s = s
       .replace(/`([^`\n]+)`/g, '<code>$1</code>')
@@ -604,8 +640,22 @@
       .replace(/^# (.+)$/gm, '<h2>$1</h2>')
       .replace(/^[-*] (.+)$/gm, '<li>$1</li>');
     // wrap consecutive li elements
-    s = s.replace(/(<li>[\s\S]+?<\/li>)(\s*(?!<li>))/g, '<ul>$1</ul>$2');
-    s = s.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>');
+    s = s.replace(/(<li>.*?<\/li>\s*)+/gs, m => '<ul>' + m + '</ul>');
+    // FIX: block-aware paragraph wrapping (mirrors renderMarkdown fix)
+    var _bRe = /^(<\/?h[1-6]>|<\/?ul>|<\/?li>|<\/?blockquote>|<\/?pre>)/;
+    var _ls = s.split('\n'), _res = [], _buf = [];
+    _ls.forEach(function(line) {
+      if (_bRe.test(line.trim())) {
+        if (_buf.length) { _res.push('<p>' + _buf.join('<br>') + '</p>'); _buf = []; }
+        _res.push(line);
+      } else if (line.trim() === '') {
+        if (_buf.length) { _res.push('<p>' + _buf.join('<br>') + '</p>'); _buf = []; }
+      } else { _buf.push(line); }
+    });
+    if (_buf.length) _res.push('<p>' + _buf.join('<br>') + '</p>');
+    s = _res.join('\n');
+    // Re-inject code blocks unmodified
+    blocks.forEach(function(block, i) { s = s.split('\x00RMDCB' + i + '\x00').join(block); });
     return s;
   }
   function setOutput(el, html, cls) {
@@ -636,44 +686,92 @@
   async function initAccount(container) {
     const panel = container.querySelector('#nova-account-panel');
     if (!panel) return;
-    const TIER_COLORS = { free:'#64748b', pro:'#3b82f6', enterprise:'#8b5cf6', beta:'#10b981' };
-    const TIER_ICONS  = { free:'🔓', pro:'⭐', enterprise:'💎', beta:'🚀' };
+    // FIX 2026-03-11: Corrected tier map (free/paid only), added subscription management
+    const TIER_COLORS = { free:'#64748b', paid:'#8b5cf6' };
+    const TIER_ICONS  = { free:'\u{1F513}', paid:'\u2B50' };
     try {
-      const resp = await fetch(API + '/account', { headers: nonceHeader() });
-      const d = await resp.json();
+      // Fetch account + subscription status in parallel
+      const [accResp, subResp] = await Promise.all([
+        fetch(API + '/account',      { headers: nonceHeader() }),
+        fetch(API + '/subscription', { headers: nonceHeader() }).catch(() => null)
+        // NOTE: /subscription route is optional — missing route returns null, handled below
+      ]);
+      const d   = await accResp.json();
+      const sub = subResp && subResp.ok ? await subResp.json().catch(() => ({})) : {};
       if (!d.ok) throw new Error(d.error || 'Fehler');
       if (!d.logged_in) {
         panel.innerHTML = `
           <div style="text-align:center;padding:2rem">
-            <div style="font-size:3rem;margin-bottom:1rem">🔐</div>
+            <div style="font-size:3rem;margin-bottom:1rem">\u{1F510}</div>
             <h3 style="color:#f1f5f9;margin-bottom:.5rem">Nicht angemeldet</h3>
             <p style="color:#94a3b8;margin-bottom:1.5rem">Melde dich an um dein Abo, gekaufte Apps und Downloads zu sehen.</p>
             <a href="${d.login_url||'https://login.ailinux.me'}" target="_blank"
                style="display:inline-block;padding:.75rem 2rem;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:white;border-radius:10px;text-decoration:none;font-weight:600">
-              🔑 Anmelden / Registrieren
+              \u{1F511} Anmelden / Registrieren
             </a>
           </div>`;
         return;
       }
-      const tier  = (d.tier||'free').toLowerCase();
+      const tier  = (d.tier||'free').toLowerCase() === 'free' ? 'free' : 'paid';
       const tclr  = TIER_COLORS[tier] || '#64748b';
-      const tico  = TIER_ICONS[tier]  || '🔓';
+      const tico  = TIER_ICONS[tier]  || '\u{1F513}';
       const ents  = Array.isArray(d.entitlements) ? d.entitlements : [];
       const dls   = Array.isArray(d.downloads)    ? d.downloads    : [];
+      // BUG-FIX 2026-03-11: API returns sub.data.status (not sub.status) — normalize both shapes
+      const subStatus = sub?.data?.status || sub.status || 'none';
+      const subActive = subStatus === 'active';
+
+      // Build subscription management section
+      let subHTML = '';
+      if (tier === 'paid' && subActive) {
+        const _renewRaw = sub?.data?.renews_at || sub.renews_at || null;
+        const renewDate = _renewRaw ? new Date(_renewRaw).toLocaleDateString('de-DE') : '';
+        subHTML = `
+          <div style="background:rgba(0,0,0,.3);border:1px solid #2a2a3a;border-radius:12px;padding:1.25rem;margin-bottom:1.25rem">
+            <h4 style="color:#f1f5f9;margin:0 0 .75rem;font-size:.95rem">\u{1F4B3} Subscription</h4>
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem">
+              <div>
+                <div style="color:#f1f5f9;font-weight:500">AILinux Pro — Aktiv</div>
+                ${renewDate ? `<div style="color:#64748b;font-size:.8rem">Verlängerung: ${renewDate}</div>` : ''}
+              </div>
+              <button id="nova-sub-cancel-btn"
+                style="padding:.4rem 1rem;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#ef4444;border-radius:8px;font-size:.8rem;cursor:pointer">
+                Abo kündigen
+              </button>
+            </div>
+          </div>`;
+      } else if (tier === 'free') {
+        subHTML = `
+          <div style="background:rgba(59,130,246,.05);border:1px solid rgba(59,130,246,.2);border-radius:12px;padding:1.25rem;margin-bottom:1.25rem">
+            <h4 style="color:#f1f5f9;margin:0 0 .75rem;font-size:.95rem">\u{1F4B3} Subscription</h4>
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem">
+              <div>
+                <div style="color:#93c5fd;font-weight:500">Free — 0 €/Monat</div>
+                <div style="color:#64748b;font-size:.8rem">57 Modelle · Ollama + Small Models</div>
+              </div>
+              <a href="${d.shop_url||'https://ailinux.me/shop'}" target="_blank"
+                 style="padding:.5rem 1.25rem;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:white;border-radius:8px;text-decoration:none;font-size:.85rem;font-weight:600">
+                \u2B06\uFE0F Upgrade auf Pro — 17,99 €/Mo
+              </a>
+            </div>
+          </div>`;
+      }
+
       const dlHTML = dls.length ? dls.map(f=>`
         <div style="display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem;background:rgba(0,0,0,.3);border:1px solid #2a2a3a;border-radius:8px;margin-bottom:.5rem">
           <div>
             <div style="color:#f1f5f9;font-weight:500;font-size:.9rem">${f.name||f.file||'Download'}</div>
             <div style="color:#64748b;font-size:.75rem">${f.type||''} ${f.size_formatted||''}</div>
           </div>
-          ${f.url?`<a href="${f.url}" download style="padding:.4rem 1rem;background:#3b82f6;color:white;border-radius:6px;text-decoration:none;font-size:.8rem;font-weight:600">↓ Download</a>`:'<span style="color:#64748b;font-size:.8rem">Nicht verfügbar</span>'}
+          ${f.url?`<a href="${f.url}" download style="padding:.4rem 1rem;background:#3b82f6;color:white;border-radius:6px;text-decoration:none;font-size:.8rem;font-weight:600">\u2193 Download</a>`:'<span style="color:#64748b;font-size:.8rem">Nicht verfügbar</span>'}
         </div>`).join('') : '<div style="color:#64748b;font-size:.875rem">Keine Downloads verfügbar.</div>';
       const entHTML = ents.length ? `<div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.5rem">${ents.map(e=>`<span style="padding:.25rem .75rem;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);border-radius:20px;font-size:.75rem;color:#93c5fd">${e}</span>`).join('')}</div>` : '<div style="color:#64748b;font-size:.875rem">Keine zusätzlichen Berechtigungen.</div>';
+
       panel.innerHTML = `
         <div style="max-width:600px;margin:0 auto">
           <div style="background:rgba(0,0,0,.3);border:1px solid #2a2a3a;border-radius:16px;padding:1.5rem;margin-bottom:1.25rem">
             <div style="display:flex;align-items:center;gap:1rem">
-              <div style="width:60px;height:60px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.75rem">👤</div>
+              <div style="width:60px;height:60px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.75rem">\u{1F464}</div>
               <div>
                 <div style="color:#f1f5f9;font-weight:600;font-size:1.125rem">${d.display_name||d.email}</div>
                 <div style="color:#94a3b8;font-size:.875rem">${d.email}</div>
@@ -681,26 +779,51 @@
               </div>
               <div style="margin-left:auto">
                 <a href="${d.account_url||'https://login.ailinux.me'}" target="_blank"
-                   style="padding:.5rem 1rem;background:rgba(255,255,255,.05);border:1px solid #2a2a3a;color:#94a3b8;border-radius:8px;text-decoration:none;font-size:.8rem">⚙️ Account</a>
+                   style="padding:.5rem 1rem;background:rgba(255,255,255,.05);border:1px solid #2a2a3a;color:#94a3b8;border-radius:8px;text-decoration:none;font-size:.8rem">\u2699\uFE0F Account</a>
               </div>
             </div>
           </div>
+          ${subHTML}
           <div style="background:rgba(0,0,0,.3);border:1px solid #2a2a3a;border-radius:12px;padding:1.25rem;margin-bottom:1.25rem">
-            <h4 style="color:#f1f5f9;margin:0 0 .75rem;font-size:.95rem">🎁 Freigeschaltete Apps & Features</h4>
+            <h4 style="color:#f1f5f9;margin:0 0 .75rem;font-size:.95rem">\u{1F381} Freigeschaltete Apps & Features</h4>
             ${entHTML}
-            ${tier==='free'?`<div style="margin-top:.75rem;padding:.75rem;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:8px;font-size:.8rem;color:#93c5fd">
-              <a href="${d.shop_url||'https://ailinux.me/shop'}" target="_blank" style="color:#60a5fa">⬆️ Upgrade auf Pro</a> — erweiterte Modelle, mehr API-Calls, exklusive Features.
-            </div>`:''}
           </div>
           <div style="background:rgba(0,0,0,.3);border:1px solid #2a2a3a;border-radius:12px;padding:1.25rem">
-            <h4 style="color:#f1f5f9;margin:0 0 .75rem;font-size:.95rem">📦 AILinux Client Downloads</h4>
+            <h4 style="color:#f1f5f9;margin:0 0 .75rem;font-size:.95rem">\u{1F4E6} AILinux Client Downloads</h4>
             ${dlHTML}
           </div>
         </div>`;
+
+      // Wire up cancel button
+      const cancelBtn = panel.querySelector('#nova-sub-cancel-btn');
+      if (cancelBtn) {
+        cancelBtn.addEventListener('click', async function() {
+          if (!confirm('Abo wirklich kündigen? Dein Pro-Zugang läuft bis zum Ende des Abrechnungszeitraums weiter.')) return;
+          cancelBtn.disabled = true; cancelBtn.textContent = 'Wird gekündigt…';
+          try {
+            const cr = await fetch(API + '/subscription/cancel', {
+              method: 'POST', headers: nonceHeader()
+            });
+            const cd = await cr.json();
+            if (cr.ok) {
+              cancelBtn.style.background = 'rgba(34,197,94,.1)';
+              cancelBtn.style.borderColor = 'rgba(34,197,94,.3)';
+              cancelBtn.style.color = '#4ade80';
+              cancelBtn.textContent = '\u2713 Kündigung bestätigt';
+            } else {
+              cancelBtn.disabled = false;
+              cancelBtn.textContent = 'Fehler: ' + (cd.error||cd.message||'Retry');
+            }
+          } catch(err) {
+            cancelBtn.disabled = false; cancelBtn.textContent = 'Verbindungsfehler';
+          }
+        });
+      }
     } catch(e) {
-      panel.innerHTML = `<div style="color:#ef4444;padding:1rem">❌ Fehler beim Laden: ${e.message}</div>`;
+      panel.innerHTML = `<div style="color:#ef4444;padding:1rem">\u274C Fehler beim Laden: ${e.message}</div>`;
     }
   }
+
 
   function initShell(container) {
     buildThemePicker(container);
@@ -715,7 +838,9 @@
   }
   function initDownloadsShell(container) {
     buildThemePicker(container);
+    initTabs(container, '.nova-tab', '.nova-panel');
     initDownloads(container);
+    initAccount(container);
   }
 
   // ── Nonce Refresh ──────────────────────────────────────────────────────────
@@ -760,13 +885,29 @@
     const nonce = () => (window.novaAiConfig && window.novaAiConfig.nonce) || '';
 
     // ── Load chat models into modelSel ──────────────────────────────────────
+    // In-memory cache damit Mobile nicht bei jedem Panel-Öffnen neu lädt
+    let _modelsCache = null;
+
     async function loadDiscussModels() {
       if (!modelSel) return;
+      // Zeige sofort Lade-Indikator
+      if (modelSel.options.length <= 1) {
+        const loadOpt = document.createElement('option');
+        loadOpt.textContent = '⏳ Modelle werden geladen…';
+        loadOpt.disabled = true;
+        modelSel.appendChild(loadOpt);
+      }
+      // Cache nutzen wenn vorhanden
+      if (_modelsCache) {
+        _populateModelSel(_modelsCache);
+        return;
+      }
       try {
         const resp = await fetch(API + '/models', { method: 'GET', headers: { 'Accept': 'application/json' } });
         if (!resp.ok) throw new Error('HTTP ' + resp.status);
         const data = await resp.json();
         const all = data.models || data.data || (Array.isArray(data) ? data : []);
+        _modelsCache = all; // Cache für nächstes Öffnen
         // Only chat models (not image/video gen)
         const chatModels = all.filter(m => {
           const cats = m.categories || [];
@@ -776,37 +917,50 @@
           return isChat && !isImg && !isVid;
         });
         if (!chatModels.length) return;
-        // Group by provider (same as playground)
-        const groups = {};
-        chatModels.forEach(m => {
-          const p = m.provider || 'other';
-          (groups[p] = groups[p] || []).push(m);
-        });
-        const provOrder = ['anthropic','gemini','openrouter','groq','mistral','cloudflare','github','ollama','other'];
-        const sorted = Object.entries(groups).sort(([a],[b]) => {
-          const ai = provOrder.indexOf(a) >= 0 ? provOrder.indexOf(a) : 99;
-          const bi = provOrder.indexOf(b) >= 0 ? provOrder.indexOf(b) : 99;
-          return ai - bi;
-        });
-        modelSel.innerHTML = '';
-        sorted.forEach(([prov, models]) => {
-          const og = document.createElement('optgroup');
-          og.label = prov;
-          models.forEach(m => {
-            const o = document.createElement('option');
-            o.value = m.id || m.model || m.name;
-            o.textContent = m.name || m.id || m.model;
-            og.appendChild(o);
-          });
-          modelSel.appendChild(og);
-        });
-        // Default: prefer gemini-2.5-flash or first
-        const preferred = ['gemini/gemini-2.5-flash','groq/meta-llama/llama-4-scout-17b-16e-instruct'];
-        for (const p of preferred) {
-          const opt = modelSel.querySelector(`option[value="${p}"]`);
-          if (opt) { opt.selected = true; break; }
-        }
+        _populateModelSel(chatModels);
       } catch(e) { /* keep default */ }
+    }
+
+    function _populateModelSel(chatModels) {
+      if (!modelSel) return;
+      // Filter: nur Chat-Modelle
+      const filtered = chatModels.filter(m => {
+        const cats = m.categories || [];
+        const isImg = m.media_image || cats.includes('media_image');
+        const isVid = m.media_video || cats.includes('media_video');
+        return !isImg && !isVid;
+      });
+      if (!filtered.length) return;
+      // Group by provider
+      const groups = {};
+      filtered.forEach(m => {
+        const p = m.provider || 'other';
+        (groups[p] = groups[p] || []).push(m);
+      });
+      const provOrder = ['anthropic','gemini','openrouter','groq','mistral','cloudflare','github','ollama','other'];
+      const sorted = Object.entries(groups).sort(([a],[b]) => {
+        const ai = provOrder.indexOf(a) >= 0 ? provOrder.indexOf(a) : 99;
+        const bi = provOrder.indexOf(b) >= 0 ? provOrder.indexOf(b) : 99;
+        return ai - bi;
+      });
+      modelSel.innerHTML = '';
+      sorted.forEach(([prov, models]) => {
+        const og = document.createElement('optgroup');
+        og.label = prov;
+        models.forEach(m => {
+          const o = document.createElement('option');
+          o.value = m.id || m.model || m.name;
+          o.textContent = m.name || m.id || m.model;
+          og.appendChild(o);
+        });
+        modelSel.appendChild(og);
+      });
+      // Default: prefer gemini-2.5-flash or llama-4-scout
+      const preferred = ['gemini/gemini-2.5-flash','groq/meta-llama/llama-4-scout-17b-16e-instruct'];
+      for (const p of preferred) {
+        const opt = modelSel.querySelector(`option[value="${p}"]`);
+        if (opt) { opt.selected = true; break; }
+      }
     }
 
     // ── Panel open/close ─────────────────────────────────────────────────────
@@ -835,7 +989,7 @@
       if (!chatEl) return;
       const div = document.createElement('div');
       div.className = 'nov-msg nov-msg-' + role;
-      div.textContent = text;
+      if (role === 'assistant') { div.classList.add('nova-md'); div.innerHTML = renderMd(text); } else { div.textContent = text; }
       chatEl.appendChild(div);
       chatEl.scrollTop = chatEl.scrollHeight;
     }
@@ -865,7 +1019,7 @@
         model,
         message: msg,
         context,
-        history: history.slice(-10),
+        history: history.slice(0, -1).slice(-10), // BUG-FIX 2026-03-11: addMessage already pushed current msg
       };
 
       if (output) { output.textContent = '⏳ …'; output.style.color = ''; }
@@ -907,6 +1061,59 @@
     document.querySelectorAll('.nova-ai-shell').forEach(initShell);
     document.querySelectorAll('.nova-downloads-shell').forEach(initDownloadsShell);
     initDiscuss();
+    // Modelle sofort beim Page-Load im Hintergrund vorladen (nicht erst beim Panel-Öffnen)
+    // Damit der native Android <select>-Picker bereits alle Optionen hat
+    setTimeout(function() {
+      const modelSel = document.getElementById('ai-model-select');
+      if (modelSel) {
+        const API = window.novaAiConfig && window.novaAiConfig.apiBase
+          ? window.novaAiConfig.apiBase : '/wp-json/nova-ai/v1';
+        fetch(API + '/models', { method: 'GET', headers: { 'Accept': 'application/json' } })
+          .then(r => r.ok ? r.json() : null)
+          .then(data => {
+            if (!data) return;
+            const all = data.models || data.data || [];
+            if (!all.length) return;
+            // Cache setzen (wird von _populateModelSel in initDiscuss genutzt)
+            // Direkt befüllen falls modelSel noch leer
+            if (modelSel.options.length <= 1) {
+              const provOrder = ['anthropic','gemini','openrouter','groq','mistral','cloudflare','github','ollama','other'];
+              const groups = {};
+              all.filter(m => {
+                const cats = m.categories||[];
+                return !m.media_image && !m.media_video && !cats.includes('media_image') && !cats.includes('media_video');
+              }).forEach(m => {
+                const p = m.provider||'other';
+                (groups[p]=groups[p]||[]).push(m);
+              });
+              const sorted = Object.entries(groups).sort(([a],[b])=>{
+                const ai=provOrder.indexOf(a)>=0?provOrder.indexOf(a):99;
+                const bi=provOrder.indexOf(b)>=0?provOrder.indexOf(b):99;
+                return ai-bi;
+              });
+              modelSel.innerHTML = '';
+              sorted.forEach(([prov, models]) => {
+                const og = document.createElement('optgroup');
+                og.label = prov;
+                models.forEach(m => {
+                  const o = document.createElement('option');
+                  o.value = m.id||m.model||m.name;
+                  o.textContent = m.name||m.id||m.model;
+                  og.appendChild(o);
+                });
+                modelSel.appendChild(og);
+              });
+              const preferred = ['gemini/gemini-2.5-flash','groq/meta-llama/llama-4-scout-17b-16e-instruct'];
+              for (const p of preferred) {
+                const opt = modelSel.querySelector('option[value="'+p+'"]');
+                if (opt) { opt.selected = true; break; }
+              }
+            }
+          }).catch(function(){});
+      }
+    }, 500); // 500ms nach DOMContentLoaded — nicht blockierend
+    // Init global header theme pickers
+    document.querySelectorAll('.nova-theme-picker').forEach(buildThemePicker);
   }
 
   if (document.readyState === 'loading') {

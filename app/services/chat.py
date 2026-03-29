@@ -247,9 +247,19 @@ OPENAI_COMPATIBLE_PROVIDERS = {
     # NOTE: Requires GitHub fine-grained PAT with "Models" permission
     # Classic PATs (ghp_) also work; fine-grained PATs need "Models" scope
     "github": {
-        "base_url": "https://models.inference.ai.azure.com",
-        "api_key_setting": "github_token",
+        "base_url": "https://models.github.ai/inference",
+        "api_key_setting": "github_models_token",
         "timeout_setting": "groq_timeout_ms",  # reuse a sane ms timeout
+        "headers": {
+            "Accept": "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28",
+        },
+    },
+    # HuggingFace Inference API (OpenAI-compatible)
+    "huggingface": {
+        "base_url": "https://router.huggingface.co/v1",
+        "api_key_setting": "huggingface_api_key",
+        "timeout_setting": "openrouter_timeout_ms",  # 120000ms, huggingface_timeout ist in sec
         "headers": {},
     },
 }
@@ -424,6 +434,9 @@ async def _get_initial_response(
         except Exception as exc:
             # PATCH v2.82: No Ollama fallback for config/auth errors
             _emsg = str(exc).lower()
+            # DEBUG: Log the actual error for GitHub models
+            if model.provider == "github":
+                logger.error(f"GITHUB_DEBUG: api_key_setting={provider_config[api_key_setting]}, api_key_present={bool(api_key)}, api_key_prefix={str(api_key)[:8] if api_key else None}, base_url={provider_config[base_url]}, error={_emsg[:200]}")
             if any(kw in _emsg for kw in ("api key", "unauthorized", "403", "401", "not configured", "forbidden")):
                 raise
             if no_fallback: raise
@@ -1036,6 +1049,7 @@ async def _stream_mistral(
         "model": target_model,
         "messages": messages,
     }
+    # Mistral: temperature immer setzen
     if temperature is not None:
         body["temperature"] = max(0.0, min(temperature, 2.0))
 
@@ -1487,7 +1501,8 @@ async def _stream_openai_compatible(
         "model": target_model,
         "messages": messages,
     }
-    if temperature is not None:
+    # GitHub Models: einige Modelle (GPT-5, o3) unterstuetzen keine custom temperature
+    if temperature is not None and provider != "github":
         body["temperature"] = max(0.0, min(temperature, 2.0))
 
     url = f"{base_url.rstrip('/')}/chat/completions"

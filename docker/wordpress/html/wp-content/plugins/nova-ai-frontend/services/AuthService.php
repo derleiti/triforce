@@ -56,6 +56,10 @@ class AuthService {
         add_action('login_form_login',    [$this, 'maybe_redirect_login']);
         add_action('login_form_register', [$this, 'maybe_redirect_register']);
 
+        // Central logout / redirect handling
+        add_filter('logout_redirect', [$this, 'filter_logout_redirect'], 10, 3);
+        add_filter('allowed_redirect_hosts', [$this, 'allow_login_redirect_host']);
+
         // REST
         add_action('rest_api_init', [$this, 'register_rest_routes']);
 
@@ -273,6 +277,28 @@ class AuthService {
             setcookie($cookie_name, '', time() - 3600, '/', '', is_ssl(), true);
             unset($_COOKIE[$cookie_name]);
         }
+    }
+    public function allow_login_redirect_host(array $hosts): array {
+        $host = wp_parse_url($this->login_page, PHP_URL_HOST);
+        if ($host && !in_array($host, $hosts, true)) {
+            $hosts[] = $host;
+        }
+        return $hosts;
+    }
+
+    public function filter_logout_redirect($redirect_to, $requested_redirect_to, $user): string {
+        $target = $this->login_page . '?action=logout';
+
+        if (!empty($requested_redirect_to)) {
+            $requested_host = wp_parse_url($requested_redirect_to, PHP_URL_HOST);
+            $home_host      = wp_parse_url(home_url(), PHP_URL_HOST);
+
+            if ($requested_host && $home_host && strtolower($requested_host) === strtolower($home_host)) {
+                $target .= '&redirect_back=' . rawurlencode($requested_redirect_to);
+            }
+        }
+
+        return $target;
     }
 
     // =========================================================================

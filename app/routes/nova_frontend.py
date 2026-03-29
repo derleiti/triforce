@@ -20,6 +20,8 @@ def _require_nova_auth(x_internal_key: str = Header(default="")):
         raise HTTPException(status_code=403, detail="Forbidden")
 
 router = APIRouter(prefix="/frontend/dashboard", tags=["nova-frontend"], dependencies=[Depends(_require_nova_auth)])
+# Public sub-router ohne Auth — nur für /models (WP Plugin braucht das ohne Key)
+public_router = APIRouter(prefix="/frontend/dashboard", tags=["nova-frontend-public"])
 logger = logging.getLogger("ailinux.nova_frontend")
 
 def _base_url() -> str:
@@ -607,7 +609,7 @@ async def config() -> Dict[str, Any]:
         }
     }
 
-@router.get("/models")
+@public_router.get("/models")
 async def models() -> Dict[str, Any]:
     raw = await _get_models()
     items = [_categorize(m) for m in raw]

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Nova AI Frontend
  * Description: AILinux AI Playground & Downloads — Chat, Vision, Media Generation + Admin Dashboard
- * Version: 6.5.0
+ * Version: 6.5.6
  * Author: zombie@ailinux
  * Text Domain: nova-ai-frontend
  */
@@ -12,7 +12,7 @@ defined('ABSPATH') || exit;
 define('NOVA_AI_BACKEND',     'http://172.18.0.1:9000');
 define('NOVA_AI_LOCAL_BACKEND', 'http://localhost:9000');
 define('NOVA_AI_INTERNAL_KEY',  '7dffc1818b9ee6d35b075b8922d6eecb3c9a5b9bfdf94df6');
-define('NOVA_AI_VERSION',     '6.5.0');
+define('NOVA_AI_VERSION', '6.5.1');
 define('NOVA_AI_PLUGIN_URL',  plugin_dir_url(__FILE__));
 define('NOVA_AI_PLUGIN_DIR',  plugin_dir_path(__FILE__));
 
@@ -251,7 +251,44 @@ function nova_proxy_auth(string $path, string $method='GET', ?array $body=null):
 }
 
 function nova_proxy_health(WP_REST_Request $r): WP_REST_Response  { return nova_proxy('/v1/frontend/dashboard/health'); }
-function nova_proxy_models(WP_REST_Request $r): WP_REST_Response  { return nova_proxy('/v1/frontend/dashboard/models'); }
+function nova_proxy_models(WP_REST_Request $r): WP_REST_Response {
+    $settings     = get_option('nova_ai_settings', []);
+    $endpoint     = $settings['api_endpoint'] ?? 'https://api.ailinux.me';
+    $internal_key = $settings['internal_key']  ?? '';
+
+    // Vollständige Modellliste via Internal-Key (610+ Modelle, kein Tier-Filter)
+    $resp = wp_remote_get($endpoint . '/v1/frontend/dashboard/models', [
+        'timeout' => 15,
+        'headers' => [
+            'Accept'          => 'application/json',
+            'X-Internal-Key'  => $internal_key,
+        ],
+    ]);
+
+    if (is_wp_error($resp) || wp_remote_retrieve_response_code($resp) !== 200) {
+        // Fallback: client/models ohne Auth (57 Free-Modelle)
+        $resp2 = wp_remote_get($endpoint . '/v1/client/models', ['timeout' => 10]);
+        if (!is_wp_error($resp2)) {
+            $body2 = json_decode(wp_remote_retrieve_body($resp2), true);
+            $raw   = $body2['models'] ?? [];
+            $models = [];
+            foreach ($raw as $m) {
+                if (is_string($m)) {
+                    $p = explode('/', $m, 2);
+                    $models[] = ['id'=>$m,'name'=>count($p)>1?$p[1]:$m,'provider'=>count($p)>1?$p[0]:'other','chat'=>true];
+                } else { $models[] = $m; }
+            }
+            return new WP_REST_Response(['models' => $models, 'tier' => 'free', 'fallback' => true], 200);
+        }
+        return new WP_REST_Response(['models' => []], 502);
+    }
+
+    $body   = json_decode(wp_remote_retrieve_body($resp), true);
+    // dashboard/models gibt {ok, models: [...objects...]} zurück
+    $models = $body['models'] ?? [];
+
+    return new WP_REST_Response(['models' => $models, 'count' => count($models)], 200);
+}
 function nova_proxy_chat(WP_REST_Request $r): WP_REST_Response    { return nova_proxy('/v1/frontend/dashboard/chat',  'POST', $r->get_json_params()); }
 function nova_proxy_vision(WP_REST_Request $r): WP_REST_Response  {
     $params = $r->get_json_params();
@@ -453,8 +490,16 @@ function nova_proxy_article_chat(WP_REST_Request $r): WP_REST_Response {
     }
     $messages[] = ['role'=>'user','content'=>$message];
     $body = json_encode(['model'=>$model,'messages'=>$messages,'stream'=>false,'max_tokens'=>800]);
-    $resp = wp_remote_post(nova_get_backend_base().'/v1/frontend/dashboard/chat',
-        ['body'=>$body,'headers'=>['Content-Type'=>'application/json'],'timeout'=>30]);
+    $settings2    = get_option('nova_ai_settings', []);
+    $internal_key = $settings2['internal_key'] ?? '';
+    $resp = wp_remote_post(nova_get_backend_base().'/v1/frontend/dashboard/chat', [
+        'body'    => $body,
+        'headers' => [
+            'Content-Type'   => 'application/json',
+            'X-Internal-Key' => $internal_key,
+        ],
+        'timeout' => 30,
+    ]);
     if (is_wp_error($resp)) return new WP_REST_Response(['error'=>$resp->get_error_message()],502);
     return new WP_REST_Response(json_decode(wp_remote_retrieve_body($resp), true), wp_remote_retrieve_response_code($resp));
 }

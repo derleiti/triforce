@@ -108,7 +108,7 @@ class Settings(BaseSettings):
         validation_alias="HUGGINGFACE_API_KEY"
     )
     huggingface_inference_url: str = Field(
-        default="https://router.huggingface.co/hf-inference",
+        default="https://router.huggingface.co",
         validation_alias="HUGGINGFACE_INFERENCE_URL"
     )
     huggingface_timeout: int = Field(
@@ -163,6 +163,7 @@ class Settings(BaseSettings):
 
     # GitHub Models (Free with PAT - GPT-4o, Llama, DeepSeek, etc.)
     github_token: str | None = Field(default=None, validation_alias="GITHUB_TOKEN")
+    github_models_token: str | None = Field(default=None, validation_alias="GITHUB_MODELS_TOKEN")
     github_models_base_url: str = Field(default="https://models.github.ai/inference", validation_alias="GITHUB_MODELS_BASE_URL")
     github_models_timeout_ms: int = Field(default=60000, validation_alias="GITHUB_MODELS_TIMEOUT_MS")
 

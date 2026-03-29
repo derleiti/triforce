@@ -236,6 +236,7 @@ class ModelRegistry:
                 self._discover_fireworks(),
                 self._discover_cloudflare(),
                 self._discover_github_models(),
+                self._discover_huggingface(),
                 return_exceptions=True
             )
 
@@ -1075,37 +1076,60 @@ class ModelRegistry:
         if not settings.github_token:
             return []
         
-        # GitHub Models - curated list (API doesn't list all)
+        # GitHub Models — echte Model-IDs aus catalog/models API (43 Modelle)
         github_models = [
-            # OpenAI Models
-            ("gpt-4o", ["chat", "code", "vision"], ["lead", "worker"]),
-            ("gpt-4o-mini", ["chat", "code"], ["worker"]),
-            ("gpt-4.1", ["chat", "code", "vision"], ["lead", "worker"]),
-            ("gpt-4.1-mini", ["chat", "code"], ["worker"]),
-            ("gpt-4.1-nano", ["chat"], ["worker"]),
-            ("o1", ["chat", "reasoning"], ["lead"]),
-            ("o1-mini", ["chat", "reasoning"], ["worker"]),
-            ("o3-mini", ["chat", "reasoning"], ["worker"]),
+            # OpenAI
+            ("openai/gpt-4.1",           ["chat", "code", "vision"], ["lead", "worker"]),
+            ("openai/gpt-4.1-mini",      ["chat", "code"],           ["worker"]),
+            ("openai/gpt-4.1-nano",      ["chat"],                   ["worker"]),
+            ("openai/gpt-4o",            ["chat", "code", "vision"], ["lead", "worker"]),
+            ("openai/gpt-4o-mini",       ["chat", "code"],           ["worker"]),
+            ("openai/gpt-5",             ["chat", "reasoning"],      ["lead"]),
+            ("openai/gpt-5-chat",        ["chat", "reasoning"],      ["lead"]),
+            ("openai/gpt-5-mini",        ["chat", "reasoning"],      ["worker"]),
+            ("openai/gpt-5-nano",        ["chat"],                   ["worker"]),
+            ("openai/o1",                ["chat", "reasoning"],      ["lead"]),
+            ("openai/o1-mini",           ["chat", "reasoning"],      ["worker"]),
+            ("openai/o1-preview",        ["chat", "reasoning"],      ["lead"]),
+            ("openai/o3",                ["chat", "reasoning"],      ["lead"]),
+            ("openai/o3-mini",           ["chat", "reasoning"],      ["worker"]),
+            ("openai/o4-mini",           ["chat", "reasoning"],      ["worker"]),
             # Meta Llama
-            ("Meta-Llama-3.1-405B-Instruct", ["chat", "code"], ["lead"]),
-            ("Meta-Llama-3.1-70B-Instruct", ["chat", "code"], ["worker"]),
-            ("Meta-Llama-3.1-8B-Instruct", ["chat"], ["worker"]),
-            ("Llama-3.3-70B-Instruct", ["chat", "code"], ["worker"]),
+            ("meta/llama-3.3-70b-instruct",                  ["chat", "code"],    ["worker"]),
+            ("meta/llama-3.2-11b-vision-instruct",           ["chat", "vision"],  ["worker"]),
+            ("meta/llama-3.2-90b-vision-instruct",           ["chat", "vision"],  ["lead"]),
+            ("meta/meta-llama-3.1-405b-instruct",            ["chat", "code"],    ["lead"]),
+            ("meta/meta-llama-3.1-8b-instruct",              ["chat"],            ["worker"]),
+            ("meta/llama-4-maverick-17b-128e-instruct-fp8",  ["chat", "code"],    ["lead"]),
+            ("meta/llama-4-scout-17b-16e-instruct",          ["chat", "code"],    ["worker"]),
             # DeepSeek
-            ("DeepSeek-R1", ["chat", "reasoning", "code"], ["lead", "worker"]),
-            ("DeepSeek-R1-0528", ["chat", "reasoning", "code"], ["worker"]),
-            ("DeepSeek-V3-0324", ["chat", "code"], ["worker"]),
+            ("deepseek/deepseek-r1",       ["chat", "reasoning", "code"], ["lead"]),
+            ("deepseek/deepseek-r1-0528",  ["chat", "reasoning", "code"], ["lead"]),
+            ("deepseek/deepseek-v3-0324",  ["chat", "code"],               ["worker"]),
             # Mistral
-            ("Mistral-Small-3.1", ["chat", "code"], ["worker"]),
-            ("Codestral-2501", ["code"], ["worker"]),
-            # Cohere
-            ("Cohere-command-a", ["chat"], ["worker"]),
-            # Microsoft Phi
-            ("Phi-4", ["chat", "code"], ["worker"]),
-            ("Phi-4-multimodal-instruct", ["chat", "vision"], ["worker"]),
+            ("mistral-ai/mistral-small-2503",  ["chat", "code"], ["worker"]),
+            ("mistral-ai/mistral-medium-2505", ["chat", "code"], ["worker"]),
+            ("mistral-ai/ministral-3b",        ["chat"],          ["worker"]),
+            ("mistral-ai/codestral-2501",      ["code"],          ["worker"]),
+            # Microsoft
+            ("microsoft/phi-4",                     ["chat", "code"],      ["worker"]),
+            ("microsoft/phi-4-mini-instruct",       ["chat"],               ["worker"]),
+            ("microsoft/phi-4-multimodal-instruct", ["chat", "vision"],    ["worker"]),
+            ("microsoft/phi-4-reasoning",           ["chat", "reasoning"], ["worker"]),
+            ("microsoft/phi-4-mini-reasoning",      ["chat", "reasoning"], ["worker"]),
+            ("microsoft/mai-ds-r1",                 ["chat", "reasoning"], ["lead"]),
             # xAI
-            ("Grok-3", ["chat", "reasoning"], ["lead"]),
-            ("Grok-3-Mini", ["chat"], ["worker"]),
+            ("xai/grok-3",      ["chat", "reasoning"], ["lead"]),
+            ("xai/grok-3-mini", ["chat"],               ["worker"]),
+            # Cohere
+            ("cohere/cohere-command-a",               ["chat"], ["worker"]),
+            ("cohere/cohere-command-r-08-2024",       ["chat"], ["worker"]),
+            ("cohere/cohere-command-r-plus-08-2024",  ["chat"], ["lead"]),
+            # AI21
+            ("ai21-labs/ai21-jamba-1.5-large", ["chat"], ["worker"]),
+            # Embeddings
+            ("openai/text-embedding-3-large", ["embedding"], ["embedder"]),
+            ("openai/text-embedding-3-small", ["embedding"], ["embedder"]),
         ]
         
         models = []
@@ -1118,6 +1142,62 @@ class ModelRegistry:
             ))
         
         logger.info("Discovered %d GitHub Models (curated list)", len(models))
+        return models
+
+    async def _discover_huggingface(self) -> list:
+        """HuggingFace Inference API — curated model list (Free + Pro)."""
+        settings = self._settings
+        api_key = getattr(settings, 'huggingface_api_key', None) or ""
+        if not api_key:
+            return []
+
+        hf_models = [
+            # Chat / Text Generation
+            ("meta-llama/Llama-3.3-70B-Instruct",          ["chat", "code"],       ["lead"]),
+            ("meta-llama/Llama-3.1-70B-Instruct",          ["chat", "code"],       ["lead"]),
+            ("meta-llama/Llama-3.2-11B-Vision-Instruct",   ["chat", "vision"],     ["worker"]),
+            ("meta-llama/Llama-3.2-3B-Instruct",           ["chat"],               ["worker"]),
+            ("mistralai/Mistral-7B-Instruct-v0.3",         ["chat", "code"],       ["worker"]),
+            ("mistralai/Mixtral-8x7B-Instruct-v0.1",       ["chat", "code"],       ["lead"]),
+            ("Qwen/Qwen2.5-72B-Instruct",                  ["chat", "code"],       ["lead"]),
+            ("Qwen/Qwen2.5-7B-Instruct",                   ["chat", "code"],       ["worker"]),
+            ("Qwen/Qwen2.5-Coder-32B-Instruct",            ["chat", "code"],       ["lead"]),
+            ("microsoft/Phi-3.5-mini-instruct",             ["chat", "code"],       ["worker"]),
+            ("microsoft/phi-4",                             ["chat", "code"],       ["worker"]),
+            ("google/gemma-2-27b-it",                       ["chat"],               ["lead"]),
+            ("google/gemma-2-9b-it",                        ["chat"],               ["worker"]),
+            ("HuggingFaceH4/zephyr-7b-beta",                ["chat"],               ["worker"]),
+            ("deepseek-ai/DeepSeek-R1-Distill-Qwen-32B",   ["chat", "reasoning"],  ["lead"]),
+            ("deepseek-ai/DeepSeek-R1-Distill-Llama-70B",  ["chat", "reasoning"],  ["lead"]),
+            ("NovaSky-AI/Sky-T1-32B-Preview",               ["chat", "reasoning"],  ["lead"]),
+            # Embeddings
+            ("sentence-transformers/all-MiniLM-L6-v2",     ["embedding"],          ["embedder"]),
+            ("BAAI/bge-large-en-v1.5",                      ["embedding"],          ["embedder"]),
+            ("intfloat/multilingual-e5-large",              ["embedding"],          ["embedder"]),
+            # Image Generation
+            ("black-forest-labs/FLUX.1-schnell",            ["image_gen"],          ["image_generator"]),
+            ("black-forest-labs/FLUX.1-dev",                ["image_gen"],          ["image_generator"]),
+            ("stabilityai/stable-diffusion-xl-base-1.0",   ["image_gen"],          ["image_generator"]),
+            # Audio / Music
+            ("facebook/musicgen-large",                     ["audio"],              ["audio_processor"]),
+            ("facebook/musicgen-medium",                    ["audio"],              ["audio_processor"]),
+            ("openai/whisper-large-v3",                     ["audio"],              ["audio_processor"]),
+            # Summarization / Translation
+            ("facebook/bart-large-cnn",                     ["summarization"],      ["worker"]),
+            ("Helsinki-NLP/opus-mt-de-en",                  ["translation"],        ["worker"]),
+            ("Helsinki-NLP/opus-mt-en-de",                  ["translation"],        ["worker"]),
+        ]
+
+        models = []
+        for model_id, capabilities, roles in hf_models:
+            models.append(ModelInfo(
+                id=f"hf/{model_id}",
+                provider="huggingface",
+                capabilities=capabilities,
+                roles=roles,
+            ))
+
+        logger.info("HuggingFace: %d curated models registered", len(models))
         return models
 
     def _cloudflare_fallback_models(self) -> List[ModelInfo]:

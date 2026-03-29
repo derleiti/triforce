@@ -253,6 +253,35 @@ async def list_available_tools(ctx: Dict = Depends(get_client_context)):
     )
 
 
+@router.get("/tools/schemas")
+async def list_tools_with_schemas(ctx: Dict = Depends(get_client_context)):
+    """
+    Gibt volle MCP-Tool-Schemas (inkl. inputSchema) zurück — für aicoder Agent.
+    Akzeptiert Client-JWT statt MCP Basic-Auth.
+    """
+    from ..mcp.runtime_registry import get_runtime_registry
+    registry = get_runtime_registry()
+
+    AGENT_TOOLS = {
+        "safe_probe", "system_info", "process_control", "health",
+        "code_read", "code_search", "code_tree",
+        "file_ops", "git_ops", "git",
+        "dev_analyze", "dev_debug", "dev_lint", "dev_refactor", "dev_summarize", "dev_links",
+        "service_status", "container_status", "log_viewer", "network_info",
+        "web_search", "browser_search", "search", "fetch", "crawl",
+        "memory_search", "memory_store",
+    }
+
+    all_tools = registry.list_tools()
+    schemas = [t for t in all_tools if t.get("name") in AGENT_TOOLS]
+
+    return {
+        "tools": schemas,
+        "tool_count": len(schemas),
+        "tier": ctx["tier"].value,
+    }
+
+
 @router.post("/call", response_model=MCPToolResponse)
 async def call_mcp_tool(
     request: MCPToolRequest,

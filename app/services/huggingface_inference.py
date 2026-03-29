@@ -140,7 +140,11 @@ class HuggingFaceInference:
         Returns:
             JSON response or raw bytes (for images)
         """
-        url = f"{self.base_url}/models/{model}{endpoint_suffix}"
+        # OpenAI-kompatible Endpunkte (/v1/chat/completions): model nur im Body
+        if endpoint_suffix and endpoint_suffix.startswith('/v1/'):
+            url = f"{self.base_url}{endpoint_suffix}"
+        else:
+            url = f"{self.base_url}/models/{model}{endpoint_suffix}"
 
         last_error = None
         for attempt in range(retry_count):

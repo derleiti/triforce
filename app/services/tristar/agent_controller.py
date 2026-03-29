@@ -11,6 +11,7 @@ Features:
 """
 
 import asyncio
+import errno
 import json
 import logging
 import os
@@ -28,6 +29,13 @@ import aiohttp
 from app.config import get_settings
 
 logger = logging.getLogger("ailinux.tristar.agent_controller")
+
+
+def _is_process_gone_error(exc: BaseException) -> bool:
+    """Treat already-dead subprocesses as an idempotent stop condition."""
+    return isinstance(exc, ProcessLookupError) or (
+        isinstance(exc, OSError) and exc.errno == errno.ESRCH
+    )
 
 
 def _inject_chatgpt_env(env: Dict[str, str]) -> Dict[str, str]:
@@ -196,6 +204,7 @@ ALLOWED_COMMAND_EXECUTABLES = frozenset([
     "/home/zombie/triforce/triforce/bin/opencode-triforce",
     "/home/zombie/triforce/triforce/bin/ollama-claude-triforce",
     "/home/zombie/triforce/triforce/bin/ollama-codex-triforce",
+    "/home/zombie/triforce/triforce/bin/ollama-opencode-triforce",
     "/home/zombie/triforce/triforce/bin/ollama-openclaw-triforce",
     # OpenRouter Free-Tier Shortcuts (v2.0)
     "/home/zombie/triforce/triforce/bin/opencode-coder",
@@ -523,6 +532,23 @@ class AgentController:
         # Use localhost for internal API calls (no internet required)
         self._triforce_url = "http://localhost:9000/v1/triforce"
 
+    @staticmethod
+    def _mark_agent_stopped(instance: AgentInstance) -> None:
+        """Normalize agent state after a subprocess has exited."""
+        instance.status = AgentStatus.STOPPED
+        instance.pid = None
+        instance.process = None
+
+    @staticmethod
+    def _agent_state_snapshot(
+        instance: Optional[AgentInstance],
+    ) -> tuple[str, Optional[int], Optional[int], Optional[str]]:
+        """Return minimal process state for shutdown diagnostics."""
+        if not instance:
+            return ("missing", None, None, None)
+        returncode = instance.process.returncode if instance.process else None
+        return (instance.status.value, instance.pid, returncode, instance.last_error)
+
     async def initialize(self):
         """Initialisiert den Controller"""
         if self._initialized:
@@ -639,8 +665,11 @@ class AgentController:
                 "mcp_port": instance.config.mcp_port,
                 "auto_restart": instance.config.auto_restart,
             }
-        with open(config_file, "w") as f:
+        # Atomic write — verhindert korrupte JSON bei parallelen Workern
+        tmp_file = config_file.with_suffix(".json.tmp")
+        with open(tmp_file, "w") as f:
             json.dump(data, f, indent=2)
+        tmp_file.replace(config_file)
 
     async def fetch_system_prompt(self, agent_type: AgentType) -> str:
         """
@@ -818,8 +847,21 @@ class AgentController:
 
             instance = self.agents[agent_id]
 
-            if instance.status != AgentStatus.RUNNING or not instance.process:
+            if not instance.process:
+                self._mark_agent_stopped(instance)
                 return {"status": "not_running", "agent": instance.to_dict()}
+
+            if instance.process.returncode is not None:
+                self._mark_agent_stopped(instance)
+                logger.info(f"Agent {agent_id} already stopped before shutdown signal")
+                return {"status": "stopped", "agent": instance.to_dict()}
+
+            if instance.status != AgentStatus.RUNNING:
+                logger.info(
+                    "Stopping agent %s with live subprocess while status=%s",
+                    agent_id,
+                    instance.status.value,
+                )
 
             try:
                 if force:
@@ -830,12 +872,23 @@ class AgentController:
                 await asyncio.wait_for(instance.process.wait(), timeout=10)
 
             except asyncio.TimeoutError:
-                instance.process.kill()
-                await instance.process.wait()
+                try:
+                    instance.process.kill()
+                except Exception as exc:
+                    if not _is_process_gone_error(exc):
+                        raise
+                    logger.info(f"Agent {agent_id} already exited during timeout kill")
+                try:
+                    await instance.process.wait()
+                except Exception as exc:
+                    if not _is_process_gone_error(exc):
+                        raise
+            except Exception as exc:
+                if not _is_process_gone_error(exc):
+                    raise
+                logger.info(f"Agent {agent_id} already exited before signal delivery")
 
-            instance.status = AgentStatus.STOPPED
-            instance.pid = None
-            instance.process = None
+            self._mark_agent_stopped(instance)
 
             logger.info(f"Stopped agent {agent_id}")
             return {"status": "stopped", "agent": instance.to_dict()}
@@ -1292,13 +1345,51 @@ class AgentController:
             except asyncio.TimeoutError:
                 logger.warning(f"Timeout stopping agent {agent_id}, force killing")
                 instance = self.agents.get(agent_id)
-                if instance and instance.process:
-                    try:
-                        instance.process.kill()
-                    except Exception:
-                        pass
-            except Exception as e:
-                logger.error(f"Error stopping agent {agent_id}: {e}")
+                if instance:
+                    process = instance.process
+                    if process:
+                        try:
+                            process.kill()
+                        except Exception as exc:
+                            if not _is_process_gone_error(exc):
+                                logger.exception(
+                                    "Force kill failed for agent %s during shutdown timeout",
+                                    agent_id,
+                                )
+                        try:
+                            await process.wait()
+                        except Exception as exc:
+                            if not _is_process_gone_error(exc):
+                                logger.exception(
+                                    "Waiting after force kill failed for agent %s during shutdown timeout",
+                                    agent_id,
+                                )
+                    self._mark_agent_stopped(instance)
+            except Exception as exc:
+                instance = self.agents.get(agent_id)
+                status, pid, returncode, last_error = self._agent_state_snapshot(instance)
+                if _is_process_gone_error(exc):
+                    logger.info(
+                        "Agent %s already stopped during shutdown "
+                        "(status=%s pid=%s returncode=%s last_error=%s)",
+                        agent_id,
+                        status,
+                        pid,
+                        returncode,
+                        last_error,
+                    )
+                    if instance:
+                        self._mark_agent_stopped(instance)
+                else:
+                    logger.exception(
+                        "Error stopping agent %s during shutdown "
+                        "(status=%s pid=%s returncode=%s last_error=%s)",
+                        agent_id,
+                        status,
+                        pid,
+                        returncode,
+                        last_error,
+                    )
 
         logger.info("AgentController shutdown complete")
 

@@ -333,6 +333,12 @@ class UserTierService:
     def is_ollama_model(self, model: str) -> bool:
         if model.startswith("ollama/"):
             return True
+        # GitHub Models / OpenRouter / andere Provider nie als Ollama behandeln
+        for prefix in ("github/", "openrouter/", "gemini/", "anthropic/",
+                        "openai/", "mistral/", "groq/", "cerebras/",
+                        "cloudflare/", "huggingface/", "cohere/"):
+            if model.startswith(prefix):
+                return False
         mc = model.lower()
         return any(mc in m.lower() for m in OLLAMA_MODELS)
 

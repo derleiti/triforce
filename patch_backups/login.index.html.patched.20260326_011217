@@ -820,15 +820,7 @@ function showSuite(email,tier,token,clientId){
   // Back/WP links
   var redir=getRedirect()||WP_ORIGIN;
   var bl=document.getElementById('backLink');if(bl)bl.href=redir;
-  var wa=document.getElementById('wpAdminLink');
-  if(wa){
-    var _origin=wpOrigin(redir);
-    wa.href=_origin+'/wp-json/nova-ai/v1/auth/wp-login'
-      +'?email='+encodeURIComponent(email||ls('ailinux_email'))
-      +'&token='+encodeURIComponent(token||ls('ailinux_token'))
-      +'&tier='+encodeURIComponent(tier||ls('ailinux_tier')||'free')
-      +'&redirect='+encodeURIComponent(_origin+'/wp-admin/');
-  }
+  var wa=document.getElementById('wpAdminLink');if(wa)wa.href=wpOrigin(redir)+'/wp-admin/';
 
   // WP sync + load WP profile
   syncWordPress(email,token,tier,clientId);
@@ -995,16 +987,12 @@ async function loadAdminHealth(){
 async function syncWordPress(email,token,tier,clientId){
   var redir=getRedirect();
   var origin=wpOrigin(redir||WP_ORIGIN);
+  var syncUrl=origin+'/wp-json/nova-ai/v1/auth/sync';
   var lastSync=ls('ailinux_wp_last_sync');
-
   if(lastSync===token){
     if(ls('ailinux_wp_can_admin')==='1'){document.getElementById('wpAdminLink').classList.remove('hidden')}
-    // WP-Cookie bereits gesetzt, wp-login iframe nicht nötig
     return;
   }
-
-  // Schritt 1: Token im Backend syncen (user meta, tier, etc.)
-  var syncUrl=origin+'/wp-json/nova-ai/v1/auth/sync';
   try{
     var resp=await fetch(syncUrl,{
       method:'POST',
@@ -1019,24 +1007,6 @@ async function syncWordPress(email,token,tier,clientId){
       else{lsRemove('ailinux_wp_can_admin')}
     }
   }catch(err){}
-
-  // Schritt 2: WP-Auth-Cookie via hidden iframe setzen (löst SameSite cross-domain Problem)
-  // Browser navigiert auf ailinux.me → Cookie wird im ailinux.me-Kontext korrekt gesetzt
-  try{
-    var wpLoginUrl=origin+'/wp-json/nova-ai/v1/auth/wp-login'
-      +'?email='+encodeURIComponent(email)
-      +'&token='+encodeURIComponent(token)
-      +'&tier='+encodeURIComponent(tier||'free')
-      +'&redirect='+encodeURIComponent(origin+'/wp-json/nova-ai/v1/health');
-    var iframe=document.createElement('iframe');
-    iframe.style.display='none';
-    iframe.style.position='absolute';
-    iframe.style.width='1px';
-    iframe.style.height='1px';
-    iframe.src=wpLoginUrl;
-    document.body.appendChild(iframe);
-    setTimeout(function(){try{document.body.removeChild(iframe)}catch(e){}},5000);
-  }catch(e){}
 }
 
 /* ── Logout ── */

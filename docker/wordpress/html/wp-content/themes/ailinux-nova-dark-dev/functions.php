@@ -192,15 +192,15 @@ function ailinux_nova_dark_enqueue_assets() {
         'displayName' => $wp_logged_in ? $current_user->display_name : '',
         'email'       => $wp_logged_in ? $current_user->user_email : '',
         'isAdmin'     => $wp_logged_in && current_user_can('manage_options'),
-        'logoutUrl'   => $wp_logged_in ? wp_logout_url( home_url('/') ) : '',
+        'logoutUrl'   => 'https://login.ailinux.me?action=logout',
     ]);
 
         wp_localize_script('ailinux-nova-dark-app', 'NOVA_API', [
         'DISABLED'       => false,
         'BASE'           => $api_base,
         'CHAT_ENDPOINT'  => '/v1/frontend/dashboard/chat',
-        'MODELS_ENDPOINT'=> '/wp-json/nova-ai/v1/models',
-        'HEALTH_ENDPOINT'=> '/v1/frontend/dashboard/health',
+        'MODELS_ENDPOINT'=> 'https://ailinux.me/wp-json/nova-ai/v1/models',
+        'HEALTH_ENDPOINT'=> '/health',
         'DEFAULT_MODEL'  => 'gemini/gemini-2.5-flash',
     ]);
 
@@ -901,12 +901,8 @@ function nova_article_discuss_widget() {
         </svg>
         <?php esc_html_e( 'KI-Assistent', 'ailinux-nova-dark' ); ?>
       </div>
-      <select id="nova-discuss-model-<?php echo $post->ID; ?>" name="nova-discuss-model" class="nova-discuss-model-select" aria-label="KI-Modell">
-        <option value="groq/meta-llama/llama-4-scout-17b-16e-instruct">Llama 4 Scout (schnell)</option>
-        <option value="gemini/gemini-2.0-flash-001">Gemini 2.0 Flash</option>
-        <option value="anthropic/claude-sonnet-4">Claude Sonnet 4</option>
-        <option value="groq/moonshotai/kimi-k2-instruct-0905">Kimi K2</option>
-        <option value="ollama/qwen2.5:14b">Qwen 2.5 (lokal)</option>
+      <select id="nova-discuss-model-<?php echo $post->ID; ?>" name="nova-discuss-model" class="nova-discuss-model-select" aria-label="KI-Modell" data-autoload="true">
+        <option value="groq/meta-llama/llama-4-scout-17b-16e-instruct" selected>Llama 4 Scout (schnell)</option>
       </select>
       <button class="nova-discuss-close" aria-label="Schließen">×</button>
     </div>
@@ -1126,3 +1122,25 @@ add_action('rest_api_init', function() {
         'permission_callback' => '__return_true',
     ]);
 });
+
+/* ── CSP Overrides: frame-src & script-src für ailinux.me Subdomains ── */
+add_action('send_headers', function() {
+    $d = "default-src 'self'";
+    $s = "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://challenges.cloudflare.com https://www.googletagmanager.com https://translate.googleapis.com https://translate.google.com https://cdn.gtranslate.net https://static.addtoany.com https://js.intercomcdn.com https://accounts.google.com";
+    $f = "frame-src 'self' https://login.ailinux.me https://api.ailinux.me https://www.youtube.com https://accounts.google.com https://challenges.cloudflare.com https://www.google.com https://td.doubleclick.net https://static.addtoany.com";
+    $c = "connect-src 'self' https://api.ailinux.me wss://api.ailinux.me https:";
+    $i = "img-src 'self' data: https: blob:";
+    $fo = "font-src 'self' data: https://fonts.gstatic.com";
+    $st = "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com";
+    $w = "worker-src 'self' blob:";
+    $m = "media-src 'self' data: https:";
+    $o = "object-src 'none'";
+    $b = "base-uri 'self'";
+    $fa = "form-action 'self' https://login.ailinux.me";
+    $fr = "frame-ancestors 'self'";
+    $csp = implode('; ', [$d,$s,$f,$c,$i,$fo,$st,$w,$m,$o,$b,$fa,$fr,'upgrade-insecure-requests']);
+    if (!headers_sent()) {
+        header('Content-Security-Policy: ' . $csp, true);
+    }
+}, 9999);
+

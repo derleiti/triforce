@@ -59,8 +59,8 @@ def extract_user_and_tier_from_token(authorization: str = None) -> tuple:
         except Exception:
             # Token abgelaufen aber gültig signiert → Tier trotzdem lesen
             import jwt as _jwt
-            from app.core.config import settings as _s
-            payload = _jwt.decode(token, _s.secret_key, algorithms=["HS256"],
+            payload = _jwt.decode(token, JWT_SECRET.encode("utf-8"),
+                                  algorithms=[JWT_ALGORITHM],
                                   options={"verify_exp": False})
         
         email = payload.get("email") or payload.get("sub")
@@ -99,8 +99,8 @@ def get_user_and_tier_from_headers(
         email, tier_str = extract_user_and_tier_from_token(authorization)
         if email:
             try:
-                tier = UserTier(tier_str) if tier_str else tier_service.get_user_tier(email)
-            except ValueError:
+                tier = normalize_tier(tier_str) if tier_str else tier_service.get_user_tier(email)
+            except Exception:
                 tier = tier_service.get_user_tier(email)
             return email, tier
     
@@ -129,7 +129,8 @@ def get_user_id_from_headers(authorization: str = None, x_user_id: str = None) -
 
 
 class ChatRequest(BaseModel):
-    message: str
+    message: str = ""
+    messages: Optional[List[dict]] = None
     model: Optional[str] = None
     system_prompt: Optional[str] = None
     temperature: Optional[float] = 0.7
@@ -356,6 +357,94 @@ async def call_openrouter(
         return data
 
 
+async def call_github_models(
+    model: str,
+    messages: List[dict],
+    temperature: float = 0.7,
+    max_tokens: int = 4096
+) -> dict:
+    """Call GitHub Models API — OpenAI-kompatibel, kostenlos mit Classic PAT."""
+    import os, aiohttp
+    token = os.getenv("GITHUB_MODELS_TOKEN", "")
+    if not token:
+        raise HTTPException(503, "GITHUB_MODELS_TOKEN nicht konfiguriert")
+
+    # model-Format: github/meta/llama-3.3-70b-instruct → meta/llama-3.3-70b-instruct
+    model_id = model[len("github/"):] if model.startswith("github/") else model
+
+    timeout = aiohttp.ClientTimeout(total=120)
+    async with aiohttp.ClientSession(timeout=timeout) as session:
+        async with session.post(
+            "https://models.github.ai/inference/chat/completions",
+            headers={
+                "Authorization": f"Bearer {token}",
+                "Content-Type": "application/json",
+                "Accept": "application/vnd.github+json",
+            },
+            json={
+                "model": model_id,
+                "messages": messages,
+                "temperature": temperature,
+                "max_tokens": max_tokens,
+            }
+        ) as resp:
+            if resp.status != 200:
+                err = await resp.text()
+                raise HTTPException(resp.status, f"GitHub Models error: {err[:200]}")
+            data = await resp.json()
+            content = data["choices"][0]["message"]["content"]
+            return {
+                "response": content,
+                "model": model,
+                "backend": "github",
+                "usage": data.get("usage", {}),
+            }
+
+
+async def call_huggingface(
+    model: str,
+    messages: list,
+    temperature: float = 0.7,
+    max_tokens: int = 4096,
+) -> dict:
+    """HuggingFace Inference API — OpenAI-kompatibel via router.huggingface.co."""
+    import os, aiohttp
+    token = os.getenv("HUGGINGFACE_API_KEY", "")
+    if not token:
+        raise HTTPException(503, "HUGGINGFACE_API_KEY nicht konfiguriert")
+
+    # hf/org/model-name -> org/model-name
+    model_id = model[len("hf/"):] if model.startswith("hf/") else model
+
+    timeout = aiohttp.ClientTimeout(total=120)
+    async with aiohttp.ClientSession(timeout=timeout) as session:
+        async with session.post(
+            f"https://router.huggingface.co/hf-inference/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {token}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "model": model_id,
+                "messages": messages,
+                "temperature": temperature,
+                "max_tokens": max_tokens,
+                "stream": False,
+            }
+        ) as resp:
+            if resp.status != 200:
+                err = await resp.text()
+                raise HTTPException(resp.status, f"HuggingFace error: {err[:200]}")
+            data = await resp.json()
+            content = data["choices"][0]["message"]["content"]
+            return {
+                "response": content,
+                "model": model,
+                "backend": "huggingface",
+                "usage": data.get("usage", {}),
+            }
+
+
 @router.post("/chat", response_model=ChatResponse)
 async def client_chat(
     request: ChatRequest,
@@ -390,17 +479,23 @@ async def client_chat(
     logger.debug(f"Chat request: user={user_id}, auth={'yes' if authorization else 'no'}")
 
 
-    # Messages bauen
-    messages = []
-    if request.system_prompt:
+    # Messages bauen: messages-Array hat Prioritaet ueber message-String
+    if request.messages:
+        messages = list(request.messages)
+        # System prompt prependen falls nicht schon vorhanden
+        if request.system_prompt and (not messages or messages[0].get("role") != "system"):
+            messages.insert(0, {"role": "system", "content": request.system_prompt})
+    else:
+        messages = []
+        if request.system_prompt:
+            messages.append({
+                "role": "system",
+                "content": request.system_prompt
+            })
         messages.append({
-            "role": "system",
-            "content": request.system_prompt
+            "role": "user",
+            "content": request.message
         })
-    messages.append({
-        "role": "user",
-        "content": request.message
-    })
 
     # Model bestimmen
 
@@ -418,13 +513,14 @@ async def client_chat(
         model = "openrouter/google/" + model.split("/", 1)[1]
 
 
-    # === GUEST / REGISTERED: Nur Ollama ===
+    # === GUEST / REGISTERED: Nur Ollama + GitHub (kostenlos) ===
 
     if (not DEMO_MODE) and is_free_tier(tier):
 
-        # Erzwinge Ollama-Prefix
+        # GitHub Models sind kostenlos -> durchlassen
+        # Alles andere: Erzwinge Ollama-Prefix
 
-        if not model.startswith("ollama/"):
+        if not model.startswith("ollama/") and not model.startswith("github/"):
 
             model = f"ollama/{model}"
 
@@ -447,21 +543,23 @@ async def client_chat(
             raise HTTPException(429, f"Token-Limit erreicht ({limit_check['limit']}/Tag)")
 
 
-        # Ollama Call
-
-        result = await call_ollama(
-
-            model=model,
-
-            messages=messages,
-
-            temperature=request.temperature,
-
-            max_tokens=request.max_tokens
-
-        )
-
-        backend = "ollama"
+        # GitHub Models (kostenlos) oder Ollama Call
+        if model.startswith("github/"):
+            result = await call_github_models(
+                model=model,
+                messages=messages,
+                temperature=request.temperature,
+                max_tokens=request.max_tokens
+            )
+            backend = "github"
+        else:
+            result = await call_ollama(
+                model=model,
+                messages=messages,
+                temperature=request.temperature,
+                max_tokens=request.max_tokens
+            )
+            backend = "ollama"
 
 
     # === PRO / ENTERPRISE: Alle Modelle ===
@@ -509,7 +607,41 @@ async def client_chat(
             model_prefix = model.split("/")[0].lower() if "/" in model else ""
 
 
-            if model.startswith("openrouter/"):
+            if model.startswith("hf/"):
+
+                result = await call_huggingface(
+
+                    model=model,
+
+                    messages=messages,
+
+                    temperature=request.temperature,
+
+                    max_tokens=request.max_tokens,
+
+                )
+
+                backend = "huggingface"
+
+
+            elif model.startswith("github/"):
+
+                result = await call_github_models(
+
+                    model=model,
+
+                    messages=messages,
+
+                    temperature=request.temperature,
+
+                    max_tokens=request.max_tokens
+
+                )
+
+                backend = "github"
+
+
+            elif model.startswith("openrouter/"):
 
                 result = await call_openrouter(
 

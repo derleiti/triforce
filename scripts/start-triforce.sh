@@ -28,7 +28,18 @@ API_PORT="${TRIFORCE_API_PORT:-9000}"
 echo "[TRIFORCE] Starting on port ${API_PORT}"
 echo "[TRIFORCE] HW mode=${TRIFORCE_RUNTIME_MODE:-unset} cpu=${TRIFORCE_CPU_MODEL:-unset} gpu=${TRIFORCE_GPU_BACKEND:-unset} workers=${TRIFORCE_UVICORN_WORKERS:-unset} threads=${TRIFORCE_THREAD_POOL:-unset}"
 
+WORKERS="${TRIFORCE_UVICORN_WORKERS:-1}"
+# Für zombie-pc (Heimnetz/single-user): max 1 Worker wegen WS-Flood
+if [[ "$(hostname)" == *"zombie"* ]]; then
+    WORKERS=1
+fi
+echo "[TRIFORCE] uvicorn workers=$WORKERS"
+
 exec "$REPO_DIR/.venv/bin/python" -m uvicorn app.main:app \
     --host 0.0.0.0 \
     --port "$API_PORT" \
-    --timeout-keep-alive 75
+    --workers "$WORKERS" \
+    --timeout-keep-alive 75 \
+    --backlog 2048 \
+    --limit-concurrency 500 \
+    --limit-max-requests 10000

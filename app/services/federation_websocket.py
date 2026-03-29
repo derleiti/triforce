@@ -61,7 +61,7 @@ elif "zombie" in _hostname_lower:
 else:
     NODE_ID = os.getenv("FEDERATION_NODE_ID", "hetzner")
 WS_RECONNECT_DELAY = 30  # Sekunden
-WS_HEARTBEAT_INTERVAL = 10  # Sekunden
+WS_HEARTBEAT_INTERVAL = 30  # Sekunden
 WS_PORT = 9001  # Separater Port für Federation WS
 
 
@@ -152,8 +152,8 @@ class FederationPeer:
                 self.websocket = await asyncio.wait_for(
                     websockets.connect(
                         self.ws_url,
-                        ping_interval=20,
-                        ping_timeout=10,
+                        ping_interval=45,
+                        ping_timeout=30,
                         close_timeout=5,
                         open_timeout=10,
                     ),
@@ -435,8 +435,8 @@ class FederationLoadBalancer:
                 handler,
                 "0.0.0.0",
                 WS_PORT,
-                ping_interval=20,
-                ping_timeout=10
+                ping_interval=45,
+                ping_timeout=30
             )
             logger.info(f"Federation WS Server listening on port {WS_PORT}")
         except Exception as e:

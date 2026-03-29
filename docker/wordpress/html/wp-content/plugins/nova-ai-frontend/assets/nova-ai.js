@@ -885,13 +885,29 @@
     const nonce = () => (window.novaAiConfig && window.novaAiConfig.nonce) || '';
 
     // ── Load chat models into modelSel ──────────────────────────────────────
+    // In-memory cache damit Mobile nicht bei jedem Panel-Öffnen neu lädt
+    let _modelsCache = null;
+
     async function loadDiscussModels() {
       if (!modelSel) return;
+      // Zeige sofort Lade-Indikator
+      if (modelSel.options.length <= 1) {
+        const loadOpt = document.createElement('option');
+        loadOpt.textContent = '⏳ Modelle werden geladen…';
+        loadOpt.disabled = true;
+        modelSel.appendChild(loadOpt);
+      }
+      // Cache nutzen wenn vorhanden
+      if (_modelsCache) {
+        _populateModelSel(_modelsCache);
+        return;
+      }
       try {
         const resp = await fetch(API + '/models', { method: 'GET', headers: { 'Accept': 'application/json' } });
         if (!resp.ok) throw new Error('HTTP ' + resp.status);
         const data = await resp.json();
         const all = data.models || data.data || (Array.isArray(data) ? data : []);
+        _modelsCache = all; // Cache für nächstes Öffnen
         // Only chat models (not image/video gen)
         const chatModels = all.filter(m => {
           const cats = m.categories || [];
@@ -901,37 +917,50 @@
           return isChat && !isImg && !isVid;
         });
         if (!chatModels.length) return;
-        // Group by provider (same as playground)
-        const groups = {};
-        chatModels.forEach(m => {
-          const p = m.provider || 'other';
-          (groups[p] = groups[p] || []).push(m);
-        });
-        const provOrder = ['anthropic','gemini','openrouter','groq','mistral','cloudflare','github','ollama','other'];
-        const sorted = Object.entries(groups).sort(([a],[b]) => {
-          const ai = provOrder.indexOf(a) >= 0 ? provOrder.indexOf(a) : 99;
-          const bi = provOrder.indexOf(b) >= 0 ? provOrder.indexOf(b) : 99;
-          return ai - bi;
-        });
-        modelSel.innerHTML = '';
-        sorted.forEach(([prov, models]) => {
-          const og = document.createElement('optgroup');
-          og.label = prov;
-          models.forEach(m => {
-            const o = document.createElement('option');
-            o.value = m.id || m.model || m.name;
-            o.textContent = m.name || m.id || m.model;
-            og.appendChild(o);
-          });
-          modelSel.appendChild(og);
-        });
-        // Default: prefer gemini-2.5-flash or first
-        const preferred = ['gemini/gemini-2.5-flash','groq/meta-llama/llama-4-scout-17b-16e-instruct'];
-        for (const p of preferred) {
-          const opt = modelSel.querySelector(`option[value="${p}"]`);
-          if (opt) { opt.selected = true; break; }
-        }
+        _populateModelSel(chatModels);
       } catch(e) { /* keep default */ }
+    }
+
+    function _populateModelSel(chatModels) {
+      if (!modelSel) return;
+      // Filter: nur Chat-Modelle
+      const filtered = chatModels.filter(m => {
+        const cats = m.categories || [];
+        const isImg = m.media_image || cats.includes('media_image');
+        const isVid = m.media_video || cats.includes('media_video');
+        return !isImg && !isVid;
+      });
+      if (!filtered.length) return;
+      // Group by provider
+      const groups = {};
+      filtered.forEach(m => {
+        const p = m.provider || 'other';
+        (groups[p] = groups[p] || []).push(m);
+      });
+      const provOrder = ['anthropic','gemini','openrouter','groq','mistral','cloudflare','github','ollama','other'];
+      const sorted = Object.entries(groups).sort(([a],[b]) => {
+        const ai = provOrder.indexOf(a) >= 0 ? provOrder.indexOf(a) : 99;
+        const bi = provOrder.indexOf(b) >= 0 ? provOrder.indexOf(b) : 99;
+        return ai - bi;
+      });
+      modelSel.innerHTML = '';
+      sorted.forEach(([prov, models]) => {
+        const og = document.createElement('optgroup');
+        og.label = prov;
+        models.forEach(m => {
+          const o = document.createElement('option');
+          o.value = m.id || m.model || m.name;
+          o.textContent = m.name || m.id || m.model;
+          og.appendChild(o);
+        });
+        modelSel.appendChild(og);
+      });
+      // Default: prefer gemini-2.5-flash or llama-4-scout
+      const preferred = ['gemini/gemini-2.5-flash','groq/meta-llama/llama-4-scout-17b-16e-instruct'];
+      for (const p of preferred) {
+        const opt = modelSel.querySelector(`option[value="${p}"]`);
+        if (opt) { opt.selected = true; break; }
+      }
     }
 
     // ── Panel open/close ─────────────────────────────────────────────────────
@@ -1032,6 +1061,57 @@
     document.querySelectorAll('.nova-ai-shell').forEach(initShell);
     document.querySelectorAll('.nova-downloads-shell').forEach(initDownloadsShell);
     initDiscuss();
+    // Modelle sofort beim Page-Load im Hintergrund vorladen (nicht erst beim Panel-Öffnen)
+    // Damit der native Android <select>-Picker bereits alle Optionen hat
+    setTimeout(function() {
+      const modelSel = document.getElementById('ai-model-select');
+      if (modelSel) {
+        const API = window.novaAiConfig && window.novaAiConfig.apiBase
+          ? window.novaAiConfig.apiBase : '/wp-json/nova-ai/v1';
+        fetch(API + '/models', { method: 'GET', headers: { 'Accept': 'application/json' } })
+          .then(r => r.ok ? r.json() : null)
+          .then(data => {
+            if (!data) return;
+            const all = data.models || data.data || [];
+            if (!all.length) return;
+            // Cache setzen (wird von _populateModelSel in initDiscuss genutzt)
+            // Direkt befüllen falls modelSel noch leer
+            if (modelSel.options.length <= 1) {
+              const provOrder = ['anthropic','gemini','openrouter','groq','mistral','cloudflare','github','ollama','other'];
+              const groups = {};
+              all.filter(m => {
+                const cats = m.categories||[];
+                return !m.media_image && !m.media_video && !cats.includes('media_image') && !cats.includes('media_video');
+              }).forEach(m => {
+                const p = m.provider||'other';
+                (groups[p]=groups[p]||[]).push(m);
+              });
+              const sorted = Object.entries(groups).sort(([a],[b])=>{
+                const ai=provOrder.indexOf(a)>=0?provOrder.indexOf(a):99;
+                const bi=provOrder.indexOf(b)>=0?provOrder.indexOf(b):99;
+                return ai-bi;
+              });
+              modelSel.innerHTML = '';
+              sorted.forEach(([prov, models]) => {
+                const og = document.createElement('optgroup');
+                og.label = prov;
+                models.forEach(m => {
+                  const o = document.createElement('option');
+                  o.value = m.id||m.model||m.name;
+                  o.textContent = m.name||m.id||m.model;
+                  og.appendChild(o);
+                });
+                modelSel.appendChild(og);
+              });
+              const preferred = ['gemini/gemini-2.5-flash','groq/meta-llama/llama-4-scout-17b-16e-instruct'];
+              for (const p of preferred) {
+                const opt = modelSel.querySelector('option[value="'+p+'"]');
+                if (opt) { opt.selected = true; break; }
+              }
+            }
+          }).catch(function(){});
+      }
+    }, 500); // 500ms nach DOMContentLoaded — nicht blockierend
     // Init global header theme pickers
     document.querySelectorAll('.nova-theme-picker').forEach(buildThemePicker);
   }

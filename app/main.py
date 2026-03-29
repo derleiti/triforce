@@ -44,7 +44,7 @@ from .routes.client_update import router as client_update_router
 from .routes.client_logs import router as client_logs_router
 from .routes.client_ai_search import router as client_ai_search_router
 from .routes.federation import router as federation_router
-from .routes.nova_frontend import router as nova_frontend_router
+from .routes.nova_frontend import router as nova_frontend_router, public_router as nova_frontend_public_router
 from .routes.nova_chat_agent import router as nova_chat_agent_router
 from .routes.nova_playground import router as nova_playground_router
 # BUG-006 FIX 2026-03-10: user_api war nie in main.py registriert
@@ -481,6 +481,7 @@ def create_app() -> FastAPI:
         "/v1/nova/playground",   # Playground — kein Login nötig
         "/v1/auth/",             # Alle Auth-Sub-Routen
         "/v1/client/auth",       # Client-Auth
+        "/v1/client/",            # Client-API hat eigene JWT-Auth
     )
 
     @app.middleware("http")
@@ -641,6 +642,7 @@ def create_app() -> FastAPI:
     app.include_router(sd3_router, prefix="/v1", tags=["Stable Diffusion 3"])
     app.include_router(vision_router, tags=["Vision"])
     app.include_router(nova_frontend_router, prefix="/v1", tags=["Nova Frontend"])
+    app.include_router(nova_frontend_public_router, prefix="/v1", tags=["Nova Frontend Public"])
     app.include_router(nova_chat_agent_router, prefix="/v1", tags=["Nova Chat Agent"])
     app.include_router(nova_playground_router, prefix="/v1", tags=["Nova Playground"])
     # BUG-006 FIX 2026-03-10: User API Router registrieren
