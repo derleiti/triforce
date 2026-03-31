@@ -141,19 +141,8 @@ class AILinux_MenuAuth_Service {
         $login_url      = esc_js(get_option('nova_ai_settings', [])['login_url'] ?? 'https://login.ailinux.me');
         ?>
 <script>
-// Logout global (capture phase, Swup+DOM unabhaengig)
-document.addEventListener('click', function(e){
-    var b=e.target.closest('#ailinux-logout-btn');
-    if(!b)return;
-    e.preventDefault();e.stopPropagation();
-    ['ailinux_token','ailinux_email','ailinux_tier','ailinux_client_id',
-     'ailinux_wp_can_admin','ailinux_wp_last_sync'].forEach(function(k){
-        try{localStorage.removeItem(k);}catch(err){}
-    });
-    try{document.cookie='ailinux_token=;domain=.ailinux.me;path=/;max-age=0';}catch(err){}
-    var m=document.getElementById('ailinux-auth-menu');
-    window.location.href=b.href||(m&&m.dataset.wpLogout)||'/';
-},true);
+// Logout: kein JS noetig, <a href=wp_logout> navigiert direkt
+// localStorage wird beim naechsten Load ohnehin gecleart wenn WP-Session weg ist
 (function () {
     'use strict';
 
@@ -189,19 +178,7 @@ document.addEventListener('click', function(e){
     }
 
     // ── Logout ───────────────────────────────────────────────────────────────
-    // Event delegation: Swup-kompatibel, funktioniert auch nach Navigation
-    document.addEventListener('click', function (e) {
-        var btn = e.target.closest('#ailinux-logout-btn');
-        if (!btn) return;
-        e.preventDefault();
-        e.stopPropagation();
-        ['ailinux_token','ailinux_email','ailinux_tier',
-         'ailinux_client_id','ailinux_wp_can_admin','ailinux_wp_last_sync'].forEach(function (k) {
-            try { localStorage.removeItem(k); } catch(err) {}
-        });
-        try { document.cookie = 'ailinux_token=;domain=.ailinux.me;path=/;max-age=0'; } catch(err) {}
-        window.location.href = btn.href || document.getElementById('ailinux-auth-menu')?.dataset?.wpLogout || '/';
-    }, true);
+    // Logout-Handler ist global oben registriert
 
     // ── localStorage → WP Sync (wenn Token im LS aber WP nicht eingeloggt) ──
     var wpLoggedIn = <?php echo $already_synced; ?>;
