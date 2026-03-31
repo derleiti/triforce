@@ -946,12 +946,24 @@ async def _poll_mail():
                 subject = msg.get("subject","(kein Betreff)")
                 sender = msg.get("from","unknown")
                 snippet = msg.get("snippet", msg.get("body",""))[:500]
+                tags_mail = ["mail", "inbox"]
+                if "[research]" in subject.lower() or "research" in subject.lower():
+                    tags_mail.append("research")
+                    try:
+                        from app.services.mail_service import mail_send
+                        mail_send(
+                            to="mrksleitermann@gmail.com",
+                            subject=f"[Nova Research] {subject}",
+                            body=f"Nova Research-Report:\nVon: {sender}\n\n{snippet}\n\nAntwort mit [RESEARCH-APPROVED] triggert implementation_agent.",
+                        )
+                        logger.info(f"Research forward -> Markus: {subject[:60]}")
+                    except Exception as _fwd_e:
+                        logger.debug(f"Research forward error: {_fwd_e}")
                 await create_event(
                     title=f"Mail: {subject}", body=f"Von: {sender}\n\n{snippet}",
-                    source=SRC_MAIL, tags=["mail","inbox"],
+                    source=SRC_MAIL, tags=tags_mail,
                     metadata={"uid": uid, "from": sender, "subject": subject},
                 )
-                # Mark as seen in IMAP so it doesn't get reprocessed after restart
                 try:
                     mail_mark_seen(uid)
                 except Exception:

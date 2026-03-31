@@ -252,3 +252,61 @@ async def nova_playground(req: PlaygroundRequest) -> Dict[str, Any]:
 @router.get("/health")
 async def playground_health() -> Dict[str, Any]:
     return {"ok": True, "endpoint": "/v1/nova/playground", "modes": ["auto", "search", "fetch", "chat"]}
+
+
+# ---------------------------------------------------------------------------
+# Agent Mode — spawn_for_user() Integration (#6)
+# ---------------------------------------------------------------------------
+
+class AgentRequest(BaseModel):
+    topic:      str
+    prompt:     str = ""
+    agent_id:   str = "claude-mcp"
+    model_id:   str = ""
+
+
+@router.post("/agent")
+async def nova_playground_agent(req: AgentRequest) -> Dict[str, Any]:
+    """
+    Startet einen dedizierten Agent-Session via spawn_for_user().
+    Gibt session_id zurück — Ergebnis via /nova/playground/agent/{session_id}/result abrufbar.
+    """
+    topic  = req.topic.strip()
+    prompt = req.prompt.strip() or f"Analysiere und bearbeite: {topic}"
+    if not topic:
+        return {"ok": False, "error": "topic darf nicht leer sein"}
+    try:
+        from app.services.agent_spawner import get_agent_spawner
+        spawner = get_agent_spawner()
+        result  = await spawner.spawn_for_user(
+            topic=topic,
+            custom_prompt=prompt,
+            agent_id=req.agent_id or "claude-mcp",
+            model_id=req.model_id or None,
+        )
+        return {"ok": True, "mode": "agent", **result}
+    except Exception as e:
+        logger.error(f"playground agent spawn: {e}")
+        return {"ok": False, "error": str(e)}
+
+
+@router.get("/agent/{session_id}/result")
+async def nova_playground_agent_result(session_id: str) -> Dict[str, Any]:
+    """Gibt den aktuellen Status + letztes Ergebnis einer Agent-Session zurück."""
+    try:
+        from app.services.agent_spawner import get_agent_spawner
+        spawner  = get_agent_spawner()
+        sessions = spawner._sessions
+        session  = sessions.get(session_id)
+        if not session:
+            return {"ok": False, "error": f"Session nicht gefunden: {session_id}"}
+        return {
+            "ok":           True,
+            "session_id":   session_id,
+            "status":       session.status,
+            "agent_id":     session.agent_id,
+            "last_response": session.last_response[:2000] if session.last_response else "",
+            "message_count": len(session.messages),
+        }
+    except Exception as e:
+        return {"ok": False, "error": str(e)}

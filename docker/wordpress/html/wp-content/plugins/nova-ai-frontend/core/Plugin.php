@@ -35,6 +35,7 @@ class Plugin {
         add_filter('the_content', [$this, 'add_discuss_button']);
         add_action('wp_footer', [$this, 'render_discuss_overlay']);
         add_action('wp_footer', [$this, 'render_chat_widget']);
+        add_action('wp_head', [$this, 'output_canonical_tag'], 1);
 
         // Shop shortcode REST + AJAX hooks
         \NovAI\Core\ShopShortcode::register();
@@ -231,4 +232,13 @@ class Plugin {
 
         include NOVA_AI_PLUGIN_DIR . 'templates/chat-widget.php';
     }
+    public function output_canonical_tag() {
+        if (!is_singular() && !is_home() && !is_front_page()) { return; }
+        $canonical = trailingslashit(get_permalink() ?: home_url($GLOBALS["wp"]->request));
+        $canonical = str_replace("http://", "https://", $canonical);
+        $page = get_query_var("paged");
+        if ($page > 1) { $canonical = trailingslashit($canonical) . "page/" . $page . "/"; }
+        echo "<link rel=\"canonical\" href=\"" . esc_url($canonical) . "\" />\n";
+    }
+
 }

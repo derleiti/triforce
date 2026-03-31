@@ -559,15 +559,6 @@ class AgentSpawner:
             except Exception as _dpe:
                 logger.debug(f"deploy_pipeline hook: {_dpe}")
 
-            # Deploy-Pipeline: deploy_ready tag -> sofort triggern
-            try:
-                from app.services.nova_deploy_pipeline import watch_for_deploy_ready
-                if await watch_for_deploy_ready(title, body, tags):
-                    mark_resolved(notif_id)
-                    continue
-            except Exception as _dpe:
-                logger.debug(f"deploy_pipeline hook: {_dpe}")
-
             # Nur HIGH + CRITICAL
             if prio not in ("high", "critical"):
                 continue
@@ -636,6 +627,13 @@ class AgentSpawner:
         # Marketing / Community
         if any(k in text for k in ("marketing", "newsletter", "community", "ankündigung")):
             return "marketing_agent"
+
+        # Research-Approved: implementation_agent triggern
+        if any(k in text for k in (
+            "[research-approved]", "research_approved", "research approved",
+            "research-approved", "[approved]",
+        )):
+            return "implementation_agent"
 
         # Research-Mail (Betreff mit [RESEARCH])
         if "[research]" in text or "research" in (tags or []):
