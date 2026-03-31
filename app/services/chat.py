@@ -14,8 +14,14 @@ from pydantic import AnyHttpUrl
 
 from ..utils.http_client import HttpClient
 # BUG-015 FIX 2026-03-10: Optional import — verhindert Startup-Crash wenn Paket fehlt
+# FutureWarning supprimiert: google-generativeai ist deprecated, Nachfolger ist google-genai.
+# Migration ist ein Breaking Change (_stream_gemini muss komplett umgeschrieben werden).
+# GOOGLE_AI_STUDIO_KEY == GEMINI_API_KEY — beides ist derselbe Schluessel.
+import warnings as _warnings
 try:
-    import google.generativeai as genai
+    with _warnings.catch_warnings():
+        _warnings.simplefilter("ignore", FutureWarning)
+        import google.generativeai as genai
     _HAS_GENAI = True
 except ImportError:
     genai = None  # type: ignore
