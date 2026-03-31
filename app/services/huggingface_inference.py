@@ -63,7 +63,7 @@ class HuggingFaceInference:
         ],
         "text_to_image": [
             "black-forest-labs/FLUX.1-schnell",
-            "stabilityai/stable-diffusion-xl-base-1.0",
+            # "stabilityai/stable-diffusion-xl-base-1.0",  # DEPRECATED on HF Inference
             "runwayml/stable-diffusion-v1-5",
         ],
         "summarization": [

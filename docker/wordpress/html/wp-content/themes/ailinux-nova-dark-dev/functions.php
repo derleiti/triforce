@@ -192,7 +192,7 @@ function ailinux_nova_dark_enqueue_assets() {
         'displayName' => $wp_logged_in ? $current_user->display_name : '',
         'email'       => $wp_logged_in ? $current_user->user_email : '',
         'isAdmin'     => $wp_logged_in && current_user_can('manage_options'),
-        'logoutUrl'   => 'https://login.ailinux.me?action=logout',
+        'logoutUrl'   => 'https://ailinux.me/account?action=logout',
     ]);
 
         wp_localize_script('ailinux-nova-dark-app', 'NOVA_API', [
@@ -602,7 +602,8 @@ function ailinux_nova_dark_render_meta_tags() {
         echo '<meta property="og:url" content="' . esc_url( home_url() ) . '" />' . "\n";
     }
 }
-add_action( 'wp_head', 'ailinux_nova_dark_render_meta_tags', 5 );
+// DISABLED: SEOPress handles OG tags
+// add_action( 'wp_head', 'ailinux_nova_dark_render_meta_tags', 5 );
 
 function ailinux_nova_dark_schema_markup() {
     if ( ! is_singular( 'post' ) ) {
@@ -641,7 +642,8 @@ function ailinux_nova_dark_schema_markup() {
 
     echo '<script type="application/ld+json">' . wp_json_encode( $schema ) . '</script>';
 }
-add_action( 'wp_head', 'ailinux_nova_dark_schema_markup', 20 );
+// DISABLED: SEOPress handles Schema markup
+// add_action( 'wp_head', 'ailinux_nova_dark_schema_markup', 20 );
 
 function ailinux_nova_dark_breadcrumb_schema() {
     if ( is_home() || is_front_page() ) {
@@ -684,7 +686,8 @@ function ailinux_nova_dark_breadcrumb_schema() {
 
     echo '<script type="application/ld+json">' . wp_json_encode( $schema ) . '</script>';
 }
-add_action( 'wp_head', 'ailinux_nova_dark_breadcrumb_schema', 21 );
+// DISABLED: SEOPress handles Breadcrumb Schema
+// add_action( 'wp_head', 'ailinux_nova_dark_breadcrumb_schema', 21 );
 
 function ailinux_nova_dark_menu_item_classes( $classes, $item ) {
     if ( in_array( 'menu-item-has-children', $classes, true ) ) {
@@ -1127,7 +1130,7 @@ add_action('rest_api_init', function() {
 add_action('send_headers', function() {
     $d = "default-src 'self'";
     $s = "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://challenges.cloudflare.com https://www.googletagmanager.com https://translate.googleapis.com https://translate.google.com https://cdn.gtranslate.net https://static.addtoany.com https://js.intercomcdn.com https://accounts.google.com";
-    $f = "frame-src 'self' https://login.ailinux.me https://api.ailinux.me https://www.youtube.com https://accounts.google.com https://challenges.cloudflare.com https://www.google.com https://td.doubleclick.net https://static.addtoany.com";
+    $f = "frame-src 'self' https://ailinux.me/account https://api.ailinux.me https://www.youtube.com https://accounts.google.com https://challenges.cloudflare.com https://www.google.com https://td.doubleclick.net https://static.addtoany.com";
     $c = "connect-src 'self' https://api.ailinux.me wss://api.ailinux.me https:";
     $i = "img-src 'self' data: https: blob:";
     $fo = "font-src 'self' data: https://fonts.gstatic.com";
@@ -1136,7 +1139,7 @@ add_action('send_headers', function() {
     $m = "media-src 'self' data: https:";
     $o = "object-src 'none'";
     $b = "base-uri 'self'";
-    $fa = "form-action 'self' https://login.ailinux.me";
+    $fa = "form-action 'self' https://ailinux.me/account";
     $fr = "frame-ancestors 'self'";
     $csp = implode('; ', [$d,$s,$f,$c,$i,$fo,$st,$w,$m,$o,$b,$fa,$fr,'upgrade-insecure-requests']);
     if (!headers_sent()) {

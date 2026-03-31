@@ -18,6 +18,13 @@ class AccountSuiteService {
     private function __construct() {
         add_shortcode('ailinux_account_suite', [$this, 'render']);
         add_action('wp_enqueue_scripts',       [$this, 'enqueue_assets']);
+        // Exclude account-suite JS from Cloudflare Rocket Loader
+        add_filter('script_loader_tag', function($tag, $handle) {
+            if (in_array($handle, ['nova-account-suite', 'cf-turnstile'])) {
+                return str_replace(' src=', ' data-cfasync="false" src=', $tag);
+            }
+            return $tag;
+        }, 10, 2);
         add_action('rest_api_init',            [$this, 'register_rest_routes']);
     }
 
@@ -28,13 +35,37 @@ class AccountSuiteService {
         $cv = @filemtime(NOVA_AI_PLUGIN_DIR.'assets/account-suite.css') ?: NOVA_AI_VERSION;
         wp_enqueue_style ('nova-account-suite', NOVA_AI_PLUGIN_URL.'assets/account-suite.css', [], $cv);
         wp_enqueue_script('nova-account-suite', NOVA_AI_PLUGIN_URL.'assets/account-suite.js',  [], $v, true);
-        wp_localize_script('nova-account-suite', 'novaAccountConfig', [
-            'apiBase'    => rest_url('nova-ai/v1'),
-            'nonce'      => wp_create_nonce('wp_rest'),
-            'loginUrl'   => 'https://login.ailinux.me',
-            'isLoggedIn' => is_user_logged_in(),
-            'shopUrl'    => 'https://ailinux.me/shop',
-        ]);
+        // Cloudflare Turnstile for login/register forms
+        if (!is_user_logged_in()) {
+            wp_enqueue_script('cf-turnstile', 'https://challenges.cloudflare.com/turnstile/v0/api.js', [], null, true);
+        }
+        $settings = get_option('nova_ai_settings', []);
+
+        $nas_config = [
+
+            'apiBase'      => rest_url('nova-ai/v1'),
+
+            'nonce'        => wp_create_nonce('wp_rest'),
+
+            'loginUrl'     => home_url('/account/'),
+
+            'triforceApi'  => rtrim($settings['api_endpoint'] ?? 'https://api.ailinux.me', '/') . '/v1/auth',
+
+            'isLoggedIn'   => is_user_logged_in(),
+
+            'shopUrl'      => 'https://ailinux.me/shop',
+
+            'wpLoginSync'  => rest_url('nova-ai/v1/auth/wp-login'),
+
+            'turnstileKey' => get_option('cfturnstile_key', ''),
+
+        ];
+
+        add_action('wp_footer', function() use ($nas_config) {
+
+            echo '<script data-cfasync="false">var novaAccountConfig=' . wp_json_encode($nas_config) . ';</script>';
+
+        }, 5);
     }
 
     public function register_rest_routes(): void {
@@ -127,21 +158,23 @@ class AccountSuiteService {
   <div class="nas-auth-inner">
     <div class="nas-logo"><span>🤖</span><h2>AILinux Account</h2><p>TriForce AI Platform</p></div>
     <div class="nas-tabs" role="tablist">
-      <button class="nas-tab active" data-tab="login">Anmelden</button>
-      <button class="nas-tab" data-tab="register">Registrieren</button>
+      <button class="nas-tab active" data-tab="login">Sign In</button>
+      <button class="nas-tab" data-tab="register">Sign Up</button>
     </div>
     <div id="nas-msg" class="nas-msg" role="alert" style="display:none"></div>
     <form id="nas-login-form" class="nas-form" novalidate>
-      <div class="nas-field"><label>E-Mail</label><input type="email" id="nas-email" placeholder="du@example.com" required autocomplete="email"></div>
-      <div class="nas-field nas-pw-wrap"><label>Passwort</label><input type="password" id="nas-pass" placeholder="••••••••" required autocomplete="current-password"><button type="button" class="nas-pw-toggle">👁</button></div>
-      <button type="submit" class="nas-btn-primary" id="nas-login-btn">Anmelden</button>
+      <div class="nas-field"><label>Email</label><input type="email" id="nas-email" placeholder="you@example.com" required autocomplete="email"></div>
+      <div class="nas-field nas-pw-wrap"><label>Password</label><input type="password" id="nas-pass" placeholder="••••••••" required autocomplete="current-password"><button type="button" class="nas-pw-toggle">👁</button></div>
+      <div class="cf-turnstile" data-sitekey="<?php echo esc_attr(get_option('cfturnstile_key', '')); ?>" data-theme="dark" data-size="normal"></div>
+      <button type="submit" class="nas-btn-primary" id="nas-login-btn">Sign In</button>
     </form>
     <form id="nas-reg-form" class="nas-form" style="display:none" novalidate>
-      <div class="nas-field"><label>E-Mail</label><input type="email" id="nas-reg-email" placeholder="du@example.com" required autocomplete="email"></div>
-      <div class="nas-field nas-pw-wrap"><label>Passwort <small>(min. 8 Zeichen)</small></label><input type="password" id="nas-reg-pass" placeholder="••••••••" minlength="8" required autocomplete="new-password"><button type="button" class="nas-pw-toggle">👁</button></div>
-      <div class="nas-field"><label>Name <small>(optional)</small></label><input type="text" id="nas-reg-name" placeholder="Dein Name" autocomplete="name"></div>
+      <div class="nas-field"><label>Email</label><input type="email" id="nas-reg-email" placeholder="you@example.com" required autocomplete="email"></div>
+      <div class="nas-field nas-pw-wrap"><label>Password <small>(min. 8 characters)</small></label><input type="password" id="nas-reg-pass" placeholder="••••••••" minlength="8" required autocomplete="new-password"><button type="button" class="nas-pw-toggle">👁</button></div>
+      <div class="nas-field"><label>Name <small>(optional)</small></label><input type="text" id="nas-reg-name" placeholder="Your Name" autocomplete="name"></div>
       <div class="nas-field"><label>Invite Code <small>(optional)</small></label><input type="text" id="nas-reg-code" placeholder="AILINUX2026"></div>
-      <button type="submit" class="nas-btn-primary" id="nas-reg-btn">Konto erstellen</button>
+      <div class="cf-turnstile" data-sitekey="<?php echo esc_attr(get_option('cfturnstile_key', '')); ?>" data-theme="dark" data-size="normal"></div>
+      <button type="submit" class="nas-btn-primary" id="nas-reg-btn">Create Account</button>
     </form>
   </div>
 </div>
@@ -157,11 +190,11 @@ class AccountSuiteService {
       </div>
     </div>
     <nav class="nas-nav">
-      <button class="nas-nav-item active" data-panel="overview"><span>🏠</span> Übersicht</button>
+      <button class="nas-nav-item active" data-panel="overview"><span>🏠</span> Overview</button>
       <button class="nas-nav-item" data-panel="subscription"><span>💳</span> Subscription</button>
       <button class="nas-nav-item" data-panel="downloads"><span>📦</span> Downloads</button>
-      <button class="nas-nav-item" data-panel="settings"><span>⚙️</span> Einstellungen</button>
-      <?php if ($is_admin): ?>
+      <button class="nas-nav-item" data-panel="settings"><span>⚙️</span> Settings</button>
+      <?php if ($is_admin && is_admin()): ?>
       <div class="nas-nav-separator">— Admin Suite —</div>
       <button class="nas-nav-item" data-panel="admin"><span>📊</span> Admin HQ</button>
       <button class="nas-nav-item" data-panel="system"><span>🖥</span> System</button>
@@ -172,80 +205,85 @@ class AccountSuiteService {
       <?php endif; ?>
     </nav>
     <div class="nas-sidebar-footer">
-      <button class="nas-logout-btn" id="nas-logout">🚪 Abmelden</button>
+      <button class="nas-logout-btn" id="nas-logout">🚪 Sign Out</button>
     </div>
   </aside>
   <main class="nas-main">
     <section class="nas-panel active" id="nas-panel-overview">
-      <h2 class="nas-panel-title">Übersicht</h2>
+      <h2 class="nas-panel-title">Overview</h2>
       <div class="nas-cards">
         <div class="nas-card nas-card-tier">
-          <div class="nas-card-label">Aktueller Plan</div>
+          <div class="nas-card-label">Current Plan</div>
           <div class="nas-card-value"><span class="nas-tier-badge nas-tier-<?= esc_attr($tier) ?>"><?= esc_html(strtoupper($tier)) ?></span></div>
           <?php if ($tier==='free'): ?><a href="https://ailinux.me/shop" class="nas-upgrade-link">⬆ Upgrade auf Subscriber (35€/mo)</a><?php endif; ?>
         </div>
-        <div class="nas-card"><div class="nas-card-label">E-Mail</div><div class="nas-card-value" style="font-size:.9rem;word-break:break-all"><?= esc_html($user->user_email) ?></div></div>
-        <div class="nas-card"><div class="nas-card-label">Client-ID</div><div class="nas-card-value" id="nas-client-id-val" style="font-size:.85rem">Lade…</div></div>
+        <div class="nas-card"><div class="nas-card-label">Email</div><div class="nas-card-value" style="font-size:.9rem;word-break:break-all"><?= esc_html($user->user_email) ?></div></div>
+        <div class="nas-card"><div class="nas-card-label">Client-ID</div><div class="nas-card-value" id="nas-client-id-val" style="font-size:.85rem">Loading…</div></div>
         <div class="nas-card"><div class="nas-card-label">Backend</div><div class="nas-card-value" id="nas-backend-status">⏳</div></div>
       </div>
       <div class="nas-features-box">
-        <h3>Dein Plan beinhaltet</h3>
+        <h3>Your Plan Includes</h3>
         <div class="nas-features-grid" id="nas-features-list"><span>⏳</span></div>
       </div>
-      <div class="nas-actions-row">
-        <a href="https://ailinux.me" class="nas-btn-outline">🌐 Website</a>
-        <a href="https://update.ailinux.me" class="nas-btn-outline" target="_blank">📥 App laden</a>
-        <?php if ($is_admin): ?><a href="<?= esc_url(admin_url()) ?>" class="nas-btn-outline">⚙ WP Admin</a><?php endif; ?>
-      </div>
+
     </section>
     <section class="nas-panel" id="nas-panel-subscription">
       <h2 class="nas-panel-title">Subscription</h2>
-      <div id="nas-sub-loading" class="nas-loading-box">⏳ Lade…</div>
+      <div id="nas-sub-loading" class="nas-loading-box">⏳ Loading…</div>
       <div id="nas-sub-content" style="display:none">
         <div class="nas-cards" id="nas-sub-cards"></div>
-        <h3 style="margin:2rem 0 1rem">Plan wechseln</h3>
+        <?php if ($tier !== 'free'): ?>
+        <div style="margin:2rem 0">
+          <div class="nas-card" style="border:1px solid #2a2a3a">
+            <div class="nas-card-label">Current Plan</div>
+            <div class="nas-card-value"><span class="nas-tier-badge nas-tier-<?= esc_attr($tier) ?>"><?= esc_html(strtoupper($tier)) ?></span></div>
+          </div>
+          <div id="nas-cancel-section" style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid #2a2a3a">
+            <h3 style="color:#ef4444;margin-bottom:.5rem">Cancel Subscription</h3>
+            <p class="nas-muted" style="margin-bottom:1rem">Your access remains active until the end of the billing period.</p>
+            <button class="nas-btn-danger" id="nas-cancel-sub-btn">Cancel Subscription</button>
+          </div>
+        </div>
+        <?php else: ?>
+        <h3 style="margin:2rem 0 1rem">Choose a Plan</h3>
         <div class="nas-plan-grid">
-          <div class="nas-plan-card"><div class="nas-plan-name">Free</div><div class="nas-plan-price">0 €/mo</div><ul class="nas-plan-features"><li>✅ Ollama + Groq + Gemini</li><li>✅ Chat, Vision, MCP Tools</li><li>✅ Nova Playground</li><li>✅ 200k Token/Woche</li></ul></div>
-          <div class="nas-plan-card nas-plan-featured"><div class="nas-plan-badge">⭐ Empfohlen</div><div class="nas-plan-name">Subscriber</div><div class="nas-plan-price">35 €/mo</div><ul class="nas-plan-features"><li>✅ 600+ Modelle (inkl. GPT-4o, Claude)</li><li>✅ Swarm Intelligence</li><li>✅ Federation-Zugang</li><li>✅ Multi-Agent Tasks</li><li>✅ 5M Token/Woche</li></ul><a href="https://ailinux.me/shop" class="nas-btn-primary">Jetzt abonnieren</a></div>
+          <div class="nas-plan-card"><div class="nas-plan-name">Free</div><div class="nas-plan-price">0 €/mo</div><ul class="nas-plan-features"><li>✅ Ollama + Groq + Gemini</li><li>✅ Chat, Vision, MCP Tools</li><li>✅ Nova Playground</li><li>✅ 200k Tokens/week</li></ul></div>
+          <div class="nas-plan-card nas-plan-featured"><div class="nas-plan-badge">⭐ Recommended</div><div class="nas-plan-name">Subscriber</div><div class="nas-plan-price">35 €/mo</div><ul class="nas-plan-features"><li>✅ 600+ Models (incl. GPT-4o, Claude)</li><li>✅ Swarm Intelligence</li><li>✅ Federation Access</li><li>✅ Multi-Agent Tasks</li><li>✅ 5M Tokens/week</li></ul><a href="https://ailinux.me/shop" class="nas-btn-primary">Subscribe Now</a></div>
         </div>
-        <div id="nas-cancel-section" style="display:none;margin-top:2rem;padding-top:1.5rem;border-top:1px solid #2a2a3a">
-          <h3 style="color:#ef4444;margin-bottom:.5rem">Abo kündigen</h3>
-          <p class="nas-muted" style="margin-bottom:1rem">Zugang bleibt bis Periodenende aktiv.</p>
-          <button class="nas-btn-danger" id="nas-cancel-sub-btn">Abo jetzt kündigen</button>
-        </div>
+        <?php endif; ?>
       </div>
     </section>
     <section class="nas-panel" id="nas-panel-downloads">
-      <h2 class="nas-panel-title">Downloads &amp; Käufe</h2>
-      <div id="nas-dl-loading" class="nas-loading-box">⏳ Lade…</div>
+      <h2 class="nas-panel-title">Downloads &amp; Purchases</h2>
+      <div id="nas-dl-loading" class="nas-loading-box">⏳ Loading…</div>
       <div id="nas-dl-content" style="display:none">
         <div id="nas-purchases-list"></div>
         <div id="nas-downloads-table"></div>
       </div>
     </section>
     <section class="nas-panel" id="nas-panel-settings">
-      <h2 class="nas-panel-title">Einstellungen</h2>
+      <h2 class="nas-panel-title">Settings</h2>
       <div class="nas-settings-section">
-        <h3>Profil bearbeiten</h3>
+        <h3>Edit Profile</h3>
         <div id="nas-settings-msg" class="nas-msg" style="display:none"></div>
         <form id="nas-settings-form" class="nas-form">
-          <div class="nas-field"><label>Anzeigename</label><input type="text" id="nas-set-name" value="<?= esc_attr($user->display_name) ?>"></div>
-          <div class="nas-field nas-pw-wrap"><label>Neues Passwort <small>(leer = kein Wechsel)</small></label><input type="password" id="nas-set-pw" placeholder="Min. 8 Zeichen" minlength="8"><button type="button" class="nas-pw-toggle">👁</button></div>
-          <button type="submit" class="nas-btn-primary">Änderungen speichern</button>
+          <div class="nas-field"><label>Display Name</label><input type="text" id="nas-set-name" value="<?= esc_attr($user->display_name) ?>"></div>
+          <div class="nas-field nas-pw-wrap"><label>New Password <small>(leave empty = no change)</small></label><input type="password" id="nas-set-pw" placeholder="Min. 8 characters" minlength="8"><button type="button" class="nas-pw-toggle">👁</button></div>
+          <button type="submit" class="nas-btn-primary">Save Changes</button>
         </form>
       </div>
       <div class="nas-settings-section">
-        <h3>API-Zugang</h3>
+        <h3>API Access</h3>
         <p class="nas-muted">Client-ID:</p>
-        <div class="nas-code-row"><code id="nas-api-client-id">Lade…</code><button class="nas-copy-btn" data-target="nas-api-client-id">📋</button></div>
+        <div class="nas-code-row"><code id="nas-api-client-id">Loading…</code><button class="nas-copy-btn" data-target="nas-api-client-id">📋</button></div>
         <p class="nas-muted" style="margin-top:.75rem">Login-Endpoint:</p>
         <div class="nas-code-row"><code>https://api.ailinux.me/v1/client/login</code><button class="nas-copy-btn" data-clipboard="https://api.ailinux.me/v1/client/login">📋</button></div>
       </div>
     </section>
-    <?php if ($is_admin): ?>
+    <?php if ($is_admin && is_admin()): ?>
     <section class="nas-panel" id="nas-panel-admin">
       <h2 class="nas-panel-title">📊 Admin HQ</h2>
-      <div id="nas-admin-overview"><div class="nas-loading-box">⏳ Lade Admin-Übersicht…</div></div>
+      <div id="nas-admin-overview"><div class="nas-loading-box">⏳ Lade Admin-Overview…</div></div>
       <div class="nas-admin-quick-links" style="margin-top:1.5rem">
         <a href="<?= esc_url(admin_url('admin.php?page=nova-ai')) ?>" class="nas-card nas-card-link" style="display:block;margin-bottom:.5rem"><div class="nas-card-label">🚀 Nova AI WP-Dashboard</div><div class="nas-card-value">Vollständiges WP-Admin Interface →</div></a>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-top:.5rem">
@@ -257,16 +295,16 @@ class AccountSuiteService {
     <section class="nas-panel" id="nas-panel-system">
       <h2 class="nas-panel-title">🖥 System Status</h2>
       <button class="nas-btn-sm nas-btn-outline" id="nas-sys-refresh" style="margin-bottom:1rem" onclick="(function(){var k='system_'+(document.getElementById('nova-account-suite')?.id||'r');delete window._nasLoaded&&(window._nasLoaded[k]=undefined);})()">🔄 Refresh</button>
-      <div id="nas-system-content"><div class="nas-loading-box">⏳ Lade…</div></div>
+      <div id="nas-system-content"><div class="nas-loading-box">⏳ Loading…</div></div>
     </section>
     <section class="nas-panel" id="nas-panel-agents">
       <h2 class="nas-panel-title">🤖 Agents</h2>
-      <div id="nas-agents-content"><div class="nas-loading-box">⏳ Lade Agents…</div></div>
+      <div id="nas-agents-content"><div class="nas-loading-box">⏳ Loading Agents…</div></div>
     </section>
     <section class="nas-panel" id="nas-panel-mcp">
       <h2 class="nas-panel-title">🌐 MCP Tools</h2>
       <input type="text" id="nas-mcp-filter" placeholder="🔍 Tool suchen…" class="nas-input-text" style="width:100%;max-width:400px;margin-bottom:1rem">
-      <div id="nas-mcp-content"><div class="nas-loading-box">⏳ Lade MCP Tools…</div></div>
+      <div id="nas-mcp-content"><div class="nas-loading-box">⏳ Loading MCP Tools…</div></div>
       <div id="nas-mcp-call-section" style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--nas-border,#2a2a3a)">
         <h3>▶ Tool ausführen</h3>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
@@ -279,7 +317,7 @@ class AccountSuiteService {
     </section>
     <section class="nas-panel" id="nas-panel-vault">
       <h2 class="nas-panel-title">🔑 API Vault</h2>
-      <div id="nas-vault-content"><div class="nas-loading-box">⏳ Lade…</div></div>
+      <div id="nas-vault-content"><div class="nas-loading-box">⏳ Loading…</div></div>
       <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--nas-border,#2a2a3a)">
         <h3>🔐 Key setzen / aktualisieren</h3>
         <div class="nas-settings-section" style="padding:0">

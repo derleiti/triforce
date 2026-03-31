@@ -3,7 +3,7 @@
 'use strict';
 const CFG=window.novaAccountConfig||{};
 const API=CFG.apiBase||'/wp-json/nova-ai/v1';
-const LOGIN_URL=CFG.loginUrl||'https://login.ailinux.me';
+const LOGIN_URL=CFG.loginUrl||'https://ailinux.me/account';
 
 const TIER_LABELS={free:'FREE',pro:'PRO',enterprise:'ENTERPRISE',unlimited:'UNLIMITED',admin:'ADMIN',paid:'PAID'};
 const TIER_CLASS={free:'nas-tier-free',pro:'nas-tier-pro',enterprise:'nas-tier-enterprise',unlimited:'nas-tier-unlimited',admin:'nas-tier-admin',paid:'nas-tier-paid'};
@@ -26,7 +26,7 @@ function html(id,h){const el=wrap(id);if(el)el.innerHTML=h}
 function show(id){const el=wrap(id);if(el)el.style.display=''}
 function hide(id){const el=wrap(id);if(el)el.style.display='none'}
 
-document.querySelectorAll('.nova-account-suite,[data-nova-account-suite]').forEach(function(root){
+document.querySelectorAll('#nova-account-suite,.nova-account-suite,[data-nova-account-suite]').forEach(function(root){
   if(root.dataset.nasInit)return; root.dataset.nasInit='1';
   const isLoggedIn=root.dataset.loggedIn==='1'||CFG.isLoggedIn;
   if(!isLoggedIn){
@@ -39,6 +39,21 @@ document.querySelectorAll('.nova-account-suite,[data-nova-account-suite]').forEa
 });
 
 function initAuthForms(root){
+  const TRIFORCE=CFG.triforceApi||'https://api.ailinux.me/v1/auth';
+  const WP_SYNC=CFG.wpLoginSync||'/wp-json/nova-ai/v1/auth/wp-login';
+  const msgEl=root.querySelector('#nas-msg');
+  function showAuthMsg(text,type){
+    if(!msgEl)return;
+    msgEl.textContent=text;msgEl.className='nas-msg '+(type||'error');
+    msgEl.style.display='block';
+    if(type==='ok')setTimeout(function(){msgEl.style.display='none'},3000);
+  }
+  function hideAuthMsg(){if(msgEl)msgEl.style.display='none'}
+  function getTurnstileToken(container){
+    const resp=container?.querySelector('[name="cf-turnstile-response"]');
+    return resp?resp.value:'';
+  }
+
   // Tab switching (login/register)
   root.querySelectorAll('.nas-tab').forEach(function(btn){
     btn.addEventListener('click',function(){
@@ -48,15 +63,105 @@ function initAuthForms(root){
       root.querySelectorAll('.nas-form').forEach(function(f){f.style.display='none'});
       const f=root.querySelector('#nas-'+tab+'-form');
       if(f)f.style.display='block';
+      hideAuthMsg();
     });
   });
+
   // Password toggles
   root.querySelectorAll('.nas-pw-toggle').forEach(function(btn){
     btn.addEventListener('click',function(){
       const inp=btn.closest('.nas-pw-wrap')?.querySelector('input');
-      if(inp){inp.type=inp.type==='password'?'text':'password';btn.textContent=inp.type==='password'?'👁':'🙈'}
+      if(inp){inp.type=inp.type==='password'?'text':'password';btn.textContent=inp.type==='password'?'\ud83d\udc41':'\ud83d\ude48'}
     });
   });
+
+  // ── LOGIN SUBMIT ──
+  const loginForm=root.querySelector('#nas-login-form');
+  if(loginForm){
+    loginForm.addEventListener('submit',async function(e){
+      e.preventDefault();
+      const btn=root.querySelector('#nas-login-btn');
+      const email=root.querySelector('#nas-email')?.value?.trim()||'';
+      const pw=root.querySelector('#nas-pass')?.value||'';
+      const cfToken=getTurnstileToken(loginForm);
+      if(!email||!pw){showAuthMsg('Please fill in all fields.');return}
+      if(!cfToken){showAuthMsg('Please complete the captcha.');return}
+      btn.disabled=true;btn.textContent='…';hideAuthMsg();
+      try{
+        const r=await fetch(TRIFORCE+'/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,password:pw,cf_turnstile_response:cfToken})});
+        const d=await r.json();
+        if(r.ok&&d.token){
+          localStorage.setItem('ailinux_token',d.token);
+          localStorage.setItem('ailinux_email',d.user_id||email);
+          localStorage.setItem('ailinux_tier',d.tier||'free');
+          localStorage.setItem('ailinux_client_id',d.client_id||'');
+          showAuthMsg('Welcome! Loading dashboard…','ok');
+          // Sync WP session
+          try{
+            await fetch(WP_SYNC+'?token='+encodeURIComponent(d.token)+'&email='+encodeURIComponent(d.user_id||email)+'&tier='+encodeURIComponent(d.tier||'free')+'&redirect='+encodeURIComponent(location.href),{credentials:'same-origin'});
+          }catch(se){console.warn('WP sync failed:',se)}
+          setTimeout(function(){location.reload()},600);
+        }else{
+          showAuthMsg(d.detail||d.message||'Login failed.');
+          if(typeof turnstile!=='undefined')turnstile.reset();
+        }
+      }catch(err){
+        showAuthMsg('Connection error. Please try again.');
+        if(typeof turnstile!=='undefined')turnstile.reset();
+      }
+      btn.disabled=false;btn.textContent='Anmelden';
+    });
+  }
+
+  // ── REGISTER SUBMIT ──
+  const regForm=root.querySelector('#nas-reg-form');
+  if(regForm){
+    regForm.addEventListener('submit',async function(e){
+      e.preventDefault();
+      const btn=root.querySelector('#nas-reg-btn');
+      const email=root.querySelector('#nas-reg-email')?.value?.trim()||'';
+      const pw=root.querySelector('#nas-reg-pass')?.value||'';
+      const name=root.querySelector('#nas-reg-name')?.value?.trim()||'';
+      const code=root.querySelector('#nas-reg-code')?.value?.trim()||'';
+      const cfToken=getTurnstileToken(regForm);
+      if(!email||!pw){showAuthMsg('Please enter email and password.');return}
+      if(pw.length<8){showAuthMsg('Password must be at least 8 characters.');return}
+      if(!cfToken){showAuthMsg('Please complete the captcha.');return}
+      btn.disabled=true;btn.textContent='…';hideAuthMsg();
+      try{
+        const body={email:email,password:pw,cf_turnstile_response:cfToken};
+        if(name)body.name=name;
+        if(code)body.invite_code=code;
+        const r=await fetch(TRIFORCE+'/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+        const d=await r.json();
+        if(r.ok&&(d.token||d.ok)){
+          showAuthMsg('Account created! Signing in…','ok');
+          if(d.token){
+            localStorage.setItem('ailinux_token',d.token);
+            localStorage.setItem('ailinux_email',d.user_id||email);
+            localStorage.setItem('ailinux_tier',d.tier||'free');
+            try{
+              await fetch(WP_SYNC+'?token='+encodeURIComponent(d.token)+'&email='+encodeURIComponent(d.user_id||email)+'&tier='+encodeURIComponent(d.tier||'free')+'&redirect='+encodeURIComponent(location.href),{credentials:'same-origin'});
+            }catch(se){}
+            setTimeout(function(){location.reload()},600);
+          }else{
+            // Auto-login after registration
+            root.querySelector('#nas-email').value=email;
+            root.querySelector('#nas-pass').value=pw;
+            root.querySelector('.nas-tab[data-tab="login"]')?.click();
+            setTimeout(function(){root.querySelector('#nas-login-form')?.dispatchEvent(new Event('submit'))},300);
+          }
+        }else{
+          showAuthMsg(d.detail||d.message||'Registration failed.');
+          if(typeof turnstile!=='undefined')turnstile.reset();
+        }
+      }catch(err){
+        showAuthMsg('Connection error. Please try again.');
+        if(typeof turnstile!=='undefined')turnstile.reset();
+      }
+      btn.disabled=false;btn.textContent='Create Account';
+    });
+  }
 }
 
 function initDashboard(root){
@@ -76,6 +181,10 @@ function initDashboard(root){
   if(logoutBtn){
     logoutBtn.addEventListener('click',async function(){
       try{await fetch(API+'/auth/logout',{method:'POST',headers:{'Content-Type':'application/json','X-WP-Nonce':CFG.nonce||''}})}catch{}
+      localStorage.removeItem('ailinux_token');
+      localStorage.removeItem('ailinux_email');
+      localStorage.removeItem('ailinux_tier');
+      localStorage.removeItem('ailinux_client_id');
       location.href=LOGIN_URL;
     });
   }
@@ -98,10 +207,10 @@ function initDashboard(root){
       const body={};
       if(nameInput?.value.trim())body.display_name=nameInput.value.trim();
       if(pwInput?.value&&pwInput.value.length>=8)body.new_password=pwInput.value;
-      if(!Object.keys(body).length){showMsg(root,'#nas-settings-msg','Nichts zu aktualisieren','error');return}
+      if(!Object.keys(body).length){showMsg(root,'#nas-settings-msg','Nothing to update','error');return}
       const r=await fetch(API+'/profile/update',{method:'POST',headers:{'Content-Type':'application/json','X-WP-Nonce':CFG.nonce||''},body:JSON.stringify(body)}).catch(function(e){return{ok:false,json:function(){return{error:e.message}}}});
       const d=await r.json().catch(function(){return{}});
-      showMsg(root,'#nas-settings-msg',d.ok?'Gespeichert ✅':'Fehler: '+(d.error||'unbekannt'),d.ok?'ok':'error');
+      showMsg(root,'#nas-settings-msg',d.ok?'Saved ✅':'Error: '+(d.error||'unbekannt'),d.ok?'ok':'error');
     });
   }
 
@@ -117,11 +226,11 @@ function initDashboard(root){
   const cancelBtn=root.querySelector('#nas-cancel-sub-btn');
   if(cancelBtn){
     cancelBtn.addEventListener('click',async function(){
-      if(!confirm('Abo wirklich kündigen?'))return;
+      if(!confirm('Cancel subscription?'))return;
       const r=await fetch(API+'/subscription/cancel',{method:'POST',headers:{'Content-Type':'application/json','X-WP-Nonce':CFG.nonce||''}}).catch(function(){return{json:function(){return{ok:false}}}});
       const d=await r.json().catch(function(){return{ok:false}});
-      if(d.ok){alert('Abo erfolgreich gekündigt.');location.reload()}
-      else{alert('Fehler: '+(d.error||'unbekannt'))}
+      if(d.ok){alert('Subscription cancelled successfully.');location.reload()}
+      else{alert('Error: '+(d.error||'unbekannt'))}
     });
   }
 
@@ -152,14 +261,14 @@ function loadPanel(name,root){
 }
 
 function loadOverview(root){
-  fetch(API+'/health').then(function(r){return r.json()}).then(function(d){
+  fetch(API+'/health',{credentials:'same-origin'}).then(function(r){return r.json()}).then(function(d){
     const el=root.querySelector('#nas-backend-status');
     if(el)el.textContent=(d.status==='ok'||d.status==='healthy'||d.ok)?'✅ Online':'⚠ '+d.status;
   }).catch(function(){
     const el=root.querySelector('#nas-backend-status');
     if(el)el.textContent='⚠ Offline';
   });
-  fetch(API+'/account').then(function(r){return r.json()}).then(function(d){
+  fetch(API+'/account',{credentials:'same-origin',headers:{'X-WP-Nonce':CFG.nonce||''}}).then(function(r){return r.json()}).then(function(d){
     if(!d.ok)return;
     const t=(d.tier||'free').toLowerCase();
     const lbl=tierLabel(t);
@@ -203,7 +312,7 @@ async function loadSubscription(root){
     if(loadEl)loadEl.style.display='none';
     if(contentEl)contentEl.style.display='block';
   }catch(e){
-    if(loadEl)loadEl.innerHTML='<div style="color:var(--nas-muted)">Fehler beim Laden</div>';
+    if(loadEl)loadEl.innerHTML='<div style="color:var(--nas-muted)">Failed to load</div>';
   }
 }
 
@@ -222,7 +331,7 @@ async function loadDownloads(root){
     }
     if(filesEl){
       if(!files.length){
-        filesEl.innerHTML='<div class="nas-loading-box">Keine Downloads verfügbar</div>';
+        filesEl.innerHTML='<div class="nas-loading-box">No downloads available</div>';
       }else{
         filesEl.innerHTML='<table class="nas-dl-table"><thead><tr><th>Datei</th><th>Typ</th><th>Größe</th><th>Geändert</th><th>Download</th></tr></thead><tbody>'+files.map(function(f){var sz=fmtBytes(f.size||0);return'<tr><td>'+esc(f.name||'—')+'</td><td>'+esc((f.type||'').toUpperCase())+'</td><td>'+sz+'</td><td>'+esc(f.modified||'—')+'</td><td>'+(f.url?'<a href="'+esc(f.url)+'" download class="nas-dl-link">↓</a>':'—')+'</td></tr>'}).join('')+'</tbody></table>';
       }
@@ -230,7 +339,7 @@ async function loadDownloads(root){
     if(loadEl)loadEl.style.display='none';
     if(contentEl)contentEl.style.display='block';
   }catch(e){
-    if(loadEl)loadEl.innerHTML='<div style="color:var(--nas-muted)">Fehler beim Laden</div>';
+    if(loadEl)loadEl.innerHTML='<div style="color:var(--nas-muted)">Failed to load</div>';
   }
 }
 
@@ -241,7 +350,7 @@ async function loadAdminOverview(root){
   if(!el)return;
   try{
     const [health,agents]=await Promise.all([
-      fetch(API+'/health').then(r=>r.json()).catch(()=>({})),
+      fetch(API+'/health',{credentials:'same-origin'}).then(r=>r.json()).catch(()=>({})),
       fetch(API+'/admin/agents',{headers:{'X-WP-Nonce':CFG.nonce||''}}).then(r=>r.json()).catch(()=>({}))
     ]);
     const agentList=agents.agents||agents.data||[];
@@ -257,7 +366,7 @@ async function loadAdminOverview(root){
       </div>
     `;
   }catch(e){
-    el.innerHTML='<div style="color:var(--nas-muted)">Fehler beim Laden der Admin-Übersicht</div>';
+    el.innerHTML='<div style="color:var(--nas-muted)">Failed to load der Admin-Übersicht</div>';
   }
 }
 
@@ -283,7 +392,7 @@ async function loadSystem(root){
     if(d.model_count)html+=`<div class="nas-info-bar">📊 Modelle gesamt: <strong>${d.model_count}</strong></div>`;
     el.innerHTML=html;
   }catch(e){
-    el.innerHTML='<div style="color:var(--nas-muted)">Fehler: '+e.message+'</div>';
+    el.innerHTML='<div style="color:var(--nas-muted)">Error: '+e.message+'</div>';
   }
 }
 
@@ -295,7 +404,7 @@ async function loadAgents(root){
     const r=await fetch(API+'/admin/agents',{headers:{'X-WP-Nonce':CFG.nonce||''}});
     const d=await r.json();
     const agents=d.agents||d.data||[];
-    if(!agents.length){el.innerHTML='<div class="nas-loading-box">Keine Agents gefunden</div>';return}
+    if(!agents.length){el.innerHTML='<div class="nas-loading-box">No agents found</div>';return}
     el.innerHTML='<div class="nas-agent-grid">'+agents.map(function(a){
       const running=a.status==='running'||a.running;
       const aid=a.id||a.name||'agent';
@@ -332,7 +441,7 @@ async function loadAgents(root){
       });
     });
   }catch(e){
-    el.innerHTML='<div style="color:var(--nas-muted)">Fehler: '+e.message+'</div>';
+    el.innerHTML='<div style="color:var(--nas-muted)">Error: '+e.message+'</div>';
   }
 }
 
@@ -371,7 +480,7 @@ async function loadMcpTools(root){
     renderTools('');
     if(filterInput){filterInput.addEventListener('input',function(){renderTools(filterInput.value)})}
   }catch(e){
-    el.innerHTML='<div style="color:var(--nas-muted)">Fehler: '+e.message+'</div>';
+    el.innerHTML='<div style="color:var(--nas-muted)">Error: '+e.message+'</div>';
   }
   // MCP call form
   const callBtn=root.querySelector('#nas-mcp-call-btn');
@@ -392,7 +501,7 @@ async function loadMcpTools(root){
         const d=await r.json();
         if(resultEl)resultEl.textContent=JSON.stringify(d,null,2);
       }catch(e){
-        if(resultEl)resultEl.textContent='Fehler: '+e.message;
+        if(resultEl)resultEl.textContent='Error: '+e.message;
       }finally{callBtn.disabled=false}
     });
   }
@@ -406,11 +515,11 @@ async function loadVault(root){
     const r=await fetch(API+'/admin/vault/keys',{headers:{'X-WP-Nonce':CFG.nonce||''}});
     const d=await r.json();
     const keys=d.keys||d.data||[];
-    el.innerHTML='<div class="nas-vault-keys"><h3>🔑 Gespeicherte Keys ('+keys.length+')</h3><div class="nas-vault-list">'+
-      (keys.length?keys.map(function(k){return`<div class="nas-vault-key-row"><span class="nas-vault-key-name">${esc(typeof k==='string'?k:k.name||k.key||String(k))}</span><span class="nas-vault-key-mask">●●●●●●●●</span></div>`}).join(''):'<div class="nas-muted">Keine Keys gefunden</div>')+
+    el.innerHTML='<div class="nas-vault-keys"><h3>🔑 Stored Keys ('+keys.length+')</h3><div class="nas-vault-list">'+
+      (keys.length?keys.map(function(k){return`<div class="nas-vault-key-row"><span class="nas-vault-key-name">${esc(typeof k==='string'?k:k.name||k.key||String(k))}</span><span class="nas-vault-key-mask">●●●●●●●●</span></div>`}).join(''):'<div class="nas-muted">No keys found</div>')+
     '</div></div>';
   }catch(e){
-    el.innerHTML='<div style="color:var(--nas-muted)">Fehler: '+e.message+'</div>';
+    el.innerHTML='<div style="color:var(--nas-muted)">Error: '+e.message+'</div>';
   }
   // Set key form
   const setBtn=root.querySelector('#nas-vault-set-btn');
@@ -426,10 +535,10 @@ async function loadVault(root){
       try{
         const r=await fetch(API+'/admin/vault/set',{method:'POST',headers:{'Content-Type':'application/json','X-WP-Nonce':CFG.nonce||''},body:JSON.stringify({key:k,value:v})});
         const d=await r.json();
-        if(msgEl){msgEl.textContent=d.ok!==false?'✅ Key gespeichert':'Fehler: '+(d.error||'unbekannt');msgEl.className='nas-msg '+(d.ok!==false?'ok':'error');msgEl.style.display='block'}
+        if(msgEl){msgEl.textContent=d.ok!==false?'✅ Key gespeichert':'Error: '+(d.error||'unbekannt');msgEl.className='nas-msg '+(d.ok!==false?'ok':'error');msgEl.style.display='block'}
         if(d.ok!==false){if(keyEl)keyEl.value='';if(valEl)valEl.value='';const key='vault_'+(root.id||'r');delete _loaded[key];loadVault(root)}
       }catch(e){
-        if(msgEl){msgEl.textContent='Fehler: '+e.message;msgEl.className='nas-msg error';msgEl.style.display='block'}
+        if(msgEl){msgEl.textContent='Error: '+e.message;msgEl.className='nas-msg error';msgEl.style.display='block'}
       }
     });
   }
@@ -444,7 +553,7 @@ async function loadLogs(root){
     const r=await fetch(API+'/admin/logs?category='+cat+'&limit=50',{headers:{'X-WP-Nonce':CFG.nonce||''}});
     const d=await r.json();
     const logs=d.logs||d.data||[];
-    if(!logs.length){el.innerHTML='<div class="nas-loading-box">Keine Logs</div>';return}
+    if(!logs.length){el.innerHTML='<div class="nas-loading-box">No logs</div>';return}
     el.innerHTML='<div class="nas-log-box">'+logs.map(function(l){
       const msg=l.message||l.msg||String(l);
       const lvl=(l.level||'info').toLowerCase();
@@ -454,7 +563,7 @@ async function loadLogs(root){
     const logBox=el.querySelector('.nas-log-box');
     if(logBox)logBox.scrollTop=logBox.scrollHeight;
   }catch(e){
-    el.innerHTML='<div style="color:var(--nas-muted)">Fehler: '+e.message+'</div>';
+    el.innerHTML='<div style="color:var(--nas-muted)">Error: '+e.message+'</div>';
   }
   // Refresh + filter
   const refreshBtn=root.querySelector('#nas-logs-refresh');

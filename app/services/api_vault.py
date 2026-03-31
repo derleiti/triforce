@@ -202,8 +202,8 @@ class APIVault:
             "mistral":    ["MISTRAL_API_KEY"],
             "groq":       ["GROQ_API_KEY"],
             "cerebras":   ["CEREBRAS_API_KEY"],
-            "cloudflare": ["CLOUDFLARE_API_KEY", "CLOUDFLARE_AI_API_KEY"],
-            "github":     ["GITHUB_TOKEN", "GITHUB_API_KEY"],
+            "cloudflare": ["CLOUDFLARE_API_TOKEN", "CLOUDFLARE_API_KEY"],
+            "github":     ["GITHUB_MODELS_TOKEN", "GITHUB_TOKEN"],
             "openrouter": ["OPENROUTER_API_KEY"],
         }
         # 1. Vault (wenn unlocked und Key vorhanden)

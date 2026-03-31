@@ -11,9 +11,9 @@
 
 set -e
 
-REPO_BASE="/home/zombie/triforce/docker/repository/repo/mirror/archive.ailinux.me"
+REPO_BASE="/home/zombie/triforce/docker/repository/repo/mirror/repo.ailinux.me"
 CLIENT_RELEASES="/home/zombie/triforce/client-releases/latest"
-POOL_DIR="$REPO_BASE/pool/main/a/ailinux-client"
+POOL_DIR="$REPO_BASE/pool/main/a/aicoder"
 DISTS_DIR="$REPO_BASE/dists/noble"
 GPG_KEY_ID="ailinux"  # Falls signiert werden soll
 
@@ -131,8 +131,8 @@ done
 
 echo "║"
 echo "║  Download-URLs:"
-echo "║    https://archive.ailinux.me/pool/main/a/ailinux-client/"
+echo "║    https://repo.ailinux.me/pool/main/a/aicoder/"
 echo "║"
 echo "║  APT Installation:"
-echo "║    sudo apt update && sudo apt install ailinux-client"
+echo "║    sudo apt update && sudo apt install aicoder"
 echo "╚═══════════════════════════════════════════════════════════════╝"

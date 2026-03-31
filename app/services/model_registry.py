@@ -1177,7 +1177,7 @@ class ModelRegistry:
             # Image Generation
             ("black-forest-labs/FLUX.1-schnell",            ["image_gen"],          ["image_generator"]),
             ("black-forest-labs/FLUX.1-dev",                ["image_gen"],          ["image_generator"]),
-            ("stabilityai/stable-diffusion-xl-base-1.0",   ["image_gen"],          ["image_generator"]),
+            # ("stabilityai/stable-diffusion-xl-base-1.0",   ["image_gen"],          ["image_generator"]),  # DEPRECATED on HF
             # Audio / Music
             ("facebook/musicgen-large",                     ["audio"],              ["audio_processor"]),
             ("facebook/musicgen-medium",                    ["audio"],              ["audio_processor"]),

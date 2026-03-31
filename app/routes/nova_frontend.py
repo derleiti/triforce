@@ -132,7 +132,22 @@ def _categorize(model: Dict[str, Any]) -> Dict[str, Any]:
     if any(x in blob for x in ["gpt-", "claude", "gemini", "mistral", "ministral", "pixtral", "llama", "qwen", "deepseek", "command-r", "chat"]):
         caps["chat"] = True
 
-    if any(x in blob for x in ["vision", "image understanding", "image-to-text", "multimodal", "pixtral", "gpt-4o", "claude-3", "claude-4", "gemini", "llama-4-scout"]):
+    if any(x in blob for x in [
+            "vision", "image understanding", "image-to-text", "multimodal",
+            # Mistral: pixtral + all current mistral models have vision
+            "pixtral",
+            # OpenAI: gpt-4o, gpt-5 (all have vision)
+            "gpt-4o", "gpt-5",
+            # Anthropic: all claude-3+ have vision
+            "claude-3", "claude-4", "claude-sonnet-4", "claude-opus-4", "claude-haiku-4",
+            # Google: all gemini models
+            "gemini",
+            # Meta: llama-3.2-vision + llama-4-scout
+            "llama-3.2-11b-vision", "llama-3.2-90b-vision", "llama-4-scout",
+    ]):
+        caps["vision"] = True
+    # Mistral: mistral-small/medium/large all support vision natively since 2025
+    if provider == "mistral" and any(x in blob for x in ["mistral-small", "mistral-medium", "mistral-large"]):
         caps["vision"] = True
     # Vision-Blacklist: Modelle die zwar "gemini" im Namen haben, aber KEIN vision-chat können
     _vision_blacklist = [
@@ -150,14 +165,20 @@ def _categorize(model: Dict[str, Any]) -> Dict[str, Any]:
                       "reranker", "embed", "stt", "tts", "transcribe", "guard", "classification",
                       "dreamshaper"]
     _is_blacklisted = any(x in blob for x in _img_blacklist)
-    # OpenRouter hat keine /images/generations API — openrouter/*-image Modelle nicht anzeigen
-    if provider == "openrouter" and any(x in blob for x in [
-            "flash-image", "pro-image", "gemini-3.1-flash-image", "gemini-3-pro-image"]):
-        _is_blacklisted = True
+    # OpenRouter: image gen works via /chat/completions with modalities: ["image","text"]
+    # → DO NOT blacklist OpenRouter image models
     if not _is_blacklisted and ("image_gen" in caps_list or any(x in blob for x in [
-            "gpt-image", "dall-e", "imagen", "image generation", "text-to-image",
-            "flux", "stable diffusion", "image_gen", "dreamshaper", "sdxl", "lucid-origin", "phoenix",
-            "flash-image", "nano-banana", "gemini-3-pro-image", "gemini-3.1-flash-image"])):
+            # OpenAI image models
+            "gpt-image", "gpt-5-image", "dall-e",
+            # Google image models
+            "imagen", "flash-image", "nano-banana", "gemini-3-pro-image", "gemini-3.1-flash-image",
+            # Flux / Stability
+            "flux", "stable diffusion", "sdxl", "lucid-origin", "phoenix",
+            # OpenRouter additional image models
+            "seedream", "riverflow", "sourceful",
+            # Generic markers
+            "image generation", "text-to-image", "image_gen",
+    ])):
         caps["media_image"] = True
 
     if "video_gen" in caps_list or any(x in blob for x in ["sora", "veo", "video generation", "text-to-video", "video_gen"]):
@@ -295,10 +316,10 @@ async def _image_proxy(req: ImageRequest) -> Dict[str, Any]:
 
     # Gemini native image generation (gemini-2.5-flash-image = "nano banana" — FREE tier 500 RPD)
     # Uses generateContent with responseModalities=["image","text"]
-    _GEMINI_NATIVE_IMG = ("gemini/gemini-2.5-flash-image", "gemini/gemini-3.1-flash-image", "gemini/gemini-3.1-pro-image")
+    _GEMINI_NATIVE_IMG = ("gemini/gemini-2.5-flash-image", "gemini/gemini-3-pro-image", "gemini/gemini-3.1-flash-image", "gemini/gemini-3.1-pro-image", "gemini/nano-banana")
     # gemini-3.1-pro-image via :predict (Imagen), but gemini-3.1-flash-image via generateContent (free)
     if any(m.startswith(p) for p in _GEMINI_NATIVE_IMG):
-        gemini_key = os.getenv("GEMINI_API_KEY", "")
+        gemini_key = (os.getenv("GOOGLE_AI_STUDIO_KEY", "") or os.getenv("GEMINI_API_KEY", ""))
         if not gemini_key:
             raise HTTPException(status_code=400, detail="GEMINI_API_KEY missing for Gemini native image")
         gemini_model = req.model[len("gemini/"):]
@@ -329,8 +350,8 @@ async def _image_proxy(req: ImageRequest) -> Dict[str, Any]:
                     err_msg = r.text or f"HTTP {r.status_code}"
                 err_lower = err_msg.lower()
                 if any(k in err_lower for k in ("paid", "upgrade", "billing", "permission", "quota", "resource exhausted")):
-                    raise HTTPException(status_code=402,
-                        detail="Gemini native image: Free-Tier-Limit erreicht oder API-Key benötigt Bezahlung. Quota: 500 RPD kostenlos via AI Studio.")
+                    raise HTTPException(status_code=429,
+                        detail="Gemini Free-Tier-Limit vorübergehend erreicht (500 Requests/Tag via AI Studio). Bitte in einigen Minuten erneut versuchen oder Cloudflare Flux nutzen.")
                 raise HTTPException(status_code=r.status_code, detail=f"Gemini native image error: {err_msg}")
             rdata = r.json()
             result_images = []
@@ -346,8 +367,8 @@ async def _image_proxy(req: ImageRequest) -> Dict[str, Any]:
                     "result": {"data": result_images}}
 
     # Gemini Imagen path
-    if m.startswith("gemini/imagen") or m.startswith("gemini/gemini-3-pro-image") or m.startswith("gemini/gemini-3.1-pro") or m.startswith("gemini/nano-banana"):
-        gemini_key = os.getenv("GEMINI_API_KEY", "")
+    if m.startswith("gemini/imagen"):
+        gemini_key = (os.getenv("GOOGLE_AI_STUDIO_KEY", "") or os.getenv("GEMINI_API_KEY", ""))
         if not gemini_key:
             raise HTTPException(status_code=400, detail="GEMINI_API_KEY missing for Imagen")
         gemini_model = req.model[len("gemini/"):]
@@ -415,10 +436,21 @@ async def _image_proxy(req: ImageRequest) -> Dict[str, Any]:
                 _w, _h = int(_parts[0]), int(_parts[1])
             except Exception:
                 pass
-        cf_payload = {"prompt": req.prompt, "num_steps": 8, "width": _w, "height": _h}
-        cf_headers = {"Authorization": f"Bearer {cf_token}", "Content-Type": "application/json"}
+        # Flux-2 models require multipart/form-data, older models use JSON
+        _cf_multipart = any(x in cf_model for x in ["flux-2-dev", "flux-2-klein"])
+        cf_headers = {"Authorization": f"Bearer {cf_token}"}
         async with httpx.AsyncClient(timeout=120.0) as client:
-            r = await client.post(cf_url, json=cf_payload, headers=cf_headers)
+            if _cf_multipart:
+                # Multipart form-data for Flux-2 models
+                _form_data = {"prompt": req.prompt, "width": str(_w), "height": str(_h)}
+                if "flux-2-dev" in cf_model:
+                    _form_data["steps"] = "25"
+                r = await client.post(cf_url, data=_form_data, headers=cf_headers)
+            else:
+                # JSON for older models (flux-1-schnell, SDXL, phoenix, lucid-origin)
+                cf_payload = {"prompt": req.prompt, "num_steps": 8, "width": _w, "height": _h}
+                cf_headers["Content-Type"] = "application/json"
+                r = await client.post(cf_url, json=cf_payload, headers=cf_headers)
             if r.status_code >= 400:
                 try:
                     err_body = r.json()
@@ -450,31 +482,153 @@ async def _image_proxy(req: ImageRequest) -> Dict[str, Any]:
                     "result": {"data": [{"b64_json": b64_data, "content_type": "image/png"}]}}
 
     # ── OpenRouter image generation path ──────────────────────────────────────
+    # OpenRouter uses /chat/completions with modalities: ["image", "text"]
     if m.startswith("openrouter/"):
         import os as _os
         or_key = _os.getenv("OPENROUTER_API_KEY", "")
         if not or_key:
             raise HTTPException(status_code=503, detail="OpenRouter API Key fehlt (OPENROUTER_API_KEY)")
-        # OpenRouter model-ID ohne "openrouter/" prefix
-        or_model = req.model[len("openrouter/"):]  # z.B. google/gemini-3.1-flash-image-preview
-        # OpenRouter hat keine dedizierte /images/generations API.
-        # Gemini-Image via OpenRouter läuft über /chat/completions mit generateContent-Semantik.
-        # Für direkte Bild-Generierung: Gemini native Pfad verwenden (gemini/* statt openrouter/*).
-        # OpenRouter Gemini image models: redirect user to free native gemini/* models
-        _or_mid = req.model.lower()
-        if any(x in _or_mid for x in ("flash-image", "pro-image", "gemini-3.1-flash-image", "gemini-3-pro-image", "gemini-2.5-flash-image")):
-            raise HTTPException(
-                status_code=400,
-                detail=(
-                    f"Bildgenerierung via OpenRouter wird nicht unterstützt. "
-                    "Bitte das native Gemini-Modell wählen: 'gemini/gemini-2.5-flash-image' (kostenlos, 500/Tag) "
-                    "oder ein Cloudflare Flux-Modell für sofortige Ergebnisse."
-                )
-            )
-        raise HTTPException(
-            status_code=400,
-            detail=f"OpenRouter Bildgenerierung für '{req.model}' nicht verfügbar. Bitte ein direktes Modell wählen."
-        )
+        or_model = req.model[len("openrouter/"):]
+        _or_aspect_map = {
+            "512x512": "1:1", "768x768": "1:1", "1024x1024": "1:1",
+            "640x360": "16:9", "1280x720": "16:9", "1920x1080": "16:9",
+            "640x480": "4:3", "800x600": "4:3", "1024x768": "4:3",
+            "480x640": "3:4", "600x800": "3:4", "768x1024": "3:4",
+            "360x640": "9:16", "480x854": "9:16", "720x1280": "9:16", "1080x1920": "9:16",
+        }
+        or_aspect = _or_aspect_map.get(req.size or "", "1:1")
+        or_payload = {
+            "model": or_model,
+            "messages": [{"role": "user", "content": req.prompt}],
+            "modalities": ["image", "text"],
+            "image_config": {"aspect_ratio": or_aspect},
+        }
+        or_headers = {
+            "Authorization": f"Bearer {or_key}",
+            "Content-Type": "application/json",
+            "HTTP-Referer": "https://ailinux.me",
+            "X-Title": "AILinux Nova",
+        }
+        async with httpx.AsyncClient(timeout=180.0) as client:
+            r = await client.post("https://openrouter.ai/api/v1/chat/completions", json=or_payload, headers=or_headers)
+            if r.status_code >= 400:
+                try:
+                    err_data = r.json()
+                    err_msg = err_data.get("error", {}).get("message", "") or str(err_data)[:300]
+                except Exception:
+                    err_msg = r.text[:300]
+                err_lower = err_msg.lower()
+                if any(k in err_lower for k in ("credit", "quota", "billing", "insufficient", "limit", "exceeded")):
+                    raise HTTPException(status_code=402,
+                        detail="OpenRouter API-Limit erreicht. Bitte API-Credits aufladen unter https://openrouter.ai/credits")
+                raise HTTPException(status_code=r.status_code, detail=f"OpenRouter image error: {err_msg}")
+            rdata = r.json()
+            import base64 as _b64, re as _re
+            result_images = []
+            for choice in rdata.get("choices", []):
+                msg = choice.get("message", {})
+                # OpenRouter returns images in message.images[] (separate from content)
+                for img_block in msg.get("images", []):
+                    if img_block.get("type") == "image_url":
+                        img_url = img_block.get("image_url", {})
+                        url_str = img_url.get("url", "") if isinstance(img_url, dict) else str(img_url)
+                        if url_str.startswith("data:image"):
+                            b64_part = url_str.split(",", 1)[1] if "," in url_str else ""
+                            if b64_part:
+                                # Extract mime type from data URL
+                                _mime = "image/png"
+                                if url_str.startswith("data:image/"):
+                                    _mime = url_str.split(";")[0][5:]  # "data:image/png" -> "image/png"
+                                result_images.append({"b64_json": b64_part, "content_type": _mime})
+                        elif url_str.startswith("http"):
+                            try:
+                                img_resp = await client.get(url_str, timeout=30.0)
+                                if img_resp.status_code == 200 and "image" in img_resp.headers.get("content-type", ""):
+                                    result_images.append({"b64_json": _b64.b64encode(img_resp.content).decode(),
+                                                          "content_type": img_resp.headers.get("content-type", "image/png").split(";")[0]})
+                            except Exception:
+                                pass
+                content = msg.get("content", "")
+                # Content can be array of content blocks (image_url type)
+                if isinstance(content, list):
+                    for block in content:
+                        btype = block.get("type", "")
+                        # image_url format: {"type":"image_url","image_url":{"url":"data:image/..."}}
+                        if btype == "image_url":
+                            img_url = block.get("image_url", {})
+                            url_str = img_url.get("url", "") if isinstance(img_url, dict) else str(img_url)
+                            if url_str.startswith("data:image"):
+                                b64_part = url_str.split(",", 1)[1] if "," in url_str else ""
+                                if b64_part:
+                                    result_images.append({"b64_json": b64_part, "content_type": "image/png"})
+                            elif url_str.startswith("http"):
+                                # External URL — fetch and convert to b64
+                                try:
+                                    img_resp = await client.get(url_str, timeout=30.0)
+                                    if img_resp.status_code == 200 and "image" in img_resp.headers.get("content-type", ""):
+                                        result_images.append({"b64_json": _b64.b64encode(img_resp.content).decode(),
+                                                              "content_type": img_resp.headers.get("content-type", "image/png").split(";")[0]})
+                                except Exception:
+                                    pass
+                        # inline_data format (Gemini-style via OR): {"type":"inline_data","inline_data":{"mime_type":"...","data":"..."}}
+                        elif btype == "inline_data":
+                            idata = block.get("inline_data", {})
+                            if idata.get("data"):
+                                result_images.append({"b64_json": idata["data"], "content_type": idata.get("mime_type", "image/png")})
+                # Content can be string with embedded data URLs
+                elif isinstance(content, str) and "data:image" in content:
+                    for match in _re.finditer(r'data:image/(\w+);base64,([A-Za-z0-9+/=]+)', content):
+                        result_images.append({"b64_json": match.group(2), "content_type": f"image/{match.group(1)}"})
+            if not result_images:
+                # Log full response for debugging
+                logger.warning("OpenRouter image: no images found. Status=%d Response=%s", r.status_code, str(rdata)[:800])
+                # Check if response indicates insufficient credits
+                usage = rdata.get("usage", {})
+                err_hint = ""
+                if not rdata.get("choices"):
+                    err_hint = " Keine choices in Antwort — moeglicherweise unzureichende Credits."
+                raise HTTPException(status_code=500,
+                    detail=f"OpenRouter: Kein Bild in der Antwort.{err_hint} Modell unterstuetzt moeglicherweise keine Bildgenerierung oder API-Credits sind leer.")
+            return {"ok": True, "mode": "media_image", "provider": "openrouter",
+                    "result": {"data": result_images}}
+
+    # ── HuggingFace Inference API image path ──────────────────────────────────
+    if m.startswith("hf/"):
+        import os as _os
+        hf_key = _os.getenv("HUGGINGFACE_API_KEY", "") or _os.getenv("HF_TOKEN", "")
+        if not hf_key:
+            raise HTTPException(status_code=503, detail="HuggingFace API Key fehlt (HUGGINGFACE_API_KEY)")
+        hf_model = req.model[len("hf/"):]  # e.g. black-forest-labs/FLUX.1-schnell
+        hf_url = f"https://router.huggingface.co/hf-inference/models/{hf_model}"
+        hf_headers = {"Authorization": f"Bearer {hf_key}"}
+        hf_payload = {"inputs": req.prompt}
+        async with httpx.AsyncClient(timeout=180.0) as client:
+            r = await client.post(hf_url, json=hf_payload, headers=hf_headers)
+            if r.status_code >= 400:
+                try:
+                    err_data = r.json()
+                    err_msg = err_data.get("error", str(err_data))[:300]
+                except Exception:
+                    err_msg = r.text[:300]
+                raise HTTPException(status_code=r.status_code, detail=f"HuggingFace Fehler: {err_msg}")
+            # HF Inference API returns raw image bytes (PNG/JPEG)
+            import base64 as _b64
+            ct = r.headers.get("content-type", "")
+            if "image" in ct:
+                b64_data = _b64.b64encode(r.content).decode()
+                return {"ok": True, "mode": "media_image", "provider": "huggingface",
+                        "result": {"data": [{"b64_json": b64_data, "content_type": ct.split(";")[0]}]}}
+            # Some models return JSON with base64
+            try:
+                jdata = r.json()
+                if isinstance(jdata, list) and jdata:
+                    img = jdata[0].get("image") or jdata[0].get("generated_image", "")
+                    if img:
+                        return {"ok": True, "mode": "media_image", "provider": "huggingface",
+                                "result": {"data": [{"b64_json": img, "content_type": "image/png"}]}}
+            except Exception:
+                pass
+            raise HTTPException(status_code=500, detail="HuggingFace: Unerwartetes Antwortformat")
 
     # Internal txt2img path (SD, ComfyUI, FLUX via together, etc.)
     base = _base_url()

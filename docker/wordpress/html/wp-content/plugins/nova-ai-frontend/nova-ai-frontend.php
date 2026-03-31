@@ -337,8 +337,8 @@ function nova_proxy_account(WP_REST_Request $r): WP_REST_Response {
         return new WP_REST_Response([
             'ok'         => true,
             'logged_in'  => false,
-            'login_url'  => 'https://login.ailinux.me',
-            'register_url' => 'https://login.ailinux.me',
+            'login_url'  => 'https://ailinux.me/account',
+            'register_url' => 'https://ailinux.me/account',
         ], 200);
     }
     $raw_tier = get_user_meta($user->ID, 'nova_tier', true) ?: 'free';
@@ -366,7 +366,7 @@ function nova_proxy_account(WP_REST_Request $r): WP_REST_Response {
         'entitlements'=> $entitls,
         'client_id'   => $client_id,
         'downloads'   => $downloads,
-        'account_url' => 'https://login.ailinux.me',
+        'account_url' => 'https://ailinux.me/account',
         'shop_url'    => 'https://ailinux.me/shop',
     ], 200);
 }
@@ -375,7 +375,7 @@ function nova_proxy_account(WP_REST_Request $r): WP_REST_Response {
 function nova_auth_status(): WP_REST_Response {
     $user = wp_get_current_user();
     if (!$user || !$user->ID) {
-        return new WP_REST_Response(['wp_logged_in'=>false,'login_url'=>'https://login.ailinux.me'], 200);
+        return new WP_REST_Response(['wp_logged_in'=>false,'login_url'=>'https://ailinux.me/account'], 200);
     }
     return new WP_REST_Response([
         'wp_logged_in' => true,

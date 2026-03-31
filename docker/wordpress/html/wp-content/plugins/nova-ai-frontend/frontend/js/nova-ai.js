@@ -705,7 +705,7 @@
             <div style="font-size:3rem;margin-bottom:1rem">\u{1F510}</div>
             <h3 style="color:#f1f5f9;margin-bottom:.5rem">Nicht angemeldet</h3>
             <p style="color:#94a3b8;margin-bottom:1.5rem">Melde dich an um dein Abo, gekaufte Apps und Downloads zu sehen.</p>
-            <a href="${d.login_url||'https://login.ailinux.me'}" target="_blank"
+            <a href="${d.login_url||'https://ailinux.me/account'}" target="_blank"
                style="display:inline-block;padding:.75rem 2rem;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:white;border-radius:10px;text-decoration:none;font-weight:600">
               \u{1F511} Anmelden / Registrieren
             </a>
@@ -778,7 +778,7 @@
                 <div style="display:inline-block;margin-top:.25rem;padding:.2rem .75rem;background:${tclr}22;border:1px solid ${tclr}44;border-radius:20px;color:${tclr};font-size:.75rem;font-weight:600">${tico} ${tier.toUpperCase()}</div>
               </div>
               <div style="margin-left:auto">
-                <a href="${d.account_url||'https://login.ailinux.me'}" target="_blank"
+                <a href="${d.account_url||'https://ailinux.me/account'}" target="_blank"
                    style="padding:.5rem 1rem;background:rgba(255,255,255,.05);border:1px solid #2a2a3a;color:#94a3b8;border-radius:8px;text-decoration:none;font-size:.8rem">\u2699\uFE0F Account</a>
               </div>
             </div>

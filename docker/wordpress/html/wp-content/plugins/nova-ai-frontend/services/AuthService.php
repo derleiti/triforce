@@ -16,7 +16,7 @@ class AuthService {
     private static ?self $instance = null;
     private string $api_endpoint;
     private string $api_endpoint_internal;
-    private string $login_page = 'https://login.ailinux.me';
+    private string $login_page = 'https://ailinux.me/account';
 
     private static function normalize_tier_value(string $tier): string {
         $t = strtolower(trim($tier));
@@ -650,7 +650,7 @@ HTML;
     private function get_allowed_origins(): array {
         $origins    = [];
         $settings   = get_option('nova_ai_settings', []);
-        $login_url  = $settings['login_url'] ?? 'https://login.ailinux.me';
+        $login_url  = $settings['login_url'] ?? 'https://ailinux.me/account';
         $login_orig = $this->to_origin($login_url);
         if ($login_orig) {
             $origins[] = $login_orig;
@@ -881,9 +881,9 @@ HTML;
             var email = localStorage.getItem('ailinux_email');
             var tier  = localStorage.getItem('ailinux_tier') || 'free';
             if (token && email) {
-                container.innerHTML = '<div class="ailinux-account-info"><div class="ailinux-account-avatar">👤</div><div class="ailinux-account-details"><h3>' + email + '</h3><span class="ailinux-account-tier">' + tier.toUpperCase() + '</span></div></div><div class="ailinux-account-actions"><a href="https://login.ailinux.me">Account</a><a href="https://update.ailinux.me">Downloads</a><a href="#" onclick="ailinuxLogout();return false;">Abmelden</a></div>';
+                container.innerHTML = '<div class="ailinux-account-info"><div class="ailinux-account-avatar">👤</div><div class="ailinux-account-details"><h3>' + email + '</h3><span class="ailinux-account-tier">' + tier.toUpperCase() + '</span></div></div><div class="ailinux-account-actions"><a href="https://ailinux.me/account">Account</a><a href="https://update.ailinux.me">Downloads</a><a href="#" onclick="ailinuxLogout();return false;">Abmelden</a></div>';
             } else {
-                container.innerHTML = '<p style="color:#94a3b8;text-align:center">Nicht angemeldet</p><a href="https://login.ailinux.me" class="ailinux-auth-btn" style="display:block;text-align:center;margin-top:1rem">🔐 Anmelden</a>';
+                container.innerHTML = '<p style="color:#94a3b8;text-align:center">Nicht angemeldet</p><a href="https://ailinux.me/account" class="ailinux-auth-btn" style="display:block;text-align:center;margin-top:1rem">🔐 Anmelden</a>';
             }
         });
         function ailinuxLogout() {
@@ -915,7 +915,7 @@ HTML;
     public function render_auth_button($atts): string {
         ob_start(); ?>
         <div class="ailinux-auth-toggle" id="ailinux-auth-toggle">
-            <a href="https://login.ailinux.me" class="ailinux-auth-btn">🔐 Anmelden</a>
+            <a href="https://ailinux.me/account" class="ailinux-auth-btn">🔐 Anmelden</a>
         </div>
         <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -923,7 +923,7 @@ HTML;
             var token = localStorage.getItem('ailinux_token');
             var email = localStorage.getItem('ailinux_email');
             if (token && email) {
-                container.innerHTML = '<a href="https://login.ailinux.me" class="ailinux-auth-btn ailinux-logged-in">👤 ' + email.split('@')[0] + '</a>';
+                container.innerHTML = '<a href="https://ailinux.me/account" class="ailinux-auth-btn ailinux-logged-in">👤 ' + email.split('@')[0] + '</a>';
             }
         });
         </script>

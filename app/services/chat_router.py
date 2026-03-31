@@ -408,6 +408,10 @@ class APIProxy:
             result = await self._cerebras_chat(api_key, model_id, messages, temperature, max_tokens)
         elif provider == "openrouter":
             result = await self._openrouter_chat(api_key, model_id, messages, temperature, max_tokens)
+        elif provider == "cloudflare":
+            result = await self._cloudflare_chat(api_key, model_id, messages, temperature, max_tokens)
+        elif provider == "github":
+            result = await self._github_chat(api_key, model_id, messages, temperature, max_tokens)
         else:
             raise RuntimeError(f"Unknown provider: {provider}")
         
@@ -598,6 +602,38 @@ class APIProxy:
                 if resp.status != 200:
                     error = await resp.text()
                     raise RuntimeError(f"OpenRouter API error: {error}")
+                data = await resp.json()
+                return data["choices"][0]["message"]["content"]
+
+    async def _cloudflare_chat(self, api_key: str, model: str, messages: list, temp: float, max_tokens: int) -> str:
+        """Cloudflare Workers AI"""
+        from .chat import _stream_cloudflare
+        from ..config import get_settings
+        settings = get_settings()
+        chunks = []
+        async for chunk in _stream_cloudflare(
+            f"cloudflare/{model}", messages,
+            account_id=settings.cloudflare_account_id,
+            api_token=api_key,
+            temperature=temp, stream=True, timeout=30.0,
+        ):
+            chunks.append(chunk)
+        return "".join(chunks)
+
+    async def _github_chat(self, api_key: str, model: str, messages: list, temp: float, max_tokens: int) -> str:
+        """GitHub Models (OpenAI-compatible)"""
+        async with aiohttp.ClientSession(timeout=self.timeout) as session:
+            async with session.post(
+                "https://models.github.ai/inference/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {api_key}",
+                    "Content-Type": "application/json",
+                },
+                json={"model": model, "messages": messages, "temperature": temp, "max_tokens": max_tokens},
+            ) as resp:
+                if resp.status != 200:
+                    error = await resp.text()
+                    raise RuntimeError(f"GitHub Models error: {error[:200]}")
                 data = await resp.json()
                 return data["choices"][0]["message"]["content"]
 
