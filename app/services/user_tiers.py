@@ -443,7 +443,7 @@ class UserTierService:
 # Bei Swarm-Clients: Output wird lokal auf dem Client gespeichert,
 # nicht auf dem Server-Dateisystem. Das regelt der swarm CLI Client-seitig.
 
-# Tools die NUR für Admins sind (Schreibzugriff auf sensitive Server-Daten)
+# Tools die NUR für Admins sind
 ADMIN_ONLY_TOOLS: set = {
     "memory_store",      # Server-Memory schreiben
     "vault_add",         # Secrets schreiben
@@ -452,14 +452,65 @@ ADMIN_ONLY_TOOLS: set = {
     "vault_lock",        # Vault sperren
 }
 
+# Tools die externe Clients (ai-coder, REST-Clients mit account_role=client)
+# NIEMALS aufrufen dürfen — nur lesen, niemals auf Server schreiben
+CLIENT_BLOCKED_TOOLS: set = {
+    # Shell & Ausführung
+    "shell", "task_runner", "binary_exec", "custom_exec", "custom_binary",
+    # Code schreiben
+    "code_edit", "code_patch",
+    # Dateisystem schreiben
+    "file_ops",
+    # Git schreiben
+    "git_ops", "git",
+    # Services & System ändern
+    "service_control", "restart", "hot_reload",
+    "package_manager", "container_control",
+    # Config & Secrets
+    "config_set", "vault_add", "vault_remove_key", "vault_unlock", "vault_lock",
+    # Remote-Nodes
+    "remote_exec", "remote_task", "remote_admin",
+    # Agents starten/stoppen
+    "agent_start", "agent_stop", "agent_spawn", "agent_spawn_worker",
+    "agent_spawn_send", "wakeup_agent", "bootstrap_agents",
+    # WordPress schreiben
+    "wp_create_draft", "wp_create_page", "wp_publish_post",
+    "wp_update_post", "wp_delete_post", "wp_multi_ai_post",
+    "create_post", "media_upload", "posts_create",
+    # Forum schreiben
+    "flarum_discussion_create", "flarum_post_create", "flarum_post_edit",
+    # Mail senden
+    "mail_send",
+    # Memory/Cache schreiben
+    "memory_store", "hive_compress",
+    # Prompts/Config schreiben
+    "prompt_set", "prompts_add", "config_set",
+    "tristar_agent_configure", "cli-agents_update-prompt",
+    # Crawler steuern
+    "admin_crawler_control", "admin_crawler_config_set",
+    # Swarm/Queue steuern
+    "swarm_broadcast", "evolve", "queue_broadcast", "queue_enqueue",
+    # Sonstige destruktive Ops
+    "redis_cleanup", "memory_clear", "tristar_logs_clear",
+    "tristar_conversation_delete", "tristar_prompts_delete",
+    "codebase_backup", "checkpoint_create_v4",
+}
+
 
 def is_tool_allowed_for_role(tool_name: str, account_role: str) -> bool:
     """Prüft ob ein Tool für eine Rolle erlaubt ist.
-    Alle Tools offen — ausser memory_store und vault_* für Clients.
+    - admin: alles
+    - client (ai-coder, externe REST-Clients): nur Lese-Tools
     """
     if account_role == "admin":
         return True
-    return tool_name not in ADMIN_ONLY_TOOLS
+    # Clients dürfen keine schreibenden Server-Tools aufrufen
+    if tool_name in CLIENT_BLOCKED_TOOLS:
+        return False
+    # Legacy: vault/memory auch für andere Rollen sperren
+    if tool_name in ADMIN_ONLY_TOOLS:
+        return False
+    return True
 
 
 def get_tool_mode(tool_name: str, account_role: str) -> str:
