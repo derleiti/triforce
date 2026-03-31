@@ -65,7 +65,8 @@ async def handle_dev_analyze(params: Dict[str, Any]) -> Dict[str, Any]:
     if not path:
         return {"error": "path is required"}
 
-    abs_path = path if path.startswith("/") else str(PROJECT_ROOT / path)
+    root = params.get("root", str(PROJECT_ROOT))
+    abs_path = path if path.startswith("/") else str(Path(root) / path)
     if not os.path.exists(abs_path):
         return {"error": f"Path not found: {abs_path}"}
 
@@ -258,7 +259,8 @@ async def handle_dev_lint(params: Dict[str, Any]) -> Dict[str, Any]:
     if not path:
         return {"error": "path is required"}
 
-    abs_path = path if path.startswith("/") else str(PROJECT_ROOT / path)
+    root = params.get("root", str(PROJECT_ROOT))
+    abs_path = path if path.startswith("/") else str(Path(root) / path)
     if language == "auto":
         language = _detect_language(abs_path)
 
@@ -452,7 +454,8 @@ async def handle_dev_summarize(params: Dict[str, Any]) -> Dict[str, Any]:
     depth = params.get("depth", "normal")
     focus = params.get("focus", "all")
 
-    abs_path = path if path.startswith("/") else str(PROJECT_ROOT / path)
+    root = params.get("root", str(PROJECT_ROOT))
+    abs_path = path if path.startswith("/") else str(Path(root) / path)
     if not os.path.exists(abs_path):
         return {"error": f"Path not found: {abs_path}"}
 
@@ -567,7 +570,8 @@ async def handle_dev_links(params: Dict[str, Any]) -> Dict[str, Any]:
     check_external = params.get("check_external", False)
     language = params.get("language", "auto")
 
-    abs_path = path if path.startswith("/") else str(PROJECT_ROOT / path)
+    root = params.get("root", str(PROJECT_ROOT))
+    abs_path = path if path.startswith("/") else str(Path(root) / path)
     if not os.path.exists(abs_path):
         return {"error": f"Path not found: {abs_path}"}
 
@@ -639,7 +643,8 @@ async def handle_dev_refactor(params: Dict[str, Any]) -> Dict[str, Any]:
     focus = params.get("focus", "all")
     apply = params.get("apply", False)
 
-    abs_path = path if path.startswith("/") else str(PROJECT_ROOT / path)
+    root = params.get("root", str(PROJECT_ROOT))
+    abs_path = path if path.startswith("/") else str(Path(root) / path)
     if not os.path.exists(abs_path):
         return {"error": f"Path not found: {abs_path}"}
 
@@ -747,10 +752,12 @@ async def handle_git(params: Dict[str, Any]) -> Dict[str, Any]:
     mode = params.get("mode", "status")
     message = params.get("message", "")
     branch = params.get("branch", "")
-    path = params.get("path", str(PROJECT_ROOT))
+    root = params.get("root", str(PROJECT_ROOT))
+    path = params.get("path", root)
     args = params.get("args", "")
 
-    abs_path = path if path.startswith("/") else str(PROJECT_ROOT / path)
+    root = params.get("root", str(PROJECT_ROOT))
+    abs_path = path if path.startswith("/") else str(Path(root) / path)
 
     cmd_map = {
         "status": "git status --short --branch",
