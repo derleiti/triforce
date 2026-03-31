@@ -176,6 +176,28 @@ function initDashboard(root){
     });
   });
 
+  // ?view= URL-Parameter beim Seitenload auswerten
+  (function(){
+    var view = new URLSearchParams(location.search).get('view');
+    // Mapping: view= -> data-panel Wert
+    var MAP = {
+      profile: 'overview', account: 'overview', overview: 'overview',
+      subscription: 'subscription', abonnement: 'subscription',
+      purchases: 'downloads', einkaufe: 'downloads', downloads: 'downloads'
+    };
+    var panelName = view ? (MAP[view.toLowerCase()] || view) : null;
+    if (panelName) {
+      var targetBtn = root.querySelector('[data-panel="' + panelName + '"]');
+      if (targetBtn) {
+        root.querySelectorAll('.nas-nav-item').forEach(function(x){x.classList.remove('active')});
+        targetBtn.classList.add('active');
+        root.querySelectorAll('.nas-panel').forEach(function(p){p.classList.remove('active')});
+        var panel = root.querySelector('#nas-panel-' + panelName);
+        if (panel) { panel.classList.add('active'); loadPanel(panelName, root); }
+      }
+    }
+  })();
+
   // Logout
   const logoutBtn=root.querySelector('#nas-logout');
   if(logoutBtn){

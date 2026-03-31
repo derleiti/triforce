@@ -48,7 +48,7 @@ class AILinux_MenuAuth_Service {
 
     private function build_auth_html(): string {
         $settings     = get_option('nova_ai_settings', []);
-        $login_url    = rtrim($settings['login_url'] ?? 'https://ailinux.me/account', '/');
+        $login_url    = rtrim($settings['login_url'] ?? 'https://login.ailinux.me', '/');
         $redirect_url = (is_ssl() ? 'https://' : 'http://') . ($_SERVER['HTTP_HOST'] ?? '') . ($_SERVER['REQUEST_URI'] ?? '/');
 
         if (is_user_logged_in()) {
@@ -60,9 +60,9 @@ class AILinux_MenuAuth_Service {
             $rest_logout = esc_url(rest_url('nova-ai/v1/auth/logout'));
             $wp_logout   = esc_url(wp_logout_url(home_url()));
             $nonce       = esc_attr(wp_create_nonce('wp_rest'));
-            $account_url = esc_url($login_url . '?view=account');
-            $sub_url     = esc_url($login_url . '?view=subscription');
-            $buys_url    = esc_url($login_url . '?view=purchases');
+            $account_url = esc_url($login_url . '?tab=profile');
+            $sub_url     = esc_url($login_url . '?tab=subscription');
+            $buys_url    = esc_url($login_url . '?tab=purchases');
             $can_admin   = current_user_can('manage_options');
 
             $admin_link = $can_admin
@@ -138,7 +138,7 @@ class AILinux_MenuAuth_Service {
         $is_logged_in   = is_user_logged_in();
         $sync_url       = wp_json_encode(rest_url('nova-ai/v1/auth/sync'));
         $already_synced = $is_logged_in ? 'true' : 'false';
-        $login_url      = esc_js(get_option('nova_ai_settings', [])['login_url'] ?? 'https://ailinux.me/account');
+        $login_url      = esc_js(get_option('nova_ai_settings', [])['login_url'] ?? 'https://login.ailinux.me');
         ?>
 <script>
 (function () {
