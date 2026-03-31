@@ -168,7 +168,7 @@ class AccountSuiteService {
       <div class="cf-turnstile" data-sitekey="<?php echo esc_attr(get_option('cfturnstile_key', '')); ?>" data-theme="dark" data-size="normal"></div>
       <button type="submit" class="nas-btn-primary" id="nas-login-btn">Sign In</button>
     </form>
-    <form id="nas-reg-form" class="nas-form" style="display:none" novalidate>
+    <form id="nas-register-form" class="nas-form" style="display:none" novalidate>
       <div class="nas-field"><label>Email</label><input type="email" id="nas-reg-email" placeholder="you@example.com" required autocomplete="email"></div>
       <div class="nas-field nas-pw-wrap"><label>Password <small>(min. 8 characters)</small></label><input type="password" id="nas-reg-pass" placeholder="••••••••" minlength="8" required autocomplete="new-password"><button type="button" class="nas-pw-toggle">👁</button></div>
       <div class="nas-field"><label>Name <small>(optional)</small></label><input type="text" id="nas-reg-name" placeholder="Your Name" autocomplete="name"></div>

@@ -114,7 +114,7 @@ function initAuthForms(root){
   }
 
   // ── REGISTER SUBMIT ──
-  const regForm=root.querySelector('#nas-reg-form');
+  const regForm=root.querySelector('#nas-register-form');
   if(regForm){
     regForm.addEventListener('submit',async function(e){
       e.preventDefault();
