@@ -952,7 +952,7 @@ async def _poll_mail():
                     try:
                         from app.services.mail_service import mail_send
                         mail_send(
-                            to="mrksleitermann@gmail.com",
+                            to="admin@ailinux.me",
                             subject=f"[Nova Research] {subject}",
                             body=f"Nova Research-Report:\nVon: {sender}\n\n{snippet}\n\nAntwort mit [RESEARCH-APPROVED] triggert implementation_agent.",
                         )

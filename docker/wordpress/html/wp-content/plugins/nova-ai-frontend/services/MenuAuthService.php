@@ -95,11 +95,11 @@ class AILinux_MenuAuth_Service {
                 </div>
             </div>
             ' . $admin_link . '
-            <a href="' . $account_url . '" class="ailinux-dropdown-link">👤 Mein Profil</a>
-            <a href="' . $buys_url . '" class="ailinux-dropdown-link">🛒 Meine Käufe</a>
-            <a href="' . $sub_url . '" class="ailinux-dropdown-link">💳 Subscription</a>
+            <a href="' . $account_url . '" class="ailinux-dropdown-link" data-no-swup>👤 Mein Profil</a>
+            <a href="' . $buys_url . '" class="ailinux-dropdown-link" data-no-swup>🛍 Einkäufe</a>
+            <a href="' . $sub_url . '" class="ailinux-dropdown-link" data-no-swup>💳 Abonnement</a>
             <div class="ailinux-dropdown-divider"></div>
-            <button class="ailinux-logout-btn" id="ailinux-logout-btn">🚪 Abmelden</button>
+            <a href="' . $wp_logout . '" class="ailinux-logout-btn" id="ailinux-logout-btn" data-no-swup>🚪 Abmelden</a>
         </div>
 
     </div>
@@ -178,26 +178,14 @@ class AILinux_MenuAuth_Service {
     // ── Logout ───────────────────────────────────────────────────────────────
     var logoutBtn = document.getElementById('ailinux-logout-btn');
     if (logoutBtn) {
-        logoutBtn.addEventListener('click', function () {
-            logoutBtn.disabled    = true;
-            logoutBtn.textContent = '…';
-
+        logoutBtn.addEventListener('click', function (e) {
+            e.preventDefault();
             ['ailinux_token','ailinux_email','ailinux_tier',
-             'ailinux_client_id','ailinux_wp_can_admin'].forEach(function (k) {
-                try { localStorage.removeItem(k); } catch(e) {}
+             'ailinux_client_id','ailinux_wp_can_admin','ailinux_wp_last_sync'].forEach(function (k) {
+                try { localStorage.removeItem(k); } catch(err) {}
             });
-
-            var restUrl  = container.dataset.restLogout;
-            var wpLogout = container.dataset.wpLogout;
-            var nonce    = container.dataset.nonce;
-
-            fetch(restUrl, {
-                method: 'POST',
-                headers: { 'X-WP-Nonce': nonce, 'Content-Type': 'application/json' }
-            })
-            .then(function (r) { return r.json(); })
-            .then(function (d) { window.location.href = d.redirect || '/'; })
-            .catch(function () { window.location.href = wpLogout; });
+            try { document.cookie = 'ailinux_token=;domain=.ailinux.me;path=/;max-age=0'; } catch(err) {}
+            window.location.href = logoutBtn.href || container.dataset.wpLogout;
         });
     }
 
@@ -431,6 +419,7 @@ class AILinux_MenuAuth_Service {
 
 /* ── Logout-Button im Dropdown ───────────────────────────────────────────── */
 .ailinux-logout-btn {
+    display: flex;
     width: 100%;
     justify-content: flex-start;
     padding: .5rem .6rem;
@@ -441,13 +430,14 @@ class AILinux_MenuAuth_Service {
     font-weight: 500;
     box-shadow: none;
     margin-top: 0;
+    text-decoration: none !important;
+    cursor: pointer;
 }
 .ailinux-logout-btn:hover {
     background: rgba(239,68,68,.1);
     transform: none;
     color: #ef4444 !important;
 }
-.ailinux-logout-btn:disabled { opacity: .5; cursor: wait; transform: none; }
 
 /* ── Mobile ──────────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
