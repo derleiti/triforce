@@ -141,20 +141,14 @@ class AILinux_MenuAuth_Service {
         $login_url      = esc_js(get_option('nova_ai_settings', [])['login_url'] ?? 'https://login.ailinux.me');
         ?>
 <script>
-// Logout: same-origin-safe iframe detection
+// Logout: direkte WP-Logout-URL (serverseitig generiert, hat Nonce)
+var _wpLogoutUrl = <?php echo json_encode(wp_logout_url(home_url())); ?>;
 document.addEventListener('click', function(e) {
     var b = e.target.closest('#ailinux-logout-btn');
     if (!b) return;
-    // Pruefe ob window.top zugaenglich (same-origin) oder cross-origin (z.B. Google Translate)
-    var topAccessible = false;
-    try { topAccessible = !!(window.top.location.href); } catch(err) { topAccessible = false; }
-    if (topAccessible) {
-        // Same-origin: direkt im Top-Frame navigieren
-        e.preventDefault();
-        window.top.location.href = b.href;
-    }
-    // Cross-origin iframe (Google Translate): kein preventDefault,
-    // target="_top" uebernimmt nativ und bricht aus dem iframe aus
+    e.preventDefault();
+    e.stopPropagation();
+    window.location.href = _wpLogoutUrl;
 }, true);
 (function () {
     'use strict';
