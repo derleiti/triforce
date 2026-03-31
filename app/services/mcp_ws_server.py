@@ -127,20 +127,37 @@ class MCPMeshServer:
         }
     
     def _get_ssl_context(self) -> Optional[ssl.SSLContext]:
-        """Create SSL context (optional mTLS)"""
+        """Create SSL context (optional mTLS).
+
+        Erwartet in CERT_DIR:
+          server.crt + server.key  — Server-Zertifikat (von interner CA signiert)
+          ca.crt                   — CA-Zertifikat fuer Peer-Verifikation (mTLS)
+
+        Fallback auf ca.crt/ca.key fuer Rueckwaertskompatibilitaet.
+        Federation laeuft ueber WireGuard (bereits verschluesselt) —
+        TLS ist zusaetzliche Schicht, kein Let's Encrypt benoetigt.
+        """
         try:
-            ca_cert = CERT_DIR / "ca.crt"
-            ca_key = CERT_DIR / "ca.key"
-            
-            if not ca_cert.exists() or not ca_key.exists():
+            # Bevorzuge server.crt/server.key (korrekte Trennung CA vs Server-Cert)
+            server_cert = CERT_DIR / "server.crt"
+            server_key  = CERT_DIR / "server.key"
+            ca_cert     = CERT_DIR / "ca.crt"
+
+            # Fallback: altes Schema (ca.crt als Server-Cert)
+            if not server_cert.exists() or not server_key.exists():
+                server_cert = CERT_DIR / "ca.crt"
+                server_key  = CERT_DIR / "ca.key"
+
+            if not server_cert.exists() or not server_key.exists():
                 logger.warning("No certificates - running without TLS")
                 return None
-            
+
             ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-            ctx.load_cert_chain(str(ca_cert), str(ca_key))
+            ctx.load_cert_chain(str(server_cert), str(server_key))
             ctx.verify_mode = ssl.CERT_OPTIONAL  # mTLS optional
-            ctx.load_verify_locations(str(ca_cert))
-            
+            if ca_cert.exists():
+                ctx.load_verify_locations(str(ca_cert))
+
             return ctx
         except Exception as e:
             logger.error(f"SSL setup failed: {e}")
