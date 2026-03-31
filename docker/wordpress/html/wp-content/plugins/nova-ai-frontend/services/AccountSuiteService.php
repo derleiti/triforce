@@ -95,9 +95,19 @@ class AccountSuiteService {
 
     public function api_cancel_subscription(\WP_REST_Request $r): \WP_REST_Response {
         if (!is_user_logged_in()) return new \WP_REST_Response(['ok'=>false,'error'=>'not_logged_in'], 401);
-        $uid = get_current_user_id();
+        $uid  = get_current_user_id();
+        $tier = get_user_meta($uid,'nova_tier',true) ?: 'free';
+        if ($tier === 'free') return new \WP_REST_Response(['ok'=>false,'error'=>'already_free'], 400);
+
         $sid = get_user_meta($uid,'nova_payment_subscription_id',true) ?: '';
-        if (!$sid) return new \WP_REST_Response(['ok'=>false,'error'=>'no_subscription'], 400);
+
+        // Gifted/manual accounts: no subscription_id → downgrade directly
+        if (!$sid) {
+            update_user_meta($uid, 'nova_tier', 'free');
+            return new \WP_REST_Response(['ok'=>true,'message'=>'Subscription cancelled','source'=>'manual']);
+        }
+
+        // LemonSqueezy accounts: cancel via API
         $s    = get_option('nova_ai_settings',[]);
         $base = $s['api_endpoint_internal'] ?? $s['api_endpoint'] ?? 'https://api.ailinux.me';
         $resp = wp_remote_post(rtrim($base,'/').'/v1/tiers/cancel',
