@@ -42,12 +42,17 @@ def _get(path: str, params: Dict = None) -> Dict:
     return r.json()
 
 def _post(path: str, payload: Dict) -> Dict:
-    r = requests.post(f"{FLARUM_API}{path}", headers=_headers(), json=payload, timeout=TIMEOUT)
+    # ensure_ascii=False: Umlaute/Unicode korrekt senden, nicht als \uXXXX escapen
+    body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+    hdrs = {**_headers(), "Content-Type": "application/json; charset=utf-8"}
+    r = requests.post(f"{FLARUM_API}{path}", headers=hdrs, data=body, timeout=TIMEOUT)
     r.raise_for_status()
     return r.json()
 
 def _patch(path: str, payload: Dict) -> Dict:
-    r = requests.patch(f"{FLARUM_API}{path}", headers=_headers(), json=payload, timeout=TIMEOUT)
+    body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+    hdrs = {**_headers(), "Content-Type": "application/json; charset=utf-8"}
+    r = requests.patch(f"{FLARUM_API}{path}", headers=hdrs, data=body, timeout=TIMEOUT)
     r.raise_for_status()
     return r.json()
 
