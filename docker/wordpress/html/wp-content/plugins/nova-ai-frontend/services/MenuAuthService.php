@@ -99,7 +99,7 @@ class AILinux_MenuAuth_Service {
             <a href="' . $buys_url . '" class="ailinux-dropdown-link" data-no-swup>🛍 Einkäufe</a>
             <a href="' . $sub_url . '" class="ailinux-dropdown-link" data-no-swup>💳 Abonnement</a>
             <div class="ailinux-dropdown-divider"></div>
-            <a href="' . $wp_logout . '" class="ailinux-logout-btn" id="ailinux-logout-btn" data-no-swup>🚪 Abmelden</a>
+            <a href="' . $wp_logout . '" class="ailinux-logout-btn" id="ailinux-logout-btn" data-no-swup target="_top" translate="no">🚪 Abmelden</a>
         </div>
 
     </div>
