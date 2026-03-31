@@ -93,18 +93,27 @@ def validate_allowed_paths(paths: List[str]) -> List[str]:
 
     normalized = []
     for raw in paths:
+        # 1. Nur absolute Pfade erlaubt — relative Pfade koennen Traversal verstecken
+        if not raw.startswith("/"):
+            raise HTTPException(400, f"Nur absolute Pfade erlaubt: {raw!r}")
+
+        # 2. '..' Segmente explizit blocken — CWD-unabhaengig, vor resolve()
+        from pathlib import PurePosixPath
+        if ".." in PurePosixPath(raw).parts:
+            raise HTTPException(400, f"Pfad darf kein '..' enthalten: {raw!r}")
+
         try:
-            # resolve() löst ../ auf — kein Betrug möglich
             p = Path(raw).resolve()
         except Exception:
-            raise HTTPException(400, f"Ungültiger Pfad: {raw!r}")
+            raise HTTPException(400, f"Ungueltiger Pfad: {raw!r}")
 
         normed = str(p)
 
+        # 3. Nach Normalisierung gegen Whitelist pruefen
         if not any(normed.startswith(prefix) for prefix in ALLOWED_PATH_PREFIXES):
             raise HTTPException(
                 400,
-                f"Pfad nicht erlaubt (außerhalb Whitelist): {normed!r}",
+                f"Pfad nicht erlaubt (ausserhalb Whitelist): {normed!r}",
             )
 
         normalized.append(normed)
