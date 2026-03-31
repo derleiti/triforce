@@ -521,11 +521,13 @@ async def client_chat(
 
     if (not DEMO_MODE) and is_free_tier(tier):
 
-        # GitHub Models sind kostenlos -> durchlassen
-        # Alles andere: Erzwinge Ollama-Prefix
-
-        if not model.startswith("ollama/") and not model.startswith("github/"):
-
+        # Kostenlose Provider durchlassen: ollama, github, openrouter:free
+        _is_free_provider = (
+            model.startswith("ollama/") or
+            model.startswith("github/") or
+            (model.startswith("openrouter/") and model.endswith(":free"))
+        )
+        if not _is_free_provider:
             model = f"ollama/{model}"
 
 
@@ -547,7 +549,7 @@ async def client_chat(
             raise HTTPException(429, f"Token-Limit erreicht ({limit_check['limit']}/Tag)")
 
 
-        # GitHub Models (kostenlos) oder Ollama Call
+        # Kostenlose Provider: GitHub, OpenRouter:free, Ollama
         if model.startswith("github/"):
             result = await call_github_models(
                 model=model,
@@ -556,6 +558,14 @@ async def client_chat(
                 max_tokens=request.max_tokens
             )
             backend = "github"
+        elif model.startswith("openrouter/") and model.endswith(":free"):
+            result = await call_openrouter(
+                model=normalize_openrouter_model(model),
+                messages=messages,
+                temperature=request.temperature,
+                max_tokens=request.max_tokens
+            )
+            backend = "openrouter"
         else:
             result = await call_ollama(
                 model=model,

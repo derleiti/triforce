@@ -152,6 +152,25 @@ OLLAMA_MODELS: List[str] = [
     "cloudflare/@cf/mistral/mistral-7b-instruct-v0.1",
     "cloudflare/@cf/qwen/qwen1.5-7b-chat-awq",
     "cloudflare/@hf/google/gemma-7b-it",
+    # ── GitHub Models (kostenlos mit GITHUB_MODELS_TOKEN) ────────────────────────
+    "github/gpt-4o-mini",
+    "github/gpt-4.1-nano",
+    "github/meta-llama-3.1-8b-instruct",
+    "github/meta-llama-3.3-70b-instruct",
+    "github/mistral-small",
+    "github/phi-4",
+    "github/phi-4-mini",
+    # ── OpenRouter Free Tier (kostenlos, kein API-Guthaben nötig) ────────────────
+    "openrouter/google/gemma-3-12b-it:free",
+    "openrouter/google/gemma-3-27b-it:free",
+    "openrouter/google/gemma-3-4b-it:free",
+    "openrouter/meta-llama/llama-3.3-70b-instruct:free",
+    "openrouter/meta-llama/llama-3.2-3b-instruct:free",
+    "openrouter/nvidia/nemotron-3-super-120b-a12b:free",
+    "openrouter/nvidia/nemotron-nano-9b-v2:free",
+    "openrouter/nousresearch/hermes-3-llama-3.1-405b:free",
+    "openrouter/minimax/minimax-m2.5:free",
+    "openrouter/liquid/lfm-2.5-1.2b-instruct:free",
 ]
 
 # Convenience aliases
@@ -323,6 +342,16 @@ class UserTierService:
         allowed = self.get_allowed_models(user_id)
         if allowed == "all":
             return True
+        # Exakter Match zuerst (inkl. github/ und openrouter/:free)
+        if model in allowed:
+            return True
+        # OpenRouter :free immer erlaubt für free tier
+        if model.startswith("openrouter/") and model.endswith(":free"):
+            return True
+        # GitHub immer erlaubt wenn GITHUB_MODELS_TOKEN vorhanden
+        if model.startswith("github/"):
+            import os
+            return bool(os.getenv("GITHUB_MODELS_TOKEN"))
         mc = model.replace("ollama/", "").lower()
         for m in allowed:
             mn = m.replace("ollama/", "").lower()
