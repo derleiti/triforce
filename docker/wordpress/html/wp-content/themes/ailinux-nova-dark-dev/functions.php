@@ -192,7 +192,7 @@ function ailinux_nova_dark_enqueue_assets() {
         'displayName' => $wp_logged_in ? $current_user->display_name : '',
         'email'       => $wp_logged_in ? $current_user->user_email : '',
         'isAdmin'     => $wp_logged_in && current_user_can('manage_options'),
-        'logoutUrl'   => 'https://ailinux.me/account?action=logout',
+        'logoutUrl'   => wp_logout_url(home_url()),
     ]);
 
         wp_localize_script('ailinux-nova-dark-app', 'NOVA_API', [
