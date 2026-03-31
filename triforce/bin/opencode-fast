@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# opencode-fast v3.0 — Step 3.5 Flash (Free, 1M Context)
+source "$(dirname "$0")/triforce-env.sh"
+_auto_update_npm "opencode-ai"
+_log_agent_start "opencode-fast" "step-3.5-flash:free" "$@"
+exec opencode -m "openrouter/stepfun/step-3.5-flash:free" "$@"

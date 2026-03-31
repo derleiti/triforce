@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
-# claude-triforce v2.0 — Claude Code mit TriForce MCP + API Keys
+# claude-triforce v3.0 — Claude Code mit Account-OAuth + npm auto-update
 source "$(dirname "$0")/triforce-env.sh"
 
-# Default Model (überschreibbar via CLAUDE_MODEL env)
+# npm auto-update (24h Cooldown, non-blocking)
+_auto_update_npm "@anthropic-ai/claude-code"
+
 DEFAULT_MODEL="${CLAUDE_MODEL:-claude-sonnet-4-20250514}"
 
-# Prüfe ob --model in den Args ist
 HAS_MODEL=false
 for arg in "$@"; do
   [[ "$arg" == "--model" || "$arg" == "-m" ]] && HAS_MODEL=true

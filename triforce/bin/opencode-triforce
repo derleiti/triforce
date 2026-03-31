@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
-# opencode-triforce v2.0 — OpenCode mit TriForce MCP + OpenRouter Fallback
+# opencode-triforce v3.0 — OpenCode mit npm auto-update
 source "$(dirname "$0")/triforce-env.sh"
 
-# Default Model: OpenRouter Free (wenn kein -m angegeben)
+# npm auto-update (24h Cooldown, non-blocking)
+_auto_update_npm "opencode-ai"
+
 DEFAULT_MODEL="${OPENCODE_MODEL:-openrouter/openai/gpt-oss-120b:free}"
 
-# Prüfe ob -m/--model in den Args ist
 HAS_MODEL=false
 for arg in "$@"; do
   [[ "$arg" == "-m" || "$arg" == "--model" ]] && HAS_MODEL=true

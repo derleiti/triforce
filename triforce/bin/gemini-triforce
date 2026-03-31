@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
-# gemini-triforce v2.0 — Gemini CLI mit TriForce API Keys
+# gemini-triforce v3.0 — Gemini CLI mit Google-Account-OAuth + npm auto-update
 source "$(dirname "$0")/triforce-env.sh"
 
-# Gemini nutzt GEMINI_API_KEY aus env (via triforce-env.sh geladen)
-# Agent-spezifisches Config-Dir
-export XDG_CONFIG_HOME="/home/zombie/triforce/config/agents/gemini"
+# npm auto-update (24h Cooldown, non-blocking)
+_auto_update_npm "@google/gemini-cli"
+
+# Gemini nutzt OAuth-Credentials aus ~/.gemini/oauth_creds.json
+# XDG_CONFIG_HOME gesetzt in triforce-env.sh
+export XDG_CONFIG_HOME="/home/zombie/.config"
 
 _log_agent_start "gemini" "gemini-2.5-flash" "$@"
 exec gemini "$@"

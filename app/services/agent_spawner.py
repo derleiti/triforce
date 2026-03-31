@@ -44,7 +44,8 @@ logger = logging.getLogger("ailinux.agent_spawner")
 
 MAX_CONCURRENT_AGENTS = 25
 AGENT_TIMEOUT_SECONDS = 1800   # 30min Inaktivität → kill
-SPAWN_COOLDOWN_S      = 300    # 5min pro issue_type
+SPAWN_COOLDOWN_S      = 300    # 5min pro issue_type (default)
+RESEARCH_COOLDOWN_S   = 18000  # 5 Stunden fuer research_agent
 
 # =============================================================================
 # Tier-1 Tool-Whitelist (System-Agents dürfen NUR diese Tools)
@@ -588,10 +589,12 @@ class AgentSpawner:
             if not issue_type:
                 continue
 
-            # Cooldown
+            # Cooldown: research_agent=5h, andere=5min
             now  = time.time()
             last = self.__class__._last_spawn_time.get(issue_type, 0)
-            if now - last < self.SPAWN_COOLDOWN_S:
+            cooldown = RESEARCH_COOLDOWN_S if issue_type == "research_agent" else self.SPAWN_COOLDOWN_S
+            if now - last < cooldown:
+                logger.debug(f"Cooldown {issue_type}: {int(cooldown-(now-last))}s remaining")
                 continue
 
             # Limit-Check
