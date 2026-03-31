@@ -318,10 +318,9 @@ async def lifespan(app: FastAPI):
                     )
                     try:
                         await agent_controller.update_system_prompt(agent_id, prompt)
-                        result = await agent_controller.start_agent(agent_id)
-                        logger.info(
-                            f"Kern-Agent {agent_id}: {result.get('status','?')}"
-                        )
+                        # ON-DEMAND: kein start_agent() beim Startup.
+                        # Agents starten per call_agent() wenn gebraucht.
+                        logger.info(f"Kern-Agent {agent_id}: system-prompt gesetzt (on-demand)")
                     except Exception as _ae:
                         logger.debug(f"Kern-Agent {agent_id} init skip: {_ae}")
 
