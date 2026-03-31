@@ -144,6 +144,7 @@ class ChatResponse(BaseModel):
     tokens_unlimited: Optional[bool] = False  # True wenn Ollama für Pro/Enterprise
     latency_ms: Optional[int] = None
     fallback_used: Optional[bool] = False  # True wenn lokales Fallback-Modell verwendet wurde
+    error: Optional[str] = ""  # Fehlermeldung wenn response leer
 
 
 class ModelsResponse(BaseModel):
@@ -755,11 +756,15 @@ async def client_chat(
 
 
     # Response extrahieren
-    response_text = result.get("choices", [{}])[0].get("message", {}).get("content", "")
+    response_text = result.get("choices", [{}])[0].get("message", {}).get("content", "") or ""
+    # Fallback: direkt response-Feld (manche Provider)
+    if not response_text:
+        response_text = result.get("response", "") or ""
     tokens = result.get("usage", {}).get("total_tokens")
     latency = int((datetime.now() - start_time).total_seconds() * 1000)
     fallback_used = result.get("is_fallback", False)
-    
+    result_error = result.get("error", "") or ""
+
     # Bei Fallback: Model aktualisieren
     if fallback_used:
         model = f"ollama/{result.get('model_used', 'ministral-3:14b')}"
@@ -782,7 +787,8 @@ async def client_chat(
         tokens_used=tokens if not is_unlimited else None,  # Nicht anzeigen wenn unlimited
         tokens_unlimited=is_unlimited,
         latency_ms=latency,
-        fallback_used=fallback_used
+        fallback_used=fallback_used,
+        error=result_error if not response_text else ""
     )
 
 
@@ -811,7 +817,8 @@ async def get_client_models(
         models = FREE_MODELS_OLLAMA
         backend = "ollama"
     else:
-        # Pro/Enterprise: Alle Server-Modelle
+        # Subscription/Software/Enterprise: Alle Server-Modelle
+        # Zugriff basiert auf tier (subscription/software/enterprise) — NICHT auf account_role
         all_models = await registry.list_models()
         all_ids = [m.id for m in all_models]
         # Filtere unavailable Models raus
@@ -868,6 +875,13 @@ async def get_client_tier(
     info = tier_service.get_tier_info(tier)
     info["backend"] = "ollama" if is_free_tier(tier) else "openrouter"
     info["user_id"] = user_id  # Für Debug
+    # model_count -1 = subscription/unlimited → echte Zahl aus registry laden
+    if info.get("model_count", 0) == -1:
+        try:
+            all_m = await registry.list_models()
+            info["model_count"] = len(availability_service.filter_available([m.id for m in all_m]))
+        except Exception:
+            info["model_count"] = "unlimited"
     return info
 
 
