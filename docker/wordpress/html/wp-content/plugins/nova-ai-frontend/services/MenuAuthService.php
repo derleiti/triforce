@@ -141,8 +141,15 @@ class AILinux_MenuAuth_Service {
         $login_url      = esc_js(get_option('nova_ai_settings', [])['login_url'] ?? 'https://login.ailinux.me');
         ?>
 <script>
-// Logout: kein JS noetig, <a href=wp_logout> navigiert direkt
-// localStorage wird beim naechsten Load ohnehin gecleart wenn WP-Session weg ist
+// Logout: window.top.location.href bricht aus Google Translate iframe aus
+document.addEventListener('click', function(e) {
+    var b = e.target.closest('#ailinux-logout-btn');
+    if (!b) return;
+    e.preventDefault();
+    // window.top bricht aus Google Translate und anderen iframes aus
+    try { window.top.location.href = b.href; }
+    catch(err) { window.location.href = b.href; }
+}, true);
 (function () {
     'use strict';
 
