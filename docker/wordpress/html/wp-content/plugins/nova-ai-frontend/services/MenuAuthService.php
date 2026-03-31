@@ -141,14 +141,20 @@ class AILinux_MenuAuth_Service {
         $login_url      = esc_js(get_option('nova_ai_settings', [])['login_url'] ?? 'https://login.ailinux.me');
         ?>
 <script>
-// Logout: window.top.location.href bricht aus Google Translate iframe aus
+// Logout: same-origin-safe iframe detection
 document.addEventListener('click', function(e) {
     var b = e.target.closest('#ailinux-logout-btn');
     if (!b) return;
-    e.preventDefault();
-    // window.top bricht aus Google Translate und anderen iframes aus
-    try { window.top.location.href = b.href; }
-    catch(err) { window.location.href = b.href; }
+    // Pruefe ob window.top zugaenglich (same-origin) oder cross-origin (z.B. Google Translate)
+    var topAccessible = false;
+    try { topAccessible = !!(window.top.location.href); } catch(err) { topAccessible = false; }
+    if (topAccessible) {
+        // Same-origin: direkt im Top-Frame navigieren
+        e.preventDefault();
+        window.top.location.href = b.href;
+    }
+    // Cross-origin iframe (Google Translate): kein preventDefault,
+    // target="_top" uebernimmt nativ und bricht aus dem iframe aus
 }, true);
 (function () {
     'use strict';
