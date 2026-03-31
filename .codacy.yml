@@ -4,20 +4,23 @@
 
 exclude_paths:
   # Agent caches & dependencies
-  - "config/agents/**/.bun/**"
-  - "config/agents/**/.cache/**"
-  - "config/agents/**/.local/**"
-  - "config/agents/**/node_modules/**"
-  # Vendor / third-party
+  - "config/agents/**"
+  # Agent config (keine ESLint-Config vorhanden)
+  - "agent/**"
+  # Docker/WP vendor & generated
   - "docker/repository/**"
   - "docker/wordpress/html/wp-content/plugins/**/vendor/**"
   - "docker/wordpress/html/wp-content/themes/**/vendor/**"
-  - "client-deploy/**/.venv/**"
-  - "client-deploy/**/node_modules/**"
+  # WP Plugin JS (keine ESLint-Config)
+  - "docker/wordpress/html/wp-content/plugins/nova-ai-frontend/admin/**"
+  - "docker/wordpress/html/wp-content/plugins/nova-ai-frontend/assets/**"
+  # Client / venv
+  - "client-deploy/**"
   - ".venv/**"
   - "**/__pycache__/**"
-  # Generated / compiled
+  # Generated / compiled / logs
   - "**/*.min.js"
   - "**/*.min.css"
   - "all-debug-messeges-*.sh"
   - "mcp_write_lock_debug_*.txt"
+  - "time_up.log"
