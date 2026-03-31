@@ -304,7 +304,7 @@ class AgentConfig:
     mcp_port: Optional[int] = None
 
     # Process Settings
-    auto_restart: bool = True
+    auto_restart: bool = False  # on-demand: CLI-Agents starten per call_agent, nicht persistent
     restart_delay: int = 15
     max_restarts: int = 5
 
@@ -639,7 +639,7 @@ class AgentController:
                         system_prompt_source=agent_data.get("system_prompt_source", "triforce"),
                         mcp_enabled=agent_data.get("mcp_enabled", True),
                         mcp_port=agent_data.get("mcp_port"),
-                        auto_restart=agent_data.get("auto_restart", True),
+                        auto_restart=agent_data.get("auto_restart", False),  # on-demand default
                     )
                     self.agents[agent_id] = AgentInstance(config=config)
                     loaded_count += 1
@@ -947,8 +947,10 @@ class AgentController:
                             instance.status = AgentStatus.ERROR
                             instance.last_error = f"Process exited with code {instance.process.returncode}"
 
-                            # Auto-Restart wenn aktiviert (aber NICHT während shutdown!)
+                            # Auto-Restart nur für explizit persistente Agents (auto_restart=True).
+                            # CLI-Agents laufen on-demand — kein Restart hier.
                             if (instance.config.auto_restart and
+                                instance.config.agent_type == AgentType.API and
                                 instance.restart_count < instance.config.max_restarts and
                                 not self._shutting_down):
                                 instance.restart_count += 1
@@ -1035,11 +1037,9 @@ class AgentController:
 
         if instance.config.agent_type == AgentType.API:
             pass  # API agents don't need a running process
-        elif instance.status != AgentStatus.RUNNING:
-            # Starte Agent wenn nicht laufend
-            await self.start_agent(agent_id)
-            await asyncio.sleep(3)  # Warte auf Start
-            instance = self.agents.get(agent_id)
+        # ON-DEMAND: CLI-Agents werden NICHT persistent gestartet.
+        # call_agent() spawnt den Subprozess direkt pro Aufruf (weiter unten).
+        # start_agent() hier weglassen verhindert die Prozess-Explosion.
 
         if not instance:
             return {
