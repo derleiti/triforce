@@ -25,18 +25,34 @@ if [[ -f "$TRIFORCE_ENV" ]]; then
   set +a
 fi
 
-# Account-Auth: API-Keys gezielt NICHT an CLI-Tools weitergeben.
-# Die Tools lesen ihre OAuth-Credentials selbst aus HOME:
-#   Claude  -> ~/.claude/.credentials.json  (claudeAiOauth)
-#   Gemini  -> ~/.gemini/oauth_creds.json   (Google OAuth)
-#   Codex   -> ~/.codex/auth.json           (OpenAI Account)
-# API-Keys bleiben fuer TriForce-Backend (chat.py etc.) gesetzt,
-# werden aber aus dem CLI-Subprocess-Environment entfernt.
-unset ANTHROPIC_API_KEY  # Claude nutzt Account-OAuth
-unset GEMINI_API_KEY     # Gemini nutzt Google-OAuth
+# Account-Auth: CLI-Tools nutzen OAuth-Credentials aus HOME.
+# API-Keys werden entfernt damit die Tools nicht auf API-Billing fallen.
+# Fallback: wenn OAuth-Token abgelaufen -> API-Key aus triforce.env benutzen.
+
+# Claude: OAuth aus ~/.claude/.credentials.json (Max-Subscription)
+_claude_oauth_valid() {
+  python3 -c "
+import json,time,sys
+try:
+    d=json.load(open('/home/zombie/.claude/.credentials.json'))
+    exp=d.get('claudeAiOauth',{}).get('expiresAt',0)/1000
+    sys.exit(0 if exp > time.time() else 1)
+except: sys.exit(1)
+" 2>/dev/null
+}
+if _claude_oauth_valid; then
+  unset ANTHROPIC_API_KEY   # OAuth aktiv -> kein API-Key-Billing
+else
+  export ANTHROPIC_API_KEY  # Fallback auf API-Key wenn OAuth abgelaufen
+fi
+
+# Gemini: OAuth aus ~/.gemini/oauth_creds.json
+unset GEMINI_API_KEY
 unset GOOGLE_AI_STUDIO_KEY
 unset GOOGLE_GEMINI_KEY
-unset OPENAI_API_KEY     # Codex nutzt Account-Token
+
+# Codex: Account-Token aus ~/.codex/auth.json
+unset OPENAI_API_KEY
 
 # Arbeitsverzeichnis
 export TRIFORCE_DIR="/home/zombie/triforce"
