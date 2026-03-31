@@ -29,7 +29,7 @@ class AILinux_MenuAuth_Service {
 
     public function __construct() {
         add_filter('wp_nav_menu_items', [$this, 'add_auth_menu_item'], 10, 2);
-        add_action('wp_head',   [$this, 'render_auth_script'], 99);
+        add_action('wp_footer', [$this, 'render_auth_script'], 99);
         add_action('wp_head',   [$this, 'render_auth_styles'],  5);
     }
 
@@ -141,6 +141,19 @@ class AILinux_MenuAuth_Service {
         $login_url      = esc_js(get_option('nova_ai_settings', [])['login_url'] ?? 'https://login.ailinux.me');
         ?>
 <script>
+// Logout global (capture phase, Swup+DOM unabhaengig)
+document.addEventListener('click', function(e){
+    var b=e.target.closest('#ailinux-logout-btn');
+    if(!b)return;
+    e.preventDefault();e.stopPropagation();
+    ['ailinux_token','ailinux_email','ailinux_tier','ailinux_client_id',
+     'ailinux_wp_can_admin','ailinux_wp_last_sync'].forEach(function(k){
+        try{localStorage.removeItem(k);}catch(err){}
+    });
+    try{document.cookie='ailinux_token=;domain=.ailinux.me;path=/;max-age=0';}catch(err){}
+    var m=document.getElementById('ailinux-auth-menu');
+    window.location.href=b.href||(m&&m.dataset.wpLogout)||'/';
+},true);
 (function () {
     'use strict';
 

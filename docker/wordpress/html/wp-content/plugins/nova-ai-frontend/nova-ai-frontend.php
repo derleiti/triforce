@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Nova AI Frontend
  * Description: AILinux AI Playground & Downloads — Chat, Vision, Media Generation + Admin Dashboard
- * Version: 6.5.6
+ * Version: 6.5.7
  * Author: zombie@ailinux
  * Text Domain: nova-ai-frontend
  */
@@ -12,7 +12,7 @@ defined('ABSPATH') || exit;
 define('NOVA_AI_BACKEND',     'http://172.18.0.1:9000');
 define('NOVA_AI_LOCAL_BACKEND', 'http://localhost:9000');
 define('NOVA_AI_INTERNAL_KEY',  '7dffc1818b9ee6d35b075b8922d6eecb3c9a5b9bfdf94df6');
-define('NOVA_AI_VERSION', '6.5.1');
+define('NOVA_AI_VERSION', '6.5.7');
 define('NOVA_AI_PLUGIN_URL',  plugin_dir_url(__FILE__));
 define('NOVA_AI_PLUGIN_DIR',  plugin_dir_path(__FILE__));
 
