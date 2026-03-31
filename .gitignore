@@ -211,3 +211,11 @@ mcp_write_lock_*.txt
 *.bak.*
 *.bak-*
 fix_*.py
+
+# Agent caches & runtimes (nicht committen)
+config/agents/**/.bun/
+config/agents/**/.cache/
+config/agents/**/.local/
+config/agents/**/*.backup
+config/agents/**/node_modules/
+config/agents/**/__pycache__/

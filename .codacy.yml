@@ -1,0 +1,23 @@
+---
+# Codacy configuration
+# Docs: https://docs.codacy.com/repositories-configure/codacy-configuration-file/
+
+exclude_paths:
+  # Agent caches & dependencies
+  - "config/agents/**/.bun/**"
+  - "config/agents/**/.cache/**"
+  - "config/agents/**/.local/**"
+  - "config/agents/**/node_modules/**"
+  # Vendor / third-party
+  - "docker/repository/**"
+  - "docker/wordpress/html/wp-content/plugins/**/vendor/**"
+  - "docker/wordpress/html/wp-content/themes/**/vendor/**"
+  - "client-deploy/**/.venv/**"
+  - "client-deploy/**/node_modules/**"
+  - ".venv/**"
+  - "**/__pycache__/**"
+  # Generated / compiled
+  - "**/*.min.js"
+  - "**/*.min.css"
+  - "all-debug-messeges-*.sh"
+  - "mcp_write_lock_debug_*.txt"
