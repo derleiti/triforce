@@ -30,6 +30,7 @@ from ..services.user_system.user_manager import (
     SubscriptionTier,
     UserSettings
 )
+from ..utils.admin_auth import require_read_access
 
 logger = logging.getLogger("ailinux.user_api")
 
@@ -264,7 +265,7 @@ async def create_user(request: UserCreateRequest, _auth: None = Depends(_require
 
 
 @router.get("/users/{user_id}")
-async def get_user(user_id: str):
+async def get_user(user_id: str, _: None = Depends(require_read_access)):
     """Holt User-Informationen"""
     user = await user_manager.get_user(user_id)
     if not user:
@@ -279,7 +280,7 @@ async def get_user(user_id: str):
 
 
 @router.get("/users/{user_id}/quota")
-async def get_user_quota(user_id: str):
+async def get_user_quota(user_id: str, _: None = Depends(require_read_access)):
     """Holt Quota-Status"""
     quota = await user_manager.check_quota(user_id)
     if "error" in quota:
@@ -334,7 +335,7 @@ async def register_device(user_id: str, request: DeviceRegisterRequest, _auth: N
 
 
 @router.get("/users/{user_id}/devices")
-async def list_devices(user_id: str):
+async def list_devices(user_id: str, _: None = Depends(require_read_access)):
     """Listet alle Geräte eines Users"""
     user = await user_manager.get_user(user_id)
     if not user:
@@ -376,7 +377,7 @@ async def revoke_device(user_id: str, device_id: str, _auth: None = Depends(_req
 # ============================================================================
 
 @router.get("/users/{user_id}/settings")
-async def get_settings(user_id: str):
+async def get_settings(user_id: str, _: None = Depends(require_read_access)):
     """Holt aktuelle User-Settings"""
     settings = await user_manager.get_settings(user_id)
     if not settings:
@@ -406,7 +407,7 @@ async def sync_settings(user_id: str, request: SettingsSyncRequest, _auth: None 
 # ============================================================================
 
 @router.get("/users/{user_id}/credentials")
-async def list_credentials(user_id: str):
+async def list_credentials(user_id: str, _: None = Depends(require_read_access)):
     """Listet Provider mit gespeicherten Keys (Keys selbst werden nicht zurückgegeben!)"""
     user = await user_manager.get_user(user_id)
     if not user:
