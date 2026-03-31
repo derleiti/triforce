@@ -23,7 +23,7 @@ logger = logging.getLogger("ailinux.hivemind")
 # Config
 # ---------------------------------------------------------------------------
 OLLAMA_URL      = "http://localhost:11434/api/generate"
-DEFAULT_MODEL   = "qwen3:8b"
+DEFAULT_MODEL   = "qwen3.5:cloud"   # via Ollama Cloud-Proxy
 REDIS_PREFIX    = "hive:"
 REDIS_TTL       = 86400 * 7   # 7 Tage
 MIN_INPUT_CHARS = 500          # Texte kürzer als das nicht komprimieren

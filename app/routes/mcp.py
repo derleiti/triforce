@@ -4324,6 +4324,18 @@ MCP_HANDLERS.update(BROWSER_HANDLERS)
 MCP_HANDLERS.update(REDIS_HANDLERS)          # cache_stats_v4, cache_invalidate_v4, redis_cleanup
 MCP_HANDLERS.update(PERFORMANCE_HANDLERS)    # model_performance, model_recommend
 
+# HiveMind: semantische Textkomprimierung via Ollama
+try:
+    from ..mcp.hivemind import mcp_hivemind_compress, mcp_hivemind_recall, mcp_hivemind_stats
+    HIVEMIND_HANDLERS: dict = {
+        "hive_compress": mcp_hivemind_compress,   # text -> komprimiert, Original in Redis
+        "hive_recall":   mcp_hivemind_recall,     # context_key -> Original aus Redis
+        "hive_stats":    mcp_hivemind_stats,      # Redis-Statistiken
+    }
+    MCP_HANDLERS.update(HIVEMIND_HANDLERS)        # hive_compress, hive_recall, hive_stats
+except Exception as _hive_e:
+    mcp_logger.warning(f"HiveMind nicht verfuegbar (non-critical): {_hive_e}")
+
 # Register all handlers with the tool_registry_v3
 MCP_HANDLERS["debug"] = handle_debug_action
 

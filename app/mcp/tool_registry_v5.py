@@ -217,6 +217,54 @@ V5_TOOLS: List[Dict[str, Any]] = [
     },
 
     # =========================================================================
+    # HIVEMIND — Semantische Textkomprimierung
+    # =========================================================================
+    {
+        "name": "hive_compress",
+        "description": "Komprimiert langen Text via Ollama auf ~25% der Originallänge. "
+                       "Behält alle Fakten (Dateinamen, IPs, Hashes, Fehlermeldungen). "
+                       "Original wird 7 Tage in Redis gespeichert und via hive_recall abrufbar. "
+                       "Ideal für Agent-Outputs, Logs, lange Analysen.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "text": {
+                    "type": "string",
+                    "description": "Zu komprimierender Text (mind. 500 Zeichen)",
+                },
+                "context_key": {
+                    "type": "string",
+                    "description": "Optionaler Redis-Key (default: SHA256-Hash des Texts)",
+                },
+                "model": {
+                    "type": "string",
+                    "description": "Ollama-Modell (default: qwen3.5:cloud)",
+                },
+            },
+            "required": ["text"],
+        },
+    },
+    {
+        "name": "hive_recall",
+        "description": "Holt den Original-Text zu einem via hive_compress komprimierten Kontext aus Redis.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "context_key": {
+                    "type": "string",
+                    "description": "Redis-Key aus hive_compress Ergebnis",
+                },
+            },
+            "required": ["context_key"],
+        },
+    },
+    {
+        "name": "hive_stats",
+        "description": "Zeigt Statistiken über gespeicherte HiveMind-Originals in Redis (Anzahl, Größe, Modell).",
+        "inputSchema": {"type": "object", "properties": {}},
+    },
+
+    # =========================================================================
     # CODE ACCESS
     # =========================================================================
     {

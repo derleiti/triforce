@@ -348,10 +348,18 @@ class UserTierService:
         # OpenRouter :free immer erlaubt für free tier
         if model.startswith("openrouter/") and model.endswith(":free"):
             return True
-        # GitHub immer erlaubt wenn GITHUB_MODELS_TOKEN vorhanden
+        # GitHub Models — erlaubt wenn GITHUB_MODELS_TOKEN gesetzt
         if model.startswith("github/"):
             import os
             return bool(os.getenv("GITHUB_MODELS_TOKEN"))
+        # Groq — kostenlos mit API-Key, erlaubt fuer free tier
+        if model.startswith("groq/"):
+            import os as _os
+            return bool(_os.getenv("GROQ_API_KEY"))
+        # Cerebras — kostenlos mit API-Key, erlaubt fuer free tier
+        if model.startswith("cerebras/"):
+            import os as _os2
+            return bool(_os2.getenv("CEREBRAS_API_KEY"))
         mc = model.replace("ollama/", "").lower()
         for m in allowed:
             mn = m.replace("ollama/", "").lower()
