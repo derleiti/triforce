@@ -160,7 +160,7 @@ FREE_MODELS_OLLAMA = OLLAMA_MODELS
 ALL_OPENROUTER_MODELS = OLLAMA_MODELS  # Extended dynamically at runtime
 
 # Default local fallback
-LOCAL_FALLBACK_MODEL = "ollama/llama3.2:3b"
+LOCAL_FALLBACK_MODEL = "ollama/ministral-3:8b-cloud"
 
 # ─── Brumo prompt ─────────────────────────────────────────────────────────────
 BRUMO_PROMPT = """# NOVA+Brumo🐻 | M:{model}

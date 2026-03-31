@@ -658,13 +658,13 @@ def create_app() -> FastAPI:
     app.include_router(tiers_router, prefix="/v1", tags=["Tiers"])
     app.include_router(nova_wordpress_router, tags=["Nova WordPress"])
 
-    # Import and include txt2img router
-    try:
-        from .routes.txt2img import router as txt2img_router
-        app.include_router(txt2img_router, prefix="/v1", tags=["Text-to-Image"])
-    except ImportError as e:
-        # import logging (centralized)
-        logger.warning(f"Could not import txt2img router: {e}")
+    # txt2img/ComfyUI deaktiviert — kein ComfyUI auf diesem Server
+    # Reaktivierung: pip install comfy_client und diesen Block einkommentieren
+    # try:
+    #     from .routes.txt2img import router as txt2img_router
+    #     app.include_router(txt2img_router, prefix="/v1", tags=["Text-to-Image"])
+    # except ImportError as e:
+    #     logger.warning(f"Could not import txt2img router: {e}")
 
     # Prometheus Metrics Setup
     if _HAS_INSTRUMENTATOR:

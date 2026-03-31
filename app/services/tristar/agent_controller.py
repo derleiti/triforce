@@ -648,8 +648,10 @@ class AgentController:
                 logger.warning(f"Failed to load agent configs: {e}")
 
     async def _save_configs(self):
-        """Speichert Agent-Konfigurationen"""
+        """Speichert Agent-Konfigurationen (mit File-Lock gegen parallele Worker)"""
+        import fcntl
         config_file = self.data_dir / "agents.json"
+        lock_file = self.data_dir / "agents.json.lock"
         data = {}
         for agent_id, instance in self.agents.items():
             data[agent_id] = {
@@ -665,11 +667,22 @@ class AgentController:
                 "mcp_port": instance.config.mcp_port,
                 "auto_restart": instance.config.auto_restart,
             }
-        # Atomic write — verhindert korrupte JSON bei parallelen Workern
-        tmp_file = config_file.with_suffix(".json.tmp")
-        with open(tmp_file, "w") as f:
-            json.dump(data, f, indent=2)
-        tmp_file.replace(config_file)
+        # Atomic write mit File-Lock — verhindert Race Condition bei parallelen Workern
+        try:
+            with open(lock_file, "w") as lf:
+                fcntl.flock(lf, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                try:
+                    tmp_file = config_file.with_suffix(".json.tmp")
+                    # Sicherstellen dass data_dir existiert (Race beim ersten Boot)
+                    config_file.parent.mkdir(parents=True, exist_ok=True)
+                    with open(tmp_file, "w") as f:
+                        json.dump(data, f, indent=2)
+                    tmp_file.replace(config_file)
+                finally:
+                    fcntl.flock(lf, fcntl.LOCK_UN)
+        except BlockingIOError:
+            # Ein anderer Worker schreibt gerade — skip, er wird die neueste Version speichern
+            logger.debug("_save_configs: skipped (another worker holds lock)")
 
     async def fetch_system_prompt(self, agent_type: AgentType) -> str:
         """
@@ -940,7 +953,11 @@ class AgentController:
                                 not self._shutting_down):
                                 instance.restart_count += 1
                                 instance.status = AgentStatus.RESTARTING
-                                await asyncio.sleep(instance.config.restart_delay)
+                                # Exponential backoff: 15s, 30s, 60s, 120s, 240s
+                                backoff = instance.config.restart_delay * (2 ** (instance.restart_count - 1))
+                                backoff = min(backoff, 300)
+                                logger.info(f"Agent {agent_id}: restart {instance.restart_count}/{instance.config.max_restarts} in {backoff}s")
+                                await asyncio.sleep(backoff)
                                 if not self._shutting_down:  # Double-check before restart
                                     await self.start_agent(agent_id)
 
@@ -1185,7 +1202,7 @@ class AgentController:
                 # Chain: CLI → ollama-cloud → api-groq → api-cerebras
                 import re as _re_fb
                 _fb_depth = len(_re_fb.findall(r"\[fallback-from:", message))
-                _MAX_FALLBACK_DEPTH = 3
+                _MAX_FALLBACK_DEPTH = 2
 
                 fallback_agent = None
                 fallback_reason = None

@@ -157,14 +157,14 @@ class ModelsResponse(BaseModel):
 
 def get_default_ollama_model() -> str:
     """Default Ollama-Modell für alle Tiers (Cloud-Proxy)"""
-    return "deepseek-v3.2:cloud"
+    return "ministral-3:8b-cloud"
 
 
 def get_default_model(tier: UserTier) -> str:
     """Default-Modell basierend auf Tier - ALLE nutzen Ollama Cloud-Proxy"""
     # Alle Tiers nutzen Ollama Cloud-Proxy (kostenlos, lokal gehostet)
     # OpenRouter Free-Modelle brauchen trotzdem Credits
-    return "ollama/deepseek-v3.2:cloud"
+    return "ollama/ministral-3:8b-cloud"
 
 
 def normalize_ollama_model(model: str) -> str:
@@ -248,11 +248,16 @@ async def call_ollama(
             result = response.json()
 
             # Ollama Response in OpenAI-Format konvertieren
+            # Thinking-Modelle haben content="" aber thinking != "" → thinking als fallback
+            _msg = result.get("message", {})
+            _content = _msg.get("content", "") or ""
+            if not _content.strip():
+                _content = _msg.get("thinking", "") or ""
             return {
                 "choices": [{
                     "message": {
                         "role": "assistant",
-                        "content": result.get("message", {}).get("content", "")
+                        "content": _content
                     }
                 }],
                 "usage": {
@@ -328,7 +333,7 @@ async def call_openrouter(
             availability_service.mark_error(model, 402, "Payment Required")
             # Fallback zu Ollama (kostenlos)
             return await call_ollama(
-                model="ollama/deepseek-v3.2:cloud",
+                model="ollama/ministral-3:8b-cloud",
                 messages=messages,
                 temperature=temperature,
                 max_tokens=max_tokens
@@ -527,7 +532,7 @@ async def client_chat(
 
         if not tier_service.is_model_allowed(user_id, model):
 
-            model = "ollama/deepseek-v3.2:cloud"
+            model = "ollama/ministral-3:8b-cloud"
 
             logger.warning(f"Model nicht erlaubt für {tier.value}, Fallback: {model}")
 

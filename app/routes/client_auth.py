@@ -91,7 +91,7 @@ def _wp_cmd(cmd: str, json_output: bool = False) -> str:
     fmt = " --format=json" if json_output else ""
     full = f"docker exec {WP_CONTAINER} {WP_CLI} {cmd}{fmt}"
     try:
-        r = subprocess.run(full, shell=True, capture_output=True, text=True, timeout=10)
+        r = subprocess.run(full, shell=True, capture_output=True, text=True, timeout=3)
         out = r.stdout.strip()
         # WP-CLI Notices filtern
         lines = [l for l in out.splitlines()
@@ -129,13 +129,20 @@ def wp_get_user(login_or_email: str) -> Optional[dict]:
 
 def wp_authenticate(email: str, password: str) -> Optional[dict]:
     """
-    Kompletter WordPress-Auth-Flow:
-    1. Passwort prüfen (erst per email, dann per login)
-    2. Userdaten holen
-    3. Tier + account_role ableiten
-
-    Returns: {"email": ..., "name": ..., "tier": ..., "account_role": ..., "wp_roles": ...}
+    Kompletter WordPress-Auth-Flow mit Redis-Cache (60s TTL).
     """
+    import hashlib, json as _json
+    # Cache-Key: sha256(email+password) — sicher, kein Klartext in Redis
+    _cache_key = "wp_auth:" + hashlib.sha256(f"{email}:{password}".encode()).hexdigest()
+    try:
+        import redis as _rl
+        _redis = _rl.from_url("redis://localhost:6379/0", decode_responses=True, socket_connect_timeout=1)
+        _cached = _redis.get(_cache_key)
+        if _cached:
+            return _json.loads(_cached)
+    except Exception:
+        _redis = None
+
     # Erst als Email probieren, dann als Username
     verified = wp_verify_password(email, password)
     if not verified:
@@ -165,7 +172,7 @@ def wp_authenticate(email: str, password: str) -> Optional[dict]:
         account_role = "client"
         tier = "free"  # Free bis Abo abgeschlossen
 
-    return {
+    _result = {
         "email": user.get("user_email", email),
         "name": user.get("display_name", email.split("@")[0]),
         "tier": tier,
@@ -173,6 +180,13 @@ def wp_authenticate(email: str, password: str) -> Optional[dict]:
         "wp_roles": wp_roles,
         "wp_id": user.get("ID"),
     }
+    # Im Cache speichern (60s TTL)
+    try:
+        if _redis:
+            _redis.setex(_cache_key, 60, _json.dumps(_result))
+    except Exception:
+        pass
+    return _result
 
 
 def _wp_create_user(

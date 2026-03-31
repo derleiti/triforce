@@ -15,6 +15,11 @@ fi
 echo "[TRIFORCE] Clearing __pycache__..."
 find "$REPO_DIR/app" -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
 
+# Orphaned opencode/agent Prozesse vom letzten Run killen (verhindert Prozess-Leak)
+echo "[TRIFORCE] Killing orphaned agent processes..."
+pkill -9 -f "opencode" 2>/dev/null || true
+pkill -9 -f "gemini-mcp|claude-mcp|codex-mcp" 2>/dev/null || true
+
 "$REPO_DIR/scripts/detect-hardware.sh"
 
 if [ -f "/run/triforce/hw.env" ]; then

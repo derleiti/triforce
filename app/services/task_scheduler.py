@@ -240,18 +240,37 @@ class TaskScheduler:
             self._tasks[cfg["id"]] = ScheduledTask(cfg)
 
     def start(self):
-        self._loop_task = asyncio.create_task(self._scheduler_loop())
+        self._loop_task = asyncio.create_task(self._acquire_lock_and_run())
         active = sum(1 for t in self._tasks.values() if t.enabled)
-        logger.info(f"Task Scheduler gestartet — {active} aktive Tasks")
+        logger.info(f"Task Scheduler initialisiert — {active} aktive Tasks")
 
     async def stop(self):
         if self._loop_task:
             self._loop_task.cancel()
 
-    async def _scheduler_loop(self):
+    async def _acquire_lock_and_run(self):
+        """Nur ein Worker laeuft (Redis-Lock, wie Federation Manager)."""
+        import redis.asyncio as aioredis
+        redis_client = None
+        lock_key = "triforce:scheduler:primary_lock"
+        try:
+            redis_client = aioredis.from_url("redis://localhost:6379", decode_responses=True)
+            while True:
+                acquired = await redis_client.set(lock_key, "1", nx=True, ex=60)
+                if acquired:
+                    logger.info("Task Scheduler: Primary Worker -- starte Loop")
+                    break
+                await asyncio.sleep(30)
+        except Exception as e:
+            logger.warning(f"Task Scheduler Redis-Lock fehlgeschlagen, starte ohne Lock: {e}")
+        await self._scheduler_loop(redis_client, lock_key)
+
+    async def _scheduler_loop(self, redis_client=None, lock_key=None):
         await asyncio.sleep(10)  # kurzer Startup-Delay
         while True:
             try:
+                if redis_client and lock_key:
+                    await redis_client.expire(lock_key, 60)
                 for task in self._tasks.values():
                     if task.due:
                         asyncio.create_task(self._run_task(task))
