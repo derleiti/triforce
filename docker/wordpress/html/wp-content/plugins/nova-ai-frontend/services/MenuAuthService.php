@@ -29,7 +29,7 @@ class AILinux_MenuAuth_Service {
 
     public function __construct() {
         add_filter('wp_nav_menu_items', [$this, 'add_auth_menu_item'], 10, 2);
-        add_action('wp_footer', [$this, 'render_auth_script'], 99);
+        add_action('wp_head',   [$this, 'render_auth_script'], 99);
         add_action('wp_head',   [$this, 'render_auth_styles'],  5);
     }
 
@@ -176,18 +176,19 @@ class AILinux_MenuAuth_Service {
     }
 
     // ── Logout ───────────────────────────────────────────────────────────────
-    var logoutBtn = document.getElementById('ailinux-logout-btn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', function (e) {
-            e.preventDefault();
-            ['ailinux_token','ailinux_email','ailinux_tier',
-             'ailinux_client_id','ailinux_wp_can_admin','ailinux_wp_last_sync'].forEach(function (k) {
-                try { localStorage.removeItem(k); } catch(err) {}
-            });
-            try { document.cookie = 'ailinux_token=;domain=.ailinux.me;path=/;max-age=0'; } catch(err) {}
-            window.location.href = logoutBtn.href || container.dataset.wpLogout;
+    // Event delegation: Swup-kompatibel, funktioniert auch nach Navigation
+    document.addEventListener('click', function (e) {
+        var btn = e.target.closest('#ailinux-logout-btn');
+        if (!btn) return;
+        e.preventDefault();
+        e.stopPropagation();
+        ['ailinux_token','ailinux_email','ailinux_tier',
+         'ailinux_client_id','ailinux_wp_can_admin','ailinux_wp_last_sync'].forEach(function (k) {
+            try { localStorage.removeItem(k); } catch(err) {}
         });
-    }
+        try { document.cookie = 'ailinux_token=;domain=.ailinux.me;path=/;max-age=0'; } catch(err) {}
+        window.location.href = btn.href || document.getElementById('ailinux-auth-menu')?.dataset?.wpLogout || '/';
+    }, true);
 
     // ── localStorage → WP Sync (wenn Token im LS aber WP nicht eingeloggt) ──
     var wpLoggedIn = <?php echo $already_synced; ?>;

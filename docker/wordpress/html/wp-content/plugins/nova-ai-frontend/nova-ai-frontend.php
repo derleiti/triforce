@@ -146,6 +146,17 @@ function nova_maybe_upgrade_legacy_backend_settings(): void {
     }
 }
 
+// /account/ nie cachen — enthält isLoggedIn + Nonce
+add_action('send_headers', function() {
+    if (is_page('account') || strpos($_SERVER['REQUEST_URI'] ?? '', '/account') !== false) {
+        header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+        header('Pragma: no-cache');
+        header('Surrogate-Control: no-store');
+        // WP Cloudflare Super Cache bypass
+        define('DONOTCACHEPAGE', true);
+    }
+}, 1);
+
 add_action('plugins_loaded', 'nova_maybe_upgrade_legacy_backend_settings', 1);
 
 /* ── FIX: Cloudflare Rocket Loader / WP Page Cache – exclude nova-ai.js ──── */
@@ -710,6 +721,13 @@ add_action('wp_enqueue_scripts', function () {
         'version'    => $ver,
         'isLoggedIn' => is_user_logged_in() ? 'true' : 'false',
     ]);
+    // novaAccountConfig.isLoggedIn via Inline-Script (nicht gecacht, immer frisch)
+    if (is_page('account') || strpos($_SERVER['REQUEST_URI'] ?? '', '/account') !== false) {
+        $logged = is_user_logged_in();
+        wp_add_inline_script('nova-ai-frontend',
+            'if(window.novaAccountConfig){novaAccountConfig.isLoggedIn=' . ($logged?'true':'false') . ';}'
+        );
+    }
 });
 
 /* ── Admin Menu ─────────────────────────────────────────────────────────────── */
