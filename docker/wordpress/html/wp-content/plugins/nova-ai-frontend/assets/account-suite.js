@@ -180,7 +180,7 @@ function initDashboard(root){
   const logoutBtn=root.querySelector('#nas-logout');
   if(logoutBtn){
     logoutBtn.addEventListener('click',async function(){
-      try{await fetch(API+'/auth/logout',{method:'POST',headers:{'Content-Type':'application/json','X-WP-Nonce':CFG.nonce||''}})}catch{}
+      try{await fetch(API+'/auth/logout',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json','X-WP-Nonce':CFG.nonce||''}})}catch{}
       localStorage.removeItem('ailinux_token');
       localStorage.removeItem('ailinux_email');
       localStorage.removeItem('ailinux_tier');
@@ -208,7 +208,7 @@ function initDashboard(root){
       if(nameInput?.value.trim())body.display_name=nameInput.value.trim();
       if(pwInput?.value&&pwInput.value.length>=8)body.new_password=pwInput.value;
       if(!Object.keys(body).length){showMsg(root,'#nas-settings-msg','Nothing to update','error');return}
-      const r=await fetch(API+'/profile/update',{method:'POST',headers:{'Content-Type':'application/json','X-WP-Nonce':CFG.nonce||''},body:JSON.stringify(body)}).catch(function(e){return{ok:false,json:function(){return{error:e.message}}}});
+      const r=await fetch(API+'/profile/update',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json','X-WP-Nonce':CFG.nonce||''},body:JSON.stringify(body)}).catch(function(e){return{ok:false,json:function(){return{error:e.message}}}});
       const d=await r.json().catch(function(){return{}});
       showMsg(root,'#nas-settings-msg',d.ok?'Saved ✅':'Error: '+(d.error||'unbekannt'),d.ok?'ok':'error');
     });
@@ -227,7 +227,7 @@ function initDashboard(root){
   if(cancelBtn){
     cancelBtn.addEventListener('click',async function(){
       if(!confirm('Cancel subscription?'))return;
-      const r=await fetch(API+'/subscription/cancel',{method:'POST',headers:{'Content-Type':'application/json','X-WP-Nonce':CFG.nonce||''}}).catch(function(){return{json:function(){return{ok:false}}}});
+      const r=await fetch(API+'/subscription/cancel',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json','X-WP-Nonce':CFG.nonce||''}}).catch(function(){return{json:function(){return{ok:false}}}});
       const d=await r.json().catch(function(){return{ok:false}});
       if(d.ok){alert('Subscription cancelled successfully.');location.reload()}
       else{alert('Error: '+(d.error||'unbekannt'))}
@@ -297,7 +297,7 @@ async function loadSubscription(root){
   const loadEl=root.querySelector('#nas-sub-loading');
   const contentEl=root.querySelector('#nas-sub-content');
   try{
-    const r=await fetch(API+'/subscription',{headers:{'X-WP-Nonce':CFG.nonce||''}});
+    const r=await fetch(API+'/subscription',{credentials:'same-origin',headers:{'X-WP-Nonce':CFG.nonce||''}});
     const d=await r.json();
     const data=d.data||{};
     const t=data.tier||'free';
@@ -312,7 +312,9 @@ async function loadSubscription(root){
     if(loadEl)loadEl.style.display='none';
     if(contentEl)contentEl.style.display='block';
   }catch(e){
-    if(loadEl)loadEl.innerHTML='<div style="color:var(--nas-muted)">Failed to load</div>';
+    // Show server-rendered content even if API fails (manual tier users)
+    if(loadEl)loadEl.style.display='none';
+    if(contentEl)contentEl.style.display='block';
   }
 }
 
@@ -322,7 +324,7 @@ async function loadDownloads(root){
   const filesEl=root.querySelector('#nas-downloads-table');
   const purchasesEl=root.querySelector('#nas-purchases-list');
   try{
-    const r=await fetch(API+'/purchases',{headers:{'X-WP-Nonce':CFG.nonce||''}});
+    const r=await fetch(API+'/purchases',{credentials:'same-origin',headers:{'X-WP-Nonce':CFG.nonce||''}});
     const d=await r.json();
     const files=d.downloads||[];
     const purchases=d.purchases||[];
@@ -351,7 +353,7 @@ async function loadAdminOverview(root){
   try{
     const [health,agents]=await Promise.all([
       fetch(API+'/health',{credentials:'same-origin'}).then(r=>r.json()).catch(()=>({})),
-      fetch(API+'/admin/agents',{headers:{'X-WP-Nonce':CFG.nonce||''}}).then(r=>r.json()).catch(()=>({}))
+      fetch(API+'/admin/agents',{credentials:'same-origin',headers:{'X-WP-Nonce':CFG.nonce||''}}).then(r=>r.json()).catch(()=>({}))
     ]);
     const agentList=agents.agents||agents.data||[];
     const active=Array.isArray(agentList)?agentList.filter(a=>a.status==='running'||a.running).length:0;
@@ -375,7 +377,7 @@ async function loadSystem(root){
   if(!el)return;
   el.innerHTML='<div class="nas-loading-box">⏳ Lade System-Status…</div>';
   try{
-    const r=await fetch(API+'/admin/status',{headers:{'X-WP-Nonce':CFG.nonce||''}});
+    const r=await fetch(API+'/admin/status',{credentials:'same-origin',headers:{'X-WP-Nonce':CFG.nonce||''}});
     const d=await r.json();
     const svcs=d.services||{};
     let html='<div class="nas-sys-grid">';
@@ -401,7 +403,7 @@ async function loadAgents(root){
   if(!el)return;
   el.innerHTML='<div class="nas-loading-box">⏳ Lade Agents…</div>';
   try{
-    const r=await fetch(API+'/admin/agents',{headers:{'X-WP-Nonce':CFG.nonce||''}});
+    const r=await fetch(API+'/admin/agents',{credentials:'same-origin',headers:{'X-WP-Nonce':CFG.nonce||''}});
     const d=await r.json();
     const agents=d.agents||d.data||[];
     if(!agents.length){el.innerHTML='<div class="nas-loading-box">No agents found</div>';return}
@@ -431,7 +433,7 @@ async function loadAgents(root){
         const action=btn.dataset.action;
         btn.disabled=true; btn.textContent='⏳';
         try{
-          const r=await fetch(API+'/admin/agents/'+encodeURIComponent(aid)+'/'+action,{method:'POST',headers:{'X-WP-Nonce':CFG.nonce||''}});
+          const r=await fetch(API+'/admin/agents/'+encodeURIComponent(aid)+'/'+action,{method:'POST',credentials:'same-origin',headers:{'X-WP-Nonce':CFG.nonce||''}});
           const d=await r.json();
           // Reload agents panel
           const key='agents_'+(root.id||'r');
@@ -450,7 +452,7 @@ async function loadMcpTools(root){
   if(!el)return;
   el.innerHTML='<div class="nas-loading-box">⏳ Lade MCP Tools…</div>';
   try{
-    const r=await fetch(API+'/admin/mcp/tools',{headers:{'X-WP-Nonce':CFG.nonce||''}});
+    const r=await fetch(API+'/admin/mcp/tools',{credentials:'same-origin',headers:{'X-WP-Nonce':CFG.nonce||''}});
     const d=await r.json();
     const tools=d.tools||d.data||[];
     const filterInput=root.querySelector('#nas-mcp-filter');
@@ -497,7 +499,7 @@ async function loadMcpTools(root){
       if(resultEl)resultEl.textContent='⏳ Ausführen…';
       callBtn.disabled=true;
       try{
-        const r=await fetch(API+'/admin/mcp/call',{method:'POST',headers:{'Content-Type':'application/json','X-WP-Nonce':CFG.nonce||''},body:JSON.stringify({tool,args})});
+        const r=await fetch(API+'/admin/mcp/call',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json','X-WP-Nonce':CFG.nonce||''},body:JSON.stringify({tool,args})});
         const d=await r.json();
         if(resultEl)resultEl.textContent=JSON.stringify(d,null,2);
       }catch(e){
@@ -512,7 +514,7 @@ async function loadVault(root){
   if(!el)return;
   el.innerHTML='<div class="nas-loading-box">⏳ Lade Vault…</div>';
   try{
-    const r=await fetch(API+'/admin/vault/keys',{headers:{'X-WP-Nonce':CFG.nonce||''}});
+    const r=await fetch(API+'/admin/vault/keys',{credentials:'same-origin',headers:{'X-WP-Nonce':CFG.nonce||''}});
     const d=await r.json();
     const keys=d.keys||d.data||[];
     el.innerHTML='<div class="nas-vault-keys"><h3>🔑 Stored Keys ('+keys.length+')</h3><div class="nas-vault-list">'+
@@ -533,7 +535,7 @@ async function loadVault(root){
       const v=valEl?.value?.trim()||'';
       if(!k||!v){if(msgEl){msgEl.textContent='Key und Wert erforderlich';msgEl.className='nas-msg error';msgEl.style.display='block'}return}
       try{
-        const r=await fetch(API+'/admin/vault/set',{method:'POST',headers:{'Content-Type':'application/json','X-WP-Nonce':CFG.nonce||''},body:JSON.stringify({key:k,value:v})});
+        const r=await fetch(API+'/admin/vault/set',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json','X-WP-Nonce':CFG.nonce||''},body:JSON.stringify({key:k,value:v})});
         const d=await r.json();
         if(msgEl){msgEl.textContent=d.ok!==false?'✅ Key gespeichert':'Error: '+(d.error||'unbekannt');msgEl.className='nas-msg '+(d.ok!==false?'ok':'error');msgEl.style.display='block'}
         if(d.ok!==false){if(keyEl)keyEl.value='';if(valEl)valEl.value='';const key='vault_'+(root.id||'r');delete _loaded[key];loadVault(root)}
@@ -550,7 +552,7 @@ async function loadLogs(root){
   el.innerHTML='<div class="nas-loading-box">⏳ Lade Logs…</div>';
   try{
     const cat=root.querySelector('#nas-logs-cat')?.value||'all';
-    const r=await fetch(API+'/admin/logs?category='+cat+'&limit=50',{headers:{'X-WP-Nonce':CFG.nonce||''}});
+    const r=await fetch(API+'/admin/logs?category='+cat+'&limit=50',{credentials:'same-origin',headers:{'X-WP-Nonce':CFG.nonce||''}});
     const d=await r.json();
     const logs=d.logs||d.data||[];
     if(!logs.length){el.innerHTML='<div class="nas-loading-box">No logs</div>';return}
