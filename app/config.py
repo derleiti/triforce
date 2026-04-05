@@ -253,3 +253,55 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
+
+
+def validate_settings_on_startup() -> list[str]:
+    """Validate critical settings on startup. Returns list of warnings.
+
+    Called once during app init to catch misconfigurations early.
+    Does not raise — returns human-readable warning strings so the
+    application can still start in degraded mode.
+    """
+    warnings: list[str] = []
+    s = get_settings()
+
+    # At least one LLM provider should be configured
+    providers_configured = any([
+        s.gemini_api_key,
+        s.anthropic_api_key,
+        s.mistral_api_key,
+        s.groq_api_key,
+        s.cerebras_api_key,
+        s.cohere_api_key,
+        s.openrouter_api_key,
+        s.together_api_key,
+        s.fireworks_api_key,
+        s.cloudflare_api_token,
+        s.github_models_token or s.github_token,
+        s.gpt_oss_api_key,
+        s.huggingface_api_key,
+    ])
+    if not providers_configured:
+        warnings.append(
+            "ENV_WARN: No LLM provider API keys configured. "
+            "Set at least one of: GEMINI_API_KEY, ANTHROPIC_API_KEY, "
+            "OPENROUTER_API_KEY, GROQ_API_KEY, etc."
+        )
+
+    # Ollama base URL should be reachable format
+    ollama_str = str(s.ollama_base)
+    if not ollama_str.startswith(("http://", "https://")):
+        warnings.append(f"ENV_WARN: OLLAMA_BASE has unexpected format: {ollama_str}")
+
+    # TriStar GUI password should not be default
+    if s.tristar_gui_password == "changeme":
+        warnings.append(
+            "ENV_WARN: TRISTAR_GUI_PASSWORD is set to 'changeme'. "
+            "Please set a strong password in .env"
+        )
+
+    # Redis URL format check
+    if not s.redis_url.startswith(("redis://", "rediss://")):
+        warnings.append(f"ENV_WARN: REDIS_URL has unexpected format: {s.redis_url}")
+
+    return warnings

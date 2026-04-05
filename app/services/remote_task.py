@@ -310,7 +310,22 @@ Aufgabe: {description}"""
         if task and task.status == TaskStatus.RUNNING:
             task.status = TaskStatus.CANCELLED
             task.completed_at = datetime.now().isoformat()
-            # TODO: Process killen wenn in running_processes
+            # Terminate the running process if tracked
+            if task_id in self.running_processes:
+                process = self.running_processes[task_id]
+                try:
+                    process.terminate()
+                    try:
+                        process.wait(timeout=5)
+                    except subprocess.TimeoutExpired:
+                        process.kill()
+                        process.wait(timeout=3)
+                except ProcessLookupError:
+                    pass  # Process already exited
+                except Exception as e:
+                    logger.warning(f"Error terminating process for task {task_id}: {e}")
+                finally:
+                    self.running_processes.pop(task_id, None)
             return True
         return False
 
