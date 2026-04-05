@@ -655,17 +655,54 @@ Benutzer-Tier: {tier.value}
         {"role": "user", "content": message}
     ]
 
-    # Erste Antwort
-    if is_free_tier(tier):
-        result = await call_ollama(model, messages)
-    else:
-        result = await call_openrouter(model, messages)
+    MAX_TOOL_ITERATIONS = 10  # Prevent infinite loops
 
-    response = result.get("choices", [{}])[0].get("message", {}).get("content", "")
+    for iteration in range(MAX_TOOL_ITERATIONS):
+        # Call LLM
+        if is_free_tier(tier):
+            result = await call_ollama(model, messages)
+        else:
+            result = await call_openrouter(model, messages)
 
-    # TODO: Implementiere Tool-Calling Loop
-    # Wenn die KI ein Tool aufrufen möchte, sende es an den Client
-    # und füge das Ergebnis zur Konversation hinzu
+        assistant_msg = result.get("choices", [{}])[0].get("message", {})
+        response = assistant_msg.get("content", "")
+        tool_calls = assistant_msg.get("tool_calls", [])
+
+        # No tool calls → return final response
+        if not tool_calls:
+            break
+
+        # Append assistant message with tool calls to history
+        messages.append(assistant_msg)
+
+        # Execute each tool call on the client
+        for tc in tool_calls:
+            func = tc.get("function", {})
+            tool_name = func.get("name", "")
+            try:
+                import json as _json
+                tool_args = _json.loads(func.get("arguments", "{}"))
+            except (ValueError, TypeError):
+                tool_args = {}
+
+            # Only execute tools that are in the CLIENT_SIDE_TOOLS registry
+            # and respect tier access (write/shell only for full access)
+            if tool_name not in CLIENT_SIDE_TOOLS:
+                tool_result = {"error": f"Unknown tool: {tool_name}"}
+            elif tool_name in ("client_file_write", "client_shell_exec") and not has_full_access(tier):
+                tool_result = {"error": f"Tool '{tool_name}' requires Enterprise tier"}
+            else:
+                try:
+                    tool_result = await connection.send_tool_call(tool_name, tool_args)
+                except Exception as e:
+                    tool_result = {"error": str(e)}
+
+            # Append tool result to message history for the next iteration
+            messages.append({
+                "role": "tool",
+                "tool_call_id": tc.get("id", ""),
+                "content": _json.dumps(tool_result) if isinstance(tool_result, dict) else str(tool_result),
+            })
 
     return {
         "response": response,

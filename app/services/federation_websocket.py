@@ -66,6 +66,37 @@ WS_PORT = 9001  # Separater Port für Federation WS
 
 
 # =============================================================================
+# Active Request Counter — thread-safe counter for heartbeat metrics
+# =============================================================================
+
+import threading
+
+class _RequestCounter:
+    """Thread-safe counter for tracking active requests across the node."""
+    __slots__ = ("_value", "_lock")
+
+    def __init__(self) -> None:
+        self._value = 0
+        self._lock = threading.Lock()
+
+    @property
+    def value(self) -> int:
+        return self._value
+
+    def increment(self) -> int:
+        with self._lock:
+            self._value += 1
+            return self._value
+
+    def decrement(self) -> int:
+        with self._lock:
+            self._value = max(0, self._value - 1)
+            return self._value
+
+_active_request_counter = _RequestCounter()
+
+
+# =============================================================================
 # Message Types
 # =============================================================================
 
@@ -225,7 +256,7 @@ class FederationPeer:
             "metrics": {
                 "cpu_percent": psutil.cpu_percent(),
                 "memory_percent": psutil.virtual_memory().percent,
-                "active_requests": 0,  # TODO: Von Request Counter
+                "active_requests": _active_request_counter.value,
                 "queue_depth": 0
             }
         })
