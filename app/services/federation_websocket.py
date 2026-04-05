@@ -27,6 +27,7 @@ import asyncio
 import json
 import logging
 import os
+import threading
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -68,8 +69,6 @@ WS_PORT = 9001  # Separater Port für Federation WS
 # =============================================================================
 # Active Request Counter — thread-safe counter for heartbeat metrics
 # =============================================================================
-
-import threading
 
 class _RequestCounter:
     """Thread-safe counter for tracking active requests across the node."""

@@ -680,8 +680,7 @@ Benutzer-Tier: {tier.value}
             func = tc.get("function", {})
             tool_name = func.get("name", "")
             try:
-                import json as _json
-                tool_args = _json.loads(func.get("arguments", "{}"))
+                tool_args = json.loads(func.get("arguments", "{}"))
             except (ValueError, TypeError):
                 tool_args = {}
 
@@ -701,7 +700,7 @@ Benutzer-Tier: {tier.value}
             messages.append({
                 "role": "tool",
                 "tool_call_id": tc.get("id", ""),
-                "content": _json.dumps(tool_result) if isinstance(tool_result, dict) else str(tool_result),
+                "content": json.dumps(tool_result) if isinstance(tool_result, dict) else str(tool_result),
             })
 
     return {
