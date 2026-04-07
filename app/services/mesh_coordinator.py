@@ -13,6 +13,7 @@ Version: 1.0.0
 """
 
 import asyncio
+import heapq
 import json
 import logging
 import time
@@ -20,7 +21,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Set
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple
 
 logger = logging.getLogger("ailinux.mesh_coordinator")
 
@@ -149,7 +150,9 @@ class MeshCoordinator:
     def __init__(self):
         self._agents: Dict[str, MeshAgent] = {}
         self._tasks: Dict[str, MeshTask] = {}
-        self._mcp_queue: List[MCPCommand] = []
+        # Priority heap: (priority, counter, MCPCommand) tuples for O(log n) insert/pop
+        self._mcp_queue: List[Tuple[int, int, MCPCommand]] = []
+        self._mcp_queue_counter: int = 0
         self._lock = asyncio.Lock()
         self._running = False
         self._mcp_processor_task: Optional[asyncio.Task] = None
@@ -557,9 +560,8 @@ Gib ein kurzes Review mit Status: APPROVED / CHANGES_REQUESTED / REJECTED
         )
 
         async with self._lock:
-            self._mcp_queue.append(cmd)
-            # Sort by priority
-            self._mcp_queue.sort(key=lambda x: x.priority)
+            heapq.heappush(self._mcp_queue, (cmd.priority, self._mcp_queue_counter, cmd))
+            self._mcp_queue_counter += 1
 
         logger.debug(f"MCP Command queued: {cmd.command} from {source_agent}")
 
@@ -587,7 +589,7 @@ Gib ein kurzes Review mit Status: APPROVED / CHANGES_REQUESTED / REJECTED
                         await asyncio.sleep(0.5)
                         continue
 
-                    cmd = self._mcp_queue.pop(0)
+                    _, _, cmd = heapq.heappop(self._mcp_queue)
 
                 cmd.status = "executing"
                 logger.info(f"Executing MCP Command: {cmd.command}")
@@ -622,13 +624,16 @@ Gib ein kurzes Review mit Status: APPROVED / CHANGES_REQUESTED / REJECTED
 
     def get_status(self) -> Dict[str, Any]:
         """Gibt den aktuellen Status des Mesh Systems zurück"""
+        completed_phases = {TaskPhase.COMPLETED, TaskPhase.FAILED}
         return {
             "running": self._running,
             "agents": {
                 agent_id: agent.to_dict()
                 for agent_id, agent in self._agents.items()
             },
-            "active_tasks": len([t for t in self._tasks.values() if t.phase not in [TaskPhase.COMPLETED, TaskPhase.FAILED]]),
+            "active_tasks": sum(
+                1 for t in self._tasks.values() if t.phase not in completed_phases
+            ),
             "mcp_queue_size": len(self._mcp_queue),
             "tasks": {
                 task_id: task.to_dict()

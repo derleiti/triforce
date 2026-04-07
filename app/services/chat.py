@@ -317,8 +317,11 @@ BLOCKED_IP_RANGES = [
     ipaddress.ip_network("fe80::/10"),         # IPv6 link-local
 ]
 
+# SSRF Protection: blocked TLDs as frozenset for O(1) lookup
+_BLOCKED_TLDS: frozenset[str] = frozenset({".local", ".internal", ".localhost", ".lan"})
 
-def _is_ssrf_safe(url: str) -> bool:
+
+async def _is_ssrf_safe(url: str) -> bool:
     """Check if URL is safe from SSRF attacks.
 
     Returns True if URL points to a public internet address,
@@ -341,14 +344,16 @@ def _is_ssrf_safe(url: str) -> bool:
             logger.warning(f"SSRF blocked: hostname '{hostname}' is blocked")
             return False
 
-        # Block .local, .internal, .localhost TLDs
-        if any(hostname.lower().endswith(tld) for tld in [".local", ".internal", ".localhost", ".lan"]):
+        # Block .local, .internal, .localhost, .lan TLDs — O(1) frozenset lookup
+        hostname_lower = hostname.lower()
+        if any(hostname_lower.endswith(tld) for tld in _BLOCKED_TLDS):
             logger.warning(f"SSRF blocked: hostname '{hostname}' has blocked TLD")
             return False
 
-        # Resolve hostname and check IP
+        # Resolve hostname and check IP — run in thread executor to avoid blocking
         try:
-            ip_str = socket.gethostbyname(hostname)
+            loop = asyncio.get_event_loop()
+            ip_str = await loop.run_in_executor(None, socket.gethostbyname, hostname)
             ip = ipaddress.ip_address(ip_str)
 
             for blocked_range in BLOCKED_IP_RANGES:
@@ -368,7 +373,7 @@ def _is_ssrf_safe(url: str) -> bool:
         return False
 
 
-def _extract_safe_urls(text: str) -> List[str]:
+async def _extract_safe_urls(text: str) -> List[str]:
     """Extract URLs from text and filter out SSRF-unsafe ones."""
     raw_urls = re.findall(r"(https?://[^\s]+)", text)
     safe_urls = []
@@ -377,7 +382,7 @@ def _extract_safe_urls(text: str) -> List[str]:
         # Clean URL (remove trailing punctuation)
         url = url.rstrip(".,;:!?\"')")
 
-        if _is_ssrf_safe(url):
+        if await _is_ssrf_safe(url):
             safe_urls.append(url)
         else:
             logger.info(f"Filtered unsafe URL from user input: {url[:50]}...")
@@ -762,7 +767,7 @@ async def stream_chat(
         yield "Okay, ich werde versuchen, die angeforderten Informationen zu crawlen...\n\n"
 
         # Extract potential URLs from the user query with SSRF protection
-        urls = _extract_safe_urls(user_query)
+        urls = await _extract_safe_urls(user_query)
         if not urls:
             yield "Ich konnte keine sicheren Links in Ihrer Anfrage finden, die ich crawlen könnte."
             return

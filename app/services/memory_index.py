@@ -11,10 +11,11 @@ Funktionsweise:
 3. Parse-Mode: LLMs sollen Index nutzen statt alles zu memorieren
 """
 
+import itertools
 import json
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Set
 from pathlib import Path
 
 logger = logging.getLogger("ailinux.memory_index")
@@ -51,8 +52,8 @@ class MemoryIndex:
 
     def __init__(self):
         self._index: Dict[str, MemoryIndexEntry] = {}
-        self._keyword_map: Dict[str, List[str]] = {}  # keyword -> [memory_ids]
-        self._category_map: Dict[str, List[str]] = {}  # category -> [memory_ids]
+        self._keyword_map: Dict[str, Set[str]] = {}  # keyword -> {memory_ids}
+        self._category_map: Dict[str, Set[str]] = {}  # category -> {memory_ids}
         self._load()
 
     def _load(self):
@@ -97,19 +98,13 @@ class MemoryIndex:
         """Fügt Entry zu internen Maps hinzu"""
         self._index[entry.memory_id] = entry
 
-        # Keyword-Map
+        # Keyword-Map: use set for O(1) membership and deduplication
         for kw in entry.keywords:
             kw_lower = kw.lower()
-            if kw_lower not in self._keyword_map:
-                self._keyword_map[kw_lower] = []
-            if entry.memory_id not in self._keyword_map[kw_lower]:
-                self._keyword_map[kw_lower].append(entry.memory_id)
+            self._keyword_map.setdefault(kw_lower, set()).add(entry.memory_id)
 
-        # Category-Map
-        if entry.category not in self._category_map:
-            self._category_map[entry.category] = []
-        if entry.memory_id not in self._category_map[entry.category]:
-            self._category_map[entry.category].append(entry.memory_id)
+        # Category-Map: use set for O(1) membership and deduplication
+        self._category_map.setdefault(entry.category, set()).add(entry.memory_id)
 
     def add(
         self,
@@ -147,19 +142,19 @@ class MemoryIndex:
 
         # Exakter Match
         if query_lower in self._keyword_map:
-            return self._keyword_map[query_lower].copy()
+            return list(self._keyword_map[query_lower])
 
-        # Partial Match
-        results = []
+        # Partial Match: accumulate into a set to avoid duplicates
+        results: Set[str] = set()
         for kw, ids in self._keyword_map.items():
             if query_lower in kw or kw in query_lower:
-                results.extend(ids)
+                results.update(ids)
 
-        return list(set(results))
+        return list(results)
 
     def search_category(self, category: str) -> List[str]:
         """Sucht nach Memory-IDs in einer Kategorie"""
-        return self._category_map.get(category, []).copy()
+        return list(self._category_map.get(category, set()))
 
     def get_entry(self, memory_id: str) -> Optional[MemoryIndexEntry]:
         """Gibt Index-Entry für Memory-ID zurück"""
@@ -172,18 +167,18 @@ class MemoryIndex:
 
         entry = self._index.pop(memory_id)
 
-        # Aus Keyword-Map entfernen
+        # Aus Keyword-Map entfernen: O(1) discard instead of O(n) list rebuild
         for kw in entry.keywords:
             if kw in self._keyword_map:
-                self._keyword_map[kw] = [
-                    mid for mid in self._keyword_map[kw] if mid != memory_id
-                ]
+                self._keyword_map[kw].discard(memory_id)
+                if not self._keyword_map[kw]:
+                    del self._keyword_map[kw]
 
-        # Aus Category-Map entfernen
+        # Aus Category-Map entfernen: O(1) discard instead of O(n) list rebuild
         if entry.category in self._category_map:
-            self._category_map[entry.category] = [
-                mid for mid in self._category_map[entry.category] if mid != memory_id
-            ]
+            self._category_map[entry.category].discard(memory_id)
+            if not self._category_map[entry.category]:
+                del self._category_map[entry.category]
 
         self._save()
 
@@ -195,7 +190,7 @@ class MemoryIndex:
         lines = []
         for cat, ids in self._category_map.items():
             entries = []
-            for mid in ids[:5]:  # Max 5 pro Kategorie
+            for mid in itertools.islice(ids, 5):  # Lazily iterate first 5 without full list copy
                 entry = self._index.get(mid)
                 if entry:
                     kws = ",".join(entry.keywords[:3])
