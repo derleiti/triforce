@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Tuple
 
 from fastapi import APIRouter, Depends, File, Form, UploadFile
-from ..utils.rate_limit_compat import RateLimiter
+from app.utils.rate_limit_compat import RateLimiter
 
 from ..services import text_analysis as text_analysis_service
 from ..services.model_registry import registry

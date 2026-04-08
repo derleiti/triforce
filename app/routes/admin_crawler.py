@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from typing import Dict, Any, List
-from fastapi import APIRouter, Depends, Header, HTTPException
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from ..services.crawler.user_crawler import user_crawler
@@ -10,13 +10,6 @@ from ..services.crawler.manager import crawler_manager
 from ..services.auto_crawler import auto_crawler
 from ..services.auto_publisher import auto_publisher
 from ..config import get_settings
-
-import os as _os_cr
-
-def _require_crawler_admin(x_internal_key: str = Header(default="")):
-    expected = _os_cr.environ.get("INTERNAL_API_KEY", "")
-    if not expected or x_internal_key != expected:
-        raise HTTPException(status_code=403, detail="Forbidden")
 
 router = APIRouter(prefix="/admin/crawler", tags=["admin-crawler"])
 
@@ -177,7 +170,7 @@ async def get_crawler_config():
 
 
 @router.post("/config", response_model=CrawlerConfigUpdateResponse)
-async def update_crawler_config(payload: CrawlerConfigUpdate, _auth_cr: None = Depends(_require_crawler_admin)) -> CrawlerConfigUpdateResponse:
+async def update_crawler_config(payload: CrawlerConfigUpdate) -> CrawlerConfigUpdateResponse:
     """Dynamically update crawler configuration without restarting services."""
     settings = get_settings()
     updates: Dict[str, Any] = {}
@@ -212,7 +205,7 @@ async def update_crawler_config(payload: CrawlerConfigUpdate, _auth_cr: None = D
 
 
 @router.post("/control")
-async def control_crawler(request: CrawlerControlRequest, _auth: None = Depends(_require_crawler_admin)):
+async def control_crawler(request: CrawlerControlRequest):
     """
     Control crawler instances (start/stop/restart).
 

@@ -451,8 +451,7 @@ class SettingsController:
         env_mapping = {
             "OLLAMA_BASE": "ollama_base_url",
             "OLLAMA_BEARER_TOKEN": "ollama_bearer_token",
-            "GOOGLE_AI_STUDIO_KEY": "gemini_api_key",
-            "GEMINI_API_KEY": "gemini_api_key",  # legacy fallback
+            "GEMINI_API_KEY": "gemini_api_key",
             "ANTHROPIC_API_KEY": "anthropic_api_key",
             "MISTRAL_API_KEY": "mistral_api_key",
             "HUGGINGFACE_API_KEY": "huggingface_api_key",
@@ -931,7 +930,7 @@ class SettingsController:
             env_mapping = {
                 "ollama_base_url": "OLLAMA_BASE",
                 "ollama_bearer_token": "OLLAMA_BEARER_TOKEN",
-                "gemini_api_key": "GOOGLE_AI_STUDIO_KEY",
+                "gemini_api_key": "GEMINI_API_KEY",
                 "anthropic_api_key": "ANTHROPIC_API_KEY",
                 "mistral_api_key": "MISTRAL_API_KEY",
                 "huggingface_api_key": "HUGGINGFACE_API_KEY",
@@ -989,7 +988,7 @@ class SettingsController:
             env_mapping = {
                 "ollama_base_url": "OLLAMA_BASE",
                 "ollama_bearer_token": "OLLAMA_BEARER_TOKEN",
-                "gemini_api_key": "GOOGLE_AI_STUDIO_KEY",
+                "gemini_api_key": "GEMINI_API_KEY",
                 "anthropic_api_key": "ANTHROPIC_API_KEY",
                 "mistral_api_key": "MISTRAL_API_KEY",
                 "huggingface_api_key": "HUGGINGFACE_API_KEY",

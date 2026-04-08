@@ -1,11 +1,4 @@
-#!/usr/bin/env bash
-set -Eeuo pipefail
-
-ROOT_DIR="${HOME}/triforce"
-cd "$ROOT_DIR"
-
-if [[ ! -f "$ROOT_DIR/.state/first-startup.done" ]]; then
-  "$ROOT_DIR/install.sh" --first-startup
-fi
-
-exec "$ROOT_DIR/scripts/start-backend.sh" "$@"
+#!/bin/bash
+cd "${HOME}/triforce"
+source .venv/bin/activate
+python app/setup_service.py

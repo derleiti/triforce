@@ -26,7 +26,7 @@ class AgentConfig:
     agent_id: str
     role: str  # admin, lead, worker, reviewer
     # Use localhost for internal API calls (no internet required)
-    api_base: str = "http://localhost:9000/v1"  # FIX BE#10: Port 9000 (not 9100)
+    api_base: str = "http://localhost:9100/v1"
     system_prompt: str = ""
     append_system_prompt: str = ""
     workspace_dir: str = "/var/tristar/agents"
@@ -87,7 +87,7 @@ class BaseAgent:
 
         # Setup signal handlers
         for sig in (signal.SIGINT, signal.SIGTERM):
-            asyncio.get_running_loop().add_signal_handler(
+            asyncio.get_event_loop().add_signal_handler(
                 sig, lambda: asyncio.create_task(self.stop())
             )
 
@@ -276,7 +276,7 @@ def create_agent_from_args() -> BaseAgent:
     parser = argparse.ArgumentParser(description="TriStar Agent")
     parser.add_argument("--agent-id", required=True, help="Agent ID")
     parser.add_argument("--role", required=True, help="Agent role")
-    parser.add_argument("--api-base", default="http://localhost:9000/v1", help="API base URL")  # FIX BE#10
+    parser.add_argument("--api-base", default="http://localhost:9100/v1", help="API base URL")
     parser.add_argument("--system-prompt", default="", help="System prompt (inline or file path)")
     parser.add_argument("--system-prompt-file", default="", help="Path to system prompt file")
     parser.add_argument("--append-system-prompt", default="", help="Additional system prompt")

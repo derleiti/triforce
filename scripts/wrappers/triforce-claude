@@ -1,11 +1,3 @@
-#!/usr/bin/env bash
-set -Eeuo pipefail
-
-source "${HOME}/triforce/.env" 2>/dev/null || true
-
-MCP_CONFIG="${HOME}/.config/triforce/mcp.json"
-if [[ ! -f "$MCP_CONFIG" && -f "${HOME}/.config/triforce/triforce-mcp.json" ]]; then
-  MCP_CONFIG="${HOME}/.config/triforce/triforce-mcp.json"
-fi
-
-exec claude --mcp-config "$MCP_CONFIG" "$@"
+#!/bin/bash
+source "${HOME}/triforce/.env" 2>/dev/null
+exec claude --mcp-config "${HOME}/.config/triforce/mcp.json" "$@"

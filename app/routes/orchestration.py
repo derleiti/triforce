@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, BackgroundTasks, Request, HTTPException, Header
+from fastapi import APIRouter, Depends, BackgroundTasks, Request, HTTPException
 from typing import Dict, Any, Optional
 from app.services.orchestrator import OrchestratorService, CrawlerManager, ChatService, WordPressService
 # Annahme: Abhängigkeiten für Orchestrator-Service
@@ -6,14 +6,7 @@ from app.services.orchestrator import OrchestratorService, CrawlerManager, ChatS
 # from app.services.chat import ChatService
 # from app.services.wordpress import WordPressService
 
-import os as _os_or
-
-def _require_orch_auth(x_internal_key: str = Header(default="")):
-    expected = _os_or.environ.get("INTERNAL_API_KEY", "")
-    if not expected or x_internal_key != expected:
-        raise HTTPException(status_code=403, detail="Forbidden")
-
-router = APIRouter(dependencies=[Depends(_require_orch_auth)])
+router = APIRouter()
 
 # Dependency Injection für den Orchestrator
 def get_orchestrator_service() -> OrchestratorService:

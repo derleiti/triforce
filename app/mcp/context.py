@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import asyncio
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -45,9 +44,7 @@ class ConversationContext:
     created_at: float = field(default_factory=time.time)
     last_active: float = field(default_factory=time.time)
     max_messages: int = 50
-    compress_threshold: int = 40   # Komprimierung ab dieser Anzahl Messages
     token_estimate: int = 0
-    _compress_lock: bool = field(default=False, repr=False)
 
     def add_message(self, role: str, content: str, metadata: Optional[Dict] = None) -> Message:
         """Add a message to the conversation."""
@@ -58,73 +55,12 @@ class ConversationContext:
         # Estimate tokens (rough: 1 token ≈ 4 chars)
         self.token_estimate += len(content) // 4
 
-        # Komprimierung: wenn threshold erreicht, async task starten
-        if len(self.messages) >= self.compress_threshold and not self._compress_lock:
-            try:
-                loop = asyncio.get_event_loop()
-                if loop.is_running():
-                    asyncio.ensure_future(self._compress_async())
-            except Exception:
-                pass  # kein Event-Loop — hard-trim als Fallback
-            # Hard-Trim als Fallback wenn Komprimierung nicht greift
-            while len(self.messages) > self.max_messages:
-                removed = self.messages.pop(0)
-                self.token_estimate -= len(removed.content) // 4
+        # Trim old messages if needed
+        while len(self.messages) > self.max_messages:
+            removed = self.messages.pop(0)
+            self.token_estimate -= len(removed.content) // 4
 
         return msg
-
-    async def _compress_async(self) -> None:
-        """
-        Komprimiert die ältesten Messages via LLM zu einer Summary.
-        Ersetzt die ersten N Messages durch eine einzelne system-summary Message.
-        Non-blocking, feuert als Background-Task.
-        """
-        if self._compress_lock or len(self.messages) < self.compress_threshold:
-            return
-        self._compress_lock = True
-        try:
-            # Die ersten 20 Messages komprimieren
-            to_compress = self.messages[:20]
-            remaining = self.messages[20:]
-
-            # Text für LLM aufbereiten
-            text_block = "\n".join(
-                f"[{m.role.upper()}]: {m.content[:500]}"
-                for m in to_compress
-            )
-            prompt = (
-                f"Fasse die folgende Konversation in 3-5 prägnanten Sätzen zusammen. "
-                f"Behalte alle wichtigen Fakten, Entscheidungen und Code-Referenzen bei.\n\n"
-                f"{text_block}"
-            )
-
-            try:
-                from app.services.chat_router import handle_chat_smart
-                result = await asyncio.wait_for(
-                    handle_chat_smart({
-                        "messages": [{"role": "user", "content": prompt}],
-                        "model": "groq/llama-3.1-8b-instant",  # schnell + günstig
-                        "temperature": 0.3,
-                        "max_tokens": 512,
-                        "stream": False,
-                    }),
-                    timeout=15,
-                )
-                summary_text = result.get("content", "") if isinstance(result, dict) else str(result)
-            except Exception as e:
-                summary_text = f"[Zusammenfassung von {len(to_compress)} Messages — Komprimierung fehlgeschlagen: {e}]"
-
-            # Summary als system-Message einsetzen
-            summary_msg = Message(
-                role="system",
-                content=f"[KONTEXT-ZUSAMMENFASSUNG]: {summary_text}",
-                metadata={"compressed": True, "original_count": len(to_compress)},
-            )
-            self.messages = [summary_msg] + remaining
-            # Token-Schätzung neu berechnen
-            self.token_estimate = sum(len(m.content) // 4 for m in self.messages)
-        finally:
-            self._compress_lock = False
 
     def add_user_message(self, content: str, metadata: Optional[Dict] = None) -> Message:
         return self.add_message("user", content, metadata)

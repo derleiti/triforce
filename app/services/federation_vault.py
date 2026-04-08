@@ -18,7 +18,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-VAULT_PATH = Path(__file__).resolve().parents[2] / ".vault"
+VAULT_PATH = Path("/home/zombie/triforce/.vault")
 FEDERATION_VAULT_FILE = VAULT_PATH / "federation_nodes.enc"
 FEDERATION_TOKENS_FILE = VAULT_PATH / "federation_tokens.json"
 
@@ -59,13 +59,11 @@ class FederationVault:
         VAULT_PATH.mkdir(parents=True, exist_ok=True)
         VAULT_PATH.chmod(0o700)
         
-        self._vault_mtime = 0.0
         self._load()
     
     def _load(self):
         """Load registered nodes from file"""
         if FEDERATION_TOKENS_FILE.exists():
-            self._vault_mtime = FEDERATION_TOKENS_FILE.stat().st_mtime
             try:
                 with open(FEDERATION_TOKENS_FILE, 'r') as f:
                     data = json.load(f)
@@ -79,7 +77,7 @@ class FederationVault:
         # Load shared secret from env or file
         self._shared_secret = os.getenv("FEDERATION_SECRET")
         if not self._shared_secret:
-            secret_file = Path(__file__).resolve().parents[2] / "config" / "federation_psk.key"
+            secret_file = Path("/home/zombie/triforce/config/federation_psk.key")
             if secret_file.exists():
                 self._shared_secret = secret_file.read_text().strip()
     
@@ -129,22 +127,9 @@ class FederationVault:
         logger.info(f"Registered federation node: {node_id} ({role})")
         return token
     
-    def _check_reload(self):
-        """Auto-reload vault if file changed on disk (e.g. after token rotation)"""
-        try:
-            if FEDERATION_TOKENS_FILE.exists():
-                mtime = FEDERATION_TOKENS_FILE.stat().st_mtime
-                if mtime > self._vault_mtime:
-                    logger.info("Vault file changed on disk — reloading")
-                    self.nodes.clear()
-                    self._load()
-        except Exception as e:
-            logger.warning(f"Vault reload check failed: {e}")
-
     def verify_token(self, node_id: str, token: str, 
                      client_ip: Optional[str] = None) -> bool:
         """Verify a node's auth token"""
-        self._check_reload()
         node = self.nodes.get(node_id)
         if not node:
             logger.warning(f"Unknown node attempted auth: {node_id}")

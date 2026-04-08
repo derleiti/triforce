@@ -223,33 +223,12 @@ async def invoke_tool(
         file_url = payload.get("file_url")
         if not file_url:
             raise ValueError("file_url is required")
-
-        # SSRF protection: block internal/private URLs
-        from urllib.parse import urlparse as _urlparse
-        _parsed = _urlparse(file_url)
-        if _parsed.scheme not in ("http", "https"):
-            raise ValueError(f"Invalid URL scheme: {_parsed.scheme}")
-        _host = (_parsed.hostname or "").lower()
-        _blocked = ("127.0.0.1", "localhost", "::1", "0.0.0.0",
-                     "10.10.0.", "172.16.", "172.17.", "172.18.", "172.19.",
-                     "192.168.", "169.254.")
-        if any(_host.startswith(b) or _host == b.rstrip(".") for b in _blocked):
-            raise ValueError(f"URL points to internal/private host: {_host}")
-
-        # Download with timeout + size limit (10 MB)
-        MAX_MEDIA_SIZE = 10 * 1024 * 1024
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            async with client.stream("GET", file_url) as response:
-                response.raise_for_status()
-                content_type = response.headers.get("content-type", "application/octet-stream")
-                chunks = []
-                total = 0
-                async for chunk in response.aiter_bytes(8192):
-                    total += len(chunk)
-                    if total > MAX_MEDIA_SIZE:
-                        raise ValueError(f"File too large (>{MAX_MEDIA_SIZE // 1024 // 1024}MB)")
-                    chunks.append(chunk)
-                file_content = b"".join(chunks)
+        
+        async with httpx.AsyncClient() as client:
+            response = await client.get(file_url)
+            response.raise_for_status()
+            file_content = response.content
+            content_type = response.headers.get("content-type", "application/octet-stream")
 
         return await wordpress_service.upload_media(
             filename=payload["filename"],

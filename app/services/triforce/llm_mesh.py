@@ -31,7 +31,7 @@ MODEL_ALIASES: Dict[str, str] = {
 
     # Worker models
     "claude": "anthropic/claude-sonnet-4",
-    "deepseek": "deepseek-v3.2:cloud",
+    "deepseek": "deepseek-v3.1:671b-cloud",
     "qwen": "qwen3-vl:235b-cloud",  # Vision + Chat
     "qwen-coder": "qwen3-coder:480b-cloud",  # Code-specialized
     "glm": "glm-4.6:cloud",

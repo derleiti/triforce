@@ -227,7 +227,7 @@ PREDEFINED_MODELS: List[Dict[str, Any]] = [
     # Coding
     {"model_id": "claude-worker", "model_name": "anthropic/claude-sonnet-4", "provider": "anthropic", "role": "worker",
      "capabilities": ["code", "analysis", "documentation"]},
-    {"model_id": "deepseek-worker", "model_name": "deepseek-v3.2:cloud", "provider": "ollama", "role": "worker",
+    {"model_id": "deepseek-worker", "model_name": "deepseek-v3.1:671b-cloud", "provider": "ollama", "role": "worker",
      "capabilities": ["code", "math", "reasoning"]},
     {"model_id": "qwen-coder", "model_name": "qwen3-coder:32b-cloud", "provider": "ollama", "role": "worker",
      "capabilities": ["code", "tool_use"]},
@@ -241,7 +241,7 @@ PREDEFINED_MODELS: List[Dict[str, Any]] = [
      "capabilities": ["multilingual", "documentation", "creative"]},
 
     # Math & Reasoning
-    {"model_id": "deepseek-math", "model_name": "deepseek-v3.2:cloud", "provider": "ollama", "role": "worker",
+    {"model_id": "deepseek-math", "model_name": "deepseek-v3.1:671b-cloud", "provider": "ollama", "role": "worker",
      "capabilities": ["math", "reasoning"]},
     {"model_id": "qwen-math", "model_name": "qwen3-math:72b", "provider": "ollama", "role": "worker",
      "capabilities": ["math", "reasoning", "code"]},
