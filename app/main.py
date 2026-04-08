@@ -1,6 +1,5 @@
 from contextlib import asynccontextmanager
 import logging
-# import logging (centralized)
 import redis.asyncio as redis
 from fastapi import FastAPI, Request, status, HTTPException
 from fastapi.exceptions import RequestValidationError
@@ -108,7 +107,6 @@ except Exception:
 async def _delayed_bootstrap():
     """Verzögerter Bootstrap der CLI Agents nach Server-Start"""
     import asyncio
-    # import logging (centralized)
     # Warte bis Server vollständig gestartet ist
     await asyncio.sleep(5)
     try:
@@ -121,7 +119,6 @@ async def _delayed_bootstrap():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # import logging (centralized)
 
     # === Hardware Acceleration Auto-Detection ===
     try:
@@ -155,7 +152,6 @@ async def lifespan(app: FastAPI):
         await agent_controller.initialize()
         await settings_controller.initialize()
     except Exception as e:
-        # import logging (centralized)
         logger.warning(f"Failed to initialize TriStar services: {e}")
 
     # Start TriForce Central Logger
@@ -163,20 +159,16 @@ async def lifespan(app: FastAPI):
         try:
             await central_logger.start()
             setup_triforce_logging()
-            # import logging (centralized)
             logger.info("TriForce Central Logging initialized")
         except Exception as e:
-            # import logging (centralized)
             logger.warning(f"Failed to initialize TriForce logging: {e}")
 
     # Start Mesh Coordinator
     try:
         from .services.mesh_coordinator import mesh_coordinator
         await mesh_coordinator.start()
-        # import logging (centralized)
         logger.info("Mesh Coordinator started")
     except Exception as e:
-        # import logging (centralized)
         logger.warning(f"Failed to start Mesh Coordinator: {e}")
 
     # Start Federation Manager (Server-to-Server)
@@ -211,10 +203,8 @@ async def lifespan(app: FastAPI):
         from .services.distributed_compute import get_distributed_compute
         distributed_compute = get_distributed_compute()
         await distributed_compute.start()
-        # import logging (centralized)
         logger.info("Distributed Compute Manager started")
     except Exception as e:
-        # import logging (centralized)
         logger.warning(f"Failed to start Distributed Compute Manager: {e}")
 
     # BUG-003 FIX 2026-03-11: init_v4_handlers wurde nie aufgerufen → alle v4 Handler tot nach Restart
@@ -229,10 +219,8 @@ async def lifespan(app: FastAPI):
     try:
         from .services.init_service import mcp_brain
         await mcp_brain.start()
-        # import logging (centralized)
         logger.info("MCP Server Brain started")
     except Exception as e:
-        # import logging (centralized)
         logger.warning(f"Failed to start MCP Brain: {e}")
 
     # Start MCP WebSocket Server (Port 44433)
@@ -254,28 +242,23 @@ async def lifespan(app: FastAPI):
         import os
         auto_bootstrap = os.environ.get("AUTO_BOOTSTRAP_AGENTS", "false").lower() == "true"
         if auto_bootstrap:
-            # import logging (centralized)
             logger.info("Auto-bootstrapping CLI Agents...")
             import asyncio
             # Verzögert starten um Server hochfahren zu lassen
             asyncio.create_task(_delayed_bootstrap())
         else:
-            # import logging (centralized)
             logger.info("Agent Bootstrap available (AUTO_BOOTSTRAP_AGENTS=true to enable)")
     except Exception as e:
-        # import logging (centralized)
         logger.warning(f"Failed to setup Agent Bootstrap: {e}")
 
     # Initialize System Log Collector (collects kernel, apps, journald logs)
     if _HAS_SYSTEM_LOG_COLLECTOR:
         try:
-            # import logging (centralized)
             logger.info("Initializing System Log Collector...")
             result = await init_system_logging()
             sources = result.get("sources_collected", [])
             logger.info(f"System Log Collector initialized: {len(sources)} sources collected")
         except Exception as e:
-            # import logging (centralized)
             logger.warning(f"Failed to initialize System Log Collector: {e}")
 
     # === SWARM-IMPROVEMENT #2: Redis Auto-Cleanup (DeepSeek-Vorschlag) ===
@@ -438,7 +421,6 @@ async def lifespan(app: FastAPI):
     await FastAPILimiter.close()
 
 def create_app() -> FastAPI:
-    # import logging (centralized)
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     # FIX: Externe HTTP-Bibliotheken auf WARNING setzen — verhindert hpack/httpcore DEBUG-Flut
     for _noisy_lib in ("hpack", "hpack.hpack", "httpcore", "httpcore.http2",

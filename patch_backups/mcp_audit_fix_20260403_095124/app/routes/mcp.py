@@ -2455,7 +2455,7 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
 
     # ── Swarm Tool-Policy: memory_store + vault nur für Admin ──
     from ..services.user_tiers import is_tool_allowed_for_role
-    _swarm_role = (request_meta or {}).get("account_role", "admin")
+    _swarm_role = (request_meta or {}).get("account_role", "client")
     if not is_tool_allowed_for_role(canonical_name, _swarm_role):
         return {
             "error": f"Tool '{canonical_name}' ist nur für Admins verfügbar.",
@@ -4324,6 +4324,18 @@ MCP_HANDLERS.update(BROWSER_HANDLERS)
 MCP_HANDLERS.update(REDIS_HANDLERS)          # cache_stats_v4, cache_invalidate_v4, redis_cleanup
 MCP_HANDLERS.update(PERFORMANCE_HANDLERS)    # model_performance, model_recommend
 
+# HiveMind: semantische Textkomprimierung via Ollama
+try:
+    from ..mcp.hivemind import mcp_hivemind_compress, mcp_hivemind_recall, mcp_hivemind_stats
+    HIVEMIND_HANDLERS: dict = {
+        "hive_compress": mcp_hivemind_compress,   # text -> komprimiert, Original in Redis
+        "hive_recall":   mcp_hivemind_recall,     # context_key -> Original aus Redis
+        "hive_stats":    mcp_hivemind_stats,      # Redis-Statistiken
+    }
+    MCP_HANDLERS.update(HIVEMIND_HANDLERS)        # hive_compress, hive_recall, hive_stats
+except Exception as _hive_e:
+    mcp_logger.warning(f"HiveMind nicht verfuegbar (non-critical): {_hive_e}")
+
 # Register all handlers with the tool_registry_v3
 MCP_HANDLERS["debug"] = handle_debug_action
 
@@ -4576,11 +4588,15 @@ async def mcp_messages_handler(request: Request, session_id: Optional[str] = Non
                 arguments = {}
             arguments = dict(arguments)
             arguments["_request_meta"] = {
-                "user_agent": request.headers.get("user-agent", ""),
-                "source_ip": request.client.host if request.client else "",
-                "auth_method": getattr(request.state, "auth_method", "") if hasattr(request, "state") else "",
-                "user": getattr(request.state, "mcp_auth_user", "") if hasattr(request, "state") else "",
-            }
+            "user_agent": request.headers.get("user-agent", ""),
+            "source_ip": request.client.host if request.client else "",
+            "auth_method": getattr(request.state, "auth_method", "") if hasattr(request, "state") else "",
+            "user": getattr(request.state, "mcp_auth_user", "") if hasattr(request, "state") else "",
+            "account_role": getattr(request.state, "auth_claims", {}).get("account_role", "client") if hasattr(request, "state") else "client",
+            "tier": getattr(request.state, "auth_claims", {}).get("tier", "free") if hasattr(request, "state") else "free",
+            "client_id": getattr(request.state, "auth_claims", {}).get("client_id", "") if hasattr(request, "state") else "",
+            "client_kind": getattr(request.state, "auth_claims", {}).get("client_kind", "") if hasattr(request, "state") else "",
+        }
             if session_id:
                 arguments["_node_id"] = session_id
             params["arguments"] = arguments
@@ -4738,6 +4754,10 @@ async def _process_mcp_request(
             "source_ip": request.client.host if request.client else "",
             "auth_method": getattr(request.state, "auth_method", "") if hasattr(request, "state") else "",
             "user": getattr(request.state, "mcp_auth_user", "") if hasattr(request, "state") else "",
+            "account_role": getattr(request.state, "auth_claims", {}).get("account_role", "client") if hasattr(request, "state") else "client",
+            "tier": getattr(request.state, "auth_claims", {}).get("tier", "free") if hasattr(request, "state") else "free",
+            "client_id": getattr(request.state, "auth_claims", {}).get("client_id", "") if hasattr(request, "state") else "",
+            "client_kind": getattr(request.state, "auth_claims", {}).get("client_kind", "") if hasattr(request, "state") else "",
         }
         if session_id:
             arguments["_node_id"] = session_id

@@ -1147,3 +1147,12 @@ add_action('send_headers', function() {
     }
 }, 9999);
 
+
+// GTranslate im Admin + REST API deaktivieren (verhindert Invalid JSON beim Widget-Speichern)
+add_action('plugins_loaded', function() {
+    if (is_admin() || (defined('REST_REQUEST') && REST_REQUEST)) {
+        remove_action('init', array('GTranslate', 'init'));
+        remove_action('wp_head', array('GTranslate', 'add_inline_script'));
+        remove_action('wp_footer', array('GTranslate', 'add_float_code'));
+    }
+}, 1);

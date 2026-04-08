@@ -1245,49 +1245,13 @@ async def handle_analyze_image(arguments: Dict[str, Any]) -> Dict[str, Any]:
 
 
 async def handle_crawl_url(arguments: Dict[str, Any]) -> Dict[str, Any]:
-    """Handle single URL crawl. FIX 2026-04-03: direct httpx fetch for reliability."""
-    import httpx as _hxc
+    """Handle single URL crawl."""
     url = arguments.get("url")
     if not url:
         raise ValueError("'url' is required")
 
     keywords = arguments.get("keywords")
     max_pages = arguments.get("max_pages", 10)
-    _explicit_max = "max_pages" in arguments
-
-    # Direct fetch for single-URL calls (faster + crawler workers unreliable)
-    if int(max_pages) <= 1 or not _explicit_max:
-        try:
-            async with _hxc.AsyncClient(follow_redirects=True, timeout=15.0,
-                verify=False, headers={"User-Agent": "AILinux-Crawl/2.85"}) as cl:
-                r = await cl.get(url); r.raise_for_status()
-                from html.parser import HTMLParser as _HP
-                import re as _rc
-                class _TE(_HP):
-                    def __init__(self):
-                        super().__init__(); self._t, self._s = [], False
-                        self._st = {"script","style","noscript","svg"}
-                    def handle_starttag(self, t, a):
-                        if t in self._st: self._s = True
-                    def handle_endtag(self, t):
-                        if t in self._st: self._s = False
-                    def handle_data(self, d):
-                        v = d.strip()
-                        if v and not self._s: self._t.append(v)
-                ct = r.headers.get("content-type", "")
-                if "html" in ct:
-                    te = _TE(); te.feed(r.text)
-                    text = _rc.sub(r"\n{3,}", "\n\n", "\n".join(te._t))
-                else:
-                    text = r.text
-                return {
-                    "job": {"id": "direct-fetch", "status": "completed",
-                            "pages_crawled": 1,
-                            "results": [{"url": url, "content": text[:30000]}]},
-                    "message": f"Direct fetch completed for {url}",
-                }
-        except Exception:
-            pass  # Fall through to crawler
 
     job = await user_crawler.crawl_url(
         url=url,
@@ -1802,38 +1766,23 @@ async def handle_list_timezones_remote(arguments: Dict[str, Any]) -> Dict[str, A
 
 
 async def handle_fetch(arguments: Dict[str, Any]) -> Dict[str, Any]:
-    """Fetch content from a URL. FIX 2026-04-03: httpx direct instead of crawler."""
-    import httpx
-    from html.parser import HTMLParser
-    import re as _re
+    """Fetch content from a URL. Required by OpenAI for Deep Research + Company Knowledge.
+    Schema matches OpenAI MCP compatibility spec: input={url:string}, output={content:string}."""
+    from ..services.crawler.user_crawler import user_crawler
+    
     url = arguments.get("url")
     if not url:
         raise ValueError("'url' is required")
-    class _TextExtractor(HTMLParser):
-        def __init__(self):
-            super().__init__()
-            self._text, self._skip = [], False
-            self._skip_tags = {"script","style","noscript","svg","nav"}
-        def handle_starttag(self, tag, attrs):
-            if tag in self._skip_tags: self._skip = True
-        def handle_endtag(self, tag):
-            if tag in self._skip_tags: self._skip = False
-        def handle_data(self, data):
-            s = data.strip()
-            if s and not self._skip: self._text.append(s)
-        def get_text(self): return "\n".join(self._text)
+    
     try:
-        async with httpx.AsyncClient(follow_redirects=True, timeout=15.0,
-            headers={"User-Agent": "AILinux-Fetch/2.85"}, verify=False) as client:
-            resp = await client.get(url)
-            resp.raise_for_status()
-            ct = resp.headers.get("content-type", "")
-            if "html" in ct:
-                ex = _TextExtractor(); ex.feed(resp.text)
-                text = _re.sub(r"\n{3,}", "\n\n", ex.get_text())
-            else:
-                text = resp.text
-        return {"content": text[:50000], "url": url}
+        result = await user_crawler.crawl_url(url, max_pages=1)
+        # Return in OpenAI-expected format
+        text = ""
+        if isinstance(result, dict):
+            text = result.get("content", result.get("text", str(result)))
+        elif isinstance(result, str):
+            text = result
+        return {"content": text[:50000], "url": url}  # Cap at 50k chars
     except Exception as e:
         return {"content": f"Error fetching {url}: {str(e)}", "url": url}
 

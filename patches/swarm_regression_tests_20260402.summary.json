@@ -1,0 +1,6 @@
+{
+  "backup_dir": "/home/zombie/triforce/.backups/swarm_e2e_test_patch_20260402_150523",
+  "test_file": "/home/zombie/triforce/tests/test_swarm_broadcast_hardening_unittest.py",
+  "patch_file": "/home/zombie/triforce/patches/swarm_regression_tests_20260402.patch",
+  "test_command": "python3 -m unittest tests.test_swarm_broadcast_hardening_unittest -v"
+}

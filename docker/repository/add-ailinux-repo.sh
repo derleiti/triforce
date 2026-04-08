@@ -137,21 +137,61 @@ has_release() {
     curl "${CURL_OPTS[@]}" -fsSL "${url}/dists/${dist}/Release" -o /dev/null 2>/dev/null
 }
 
+# Ubuntu-Codename-Reihenfolge (aufsteigend)
+UBUNTU_CODENAME_ORDER=(noble oracular plucky questing resolute)
+
+# Besten verfügbaren Codename für einen upstream-URL ermitteln.
+# Fällt auf den letzten verfügbaren zurück wenn $wanted nicht existiert.
+best_upstream_codename() {
+    local base_url="$1"   # z.B. https://dl.winehq.org/wine-builds/ubuntu
+    local wanted="$2"     # z.B. resolute
+    # Wenn gewünschter Codename verfügbar → direkt verwenden
+    if curl "${CURL_OPTS[@]}" -fsSL "${base_url}/dists/${wanted}/Release" -o /dev/null 2>/dev/null; then
+        echo "$wanted"
+        return
+    fi
+    # Rückwärts durch bekannte Codenames bis zum ersten verfügbaren
+    local best=""
+    for cn in "${UBUNTU_CODENAME_ORDER[@]}"; do
+        if curl "${CURL_OPTS[@]}" -fsSL "${base_url}/dists/${cn}/Release" -o /dev/null 2>/dev/null; then
+            best="$cn"
+        fi
+        [[ "$cn" == "$wanted" ]] && break
+    done
+    if [[ -n "$best" ]]; then
+        log_warn "Repo ${base_url}: '${wanted}' nicht verfügbar → Fallback auf '${best}'"
+        echo "$best"
+    else
+        # Absoluter Fallback
+        log_warn "Repo ${base_url}: kein passender Codename gefunden → Fallback auf 'noble'"
+        echo "noble"
+    fi
+}
+
 get_mirror_repo_specs() {
     local codename="$1"
+
+    # Codenames für Repos ermitteln die oft hinter dem Ubuntu-Zyklus hinken
+    local cn_wine cn_libreoffice cn_lutris cn_neon
+    cn_wine=$(best_upstream_codename "https://dl.winehq.org/wine-builds/ubuntu" "$codename")
+    cn_libreoffice=$(best_upstream_codename "http://ppa.launchpadcontent.net/libreoffice/ppa/ubuntu" "$codename")
+    cn_lutris=$(best_upstream_codename "http://ppa.launchpadcontent.net/lutris-team/lutris/ubuntu" "$codename")
+    cn_neon=$(best_upstream_codename "http://archive.neon.kde.org/user" "$codename")
+
     cat <<EOF
 repo.ailinux.me|${codename}|main|amd64,i386|${codename}|AILinux Local
 archive.ubuntu.com/ubuntu|${codename},${codename}-updates|main,restricted,universe,multiverse|amd64,i386|${codename}|Ubuntu Base
 security.ubuntu.com/ubuntu|${codename}-security|main,restricted,universe,multiverse|amd64,i386|${codename}-security|Ubuntu Security
-archive.neon.kde.org/user|${codename}|main|amd64|${codename}|KDE neon
+archive.neon.kde.org/user|${cn_neon}|main|amd64|${cn_neon}|KDE neon
 deb.nodesource.com/node_22.x|nodistro|main|amd64|nodistro|NodeSource 22.x
 dl.google.com/linux/chrome/deb|stable|main|amd64|stable|Google Chrome
-dl.winehq.org/wine-builds/ubuntu|${codename}|main|amd64,i386|${codename}|WineHQ
+dl.winehq.org/wine-builds/ubuntu|${cn_wine}|main|amd64|${cn_wine}|WineHQ
 download.docker.com/linux/ubuntu|${codename}|stable|amd64|${codename}|Docker CE
 packages.microsoft.com/repos/code|stable|main|amd64|stable|VS Code
 ppa.launchpadcontent.net/cappelikan/ppa/ubuntu|${codename}|main|amd64|${codename}|Cappelikan PPA
 ppa.launchpadcontent.net/graphics-drivers/ppa/ubuntu|${codename}|main|amd64|${codename}|Graphics Drivers PPA
-ppa.launchpadcontent.net/libreoffice/ppa/ubuntu|${codename}|main|amd64|${codename}|LibreOffice PPA
+ppa.launchpadcontent.net/libreoffice/ppa/ubuntu|${cn_libreoffice}|main|amd64|${cn_libreoffice}|LibreOffice PPA
+ppa.launchpadcontent.net/lutris-team/lutris/ubuntu|${cn_lutris}|main|amd64|${cn_lutris}|Lutris PPA
 repo.steampowered.com/steam|stable|steam|amd64,i386|stable|Steam
 EOF
 }

@@ -243,21 +243,48 @@ def _serialize_job(job) -> Dict[str, Any]:
 
 
 async def handle_crawl_url(params: Dict[str, Any]) -> Dict[str, Any]:
+    """FIX 2026-04-03: Direct httpx fetch for single URLs, crawler for multi-page."""
+    import httpx as _hx
     url = params.get("url")
     if not url:
         raise ValueError("'url' parameter is required for crawl.url")
-
     keywords = params.get("keywords")
     if keywords is not None and not isinstance(keywords, Iterable):
         raise ValueError("'keywords' must be an iterable of strings")
-
+    max_pages = int(params.get("max_pages", 10))
+    _explicit_max = "max_pages" in params
+    # Single-page or no explicit multi-page: direct fetch (faster, more reliable)
+    if max_pages <= 1 or not _explicit_max:
+        try:
+            async with _hx.AsyncClient(follow_redirects=True, timeout=15.0,
+                verify=False, headers={"User-Agent":"AILinux-Crawl/2.85"}) as cl:
+                r = await cl.get(url); r.raise_for_status()
+                from html.parser import HTMLParser as _HP
+                import re as _rc
+                class _T(_HP):
+                    def __init__(self):
+                        super().__init__(); self._t,self._s=[],False
+                        self._st={"script","style","noscript","svg"}
+                    def handle_starttag(s,t,a):
+                        if t in s._st: s._s=True
+                    def handle_endtag(s,t):
+                        if t in s._st: s._s=False
+                    def handle_data(s,d):
+                        v=d.strip()
+                        if v and not s._s: s._t.append(v)
+                ct = r.headers.get("content-type","")
+                if "html" in ct:
+                    t=_T(); t.feed(r.text); text=_rc.sub(r"\n{3,}","\n\n","\n".join(t._t))
+                else: text=r.text
+                return {"job":{"id":"direct","status":"completed","pages_crawled":1,
+                    "results":[{"url":url,"content":text[:30000]}]},
+                    "message":f"Direct fetch completed for {url}"}
+        except Exception: pass
+    # Multi-page or fallback
     job = await user_crawler.crawl_url(
-        url=url,
-        keywords=list(keywords) if keywords else None,
-        max_pages=int(params.get("max_pages", 10)),
-        idempotency_key=params.get("idempotency_key"),
-    )
-    return {"job": _serialize_job(job)}
+        url=url, keywords=list(keywords) if keywords else None,
+        max_pages=max_pages, idempotency_key=params.get("idempotency_key"))
+    return {"job": _serialize_job(job), "message": f"Crawl job started for {url}"}
 
 
 async def handle_crawl_site(params: Dict[str, Any]) -> Dict[str, Any]:
@@ -4318,6 +4345,44 @@ for _ast in [t["name"] for t in AGENT_SPAWNER_TOOLS]:
 for _sct in [t["name"] for t in SCHEDULER_TOOLS]:
     MCP_HANDLERS[_sct] = lambda p, _n=_sct: handle_scheduler_tool(_n, p)
 MCP_HANDLERS.update(SWARM_HANDLERS)          # swarm_broadcast, swarm_status, swarm_top_results, swarm_consolidated
+
+# === FIX 2026-04-03: Missing/broken handlers ===
+
+async def _handle_ollama_status(params):
+    """FIX: ollama_status had no handler."""
+    import httpx
+    try:
+        async with httpx.AsyncClient(timeout=5.0) as cl:
+            ps = await cl.get("http://localhost:11434/api/ps")
+            ps_d = ps.json() if ps.status_code == 200 else {}
+            tags = await cl.get("http://localhost:11434/api/tags")
+            tags_d = tags.json() if tags.status_code == 200 else {}
+        return {
+            "status": "running",
+            "running_models": [{"name":m.get("name"),"size":m.get("size")} for m in ps_d.get("models",[])],
+            "available_models": len(tags_d.get("models",[])),
+        }
+    except Exception as e:
+        return {"status": "unreachable", "error": str(e)}
+
+async def _handle_mcp_write_fallback_safe(params):
+    """FIX: mcp_write_fallback crashed with no params."""
+    fid = (params or {}).get("fallback_id")
+    if not fid:
+        return {"error": "fallback_id required", "hint": "This tool executes stored write operations."}
+    return await handle_mcp_write_fallback(params)
+
+async def _handle_ram_patch_apply_v4_safe(params):
+    """FIX: ram_patch_apply_v4 crashed with no params."""
+    patch = (params or {}).get("patch") or (params or {}).get("diff")
+    if not patch:
+        return {"error": "patch/diff content required", "hint": "Provide unified diff as 'patch' parameter."}
+    return await handle_codebase_patch({"patch": patch, "path": (params or {}).get("path","")})
+
+MCP_HANDLERS["ollama_status"] = _handle_ollama_status
+MCP_HANDLERS["mcp_write_fallback"] = _handle_mcp_write_fallback_safe
+MCP_HANDLERS["ram_patch_apply_v4"] = _handle_ram_patch_apply_v4_safe
+
 MCP_HANDLERS.update(WORDPRESS_HANDLERS)      # wp_publish_post, wp_list_posts, wp_update_post, wp_delete_post, wp_create_page, wp_multi_ai_post
 MCP_HANDLERS.update(MAIL_TOOL_HANDLERS)      # mail_inbox, mail_read, mail_send, mail_mark_seen
 MCP_HANDLERS.update(BROWSER_HANDLERS)

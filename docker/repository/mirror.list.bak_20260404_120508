@@ -1,9 +1,9 @@
 # ============================================================================
 # AILinux Mirror Configuration - OPTIMIZED
 # ============================================================================
-# Core: Ubuntu, Docker, Wine, Steam, Chrome, Node, LibreOffice
-# Dev: VS Code
-# AI/GPU: NVIDIA Container Toolkit, Graphics Drivers
+# Core: Ubuntu, KDE Neon, Docker, Wine, Steam, Chrome, Node, LibreOffice
+# Dev: VS Code, Lutris
+# AI/GPU: NVIDIA CUDA, Container Toolkit, Intel oneAPI, Graphics Drivers
 # ============================================================================
 
 # --- apt-mirror Settings ---
@@ -18,87 +18,93 @@ set nthreads          50
 set limit_rate        100m
 
 # ============================================================================
-# Ubuntu 26.04 LTS (Resolute Raccoon) - ESSENTIAL ONLY
+# Ubuntu 26.04 LTS (Racoon) - ESSENTIAL ONLY
 # ============================================================================
 
 # --- Main Archive (amd64) ---
-deb-amd64 http://archive.ubuntu.com/ubuntu resolute main restricted universe multiverse
-deb-amd64 http://archive.ubuntu.com/ubuntu resolute-updates main restricted universe multiverse
+deb-amd64 http://archive.ubuntu.com/ubuntu racoon main restricted universe multiverse
+deb-amd64 http://archive.ubuntu.com/ubuntu racoon-updates main restricted universe multiverse
 
 # --- Security Updates ---
-deb-amd64 http://security.ubuntu.com/ubuntu resolute-security main restricted universe multiverse
+deb-amd64 http://security.ubuntu.com/ubuntu racoon-security main restricted universe multiverse
 
-# --- i386 Support (Wine/Steam) ---
-deb-i386 http://archive.ubuntu.com/ubuntu resolute main restricted universe multiverse
-deb-i386 http://archive.ubuntu.com/ubuntu resolute-updates main restricted universe multiverse
-deb-i386 http://security.ubuntu.com/ubuntu resolute-security main restricted universe multiverse
-
-# ============================================================================
-# KDE Neon (User Edition) - DISABLED: max. noble, no resolute yet
-# ============================================================================
-# deb-amd64 http://archive.neon.kde.org/user noble main
+# --- i386 Support DISABLED 2026-04-03: Wine/Steam have own i386 repos ---
+deb-i386 http://archive.ubuntu.com/ubuntu racoon main restricted universe multiverse
+deb-i386 http://archive.ubuntu.com/ubuntu racoon-updates main restricted universe multiverse
+deb-i386 http://security.ubuntu.com/ubuntu racoon-security main restricted universe multiverse
 
 # ============================================================================
-# Google Chrome (stable - kein Ubuntu-Codename nötig)
+# KDE Neon (User Edition)
+# ============================================================================
+#deb-amd64 http://archive.neon.kde.org/user racoon main
+
+# ============================================================================
+# Google Chrome
 # ============================================================================
 deb-amd64 http://dl.google.com/linux/chrome/deb/ stable main
 
 # ============================================================================
-# WineHQ (amd64 only ab questing — i386 eingestellt, WoW64 in amd64-Paketen) - max. questing
+# WineHQ (amd64 + i386 for 32-bit Windows apps)
 # ============================================================================
-deb-amd64 https://dl.winehq.org/wine-builds/ubuntu/ questing main
+deb-amd64 https://dl.winehq.org/wine-builds/ubuntu/ racoon main
+deb-i386 https://dl.winehq.org/wine-builds/ubuntu/ racoon main
 
 # ============================================================================
-# Docker CE (Official) - resolute verfügbar
+# Docker CE (Official)
 # ============================================================================
-deb-amd64 https://download.docker.com/linux/ubuntu resolute stable
+deb-amd64 https://download.docker.com/linux/ubuntu racoon stable
 
 # ============================================================================
-# Steam (stable - kein Ubuntu-Codename)
+# Steam (amd64 + i386 for gaming)
 # ============================================================================
 deb-amd64 http://repo.steampowered.com/steam/ stable steam
 deb-i386 http://repo.steampowered.com/steam/ stable steam
 
 # ============================================================================
-# Node.js 22.x LTS (nodistro - kein Ubuntu-Codename)
+# Node.js 22.x LTS (Jod)
 # ============================================================================
 deb-amd64 https://deb.nodesource.com/node_22.x nodistro main
 
 # ============================================================================
-# LibreOffice Fresh PPA - max. questing, resolute noch nicht verfügbar
+# LibreOffice Fresh PPA
 # ============================================================================
-deb-amd64 http://ppa.launchpadcontent.net/libreoffice/ppa/ubuntu questing main
+deb-amd64 http://ppa.launchpadcontent.net/libreoffice/ppa/ubuntu racoon main
 
 # ============================================================================
-# Cappelikan - Mainline Linux Kernels - resolute verfügbar
+# Cappelikan - Mainline Linux Kernels
 # ============================================================================
-deb-amd64 http://ppa.launchpadcontent.net/cappelikan/ppa/ubuntu resolute main
+deb-amd64 http://ppa.launchpadcontent.net/cappelikan/ppa/ubuntu racoon main
 
 # ============================================================================
-# DEV: Visual Studio Code (stable - kein Ubuntu-Codename)
+# DEV: Visual Studio Code (Microsoft Official)
 # ============================================================================
 deb-amd64 https://packages.microsoft.com/repos/code stable main
 
 # ============================================================================
-# GAMING: Lutris PPA - max. questing, resolute nicht verfügbar
+# GAMING: Lutris PPA (DISABLED - no racoon support as of Dec 2025)
 # ============================================================================
-deb-amd64 http://ppa.launchpadcontent.net/lutris-team/lutris/ubuntu questing main
+deb-amd64 http://ppa.launchpadcontent.net/lutris-team/lutris/ubuntu racoon main
 
 # ============================================================================
-# DRIVERS: NVIDIA Proprietary Drivers PPA - resolute verfügbar
+# DRIVERS: NVIDIA Proprietary Drivers PPA
 # ============================================================================
-deb-amd64 http://ppa.launchpadcontent.net/graphics-drivers/ppa/ubuntu resolute main
+deb-amd64 http://ppa.launchpadcontent.net/graphics-drivers/ppa/ubuntu racoon main
 
 # ============================================================================
 # AI/ML: NVIDIA CUDA Toolkit
-# DISABLED: 251G mirror - users add repo directly
-# deb-amd64 https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2604/x86_64/ /
 # ============================================================================
+# DISABLED 2026-04-03: 251G mirror removed — users add repo directly
+# deb-amd64 https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2604/x86_64/ /
 
 # ============================================================================
 # AI/ML: NVIDIA Container Toolkit (Docker GPU Support)
 # ============================================================================
 deb-amd64 https://nvidia.github.io/libnvidia-container/stable/deb/amd64 /
+
+# ============================================================================
+# AI/ML: Intel oneAPI (CPU/GPU Compute, MKL, OpenVINO)
+# ============================================================================
+# deb-amd64 https://apt.repos.intel.com/oneapi all main
 
 # ============================================================================
 # Cleanup old/removed packages
@@ -116,4 +122,6 @@ clean http://ppa.launchpadcontent.net/cappelikan/ppa/ubuntu
 clean https://packages.microsoft.com/repos/code
 clean http://ppa.launchpadcontent.net/lutris-team/lutris/ubuntu
 clean http://ppa.launchpadcontent.net/graphics-drivers/ppa/ubuntu
+clean https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2604/x86_64/
 clean https://nvidia.github.io/libnvidia-container/stable/deb/amd64
+clean https://apt.repos.intel.com/oneapi

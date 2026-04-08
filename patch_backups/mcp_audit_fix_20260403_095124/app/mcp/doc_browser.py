@@ -47,10 +47,7 @@ DOC_EXTENSIONS = {
 SKIP_DIRS = {
     ".git", ".venv", "__pycache__", ".pytest_cache", ".ruff_cache",
     "node_modules", ".backups", ".repair-backup", ".debug",
-    "logs", "certs", "build", ".claude",
-    # FIX 2026-04-03: prevent timeout on project root (docker=1.8TB)
-    "docker", "data", "client-deploy", "aur-ailinux-client",
-    "repository", "mirror", "wp-content", "vendor",
+    "logs", "certs", "build", ".claude"
 }
 
 # Dateien die wir überspringen (zu groß / irrelevant)
@@ -370,13 +367,10 @@ async def handle_doc_tree(params: Dict[str, Any]) -> Dict[str, Any]:
         children = []
         try:
             for entry in sorted(path.iterdir()):
-                try:
-                    node = build_tree(entry, depth + 1)
-                    if node:
-                        children.append(node)
-                except (PermissionError, FileNotFoundError, OSError):
-                    pass  # broken symlink, stale file, permission denied
-        except (PermissionError, FileNotFoundError, OSError):
+                node = build_tree(entry, depth + 1)
+                if node:
+                    children.append(node)
+        except PermissionError:
             pass
 
         if not children:
