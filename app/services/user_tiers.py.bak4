@@ -1,0 +1,188 @@
+"""
+AILinux User Tier System v2.1 + Brumo Integration
+=================================================
+GUEST: 27 Ollama | 50k Token | kein MCP
+REGISTERED: 37 Modelle | 100k Token | MCP ✓
+PRO: 551 Modelle | 100k Token | MCP ✓
+ENTERPRISE: 551 Modelle | Unlimited | MCP ✓ | Priority ✓
+"""
+from enum import Enum
+from typing import Optional, Dict, List
+from dataclasses import dataclass
+from datetime import datetime
+import json
+from pathlib import Path
+
+class UserTier(str, Enum):
+    GUEST = "guest"
+    REGISTERED = "registered"
+    PRO = "pro"
+    ENTERPRISE = "enterprise"
+    FREE = "guest"
+
+@dataclass
+class TierConfig:
+    name: str
+    display_name: str
+    price_monthly: float
+    price_yearly: float
+    models: str
+    mcp_access: bool
+    cli_agents: bool
+    priority_queue: bool
+    support_level: str
+    features: List[str]
+    daily_token_limit: int = 0
+
+OLLAMA_MODELS = [
+    "ollama/deepseek-v3.1:671b-cloud", "ollama/qwen3-coder:480b-cloud",
+    "ollama/qwen3-vl:235b-cloud", "ollama/cogito-2.1:671b-cloud",
+    "ollama/kimi-k2:1t-cloud", "ollama/kimi-k2-thinking:cloud",
+    "ollama/gpt-oss:120b-cloud", "ollama/gpt-oss:20b-cloud",
+    "ollama/gemini-3-pro-preview:latest", "ollama/minimax-m2:cloud",
+    "ollama/glm-4.6:cloud", "ollama/ministral-3:14b-cloud",
+    "ollama/llama3.2:latest", "ollama/llama3.2:3b",
+    "ollama/qwen2.5:7b", "ollama/qwen2.5:14b", "ollama/qwen2.5:32b",
+    "ollama/qwen2.5-coder:7b", "ollama/qwen2.5-coder:14b",
+    "ollama/mistral:7b", "ollama/mistral:latest",
+    "ollama/codellama:7b", "ollama/codellama:13b",
+    "ollama/deepseek-coder:6.7b", "ollama/deepseek-r1:8b",
+    "ollama/phi3:mini", "ollama/gemma2:9b",
+]
+
+FREE_CLOUD_MODELS = [
+    "groq/llama-3.3-70b-versatile", "groq/qwen/qwen3-32b",
+    "groq/meta-llama/llama-4-scout-17b-16e-instruct", "groq/openai/gpt-oss-120b",
+    "cerebras/llama-3.3-70b", "cerebras/qwen-3-32b",
+    "cloudflare/@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+    "cloudflare/@cf/qwen/qwen2.5-coder-32b-instruct",
+    "gemini/gemini-2.0-flash-lite", "gemini/gemini-2.0-flash",
+]
+
+PREMIUM_MODELS = []
+ALL_OPENROUTER_MODELS = OLLAMA_MODELS + FREE_CLOUD_MODELS
+FREE_MODELS_OLLAMA = OLLAMA_MODELS
+FREE_MODELS = OLLAMA_MODELS
+
+# Brumo System Prompt (ultra-kompakt, 442 Bytes)
+BRUMO_PROMPT = """# NOVA+Brumo🐻 | M:{model}
+STIL:warm+direkt+präzise DE/EN-tech
+BRUMO:1x Spruch/Antwort(passend)
+
+SPRÜCHE{code:"Kompiliert.",fix:"Läuft.Wie'n Bär.",ok:"Sauber.",err:"Erst denken.",fast:"Schneller als Lachs.",bug:"Passiert.Mir nicht.",wild:"Klingt wild.Machen wir.",ez:"Passt.",linux:"Kernel approved.",ai:"Maschine lernt.Ich chill."}
+
+REGELN:•nummeriert bei komplex•keine Annahmen•Nutzen>Länge
+@mcp>Tools|@g>Lead|@c>Code|@x>Exec"""
+
+def get_brumo_prompt(model: str = "unknown") -> str:
+    return BRUMO_PROMPT.format(model=model.split("/")[-1][:20])
+
+TIER_CONFIGS: Dict[UserTier, TierConfig] = {
+    UserTier.GUEST: TierConfig(
+        name="guest", display_name="Gast",
+        price_monthly=0.0, price_yearly=0.0,
+        models="ollama_only", mcp_access=False, cli_agents=False,
+        priority_queue=False, support_level="none",
+        daily_token_limit=50_000,
+        features=["27 Ollama Modelle", "50k Tokens/Tag", "Kein MCP", "🐻 Brumo dabei"]
+    ),
+    UserTier.REGISTERED: TierConfig(
+        name="registered", display_name="Registriert",
+        price_monthly=0.0, price_yearly=0.0,
+        models="ollama_mcp", mcp_access=True, cli_agents=True,
+        priority_queue=False, support_level="community",
+        daily_token_limit=100_000,
+        features=["37 Modelle (Ollama+Cloud)", "MCP Tools", "CLI Agents", "100k Tokens/Tag"]
+    ),
+    UserTier.PRO: TierConfig(
+        name="pro", display_name="Pro",
+        price_monthly=14.99, price_yearly=149.99,
+        models="all", mcp_access=True, cli_agents=True,
+        priority_queue=False, support_level="email",
+        daily_token_limit=100_000,
+        features=["551 KI-Modelle", "Claude, GPT, Grok", "100k Tokens/Tag", "Email Support"]
+    ),
+    UserTier.ENTERPRISE: TierConfig(
+        name="enterprise", display_name="Enterprise",
+        price_monthly=49.99, price_yearly=499.99,
+        models="all", mcp_access=True, cli_agents=True,
+        priority_queue=True, support_level="24/7",
+        daily_token_limit=0,
+        features=["551 Modelle", "Unlimited Tokens", "Priority Queue", "24/7 Support"]
+    ),
+}
+
+class UserTierService:
+    def __init__(self, users_path: Path = None):
+        paths = [Path(".vault/users"), Path("/opt/triforce/.vault/users"), Path("/home/zombie/triforce/.vault/users")]
+        self.users_path = users_path or next((p for p in paths if p.parent.exists()), Path(".vault/users"))
+        self.users_path.mkdir(parents=True, exist_ok=True)
+        self._token_usage: Dict[str, Dict] = {}
+    
+    def get_user_tier(self, user_id: str = None) -> UserTier:
+        if not user_id: return UserTier.GUEST
+        f = self.users_path / f"{user_id}.json"
+        if not f.exists(): return UserTier.REGISTERED
+        try:
+            t = json.loads(f.read_text()).get("tier", "registered")
+            return UserTier(t if t != "free" else "registered")
+        except: return UserTier.REGISTERED
+    
+    def set_user_tier(self, user_id: str, tier: UserTier, expires: datetime = None) -> bool:
+        f = self.users_path / f"{user_id}.json"
+        try:
+            d = json.loads(f.read_text()) if f.exists() else {"user_id": user_id}
+            d.update({"tier": tier.value, "tier_updated": datetime.now().isoformat()})
+            if expires: d["tier_expires"] = expires.isoformat()
+            f.write_text(json.dumps(d, indent=2))
+            return True
+        except: return False
+    
+    def get_allowed_models(self, user_id: str = None) -> List[str]:
+        cfg = TIER_CONFIGS[self.get_user_tier(user_id)]
+        if cfg.models == "ollama_only": return OLLAMA_MODELS
+        if cfg.models == "ollama_mcp": return OLLAMA_MODELS + FREE_CLOUD_MODELS
+        return "all"
+    
+    def get_model_backend(self, user_id: str = None) -> str:
+        m = TIER_CONFIGS[self.get_user_tier(user_id)].models
+        return {"ollama_only": "ollama", "ollama_mcp": "mixed"}.get(m, "openrouter")
+    
+    def has_mcp_access(self, user_id: str = None) -> bool:
+        return TIER_CONFIGS[self.get_user_tier(user_id)].mcp_access
+    
+    def has_cli_agents(self, user_id: str = None) -> bool:
+        return TIER_CONFIGS[self.get_user_tier(user_id)].cli_agents
+    
+    def is_model_allowed(self, user_id: str, model: str) -> bool:
+        a = self.get_allowed_models(user_id)
+        return a == "all" or model in a or any(model == m.split("/")[-1] or m.endswith(model) for m in a)
+    
+    def get_daily_token_limit(self, user_id: str = None) -> int:
+        return TIER_CONFIGS[self.get_user_tier(user_id)].daily_token_limit
+    
+    def track_tokens(self, user_id: str, tokens: int) -> Dict:
+        today = datetime.now().strftime("%Y-%m-%d")
+        self._token_usage.setdefault(user_id, {})[today] = self._token_usage.get(user_id, {}).get(today, 0) + tokens
+        limit = self.get_daily_token_limit(user_id)
+        used = self._token_usage[user_id][today]
+        return {"used_today": used, "limit": limit, "remaining": max(0, limit - used) if limit > 0 else -1}
+    
+    def check_token_limit(self, user_id: str = None) -> Dict:
+        limit = self.get_daily_token_limit(user_id)
+        if limit == 0: return {"allowed": True, "unlimited": True}
+        used = self._token_usage.get(user_id, {}).get(datetime.now().strftime("%Y-%m-%d"), 0) if user_id else 0
+        return {"allowed": used < limit, "used": used, "limit": limit, "remaining": max(0, limit - used)}
+    
+    def get_tier_info(self, tier: UserTier) -> Dict:
+        cfg = TIER_CONFIGS[tier]
+        cnt = {"ollama_only": len(OLLAMA_MODELS), "ollama_mcp": len(OLLAMA_MODELS)+len(FREE_CLOUD_MODELS)}.get(cfg.models, 551)
+        return {"tier": tier.value, "name": cfg.display_name, "price_monthly": cfg.price_monthly, 
+                "price_yearly": cfg.price_yearly, "features": cfg.features, "model_count": cnt,
+                "mcp_access": cfg.mcp_access, "cli_agents": cfg.cli_agents, "priority_queue": cfg.priority_queue, 
+                "daily_token_limit": cfg.daily_token_limit}
+    
+    def get_all_tiers(self) -> List[Dict]:
+        return [self.get_tier_info(t) for t in [UserTier.GUEST, UserTier.REGISTERED, UserTier.PRO, UserTier.ENTERPRISE]]
+
+tier_service = UserTierService()

@@ -1,0 +1,502 @@
+"""
+AILinux Client Chat API
+Tier-basierter Chat:
+- Free: Ollama Backend (lokal auf Server)
+- Pro/Enterprise: OpenRouter + alle Cloud-Provider
+"""
+from fastapi import APIRouter, HTTPException, Header
+from pydantic import BaseModel
+from typing import Optional, List
+import httpx
+import os
+import logging
+from datetime import datetime
+
+from ..services.user_tiers import (
+    tier_service, UserTier, FREE_MODELS_OLLAMA, ALL_OPENROUTER_MODELS
+)
+from ..services.model_registry import registry
+
+logger = logging.getLogger("ailinux.client_chat")
+
+router = APIRouter(prefix="/client", tags=["Client Chat"])
+
+# Backend Config
+OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
+OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
+
+
+class ChatRequest(BaseModel):
+    message: str
+    model: Optional[str] = None
+    system_prompt: Optional[str] = None
+    temperature: Optional[float] = 0.7
+    max_tokens: Optional[int] = 4096
+
+
+class ChatResponse(BaseModel):
+    response: str
+    model: str
+    tier: str
+    backend: str  # "ollama" oder "openrouter"
+    tokens_used: Optional[int] = None
+    latency_ms: Optional[int] = None
+
+
+class ModelsResponse(BaseModel):
+    tier: str
+    tier_name: str
+    model_count: int
+    models: List[str]
+    backend: str
+    upgrade_available: bool
+
+
+def get_default_ollama_model() -> str:
+    """Default Ollama-Modell für Free Tier"""
+    return "llama3.2:latest"
+
+
+def get_default_model(tier: UserTier) -> str:
+    """Default-Modell basierend auf Tier"""
+    if tier == UserTier.GUEST:
+        return "ollama/llama3.2:latest"
+    elif tier == UserTier.PRO:
+        return "anthropic/claude-sonnet-4"
+    else:  # Enterprise
+        return "anthropic/claude-opus-4"
+
+
+def normalize_ollama_model(model: str) -> str:
+    """Normalisiere Model-ID für Ollama"""
+    if model.startswith("ollama/"):
+        return model[7:]  # Entferne "ollama/" Prefix
+    return model
+
+
+def normalize_openrouter_model(model: str) -> str:
+    """Normalisiere Model-ID für OpenRouter"""
+    if model.startswith("openrouter/"):
+        return model[11:]  # Entferne "openrouter/" Prefix
+    return model
+
+
+async def call_ollama(
+    model: str,
+    messages: List[dict],
+    temperature: float = 0.7,
+    max_tokens: int = 4096
+) -> dict:
+    """Call Ollama API (lokal auf Server)"""
+
+    # Normalisiere Model-Name
+    model_name = normalize_ollama_model(model)
+
+    payload = {
+        "model": model_name,
+        "messages": messages,
+        "stream": False,
+        "options": {
+            "temperature": temperature,
+            "num_predict": max_tokens,
+        }
+    }
+
+    async with httpx.AsyncClient(timeout=300.0) as client:
+        try:
+            response = await client.post(
+                f"{OLLAMA_BASE_URL}/api/chat",
+                json=payload
+            )
+
+            if response.status_code != 200:
+                error_text = response.text
+                logger.error(f"Ollama Error: {error_text}")
+                raise HTTPException(
+                    status_code=response.status_code,
+                    detail=f"Ollama Error: {error_text}"
+                )
+
+            result = response.json()
+
+            # Ollama Response in OpenAI-Format konvertieren
+            return {
+                "choices": [{
+                    "message": {
+                        "role": "assistant",
+                        "content": result.get("message", {}).get("content", "")
+                    }
+                }],
+                "usage": {
+                    "total_tokens": result.get("eval_count", 0) + result.get("prompt_eval_count", 0)
+                }
+            }
+
+        except httpx.ConnectError:
+            logger.error("Ollama nicht erreichbar")
+            raise HTTPException(503, "Ollama Backend nicht erreichbar")
+
+
+async def call_openrouter(
+    model: str,
+    messages: List[dict],
+    temperature: float = 0.7,
+    max_tokens: int = 4096
+) -> dict:
+    """Call OpenRouter API (für Pro/Enterprise)"""
+
+    # Normalisiere Model-Name
+    model_name = normalize_openrouter_model(model)
+
+    headers = {
+        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+        "Content-Type": "application/json",
+        "HTTP-Referer": "https://ailinux.me",
+        "X-Title": "AILinux Client"
+    }
+
+    payload = {
+        "model": model_name,
+        "messages": messages,
+        "temperature": temperature,
+        "max_tokens": max_tokens,
+    }
+
+    async with httpx.AsyncClient(timeout=120.0) as client:
+        response = await client.post(
+            f"{OPENROUTER_BASE_URL}/chat/completions",
+            headers=headers,
+            json=payload
+        )
+
+        if response.status_code != 200:
+            error_text = response.text
+            raise HTTPException(
+                status_code=response.status_code,
+                detail=f"OpenRouter Error: {error_text}"
+            )
+
+        return response.json()
+
+
+@router.post("/chat", response_model=ChatResponse)
+async def client_chat(
+    request: ChatRequest,
+    x_user_id: str = Header(None, alias="X-User-ID"),
+    x_client_id: str = Header(None, alias="X-Client-ID")
+):
+    """
+    Chat-Endpoint für AILinux Client
+
+    - Free Tier: Ollama Backend (lokal, kostenlos)
+    - Pro/Enterprise: OpenRouter (Cloud-APIs)
+
+    Headers:
+        X-User-ID: User-Email oder ID
+        X-Client-ID: Client-ID für Tracking
+    """
+    start_time = datetime.now()
+
+    # User-ID ermitteln
+    user_id = x_user_id if x_user_id and x_user_id not in ("", "anonymous") else None
+
+    # Tier holen
+    tier = tier_service.get_user_tier(user_id)
+
+    # Messages bauen
+    messages = []
+    if request.system_prompt:
+        messages.append({
+            "role": "system",
+            "content": request.system_prompt
+        })
+    messages.append({
+        "role": "user",
+        "content": request.message
+    })
+
+    # === FREE TIER: Ollama Backend ===
+    if tier == UserTier.GUEST:
+        # Model bestimmen
+        model = request.model or get_default_model(tier)
+
+        # Prüfen ob Ollama-Modell erlaubt
+        if not model.startswith("ollama/"):
+            model = f"ollama/{model}"
+
+        if not tier_service.is_model_allowed(user_id, model):
+            # Fallback auf Default
+            model = "ollama/llama3.2:latest"
+            logger.warning(f"Model nicht erlaubt für Free Tier, Fallback: {model}")
+
+        # Ollama Call
+        result = await call_ollama(
+            model=model,
+            messages=messages,
+            temperature=request.temperature,
+            max_tokens=request.max_tokens
+        )
+
+        backend = "ollama"
+
+    # === PRO/ENTERPRISE: OpenRouter ===
+    else:
+        model = request.model or get_default_model(tier)
+
+        # Entferne Provider-Prefix für OpenRouter
+        if model.startswith("openrouter/"):
+            model = model[11:]
+        elif model.startswith("ollama/"):
+            # Ollama-Modelle auch für Pro erlauben (aber via Ollama)
+            result = await call_ollama(
+                model=model,
+                messages=messages,
+                temperature=request.temperature,
+                max_tokens=request.max_tokens
+            )
+            latency = int((datetime.now() - start_time).total_seconds() * 1000)
+            return ChatResponse(
+                response=result["choices"][0]["message"]["content"],
+                model=model,
+                tier=tier.value,
+                backend="ollama",
+                tokens_used=result.get("usage", {}).get("total_tokens"),
+                latency_ms=latency
+            )
+
+        # OpenRouter Call
+        result = await call_openrouter(
+            model=model,
+            messages=messages,
+            temperature=request.temperature,
+            max_tokens=request.max_tokens
+        )
+        backend = "openrouter"
+
+    # Response extrahieren
+    response_text = result.get("choices", [{}])[0].get("message", {}).get("content", "")
+    tokens = result.get("usage", {}).get("total_tokens")
+    latency = int((datetime.now() - start_time).total_seconds() * 1000)
+
+    return ChatResponse(
+        response=response_text,
+        model=model,
+        tier=tier.value,
+        backend=backend,
+        tokens_used=tokens,
+        latency_ms=latency
+    )
+
+
+@router.get("/models", response_model=ModelsResponse)
+async def get_client_models(
+    x_user_id: str = Header(None, alias="X-User-ID")
+):
+    """
+    Hole verfügbare Modelle für den Client
+
+    - Free: Ollama Modelle (lokal auf Server)
+    - Pro/Enterprise: ALLE Modelle vom Registry
+    """
+    user_id = x_user_id if x_user_id and x_user_id not in ("", "anonymous") else None
+    tier = tier_service.get_user_tier(user_id)
+    config = tier_service.get_tier_info(tier)
+
+    if tier == UserTier.GUEST:
+        # Free: Nur Ollama Modelle
+        models = FREE_MODELS_OLLAMA
+        backend = "ollama"
+    else:
+        # Pro/Enterprise: ALLE Modelle vom Registry
+        all_models = registry.list_models()
+        models = [m.model_id for m in all_models]
+        backend = "openrouter"
+
+    return ModelsResponse(
+        tier=tier.value,
+        tier_name=config["name"],
+        model_count=len(models),
+        models=models,
+        backend=backend,
+        upgrade_available=(tier == UserTier.GUEST)
+    )
+
+
+@router.get("/tier")
+async def get_client_tier(
+    x_user_id: str = Header(None, alias="X-User-ID")
+):
+    """Hole Tier-Info für den aktuellen User"""
+    user_id = x_user_id if x_user_id and x_user_id not in ("", "anonymous") else None
+    tier = tier_service.get_user_tier(user_id)
+    info = tier_service.get_tier_info(tier)
+    info["backend"] = "ollama" if tier == UserTier.GUEST else "openrouter"
+    return info
+
+
+@router.post("/analyze")
+async def analyze_file(
+    content: str,
+    filename: str,
+    action: str = "analyze",
+    x_user_id: str = Header(None, alias="X-User-ID")
+):
+    """
+    Datei-Analyse via KI
+
+    Actions: analyze, bugs, optimize, summarize, document, security
+    """
+    user_id = x_user_id if x_user_id and x_user_id not in ("", "anonymous") else None
+    tier = tier_service.get_user_tier(user_id)
+
+    prompts = {
+        "analyze": f"Analysiere diese Datei '{filename}' gründlich. Erkläre was sie tut, die Struktur und wichtige Teile:\n\n```\n{content[:8000]}\n```",
+        "bugs": f"Finde Bugs, Fehler und potenzielle Probleme in '{filename}':\n\n```\n{content[:8000]}\n```",
+        "optimize": f"Optimiere '{filename}'. Zeige verbesserten Code mit Erklärungen:\n\n```\n{content[:8000]}\n```",
+        "summarize": f"Fasse '{filename}' kurz zusammen:\n\n```\n{content[:8000]}\n```",
+        "document": f"Erstelle Dokumentation für '{filename}':\n\n```\n{content[:8000]}\n```",
+        "security": f"Security-Check für '{filename}':\n\n```\n{content[:8000]}\n```",
+    }
+
+    prompt = prompts.get(action, prompts["analyze"])
+    model = get_default_model(tier)
+    messages = [{"role": "user", "content": prompt}]
+
+    # Free: Ollama, Pro+: OpenRouter
+    if tier == UserTier.GUEST:
+        result = await call_ollama(model, messages)
+        backend = "ollama"
+    else:
+        result = await call_openrouter(normalize_openrouter_model(model), messages)
+        backend = "openrouter"
+
+    response_text = result.get("choices", [{}])[0].get("message", {}).get("content", "")
+
+    return {
+        "action": action,
+        "filename": filename,
+        "model": model,
+        "tier": tier.value,
+        "backend": backend,
+        "result": response_text
+    }
+
+
+@router.get("/ollama/status")
+async def ollama_status():
+    """Prüfe Ollama Backend Status"""
+    try:
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            response = await client.get(f"{OLLAMA_BASE_URL}/api/tags")
+            if response.status_code == 200:
+                data = response.json()
+                models = [m["name"] for m in data.get("models", [])]
+                return {
+                    "status": "online",
+                    "url": OLLAMA_BASE_URL,
+                    "models_loaded": len(models),
+                    "models": models[:20]  # Max 20 anzeigen
+                }
+    except Exception as e:
+        logger.error(f"Ollama Status Check failed: {e}")
+
+    return {
+        "status": "offline",
+        "url": OLLAMA_BASE_URL,
+        "models_loaded": 0,
+        "models": []
+    }
+
+
+@router.get("/models/sync")
+async def sync_models(
+    x_user_id: str = Header(None, alias="X-User-ID")
+):
+    """
+    Synchronisiere Modellliste vom Server.
+    PRO/ENTERPRISE: Alle 551 OpenRouter Modelle dynamisch
+    """
+    from ..services.model_registry import registry
+    from ..services.user_tiers import OLLAMA_MODELS, FREE_CLOUD_MODELS
+    
+    user_id = x_user_id if x_user_id and x_user_id not in ("", "anonymous") else None
+    tier = tier_service.get_user_tier(user_id)
+    config = tier_service.get_tier_info(tier)
+    
+    models_list = []
+    
+    # Ollama für alle
+    for m in OLLAMA_MODELS:
+        models_list.append({
+            "id": m, "name": m.split("/")[-1], 
+            "provider": "ollama", "category": "local", "free": True
+        })
+    
+    # Free Cloud für REGISTERED+
+    if tier.value in ["registered", "pro", "enterprise"]:
+        for m in FREE_CLOUD_MODELS:
+            models_list.append({
+                "id": m, "name": m.split("/")[-1],
+                "provider": m.split("/")[0], "category": "free_cloud", "free": True
+            })
+    
+    # Premium für PRO/ENTERPRISE
+    if tier.value in ["pro", "enterprise"]:
+        try:
+            all_registry = await registry.list_models()
+        except Exception as e:
+            logger.warning(f"Registry load failed: {e}")
+            all_registry = []
+        existing_ids = {m["id"] for m in models_list}
+        for m in all_registry:
+            if m.model_id not in existing_ids:
+                models_list.append({
+                    "id": m.model_id, 
+                    "name": m.name or m.model_id.split("/")[-1],
+                    "provider": m.provider, 
+                    "category": "premium", 
+                    "free": False
+                })
+    
+    return {
+        "tier": tier.value,
+        "tier_name": config["name"],
+        "model_count": len(models_list),
+        "models": sorted(models_list, key=lambda x: (x["category"], x["provider"], x["name"])),
+        "categories": {
+            "local": len([m for m in models_list if m["category"] == "local"]),
+            "free_cloud": len([m for m in models_list if m["category"] == "free_cloud"]),
+            "premium": len([m for m in models_list if m["category"] == "premium"]),
+        },
+        "sync_timestamp": datetime.now().isoformat(),
+        "version": "2.2"
+    }
+
+
+@router.get("/models/providers")
+async def get_model_providers(
+    x_user_id: str = Header(None, alias="X-User-ID")
+):
+    """Liste alle Provider mit Modell-Anzahl"""
+    from ..services.model_registry import registry
+    
+    user_id = x_user_id if x_user_id and x_user_id not in ("", "anonymous") else None
+    tier = tier_service.get_user_tier(user_id)
+    
+    providers = {}
+    all_models = registry.list_models()
+    
+    for m in all_models:
+        p = m.provider
+        if p not in providers:
+            providers[p] = {"count": 0, "models": []}
+        providers[p]["count"] += 1
+        if len(providers[p]["models"]) < 5:
+            providers[p]["models"].append(m.model_id)
+    
+    return {
+        "tier": tier.value,
+        "provider_count": len(providers),
+        "providers": dict(sorted(providers.items(), key=lambda x: -x[1]["count"]))
+    }
