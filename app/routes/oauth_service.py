@@ -19,7 +19,7 @@ from __future__ import annotations
 
 import secrets
 import logging
-from urllib.parse import urlencode
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from fastapi import APIRouter, HTTPException, Request, Response
 from fastapi.responses import JSONResponse
@@ -67,6 +67,7 @@ DEFAULT_ISSUER = "https://api.ailinux.me"
 LOCAL_HOSTS = [
     "localhost",
     "127.0.0.1",
+    "::1",
     "host.docker.internal",
     "172.17.0.1",
     "172.19.0.1",
@@ -99,6 +100,21 @@ def _get_issuer(request: Request) -> str:
     return DEFAULT_ISSUER
 
 
+def _is_local_loopback_request(request: Request) -> bool:
+    """Loopback/internal MCP clients should not be pushed into OAuth discovery."""
+    forwarded_port = request.headers.get("X-Forwarded-Port", "")
+    host = (request.url.hostname or "").lower()
+    return not forwarded_port and (host in LOCAL_HOSTS or host.startswith("172."))
+
+
+def _build_redirect_location(redirect_uri: str, params: dict[str, str]) -> str:
+    """Append OAuth params without breaking existing redirect query values."""
+    parsed = urlsplit(redirect_uri)
+    merged_query = dict(parse_qsl(parsed.query, keep_blank_values=True))
+    merged_query.update(params)
+    return urlunsplit(parsed._replace(query=urlencode(merged_query)))
+
+
 # ============================================================================
 # OAuth 2.0 Discovery Endpoints (RFC 8414, RFC 9470)
 # ============================================================================
@@ -107,6 +123,8 @@ def _get_issuer(request: Request) -> str:
 @router.get("/.well-known/openid-configuration")
 async def oauth_metadata(request: Request):
     """OAuth 2.0 Authorization Server Metadata (RFC 8414)."""
+    if _is_local_loopback_request(request):
+        raise HTTPException(status_code=404, detail="OAuth discovery is disabled for local MCP clients")
     return get_oauth_metadata(_get_issuer(request))
 
 
@@ -114,6 +132,8 @@ async def oauth_metadata(request: Request):
 @router.get("/.well-known/oauth-protected-resource/{path:path}")
 async def oauth_protected_resource(request: Request, path: str = ""):
     """OAuth 2.0 Protected Resource Metadata (RFC 9470)."""
+    if _is_local_loopback_request(request):
+        raise HTTPException(status_code=404, detail="OAuth discovery is disabled for local MCP clients")
     issuer = _get_issuer(request)
     return get_protected_resource_metadata(issuer, f"/{path}" if path else "/")
 
@@ -157,7 +177,7 @@ async def authorize_get(
     )
 
     params = {"code": code, "state": state}
-    location = f"{redirect_uri}?{urlencode(params)}"
+    location = _build_redirect_location(redirect_uri, params)
 
     logger.info(f"AUTH_CODE_ISSUED | client={client_id} | redirect={redirect_uri[:50]}")
     return Response(status_code=302, headers={"Location": location})
@@ -223,10 +243,14 @@ async def token_endpoint(request: Request):
         if not client_secret:
             client_id, client_secret = _extract_basic_auth(request)
 
-        # Validate client credentials (required for confidential clients)
-        if client_id and client_secret:
+        # RFC 7636: PKCE public clients send code_verifier — no client_secret needed.
+        # The code_verifier IS the proof of identity for public clients.
+        if code_verifier:
+            logger.info(f"TOKEN_PKCE | client={client_id!r} | skipping secret validation (PKCE flow)")
+        elif client_id and client_secret:
+            # Confidential client without PKCE: validate secret
             if not _validate_credentials(client_id, client_secret):
-                logger.warning(f"TOKEN_FAIL | grant=authorization_code | reason=invalid_client")
+                logger.warning(f"TOKEN_FAIL | grant=authorization_code | reason=invalid_client | client={client_id!r}")
                 raise HTTPException(401, "Invalid client credentials")
 
         token = exchange_auth_code(code, code_verifier)

@@ -189,7 +189,7 @@ async def receive_client_logs(
             if isinstance(entry, str):
                 try:
                     entry = json.loads(entry)
-                except:
+                except Exception:
                     continue
             
             level = entry.get("level", "").upper()
@@ -205,8 +205,8 @@ async def receive_client_logs(
         }
         
     except Exception as e:
-        logger.error(f"Log receive error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error("Log receive error: %s", e, exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal server error") from e
 
 
 @router.get("/logs")

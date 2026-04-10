@@ -291,70 +291,6 @@ class GroupChatOrchestrator:
         self.sessions: Dict[str, GroupChatSession] = {}
         self._load_sessions()
 
-    def _clone_participant(self, participant: Participant) -> Participant:
-        return Participant(
-            id=participant.id,
-            name=participant.name,
-            role=participant.role,
-            provider=participant.provider,
-            connection=participant.connection,
-            capabilities=set(participant.capabilities),
-            active=participant.active,
-            last_seen=participant.last_seen,
-        )
-
-    def _session_path(self, session_id: str) -> Path:
-        return GROUP_CHAT_DIR / f"{session_id}.json"
-
-    def _restore_session_from_data(self, data: Dict[str, Any]) -> GroupChatSession:
-        session = GroupChatSession(
-            id=data["id"],
-            topic=data["topic"],
-            phase=SessionPhase(data.get("phase", "created")),
-            created_at=data.get("created_at", ""),
-            assigned_coder=data.get("assigned_coder"),
-            coding_result=data.get("coding_result"),
-            final_summary=data.get("final_summary"),
-            error=data.get("error"),
-        )
-        session.pending_responses = set(data.get("pending_responses", []))
-
-        for pid, pdata in data.get("participants", {}).items():
-            if pid in DEFAULT_PARTICIPANTS:
-                participant = self._clone_participant(DEFAULT_PARTICIPANTS[pid])
-                participant.active = pdata.get("active", participant.active)
-                participant.last_seen = pdata.get("last_seen")
-                session.participants[pid] = participant
-
-        for mdata in data.get("messages", []):
-            msg = ChatMessage(
-                id=mdata["id"],
-                session_id=mdata["session_id"],
-                sender=mdata["sender"],
-                type=MessageType(mdata["type"]),
-                content=mdata["content"],
-                metadata=mdata.get("metadata", {}),
-                timestamp=mdata.get("timestamp", ""),
-                addressed_to=mdata.get("addressed_to"),
-            )
-            session.messages.append(msg)
-
-        return session
-
-    def _load_session_from_disk(self, session_id: str, cache: bool = True) -> Optional[GroupChatSession]:
-        filepath = self._session_path(session_id)
-        if not filepath.exists():
-            return None
-        try:
-            data = json.loads(filepath.read_text())
-            session = self._restore_session_from_data(data)
-            if cache:
-                self.sessions[session.id] = session
-            return session
-        except Exception as e:
-            logger.error(f"Failed to load session {session_id} from disk: {e}")
-            return None
-
     # -------------------------------------------------------------------------
     # Session Management
     # -------------------------------------------------------------------------
@@ -369,16 +305,13 @@ class GroupChatOrchestrator:
         if participants:
             for pid in participants:
                 if pid in DEFAULT_PARTICIPANTS:
-                    session.participants[pid] = self._clone_participant(DEFAULT_PARTICIPANTS[pid])
+                    session.participants[pid] = DEFAULT_PARTICIPANTS[pid]
             if not session.participants:
                 raise ValueError(
                     f"No valid participants. Allowed: {', '.join(sorted(DEFAULT_PARTICIPANTS.keys()))}"
                 )
         else:
-            session.participants = {
-                pid: self._clone_participant(participant)
-                for pid, participant in DEFAULT_PARTICIPANTS.items()
-            }
+            session.participants = dict(DEFAULT_PARTICIPANTS)
 
         # System-Nachricht
         session.add_message(
@@ -406,23 +339,14 @@ class GroupChatOrchestrator:
         return session
 
     def get_session(self, session_id: str) -> Optional[GroupChatSession]:
-        session = self.sessions.get(session_id)
-        if session:
-            return session
-        return self._load_session_from_disk(session_id, cache=True)
+        return self.sessions.get(session_id)
 
     def list_sessions(self, active_only: bool = True) -> List[Dict[str, Any]]:
-        for filepath in GROUP_CHAT_DIR.glob("gc-*.json"):
-            session_id = filepath.stem
-            if session_id not in self.sessions:
-                self._load_session_from_disk(session_id, cache=True)
-
         sessions = []
         for s in self.sessions.values():
             if active_only and s.phase in (SessionPhase.COMPLETED, SessionPhase.FAILED):
                 continue
             sessions.append(s.to_dict())
-        sessions.sort(key=lambda item: item.get("created_at", ""), reverse=True)
         return sessions
 
     # -------------------------------------------------------------------------
@@ -433,7 +357,7 @@ class GroupChatOrchestrator:
         """
         Gemini Lead analysiert die Frage und erstellt Sub-Tasks für Web-AIs.
         """
-        session = self.get_session(session_id)
+        session = self.sessions.get(session_id)
         if not session:
             return {"error": f"Session {session_id} not found"}
 
@@ -443,8 +367,11 @@ class GroupChatOrchestrator:
         analysis_prompt = self._build_analysis_prompt(session)
 
         try:
-            analysis, analysis_model = await self._chat_with_lead_model(
-                [{"role": "user", "content": analysis_prompt}],
+            from app.services.chat_router import api_proxy
+
+            analysis = await api_proxy.chat(
+                model="gemini/gemini-2.5-flash",
+                messages=[{"role": "user", "content": analysis_prompt}],
                 temperature=0.3,
                 max_tokens=4096,
             )
@@ -462,7 +389,7 @@ class GroupChatOrchestrator:
                 sender="gemini-lead",
                 msg_type=MessageType.ANALYSIS,
                 content=analysis,
-                metadata={"model": analysis_model},
+                metadata={"model": "gemini/gemini-2.5-flash"},
             )
 
             # Sub-Tasks für Web-AIs extrahieren und posten
@@ -523,7 +450,7 @@ class GroupChatOrchestrator:
         MCP-Agents (claude-web, chatgpt-web) bekommen Notifications.
         Wird als Background-Task nach start_discussion gefeuert.
         """
-        session = self.get_session(session_id)
+        session = self.sessions.get(session_id)
         if not session:
             return {"error": f"Session {session_id} not found"}
 
@@ -641,7 +568,7 @@ Format: Problem → Lösung → Code-Skizze (wenn relevant)."""
         Web-AIs posten ihre Antworten via MCP.
         Wird von Claude-Web oder ChatGPT-Web aufgerufen.
         """
-        session = self.get_session(session_id)
+        session = self.sessions.get(session_id)
         if not session:
             return {"error": f"Session {session_id} not found"}
 
@@ -693,7 +620,7 @@ Format: Problem → Lösung → Code-Skizze (wenn relevant)."""
         Liest Nachrichten aus dem Group Chat.
         Web-AIs rufen das via MCP auf um den Stand zu sehen.
         """
-        session = self.get_session(session_id)
+        session = self.sessions.get(session_id)
         if not session:
             return {"error": f"Session {session_id} not found"}
 
@@ -734,7 +661,7 @@ Format: Problem → Lösung → Code-Skizze (wenn relevant)."""
         """
         Gemini Lead konsolidiert alle Antworten und erstellt Coding-Prompt.
         """
-        session = self.get_session(session_id)
+        session = self.sessions.get(session_id)
         if not session:
             return {"error": f"Session {session_id} not found"}
 
@@ -743,8 +670,11 @@ Format: Problem → Lösung → Code-Skizze (wenn relevant)."""
         consolidation_prompt = self._build_consolidation_prompt(session)
 
         try:
-            summary, summary_model = await self._chat_with_lead_model(
-                [{"role": "user", "content": consolidation_prompt}],
+            from app.services.chat_router import api_proxy
+
+            summary = await api_proxy.chat(
+                model="gemini/gemini-2.5-flash",
+                messages=[{"role": "user", "content": consolidation_prompt}],
                 temperature=0.2,
                 max_tokens=6000,
             )
@@ -761,7 +691,7 @@ Format: Problem → Lösung → Code-Skizze (wenn relevant)."""
                 sender="gemini-lead",
                 msg_type=MessageType.SUMMARY,
                 content=summary,
-                metadata={"model": summary_model, "phase": "consolidation"},
+                metadata={"model": "gemini/gemini-2.5-flash", "phase": "consolidation"},
             )
 
             session.final_summary = summary
@@ -789,7 +719,7 @@ Format: Problem → Lösung → Code-Skizze (wenn relevant)."""
         """
         Weist den konsolidierten Task einem Coding-Agent zu.
         """
-        session = self.get_session(session_id)
+        session = self.sessions.get(session_id)
         if not session:
             return {"error": f"Session {session_id} not found"}
 
@@ -1090,36 +1020,6 @@ Format:
             logger.error(f"CLI execution failed for {agent_id}: {e}")
             return {"status": "error", "error": str(e), "response": ""}
 
-    async def _chat_with_lead_model(
-        self,
-        messages: List[Dict[str, str]],
-        temperature: float,
-        max_tokens: int,
-    ) -> tuple[str, str]:
-        """Try Gemini first, then fall back to Mistral if Gemini is unavailable."""
-        from app.services.chat_router import api_proxy
-
-        candidates = [
-            "gemini/gemini-2.5-flash",
-            self.API_MODEL_MAP.get("mistral-api", "mistral/mistral-small-latest"),
-        ]
-        errors: List[str] = []
-
-        for model_name in candidates:
-            try:
-                response = await api_proxy.chat(
-                    model=model_name,
-                    messages=messages,
-                    temperature=temperature,
-                    max_tokens=max_tokens,
-                )
-                return response, model_name
-            except Exception as e:
-                errors.append(f"{model_name}: {e}")
-                logger.warning(f"Lead model failed for {model_name}: {e}")
-
-        raise RuntimeError("Lead model execution failed: " + " | ".join(errors))
-
 
     # Model mappings for API/Ollama execution
     API_MODEL_MAP = {
@@ -1192,7 +1092,37 @@ Format:
         for filepath in GROUP_CHAT_DIR.glob("gc-*.json"):
             try:
                 data = json.loads(filepath.read_text())
-                session = self._restore_session_from_data(data)
+                session = GroupChatSession(
+                    id=data["id"],
+                    topic=data["topic"],
+                    phase=SessionPhase(data.get("phase", "created")),
+                    created_at=data.get("created_at", ""),
+                    assigned_coder=data.get("assigned_coder"),
+                    coding_result=data.get("coding_result"),
+                    final_summary=data.get("final_summary"),
+                    error=data.get("error"),
+                )
+                session.pending_responses = set(data.get("pending_responses", []))
+
+                # Participants wiederherstellen
+                for pid, pdata in data.get("participants", {}).items():
+                    if pid in DEFAULT_PARTICIPANTS:
+                        session.participants[pid] = DEFAULT_PARTICIPANTS[pid]
+
+                # Messages wiederherstellen
+                for mdata in data.get("messages", []):
+                    msg = ChatMessage(
+                        id=mdata["id"],
+                        session_id=mdata["session_id"],
+                        sender=mdata["sender"],
+                        type=MessageType(mdata["type"]),
+                        content=mdata["content"],
+                        metadata=mdata.get("metadata", {}),
+                        timestamp=mdata.get("timestamp", ""),
+                        addressed_to=mdata.get("addressed_to"),
+                    )
+                    session.messages.append(msg)
+
                 self.sessions[session.id] = session
             except Exception as e:
                 logger.error(f"Failed to load session {filepath}: {e}")

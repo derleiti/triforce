@@ -179,15 +179,34 @@ class CircuitBreakerRegistry:
 
 @dataclass
 class CycleDetector:
-    """Detects and prevents LLM call cycles"""
+    """Detects and prevents LLM call cycles. Chains auto-expire after TTL."""
     max_depth: int = 10
+    chain_ttl_seconds: int = 300  # 5 minutes TTL for stale chains
     _active_chains: Dict[str, List[str]] = field(default_factory=dict)
+    _chain_timestamps: Dict[str, datetime] = field(default_factory=dict)
+
+    def _cleanup_stale(self):
+        """Remove chains older than TTL (prevents memory leak from abandoned traces)."""
+        if not self._chain_timestamps:
+            return
+        now = datetime.utcnow()
+        cutoff = now - timedelta(seconds=self.chain_ttl_seconds)
+        stale = [tid for tid, ts in self._chain_timestamps.items() if ts < cutoff]
+        for tid in stale:
+            self._active_chains.pop(tid, None)
+            self._chain_timestamps.pop(tid, None)
+        if stale:
+            logger.info(f"CycleDetector: cleaned up {len(stale)} stale chains")
 
     def start_chain(self, trace_id: str, llm_id: str) -> bool:
         """Start or continue a call chain. Returns False if cycle detected."""
+        # Periodic cleanup: run every time (cheap — dict iteration)
+        self._cleanup_stale()
+
         if trace_id not in self._active_chains:
             self._active_chains[trace_id] = []
 
+        self._chain_timestamps[trace_id] = datetime.utcnow()
         chain = self._active_chains[trace_id]
 
         # Check for cycle (LLM already in chain)
@@ -210,11 +229,14 @@ class CycleDetector:
     def end_chain(self, trace_id: str):
         """End and cleanup a call chain"""
         self._active_chains.pop(trace_id, None)
+        self._chain_timestamps.pop(trace_id, None)
 
     def pop_from_chain(self, trace_id: str):
         """Remove last LLM from chain (for unwinding)"""
         if trace_id in self._active_chains and self._active_chains[trace_id]:
             self._active_chains[trace_id].pop()
+            # Update timestamp on activity
+            self._chain_timestamps[trace_id] = datetime.utcnow()
 
     def get_chain(self, trace_id: str) -> List[str]:
         """Get the current call chain"""
@@ -231,6 +253,13 @@ class CycleDetector:
     def get_active_chains(self) -> Dict[str, List[str]]:
         """Get all active chains (for debugging)"""
         return dict(self._active_chains)
+
+    def get_stats(self) -> Dict:
+        """Get detector stats for monitoring"""
+        return {
+            "active_chains": len(self._active_chains),
+            "ttl_seconds": self.chain_ttl_seconds,
+        }
 
 
 @dataclass

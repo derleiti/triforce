@@ -15,11 +15,19 @@ Version: 1.0.0
 
 from __future__ import annotations
 
+import logging
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, Header, HTTPException, Query
 from pydantic import BaseModel, Field
+import os as _os
+
+def _require_mesh_admin(x_internal_key: str = Header(default="")):
+    """Require admin key for mesh write/control operations."""
+    expected = _os.environ.get("INTERNAL_API_KEY", "")
+    if not expected or x_internal_key != expected:
+        raise HTTPException(status_code=403, detail="Forbidden: invalid admin key")
 
 from ..services.mesh_coordinator import (
     mesh_coordinator,
@@ -32,6 +40,7 @@ from ..services.mesh_coordinator import (
 )
 
 router = APIRouter(prefix="/mesh", tags=["Mesh AI"])
+logger = logging.getLogger("ailinux.mesh")
 
 
 # ============================================================================
@@ -54,7 +63,7 @@ class TaskResponse(BaseModel):
 
 class MCPCommandRequest(BaseModel):
     """Request für MCP Command Queue"""
-    source_agent: str = Field(..., description="ID des sendenden Agents")
+    source_agent: str = Field("system", description="ID des sendenden Agents")  # FIX: war required, Default 'system' verhindert 422-Fehler
     command: str = Field(..., description="MCP Command Name")
     params: Dict[str, Any] = Field(default_factory=dict, description="Command Parameter")
     priority: int = Field(2, ge=0, le=4, description="Priorität (0=kritisch, 4=niedrig)")
@@ -99,7 +108,8 @@ async def submit_task(request: TaskSubmitRequest) -> Dict[str, Any]:
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error("Mesh task submission failed: %s", e, exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal server error") from e
 
 
 @router.get("/tasks", summary="List all mesh tasks")
@@ -186,7 +196,7 @@ async def get_agent(agent_id: str) -> Dict[str, Any]:
 
 
 @router.post("/agents/register", summary="Register a new mesh agent")
-async def register_agent(request: AgentRegisterRequest) -> Dict[str, Any]:
+async def register_agent(request: AgentRegisterRequest, _: None = Depends(_require_mesh_admin)) -> Dict[str, Any]:
     """
     Registriert einen neuen Agent im Mesh System.
 
@@ -227,7 +237,7 @@ async def register_agent(request: AgentRegisterRequest) -> Dict[str, Any]:
 # ============================================================================
 
 @router.post("/queue/enqueue", summary="Enqueue an MCP command")
-async def enqueue_command(request: MCPCommandRequest) -> Dict[str, Any]:
+async def enqueue_command(request: MCPCommandRequest, _: None = Depends(_require_mesh_admin)) -> Dict[str, Any]:
     """
     Fügt einen MCP Command zur Queue hinzu.
 
@@ -256,7 +266,8 @@ async def enqueue_command(request: MCPCommandRequest) -> Dict[str, Any]:
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error("Mesh queue enqueue failed: %s", e, exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal server error") from e
 
 
 @router.get("/queue", summary="Get MCP command queue status")
@@ -333,7 +344,7 @@ async def mesh_health() -> Dict[str, Any]:
 
 
 @router.post("/start", summary="Start the mesh coordinator")
-async def start_coordinator() -> Dict[str, Any]:
+async def start_coordinator(_: None = Depends(_require_mesh_admin)) -> Dict[str, Any]:
     """Startet den Mesh Coordinator Background Service"""
     if mesh_coordinator._running:
         return {
@@ -350,7 +361,7 @@ async def start_coordinator() -> Dict[str, Any]:
 
 
 @router.post("/stop", summary="Stop the mesh coordinator")
-async def stop_coordinator() -> Dict[str, Any]:
+async def stop_coordinator(_: None = Depends(_require_mesh_admin)) -> Dict[str, Any]:
     """Stoppt den Mesh Coordinator Background Service"""
     if not mesh_coordinator._running:
         return {
@@ -508,7 +519,7 @@ import time as _time
 
 FEDERATION_NODES = {
     "hetzner": {"ip": "10.10.0.1", "port": 9000, "cores": 20, "ram": 62, "gpu": None, "role": "master", "name": "Hetzner EX63"},
-    "backup": {"ip": "10.10.0.3", "port": 9100, "cores": 28, "ram": 64, "gpu": None, "role": "hub", "name": "Backup VPS"},
+    "backup": {"ip": "10.10.0.3", "port": 9000, "cores": 28, "ram": 64, "gpu": None, "role": "hub", "name": "Backup VPS"},
     "zombie-pc": {"ip": "10.10.0.2", "port": 9000, "cores": 16, "ram": 30, "gpu": "RX 6800 XT", "role": "hub", "name": "Zombie PC"}
 }
 
@@ -521,7 +532,11 @@ async def _check_node(session, nid, cfg):
         t = _time.time()
         async with session.get(f"http://{cfg['ip']}:{cfg['port']}/health", timeout=aiohttp.ClientTimeout(total=3)) as r:
             if r.status == 200: result["online"], result["latency_ms"] = True, round((_time.time() - t) * 1000)
-    except: pass
+    except Exception as e:
+        # Kein swallow: Monitoring/Audit muss Ursache sehen.
+        logger.warning("Mesh node health check failed for %s: %s", nid, e, exc_info=True)
+        result["online"] = False
+        result["error"] = "health_check_failed"
     return result
 
 async def _get_ollama(session, ip):
@@ -547,7 +562,7 @@ async def get_mesh_resources(fmt="summary"):
     else: return {**base, "federation": {"nodes": nodes, "totals": {"online": len(online), "cores": sum(n["cores"] for n in online), "ram_gb": sum(n["ram_gb"] for n in online), "gpus": [n["gpu"] for n in nodes if n.get("gpu")]}}, "intelligence": {"cloud": CLOUD_PROVIDERS, "local": local, "total": cloud + len(local)}}
 
 @router.get("/resources", summary="Live Mesh Hardware Resources")
-async def mesh_resources_endpoint(format: str = Query("summary", regex="^(summary|nodes|full)$")):
+async def mesh_resources_endpoint(format: str = Query("summary", pattern="^(summary|nodes|full)$")):  # FIX: regex → pattern (FastAPI/Pydantic v2)
     return await get_mesh_resources(format)
 
 async def handle_mesh_resources(params: Dict[str, Any]) -> Dict[str, Any]:

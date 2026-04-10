@@ -363,7 +363,7 @@ class APIToMCPTranslator:
 class MCPToAPITranslator:
     """Translates MCP JSON-RPC calls to REST API calls."""
 
-    def __init__(self, base_url: str = "http://localhost:9100"):
+    def __init__(self, base_url: str = "http://localhost:9000"):
         # Use localhost for internal API calls (no internet required)
         self.base_url = base_url.rstrip("/")
         self.mappings = MCP_TO_API_MAPPINGS
@@ -506,7 +506,7 @@ class BidirectionalTranslator:
     Automatically detects the input format and translates accordingly.
     """
 
-    def __init__(self, base_url: str = "http://localhost:9100"):
+    def __init__(self, base_url: str = "http://localhost:9000"):
         # Use localhost for internal API calls (no internet required)
         self.api_to_mcp = APIToMCPTranslator()
         self.mcp_to_api = MCPToAPITranslator(base_url)

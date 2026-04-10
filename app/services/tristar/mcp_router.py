@@ -456,7 +456,7 @@ Liefere hochwertigen, gut dokumentierten Code.""",
         name="DeepSeek Worker",
         description="Spezialist für komplexe Algorithmen",
         role="worker",
-        llm_model="deepseek-v3.1:671b-cloud",
+        llm_model="deepseek-v3.2:cloud",
         system_prompt="""Du bist DeepSeek Worker im TriStar System.
 
 DEINE SPEZIALISIERUNG:

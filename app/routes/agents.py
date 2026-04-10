@@ -2,11 +2,20 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Header, Query
+from fastapi import APIRouter, Depends, Header, HTTPException, Query
 from pydantic import BaseModel, ValidationError
 
 from ..services import agents as agents_service
 from ..utils.errors import api_error
+import logging
+logger = logging.getLogger(__name__)
+
+import os as _os
+
+def _require_agent_admin(x_internal_key: str = Header(default="")):
+    expected = _os.environ.get("INTERNAL_API_KEY", "")
+    if not expected or x_internal_key != expected:
+        raise HTTPException(status_code=403, detail="Forbidden")
 
 router = APIRouter(prefix="/agents", tags=["agents"])
 
@@ -66,7 +75,7 @@ async def get_cli_agent(agent_id: str):
 
 
 @router.post("/cli/{agent_id}/start", response_model=CLIAgentActionResponse, summary="Start CLI Agent")
-async def start_cli_agent(agent_id: str):
+async def start_cli_agent(agent_id: str, _auth: None = Depends(_require_agent_admin)):
     """Start a CLI agent subprocess."""
     from ..services.tristar.agent_controller import agent_controller
     
@@ -78,11 +87,12 @@ async def start_cli_agent(agent_id: str):
             message=f"Agent {agent_id} started"
         )
     except Exception as e:
-        raise api_error(str(e), status_code=500, code="agent_start_failed")
+        logger.error("agent_start %s failed: %s", agent_id, e, exc_info=True)
+        raise api_error("Agent start failed", status_code=500, code="agent_start_failed")
 
 
 @router.post("/cli/{agent_id}/stop", response_model=CLIAgentActionResponse, summary="Stop CLI Agent")
-async def stop_cli_agent(agent_id: str):
+async def stop_cli_agent(agent_id: str, _auth: None = Depends(_require_agent_admin)):
     """Stop a running CLI agent."""
     from ..services.tristar.agent_controller import agent_controller
     
@@ -94,11 +104,12 @@ async def stop_cli_agent(agent_id: str):
             message=f"Agent {agent_id} stopped"
         )
     except Exception as e:
-        raise api_error(str(e), status_code=500, code="agent_stop_failed")
+        logger.error("agent_stop %s failed: %s", agent_id, e, exc_info=True)
+        raise api_error("Agent stop failed", status_code=500, code="agent_stop_failed")
 
 
 @router.post("/cli/{agent_id}/call", summary="Call CLI Agent")
-async def call_cli_agent(agent_id: str, payload: Dict[str, Any]):
+async def call_cli_agent(agent_id: str, payload: Dict[str, Any], _auth: None = Depends(_require_agent_admin)):
     """Send a message to a CLI agent and get response."""
     from ..services.tristar.agent_controller import agent_controller
     
@@ -112,7 +123,9 @@ async def call_cli_agent(agent_id: str, payload: Dict[str, Any]):
         result = await agent_controller.call_agent(agent_id, message, timeout=timeout)
         return result
     except Exception as e:
-        raise api_error(str(e), status_code=500, code="agent_call_failed")
+        logger.error(f"agent_call {agent_id} failed: {e}", exc_info=True)  # full trace in logs only
+        # SECURITY: do not expose internal exception to client (CWE-209 / CodeQL py/stack-trace-exposure)
+        raise api_error("Agent call failed", status_code=500, code="agent_call_failed")
 
 
 class ToolListResponse(BaseModel):
@@ -151,6 +164,7 @@ async def invoke_tool(
     tool_name: str,
     payload: Dict[str, Any],
     ailinux_client: Optional[str] = Header(None, alias="X-AILinux-Client"),
+    _auth: None = Depends(_require_agent_admin),
 ):
     try:
         result = await agents_service.invoke_tool(tool_name, payload, default_requested_by=ailinux_client)

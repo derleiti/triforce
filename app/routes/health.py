@@ -65,7 +65,7 @@ async def hardware_status():
     except Exception as e:
         logger.warning(f"Hardware detection failed: {e}")
         return JSONResponse(
-            content={"error": str(e), "status": "detection_failed"},
+            content={"error": "Internal server error", "status": "detection_failed"},
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 
@@ -100,9 +100,9 @@ async def register_compute_client(request: Request, gpu_info: ClientGPUInfoReque
         return JSONResponse(content=result, status_code=status.HTTP_200_OK)
 
     except Exception as e:
-        logger.error(f"Compute registration failed: {e}")
+        logger.error(f"Compute registration failed: {e}", exc_info=True)
         return JSONResponse(
-            content={"error": str(e), "session_id": None},
+            content={"error": "Internal server error", "session_id": None},
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 
@@ -130,11 +130,27 @@ async def compute_status():
         }, status_code=status.HTTP_200_OK)
 
     except Exception as e:
-        logger.error(f"Compute status failed: {e}")
+        logger.error(f"Compute status failed: {e}", exc_info=True)  # full trace in logs only
         return JSONResponse(
-            content={"error": str(e)},
+            # SECURITY: do not expose exception details externally (CWE-209 / CodeQL py/stack-trace-exposure)
+            content={"error": "Internal server error"},
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+
+
+@router.get(
+    "/v1/mcp/health",
+    tags=["Monitoring"],
+    summary="MCP compatibility health check",
+    include_in_schema=False,
+)
+async def mcp_health():
+    """
+    Minimal health endpoint for MCP-style probes.
+    Some internal probes call /v1/mcp/health; return 200 to avoid noisy 404s.
+    """
+    logger.debug("MCP health probe received")
+    return JSONResponse(content=HEALTH_RESPONSE, status_code=status.HTTP_200_OK)
 
 
 @router.get(
@@ -159,8 +175,8 @@ async def prometheus_metrics():
         from ..utils.metrics import get_metrics_response
         return get_metrics_response()
     except Exception as e:
-        logger.warning(f"Failed to get metrics: {e}")
+        logger.warning(f"Failed to get metrics: {e}", exc_info=True)
         return Response(
-            content=f"# Metrics not available: {e}\n",
+            content="# Metrics not available\n",
             media_type="text/plain"
         )

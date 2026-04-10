@@ -2,13 +2,21 @@
 # MCP Server Integration für TriForce
 
 [defaults]
-model = "gpt-5-codex"
+model = "gpt-5.4"
 approval_mode = "full-auto"
 
 [sandbox]
 enabled = false
 
+# Primary: localhost (kein Auth nötig)
 [[mcp.servers]]
 name = "triforce"
 transport = "http"
-url = "http://localhost:9100/mcp"
+url = "http://localhost:9000/v1/mcp"
+
+# Fallback: extern via Apache (Basic Auth)
+[[mcp.servers]]
+name = "triforce-external"
+transport = "http"
+url = "https://api.ailinux.me/v1/mcp"
+headers = { Authorization = "Basic em9tYmllOmU5RjhEdUtiSC0=" }

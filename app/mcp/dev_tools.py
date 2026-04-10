@@ -615,13 +615,6 @@ async def handle_dev_links(params: Dict[str, Any]) -> Dict[str, Any]:
             if isinstance(node, ast.Constant) and isinstance(node.s, str):
                 val = node.s
                 if "/" in val and len(val) > 5 and not val.startswith("http"):
-                    # FIX 2026-04-03: Skip URL routes (FastAPI endpoints)
-                    _rp = ("/v1/","/mcp/","/health","/.well-known/","/tristar/",
-                           "/triforce/","/static/","/auth/","/client/","/nova/")
-                    if any(val.startswith(p) for p in _rp):
-                        continue
-                    if val.startswith("/") and "." not in val.split("/")[-1]:
-                        continue  # URL path without file extension
                     candidate = Path(val)
                     if candidate.is_absolute() and not candidate.exists():
                         broken.append({
@@ -805,8 +798,11 @@ DEV_TOOL_HANDLERS = {
     "dev_links": handle_dev_links,
     "dev_refactor": handle_dev_refactor,
     "git": handle_git,
-    # Git aliases removed — V5_ALIASES handles remapping (fix 2026-04-03)
-    # Lambda aliases overwrote handle_git in runtime_registry (last=branch)
+    # Git aliases
+    "git_status": lambda p: handle_git({**p, "mode": "status"}),
+    "git_diff": lambda p: handle_git({**p, "mode": "diff"}),
+    "git_commit": lambda p: handle_git({**p, "mode": "commit"}),
+    "git_branch": lambda p: handle_git({**p, "mode": "branch"}),
 }
 
 DEV_TOOL_NAMES = list(DEV_TOOL_HANDLERS.keys())

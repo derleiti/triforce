@@ -53,7 +53,12 @@ async def register_contributor(
     
     Client shares hardware resources with the mesh.
     """
-    # TODO: Extract client_id from auth token
+    # Validate federation secret
+    import os as _os
+    expected_secret = _os.environ.get("FEDERATION_SECRET", "")
+    if not expected_secret or authorization != f"Bearer {expected_secret}":
+        from fastapi import HTTPException
+        raise HTTPException(status_code=403, detail="Forbidden: invalid authorization")
     import uuid
     client_id = str(uuid.uuid4())[:8]
     
@@ -78,11 +83,18 @@ async def receive_heartbeat(
     """
     Receive heartbeat from another federation node.
     """
+    import os as _os
+    expected_secret = _os.environ.get("FEDERATION_SECRET", "")
+    if not expected_secret or x_federation_key != expected_secret:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=403, detail="Forbidden: invalid federation key")
+
     if x_node_id and x_node_id in federation.nodes:
         node = federation.nodes[x_node_id]
         from datetime import datetime
+        from ..services.server_federation import NodeStatus
         node.last_heartbeat = datetime.now()
-        node.status = "healthy"
+        node.status = NodeStatus.HEALTHY
         return {"status": "ok", "node_id": x_node_id}
     
     return {"status": "unknown_node"}

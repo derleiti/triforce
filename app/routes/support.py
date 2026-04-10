@@ -9,7 +9,7 @@ from typing import Optional
 import os
 
 from ..services.support_service import get_support_service, init_support_service
-from ..services.user_tiers import tier_service, UserTier
+from ..services.user_tiers import tier_service, UserTier, has_full_access, is_free_tier
 
 router = APIRouter(prefix="/support", tags=["support"])
 
@@ -47,7 +47,7 @@ async def support_chat(
     tier = tier_service.get_user_tier(user_id)
     
     # Tier-Check
-    if tier == UserTier.GUEST:
+    if tier == UserTier.FREE:
         return SupportResponse(
             success=False,
             error="Support-Chat nur für registrierte User. Bitte anmelden!",
@@ -89,7 +89,7 @@ async def support_status(
         "features": {
             "chat": tier.value != "guest",
             "priority": tier.value in ["pro", "enterprise"],
-            "mcp_diagnostics": tier.value == "enterprise"
+            "mcp_diagnostics": tier.value in ("enterprise", "subscription", "admin")
         }
     }
 
@@ -120,8 +120,8 @@ async def get_system_info(
     user_id = x_user_id if x_user_id and x_user_id not in ("", "anonymous") else None
     tier = tier_service.get_user_tier(user_id)
     
-    if tier != UserTier.ENTERPRISE:
-        raise HTTPException(403, "Enterprise-Feature")
+    if not has_full_access(tier):
+        raise HTTPException(403, "Dieses Feature erfordert eine Swarm Subscription")
     
     support = get_support_service()
     status = await support.get_system_status()

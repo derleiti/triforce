@@ -648,7 +648,7 @@ async def get_weather(lat: float = 52.28, lon: float = 7.44, location: str = "Rh
     url = "https://api.open-meteo.com/v1/forecast"
     params = {
         "latitude": lat, "longitude": lon,
-        "current_weather": True, "timezone": "Europe/Berlin",
+        "current_weather": "true", "timezone": "Europe/Berlin",
     }
     try:
         async with aiohttp.ClientSession() as session:
@@ -672,7 +672,7 @@ async def get_crypto_prices(coins: List[str] = None) -> Dict[str, Any]:
     if coins is None:
         coins = ["bitcoin", "ethereum", "solana"]
     url = "https://api.coingecko.com/api/v3/simple/price"
-    params = {"ids": ",".join(coins), "vs_currencies": "usd,eur", "include_24hr_change": True}
+    params = {"ids": ",".join(coins), "vs_currencies": "usd,eur", "include_24hr_change": "true"}
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(url, params=params, timeout=10) as resp:
@@ -717,8 +717,89 @@ async def google_search_deep(query: str, num_results: int = 150, lang: str = "de
             logger.error(f"Google Deep Search error: {e}")
             return []
     
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
     with ThreadPoolExecutor() as executor:
         results = await loop.run_in_executor(executor, _sync_search)
     
     return results
+
+
+
+# =============================================================================
+# Time/Timezone Utilities (used by widget_handlers)
+# =============================================================================
+
+async def get_current_time(timezone: str = "Europe/Berlin", location: str = None) -> Dict[str, Any]:
+    """Get current time for a timezone."""
+    from datetime import datetime
+    try:
+        import zoneinfo
+        tz = zoneinfo.ZoneInfo(timezone)
+    except (ImportError, KeyError):
+        # Fallback for unknown timezone
+        import datetime as dt
+        tz = dt.timezone.utc
+        timezone = "UTC"
+    
+    now = datetime.now(tz)
+    return {
+        "timezone": timezone,
+        "location": location or timezone,
+        "time": now.strftime("%H:%M:%S"),
+        "date": now.strftime("%Y-%m-%d"),
+        "datetime": now.isoformat(),
+        "day_of_week": now.strftime("%A"),
+        "utc_offset": now.strftime("%z"),
+    }
+
+
+
+async def get_stock_indices() -> Dict[str, Any]:
+    """Get major stock indices via Yahoo Finance scraping fallback."""
+    indices = {
+        "^GSPC": "S&P 500",
+        "^DJI": "Dow Jones",
+        "^IXIC": "NASDAQ",
+        "^GDAXI": "DAX",
+        "^FTSE": "FTSE 100",
+    }
+    results = {}
+    try:
+        async with aiohttp.ClientSession() as session:
+            for symbol, name in indices.items():
+                try:
+                    url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?range=1d&interval=1d"
+                    headers = {"User-Agent": "Mozilla/5.0"}
+                    async with session.get(url, headers=headers, timeout=8) as resp:
+                        if resp.status == 200:
+                            data = await resp.json()
+                            meta = data.get("chart", {}).get("result", [{}])[0].get("meta", {})
+                            results[name] = {
+                                "price": meta.get("regularMarketPrice"),
+                                "previous_close": meta.get("previousClose"),
+                                "currency": meta.get("currency", "USD"),
+                            }
+                        else:
+                            results[name] = {"error": f"HTTP {resp.status}"}
+                except Exception as e:
+                    results[name] = {"error": str(e)[:60]}
+    except Exception as e:
+        return {"error": str(e), "indices": {}}
+    return {"indices": results, "source": "yahoo_finance"}
+
+
+async def list_timezones(region: str = None) -> Dict[str, Any]:
+    """List available timezones, optionally filtered by region."""
+    import zoneinfo
+    all_zones = sorted(zoneinfo.available_timezones())
+    if region:
+        filtered = [z for z in all_zones if region.lower() in z.lower()]
+        return {"region": region, "timezones": filtered, "count": len(filtered)}
+    # Group by region
+    regions = {}
+    for z in all_zones:
+        parts = z.split("/", 1)
+        r = parts[0] if len(parts) > 1 else "Other"
+        regions.setdefault(r, []).append(z)
+    return {"regions": {r: len(v) for r, v in regions.items()}, "total": len(all_zones)}
+

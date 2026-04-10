@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends
-from app.utils.rate_limit_compat import RateLimiter
+from ..utils.rate_limit_compat import RateLimiter
 
 from ..config import get_settings
 from ..schemas.settings import SettingsResponse, SettingsUpdate

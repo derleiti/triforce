@@ -1006,7 +1006,7 @@ PRESETS:full_trace_analysis,agent_health_check,error_investigation,tool_performa
     def _get_agent_role(self, agent_id: str) -> str:
         """Gibt kompakte Rollenbeschreibung zurück."""
         roles = {
-            "gemini-mcp": "lead,coord,init",
+            "gemini-mcp": "lead,orchestrate,research,broadcast",
             "claude-mcp": "code,review,analysis",
             "codex-mcp": "code,exec,impl",
             "mistral-mcp": "research,fast,multi",

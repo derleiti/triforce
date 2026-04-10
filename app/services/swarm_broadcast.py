@@ -63,24 +63,6 @@ PROVIDER_LIMITS: Dict[str, Dict[str, Any]] = {
     "ollama":     {"rpm": 60,  "batch": 5,  "delay": 3.0, "timeout": 45}   # Cloud-only, API-backed,
 }
 
-NON_CHAT_MODEL_PATTERNS: Tuple[str, ...] = (
-    "whisper",
-    "tts",
-    "speech",
-    "transcribe",
-    "audio",
-)
-
-ERROR_RESPONSE_MARKERS: Tuple[str, ...] = (
-    "[error",
-    "[fehler",
-    "does not support chat completions",
-    "requires terms acceptance",
-    "timeout after",
-    "http 4",
-    "http 5",
-)
-
 
 # =============================================================================
 # Data Models
@@ -100,13 +82,11 @@ class SwarmResponse:
         return {
             "model_id": self.model_id,
             "provider": self.provider,
-            "response": self.response,
-            "response_preview": self.response[:500],
+            "response": self.response[:500],  # Truncate for overview
             "full_response_length": len(self.response),
             "latency_ms": self.latency_ms,
             "quality_score": self.quality_score,
             "error": self.error,
-            "timestamp": self.timestamp,
         }
 
 
@@ -150,51 +130,6 @@ class SwarmBroadcast:
     def __init__(self):
         self.sessions: Dict[str, SwarmSession] = {}
         self._http_timeout = aiohttp.ClientTimeout(total=120)
-        self._load_sessions()
-
-    def _session_path(self, session_id: str) -> Path:
-        return SWARM_DIR / f"{session_id}.json"
-
-    def _response_from_dict(self, data: Dict[str, Any]) -> SwarmResponse:
-        return SwarmResponse(
-            model_id=data.get("model_id", ""),
-            provider=data.get("provider", "unknown"),
-            response=data.get("response") or data.get("response_preview", ""),
-            latency_ms=int(data.get("latency_ms", 0) or 0),
-            quality_score=float(data.get("quality_score", 0.0) or 0.0),
-            error=data.get("error"),
-            timestamp=data.get("timestamp", datetime.now(timezone.utc).isoformat()),
-        )
-
-    def _load_session_from_disk(self, session_id: str, cache: bool = True) -> Optional[SwarmSession]:
-        filepath = self._session_path(session_id)
-        if not filepath.exists():
-            return None
-        try:
-            data = json.loads(filepath.read_text())
-            session = SwarmSession(
-                id=data["id"],
-                prompt=data.get("prompt", ""),
-                user_question=data.get("user_question", ""),
-                created_at=data.get("created_at", datetime.now(timezone.utc).isoformat()),
-                total_models=int(data.get("total_models", 0) or 0),
-                phase=data.get("phase", "created"),
-                elapsed_ms=int(data.get("elapsed_ms", 0) or 0),
-            )
-            session.responses = [self._response_from_dict(r) for r in data.get("responses", [])]
-            session.errors = [self._response_from_dict(r) for r in data.get("errors", [])]
-            session.top_results = [self._response_from_dict(r) for r in data.get("top_results", [])]
-            if cache:
-                self.sessions[session.id] = session
-            return session
-        except Exception as e:
-            logger.error(f"Failed to load swarm session {session_id}: {e}")
-            return None
-
-    def _load_sessions(self):
-        for filepath in SWARM_DIR.glob("swarm-*.json"):
-            session_id = filepath.stem
-            self._load_session_from_disk(session_id, cache=True)
 
     # -------------------------------------------------------------------------
     # Main Entry Point
@@ -227,7 +162,6 @@ class SwarmBroadcast:
             user_question=user_question,
         )
         self.sessions[session_id] = session
-        self._save_session(session)
 
         start = time.monotonic()
 
@@ -244,15 +178,8 @@ class SwarmBroadcast:
                 only_set = set(p.lower() for p in only_providers)
                 models = [m for m in models if m["provider"] in only_set]
 
-            pre_eligible_count = len(models)
-            models = [m for m in models if self._is_model_chat_eligible(m["id"])]
-            filtered_out = pre_eligible_count - len(models)
-            if filtered_out:
-                logger.info(f"Swarm {session_id}: filtered out {filtered_out} non-chat/unsupported models before broadcast")
-
             logger.info(f"Swarm {session_id}: Broadcasting to {len(models)} models")
             session.phase = "broadcasting"
-            self._save_session(session)
 
             # Step 2: Group by provider
             by_provider: Dict[str, List[Dict]] = {}
@@ -273,11 +200,10 @@ class SwarmBroadcast:
 
             # Step 4: Score all responses
             session.phase = "scoring"
-            self._save_session(session)
             self._score_responses(session, user_question)
 
             # Step 5: Rank and select top N
-            scored = sorted((r for r in session.responses if r.quality_score > 0), key=lambda r: r.quality_score, reverse=True)
+            scored = sorted(session.responses, key=lambda r: r.quality_score, reverse=True)
             session.top_results = scored[:top_n]
 
             session.phase = "completed"
@@ -297,7 +223,6 @@ class SwarmBroadcast:
         except Exception as e:
             session.phase = "failed"
             session.elapsed_ms = int((time.monotonic() - start) * 1000)
-            self._save_session(session)
             logger.error(f"Swarm broadcast failed: {e}")
 
         return session
@@ -344,8 +269,6 @@ class SwarmBroadcast:
                     session.errors.append(result)
                 else:
                     session.responses.append(result)
-
-            self._save_session(session)
 
             # Rate limit delay between batches
             if i + batch_size < len(models) and delay > 0:
@@ -405,15 +328,6 @@ class SwarmBroadcast:
                     elif "response" in data:
                         content = data["response"]
 
-                    if self._looks_like_error_response(content):
-                        return SwarmResponse(
-                            model_id=model_id,
-                            provider=provider,
-                            response=content,
-                            latency_ms=latency,
-                            error=f"error-like model response: {content[:160]}",
-                        )
-
                     return SwarmResponse(
                         model_id=model_id, provider=provider,
                         response=content, latency_ms=latency,
@@ -440,80 +354,53 @@ class SwarmBroadcast:
 
     def _score_responses(self, session: SwarmSession, user_question: str):
         """Score each response for quality/relevance."""
-        question_words = self._tokenize(user_question)
+        question_words = set(user_question.lower().split())
 
         for resp in session.responses:
             score = 0.0
             text = resp.response.strip()
-            lower_text = text.lower()
 
-            if not text or self._looks_like_error_response(text):
+            if not text:
                 resp.quality_score = 0.0
                 continue
 
-            # Length score (prefer 80-800 chars, penalize too short/too long)
+            # Length score (prefer 50-500 chars, penalize too short/long)
             length = len(text)
-            if length < 40:
-                score += 0.05
-            elif length < 80:
-                score += 0.2
-            elif length <= 800:
-                score += 0.45
-            elif length <= 1600:
-                score += 0.35
+            if length < 20:
+                score += 0.1
+            elif length < 50:
+                score += 0.3
+            elif length <= 500:
+                score += 0.5
+            elif length <= 1000:
+                score += 0.4
             else:
-                score += 0.2
+                score += 0.3
 
             # Relevance score (keyword overlap)
-            response_words = self._tokenize(text)
+            response_words = set(text.lower().split())
             overlap = len(question_words & response_words)
             relevance = min(overlap / max(len(question_words), 1), 1.0)
-            score += relevance * 0.35
+            score += relevance * 0.3
 
             # Coherence: has structure (code blocks, lists, paragraphs)
             if "```" in text:
-                score += 0.08
+                score += 0.1  # Contains code
             if "\n" in text:
-                score += 0.05
-            if any(w in lower_text for w in ["beispiel", "example", "implementation", "code", "plan", "checklist"]):
+                score += 0.05  # Multi-line
+            if any(w in text.lower() for w in ["beispiel", "example", "implementation", "code"]):
                 score += 0.05
 
-            # Penalize excessive hidden reasoning dumps / noisy meta output
-            if "<think>" in lower_text:
-                score -= 0.18
-            if lower_text.count("\n") > 40:
-                score -= 0.05
-
-            # Speed bonus (faster = better, max 0.07)
+            # Speed bonus (faster = better, max 0.1)
             if resp.latency_ms > 0:
-                speed_score = max(0, 0.07 - (resp.latency_ms / 30000) * 0.07)
+                speed_score = max(0, 0.1 - (resp.latency_ms / 30000) * 0.1)
                 score += speed_score
 
-            resp.quality_score = round(max(0.0, min(score, 1.0)), 3)
+            resp.quality_score = round(min(score, 1.0), 3)
 
     # -------------------------------------------------------------------------
     # Helpers
     # -------------------------------------------------------------------------
-
-    def _is_model_chat_eligible(self, model_id: str) -> bool:
-        lower_model = model_id.lower()
-        return not any(pattern in lower_model for pattern in NON_CHAT_MODEL_PATTERNS)
-
-    def _looks_like_error_response(self, text: str) -> bool:
-        if not text:
-            return True
-        lower_text = text.strip().lower()
-        if any(marker in lower_text for marker in ERROR_RESPONSE_MARKERS):
-            return True
-        if lower_text.startswith("[") and ("error" in lower_text or "fehler" in lower_text):
-            return True
-        return False
-
-    def _tokenize(self, text: str) -> set[str]:
-        normalized = []
-        for ch in text.lower():
-            normalized.append(ch if ch.isalnum() else ' ')
-        return {token for token in ''.join(normalized).split() if len(token) >= 3}
 
     def _build_broadcast_prompt(self, user_question: str) -> str:
         """Short prompt for all models — max ~100 tokens."""
@@ -551,10 +438,7 @@ class SwarmBroadcast:
             return []
 
     def get_session(self, session_id: str) -> Optional[SwarmSession]:
-        session = self.sessions.get(session_id)
-        if session:
-            return session
-        return self._load_session_from_disk(session_id, cache=True)
+        return self.sessions.get(session_id)
 
     def get_consolidated_prompt(self, session: SwarmSession) -> str:
         """Build a consolidated prompt from top results for Gemini Lead."""

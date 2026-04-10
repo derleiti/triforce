@@ -1098,12 +1098,16 @@ class CrawlerManager:
             final_score = (res.get("score", 0.0) + res_score) / 2.0 if res.get("score") else res_score
             if final_score >= min_score:
                 scored_results.append({
-                    "url": res["url"],
-                    "title": res["title"],
-                    "excerpt": res["excerpt"],
+                    "id": res.get("id"),
+                    "url": res.get("url"),
+                    "title": res.get("title"),
+                    "excerpt": res.get("excerpt"),
                     "score": final_score,
-                    "ts": res["created_at"],
-                    "source_domain": res["source_domain"],
+                    "ts": res.get("created_at"),
+                    "source_domain": res.get("source_domain"),
+                    "posted_at": res.get("posted_at"),
+                    "summary": res.get("summary"),
+                    "content_hash": res.get("content_hash"),
                 })
 
         scored_results.sort(key=lambda x: x["score"], reverse=True)

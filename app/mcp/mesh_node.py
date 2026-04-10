@@ -227,7 +227,9 @@ class MeshNode:
         # Parse address
         if "://" not in address:
             address = f"ws://{address}"
-        ws_url = f"{address}/mesh?node_id={self.node_id}&port={self.listen_port}"
+        import os as _os
+        _mesh_token = _os.environ.get("FEDERATION_SECRET", "")
+        ws_url = f"{address}/mesh?node_id={self.node_id}&port={self.listen_port}&token={_mesh_token}"
         
         try:
             ws = await self._client_session.ws_connect(ws_url, heartbeat=30)
@@ -291,7 +293,16 @@ class MeshNode:
         
         remote_id = request.query.get("node_id", "")
         remote_port = request.query.get("port", "")
-        
+        mesh_token = request.query.get("token", "")
+
+        # Validate mesh token
+        import os as _os
+        expected = _os.environ.get("FEDERATION_SECRET", "")
+        if expected and mesh_token != expected:
+            logger.warning(f"Rejected unauthenticated mesh peer: {remote_id} from {request.remote}")
+            await ws.close(code=4003, message=b"Forbidden: invalid mesh token")
+            return ws
+
         logger.info(f"Incoming connection from {remote_id}")
         
         peer = None
@@ -512,7 +523,7 @@ class MeshNode:
                         "params": {"message": message, "origin": origin, "ttl": ttl - 1}
                     })
                     forwarded += 1
-                except:
+                except Exception:
                     pass
         
         return {"forwarded": forwarded}
@@ -535,7 +546,7 @@ class MeshNode:
             if p.is_connected:
                 try:
                     return await self.call_peer(p.peer_id, "mesh/route", params, timeout=30)
-                except:
+                except Exception:
                     continue
         
         return {"error": f"No route to {target}"}
@@ -573,7 +584,7 @@ class MeshNode:
         self._request_counter += 1
         req_id = f"{self.node_id}_{self._request_counter}"
         
-        fut = asyncio.get_event_loop().create_future()
+        fut = asyncio.get_running_loop().create_future()
         self._pending_requests[req_id] = fut
         
         message = {
@@ -600,7 +611,7 @@ class MeshNode:
                     "method": method,
                     "params": params or {}
                 })
-            except:
+            except Exception:
                 pass
     
     # =========================================================================
@@ -644,7 +655,7 @@ class MeshNode:
                         await self.call_peer(peer_id, "ping", timeout=5)
                         peer.latency_ms = (datetime.now() - start).total_seconds() * 1000
                         peer.last_seen = datetime.now()
-                    except:
+                    except Exception:
                         peer.state = PeerState.FAILED
     
     async def _connect_to_hub(self):
@@ -699,7 +710,7 @@ class MeshNode:
             ip = s.getsockname()[0]
             s.close()
             return ip
-        except:
+        except Exception:
             return "127.0.0.1"
 
 

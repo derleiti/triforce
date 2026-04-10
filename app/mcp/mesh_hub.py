@@ -300,7 +300,7 @@ class MeshHub:
         request_id = f"hub_{self._request_counter}"
         
         # Create pending request
-        loop = asyncio.get_event_loop()
+        loop = asyncio.get_running_loop()
         future = loop.create_future()
         
         self.pending_requests[request_id] = PendingRequest(

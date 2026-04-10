@@ -202,7 +202,7 @@ SPECIALISTS: Dict[str, ModelSpecialist] = {
         id="gemini/gemini-2.0-flash",
         name="Gemini 2.0 Flash",
         provider="gemini",
-        description="Fast multimodal model with vision and long context",
+        description="Fast multimodal model with vision, math, and long context",
         capabilities={
             SpecialistCapability.VISION,
             SpecialistCapability.CODE_GENERATION,
@@ -210,6 +210,8 @@ SPECIALISTS: Dict[str, ModelSpecialist] = {
             SpecialistCapability.FAST_RESPONSE,
             SpecialistCapability.SUMMARIZATION,
             SpecialistCapability.DATA_ANALYSIS,
+            SpecialistCapability.MATH,
+            SpecialistCapability.REASONING,
         },
         optimal_tasks=[
             "image analysis",
@@ -369,7 +371,7 @@ SPECIALISTS: Dict[str, ModelSpecialist] = {
     "gpt-oss": ModelSpecialist(
         id="gpt-oss:20b-cloud",
         name="GPT-OSS 20B",
-        provider="gpt-oss",
+        provider="ollama",
         description="German-focused open-source model",
         capabilities={
             SpecialistCapability.GERMAN_LANGUAGE,
