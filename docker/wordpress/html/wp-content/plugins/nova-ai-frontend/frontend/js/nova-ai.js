@@ -956,7 +956,7 @@
         modelSel.appendChild(og);
       });
       // Default: prefer gemini-2.5-flash or llama-4-scout
-      const preferred = ['gemini/gemini-2.5-flash','groq/meta-llama/llama-4-scout-17b-16e-instruct'];
+      const preferred = ['openrouter/anthropic/claude-sonnet-4.6','openrouter/anthropic/claude-sonnet-4.5','groq/meta-llama/llama-4-scout-17b-16e-instruct'];
       for (const p of preferred) {
         const opt = modelSel.querySelector(`option[value="${p}"]`);
         if (opt) { opt.selected = true; break; }
@@ -1103,7 +1103,7 @@
                 });
                 modelSel.appendChild(og);
               });
-              const preferred = ['gemini/gemini-2.5-flash','groq/meta-llama/llama-4-scout-17b-16e-instruct'];
+              const preferred = ['openrouter/anthropic/claude-sonnet-4.6','openrouter/anthropic/claude-sonnet-4.5','groq/meta-llama/llama-4-scout-17b-16e-instruct'];
               for (const p of preferred) {
                 const opt = modelSel.querySelector('option[value="'+p+'"]');
                 if (opt) { opt.selected = true; break; }
