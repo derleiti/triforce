@@ -57,3 +57,9 @@ python-jose[cryptography]==3.5.0
 passlib[bcrypt]==1.7.4
 websockets==16.0
 jwt==1.4.0
+
+# Missing dependencies found in code audit (2026-04-11)
+aiofiles==25.1.0
+textual==4.1.1
+PyYAML==6.0.3
+requests==2.33.1
