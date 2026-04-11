@@ -6,12 +6,19 @@
     "role": "hub",
     "user": "zombie"
   },
+  "zombie-dev": {
+    "url": "http://10.10.0.4:9000",
+    "vpn_ip": "10.10.0.4",
+    "port": 9000,
+    "role": "hub",
+    "user": "zombie"
+  },
   "backup": {
     "url": "http://10.10.0.3:9000",
     "vpn_ip": "10.10.0.3",
     "port": 9000,
     "role": "node",
-    "user": "backupuser"
+    "user": "zombie"
   },
   "zombie-pc": {
     "url": "http://10.10.0.2:9000",

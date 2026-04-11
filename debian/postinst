@@ -1,0 +1,20 @@
+#!/bin/bash
+set -e
+
+# Create venv if not exists
+if [ ! -d /opt/triforce/.venv ]; then
+    echo "Creating Python virtual environment..."
+    python3 -m venv /opt/triforce/.venv
+    /opt/triforce/.venv/bin/pip install --upgrade pip
+    /opt/triforce/.venv/bin/pip install -r /opt/triforce/requirements.txt
+fi
+
+# Create config dir
+mkdir -p /opt/triforce/config /opt/triforce/logs
+
+# Enable and start service
+systemctl daemon-reload
+systemctl enable triforce.service || true
+echo "TriForce v$(cat /opt/triforce/VERSION) installed. Start with: systemctl start triforce"
+
+#DEBHELPER#

@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # ============================================================================
-# AILinux Repo Adder v6.1
+# AILinux Repo Adder v6.2
 # ============================================================================
 
 DEFAULT_BASE="https://repo.ailinux.me/mirror"
@@ -12,7 +12,12 @@ KEYRING_PATH="${KEYRING_DIR}/ailinux-archive-keyring.gpg"
 LIST_PATH="/etc/apt/sources.list.d/ailinux-mirror.list"
 SHARED_KEYS_URL="${BASE_URL}/shared_keys"
 THIRD_PARTY_MANIFEST="${SHARED_KEYS_URL}/third-party-repos.json"
-CURRENT_NODE="${AILINUX_NODE_ID:-$(hostname -s 2>/dev/null || hostname || echo unknown)}"
+# Node-ID: nur bei explizit gesetztem AILINUX_NODE_ID; sonst "generic" (kein Node-Filter)
+if [[ -n "${AILINUX_NODE_ID:-}" ]]; then
+    CURRENT_NODE="$AILINUX_NODE_ID"
+else
+    CURRENT_NODE="generic"
+fi
 CURL_OPTS=(-4 --connect-timeout 10 --max-time 30 --retry 2 --retry-delay 1)
 
 VERBOSE=0
@@ -41,7 +46,7 @@ log_debug() { [[ $VERBOSE -eq 1 ]] && echo -e "${CYAN}[DBG]${NC} $*" >&2 || true
 
 usage() {
     cat <<'EOF'
-AILinux Repo Adder v6.1
+AILinux Repo Adder v6.2
 
 Usage:
   curl -fsSL https://repo.ailinux.me/mirror/add-ailinux-repo.sh | sudo bash
@@ -297,7 +302,9 @@ install_third_party_repos() {
             ((skipped++)) || true
             continue
         fi
-        if [[ -n "$nodes" && -z "$SELECTED_IDS" ]] && ! csv_matches_any "$nodes" "${node_targets[@]}"; then
+        # Node-Filter: nur aktiv wenn CURRENT_NODE != generic
+        if [[ "$CURRENT_NODE" != "generic" && -n "$nodes" && -z "$SELECTED_IDS" ]] && \
+           ! csv_matches_any "$nodes" "${node_targets[@]}"; then
             log_debug "Skipping ${id} for node targets $(IFS=,; echo "${node_targets[*]}") (allowed: ${nodes})"
             ((skipped++)) || true
             continue
@@ -336,7 +343,7 @@ main() {
     parse_args "$@"
 
     echo -e "\n${BOLD}╔════════════════════════════════════════════╗${NC}"
-    echo -e "${BOLD}║  AILinux Repo Adder v6.1                   ║${NC}"
+    echo -e "${BOLD}║  AILinux Repo Adder v6.2                   ║${NC}"
     echo -e "${BOLD}║  https://repo.ailinux.me                   ║${NC}"
     echo -e "${BOLD}╚════════════════════════════════════════════╝${NC}\n"
 

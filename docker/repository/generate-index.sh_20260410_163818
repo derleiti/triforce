@@ -432,15 +432,9 @@ cat >> "$TMP_INDEX_FILE" << HTMLHEADER
 
   <div class="quick-start">
     <h2><span>⚡</span> Quick Install</h2>
-    <p style="color: var(--text-secondary); margin-bottom: 10px; font-size: 0.9rem;">Mirror-Repos only:</p>
     <div class="code-block">
       <button class="copy-btn" type="button">Copy</button>
       <code>curl -fsSL "${PUBLIC_BASE}/add-ailinux-repo.sh" | sudo bash</code>
-    </div>
-    <p style="color: var(--text-secondary); margin: 12px 0 10px; font-size: 0.9rem;">Mirror + Third-Party Repos (Chrome, Steam, Docker, VS Code, …):</p>
-    <div class="code-block">
-      <button class="copy-btn" type="button">Copy</button>
-      <code>curl -fsSL "${PUBLIC_BASE}/add-ailinux-repo.sh" | sudo bash -s -- --third-party</code>
     </div>
   </div>
 
@@ -868,13 +862,3 @@ deploy_optional_file_to_index_targets "$UPDATE_LOGFILE" "update-mirror.log" "Raw
 deploy_optional_file_to_index_targets "$POSTMIRROR_LOGFILE" "postmirror.log" "Raw postmirror log"
 
 echo "[generate-index] ${REPO_COUNT} Repositories katalogisiert, Gesamtgröße: ${TOTAL_SIZE}"
-
-# --- Re-install repos on this host after index generation ---
-log_label="add-ailinux-repo"
-ADD_REPO_SCRIPT="${HOST_MIRROR_PATH}/add-ailinux-repo.sh"
-if [[ -f "$ADD_REPO_SCRIPT" ]]; then
-  echo "[generate-index] Running add-ailinux-repo.sh --third-party ..."
-  bash "$ADD_REPO_SCRIPT" --third-party --no-update || echo "[generate-index] WARNING: add-ailinux-repo.sh exited with $?"
-else
-  echo "[generate-index] WARNING: add-ailinux-repo.sh not found at $ADD_REPO_SCRIPT"
-fi

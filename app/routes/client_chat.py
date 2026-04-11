@@ -616,7 +616,7 @@ async def client_chat(
                     raise HTTPException(429, f"Token-Limit erreicht ({limit_check['limit']}/Tag). Nutze Ollama-Modelle für unlimited.")
 
 
-            _CHAT_ROUTER_PREFIXES = {"gemini", "anthropic", "openai", "mistral", "groq", "cerebras", "cloudflare", "github"}
+            _CHAT_ROUTER_PREFIXES = {"gemini", "anthropic", "openai", "mistral", "groq", "cerebras", "cloudflare", "github", "replicate"}
 
             model_prefix = model.split("/")[0].lower() if "/" in model else ""
 

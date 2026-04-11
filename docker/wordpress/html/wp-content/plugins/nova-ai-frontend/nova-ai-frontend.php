@@ -9,9 +9,10 @@
 
 defined('ABSPATH') || exit;
 
-define('NOVA_AI_BACKEND',     'http://172.18.0.1:9000');
-define('NOVA_AI_LOCAL_BACKEND', 'http://localhost:9000');
-define('NOVA_AI_INTERNAL_KEY',  '7dffc1818b9ee6d35b075b8922d6eecb3c9a5b9bfdf94df6');
+// FIX 2026-04-11: Credentials aus wp-config.php laden (Fallbacks für Abwärtskompatibilität)
+if ( ! defined( 'NOVA_AI_BACKEND' ) )       define('NOVA_AI_BACKEND',      'http://172.18.0.1:9000');
+if ( ! defined( 'NOVA_AI_LOCAL_BACKEND' ) )  define('NOVA_AI_LOCAL_BACKEND', 'http://localhost:9000');
+if ( ! defined( 'NOVA_AI_INTERNAL_KEY' ) )   define('NOVA_AI_INTERNAL_KEY',  '');
 define('NOVA_AI_VERSION', '6.5.7');
 define('NOVA_AI_PLUGIN_URL',  plugin_dir_url(__FILE__));
 define('NOVA_AI_PLUGIN_DIR',  plugin_dir_path(__FILE__));
@@ -182,11 +183,11 @@ add_action('rest_api_init', function () {
         $qs    = isset($_SERVER['QUERY_STRING'])  ? $_SERVER['QUERY_STRING']  : '';
         $route = isset($_SERVER['PATH_INFO'])     ? $_SERVER['PATH_INFO']     : '';
         $rr    = isset($_GET['rest_route'])       ? $_GET['rest_route']       : '';
+        // FIX 2026-04-11: Präziserer Check — nur /wp-json/nova-ai/v1/ Namespace
         $is_nova = (
-            strpos($uri,   '/nova-ai/') !== false ||
-            strpos($qs,    'nova-ai')   !== false ||
-            strpos($rr,    '/nova-ai/') !== false ||
-            strpos($route, '/nova-ai/') !== false
+            preg_match('#/wp-json/nova-ai/v1/#', $uri) ||
+            (strpos($rr, '/nova-ai/v1/') === 0) ||
+            (strpos($route, '/nova-ai/v1/') === 0)
         );
         if ($is_nova) {
             error_log('[nova-ai] auth bypass fired, uri=' . $uri . ' result_type=' . (is_wp_error($result) ? 'WP_Error:' . $result->get_error_code() : gettype($result)));
@@ -251,7 +252,12 @@ function nova_proxy_auth(string $path, string $method='GET', ?array $body=null):
     $url  = rtrim($base, '/') . $path;
     $args = ['method'=>$method, 'timeout'=>15, 'headers'=>[
         'Content-Type'=>'application/json',
-        'Authorization'=>'Basic '.base64_encode((getenv('MCP_OAUTH_USER') ?: 'zombie').':'.(getenv('MCP_OAUTH_PASS') ?: 'JxBWta21vGyMEiPc9Trbn1HlN7KV')),
+        // FIX 2026-04-11: Credentials aus wp-config.php / Environment
+            'Authorization'=>'Basic '.base64_encode(
+                (defined('NOVA_MCP_USER') ? NOVA_MCP_USER : (getenv('MCP_OAUTH_USER') ?: 'zombie'))
+                .':'.
+                (defined('NOVA_MCP_PASS') ? NOVA_MCP_PASS : (getenv('MCP_OAUTH_PASS') ?: ''))
+            ),
     ]];
     if ($body !== null) $args['body'] = json_encode($body);
     $resp = wp_remote_request($url, $args);
@@ -719,7 +725,7 @@ add_action('wp_enqueue_scripts', function () {
         'nonceUrl'   => rest_url('nova-ai/v1/nonce'),
         'autoTheme'  => true,
         'version'    => $ver,
-        'isLoggedIn' => is_user_logged_in() ? 'true' : 'false',
+        'isLoggedIn' => is_user_logged_in(), // FIX 2026-04-11: Boolean statt String
     ]);
     // novaAccountConfig.isLoggedIn via Inline-Script (nicht gecacht, immer frisch)
     if (is_page('account') || strpos($_SERVER['REQUEST_URI'] ?? '', '/account') !== false) {
@@ -1527,10 +1533,10 @@ add_filter('render_block_core/shortcode', function ($content) {
 });
 
 /* ── Discuss with AI Button (the_content injection) ───────────────────────── */
-// FIX 2026-03-11: Plugin.php was dead code — DiscussButton.php never instantiated.
-// This filter directly injects the discuss button+overlay HTML into single posts/pages.
-// IDs match exactly what initDiscuss() in nova-ai.js expects.
-add_filter('the_content', function (string $content): string {
+// DISABLED 2026-04-11: AI Discuss Button entfernt per Markus' Anforderung
+// add_filter('the_content', function (string $content): string {
+if (false) { // Dead code — kept for reference
+(function (string $content): string {
     $s = get_option('nova_ai_settings', []);
     if (empty($s['discuss_button_enabled'])) return $content;
     if (!is_singular()) return $content; // Only on single posts/pages
@@ -1564,4 +1570,4 @@ add_filter('the_content', function (string $content): string {
     <?php
     $html = ob_get_clean();
     return $content . $html;
-});
+});}

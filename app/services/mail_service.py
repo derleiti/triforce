@@ -39,7 +39,12 @@ def _imap_connect() -> imaplib.IMAP4_SSL | imaplib.IMAP4:
 
     use_ssl = s.mail_imap_ssl if s.mail_imap_ssl is not None else True
     if use_ssl:
-        conn = imaplib.IMAP4_SSL(host, port)
+        # FIX: kein Cert-Check fuer internen Mailserver (self-signed / IP)
+        import ssl as _ssl
+        _ctx = _ssl.create_default_context()
+        _ctx.check_hostname = False
+        _ctx.verify_mode = _ssl.CERT_NONE
+        conn = imaplib.IMAP4_SSL(host, port, ssl_context=_ctx)
     else:
         conn = imaplib.IMAP4(host, port)
 

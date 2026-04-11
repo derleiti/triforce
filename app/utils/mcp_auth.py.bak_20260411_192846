@@ -22,7 +22,6 @@ from __future__ import annotations
 
 import os
 import logging
-import os as _os
 import os
 import secrets
 import hashlib
@@ -448,29 +447,12 @@ async def require_mcp_auth(request: Request) -> str:
             logger.warning(f"AUTH_FAIL | IP: {client_ip} | Reason: invalid_basic")
             raise _unauthorized("Invalid credentials", "Basic")
     
-    # No auth provided — check trusted headers before rejecting.
-
-    # FIX 2026-04-11: X-Internal-Key (WP Plugin proxy calls)
-    x_internal_key = (request.headers.get("X-Internal-Key", "") or "").strip()
-    expected_internal = _os.environ.get("INTERNAL_API_KEY", "")
-    if x_internal_key and expected_internal and x_internal_key == expected_internal:
-        req_path = request.url.path
-        logger.info(f"AUTH_BYPASS | IP: {client_ip} | Method: internal_key | Path: {req_path}")
-        request.state.mcp_auth_user = "internal-api"
-        request.state.auth_method = "internal-key"
-        request.state.auth_claims = {
-            "account_role": "admin",
-            "tier": "unlimited",
-            "client_kind": "internal_api",
-            "email": "internal@ailinux.me",
-        }
-        return "internal-api"
-
-    # Nova-Frontend explicit header bypass
+    # No auth provided.
+    # Externe Clients müssen IMMER authentifiziert sein.
+    # Nova-Frontend darf nur noch explizit über einen vertrauenswürdigen Header laufen.
     x_nova_frontend = (request.headers.get("X-Nova-Frontend", "") or "").strip().lower()
     if x_nova_frontend in {"1", "true", "yes"}:
-        req_path = request.url.path
-        logger.info(f"AUTH_BYPASS | IP: {client_ip} | Method: nova_frontend | Path: {req_path}")
+        logger.info(f"AUTH_BYPASS | IP: {client_ip} | Method: nova_frontend | explicit_header")
         request.state.mcp_auth_user = "nova-frontend"
         request.state.auth_method = "nova-frontend"
         request.state.auth_claims = {
@@ -481,9 +463,7 @@ async def require_mcp_auth(request: Request) -> str:
         }
         return "nova-frontend"
 
-    # FIX 2026-04-11: Log request path for easier 401 debugging
-    req_path = request.url.path
-    logger.warning(f"AUTH_FAIL | IP: {client_ip} | Path: {req_path} | Reason: no_credentials")
+    logger.warning(f"AUTH_FAIL | IP: {client_ip} | Reason: no_credentials")
     raise _unauthorized("Authentication required")
 
 

@@ -1,601 +1,387 @@
 #!/usr/bin/env bash
-# =====================================================================
-#  AILinux Repository Bootstrap (Deb822, noble/24.04 FULL amd64+i386)
-#  - Ubuntu FULL: main+restricted+universe+multiverse (amd64+i386)
-#  - Zusatzquellen (Neon, Xubuntu Staging, Cappelikan, LibreOffice, Docker, Chrome, WineHQ)
-#  - AILinux Branding (add-apt-repository-kompatibel: ID=ubuntu, DISTRIB_ID=Ubuntu)
-#
-#  Optionen:
-#    --dry-run      : nur anzeigen, nichts schreiben
-#    --remove       : alle von diesem Script erstellten Quellen + Key + Branding entfernen
-#    --no-branding  : Branding überspringen (Standard: Branding aktiv)
-# =====================================================================
-
 set -euo pipefail
 
-# -------------------------- Konfiguration ----------------------------
-REPO_DOMAIN_URL="${REPO_DOMAIN_URL:-https://repo.ailinux.me:8443}"
-REPO_BASE_URL="${REPO_BASE_URL:-${REPO_DOMAIN_URL}/mirror}"
+# ============================================================================
+# AILinux Repo Adder v6.2
+# ============================================================================
 
-# Ein lokaler Key für alle gespiegelten Quellen (du re-signst Releases)
-KEY_URL="${KEY_URL:-${REPO_BASE_URL}/ailinux-archive-key.gpg}"
-KEYRING_DEST="${KEYRING_DEST:-/usr/share/keyrings/ailinux-archive-keyring.gpg}"
-
-CODENAME="$(. /etc/os-release 2>/dev/null && echo "${VERSION_CODENAME:-noble}")"
-[[ -z "${CODENAME}" ]] && CODENAME="noble"
-NEED_I386=false
-
-# Dynamische Architektur-Erkennung basierend auf Codename
-# WICHTIG: Ubuntu Noble (24.04) hat i386-Support für Base-Repos eingestellt!
-# PPAs können aber weiterhin i386 unterstützen.
-case "$CODENAME" in
-  noble)
-    # Ubuntu Noble: Base amd64 and i386, PPAs with i386-Support
-    NEED_I386=true
-    UBUNTU_ARCHS="amd64 i386"
-    XUBUNTU_ARCHS="amd64 i386"
-    CAPPELIKAN_ARCHS="amd64 i386"
-    LIBREOFFICE_ARCHS="amd64 i386"
-    WINE_ARCHS="amd64 i386"
-    GITCORE_ARCHS="amd64 i386"
-    PYTHON_ARCHS="amd64 i386"
-    GRAPHICS_ARCHS="amd64 i386"
-    KDENLIVE_ARCHS="amd64 i386"
-    OBS_ARCHS="amd64 i386"
-    FFMPEG_ARCHS="amd64 i386"
-    TIMESHIFT_ARCHS="amd64 i386"
-    ;;
-  jammy|focal|bionic|xenial)
-    # Ältere Versionen mit vollständigem i386-Support
-    NEED_I386=true
-    UBUNTU_ARCHS="amd64 i386"
-    XUBUNTU_ARCHS="amd64 i386"
-    CAPPELIKAN_ARCHS="amd64 i386"
-    LIBREOFFICE_ARCHS="amd64 i386"
-    WINE_ARCHS="amd64 i386"
-    GITCORE_ARCHS="amd64 i386"
-    PYTHON_ARCHS="amd64 i386"
-    GRAPHICS_ARCHS="amd64 i386"
-    KDENLIVE_ARCHS="amd64 i386"
-    OBS_ARCHS="amd64 i386"
-    FFMPEG_ARCHS="amd64 i386"
-    TIMESHIFT_ARCHS="amd64 i386"
-    ;;
-  *)
-    # Neuere Versionen (oracular, plucky, questing, etc.): nur amd64
-    UBUNTU_ARCHS="amd64"
-    XUBUNTU_ARCHS="amd64"
-    CAPPELIKAN_ARCHS="amd64"
-    LIBREOFFICE_ARCHS="amd64"
-    WINE_ARCHS="amd64"
-    GITCORE_ARCHS="amd64"
-    PYTHON_ARCHS="amd64"
-    GRAPHICS_ARCHS="amd64"
-    KDENLIVE_ARCHS="amd64"
-    OBS_ARCHS="amd64"
-    FFMPEG_ARCHS="amd64"
-    TIMESHIFT_ARCHS="amd64"
-    ;;
-esac
-
-# Ubuntu-Basis (FULL)
-UBUNTU_SUITES="${CODENAME} ${CODENAME}-updates ${CODENAME}-backports"  # security has its own source
-UBUNTU_COMPONENTS="main restricted universe multiverse"
-
-# Architekturen für spezielle Repos (immer nur amd64, außer Neon bei Multiarch)
-NEON_ARCHS="amd64"
-DOCKER_ARCHS="amd64"
-CHROME_ARCHS="amd64"
-BRAVE_ARCHS="amd64"
-NODESOURCE_ARCHS="amd64"
-
-if [[ "${NEED_I386}" == true ]]; then
-  NEON_ARCHS="amd64 i386"
-fi
-
-# Deb822-Ziele (.sources)
-D="/etc/apt/sources.list.d"
-F_UBU="${D}/ailinux-ubuntu.sources"
-F_SEC="${D}/ailinux-ubuntu-security.sources"
-F_NEON="${D}/ailinux-neon.sources"
-F_XFCE="${D}/ailinux-xubuntu-staging.sources"
-F_CAPL="${D}/ailinux-cappelikan.sources"
-F_LO="${D}/ailinux-libreoffice.sources"
-F_DOCK="${D}/ailinux-docker.sources"
-F_CHRM="${D}/ailinux-chrome.sources"
-F_WINE="${D}/ailinux-winehq.sources"
-F_GIT="${D}/ailinux-git-core.sources"
-F_PY="${D}/ailinux-python-deadsnakes.sources"
-F_GFX="${D}/ailinux-graphics-drivers.sources"
-F_KDNL="${D}/ailinux-kdenlive.sources"
-F_OBS="${D}/ailinux-obs-studio.sources"
-F_FF4="${D}/ailinux-ffmpeg4.sources"
-F_FF5="${D}/ailinux-ffmpeg5.sources"
-F_TIME="${D}/ailinux-timeshift.sources"
-F_BRAVE="${D}/ailinux-brave.sources"
-F_NODE="${D}/ailinux-nodesource.sources"
-
-# Gespiegelte URIs auf DEINEM Server
-URI_UBU="${REPO_BASE_URL}/archive.ubuntu.com/ubuntu"
-URI_SEC="${REPO_BASE_URL}/security.ubuntu.com/ubuntu"
-URI_NEON="${REPO_BASE_URL}/archive.neon.kde.org/user"
-URI_XFCE="${REPO_BASE_URL}/ppa.launchpadcontent.net/xubuntu-dev/staging/ubuntu"
-URI_CAPL="${REPO_BASE_URL}/ppa.launchpadcontent.net/cappelikan/ppa/ubuntu"
-URI_LO="${REPO_BASE_URL}/ppa.launchpadcontent.net/libreoffice/ppa/ubuntu"
-URI_DOCK="${REPO_BASE_URL}/download.docker.com/linux/ubuntu"
-URI_CHRM="${REPO_BASE_URL}/dl.google.com/linux/chrome/deb"
-URI_WINE="${REPO_BASE_URL}/dl.winehq.org/wine-builds/ubuntu"
-URI_GIT="${REPO_BASE_URL}/ppa.launchpadcontent.net/git-core/ppa/ubuntu"
-URI_PY="${REPO_BASE_URL}/ppa.launchpadcontent.net/deadsnakes/ppa/ubuntu"
-URI_GFX="${REPO_BASE_URL}/ppa.launchpadcontent.net/graphics-drivers/ppa/ubuntu"
-URI_KDNL="${REPO_BASE_URL}/ppa.launchpadcontent.net/kdenlive/kdenlive-stable/ubuntu"
-URI_OBS="${REPO_BASE_URL}/ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu"
-URI_FF4="${REPO_BASE_URL}/ppa.launchpadcontent.net/savoury1/ffmpeg4/ubuntu"
-URI_FF5="${REPO_BASE_URL}/ppa.launchpadcontent.net/savoury1/ffmpeg5/ubuntu"
-URI_TIME="${REPO_BASE_URL}/ppa.launchpadcontent.net/teejee2008/timeshift/ubuntu"
-URI_BRAVE="${REPO_BASE_URL}/brave-browser-apt-release.s3.brave.com"
-URI_NODE="${REPO_BASE_URL}/deb.nodesource.com/node_20.x"
-
-# Branding
-BRANDING_SCRIPT="/usr/local/sbin/ailinux-branding.sh"
-BRANDING_SERVICE="/etc/systemd/system/ailinux-branding.service"
-DO_BRANDING=true
-
-# -------------------------- Optionen/Flags ---------------------------
-DRY_RUN=false
-DO_REMOVE=false
-for arg in "$@"; do
-  case "$arg" in
-    --dry-run)      DRY_RUN=true ;;
-    --remove)       DO_REMOVE=true ;;
-    --no-branding)  DO_BRANDING=false ;;
-    *) echo "Unbekannte Option: $arg"; echo "Verwendung: $0 [--dry-run] [--remove] [--no-branding]"; exit 2 ;;
-  esac
-done
-
-# ----------------------------- Helpers -------------------------------
-need_root() { if [[ $EUID -ne 0 ]]; then echo "Bitte als root ausführen (sudo $0 …)"; exit 1; fi; }
-msg(){ printf "%s\n" "$*"; }
-
-write_file(){ # write_file <path> <mode> <<<"content"
-  local path="$1" mode="$2"
-  if $DRY_RUN; then
-    echo "DRY-RUN: würde schreiben: $path (chmod $mode)"; sed 's/^/| /'
-  else
-    install -Dm"$mode" /dev/stdin "$path"
-    echo "Geschrieben: $path"
-  fi
-}
-
-backup_and_rm(){ # backup_and_rm <file>
-  local f="$1"; [[ -e "$f" ]] || return 0
-  local dir="/var/backups/ailinux-repo"; mkdir -p "$dir"
-  cp -a "$f" "$dir/$(basename "$f").$(date +%Y%m%d-%H%M%S).bak" || true
-  $DRY_RUN && echo "DRY-RUN: würde löschen: $f" || rm -f "$f"
-}
-
-install_key(){
-  msg "-> Lade Schlüssel: $KEY_URL"
-  if $DRY_RUN; then
-    echo "DRY-RUN: würde nach $KEYRING_DEST installieren"
-    return 0
-  fi
-  curl -fsSL "$KEY_URL" -o /tmp/ailinux-key.gpg
-  install -Dm0644 /tmp/ailinux-key.gpg "$KEYRING_DEST"
-  rm -f /tmp/ailinux-key.gpg
-  echo "Installiert: $KEYRING_DEST"
-}
-
-apt_update(){
-  $DRY_RUN && echo "DRY-RUN: würde 'apt update' ausführen" || apt update
-}
-
-ensure_multiarch(){
-  if [[ "${NEED_I386}" != true ]]; then
-    echo "i386 Architektur wird für ${CODENAME} nicht benötigt – überspringe Multiarch-Setup."
-    return 0
-  fi
-
-  if dpkg --print-foreign-architectures 2>/dev/null | grep -q "^i386$"; then
-    echo "✓ i386 Architektur ist bereits aktiviert."
-    return 0
-  fi
-
-  if $DRY_RUN; then
-    echo "DRY-RUN: würde 'dpkg --add-architecture i386' ausführen"
-  else
-    echo "Aktiviere i386 Architektur (dpkg --add-architecture i386)…"
-    dpkg --add-architecture i386
-    echo "✓ i386 Architektur aktiviert."
-  fi
-}
-
-# ----------------------------- BRANDING -------------------------------
-install_branding_assets(){
-  # add-apt-repository-kompatibel:
-  #  - /etc/os-release: ID=ubuntu, UBUNTU_CODENAME=noble
-  #  - /etc/lsb-release: DISTRIB_ID=Ubuntu, … (mit AILinux-Branding in PRETTY-NAME/Beschreibung)
-  cat <<'EOS' | write_file "$BRANDING_SCRIPT" 0755
-#!/usr/bin/env bash
-set -euo pipefail
-
-OS_RELEASE="/etc/os-release"
-LSB_RELEASE="/etc/lsb-release"
-
-cat >"$OS_RELEASE" <<'EOF'
-NAME="AILinux"
-PRETTY_NAME="AILinux (Ubuntu 24.04 Noble Base)"
-ID=ubuntu
-ID_LIKE=debian
-VERSION_ID="24.04"
-VERSION_CODENAME=noble
-UBUNTU_CODENAME=noble
-HOME_URL="https://ailinux.me"
-SUPPORT_URL="https://forum.ailinux.me"
-BUG_REPORT_URL="https://github.com/derleiti/ailinux-repo/issues"
-EOF
-
-cat >"$LSB_RELEASE" <<'EOF'
-DISTRIB_ID=Ubuntu
-DISTRIB_RELEASE=24.04
-DISTRIB_CODENAME=noble
-DISTRIB_DESCRIPTION="AILinux (Ubuntu 24.04 Noble Base)"
-EOF
-
-echo "AILinux-Branding aktualisiert: $OS_RELEASE & $LSB_RELEASE"
-EOS
-
-  cat <<'EOF' | write_file "$BRANDING_SERVICE" 0644
-[Unit]
-Description=AILinux Branding Writer (os-release & lsb-release)
-After=local-fs.target
-ConditionPathExists=/usr/local/sbin/ailinux-branding.sh
-
-[Service]
-Type=oneshot
-ExecStart=/usr/local/sbin/ailinux-branding.sh
-RemainAfterExit=yes
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-  if $DRY_RUN; then
-    echo "DRY-RUN: würde 'systemctl daemon-reload && systemctl enable --now ailinux-branding.service' ausführen."
-  else
-    systemctl daemon-reload
-    systemctl enable --now ailinux-branding.service
-    echo "Branding-Dienst aktiviert und ausgeführt: ailinux-branding.service"
-  fi
-}
-
-remove_branding_assets(){
-  if $DRY_RUN; then
-    echo "DRY-RUN: würde Branding entfernen: $BRANDING_SERVICE $BRANDING_SCRIPT"
-  else
-    systemctl disable --now ailinux-branding.service 2>/dev/null || true
-    rm -f "$BRANDING_SERVICE" "$BRANDING_SCRIPT"
-    systemctl daemon-reload
-    echo "Branding entfernt."
-  fi
-}
-
-# ----------------------------- REMOVE --------------------------------
-do_remove(){
-  msg "Entferne AILinux .sources & Keyring…"
-  for f in \
-    "$F_UBU" "$F_SEC" "$F_NEON" "$F_XFCE" "$F_CAPL" "$F_LO" "$F_DOCK" "$F_CHRM" "$F_WINE" \
-    "$F_GIT" "$F_PY" "$F_GFX" "$F_KDNL" "$F_OBS" "$F_FF4" "$F_FF5" "$F_TIME" "$F_BRAVE" "$F_NODE"
-  do
-    backup_and_rm "$f"
-  done
-  backup_and_rm "$KEYRING_DEST"
-  remove_branding_assets
-  apt_update
-  echo "Fertig (REMOVE)."
-}
-
-# ---------------------------- ADD/UPDATE ------------------------------
-empty_sources_list(){
-  # /etc/apt/sources.list leeren, um Duplikate mit .sources-Dateien zu vermeiden
-  local SOURCES_LIST="/etc/apt/sources.list"
-  if $DRY_RUN; then
-    echo "DRY-RUN: würde /etc/apt/sources.list leeren"
-  else
-    {
-      echo "# AILinux - Alle Repositories sind in /etc/apt/sources.list.d/*.sources konfiguriert"
-      echo "#"
-      echo "# Dieses File wurde automatisch von add-ailinux-repo.sh geleert, um Duplikate zu vermeiden."
-      echo "# Alle aktiven Repositories befinden sich in /etc/apt/sources.list.d/ailinux-*.sources"
-    } > "$SOURCES_LIST"
-    echo "✓ /etc/apt/sources.list geleert (Duplikate vermieden)"
-  fi
-}
-
-write_ubuntu_sources(){
-  # Hauptarchiv (FULL)
-  {
-    echo "Types: deb"
-    echo "URIs: ${URI_UBU}"
-    echo "Suites: ${UBUNTU_SUITES}"
-    echo "Components: ${UBUNTU_COMPONENTS}"
-    [[ -n "${UBUNTU_ARCHS}" ]] && echo "Architectures: ${UBUNTU_ARCHS}"
-    echo "Signed-By: ${KEYRING_DEST}"
-  } | write_file "$F_UBU" 0644
-
-  # Security-Archiv getrennt (klarere Trennung)
-  {
-    echo "Types: deb"
-    echo "URIs: ${URI_SEC}"
-    echo "Suites: ${CODENAME}-security"
-    echo "Components: ${UBUNTU_COMPONENTS}"
-    [[ -n "${UBUNTU_ARCHS}" ]] && echo "Architectures: ${UBUNTU_ARCHS}"
-    echo "Signed-By: ${KEYRING_DEST}"
-  } | write_file "$F_SEC" 0644
-}
-
-write_neon(){
-  {
-    echo "Types: deb"
-    echo "URIs: ${URI_NEON}"
-    echo "Suites: ${CODENAME}"
-    echo "Components: main"
-    [[ -n "${NEON_ARCHS}" ]] && echo "Architectures: ${NEON_ARCHS}"
-    echo "Signed-By: ${KEYRING_DEST}"
-  } | write_file "$F_NEON" 0644
-}
-
-write_xubuntu_staging(){
-  {
-    echo "Types: deb"
-    echo "URIs: ${URI_XFCE}"
-    echo "Suites: ${CODENAME}"
-    echo "Components: main"
-    [[ -n "${XUBUNTU_ARCHS}" ]] && echo "Architectures: ${XUBUNTU_ARCHS}"
-    echo "Signed-By: ${KEYRING_DEST}"
-  } | write_file "$F_XFCE" 0644
-}
-
-write_cappelikan(){
-  {
-    echo "Types: deb"
-    echo "URIs: ${URI_CAPL}"
-    echo "Suites: ${CODENAME}"
-    echo "Components: main"
-    [[ -n "${CAPPELIKAN_ARCHS}" ]] && echo "Architectures: ${CAPPELIKAN_ARCHS}"
-    echo "Signed-By: ${KEYRING_DEST}"
-  } | write_file "$F_CAPL" 0644
-}
-
-write_libreoffice(){
-  {
-    echo "Types: deb"
-    echo "URIs: ${URI_LO}"
-    echo "Suites: ${CODENAME}"
-    echo "Components: main"
-    [[ -n "${LIBREOFFICE_ARCHS}" ]] && echo "Architectures: ${LIBREOFFICE_ARCHS}"
-    echo "Signed-By: ${KEYRING_DEST}"
-  } | write_file "$F_LO" 0644
-}
-
-write_docker(){
-  {
-    echo "Types: deb"
-    echo "URIs: ${URI_DOCK}"
-    echo "Suites: ${CODENAME}"
-    echo "Components: stable"
-    [[ -n "${DOCKER_ARCHS}" ]] && echo "Architectures: ${DOCKER_ARCHS}"
-    echo "Signed-By: ${KEYRING_DEST}"
-  } | write_file "$F_DOCK" 0644
-}
-
-write_chrome(){
-  {
-    echo "Types: deb"
-    echo "URIs: ${URI_CHRM}"
-    echo "Suites: stable"
-    echo "Components: main"
-    [[ -n "${CHROME_ARCHS}" ]] && echo "Architectures: ${CHROME_ARCHS}"
-    echo "Signed-By: ${KEYRING_DEST}"
-  } | write_file "$F_CHRM" 0644
-}
-
-write_winehq(){
-  {
-    echo "Types: deb"
-    echo "URIs: ${URI_WINE}"
-    echo "Suites: ${CODENAME}"
-    echo "Components: main"
-    [[ -n "${WINE_ARCHS}" ]] && echo "Architectures: ${WINE_ARCHS}"
-    echo "Signed-By: ${KEYRING_DEST}"
-  } | write_file "$F_WINE" 0644
-}
-
-write_git_core(){
-  {
-    echo "Types: deb"
-    echo "URIs: ${URI_GIT}"
-    echo "Suites: ${CODENAME}"
-    echo "Components: main"
-    [[ -n "${GITCORE_ARCHS}" ]] && echo "Architectures: ${GITCORE_ARCHS}"
-    echo "Signed-By: ${KEYRING_DEST}"
-  } | write_file "$F_GIT" 0644
-}
-
-write_python_deadsnakes(){
-  {
-    echo "Types: deb"
-    echo "URIs: ${URI_PY}"
-    echo "Suites: ${CODENAME}"
-    echo "Components: main"
-    [[ -n "${PYTHON_ARCHS}" ]] && echo "Architectures: ${PYTHON_ARCHS}"
-    echo "Signed-By: ${KEYRING_DEST}"
-  } | write_file "$F_PY" 0644
-}
-
-write_graphics_drivers(){
-  {
-    echo "Types: deb"
-    echo "URIs: ${URI_GFX}"
-    echo "Suites: ${CODENAME}"
-    echo "Components: main"
-    [[ -n "${GRAPHICS_ARCHS}" ]] && echo "Architectures: ${GRAPHICS_ARCHS}"
-    echo "Signed-By: ${KEYRING_DEST}"
-  } | write_file "$F_GFX" 0644
-}
-
-write_kdenlive(){
-  {
-    echo "Types: deb"
-    echo "URIs: ${URI_KDNL}"
-    echo "Suites: ${CODENAME}"
-    echo "Components: main"
-    [[ -n "${KDENLIVE_ARCHS}" ]] && echo "Architectures: ${KDENLIVE_ARCHS}"
-    echo "Signed-By: ${KEYRING_DEST}"
-  } | write_file "$F_KDNL" 0644
-}
-
-write_obs_studio(){
-  {
-    echo "Types: deb"
-    echo "URIs: ${URI_OBS}"
-    echo "Suites: ${CODENAME}"
-    echo "Components: main"
-    [[ -n "${OBS_ARCHS}" ]] && echo "Architectures: ${OBS_ARCHS}"
-    echo "Signed-By: ${KEYRING_DEST}"
-  } | write_file "$F_OBS" 0644
-}
-
-write_ffmpeg4(){
-  {
-    echo "Types: deb"
-    echo "URIs: ${URI_FF4}"
-    echo "Suites: ${CODENAME}"
-    echo "Components: main"
-    [[ -n "${FFMPEG_ARCHS}" ]] && echo "Architectures: ${FFMPEG_ARCHS}"
-    echo "Signed-By: ${KEYRING_DEST}"
-  } | write_file "$F_FF4" 0644
-}
-
-write_ffmpeg5(){
-  {
-    echo "Types: deb"
-    echo "URIs: ${URI_FF5}"
-    echo "Suites: ${CODENAME}"
-    echo "Components: main"
-    [[ -n "${FFMPEG_ARCHS}" ]] && echo "Architectures: ${FFMPEG_ARCHS}"
-    echo "Signed-By: ${KEYRING_DEST}"
-  } | write_file "$F_FF5" 0644
-}
-
-write_timeshift(){
-  {
-    echo "Types: deb"
-    echo "URIs: ${URI_TIME}"
-    echo "Suites: ${CODENAME}"
-    echo "Components: main"
-    [[ -n "${TIMESHIFT_ARCHS}" ]] && echo "Architectures: ${TIMESHIFT_ARCHS}"
-    echo "Signed-By: ${KEYRING_DEST}"
-  } | write_file "$F_TIME" 0644
-}
-
-write_brave(){
-  {
-    echo "Types: deb"
-    echo "URIs: ${URI_BRAVE}"
-    echo "Suites: stable"
-    echo "Components: main"
-    [[ -n "${BRAVE_ARCHS}" ]] && echo "Architectures: ${BRAVE_ARCHS}"
-    echo "Signed-By: ${KEYRING_DEST}"
-  } | write_file "$F_BRAVE" 0644
-}
-
-write_nodesource(){
-  {
-    echo "Types: deb"
-    echo "URIs: ${URI_NODE}"
-    echo "Suites: nodistro"
-    echo "Components: main"
-    [[ -n "${NODESOURCE_ARCHS}" ]] && echo "Architectures: ${NODESOURCE_ARCHS}"
-    echo "Signed-By: ${KEYRING_DEST}"
-  } | write_file "$F_NODE" 0644
-}
-
-# ----------------------------- Ablauf --------------------------------
-need_root
-echo "===[ AILinux Repo Bootstrap ]==============================="
-echo "Base URL  : $REPO_BASE_URL"
-echo "Codename  : $CODENAME"
-echo "Archs     : Base=${UBUNTU_ARCHS}; Wine=${WINE_ARCHS}"
-if [[ "${NEED_I386}" == true ]]; then
-  echo "Multiarch : i386 wird automatisch aktiviert (dpkg --add-architecture i386)"
+DEFAULT_BASE="https://repo.ailinux.me/mirror"
+BASE_URL="${AILINUX_REPO_BASE:-$DEFAULT_BASE}"
+KEYRING_DIR="/usr/share/keyrings"
+KEYRING_PATH="${KEYRING_DIR}/ailinux-archive-keyring.gpg"
+LIST_PATH="/etc/apt/sources.list.d/ailinux-mirror.list"
+SHARED_KEYS_URL="${BASE_URL}/shared_keys"
+THIRD_PARTY_MANIFEST="${SHARED_KEYS_URL}/third-party-repos.json"
+# Node-ID: nur bei explizit gesetztem AILINUX_NODE_ID; sonst "generic" (kein Node-Filter)
+if [[ -n "${AILINUX_NODE_ID:-}" ]]; then
+    CURRENT_NODE="$AILINUX_NODE_ID"
 else
-  echo "Multiarch : nur amd64 erforderlich – keine i386 Mirror-Einträge"
+    CURRENT_NODE="generic"
 fi
-echo "Keyring   : $KEYRING_DEST"
-echo "Dry-Run   : $DRY_RUN"
-echo "Operation : $([[ $DO_REMOVE == true ]] && echo REMOVE || echo ADD/UPDATE)"
-echo "Branding  : $([[ $DO_BRANDING == true ]] && echo aktiv || echo deaktiviert)"
-echo "============================================================"
+CURL_OPTS=(-4 --connect-timeout 10 --max-time 30 --retry 2 --retry-delay 1)
 
-$DO_REMOVE && { do_remove; exit 0; }
+VERBOSE=0
+DRY_RUN=0
+SKIP_UPDATE=0
+THIRD_PARTY=0
+THIRD_PARTY_ONLY=0
+LIST_REPOS=0
+LIST_THIRD=0
+SELECTED_IDS=""
+SELECTED_CATS=""
 
-# 1) Key
-install_key
-# 1b) Branding (standardmäßig aktiv)
-if $DO_BRANDING; then install_branding_assets; else echo "Branding übersprungen (--no-branding)."; fi
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+BOLD='\033[1m'
+NC='\033[0m'
 
-# 1c) Multiarch sicherstellen (falls notwendig)
-ensure_multiarch
+log_info()  { echo -e "${BLUE}[*]${NC} $*"; }
+log_ok()    { echo -e "${GREEN}[+]${NC} $*"; }
+log_warn()  { echo -e "${YELLOW}[!]${NC} $*"; }
+log_error() { echo -e "${RED}[ERROR]${NC} $*" >&2; }
+log_debug() { [[ $VERBOSE -eq 1 ]] && echo -e "${CYAN}[DBG]${NC} $*" >&2 || true; }
 
-# 1d) /etc/apt/sources.list leeren (Duplikate vermeiden)
-empty_sources_list
+usage() {
+    cat <<'EOF'
+AILinux Repo Adder v6.2
 
-# 2) Quellen schreiben (entsprechend deiner FULL mirror.list)
-write_ubuntu_sources
-write_neon
-write_xubuntu_staging
-write_cappelikan
-write_libreoffice
-write_docker
-write_chrome
-write_winehq
-write_git_core
-write_python_deadsnakes
-write_graphics_drivers
-write_kdenlive
-write_obs_studio
-write_ffmpeg4
-write_ffmpeg5
-write_timeshift
-write_brave
-write_nodesource
+Usage:
+  curl -fsSL https://repo.ailinux.me/mirror/add-ailinux-repo.sh | sudo bash
+  curl -fsSL https://repo.ailinux.me/mirror/add-ailinux-repo.sh | sudo bash -s -- --third-party
+  sudo ./add-ailinux-repo.sh [OPTIONS]
 
-# 3) Update
-apt_update
+Options:
+  --no-update         Skip apt-get update
+  --list-repos        Print generated AILinux mirror entries and exit
+  --dry-run           Show what would be done without writing files
+  --verbose, -v       Enable debug output
+  --third-party       Also install third-party repositories
+  --third-party-only  Install only third-party repositories
+  --select ID,...     Limit third-party repos to explicit IDs
+  --categories C,...  Limit third-party repos to categories
+  --list-third        List available third-party repos and exit
+  -h, --help          Show help
 
-echo ""
-echo "Fertig. AILinux-Quellen + Branding sind eingerichtet."
-echo ""
-echo "Konfigurierte Repositories:"
-echo "  - Ubuntu Base (amd64+i386 - full multiarch support): main, universe, multiverse, restricted"
-echo "  - KDE Neon (amd64)"
-echo "  - Xubuntu Dev Staging (amd64+i386)"
-echo "  - Cappelikan/MainLine Kernels (amd64+i386)"
-echo "  - LibreOffice (amd64+i386)"
-echo "  - Docker (amd64)"
-echo "  - Google Chrome (amd64)"
-echo "  - WineHQ (amd64+i386)"
-echo "  - Git Stable (amd64+i386)"
-echo "  - Python/Deadsnakes (amd64+i386)"
-echo "  - Graphics Drivers (amd64+i386) - NVIDIA/AMD mit i386-Support"
-echo "  - Kdenlive (amd64+i386)"
-echo "  - OBS Studio (amd64+i386)"
-echo "  - FFmpeg4 (amd64+i386)"
-echo "  - FFmpeg5 (amd64+i386)"
-echo "  - Timeshift (amd64+i386)"
-echo "  - Brave Browser (amd64)"
-echo "  - NodeSource/Node.js 20.x (amd64)"
-echo ""
-echo "Tipp: Branding neu anwenden: systemctl start ailinux-branding.service"
-# =====================================================================
+Notes:
+  Pass options to bash after "-s --" when piping from curl.
+  Third-party repos are node-aware by default and follow the manifest's "nodes".
+EOF
+}
+
+need_cmd() {
+    command -v "$1" >/dev/null 2>&1 || {
+        log_error "Required command not found: $1"
+        exit 1
+    }
+}
+
+contains_csv() {
+    local needle="$1"
+    local csv="$2"
+    local item
+    for item in ${csv//,/ }; do
+        [[ "$item" == "$needle" ]] && return 0
+    done
+    return 1
+}
+
+resolve_node_targets() {
+    local node="$1"
+    printf '%s\n' "$node"
+
+    case "$node" in
+        ailinux)
+            printf '%s\n' "zombie-pc"
+            ;;
+    esac
+}
+
+csv_matches_any() {
+    local csv="$1"
+    shift
+    local candidate
+    for candidate in "$@"; do
+        contains_csv "$candidate" "$csv" && return 0
+    done
+    return 1
+}
+
+parse_args() {
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --no-update) SKIP_UPDATE=1 ;;
+            --list-repos) LIST_REPOS=1 ;;
+            --dry-run) DRY_RUN=1 ;;
+            --verbose|-v) VERBOSE=1 ;;
+            --third-party) THIRD_PARTY=1 ;;
+            --third-party-only) THIRD_PARTY=1; THIRD_PARTY_ONLY=1 ;;
+            --select) shift; SELECTED_IDS="${1:-}" ;;
+            --select=*) SELECTED_IDS="${1#--select=}" ;;
+            --categories) shift; SELECTED_CATS="${1:-}" ;;
+            --categories=*) SELECTED_CATS="${1#--categories=}" ;;
+            --list-third) LIST_THIRD=1 ;;
+            -h|--help) usage; exit 0 ;;
+            *) log_warn "Unknown option: $1" ;;
+        esac
+        shift
+    done
+}
+
+detect_codename() {
+    local codename
+    codename=$(lsb_release -cs 2>/dev/null) || codename=$(bash -c '. /etc/os-release 2>/dev/null; echo "${VERSION_CODENAME:-${UBUNTU_CODENAME:-noble}}"' 2>/dev/null) || codename="noble"
+    echo "$codename"
+}
+
+has_release() {
+    local url="$1"
+    local dist="$2"
+    curl "${CURL_OPTS[@]}" -fsSL "${url}/dists/${dist}/Release" -o /dev/null 2>/dev/null
+}
+
+get_mirror_repo_specs() {
+    local codename="$1"
+    cat <<EOF
+repo.ailinux.me|${codename}|main|amd64,i386|${codename}|AILinux Local
+archive.ubuntu.com/ubuntu|${codename},${codename}-updates|main,restricted,universe,multiverse|amd64,i386|${codename}|Ubuntu Base
+security.ubuntu.com/ubuntu|${codename}-security|main,restricted,universe,multiverse|amd64,i386|${codename}-security|Ubuntu Security
+archive.neon.kde.org/user|${codename}|main|amd64|${codename}|KDE neon
+deb.nodesource.com/node_22.x|nodistro|main|amd64|nodistro|NodeSource 22.x
+dl.google.com/linux/chrome/deb|stable|main|amd64|stable|Google Chrome
+dl.winehq.org/wine-builds/ubuntu|${codename}|main|amd64,i386|${codename}|WineHQ
+download.docker.com/linux/ubuntu|${codename}|stable|amd64|${codename}|Docker CE
+packages.microsoft.com/repos/code|stable|main|amd64|stable|VS Code
+ppa.launchpadcontent.net/cappelikan/ppa/ubuntu|${codename}|main|amd64|${codename}|Cappelikan PPA
+ppa.launchpadcontent.net/graphics-drivers/ppa/ubuntu|${codename}|main|amd64|${codename}|Graphics Drivers PPA
+ppa.launchpadcontent.net/libreoffice/ppa/ubuntu|${codename}|main|amd64|${codename}|LibreOffice PPA
+repo.steampowered.com/steam|stable|steam|amd64,i386|stable|Steam
+EOF
+}
+
+install_mirror_repos() {
+    local codename repo_spec repo_path suites components archs probe_dist label
+    local list_content discovered=0
+
+    codename=$(detect_codename)
+    log_info "Detected OS codename: $codename"
+    log_info "Mirror base: $BASE_URL"
+
+    if [[ $DRY_RUN -eq 0 ]]; then
+        log_info "Installing AILinux archive keyring..."
+        mkdir -p "$KEYRING_DIR"
+        curl "${CURL_OPTS[@]}" -sSL "${BASE_URL}/ailinux-archive-key.gpg" -o "$KEYRING_PATH" || {
+            log_error "Failed to download AILinux keyring"
+            return 1
+        }
+        chmod 644 "$KEYRING_PATH"
+        log_ok "Keyring installed: $KEYRING_PATH"
+    else
+        log_info "[DRY-RUN] Would install keyring: ${BASE_URL}/ailinux-archive-key.gpg -> $KEYRING_PATH"
+    fi
+
+    log_info "Discovering mirror repositories..."
+
+    list_content=$(cat <<EOF
+# ============================================
+# AILinux Mirror Repositories
+# Auto-generated: $(date -u +%Y-%m-%dT%H:%M:%S+00:00)
+# Base URL: $BASE_URL
+# System: $codename
+# Keyring: $KEYRING_PATH
+# ============================================
+# --- MIRRORED REPOS ---
+EOF
+)
+
+    while IFS= read -r repo_spec; do
+        [[ -n "$repo_spec" ]] || continue
+        IFS='|' read -r repo_path suites components archs probe_dist label <<<"$repo_spec"
+        if ! has_release "$BASE_URL/${repo_path}" "$probe_dist"; then
+            log_debug "Skipping ${repo_path} (missing Release for ${probe_dist})"
+            continue
+        fi
+
+        ((discovered++)) || true
+        list_content+=$'\n'"# ${label} (${repo_path})"
+
+        local suite component
+        for suite in ${suites//,/ }; do
+            list_content+=$'\n'"deb [arch=${archs} signed-by=${KEYRING_PATH}] ${BASE_URL}/${repo_path} ${suite}"
+            for component in ${components//,/ }; do
+                list_content+=" ${component}"
+            done
+        done
+    done < <(get_mirror_repo_specs "$codename")
+
+    if [[ $discovered -eq 0 ]]; then
+        log_warn "No mirrored repos with valid Release metadata were discovered"
+    fi
+
+    if [[ $LIST_REPOS -eq 1 ]]; then
+        echo "$list_content"
+        return 0
+    fi
+
+    if [[ $DRY_RUN -eq 0 ]]; then
+        printf '%s\n' "$list_content" > "$LIST_PATH"
+        log_ok "Mirror repos written to $LIST_PATH"
+    else
+        log_info "[DRY-RUN] Would write mirror repos to $LIST_PATH"
+        echo "$list_content"
+    fi
+}
+
+emit_third_party_rows() {
+    local manifest_json="$1"
+    MANIFEST_JSON="$manifest_json" python3 - <<'PY'
+import base64
+import json
+import os
+import sys
+
+data = json.loads(os.environ["MANIFEST_JSON"])
+for repo in data.get("repos", []):
+    content = base64.b64encode(repo.get("source_content", "").encode()).decode()
+    fields = [
+        repo.get("id", ""),
+        repo.get("name", ""),
+        repo.get("category", ""),
+        ",".join(repo.get("nodes", []) or []),
+        repo.get("key", ""),
+        repo.get("key_dest", ""),
+        repo.get("source_file", ""),
+        str(repo.get("optional", False)).lower(),
+        content,
+    ]
+    print("\t".join(fields))
+PY
+}
+
+install_third_party_repos() {
+    local manifest rows installed=0 skipped=0
+    local row id name category nodes key key_dest source_file optional content_b64 real_content key_url
+    local -a node_targets=()
+
+    if ! command -v python3 >/dev/null 2>&1; then
+        log_error "python3 is required for third-party repo parsing"
+        return 1
+    fi
+
+    log_info "Fetching third-party repo manifest from ${THIRD_PARTY_MANIFEST}..."
+    manifest=$(curl "${CURL_OPTS[@]}" -sSL "$THIRD_PARTY_MANIFEST") || {
+        log_error "Failed to fetch third-party manifest"
+        return 1
+    }
+
+    mapfile -t rows < <(emit_third_party_rows "$manifest")
+    log_info "Found ${#rows[@]} third-party repos in manifest"
+    mapfile -t node_targets < <(resolve_node_targets "$CURRENT_NODE")
+    log_info "Third-party node targets: $(IFS=,; echo "${node_targets[*]}")"
+
+    if [[ $LIST_THIRD -eq 1 ]]; then
+        printf "%-20s %-26s %-12s %-20s %s\n" "ID" "NAME" "CATEGORY" "NODES" "OPTIONAL"
+        printf "%-20s %-26s %-12s %-20s %s\n" "----" "----" "--------" "-----" "--------"
+        for row in "${rows[@]}"; do
+            IFS=$'\t' read -r id name category nodes _ _ _ optional _ <<<"$row"
+            printf "%-20s %-26s %-12s %-20s %s\n" "$id" "$name" "$category" "$nodes" "$optional"
+        done
+        return 0
+    fi
+
+    for row in "${rows[@]}"; do
+        IFS=$'\t' read -r id name category nodes key key_dest source_file optional content_b64 <<<"$row"
+
+        if [[ -n "$SELECTED_IDS" ]] && ! contains_csv "$id" "$SELECTED_IDS"; then
+            ((skipped++)) || true
+            continue
+        fi
+        if [[ -n "$SELECTED_CATS" ]] && ! contains_csv "$category" "$SELECTED_CATS"; then
+            ((skipped++)) || true
+            continue
+        fi
+        # Node-Filter: nur aktiv wenn CURRENT_NODE != generic
+        if [[ "$CURRENT_NODE" != "generic" && -n "$nodes" && -z "$SELECTED_IDS" ]] && \
+           ! csv_matches_any "$nodes" "${node_targets[@]}"; then
+            log_debug "Skipping ${id} for node targets $(IFS=,; echo "${node_targets[*]}") (allowed: ${nodes})"
+            ((skipped++)) || true
+            continue
+        fi
+
+        key_url="${SHARED_KEYS_URL}/${key}"
+        log_info "Processing: ${name} [${id}]"
+
+        if [[ $DRY_RUN -eq 0 ]]; then
+            mkdir -p "$(dirname "$key_dest")" "$(dirname "$source_file")"
+            curl "${CURL_OPTS[@]}" -sSL -o "$key_dest" "$key_url" || {
+                if [[ "$optional" == "true" ]]; then
+                    log_warn "  Key download failed, skipping optional repo: $id"
+                    ((skipped++)) || true
+                    continue
+                fi
+                log_error "  Key download failed for required repo: $id"
+                continue
+            }
+            chmod 644 "$key_dest"
+            real_content=$(printf '%s' "$content_b64" | base64 -d)
+            printf '%s\n' "$real_content" > "$source_file"
+            log_ok "  Source added: $source_file"
+        else
+            log_info "  [DRY-RUN] Would install key: $key_url -> $key_dest"
+            log_info "  [DRY-RUN] Would write: $source_file"
+        fi
+
+        ((installed++)) || true
+    done
+
+    log_ok "Third-party: $installed installed, $skipped skipped"
+}
+
+main() {
+    parse_args "$@"
+
+    echo -e "\n${BOLD}╔════════════════════════════════════════════╗${NC}"
+    echo -e "${BOLD}║  AILinux Repo Adder v6.2                   ║${NC}"
+    echo -e "${BOLD}║  https://repo.ailinux.me                   ║${NC}"
+    echo -e "${BOLD}╚════════════════════════════════════════════╝${NC}\n"
+
+    if [[ $DRY_RUN -eq 0 && $LIST_REPOS -eq 0 && $LIST_THIRD -eq 0 && $EUID -ne 0 ]]; then
+        log_error "This script must be run as root (sudo). Use --dry-run to preview."
+        exit 1
+    fi
+
+    need_cmd curl
+    need_cmd apt-get
+
+    if [[ $LIST_THIRD -eq 1 ]]; then
+        install_third_party_repos
+        exit 0
+    fi
+
+    if [[ $THIRD_PARTY_ONLY -eq 0 ]]; then
+        log_info "Phase 1: AILinux Mirror Repositories"
+        install_mirror_repos
+    fi
+
+    if [[ $THIRD_PARTY -eq 1 ]]; then
+        echo ""
+        log_info "Phase 2: Third-Party Repositories"
+        install_third_party_repos
+    fi
+
+    if [[ $SKIP_UPDATE -eq 0 && $DRY_RUN -eq 0 && $LIST_REPOS -eq 0 ]]; then
+        echo ""
+        log_info "Running apt-get update..."
+        apt-get update -qq && log_ok "apt-get update complete" || log_warn "apt-get update had issues (check output)"
+    fi
+
+    echo ""
+    log_ok "Done! AILinux repositories configured."
+    [[ $THIRD_PARTY -eq 1 ]] && log_ok "Third-party repos installed."
+    [[ $DRY_RUN -eq 1 ]] && log_warn "DRY-RUN mode - no changes made."
+    echo ""
+}
+
+main "$@"

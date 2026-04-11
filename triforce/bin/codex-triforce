@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
-# codex-triforce v3.0 — Codex CLI mit Account-Token + npm auto-update
+# codex-triforce v3.1 — persist HOME auth
 source "$(dirname "$0")/triforce-env.sh"
+
+# Auth aus persist-Volume (frisch kopiert von /home/zombie/.codex/)
+export HOME=/opt/triforce/persist/cli-config/codex
 
 # npm auto-update (24h Cooldown, non-blocking)
 _auto_update_npm "@openai/codex"

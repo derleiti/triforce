@@ -240,15 +240,11 @@ add_filter( 'wp_resource_hints', function( $hints, $relation_type ) {
     return $hints;
 }, 10, 2 );
 
-add_action('wp_enqueue_scripts', function () {
-    // style.css früh anwärmen (reduziert Render-Blocker-Eindruck)
-    wp_enqueue_style('ailinux-nova-dark-style-preload',
-        AILINUX_NOVA_DARK_URI . '/dist/style.css',
-        [],
-        ailinux_nova_dark_get_asset_version('/dist/style.css'),
-        'all'
-    );
-}, 5);
+// FIX 2026-04-11: Duplicate style.css enqueue removed (already loaded at priority 20)
+// Preload hint instead of second enqueue:
+add_action('wp_head', function() {
+    echo '<link rel="preload" href="' . esc_url(AILINUX_NOVA_DARK_URI . '/dist/style.css') . '" as="style">' . "\n";
+}, 1);
 
 function ailinux_nova_dark_disable_wpemoji() {
     remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
@@ -786,33 +782,44 @@ add_action( 'wp_enqueue_scripts', 'ailinux_nova_dark_maybe_enqueue_bbpress_css',
  * Enqueue Consent Banner CSS (Complianz optimizations)
  */
 function ailinux_nova_dark_enqueue_consent_css() {
+    $consent_file = WP_CONTENT_DIR . '/uploads/ailx/consent.css';
+    if ( ! file_exists( $consent_file ) ) {
+        return; // FIX 2026-04-11: Skip if file missing (prevents filemtime fatal)
+    }
     wp_enqueue_style(
         'ailx-consent',
         content_url( 'uploads/ailx/consent.css' ),
         array(),
-        filemtime( WP_CONTENT_DIR . '/uploads/ailx/consent.css' )
+        filemtime( $consent_file )
     );
 }
 add_action( 'wp_enqueue_scripts', 'ailinux_nova_dark_enqueue_consent_css', 35 );
 
-// Optional CSP nonce support: define AILINUX_CSP_NONCE via server or mu-plugin.
+// FIX 2026-04-11: Rocket Loader protection + optional CSP nonce for theme scripts
 add_filter('script_loader_tag', function ($tag, $handle, $src) {
-    if (!defined('AILINUX_CSP_NONCE') || !AILINUX_CSP_NONCE) return $tag;
-    $handles = [
-        'ailinux-nova-dark-color-mode',
-        'ailinux-nova-dark-app',
-        'ailinux-nova-dark-mobile-menu',
-        'ailinux-nova-dark-customizer',
-        'ailinux-nova-dark-webgpu',
-    ];
-    if (in_array($handle, $handles, true)) {
-        $tag = str_replace('<script ', '<script nonce="' . esc_attr(AILINUX_CSP_NONCE) . '" ', $tag);
+    // 1. Prevent Rocket Loader from deferring critical scripts (ALWAYS active)
+    $cfasync_handles = ['ailinux-nova-dark-color-mode', 'ailinux-nova-dark-app', 'ailinux-nova-dark-mobile-menu'];
+    if (in_array($handle, $cfasync_handles, true) && strpos($tag, 'data-cfasync') === false) {
+        $tag = str_replace('<script ', '<script data-cfasync="false" ', $tag);
     }
-    // webgpu.js is an ES module - must have type="module" or Rocket Loader breaks it
+
+    // 2. webgpu.js: ES module + cfasync
     if ($handle === 'ailinux-nova-dark-webgpu') {
         $tag = str_replace(' type="text/javascript"', '', $tag);
-        $tag = str_replace('<script ', '<script type="module" data-cfasync="false" ', $tag);
+        if (strpos($tag, 'data-cfasync') === false) {
+            $tag = str_replace('<script ', '<script type="module" data-cfasync="false" ', $tag);
+        }
     }
+
+    // 3. Optional CSP nonce (only if AILINUX_CSP_NONCE is defined)
+    if (defined('AILINUX_CSP_NONCE') && AILINUX_CSP_NONCE) {
+        $nonce_handles = ['ailinux-nova-dark-color-mode', 'ailinux-nova-dark-app',
+                          'ailinux-nova-dark-mobile-menu', 'ailinux-nova-dark-customizer'];
+        if (in_array($handle, $nonce_handles, true)) {
+            $tag = str_replace('<script ', '<script nonce="' . esc_attr(AILINUX_CSP_NONCE) . '" ', $tag);
+        }
+    }
+
     return $tag;
 }, 10, 3);
 
@@ -825,29 +832,18 @@ function ailinux_nova_dark_flush_menu_on_page_save( $post_id, $post, $update ) {
         return;
     }
 
-    // Flush object cache if available
-    if ( function_exists( 'wp_cache_flush' ) ) {
-        wp_cache_flush();
-    }
-
-    // Delete nav menu transients to force refresh
+    // FIX 2026-04-11: Targeted transient cleanup instead of nuclear wp_cache_flush()
     global $wpdb;
     $wpdb->query( $wpdb->prepare(
         "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
         $wpdb->esc_like( '_transient_nav_menu_' ) . '%'
     ) );
-
-    // Force menu locations to refresh
-    $locations = get_nav_menu_locations();
-    foreach ( $locations as $location => $menu_id ) {
-        wp_update_nav_menu_object( $menu_id, array( 'menu-name' => get_term_field( 'name', $menu_id, 'nav_menu' ) ) );
-    }
 }
 add_action( 'save_post', 'ailinux_nova_dark_flush_menu_on_page_save', 10, 3 );
 
 /* ============================================================
    NOVA AI — ARTIKEL DISKUSSIONS-WIDGET
-   Eingebettet in einzelne Posts & Pages
+   ARTIKEL DISKUSSIONS-WIDGET — re-enabled 2026-04-11
    ============================================================ */
 
 /**
@@ -904,8 +900,8 @@ function nova_article_discuss_widget() {
         </svg>
         <?php esc_html_e( 'KI-Assistent', 'ailinux-nova-dark' ); ?>
       </div>
-      <select id="nova-discuss-model-<?php echo $post->ID; ?>" name="nova-discuss-model" class="nova-discuss-model-select" aria-label="KI-Modell" data-autoload="true">
-        <option value="groq/meta-llama/llama-4-scout-17b-16e-instruct" selected>Llama 4 Scout (schnell)</option>
+      <select id="nova-discuss-model-<?php echo $post->ID; ?>" name="nova-discuss-model" class="nova-discuss-model-select" aria-label="KI-Modell" data-autoload="true" data-models-url="<?php echo esc_attr( rest_url('nova-ai/v1/models') ); ?>">
+        <option value="groq/meta-llama/llama-4-scout-17b-16e-instruct" selected>Modelle laden…</option>
       </select>
       <button class="nova-discuss-close" aria-label="Schließen">×</button>
     </div>
@@ -974,11 +970,62 @@ add_action( 'wp_footer', function () {
         } catch(e) {}
       }
 
+      // Modelle laden (einmalig beim ersten Öffnen)
+      let modelsLoaded = false;
+      async function loadModels() {
+        if (modelsLoaded) return;
+        modelsLoaded = true;
+        const modelsUrl = modelSel?.dataset?.modelsUrl || (apiBase + '/models');
+        try {
+          const r = await fetch(modelsUrl);
+          if (!r.ok) return;
+          const data = await r.json();
+          const chatModels = (data.categories?.chat || data.models || [])
+            .filter(function(m) { return m.chat && !m.paused; });
+          if (!chatModels.length) return;
+          // Aktuellen Wert merken
+          const curVal = modelSel.value;
+          modelSel.innerHTML = '';
+          // Nach Provider gruppieren
+          const grouped = {};
+          chatModels.forEach(function(m) {
+            const p = m.provider || 'other';
+            if (!grouped[p]) grouped[p] = [];
+            grouped[p].push(m);
+          });
+          // Sortierte Provider
+          const provOrder = ['groq','gemini','mistral','cerebras','github','openrouter','cloudflare','ollama','anthropic','huggingface','replicate'];
+          const sortedProviders = Object.keys(grouped).sort(function(a,b) {
+            const ia = provOrder.indexOf(a), ib = provOrder.indexOf(b);
+            return (ia===-1?99:ia) - (ib===-1?99:ib);
+          });
+          sortedProviders.forEach(function(prov) {
+            const grp = document.createElement('optgroup');
+            grp.label = prov.charAt(0).toUpperCase() + prov.slice(1);
+            grouped[prov].forEach(function(m) {
+              const opt = document.createElement('option');
+              opt.value = m.id;
+              opt.textContent = m.name || m.id.split('/').pop();
+              if (m.id === curVal) opt.selected = true;
+              grp.appendChild(opt);
+            });
+            modelSel.appendChild(grp);
+          });
+          // Default: behalte groq/llama-4-scout falls vorhanden
+          if (!modelSel.querySelector('option[selected]') && modelSel.options.length) {
+            modelSel.options[0].selected = true;
+          }
+        } catch(e) {
+          console.warn('Discuss: Model loading failed', e);
+        }
+      }
+
       // Button toggle
       btn.addEventListener('click', function() {
         const isOpen = panel.classList.toggle('open');
         btn.setAttribute('aria-expanded', isOpen);
         if (isOpen && !nonce) fetchNonce();
+        if (isOpen) loadModels();
         if (isOpen && messages.children.length === 0) {
           addMessage('ai', '👋 Ich habe den Artikel „' + (ctx.title || '') + '" geladen. Was möchtest du wissen?');
         }
@@ -1089,6 +1136,7 @@ add_action( 'wp_footer', function () {
 </script>
     <?php
 }, 99 );
+// discuss widget active
 
 // webgpu.js dequeue: ES Module breaks Rocket Loader. Not used in theme. Remove completely.
 add_action('wp_enqueue_scripts', function() {
@@ -1126,8 +1174,29 @@ add_action('rest_api_init', function() {
     ]);
 });
 
+/* ── FIX 2026-04-11: Force permissive CSP on wp-admin (overrides CF/plugin CSP) ── */
+add_action('admin_init', function() {
+    // Remove any CSP headers that block unsafe-eval (needed for Block Editor, Customizer, Widgets)
+    header_remove('Content-Security-Policy');
+    header_remove('content-security-policy');
+}, 1);
+add_action('send_headers', function() {
+    if (is_admin() || is_customize_preview() || isset($_GET['wp_customize']) || isset($_GET['customize_changeset_uuid'])) {
+        // Overwrite with permissive admin CSP
+        header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https: blob:; font-src 'self' data: https:; connect-src 'self' https: wss:; frame-src 'self' https:; worker-src 'self' blob:; media-src 'self' data: https:; object-src 'none'; base-uri 'self'; form-action 'self' https:; frame-ancestors 'self'; upgrade-insecure-requests", true);
+    }
+}, 99999); // Very high priority to override anything
+
 /* ── CSP Overrides: frame-src & script-src für ailinux.me Subdomains ── */
 add_action('send_headers', function() {
+    // FIX 2026-04-11: CSP nur im Frontend — Admin/REST/AJAX/Customizer brauchen unsafe-eval
+    if (is_admin() || wp_doing_ajax() || (defined('REST_REQUEST') && REST_REQUEST) || wp_doing_cron()) {
+        return;
+    }
+    // Customizer preview runs as frontend but needs unsafe-eval for live-preview JS
+    if (is_customize_preview() || isset($_GET['customize_changeset_uuid']) || isset($_GET['wp_customize'])) {
+        return;
+    }
     $d = "default-src 'self'";
     $s = "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://challenges.cloudflare.com https://www.googletagmanager.com https://translate.googleapis.com https://translate.google.com https://cdn.gtranslate.net https://static.addtoany.com https://js.intercomcdn.com https://accounts.google.com";
     $f = "frame-src 'self' https://ailinux.me/account https://api.ailinux.me https://www.youtube.com https://accounts.google.com https://challenges.cloudflare.com https://www.google.com https://td.doubleclick.net https://static.addtoany.com";
@@ -1149,10 +1218,20 @@ add_action('send_headers', function() {
 
 
 // GTranslate im Admin + REST API deaktivieren (verhindert Invalid JSON beim Widget-Speichern)
+// FIX 2026-04-11: Auch output_buffering hooks abfangen + wp_loaded für spätere Registrierungen
 add_action('plugins_loaded', function() {
-    if (is_admin() || (defined('REST_REQUEST') && REST_REQUEST)) {
+    if (is_admin() || (defined('REST_REQUEST') && REST_REQUEST) || wp_doing_ajax()) {
         remove_action('init', array('GTranslate', 'init'));
         remove_action('wp_head', array('GTranslate', 'add_inline_script'));
         remove_action('wp_footer', array('GTranslate', 'add_float_code'));
+        // Catch late registrations
+        add_action('wp_loaded', function() {
+            remove_action('wp_head', array('GTranslate', 'add_inline_script'));
+            remove_action('wp_footer', array('GTranslate', 'add_float_code'));
+            // Disable output buffering that injects translation HTML
+            if (class_exists('GTranslate')) {
+                remove_action('template_redirect', array('GTranslate', 'start_buffering'));
+            }
+        }, 999);
     }
 }, 1);

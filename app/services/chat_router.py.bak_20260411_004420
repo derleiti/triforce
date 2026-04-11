@@ -28,7 +28,6 @@ class ModelProvider(str, Enum):
     MISTRAL = "mistral"
     GROQ = "groq"
     CEREBRAS = "cerebras"
-    REPLICATE = "replicate"
 
 
 @dataclass
@@ -398,13 +397,6 @@ class APIProxy:
         if provider == "openai":
             result = await self._openai_chat(api_key, model_id, messages, temperature, max_tokens)
         elif provider == "anthropic":
-            # Alias-Aufloesung: "claude-sonnet-4" -> "claude-sonnet-4-20250514" etc.
-            try:
-                from app.services.chat import ANTHROPIC_MODEL_ALIASES
-                model_id = ANTHROPIC_MODEL_ALIASES.get(model_id,
-                           ANTHROPIC_MODEL_ALIASES.get(f"anthropic/{model_id}", model_id))
-            except Exception:
-                pass
             result = await self._anthropic_chat(api_key, model_id, messages, temperature, max_tokens)
         elif provider in ("google", "gemini"):
             result = await self._gemini_chat(api_key, model_id, messages, temperature, max_tokens)
@@ -414,8 +406,6 @@ class APIProxy:
             result = await self._groq_chat(api_key, model_id, messages, temperature, max_tokens)
         elif provider == "cerebras":
             result = await self._cerebras_chat(api_key, model_id, messages, temperature, max_tokens)
-        elif provider == "replicate":
-            result = await self._replicate_chat(api_key, model_id, messages, temperature, max_tokens)
         elif provider == "openrouter":
             result = await self._openrouter_chat(api_key, model_id, messages, temperature, max_tokens)
         elif provider == "cloudflare":
@@ -587,101 +577,6 @@ class APIProxy:
                     raise RuntimeError(f"Cerebras API error: {error}")
                 data = await resp.json()
                 return data["choices"][0]["message"]["content"]
-
-
-    async def _replicate_chat(self, api_key: str, model: str, messages: list, temp: float, max_tokens: int) -> str:
-        """Replicate Prediction API — SSE streaming with sync fallback."""
-        import asyncio
-        
-        # Build prompt/system_prompt from messages
-        system_prompt = ""
-        prompt_parts = []
-        for msg in messages:
-            role = msg.get("role", "user")
-            content = msg.get("content", "")
-            if role == "system":
-                system_prompt = content
-            elif role == "assistant":
-                prompt_parts.append(f"Assistant: {content}")
-            else:
-                prompt_parts.append(content if len(messages) <= 2 else f"User: {content}")
-        prompt = "\n".join(prompt_parts)
-
-        model_id = model.strip()
-        payload = {
-            "input": {
-                "prompt": prompt,
-                "max_tokens": max_tokens or 2048,
-                "temperature": temp if temp is not None else 0.7,
-            }
-        }
-        if system_prompt:
-            payload["input"]["system_prompt"] = system_prompt
-
-        url = f"https://api.replicate.com/v1/models/{model_id}/predictions"
-
-        async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=120)) as session:
-            async with session.post(
-                url,
-                headers={
-                    "Authorization": f"Bearer {api_key}",
-                    "Content-Type": "application/json",
-                    "Prefer": "wait=60",
-                },
-                json=payload
-            ) as resp:
-                if resp.status not in (200, 201):
-                    error = await resp.text()
-                    raise RuntimeError(f"Replicate API error ({resp.status}): {error}")
-                data = await resp.json()
-
-            stream_url = data.get("urls", {}).get("stream")
-            status = data.get("status", "")
-
-            # Try SSE streaming and collect full response
-            if stream_url and status in ("starting", "processing"):
-                chunks = []
-                try:
-                    async with session.get(
-                        stream_url,
-                        headers={"Authorization": f"Bearer {api_key}", "Accept": "text/event-stream"},
-                        timeout=aiohttp.ClientTimeout(total=120, sock_read=35),
-                    ) as sse:
-                        event_type = ""
-                        async for raw_line in sse.content:
-                            line = raw_line.decode("utf-8", errors="replace").rstrip("\n\r")
-                            if line.startswith("event: "):
-                                event_type = line[7:].strip()
-                            elif line.startswith("data: "):
-                                if event_type == "output":
-                                    chunks.append(line[6:])
-                                elif event_type == "done":
-                                    break
-                            elif line == "":
-                                event_type = ""
-                    if chunks:
-                        return "".join(chunks)
-                except Exception:
-                    pass  # fall through to poll
-
-            # Sync completed
-            if data.get("status") == "succeeded":
-                output = data.get("output", "")
-                return "".join(output) if isinstance(output, list) else str(output)
-
-            # Poll fallback
-            get_url = data.get("urls", {}).get("get", "")
-            if get_url:
-                for _ in range(60):
-                    await asyncio.sleep(1)
-                    async with session.get(get_url, headers={"Authorization": f"Bearer {api_key}"}) as poll:
-                        pd = await poll.json()
-                        if pd.get("status") == "succeeded":
-                            output = pd.get("output", "")
-                            return "".join(output) if isinstance(output, list) else str(output)
-                        elif pd.get("status") in ("failed", "canceled"):
-                            raise RuntimeError(f"Replicate {pd['status']}: {pd.get('error')}")
-            raise RuntimeError("Replicate prediction timed out")
 
 
     async def _openrouter_chat(self, api_key: str, model: str, messages: list, temp: float, max_tokens: int) -> str:

@@ -68,15 +68,6 @@
     Header always unset X-Powered-By
   </IfModule>
 
-  # FIX 2026-04-11: wp-admin needs 'unsafe-eval' for Block Editor, Customizer, Widgets
-  # Unset restrictive CSP for admin paths and let them run without CSP restrictions
-  <LocationMatch "^/wp-admin">
-    Header always unset Content-Security-Policy
-  </LocationMatch>
-  <LocationMatch "^/wp-includes">
-    Header always unset Content-Security-Policy
-  </LocationMatch>
-
   Protocols h2 http/1.1
   SSLVerifyClient none
 

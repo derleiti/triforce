@@ -1048,12 +1048,15 @@ class AgentController:
                 "error": "Agent instance not available",
             }
         # API agents don't need a subprocess
+        # CLI agents (CODEX/CLAUDE/GEMINI) spawn on-demand per call — no persistent process needed.
         if instance.config.agent_type != AgentType.API and not instance.process:
-            return {
-                "agent_id": agent_id,
-                "status": "error",
-                "error": "Agent process not available",
-            }
+            # On-demand agents: skip process check, spawn below
+            if instance.config.agent_type == AgentType.API:
+                return {
+                    "agent_id": agent_id,
+                    "status": "error",
+                    "error": "Agent process not available",
+                }
 
         # API-based agents: no subprocess, direct API call
         if instance.config.agent_type == AgentType.API:

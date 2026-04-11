@@ -52,7 +52,7 @@ if [[ -z "${GNUPGHOME:-}" ]]; then
   fi
 fi
 
-SIGNING_KEY_ID="2B320747C602A195"
+SIGNING_KEY_ID="59FAE19560F5E25B"
 # Erstes Argument oder aktuelles Verzeichnis
 BASE_DIR_INPUT="${1:-$(pwd)}"
 BASE_DIR="$(realpath --no-symlinks "$BASE_DIR_INPUT" 2>/dev/null || echo "$BASE_DIR_INPUT")"

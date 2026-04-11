@@ -314,6 +314,57 @@ async def _image_proxy(req: ImageRequest) -> Dict[str, Any]:
                 raise HTTPException(status_code=r.status_code, detail=r.text)
             return {"ok": True, "mode": "media_image", "provider": "openai", "result": r.json()}
 
+    # ── Replicate image generation (FLUX, SDXL) ──
+    if m.startswith("replicate/"):
+        from ..config import get_settings as _gs
+        _s = _gs()
+        rep_key = _s.replicate_api_key
+        if not rep_key:
+            raise HTTPException(status_code=503, detail="Replicate API key not configured")
+        rep_model = m.replace("replicate/", "", 1)
+        # Map size to aspect_ratio for FLUX models
+        _SIZE_TO_AR = {"1024x1024": "1:1", "1792x1024": "16:9", "1024x1792": "9:16", "512x512": "1:1"}
+        rep_payload: dict = {"input": {"prompt": req.prompt}}
+        if "flux" in rep_model.lower():
+            rep_payload["input"]["aspect_ratio"] = _SIZE_TO_AR.get(req.size, "1:1")
+            rep_payload["input"]["num_outputs"] = min(req.n, 4)
+            rep_payload["input"]["output_format"] = "webp"
+            rep_payload["input"]["output_quality"] = 90 if req.quality == "hd" else 80
+        else:
+            # SDXL / other models use width/height
+            parts = req.size.split("x")
+            if len(parts) == 2:
+                rep_payload["input"]["width"] = int(parts[0])
+                rep_payload["input"]["height"] = int(parts[1])
+            rep_payload["input"]["num_outputs"] = min(req.n, 4)
+        async with httpx.AsyncClient(timeout=120.0) as client:
+            r = await client.post(
+                f"https://api.replicate.com/v1/models/{rep_model}/predictions",
+                headers={"Authorization": f"Bearer {rep_key}", "Content-Type": "application/json", "Prefer": "wait=60"},
+                json=rep_payload,
+            )
+            if r.status_code not in (200, 201):
+                raise HTTPException(status_code=r.status_code, detail=r.text)
+            rdata = r.json()
+            # Poll if not yet done
+            if rdata.get("status") in ("starting", "processing"):
+                import asyncio
+                get_url = rdata.get("urls", {}).get("get", "")
+                for _ in range(60):
+                    await asyncio.sleep(2)
+                    pr = await client.get(get_url, headers={"Authorization": f"Bearer {rep_key}"})
+                    pd = pr.json()
+                    if pd.get("status") == "succeeded":
+                        rdata = pd
+                        break
+                    elif pd.get("status") in ("failed", "canceled"):
+                        raise HTTPException(status_code=500, detail=f"Replicate {pd['status']}: {pd.get('error')}")
+            output = rdata.get("output", [])
+            if isinstance(output, str):
+                output = [output]
+            images = [{"url": u} for u in output if isinstance(u, str) and u.startswith("http")]
+            return {"ok": True, "mode": "media_image", "provider": "replicate", "result": {"data": images}}
+
     # Gemini native image generation (gemini-2.5-flash-image = "nano banana" — FREE tier 500 RPD)
     # Uses generateContent with responseModalities=["image","text"]
     _GEMINI_NATIVE_IMG = ("gemini/gemini-2.5-flash-image", "gemini/gemini-3-pro-image", "gemini/gemini-3.1-flash-image", "gemini/gemini-3.1-pro-image", "gemini/nano-banana")

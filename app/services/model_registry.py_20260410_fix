@@ -230,7 +230,6 @@ class ModelRegistry:
                 self._discover_mistral(),
                 self._discover_groq(),
                 self._discover_cerebras(),
-                self._discover_replicate(),
                 self._discover_cohere(),
                 self._discover_openrouter(),
                 self._discover_together(),
@@ -280,7 +279,7 @@ class ModelRegistry:
             if entry.id == canonical_id:
                 return entry
         # Try with provider prefixes (ollama/gemini/groq/etc.)
-        _PREFIXES = ["ollama/", "gemini/", "groq/", "openrouter/", "anthropic/", "mistral/", "cloudflare/", "github/", "replicate/"]
+        _PREFIXES = ["ollama/", "gemini/", "groq/", "openrouter/", "anthropic/", "mistral/", "cloudflare/", "github/"]
         for prefix in _PREFIXES:
             prefixed = f"{prefix}{canonical_id}"
             for entry in models:
@@ -507,36 +506,25 @@ class ModelRegistry:
         return self._gemini_fallback_models()
 
     def _gemini_fallback_models(self) -> List[ModelInfo]:
-        """Fallback Gemini models if API discovery fails.
-        
-        Updated April 2026 — reflects current Gemini API model availability.
-        Gemini 1.5 and 3-pro-preview are shut down. 2.0 deprecated June 2026.
-        """
+        """Fallback Gemini models if API discovery fails."""
         return [
-            # Gemini 3.1 Models (Latest Preview)
-            ModelInfo(id="gemini/gemini-3.1-pro-preview", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
-            ModelInfo(id="gemini/gemini-3.1-flash-lite-preview", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
-            # Gemini 3 Flash
-            ModelInfo(id="gemini/gemini-3-flash-preview", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
-            # Gemini 2.5 Models (Stable)
+            # Gemini 2.5 Models (Latest Stable)
             ModelInfo(id="gemini/gemini-2.5-pro", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
             ModelInfo(id="gemini/gemini-2.5-flash", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
             ModelInfo(id="gemini/gemini-2.5-flash-lite", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
-            # Nano Banana Image Models
-            ModelInfo(id="gemini/gemini-3.1-flash-image-preview", provider="gemini", capabilities=["chat", "vision", "image_gen"], roles=["assistant", "image_generator"]),
-            ModelInfo(id="gemini/gemini-3-pro-image-preview", provider="gemini", capabilities=["chat", "vision", "image_gen"], roles=["assistant", "image_generator"]),
-            ModelInfo(id="gemini/gemini-2.5-flash-image", provider="gemini", capabilities=["chat", "vision", "image_gen"], roles=["assistant", "image_generator"]),
-            # Imagen 4 (Image Generation — requires billing)
+            # Gemini 2.0 Models
+            ModelInfo(id="gemini/gemini-2.0-flash", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
+            # Gemini 1.5 Models
+            ModelInfo(id="gemini/gemini-1.5-flash", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
+            ModelInfo(id="gemini/gemini-1.5-pro", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
+            # Imagen 4 (Image Generation)
             ModelInfo(id="gemini/imagen-4.0-generate-001", provider="gemini", capabilities=["image_gen"], roles=["image_generator"], api_method="predict"),
-            ModelInfo(id="gemini/imagen-4.0-fast-generate-001", provider="gemini", capabilities=["image_gen"], roles=["image_generator"], api_method="predict"),
             ModelInfo(id="gemini/imagen-4.0-ultra-generate-001", provider="gemini", capabilities=["image_gen"], roles=["image_generator"], api_method="predict"),
-            # Veo 3 (Video Generation — requires billing)
+            # Veo 3 (Video Generation)
             ModelInfo(id="gemini/veo-3.0-generate-001", provider="gemini", capabilities=["video_gen"], roles=["video_generator"], api_method="predictLongRunning"),
             ModelInfo(id="gemini/veo-3.0-fast-generate-001", provider="gemini", capabilities=["video_gen"], roles=["video_generator"], api_method="predictLongRunning"),
-            ModelInfo(id="gemini/veo-3.1-generate-preview", provider="gemini", capabilities=["video_gen"], roles=["video_generator"], api_method="predictLongRunning"),
-            ModelInfo(id="gemini/veo-3.1-fast-generate-preview", provider="gemini", capabilities=["video_gen"], roles=["video_generator"], api_method="predictLongRunning"),
             # Embedding
-            ModelInfo(id="gemini/gemini-embedding-2-preview", provider="gemini", capabilities=["embedding"], roles=["embedder"]),
+            ModelInfo(id="gemini/text-embedding-004", provider="gemini", capabilities=["embedding"], roles=["embedder"]),
         ]
 
     async def _discover_mistral(self) -> List[ModelInfo]:
@@ -748,54 +736,6 @@ class ModelRegistry:
             ModelInfo(id="cerebras/llama-3.3-70b", provider="cerebras", capabilities=["chat"], roles=["assistant"]),
             ModelInfo(id="cerebras/qwen-3-32b", provider="cerebras", capabilities=["chat"], roles=["assistant"]),
         ]
-
-    async def _discover_replicate(self) -> List[ModelInfo]:
-        """Discover popular LLM models on Replicate."""
-        settings = self._settings
-        if not settings.replicate_api_key:
-            return []
-
-        # Replicate doesn't have a simple /models list for LLMs
-        # Use curated list of popular text generation models
-        models = [
-            ModelInfo(id="replicate/meta/meta-llama-3-70b-instruct", provider="replicate", capabilities=["chat"], roles=["assistant"]),
-            ModelInfo(id="replicate/meta/meta-llama-3-8b-instruct", provider="replicate", capabilities=["chat"], roles=["assistant"]),
-            ModelInfo(id="replicate/meta/meta-llama-3.1-405b-instruct", provider="replicate", capabilities=["chat"], roles=["assistant"]),
-            ModelInfo(id="replicate/mistralai/mistral-7b-instruct-v0.2", provider="replicate", capabilities=["chat"], roles=["assistant"]),
-            ModelInfo(id="replicate/mistralai/mixtral-8x7b-instruct-v0.1", provider="replicate", capabilities=["chat"], roles=["assistant"]),
-            ModelInfo(id="replicate/black-forest-labs/flux-schnell", provider="replicate", capabilities=["image_generation"], roles=["image_creator"]),
-            ModelInfo(id="replicate/black-forest-labs/flux-dev", provider="replicate", capabilities=["image_generation"], roles=["image_creator"]),
-            ModelInfo(id="replicate/stability-ai/sdxl", provider="replicate", capabilities=["image_generation"], roles=["image_creator"]),
-        ]
-
-        # Try to search for more models via API
-        try:
-            async with httpx.AsyncClient(timeout=10.0) as client:
-                response = await client.get(
-                    "https://api.replicate.com/v1/collections/language-models",
-                    headers={"Authorization": f"Bearer {settings.replicate_api_key}"}
-                )
-                if response.status_code == 200:
-                    data = response.json()
-                    for model in data.get("models", [])[:20]:
-                        owner = model.get("owner", "")
-                        name = model.get("name", "")
-                        if owner and name:
-                            model_id = f"replicate/{owner}/{name}"
-                            if not any(m.id == model_id for m in models):
-                                capabilities, roles, api_method = detect_capabilities(name)
-                                models.append(ModelInfo(
-                                    id=model_id,
-                                    provider="replicate",
-                                    capabilities=list(set(capabilities)),
-                                    roles=roles,
-                                    api_method=api_method
-                                ))
-        except Exception as exc:
-            logger.debug("Replicate collection discovery failed: %s", exc)
-
-        logger.info("Discovered %d Replicate models", len(models))
-        return models
 
     async def _discover_cohere(self) -> List[ModelInfo]:
         """Discover models from Cohere API (Best RAG & Embeddings)."""

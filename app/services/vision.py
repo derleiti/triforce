@@ -224,6 +224,46 @@ async def analyze(
                 request_model, prompt, image_url=image_url,
             )
 
+    # ── Replicate vision models (LLaVA, Moondream, Qwen-Omni) ──
+    if provider == "replicate":
+        from ..config import get_settings as _gs
+        _s = _gs()
+        rep_key = _s.replicate_api_key
+        if not rep_key:
+            raise api_error("Replicate API key not configured", status_code=503, code="replicate_unavailable")
+        rep_model = model_id.replace("replicate/", "", 1) if model_id.startswith("replicate/") else model_id
+        rep_input = {"prompt": prompt or "Describe this image in detail."}
+        if image_url:
+            rep_input["image"] = image_url
+        elif image_base64:
+            rep_input["image"] = f"data:{mime_type or 'image/jpeg'};base64,{image_base64}"
+        rep_input["max_tokens"] = 1024
+        import httpx as _httpx, asyncio
+        async with _httpx.AsyncClient(timeout=120.0) as client:
+            r = await client.post(
+                f"https://api.replicate.com/v1/models/{rep_model}/predictions",
+                headers={"Authorization": f"Bearer {rep_key}", "Content-Type": "application/json", "Prefer": "wait=60"},
+                json={"input": rep_input},
+            )
+            if r.status_code not in (200, 201):
+                raise api_error(f"Replicate vision error: {r.text}", status_code=r.status_code, code="replicate_error")
+            rdata = r.json()
+            if rdata.get("status") in ("starting", "processing"):
+                get_url = rdata.get("urls", {}).get("get", "")
+                for _ in range(60):
+                    await asyncio.sleep(1)
+                    pr = await client.get(get_url, headers={"Authorization": f"Bearer {rep_key}"})
+                    pd = pr.json()
+                    if pd.get("status") == "succeeded":
+                        rdata = pd
+                        break
+                    elif pd.get("status") in ("failed", "canceled"):
+                        raise api_error(f"Replicate vision {pd['status']}", status_code=500, code="replicate_error")
+            output = rdata.get("output", "")
+            if isinstance(output, list):
+                output = "".join(output)
+            return {"text": str(output), "provider": "replicate", "model": model_id}
+
     raise api_error("Selected model does not support vision analysis", status_code=400, code="unsupported_provider")
 
 

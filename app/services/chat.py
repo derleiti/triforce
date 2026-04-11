@@ -157,23 +157,32 @@ MISTRAL_MODEL_ALIASES = {
 }
 
 GEMINI_MODEL_ALIASES = {
-    # Gemini 3 Models (Preview)
-    "gemini/gemini-3-pro": "gemini-3-pro-preview",
-    "gemini-3-pro": "gemini-3-pro-preview",
-    # Gemini 2.5 Models (use simple names, no preview suffix needed)
+    # Gemini 3.1 Models (Latest)
+    "gemini/gemini-3.1-pro": "gemini-3.1-pro-preview",
+    "gemini-3.1-pro": "gemini-3.1-pro-preview",
+    "gemini/gemini-3.1-flash-lite": "gemini-3.1-flash-lite-preview",
+    "gemini-3.1-flash-lite": "gemini-3.1-flash-lite-preview",
+    # Gemini 3 Models — 3-pro-preview shut down 2026-03-09, redirect to 3.1
+    "gemini/gemini-3-pro": "gemini-3.1-pro-preview",
+    "gemini-3-pro": "gemini-3.1-pro-preview",
+    "gemini/gemini-3-pro-preview": "gemini-3.1-pro-preview",
+    "gemini-3-pro-preview": "gemini-3.1-pro-preview",
+    "gemini/gemini-3-flash": "gemini-3-flash-preview",
+    "gemini-3-flash": "gemini-3-flash-preview",
+    # Gemini 2.5 Models (Stable)
     "gemini/gemini-2.5-pro": "gemini-2.5-pro",
     "gemini/gemini-2.5-flash": "gemini-2.5-flash",
     "gemini/gemini-2.5-flash-lite": "gemini-2.5-flash-lite",
-    # Gemini 2.0 Models (use stable, not -exp)
-    "gemini/gemini-2.0-flash": "gemini-2.0-flash",
-    "gemini/gemini-2.0-flash-exp": "gemini-2.0-flash",  # Map exp to stable
-    "gemini-2.0-flash-exp": "gemini-2.0-flash",  # Map exp to stable
-    "gemini/gemini-2.0-flash-lite": "gemini-2.0-flash-lite",
-    # Gemini 1.5 Models
-    "gemini/gemini-1.5-flash": "gemini-1.5-flash",
-    "gemini/gemini-1.5-flash-8b": "gemini-1.5-flash-8b",
-    "gemini/gemini-1.5-pro": "gemini-1.5-pro",
-    # Legacy aliases (map to latest stable 2.5)
+    # Gemini 2.0 (deprecated June 2026, redirect to 2.5)
+    "gemini/gemini-2.0-flash": "gemini-2.5-flash",
+    "gemini/gemini-2.0-flash-exp": "gemini-2.5-flash",
+    "gemini-2.0-flash-exp": "gemini-2.5-flash",
+    "gemini/gemini-2.0-flash-lite": "gemini-2.5-flash-lite",
+    # Gemini 1.5 (shut down, redirect to 2.5)
+    "gemini/gemini-1.5-flash": "gemini-2.5-flash",
+    "gemini/gemini-1.5-flash-8b": "gemini-2.5-flash-lite",
+    "gemini/gemini-1.5-pro": "gemini-2.5-pro",
+    # Legacy aliases
     "gemini/gemini-pro": "gemini-2.5-flash",
     "gemini/pro": "gemini-2.5-flash",
     "gemini/gemini-pro-vision": "gemini-2.5-flash",
@@ -593,6 +602,25 @@ async def _get_initial_response(
                 raise
             if no_fallback: raise
             async for chunk in _fallback_to_ollama(messages, temperature, settings.request_timeout, "Cloudflare", exc):
+                chunks.append(chunk)
+    elif model.provider == "replicate":
+        if not settings.replicate_api_key:
+            raise api_error("Replicate support is not configured", status_code=503, code="replicate_unavailable")
+        try:
+            async for chunk in _stream_replicate(
+                request_model,
+                messages,
+                api_key=settings.replicate_api_key,
+                temperature=temperature,
+                timeout=120.0,
+            ):
+                chunks.append(chunk)
+        except Exception as exc:
+            _emsg = str(exc).lower()
+            if any(kw in _emsg for kw in ("api key", "unauthorized", "402", "insufficient")):
+                raise
+            if no_fallback: raise
+            async for chunk in _fallback_to_ollama(messages, temperature, settings.request_timeout, "Replicate", exc):
                 chunks.append(chunk)
     else:
         raise api_error("Unsupported provider", status_code=400, code="unsupported_provider")
@@ -1836,3 +1864,122 @@ async def _stream_cloudflare(
         text = result.get("response", "")
         if text:
             yield text
+
+async def _stream_replicate(
+    model: str,
+    messages: List[dict[str, str]],
+    *,
+    api_key: str,
+    temperature: Optional[float],
+    timeout: float = 120.0,
+) -> AsyncGenerator[str, None]:
+    """Stream text from Replicate via SSE (urls.stream) with sync+poll fallback."""
+    import aiohttp, asyncio
+
+    target_model = strip_provider_prefix(model)
+
+    # Convert chat messages to Replicate prompt/system_prompt format
+    system_prompt = ""
+    prompt_parts = []
+    for msg in messages:
+        role = msg.get("role", "user")
+        text = msg.get("content", "")
+        if role == "system":
+            system_prompt = text
+        elif role == "assistant":
+            prompt_parts.append(f"Assistant: {text}")
+        else:
+            prompt_parts.append(text if len(messages) <= 2 else f"User: {text}")
+    prompt = "\n".join(prompt_parts)
+
+    payload = {
+        "input": {
+            "prompt": prompt,
+            "max_tokens": 2048,
+            "temperature": temperature if temperature is not None else 0.7,
+        }
+    }
+    if system_prompt:
+        payload["input"]["system_prompt"] = system_prompt
+
+    url = f"https://api.replicate.com/v1/models/{target_model}/predictions"
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+        "Prefer": "wait=60",
+    }
+
+    async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=timeout)) as session:
+        # Create prediction
+        async with session.post(url, headers=headers, json=payload) as resp:
+            if resp.status not in (200, 201):
+                error = await resp.text()
+                raise RuntimeError(f"Replicate API error ({resp.status}): {error}")
+            data = await resp.json()
+
+        stream_url = data.get("urls", {}).get("stream")
+        status = data.get("status", "")
+
+        # ━━ Path A: SSE Streaming (preferred for LLMs) ━━
+        if stream_url and status in ("starting", "processing"):
+            try:
+                async with session.get(
+                    stream_url,
+                    headers={
+                        "Authorization": f"Bearer {api_key}",
+                        "Accept": "text/event-stream",
+                    },
+                    timeout=aiohttp.ClientTimeout(total=120, sock_read=35),
+                ) as sse_resp:
+                    event_type = ""
+                    async for raw_line in sse_resp.content:
+                        line = raw_line.decode("utf-8", errors="replace").rstrip("\n\r")
+                        if line.startswith("event: "):
+                            event_type = line[7:].strip()
+                        elif line.startswith("data: "):
+                            payload_str = line[6:]
+                            if event_type == "output":
+                                yield payload_str
+                            elif event_type == "error":
+                                raise RuntimeError(f"Replicate SSE error: {payload_str}")
+                            elif event_type == "done":
+                                return
+                        # empty line = end of event block, reset
+                        elif line == "":
+                            event_type = ""
+                return  # SSE done
+            except Exception as sse_err:
+                logger.warning("Replicate SSE failed, trying poll fallback: %s", sse_err)
+                # Fall through to poll
+
+        # ━━ Path B: Sync completed or poll fallback ━━
+        if status == "succeeded":
+            output = data.get("output", "")
+            if isinstance(output, list):
+                for token in output:
+                    yield str(token)
+            else:
+                yield str(output)
+            return
+
+        # Poll for completion
+        get_url = data.get("urls", {}).get("get", "")
+        if get_url:
+            for _ in range(60):
+                await asyncio.sleep(1)
+                async with session.get(get_url, headers={"Authorization": f"Bearer {api_key}"}) as poll:
+                    poll_data = await poll.json()
+                    ps = poll_data.get("status")
+                    if ps == "succeeded":
+                        output = poll_data.get("output", "")
+                        if isinstance(output, list):
+                            for token in output:
+                                yield str(token)
+                        else:
+                            yield str(output)
+                        return
+                    elif ps == "failed":
+                        raise RuntimeError(f"Replicate failed: {poll_data.get('error')}")
+                    elif ps == "canceled":
+                        raise RuntimeError("Replicate prediction canceled")
+        raise RuntimeError("Replicate prediction timed out")

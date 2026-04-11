@@ -22,21 +22,22 @@ set limit_rate        100m
 # ============================================================================
 
 # --- Main Archive (amd64) ---
-deb-amd64 http://archive.ubuntu.com/ubuntu noble main restricted universe multiverse
-deb-amd64 http://archive.ubuntu.com/ubuntu noble-updates main restricted universe multiverse
-
-# --- Security Updates ---
-deb-amd64 http://security.ubuntu.com/ubuntu noble-security main restricted universe multiverse
+deb-amd64 http://archive.ubuntu.com/ubuntu resolute main restricted universe multiverse
+deb-amd64 http://archive.ubuntu.com/ubuntu resolute-updates main restricted universe multiverse
+deb-amd64 http://security.ubuntu.com/ubuntu resolute-security main restricted universe multiverse
+deb-arm64 http://archive.ubuntu.com/ubuntu resolute main restricted universe multiverse
+deb-arm64 http://archive.ubuntu.com/ubuntu resolute-updates main restricted universe multiverse
+deb-arm64 http://security.ubuntu.com/ubuntu resolute-security main restricted universe multiverse
 
 # --- i386 Support (for Wine, Steam, 32-bit compatibility) ---
-deb-i386 http://archive.ubuntu.com/ubuntu noble main restricted universe multiverse
-deb-i386 http://archive.ubuntu.com/ubuntu noble-updates main restricted universe multiverse
-deb-i386 http://security.ubuntu.com/ubuntu noble-security main restricted universe multiverse
+deb-i386 http://archive.ubuntu.com/ubuntu resolute main restricted universe multiverse
+deb-i386 http://archive.ubuntu.com/ubuntu resolute-updates main restricted universe multiverse
+deb-i386 http://security.ubuntu.com/ubuntu resolute-security main restricted universe multiverse
 
 # ============================================================================
 # KDE Neon (User Edition)
 # ============================================================================
-deb-amd64 http://archive.neon.kde.org/user noble main
+# deb-amd64 http://archive.neon.kde.org/user noble main
 
 # ============================================================================
 # Google Chrome
@@ -46,13 +47,13 @@ deb-amd64 http://dl.google.com/linux/chrome/deb/ stable main
 # ============================================================================
 # WineHQ (amd64 + i386 for 32-bit Windows apps)
 # ============================================================================
-deb-amd64 https://dl.winehq.org/wine-builds/ubuntu/ noble main
-deb-i386 https://dl.winehq.org/wine-builds/ubuntu/ noble main
+deb-amd64 https://dl.winehq.org/wine-builds/ubuntu/ resolute main
+deb-i386 http://dl.winehq.org/wine-builds/ubuntu/ resolute main
 
 # ============================================================================
 # Docker CE (Official)
 # ============================================================================
-deb-amd64 https://download.docker.com/linux/ubuntu noble stable
+deb-amd64 http://download.docker.com/linux/ubuntu noble stable
 
 # ============================================================================
 # Steam (amd64 + i386 for gaming)
@@ -63,7 +64,7 @@ deb-i386 http://repo.steampowered.com/steam/ stable steam
 # ============================================================================
 # Node.js 22.x LTS (Jod)
 # ============================================================================
-deb-amd64 https://deb.nodesource.com/node_22.x nodistro main
+deb-amd64 http://deb.nodesource.com/node_22.x nodistro main
 
 # ============================================================================
 # LibreOffice Fresh PPA
@@ -78,7 +79,7 @@ deb-amd64 http://ppa.launchpadcontent.net/cappelikan/ppa/ubuntu noble main
 # ============================================================================
 # DEV: Visual Studio Code (Microsoft Official)
 # ============================================================================
-deb-amd64 https://packages.microsoft.com/repos/code stable main
+deb-amd64 http://packages.microsoft.com/repos/code stable main
 
 # ============================================================================
 # GAMING: Lutris PPA (DISABLED - no noble support as of Dec 2025)
@@ -93,7 +94,7 @@ deb-amd64 http://ppa.launchpadcontent.net/graphics-drivers/ppa/ubuntu noble main
 # ============================================================================
 # AI/ML: NVIDIA CUDA Toolkit
 # ============================================================================
-deb-amd64 https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/ /
+# deb-amd64 https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/ /
 
 # ============================================================================
 # AI/ML: NVIDIA Container Toolkit (Docker GPU Support)
@@ -119,7 +120,7 @@ clean https://deb.nodesource.com/node_22.x
 clean http://ppa.launchpadcontent.net/libreoffice/ppa/ubuntu
 clean http://ppa.launchpadcontent.net/cappelikan/ppa/ubuntu
 clean https://packages.microsoft.com/repos/code
-# clean http://ppa.launchpadcontent.net/lutris-team/lutris/ubuntu
+clean http://ppa.launchpadcontent.net/lutris-team/lutris/ubuntu
 clean http://ppa.launchpadcontent.net/graphics-drivers/ppa/ubuntu
 clean https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/
 clean https://nvidia.github.io/libnvidia-container/stable/deb/amd64

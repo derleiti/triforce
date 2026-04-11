@@ -233,8 +233,7 @@ async def create_event(
                 logger.debug(f"DEDUP: {fp} seen {count}x -> suppressed (already promoted)")
                 return None
         else:
-            if count <= 10 or count % 50 == 0:
-                logger.debug(f"DEDUP: skipped {fp} (seen {count}x)")
+            logger.debug(f"DEDUP: skipped {fp} (seen {count}x)")
             return None
     entry = {
         "id": str(uuid.uuid4())[:8], "title": title, "body": body,
@@ -1065,36 +1064,6 @@ _poller_status: Dict[str, str] = {}
 
 
 def start_pollers():
-    """Start pollers with Redis lock — only one uvicorn worker runs them."""
-    global _poller_tasks
-    asyncio.create_task(_start_pollers_with_lock())
-
-
-async def _start_pollers_with_lock():
-    """Acquire Redis lock before starting poller tasks."""
-    global _poller_tasks
-    r = await _get_redis()
-    if r is None:
-        logger.warning("Pollers: Redis unavailable, starting without lock (risk of duplicates)")
-        _launch_pollers()
-        return
-    # Try to acquire lock — only one worker wins
-    locked = await r.set("notify:poller_lock", "1", nx=True, ex=120)
-    if not locked:
-        logger.info("Pollers: another worker holds the lock, skipping")
-        return
-    logger.info("Pollers: acquired lock, starting as leader")
-    _launch_pollers()
-    # Refresh lock periodically so it doesn't expire while pollers run
-    while True:
-        await asyncio.sleep(60)
-        try:
-            await r.set("notify:poller_lock", "1", ex=120)
-        except Exception:
-            break
-
-
-def _launch_pollers():
     global _poller_tasks
     for name, coro in [("mail",_poll_mail),("forum",_poll_forum),("wordpress",_poll_wordpress)]:
         task = asyncio.create_task(coro())
