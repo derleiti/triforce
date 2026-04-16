@@ -12,6 +12,7 @@ import ssl
 from typing import Dict, Any, Optional
 
 import websockets
+from websockets.exceptions import ConnectionClosed
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("hub.connector")
@@ -71,9 +72,13 @@ class HubConnector:
             }))
             
             # Handle messages
-            async for msg in ws:
-                data = json.loads(msg)
-                await self._handle_message(data)
+            try:
+                async for msg in ws:
+                    data = json.loads(msg)
+                    await self._handle_message(data)
+            except ConnectionClosed as e:
+                # Normal during keepalive timeout or peer shutdown — fall through to reconnect loop
+                logger.info(f"Remote hub closed connection: code={e.code} reason={e.reason or 'no reason'}")
     
     async def _handle_message(self, data: Dict[str, Any]):
         """Handle message from remote hub"""

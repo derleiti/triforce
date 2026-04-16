@@ -93,7 +93,7 @@ print('patched')
 
 ERRORS=0
 deploy_token "zombie@10.10.0.2"     "zombie-pc" "$ZOMBIE_TOKEN" "/home/zombie/triforce/config/triforce.env" || ERRORS=$((ERRORS+1))
-deploy_token "backupuser@10.10.0.3" "backup"    "$BACKUP_TOKEN" "/home/backupuser/triforce/config/triforce.env" || ERRORS=$((ERRORS+1))
+deploy_token "zombie@10.10.0.3" "backup"    "$BACKUP_TOKEN" "/home/zombie/triforce/config/triforce.env" || ERRORS=$((ERRORS+1))
 
 # Hetzner braucht KEINEN Neustart — Vault lädt dynamisch bei verify_token()
 log "Vault bereits aktuell — kein Hetzner-Restart nötig"
