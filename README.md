@@ -489,12 +489,19 @@ triforce/
 
 ## License
 
-MIT — see [LICENSE](LICENSE)
+**TriForce is licensed under the GNU Affero General Public License v3.0 (AGPL-3.0).**
 
----
+This means:
+- You are free to use, modify, and distribute this code.
+- If you run a modified version as a network service (e.g. as a SaaS platform),
+  you are required to make the full source code of your modified version
+  available to your users under the same AGPL-3.0 license.
+- This protects the project from proprietary forks being offered as competing
+  hosted services without contributing changes back to the community.
 
-<div align="center">
+Previous releases prior to this license change were distributed under MIT.
+The change applies to all current and future commits.
 
-**Built by [AILinux](https://ailinux.me) · [GitHub](https://github.com/derleiti/triforce) · [API Docs](https://api.ailinux.me/docs)**
+Copyright (c) 2026 Markus Leitermann / AILinuX <support@ailinux.me>
+See [LICENSE](./LICENSE) for the full text.
 
-</div>
