@@ -283,7 +283,7 @@ async def token_endpoint(request: Request):
 # Token Management (Admin)
 # ============================================================================
 
-@router.post("/auth/create-token")
+@router.post("/auth/create-token", operation_id="create_token_oauth_service")
 async def create_long_lived_token(request: Request):
     """Create a long-lived API token (requires valid auth)."""
     auth = request.headers.get("Authorization", "")

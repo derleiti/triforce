@@ -270,7 +270,7 @@ async def auto_authorize(request: Request):
 # NOTE: /token endpoint is now handled by oauth_service.py
 # Token endpoints are kept for backward compatibility but use central mcp_auth module
 
-@router.post("/auth/create-token", tags=["Auth"], summary="Create a long-lived token for Claude Web")
+@router.post("/auth/create-token", tags=["Auth"], summary="Create a long-lived token for Claude Web", operation_id="create_token_mcp_remote")
 async def create_persistent_token(request: Request):
     """
     Create a long-lived Bearer token for Claude Web integration.
