@@ -219,3 +219,9 @@ config/agents/**/.local/
 config/agents/**/*.backup
 config/agents/**/node_modules/
 config/agents/**/__pycache__/
+*_bak
+*_bak.*
+*.py_*_bak
+*.py.bak_*
+*.bak[0-9]
+*_20260*_bak

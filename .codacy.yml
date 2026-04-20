@@ -11,6 +11,8 @@ exclude_paths:
   # Agent / config dirs ohne ESLint-Setup
   - "agent/**"
   - "config/**"
+  # Agent launcher symlinks (point to /root/.npm-global/ — broken on CI)
+  - "bin/**"
   # Webui (vanilla JS, kein eslintrc)
   - "webui/**"
   # Docker vendor & WP-spezifische Dirs
