@@ -1290,7 +1290,16 @@ class ModelRegistry:
 
         if settings.anthropic_api_key:
             hosted.extend([
-                # Claude 4 Series (Latest)
+                # Claude 4.7 Series (Latest 2026)
+                ModelInfo(id="anthropic/claude-opus-4-7", provider="anthropic", capabilities=["chat", "vision", "code", "reasoning"], roles=["assistant", "vision_analyst", "code_assistant", "reasoning_engine"]),
+                # Claude 4.6 Series
+                ModelInfo(id="anthropic/claude-opus-4-6", provider="anthropic", capabilities=["chat", "vision", "code", "reasoning"], roles=["assistant", "vision_analyst", "code_assistant", "reasoning_engine"]),
+                ModelInfo(id="anthropic/claude-sonnet-4-6", provider="anthropic", capabilities=["chat", "vision", "code"], roles=["assistant", "vision_analyst", "code_assistant"]),
+                # Claude 4.5 Series
+                ModelInfo(id="anthropic/claude-opus-4-5", provider="anthropic", capabilities=["chat", "vision", "code", "reasoning"], roles=["assistant", "vision_analyst", "code_assistant", "reasoning_engine"]),
+                ModelInfo(id="anthropic/claude-sonnet-4-5", provider="anthropic", capabilities=["chat", "vision", "code"], roles=["assistant", "vision_analyst", "code_assistant"]),
+                ModelInfo(id="anthropic/claude-haiku-4-5", provider="anthropic", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
+                # Claude 4 Series (previous)
                 ModelInfo(id="anthropic/claude-sonnet-4", provider="anthropic", capabilities=["chat", "vision", "code"], roles=["assistant", "vision_analyst", "code_assistant"]),
                 ModelInfo(id="anthropic/claude-opus-4", provider="anthropic", capabilities=["chat", "vision", "code", "reasoning"], roles=["assistant", "vision_analyst", "code_assistant", "reasoning_engine"]),
                 # Claude 3.5 Series

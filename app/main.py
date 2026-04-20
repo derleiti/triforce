@@ -39,6 +39,7 @@ from .routes.perf_monitor import router as perf_monitor_router, perf_middleware
 from .routes.distributed_compute import router as distributed_compute_router
 from .routes.tristar_gui import router as tristar_gui_router
 from .routes.client_chat import router as client_chat_router
+from .routes.nova_frontend import router as nova_frontend_router, public_router as nova_frontend_public_router
 from .routes.client_auth import router as client_auth_router
 from .routes.client_update import router as client_update_router
 from .routes.client_logs import router as client_logs_router
@@ -582,6 +583,8 @@ def create_app() -> FastAPI:
     app.include_router(admin_crawler_router, prefix="/v1", tags=["Admin Crawler"])
     app.include_router(agents_router, prefix="/v1", tags=["Agents"])
     app.include_router(chat_router, prefix="/v1", tags=["Chat"])
+    app.include_router(nova_frontend_router, prefix="/v1", tags=["Nova Frontend"])
+    app.include_router(nova_frontend_public_router, prefix="/v1", tags=["Nova Frontend Public"])
     app.include_router(crawler_router, prefix="/v1", tags=["Crawler"])
     app.include_router(health_router, tags=["Monitoring"])
     app.include_router(mcp_public_router, prefix="/v1", tags=["MCP"])

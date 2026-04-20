@@ -198,7 +198,22 @@ OLLAMA_MODEL_ALIASES = {
 }
 
 ANTHROPIC_MODEL_ALIASES = {
-    # Claude 4 Series (Latest - use model IDs from Anthropic API)
+    # Claude 4.7 Series (Latest 2026 - verified via live API test 2026-04-20)
+    "anthropic/claude-opus-4-7": "claude-opus-4-7",
+    "claude-opus-4-7": "claude-opus-4-7",
+    # Claude 4.6 Series (verified via live API test 2026-04-20)
+    "anthropic/claude-opus-4-6": "claude-opus-4-6",
+    "anthropic/claude-sonnet-4-6": "claude-sonnet-4-6",
+    "claude-opus-4-6": "claude-opus-4-6",
+    "claude-sonnet-4-6": "claude-sonnet-4-6",
+    # Claude 4.5 Series (haiku-4-6 does not exist, haiku-4-5 is latest)
+    "anthropic/claude-opus-4-5": "claude-opus-4-5-20251101",
+    "anthropic/claude-sonnet-4-5": "claude-sonnet-4-5-20250929",
+    "anthropic/claude-haiku-4-5": "claude-haiku-4-5-20251001",
+    "claude-opus-4-5": "claude-opus-4-5-20251101",
+    "claude-sonnet-4-5": "claude-sonnet-4-5-20250929",
+    "claude-haiku-4-5": "claude-haiku-4-5-20251001",
+    # Claude 4 Series
     "anthropic/claude-sonnet-4": "claude-sonnet-4-20250514",
     "anthropic/claude-opus-4": "claude-opus-4-20250514",
     "claude-sonnet-4": "claude-sonnet-4-20250514",
