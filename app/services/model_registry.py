@@ -457,14 +457,29 @@ class ModelRegistry:
             return []
 
         models: List[ModelInfo] = []
+        # Google AI Studio models.list: pageSize default=50, max=1000.
+        # Loop with nextPageToken to get ALL models (spec: ai.google.dev/api/models).
+        all_api_models: List[dict] = []
         try:
             async with httpx.AsyncClient(timeout=10.0) as client:
-                response = await client.get(
-                    "https://generativelanguage.googleapis.com/v1beta/models",
-                    params={"key": settings.gemini_api_key}
-                )
-                response.raise_for_status()
-                data = response.json()
+                page_token: Optional[str] = None
+                for _page in range(10):  # safety cap: 10 pages * 1000 = 10000 models
+                    params: Dict[str, object] = {
+                        "key": settings.gemini_api_key,
+                        "pageSize": 1000,
+                    }
+                    if page_token:
+                        params["pageToken"] = page_token
+                    response = await client.get(
+                        "https://generativelanguage.googleapis.com/v1beta/models",
+                        params=params,
+                    )
+                    response.raise_for_status()
+                    data = response.json()
+                    all_api_models.extend(data.get("models", []))
+                    page_token = data.get("nextPageToken") or None
+                    if not page_token:
+                        break
         except httpx.RequestError as exc:
             logger.warning("Failed to discover Gemini models: %s", exc)
             return self._gemini_fallback_models()
@@ -472,7 +487,7 @@ class ModelRegistry:
             logger.warning("Gemini API returned HTTP %s: %s", exc.response.status_code, exc)
             return self._gemini_fallback_models()
 
-        for model in data.get("models", []):
+        for model in all_api_models:
             name = model.get("name", "")
             # Extract model ID from full path (e.g., "models/gemini-2.0-flash" -> "gemini-2.0-flash")
             if name.startswith("models/"):
