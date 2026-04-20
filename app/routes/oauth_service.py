@@ -309,7 +309,7 @@ async def create_long_lived_token(request: Request):
     return {"access_token": token, "token_type": "bearer", "name": name, "expires_days": expires_days}
 
 
-@router.get("/auth/tokens")
+@router.get("/auth/tokens", operation_id="list_tokens_oauth_service")
 async def list_tokens(request: Request):
     """List active tokens (requires valid auth)."""
     auth = request.headers.get("Authorization", "")

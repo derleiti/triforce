@@ -309,7 +309,7 @@ async def create_persistent_token(request: Request):
     }
 
 
-@router.get("/auth/tokens", tags=["Auth"], summary="List active tokens")
+@router.get("/auth/tokens", tags=["Auth"], summary="List active tokens", operation_id="list_tokens_mcp_remote")
 async def list_tokens(request: Request):
     """List all active persistent tokens (requires auth)."""
     await require_mcp_auth(request)
