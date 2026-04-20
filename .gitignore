@@ -225,3 +225,6 @@ config/agents/**/__pycache__/
 *.py.bak_*
 *.bak[0-9]
 *_20260*_bak
+
+# Debug journals — contain credentials & sensitive state dumps
+.debug/
