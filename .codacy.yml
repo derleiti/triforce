@@ -18,6 +18,13 @@ exclude_paths:
   # Docker vendor & WP-spezifische Dirs
   - "docker/repository/**"
   - "docker/wordpress/html/wp-content/plugins/**/vendor/**"
+  # WordPress plugin vendored deps (often contain non-UTF-8 charset tables, binaries)
+  - "docker/wordpress/html/wp-content/plugins/**/vendor-prefixed/**"
+  - "docker/wordpress/html/wp-content/plugins/**/vendor_prefixed/**"
+  - "docker/wordpress/html/wp-content/plugins/**/lib/vendor/**"
+  - "docker/wordpress/html/wp-content/plugins/**/3rd-party/**"
+  - "docker/wordpress/html/wp-content/plugins/**/languages/**"
+  - "docker/wordpress/html/wp-content/themes/**/vendor-prefixed/**"
   - "docker/wordpress/html/wp-content/themes/**/vendor/**"
   - "docker/wordpress/html/wp-content/plugins/nova-ai-frontend/admin/**"
   - "docker/wordpress/html/wp-content/plugins/nova-ai-frontend/assets/**"
