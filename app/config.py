@@ -1,11 +1,10 @@
 # TriForce Backend Version
-VERSION = "2.86"
+VERSION = "2.81"
 
 from functools import lru_cache
 from typing import Dict, List, Optional
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import AnyHttpUrl, Field
-from pydantic import AliasChoices
 
 DEFAULT_ALLOWED_ORIGINS = [
     "http://localhost",
@@ -47,7 +46,7 @@ class Settings(BaseSettings):
     ollama_base: AnyHttpUrl = Field(default="http://localhost:11434", validation_alias="OLLAMA_BASE")
     ollama_bearer_token: Optional[str] = Field(default=None, validation_alias="OLLAMA_BEARER_TOKEN")
     ollama_bearer_auth_enabled: bool = Field(default=True, validation_alias="OLLAMA_BEARER_AUTH_ENABLED")
-    ollama_fallback_model: str = Field(default="qwen3:8b", validation_alias="OLLAMA_FALLBACK_MODEL")
+    ollama_fallback_model: str = Field(default="gpt-oss:20b-cloud", validation_alias="OLLAMA_FALLBACK_MODEL")
     stable_diffusion_url: AnyHttpUrl = Field(default="http://localhost:7860", validation_alias="STABLE_DIFFUSION_URL")
     comfyui_url: Optional[AnyHttpUrl] = Field(default=None, validation_alias="COMFYUI_URL")
     stable_diffusion_backend: str = Field(default="automatic1111", validation_alias="STABLE_DIFFUSION_BACKEND")
@@ -66,28 +65,13 @@ class Settings(BaseSettings):
     mcp_oauth_user: Optional[str] = Field(default=None, validation_alias="MCP_OAUTH_USER")
     mcp_oauth_pass: Optional[str] = Field(default=None, validation_alias="MCP_OAUTH_PASS")
 
-    # MCP Mesh WebSocket
-    mcp_ws_host: str = Field(default="::", validation_alias="MCP_WS_HOST")
-    mcp_ws_port: int = Field(default=58642, validation_alias="MCP_WS_PORT")
-    mcp_ws_public_host: Optional[str] = Field(default=None, validation_alias="MCP_WS_PUBLIC_HOST")
-    mcp_ws_public_port: int = Field(default=58642, validation_alias="MCP_WS_PUBLIC_PORT")
-    mcp_ws_enable_ipv6: bool = Field(default=True, validation_alias="MCP_WS_ENABLE_IPV6")
-    mcp_endpoint: Optional[str] = Field(default=None, validation_alias="MCP_ENDPOINT")
-    federation_nodes_file: str = Field(default="config/federation_nodes.json", validation_alias="FEDERATION_NODES_FILE")
-
     # GPT-OSS
     gpt_oss_api_key: str | None = Field(default=None, validation_alias="GPT_OSS_API_KEY")
     gpt_oss_base_url: AnyHttpUrl | None = Field(default=None, validation_alias="GPT_OSS_BASE_URL")
 
     # Gemini
-    gemini_api_key: str | None = Field(
-        default=None,
-        validation_alias=AliasChoices("GOOGLE_AI_STUDIO_KEY","GEMINI_API_KEY","GOOGLE_GEMINI_KEY")
-    )
-    google_url: Optional[str] = Field(default=None, validation_alias="GOOGLE_URL")
-    google_user: Optional[str] = Field(default=None, validation_alias="GOOGLE_USER")
-    google_pass: Optional[str] = Field(default=None, validation_alias="GOOGLE_PASS")
-    gemini_agent_id: Optional[str] = Field(default=None, validation_alias="GEMINI_AGENT_ID")
+    gemini_api_key: str | None = Field(default=None, validation_alias="GEMINI_API_KEY")
+
     # Mistral
     mistral_api_key: str | None = Field(default=None, validation_alias="MISTRAL_API_KEY")
     mistral_organisation_id: str | None = Field(default=None, validation_alias="MISTRAL_ORG_ID")
@@ -97,10 +81,6 @@ class Settings(BaseSettings):
     anthropic_api_key: str | None = Field(default=None, validation_alias="ANTHROPIC_API_KEY")
     anthropic_timeout_ms: int = Field(default=120000, validation_alias="ANTHROPIC_TIMEOUT_MS")
     anthropic_max_tokens: int = Field(default=8192, validation_alias="ANTHROPIC_MAX_TOKENS")
-    claude_url: Optional[str] = Field(default=None, validation_alias=AliasChoices("CLAUDE_URL", "NOVA_CLAUDE_URL"))
-    claude_user: Optional[str] = Field(default=None, validation_alias=AliasChoices("CLAUDE_USER", "NOVA_CLAUDE_USER"))
-    claude_pass: Optional[str] = Field(default=None, validation_alias=AliasChoices("CLAUDE_PASS", "NOVA_CLAUDE_PASS"))
-    claude_agent_id: Optional[str] = Field(default=None, validation_alias=AliasChoices("CLAUDE_AGENT_ID", "NOVA_CLAUDE_AGENT_ID"))
 
     # Hugging Face Inference API (v2.80)
     huggingface_api_key: str | None = Field(
@@ -108,7 +88,7 @@ class Settings(BaseSettings):
         validation_alias="HUGGINGFACE_API_KEY"
     )
     huggingface_inference_url: str = Field(
-        default="https://router.huggingface.co",
+        default="https://router.huggingface.co/hf-inference",
         validation_alias="HUGGINGFACE_INFERENCE_URL"
     )
     huggingface_timeout: int = Field(
@@ -128,7 +108,6 @@ class Settings(BaseSettings):
 
     # Cerebras (1M tokens/day FREE - 20x faster than GPU)
     cerebras_api_key: str | None = Field(default=None, validation_alias="CEREBRAS_API_KEY")
-    replicate_api_key: str | None = Field(default=None, validation_alias="REPLICATE_API_KEY")
     cerebras_base_url: str = Field(default="https://api.cerebras.ai/v1", validation_alias="CEREBRAS_BASE_URL")
     cerebras_default_model: str = Field(default="llama3.1-70b", validation_alias="CEREBRAS_DEFAULT_MODEL")
     cerebras_timeout_ms: int = Field(default=30000, validation_alias="CEREBRAS_TIMEOUT_MS")
@@ -164,7 +143,6 @@ class Settings(BaseSettings):
 
     # GitHub Models (Free with PAT - GPT-4o, Llama, DeepSeek, etc.)
     github_token: str | None = Field(default=None, validation_alias="GITHUB_TOKEN")
-    github_models_token: str | None = Field(default=None, validation_alias="GITHUB_MODELS_TOKEN")
     github_models_base_url: str = Field(default="https://models.github.ai/inference", validation_alias="GITHUB_MODELS_BASE_URL")
     github_models_timeout_ms: int = Field(default=60000, validation_alias="GITHUB_MODELS_TIMEOUT_MS")
 
@@ -174,35 +152,6 @@ class Settings(BaseSettings):
 
     # OpenAI compatibility
     openai_model_aliases: Dict[str, str] = Field(default_factory=dict, validation_alias="OPENAI_MODEL_ALIASES")
-    chatgpt_url: Optional[str] = Field(default=None, validation_alias="CHATGPT_URL")
-    chatgpt_user: Optional[str] = Field(default=None, validation_alias="CHATGPT_USER")
-    chatgpt_pass: Optional[str] = Field(default=None, validation_alias="CHATGPT_PASS")
-    nova_chatgpt_url: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_CHATGPT_URL", "CHATGPT_URL"))
-    nova_chatgpt_user: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_CHATGPT_USER", "CHATGPT_USER"))
-    nova_chatgpt_pass: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_CHATGPT_PASS", "CHATGPT_PASS"))
-    nova_chatgpt_agent_id: Optional[str] = Field(default=None, validation_alias="NOVA_CHATGPT_AGENT_ID")
-    nova_google_url: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_GOOGLE_URL", "GOOGLE_URL"))
-    nova_google_user: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_GOOGLE_USER", "GOOGLE_USER"))
-    nova_google_pass: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_GOOGLE_PASS", "GOOGLE_PASS"))
-    nova_gemini_agent_id: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_GEMINI_AGENT_ID", "GEMINI_AGENT_ID"))
-    nova_claude_url: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_CLAUDE_URL", "CLAUDE_URL"))
-    nova_claude_user: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_CLAUDE_USER", "CLAUDE_USER"))
-    nova_claude_pass: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_CLAUDE_PASS", "CLAUDE_PASS"))
-    nova_claude_agent_id: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_CLAUDE_AGENT_ID", "CLAUDE_AGENT_ID"))
-    nova_mistral_url: Optional[str] = Field(default=None, validation_alias="NOVA_MISTRAL_URL")
-    nova_mistral_user: Optional[str] = Field(default=None, validation_alias="NOVA_MISTRAL_USER")
-    nova_mistral_pass: Optional[str] = Field(default=None, validation_alias="NOVA_MISTRAL_PASS")
-    nova_mistral_agent_id: Optional[str] = Field(default=None, validation_alias="NOVA_MISTRAL_AGENT_ID")
-
-    # n8n (WordPress automation bridge)
-    enable_n8n: bool = Field(default=False, validation_alias="ENABLE_N8N")
-    n8n_api_key: str | None = Field(default=None, validation_alias="N8N_API_KEY")
-    n8n_webhook_url: AnyHttpUrl | None = Field(default=None, validation_alias="N8N_WEBHOOK_URL")
-    n8n_host: str | None = Field(default=None, validation_alias="N8N_HOST")
-    n8n_port: int | None = Field(default=None, validation_alias="N8N_PORT")
-    n8n_protocol: str = Field(default="https", validation_alias="N8N_PROTOCOL")
-    n8n_basic_auth_user: str | None = Field(default=None, validation_alias="N8N_BASIC_AUTH_USER")
-    n8n_basic_auth_password: str | None = Field(default=None, validation_alias="N8N_BASIC_AUTH_PASSWORD")
 
     # WordPress / bbPress
     wordpress_url: AnyHttpUrl | None = Field(default=None, validation_alias="WORDPRESS_URL")
@@ -233,76 +182,14 @@ class Settings(BaseSettings):
     # Mail / Notification (optional)
     mail_from_name: Optional[str] = Field(default=None, validation_alias="MAIL_FROM_NAME")
     mail_from_addr: Optional[str] = Field(default=None, validation_alias="MAIL_FROM_ADDR")
-    mail_smtp_host: Optional[str] = Field(default="127.0.0.1", validation_alias="MAIL_SMTP_HOST")  # FIX S15-1: was None
+    mail_smtp_host: Optional[str] = Field(default=None, validation_alias="MAIL_SMTP_HOST")
     mail_smtp_port: Optional[int] = Field(default=None, validation_alias="MAIL_SMTP_PORT")
     mail_smtp_user: Optional[str] = Field(default=None, validation_alias="MAIL_SMTP_USER")
     mail_smtp_pass: Optional[str] = Field(default=None, validation_alias="MAIL_SMTP_PASS")
     mail_smtp_starttls: Optional[bool] = Field(default=None, validation_alias="MAIL_SMTP_STARTTLS")
     mail_recipient_allowlist: Optional[str] = Field(default=None, validation_alias="MAIL_RECIPIENT_ALLOWLIST")
     mail_rate_per_min: Optional[int] = Field(default=None, validation_alias="MAIL_RATE_PER_MIN")
-    # IMAP — Nova inbox read access
-    mail_imap_host: Optional[str] = Field(default="127.0.0.1", validation_alias="MAIL_IMAP_HOST")  # FIX S15-1: was None
-    mail_imap_port: Optional[int] = Field(default=993, validation_alias="MAIL_IMAP_PORT")
-    mail_imap_user: Optional[str] = Field(default=None, validation_alias="MAIL_IMAP_USER")
-    mail_imap_pass: Optional[str] = Field(default=None, validation_alias="MAIL_IMAP_PASS")
-    mail_imap_ssl: Optional[bool] = Field(default=True, validation_alias="MAIL_IMAP_SSL")
-    mail_imap_folder: Optional[str] = Field(default="INBOX", validation_alias="MAIL_IMAP_FOLDER")
-    # WordPress Application Password (Nova admin API access)
-    wordpress_app_user: Optional[str] = Field(default=None, validation_alias="WORDPRESS_APP_USER")
-    wordpress_app_password: Optional[str] = Field(default=None, validation_alias="WORDPRESS_APP_PASSWORD")
 
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
-
-
-def validate_settings_on_startup() -> list[str]:
-    """Validate critical settings on startup. Returns list of warnings.
-
-    Called once during app init to catch misconfigurations early.
-    Does not raise — returns human-readable warning strings so the
-    application can still start in degraded mode.
-    """
-    warnings: list[str] = []
-    s = get_settings()
-
-    # At least one LLM provider should be configured
-    providers_configured = any([
-        s.gemini_api_key,
-        s.anthropic_api_key,
-        s.mistral_api_key,
-        s.groq_api_key,
-        s.cerebras_api_key,
-        s.cohere_api_key,
-        s.openrouter_api_key,
-        s.together_api_key,
-        s.fireworks_api_key,
-        s.cloudflare_api_token,
-        s.github_models_token or s.github_token,
-        s.gpt_oss_api_key,
-        s.huggingface_api_key,
-    ])
-    if not providers_configured:
-        warnings.append(
-            "ENV_WARN: No LLM provider API keys configured. "
-            "Set at least one of: GEMINI_API_KEY, ANTHROPIC_API_KEY, "
-            "OPENROUTER_API_KEY, GROQ_API_KEY, etc."
-        )
-
-    # Ollama base URL should be reachable format
-    ollama_str = str(s.ollama_base)
-    if not ollama_str.startswith(("http://", "https://")):
-        warnings.append(f"ENV_WARN: OLLAMA_BASE has unexpected format: {ollama_str}")
-
-    # TriStar GUI password should not be default
-    if s.tristar_gui_password == "changeme":
-        warnings.append(
-            "ENV_WARN: TRISTAR_GUI_PASSWORD is set to 'changeme'. "
-            "Please set a strong password in .env"
-        )
-
-    # Redis URL format check
-    if not s.redis_url.startswith(("redis://", "rediss://")):
-        warnings.append(f"ENV_WARN: REDIS_URL has unexpected format: {s.redis_url}")
-
-    return warnings

@@ -11,7 +11,6 @@ Features:
 """
 
 import asyncio
-import errno
 import json
 import logging
 import os
@@ -26,172 +25,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 import aiohttp
 
-from app.config import get_settings
-
 logger = logging.getLogger("ailinux.tristar.agent_controller")
-
-
-def _is_process_gone_error(exc: BaseException) -> bool:
-    """Treat already-dead subprocesses as an idempotent stop condition."""
-    return isinstance(exc, ProcessLookupError) or (
-        isinstance(exc, OSError) and exc.errno == errno.ESRCH
-    )
-
-
-def _inject_chatgpt_env(env: Dict[str, str]) -> Dict[str, str]:
-    """Expose CHATGPT_* credentials to agent subprocesses."""
-    settings = get_settings()
-    chatgpt_env = {
-        "CHATGPT_URL": os.getenv("CHATGPT_URL") or settings.chatgpt_url,
-        "CHATGPT_USER": os.getenv("CHATGPT_USER") or settings.chatgpt_user,
-        "CHATGPT_PASS": os.getenv("CHATGPT_PASS") or settings.chatgpt_pass,
-    }
-    for key, value in chatgpt_env.items():
-        if value:
-            env[key] = value
-    return env
-
-
-def _inject_google_env(env: Dict[str, str]) -> Dict[str, str]:
-    """Expose Google/Gemini credentials to agent subprocesses."""
-    settings = get_settings()
-    google_env = {
-        "GOOGLE_URL": os.getenv("GOOGLE_URL") or settings.google_url,
-        "GOOGLE_USER": os.getenv("GOOGLE_USER") or settings.google_user,
-        "GOOGLE_PASS": os.getenv("GOOGLE_PASS") or settings.google_pass,
-        "GEMINI_AGENT_ID": os.getenv("GEMINI_AGENT_ID") or settings.gemini_agent_id,
-        "GOOGLE_AI_STUDIO_KEY": os.getenv("GOOGLE_AI_STUDIO_KEY") or settings.gemini_api_key,
-        "GEMINI_API_KEY": os.getenv("GEMINI_API_KEY") or settings.gemini_api_key,
-    }
-    for key, value in google_env.items():
-        if value:
-            env[key] = value
-    return env
-
-
-def _inject_claude_env(env: Dict[str, str]) -> Dict[str, str]:
-    """Expose Claude account credentials to agent subprocesses."""
-    settings = get_settings()
-    claude_env = {
-        "CLAUDE_URL": os.getenv("CLAUDE_URL") or settings.claude_url or settings.nova_claude_url,
-        "CLAUDE_USER": os.getenv("CLAUDE_USER") or settings.claude_user or settings.nova_claude_user,
-        "CLAUDE_PASS": os.getenv("CLAUDE_PASS") or settings.claude_pass or settings.nova_claude_pass,
-        "CLAUDE_AGENT_ID": os.getenv("CLAUDE_AGENT_ID") or settings.claude_agent_id or settings.nova_claude_agent_id,
-        "ANTHROPIC_API_KEY": os.getenv("ANTHROPIC_API_KEY") or settings.anthropic_api_key,
-    }
-    for key, value in claude_env.items():
-        if value:
-            env[key] = value
-    return env
-
-
-def _inject_nova_env(env: Dict[str, str]) -> Dict[str, str]:
-    """Expose Nova-specific provider credentials to agent subprocesses."""
-    settings = get_settings()
-    nova_env = {
-        "NOVA_CHATGPT_URL": os.getenv("NOVA_CHATGPT_URL") or settings.nova_chatgpt_url,
-        "NOVA_CHATGPT_USER": os.getenv("NOVA_CHATGPT_USER") or settings.nova_chatgpt_user,
-        "NOVA_CHATGPT_PASS": os.getenv("NOVA_CHATGPT_PASS") or settings.nova_chatgpt_pass,
-        "NOVA_CHATGPT_AGENT_ID": os.getenv("NOVA_CHATGPT_AGENT_ID") or settings.nova_chatgpt_agent_id,
-        "NOVA_GOOGLE_URL": os.getenv("NOVA_GOOGLE_URL") or settings.nova_google_url,
-        "NOVA_GOOGLE_USER": os.getenv("NOVA_GOOGLE_USER") or settings.nova_google_user,
-        "NOVA_GOOGLE_PASS": os.getenv("NOVA_GOOGLE_PASS") or settings.nova_google_pass,
-        "NOVA_GEMINI_AGENT_ID": os.getenv("NOVA_GEMINI_AGENT_ID") or settings.nova_gemini_agent_id,
-        "NOVA_CLAUDE_URL": os.getenv("NOVA_CLAUDE_URL") or settings.nova_claude_url,
-        "NOVA_CLAUDE_USER": os.getenv("NOVA_CLAUDE_USER") or settings.nova_claude_user,
-        "NOVA_CLAUDE_PASS": os.getenv("NOVA_CLAUDE_PASS") or settings.nova_claude_pass,
-        "NOVA_CLAUDE_AGENT_ID": os.getenv("NOVA_CLAUDE_AGENT_ID") or settings.nova_claude_agent_id,
-        "NOVA_MISTRAL_URL": os.getenv("NOVA_MISTRAL_URL") or settings.nova_mistral_url,
-        "NOVA_MISTRAL_USER": os.getenv("NOVA_MISTRAL_USER") or settings.nova_mistral_user,
-        "NOVA_MISTRAL_PASS": os.getenv("NOVA_MISTRAL_PASS") or settings.nova_mistral_pass,
-        "NOVA_MISTRAL_AGENT_ID": os.getenv("NOVA_MISTRAL_AGENT_ID") or settings.nova_mistral_agent_id,
-    }
-    for key, value in nova_env.items():
-        if value:
-            env[key] = value
-    return env
-
-def _clean_agent_response(agent_id: str, response: str) -> str:
-    """
-    Entfernt bekanntes CLI-/Startup-Rauschen aus Agent-Antworten,
-    ohne den Raw-Output im Buffer zu verlieren.
-    """
-    if not response:
-        return response
-
-    import re
-
-    # ANSI entfernen
-    response = re.sub(r"\x1b\[[0-9;]*[A-Za-z]", "", response)
-
-    noise_prefixes = [
-        "YOLO mode is enabled.",
-        "Loaded cached credentials.",
-        "Server 'ailinux-local' supports",
-        "Server 'ailinux-internal' supports",
-        "Server 'ailinux-external' supports",
-        'Prompt with name "',
-        "Attempt 1 failed with status 429.",
-        "OpenAI Codex v",
-        "--------",
-        "workdir:",
-        "model:",
-        "provider:",
-        "approval:",
-        "sandbox:",
-        "reasoning effort:",
-        "reasoning summaries:",
-        "session id:",
-        "mcp: ailinux-local starting",
-        "mcp: ailinux-internal starting",
-        "mcp: ailinux-local ready",
-        "mcp: ailinux-internal ready",
-        "mcp startup: ready:",
-        "codex",
-        "user",
-        "tokens used",
-        "[fallback-from:",
-        "> build",
-        "Launching OpenClaw with",
-        "Starting your assistant",
-        "This will modify your OpenClaw configuration:",
-        "Backups will be saved to /tmp/ollama-backups/",
-        "Added 2 models to OpenClaw",        "Launching Claude Code with",
-        "• Suche nach",
-        "✓ Suche nach",
-
-    ]
-
-    original_lines = response.splitlines()
-    cleaned_lines = []
-
-    for i, line in enumerate(original_lines):
-        stripped = line.strip()
-        if not stripped:
-            continue
-
-        if any(stripped.startswith(prefix) for prefix in noise_prefixes):
-            continue
-
-        if re.fullmatch(r"[\d.,]+", stripped):
-            continue
-
-        if i == 0 and stripped.endswith("deine Rolle im MCP-System."):
-            continue
-
-        cleaned_lines.append(stripped)
-
-    deduped = []
-    seen = set()
-    for line in cleaned_lines:
-        if line in seen:
-            continue
-        seen.add(line)
-        deduped.append(line)
-
-    cleaned = "\n".join(deduped).strip()
-    return cleaned if cleaned else response.strip()
-
 
 # SECURITY: Whitelist of allowed command executables
 # Only these binaries can be executed as agent commands
@@ -202,14 +36,6 @@ ALLOWED_COMMAND_EXECUTABLES = frozenset([
     "/home/zombie/triforce/triforce/bin/codex-triforce",
     "/home/zombie/triforce/triforce/bin/gemini-triforce",
     "/home/zombie/triforce/triforce/bin/opencode-triforce",
-    "/home/zombie/triforce/triforce/bin/ollama-claude-triforce",
-    "/home/zombie/triforce/triforce/bin/ollama-codex-triforce",
-    "/home/zombie/triforce/triforce/bin/ollama-opencode-triforce",
-    "/home/zombie/triforce/triforce/bin/ollama-openclaw-triforce",
-    # OpenRouter Free-Tier Shortcuts (v2.0)
-    "/home/zombie/triforce/triforce/bin/opencode-coder",
-    "/home/zombie/triforce/triforce/bin/opencode-reasoning",
-    "/home/zombie/triforce/triforce/bin/opencode-fast",
     # Legacy paths (backwards compatibility)
     "/home/zombie/triforce/bin/claude-triforce",
     "/home/zombie/triforce/bin/codex-triforce",
@@ -242,10 +68,8 @@ def validate_command(command: List[str]) -> bool:
     Security: Prevents arbitrary command execution via agents.json manipulation.
     Only allows known CLI agent binaries and their wrappers.
     """
-    if not isinstance(command, list):
+    if not command or not isinstance(command, list):
         return False
-    if not command:  # empty command is valid for API agents
-        return True
 
     executable = command[0]
 
@@ -273,7 +97,6 @@ class AgentStatus(str, Enum):
     RUNNING = "running"
     ERROR = "error"
     RESTARTING = "restarting"
-    ON_DEMAND = "on_demand"  # Agent ready but started only when called
 
 
 class AgentType(str, Enum):
@@ -282,7 +105,6 @@ class AgentType(str, Enum):
     CODEX = "codex"
     GEMINI = "gemini"
     OPENCODE = "opencode"
-    API = "api"  # API-based agent (no CLI subprocess)
 
 
 @dataclass
@@ -304,7 +126,7 @@ class AgentConfig:
     mcp_port: Optional[int] = None
 
     # Process Settings
-    auto_restart: bool = False  # on-demand: CLI-Agents starten per call_agent, nicht persistent
+    auto_restart: bool = True
     restart_delay: int = 15
     max_restarts: int = 5
 
@@ -410,107 +232,6 @@ DEFAULT_AGENTS: List[Dict[str, Any]] = [
             "OPENCODE_DISABLE_TELEMETRY": "1",
         },
     },
-    # ── OpenRouter Free-Tier Agents (v2.0 — kein Budget-Kill) ──
-    {
-        "agent_id": "opencode-coder",
-        "agent_type": "opencode",
-        "name": "OpenCode Coder (Qwen3 Coder Free)",
-        "description": "Code-Tasks via OpenRouter/Qwen3-Coder — kostenlos",
-        "command": [f"{TRIFORCE_BIN}/opencode-coder", "run"],
-        "env": {
-            "PATH": f"{TRIFORCE_BIN}:{CLI_BIN}:/usr/local/bin:/usr/bin:/bin",
-            "OPENCODE_DISABLE_TELEMETRY": "1",
-        },
-    },
-    {
-        "agent_id": "opencode-reasoning",
-        "agent_type": "opencode",
-        "name": "OpenCode Reasoning (GPT-OSS-120B Free)",
-        "description": "Reasoning/Audit via OpenRouter/GPT-OSS-120B — kostenlos",
-        "command": [f"{TRIFORCE_BIN}/opencode-reasoning", "run"],
-        "env": {
-            "PATH": f"{TRIFORCE_BIN}:{CLI_BIN}:/usr/local/bin:/usr/bin:/bin",
-            "OPENCODE_DISABLE_TELEMETRY": "1",
-        },
-    },
-    {
-        "agent_id": "opencode-fast",
-        "agent_type": "opencode",
-        "name": "OpenCode Fast (Step 3.5 Flash 1M Free)",
-        "description": "Schnelle Tasks via OpenRouter/Step-3.5-Flash — 1M Context, kostenlos",
-        "command": [f"{TRIFORCE_BIN}/opencode-fast", "run"],
-        "env": {
-            "PATH": f"{TRIFORCE_BIN}:{CLI_BIN}:/usr/local/bin:/usr/bin:/bin",
-            "OPENCODE_DISABLE_TELEMETRY": "1",
-        },
-    },
-    # ── Ollama Cloud Agents (via ollama launch <integration>) ──
-    {
-        "agent_id": "ollama-claude-mcp",
-        "agent_type": "claude",
-        "name": "Ollama Claude Agent (Kimi K2 Thinking 1T)",
-        "description": "Claude Code via ollama launch claude — Kimi K2 1T. --bare skippt API-Limit",
-        "command": [f"{TRIFORCE_BIN}/ollama-claude-triforce"],
-        "env": {
-            "PATH": f"{TRIFORCE_BIN}:{CLI_BIN}:/usr/local/bin:/usr/bin:/bin",
-            "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
-            "DISABLE_TELEMETRY": "1",
-        },
-    },
-    {
-        "agent_id": "ollama-codex-mcp",
-        "agent_type": "codex",
-        "name": "Ollama Codex Agent (Qwen3 Coder 480B)",
-        "description": "Codex CLI via ollama launch codex — Qwen3 480B. --full-auto",
-        "command": [f"{TRIFORCE_BIN}/ollama-codex-triforce"],
-        "env": {
-            "PATH": f"{TRIFORCE_BIN}:{CLI_BIN}:/usr/local/bin:/usr/bin:/bin",
-            "CODEX_DISABLE_TELEMETRY": "1",
-        },
-    },
-    {
-        "agent_id": "ollama-openclaw-mcp",
-        "agent_type": "opencode",
-        "name": "Ollama OpenClaw Agent (DeepSeek V3.2 671B)",
-        "description": "OpenClaw via ollama launch openclaw — DeepSeek V3.2 671B Cloud",
-        "command": [f"{TRIFORCE_BIN}/ollama-openclaw-triforce"],
-        "env": {
-            "PATH": f"{TRIFORCE_BIN}:{CLI_BIN}:/usr/local/bin:/usr/bin:/bin",
-        },
-    },
-            # ── API-based Agents (no CLI subprocess, direct LLM API calls) ──
-    {
-        "agent_id": "api-groq",
-        "agent_type": "api",
-        "name": "Groq API Agent (Llama 3.3 70B)",
-        "description": "API-basierter Agent via Groq — schnell, kein CLI nötig",
-        "command": [],  # no subprocess
-        "env": {"API_MODEL": "groq/llama-3.3-70b-versatile"},
-    },
-    {
-        "agent_id": "api-openrouter",
-        "agent_type": "api",
-        "name": "OpenRouter API Agent (Llama 3.3 Free)",
-        "description": "API-basierter Agent via OpenRouter Free Tier",
-        "command": [],
-        "env": {"API_MODEL": "openrouter/meta-llama/llama-3.3-70b-instruct:free"},
-    },
-    {
-        "agent_id": "api-cerebras",
-        "agent_type": "api",
-        "name": "Cerebras API Agent (Llama 3.3 70B)",
-        "description": "API-basierter Agent via Cerebras — ultra-fast inference",
-        "command": [],
-        "env": {"API_MODEL": "cerebras/llama-3.3-70b"},
-    },
-    {
-        "agent_id": "api-ollama-cloud",
-        "agent_type": "api",
-        "name": "Ollama Cloud API Agent (Multi-Model)",
-        "description": "API-basiert via Ollama Cloud: Kimi K2, Qwen3 Coder, DeepSeek V3.2, GLM-5",
-        "command": [],
-        "env": {"API_MODEL": "ollama/kimi-k2-thinking:cloud,ollama/qwen3-coder:480b-cloud,ollama/deepseek-v3.2:cloud,ollama/glm-5:cloud"},
-    },
 ]
 
 
@@ -530,24 +251,7 @@ class AgentController:
         self._shutting_down = False  # Prevent auto-restart during shutdown
         self._monitor_task: Optional[asyncio.Task] = None
         # Use localhost for internal API calls (no internet required)
-        self._triforce_url = "http://localhost:9000/v1/triforce"
-
-    @staticmethod
-    def _mark_agent_stopped(instance: AgentInstance) -> None:
-        """Normalize agent state after a subprocess has exited."""
-        instance.status = AgentStatus.STOPPED
-        instance.pid = None
-        instance.process = None
-
-    @staticmethod
-    def _agent_state_snapshot(
-        instance: Optional[AgentInstance],
-    ) -> tuple[str, Optional[int], Optional[int], Optional[str]]:
-        """Return minimal process state for shutdown diagnostics."""
-        if not instance:
-            return ("missing", None, None, None)
-        returncode = instance.process.returncode if instance.process else None
-        return (instance.status.value, instance.pid, returncode, instance.last_error)
+        self._triforce_url = "http://localhost:9100/v1/triforce"
 
     async def initialize(self):
         """Initialisiert den Controller"""
@@ -562,25 +266,6 @@ class AgentController:
         # Registriere Default-Agenten wenn keine vorhanden
         if not self.agents:
             await self._register_default_agents()
-        else:
-            # Sync ALL new agents from DEFAULT_AGENTS (not just API-type)
-            new_count = 0
-            for agent_data in DEFAULT_AGENTS:
-                aid = agent_data["agent_id"]
-                if aid not in self.agents or agent_data.get("agent_type") == "api":
-                    config = AgentConfig(
-                        agent_id=aid,
-                        agent_type=AgentType(agent_data["agent_type"]),
-                        name=agent_data["name"],
-                        command=agent_data.get("command", []),
-                        env=agent_data.get("env", {}),
-                    )
-                    self.agents[config.agent_id] = AgentInstance(config=config)
-                    new_count += 1
-                    logger.info(f"Synced agent from defaults: {aid}")
-            if new_count:
-                await self._save_configs()
-                logger.info(f"Synced {new_count} agents from DEFAULT_AGENTS")
 
         # Starte Health Monitor
         self._monitor_task = asyncio.create_task(self._health_monitor())
@@ -619,8 +304,8 @@ class AgentController:
                 for agent_id, agent_data in data.items():
                     command = agent_data.get("command", [])
 
-                    # SECURITY: Validate command against whitelist (skip for API agents)
-                    if agent_data.get("agent_type") != "api" and not validate_command(command):
+                    # SECURITY: Validate command against whitelist
+                    if not validate_command(command):
                         logger.error(
                             f"SECURITY: Skipping agent '{agent_id}' - "
                             f"command not in whitelist: {command}"
@@ -639,7 +324,7 @@ class AgentController:
                         system_prompt_source=agent_data.get("system_prompt_source", "triforce"),
                         mcp_enabled=agent_data.get("mcp_enabled", True),
                         mcp_port=agent_data.get("mcp_port"),
-                        auto_restart=agent_data.get("auto_restart", False),  # on-demand default
+                        auto_restart=agent_data.get("auto_restart", True),
                     )
                     self.agents[agent_id] = AgentInstance(config=config)
                     loaded_count += 1
@@ -648,10 +333,8 @@ class AgentController:
                 logger.warning(f"Failed to load agent configs: {e}")
 
     async def _save_configs(self):
-        """Speichert Agent-Konfigurationen (mit File-Lock gegen parallele Worker)"""
-        import fcntl
+        """Speichert Agent-Konfigurationen"""
         config_file = self.data_dir / "agents.json"
-        lock_file = self.data_dir / "agents.json.lock"
         data = {}
         for agent_id, instance in self.agents.items():
             data[agent_id] = {
@@ -667,78 +350,50 @@ class AgentController:
                 "mcp_port": instance.config.mcp_port,
                 "auto_restart": instance.config.auto_restart,
             }
-        # Atomic write mit File-Lock — verhindert Race Condition bei parallelen Workern
-        try:
-            with open(lock_file, "w") as lf:
-                fcntl.flock(lf, fcntl.LOCK_EX | fcntl.LOCK_NB)
-                try:
-                    tmp_file = config_file.with_suffix(".json.tmp")
-                    # Sicherstellen dass data_dir existiert (Race beim ersten Boot)
-                    config_file.parent.mkdir(parents=True, exist_ok=True)
-                    with open(tmp_file, "w") as f:
-                        json.dump(data, f, indent=2)
-                    tmp_file.replace(config_file)
-                finally:
-                    fcntl.flock(lf, fcntl.LOCK_UN)
-        except BlockingIOError:
-            # Ein anderer Worker schreibt gerade — skip, er wird die neueste Version speichern
-            logger.debug("_save_configs: skipped (another worker holds lock)")
+        with open(config_file, "w") as f:
+            json.dump(data, f, indent=2)
 
     async def fetch_system_prompt(self, agent_type: AgentType) -> str:
         """
         Holt System-Prompt für CLI-Agenten.
 
         Reihenfolge:
-        1. project prompts unter /home/zombie/triforce/triforce/prompts
-        2. TriStar prompts unter /var/tristar/prompts
+        1. triforce/prompts/cli-agent-system.txt (universeller Prompt)
+        2. triforce/prompts/{agent_type}.txt (spezifischer Prompt)
         3. TriForce API Fallback
-        4. TriStar model_init Fallback
         """
+        prompts_dir = Path("/home/zombie/triforce/triforce/prompts")
 
-        def _read_prompt_file(path: Path) -> Optional[str]:
-            if not path.exists():
-                return None
+        # 1. Universeller CLI-Agent System-Prompt
+        universal_prompt = prompts_dir / "cli-agent-system.txt"
+        if universal_prompt.exists():
             try:
-                prompt = path.read_text(encoding="utf-8").strip()
+                prompt = universal_prompt.read_text(encoding="utf-8").strip()
                 if prompt:
-                    logger.info(f"Loaded system prompt from {path}")
+                    logger.info(f"Loaded system prompt from {universal_prompt}")
                     return prompt
             except Exception as e:
-                logger.warning(f"Failed to read {path}: {e}")
-            return None
+                logger.warning(f"Failed to read {universal_prompt}: {e}")
 
-        prompt_dirs = [
-            Path("/home/zombie/triforce/triforce/prompts"),
-            Path("/var/tristar/prompts"),
-        ]
-
-        if agent_type == AgentType.GEMINI:
-            candidate_names = [
-                "reflect_resume_debug_prompt.txt",
-                "reflect_prompt.txt",
-                f"{agent_type.value}.txt",
-                "cli-agent-system.txt",
-            ]
-        else:
-            candidate_names = [
-                "cli-agent-system.txt",
-                f"{agent_type.value}.txt",
-            ]
-
-        for prompts_dir in prompt_dirs:
-            for candidate in candidate_names:
-                prompt = _read_prompt_file(prompts_dir / candidate)
+        # 2. Agent-spezifischer Prompt
+        specific_prompt = prompts_dir / f"{agent_type.value}.txt"
+        if specific_prompt.exists():
+            try:
+                prompt = specific_prompt.read_text(encoding="utf-8").strip()
                 if prompt:
+                    logger.info(f"Loaded system prompt from {specific_prompt}")
                     return prompt
+            except Exception as e:
+                logger.warning(f"Failed to read {specific_prompt}: {e}")
 
         # 3. Fallback: TriForce API
         try:
             async with aiohttp.ClientSession() as session:
                 url = f"{self._triforce_url}/init"
-                async with session.post(url, json={"request": "systemprompt", "llm_id": agent_type.value}, timeout=10) as resp:
+                async with session.post(url, json={"agent_type": agent_type.value}, timeout=10) as resp:
                     if resp.status == 200:
                         data = await resp.json()
-                        return data.get("systemprompt", data.get("system_prompt", ""))
+                        return data.get("system_prompt", "")
         except Exception as e:
             logger.warning(f"Failed to fetch system prompt from TriForce: {e}")
 
@@ -800,10 +455,6 @@ class AgentController:
                 # Wir nutzen die env aus der Config, nicht überschreiben!
                 env = os.environ.copy()
                 env.update(instance.config.env)
-                env = _inject_chatgpt_env(env)
-                env = _inject_google_env(env)
-                env = _inject_claude_env(env)
-                env = _inject_nova_env(env)
                 # USER für Prozess-Kontext setzen
                 env["USER"] = "zombie"
 
@@ -860,21 +511,8 @@ class AgentController:
 
             instance = self.agents[agent_id]
 
-            if not instance.process:
-                self._mark_agent_stopped(instance)
+            if instance.status != AgentStatus.RUNNING or not instance.process:
                 return {"status": "not_running", "agent": instance.to_dict()}
-
-            if instance.process.returncode is not None:
-                self._mark_agent_stopped(instance)
-                logger.info(f"Agent {agent_id} already stopped before shutdown signal")
-                return {"status": "stopped", "agent": instance.to_dict()}
-
-            if instance.status != AgentStatus.RUNNING:
-                logger.info(
-                    "Stopping agent %s with live subprocess while status=%s",
-                    agent_id,
-                    instance.status.value,
-                )
 
             try:
                 if force:
@@ -885,23 +523,12 @@ class AgentController:
                 await asyncio.wait_for(instance.process.wait(), timeout=10)
 
             except asyncio.TimeoutError:
-                try:
-                    instance.process.kill()
-                except Exception as exc:
-                    if not _is_process_gone_error(exc):
-                        raise
-                    logger.info(f"Agent {agent_id} already exited during timeout kill")
-                try:
-                    await instance.process.wait()
-                except Exception as exc:
-                    if not _is_process_gone_error(exc):
-                        raise
-            except Exception as exc:
-                if not _is_process_gone_error(exc):
-                    raise
-                logger.info(f"Agent {agent_id} already exited before signal delivery")
+                instance.process.kill()
+                await instance.process.wait()
 
-            self._mark_agent_stopped(instance)
+            instance.status = AgentStatus.STOPPED
+            instance.pid = None
+            instance.process = None
 
             logger.info(f"Stopped agent {agent_id}")
             return {"status": "stopped", "agent": instance.to_dict()}
@@ -947,19 +574,13 @@ class AgentController:
                             instance.status = AgentStatus.ERROR
                             instance.last_error = f"Process exited with code {instance.process.returncode}"
 
-                            # Auto-Restart nur für explizit persistente Agents (auto_restart=True).
-                            # CLI-Agents laufen on-demand — kein Restart hier.
+                            # Auto-Restart wenn aktiviert (aber NICHT während shutdown!)
                             if (instance.config.auto_restart and
-                                instance.config.agent_type == AgentType.API and
                                 instance.restart_count < instance.config.max_restarts and
                                 not self._shutting_down):
                                 instance.restart_count += 1
                                 instance.status = AgentStatus.RESTARTING
-                                # Exponential backoff: 15s, 30s, 60s, 120s, 240s
-                                backoff = instance.config.restart_delay * (2 ** (instance.restart_count - 1))
-                                backoff = min(backoff, 300)
-                                logger.info(f"Agent {agent_id}: restart {instance.restart_count}/{instance.config.max_restarts} in {backoff}s")
-                                await asyncio.sleep(backoff)
+                                await asyncio.sleep(instance.config.restart_delay)
                                 if not self._shutting_down:  # Double-check before restart
                                     await self.start_agent(agent_id)
 
@@ -1022,7 +643,7 @@ class AgentController:
         self,
         agent_id: str,
         message: str,
-        timeout: int = 600,
+        timeout: int = 120,
     ) -> Dict[str, Any]:
         """
         Sendet eine Nachricht an einen Agenten und wartet auf Antwort.
@@ -1035,52 +656,18 @@ class AgentController:
         if not instance:
             raise ValueError(f"Agent not found: {agent_id}")
 
-        if instance.config.agent_type == AgentType.API:
-            pass  # API agents don't need a running process
-        # ON-DEMAND: CLI-Agents werden NICHT persistent gestartet.
-        # call_agent() spawnt den Subprozess direkt pro Aufruf (weiter unten).
-        # start_agent() hier weglassen verhindert die Prozess-Explosion.
+        if instance.status != AgentStatus.RUNNING:
+            # Starte Agent wenn nicht laufend
+            await self.start_agent(agent_id)
+            await asyncio.sleep(3)  # Warte auf Start
+            instance = self.agents.get(agent_id)
 
-        if not instance:
+        if not instance or not instance.process:
             return {
                 "agent_id": agent_id,
                 "status": "error",
-                "error": "Agent instance not available",
+                "error": "Agent process not available",
             }
-        # API agents don't need a subprocess
-        # CLI agents (CODEX/CLAUDE/GEMINI) spawn on-demand per call — no persistent process needed.
-        if instance.config.agent_type != AgentType.API and not instance.process:
-            # On-demand agents: skip process check, spawn below
-            if instance.config.agent_type == AgentType.API:
-                return {
-                    "agent_id": agent_id,
-                    "status": "error",
-                    "error": "Agent process not available",
-                }
-
-        # API-based agents: no subprocess, direct API call
-        if instance.config.agent_type == AgentType.API:
-            try:
-                from app.services.api_agent import run_api_agent_with_fallback
-                api_model = instance.config.env.get("API_MODEL", "")
-                api_models = [m.strip() for m in api_model.split(",") if m.strip()] if api_model else None
-                result = await run_api_agent_with_fallback(
-                    task=message,
-                    models=api_models,
-                    timeout=timeout,
-                )
-                return {
-                    "agent_id": agent_id,
-                    "status": result.get("status", "error"),
-                    "response": result.get("response", ""),
-                    "model": result.get("model", ""),
-                    "turns": result.get("turns", 0),
-                    "tools_called": result.get("tools_called", []),
-                    "exit_code": 0 if result.get("status") == "completed" else 1,
-                    "fallback_used": False,
-                }
-            except Exception as e:
-                return {"agent_id": agent_id, "status": "error", "response": str(e), "exit_code": 1}
 
         # Für interaktive CLI-Agenten: Starte neuen Prozess mit Nachricht
         # Die MCP-Server-Prozesse sind nicht interaktiv, daher nutzen wir
@@ -1090,10 +677,6 @@ class AgentController:
             # Nutze die env aus der Config - die Wrapper-Scripts setzen HOME korrekt
             env = os.environ.copy()
             env.update(instance.config.env)
-            env = _inject_chatgpt_env(env)
-            env = _inject_google_env(env)
-            env = _inject_claude_env(env)
-            env = _inject_nova_env(env)
             # Stelle sicher dass PATH die npm-global binaries enthält
             env["PATH"] = "/root/.npm-global/bin:/usr/local/bin:/usr/bin:/bin"
 
@@ -1106,73 +689,21 @@ class AgentController:
             agent_home = instance.config.env.get("HOME", "/root")
 
             # Nutze TriForce Wrapper - diese setzen HOME/ENV korrekt
-            if agent_id == "ollama-claude-mcp":
+            if agent_type == AgentType.CLAUDE:
                 cmd = [
-                    instance.config.command[0],
-                    "-p",
-                    message,
-                    "--permission-mode", "acceptEdits",
-                    "--allowedTools", "Read,Bash",
+                    "bash", "-c",
+                    f"echo {safe_msg} | {TRIFORCE_BIN}/claude-triforce -p --output-format text 2>&1"
                 ]
-            elif agent_type == AgentType.CLAUDE:
-                # Tier-1 System-Agents: restricted tools (kein Write/Shell/Git)
-                # Tier-2 Worker-Agents: volle Rechte (session_id beginnt mit "spawn-")
-                is_tier1 = instance.config.system_prompt_source in ("triforce", "custom") and \
-                           not getattr(instance, "_is_worker", False)
-                if is_tier1 and agent_id in ("claude-mcp", "gemini-mcp", "codex-mcp"):
-                    allowed = "Read,LS,Glob,Grep,Cat,WebSearch,WebFetch,mcp__triforce__notify_send,mcp__triforce__notify_list,mcp__triforce__notify_read,mcp__triforce__agent_spawn_worker,mcp__triforce__agent_call,mcp__triforce__agent_broadcast,mcp__triforce__safe_probe,mcp__triforce__log_viewer,mcp__triforce__code_read,mcp__triforce__code_search,mcp__triforce__mail_inbox,mcp__triforce__mail_read,mcp__triforce__mail_send,mcp__triforce__flarum_discussions,mcp__triforce__flarum_discussion_get,mcp__triforce__flarum_post_create,mcp__triforce__flarum_posts,mcp__triforce__health,mcp__triforce__status,mcp__triforce__group_chat_create,mcp__triforce__group_chat_ask,mcp__triforce__group_chat_read,mcp__triforce__group_chat_status,mcp__triforce__memory_search,mcp__triforce__memory_store"
-                    cmd = [
-                        "bash", "-c",
-                        f"echo {safe_msg} | {TRIFORCE_BIN}/claude-triforce -p "
-                        f"--output-format text "
-                        f"--allowedTools {shlex.quote(allowed)} "
-                        f"--permission-mode default 2>&1"
-                    ]
-                else:
-                    cmd = [
-                        "bash", "-c",
-                        f"echo {safe_msg} | {TRIFORCE_BIN}/claude-triforce -p --output-format text 2>&1"
-                    ]
             elif agent_type == AgentType.CODEX:
-                # Tier-1: kein --full-auto (kein Write)
-                is_tier1_codex = agent_id in ("claude-mcp", "gemini-mcp", "codex-mcp") and                                   not getattr(instance, "_is_worker", False)
-                if is_tier1_codex:
-                    cmd = [
-                        "bash", "-c",
-                        f"echo {safe_msg} | {TRIFORCE_BIN}/codex-triforce exec - 2>&1"
-                    ]
-                else:
-                    cmd = [
-                        "bash", "-c",
-                        f"echo {safe_msg} | {TRIFORCE_BIN}/codex-triforce exec - --full-auto 2>&1"
-                    ]
+                cmd = [
+                    "bash", "-c",
+                    f"echo {safe_msg} | {TRIFORCE_BIN}/codex-triforce exec - --full-auto 2>&1"
+                ]
             elif agent_type == AgentType.GEMINI:
-                prompt_dir = Path("/var/tristar/agents/runtime-prompts")
-                prompt_dir.mkdir(parents=True, exist_ok=True)
-                call_prompt_file = prompt_dir / f"{agent_id}.call_prompt.txt"
-
-                full_prompt = message
-                if instance.config.system_prompt:
-                    full_prompt = (
-                        f"{instance.config.system_prompt}\n\n"
-                        f"AKTUELLE AUFGABE:\n{message}\n\n"
-                        f"Antworte direkt auf die Aufgabe."
-                    )
-
-                call_prompt_file.write_text(full_prompt, encoding="utf-8")
-
-                is_tier1_gemini = agent_id in ("claude-mcp", "gemini-mcp", "codex-mcp") and                                    not getattr(instance, "_is_worker", False)
-                if is_tier1_gemini:
-                    # Tier-1: kein --yolo (kein unkontrollierter Write-Zugriff)
-                    cmd = [
-                        "bash", "-c",
-                        f'{TRIFORCE_BIN}/gemini-triforce -p "$(cat {shlex.quote(str(call_prompt_file))})" 2>&1'
-                    ]
-                else:
-                    cmd = [
-                        "bash", "-c",
-                        f'{TRIFORCE_BIN}/gemini-triforce --yolo -p "$(cat {shlex.quote(str(call_prompt_file))})" 2>&1'
-                    ]
+                cmd = [
+                    "bash", "-c",
+                    f"echo {safe_msg} | {TRIFORCE_BIN}/gemini-triforce --yolo 2>&1"
+                ]
             elif agent_type == AgentType.OPENCODE:
                 # WICHTIG: Sauberes Workspace ohne CLAUDE.md um unerwartete Task-Ausführung zu vermeiden
                 opencode_workspace = "/var/tristar/agents/opencode-workspace"
@@ -1201,78 +732,6 @@ class AgentController:
                 )
                 response = stdout.decode("utf-8", errors="replace").strip()
 
-                # ── Fallback-Chain (multi-hop, max 3) ──────────────────
-                # Chain: CLI → ollama-cloud → api-groq → api-cerebras
-                import re as _re_fb
-                _fb_depth = len(_re_fb.findall(r"\[fallback-from:", message))
-                _MAX_FALLBACK_DEPTH = 2
-
-                fallback_agent = None
-                fallback_reason = None
-                lower_response = response.lower()
-
-                # Detect: quota errors, crashes, garbage output
-                _is_quota = any(kw in lower_response for kw in (
-                    "quotaerror", "quota_exhausted", "usage limit",
-                    "api usage limits", "credit balance is too low",
-                    "resource_exhausted", "model_capacity_exhausted",
-                    "no capacity available", "status 429", "rate limit",
-                    "you've hit your usage limit", "you have reached your specified api usage limits",
-                ))
-                _is_crash = process.returncode != 0
-                _is_garbage = any(g in lower_response for g in (
-                    "<|tool_call_begin|>", "<|tool_calls_section_end|>",
-                    "functions.ailinux", "invalid tool",
-                ))
-                _needs_fallback = _is_quota or _is_crash or _is_garbage
-
-                # Ordered fallback map v2.0 — OpenRouter Free als letzte Stufe
-                _FALLBACK_NEXT = {
-                    "claude-mcp": ("opencode-reasoning", "claude→GPT-OSS-120B(OpenRouter-Free)"),
-                    "codex-mcp": ("opencode-coder", "codex→Qwen3-Coder-480B(OpenRouter-Free)"),
-                    "gemini-mcp": ("opencode-fast", "gemini→Step3.5-Flash-1M(OpenRouter-Free)"),
-                    "ollama-claude-mcp": ("opencode-reasoning", "ollama-claude→GPT-OSS-120B(OpenRouter-Free)"),
-                    "ollama-codex-mcp": ("opencode-coder", "ollama-codex→Qwen3-Coder-480B(OpenRouter-Free)"),
-                    "ollama-openclaw-mcp": ("opencode-fast", "ollama-openclaw→Step3.5-Flash-1M(OpenRouter-Free)"),
-                    "api-groq": ("api-openrouter", "groq→Llama-3.3-70B-OpenRouter"),
-                    "api-cerebras": ("api-openrouter", "cerebras→Llama-3.3-70B-OpenRouter"),
-                    "opencode-mcp": ("opencode-fast", "opencode→Step3.5-Flash-1M(OpenRouter-Free)"),
-                    "opencode-coder": ("opencode-reasoning", "coder→GPT-OSS-120B(OpenRouter-Free)"),
-                    "opencode-reasoning": ("opencode-fast", "reasoning→Step3.5-Flash-1M(OpenRouter-Free)"),
-                    "opencode-fast": ("api-openrouter", "fast→Llama-3.3-70B-API"),
-                }
-
-                if _needs_fallback and agent_id in _FALLBACK_NEXT:
-                    fallback_agent, fallback_reason = _FALLBACK_NEXT[agent_id]
-                    if _is_garbage:
-                        fallback_reason += "_garbage"
-                    elif _is_crash:
-                        fallback_reason += f"_crash_{process.returncode}"
-
-                # Multi-hop guard (max depth, not single-hop)
-                if fallback_agent and _fb_depth < _MAX_FALLBACK_DEPTH:
-                    fallback_message = (
-                        f"[fallback-from:{agent_id}] "
-                        f"Der ursprüngliche Agent ist aktuell nicht nutzbar. "
-                        f"Bearbeite stattdessen diese Aufgabe:\n\n{message}"
-                    )
-                    logger.warning(
-                        f"Agent fallback triggered: {agent_id} -> {fallback_agent} [{fallback_reason}]"
-                    )
-                    fallback_result = await self.call_agent(
-                        fallback_agent,
-                        fallback_message,
-                        timeout=timeout,
-                    )
-                    if isinstance(fallback_result, dict):
-                        fallback_result["requested_agent"] = agent_id
-                        fallback_result["executed_agent"] = fallback_result.get("agent_id", fallback_agent)
-                        fallback_result["fallback_used"] = True
-                        fallback_result["fallback_reason"] = fallback_reason
-                    return fallback_result
-
-                cleaned_response = _clean_agent_response(agent_id, response)
-
                 # Speichere in Output-Buffer
                 instance.output_buffer.append(f">>> {message[:50]}...")
                 instance.output_buffer.append(response[:500])
@@ -1281,12 +740,8 @@ class AgentController:
 
                 return {
                     "agent_id": agent_id,
-                    "requested_agent": agent_id,
-                    "executed_agent": agent_id,
-                    "fallback_used": False,
-                    "fallback_reason": None,
                     "status": "success",
-                    "response": cleaned_response,
+                    "response": response,
                     "exit_code": process.returncode,
                 }
 
@@ -1365,51 +820,13 @@ class AgentController:
             except asyncio.TimeoutError:
                 logger.warning(f"Timeout stopping agent {agent_id}, force killing")
                 instance = self.agents.get(agent_id)
-                if instance:
-                    process = instance.process
-                    if process:
-                        try:
-                            process.kill()
-                        except Exception as exc:
-                            if not _is_process_gone_error(exc):
-                                logger.exception(
-                                    "Force kill failed for agent %s during shutdown timeout",
-                                    agent_id,
-                                )
-                        try:
-                            await process.wait()
-                        except Exception as exc:
-                            if not _is_process_gone_error(exc):
-                                logger.exception(
-                                    "Waiting after force kill failed for agent %s during shutdown timeout",
-                                    agent_id,
-                                )
-                    self._mark_agent_stopped(instance)
-            except Exception as exc:
-                instance = self.agents.get(agent_id)
-                status, pid, returncode, last_error = self._agent_state_snapshot(instance)
-                if _is_process_gone_error(exc):
-                    logger.info(
-                        "Agent %s already stopped during shutdown "
-                        "(status=%s pid=%s returncode=%s last_error=%s)",
-                        agent_id,
-                        status,
-                        pid,
-                        returncode,
-                        last_error,
-                    )
-                    if instance:
-                        self._mark_agent_stopped(instance)
-                else:
-                    logger.exception(
-                        "Error stopping agent %s during shutdown "
-                        "(status=%s pid=%s returncode=%s last_error=%s)",
-                        agent_id,
-                        status,
-                        pid,
-                        returncode,
-                        last_error,
-                    )
+                if instance and instance.process:
+                    try:
+                        instance.process.kill()
+                    except Exception:
+                        pass
+            except Exception as e:
+                logger.error(f"Error stopping agent {agent_id}: {e}")
 
         logger.info("AgentController shutdown complete")
 

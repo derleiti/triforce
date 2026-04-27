@@ -492,9 +492,6 @@ export HOME="${BASE_DIR}/config/agents/${AGENT_NAME}"
 if [ -f "${BASE_DIR}/auth/.env.agents" ]; then
     source "${BASE_DIR}/auth/.env.agents"
 fi
-if [ -f "${BASE_DIR}/bin/load-chatgpt-env.sh" ]; then
-    source "${BASE_DIR}/bin/load-chatgpt-env.sh"
-fi
 
 # Logging
 echo "--- $(date '+%Y-%m-%d %H:%M:%S') | claude-triforce | Args: $* ---" >> "$LOG_FILE"
@@ -535,9 +532,6 @@ export HOME="${BASE_DIR}/config/agents/${AGENT_NAME}"
 if [ -f "${BASE_DIR}/auth/.env.agents" ]; then
     source "${BASE_DIR}/auth/.env.agents"
 fi
-if [ -f "${BASE_DIR}/bin/load-chatgpt-env.sh" ]; then
-    source "${BASE_DIR}/bin/load-chatgpt-env.sh"
-fi
 
 # Logging
 echo "--- $(date '+%Y-%m-%d %H:%M:%S') | codex-triforce | Args: $* ---" >> "$LOG_FILE"
@@ -575,9 +569,6 @@ export HOME="${BASE_DIR}/config/agents/${AGENT_NAME}"
 # API Keys laden
 if [ -f "${BASE_DIR}/auth/.env.agents" ]; then
     source "${BASE_DIR}/auth/.env.agents"
-fi
-if [ -f "${BASE_DIR}/bin/load-chatgpt-env.sh" ]; then
-    source "${BASE_DIR}/bin/load-chatgpt-env.sh"
 fi
 
 # Logging
@@ -620,9 +611,6 @@ export XDG_CONFIG_HOME="${HOME}/.config"
 # API Keys laden
 if [ -f "${BASE_DIR}/auth/.env.agents" ]; then
     source "${BASE_DIR}/auth/.env.agents"
-fi
-if [ -f "${BASE_DIR}/bin/load-chatgpt-env.sh" ]; then
-    source "${BASE_DIR}/bin/load-chatgpt-env.sh"
 fi
 
 # Logging

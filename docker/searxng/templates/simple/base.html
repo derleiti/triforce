@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html class="no-js theme-dark center-alignment-{{ preferences.get_value('center_alignment') and 'yes' or 'no' }}" lang="{{ locale_rfc5646 }}" {% if rtl %} dir="rtl"{% endif %}>
+<head>
+  <meta charset="UTF-8">
+  <meta name="endpoint" content="{{ endpoint }}">
+  <meta name="description" content="TriForce Search — AI-powered privacy-respecting metasearch">
+  <meta name="keywords" content="AILinux, TriForce, search, AI, metasearch">
+  <meta name="generator" content="searxng/{{ searxng_version }}">
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noarchive">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{% endblock %}{{ instance_name }}</title>
+  <script type="module" src="{{ url_for('static', filename='sxng-core.min.js') }}" client_settings="{{ client_settings }}"></script>
+  {% block meta %}{% endblock %}
+  {% if rtl %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='sxng-rtl.min.css') }}" type="text/css" media="screen">
+  {% else %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='sxng-ltr.min.css') }}" type="text/css" media="screen">
+  {% endif %}
+  {% if get_setting('server.limiter') or get_setting('server.public_instance') %}
+  <link rel="stylesheet" href="{{ url_for('client_token', token=link_token) }}" type="text/css">
+  {% endif %}
+  {% block head %}
+  <link title="{{ instance_name }}" type="application/opensearchdescription+xml" rel="search" href="{{ opensearch_url }}">
+  {% endblock %}
+  <link rel="icon" href="{{ url_for('static', filename='img/favicon.png') }}" sizes="any">
+  <link rel="icon" href="{{ url_for('static', filename='img/favicon.svg') }}" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/favicon.png') }}">
+  <link rel="manifest" href="{{ url_for('manifest') }}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ═══════════════════════════════════════════════════════════════
+       TRIFORCE SEARCH — Custom Dark Theme
+       AILinux · search.ailinux.me
+       ═══════════════════════════════════════════════════════════════ */
+
+    :root {
+      --tf-bg-primary: #0a0a0f;
+      --tf-bg-secondary: #111118;
+      --tf-bg-tertiary: #16161f;
+      --tf-bg-card: #1a1a25;
+      --tf-bg-hover: #1f1f2e;
+      --tf-bg-input: #12121a;
+      --tf-border: #2a2a3a;
+      --tf-border-focus: #6366f1;
+      --tf-text-primary: #e4e4eb;
+      --tf-text-secondary: #9494a8;
+      --tf-text-muted: #5e5e72;
+      --tf-accent: #6366f1;
+      --tf-accent-hover: #818cf8;
+      --tf-accent-glow: rgba(99, 102, 241, 0.15);
+      --tf-green: #22c55e;
+      --tf-link: #818cf8;
+      --tf-link-visited: #a78bfa;
+      --tf-url-color: #22c55e;
+      --tf-radius: 12px;
+      --tf-radius-sm: 8px;
+      --tf-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      --tf-shadow-lg: 0 8px 32px rgba(0,0,0,0.4);
+      --tf-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --tf-mono: 'JetBrains Mono', 'Fira Code', monospace;
+      --tf-transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ── Global Reset ── */
+    html, body {
+      background: var(--tf-bg-primary) !important;
+      color: var(--tf-text-primary) !important;
+      font-family: var(--tf-font) !important;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body { min-height: 100vh; }
+
+    /* ── Links ── */
+    a { color: var(--tf-link) !important; text-decoration: none !important; transition: color var(--tf-transition); }
+    a:hover { color: var(--tf-accent-hover) !important; }
+    a:visited { color: var(--tf-link-visited) !important; }
+
+    /* ── Top Navigation ── */
+    #links_on_top {
+      background: var(--tf-bg-secondary) !important;
+      border-bottom: 1px solid var(--tf-border) !important;
+      padding: 8px 24px !important;
+      display: flex;
+      gap: 16px;
+      justify-content: flex-end;
+    }
+    #links_on_top a {
+      color: var(--tf-text-secondary) !important;
+      font-size: 13px !important;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: var(--tf-radius-sm);
+      transition: all var(--tf-transition);
+    }
+    #links_on_top a:hover {
+      color: var(--tf-text-primary) !important;
+      background: var(--tf-bg-hover) !important;
+    }
+    #links_on_top svg { width: 16px; height: 16px; }
+
+    /* ── Search Box ── */
+    .search_box {
+      background: var(--tf-bg-input) !important;
+      border: 1.5px solid var(--tf-border) !important;
+      border-radius: var(--tf-radius) !important;
+      box-shadow: var(--tf-shadow) !important;
+      transition: all var(--tf-transition);
+      overflow: hidden;
+    }
+    .search_box:focus-within {
+      border-color: var(--tf-border-focus) !important;
+      box-shadow: var(--tf-shadow), 0 0 0 3px var(--tf-accent-glow) !important;
+    }
+
+    #q {
+      background: transparent !important;
+      color: var(--tf-text-primary) !important;
+      font-family: var(--tf-font) !important;
+      font-size: 16px !important;
+      font-weight: 400;
+      border: none !important;
+      padding: 14px 18px !important;
+      caret-color: var(--tf-accent);
+    }
+    #q::placeholder {
+      color: var(--tf-text-muted) !important;
+      font-weight: 300;
+    }
+
+    #send_search, #clear_search {
+      background: transparent !important;
+      border: none !important;
+      color: var(--tf-text-secondary) !important;
+      cursor: pointer;
+      padding: 10px 14px !important;
+      transition: color var(--tf-transition);
+    }
+    #send_search:hover, #clear_search:hover {
+      color: var(--tf-accent) !important;
+    }
+
+    /* ── Index Page (Homepage) ── */
+    .index {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 70vh;
+      padding: 40px 20px;
+    }
+    .index .title h1 {
+      font-size: 2.8rem !important;
+      font-weight: 700 !important;
+      color: var(--tf-text-primary) !important;
+      letter-spacing: -0.03em;
+      margin-bottom: 8px !important;
+    }
+    .index .search_box {
+      max-width: 680px;
+      width: 100%;
+    }
+    .index #search {
+      width: 100%;
+      max-width: 680px;
+    }
+
+    /* ── Category Tabs / Filters ── */
+    #categories, .category {
+      background: transparent !important;
+      border: none !important;
+    }
+    #categories button, .category a, .category label {
+      background: var(--tf-bg-tertiary) !important;
+      color: var(--tf-text-secondary) !important;
+      border: 1px solid var(--tf-border) !important;
+      border-radius: var(--tf-radius-sm) !important;
+      padding: 6px 14px !important;
+      font-size: 13px !important;
+      font-weight: 500;
+      font-family: var(--tf-font) !important;
+      transition: all var(--tf-transition);
+      cursor: pointer;
+      margin: 2px;
+    }
+    #categories button:hover, .category a:hover, .category label:hover {
+      background: var(--tf-bg-hover) !important;
+      color: var(--tf-text-primary) !important;
+      border-color: var(--tf-accent) !important;
+    }
+    #categories button.active, #categories button[aria-pressed="true"],
+    .category input:checked + label,
+    .category a.active {
+      background: var(--tf-accent) !important;
+      color: #fff !important;
+      border-color: var(--tf-accent) !important;
+    }
+
+    /* ── Search Results ── */
+    #results {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .result {
+      background: var(--tf-bg-card) !important;
+      border: 1px solid var(--tf-border) !important;
+      border-radius: var(--tf-radius) !important;
+      padding: 18px 22px !important;
+      margin-bottom: 12px !important;
+      transition: all var(--tf-transition);
+    }
+    .result:hover {
+      border-color: var(--tf-border-focus) !important;
+      background: var(--tf-bg-hover) !important;
+      box-shadow: var(--tf-shadow) !important;
+    }
+
+    .result h3, .result .title {
+      font-size: 17px !important;
+      font-weight: 600 !important;
+      line-height: 1.4 !important;
+      margin-bottom: 4px !important;
+    }
+    .result h3 a {
+      color: var(--tf-link) !important;
+    }
+    .result h3 a:visited {
+      color: var(--tf-link-visited) !important;
+    }
+
+    .result .url_wrapper, .result .url, .result .cache_link,
+    .result .url_header .url {
+      color: var(--tf-url-color) !important;
+      font-family: var(--tf-mono) !important;
+      font-size: 12px !important;
+      font-weight: 400;
+      opacity: 0.85;
+    }
+
+    .result .content, .result p {
+      color: var(--tf-text-secondary) !important;
+      font-size: 14px !important;
+      line-height: 1.6 !important;
+      margin-top: 6px;
+    }
+
+    .result .engines {
+      color: var(--tf-text-muted) !important;
+      font-size: 11px !important;
+      margin-top: 8px;
+    }
+    .result .engines span {
+      background: var(--tf-bg-tertiary) !important;
+      border: 1px solid var(--tf-border) !important;
+      border-radius: 4px !important;
+      padding: 2px 6px !important;
+      font-size: 10px !important;
+      color: var(--tf-text-muted) !important;
+    }
+
+    /* ── Sidebar ── */
+    #sidebar {
+      background: var(--tf-bg-secondary) !important;
+      border: 1px solid var(--tf-border) !important;
+      border-radius: var(--tf-radius) !important;
+      padding: 16px !important;
+    }
+    #sidebar summary {
+      color: var(--tf-text-primary) !important;
+      font-weight: 600;
+    }
+
+    /* ── Infoboxes ── */
+    .infobox {
+      background: var(--tf-bg-card) !important;
+      border: 1px solid var(--tf-border) !important;
+      border-radius: var(--tf-radius) !important;
+    }
+
+    /* ── Answers ── */
+    .answer {
+      background: var(--tf-bg-card) !important;
+      border: 1px solid var(--tf-accent) !important;
+      border-radius: var(--tf-radius) !important;
+      padding: 16px 20px !important;
+      margin-bottom: 16px;
+    }
+
+    /* ── Suggestions ── */
+    .suggestion_item a {
+      background: var(--tf-bg-tertiary) !important;
+      border: 1px solid var(--tf-border) !important;
+      border-radius: var(--tf-radius-sm) !important;
+      color: var(--tf-text-secondary) !important;
+      padding: 4px 12px !important;
+      font-size: 13px !important;
+    }
+    .suggestion_item a:hover {
+      background: var(--tf-bg-hover) !important;
+      border-color: var(--tf-accent) !important;
+      color: var(--tf-text-primary) !important;
+    }
+
+    /* ── Pagination ── */
+    #pagination {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      padding: 24px 0;
+    }
+    #pagination a, #pagination button {
+      background: var(--tf-bg-card) !important;
+      border: 1px solid var(--tf-border) !important;
+      border-radius: var(--tf-radius-sm) !important;
+      color: var(--tf-text-secondary) !important;
+      padding: 8px 16px !important;
+      font-weight: 500;
+      transition: all var(--tf-transition);
+    }
+    #pagination a:hover, #pagination button:hover {
+      background: var(--tf-accent) !important;
+      color: #fff !important;
+      border-color: var(--tf-accent) !important;
+    }
+
+    /* ── Autocomplete ── */
+    .autocomplete ul {
+      background: var(--tf-bg-secondary) !important;
+      border: 1px solid var(--tf-border) !important;
+      border-radius: var(--tf-radius-sm) !important;
+      box-shadow: var(--tf-shadow-lg) !important;
+      margin-top: 4px;
+    }
+    .autocomplete li {
+      color: var(--tf-text-secondary) !important;
+      padding: 10px 18px !important;
+      font-size: 14px !important;
+      transition: background var(--tf-transition);
+    }
+    .autocomplete li:hover, .autocomplete li.active,
+    .autocomplete li[aria-selected="true"] {
+      background: var(--tf-bg-hover) !important;
+      color: var(--tf-text-primary) !important;
+    }
+
+    /* ── Footer ── */
+    footer {
+      background: var(--tf-bg-secondary) !important;
+      border-top: 1px solid var(--tf-border) !important;
+      padding: 20px !important;
+      text-align: center;
+    }
+    footer p {
+      color: var(--tf-text-muted) !important;
+      font-size: 12px !important;
+      line-height: 1.8;
+    }
+    footer a {
+      color: var(--tf-text-secondary) !important;
+      font-size: 12px !important;
+    }
+
+    /* ── Preferences Page ── */
+    .preferences_back, fieldset {
+      background: var(--tf-bg-card) !important;
+      border: 1px solid var(--tf-border) !important;
+      border-radius: var(--tf-radius) !important;
+    }
+    select, input[type="text"], input[type="number"], textarea {
+      background: var(--tf-bg-input) !important;
+      color: var(--tf-text-primary) !important;
+      border: 1px solid var(--tf-border) !important;
+      border-radius: var(--tf-radius-sm) !important;
+      font-family: var(--tf-font) !important;
+      padding: 8px 12px !important;
+    }
+    select:focus, input[type="text"]:focus {
+      border-color: var(--tf-border-focus) !important;
+      outline: none !important;
+    }
+    button, input[type="submit"] {
+      background: var(--tf-accent) !important;
+      color: #fff !important;
+      border: none !important;
+      border-radius: var(--tf-radius-sm) !important;
+      padding: 8px 20px !important;
+      font-weight: 600;
+      font-family: var(--tf-font) !important;
+      cursor: pointer;
+      transition: all var(--tf-transition);
+    }
+    button:hover, input[type="submit"]:hover {
+      background: var(--tf-accent-hover) !important;
+    }
+
+    /* ── Dialogs & Errors ── */
+    .dialog-error {
+      background: rgba(239, 68, 68, 0.1) !important;
+      border: 1px solid rgba(239, 68, 68, 0.3) !important;
+      border-radius: var(--tf-radius) !important;
+      color: #fca5a5 !important;
+      padding: 12px 18px !important;
+    }
+
+    /* ── Image Results ── */
+    .result-images .image_result {
+      border-radius: var(--tf-radius-sm) !important;
+      overflow: hidden;
+      border: 1px solid var(--tf-border) !important;
+    }
+    .result-images .image_result:hover {
+      border-color: var(--tf-accent) !important;
+    }
+
+    /* ── Search Header on Results Page ── */
+    #search_header {
+      background: var(--tf-bg-secondary) !important;
+      border-bottom: 1px solid var(--tf-border) !important;
+      padding: 12px 0 !important;
+    }
+
+    /* ── Back to Top ── */
+    #backToTop a {
+      background: var(--tf-bg-card) !important;
+      border: 1px solid var(--tf-border) !important;
+      border-radius: 50% !important;
+      color: var(--tf-text-secondary) !important;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--tf-shadow) !important;
+    }
+    #backToTop a:hover {
+      background: var(--tf-accent) !important;
+      color: #fff !important;
+    }
+
+    /* ── Result Count ── */
+    #result_count {
+      color: var(--tf-text-muted) !important;
+      font-size: 12px !important;
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--tf-bg-primary); }
+    ::-webkit-scrollbar-thumb {
+      background: var(--tf-border);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover { background: var(--tf-text-muted); }
+
+    /* ── SVG Icons color ── */
+    svg { color: currentColor !important; }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .index .title h1 { font-size: 2rem !important; }
+      .result { padding: 14px 16px !important; }
+      #q { font-size: 15px !important; padding: 12px 14px !important; }
+    }
+
+    /* ── Force dark on all SearXNG theme elements ── */
+    .theme-dark, .theme-auto {
+      --color-base-font: var(--tf-text-primary) !important;
+      --color-base-background: var(--tf-bg-primary) !important;
+    }
+
+    /* ── Subtitle / Powered by line ── */
+    .subtitle {
+      color: var(--tf-text-muted);
+      font-size: 14px;
+      font-weight: 300;
+      margin-top: 4px;
+      margin-bottom: 32px;
+      letter-spacing: 0.02em;
+    }
+    .subtitle a {
+      color: var(--tf-accent) !important;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body class="{{ endpoint }}_endpoint" >
+  <main id="main_{{  self._TemplateReference__context.name|replace("simple/", "")|replace(".html", "") }}" class="{{body_class}}">
+    {% if errors %}
+        <div class="dialog-error" role="alert">
+            <a href="#" class="close" aria-label="close" title="close">×</a>
+            <ul>
+            {% for message in errors %}
+                <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    <nav id="links_on_top">
+      {%- from 'simple/icons.html' import icon_big -%}
+      {%- block linkto_about -%}
+        <a href="{{ url_for('info', pagename='about') }}" class="link_on_top_about">{{ icon_big('information-circle') }}<span>{{ _('About') }}</span></a>
+      {%- endblock -%}
+      {%- block linkto_donate -%}
+        {%- if donation_url -%}
+        <a href="{{ donation_url }}" class="link_on_top_donate">{{ icon_big('heart') }}<span>{{ _('Donate') }}</span></a>
+        {%- endif -%}
+      {%- endblock -%}
+      {%- block linkto_preferences -%}
+        {%- if request.args.get('preferences') -%}
+          <a href="{{ url_for('preferences') }}?preferences={{ request.args.get('preferences') }}&preferences_preview_only=true" class="link_on_top_preferences">{{ icon_big('settings') }}<span>{{ _('Preferences') }}</span></a>
+        {%- else -%}
+          <a href="{{ url_for('preferences') }}" class="link_on_top_preferences">{{ icon_big('settings') }}<span>{{ _('Preferences') }}</span></a>
+        {%- endif -%}
+      {%- endblock -%}
+    </nav>
+    {% block header %}
+    {% endblock %}
+    {% block content %}
+    {% endblock %}
+  </main>
+  <footer>
+    <p>
+    {{ _('Powered by') }} <a href="https://ailinux.me">AILinux</a> · TriForce Search {{ searxng_version }} — {{ _('a privacy-respecting, open metasearch engine') }}<br>
+        <a href="https://ailinux.me">ailinux.me</a>
+        {% if enable_metrics %}| <a href="{{ url_for('stats') }}">{{ _('Engine stats') }}</a>{% endif %}
+        {% if get_setting('general.privacypolicy_url') %}
+        | <a href="{{ get_setting('general.privacypolicy_url') }}">{{ _('Privacy policy') }}</a>
+        {% endif %}
+        {% if get_setting('general.contact_url') %}
+        | <a href="{{ get_setting('general.contact_url') }}">{{ _('Contact instance maintainer') }}</a>
+        {% endif %}
+        {% for title, link in get_setting('brand.custom.links').items() %}
+        | <a href="{{ link }}">{{ _(title) }}</a>
+        {% endfor %}
+    </p>
+  </footer>
+</body>
+</html>

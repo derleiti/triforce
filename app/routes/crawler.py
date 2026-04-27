@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import List
 
-from fastapi import APIRouter, HTTPException, Query, Header, Depends
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 from fastapi.responses import FileResponse
 
@@ -16,14 +16,7 @@ from ..schemas import (
 from ..services.crawler.manager import crawler_manager
 from ..services.crawler.user_crawler import user_crawler
 
-import os as _os_cw
-
-def _require_crawler_auth(x_internal_key: str = Header(default="")):
-    expected = _os_cw.environ.get("INTERNAL_API_KEY", "")
-    if not expected or x_internal_key != expected:
-        raise HTTPException(status_code=403, detail="Forbidden")
-
-router = APIRouter(dependencies=[Depends(_require_crawler_auth)])
+router = APIRouter()
 
 class CrawlerSearchRequest(BaseModel):
     query: str

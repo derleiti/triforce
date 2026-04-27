@@ -28,7 +28,6 @@ class ModelProvider(str, Enum):
     MISTRAL = "mistral"
     GROQ = "groq"
     CEREBRAS = "cerebras"
-    REPLICATE = "replicate"
 
 
 @dataclass
@@ -362,7 +361,7 @@ class APIProxy:
         max_tokens: int = 4096
     ) -> str:
         """
-        Chat mit Cloud-API (mit LLM Response Cache)
+        Chat mit Cloud-API
         
         Args:
             model: Model-ID (z.B. "openai/gpt-4o")
@@ -373,67 +372,32 @@ class APIProxy:
         Returns:
             Assistant-Antwort als String
         """
-        # === SWARM-IMPROVEMENT #1: LLM Response Cache (Mistral-Vorschlag) ===
-        try:
-            from .redis_optimizer import get_cache
-            cache = get_cache()
-            cached = await cache.get(model, messages)
-            if cached:
-                return cached
-        except Exception:
-            pass  # Cache miss or unavailable — continue normally
-        
         from .api_vault import api_vault
         
+        if not api_vault.is_unlocked:
+            raise RuntimeError("API Vault is locked - cannot access API keys")
+        
         provider, model_id = model.split("/", 1)
-        # get_key() hat ENV-Fallback - kein Vault-Lock noetig
         api_key = api_vault.get_key(provider)
         
         if not api_key:
-            # Federation-Proxy: route through master node if we're not the master
-            return await self._federation_proxy_chat(model, messages, temperature, max_tokens)
+            raise RuntimeError(f"No API key for provider: {provider}")
         
         # Provider-spezifische Implementierung
-        result = None
         if provider == "openai":
-            result = await self._openai_chat(api_key, model_id, messages, temperature, max_tokens)
+            return await self._openai_chat(api_key, model_id, messages, temperature, max_tokens)
         elif provider == "anthropic":
-            # Alias-Aufloesung: "claude-sonnet-4" -> "claude-sonnet-4-20250514" etc.
-            try:
-                from app.services.chat import ANTHROPIC_MODEL_ALIASES
-                model_id = ANTHROPIC_MODEL_ALIASES.get(model_id,
-                           ANTHROPIC_MODEL_ALIASES.get(f"anthropic/{model_id}", model_id))
-            except Exception:
-                pass
-            result = await self._anthropic_chat(api_key, model_id, messages, temperature, max_tokens)
+            return await self._anthropic_chat(api_key, model_id, messages, temperature, max_tokens)
         elif provider in ("google", "gemini"):
-            result = await self._gemini_chat(api_key, model_id, messages, temperature, max_tokens)
+            return await self._gemini_chat(api_key, model_id, messages, temperature, max_tokens)
         elif provider == "mistral":
-            result = await self._mistral_chat(api_key, model_id, messages, temperature, max_tokens)
+            return await self._mistral_chat(api_key, model_id, messages, temperature, max_tokens)
         elif provider == "groq":
-            result = await self._groq_chat(api_key, model_id, messages, temperature, max_tokens)
+            return await self._groq_chat(api_key, model_id, messages, temperature, max_tokens)
         elif provider == "cerebras":
-            result = await self._cerebras_chat(api_key, model_id, messages, temperature, max_tokens)
-        elif provider == "replicate":
-            result = await self._replicate_chat(api_key, model_id, messages, temperature, max_tokens)
-        elif provider == "openrouter":
-            result = await self._openrouter_chat(api_key, model_id, messages, temperature, max_tokens)
-        elif provider == "cloudflare":
-            result = await self._cloudflare_chat(api_key, model_id, messages, temperature, max_tokens)
-        elif provider == "github":
-            result = await self._github_chat(api_key, model_id, messages, temperature, max_tokens)
+            return await self._cerebras_chat(api_key, model_id, messages, temperature, max_tokens)
         else:
             raise RuntimeError(f"Unknown provider: {provider}")
-        
-        # === SWARM-IMPROVEMENT #1b: Cache successful response ===
-        if result:
-            try:
-                from .redis_optimizer import get_cache
-                await get_cache().set(model, messages, result)
-            except Exception:
-                pass
-        
-        return result
     
     async def _openai_chat(self, api_key: str, model: str, messages: list, temp: float, max_tokens: int) -> str:
         """OpenAI API Call"""
@@ -587,210 +551,6 @@ class APIProxy:
                     raise RuntimeError(f"Cerebras API error: {error}")
                 data = await resp.json()
                 return data["choices"][0]["message"]["content"]
-
-
-    async def _replicate_chat(self, api_key: str, model: str, messages: list, temp: float, max_tokens: int) -> str:
-        """Replicate Prediction API — SSE streaming with sync fallback."""
-        import asyncio
-        
-        # Build prompt/system_prompt from messages
-        system_prompt = ""
-        prompt_parts = []
-        for msg in messages:
-            role = msg.get("role", "user")
-            content = msg.get("content", "")
-            if role == "system":
-                system_prompt = content
-            elif role == "assistant":
-                prompt_parts.append(f"Assistant: {content}")
-            else:
-                prompt_parts.append(content if len(messages) <= 2 else f"User: {content}")
-        prompt = "\n".join(prompt_parts)
-
-        model_id = model.strip()
-        payload = {
-            "input": {
-                "prompt": prompt,
-                "max_tokens": max_tokens or 2048,
-                "temperature": temp if temp is not None else 0.7,
-            }
-        }
-        if system_prompt:
-            payload["input"]["system_prompt"] = system_prompt
-
-        url = f"https://api.replicate.com/v1/models/{model_id}/predictions"
-
-        async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=120)) as session:
-            async with session.post(
-                url,
-                headers={
-                    "Authorization": f"Bearer {api_key}",
-                    "Content-Type": "application/json",
-                    "Prefer": "wait=60",
-                },
-                json=payload
-            ) as resp:
-                if resp.status not in (200, 201):
-                    error = await resp.text()
-                    raise RuntimeError(f"Replicate API error ({resp.status}): {error}")
-                data = await resp.json()
-
-            stream_url = data.get("urls", {}).get("stream")
-            status = data.get("status", "")
-
-            # Try SSE streaming and collect full response
-            if stream_url and status in ("starting", "processing"):
-                chunks = []
-                try:
-                    async with session.get(
-                        stream_url,
-                        headers={"Authorization": f"Bearer {api_key}", "Accept": "text/event-stream"},
-                        timeout=aiohttp.ClientTimeout(total=120, sock_read=35),
-                    ) as sse:
-                        event_type = ""
-                        async for raw_line in sse.content:
-                            line = raw_line.decode("utf-8", errors="replace").rstrip("\n\r")
-                            if line.startswith("event: "):
-                                event_type = line[7:].strip()
-                            elif line.startswith("data: "):
-                                if event_type == "output":
-                                    chunks.append(line[6:])
-                                elif event_type == "done":
-                                    break
-                            elif line == "":
-                                event_type = ""
-                    if chunks:
-                        return "".join(chunks)
-                except Exception:
-                    pass  # fall through to poll
-
-            # Sync completed
-            if data.get("status") == "succeeded":
-                output = data.get("output", "")
-                return "".join(output) if isinstance(output, list) else str(output)
-
-            # Poll fallback
-            get_url = data.get("urls", {}).get("get", "")
-            if get_url:
-                for _ in range(60):
-                    await asyncio.sleep(1)
-                    async with session.get(get_url, headers={"Authorization": f"Bearer {api_key}"}) as poll:
-                        pd = await poll.json()
-                        if pd.get("status") == "succeeded":
-                            output = pd.get("output", "")
-                            return "".join(output) if isinstance(output, list) else str(output)
-                        elif pd.get("status") in ("failed", "canceled"):
-                            raise RuntimeError(f"Replicate {pd['status']}: {pd.get('error')}")
-            raise RuntimeError("Replicate prediction timed out")
-
-
-    async def _openrouter_chat(self, api_key: str, model: str, messages: list, temp: float, max_tokens: int) -> str:
-        """OpenRouter API Call (OpenAI-compatible)"""
-        from ..utils.model_helpers import strip_provider_prefix
-        model_id = strip_provider_prefix(model)
-        async with aiohttp.ClientSession(timeout=self.timeout) as session:
-            async with session.post(
-                "https://openrouter.ai/api/v1/chat/completions",
-                headers={
-                    "Authorization": f"Bearer {api_key}",
-                    "Content-Type": "application/json",
-                    "HTTP-Referer": "https://api.ailinux.me",
-                    "X-Title": "AILinux TriForce",
-                },
-                json={
-                    "model": model_id,
-                    "messages": messages,
-                    "temperature": temp,
-                    "max_tokens": max_tokens
-                }
-            ) as resp:
-                if resp.status != 200:
-                    error = await resp.text()
-                    raise RuntimeError(f"OpenRouter API error: {error}")
-                data = await resp.json()
-                return data["choices"][0]["message"]["content"]
-
-    async def _cloudflare_chat(self, api_key: str, model: str, messages: list, temp: float, max_tokens: int) -> str:
-        """Cloudflare Workers AI"""
-        from .chat import _stream_cloudflare
-        from ..config import get_settings
-        settings = get_settings()
-        chunks = []
-        async for chunk in _stream_cloudflare(
-            f"cloudflare/{model}", messages,
-            account_id=settings.cloudflare_account_id,
-            api_token=api_key,
-            temperature=temp, stream=True, timeout=30.0,
-        ):
-            chunks.append(chunk)
-        return "".join(chunks)
-
-    async def _github_chat(self, api_key: str, model: str, messages: list, temp: float, max_tokens: int) -> str:
-        """GitHub Models (OpenAI-compatible)"""
-        async with aiohttp.ClientSession(timeout=self.timeout) as session:
-            async with session.post(
-                "https://models.github.ai/inference/chat/completions",
-                headers={
-                    "Authorization": f"Bearer {api_key}",
-                    "Content-Type": "application/json",
-                },
-                json={"model": model, "messages": messages, "temperature": temp, "max_tokens": max_tokens},
-            ) as resp:
-                if resp.status != 200:
-                    error = await resp.text()
-                    raise RuntimeError(f"GitHub Models error: {error[:200]}")
-                data = await resp.json()
-                return data["choices"][0]["message"]["content"]
-
-    async def _federation_proxy_chat(
-        self, model: str, messages: list, temp: float, max_tokens: int
-    ) -> str:
-        """Proxy chat request through federation master (hetzner) when no local API key."""
-        import os, json as _json, base64
-        node_id = os.getenv("FEDERATION_NODE_ID", "")
-        if node_id in ("hetzner", ""):
-            raise RuntimeError(f"No API key for provider: {model.split('/')[0]} (master node, no fallback)")
-        
-        master_url = "http://10.10.0.1:9000"
-        fed_token = os.getenv("FEDERATION_TOKEN", "")
-        _creds = os.getenv("FEDERATION_BASIC_AUTH", "")
-        if not _creds:
-            raise RuntimeError(f"No API key for provider: {model.split('/')[0]} (no FEDERATION_BASIC_AUTH for proxy)")
-        basic_auth = base64.b64encode(_creds.encode()).decode()
-        
-        import logging
-        logging.getLogger("ailinux.chat_router").info(
-            "Federation proxy: routing %s through master (%s)", model, master_url
-        )
-        
-        payload = {
-            "model": model,
-            "messages": messages,
-            "temperature": temp,
-            "max_tokens": max_tokens,
-            "stream": False,
-        }
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Basic {basic_auth}",
-        }
-        
-        async with aiohttp.ClientSession(timeout=self.timeout) as session:
-            async with session.post(
-                f"{master_url}/v1/chat/completions",
-                headers=headers,
-                json=payload,
-            ) as resp:
-                if resp.status != 200:
-                    error = await resp.text()
-                    raise RuntimeError(f"Federation proxy error ({resp.status}): {error[:500]}")
-                data = await resp.json()
-                # OpenAI-compat format
-                choices = data.get("choices", [])
-                if choices:
-                    return choices[0].get("message", {}).get("content", "")
-                # Fallback: direct text
-                return data.get("text", data.get("content", str(data)))
 
 
 # Singletons

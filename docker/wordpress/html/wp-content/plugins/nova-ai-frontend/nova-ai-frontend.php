@@ -17,6 +17,9 @@ define('NOVA_AI_VERSION', '6.5.7');
 define('NOVA_AI_PLUGIN_URL',  plugin_dir_url(__FILE__));
 define('NOVA_AI_PLUGIN_DIR',  plugin_dir_path(__FILE__));
 
+// 2026-04-24: PSR-4 Autoloader + Plugin bootstrap
+require_once NOVA_AI_PLUGIN_DIR . 'includes/autoloader.php';
+
 function nova_get_docker_gateway_ip(): string {
     $routes = @file('/proc/net/route');
     if (!$routes) {
@@ -267,14 +270,15 @@ function nova_proxy_auth(string $path, string $method='GET', ?array $body=null):
     return new WP_REST_Response($data, $code);
 }
 
-function nova_proxy_health(WP_REST_Request $r): WP_REST_Response  { return nova_proxy('/v1/frontend/dashboard/health'); }
+function nova_proxy_health(WP_REST_Request $r): WP_REST_Response  { return nova_proxy('/health'); }
 function nova_proxy_models(WP_REST_Request $r): WP_REST_Response {
     $settings     = get_option('nova_ai_settings', []);
     $endpoint     = $settings['api_endpoint'] ?? 'https://api.ailinux.me';
     $internal_key = $settings['internal_key']  ?? '';
 
-    // Vollständige Modellliste via Internal-Key (610+ Modelle, kein Tier-Filter)
-    $resp = wp_remote_get($endpoint . '/v1/frontend/dashboard/models', [
+    // FIX 2026-04-24: /v1/frontend/dashboard/models entfernt — nutze /v1/models/all.
+    // Response-Shape: {data: [...], total: N} statt {models: [...]} — wird unten normalisiert.
+    $resp = wp_remote_get($endpoint . '/v1/models/all', [
         'timeout' => 15,
         'headers' => [
             'Accept'          => 'application/json',
@@ -300,20 +304,37 @@ function nova_proxy_models(WP_REST_Request $r): WP_REST_Response {
         return new WP_REST_Response(['models' => []], 502);
     }
 
-    $body   = json_decode(wp_remote_retrieve_body($resp), true);
-    // dashboard/models gibt {ok, models: [...objects...]} zurück
-    $models = $body['models'] ?? [];
-
+    $body = json_decode(wp_remote_retrieve_body($resp), true);
+    // FIX 2026-04-24: /v1/models/all liefert {data: [...], total: N} — mappen auf {models, count}
+    $raw = $body['data'] ?? ($body['models'] ?? []);
+    $models = [];
+    foreach ($raw as $m) {
+        if (is_string($m)) {
+            $p = explode('/', $m, 2);
+            $models[] = ['id'=>$m, 'name'=>count($p)>1?$p[1]:$m, 'provider'=>count($p)>1?$p[0]:'other', 'chat'=>true];
+            continue;
+        }
+        $id       = $m['id'] ?? '';
+        $parts    = explode('/', $id, 2);
+        $caps     = $m['capabilities'] ?? [];
+        $models[] = [
+            'id'       => $id,
+            'name'     => $m['name'] ?? (count($parts)>1 ? $parts[1] : $id),
+            'provider' => $m['provider'] ?? (count($parts)>1 ? $parts[0] : 'other'),
+            'chat'     => in_array('chat', $caps, true) || ($m['chat'] ?? false) === true,
+            'vision'   => in_array('vision', $caps, true) || in_array('multimodal', $caps, true),
+        ];
+    }
     return new WP_REST_Response(['models' => $models, 'count' => count($models)], 200);
 }
-function nova_proxy_chat(WP_REST_Request $r): WP_REST_Response    { return nova_proxy('/v1/frontend/dashboard/chat',  'POST', $r->get_json_params()); }
+function nova_proxy_chat(WP_REST_Request $r): WP_REST_Response    { return nova_proxy('/v1/chat',  'POST', $r->get_json_params()); }
 function nova_proxy_vision(WP_REST_Request $r): WP_REST_Response  {
     $params = $r->get_json_params();
     // Normalize: JS might send 'query' or 'prompt'
     if (!empty($params['query']) && empty($params['prompt'])) {
         $params['prompt'] = $params['query'];
     }
-    return nova_proxy('/v1/frontend/dashboard/vision','POST', $params);
+    return nova_proxy('/v1/images/analyze','POST', $params);
 }
 
 function nova_proxy_vision_upload(WP_REST_Request $r): WP_REST_Response {
@@ -340,7 +361,7 @@ function nova_proxy_vision_upload(WP_REST_Request $r): WP_REST_Response {
     }
     $b64 = base64_encode($raw_bytes);
 
-    return nova_proxy('/v1/frontend/dashboard/vision', 'POST', [
+    return nova_proxy('/v1/images/analyze', 'POST', [
         'model'        => $model,
         'prompt'       => $prompt,
         'image_base64' => $b64,
@@ -367,7 +388,7 @@ function nova_proxy_account(WP_REST_Request $r): WP_REST_Response {
 
     // Get available downloads from backend
     $downloads = [];
-    $dl_resp = nova_proxy('/v1/frontend/dashboard/downloads', 'GET');
+    $dl_resp = nova_proxy('/health', 'GET');
     if ($dl_resp instanceof WP_REST_Response) {
         $dl_data = $dl_resp->get_data();
         $downloads = $dl_data['files'] ?? [];
@@ -486,9 +507,14 @@ function nova_auth_logout(): WP_REST_Response {
     return new WP_REST_Response( ['success' => true, 'redirect' => home_url()], 200 );
 }
 
-function nova_proxy_image(WP_REST_Request $r): WP_REST_Response   { return nova_proxy('/v1/frontend/dashboard/media/image','POST',$r->get_json_params()); }
-function nova_proxy_video(WP_REST_Request $r): WP_REST_Response   { return nova_proxy('/v1/frontend/dashboard/media/video','POST',$r->get_json_params()); }
-function nova_proxy_video_status(WP_REST_Request $r): WP_REST_Response { return nova_proxy('/v1/frontend/dashboard/media/video/status/'.$r['job_id']); }
+function nova_proxy_image(WP_REST_Request $r): WP_REST_Response   { return nova_proxy('/v1/images/generate','POST',$r->get_json_params()); }
+function nova_proxy_video(WP_REST_Request $r): WP_REST_Response   {
+    // FIX 2026-04-24: Video-Generation hat im neuen TriForce-Backend keinen Endpoint mehr.
+    return new WP_REST_Response(['error'=>'video_generation_unavailable','message'=>'Video generation is not available on this backend.'], 501);
+}
+function nova_proxy_video_status(WP_REST_Request $r): WP_REST_Response {
+    return new WP_REST_Response(['error'=>'video_generation_unavailable','message'=>'Video generation is not available.'], 501);
+}
 
 /* ── Article Chat Proxy ─────────────────────────────────────────────────────── */
 function nova_proxy_article_chat(WP_REST_Request $r): WP_REST_Response {
@@ -509,7 +535,7 @@ function nova_proxy_article_chat(WP_REST_Request $r): WP_REST_Response {
     $body = json_encode(['model'=>$model,'messages'=>$messages,'stream'=>false,'max_tokens'=>800]);
     $settings2    = get_option('nova_ai_settings', []);
     $internal_key = $settings2['internal_key'] ?? '';
-    $resp = wp_remote_post(nova_get_backend_base().'/v1/frontend/dashboard/chat', [
+    $resp = wp_remote_post(nova_get_backend_base().'/v1/chat', [
         'body'    => $body,
         'headers' => [
             'Content-Type'   => 'application/json',
@@ -567,7 +593,7 @@ function nova_admin_status(): WP_REST_Response {
     $r = nova_proxy('/health');
     $data = $r->get_data();
     if (empty($data['model_count'])) {
-        $fh = nova_proxy('/v1/frontend/dashboard/health');
+        $fh = nova_proxy('/health');
         $fhd = $fh->get_data();
         if (!empty($fhd['model_count'])) { $data['model_count'] = $fhd['model_count']; $r->set_data($data); }
     }
@@ -1109,7 +1135,7 @@ add_shortcode('ailinux_downloads', function ($atts): string {
     $label = esc_attr($atts['label'] ?? 'AILINUX DOWNLOADS');
     $title = esc_html($atts['title'] ?? 'Downloads');
     $desc  = esc_html($atts['desc']  ?? 'Dateien & Pakete zum Download.');
-    $raw   = wp_remote_get(nova_get_backend_base().'/v1/frontend/dashboard/downloads', ['timeout'=>10, 'headers'=>['X-Internal-Key' => defined('NOVA_AI_INTERNAL_KEY') ? NOVA_AI_INTERNAL_KEY : (get_option('nova_ai_settings', [])['internal_key'] ?? '')]]);
+    $raw   = wp_remote_get(nova_get_backend_base().'/health', ['timeout'=>10, 'headers'=>['X-Internal-Key' => defined('NOVA_AI_INTERNAL_KEY') ? NOVA_AI_INTERNAL_KEY : (get_option('nova_ai_settings', [])['internal_key'] ?? '')]]);
     $tree  = null;
     if (!is_wp_error($raw)) {
         $body = json_decode(wp_remote_retrieve_body($raw), true);

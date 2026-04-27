@@ -683,14 +683,6 @@ class AgentBootstrapService:
             result["init_pushed"] = True
             result["note"] = "CLI agent ready for on-demand calls"
             
-            # Update agent_controller status to ON_DEMAND
-            try:
-                from .tristar.agent_controller import agent_controller, AgentStatus
-                if hasattr(agent_controller, 'agents') and agent_id in agent_controller.agents:
-                    agent_controller.agents[agent_id].status = AgentStatus.ON_DEMAND
-            except Exception:
-                pass  # Non-critical, agent_controller may not be initialized yet
-            
             self._init_results[agent_id] = result
             logger.info(f"Agent {agent_id} marked as ready (on-demand mode)")
 

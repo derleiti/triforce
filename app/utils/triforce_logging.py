@@ -282,8 +282,7 @@ class TriForceCentralLogger:
         self._stats = {
             "total_logged": 0,
             "total_flushed": 0,
-            "errors": 0,          # legacy name: counts FLUSH failures (see flush_errors alias in get_stats)
-            "error_entries": 0,   # counts ERROR/CRITICAL level log entries
+            "errors": 0,
             "started_at": datetime.now(timezone.utc).isoformat(),
         }
 
@@ -312,8 +311,6 @@ class TriForceCentralLogger:
         self._buffer.append(entry)
         self._pending.append(entry)
         self._stats["total_logged"] += 1
-        if entry.level in (LogLevel.ERROR, LogLevel.CRITICAL):
-            self._stats["error_entries"] += 1
 
     async def log(
         self,
@@ -361,8 +358,6 @@ class TriForceCentralLogger:
             self._buffer.append(entry)
             self._pending.append(entry)
             self._stats["total_logged"] += 1
-            if entry.level in (LogLevel.ERROR, LogLevel.CRITICAL):
-                self._stats["error_entries"] += 1
 
             # Flush if threshold reached
             if len(self._pending) >= self.flush_threshold:
@@ -627,21 +622,9 @@ class TriForceCentralLogger:
         return [e.to_dict() for e in entries[-limit:]]
 
     def get_stats(self) -> Dict[str, Any]:
-        """Get logger statistics.
-        
-        Fields:
-          total_logged:   total entries queued into the buffer
-          total_flushed:  entries persisted to disk
-          errors:         [legacy] flush-to-disk failures — kept for backwards compat
-          flush_errors:   alias of `errors` with accurate name
-          error_entries:  number of ERROR/CRITICAL level entries logged
-          buffer_size:    current in-memory buffer size
-          pending_flush:  entries queued but not yet written to disk
-          websocket_clients: active WebSocket stream subscribers
-        """
+        """Get logger statistics"""
         return {
             **self._stats,
-            "flush_errors": self._stats["errors"],
             "buffer_size": len(self._buffer),
             "pending_flush": len(self._pending),
             "websocket_clients": len(self._websockets),

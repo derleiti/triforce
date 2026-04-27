@@ -213,6 +213,19 @@ def get_unified_tools(extra_tools: Optional[List[Dict[str, Any]]] = None) -> Lis
     raw_tools: List[Dict[str, Any]] = []
     # v4 schemas removed — v5 is canonical source (2026-03-16)
     raw_tools.extend(v5_get_all_tools())
+
+    # 2026-04-27: include STRUCTURED_ADMIN_TOOLS (log_viewer, service_status,
+    # mcp_telemetry, binary_exec, custom_exec, safe_probe, file_ops, ...).
+    # Their handlers are bridged into v4 HandlerRegistry via
+    # handlers_v4._register_structured_admin_handlers(); this exposes them
+    # in tools/list so MCP clients can discover them.
+    # _dedupe_tools is "first wins", so V5 definitions take precedence on overlap.
+    try:
+        from .structured_admin import STRUCTURED_ADMIN_TOOLS
+        raw_tools.extend(STRUCTURED_ADMIN_TOOLS)
+    except Exception:
+        pass
+
     if extra_tools:
         raw_tools.extend(extra_tools)
 

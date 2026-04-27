@@ -8,12 +8,7 @@ from pathlib import Path
 from typing import Optional, Tuple
 
 import httpx
-try:
-    import google.generativeai as genai
-    _GENAI_AVAILABLE = True
-except ImportError:
-    genai = None  # type: ignore
-    _GENAI_AVAILABLE = False
+import google.generativeai as genai
 from PIL import Image
 import io
 
@@ -34,7 +29,6 @@ ANTHROPIC_VISION_ALIASES = {
     "anthropic/claude-3.5-haiku": "claude-3-5-haiku-20241022",
     "anthropic/claude-3-opus": "claude-3-opus-20240229",
     "anthropic/claude-3-sonnet": "claude-3-sonnet-20240229",
-    "anthropic/claude-3-haiku": "claude-3-haiku-20240307",
     "anthropic/claude": "claude-sonnet-4-20250514",
     "claude": "claude-sonnet-4-20250514",
 }
@@ -114,17 +108,6 @@ async def analyze(
             resolved_bytes,
         )
 
-    # === Federation Proxy: route cloud vision through master if no local API key ===
-    if model.provider not in ("ollama",):
-        import os as _os
-        _node_id = _os.getenv("FEDERATION_NODE_ID", "")
-        if _node_id not in ("hetzner", ""):
-            from .api_vault import api_vault as _av
-            _provider_key = _av.get_key(model.provider)
-            if not _provider_key:
-                logger.info("Federation vision proxy: routing %s through master (no local key)", request_model)
-                return await _federation_proxy_vision(request_model, prompt, image_url, image_bytes, content_type)
-
     if model.provider == "gemini":
         settings = get_settings()
         if not settings.gemini_api_key:
@@ -151,7 +134,7 @@ async def analyze(
             raise api_error("Anthropic Claude support is not configured", status_code=503, code="anthropic_unavailable")
 
         resolved_bytes = image_bytes
-        resolved_type = content_type or "image/jpeg"
+        resolved_type = content_type or "image/png"
 
         if resolved_bytes is None:
             assert image_url is not None
@@ -160,109 +143,16 @@ async def analyze(
         if resolved_bytes is None:
             raise api_error("Image bytes missing", status_code=422, code="missing_image")
 
-        # Detect actual MIME from magic bytes
-        if len(resolved_bytes) >= 3 and resolved_bytes[0] == 0xFF and resolved_bytes[1] == 0xD8 and resolved_bytes[2] == 0xFF:
-            resolved_type = "image/jpeg"
-        elif len(resolved_bytes) >= 4 and resolved_bytes[0] == 0x89 and resolved_bytes[1:4] == b"PNG":
-            resolved_type = "image/png"
-        elif len(resolved_bytes) >= 6 and resolved_bytes[:6] in (b"GIF87a", b"GIF89a"):
-            resolved_type = "image/gif"
-        elif len(resolved_bytes) >= 12 and resolved_bytes[:4] == b"RIFF" and resolved_bytes[8:12] == b"WEBP":
-            resolved_type = "image/webp"
         _persist_temp_file(resolved_bytes, filename)
-        try:
-            return await _analyze_with_anthropic_data(
-                request_model,
-                prompt,
-                resolved_bytes,
-                content_type=resolved_type,
-                api_key=settings.anthropic_api_key,
-                max_tokens=settings.anthropic_max_tokens,
-                timeout=settings.anthropic_timeout_ms / 1000.0,
-            )
-        except Exception as _anth_err:
-            _err_str = str(_anth_err)
-            if "usage limit" in _err_str.lower() or "rate" in _err_str.lower() or "429" in _err_str:
-                logger.warning("Anthropic vision rate-limited — falling back to Gemini: %s", _err_str)
-                if settings.gemini_api_key:
-                    if image_url:
-                        return await _analyze_with_gemini_url(
-                            "gemini/gemini-2.0-flash", prompt, image_url,
-                            api_key=settings.gemini_api_key,
-                        )
-                    else:
-                        return await _analyze_with_gemini_data(
-                            "gemini/gemini-2.0-flash", prompt,
-                            resolved_bytes,
-                            api_key=settings.gemini_api_key,
-                        )
-                logger.error("Anthropic rate-limited and no Gemini API key for fallback")
-            raise
-
-    # ── OpenAI-compat providers (openrouter, github, groq, mistral, cerebras) ──
-    if model.provider in _OPENAI_COMPAT_VISION_PROVIDERS:
-        if image_bytes is not None:
-            return await _analyze_openai_compat_vision(
-                model.provider, request_model, prompt,
-                image_bytes=image_bytes, content_type=content_type or "image/jpeg",
-            )
-        else:
-            return await _analyze_openai_compat_vision(
-                model.provider, request_model, prompt,
-                image_url=image_url,
-            )
-
-    # ── Cloudflare Workers AI vision ──────────────────────────────────────────
-    if model.provider == "cloudflare":
-        if image_bytes is not None:
-            return await _analyze_cloudflare_vision(
-                request_model, prompt,
-                image_bytes=image_bytes, content_type=content_type or "image/jpeg",
-            )
-        else:
-            return await _analyze_cloudflare_vision(
-                request_model, prompt, image_url=image_url,
-            )
-
-    # ── Replicate vision models (LLaVA, Moondream, Qwen-Omni) ──
-    if provider == "replicate":
-        from ..config import get_settings as _gs
-        _s = _gs()
-        rep_key = _s.replicate_api_key
-        if not rep_key:
-            raise api_error("Replicate API key not configured", status_code=503, code="replicate_unavailable")
-        rep_model = model_id.replace("replicate/", "", 1) if model_id.startswith("replicate/") else model_id
-        rep_input = {"prompt": prompt or "Describe this image in detail."}
-        if image_url:
-            rep_input["image"] = image_url
-        elif image_base64:
-            rep_input["image"] = f"data:{mime_type or 'image/jpeg'};base64,{image_base64}"
-        rep_input["max_tokens"] = 1024
-        import httpx as _httpx, asyncio
-        async with _httpx.AsyncClient(timeout=120.0) as client:
-            r = await client.post(
-                f"https://api.replicate.com/v1/models/{rep_model}/predictions",
-                headers={"Authorization": f"Bearer {rep_key}", "Content-Type": "application/json", "Prefer": "wait=60"},
-                json={"input": rep_input},
-            )
-            if r.status_code not in (200, 201):
-                raise api_error(f"Replicate vision error: {r.text}", status_code=r.status_code, code="replicate_error")
-            rdata = r.json()
-            if rdata.get("status") in ("starting", "processing"):
-                get_url = rdata.get("urls", {}).get("get", "")
-                for _ in range(60):
-                    await asyncio.sleep(1)
-                    pr = await client.get(get_url, headers={"Authorization": f"Bearer {rep_key}"})
-                    pd = pr.json()
-                    if pd.get("status") == "succeeded":
-                        rdata = pd
-                        break
-                    elif pd.get("status") in ("failed", "canceled"):
-                        raise api_error(f"Replicate vision {pd['status']}", status_code=500, code="replicate_error")
-            output = rdata.get("output", "")
-            if isinstance(output, list):
-                output = "".join(output)
-            return {"text": str(output), "provider": "replicate", "model": model_id}
+        return await _analyze_with_anthropic_data(
+            request_model,
+            prompt,
+            resolved_bytes,
+            content_type=resolved_type,
+            api_key=settings.anthropic_api_key,
+            max_tokens=settings.anthropic_max_tokens,
+            timeout=settings.anthropic_timeout_ms / 1000.0,
+        )
 
     raise api_error("Selected model does not support vision analysis", status_code=400, code="unsupported_provider")
 
@@ -298,10 +188,7 @@ def _persist_temp_file(data: bytes, filename: Optional[str]) -> None:
         handle.write(data)
     path = Path(temp_path)
 
-    try:
-        loop = asyncio.get_running_loop()
-    except RuntimeError:
-        loop = asyncio.get_event_loop()
+    loop = asyncio.get_event_loop()
     loop.call_later(
         TEMP_RETENTION_SECONDS,
         lambda: path.exists() and path.unlink(missing_ok=True),
@@ -452,8 +339,6 @@ async def _analyze_with_gemini_url(
 
 
 async def _dispatch_gemini(model_name: str, prompt: str, image: Image, api_key: str) -> str:
-    if not _GENAI_AVAILABLE or genai is None:
-        raise api_error("google-generativeai not installed", status_code=503, code="genai_unavailable")
     genai.configure(api_key=api_key)
     target_model = strip_provider_prefix(model_name)
     model = genai.GenerativeModel(target_model)
@@ -477,18 +362,8 @@ async def _download_image(url: str) -> Tuple[str, bytes]:
     settings = get_settings()
     timeout = httpx.Timeout(settings.request_timeout)
     try:
-        _headers = {
-            "User-Agent": "Mozilla/5.0 (compatible; TriForce-Vision/1.0; +https://ailinux.me)",
-            "Accept": "image/webp,image/avif,image/*,*/*;q=0.8",
-            "Accept-Language": "en-US,en;q=0.5",
-        }
         async with httpx.AsyncClient(timeout=timeout) as client:
-            response = await client.get(url, follow_redirects=True, headers=_headers)
-            if response.status_code == 403:
-                raise api_error(
-                    f"Bild-URL blockiert (403 Forbidden). Direkte Bild-URLs (jpg/png) verwenden statt Webseiten.",
-                    status_code=422, code="image_access_denied"
-                )
+            response = await client.get(url)
             response.raise_for_status()
 
             content_length = response.headers.get("Content-Length")
@@ -527,24 +402,11 @@ async def _analyze_with_anthropic_data(
     # Optimize image to prevent issues with large images
     optimized_bytes = _optimize_image(image_bytes, max_size=2048)
 
-    # BUG-FIX 2026-03-12: _optimize_image always outputs JPEG, update content_type
-    if optimized_bytes != image_bytes:
-        content_type = "image/jpeg"
-
     # Map model aliases
     target_model = ANTHROPIC_VISION_ALIASES.get(model)
     if not target_model:
         stripped = strip_provider_prefix(model)
         target_model = ANTHROPIC_VISION_ALIASES.get(stripped, stripped)
-
-    # Cap max_tokens per model limit (claude-3-haiku has 4096 max)
-    CLAUDE3_MAX_TOKENS = {
-        "claude-3-haiku-20240307": 4096,
-        "claude-3-sonnet-20240229": 4096,
-        "claude-3-opus-20240229": 4096,
-    }
-    if target_model in CLAUDE3_MAX_TOKENS:
-        max_tokens = min(max_tokens, CLAUDE3_MAX_TOKENS[target_model])
 
     # Map content type to Anthropic media type
     media_type_map = {
@@ -637,250 +499,3 @@ async def _analyze_with_anthropic_data(
         raise api_error("Anthropic vision model returned no response", status_code=502, code="empty_response")
 
     return "\n".join(text_parts)
-
-# ── OpenAI-compatible Vision Handler ────────────────────────────────────────
-# Supports: openrouter, github, groq, mistral, cerebras
-# All use POST /chat/completions with image_url or base64 content parts.
-
-_OPENAI_COMPAT_VISION_PROVIDERS = {
-    "openrouter": {
-        "base_url": "https://openrouter.ai/api/v1/chat/completions",
-        "key_attr": "openrouter_api_key",
-    },
-    "github": {
-        "base_url": "https://models.inference.ai.azure.com/chat/completions",
-        "key_attr": "github_token",
-    },
-    "groq": {
-        "base_url": "https://api.groq.com/openai/v1/chat/completions",
-        "key_attr": "groq_api_key",
-    },
-    "mistral": {
-        "base_url": "https://api.mistral.ai/v1/chat/completions",
-        "key_attr": "mistral_api_key",
-    },
-    "cerebras": {
-        "base_url": "https://api.cerebras.ai/v1/chat/completions",
-        "key_attr": "cerebras_api_key",
-    },
-}
-
-
-async def _analyze_openai_compat_vision(
-    provider: str,
-    model: str,
-    prompt: str,
-    image_bytes: Optional[bytes] = None,
-    image_url: Optional[str] = None,
-    content_type: str = "image/png",
-    timeout: float = 120.0,
-) -> str:
-    """Generic OpenAI /chat/completions vision handler for all compatible providers."""
-    from ..config import get_settings
-    cfg = _OPENAI_COMPAT_VISION_PROVIDERS[provider]
-    settings = get_settings()
-    api_key = getattr(settings, cfg["key_attr"], None)
-    if not api_key:
-        raise api_error(
-            f"{provider.title()} API Key nicht konfiguriert ({cfg['key_attr']})",
-            status_code=503, code="provider_key_missing",
-        )
-    target_model = strip_provider_prefix(model)
-
-    # Build image content part
-    if image_bytes is not None:
-        optimized = _optimize_image(image_bytes, max_size=1536)
-        b64 = base64.b64encode(optimized).decode("ascii")
-        # BUG-FIX 2026-03-11: _optimize_image always outputs JPEG regardless of input.
-        # Original content_type caused MIME mismatch -> "Invalid image data" from GitHub etc.
-        actual_mime = "image/jpeg"
-        image_part = {
-            "type": "image_url",
-            "image_url": {"url": f"data:{actual_mime};base64,{b64}"},
-        }
-    elif image_url is not None:
-        image_part = {"type": "image_url", "image_url": {"url": image_url}}
-    else:
-        raise api_error("Kein Bild angegeben", status_code=422, code="missing_image")
-
-    body = {
-        "model": target_model,
-        "max_tokens": 4096,
-        "messages": [
-            {
-                "role": "user",
-                "content": [
-                    image_part,
-                    {"type": "text", "text": prompt},
-                ],
-            }
-        ],
-    }
-
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json",
-    }
-    if provider == "openrouter":
-        headers["HTTP-Referer"] = "https://ailinux.me"
-        headers["X-Title"] = "Nova AI"
-
-    async with httpx.AsyncClient(timeout=timeout) as client:
-        r = await client.post(cfg["base_url"], json=body, headers=headers)
-        if r.status_code >= 400:
-            try:
-                err = r.json().get("error", {})
-                msg = err.get("message", r.text) if isinstance(err, dict) else str(err)
-            except Exception:
-                msg = r.text[:300]
-            raise api_error(
-                f"{provider.title()} Vision Fehler: {msg}",
-                status_code=r.status_code, code="provider_vision_error",
-            )
-        rdata = r.json()
-        choices = rdata.get("choices", [])
-        if not choices:
-            raise api_error("Leere Antwort vom Provider", status_code=500, code="empty_response")
-        return choices[0].get("message", {}).get("content", "")
-
-
-async def _analyze_cloudflare_vision(
-    model: str,
-    prompt: str,
-    image_bytes: Optional[bytes] = None,
-    image_url: Optional[str] = None,
-    content_type: str = "image/png",
-    timeout: float = 120.0,
-) -> str:
-    """Cloudflare Workers AI vision — uses /v1/chat/completions compatible endpoint."""
-    from ..config import get_settings
-    settings = get_settings()
-    cf_account = settings.cloudflare_account_id
-    cf_token = settings.cloudflare_api_token
-    if not cf_account or not cf_token:
-        raise api_error(
-            "Cloudflare Account ID oder API Token fehlt",
-            status_code=503, code="cloudflare_unavailable",
-        )
-    cf_model = strip_provider_prefix(model)  # @cf/meta/llama-3.2-11b-vision-instruct
-    url = f"https://api.cloudflare.com/client/v4/accounts/{cf_account}/ai/run/{cf_model}"
-
-    # CF uses OpenAI-style chat/completions body
-    if image_bytes is not None:
-        optimized = _optimize_image(image_bytes, max_size=1024)
-        b64 = base64.b64encode(optimized).decode("ascii")
-        # BUG-FIX 2026-03-11: _optimize_image always outputs JPEG
-        img_content = f"data:image/jpeg;base64,{b64}"
-    elif image_url is not None:
-        img_content = image_url
-    else:
-        raise api_error("Kein Bild angegeben", status_code=422, code="missing_image")
-
-    body = {
-        "messages": [
-            {
-                "role": "user",
-                "content": [
-                    {"type": "image_url", "image_url": {"url": img_content}},
-                    {"type": "text", "text": prompt},
-                ],
-            }
-        ],
-        "max_tokens": 2048,
-    }
-
-    headers = {
-        "Authorization": f"Bearer {cf_token}",
-        "Content-Type": "application/json",
-    }
-    async with httpx.AsyncClient(timeout=timeout) as client:
-        # BUG-FIX 2026-03-11: CF llama-3.2-11b-vision-instruct requires model
-        # license agreement via sending "agree" as first prompt. Auto-agree on 403.
-        for _attempt in range(2):
-            r = await client.post(url, json=body, headers=headers)
-            # Check for Model Agreement requirement (can be 403, 400, or even 200 with errors)
-            _resp_text = ""
-            try:
-                _resp_json = r.json()
-                _resp_text = str(_resp_json.get("errors", _resp_json))[:500]
-            except Exception:
-                _resp_text = r.text[:500]
-            if "Model Agreement" in _resp_text and _attempt == 0:
-                logger.info("Cloudflare: auto-agreeing to model license for %s", cf_model)
-                agree_body = {"messages": [{"role": "user", "content": "agree"}], "max_tokens": 10}
-                _agree_r = await client.post(url, json=agree_body, headers=headers)
-                logger.info("Cloudflare: agree response status=%d", _agree_r.status_code)
-                continue
-            if r.status_code == 403:
-                raise api_error(
-                    f"Cloudflare Vision Fehler: {_resp_text[:300]}",
-                    status_code=r.status_code, code="cloudflare_vision_error",
-                )
-            if r.status_code >= 400:
-                try:
-                    err_body = r.json()
-                    msg = str(err_body.get("errors", err_body))[:200]
-                except Exception:
-                    msg = r.text[:200]
-                raise api_error(
-                    f"Cloudflare Vision Fehler: {msg}",
-                    status_code=r.status_code, code="cloudflare_vision_error",
-                )
-            break
-        rdata = r.json()
-        # CF returns: {"result": {"response": "..."}} or choices[]
-        result = rdata.get("result", {})
-        if isinstance(result, dict):
-            text = result.get("response") or result.get("content") or ""
-            if text:
-                return text
-        choices = rdata.get("choices", [])
-        if choices:
-            return choices[0].get("message", {}).get("content", "")
-        return str(result)[:500]
-
-
-# === Federation Vision Proxy ================================================
-async def _federation_proxy_vision(
-    model: str, prompt: str,
-    image_url: Optional[str] = None,
-    image_bytes: Optional[bytes] = None,
-    content_type: Optional[str] = None,
-) -> str:
-    """Proxy vision request through federation master (hetzner) via WireGuard."""
-    import base64 as _b64
-    master_url = "http://10.10.0.1:9000"
-    import os as _os2
-    _creds = _os2.getenv("FEDERATION_BASIC_AUTH", "")
-    if not _creds:
-        raise api_error("Federation proxy not configured (FEDERATION_BASIC_AUTH missing)", status_code=503, code="proxy_not_configured")
-    basic_auth = _b64.b64encode(_creds.encode()).decode()
-
-    if image_url:
-        # URL-based: simple JSON POST
-        payload = {"model": model, "prompt": prompt, "image_url": image_url}
-        async with httpx.AsyncClient(timeout=httpx.Timeout(120)) as client:
-            resp = await client.post(
-                f"{master_url}/v1/images/analyze",
-                headers={"Authorization": f"Basic {basic_auth}", "Content-Type": "application/json"},
-                json=payload,
-            )
-            if resp.status_code != 200:
-                raise api_error(f"Federation vision proxy error: {resp.text[:300]}", status_code=resp.status_code, code="federation_proxy_error")
-            return resp.json().get("text", "")
-    elif image_bytes:
-        # Upload-based: multipart
-        files = {"file": ("image.jpg", image_bytes, content_type or "image/jpeg")}
-        data = {"model": model, "prompt": prompt}
-        async with httpx.AsyncClient(timeout=httpx.Timeout(120)) as client:
-            resp = await client.post(
-                f"{master_url}/v1/images/analyze/upload",
-                headers={"Authorization": f"Basic {basic_auth}"},
-                files=files,
-                data=data,
-            )
-            if resp.status_code != 200:
-                raise api_error(f"Federation vision proxy error: {resp.text[:300]}", status_code=resp.status_code, code="federation_proxy_error")
-            return resp.json().get("text", "")
-    else:
-        raise api_error("No image data for federation proxy", status_code=422, code="missing_image")

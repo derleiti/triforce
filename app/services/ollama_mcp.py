@@ -640,7 +640,7 @@ async def handle_ollama_chat(arguments: Dict[str, Any]) -> Dict[str, Any]:
 async def handle_ollama_embed(arguments: Dict[str, Any]) -> Dict[str, Any]:
     """Handle ollama.embed tool."""
     model = arguments.get("model")
-    input_text = arguments.get("input") or arguments.get("text")  # accept both
+    input_text = arguments.get("input")
     if not model or not input_text:
         raise ValueError("'model' and 'input' are required")
     return await ollama_mcp.embed(model, input_text)

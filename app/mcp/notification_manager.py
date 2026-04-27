@@ -49,6 +49,16 @@ SRC_MCP = "mcp"
 SRC_MANUAL = "manual"
 SRC_WORDPRESS = "wordpress"
 
+# -----------------------------------------------------------------------------
+# AUTO-ACTION KILL-SWITCH (vom Betreiber explizit deaktiviert)
+# -----------------------------------------------------------------------------
+# Agents handeln NICHT autonom auf Events. Stattdessen wird bei HIGH/CRITICAL
+# eine strukturierte Vorschlag-Mail an die Admin-Postfaecher geschickt.
+# Markus entscheidet, ob/wie reagiert wird.
+AUTO_AGENT_ACTIONS_ENABLED = False
+SUGGEST_RECIPIENTS = ["nova@ailinux.me", "admin@ailinux.me"]
+# -----------------------------------------------------------------------------
+
 MAIL_POLL_INTERVAL = 60
 FORUM_POLL_INTERVAL = 300
 WP_POLL_INTERVAL = 600
@@ -545,6 +555,10 @@ ISSUE_MAP = {
 
 async def _cloud_mail_fallback(event: Dict) -> bool:
     """Fallback: reply to mail events via Groq cloud API when CLI agents are exhausted."""
+    # SUGGEST-ONLY: kein automatisches Antworten auf Mails mehr.
+    if not AUTO_AGENT_ACTIONS_ENABLED:
+        logger.debug("cloud_mail_fallback: skipped (AUTO_AGENT_ACTIONS_ENABLED=False)")
+        return False
     metadata = event.get("metadata", {})
     uid = metadata.get("uid", "")
     sender = metadata.get("from", "")
@@ -611,6 +625,10 @@ async def _cloud_mail_fallback(event: Dict) -> bool:
 
 async def _direct_mail_reply(event: Dict) -> bool:
     """Fallback: Reply to mail events directly via Groq API when CLI agents are unavailable."""
+    # SUGGEST-ONLY: kein automatisches Antworten auf Mails mehr.
+    if not AUTO_AGENT_ACTIONS_ENABLED:
+        logger.debug("direct_mail_reply: skipped (AUTO_AGENT_ACTIONS_ENABLED=False)")
+        return False
     metadata = event.get("metadata", {})
     uid = metadata.get("uid", "")
     sender = metadata.get("from", "")
@@ -691,6 +709,86 @@ async def _direct_mail_reply(event: Dict) -> bool:
         logger.warning(f"direct_mail_reply failed: {e}")
         return False
 
+async def _send_suggestion_mail(event: Dict) -> bool:
+    """Suggest-only Modus: schickt eine strukturierte Vorschlag-Mail an die
+    Admin-Postfaecher (nova@, admin@) statt einen Agent auto-handeln zu lassen.
+
+    Inhalt: Event-Metadaten + vorgeschlagenes Vorgehen aus TASK_PROMPTS.
+    Es passiert KEINE Aktion ausser dieser Benachrichtigung.
+    """
+    try:
+        from app.services.mail_service import mail_send
+        title = event.get("title", "")
+        body = event.get("body", "")
+        event_type = event.get("event_type", "")
+        priority = event.get("priority", "normal")
+        source = event.get("source", "")
+        event_id = event.get("id", "")
+        metadata = event.get("metadata", {}) or {}
+        action_url = event.get("action_url", "")
+
+        # Vorgeschlagenes Vorgehen aus den vorhandenen Task-Prompts ableiten,
+        # damit Markus auf einen Blick sieht, was ein Agent *tun wuerde*.
+        try:
+            template = TASK_PROMPTS.get(event_type, _DEFAULT_TASK_PROMPT)
+            suggested = template.format(
+                event_id=event_id,
+                uid=metadata.get("uid", ""),
+                discussion_id=metadata.get("discussion_id", ""),
+                comment_id=metadata.get("comment_id", ""),
+                author=metadata.get("author", ""),
+                subject=metadata.get("subject", ""),
+            )
+        except Exception:
+            suggested = "(kein passender Task-Prompt — manuelle Pruefung)"
+
+        try:
+            metadata_str = json.dumps(metadata, indent=2, ensure_ascii=False, default=str)[:1500]
+        except Exception:
+            metadata_str = str(metadata)[:1500]
+
+        mail_body = (
+            f"[Nova Suggest-Mode] Neues Event — KEINE Auto-Aktion ausgefuehrt.\n"
+            f"\n"
+            f"Event-ID  : {event_id}\n"
+            f"Type      : {event_type}\n"
+            f"Priority  : {priority}\n"
+            f"Source    : {source}\n"
+            f"Action-URL: {action_url}\n"
+            f"\n"
+            f"--- TITEL ---\n{title}\n"
+            f"\n"
+            f"--- BODY ---\n{(body or '')[:3000]}\n"
+            f"\n"
+            f"--- VORGESCHLAGENES VORGEHEN (zur Pruefung) ---\n{suggested}\n"
+            f"\n"
+            f"--- METADATA ---\n{metadata_str}\n"
+            f"\n"
+            f"-- \nNova AI (Suggest-Mode aktiv, AUTO_AGENT_ACTIONS_ENABLED=False)\n"
+        )
+
+        sent_to = []
+        for recipient in SUGGEST_RECIPIENTS:
+            try:
+                mail_send(
+                    to=recipient,
+                    subject=f"[Nova-Vorschlag] [{priority.upper()}] {title[:80]}",
+                    body=mail_body,
+                )
+                sent_to.append(recipient)
+            except Exception as _se:
+                logger.warning(f"SUGGEST mail to {recipient} failed: {_se}")
+
+        if sent_to:
+            logger.info(f"SUGGEST: vorschlag verschickt an {sent_to} | {event_type} | {event_id}")
+            return True
+        logger.warning(f"SUGGEST: keine Mail rausgegangen fuer event {event_id}")
+        return False
+    except Exception as e:
+        logger.error(f"_send_suggestion_mail error: {e}")
+        return False
+
+
 async def _dispatch_event(event: Dict) -> None:
     """Dispatch event to the appropriate agent with task-specific prompt."""
     event_type = event.get("event_type", "")
@@ -711,6 +809,23 @@ async def _dispatch_event(event: Dict) -> None:
 
     if priority not in (PRIO_HIGH, PRIO_CRITICAL):
         return
+
+    # ----------------------------------------------------------------------
+    # SUGGEST-ONLY MODUS: keine Agent-Auto-Aktionen mehr.
+    # Stattdessen Vorschlag-Mail an nova@ + admin@ und fertig.
+    # ----------------------------------------------------------------------
+    if not AUTO_AGENT_ACTIONS_ENABLED:
+        # Cooldown beachten, sonst spammen wir die Postfaecher
+        now_s = time.time()
+        last_s = _DISPATCH_COOLDOWN.get(event_type, 0)
+        if now_s - last_s < DISPATCH_COOLDOWN_S:
+            return
+        _DISPATCH_COOLDOWN[event_type] = now_s
+        ok = await _send_suggestion_mail(event)
+        if ok:
+            _mark_dispatched(event_id, "suggest-mail", None)
+        return
+    # ----------------------------------------------------------------------
     rule = EVENT_TYPES.get(event_type, {})
     agent_id = rule.get("agent")
     if not agent_id:

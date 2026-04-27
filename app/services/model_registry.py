@@ -121,14 +121,6 @@ def detect_capabilities(model_name: str, supported_methods: List[str] = None) ->
     if not capabilities:
         capabilities.append("chat")
 
-    # Ollama-Modelle können immer chatten — egal ob reasoning/code/vision erkannt
-    # detect_capabilities() wurde ursprünglich für Gemini gebaut, Ollama braucht
-    # immer "chat" als Basis-Capability.
-    if supported_methods is None and "chat" not in capabilities:
-        # Kein supported_methods → Ollama oder unbekannter Provider
-        # Bei Gemini wird supported_methods immer übergeben
-        capabilities.append("chat")
-
     # Map capabilities to roles
     for cap in capabilities:
         role = CAPABILITY_TO_ROLE.get(cap)
@@ -230,14 +222,12 @@ class ModelRegistry:
                 self._discover_mistral(),
                 self._discover_groq(),
                 self._discover_cerebras(),
-                self._discover_replicate(),
                 self._discover_cohere(),
                 self._discover_openrouter(),
                 self._discover_together(),
                 self._discover_fireworks(),
                 self._discover_cloudflare(),
                 self._discover_github_models(),
-                self._discover_huggingface(),
                 return_exceptions=True
             )
 
@@ -275,23 +265,9 @@ class ModelRegistry:
     async def get_model(self, model_id: str) -> Optional[ModelInfo]:
         canonical_id = self._normalize_id(model_id)
         models = await self.list_models()
-        # Direct match
         for entry in models:
             if entry.id == canonical_id:
                 return entry
-        # Try with provider prefixes (ollama/gemini/groq/etc.)
-        _PREFIXES = ["ollama/", "gemini/", "groq/", "openrouter/", "anthropic/", "mistral/", "cloudflare/", "github/", "replicate/"]
-        for prefix in _PREFIXES:
-            prefixed = f"{prefix}{canonical_id}"
-            for entry in models:
-                if entry.id == prefixed:
-                    return entry
-        # Try without prefix (if model_id has one)
-        if "/" in canonical_id:
-            bare = canonical_id.split("/", 1)[1]
-            for entry in models:
-                if entry.id.endswith(f"/{bare}"):
-                    return entry
         return None
 
     async def _discover_ollama(self) -> List[ModelInfo]:
@@ -457,29 +433,14 @@ class ModelRegistry:
             return []
 
         models: List[ModelInfo] = []
-        # Google AI Studio models.list: pageSize default=50, max=1000.
-        # Loop with nextPageToken to get ALL models (spec: ai.google.dev/api/models).
-        all_api_models: List[dict] = []
         try:
             async with httpx.AsyncClient(timeout=10.0) as client:
-                page_token: Optional[str] = None
-                for _page in range(10):  # safety cap: 10 pages * 1000 = 10000 models
-                    params: Dict[str, object] = {
-                        "key": settings.gemini_api_key,
-                        "pageSize": 1000,
-                    }
-                    if page_token:
-                        params["pageToken"] = page_token
-                    response = await client.get(
-                        "https://generativelanguage.googleapis.com/v1beta/models",
-                        params=params,
-                    )
-                    response.raise_for_status()
-                    data = response.json()
-                    all_api_models.extend(data.get("models", []))
-                    page_token = data.get("nextPageToken") or None
-                    if not page_token:
-                        break
+                response = await client.get(
+                    "https://generativelanguage.googleapis.com/v1beta/models",
+                    params={"key": settings.gemini_api_key}
+                )
+                response.raise_for_status()
+                data = response.json()
         except httpx.RequestError as exc:
             logger.warning("Failed to discover Gemini models: %s", exc)
             return self._gemini_fallback_models()
@@ -487,7 +448,7 @@ class ModelRegistry:
             logger.warning("Gemini API returned HTTP %s: %s", exc.response.status_code, exc)
             return self._gemini_fallback_models()
 
-        for model in all_api_models:
+        for model in data.get("models", []):
             name = model.get("name", "")
             # Extract model ID from full path (e.g., "models/gemini-2.0-flash" -> "gemini-2.0-flash")
             if name.startswith("models/"):
@@ -522,36 +483,25 @@ class ModelRegistry:
         return self._gemini_fallback_models()
 
     def _gemini_fallback_models(self) -> List[ModelInfo]:
-        """Fallback Gemini models if API discovery fails.
-        
-        Updated April 2026 — reflects current Gemini API model availability.
-        Gemini 1.5 and 3-pro-preview are shut down. 2.0 deprecated June 2026.
-        """
+        """Fallback Gemini models if API discovery fails."""
         return [
-            # Gemini 3.1 Models (Latest Preview)
-            ModelInfo(id="gemini/gemini-3.1-pro-preview", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
-            ModelInfo(id="gemini/gemini-3.1-flash-lite-preview", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
-            # Gemini 3 Flash
-            ModelInfo(id="gemini/gemini-3-flash-preview", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
-            # Gemini 2.5 Models (Stable)
+            # Gemini 2.5 Models (Latest Stable)
             ModelInfo(id="gemini/gemini-2.5-pro", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
             ModelInfo(id="gemini/gemini-2.5-flash", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
             ModelInfo(id="gemini/gemini-2.5-flash-lite", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
-            # Nano Banana Image Models
-            ModelInfo(id="gemini/gemini-3.1-flash-image-preview", provider="gemini", capabilities=["chat", "vision", "image_gen"], roles=["assistant", "image_generator"]),
-            ModelInfo(id="gemini/gemini-3-pro-image-preview", provider="gemini", capabilities=["chat", "vision", "image_gen"], roles=["assistant", "image_generator"]),
-            ModelInfo(id="gemini/gemini-2.5-flash-image", provider="gemini", capabilities=["chat", "vision", "image_gen"], roles=["assistant", "image_generator"]),
-            # Imagen 4 (Image Generation — requires billing)
+            # Gemini 2.0 Models
+            ModelInfo(id="gemini/gemini-2.0-flash", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
+            # Gemini 1.5 Models
+            ModelInfo(id="gemini/gemini-1.5-flash", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
+            ModelInfo(id="gemini/gemini-1.5-pro", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
+            # Imagen 4 (Image Generation)
             ModelInfo(id="gemini/imagen-4.0-generate-001", provider="gemini", capabilities=["image_gen"], roles=["image_generator"], api_method="predict"),
-            ModelInfo(id="gemini/imagen-4.0-fast-generate-001", provider="gemini", capabilities=["image_gen"], roles=["image_generator"], api_method="predict"),
             ModelInfo(id="gemini/imagen-4.0-ultra-generate-001", provider="gemini", capabilities=["image_gen"], roles=["image_generator"], api_method="predict"),
-            # Veo 3 (Video Generation — requires billing)
+            # Veo 3 (Video Generation)
             ModelInfo(id="gemini/veo-3.0-generate-001", provider="gemini", capabilities=["video_gen"], roles=["video_generator"], api_method="predictLongRunning"),
             ModelInfo(id="gemini/veo-3.0-fast-generate-001", provider="gemini", capabilities=["video_gen"], roles=["video_generator"], api_method="predictLongRunning"),
-            ModelInfo(id="gemini/veo-3.1-generate-preview", provider="gemini", capabilities=["video_gen"], roles=["video_generator"], api_method="predictLongRunning"),
-            ModelInfo(id="gemini/veo-3.1-fast-generate-preview", provider="gemini", capabilities=["video_gen"], roles=["video_generator"], api_method="predictLongRunning"),
             # Embedding
-            ModelInfo(id="gemini/gemini-embedding-2-preview", provider="gemini", capabilities=["embedding"], roles=["embedder"]),
+            ModelInfo(id="gemini/text-embedding-004", provider="gemini", capabilities=["embedding"], roles=["embedder"]),
         ]
 
     async def _discover_mistral(self) -> List[ModelInfo]:
@@ -763,54 +713,6 @@ class ModelRegistry:
             ModelInfo(id="cerebras/llama-3.3-70b", provider="cerebras", capabilities=["chat"], roles=["assistant"]),
             ModelInfo(id="cerebras/qwen-3-32b", provider="cerebras", capabilities=["chat"], roles=["assistant"]),
         ]
-
-    async def _discover_replicate(self) -> List[ModelInfo]:
-        """Discover popular LLM models on Replicate."""
-        settings = self._settings
-        if not settings.replicate_api_key:
-            return []
-
-        # Replicate doesn't have a simple /models list for LLMs
-        # Use curated list of popular text generation models
-        models = [
-            ModelInfo(id="replicate/meta/meta-llama-3-70b-instruct", provider="replicate", capabilities=["chat"], roles=["assistant"]),
-            ModelInfo(id="replicate/meta/meta-llama-3-8b-instruct", provider="replicate", capabilities=["chat"], roles=["assistant"]),
-            ModelInfo(id="replicate/meta/meta-llama-3.1-405b-instruct", provider="replicate", capabilities=["chat"], roles=["assistant"]),
-            ModelInfo(id="replicate/mistralai/mistral-7b-instruct-v0.2", provider="replicate", capabilities=["chat"], roles=["assistant"]),
-            ModelInfo(id="replicate/mistralai/mixtral-8x7b-instruct-v0.1", provider="replicate", capabilities=["chat"], roles=["assistant"]),
-            ModelInfo(id="replicate/black-forest-labs/flux-schnell", provider="replicate", capabilities=["image_generation"], roles=["image_creator"]),
-            ModelInfo(id="replicate/black-forest-labs/flux-dev", provider="replicate", capabilities=["image_generation"], roles=["image_creator"]),
-            ModelInfo(id="replicate/stability-ai/sdxl", provider="replicate", capabilities=["image_generation"], roles=["image_creator"]),
-        ]
-
-        # Try to search for more models via API
-        try:
-            async with httpx.AsyncClient(timeout=10.0) as client:
-                response = await client.get(
-                    "https://api.replicate.com/v1/collections/language-models",
-                    headers={"Authorization": f"Bearer {settings.replicate_api_key}"}
-                )
-                if response.status_code == 200:
-                    data = response.json()
-                    for model in data.get("models", [])[:20]:
-                        owner = model.get("owner", "")
-                        name = model.get("name", "")
-                        if owner and name:
-                            model_id = f"replicate/{owner}/{name}"
-                            if not any(m.id == model_id for m in models):
-                                capabilities, roles, api_method = detect_capabilities(name)
-                                models.append(ModelInfo(
-                                    id=model_id,
-                                    provider="replicate",
-                                    capabilities=list(set(capabilities)),
-                                    roles=roles,
-                                    api_method=api_method
-                                ))
-        except Exception as exc:
-            logger.debug("Replicate collection discovery failed: %s", exc)
-
-        logger.info("Discovered %d Replicate models", len(models))
-        return models
 
     async def _discover_cohere(self) -> List[ModelInfo]:
         """Discover models from Cohere API (Best RAG & Embeddings)."""
@@ -1121,15 +1023,9 @@ class ModelRegistry:
             elif task_name == "Translation":
                 capabilities.append("translation")
                 roles.append("translator")
-            elif task_name == "Summarization":
-                capabilities.append("summarization")
-                roles.append("summarizer")
-            elif task_name == "Text Classification":
-                capabilities.append("classification")
-                roles.append("classifier")
             else:
-                # Unknown task type - skip, do NOT default to chat
-                continue
+                capabilities.append("chat")
+                roles.append("assistant")
 
             models.append(ModelInfo(
                 id=f"cloudflare/{model_id}",
@@ -1151,60 +1047,37 @@ class ModelRegistry:
         if not settings.github_token:
             return []
         
-        # GitHub Models — echte Model-IDs aus catalog/models API (43 Modelle)
+        # GitHub Models - curated list (API doesn't list all)
         github_models = [
-            # OpenAI
-            ("openai/gpt-4.1",           ["chat", "code", "vision"], ["lead", "worker"]),
-            ("openai/gpt-4.1-mini",      ["chat", "code"],           ["worker"]),
-            ("openai/gpt-4.1-nano",      ["chat"],                   ["worker"]),
-            ("openai/gpt-4o",            ["chat", "code", "vision"], ["lead", "worker"]),
-            ("openai/gpt-4o-mini",       ["chat", "code"],           ["worker"]),
-            ("openai/gpt-5",             ["chat", "reasoning"],      ["lead"]),
-            ("openai/gpt-5-chat",        ["chat", "reasoning"],      ["lead"]),
-            ("openai/gpt-5-mini",        ["chat", "reasoning"],      ["worker"]),
-            ("openai/gpt-5-nano",        ["chat"],                   ["worker"]),
-            ("openai/o1",                ["chat", "reasoning"],      ["lead"]),
-            ("openai/o1-mini",           ["chat", "reasoning"],      ["worker"]),
-            ("openai/o1-preview",        ["chat", "reasoning"],      ["lead"]),
-            ("openai/o3",                ["chat", "reasoning"],      ["lead"]),
-            ("openai/o3-mini",           ["chat", "reasoning"],      ["worker"]),
-            ("openai/o4-mini",           ["chat", "reasoning"],      ["worker"]),
+            # OpenAI Models
+            ("gpt-4o", ["chat", "code", "vision"], ["lead", "worker"]),
+            ("gpt-4o-mini", ["chat", "code"], ["worker"]),
+            ("gpt-4.1", ["chat", "code", "vision"], ["lead", "worker"]),
+            ("gpt-4.1-mini", ["chat", "code"], ["worker"]),
+            ("gpt-4.1-nano", ["chat"], ["worker"]),
+            ("o1", ["chat", "reasoning"], ["lead"]),
+            ("o1-mini", ["chat", "reasoning"], ["worker"]),
+            ("o3-mini", ["chat", "reasoning"], ["worker"]),
             # Meta Llama
-            ("meta/llama-3.3-70b-instruct",                  ["chat", "code"],    ["worker"]),
-            ("meta/llama-3.2-11b-vision-instruct",           ["chat", "vision"],  ["worker"]),
-            ("meta/llama-3.2-90b-vision-instruct",           ["chat", "vision"],  ["lead"]),
-            ("meta/meta-llama-3.1-405b-instruct",            ["chat", "code"],    ["lead"]),
-            ("meta/meta-llama-3.1-8b-instruct",              ["chat"],            ["worker"]),
-            ("meta/llama-4-maverick-17b-128e-instruct-fp8",  ["chat", "code"],    ["lead"]),
-            ("meta/llama-4-scout-17b-16e-instruct",          ["chat", "code"],    ["worker"]),
+            ("Meta-Llama-3.1-405B-Instruct", ["chat", "code"], ["lead"]),
+            ("Meta-Llama-3.1-70B-Instruct", ["chat", "code"], ["worker"]),
+            ("Meta-Llama-3.1-8B-Instruct", ["chat"], ["worker"]),
+            ("Llama-3.3-70B-Instruct", ["chat", "code"], ["worker"]),
             # DeepSeek
-            ("deepseek/deepseek-r1",       ["chat", "reasoning", "code"], ["lead"]),
-            ("deepseek/deepseek-r1-0528",  ["chat", "reasoning", "code"], ["lead"]),
-            ("deepseek/deepseek-v3-0324",  ["chat", "code"],               ["worker"]),
+            ("DeepSeek-R1", ["chat", "reasoning", "code"], ["lead", "worker"]),
+            ("DeepSeek-R1-0528", ["chat", "reasoning", "code"], ["worker"]),
+            ("DeepSeek-V3-0324", ["chat", "code"], ["worker"]),
             # Mistral
-            ("mistral-ai/mistral-small-2503",  ["chat", "code"], ["worker"]),
-            ("mistral-ai/mistral-medium-2505", ["chat", "code"], ["worker"]),
-            ("mistral-ai/ministral-3b",        ["chat"],          ["worker"]),
-            ("mistral-ai/codestral-2501",      ["code"],          ["worker"]),
-            # Microsoft
-            ("microsoft/phi-4",                     ["chat", "code"],      ["worker"]),
-            ("microsoft/phi-4-mini-instruct",       ["chat"],               ["worker"]),
-            ("microsoft/phi-4-multimodal-instruct", ["chat", "vision"],    ["worker"]),
-            ("microsoft/phi-4-reasoning",           ["chat", "reasoning"], ["worker"]),
-            ("microsoft/phi-4-mini-reasoning",      ["chat", "reasoning"], ["worker"]),
-            ("microsoft/mai-ds-r1",                 ["chat", "reasoning"], ["lead"]),
-            # xAI
-            ("xai/grok-3",      ["chat", "reasoning"], ["lead"]),
-            ("xai/grok-3-mini", ["chat"],               ["worker"]),
+            ("Mistral-Small-3.1", ["chat", "code"], ["worker"]),
+            ("Codestral-2501", ["code"], ["worker"]),
             # Cohere
-            ("cohere/cohere-command-a",               ["chat"], ["worker"]),
-            ("cohere/cohere-command-r-08-2024",       ["chat"], ["worker"]),
-            ("cohere/cohere-command-r-plus-08-2024",  ["chat"], ["lead"]),
-            # AI21
-            ("ai21-labs/ai21-jamba-1.5-large", ["chat"], ["worker"]),
-            # Embeddings
-            ("openai/text-embedding-3-large", ["embedding"], ["embedder"]),
-            ("openai/text-embedding-3-small", ["embedding"], ["embedder"]),
+            ("Cohere-command-a", ["chat"], ["worker"]),
+            # Microsoft Phi
+            ("Phi-4", ["chat", "code"], ["worker"]),
+            ("Phi-4-multimodal-instruct", ["chat", "vision"], ["worker"]),
+            # xAI
+            ("Grok-3", ["chat", "reasoning"], ["lead"]),
+            ("Grok-3-Mini", ["chat"], ["worker"]),
         ]
         
         models = []
@@ -1217,62 +1090,6 @@ class ModelRegistry:
             ))
         
         logger.info("Discovered %d GitHub Models (curated list)", len(models))
-        return models
-
-    async def _discover_huggingface(self) -> list:
-        """HuggingFace Inference API — curated model list (Free + Pro)."""
-        settings = self._settings
-        api_key = getattr(settings, 'huggingface_api_key', None) or ""
-        if not api_key:
-            return []
-
-        hf_models = [
-            # Chat / Text Generation
-            ("meta-llama/Llama-3.3-70B-Instruct",          ["chat", "code"],       ["lead"]),
-            ("meta-llama/Llama-3.1-70B-Instruct",          ["chat", "code"],       ["lead"]),
-            ("meta-llama/Llama-3.2-11B-Vision-Instruct",   ["chat", "vision"],     ["worker"]),
-            ("meta-llama/Llama-3.2-3B-Instruct",           ["chat"],               ["worker"]),
-            ("mistralai/Mistral-7B-Instruct-v0.3",         ["chat", "code"],       ["worker"]),
-            ("mistralai/Mixtral-8x7B-Instruct-v0.1",       ["chat", "code"],       ["lead"]),
-            ("Qwen/Qwen2.5-72B-Instruct",                  ["chat", "code"],       ["lead"]),
-            ("Qwen/Qwen2.5-7B-Instruct",                   ["chat", "code"],       ["worker"]),
-            ("Qwen/Qwen2.5-Coder-32B-Instruct",            ["chat", "code"],       ["lead"]),
-            ("microsoft/Phi-3.5-mini-instruct",             ["chat", "code"],       ["worker"]),
-            ("microsoft/phi-4",                             ["chat", "code"],       ["worker"]),
-            ("google/gemma-2-27b-it",                       ["chat"],               ["lead"]),
-            ("google/gemma-2-9b-it",                        ["chat"],               ["worker"]),
-            ("HuggingFaceH4/zephyr-7b-beta",                ["chat"],               ["worker"]),
-            ("deepseek-ai/DeepSeek-R1-Distill-Qwen-32B",   ["chat", "reasoning"],  ["lead"]),
-            ("deepseek-ai/DeepSeek-R1-Distill-Llama-70B",  ["chat", "reasoning"],  ["lead"]),
-            ("NovaSky-AI/Sky-T1-32B-Preview",               ["chat", "reasoning"],  ["lead"]),
-            # Embeddings
-            ("sentence-transformers/all-MiniLM-L6-v2",     ["embedding"],          ["embedder"]),
-            ("BAAI/bge-large-en-v1.5",                      ["embedding"],          ["embedder"]),
-            ("intfloat/multilingual-e5-large",              ["embedding"],          ["embedder"]),
-            # Image Generation
-            ("black-forest-labs/FLUX.1-schnell",            ["image_gen"],          ["image_generator"]),
-            ("black-forest-labs/FLUX.1-dev",                ["image_gen"],          ["image_generator"]),
-            # ("stabilityai/stable-diffusion-xl-base-1.0",   ["image_gen"],          ["image_generator"]),  # DEPRECATED on HF
-            # Audio / Music
-            ("facebook/musicgen-large",                     ["audio"],              ["audio_processor"]),
-            ("facebook/musicgen-medium",                    ["audio"],              ["audio_processor"]),
-            ("openai/whisper-large-v3",                     ["audio"],              ["audio_processor"]),
-            # Summarization / Translation
-            ("facebook/bart-large-cnn",                     ["summarization"],      ["worker"]),
-            ("Helsinki-NLP/opus-mt-de-en",                  ["translation"],        ["worker"]),
-            ("Helsinki-NLP/opus-mt-en-de",                  ["translation"],        ["worker"]),
-        ]
-
-        models = []
-        for model_id, capabilities, roles in hf_models:
-            models.append(ModelInfo(
-                id=f"hf/{model_id}",
-                provider="huggingface",
-                capabilities=capabilities,
-                roles=roles,
-            ))
-
-        logger.info("HuggingFace: %d curated models registered", len(models))
         return models
 
     def _cloudflare_fallback_models(self) -> List[ModelInfo]:
@@ -1299,22 +1116,13 @@ class ModelRegistry:
         if settings.gpt_oss_api_key:
             hosted.extend([
                 ModelInfo(id="gpt-oss:cloud/120b", provider="ollama", capabilities=["chat"], roles=["assistant"]),
-                ModelInfo(id="gpt-oss:120b-cloud", provider="ollama", capabilities=["chat"], roles=["assistant"]),
-                ModelInfo(id="gpt-oss:20b-cloud", provider="ollama", capabilities=["chat"], roles=["assistant"]),
+                ModelInfo(id="gpt-oss:120b-cloud", provider="gpt-oss", capabilities=["chat"], roles=["assistant"]),
+                ModelInfo(id="gpt-oss:20b-cloud", provider="gpt-oss", capabilities=["chat"], roles=["assistant"]),
             ])
 
         if settings.anthropic_api_key:
             hosted.extend([
-                # Claude 4.7 Series (Latest 2026)
-                ModelInfo(id="anthropic/claude-opus-4-7", provider="anthropic", capabilities=["chat", "vision", "code", "reasoning"], roles=["assistant", "vision_analyst", "code_assistant", "reasoning_engine"]),
-                # Claude 4.6 Series
-                ModelInfo(id="anthropic/claude-opus-4-6", provider="anthropic", capabilities=["chat", "vision", "code", "reasoning"], roles=["assistant", "vision_analyst", "code_assistant", "reasoning_engine"]),
-                ModelInfo(id="anthropic/claude-sonnet-4-6", provider="anthropic", capabilities=["chat", "vision", "code"], roles=["assistant", "vision_analyst", "code_assistant"]),
-                # Claude 4.5 Series
-                ModelInfo(id="anthropic/claude-opus-4-5", provider="anthropic", capabilities=["chat", "vision", "code", "reasoning"], roles=["assistant", "vision_analyst", "code_assistant", "reasoning_engine"]),
-                ModelInfo(id="anthropic/claude-sonnet-4-5", provider="anthropic", capabilities=["chat", "vision", "code"], roles=["assistant", "vision_analyst", "code_assistant"]),
-                ModelInfo(id="anthropic/claude-haiku-4-5", provider="anthropic", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
-                # Claude 4 Series (previous)
+                # Claude 4 Series (Latest)
                 ModelInfo(id="anthropic/claude-sonnet-4", provider="anthropic", capabilities=["chat", "vision", "code"], roles=["assistant", "vision_analyst", "code_assistant"]),
                 ModelInfo(id="anthropic/claude-opus-4", provider="anthropic", capabilities=["chat", "vision", "code", "reasoning"], roles=["assistant", "vision_analyst", "code_assistant", "reasoning_engine"]),
                 # Claude 3.5 Series
@@ -1323,7 +1131,7 @@ class ModelRegistry:
                 # Claude 3 Series
                 ModelInfo(id="anthropic/claude-3-opus", provider="anthropic", capabilities=["chat", "vision", "reasoning"], roles=["assistant", "vision_analyst", "reasoning_engine"]),
                 ModelInfo(id="anthropic/claude-3-sonnet", provider="anthropic", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
-                ModelInfo(id="anthropic/claude-3-haiku", provider="anthropic", capabilities=["chat", "vision"], roles=["assistant"]),
+                ModelInfo(id="anthropic/claude-3-haiku", provider="anthropic", capabilities=["chat"], roles=["assistant"]),
                 # Legacy aliases
                 ModelInfo(id="anthropic/claude", provider="anthropic", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
                 ModelInfo(id="claude", provider="anthropic", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),

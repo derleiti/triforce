@@ -22,8 +22,6 @@ from __future__ import annotations
 
 import os
 import logging
-import os as _os
-import os
 import secrets
 import hashlib
 import base64
@@ -174,7 +172,7 @@ def add_token(token: str, metadata: Optional[Dict] = None):
 
 
 def is_valid_token(token: str) -> bool:
-    """Check if a bearer token is valid (MCP token or Client JWT)."""
+    """Check if a bearer token is valid."""
     # Check in-memory tokens first
     if token in _ACTIVE_TOKENS:
         return True
@@ -192,16 +190,6 @@ def is_valid_token(token: str) -> bool:
             except Exception:
                 pass
         return True
-
-    # Fallback: accept valid Client JWT tokens (aicoder GUI/CLI users)
-    try:
-        from app.routes.client_auth import decode_jwt_token
-        payload = decode_jwt_token(token)
-        if payload.get("sub") or payload.get("email"):
-            return True
-    except Exception:
-        pass
-
     return False
 
 
@@ -339,151 +327,72 @@ def exchange_auth_code(code: str, code_verifier: str = None) -> Optional[str]:
     return token
 
 
+def _validate_jwt(token: str) -> Optional[Dict[str, Any]]:
+    """
+    Validate JWT-Token vom /v1/client/login als alternativen MCP-Bearer.
+    Returns payload dict bei valid, None bei invalid/expired.
+    Lazy-Import um Circular-Imports zu vermeiden.
+    """
+    try:
+        import jwt as _jwt
+        from ..routes.client_auth import JWT_SECRET, JWT_ALGORITHM
+        return _jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+    except Exception:
+        return None
+
+
 async def require_mcp_auth(request: Request) -> str:
     """
     Unified MCP authentication - Port-based.
-
-    Reihenfolge ist entscheidend:
-    1. X-Forwarded-Port: 9100 → Auth IMMER erzwingen (externer Request via Apache)
-       Apache sitzt im 172.18.x Docker-Netz, daher muss Port-Check VOR IP-Check kommen.
-    2. Private IP ohne Port 9100 → Bypass (echter Container-zu-Container Traffic)
-    3. Kein Header → Bypass (direkter interner Zugriff)
+    
+    X-Forwarded-Port: 9100 → Auth required (external)
+    No X-Forwarded-Port → Bypass (internal/public)
     """
-    cached_user = getattr(request.state, "mcp_auth_user", None)
-    if cached_user:
-        return cached_user
-
     client_ip = request.client.host if request.client else "unknown"
     auth_header = request.headers.get("Authorization", "")
-    forwarded_for = request.headers.get("X-Forwarded-For", "")
-    forwarded_host = request.headers.get("X-Forwarded-Host", "")
-
-    # 1. PORT-CHECK ZUERST: X-Forwarded-Port: 9100 = externer Request via Apache
-    #    Apache (172.18.x) setzt diesen Header für alle externen Requests.
-    #    MUSS vor dem IP-Bypass geprüft werden, sonst bypassen alle Apache-Requests Auth!
+    
+    # Port-based auth decision
     forwarded_port = request.headers.get("X-Forwarded-Port", "")
-    if forwarded_port == "9100":
-        # → fällt durch zu Auth-Prüfung unten
-        logger.debug(f"AUTH_CHECK | IP: {client_ip} | X-Fwd-Port: 9100 | Path: {request.url.path}")
-    else:
-        # 2. Nur explizit vertrauenswürdige interne Quellen dürfen ohne Login durch.
-        #    Öffentliche Direktzugriffe ohne Proxy-Header werden NICHT mehr gebypasst.
-        _force_auth = os.environ.get("FORCE_AUTH", "").lower() in ("1", "true", "yes")
-        _TRUSTED_INTERNAL_PREFIXES = (
-            "127.", "::1", "10.10.", "172.17.", "172.18.", "172.19.", "172.20.",
-        ) if _force_auth else (
-            "127.", "::1", "10.10.", "172.18.", "172.19.", "192.168.",
-        )
-        has_forwarding_context = bool(forwarded_for or forwarded_host)
-
-        if any(client_ip.startswith(p) for p in _TRUSTED_INTERNAL_PREFIXES) and not has_forwarding_context:
-            logger.debug(
-                f"AUTH_BYPASS | IP: {client_ip} | Method: trusted_internal_bypass | Path: {request.url.path}"
-            )
-            request.state.mcp_auth_user = "internal"
-            request.state.auth_method = "internal"
-            request.state.auth_claims = {
-                "account_role": "admin",
-                "tier": "subscription",
-                "client_kind": "internal",
-                "email": "internal",
-            }
-            return "internal"
+    
+    # No X-Forwarded-Port = internal/public → bypass
+    if forwarded_port != "9100":
+        logger.debug(f"AUTH_OK | IP: {client_ip} | X-Fwd-Port: {forwarded_port or 'none'} | Method: port_bypass")
+        return "internal"
     
     # External request (port 9100) → requires auth
     logger.debug(f"AUTH_CHECK | IP: {client_ip} | X-Fwd-Port: {forwarded_port}")
-
-    # Method 1: Bearer Token — prüfe ZUERST vor MCP_AUTH_USER/PASS Check
-    # Damit aicoder-GUI/CLI, ChatGPT und andere externe Clients funktionieren.
+    
+    if not MCP_AUTH_USER or not MCP_AUTH_PASS:
+        logger.error("AUTH_ERROR | MCP_OAUTH_USER/PASS not configured")
+        raise _unauthorized("Server authentication not configured")
+    
+    # Method 1: Bearer Token
     if auth_header.lower().startswith("bearer "):
         token = auth_header[7:].strip()
         if is_valid_token(token):
-            auth_user = "oauth_client"
-            auth_claims: Dict[str, Any] = {"account_role": "client", "client_kind": "external"}
-            try:
-                from app.routes.client_auth import decode_jwt_token
-                payload = decode_jwt_token(token)
-                auth_user = payload.get("email") or payload.get("sub") or payload.get("client_id") or "oauth_client"
-                auth_claims = {
-                    "account_role": payload.get("account_role", "client"),
-                    "tier": payload.get("role") or payload.get("tier") or "free",
-                    "client_id": payload.get("client_id"),
-                    "client_kind": payload.get("client_kind", "external"),
-                    "email": payload.get("email") or payload.get("sub"),
-                }
-            except Exception:
-                data = _PERSISTENT_TOKENS.get(token, {}) if token in _PERSISTENT_TOKENS else {}
-                auth_user = data.get("user") or "oauth_client"
-                auth_claims = {
-                    "account_role": "admin" if auth_user == MCP_AUTH_USER else "client",
-                    "tier": data.get("scope", "mcp"),
-                    "client_id": data.get("client_id"),
-                    "client_kind": "oauth_token",
-                    "email": data.get("user"),
-                }
-            logger.debug(f"AUTH_OK | IP: {client_ip} | Method: bearer | User: {auth_user}")
-            request.state.mcp_auth_user = auth_user
-            request.state.auth_method = "bearer"
-            request.state.auth_claims = auth_claims
-            return auth_user
-        else:
-            logger.warning(f"AUTH_FAIL | IP: {client_ip} | Reason: invalid_bearer")
-            raise _unauthorized("Invalid bearer token")
+            logger.debug(f"AUTH_OK | IP: {client_ip} | Method: bearer")
+            return "oauth_client"
+        # JWT Bridge: Akzeptiere JWTs vom /v1/client/login als gültige MCP-Bearer
+        jwt_payload = _validate_jwt(token)
+        if jwt_payload:
+            user = jwt_payload.get("email") or jwt_payload.get("sub") or "jwt_user"
+            logger.debug(f"AUTH_OK | IP: {client_ip} | Method: jwt | User: {user}")
+            return user
+        logger.warning(f"AUTH_FAIL | IP: {client_ip} | Reason: invalid_bearer")
+        raise _unauthorized("Invalid bearer token")
     
     # Method 2: Basic Auth
     if auth_header.lower().startswith("basic "):
         username, password = _extract_basic_auth(request)
         if _validate_credentials(username, password):
             logger.debug(f"AUTH_OK | IP: {client_ip} | Method: basic | User: {username}")
-            request.state.mcp_auth_user = username
-            request.state.auth_method = "basic"
-            request.state.auth_claims = {
-                "account_role": "admin" if username == MCP_AUTH_USER else "client",
-                "tier": "subscription",
-                "client_kind": "basic",
-                "email": username,
-            }
             return username
         else:
             logger.warning(f"AUTH_FAIL | IP: {client_ip} | Reason: invalid_basic")
             raise _unauthorized("Invalid credentials", "Basic")
     
-    # No auth provided — check trusted headers before rejecting.
-
-    # FIX 2026-04-11: X-Internal-Key (WP Plugin proxy calls)
-    x_internal_key = (request.headers.get("X-Internal-Key", "") or "").strip()
-    expected_internal = _os.environ.get("INTERNAL_API_KEY", "")
-    if x_internal_key and expected_internal and x_internal_key == expected_internal:
-        req_path = request.url.path
-        logger.info(f"AUTH_BYPASS | IP: {client_ip} | Method: internal_key | Path: {req_path}")
-        request.state.mcp_auth_user = "internal-api"
-        request.state.auth_method = "internal-key"
-        request.state.auth_claims = {
-            "account_role": "admin",
-            "tier": "unlimited",
-            "client_kind": "internal_api",
-            "email": "internal@ailinux.me",
-        }
-        return "internal-api"
-
-    # Nova-Frontend explicit header bypass
-    x_nova_frontend = (request.headers.get("X-Nova-Frontend", "") or "").strip().lower()
-    if x_nova_frontend in {"1", "true", "yes"}:
-        req_path = request.url.path
-        logger.info(f"AUTH_BYPASS | IP: {client_ip} | Method: nova_frontend | Path: {req_path}")
-        request.state.mcp_auth_user = "nova-frontend"
-        request.state.auth_method = "nova-frontend"
-        request.state.auth_claims = {
-            "account_role": "client",
-            "tier": "free",
-            "client_kind": "nova_frontend",
-            "email": "nova-frontend",
-        }
-        return "nova-frontend"
-
-    # FIX 2026-04-11: Log request path for easier 401 debugging
-    req_path = request.url.path
-    logger.warning(f"AUTH_FAIL | IP: {client_ip} | Path: {req_path} | Reason: no_credentials")
+    # No auth provided
+    logger.warning(f"AUTH_FAIL | IP: {client_ip} | Reason: no_credentials")
     raise _unauthorized("Authentication required")
 
 

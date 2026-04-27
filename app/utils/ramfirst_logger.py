@@ -370,10 +370,7 @@ class RAMFirstLogger:
                     await f.write(content)
             else:
                 # Fallback to sync write in executor
-                try:
-                    loop = asyncio.get_running_loop()
-                except RuntimeError:
-                    loop = asyncio.get_event_loop()  # FIX B13: py3.12 safe fallback
+                loop = asyncio.get_event_loop()
                 await loop.run_in_executor(
                     None,
                     lambda: self._sync_write(log_file, content)

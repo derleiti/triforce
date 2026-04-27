@@ -198,7 +198,7 @@ function ailinux_nova_dark_enqueue_assets() {
         wp_localize_script('ailinux-nova-dark-app', 'NOVA_API', [
         'DISABLED'       => false,
         'BASE'           => $api_base,
-        'CHAT_ENDPOINT'  => '/v1/frontend/dashboard/chat',
+        'CHAT_ENDPOINT'  => '/v1/chat',
         'MODELS_ENDPOINT'=> 'https://ailinux.me/wp-json/nova-ai/v1/models',
         'HEALTH_ENDPOINT'=> '/health',
         'DEFAULT_MODEL'  => 'gemini/gemini-2.5-flash',

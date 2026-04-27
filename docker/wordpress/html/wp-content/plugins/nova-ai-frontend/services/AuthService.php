@@ -701,7 +701,9 @@ HTML;
 
     private function verify_ailinux_token(string $email, string $token) {
         $endpoint = $this->get_server_api_endpoint();
-        $response = wp_remote_get($endpoint . '/v1/auth/verify', [
+        // FIX 2026-04-24: /v1/auth/verify existiert nicht — korrekter Endpoint ist /v1/auth/client/me.
+        // HTTP 200 == gültiger Token. Email liegt unter body.session.email, nicht top-level.
+        $response = wp_remote_get($endpoint . '/v1/auth/client/me', [
             'headers' => ['Authorization' => 'Bearer ' . $token],
             'timeout' => 10,
         ]);
@@ -709,13 +711,25 @@ HTML;
         if (is_wp_error($response)) {
             return false;
         }
-
-        $body = json_decode(wp_remote_retrieve_body($response), true);
-        if (!is_array($body) || empty($body['valid'])) {
+        if (wp_remote_retrieve_response_code($response) !== 200) {
             return false;
         }
-        if (!empty($body['email']) && strtolower($body['email']) !== strtolower($email)) {
+
+        $body = json_decode(wp_remote_retrieve_body($response), true);
+        if (!is_array($body)) {
             return false;
+        }
+
+        // Email kann an mehreren Stellen stehen (neue API: session.email; ältere: top-level)
+        $verified_email = $body['session']['email'] ?? ($body['email'] ?? '');
+        if ($verified_email && strtolower($verified_email) !== strtolower($email)) {
+            return false;
+        }
+
+        // Shim: Shape angleichen an das, was Rest-of-Code erwartet (top-level 'email', 'valid')
+        $body['valid'] = true;
+        if (!isset($body['email']) && $verified_email) {
+            $body['email'] = $verified_email;
         }
         return $body;
     }

@@ -16,7 +16,7 @@ Protokoll:
 - JSON-RPC 2.0 Format (MCP-kompatibel)
 - Client meldet verfügbare Tools an Server
 """
-from fastapi import Request, APIRouter, WebSocket, WebSocketDisconnect, HTTPException, Header
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect, HTTPException, Header
 from pydantic import BaseModel
 from typing import Optional, Dict, Any, List
 import asyncio
@@ -26,8 +26,7 @@ import uuid
 from datetime import datetime
 from enum import Enum
 
-from ..services.user_tiers import tier_service, UserTier, has_full_access, is_free_tier, normalize_tier
-from ..services.subscription import tier_to_plan, PlanType, subscription_service
+from ..services.user_tiers import tier_service, UserTier
 from ..routes.client_auth import decode_jwt_token
 
 logger = logging.getLogger("ailinux.mcp_node")
@@ -81,7 +80,7 @@ class ClientConnection:
         }
 
         # Future für Antwort erstellen
-        future = asyncio.get_running_loop().create_future()
+        future = asyncio.get_event_loop().create_future()
         self.pending_requests[request_id] = future
 
         try:
@@ -248,21 +247,10 @@ CLIENT_SIDE_TOOLS = {
 # =============================================================================
 
 class ProxyToolRequest(BaseModel):
-    """Tool-Call über Proxy
-    FIX S16-3: client_id optional (kein Crash wenn Caller es weglässt → 404 statt 422)
-    FIX S16-3: args als Alias für params (verschiedene Caller-Konventionen)
-    """
-    client_id: Optional[str] = None
+    """Tool-Call über Proxy"""
+    client_id: str
     tool: str
     params: Dict[str, Any] = {}
-    args: Dict[str, Any] = {}  # Alias for params — merged on access
-
-    @property
-    def merged_params(self) -> Dict[str, Any]:
-        """Merged params + args (args is alias, params takes precedence)"""
-        merged = dict(self.args)
-        merged.update(self.params)
-        return merged
 
 
 class ProxyToolResponse(BaseModel):
@@ -339,19 +327,21 @@ async def websocket_connect(
     # User-ID: aus Token, Query-Param oder Client-ID
     resolved_user_id = payload.get("sub") or user_id or client_id
     
-    # Tier: PRIORITAET -> JWT role claim > Query-Param > Vault-Lookup
-    # JWT role ist die einzige verlässliche Quelle (kommt vom Login-Server)
-    jwt_role = payload.get("role") or payload.get("tier") or ""
-    tier_source = jwt_role or tier or ""
-    if tier_source:
-        resolved_tier = normalize_tier(tier_source)
+    # Tier: aus Query-Param oder Service abfragen
+    # Map client tier names to UserTier enum
+    tier_mapping = {
+        "free": UserTier.GUEST,
+        "guest": UserTier.GUEST,
+        "registered": UserTier.REGISTERED,
+        "pro": UserTier.PRO,
+        "enterprise": UserTier.ENTERPRISE
+    }
+    if tier and tier.lower() in tier_mapping:
+        resolved_tier = tier_mapping[tier.lower()]
     else:
         resolved_tier = tier_service.get_user_tier(resolved_user_id)
     
-    # Tier -> Plan mappen (DEMO/SUBSCRIBER)
-    resolved_plan = tier_to_plan(resolved_tier.value)
-
-    logger.info(f"MCP Node connecting: session={session_id}, machine={machine_id}, user={resolved_user_id}, tier={resolved_tier.value}, plan={resolved_plan.value}, version={client_version}")
+    logger.info(f"MCP Node connecting: session={session_id}, machine={machine_id}, user={resolved_user_id}, tier={resolved_tier.value}, version={client_version}")
 
     # Client-Verbindung registrieren
     connection = ClientConnection(client_id, resolved_user_id, websocket, resolved_tier)
@@ -364,7 +354,7 @@ async def websocket_connect(
 
     logger.info(f"Client connected: {client_id} ({resolved_tier.value})")
 
-    # Willkommensnachricht: plan + tier
+    # Willkommensnachricht mit verfügbaren Tools
     await websocket.send_json({
         "jsonrpc": "2.0",
         "method": "connected",
@@ -372,10 +362,7 @@ async def websocket_connect(
             "client_id": client_id,
             "session_id": session_id,
             "user_id": resolved_user_id,
-            "plan": resolved_plan.value,
-            "is_paid": resolved_plan == PlanType.SUBSCRIPTION,
             "tier": resolved_tier.value,
-            "context_limit": subscription_service.get_context_limit(resolved_plan),
             "available_tools": list(CLIENT_SIDE_TOOLS.keys()),
             "server_version": "2.80.0"
         }
@@ -477,7 +464,6 @@ async def list_connected_clients(authorization: str = Header(None)):
 @router.post("/call", response_model=ProxyToolResponse)
 async def call_client_tool(
     request: ProxyToolRequest,
-    http_request: Request = None,
     authorization: str = Header(None)
 ):
     """
@@ -485,58 +471,19 @@ async def call_client_tool(
 
     Der Server sendet den Tool-Call an den verbundenen Client,
     der Client führt das Tool lokal aus und sendet das Ergebnis zurück.
-
-    Auth: Bearer JWT ODER Basic (MCP_OAUTH_USER:PASS) für interne Aufrufe.
-    Interne IPs (127.x, 172.18.x) können auch ohne Auth zugreifen.
     """
-    import os, base64
-
-    # ── Bypass: Interne IPs (localhost, Docker-Netz) dürfen immer ───────────
-    client_ip = ""
-    if http_request:
-        client_ip = getattr(http_request.client, "host", "") or ""
-    _internal = (
-        client_ip.startswith("127.") or
-        client_ip.startswith("172.18.") or
-        client_ip.startswith("172.17.") or
-        client_ip == "::1" or
-        client_ip == ""
-    )
-
     if not authorization:
-        if _internal:
-            logger.debug(f"[mcp/node/call] Internal bypass (no auth) from {client_ip}")
-        else:
-            raise HTTPException(401, "Authorization required")
-    else:
-        # ── Bearer JWT ────────────────────────────────────────────────────────
-        if authorization.startswith("Bearer "):
-            try:
-                token = authorization[7:]
-                decode_jwt_token(token)
-            except Exception:
-                raise HTTPException(401, "Invalid token")
-        # ── Basic Auth (WordPress / interne Services) ─────────────────────────
-        elif authorization.startswith("Basic "):
-            try:
-                decoded = base64.b64decode(authorization[6:]).decode("utf-8")
-                given_user, given_pass = decoded.split(":", 1)
-            except Exception:
-                raise HTTPException(401, "Invalid Basic auth")
-            mcp_user = os.environ.get("MCP_OAUTH_USER", "zombie")
-            mcp_pass = os.environ.get("MCP_OAUTH_PASS", "")
-            import hmac as _hmac
-            if not (given_user == mcp_user and _hmac.compare_digest(given_pass, mcp_pass)):
-                raise HTTPException(401, "Invalid credentials")
-        else:
-            if not _internal:
-                raise HTTPException(401, "Unsupported auth scheme")
+        raise HTTPException(401, "Authorization required")
+
+    # Validiere Caller
+    try:
+        token = authorization.replace("Bearer ", "")
+        payload = decode_jwt_token(token)
+    except Exception:
+        raise HTTPException(401, "Invalid token")
 
     # Client finden
     client_id = request.client_id
-    if not client_id:
-        # FIX S16-3: client_id optional — 404 statt 422 Validation Error
-        raise HTTPException(400, "client_id ist erforderlich für /mcp/node/call")
     connection = CONNECTED_CLIENTS.get(client_id)
 
     if not connection:
@@ -547,13 +494,13 @@ async def call_client_tool(
         raise HTTPException(400, f"Unbekanntes Client-Tool: {request.tool}")
 
     # Enterprise Tier für Dateisystem-Zugriff
-    if is_free_tier(connection.tier) and request.tool in ["client_file_write", "client_shell_exec"]:
-        raise HTTPException(403, f"Tool '{request.tool}' erfordert Subscription")
+    if connection.tier == UserTier.FREE and request.tool in ["client_file_write", "client_shell_exec"]:
+        raise HTTPException(403, f"Tool '{request.tool}' erfordert Pro oder Enterprise Tier")
 
     start_time = datetime.now()
 
     try:
-        result = await connection.send_tool_call(request.tool, request.merged_params)
+        result = await connection.send_tool_call(request.tool, request.params)
         latency = int((datetime.now() - start_time).total_seconds() * 1000)
 
         logger.info(f"Proxy call success: {request.tool} on {client_id} ({latency}ms)")
@@ -638,8 +585,8 @@ Verfügbare Tools:
 - client_file_read: Datei lesen
 - client_file_list: Verzeichnis auflisten
 - client_codebase_search: Code durchsuchen
-{"- client_file_write: Datei schreiben" if has_full_access(tier) else ""}
-{"- client_shell_exec: Shell-Befehl ausführen" if has_full_access(tier) else ""}
+{"- client_file_write: Datei schreiben (Enterprise)" if tier == UserTier.ENTERPRISE else ""}
+{"- client_shell_exec: Shell-Befehl ausführen (Enterprise)" if tier == UserTier.ENTERPRISE else ""}
 
 Wenn der Benutzer nach Dateien fragt oder Code-Hilfe benötigt,
 nutze die Tools um die relevanten Dateien zu lesen.
@@ -655,53 +602,17 @@ Benutzer-Tier: {tier.value}
         {"role": "user", "content": message}
     ]
 
-    MAX_TOOL_ITERATIONS = 10  # Prevent infinite loops
+    # Erste Antwort
+    if tier == UserTier.FREE:
+        result = await call_ollama(model, messages)
+    else:
+        result = await call_openrouter(model, messages)
 
-    for iteration in range(MAX_TOOL_ITERATIONS):
-        # Call LLM
-        if is_free_tier(tier):
-            result = await call_ollama(model, messages)
-        else:
-            result = await call_openrouter(model, messages)
+    response = result.get("choices", [{}])[0].get("message", {}).get("content", "")
 
-        assistant_msg = result.get("choices", [{}])[0].get("message", {})
-        response = assistant_msg.get("content", "")
-        tool_calls = assistant_msg.get("tool_calls", [])
-
-        # No tool calls → return final response
-        if not tool_calls:
-            break
-
-        # Append assistant message with tool calls to history
-        messages.append(assistant_msg)
-
-        # Execute each tool call on the client
-        for tc in tool_calls:
-            func = tc.get("function", {})
-            tool_name = func.get("name", "")
-            try:
-                tool_args = json.loads(func.get("arguments", "{}"))
-            except (ValueError, TypeError):
-                tool_args = {}
-
-            # Only execute tools that are in the CLIENT_SIDE_TOOLS registry
-            # and respect tier access (write/shell only for full access)
-            if tool_name not in CLIENT_SIDE_TOOLS:
-                tool_result = {"error": f"Unknown tool: {tool_name}"}
-            elif tool_name in ("client_file_write", "client_shell_exec") and not has_full_access(tier):
-                tool_result = {"error": f"Tool '{tool_name}' requires Enterprise tier"}
-            else:
-                try:
-                    tool_result = await connection.send_tool_call(tool_name, tool_args)
-                except Exception as e:
-                    tool_result = {"error": str(e)}
-
-            # Append tool result to message history for the next iteration
-            messages.append({
-                "role": "tool",
-                "tool_call_id": tc.get("id", ""),
-                "content": json.dumps(tool_result) if isinstance(tool_result, dict) else str(tool_result),
-            })
+    # TODO: Implementiere Tool-Calling Loop
+    # Wenn die KI ein Tool aufrufen möchte, sende es an den Client
+    # und füge das Ergebnis zur Konversation hinzu
 
     return {
         "response": response,

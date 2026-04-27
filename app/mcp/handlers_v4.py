@@ -90,8 +90,12 @@ class HandlerRegistry:
         self._register_init_handlers()
         self._register_gemini_handlers()
         self._register_mesh_handlers()
-        self._register_bundled_handlers()
-        
+        self._register_notification_handlers()
+        # structured_admin LAST: real handlers override stubs from
+        # _register_log_handlers / _register_remote_handlers / _register_system_handlers
+        # (e.g. log_viewer, remote_status, service_status -> not_implemented stubs)
+        self._register_structured_admin_handlers()
+
         self._initialized = True
         logger.info(f"Initialized {len(self._handlers)} handlers")
     
@@ -625,7 +629,39 @@ class HandlerRegistry:
             self.register("debug", handle_debug)
         except ImportError as e:
             logger.warning(f"System handlers import failed: {e}")
-    
+
+    def _register_structured_admin_handlers(self):
+        """Structured Admin handlers from app/mcp/structured_admin.py.
+
+        Bridges the structured_admin module's STRUCTURED_ADMIN_HANDLERS dict
+        into the v4 HandlerRegistry, so tools exposed in the MCP tool list
+        actually have runtime handlers. Covers (non-exhaustive):
+        log_viewer, service_status, container_status, file_ops, file_read,
+        binary_exec, custom_exec, mcp_telemetry, mcp_analytics, safe_probe,
+        agent_review, remote_exec, remote_admin, remote_status, remote_hosts,
+        system_info, network_info, task_runner, binary_list, template_list,
+        container_control, service_control.
+
+        IMPORTANT: This must be called LAST in initialize() so the real
+        structured_admin handlers OVERRIDE the 'not_implemented' stubs
+        registered by _register_log_handlers / _register_remote_handlers /
+        _register_system_handlers (e.g. remote_status, log_viewer fallbacks).
+        """
+        try:
+            from app.mcp.structured_admin import STRUCTURED_ADMIN_HANDLERS
+        except ImportError as e:
+            logger.warning(f"Structured admin handlers import failed: {e}")
+            return
+        try:
+            n = self.register_many(STRUCTURED_ADMIN_HANDLERS)
+            sample = sorted(STRUCTURED_ADMIN_HANDLERS.keys())[:6]
+            logger.info(
+                f"Structured admin handlers registered: {n} tools "
+                f"(sample: {sample}{'...' if len(STRUCTURED_ADMIN_HANDLERS) > 6 else ''})"
+            )
+        except Exception as e:
+            logger.warning(f"Structured admin handlers registration failed: {e}")
+
     def _register_vault_handlers(self):
         """Vault: vault_keys, vault_add, vault_status"""
         try:
@@ -649,24 +685,22 @@ class HandlerRegistry:
             logger.warning(f"Vault handlers import failed: {e}")
     
     def _register_remote_handlers(self):
-        """Remote: remote_hosts, remote_task, remote_status"""
-        try:
-            # Remote functions not yet implemented - create stubs
-            async def handle_remote_hosts(params):
-                logger.warning("remote_hosts not yet implemented")
-                return {"status": "not_implemented", "hosts": [], "message": "Remote hosts function pending"}
+        """Remote: remote_task (stub).
 
+        NOTE: remote_hosts and remote_status are provided as real read-only
+        handlers by app.mcp.structured_admin, registered later in
+        initialize() via _register_structured_admin_handlers (which runs
+        LAST). Earlier this function also registered "not_implemented"
+        stubs for remote_hosts/remote_status; those were redundant because
+        they were always immediately overwritten. Removed 2026-04-27.
+        """
+        try:
+            # remote_task has no structured_admin equivalent yet -> stub stays
             async def handle_remote_task(params):
                 logger.warning("remote_task not yet implemented")
                 return {"status": "not_implemented", "message": "Remote task function pending"}
 
-            async def handle_remote_status(params):
-                logger.warning("remote_status not yet implemented")
-                return {"status": "not_implemented", "message": "Remote status function pending"}
-
-            self.register("remote_hosts", handle_remote_hosts)
             self.register("remote_task", handle_remote_task)
-            self.register("remote_status", handle_remote_status)
         except Exception as e:
             logger.warning(f"Remote handlers registration failed: {e}")
     
@@ -745,44 +779,17 @@ class HandlerRegistry:
             self.register("mesh_agents", handle_mesh_agents)
         except Exception as e:
             logger.warning(f"Mesh handlers registration failed: {e}")
-    
-    def _register_bundled_handlers(self):
-        """Bundled handlers from app.mcp.* modules.
-        
-        Registers pre-built *_TOOL_HANDLERS dicts from:
-          - notification_manager (notify_*)
-          - mail_tools (mail_*)
-          - flarum_tools (flarum_*)
-          - dev_tools (dev_*, git_*)
-          - doc_browser (doc_*)
-          - tla_workflow (tla_*)
-        
-        Each bundle is defensive-imported so one failure does not block others.
-        """
-        bundles = [
-            ("app.mcp.notification_manager", "NOTIFY_TOOL_HANDLERS", "notify"),
-            ("app.mcp.mail_tools",           "MAIL_TOOL_HANDLERS",   "mail"),
-            ("app.mcp.flarum_tools",         "FLARUM_TOOL_HANDLERS", "flarum"),
-            ("app.mcp.dev_tools",            "DEV_TOOL_HANDLERS",    "dev"),
-            ("app.mcp.doc_browser",          "DOC_TOOL_HANDLERS",    "doc"),
-            ("app.mcp.tla_workflow",         "TLA_TOOL_HANDLERS",    "tla"),
-        ]
-        total = 0
-        for mod_path, attr, label in bundles:
-            try:
-                module = __import__(mod_path, fromlist=[attr])
-                handlers = getattr(module, attr, None)
-                if not isinstance(handlers, dict):
-                    logger.warning(f"{label} bundle: {attr} missing or not a dict in {mod_path}")
-                    continue
-                count = self.register_many(handlers)
-                total += count
-                logger.info(f"{label} bundle registered: {count} handlers")
-            except ImportError as e:
-                logger.warning(f"{label} bundle import failed: {e}")
-            except Exception as e:
-                logger.warning(f"{label} bundle registration failed: {e}")
-        logger.info(f"Bundled handlers total: {total}")
+
+    def _register_notification_handlers(self):
+        """Notifications: notify_list, notify_read, notify_clear, notify_send, notify_status"""
+        try:
+            from app.mcp.notification_manager import NOTIFY_TOOL_HANDLERS
+            self.register_many(NOTIFY_TOOL_HANDLERS)
+            logger.info(f"Notification handlers registered: {list(NOTIFY_TOOL_HANDLERS.keys())}")
+        except ImportError as e:
+            logger.warning(f"Notification handlers import failed: {e}")
+        except Exception as e:
+            logger.warning(f"Notification handlers registration failed: {e}")
 
 
 # =============================================================================
