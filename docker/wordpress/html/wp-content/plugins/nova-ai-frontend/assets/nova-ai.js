@@ -474,7 +474,24 @@
           const extractB64 = (b64) => { try { const d=JSON.parse(atob(b64)); return d?.result?.image||d?.image||null; } catch { return null; } };
           const res = json.result || json;
           const rawImgs = res.images || res.data || (res.url?[{url:res.url}]:null) || (json.url?[{url:json.url}]:[]);
-          const urls = rawImgs.map(i => i.url || extractB64(i.b64_json||i.b64||'') || i.b64_json || i.b64).filter(Boolean);
+          // FIX 2026-04-28: support all image-gen response shapes across providers:
+          //  - object form  : [{url:...}], [{b64_json:...}], [{b64:...}]   (OpenAI / Replicate / older CF)
+          //  - string form  : ["data:image/png;base64,..."]                (Cloudflare Flux 2 / @cf/black-forest-labs/*)
+          //  - bare b64     : ["iVBORw0KG..."]                             (some Workers-AI variants)
+          const urls = rawImgs.map(i => {
+            if (typeof i === 'string') return i;
+            if (!i) return null;
+            return i.url || extractB64(i.b64_json||i.b64||'') || i.b64_json || i.b64 || null;
+          }).filter(Boolean);
+          // Detect MIME from data-URL prefix or base64 magic bytes (first chars after `;base64,`)
+          const detectExt = (s) => {
+            if (typeof s !== 'string') return 'png';
+            if (s.indexOf('data:image/jpeg')===0 || s.indexOf(';base64,/9j/')>=0) return 'jpg';
+            if (s.indexOf('data:image/webp')===0 || s.indexOf(';base64,UklGR')>=0) return 'webp';
+            if (s.indexOf('data:image/gif')===0  || s.indexOf(';base64,R0lGOD')>=0) return 'gif';
+            return 'png';
+          };
+          const extToMime = ext => ext==='jpg' ? 'image/jpeg' : ('image/'+ext);
           // Random 20-char filename generator
           const rndName = () => {
             const chars='abcdefghijklmnopqrstuvwxyz0123456789';
@@ -484,28 +501,38 @@
           urls.forEach(src => {
             const wrap = document.createElement('div'); wrap.className='nova-img-wrap';
             wrap.style.cssText='display:inline-flex;flex-direction:column;align-items:center;gap:6px;margin:4px;';
+            const isHttp = src.startsWith('http');
+            const isData = src.startsWith('data:');
+            const ext = detectExt(src);
+            const mime = extToMime(ext);
             const img = document.createElement('img'); img.className='nova-img-result';
-            img.src = src.startsWith('http') ? src : 'data:image/png;base64,'+src;
+            // FIX 2026-04-28: avoid double-prefix when src is already a complete data:URL
+            img.src = (isHttp || isData) ? src : 'data:'+mime+';base64,'+src;
             img.alt = prompt;
-            // Download button
+            img.style.cssText = 'max-width:100%;height:auto;border-radius:8px;display:block;';
+            // Download button — uses correct extension matching detected format
             const dlBtn = document.createElement('a');
-            const fname = rndName() + '.png';
+            const fname = rndName() + '.' + ext;
             dlBtn.textContent = '⬇ ' + fname;
             dlBtn.style.cssText='font-size:11px;color:#60a5fa;cursor:pointer;text-decoration:underline;word-break:break-all;';
             dlBtn.title = 'Bild herunterladen';
-            if (src.startsWith('http')) {
-              // For URL-based images: open in new tab (CORS prevents direct download)
-              dlBtn.href = src; dlBtn.target='_blank'; dlBtn.download = fname;
+            if (isHttp) {
+              // For URL-based images: direct download attribute, fallback to new tab on CORS
+              dlBtn.href = src; dlBtn.target='_blank'; dlBtn.download = fname; dlBtn.rel='noopener';
             } else {
-              // For base64: create blob and download directly
+              // For base64 / data:URL: create blob and download directly
               try {
-                const byteStr = atob(src.startsWith('data:') ? src.split(',')[1] : src);
+                const b64 = isData ? src.split(',')[1] : src;
+                const byteStr = atob(b64);
                 const ab = new Uint8Array(byteStr.length);
                 for(let i=0;i<byteStr.length;i++) ab[i]=byteStr.charCodeAt(i);
-                const blob = new Blob([ab], {type:'image/png'});
+                const blob = new Blob([ab], {type: mime});
                 dlBtn.href = URL.createObjectURL(blob);
                 dlBtn.download = fname;
-              } catch(ex) { dlBtn.href = 'data:image/png;base64,'+src; dlBtn.download = fname; }
+              } catch(ex) {
+                dlBtn.href = isData ? src : 'data:'+mime+';base64,'+src;
+                dlBtn.download = fname;
+              }
             }
             wrap.appendChild(img); wrap.appendChild(dlBtn);
             imgOut.appendChild(wrap);
