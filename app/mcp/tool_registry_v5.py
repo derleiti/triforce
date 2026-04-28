@@ -1597,3 +1597,36 @@ V5_TOOLS += [
         }},
     },
 ]
+
+
+# =============================================================================
+# DEDUPLICATION GUARD — Bug-Fix 2026-04-28 (Code Review)
+# Removes accidental duplicate tool definitions (e.g. flarum_* re-definitions
+# in the V5_TOOLS += [...] block). First occurrence wins — preserves the
+# canonical schemas defined in the initial V5_TOOLS block.
+# =============================================================================
+def _v5_dedup_tools() -> int:
+    """Remove duplicate tool definitions (first-occurrence wins). Returns count removed."""
+    seen: set = set()
+    deduped: List[Dict[str, Any]] = []
+    for _t in V5_TOOLS:
+        _name = _t.get("name") if isinstance(_t, dict) else None
+        if not _name:
+            continue
+        if _name in seen:
+            continue
+        seen.add(_name)
+        deduped.append(_t)
+    removed = len(V5_TOOLS) - len(deduped)
+    V5_TOOLS.clear()
+    V5_TOOLS.extend(deduped)
+    return removed
+
+
+_REMOVED = _v5_dedup_tools()
+if _REMOVED:
+    import logging as _logging
+    _logging.getLogger("ailinux.mcp.registry").info(
+        f"V5 registry: removed {_REMOVED} duplicate tool definition(s)"
+    )
+del _REMOVED

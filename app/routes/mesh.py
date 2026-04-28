@@ -547,7 +547,7 @@ async def get_mesh_resources(fmt="summary"):
     else: return {**base, "federation": {"nodes": nodes, "totals": {"online": len(online), "cores": sum(n["cores"] for n in online), "ram_gb": sum(n["ram_gb"] for n in online), "gpus": [n["gpu"] for n in nodes if n.get("gpu")]}}, "intelligence": {"cloud": CLOUD_PROVIDERS, "local": local, "total": cloud + len(local)}}
 
 @router.get("/resources", summary="Live Mesh Hardware Resources")
-async def mesh_resources_endpoint(format: str = Query("summary", regex="^(summary|nodes|full)$")):
+async def mesh_resources_endpoint(format: str = Query("summary", pattern="^(summary|nodes|full)$")):
     return await get_mesh_resources(format)
 
 async def handle_mesh_resources(params: Dict[str, Any]) -> Dict[str, Any]:

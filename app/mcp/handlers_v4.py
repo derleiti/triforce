@@ -11,13 +11,11 @@ Version: 4.0.0
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 from app.mcp.tool_registry_v4 import (
     register_handler,
-    register_handlers,
     resolve_alias,
-    get_handler,
     TOOL_ALIASES,
 )
 
@@ -535,8 +533,19 @@ class HandlerRegistry:
                 return await handle_tristar_shell_exec(params)
 
             async def handle_restart(params):
-                logger.warning("restart not yet implemented")
-                return {"status": "not_implemented", "message": "Restart function pending"}
+                """Restart the TriForce backend service via systemd.
+
+                Bridges the v4 'restart' tool to the existing
+                system_control.restart_backend() implementation that the
+                legacy 'restart_backend' route already uses.
+                """
+                try:
+                    from app.services import system_control
+                except ImportError as e:
+                    logger.error(f"system_control import failed: {e}")
+                    return {"status": "error", "message": f"system_control unavailable: {e}"}
+                delay = params.get("delay", 2)
+                return await system_control.restart_backend(delay)
 
             async def handle_health(params):
                 """Comprehensive health check of all services"""
@@ -619,8 +628,20 @@ class HandlerRegistry:
                 return health_data
 
             async def handle_debug(params):
-                logger.warning("debug not yet implemented")
-                return {"status": "not_implemented", "message": "Debug function pending"}
+                """Debug an MCP request without executing it.
+
+                Bridges the v4 'debug' tool to the existing
+                mcp_debugger.debug_mcp_request() implementation.
+                """
+                try:
+                    from app.services.mcp_debugger import mcp_debugger
+                except ImportError as e:
+                    logger.error(f"mcp_debugger import failed: {e}")
+                    return {"status": "error", "message": f"mcp_debugger unavailable: {e}"}
+                return await mcp_debugger.debug_mcp_request(
+                    tool_name=params.get("tool_name", ""),
+                    params=params.get("params", {}),
+                )
 
             self.register("status", handle_status)
             self.register("shell", handle_shell_exec)

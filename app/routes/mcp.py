@@ -10,7 +10,7 @@ logger = logging.getLogger("ailinux.mcp.routes")
 from typing import Any, Awaitable, Callable, Dict, Iterable, List, Optional
 import json
 
-from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
+from fastapi import APIRouter, Depends, Request, Response
 from fastapi.responses import JSONResponse
 
 from ..services.crawler.user_crawler import user_crawler
@@ -40,43 +40,33 @@ from ..routes.admin_crawler import (
     get_crawler_config,
     update_crawler_config,
 )
-from ..mcp.api_docs import get_api_docs, get_endpoint_for_task, API_DOCUMENTATION
+from ..mcp.api_docs import get_api_docs, get_endpoint_for_task
 from ..mcp.translation import BidirectionalTranslator, APIToMCPTranslator, MCPToAPITranslator
-from ..mcp.specialists import specialist_router, SpecialistCapability, SPECIALISTS
+from ..mcp.specialists import specialist_router, SPECIALISTS
 from ..mcp.context import context_manager, prompt_library, workflow_manager
 from ..mcp.adaptive_code import ADAPTIVE_CODE_TOOLS, ADAPTIVE_CODE_HANDLERS
 from ..mcp.adaptive_code_v4 import ADAPTIVE_CODE_V4_TOOLS, ADAPTIVE_CODE_V4_HANDLERS
 from ..mcp.tool_registry_v3 import (
     get_all_tools as registry_v3_get_all_tools,
-    get_tool_by_name as registry_v3_get_tool,
     get_tool_count as registry_v3_tool_count,
-    get_categories as registry_v3_categories,
     register_handlers_from_dict,
-    integrate_with_mcp_handlers,
 )
 # v4 Consolidated Registry (52 tools, optimized from 134)
 from ..mcp.tool_registry_v4 import (
     get_all_tools as registry_v4_get_all_tools,
-    get_tool_by_name as registry_v4_get_tool,
     get_tool_count as registry_v4_tool_count,
-    get_categories as registry_v4_categories,
-    resolve_alias,
-    TOOL_ALIASES,
     resolve_alias_reverse,
 )
 from ..mcp.handlers_v4 import (
-    handler_registry,
     init_handlers as init_v4_handlers,
     call_tool as call_v4_tool,
-    get_compatibility_handlers,
 )
 from ..services.compatibility_layer import compatibility_layer
-from ..services.system_control import system_control, HOTRELOAD_TOOLS, HOTRELOAD_HANDLERS
-from ..services.memory_index import MEMORY_INDEX_TOOLS, MEMORY_INDEX_HANDLERS, memory_index
+from ..services.system_control import system_control, HOTRELOAD_HANDLERS
+from ..services.memory_index import MEMORY_INDEX_HANDLERS
 from ..services.mcp_debugger import mcp_debugger
-from ..services.llm_compat import LLM_COMPAT_TOOLS, LLM_COMPAT_HANDLERS, llm_compat
-from ..services.init_service import compact_init
-from ..utils.mcp_auth import AUTH_ENABLED, require_mcp_auth
+from ..services.llm_compat import LLM_COMPAT_HANDLERS
+from ..utils.mcp_auth import require_mcp_auth
 import logging
 
 mcp_logger = logging.getLogger("ailinux.mcp")
@@ -583,21 +573,28 @@ async def handle_models_list(_: Dict[str, Any]) -> Dict[str, Any]:
             by_provider[m.provider] = []
         by_provider[m.provider].append(m.id)
 
-    # Group by key capabilities (saving context by not listing every model for every cap)
+    # Group by key capabilities — these become the tabs in Nova-AI-Frontend.
+    # Each tab corresponds to one capability tag emitted by detect_capabilities()
+    # in app/services/model_registry.py. Keep order stable: it drives tab order.
     by_capability = {
-        "code": [],
-        "vision": [],
-        "chat": [],
-        "embedding": []
+        "chat": [],            # Standard text chat & multi-turn dialogue
+        "vision": [],          # Multimodal models accepting image input (Gemini, Pixtral, GPT-4o, ...)
+        "image_gen": [],       # Imagen 4, Nano Banana 2, FLUX, SDXL, dall-e
+        "video_gen": [],       # Veo 3.1, Sora
+        "audio": [],           # Whisper / Voxtral STT, Gemini TTS, Live API, native-audio
+        "audio_gen": [],       # Lyria 3, Suno-style music generators
+        "embedding": [],       # gemini-embedding-001, mistral-embed, codestral-embed, BGE
+        "code": [],             # Codestral, DeepSeek-Coder, qwen-coder, codex
+        "reasoning": [],       # o1/o3, DeepSeek-R1, Magistral, thinking variants
+        "function_calling": [], # Models advertising native tool use
+        "moderation": [],      # llama-guard, mistral-moderation
+        "ocr": [],             # mistral-ocr, document-vision
     }
-    
+
     for m in models:
         for cap in m.capabilities:
             if cap in by_capability:
                 by_capability[cap].append(m.id)
-            elif cap == "image_gen": # Map specific caps to broader categories if needed
-                 if "vision" not in by_capability: by_capability["vision"] = []
-                 by_capability["vision"].append(m.id)
 
     # Simplify lists - strictly limit to ID strings to save tokens
     return {
@@ -1398,10 +1395,10 @@ async def handle_initialize(params: Dict[str, Any], request: Optional[Request] =
 
 
 async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
-    """MCP tools/list method - returns optimized tools from registry v4.
+    """MCP tools/list - unified inventory (v4 + extras + V5).
     
-    v4 reduced from 134 to 52 tools for better AI usability.
-    Old tool names still work via TOOL_ALIASES.
+    Wiederhergestellt nach dem Stash-Merge-Verlust vom 2026-04-20.
+    Vorher: nur 52 v4-Tools. Jetzt: ~142 (v4 + WP/Browser/Redis/Performance + V5).
     """
     # Check if client wants legacy (v3) tools
     use_legacy = params.get("legacy", False) or params.get("v3", False)
@@ -1411,13 +1408,46 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
         tools = registry_v3_get_all_tools()
         return {"tools": tools, "version": "v3", "count": len(tools)}
     
-    # Default: Return optimized 52 tools from v4
+    # Primary: unified inventory (Pre-Killer style, full toolbox with handlers)
+    try:
+        from ..mcp.tool_registry_unified import get_unified_tools
+        from ..mcp.handlers_wordpress import WORDPRESS_TOOL_SCHEMAS
+        from ..mcp.handlers_browser import BROWSER_TOOL_SCHEMAS
+        from ..mcp.handlers_redis import REDIS_TOOL_SCHEMAS
+        from ..services.model_performance import PERFORMANCE_TOOL_SCHEMAS
+        
+        tools = get_unified_tools(
+            extra_tools=(WORDPRESS_TOOL_SCHEMAS + BROWSER_TOOL_SCHEMAS +
+                         PERFORMANCE_TOOL_SCHEMAS + REDIS_TOOL_SCHEMAS)
+        )
+        existing = {t.get("name") for t in tools}
+        
+        # V5 extension tools (deduplicated)
+        try:
+            from ..mcp.tool_registry_v5 import V5_TOOLS
+            for tool in V5_TOOLS:
+                if tool.get("name") not in existing:
+                    tools.append(tool)
+                    existing.add(tool.get("name"))
+        except Exception as e:
+            logger.warning(f"V5_TOOLS load skipped: {e}")
+        
+        return {
+            "tools": tools,
+            "version": "unified",
+            "count": len(tools),
+            "note": "v4 + WordPress/Browser/Redis/Performance + V5 (restored 2026-04-27)"
+        }
+    except Exception as e:
+        logger.warning(f"Unified tools failed, falling back to v4: {e}")
+    
+    # Fallback: v4 only (52 tools)
     tools = registry_v4_get_all_tools()
     return {
         "tools": tools, 
-        "version": "v4", 
+        "version": "v4-fallback", 
         "count": len(tools),
-        "note": "Optimized from 134 to 52 tools. Use legacy=true for v3."
+        "note": "Fallback to v4 due to unified registry failure - check logs"
     }
 
 
@@ -2046,7 +2076,8 @@ async def handle_execute_mcp_tool(params: Dict[str, Any]) -> Dict[str, Any]:
     # Try v4 handlers first
     if not handler:
         try:
-            v4_result = await call_v4_tool(tool_name, arguments)
+            # Bug-Fix 2026-04-28: was `arguments` (undefined in this scope), now tool_params
+            v4_result = await call_v4_tool(tool_name, tool_params)
             if v4_result:
                 return {"content": [{"type": "text", "text": json.dumps(v4_result, separators=(chr(44), chr(58)))}], "isError": False}
         except Exception:
@@ -2282,7 +2313,6 @@ async def handle_tristar_memory_search(params: Dict[str, Any]) -> Dict[str, Any]
 # Codebase Access Handlers
 # ============================================================================
 
-import os
 import unicodedata
 from pathlib import Path
 import logging
@@ -2656,7 +2686,7 @@ async def handle_codebase_create(params: Dict[str, Any]) -> Dict[str, Any]:
         raise ValueError(f"Invalid path: {file_path}")
 
     if any(forbidden in file_path for forbidden in EDIT_FORBIDDEN_PATHS):
-        raise ValueError(f"Creating forbidden for security-sensitive files")
+        raise ValueError(f"Creating forbidden for security-sensitive file: {file_path}")
 
     if safe_path.exists():
         raise ValueError(f"File already exists: {file_path}. Use codebase.edit to modify.")
@@ -3083,9 +3113,9 @@ async def handle_cli_agents_list(params: Dict[str, Any]) -> Dict[str, Any]:
     summary = []
     for a in agents:
         agent_id = a.get("id", "unknown")
-        status = a.get("status", "unknown")
+        agent_status = a.get("status", "unknown")
         pid = a.get("pid", "-")
-        summary.append(f"{agent_id}: {status} (pid={pid})")
+        summary.append(f"{agent_id}: {agent_status} (pid={pid})")
 
     return {
         "summary": summary,
@@ -3706,14 +3736,11 @@ async def mcp_messages_handler(request: Request, session_id: Optional[str] = Non
 
         # Handle other MCP methods through standard handlers
         handler = MCP_HANDLERS.get(method)
-        # Try v4 handlers as fallback
-        if not handler:
-            try:
-                v4_result = await call_v4_tool(tool_name, arguments)
-                if v4_result:
-                    return {"content": [{"type": "text", "text": json.dumps(v4_result, separators=(chr(44), chr(58)))}], "isError": False}
-            except Exception:
-                pass  # Fall through to error
+        # NOTE: V4-fallback removed 2026-04-28 (Code Review) — the previous
+        # "call_v4_tool(tool_name, arguments)" call referenced undefined names
+        # in this scope, raised NameError, and was silently swallowed. Standard
+        # MCP methods (tools/list, tools/call, etc.) are handled via MCP_HANDLERS
+        # directly; v4 tool dispatch is done inside handle_tools_call.
 
         if not handler:
             error_msg = f"Method '{method}' not supported"
@@ -3855,14 +3882,9 @@ async def _process_mcp_request(
     if not handler and "_" in method:
         handler = MCP_HANDLERS.get(method.replace("_", "."))
 
-    # Try v4 handlers first
-    if not handler:
-        try:
-            v4_result = await call_v4_tool(tool_name, arguments)
-            if v4_result:
-                return {"content": [{"type": "text", "text": json.dumps(v4_result, separators=(chr(44), chr(58)))}], "isError": False}
-        except Exception:
-            pass  # Fall through to error
+    # NOTE: Dead V4 fallback removed 2026-04-28 (Code Review) — referenced
+    # undefined names tool_name/arguments. Tool calls are dispatched through
+    # the "tools/call" handler which has correct argument extraction.
 
     if not handler:
         return {
@@ -3911,9 +3933,7 @@ async def mcp_unified_endpoint(request: Request):
     - Mcp-Session-Id: Session ID (optional, returned in initialize response)
     - Authorization: Bearer <token> or Basic <base64(user:pass)>
     """
-    import time as _time
     import logging
-    from ..utils.triforce_logging import multi_logger
 
     await require_mcp_auth(request)
 
