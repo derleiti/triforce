@@ -828,6 +828,16 @@ class ModelRegistry:
                     capabilities.append("vision")
                     roles.append("vision_analyst")
 
+            # Detect image/video generation from output_modalities (OpenRouter API truth source)
+            # Catches gemini-*-image, gpt-*-image, nano-banana etc. that the regex misses.
+            output_mods = set(architecture.get("output_modalities") or [])
+            if "image" in output_mods and "image_gen" not in capabilities:
+                capabilities.append("image_gen")
+                roles.append("image_generator")
+            if "video" in output_mods and "video_gen" not in capabilities:
+                capabilities.append("video_gen")
+                roles.append("video_generator")
+
             models.append(ModelInfo(
                 id=f"openrouter/{model_id}",
                 provider="openrouter",
@@ -852,6 +862,19 @@ class ModelRegistry:
             ModelInfo(id="openrouter/anthropic/claude-3.5-sonnet", provider="openrouter", capabilities=["chat", "vision", "code"], roles=["assistant", "vision_analyst", "code_assistant"]),
             ModelInfo(id="openrouter/openai/gpt-4o", provider="openrouter", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
             ModelInfo(id="openrouter/google/gemini-2.0-flash-exp:free", provider="openrouter", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
+            # ----- OpenRouter Image generation (chat/completions with modalities=['image','text']) -----
+            ModelInfo(id="openrouter/google/gemini-2.5-flash-image", provider="openrouter",
+                      capabilities=["image_gen"], roles=["image_generator"]),
+            ModelInfo(id="openrouter/google/gemini-3.1-flash-image-preview", provider="openrouter",
+                      capabilities=["image_gen"], roles=["image_generator"]),
+            ModelInfo(id="openrouter/google/gemini-3-pro-image-preview", provider="openrouter",
+                      capabilities=["image_gen"], roles=["image_generator"]),
+            ModelInfo(id="openrouter/openai/gpt-5-image-mini", provider="openrouter",
+                      capabilities=["image_gen"], roles=["image_generator"]),
+            ModelInfo(id="openrouter/openai/gpt-5-image", provider="openrouter",
+                      capabilities=["image_gen"], roles=["image_generator"]),
+            ModelInfo(id="openrouter/openai/gpt-5.4-image-2", provider="openrouter",
+                      capabilities=["image_gen"], roles=["image_generator"]),
         ]
 
     async def _discover_together(self) -> List[ModelInfo]:
