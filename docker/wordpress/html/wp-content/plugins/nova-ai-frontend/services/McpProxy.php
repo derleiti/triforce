@@ -98,7 +98,11 @@ class McpProxy {
 
             // Models & Chat
             'models' => '/v1/models',
-            'chat' => '/v1/chat',
+            // NOTE: chat is intentionally NOT mapped via McpProxy.
+            // McpProxy is admin-only and lacks per-user JWT-Auth-Forward,
+            // so it can't enforce tier limits. For chat, use ChatProxy::handle_chat
+            // which forwards Authorization Bearer → /v1/client/chat (tier-aware)
+            // and falls back to /v1/chat for anonymous requests.
 
             // Ollama
             'ollama_status' => '/mcp/ollama/status',
