@@ -323,6 +323,11 @@ function nova_proxy_models(WP_REST_Request $r): WP_REST_Response {
             'provider' => $m['provider'] ?? (count($parts)>1 ? $parts[0] : 'other'),
             'chat'     => in_array('chat', $caps, true) || ($m['chat'] ?? false) === true,
             'vision'   => in_array('vision', $caps, true) || in_array('multimodal', $caps, true),
+            'media_image'  => in_array('image_gen', $caps, true),
+            'media_video'  => in_array('video_gen', $caps, true),
+            'image_gen'    => in_array('image_gen', $caps, true),
+            'video_gen'    => in_array('video_gen', $caps, true),
+            'capabilities' => $caps,
         ];
     }
     return new WP_REST_Response(['models' => $models, 'count' => count($models)], 200);
@@ -338,8 +343,9 @@ function nova_proxy_vision(WP_REST_Request $r): WP_REST_Response  {
 }
 
 function nova_proxy_vision_upload(WP_REST_Request $r): WP_REST_Response {
-    // Phase 5 Fix: file → base64 → JSON → nova_frontend vision route (bypasses broken model_registry).
-    // Datei wird nur für die Dauer der Anfrage im Speicher gehalten — keine dauerhafte Speicherung.
+    // Forward multipart directly to backend /v1/images/analyze/upload —
+    // no base64 detour. Datei wird nur fuer die Dauer der Anfrage im
+    // Speicher gehalten, keine dauerhafte Speicherung.
     $files = $r->get_file_params();
     $body  = $r->get_body_params();
     $model  = sanitize_text_field($body['model']  ?? '');
@@ -349,24 +355,60 @@ function nova_proxy_vision_upload(WP_REST_Request $r): WP_REST_Response {
         return new WP_REST_Response(['ok'=>false,'error'=>'Keine Datei empfangen'], 400);
     }
     $tmp_path = $files['image_file']['tmp_name'];
-    // BUG-FIX: use finfo magic-bytes instead of browser-declared MIME (can be wrong)
+    $orig_name = $files['image_file']['name'] ?: 'upload.jpg';
+
+    // Use finfo magic-bytes; browser-declared MIME can be wrong
     $finfo_obj = finfo_open(FILEINFO_MIME_TYPE);
     $detected_mime = finfo_file($finfo_obj, $tmp_path);
     finfo_close($finfo_obj);
-    $mime = ($detected_mime && strpos($detected_mime, 'image/') === 0) ? $detected_mime : ($files['image_file']['type'] ?: 'image/jpeg');
+    $mime = ($detected_mime && strpos($detected_mime, 'image/') === 0)
+            ? $detected_mime
+            : ($files['image_file']['type'] ?: 'image/jpeg');
 
     $raw_bytes = file_get_contents($tmp_path);
     if ($raw_bytes === false) {
         return new WP_REST_Response(['ok'=>false,'error'=>'Datei konnte nicht gelesen werden'], 500);
     }
-    $b64 = base64_encode($raw_bytes);
 
-    return nova_proxy('/v1/images/analyze', 'POST', [
-        'model'        => $model,
-        'prompt'       => $prompt,
-        'image_base64' => $b64,
-        'mime_type'    => $mime,
+    // Build multipart body manually (wp_remote_request supports raw body
+    // with Content-Type: multipart/form-data; boundary=...)
+    $boundary = 'NovaVisionBoundary' . wp_generate_uuid4();
+    $crlf = "\r\n";
+    $multipart = '';
+    foreach ([['model', $model], ['prompt', $prompt]] as $pair) {
+        $multipart .= '--' . $boundary . $crlf;
+        $multipart .= 'Content-Disposition: form-data; name="' . $pair[0] . '"' . $crlf . $crlf;
+        $multipart .= $pair[1] . $crlf;
+    }
+    $multipart .= '--' . $boundary . $crlf;
+    $multipart .= 'Content-Disposition: form-data; name="image_file"; filename="' . $orig_name . '"' . $crlf;
+    $multipart .= 'Content-Type: ' . $mime . $crlf . $crlf;
+    $multipart .= $raw_bytes . $crlf;
+    $multipart .= '--' . $boundary . '--' . $crlf;
+
+    $url = nova_get_backend_base() . '/v1/images/analyze/upload';
+    $resp = wp_remote_request($url, [
+        'method'  => 'POST',
+        'timeout' => 120,
+        'headers' => [
+            'Content-Type'    => 'multipart/form-data; boundary=' . $boundary,
+            'X-Internal-Key'  => NOVA_AI_INTERNAL_KEY,
+        ],
+        'body' => $multipart,
     ]);
+    if (is_wp_error($resp)) {
+        return new WP_REST_Response(['ok'=>false,'error'=>$resp->get_error_message()], 502);
+    }
+    $code = wp_remote_retrieve_response_code($resp);
+    $data = json_decode(wp_remote_retrieve_body($resp), true) ?? ['raw'=>wp_remote_retrieve_body($resp)];
+    if ($code >= 400 && !isset($data['message'])) {
+        $data['message'] = $data['detail'] ?? $data['error'] ?? "Backend HTTP $code";
+    }
+    // Wrap text -> {ok:true, mode:'vision', raw:{...}} for frontend compat
+    if ($code < 400 && isset($data['text'])) {
+        $data = ['ok' => true, 'mode' => 'vision', 'raw' => $data];
+    }
+    return new WP_REST_Response($data, $code);
 }
 function nova_proxy_account(WP_REST_Request $r): WP_REST_Response {
     // Returns account info: WP login status + tier/subscription from user_meta
