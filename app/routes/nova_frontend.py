@@ -725,17 +725,14 @@ async def _image_proxy(req: ImageRequest) -> Dict[str, Any]:
                 pass
             raise HTTPException(status_code=500, detail="HuggingFace: Unerwartetes Antwortformat")
 
-    # Internal txt2img path (SD, ComfyUI, FLUX via together, etc.)
+    # Internal txt2img path (kept for backwards compat with /v1/txt2img;
+    # the legacy ComfyUI/A1111 sd3 fallback has been removed.)
     base = _base_url()
     payload = {"prompt": req.prompt, "model": req.model, "size": req.size, "n": req.n}
     async with httpx.AsyncClient(timeout=180.0) as client:
         r = await client.post(f"{base}/v1/txt2img", json=payload)
         if r.status_code == 200:
             return {"ok": True, "mode": "media_image", "provider": "internal", "result": r.json()}
-        # Fallback: try sd3 /images/generate endpoint
-        r2 = await client.post(f"{base}/v1/images/generate", json={"prompt": req.prompt, "model": req.model})
-        if r2.status_code == 200:
-            return {"ok": True, "mode": "media_image", "provider": "internal_sd3", "result": r2.json()}
         raise HTTPException(
             status_code=503,
             detail=f"Bild-Generierung für Modell '{req.model}' nicht verfügbar. Bitte ein anderes Modell wählen."
