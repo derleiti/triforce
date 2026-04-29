@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import base64
+import logging
 import os
 import tempfile
 from pathlib import Path
@@ -13,11 +14,13 @@ from PIL import Image
 import io
 
 from ..config import get_settings
-from ..services.model_registry import ModelInfo
+from ..services.model_registry import ModelInfo, resolve_gemini_api_key
 from ..utils.errors import api_error
 from ..utils.http import extract_http_error
 from ..utils.http_client import HttpClient
 from ..utils.model_helpers import strip_provider_prefix
+
+logger = logging.getLogger(__name__)
 
 MAX_IMAGE_BYTES = 10 * 1024 * 1024  # 10MB
 
@@ -33,6 +36,30 @@ ANTHROPIC_VISION_ALIASES = {
     "claude": "claude-sonnet-4-20250514",
 }
 TEMP_RETENTION_SECONDS = 120
+
+
+def _detect_image_mime(data: bytes) -> Optional[str]:
+    """Detect image MIME type from magic bytes.
+
+    Returns one of 'image/png', 'image/jpeg', 'image/webp', 'image/gif',
+    or None if the bytes do not match a known supported image format.
+
+    The browser- or Multipart-declared Content-Type is not trustworthy:
+    Drag-and-drop reuploads, screenshot tools, and clipboard handlers
+    routinely mislabel JPEG as PNG (and vice versa). Anthropic and other
+    providers validate against magic bytes and reject mismatches.
+    """
+    if not data or len(data) < 12:
+        return None
+    if data[:8] == b"\x89PNG\r\n\x1a\n":
+        return "image/png"
+    if data[:3] == b"\xff\xd8\xff":
+        return "image/jpeg"
+    if data[:6] in (b"GIF87a", b"GIF89a"):
+        return "image/gif"
+    if data[:4] == b"RIFF" and data[8:12] == b"WEBP":
+        return "image/webp"
+    return None
 
 
 async def analyze(
@@ -85,6 +112,20 @@ async def analyze(
             # fallback: we'll download and validate below in _download_image if needed
             pass
 
+    # Detect actual MIME type from magic bytes — the header-declared content_type
+    # (browser / Multipart Content-Type) is unreliable. Anthropic et al. validate
+    # magic bytes and reject mismatches with errors like
+    #   "specified using the image/png media type, but the image appears to be image/jpeg".
+    if image_bytes is not None:
+        detected = _detect_image_mime(image_bytes)
+        if detected:
+            if content_type and content_type.lower() != detected:
+                logger.info(
+                    "Vision upload: content-type '%s' mismatched magic bytes; using detected '%s'",
+                    content_type, detected,
+                )
+            content_type = detected
+
     if image_bytes is not None and content_type is None:
         content_type = "image/png"
 
@@ -110,7 +151,8 @@ async def analyze(
 
     if model.provider == "gemini":
         settings = get_settings()
-        if not settings.gemini_api_key:
+        gemini_key = resolve_gemini_api_key()
+        if not gemini_key:
             raise api_error("Gemini support is not configured", status_code=503, code="gemini_unavailable")
         if image_bytes is not None:
             _persist_temp_file(image_bytes, filename)
@@ -118,14 +160,14 @@ async def analyze(
                 request_model,
                 prompt,
                 image_bytes,
-                api_key=settings.gemini_api_key,
+                api_key=gemini_key,
             )
         assert image_url is not None
         return await _analyze_with_gemini_url(
             request_model,
             prompt,
             image_url,
-            api_key=settings.gemini_api_key,
+            api_key=gemini_key,
         )
 
     if model.provider == "anthropic":
@@ -195,7 +237,16 @@ def _persist_temp_file(data: bytes, filename: Optional[str]) -> None:
     )
 
 
-def _optimize_image(image_bytes: bytes, max_size: int = 1024) -> bytes:
+def _optimize_image(image_bytes: bytes, max_size: int = 1024) -> Tuple[bytes, str]:
+    """Optimize image for vision providers.
+
+    Returns (optimized_bytes, output_content_type). The output is always JPEG
+    after re-encoding (smaller payloads, no transparency issues), so callers
+    must use the returned content_type — not the original — when telling the
+    provider what media type to expect. If optimization fails, the original
+    bytes are returned together with a None content_type so the caller can
+    decide whether to fall back to the input MIME or detect from magic bytes.
+    """
     try:
         with Image.open(io.BytesIO(image_bytes)) as img:
             # Convert to RGB to avoid transparency issues/palette modes
@@ -213,12 +264,12 @@ def _optimize_image(image_bytes: bytes, max_size: int = 1024) -> bytes:
                 ratio = min(max_size / width, max_size / height)
                 new_size = (int(width * ratio), int(height * ratio))
                 img = img.resize(new_size, Image.Resampling.LANCZOS)
-            
+
             out_io = io.BytesIO()
             img.save(out_io, format='JPEG', quality=85)
-            return out_io.getvalue()
+            return out_io.getvalue(), "image/jpeg"
     except Exception:
-        return image_bytes
+        return image_bytes, ""
 
 
 async def _analyze_with_ollama_data(
@@ -229,7 +280,7 @@ async def _analyze_with_ollama_data(
     settings = get_settings()
     
     # Optimize image to prevent Ollama OOM/crashes
-    image_bytes = _optimize_image(image_bytes)
+    image_bytes, _ = _optimize_image(image_bytes)
     
     url = httpx.URL(str(settings.ollama_base)).join("/api/chat")
     encoded = base64.b64encode(image_bytes).decode("ascii")
@@ -399,8 +450,13 @@ async def _analyze_with_anthropic_data(
     Claude supports vision for Claude 3+ models. Images are sent as base64-encoded
     data within the message content.
     """
-    # Optimize image to prevent issues with large images
-    optimized_bytes = _optimize_image(image_bytes, max_size=2048)
+    # Optimize image to prevent issues with large images.
+    # Optimization re-encodes to JPEG, so use the returned content_type as the
+    # source of truth for media_type — not the input content_type. This prevents
+    # "image/png declared but bytes are JPEG" errors from Anthropic.
+    optimized_bytes, optimized_ct = _optimize_image(image_bytes, max_size=2048)
+    if optimized_ct:
+        content_type = optimized_ct
 
     # Map model aliases
     target_model = ANTHROPIC_VISION_ALIASES.get(model)
