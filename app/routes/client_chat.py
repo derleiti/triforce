@@ -303,20 +303,26 @@ async def call_openrouter(
     model: str,
     messages: List[dict],
     temperature: float = 0.7,
-    max_tokens: int = 4096
+    max_tokens: int = 4096,
+    _tried: Optional[set] = None,
 ) -> dict:
-    """Call OpenRouter API (für Pro/Enterprise) mit Ollama-Fallback bei 402"""
+    """
+    Call OpenRouter API. Bei 429 für :free Modelle: Rotating Fallback durch OLLAMA_MODELS-Liste.
+    Bei 402 (Payment) für non-free: raise (Ollama-Fallback tot seit 2026-05-07).
+    """
+    if _tried is None:
+        _tried = set()
+    _tried.add(model)
 
-    # Normalisiere Model-Name
+    # Normalisiere Model-Name (entfernt openrouter/ prefix)
     model_name = normalize_openrouter_model(model)
 
     headers = {
         "Authorization": f"Bearer {OPENROUTER_API_KEY}",
         "Content-Type": "application/json",
         "HTTP-Referer": "https://ailinux.me",
-        "X-Title": "AILinux Client"
+        "X-Title": "AILinux Client",
     }
-
     payload = {
         "model": model_name,
         "messages": messages,
@@ -328,23 +334,46 @@ async def call_openrouter(
         response = await client.post(
             f"{OPENROUTER_BASE_URL}/chat/completions",
             headers=headers,
-            json=payload
+            json=payload,
         )
 
-        # Bei 402 (Payment Required) → mark unavailable + raise (Ollama-Fallback tot 2026-05-07)
+        # ============================================================
+        # 429 Rate-Limited bei :free → Rotating Fallback durch OLLAMA_MODELS
+        # ============================================================
+        if response.status_code == 429 and ":free" in model_name:
+            logger.warning(f"OpenRouter 429 (rate-limited) für {model} — rotating fallback")
+            from ..services.user_tiers import OLLAMA_MODELS
+            if len(_tried) < 5:
+                for candidate in OLLAMA_MODELS:
+                    if candidate not in _tried and ":free" in candidate:
+                        logger.info(f"Rotating: {model} → {candidate}")
+                        return await call_openrouter(
+                            model=candidate,
+                            messages=messages,
+                            temperature=temperature,
+                            max_tokens=max_tokens,
+                            _tried=_tried,
+                        )
+            availability_service.mark_error(model, 429, "Rate limited (all free models exhausted)")
+            raise HTTPException(
+                status_code=429,
+                detail=f"Alle Free-Modelle aktuell rate-limited. Versucht: {sorted(_tried)}. Bitte in einer Minute erneut versuchen.",
+            )
+
+        # 402 Payment Required → mark + raise (Ollama-Fallback tot seit 2026-05-07)
         if response.status_code == 402:
             logger.warning(f"OpenRouter 402 für {model}")
             availability_service.mark_error(model, 402, "Payment Required")
             raise HTTPException(
                 status_code=402,
-                detail=f"OpenRouter Payment Required für {model}. Versuche openrouter/...:free oder anthropic/* (für Pro/Enterprise)."
+                detail=f"OpenRouter Payment Required für {model}. Versuche openrouter/...:free oder anthropic/* (für Pro/Enterprise).",
             )
 
         if response.status_code != 200:
             error_text = response.text
             raise HTTPException(
                 status_code=response.status_code,
-                detail=f"OpenRouter Error: {error_text}"
+                detail=f"OpenRouter Error: {error_text}",
             )
 
         return response.json()
