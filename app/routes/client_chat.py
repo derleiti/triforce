@@ -27,6 +27,24 @@ router = APIRouter(prefix="/client", tags=["Client Chat"])
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
+ANTHROPIC_BASE_URL = "https://api.anthropic.com"
+
+# Anthropic Model Aliases (Schema-ID → echte API-ID)
+ANTHROPIC_MODEL_MAP = {
+    "anthropic/claude-opus-4-7": "claude-opus-4-7",
+    "anthropic/claude-opus-4-6": "claude-opus-4-6",
+    "anthropic/claude-sonnet-4-6": "claude-sonnet-4-6",
+    "anthropic/claude-haiku-4-5": "claude-haiku-4-5-20251001",
+    "anthropic/claude-sonnet-4": "claude-sonnet-4-20250514",
+    "anthropic/claude-opus-4": "claude-opus-4-20250514",
+    "anthropic/claude-3.5-sonnet": "claude-sonnet-4-20250514",
+    "anthropic/claude-3.5-haiku": "claude-3-5-haiku-20241022",
+    "anthropic/claude-3-opus": "claude-3-opus-20240229",
+    "anthropic/claude-3-sonnet": "claude-3-sonnet-20240229",
+    "anthropic/claude-3-haiku": "claude-3-haiku-20240307",
+    "anthropic/claude": "claude-sonnet-4-20250514",
+}
 
 # JWT Config - Import from auth module to share secret
 from .client_auth import JWT_SECRET, JWT_ALGORITHM
@@ -332,6 +350,98 @@ async def call_openrouter(
         return response.json()
 
 
+async def call_anthropic(
+    model: str,
+    messages: List[dict],
+    temperature: float = 0.7,
+    max_tokens: int = 4096
+) -> dict:
+    """Call Anthropic API directly. Returns OpenAI-format dict."""
+    # Map model alias to real Anthropic API ID
+    target_model = ANTHROPIC_MODEL_MAP.get(model, model.replace("anthropic/", ""))
+
+    # Anthropic separates system messages from the messages array
+    system_parts = []
+    api_messages = []
+    for msg in messages:
+        role = msg.get("role", "user")
+        content = msg.get("content", "")
+        if role == "system":
+            system_parts.append(content)
+        elif role == "assistant":
+            api_messages.append({"role": "assistant", "content": content})
+        else:
+            api_messages.append({"role": "user", "content": content})
+
+    # Merge consecutive same-role messages (Anthropic requires alternating)
+    merged = []
+    for msg in api_messages:
+        if merged and merged[-1]["role"] == msg["role"]:
+            merged[-1]["content"] = f"{merged[-1]['content']}\n\n{msg['content']}"
+        else:
+            merged.append(msg)
+
+    # First message must be from user
+    if merged and merged[0]["role"] != "user":
+        merged.insert(0, {"role": "user", "content": "Hello"})
+
+    headers = {
+        "x-api-key": ANTHROPIC_API_KEY,
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json",
+    }
+    body = {
+        "model": target_model,
+        "messages": merged,
+        "max_tokens": max_tokens,
+    }
+    # Reasoning models (Opus 4.6, 4.7) reject temperature parameter
+    is_reasoning = any(x in target_model for x in ("opus-4-7", "opus-4-6"))
+    if not is_reasoning:
+        body["temperature"] = max(0.0, min(temperature, 1.0))
+    if system_parts:
+        body["system"] = "\n\n".join(system_parts)
+
+    async with httpx.AsyncClient(timeout=120.0) as client:
+        response = await client.post(
+            f"{ANTHROPIC_BASE_URL}/v1/messages",
+            headers=headers,
+            json=body,
+        )
+
+        if response.status_code != 200:
+            error_text = response.text
+            logger.error(f"Anthropic Error ({target_model}): {error_text}")
+            raise HTTPException(
+                status_code=response.status_code,
+                detail=f"Anthropic Error: {error_text}",
+            )
+
+        data = response.json()
+
+        # Extract text from content blocks
+        content_text = ""
+        for block in data.get("content", []):
+            if block.get("type") == "text":
+                content_text += block.get("text", "")
+
+        usage = data.get("usage", {})
+        total_tokens = usage.get("input_tokens", 0) + usage.get("output_tokens", 0)
+
+        # Convert to OpenAI-compatible format
+        return {
+            "choices": [{
+                "message": {
+                    "role": "assistant",
+                    "content": content_text,
+                }
+            }],
+            "usage": {"total_tokens": total_tokens},
+            "model_used": target_model,
+            "is_fallback": False,
+        }
+
+
 @router.post("/chat", response_model=ChatResponse)
 async def client_chat(
     request: ChatRequest,
@@ -414,6 +524,24 @@ async def client_chat(
                 max_tokens=request.max_tokens
             )
             backend = "ollama"
+        # Anthropic-Modelle direkt zur Anthropic-API
+        elif model.startswith("anthropic/") or model.startswith("claude"):
+            # Token-Limit prüfen (außer Enterprise)
+            if tier != UserTier.ENTERPRISE:
+                limit_check = tier_service.check_token_limit(user_id, model)
+                if not limit_check["allowed"]:
+                    raise HTTPException(429, f"Token-Limit erreicht ({limit_check['limit']}/Tag).")
+
+            if not ANTHROPIC_API_KEY:
+                raise HTTPException(503, "Anthropic API key not configured")
+
+            result = await call_anthropic(
+                model=model,
+                messages=messages,
+                temperature=request.temperature,
+                max_tokens=request.max_tokens
+            )
+            backend = "anthropic"
         else:
             # Cloud-Modelle: Token-Limit prüfen (außer Enterprise)
             if tier != UserTier.ENTERPRISE:

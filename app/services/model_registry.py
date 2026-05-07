@@ -1171,3 +1171,14 @@ class ModelRegistry:
 
 
 registry = ModelRegistry()
+
+
+def resolve_gemini_api_key() -> str | None:
+    """Resolve Gemini API key: settings.gemini_api_key → GEMINI_API_KEY env → GOOGLE_API_KEY env."""
+    import os
+    from ..config import settings
+    return (
+        getattr(settings, "gemini_api_key", None)
+        or os.getenv("GEMINI_API_KEY")
+        or os.getenv("GOOGLE_API_KEY")
+    )

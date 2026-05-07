@@ -71,7 +71,7 @@ OLLAMA_MODELS = [
 ]
 
 # Lokales Fallback-Modell (läuft direkt auf Server, kein Cloud-Proxy)
-LOCAL_FALLBACK_MODEL = "ollama/ministral-3:14b"
+LOCAL_FALLBACK_MODEL = "ollama/ministral-3:14b-cloud"
 
 # Aliases für Kompatibilität
 FREE_MODELS_OLLAMA = OLLAMA_MODELS
