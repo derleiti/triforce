@@ -35,43 +35,46 @@ class TierConfig:
     daily_token_limit: int = 0  # 0 = unlimited
     ollama_unlimited: bool = False  # Ollama immer ohne Limit
 
-# Ollama Cloud-Proxy Modelle (Default für alle Tiers) - 20 Modelle
+# ============================================================================
+# FREE-TIER DEFAULT MODELS — OpenRouter-Free (NOTFALL-REROUTE 2026-05-07)
+# ============================================================================
+# Ollama Cloud Subscription ist past due → alle :cloud-Modelle returnen 403.
+# Fallback: OpenRouter-Free-Modelle (kostenlos, kein Subscription nötig, nur API-Key).
+# Variablenname OLLAMA_MODELS ist historisch, wird aber im ganzen Code genutzt.
+# Sobald Ollama wieder bezahlt ist: alte Liste aus user_tiers.py.bak.pre-openrouter-reroute-* zurück.
+# ============================================================================
 OLLAMA_MODELS = [
-    # DeepSeek Familie
-    "ollama/deepseek-v3.1:671b-cloud",
-    "ollama/deepseek-v3.2:cloud",
-    # Qwen Familie
-    "ollama/qwen3-coder:480b-cloud",
-    "ollama/qwen3-vl:235b-cloud",
-    "ollama/qwen3-next:80b-cloud",
-    # Kimi/Moonshot
-    "ollama/kimi-k2:1t-cloud",
-    "ollama/kimi-k2-thinking:cloud",
-    # GPT-OSS (OpenAI Open Source)
-    "ollama/gpt-oss:120b-cloud",
-    "ollama/gpt-oss:20b-cloud",
-    # Google
-    "ollama/gemini-3-pro-preview:latest",
-    # MiniMax
-    "ollama/minimax-m2:cloud",
-    # GLM (Zhipu)
-    "ollama/glm-4.6:cloud",
-    # Mistral Familie
-    "ollama/ministral-3:14b-cloud",
-    "ollama/ministral-3:8b-cloud",
-    "ollama/ministral-3:3b-cloud",
-    "ollama/devstral-2:123b-cloud",
-    "ollama/devstral-small-2:24b-cloud",
-    # NVIDIA Nemotron
-    "ollama/nemotron-3-nano:30b-cloud",
-    # Cogito
-    "ollama/cogito-2.1:671b-cloud",
-    # Essential AI
-    "ollama/rnj-1:8b-cloud",
+    # Allgemein / Chat
+    "openrouter/google/gemma-4-31b-it:free",
+    "openrouter/google/gemma-4-26b-a4b-it:free",
+    "openrouter/meta-llama/llama-3.3-70b-instruct:free",
+    "openrouter/minimax/minimax-m2.5:free",
+    "openrouter/nvidia/nemotron-3-super-120b-a12b:free",
+    "openrouter/nvidia/nemotron-3-nano-30b-a3b:free",
+    "openrouter/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+    # Coding
+    "openrouter/qwen/qwen3-coder:free",
+    "openrouter/qwen/qwen3-next-80b-a3b-instruct:free",
+    # OpenAI Open
+    "openrouter/openai/gpt-oss-120b:free",
+    "openrouter/openai/gpt-oss-20b:free",
+    # GLM / Z.AI
+    "openrouter/z-ai/glm-4.5-air:free",
+    # Vision
+    "openrouter/nvidia/nemotron-nano-12b-v2-vl:free",
+    "openrouter/qwen/qwen3-vl-8b-thinking:free" if False else "openrouter/meta-llama/llama-3.2-3b-instruct:free",  # placeholder
+    # Long-context
+    "openrouter/inclusionai/ling-2.6-1t:free",
+    # Misc free
+    "openrouter/poolside/laguna-m.1:free",
+    "openrouter/tencent/hy3-preview:free",
+    "openrouter/baidu/qianfan-ocr-fast:free",
+    "openrouter/liquid/lfm-2.5-1.2b-instruct:free",
+    "openrouter/liquid/lfm-2.5-1.2b-thinking:free",
 ]
 
-# Lokales Fallback-Modell (läuft direkt auf Server, kein Cloud-Proxy)
-LOCAL_FALLBACK_MODEL = "ollama/ministral-3:14b-cloud"
+# Default-Fallback (statt LOCAL ollama, jetzt OpenRouter-Free)
+LOCAL_FALLBACK_MODEL = "openrouter/google/gemma-4-31b-it:free"
 
 # Aliases für Kompatibilität
 FREE_MODELS_OLLAMA = OLLAMA_MODELS
@@ -193,11 +196,17 @@ class UserTierService:
         return False
     
     def is_ollama_model(self, model: str) -> bool:
-        """Prüft ob Modell ein Ollama-Modell ist"""
+        """
+        Prüft ob Modell ein Free-Tier-Default-Modell ist.
+        Name historisch, prüft jetzt: ollama/* ODER in OLLAMA_MODELS-Liste
+        (welche während Ollama-Outage openrouter/...:free enthält).
+        """
         if model.startswith("ollama/"):
             return True
+        if model in OLLAMA_MODELS:
+            return True
         model_clean = model.lower()
-        return any(model_clean in m.lower() for m in OLLAMA_MODELS)
+        return any(model_clean == m.lower() for m in OLLAMA_MODELS)
     
     def get_token_limit_for_model(self, user_id: str, model: str) -> int:
         """

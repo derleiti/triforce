@@ -172,15 +172,19 @@ class ModelsResponse(BaseModel):
 
 
 def get_default_ollama_model() -> str:
-    """Default Ollama-Modell für alle Tiers (Cloud-Proxy)"""
-    return "deepseek-v3.1:671b-cloud"
+    """
+    Default Free-Tier-Modell. Name historisch.
+    Während Ollama-Outage (2026-05-07): OpenRouter-Free.
+    """
+    return "google/gemma-4-31b-it:free"
 
 
 def get_default_model(tier: UserTier) -> str:
-    """Default-Modell basierend auf Tier - ALLE nutzen Ollama Cloud-Proxy"""
-    # Alle Tiers nutzen Ollama Cloud-Proxy (kostenlos, lokal gehostet)
-    # OpenRouter Free-Modelle brauchen trotzdem Credits
-    return "ollama/deepseek-v3.1:671b-cloud"
+    """
+    Default-Modell basierend auf Tier.
+    Während Ollama-Outage (2026-05-07): OpenRouter-Free statt Ollama-Cloud.
+    """
+    return "openrouter/google/gemma-4-31b-it:free"
 
 
 def normalize_ollama_model(model: str) -> str:
@@ -327,17 +331,13 @@ async def call_openrouter(
             json=payload
         )
 
-        # Bei 402 (Payment Required) → Fallback zu Ollama
+        # Bei 402 (Payment Required) → mark unavailable + raise (Ollama-Fallback tot 2026-05-07)
         if response.status_code == 402:
-            logger.warning(f"OpenRouter 402 für {model} - Fallback zu Ollama")
-            # Markiere Model als unavailable
+            logger.warning(f"OpenRouter 402 für {model}")
             availability_service.mark_error(model, 402, "Payment Required")
-            # Fallback zu Ollama (kostenlos)
-            return await call_ollama(
-                model="ollama/deepseek-v3.1:671b-cloud",
-                messages=messages,
-                temperature=temperature,
-                max_tokens=max_tokens
+            raise HTTPException(
+                status_code=402,
+                detail=f"OpenRouter Payment Required für {model}. Versuche openrouter/...:free oder anthropic/* (für Pro/Enterprise)."
             )
 
         if response.status_code != 200:
@@ -484,15 +484,15 @@ async def client_chat(
     # Model bestimmen
     model = request.model or get_default_model(tier)
 
-    # === GUEST / REGISTERED: Nur Ollama ===
+    # === GUEST / REGISTERED: OpenRouter-Free (Ollama-Outage 2026-05-07) ===
     if tier in (UserTier.GUEST, UserTier.REGISTERED):
-        # Erzwinge Ollama-Prefix
-        if not model.startswith("ollama/"):
-            model = f"ollama/{model}"
+        # Erzwinge openrouter/-Prefix für free-tier (war früher ollama/)
+        if not model.startswith("openrouter/"):
+            model = LOCAL_FALLBACK_MODEL  # openrouter/google/gemma-4-31b-it:free
 
-        # Prüfen ob erlaubt
+        # Prüfen ob erlaubt (OLLAMA_MODELS-Liste enthält jetzt openrouter/...:free)
         if not tier_service.is_model_allowed(user_id, model):
-            model = "ollama/deepseek-v3.1:671b-cloud"
+            model = LOCAL_FALLBACK_MODEL
             logger.warning(f"Model nicht erlaubt für {tier.value}, Fallback: {model}")
 
         # Token-Limit prüfen
@@ -500,23 +500,20 @@ async def client_chat(
         if not limit_check["allowed"]:
             raise HTTPException(429, f"Token-Limit erreicht ({limit_check['limit']}/Tag)")
 
-        # Ollama Call
-        result = await call_ollama(
+        # OpenRouter Call (statt Ollama während Outage)
+        result = await call_openrouter(
             model=model,
             messages=messages,
             temperature=request.temperature,
             max_tokens=request.max_tokens
         )
-        backend = "ollama"
+        backend = "openrouter"
 
     # === PRO / ENTERPRISE: Alle Modelle ===
     else:
-        # Ollama-Modelle direkt über Ollama
-        if model.startswith("ollama/") or tier_service.is_ollama_model(model):
-            if not model.startswith("ollama/"):
-                model = f"ollama/{model}"
-            
-            # PRO: Ollama = unlimited (kein Limit-Check nötig)
+        # Ollama-Modelle direkt über Ollama (deprecated während Outage, returnen 403)
+        if model.startswith("ollama/"):
+            # PRO: Ollama = unlimited (kein Limit-Check nötig) - aktuell aber tot
             result = await call_ollama(
                 model=model,
                 messages=messages,
@@ -568,9 +565,12 @@ async def client_chat(
     latency = int((datetime.now() - start_time).total_seconds() * 1000)
     fallback_used = result.get("is_fallback", False)
     
-    # Bei Fallback: Model aktualisieren
+    # Bei Fallback: Model aktualisieren (default openrouter free statt totes ministral)
     if fallback_used:
-        model = f"ollama/{result.get('model_used', 'ministral-3:14b')}"
+        fallback_name = result.get('model_used', 'google/gemma-4-31b-it:free')
+        # Prefix abhängig vom Backend (ollama während outage tot, default openrouter)
+        prefix = 'ollama/' if backend == 'ollama' else 'openrouter/'
+        model = f"{prefix}{fallback_name}"
 
     # Prüfen ob Ollama unlimited (Pro/Enterprise mit Ollama-Modell)
     is_ollama = tier_service.is_ollama_model(model) or backend == "ollama"

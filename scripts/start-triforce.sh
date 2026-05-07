@@ -33,7 +33,12 @@ do_update() {
     
     if [ "$LOCAL" != "$REMOTE" ]; then
         log "Update available: $LOCAL -> $REMOTE"
-        git stash push -m "auto-stash $(date +%Y%m%d-%H%M%S)" 2>/dev/null || true
+        # NO auto-stash (verursacht Stash-Akkumulation, 80+ entries siehe 2026-05-07)
+        # Falls lokale Changes da sind: Update skippen statt heimlich stashen
+        if ! git diff --quiet HEAD || ! git diff --cached --quiet; then
+            log "Local changes detected -> SKIPPING update (commit or stash manually)"
+            return 1
+        fi
         git pull --ff-only origin "$BRANCH" || return 1
         log "Updated to $(git rev-parse --short HEAD)"
         return 0  # Update happened
