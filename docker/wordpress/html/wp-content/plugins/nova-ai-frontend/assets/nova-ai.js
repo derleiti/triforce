@@ -10,6 +10,74 @@
   const NONCE = () => window.novaAiConfig?.nonce || null;
   const nonceHeader = () => { var n = NONCE(); return n ? {'X-WP-Nonce': n} : {}; };
   const DEBUG = false;
+  const MODEL_KIND_ORDER = ['chat','vision','media_image','media_video','audio','ocr','embedding','code','reasoning'];
+  const PROVIDER_ORDER = {
+    chat: ['openai','anthropic','gemini','mistral','groq','cerebras','cohere','openrouter','ollama','cloudflare','github','together','fireworks','other'],
+    vision: ['openai','anthropic','gemini','mistral','cohere','openrouter','ollama','cloudflare','github','together','fireworks','other'],
+    media_image: ['openai','gemini','cloudflare','openrouter','together','fireworks','replicate','huggingface','other'],
+    media_video: ['openai','gemini','cloudflare','openrouter','replicate','other'],
+    audio: ['openai','gemini','groq','mistral','cloudflare','other'],
+    ocr: ['mistral','cohere','openai','gemini','other'],
+    embedding: ['openai','cohere','mistral','gemini','cloudflare','fireworks','other'],
+    code: ['openai','anthropic','mistral','ollama','groq','openrouter','github','other'],
+    reasoning: ['openai','anthropic','gemini','ollama','groq','mistral','cerebras','cohere','openrouter','other'],
+  };
+
+  function providerRank(kind, provider) {
+    const order = PROVIDER_ORDER[kind] || PROVIDER_ORDER.chat;
+    const p = (provider || 'other').toLowerCase();
+    const idx = order.indexOf(p);
+    return idx >= 0 ? idx : 99;
+  }
+
+  function modelLabel(m) {
+    return m.name || m.id || m.model || '';
+  }
+
+  function normalizeCategories(m) {
+    const cats = Array.isArray(m.categories) ? m.categories.slice() : [];
+    if (!cats.length) {
+      if (m.media_video) cats.push('media_video');
+      if (m.media_image || m.image_gen) cats.push('media_image');
+      if (m.audio) cats.push('audio');
+      if (m.ocr) cats.push('ocr');
+      if (m.embedding) cats.push('embedding');
+      if (m.code) cats.push('code');
+      if (m.reasoning) cats.push('reasoning');
+      if (m.vision) cats.push('vision');
+      if (m.chat !== false && !m.media_image && !m.media_video && !m.embedding) cats.push('chat');
+    }
+    return cats.filter((cat, idx) => MODEL_KIND_ORDER.includes(cat) && cats.indexOf(cat) === idx);
+  }
+
+  function sortModelGroups(groups, kind) {
+    return Object.entries(groups).sort(([a],[b]) => {
+      const ar = providerRank(kind, a);
+      const br = providerRank(kind, b);
+      if (ar !== br) return ar - br;
+      return a.localeCompare(b);
+    });
+  }
+
+  function appendModelGroups(selectEl, list, kind) {
+    const groups = {};
+    list.forEach(m => {
+      const p = (m.provider || 'other').toLowerCase();
+      (groups[p] = groups[p] || []).push(m);
+    });
+    selectEl.innerHTML = '';
+    sortModelGroups(groups, kind).forEach(([prov, ms]) => {
+      const og = document.createElement('optgroup');
+      og.label = prov;
+      ms.sort((a,b) => modelLabel(a).localeCompare(modelLabel(b))).forEach(m => {
+        const o = document.createElement('option');
+        o.value = m.id || m.model || m.name;
+        o.textContent = modelLabel(m);
+        og.appendChild(o);
+      });
+      selectEl.appendChild(og);
+    });
+  }
 
   // ── Themes ──────────────────────────────────────────────────
   const DARK_THEMES  = ['dark-github','dark-dracula','dark-monokai','dark-nord','dark-solarized','dark-onedark'];
@@ -122,16 +190,10 @@
       if (!resp.ok) return;
       const data = await resp.json();
       const models = Array.isArray(data.models) ? data.models : (Array.isArray(data) ? data : []);
-      const kinds = { chat:[], vision:[], media_image:[], media_video:[] };
+      const kinds = {};
+      MODEL_KIND_ORDER.forEach(k => { kinds[k] = []; });
       models.forEach(m => {
-        // categories-Array oder boolean-Flags auswerten
-        const cats = m.categories || [];
-        if (!cats.length) {
-          if (m.media_video) cats.push("media_video");
-          if (m.media_image) cats.push("media_image");
-          if (m.vision) cats.push("vision");
-          if (m.chat !== false) cats.push("chat");
-        }
+        const cats = normalizeCategories(m);
         cats.forEach(t => {
           (kinds[t] || kinds.chat).push(m);
         });  // cats.forEach
@@ -140,29 +202,7 @@
         const list = kinds[sel.dataset.model] || [];
         sel.innerHTML = '';
         if (!list.length) { sel.innerHTML = '<option value="">— keine Modelle —</option>'; return; }
-        const groups = {};
-        list.forEach(m => { const p = m.provider || 'Other'; (groups[p] = groups[p]||[]).push(m); });
-        // Sortierung: cloudflare zuerst, dann andere Provider alphabetisch
-        const _provOrder = ['cloudflare','anthropic','groq','mistral','openrouter','gemini','github','ollama','other'];
-        const _modelType = sel.dataset.model;
-        const _sorted = Object.entries(groups).sort(([a],[b]) => {
-          if (_modelType === 'media_image') {
-            const ai = _provOrder.indexOf(a) >= 0 ? _provOrder.indexOf(a) : 99;
-            const bi = _provOrder.indexOf(b) >= 0 ? _provOrder.indexOf(b) : 99;
-            return ai - bi;
-          }
-          return a.localeCompare(b);
-        });
-        _sorted.forEach(([prov, ms]) => {
-          const og = document.createElement('optgroup'); og.label = prov;
-          ms.forEach(m => {
-            const o = document.createElement('option');
-            o.value = m.id || m.model || m.name;
-            o.textContent = m.name || m.id || m.model;
-            og.appendChild(o);
-          });
-          sel.appendChild(og);
-        });
+        appendModelGroups(sel, list, sel.dataset.model);
       });
     } catch(e) { DEBUG && console.warn('[Nova] Model load failed:', e); }
   }
@@ -937,7 +977,7 @@
         _modelsCache = all; // Cache für nächstes Öffnen
         // Only chat models (not image/video gen)
         const chatModels = all.filter(m => {
-          const cats = m.categories || [];
+          const cats = normalizeCategories(m);
           const isImg = m.media_image || cats.includes('media_image');
           const isVid = m.media_video || cats.includes('media_video');
           const isChat = m.chat !== false || cats.includes('chat') || cats.includes('vision');
@@ -952,38 +992,14 @@
       if (!modelSel) return;
       // Filter: nur Chat-Modelle
       const filtered = chatModels.filter(m => {
-        const cats = m.categories || [];
+        const cats = normalizeCategories(m);
         const isImg = m.media_image || cats.includes('media_image');
         const isVid = m.media_video || cats.includes('media_video');
         return !isImg && !isVid;
       });
       if (!filtered.length) return;
-      // Group by provider
-      const groups = {};
-      filtered.forEach(m => {
-        const p = m.provider || 'other';
-        (groups[p] = groups[p] || []).push(m);
-      });
-      const provOrder = ['anthropic','gemini','openrouter','groq','mistral','cloudflare','github','ollama','other'];
-      const sorted = Object.entries(groups).sort(([a],[b]) => {
-        const ai = provOrder.indexOf(a) >= 0 ? provOrder.indexOf(a) : 99;
-        const bi = provOrder.indexOf(b) >= 0 ? provOrder.indexOf(b) : 99;
-        return ai - bi;
-      });
-      modelSel.innerHTML = '';
-      sorted.forEach(([prov, models]) => {
-        const og = document.createElement('optgroup');
-        og.label = prov;
-        models.forEach(m => {
-          const o = document.createElement('option');
-          o.value = m.id || m.model || m.name;
-          o.textContent = m.name || m.id || m.model;
-          og.appendChild(o);
-        });
-        modelSel.appendChild(og);
-      });
-      // Default: prefer gemini-2.5-flash or llama-4-scout
-      const preferred = ['gemini/gemini-2.5-flash','groq/meta-llama/llama-4-scout-17b-16e-instruct'];
+      appendModelGroups(modelSel, filtered, 'chat');
+      const preferred = ['openai/gpt-5.2','anthropic/claude-sonnet-4-20250514','gemini/gemini-2.5-flash','groq/meta-llama/llama-4-scout-17b-16e-instruct'];
       for (const p of preferred) {
         const opt = modelSel.querySelector(`option[value="${p}"]`);
         if (opt) { opt.selected = true; break; }
@@ -1104,33 +1120,12 @@
             // Cache setzen (wird von _populateModelSel in initDiscuss genutzt)
             // Direkt befüllen falls modelSel noch leer
             if (modelSel.options.length <= 1) {
-              const provOrder = ['anthropic','gemini','openrouter','groq','mistral','cloudflare','github','ollama','other'];
-              const groups = {};
-              all.filter(m => {
-                const cats = m.categories||[];
-                return !m.media_image && !m.media_video && !cats.includes('media_image') && !cats.includes('media_video');
-              }).forEach(m => {
-                const p = m.provider||'other';
-                (groups[p]=groups[p]||[]).push(m);
+              const chatModels = all.filter(m => {
+                const cats = normalizeCategories(m);
+                return !m.media_image && !m.media_video && !cats.includes('media_image') && !cats.includes('media_video') && !cats.includes('embedding');
               });
-              const sorted = Object.entries(groups).sort(([a],[b])=>{
-                const ai=provOrder.indexOf(a)>=0?provOrder.indexOf(a):99;
-                const bi=provOrder.indexOf(b)>=0?provOrder.indexOf(b):99;
-                return ai-bi;
-              });
-              modelSel.innerHTML = '';
-              sorted.forEach(([prov, models]) => {
-                const og = document.createElement('optgroup');
-                og.label = prov;
-                models.forEach(m => {
-                  const o = document.createElement('option');
-                  o.value = m.id||m.model||m.name;
-                  o.textContent = m.name||m.id||m.model;
-                  og.appendChild(o);
-                });
-                modelSel.appendChild(og);
-              });
-              const preferred = ['gemini/gemini-2.5-flash','groq/meta-llama/llama-4-scout-17b-16e-instruct'];
+              appendModelGroups(modelSel, chatModels, 'chat');
+              const preferred = ['openai/gpt-5.2','anthropic/claude-sonnet-4-20250514','gemini/gemini-2.5-flash','groq/meta-llama/llama-4-scout-17b-16e-instruct'];
               for (const p of preferred) {
                 const opt = modelSel.querySelector('option[value="'+p+'"]');
                 if (opt) { opt.selected = true; break; }
