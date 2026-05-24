@@ -11,6 +11,7 @@ Features:
 """
 
 import asyncio
+import errno
 import json
 import logging
 import os
@@ -235,6 +236,38 @@ DEFAULT_AGENTS: List[Dict[str, Any]] = [
 ]
 
 
+def _inject_nova_env(env: Dict[str, str]) -> Dict[str, str]:
+    """Inject Nova account routing settings into spawned agent environments."""
+    try:
+        from ...config import get_settings
+        settings = get_settings()
+        values = {
+            "NOVA_CHATGPT_URL": settings.nova_chatgpt_url,
+            "NOVA_CHATGPT_USER": settings.nova_chatgpt_user,
+            "NOVA_CHATGPT_PASS": settings.nova_chatgpt_pass,
+            "NOVA_CHATGPT_AGENT_ID": settings.nova_chatgpt_agent_id,
+            "NOVA_GOOGLE_URL": settings.nova_google_url,
+            "NOVA_GOOGLE_USER": settings.nova_google_user,
+            "NOVA_GOOGLE_PASS": settings.nova_google_pass,
+            "NOVA_GEMINI_AGENT_ID": settings.nova_gemini_agent_id,
+            "NOVA_CLAUDE_URL": settings.nova_claude_url,
+            "NOVA_CLAUDE_USER": settings.nova_claude_user,
+            "NOVA_CLAUDE_PASS": settings.nova_claude_pass,
+            "NOVA_CLAUDE_AGENT_ID": settings.nova_claude_agent_id,
+            "CLAUDE_AGENT_ID": settings.claude_agent_id or settings.nova_claude_agent_id,
+            "NOVA_MISTRAL_URL": settings.nova_mistral_url,
+            "NOVA_MISTRAL_USER": settings.nova_mistral_user,
+            "NOVA_MISTRAL_PASS": settings.nova_mistral_pass,
+            "NOVA_MISTRAL_AGENT_ID": settings.nova_mistral_agent_id,
+        }
+        for key, value in values.items():
+            if value and not env.get(key):
+                env[key] = str(value)
+    except Exception as exc:
+        logger.warning("Failed to inject Nova agent environment: %s", exc)
+    return env
+
+
 class AgentController:
     """
     Controller für CLI-Agenten.
@@ -455,6 +488,7 @@ class AgentController:
                 # Wir nutzen die env aus der Config, nicht überschreiben!
                 env = os.environ.copy()
                 env.update(instance.config.env)
+                env = _inject_nova_env(env)
                 # USER für Prozess-Kontext setzen
                 env["USER"] = "zombie"
 
@@ -516,15 +550,36 @@ class AgentController:
 
             try:
                 if force:
-                    instance.process.kill()
+                    try:
+                        instance.process.kill()
+                    except ProcessLookupError:
+                        pass
+                    except OSError as e:
+                        if getattr(e, "errno", None) != errno.ESRCH:
+                            raise
                 else:
-                    instance.process.terminate()
+                    try:
+                        instance.process.terminate()
+                    except ProcessLookupError:
+                        pass
+                    except OSError as e:
+                        if getattr(e, "errno", None) != errno.ESRCH:
+                            raise
 
                 await asyncio.wait_for(instance.process.wait(), timeout=10)
 
             except asyncio.TimeoutError:
-                instance.process.kill()
-                await instance.process.wait()
+                try:
+                    instance.process.kill()
+                except ProcessLookupError:
+                    pass
+                except OSError as e:
+                    if getattr(e, "errno", None) != errno.ESRCH:
+                        raise
+                try:
+                    await instance.process.wait()
+                except Exception:
+                    pass
 
             instance.status = AgentStatus.STOPPED
             instance.pid = None
@@ -677,6 +732,7 @@ class AgentController:
             # Nutze die env aus der Config - die Wrapper-Scripts setzen HOME korrekt
             env = os.environ.copy()
             env.update(instance.config.env)
+            env = _inject_nova_env(env)
             # Stelle sicher dass PATH die npm-global binaries enthält
             env["PATH"] = "/root/.npm-global/bin:/usr/local/bin:/usr/bin:/bin"
 
@@ -823,10 +879,26 @@ class AgentController:
                 if instance and instance.process:
                     try:
                         instance.process.kill()
-                    except Exception:
+                    except ProcessLookupError:
                         pass
+                    except OSError as e:
+                        if getattr(e, "errno", None) != errno.ESRCH:
+                            raise
+                    finally:
+                        instance.status = AgentStatus.STOPPED
+                        instance.pid = None
+                        instance.process = None
             except Exception as e:
-                logger.error(f"Error stopping agent {agent_id}: {e}")
+                instance = self.agents.get(agent_id)
+                process = instance.process if instance else None
+                logger.error(
+                    "Error stopping agent %s during shutdown: %s | status=%s pid=%s returncode=%s",
+                    agent_id,
+                    e,
+                    instance.status.value if instance else "unknown",
+                    instance.pid if instance else None,
+                    getattr(process, "returncode", None),
+                )
 
         logger.info("AgentController shutdown complete")
 

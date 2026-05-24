@@ -24,6 +24,41 @@ router = APIRouter(prefix="/frontend/dashboard", tags=["nova-frontend"], depende
 public_router = APIRouter(prefix="/frontend/dashboard", tags=["nova-frontend-public"])
 logger = logging.getLogger("ailinux.nova_frontend")
 
+CATEGORY_ORDER = {
+    "chat": 0,
+    "vision": 1,
+    "media_image": 2,
+    "media_video": 3,
+    "audio": 4,
+    "ocr": 5,
+    "embedding": 6,
+    "code": 7,
+    "reasoning": 8,
+}
+
+PROVIDER_ORDER = {
+    "chat": ["openai", "anthropic", "gemini", "mistral", "groq", "cerebras", "cohere", "openrouter", "ollama", "cloudflare", "github", "together", "fireworks"],
+    "vision": ["openai", "anthropic", "gemini", "mistral", "cohere", "openrouter", "ollama", "cloudflare", "github", "together", "fireworks"],
+    "media_image": ["openai", "gemini", "cloudflare", "openrouter", "together", "fireworks", "replicate", "huggingface"],
+    "media_video": ["openai", "gemini", "cloudflare", "openrouter", "replicate"],
+    "audio": ["openai", "gemini", "groq", "mistral", "cloudflare"],
+    "ocr": ["mistral", "cohere", "openai", "gemini"],
+    "embedding": ["openai", "cohere", "mistral", "gemini", "cloudflare", "fireworks"],
+}
+
+
+def _primary_category(item: Dict[str, Any]) -> str:
+    cats = item.get("categories") or []
+    return min(cats, key=lambda c: CATEGORY_ORDER.get(c, 99), default="chat")
+
+
+def _model_sort_key(item: Dict[str, Any]) -> tuple[int, int, str]:
+    category = _primary_category(item)
+    providers = PROVIDER_ORDER.get(category, [])
+    provider = str(item.get("provider") or "other")
+    provider_rank = providers.index(provider) if provider in providers else 99
+    return (CATEGORY_ORDER.get(category, 99), provider_rank, str(item.get("name") or item.get("id") or "").lower())
+
 def _base_url() -> str:
     return (
         os.getenv("TRIFORCE_PUBLIC_BASE_URL")
@@ -71,6 +106,15 @@ class VideoRequest(BaseModel):
     seconds: int = 8
     size: str = "1280x720"
 
+
+def _parse_size(size: str, default: tuple[int, int] = (1024, 1024)) -> tuple[int, int]:
+    try:
+        width, height = str(size or "").lower().split("x", 1)
+        return int(width), int(height)
+    except Exception:
+        return default
+
+
 def _provider(model: Dict[str, Any]) -> str:
     raw = str(_pick(model, "provider", "owned_by", "vendor", default="")).lower()
     mid = str(_pick(model, "id", "model", "name", default="")).lower()
@@ -83,6 +127,8 @@ def _provider(model: Dict[str, Any]) -> str:
         return "cloudflare"
     if mid.startswith("github/"):
         return "github"
+    if mid.startswith("openai/"):
+        return "openai"
     if mid.startswith("groq/"):
         return "groq"
     if mid.startswith("gemini/") or mid.startswith("google/"):
@@ -95,6 +141,9 @@ def _provider(model: Dict[str, Any]) -> str:
         return "ollama"
 
     # Fallback: raw provider field
+    for known in ("openai", "anthropic", "google", "gemini", "mistral", "groq", "cloudflare", "cerebras", "cohere", "openrouter", "ollama", "github", "together", "fireworks"):
+        if known in raw:
+            return "gemini" if known == "google" else known
     if "openai" in raw or mid.startswith("gpt-") or "dall-e" in mid or "gpt-image" in mid or "sora" in mid:
         return "openai"
     if "anthropic" in raw or "claude" in mid:
@@ -126,6 +175,11 @@ def _categorize(model: Dict[str, Any]) -> Dict[str, Any]:
         "vision": False,
         "media_image": False,
         "media_video": False,
+        "audio": False,
+        "embedding": False,
+        "ocr": False,
+        "code": False,
+        "reasoning": False,
         "backend_supported": False,
     }
 
@@ -160,6 +214,19 @@ def _categorize(model: Dict[str, Any]) -> Dict[str, Any]:
 
     # image_gen: check capabilities list from model_registry output
     caps_list = model.get("capabilities", [])
+    if not isinstance(caps_list, list):
+        caps_list = []
+    caps_set = {str(c).lower() for c in caps_list}
+    if "audio" in caps_set or any(x in blob for x in ["audio", "whisper", "transcribe", "tts", "voxtral", "realtime"]):
+        caps["audio"] = True
+    if "embedding" in caps_set or "embed" in blob:
+        caps["embedding"] = True
+    if "ocr" in caps_set or "document ai" in blob or "ocr" in blob:
+        caps["ocr"] = True
+    if "code" in caps_set or any(x in blob for x in ["codex", "codestral", "devstral", "coder", "qwen3-coder"]):
+        caps["code"] = True
+    if "reasoning" in caps_set or any(x in blob for x in ["reasoning", "thinking", "gpt-oss", "magistral", " o3", "/o3", "o4-mini"]):
+        caps["reasoning"] = True
     # Exclude img2img, inpainting, audio and other non-text2image models
     _img_blacklist = ["img2img", "inpainting", "deepgram", "whisper", "aura-", "melotts",
                       "reranker", "embed", "stt", "tts", "transcribe", "guard", "classification",
@@ -167,7 +234,7 @@ def _categorize(model: Dict[str, Any]) -> Dict[str, Any]:
     _is_blacklisted = any(x in blob for x in _img_blacklist)
     # OpenRouter: image gen works via /chat/completions with modalities: ["image","text"]
     # → DO NOT blacklist OpenRouter image models
-    if not _is_blacklisted and ("image_gen" in caps_list or any(x in blob for x in [
+    if not _is_blacklisted and ("image_gen" in caps_set or any(x in blob for x in [
             # OpenAI image models
             "gpt-image", "gpt-5-image", "dall-e",
             # Google image models
@@ -181,24 +248,28 @@ def _categorize(model: Dict[str, Any]) -> Dict[str, Any]:
     ])):
         caps["media_image"] = True
 
-    if "video_gen" in caps_list or any(x in blob for x in ["sora", "veo", "video generation", "text-to-video", "video_gen"]):
+    if "video_gen" in caps_set or any(x in blob for x in ["sora", "veo", "video generation", "text-to-video", "video_gen", "hailuo"]):
         caps["media_video"] = True
 
-    if provider in {"openai", "anthropic", "google", "gemini", "mistral", "groq", "cloudflare", "cerebras", "openrouter", "ollama", "github"}:
-        caps["backend_supported"] = caps["chat"] or caps["vision"]
+    if caps["media_image"] or caps["media_video"] or caps["audio"] or caps["embedding"] or caps["ocr"]:
+        caps["chat"] = caps["chat"] and not (caps["media_image"] or caps["media_video"] or caps["embedding"])
+
+    if provider in {"openai", "anthropic", "google", "gemini", "mistral", "groq", "cloudflare", "cerebras", "cohere", "openrouter", "ollama", "github", "together", "fireworks"}:
+        caps["backend_supported"] = any(caps[k] for k in ("chat", "vision", "media_image", "media_video", "audio", "ocr", "embedding"))
 
     return {
         "id": mid,
         "name": name,
         "provider": provider,
         **caps,
-        "categories": [k for k in ("chat", "vision", "media_image", "media_video") if caps[k]],
+        "categories": [k for k in ("chat", "vision", "media_image", "media_video", "audio", "ocr", "embedding", "code", "reasoning") if caps[k]],
     }
 
 async def _get_models() -> List[Dict[str, Any]]:
     urls = [
-        f"{_base_url()}/v1/models",
-        f"{_base_url()}/models",
+        f"{_base_url()}/v1/models/all",
+        f"{_base_url()}/v1/models?include_unavailable=true",
+        f"{_base_url()}/models?include_unavailable=true",
         f"{_base_url()}/v1/tristar/models",
     ]
     async with httpx.AsyncClient(timeout=15.0) as client:
@@ -292,6 +363,44 @@ async def _vision_proxy(model: str, prompt: str, image_url: Optional[str], image
         if r.status_code >= 400:
             raise HTTPException(status_code=r.status_code, detail=r.text)
         return r.json()
+
+async def _image_fallback(req: ImageRequest, exclude_prefixes: tuple[str, ...] = ()) -> Optional[Dict[str, Any]]:
+    """Try configured image providers when a selected provider is unavailable."""
+    candidates: list[str] = []
+    if os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_AI_STUDIO_KEY"):
+        candidates.append("gemini/gemini-2.5-flash-image")
+    if _openai_key():
+        candidates.append("openai/gpt-image-1-mini")
+    if os.getenv("OPENROUTER_API_KEY"):
+        candidates.extend([
+            "openrouter/google/gemini-2.5-flash-image",
+            "openrouter/openai/gpt-5-image-mini",
+        ])
+    if os.getenv("REPLICATE_API_KEY"):
+        candidates.append("replicate/black-forest-labs/flux-schnell")
+
+    tried_errors: list[str] = []
+    for model in candidates:
+        if any(model.startswith(prefix) for prefix in exclude_prefixes):
+            continue
+        try:
+            fallback_req = ImageRequest(
+                model=model,
+                prompt=req.prompt,
+                size=req.size,
+                quality=req.quality,
+                n=req.n,
+            )
+            result = await _image_proxy(fallback_req)
+            result["fallback_from"] = req.model
+            return result
+        except HTTPException as exc:
+            tried_errors.append(f"{model}: {exc.detail}")
+        except Exception as exc:
+            tried_errors.append(f"{model}: {exc}")
+    if tried_errors:
+        logger.warning("Image fallback failed after %d attempt(s): %s", len(tried_errors), tried_errors[:3])
+    return None
 
 async def _image_proxy(req: ImageRequest) -> Dict[str, Any]:
     """
@@ -552,6 +661,10 @@ async def _image_proxy(req: ImageRequest) -> Dict[str, Any]:
                     err_msg = str(err_body.get("errors", err_body))[:200]
                 except Exception:
                     err_msg = r.text[:200]
+                if r.status_code in (401, 403) or "authentication" in err_msg.lower() or "'code': 10000" in err_msg:
+                    fallback = await _image_fallback(req, exclude_prefixes=("cloudflare/", "@cf/"))
+                    if fallback:
+                        return fallback
                 raise HTTPException(status_code=r.status_code,
                     detail=f"Cloudflare Workers AI Fehler: {err_msg}")
             # CF returns raw PNG bytes OR JSON depending on model
@@ -725,12 +838,18 @@ async def _image_proxy(req: ImageRequest) -> Dict[str, Any]:
                 pass
             raise HTTPException(status_code=500, detail="HuggingFace: Unerwartetes Antwortformat")
 
-    # Internal txt2img path (kept for backwards compat with /v1/txt2img;
-    # the legacy ComfyUI/A1111 sd3 fallback has been removed.)
+    # Internal image path. ComfyUI/A1111 txt2img is obsolete; route all
+    # remaining server-side generation through the cloud-provider endpoint.
     base = _base_url()
-    payload = {"prompt": req.prompt, "model": req.model, "size": req.size, "n": req.n}
+    width, height = _parse_size(req.size)
+    payload = {
+        "prompt": req.prompt,
+        "model": req.model,
+        "width": width,
+        "height": height,
+    }
     async with httpx.AsyncClient(timeout=180.0) as client:
-        r = await client.post(f"{base}/v1/txt2img", json=payload)
+        r = await client.post(f"{base}/v1/images/generate", json=payload)
         if r.status_code == 200:
             return {"ok": True, "mode": "media_image", "provider": "internal", "result": r.json()}
         raise HTTPException(
@@ -865,7 +984,7 @@ async def models(response: Response) -> Dict[str, Any]:
     raw = await _get_models()
     items = [_categorize(m) for m in raw]
     # Paused-flag entfernt 2026-04-20 — Anthropic API-Pause lief am 2026-04-01 aus
-    items.sort(key=lambda x: (not x["backend_supported"], x["provider"], x["name"].lower()))
+    items.sort(key=lambda x: (not x["backend_supported"], *_model_sort_key(x)))
     return {
         "ok": True,
         "count": len(items),
@@ -874,6 +993,11 @@ async def models(response: Response) -> Dict[str, Any]:
             "vision": [m for m in items if m["vision"]],
             "media_image": [m for m in items if m["media_image"]],
             "media_video": [m for m in items if m["media_video"]],
+            "audio": [m for m in items if m["audio"]],
+            "ocr": [m for m in items if m["ocr"]],
+            "embedding": [m for m in items if m["embedding"]],
+            "code": [m for m in items if m["code"]],
+            "reasoning": [m for m in items if m["reasoning"]],
         },
         "models": items,
     }

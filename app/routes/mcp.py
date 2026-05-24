@@ -72,6 +72,38 @@ import logging
 mcp_logger = logging.getLogger("ailinux.mcp")
 
 router = APIRouter(dependencies=[Depends(require_mcp_auth)])
+public_router = APIRouter()
+
+
+@public_router.get("/.well-known/oauth-authorization-server")
+async def oauth_authorization_server_metadata(request: Request) -> JSONResponse:
+    """Public OAuth metadata for MCP client discovery."""
+    base = str(request.base_url).rstrip("/")
+    return JSONResponse({
+        "issuer": base,
+        "authorization_endpoint": f"{base}/authorize",
+        "token_endpoint": f"{base}/token",
+        "response_types_supported": ["code"],
+        "grant_types_supported": ["authorization_code", "refresh_token"],
+        "code_challenge_methods_supported": ["S256"],
+    })
+
+
+public_oauth_authorization_server_metadata = oauth_authorization_server_metadata
+
+
+@public_router.get("/.well-known/mcp")
+async def public_mcp_metadata(request: Request) -> Dict[str, Any]:
+    """Public MCP server metadata for desktop and web clients."""
+    base = str(request.base_url).rstrip("/")
+    return {
+        "name": "ailinux-mcp-server",
+        "version": "2.80",
+        "transport": "streamable-http",
+        "endpoint": f"{base}/v1/mcp",
+        "authorization_server": f"{base}/v1/.well-known/oauth-authorization-server",
+        "protocol_versions": ["2024-11-05", "2025-03-26"],
+    }
 
 
 def _estimate_tokens(text: str) -> int:
@@ -674,6 +706,22 @@ async def handle_specialists_invoke(params: Dict[str, Any]) -> Dict[str, Any]:
 
     result["specialist"] = specialist.to_dict()
     return result
+
+
+async def handle_nova_chat_agent(params: Dict[str, Any]) -> Dict[str, Any]:
+    """Invoke Nova's account-backed chat agent."""
+    from ..services.nova_chat_agent import nova_chat_agent_service
+
+    return await nova_chat_agent_service.chat(
+        provider=params.get("provider", "auto"),
+        message=params.get("message", ""),
+        messages=params.get("messages"),
+        system=params.get("system", ""),
+        model=params.get("model"),
+        temperature=float(params.get("temperature", 0.4)),
+        max_tokens=int(params.get("max_tokens", 1200)),
+        timeout=int(params.get("timeout", 120)),
+    )
 
 
 # =============================================================================
@@ -1400,8 +1448,9 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
     Wiederhergestellt nach dem Stash-Merge-Verlust vom 2026-04-20.
     Vorher: nur 52 v4-Tools. Jetzt: ~142 (v4 + WP/Browser/Redis/Performance + V5).
     """
+    inventory = str(params.get("inventory", "all"))
     # Check if client wants legacy (v3) tools
-    use_legacy = params.get("legacy", False) or params.get("v3", False)
+    use_legacy = inventory in {"legacy", "v3"} or params.get("legacy", False) or params.get("v3", False)
     
     if use_legacy:
         # Return all 134 tools from v3 for backwards compatibility
@@ -1421,6 +1470,25 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
                          PERFORMANCE_TOOL_SCHEMAS + REDIS_TOOL_SCHEMAS)
         )
         existing = {t.get("name") for t in tools}
+        if "nova_chat_agent" not in existing:
+            tools.append({
+                "name": "nova_chat_agent",
+                "description": "Chat through Nova's configured account-backed agent bridge.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "provider": {"type": "string", "default": "auto"},
+                        "message": {"type": "string"},
+                        "messages": {"type": "array", "items": {"type": "object"}},
+                        "system": {"type": "string"},
+                        "model": {"type": "string"},
+                        "temperature": {"type": "number"},
+                        "max_tokens": {"type": "integer"},
+                    },
+                    "required": ["message"],
+                },
+            })
+            existing.add("nova_chat_agent")
         
         # V5 extension tools (deduplicated)
         try:
@@ -1484,6 +1552,23 @@ async def _handle_tools_list_LEGACY(params: Dict[str, Any]) -> Dict[str, Any]:
             "name": "list_models",
             "description": "List all available AI models with their capabilities",
             "inputSchema": {"type": "object", "properties": {}},
+        },
+        {
+            "name": "nova_chat_agent",
+            "description": "Chat through Nova's configured account-backed agent bridge.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "provider": {"type": "string", "default": "auto"},
+                    "message": {"type": "string"},
+                    "messages": {"type": "array", "items": {"type": "object"}},
+                    "system": {"type": "string"},
+                    "model": {"type": "string"},
+                    "temperature": {"type": "number"},
+                    "max_tokens": {"type": "integer"},
+                },
+                "required": ["message"],
+            },
         },
         {
             "name": "ask_specialist",
@@ -2095,6 +2180,10 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
     tool_name = params.get("name")
     arguments = params.get("arguments", {})
 
+    # Resolve unified registry aliases before legacy/v4 normalization.
+    from ..mcp.tool_registry_unified import resolve_tool_name_for_call
+    tool_name = resolve_tool_name_for_call(tool_name) if tool_name else tool_name
+
     # Resolve v4 short names to internal names
     tool_name = resolve_alias_reverse(tool_name) if tool_name else tool_name
 
@@ -2106,6 +2195,7 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
         "acknowledge_policy": handle_acknowledge_policy,
         "chat": handle_llm_invoke,
         "list_models": handle_models_list,
+        "nova_chat_agent": handle_nova_chat_agent,
         "ask_specialist": handle_specialists_invoke,
         "crawl_url": handle_crawl_url,
         "web_search": handle_web_search,
@@ -3344,6 +3434,7 @@ MCP_HANDLERS: Dict[str, Handler] = {
     "initialize": handle_initialize,
     "tools/list": handle_tools_list,
     "tools/call": handle_tools_call,
+    "nova_chat_agent": handle_nova_chat_agent,
     "prompts/list": handle_prompts_list_mcp,
     "prompts/get": handle_prompts_render,  # prompts/get maps to render
     "resources/list": handle_resources_list_mcp,

@@ -4,7 +4,7 @@ VERSION = "2.81"
 from functools import lru_cache
 from typing import Dict, List, Optional
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import AnyHttpUrl, Field
+from pydantic import AliasChoices, AnyHttpUrl, Field
 
 DEFAULT_ALLOWED_ORIGINS = [
     "http://localhost",
@@ -152,6 +152,26 @@ class Settings(BaseSettings):
 
     # OpenAI compatibility
     openai_model_aliases: Dict[str, str] = Field(default_factory=dict, validation_alias="OPENAI_MODEL_ALIASES")
+    chatgpt_url: Optional[str] = Field(default=None, validation_alias="CHATGPT_URL")
+    chatgpt_user: Optional[str] = Field(default=None, validation_alias="CHATGPT_USER")
+    chatgpt_pass: Optional[str] = Field(default=None, validation_alias="CHATGPT_PASS")
+    nova_chatgpt_url: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_CHATGPT_URL", "CHATGPT_URL"))
+    nova_chatgpt_user: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_CHATGPT_USER", "CHATGPT_USER"))
+    nova_chatgpt_pass: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_CHATGPT_PASS", "CHATGPT_PASS"))
+    nova_chatgpt_agent_id: Optional[str] = Field(default=None, validation_alias="NOVA_CHATGPT_AGENT_ID")
+    nova_google_url: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_GOOGLE_URL", "GOOGLE_URL"))
+    nova_google_user: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_GOOGLE_USER", "GOOGLE_USER"))
+    nova_google_pass: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_GOOGLE_PASS", "GOOGLE_PASS"))
+    nova_gemini_agent_id: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_GEMINI_AGENT_ID", "GEMINI_AGENT_ID"))
+    nova_claude_url: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_CLAUDE_URL", "CLAUDE_URL"))
+    nova_claude_user: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_CLAUDE_USER", "CLAUDE_USER"))
+    nova_claude_pass: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_CLAUDE_PASS", "CLAUDE_PASS"))
+    nova_claude_agent_id: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_CLAUDE_AGENT_ID", "CLAUDE_AGENT_ID"))
+    claude_agent_id: Optional[str] = Field(default=None, validation_alias=AliasChoices("CLAUDE_AGENT_ID", "NOVA_CLAUDE_AGENT_ID"))
+    nova_mistral_url: Optional[str] = Field(default=None, validation_alias="NOVA_MISTRAL_URL")
+    nova_mistral_user: Optional[str] = Field(default=None, validation_alias="NOVA_MISTRAL_USER")
+    nova_mistral_pass: Optional[str] = Field(default=None, validation_alias="NOVA_MISTRAL_PASS")
+    nova_mistral_agent_id: Optional[str] = Field(default=None, validation_alias="NOVA_MISTRAL_AGENT_ID")
 
     # WordPress / bbPress
     wordpress_url: AnyHttpUrl | None = Field(default=None, validation_alias="WORDPRESS_URL")

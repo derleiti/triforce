@@ -19,7 +19,7 @@ from __future__ import annotations
 
 import secrets
 import logging
-from urllib.parse import urlencode
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from fastapi import APIRouter, HTTPException, Request, Response
 from fastapi.responses import JSONResponse
@@ -156,8 +156,16 @@ async def authorize_get(
         user=client_id,  # Use client_id as user for now
     )
 
-    params = {"code": code, "state": state}
-    location = f"{redirect_uri}?{urlencode(params)}"
+    parts = urlsplit(redirect_uri)
+    query = dict(parse_qsl(parts.query, keep_blank_values=True))
+    query.update({"code": code, "state": state})
+    location = urlunsplit((
+        parts.scheme,
+        parts.netloc,
+        parts.path,
+        urlencode(query),
+        parts.fragment,
+    ))
 
     logger.info(f"AUTH_CODE_ISSUED | client={client_id} | redirect={redirect_uri[:50]}")
     return Response(status_code=302, headers={"Location": location})

@@ -50,6 +50,7 @@ from ..services.gemini_access import GEMINI_ACCESS_TOOLS, GEMINI_ACCESS_HANDLERS
 from ..services.command_queue import QUEUE_TOOLS, QUEUE_HANDLERS
 from ..services.huggingface_inference import HF_INFERENCE_TOOLS, HF_HANDLERS
 from ..mcp.adaptive_code import ADAPTIVE_CODE_TOOLS, ADAPTIVE_CODE_HANDLERS
+from ..mcp.structured_admin import STRUCTURED_ADMIN_TOOLS, STRUCTURED_ADMIN_HANDLERS
 from ..utils.throttle import request_slot
 from ..mcp.api_docs import get_api_docs, API_DOCUMENTATION
 from ..mcp.specialists import specialist_router, SPECIALISTS
@@ -922,6 +923,13 @@ def get_tools() -> List[Dict[str, Any]]:
         # Adaptive Code Illumination Tools (v2.80)
         # =================================================================
         *ADAPTIVE_CODE_TOOLS,
+
+        # =================================================================
+        # Structured Admin Tools
+        # =================================================================
+        # Exposes tools already registered in app/mcp/structured_admin.py.
+        # NOTE: Some of these are write/exec capable. Keep MCP auth strong.
+        *STRUCTURED_ADMIN_TOOLS,
     ]
 
 
@@ -1676,6 +1684,9 @@ TOOL_HANDLERS = {
     "list_timezones": handle_list_timezones_remote,
 }
 
+# Structured Admin Tools
+TOOL_HANDLERS.update(STRUCTURED_ADMIN_HANDLERS)
+
 
 # ============================================================================
 # MCP Protocol Endpoints
@@ -1866,20 +1877,6 @@ async def mcp_rpc_endpoint(request: Request):
 
     elif method == "tools/list":
         tools_result = get_tools()
-
-        # Filter tools by default to reduce token count (85 tools = 28K tokens!)
-        # Use X-TriForce-All: true header to get all tools
-        show_all = request.headers.get("X-TriForce-All", "").lower() == "true"
-        if not show_all:
-            # Essential tools only (reduces to ~15 tools, ~5K tokens)
-            essential_tools = [
-                "chat", "list_models", "ask_specialist", "web_search",
-                "tristar_memory_store", "tristar_memory_search",
-                "cli-agents_list", "cli-agents_call", "cli-agents_broadcast",
-                "codebase_structure", "codebase_file", "codebase_search",
-                "gemini_research", "gemini_quick", "ollama_list"
-            ]
-            tools_result = [t for t in tools_result if t.get("name") in essential_tools]
 
         latency_ms = (_time.time() - start_time) * 1000
         await multi_logger.log_mcp(method, params, {"tools_count": len(tools_result)}, latency_ms)
