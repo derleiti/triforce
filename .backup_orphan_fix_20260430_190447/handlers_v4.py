@@ -89,7 +89,6 @@ class HandlerRegistry:
         self._register_gemini_handlers()
         self._register_mesh_handlers()
         self._register_notification_handlers()
-        self._register_dev_tool_handlers()
         # structured_admin LAST: real handlers override stubs from
         # _register_log_handlers / _register_remote_handlers / _register_system_handlers
         # (e.g. log_viewer, remote_status, service_status -> not_implemented stubs)
@@ -651,20 +650,6 @@ class HandlerRegistry:
             self.register("debug", handle_debug)
         except ImportError as e:
             logger.warning(f"System handlers import failed: {e}")
-
-
-    def _register_dev_tool_handlers(self):
-        """Dev Tools v5: dev_analyze, dev_lint, dev_debug, dev_summarize, dev_links, dev_refactor, git."""
-        try:
-            from app.mcp.dev_tools import DEV_TOOL_HANDLERS
-        except ImportError as e:
-            logger.warning(f"Dev tool handlers import failed: {e}")
-            return
-        try:
-            n = self.register_many(DEV_TOOL_HANDLERS)
-            logger.info(f"Dev tool handlers registered: {n} tools")
-        except Exception as e:
-            logger.warning(f"Dev tool handlers registration failed: {e}")
 
     def _register_structured_admin_handlers(self):
         """Structured Admin handlers from app/mcp/structured_admin.py.

@@ -1,0 +1,119 @@
+TriForce MCP Tool Exposure Diagnostic
+=====================================
+Timestamp: 2026-05-16T06:24:09+02:00
+ROOT: /home/zombie/triforce
+BASE_URL: http://127.0.0.1:9100/v1/mcp
+
+[1] Git status
+--------------
+ M app/main.py
+ M app/routes/mcp_remote.py
+ m client-deploy/ailinux-client
+ m client-deploy/aiwindows-client
+?? .backup_orphan_fix_20260430_190447/
+?? .review-backup-20260428_190428/
+?? .review-backup-plugin-20260428_193952/
+?? README.m
+?? app/mcp/agent_session.py
+?? app/mcp/safe_tools.py
+?? app/routes/search_curated.py
+?? app/services/hive_client.py
+?? app/services/sd3.py
+?? app/utils/mcp_security.py
+?? app/utils/redaction.py
+?? backups/
+?? docker/wordpress/search-root/wireframe.html
+?? fix_mcp_tool_exposure_check.sh
+?? mcp_tool_exposure_report_20260516_062409.txt
+?? scripts/start-triforce.sh.bak_20260427_201346
+
+Last commits:
+c060d2ca feat(notfall): Rotating fallback bei OpenRouter 429 für :free-Modelle
+a6a7e183 fix(notfall): OpenRouter-Free als Default fuer Free/Registered (Ollama-Outage 2026-05-07)
+1928bec6 fix(chat): Anthropic-Branch + Phantom-Import + LOCAL_FALLBACK :cloud-Suffix
+8bd80380 fix(plugin): forward vision uploads as multipart instead of base64-JSON
+3a19ecdf fix(vision): correct content_type after PIL re-encode + magic-bytes detection
+
+[2] Static code checks
+----------------------
+OK: app/mcp/structured_admin.py exists
+OK: app/mcp/tool_registry_unified.py exists
+OK: app/routes/mcp.py exists
+OK: app/mcp/handlers_v4.py exists
+
+structured_admin tool definitions:
+  OK      file_ops
+  OK      file_read
+  OK      custom_exec
+  OK      template_list
+  OK      task_runner
+  OK      task_reference
+  OK      binary_exec
+  OK      binary_list
+  OK      git_ops
+  OK      service_control
+  OK      service_status
+  OK      container_control
+  OK      container_status
+  OK      remote_admin
+  OK      remote_status
+  OK      safe_probe
+
+structured_admin handlers:
+  OK-ish  file_ops
+  OK-ish  file_read
+  OK-ish  custom_exec
+  OK-ish  template_list
+  OK-ish  task_runner
+  OK-ish  task_reference
+  OK-ish  binary_exec
+  OK-ish  binary_list
+  OK-ish  git_ops
+  OK-ish  service_control
+  OK-ish  service_status
+  OK-ish  container_control
+  OK-ish  container_status
+  OK-ish  remote_admin
+  OK-ish  remote_status
+  OK-ish  safe_probe
+
+unified registry includes structured_admin?
+217:    # 2026-04-27: include STRUCTURED_ADMIN_TOOLS (log_viewer, service_status,
+224:        from .structured_admin import STRUCTURED_ADMIN_TOOLS
+225:        raw_tools.extend(STRUCTURED_ADMIN_TOOLS)
+
+mcp.py tools/list uses get_unified_tools?
+1397:async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
+1413:        from ..mcp.tool_registry_unified import get_unified_tools
+1419:        tools = get_unified_tools(
+1454:async def _handle_tools_list_LEGACY(params: Dict[str, Any]) -> Dict[str, Any]:
+2030:    tools_response = await handle_tools_list({})
+3345:    "tools/list": handle_tools_list,
+
+handlers_v4 registers structured_admin last?
+92:        # structured_admin LAST: real handlers override stubs from
+95:        self._register_structured_admin_handlers()
+654:    def _register_structured_admin_handlers(self):
+657:        Bridges the structured_admin module's STRUCTURED_ADMIN_HANDLERS dict
+672:            from app.mcp.structured_admin import STRUCTURED_ADMIN_HANDLERS
+677:            n = self.register_many(STRUCTURED_ADMIN_HANDLERS)
+678:            sample = sorted(STRUCTURED_ADMIN_HANDLERS.keys())[:6]
+681:                f"(sample: {sample}{'...' if len(STRUCTURED_ADMIN_HANDLERS) > 6 else ''})"
+713:        initialize() via _register_structured_admin_handlers (which runs
+
+[3] Python import-level registry check
+--------------------------------------
+ERROR importing structured_admin: ModuleNotFoundError: No module named 'fastapi'
+
+ERROR importing tool_registry_unified: ModuleNotFoundError: No module named 'fastapi'
+
+[4] Live MCP tools/list check
+-----------------------------
+curl failed with rc=7
+Live MCP check could not be completed.
+
+[5] Optional service restart
+----------------------------
+No restart requested. Use --restart to restart triforce after manual code changes.
+
+Report written to: /home/zombie/triforce/mcp_tool_exposure_report_20260516_062409.txt

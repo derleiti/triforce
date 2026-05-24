@@ -70,6 +70,7 @@ from .routes.agents import router as agents_router
 from .routes.chat import router as chat_router
 from .routes.crawler import router as crawler_router
 from .routes.health import router as health_router
+from .routes.mcp import public_router as mcp_public_router
 from .routes.mcp import router as mcp_router
 from .routes.mcp_node import router as mcp_node_router
 from .routes.mcp_remote import router as mcp_remote_router
@@ -92,7 +93,13 @@ from .routes.client_chat import router as client_chat_router
 from .routes.client_auth import router as client_auth_router
 from .routes.client_update import router as client_update_router
 from .routes.client_logs import router as client_logs_router
+from .routes.client_ocr import router as client_ocr_router
 from .routes.federation import router as federation_router
+from .routes.nova_chat_agent import router as nova_chat_agent_router
+from .routes.nova_frontend import public_router as nova_frontend_public_router
+from .routes.nova_frontend import router as nova_frontend_router
+from .routes.nova_playground import router as nova_playground_router
+from .routes.nova_wordpress import router as nova_wordpress_router
 
 # Import routers from the top-level app directory
 from .routes_sd3 import router as sd3_router
@@ -369,6 +376,7 @@ def create_app() -> FastAPI:
     app.include_router(chat_router, prefix="/v1", tags=["Chat"])
     app.include_router(crawler_router, prefix="/v1", tags=["Crawler"])
     app.include_router(health_router, tags=["Monitoring"])
+    app.include_router(mcp_public_router, prefix="/v1", tags=["MCP"])
     app.include_router(mcp_router, prefix="/v1", tags=["MCP"])
     app.include_router(mcp_node_router, prefix="/v1", tags=["MCP Node"])
     app.include_router(mcp_remote_router, tags=["MCP Remote Server"])
@@ -423,15 +431,24 @@ def create_app() -> FastAPI:
     app.include_router(client_auth_router, prefix="/v1", tags=["Client Auth"])
     app.include_router(client_update_router, prefix="/v1", tags=["Client Update"])
     app.include_router(client_logs_router, tags=["Client Logs"])
+    app.include_router(client_ocr_router, prefix="/v1", tags=["Client OCR"])
     app.include_router(federation_router, prefix="/v1", tags=["Federation"])
+    app.include_router(nova_chat_agent_router, prefix="/v1", tags=["Nova Chat Agent"])
+    app.include_router(nova_frontend_public_router, prefix="/v1", tags=["Nova Frontend Public"])
+    app.include_router(nova_frontend_router, prefix="/v1", tags=["Nova Frontend"])
+    app.include_router(nova_playground_router, prefix="/v1", tags=["Nova Playground"])
+    app.include_router(nova_wordpress_router, tags=["Nova WordPress"])
 
-    # Import and include txt2img router
-    try:
-        from .routes.txt2img import router as txt2img_router
-        app.include_router(txt2img_router, prefix="/v1", tags=["Text-to-Image"])
-    except ImportError as e:
-        # import logging (centralized)
-        logger.warning(f"Could not import txt2img router: {e}")
+    @app.middleware("http")
+    async def public_discovery_options_middleware(request: Request, call_next):
+        public_discovery_paths = {
+            "/v1/.well-known/mcp",
+            "/v1/.well-known/oauth-authorization-server",
+        }
+        if request.method == "OPTIONS":
+            if request.url.path in public_discovery_paths:
+                return Response(status_code=204)
+        return await call_next(request)
 
     # Prometheus Metrics Setup
     if _HAS_INSTRUMENTATOR:

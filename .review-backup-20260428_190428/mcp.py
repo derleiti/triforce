@@ -10,7 +10,7 @@ logger = logging.getLogger("ailinux.mcp.routes")
 from typing import Any, Awaitable, Callable, Dict, Iterable, List, Optional
 import json
 
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.responses import JSONResponse
 
 from ..services.crawler.user_crawler import user_crawler
@@ -40,70 +40,48 @@ from ..routes.admin_crawler import (
     get_crawler_config,
     update_crawler_config,
 )
-from ..mcp.api_docs import get_api_docs, get_endpoint_for_task
+from ..mcp.api_docs import get_api_docs, get_endpoint_for_task, API_DOCUMENTATION
 from ..mcp.translation import BidirectionalTranslator, APIToMCPTranslator, MCPToAPITranslator
-from ..mcp.specialists import specialist_router, SPECIALISTS
+from ..mcp.specialists import specialist_router, SpecialistCapability, SPECIALISTS
 from ..mcp.context import context_manager, prompt_library, workflow_manager
 from ..mcp.adaptive_code import ADAPTIVE_CODE_TOOLS, ADAPTIVE_CODE_HANDLERS
 from ..mcp.adaptive_code_v4 import ADAPTIVE_CODE_V4_TOOLS, ADAPTIVE_CODE_V4_HANDLERS
 from ..mcp.tool_registry_v3 import (
     get_all_tools as registry_v3_get_all_tools,
+    get_tool_by_name as registry_v3_get_tool,
     get_tool_count as registry_v3_tool_count,
+    get_categories as registry_v3_categories,
     register_handlers_from_dict,
+    integrate_with_mcp_handlers,
 )
 # v4 Consolidated Registry (52 tools, optimized from 134)
 from ..mcp.tool_registry_v4 import (
     get_all_tools as registry_v4_get_all_tools,
+    get_tool_by_name as registry_v4_get_tool,
     get_tool_count as registry_v4_tool_count,
+    get_categories as registry_v4_categories,
+    resolve_alias,
+    TOOL_ALIASES,
     resolve_alias_reverse,
 )
 from ..mcp.handlers_v4 import (
+    handler_registry,
     init_handlers as init_v4_handlers,
     call_tool as call_v4_tool,
+    get_compatibility_handlers,
 )
 from ..services.compatibility_layer import compatibility_layer
-from ..services.system_control import system_control, HOTRELOAD_HANDLERS
-from ..services.memory_index import MEMORY_INDEX_HANDLERS
+from ..services.system_control import system_control, HOTRELOAD_TOOLS, HOTRELOAD_HANDLERS
+from ..services.memory_index import MEMORY_INDEX_TOOLS, MEMORY_INDEX_HANDLERS, memory_index
 from ..services.mcp_debugger import mcp_debugger
-from ..services.llm_compat import LLM_COMPAT_HANDLERS
-from ..utils.mcp_auth import require_mcp_auth
+from ..services.llm_compat import LLM_COMPAT_TOOLS, LLM_COMPAT_HANDLERS, llm_compat
+from ..services.init_service import compact_init
+from ..utils.mcp_auth import AUTH_ENABLED, require_mcp_auth
 import logging
 
 mcp_logger = logging.getLogger("ailinux.mcp")
 
 router = APIRouter(dependencies=[Depends(require_mcp_auth)])
-public_router = APIRouter()
-
-
-@public_router.get("/.well-known/oauth-authorization-server")
-async def oauth_authorization_server_metadata(request: Request) -> JSONResponse:
-    """Public OAuth metadata for MCP client discovery."""
-    base = str(request.base_url).rstrip("/")
-    return JSONResponse({
-        "issuer": base,
-        "authorization_endpoint": f"{base}/authorize",
-        "token_endpoint": f"{base}/token",
-        "response_types_supported": ["code"],
-        "grant_types_supported": ["authorization_code", "refresh_token"],
-        "code_challenge_methods_supported": ["S256"],
-    })
-
-
-public_oauth_authorization_server_metadata = oauth_authorization_server_metadata
-
-
-@public_router.get("/.well-known/mcp")
-async def public_mcp_metadata(request: Request) -> Dict[str, Any]:
-    """Public MCP server metadata for desktop and web clients."""
-    base = str(request.base_url).rstrip("/")
-    return {
-        "name": "ailinux-mcp-server",
-        "version": "2.80",
-        "transport": "streamable-http",
-        "endpoint": f"{base}/v1/mcp",
-        "authorization_server": f"{base}/v1/.well-known/oauth-authorization-server",
-        "protocol_versions": ["2024-11-05", "2025-03-26"],
-    }
 
 
 def _estimate_tokens(text: str) -> int:
@@ -706,22 +684,6 @@ async def handle_specialists_invoke(params: Dict[str, Any]) -> Dict[str, Any]:
 
     result["specialist"] = specialist.to_dict()
     return result
-
-
-async def handle_nova_chat_agent(params: Dict[str, Any]) -> Dict[str, Any]:
-    """Invoke Nova's account-backed chat agent."""
-    from ..services.nova_chat_agent import nova_chat_agent_service
-
-    return await nova_chat_agent_service.chat(
-        provider=params.get("provider", "auto"),
-        message=params.get("message", ""),
-        messages=params.get("messages"),
-        system=params.get("system", ""),
-        model=params.get("model"),
-        temperature=float(params.get("temperature", 0.4)),
-        max_tokens=int(params.get("max_tokens", 1200)),
-        timeout=int(params.get("timeout", 120)),
-    )
 
 
 # =============================================================================
@@ -1448,9 +1410,8 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
     Wiederhergestellt nach dem Stash-Merge-Verlust vom 2026-04-20.
     Vorher: nur 52 v4-Tools. Jetzt: ~142 (v4 + WP/Browser/Redis/Performance + V5).
     """
-    inventory = str(params.get("inventory", "all"))
     # Check if client wants legacy (v3) tools
-    use_legacy = inventory in {"legacy", "v3"} or params.get("legacy", False) or params.get("v3", False)
+    use_legacy = params.get("legacy", False) or params.get("v3", False)
     
     if use_legacy:
         # Return all 134 tools from v3 for backwards compatibility
@@ -1470,25 +1431,6 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
                          PERFORMANCE_TOOL_SCHEMAS + REDIS_TOOL_SCHEMAS)
         )
         existing = {t.get("name") for t in tools}
-        if "nova_chat_agent" not in existing:
-            tools.append({
-                "name": "nova_chat_agent",
-                "description": "Chat through Nova's configured account-backed agent bridge.",
-                "inputSchema": {
-                    "type": "object",
-                    "properties": {
-                        "provider": {"type": "string", "default": "auto"},
-                        "message": {"type": "string"},
-                        "messages": {"type": "array", "items": {"type": "object"}},
-                        "system": {"type": "string"},
-                        "model": {"type": "string"},
-                        "temperature": {"type": "number"},
-                        "max_tokens": {"type": "integer"},
-                    },
-                    "required": ["message"],
-                },
-            })
-            existing.add("nova_chat_agent")
         
         # V5 extension tools (deduplicated)
         try:
@@ -1552,23 +1494,6 @@ async def _handle_tools_list_LEGACY(params: Dict[str, Any]) -> Dict[str, Any]:
             "name": "list_models",
             "description": "List all available AI models with their capabilities",
             "inputSchema": {"type": "object", "properties": {}},
-        },
-        {
-            "name": "nova_chat_agent",
-            "description": "Chat through Nova's configured account-backed agent bridge.",
-            "inputSchema": {
-                "type": "object",
-                "properties": {
-                    "provider": {"type": "string", "default": "auto"},
-                    "message": {"type": "string"},
-                    "messages": {"type": "array", "items": {"type": "object"}},
-                    "system": {"type": "string"},
-                    "model": {"type": "string"},
-                    "temperature": {"type": "number"},
-                    "max_tokens": {"type": "integer"},
-                },
-                "required": ["message"],
-            },
         },
         {
             "name": "ask_specialist",
@@ -2161,8 +2086,7 @@ async def handle_execute_mcp_tool(params: Dict[str, Any]) -> Dict[str, Any]:
     # Try v4 handlers first
     if not handler:
         try:
-            # Bug-Fix 2026-04-28: was `arguments` (undefined in this scope), now tool_params
-            v4_result = await call_v4_tool(tool_name, tool_params)
+            v4_result = await call_v4_tool(tool_name, arguments)
             if v4_result:
                 return {"content": [{"type": "text", "text": json.dumps(v4_result, separators=(chr(44), chr(58)))}], "isError": False}
         except Exception:
@@ -2180,10 +2104,6 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
     tool_name = params.get("name")
     arguments = params.get("arguments", {})
 
-    # Resolve unified registry aliases before legacy/v4 normalization.
-    from ..mcp.tool_registry_unified import resolve_tool_name_for_call
-    tool_name = resolve_tool_name_for_call(tool_name) if tool_name else tool_name
-
     # Resolve v4 short names to internal names
     tool_name = resolve_alias_reverse(tool_name) if tool_name else tool_name
 
@@ -2195,7 +2115,6 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
         "acknowledge_policy": handle_acknowledge_policy,
         "chat": handle_llm_invoke,
         "list_models": handle_models_list,
-        "nova_chat_agent": handle_nova_chat_agent,
         "ask_specialist": handle_specialists_invoke,
         "crawl_url": handle_crawl_url,
         "web_search": handle_web_search,
@@ -2403,6 +2322,7 @@ async def handle_tristar_memory_search(params: Dict[str, Any]) -> Dict[str, Any]
 # Codebase Access Handlers
 # ============================================================================
 
+import os
 import unicodedata
 from pathlib import Path
 import logging
@@ -2776,7 +2696,7 @@ async def handle_codebase_create(params: Dict[str, Any]) -> Dict[str, Any]:
         raise ValueError(f"Invalid path: {file_path}")
 
     if any(forbidden in file_path for forbidden in EDIT_FORBIDDEN_PATHS):
-        raise ValueError(f"Creating forbidden for security-sensitive file: {file_path}")
+        raise ValueError(f"Creating forbidden for security-sensitive files")
 
     if safe_path.exists():
         raise ValueError(f"File already exists: {file_path}. Use codebase.edit to modify.")
@@ -3203,9 +3123,9 @@ async def handle_cli_agents_list(params: Dict[str, Any]) -> Dict[str, Any]:
     summary = []
     for a in agents:
         agent_id = a.get("id", "unknown")
-        agent_status = a.get("status", "unknown")
+        status = a.get("status", "unknown")
         pid = a.get("pid", "-")
-        summary.append(f"{agent_id}: {agent_status} (pid={pid})")
+        summary.append(f"{agent_id}: {status} (pid={pid})")
 
     return {
         "summary": summary,
@@ -3434,7 +3354,6 @@ MCP_HANDLERS: Dict[str, Handler] = {
     "initialize": handle_initialize,
     "tools/list": handle_tools_list,
     "tools/call": handle_tools_call,
-    "nova_chat_agent": handle_nova_chat_agent,
     "prompts/list": handle_prompts_list_mcp,
     "prompts/get": handle_prompts_render,  # prompts/get maps to render
     "resources/list": handle_resources_list_mcp,
@@ -3827,11 +3746,14 @@ async def mcp_messages_handler(request: Request, session_id: Optional[str] = Non
 
         # Handle other MCP methods through standard handlers
         handler = MCP_HANDLERS.get(method)
-        # NOTE: V4-fallback removed 2026-04-28 (Code Review) — the previous
-        # "call_v4_tool(tool_name, arguments)" call referenced undefined names
-        # in this scope, raised NameError, and was silently swallowed. Standard
-        # MCP methods (tools/list, tools/call, etc.) are handled via MCP_HANDLERS
-        # directly; v4 tool dispatch is done inside handle_tools_call.
+        # Try v4 handlers as fallback
+        if not handler:
+            try:
+                v4_result = await call_v4_tool(tool_name, arguments)
+                if v4_result:
+                    return {"content": [{"type": "text", "text": json.dumps(v4_result, separators=(chr(44), chr(58)))}], "isError": False}
+            except Exception:
+                pass  # Fall through to error
 
         if not handler:
             error_msg = f"Method '{method}' not supported"
@@ -3973,9 +3895,14 @@ async def _process_mcp_request(
     if not handler and "_" in method:
         handler = MCP_HANDLERS.get(method.replace("_", "."))
 
-    # NOTE: Dead V4 fallback removed 2026-04-28 (Code Review) — referenced
-    # undefined names tool_name/arguments. Tool calls are dispatched through
-    # the "tools/call" handler which has correct argument extraction.
+    # Try v4 handlers first
+    if not handler:
+        try:
+            v4_result = await call_v4_tool(tool_name, arguments)
+            if v4_result:
+                return {"content": [{"type": "text", "text": json.dumps(v4_result, separators=(chr(44), chr(58)))}], "isError": False}
+        except Exception:
+            pass  # Fall through to error
 
     if not handler:
         return {
@@ -4024,7 +3951,9 @@ async def mcp_unified_endpoint(request: Request):
     - Mcp-Session-Id: Session ID (optional, returned in initialize response)
     - Authorization: Bearer <token> or Basic <base64(user:pass)>
     """
+    import time as _time
     import logging
+    from ..utils.triforce_logging import multi_logger
 
     await require_mcp_auth(request)
 

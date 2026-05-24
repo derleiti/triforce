@@ -317,7 +317,7 @@ function nova_proxy_models(WP_REST_Request $r): WP_REST_Response {
         $id       = $m['id'] ?? '';
         $parts    = explode('/', $id, 2);
         $caps     = $m['capabilities'] ?? [];
-        $models[] = [
+        $entry = [
             'id'       => $id,
             'name'     => $m['name'] ?? (count($parts)>1 ? $parts[1] : $id),
             'provider' => $m['provider'] ?? (count($parts)>1 ? $parts[0] : 'other'),
@@ -325,10 +325,22 @@ function nova_proxy_models(WP_REST_Request $r): WP_REST_Response {
             'vision'   => in_array('vision', $caps, true) || in_array('multimodal', $caps, true),
             'media_image'  => in_array('image_gen', $caps, true),
             'media_video'  => in_array('video_gen', $caps, true),
+            'audio'        => in_array('audio', $caps, true),
+            'ocr'          => in_array('ocr', $caps, true),
+            'embedding'    => in_array('embedding', $caps, true),
+            'code'         => in_array('code', $caps, true),
+            'reasoning'    => in_array('reasoning', $caps, true),
             'image_gen'    => in_array('image_gen', $caps, true),
             'video_gen'    => in_array('video_gen', $caps, true),
             'capabilities' => $caps,
         ];
+        $entry['categories'] = [];
+        foreach (['chat','vision','media_image','media_video','audio','ocr','embedding','code','reasoning'] as $cat) {
+            if (!empty($entry[$cat])) {
+                $entry['categories'][] = $cat;
+            }
+        }
+        $models[] = $entry;
     }
     return new WP_REST_Response(['models' => $models, 'count' => count($models)], 200);
 }

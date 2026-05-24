@@ -12,7 +12,7 @@ Stand: 2025-12-13
 
 from fastapi import APIRouter, HTTPException, Depends, Header
 from pydantic import BaseModel, Field
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Tuple
 from datetime import datetime, timedelta
 from enum import Enum
 import hashlib
@@ -94,23 +94,92 @@ def generate_client_secret() -> str:
     return secrets.token_urlsafe(32)
 
 
+def normalize_tier(tier: Optional[str]) -> str:
+    """Normalize legacy/client tier names to the server-side tier contract."""
+    raw = (tier or "guest").strip().lower()
+    aliases = {
+        "free": "guest",
+        "basic": "guest",
+        "paid": "pro",
+        "premium": "pro",
+        "admin": "enterprise",
+        "unlimited": "enterprise",
+    }
+    normalized = aliases.get(raw, raw)
+    if normalized in {"guest", "registered", "pro", "enterprise"}:
+        return normalized
+    logger.warning("Unknown user tier %r, falling back to guest", tier)
+    return "guest"
+
+
+def get_user_entitlements(user: Optional[dict]) -> Dict[str, Any]:
+    """Return Nova/Copa product entitlements in a stable dict form."""
+    if not user:
+        return {}
+    entitlements = user.get("nova_entitlements") or user.get("entitlements") or {}
+    if isinstance(entitlements, dict):
+        return entitlements
+    if isinstance(entitlements, list):
+        return {str(item): True for item in entitlements}
+    return {}
+
+
+def permissions_for_tier(tier: str) -> Tuple[ClientRole, List[str], List[str]]:
+    """Map a user tier to client role and MCP tool permissions."""
+    tier = normalize_tier(tier)
+    if tier == "enterprise":
+        return ClientRole.ADMIN, ["*"], []
+    if tier == "pro":
+        return (
+            ClientRole.DESKTOP,
+            [
+                "chat", "chat_smart", "weather", "current_time",
+                "web_search", "smart_search", "client_*", "tristar_memory_*",
+            ],
+            ["codebase_*", "restart_*", "vault_*", "tristar_shell_exec"],
+        )
+    if tier == "registered":
+        return (
+            ClientRole.DESKTOP,
+            ["chat", "chat_smart", "weather", "current_time", "web_search", "client_*"],
+            ["codebase_*", "restart_*", "vault_*", "tristar_shell_exec"],
+        )
+    return (
+        ClientRole.DESKTOP,
+        ["chat", "weather", "current_time", "web_search"],
+        ["codebase_*", "restart_*", "vault_*", "tristar_*"],
+    )
+
+
 def create_jwt_token(
     client_id: str, 
     role: str, 
     email: str = None,
+    entitlements: Optional[Dict[str, Any]] = None,
+    name: Optional[str] = None,
     expires_hours: int = JWT_EXPIRY_HOURS
 ) -> str:
     """JWT Token erstellen - enthält Email für Tier-Lookup"""
+    client_roles = {item.value for item in ClientRole}
+    is_client_role = role in client_roles
+    role = role if is_client_role else normalize_tier(role)
     payload = {
         "client_id": client_id,
         "role": role,  # tier: guest, registered, pro, enterprise
         "exp": datetime.utcnow() + timedelta(hours=expires_hours),
         "iat": datetime.utcnow()
     }
+    if not is_client_role:
+        payload["tier"] = role
     # Email im Token speichern für Tier-Service
     if email:
         payload["email"] = email
         payload["sub"] = email  # Standard JWT subject claim
+    if name:
+        payload["name"] = name
+    if entitlements:
+        payload["nova_entitlements"] = entitlements
+        payload["entitlements"] = entitlements
     
     return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
@@ -123,6 +192,52 @@ def decode_jwt_token(token: str) -> dict:
         raise HTTPException(401, "Token expired")
     except jwt.InvalidTokenError:
         raise HTTPException(401, "Invalid token")
+
+
+def decode_authorization_header(authorization: Optional[str]) -> dict:
+    """Decode a Bearer Authorization header."""
+    if not authorization:
+        raise HTTPException(401, "Authorization header required")
+    parts = authorization.strip().split()
+    if len(parts) == 2 and parts[0].lower() == "bearer":
+        token = parts[1]
+    else:
+        token = authorization.replace("Bearer ", "", 1).strip()
+    if not token:
+        raise HTTPException(401, "Authorization header required")
+    return decode_jwt_token(token)
+
+
+def build_verified_session(payload: dict) -> Dict[str, Any]:
+    """Build the public auth session shape used by ai-coder and Copa."""
+    email = (payload.get("email") or payload.get("sub") or "").lower()
+    user = USER_REGISTRY.get(email, {}) if email else {}
+    tier_source = payload.get("tier") or user.get("tier")
+    if not tier_source and payload.get("role") in {"guest", "registered", "pro", "enterprise", "free"}:
+        tier_source = payload.get("role")
+    tier = normalize_tier(tier_source)
+    entitlements = (
+        payload.get("nova_entitlements")
+        or payload.get("entitlements")
+        or get_user_entitlements(user)
+    )
+    if not isinstance(entitlements, dict):
+        entitlements = {}
+
+    client_id = payload.get("client_id")
+    return {
+        "valid": True,
+        "user_id": email or client_id,
+        "email": email,
+        "client_id": client_id,
+        "tier": tier,
+        "role": tier,
+        "name": payload.get("name") or user.get("name"),
+        "nova_entitlements": entitlements,
+        "entitlements": entitlements,
+        "expires_at": payload.get("exp"),
+        "issued_at": payload.get("iat"),
+    }
 
 
 # =============================================================================
@@ -191,7 +306,7 @@ def save_user_to_file(email: str, user_data: dict) -> bool:
         return False
 
 
-def register_new_user(email: str, password: str, name: str = None, tier: str = "free") -> dict:
+def register_new_user(email: str, password: str, name: str = None, tier: str = "guest") -> dict:
     """Registriere einen neuen User und speichere in users.json"""
     email = email.lower().strip()
     
@@ -202,9 +317,10 @@ def register_new_user(email: str, password: str, name: str = None, tier: str = "
     # Erstelle User-Daten
     user_data = {
         "password_hash": hash_secret(password),
-        "tier": tier,
+        "tier": normalize_tier(tier),
         "name": name or email.split("@")[0],
         "billing": False,
+        "nova_entitlements": {},
         "created_at": datetime.now().isoformat(),
     }
     
@@ -236,8 +352,14 @@ class UserLoginResponse(BaseModel):
     """User Login Response"""
     user_id: str
     token: str
+    token_type: str = "Bearer"
+    expires_in: int = JWT_EXPIRY_HOURS * 3600
     tier: str
     client_id: str  # Server-assigned per login
+    email: str
+    name: Optional[str] = None
+    nova_entitlements: Dict[str, Any] = Field(default_factory=dict)
+    entitlements: Dict[str, Any] = Field(default_factory=dict)
 
 
 
@@ -321,12 +443,12 @@ async def user_login(request: UserLoginRequest):
             email=email,
             password=request.password,
             name=request.name if hasattr(request, 'name') and request.name else None,
-            tier="free"  # Neue User starten als "free"
+            tier="guest"  # Neue User starten als Gast-Tier
         )
         if not user:
             logger.error(f"Failed to register new user: {email}")
             raise HTTPException(500, "Failed to register user")
-        logger.info(f"New user registered: {email} (tier: free)")
+        logger.info(f"New user registered: {email} (tier: guest)")
     else:
         # Existierender User - Passwort prüfen
         if not verify_secret(request.password, user["password_hash"]):
@@ -337,23 +459,18 @@ async def user_login(request: UserLoginRequest):
     email_prefix = email.split("@")[0][:10]
     client_id = f"client-{email_prefix}-{secrets.token_hex(8)}"
 
-    # Determine role based on tier
-    if user["tier"] == "enterprise":
-        role = ClientRole.ADMIN
-        allowed = ["*"]
-        blocked = []
-    elif user["tier"] == "pro":
-        role = ClientRole.DESKTOP
-        allowed = ["chat", "chat_smart", "weather", "current_time",
-                   "web_search", "smart_search", "client_*", "tristar_memory_*"]
-        blocked = ["codebase_*", "restart_*", "vault_*", "tristar_shell_exec"]
-    else:  # free
-        role = ClientRole.DESKTOP
-        allowed = ["chat", "weather", "current_time", "web_search"]
-        blocked = ["codebase_*", "restart_*", "vault_*", "tristar_*"]
+    tier = normalize_tier(user.get("tier"))
+    entitlements = get_user_entitlements(user)
+    role, allowed, blocked = permissions_for_tier(tier)
 
     # Create JWT token MIT EMAIL (wichtig für Tier-Service!)
-    token = create_jwt_token(client_id, user["tier"], email=email)
+    token = create_jwt_token(
+        client_id,
+        tier,
+        email=email,
+        entitlements=entitlements,
+        name=user.get("name"),
+    )
 
     # Register client session
     CLIENT_REGISTRY[client_id] = {
@@ -373,14 +490,76 @@ async def user_login(request: UserLoginRequest):
         "last_seen": datetime.now().isoformat()
     }
 
-    logger.info(f"User logged in: {email} ({user['tier']}) -> {client_id}")
+    logger.info(f"User logged in: {email} ({tier}) -> {client_id}")
 
     return UserLoginResponse(
         user_id=email,
         token=token,
-        tier=user["tier"],
-        client_id=client_id
+        tier=tier,
+        client_id=client_id,
+        email=email,
+        name=user.get("name"),
+        nova_entitlements=entitlements,
+        entitlements=entitlements,
     )
+
+
+@router.get("/verify")
+async def verify_auth(authorization: str = Header(None)):
+    """
+    Validate a user/client JWT and return the session contract used by desktop clients.
+    """
+    payload = decode_authorization_header(authorization)
+    return build_verified_session(payload)
+
+
+@router.get("/client/handshake")
+async def client_handshake(authorization: str = Header(None)):
+    """
+    Return client capabilities and canonical endpoint paths after authentication.
+    """
+    payload = decode_authorization_header(authorization)
+    session = build_verified_session(payload)
+    tier = session["tier"]
+    default_role, default_allowed, default_blocked = permissions_for_tier(tier)
+
+    client_id = session.get("client_id")
+    client = CLIENT_REGISTRY.get(client_id, {}) if client_id else {}
+    allowed_tools = client.get("allowed_tools") or default_allowed
+    blocked_tools = client.get("blocked_tools") or default_blocked
+    role = client.get("role") or default_role
+    role_value = role.value if isinstance(role, ClientRole) else role
+
+    if client_id in ACTIVE_SESSIONS:
+        ACTIVE_SESSIONS[client_id]["last_seen"] = datetime.now().isoformat()
+
+    return {
+        "ok": True,
+        "valid": True,
+        "client_id": client_id,
+        "user_id": session.get("user_id"),
+        "email": session.get("email"),
+        "tier": tier,
+        "role": role_value,
+        "allowed_tools": allowed_tools,
+        "blocked_tools": blocked_tools,
+        "capabilities": {
+            "chat": True,
+            "models": True,
+            "mcp": True,
+            "ocr": bool(session.get("nova_entitlements", {}).get("copa_ocr")) or tier in {"pro", "enterprise"},
+        },
+        "endpoints": {
+            "auth_verify": "/v1/auth/verify",
+            "chat": "/v1/client/chat",
+            "models": "/v1/client/models",
+            "mcp": "/v1/mcp",
+            "ocr_mistral": "/v1/client/ocr/mistral",
+            "ocr_status": "/v1/client/ocr/status",
+        },
+        "nova_entitlements": session.get("nova_entitlements", {}),
+        "entitlements": session.get("entitlements", {}),
+    }
 
 
 @router.post("/register", response_model=UserRegisterResponse)

@@ -15,8 +15,8 @@ from ..utils.http_client import HttpClient
 logger = logging.getLogger("ailinux.model_registry")
 
 
-VISION_PATTERN = re.compile(r"(llava|vision|moondream|llama-vision|bakllava|pixtral|minicpm)", re.IGNORECASE)
-IMAGE_GEN_PATTERN = re.compile(r"(flux|stable-diffusion|sd-|sdxl|dalle|imagen)", re.IGNORECASE)
+VISION_PATTERN = re.compile(r"(llava|vision|vl|moondream|llama-vision|bakllava|pixtral|minicpm|qwen3-vl)", re.IGNORECASE)
+IMAGE_GEN_PATTERN = re.compile(r"(flux|stable-diffusion|sd-|sdxl|dall-e|dalle|gpt-image|imagen|image-gen|text-to-image)", re.IGNORECASE)
 VIDEO_GEN_PATTERN = re.compile(r"(veo|video-gen|sora)", re.IGNORECASE)
 AUDIO_PATTERN = re.compile(r"(audio|tts|transcribe|voxtral|whisper)", re.IGNORECASE)
 CODE_PATTERN = re.compile(r"(codestral|devstral|code|coder)", re.IGNORECASE)
@@ -24,6 +24,36 @@ EMBEDDING_PATTERN = re.compile(r"(embed)", re.IGNORECASE)
 REASONING_PATTERN = re.compile(r"(thinking|reason|magistral|o1|o3)", re.IGNORECASE)
 MODERATION_PATTERN = re.compile(r"(moderation|safety|guard)", re.IGNORECASE)
 OCR_PATTERN = re.compile(r"(ocr|document)", re.IGNORECASE)
+
+PROVIDER_SORT_ORDER = {
+    "openai": 0,
+    "anthropic": 1,
+    "gemini": 2,
+    "mistral": 3,
+    "groq": 4,
+    "cerebras": 5,
+    "cohere": 6,
+    "openrouter": 7,
+    "ollama": 8,
+    "cloudflare": 9,
+    "together": 10,
+    "fireworks": 11,
+    "github": 12,
+}
+
+CAPABILITY_SORT_ORDER = {
+    "chat": 0,
+    "reasoning": 1,
+    "code": 2,
+    "vision": 3,
+    "image_gen": 4,
+    "video_gen": 5,
+    "audio": 6,
+    "ocr": 7,
+    "embedding": 8,
+    "rerank": 9,
+    "moderation": 10,
+}
 
 # Gemini models to exclude (experimental, deprecated, or specialized)
 GEMINI_EXCLUDE_PATTERN = re.compile(r"(aqa|attribution|legacy|tunedModels)", re.IGNORECASE)
@@ -150,6 +180,7 @@ class ModelRegistry:
             "gpt-oss:cloud/120",
             "gpt-oss:cloud/120b",
             "gpt-oss:120b-cloud",
+            "ollama/gpt-oss:120b-cloud",
         ]
         self._alias_lookup = {alias.lower(): canonical for alias in aliases}
 
@@ -161,7 +192,13 @@ class ModelRegistry:
         normalized_id = self._normalize_id(entry.id)
         if normalized_id == entry.id:
             return entry
-        return ModelInfo(id=normalized_id, provider=entry.provider, capabilities=list(entry.capabilities))
+        return ModelInfo(
+            id=normalized_id,
+            provider=entry.provider,
+            capabilities=list(entry.capabilities),
+            roles=list(entry.roles),
+            api_method=entry.api_method,
+        )
 
     def normalize_model_id(self, model_id: str) -> str:
         """Public helper so other services can resolve historical aliases."""
@@ -237,7 +274,8 @@ class ModelRegistry:
                 elif isinstance(result, list):
                     models.extend(result)
 
-            # Add static hosted models (Anthropic, GPT-OSS)
+            # Add documented static models even when the local account lacks billing
+            # or an API key. Dynamic discovery above augments this list when possible.
             models.extend(self._discover_static_hosted())
 
             # Deduplicate by canonical ID and merge capabilities/roles if the same model was discovered multiple times
@@ -258,9 +296,15 @@ class ModelRegistry:
                 else:
                     deduped[normalized.id] = normalized
 
-            self._cache = list(deduped.values())
+            self._cache = sorted(deduped.values(), key=self._sort_key)
             self._cache_expiry = now + self._ttl_seconds
             return list(self._cache)
+
+    @staticmethod
+    def _sort_key(entry: ModelInfo) -> tuple[int, int, str]:
+        cap_rank = min((CAPABILITY_SORT_ORDER.get(cap, 99) for cap in entry.capabilities), default=99)
+        provider_rank = PROVIDER_SORT_ORDER.get(entry.provider, 99)
+        return (cap_rank, provider_rank, entry.id.lower())
 
     async def get_model(self, model_id: str) -> Optional[ModelInfo]:
         canonical_id = self._normalize_id(model_id)
@@ -271,48 +315,9 @@ class ModelRegistry:
         return None
 
     async def _discover_ollama(self) -> List[ModelInfo]:
-        settings = self._settings
-        try:
-            headers = {}
-            if settings.ollama_bearer_token:
-                headers["Authorization"] = f"Bearer {settings.ollama_bearer_token}"
-
-            ollama_client = HttpClient(
-                base_url=str(settings.ollama_base),
-                timeout=settings.ollama_timeout_ms / 1000.0
-            )
-            response = await ollama_client.get("/api/tags", headers=headers)
-            payload = response.json()
-        except httpx.RequestError as exc:
-            logger.warning("Failed to connect to Ollama at %s: %s", settings.ollama_base, exc)
-            return []
-        except httpx.HTTPStatusError as exc:
-            logger.warning("Ollama returned HTTP error %s for %s: %s", exc.response.status_code, settings.ollama_base, exc)
-            return []
-        items = payload.get("models") or payload.get("data") or []
-        models: List[ModelInfo] = []
-        for item in items:
-            name = item.get("name") or item.get("model")
-            if not name:
-                continue
-
-            # Use detect_capabilities for consistent capability/role detection
-            capabilities, roles, api_method = detect_capabilities(name)
-
-            # For Ollama models, if no specific capability detected, add chat
-            if not capabilities or capabilities == ["chat"]:
-                capabilities = ["chat"]
-                if "assistant" not in roles:
-                    roles = ["assistant"]
-
-            models.append(ModelInfo(
-                id=f"ollama/{name}",
-                provider="ollama",
-                capabilities=capabilities,
-                roles=roles,
-                api_method=api_method
-            ))
-        return models
+        # The frontend catalogue must not expose arbitrary local /api/tags models.
+        # Ollama entries here are documented Cloud tags only.
+        return self._ollama_cloud_models()
 
     async def _discover_stable_diffusion(self) -> List[ModelInfo]:
         settings = self._settings
@@ -485,23 +490,26 @@ class ModelRegistry:
     def _gemini_fallback_models(self) -> List[ModelInfo]:
         """Fallback Gemini models if API discovery fails."""
         return [
-            # Gemini 2.5 Models (Latest Stable)
+            # Gemini text / multimodal
+            ModelInfo(id="gemini/gemini-3-pro-preview", provider="gemini", capabilities=["chat", "vision", "reasoning", "code"], roles=["assistant", "vision_analyst", "reasoning_engine", "code_assistant"]),
             ModelInfo(id="gemini/gemini-2.5-pro", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
             ModelInfo(id="gemini/gemini-2.5-flash", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
             ModelInfo(id="gemini/gemini-2.5-flash-lite", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
-            # Gemini 2.0 Models
+            ModelInfo(id="gemini/gemini-live-2.5-flash-preview", provider="gemini", capabilities=["chat", "vision", "audio"], roles=["assistant", "vision_analyst", "audio_processor"]),
+            ModelInfo(id="gemini/gemini-2.5-flash-preview-native-audio-dialog", provider="gemini", capabilities=["chat", "audio"], roles=["assistant", "audio_processor"]),
+            ModelInfo(id="gemini/gemini-2.5-flash-exp-native-audio-thinking-dialog", provider="gemini", capabilities=["chat", "audio", "reasoning"], roles=["assistant", "audio_processor", "reasoning_engine"]),
             ModelInfo(id="gemini/gemini-2.0-flash", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
-            # Gemini 1.5 Models
-            ModelInfo(id="gemini/gemini-1.5-flash", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
-            ModelInfo(id="gemini/gemini-1.5-pro", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
-            # Imagen 4 (Image Generation)
+            # Gemini/Imagen image generation
+            ModelInfo(id="gemini/gemini-2.5-flash-image", provider="gemini", capabilities=["image_gen"], roles=["image_generator"]),
             ModelInfo(id="gemini/imagen-4.0-generate-001", provider="gemini", capabilities=["image_gen"], roles=["image_generator"], api_method="predict"),
+            ModelInfo(id="gemini/imagen-4.0-fast-generate-001", provider="gemini", capabilities=["image_gen"], roles=["image_generator"], api_method="predict"),
             ModelInfo(id="gemini/imagen-4.0-ultra-generate-001", provider="gemini", capabilities=["image_gen"], roles=["image_generator"], api_method="predict"),
-            # Veo 3 (Video Generation)
+            # Veo video generation
+            ModelInfo(id="gemini/veo-3.1-generate-preview", provider="gemini", capabilities=["video_gen"], roles=["video_generator"], api_method="predictLongRunning"),
             ModelInfo(id="gemini/veo-3.0-generate-001", provider="gemini", capabilities=["video_gen"], roles=["video_generator"], api_method="predictLongRunning"),
             ModelInfo(id="gemini/veo-3.0-fast-generate-001", provider="gemini", capabilities=["video_gen"], roles=["video_generator"], api_method="predictLongRunning"),
-            # Embedding
-            ModelInfo(id="gemini/text-embedding-004", provider="gemini", capabilities=["embedding"], roles=["embedder"]),
+            ModelInfo(id="gemini/veo-2.0-generate-001", provider="gemini", capabilities=["video_gen"], roles=["video_generator"], api_method="predictLongRunning"),
+            ModelInfo(id="gemini/gemini-embedding-001", provider="gemini", capabilities=["embedding"], roles=["embedder"]),
         ]
 
     async def _discover_mistral(self) -> List[ModelInfo]:
@@ -654,11 +662,13 @@ class ModelRegistry:
         """Fallback Groq models if API discovery fails."""
         return [
             ModelInfo(id="groq/llama-3.3-70b-versatile", provider="groq", capabilities=["chat"], roles=["assistant"]),
-            ModelInfo(id="groq/llama-3.3-70b-specdec", provider="groq", capabilities=["chat"], roles=["assistant"]),
             ModelInfo(id="groq/llama-3.1-8b-instant", provider="groq", capabilities=["chat"], roles=["assistant"]),
-            ModelInfo(id="groq/llama-3.2-90b-vision-preview", provider="groq", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
-            ModelInfo(id="groq/mixtral-8x7b-32768", provider="groq", capabilities=["chat"], roles=["assistant"]),
-            ModelInfo(id="groq/gemma2-9b-it", provider="groq", capabilities=["chat"], roles=["assistant"]),
+            ModelInfo(id="groq/openai/gpt-oss-120b", provider="groq", capabilities=["chat", "reasoning"], roles=["assistant", "reasoning_engine"]),
+            ModelInfo(id="groq/openai/gpt-oss-20b", provider="groq", capabilities=["chat", "reasoning"], roles=["assistant", "reasoning_engine"]),
+            ModelInfo(id="groq/groq/compound", provider="groq", capabilities=["chat", "function_calling"], roles=["assistant", "tool_user"]),
+            ModelInfo(id="groq/groq/compound-mini", provider="groq", capabilities=["chat", "function_calling"], roles=["assistant", "tool_user"]),
+            ModelInfo(id="groq/meta-llama/llama-4-scout-17b-16e-instruct", provider="groq", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
+            ModelInfo(id="groq/qwen/qwen3-32b", provider="groq", capabilities=["chat", "reasoning"], roles=["assistant", "reasoning_engine"]),
             ModelInfo(id="groq/whisper-large-v3", provider="groq", capabilities=["audio"], roles=["audio_processor"]),
             ModelInfo(id="groq/whisper-large-v3-turbo", provider="groq", capabilities=["audio"], roles=["audio_processor"]),
         ]
@@ -708,10 +718,8 @@ class ModelRegistry:
     def _cerebras_fallback_models(self) -> List[ModelInfo]:
         """Fallback Cerebras models if API discovery fails."""
         return [
-            ModelInfo(id="cerebras/llama3.1-70b", provider="cerebras", capabilities=["chat"], roles=["assistant"]),
             ModelInfo(id="cerebras/llama3.1-8b", provider="cerebras", capabilities=["chat"], roles=["assistant"]),
-            ModelInfo(id="cerebras/llama-3.3-70b", provider="cerebras", capabilities=["chat"], roles=["assistant"]),
-            ModelInfo(id="cerebras/qwen-3-32b", provider="cerebras", capabilities=["chat"], roles=["assistant"]),
+            ModelInfo(id="cerebras/gpt-oss-120b", provider="cerebras", capabilities=["chat", "reasoning"], roles=["assistant", "reasoning_engine"]),
         ]
 
     async def _discover_cohere(self) -> List[ModelInfo]:
@@ -776,30 +784,35 @@ class ModelRegistry:
     def _cohere_fallback_models(self) -> List[ModelInfo]:
         """Fallback Cohere models if API discovery fails."""
         return [
-            ModelInfo(id="cohere/command-r-plus", provider="cohere", capabilities=["chat"], roles=["assistant"]),
-            ModelInfo(id="cohere/command-r", provider="cohere", capabilities=["chat"], roles=["assistant"]),
-            ModelInfo(id="cohere/command-light", provider="cohere", capabilities=["chat"], roles=["assistant"]),
-            ModelInfo(id="cohere/embed-multilingual-v3.0", provider="cohere", capabilities=["embedding"], roles=["embedder"]),
-            ModelInfo(id="cohere/embed-english-v3.0", provider="cohere", capabilities=["embedding"], roles=["embedder"]),
-            ModelInfo(id="cohere/rerank-multilingual-v3.0", provider="cohere", capabilities=["rerank"], roles=["assistant"]),
+            ModelInfo(id="cohere/command-a-plus-05-2026", provider="cohere", capabilities=["chat", "vision", "reasoning"], roles=["assistant", "vision_analyst", "reasoning_engine"]),
+            ModelInfo(id="cohere/command-a-03-2025", provider="cohere", capabilities=["chat"], roles=["assistant"]),
+            ModelInfo(id="cohere/command-r7b-12-2024", provider="cohere", capabilities=["chat"], roles=["assistant"]),
+            ModelInfo(id="cohere/command-a-translate-08-2025", provider="cohere", capabilities=["chat"], roles=["assistant"]),
+            ModelInfo(id="cohere/command-a-reasoning-08-2025", provider="cohere", capabilities=["chat", "reasoning"], roles=["assistant", "reasoning_engine"]),
+            ModelInfo(id="cohere/command-a-vision-07-2025", provider="cohere", capabilities=["chat", "vision", "ocr"], roles=["assistant", "vision_analyst", "document_reader"]),
+            ModelInfo(id="cohere/command-r-08-2024", provider="cohere", capabilities=["chat"], roles=["assistant"]),
+            ModelInfo(id="cohere/command-r-plus-08-2024", provider="cohere", capabilities=["chat"], roles=["assistant"]),
+            ModelInfo(id="cohere/embed-v4.0", provider="cohere", capabilities=["embedding"], roles=["embedder"]),
+            ModelInfo(id="cohere/rerank-v4.0-pro", provider="cohere", capabilities=["rerank"], roles=["assistant"]),
         ]
 
     async def _discover_openrouter(self) -> List[ModelInfo]:
         """Discover models from OpenRouter API (300+ models, one API key)."""
         settings = self._settings
-        if not settings.openrouter_api_key:
-            return []
 
         models: List[ModelInfo] = []
         try:
+            headers = {
+                "HTTP-Referer": "https://api.ailinux.me",
+                "X-Title": "AILinux TriForce"
+            }
+            if settings.openrouter_api_key:
+                headers["Authorization"] = f"Bearer {settings.openrouter_api_key}"
             async with httpx.AsyncClient(timeout=15.0) as client:
                 response = await client.get(
                     f"{settings.openrouter_base_url}/models",
-                    headers={
-                        "Authorization": f"Bearer {settings.openrouter_api_key}",
-                        "HTTP-Referer": "https://api.ailinux.me",
-                        "X-Title": "AILinux TriForce"
-                    }
+                    params={"output_modalities": "all"},
+                    headers=headers
                 )
                 response.raise_for_status()
                 data = response.json()
@@ -854,27 +867,13 @@ class ModelRegistry:
     def _openrouter_fallback_models(self) -> List[ModelInfo]:
         """Fallback OpenRouter models if API discovery fails."""
         return [
-            # Free models
+            # Dynamic OpenRouter discovery is preferred; these are conservative common entries.
             ModelInfo(id="openrouter/meta-llama/llama-3.3-70b-instruct:free", provider="openrouter", capabilities=["chat"], roles=["assistant"]),
             ModelInfo(id="openrouter/google/gemma-2-9b-it:free", provider="openrouter", capabilities=["chat"], roles=["assistant"]),
             ModelInfo(id="openrouter/mistralai/mistral-7b-instruct:free", provider="openrouter", capabilities=["chat"], roles=["assistant"]),
-            # Popular paid models
-            ModelInfo(id="openrouter/anthropic/claude-3.5-sonnet", provider="openrouter", capabilities=["chat", "vision", "code"], roles=["assistant", "vision_analyst", "code_assistant"]),
-            ModelInfo(id="openrouter/openai/gpt-4o", provider="openrouter", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
-            ModelInfo(id="openrouter/google/gemini-2.0-flash-exp:free", provider="openrouter", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
-            # ----- OpenRouter Image generation (chat/completions with modalities=['image','text']) -----
-            ModelInfo(id="openrouter/google/gemini-2.5-flash-image", provider="openrouter",
-                      capabilities=["image_gen"], roles=["image_generator"]),
-            ModelInfo(id="openrouter/google/gemini-3.1-flash-image-preview", provider="openrouter",
-                      capabilities=["image_gen"], roles=["image_generator"]),
-            ModelInfo(id="openrouter/google/gemini-3-pro-image-preview", provider="openrouter",
-                      capabilities=["image_gen"], roles=["image_generator"]),
-            ModelInfo(id="openrouter/openai/gpt-5-image-mini", provider="openrouter",
-                      capabilities=["image_gen"], roles=["image_generator"]),
-            ModelInfo(id="openrouter/openai/gpt-5-image", provider="openrouter",
-                      capabilities=["image_gen"], roles=["image_generator"]),
-            ModelInfo(id="openrouter/openai/gpt-5.4-image-2", provider="openrouter",
-                      capabilities=["image_gen"], roles=["image_generator"]),
+            ModelInfo(id="openrouter/openai/gpt-5.2", provider="openrouter", capabilities=["chat", "vision", "reasoning", "code"], roles=["assistant", "vision_analyst", "reasoning_engine", "code_assistant"]),
+            ModelInfo(id="openrouter/anthropic/claude-sonnet-4", provider="openrouter", capabilities=["chat", "vision", "code"], roles=["assistant", "vision_analyst", "code_assistant"]),
+            ModelInfo(id="openrouter/google/gemini-2.5-flash", provider="openrouter", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
         ]
 
     async def _discover_together(self) -> List[ModelInfo]:
@@ -1118,12 +1117,20 @@ class ModelRegistry:
     def _cloudflare_fallback_models(self) -> List[ModelInfo]:
         """Fallback Cloudflare models if API discovery fails."""
         return [
+            ModelInfo(id="cloudflare/@cf/moonshotai/kimi-k2.6", provider="cloudflare", capabilities=["chat", "vision", "reasoning"], roles=["assistant", "vision_analyst", "reasoning_engine"]),
+            ModelInfo(id="cloudflare/@cf/zai-org/glm-4.7-flash", provider="cloudflare", capabilities=["chat", "reasoning"], roles=["assistant", "reasoning_engine"]),
+            ModelInfo(id="cloudflare/@cf/openai/gpt-oss-120b", provider="cloudflare", capabilities=["chat", "reasoning"], roles=["assistant", "reasoning_engine"]),
+            ModelInfo(id="cloudflare/@cf/meta/llama-4-scout-17b-16e-instruct", provider="cloudflare", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
             ModelInfo(id="cloudflare/@cf/meta/llama-3.3-70b-instruct-fp8-fast", provider="cloudflare", capabilities=["chat"], roles=["assistant"]),
             ModelInfo(id="cloudflare/@cf/meta/llama-3.2-11b-vision-instruct", provider="cloudflare", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
-            ModelInfo(id="cloudflare/@cf/mistral/mistral-7b-instruct-v0.2", provider="cloudflare", capabilities=["chat"], roles=["assistant"]),
-            ModelInfo(id="cloudflare/@cf/qwen/qwen1.5-14b-chat-awq", provider="cloudflare", capabilities=["chat"], roles=["assistant"]),
+            ModelInfo(id="cloudflare/@cf/deepseek-ai/deepseek-r1-distill-qwen-32b", provider="cloudflare", capabilities=["chat", "reasoning"], roles=["assistant", "reasoning_engine"]),
+            ModelInfo(id="cloudflare/@cf/black-forest-labs/flux-1-schnell", provider="cloudflare", capabilities=["image_gen"], roles=["image_generator"]),
+            ModelInfo(id="cloudflare/@cf/black-forest-labs/flux-2-klein-9b", provider="cloudflare", capabilities=["image_gen"], roles=["image_generator"]),
             ModelInfo(id="cloudflare/@cf/openai/whisper", provider="cloudflare", capabilities=["audio"], roles=["audio_processor"]),
-            ModelInfo(id="cloudflare/@cf/stabilityai/stable-diffusion-xl-base-1.0", provider="cloudflare", capabilities=["image_gen"], roles=["image_generator"]),
+            ModelInfo(id="cloudflare/gpt-image-1.5", provider="cloudflare", capabilities=["image_gen"], roles=["image_generator"]),
+            ModelInfo(id="cloudflare/imagen-4", provider="cloudflare", capabilities=["image_gen"], roles=["image_generator"]),
+            ModelInfo(id="cloudflare/hailuo-2.3", provider="cloudflare", capabilities=["video_gen"], roles=["video_generator"]),
+            ModelInfo(id="cloudflare/hailuo-2.3-fast", provider="cloudflare", capabilities=["video_gen"], roles=["video_generator"]),
             ModelInfo(id="cloudflare/@cf/baai/bge-base-en-v1.5", provider="cloudflare", capabilities=["embedding"], roles=["embedder"]),
         ]
 
@@ -1132,42 +1139,139 @@ class ModelRegistry:
     # =========================================================================
 
     def _discover_static_hosted(self) -> Iterable[ModelInfo]:
-        """Discover statically configured hosted models (Anthropic, GPT-OSS)."""
-        settings = self._settings
+        """Return documented hosted models that should be visible even without billing."""
         hosted: List[ModelInfo] = []
-
-        if settings.gpt_oss_api_key:
-            hosted.extend([
-                ModelInfo(id="gpt-oss:cloud/120b", provider="ollama", capabilities=["chat"], roles=["assistant"]),
-                ModelInfo(id="gpt-oss:120b-cloud", provider="gpt-oss", capabilities=["chat"], roles=["assistant"]),
-                ModelInfo(id="gpt-oss:20b-cloud", provider="gpt-oss", capabilities=["chat"], roles=["assistant"]),
-            ])
-
-        if settings.anthropic_api_key:
-            hosted.extend([
-                # Claude 4.7 Series (Latest)
-                ModelInfo(id="anthropic/claude-opus-4-7", provider="anthropic", capabilities=["chat", "vision", "code", "reasoning"], roles=["assistant", "vision_analyst", "code_assistant", "reasoning_engine"]),
-                # Claude 4.6 Series
-                ModelInfo(id="anthropic/claude-opus-4-6", provider="anthropic", capabilities=["chat", "vision", "code", "reasoning"], roles=["assistant", "vision_analyst", "code_assistant", "reasoning_engine"]),
-                ModelInfo(id="anthropic/claude-sonnet-4-6", provider="anthropic", capabilities=["chat", "vision", "code"], roles=["assistant", "vision_analyst", "code_assistant"]),
-                # Claude 4.5 Series
-                ModelInfo(id="anthropic/claude-haiku-4-5", provider="anthropic", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
-                # Claude 4 Series
-                ModelInfo(id="anthropic/claude-sonnet-4", provider="anthropic", capabilities=["chat", "vision", "code"], roles=["assistant", "vision_analyst", "code_assistant"]),
-                ModelInfo(id="anthropic/claude-opus-4", provider="anthropic", capabilities=["chat", "vision", "code", "reasoning"], roles=["assistant", "vision_analyst", "code_assistant", "reasoning_engine"]),
-                # Claude 3.5 Series
-                ModelInfo(id="anthropic/claude-3.5-sonnet", provider="anthropic", capabilities=["chat", "vision", "code"], roles=["assistant", "vision_analyst", "code_assistant"]),
-                ModelInfo(id="anthropic/claude-3.5-haiku", provider="anthropic", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
-                # Claude 3 Series
-                ModelInfo(id="anthropic/claude-3-opus", provider="anthropic", capabilities=["chat", "vision", "reasoning"], roles=["assistant", "vision_analyst", "reasoning_engine"]),
-                ModelInfo(id="anthropic/claude-3-sonnet", provider="anthropic", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
-                ModelInfo(id="anthropic/claude-3-haiku", provider="anthropic", capabilities=["chat"], roles=["assistant"]),
-                # Legacy aliases
-                ModelInfo(id="anthropic/claude", provider="anthropic", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
-                ModelInfo(id="claude", provider="anthropic", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
-            ])
-
+        hosted.extend(self._openai_static_models())
+        hosted.extend(self._anthropic_static_models())
+        hosted.extend(self._ollama_cloud_models())
+        hosted.extend(self._gemini_fallback_models())
+        hosted.extend(self._mistral_fallback_models())
+        hosted.extend(self._groq_fallback_models())
+        hosted.extend(self._cerebras_fallback_models())
+        hosted.extend(self._cohere_fallback_models())
+        hosted.extend(self._cloudflare_fallback_models())
         return hosted
+
+    def _openai_static_models(self) -> List[ModelInfo]:
+        return [
+            ModelInfo(id="openai/gpt-5.2", provider="openai", capabilities=["chat", "vision", "reasoning", "code"], roles=["assistant", "vision_analyst", "reasoning_engine", "code_assistant"]),
+            ModelInfo(id="openai/gpt-5.2-pro", provider="openai", capabilities=["chat", "vision", "reasoning", "code"], roles=["assistant", "vision_analyst", "reasoning_engine", "code_assistant"]),
+            ModelInfo(id="openai/gpt-5.1", provider="openai", capabilities=["chat", "vision", "reasoning", "code"], roles=["assistant", "vision_analyst", "reasoning_engine", "code_assistant"]),
+            ModelInfo(id="openai/gpt-5", provider="openai", capabilities=["chat", "vision", "reasoning", "code"], roles=["assistant", "vision_analyst", "reasoning_engine", "code_assistant"]),
+            ModelInfo(id="openai/gpt-5-mini", provider="openai", capabilities=["chat", "vision", "reasoning"], roles=["assistant", "vision_analyst", "reasoning_engine"]),
+            ModelInfo(id="openai/gpt-5-nano", provider="openai", capabilities=["chat", "vision", "reasoning"], roles=["assistant", "vision_analyst", "reasoning_engine"]),
+            ModelInfo(id="openai/gpt-4.1", provider="openai", capabilities=["chat", "vision", "code"], roles=["assistant", "vision_analyst", "code_assistant"]),
+            ModelInfo(id="openai/gpt-4.1-mini", provider="openai", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
+            ModelInfo(id="openai/gpt-4.1-nano", provider="openai", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
+            ModelInfo(id="openai/o3", provider="openai", capabilities=["chat", "reasoning"], roles=["assistant", "reasoning_engine"]),
+            ModelInfo(id="openai/o3-pro", provider="openai", capabilities=["chat", "reasoning"], roles=["assistant", "reasoning_engine"]),
+            ModelInfo(id="openai/o4-mini", provider="openai", capabilities=["chat", "reasoning"], roles=["assistant", "reasoning_engine"]),
+            ModelInfo(id="openai/gpt-5.2-codex", provider="openai", capabilities=["chat", "code", "reasoning"], roles=["assistant", "code_assistant", "reasoning_engine"]),
+            ModelInfo(id="openai/gpt-5.1-codex", provider="openai", capabilities=["chat", "code", "reasoning"], roles=["assistant", "code_assistant", "reasoning_engine"]),
+            ModelInfo(id="openai/gpt-image-1.5", provider="openai", capabilities=["image_gen"], roles=["image_generator"]),
+            ModelInfo(id="openai/gpt-image-1", provider="openai", capabilities=["image_gen"], roles=["image_generator"]),
+            ModelInfo(id="openai/gpt-image-1-mini", provider="openai", capabilities=["image_gen"], roles=["image_generator"]),
+            ModelInfo(id="openai/chatgpt-image-latest", provider="openai", capabilities=["image_gen"], roles=["image_generator"]),
+            ModelInfo(id="openai/dall-e-3", provider="openai", capabilities=["image_gen"], roles=["image_generator"]),
+            ModelInfo(id="openai/dall-e-2", provider="openai", capabilities=["image_gen"], roles=["image_generator"]),
+            ModelInfo(id="openai/sora-2", provider="openai", capabilities=["video_gen"], roles=["video_generator"]),
+            ModelInfo(id="openai/sora-2-pro", provider="openai", capabilities=["video_gen"], roles=["video_generator"]),
+            ModelInfo(id="openai/gpt-realtime", provider="openai", capabilities=["chat", "audio"], roles=["assistant", "audio_processor"]),
+            ModelInfo(id="openai/gpt-realtime-mini", provider="openai", capabilities=["chat", "audio"], roles=["assistant", "audio_processor"]),
+            ModelInfo(id="openai/gpt-audio", provider="openai", capabilities=["chat", "audio"], roles=["assistant", "audio_processor"]),
+            ModelInfo(id="openai/gpt-audio-mini", provider="openai", capabilities=["chat", "audio"], roles=["assistant", "audio_processor"]),
+            ModelInfo(id="openai/gpt-4o-transcribe", provider="openai", capabilities=["audio"], roles=["audio_processor"]),
+            ModelInfo(id="openai/gpt-4o-mini-transcribe", provider="openai", capabilities=["audio"], roles=["audio_processor"]),
+            ModelInfo(id="openai/gpt-4o-mini-tts", provider="openai", capabilities=["audio"], roles=["audio_processor"]),
+            ModelInfo(id="openai/tts-1", provider="openai", capabilities=["audio"], roles=["audio_processor"]),
+            ModelInfo(id="openai/tts-1-hd", provider="openai", capabilities=["audio"], roles=["audio_processor"]),
+            ModelInfo(id="openai/whisper-1", provider="openai", capabilities=["audio"], roles=["audio_processor"]),
+            ModelInfo(id="openai/text-embedding-3-large", provider="openai", capabilities=["embedding"], roles=["embedder"]),
+            ModelInfo(id="openai/text-embedding-3-small", provider="openai", capabilities=["embedding"], roles=["embedder"]),
+            ModelInfo(id="openai/text-embedding-ada-002", provider="openai", capabilities=["embedding"], roles=["embedder"]),
+            ModelInfo(id="openai/omni-moderation-latest", provider="openai", capabilities=["moderation"], roles=["content_moderator"]),
+        ]
+
+    def _anthropic_static_models(self) -> List[ModelInfo]:
+        return [
+            ModelInfo(id="anthropic/claude-opus-4-1-20250805", provider="anthropic", capabilities=["chat", "vision", "code", "reasoning"], roles=["assistant", "vision_analyst", "code_assistant", "reasoning_engine"]),
+            ModelInfo(id="anthropic/claude-opus-4-20250514", provider="anthropic", capabilities=["chat", "vision", "code", "reasoning"], roles=["assistant", "vision_analyst", "code_assistant", "reasoning_engine"]),
+            ModelInfo(id="anthropic/claude-sonnet-4-20250514", provider="anthropic", capabilities=["chat", "vision", "code", "reasoning"], roles=["assistant", "vision_analyst", "code_assistant", "reasoning_engine"]),
+            ModelInfo(id="anthropic/claude-3-7-sonnet-20250219", provider="anthropic", capabilities=["chat", "vision", "code", "reasoning"], roles=["assistant", "vision_analyst", "code_assistant", "reasoning_engine"]),
+            ModelInfo(id="anthropic/claude-3-5-haiku-20241022", provider="anthropic", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
+            ModelInfo(id="anthropic/claude-3-haiku-20240307", provider="anthropic", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
+            ModelInfo(id="anthropic/claude-3-7-sonnet-latest", provider="anthropic", capabilities=["chat", "vision", "code", "reasoning"], roles=["assistant", "vision_analyst", "code_assistant", "reasoning_engine"]),
+            ModelInfo(id="anthropic/claude-3-5-haiku-latest", provider="anthropic", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
+            ModelInfo(id="anthropic/claude-sonnet-4-0", provider="anthropic", capabilities=["chat", "vision", "code", "reasoning"], roles=["assistant", "vision_analyst", "code_assistant", "reasoning_engine"]),
+            ModelInfo(id="anthropic/claude-opus-4-0", provider="anthropic", capabilities=["chat", "vision", "code", "reasoning"], roles=["assistant", "vision_analyst", "code_assistant", "reasoning_engine"]),
+        ]
+
+    def _ollama_cloud_models(self) -> List[ModelInfo]:
+        cloud_ids = [
+            "gpt-oss:120b-cloud",
+            "gpt-oss:20b-cloud",
+            "qwen3-coder:480b-cloud",
+            "qwen3-vl:235b-instruct-cloud",
+            "deepseek-v3.2:cloud",
+            "deepseek-v3.1:671b-cloud",
+            "kimi-k2-thinking:cloud",
+            "kimi-k2:1t-cloud",
+            "glm-4.6:cloud",
+            "kimi-k2.6:cloud",
+            "deepseek-v4-pro:cloud",
+            "deepseek-v4-flash:cloud",
+            "glm-5.1:cloud",
+            "gemma4:31b-cloud",
+            "nemotron-3-super:cloud",
+            "minimax-m2.7:cloud",
+            "minimax-m2.1:cloud",
+            "cogito-2.1:671b-cloud",
+            "gemini-3-flash-preview:cloud",
+            "minimax-m2:cloud",
+            "devstral-2:123b-cloud",
+            "glm-4.7:cloud",
+            "devstral-small-2:24b-cloud",
+            "nemotron-3-nano:30b-cloud",
+            "qwen3-next:80b-cloud",
+            "kimi-k2.5:cloud",
+            "ministral-3:14b-cloud",
+            "ministral-3:8b-cloud",
+            "ministral-3:3b-cloud",
+            "rnj-1:8b-cloud",
+            "qwen3-vl:235b-cloud",
+            "qwen3-coder-next:cloud",
+            "glm-5:cloud",
+            "qwen3.5:cloud",
+            "qwen3.5:397b-cloud",
+            "minimax-m2.5:cloud",
+        ]
+        models: List[ModelInfo] = []
+        for model_id in cloud_ids:
+            capabilities, roles, api_method = detect_capabilities(model_id)
+            if "chat" not in capabilities:
+                capabilities.append("chat")
+                if "assistant" not in roles:
+                    roles.append("assistant")
+            if any(token in model_id for token in ("gpt-oss", "deepseek", "thinking", "glm-", "qwen3", "nemotron")):
+                if "reasoning" not in capabilities:
+                    capabilities.append("reasoning")
+                    roles.append("reasoning_engine")
+            if any(token in model_id for token in ("coder", "devstral", "deepseek", "glm-", "kimi")):
+                if "code" not in capabilities:
+                    capabilities.append("code")
+                    roles.append("code_assistant")
+            if "vl" in model_id or "gemini" in model_id:
+                if "vision" not in capabilities:
+                    capabilities.append("vision")
+                    roles.append("vision_analyst")
+            models.append(ModelInfo(
+                id=f"ollama/{model_id}",
+                provider="ollama",
+                capabilities=sorted(set(capabilities)),
+                roles=sorted(set(roles)),
+                api_method=api_method,
+            ))
+        return models
 
 
 registry = ModelRegistry()

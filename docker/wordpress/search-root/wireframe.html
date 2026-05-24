@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AILinux Search · Wireframe</title>
+<style>
+  :root {
+    --bg: #0a0d10;
+    --surface: #11161b;
+    --line: #1f2730;
+    --line-soft: #161c22;
+    --text: #e8edf2;
+    --text-dim: #8a96a3;
+    --text-faint: #5c6773;
+    --accent: #4cc9f0;
+    --accent-soft: rgba(76, 201, 240, 0.12);
+    --warn: #ffd166;
+    --good: #7ce38b;
+    --radius: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .stage {
+    width: min(720px, calc(100vw - 32px));
+    margin: 0 auto;
+    padding: 0 16px;
+    transition: padding-top 0.5s cubic-bezier(0.2, 0, 0.2, 1);
+  }
+  .stage.landing { padding-top: 22vh; }
+  .stage.results { padding-top: 32px; }
+
+  /* === BRAND === */
+  .brand {
+    text-align: center;
+    margin-bottom: 28px;
+    transition: all 0.5s cubic-bezier(0.2, 0, 0.2, 1);
+  }
+  .stage.results .brand { text-align: left; margin-bottom: 24px; }
+  .brand-mark {
+    font-size: 28px;
+    font-weight: 200;
+    letter-spacing: -0.01em;
+    color: var(--text);
+  }
+  .stage.results .brand-mark { font-size: 18px; color: var(--text-dim); }
+  .brand-mark span { color: var(--accent); font-weight: 400; }
+  .brand-tag {
+    margin-top: 6px;
+    color: var(--text-faint);
+    font-size: 13px;
+  }
+  .stage.results .brand-tag { display: none; }
+
+  /* === SEARCHBOX === */
+  .searchbox {
+    position: relative;
+    margin-bottom: 8px;
+  }
+  .searchbox input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 14px 48px 14px 18px;
+    color: var(--text);
+    font-size: 16px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .searchbox input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  .searchbox input::placeholder { color: var(--text-faint); }
+  .searchbox button {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.15s, background 0.15s;
+  }
+  .searchbox button:hover { color: var(--accent); background: var(--accent-soft); }
+
+  /* === HINTS / EXAMPLES === */
+  .hints {
+    color: var(--text-faint);
+    font-size: 12px;
+    text-align: center;
+    margin-top: 10px;
+  }
+  .hints kbd {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-family: ui-monospace, monospace;
+    font-size: 11px;
+  }
+  .examples {
+    margin-top: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+  }
+  .examples-label {
+    color: var(--text-faint);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 4px;
+  }
+  .example-chip {
+    background: transparent;
+    border: 1px solid var(--line-soft);
+    color: var(--text-dim);
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+  .example-chip:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  /* === SEARCH PHASES === */
+  .phase {
+    margin-top: 20px;
+    color: var(--text-dim);
+    font-size: 13px;
+    font-family: ui-monospace, "SF Mono", monospace;
+    display: none;
+  }
+  .phase.active { display: block; animation: fadeIn 0.3s ease-out; }
+  .phase-line {
+    padding: 4px 0;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .phase-line .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--text-faint);
+    flex-shrink: 0;
+  }
+  .phase-line.done .dot { background: var(--good); }
+  .phase-line.live .dot {
+    background: var(--accent);
+    animation: pulse 1s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(1.4); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* === ANSWER BOX === */
+  .answer {
+    margin-top: 24px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 2px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 18px 22px;
+    display: none;
+    animation: fadeIn 0.4s ease-out;
+  }
+  .answer.active { display: block; }
+  .answer-text {
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.65;
+  }
+  .answer-text sup {
+    color: var(--accent);
+    font-weight: 500;
+    font-size: 12px;
+    cursor: pointer;
+    margin-left: 1px;
+  }
+  .answer-meta {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    font-size: 12px;
+    color: var(--text-faint);
+  }
+  .answer-meta button {
+    background: transparent;
+    border: none;
+    color: var(--text-faint);
+    cursor: pointer;
+    font-size: 12px;
+    font-family: inherit;
+    padding: 2px 0;
+  }
+  .answer-meta button:hover { color: var(--accent); }
+  .meta-detail {
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: var(--bg);
+    border: 1px solid var(--line-soft);
+    border-radius: 6px;
+    font-family: ui-monospace, monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    display: none;
+  }
+  .meta-detail.open { display: block; }
+  .meta-detail dt { color: var(--text-faint); display: inline; }
+  .meta-detail dd { color: var(--text); display: inline; margin-right: 14px; }
+
+  /* === SOURCES === */
+  .sources {
+    margin-top: 28px;
+    display: none;
+  }
+  .sources.active { display: block; }
+  .sources-header {
+    color: var(--text-faint);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .sources-stats { font-size: 11px; text-transform: none; letter-spacing: 0; }
+  .sources-stats .num { color: var(--text); font-weight: 500; }
+  .source {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line-soft);
+    opacity: 0;
+    transform: translateY(6px);
+    animation: sourceIn 0.4s ease-out forwards;
+  }
+  @keyframes sourceIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .source:last-child { border-bottom: none; }
+  .source-num {
+    display: inline-block;
+    color: var(--accent);
+    font-family: ui-monospace, monospace;
+    font-size: 12px;
+    width: 24px;
+  }
+  .source-title {
+    display: inline;
+    color: var(--text);
+    font-size: 15px;
+    text-decoration: none;
+    font-weight: 400;
+  }
+  .source-title:hover { color: var(--accent); }
+  .source-url {
+    margin-left: 24px;
+    color: var(--text-faint);
+    font-size: 12px;
+    font-family: ui-monospace, monospace;
+    margin-top: 2px;
+  }
+  .source-snippet {
+    margin-left: 24px;
+    color: var(--text-dim);
+    font-size: 13px;
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+  .source-tags {
+    margin-left: 24px;
+    margin-top: 8px;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .tag {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    font-family: ui-monospace, monospace;
+  }
+  .tag.docs { background: rgba(76, 201, 240, 0.1); color: var(--accent); }
+  .tag.forum { background: rgba(255, 209, 102, 0.1); color: var(--warn); }
+  .tag.recent { background: rgba(124, 227, 139, 0.08); color: var(--good); }
+  .tag.github { background: rgba(120, 130, 140, 0.12); color: var(--text-dim); }
+
+  /* === FOLLOWUP === */
+  .followup {
+    margin-top: 32px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line-soft);
+    display: none;
+  }
+  .followup.active { display: block; }
+  .followup-label {
+    color: var(--text-faint);
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+</style>
+</head>
+<body>
+
+<div class="stage landing" id="stage">
+
+  <div class="brand">
+    <div class="brand-mark">ailinux<span>·</span>search</div>
+    <div class="brand-tag">substanz statt seo · ki-kuratiert · keine logs</div>
+  </div>
+
+  <div class="searchbox">
+    <input type="text" id="q" placeholder="Frag oder such…" autocomplete="off" autofocus>
+    <button id="go" aria-label="Suchen">→</button>
+  </div>
+
+  <div class="hints" id="hints">
+    <kbd>/</kbd> Fokus  ·  <kbd>Enter</kbd> Suchen  ·  <kbd>Esc</kbd> Zurück
+  </div>
+
+  <div class="examples" id="examples">
+    <div class="examples-label">Beispiele</div>
+    <button class="example-chip" data-q="searxng hinter apache reverse proxy">searxng hinter apache reverse proxy</button>
+    <button class="example-chip" data-q="postgres vs mariadb für kleine apps">postgres vs mariadb für kleine apps</button>
+    <button class="example-chip" data-q="best practice fastapi authentication 2026">best practice fastapi authentication 2026</button>
+  </div>
+
+  <div class="phase" id="phase">
+    <div class="phase-line live" id="p1"><span class="dot"></span><span id="p1t">Suche über 6 Quellen…</span></div>
+    <div class="phase-line" id="p2"><span class="dot"></span><span id="p2t">Filtere SEO-Cluster…</span></div>
+    <div class="phase-line" id="p3"><span class="dot"></span><span id="p3t">Synthese mit deepseek-v3.2…</span></div>
+  </div>
+
+  <div class="answer" id="answer">
+    <div class="answer-text" id="answerText"></div>
+    <div class="answer-meta">
+      <button id="moreBtn">Modell-Info ⓘ</button>
+      <span style="color: var(--text-faint); margin-left: auto; font-size: 11px;">1.4s · 47 → 6 Quellen</span>
+    </div>
+    <div class="meta-detail" id="metaDetail">
+      <div><dt>Synthese</dt><dd>ollama/deepseek-v3.2:cloud</dd></div>
+      <div><dt>Suche</dt><dd>SearXNG (DDG, Brave, Google) + Wiby + Wikipedia</dd></div>
+      <div><dt>Ranking</dt><dd>Keyword-Score + Recency + Domain-Trust</dd></div>
+      <div><dt>SEO-Filter</dt><dd>Aktiv · 12 Cluster ausgeblendet</dd></div>
+      <div><dt>Latenz</dt><dd>Search 0.8s · Synthese 0.6s</dd></div>
+    </div>
+  </div>
+
+  <div class="sources" id="sources">
+    <div class="sources-header">
+      <span>Quellen</span>
+      <span class="sources-stats"><span class="num">6</span> kuratiert aus <span class="num">47</span> · <span class="num">12</span> SEO-Cluster ausgeblendet</span>
+    </div>
+    <div id="sourcesList"></div>
+  </div>
+
+  <div class="followup" id="followup">
+    <div class="followup-label">Folgefrage stellen — Kontext bleibt</div>
+    <div class="searchbox">
+      <input type="text" id="qFollow" placeholder="Was noch?" autocomplete="off">
+      <button aria-label="Folgefrage">→</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const stage = document.getElementById('stage');
+  const q = document.getElementById('q');
+  const go = document.getElementById('go');
+  const phase = document.getElementById('phase');
+  const answer = document.getElementById('answer');
+  const answerText = document.getElementById('answerText');
+  const sources = document.getElementById('sources');
+  const sourcesList = document.getElementById('sourcesList');
+  const followup = document.getElementById('followup');
+  const examples = document.getElementById('examples');
+  const hints = document.getElementById('hints');
+  const moreBtn = document.getElementById('moreBtn');
+  const metaDetail = document.getElementById('metaDetail');
+
+  // Mock-Antwort (wäre vom Backend)
+  const MOCK_ANSWER = 'Apache als Reverse Proxy auf Port 8080 konfigurieren, <code>base_url</code> in <code>settings.yml</code> setzen und <code>X-Real-IP</code> sowie <code>X-Forwarded-For</code> weiterreichen<sup>[1]</sup>. Häufiger Stolperstein ist die Direktive <code>ProxyPreserveHost On</code> — ohne diese erkennt SearXNG die Bot-Detection-Header falsch und blockt legitime Requests<sup>[2]</sup>. Für SSL-Termination empfiehlt sich Let\'s Encrypt mit certbot direkt im Apache-VHost<sup>[3]</sup>.';
+
+  const MOCK_SOURCES = [
+    { num: 1, title: 'SearXNG Documentation — Reverse Proxy Setup', url: 'docs.searxng.org/admin/installation-apache.html', snippet: 'Offizielle Doku: Apache-Konfiguration mit ProxyPass, RequestHeader-Setup für Bot-Detection und SSL-Termination.', tags: [['docs', 'docs'], ['recent', '2025-09']] },
+    { num: 2, title: 'GitHub Issue #1842 — Apache+SearXNG Stolperstein', url: 'github.com/searxng/searxng/issues/1842', snippet: 'Diskussion zum ProxyPreserveHost-Problem. 23 Antworten, akzeptierte Lösung in Post #7 mit funktionierendem VHost-Beispiel.', tags: [['github', 'github'], ['forum', 'thread'], ['recent', '2024']] },
+    { num: 3, title: 'landchad.net — SearXNG self-hosted Setup', url: 'landchad.net/searxng/', snippet: 'Tutorial mit Schritt-für-Schritt-Anleitung. Apache + Docker + Let\'s Encrypt. Kein SEO-Spam, klarer Substanz-Tutorial.', tags: [['recent', '2024-11']] },
+    { num: 4, title: 'r/selfhosted — SearXNG behind Apache', url: 'reddit.com/r/selfhosted/comments/...', snippet: 'Reddit-Thread mit alternativem Setup über mod_proxy_http2. Weniger sauber, funktioniert aber.', tags: [['forum', 'thread']] },
+    { num: 5, title: 'Server Fault — SearXNG 502 Bad Gateway behind Apache', url: 'serverfault.com/questions/...', snippet: 'Q&A mit drei Antworten zum häufigen 502-Fehler. Lösung: Timeout-Settings in mod_proxy.', tags: [['forum', 'q&a']] },
+    { num: 6, title: 'AILinux Wiki — SearXNG im TriForce Stack', url: 'ailinux.me/wiki/searxng', snippet: 'Eigene Doku zum SearXNG-Container im AILinux-Setup. VHost-Template mitgeliefert.', tags: [['docs', 'docs'], ['recent', '2026']] }
+  ];
+
+  function runSearch(query) {
+    if (!query || query.trim().length < 2) return;
+
+    stage.classList.remove('landing');
+    stage.classList.add('results');
+    examples.style.display = 'none';
+    hints.style.display = 'none';
+    answer.classList.remove('active');
+    sources.classList.remove('active');
+    followup.classList.remove('active');
+    sourcesList.innerHTML = '';
+    answerText.innerHTML = '';
+
+    phase.classList.add('active');
+    document.getElementById('p1').className = 'phase-line live';
+    document.getElementById('p2').className = 'phase-line';
+    document.getElementById('p3').className = 'phase-line';
+
+    setTimeout(() => {
+      document.getElementById('p1').className = 'phase-line done';
+      document.getElementById('p2').className = 'phase-line live';
+    }, 800);
+
+    setTimeout(() => {
+      document.getElementById('p2').className = 'phase-line done';
+      document.getElementById('p3').className = 'phase-line live';
+    }, 1300);
+
+    setTimeout(() => {
+      document.getElementById('p3').className = 'phase-line done';
+      phase.classList.remove('active');
+      answer.classList.add('active');
+      streamText(answerText, MOCK_ANSWER, () => {
+        sources.classList.add('active');
+        renderSources();
+      });
+    }, 2000);
+  }
+
+  function streamText(el, text, done) {
+    el.innerHTML = '';
+    let i = 0;
+    const buf = [];
+    function tick() {
+      if (i >= text.length) { done && done(); return; }
+      // Token-ish chunks für realistisches Stream-Feeling
+      const chunk = text.slice(i, i + Math.floor(Math.random() * 4 + 2));
+      buf.push(chunk);
+      el.innerHTML = buf.join('');
+      i += chunk.length;
+      setTimeout(tick, 18);
+    }
+    tick();
+  }
+
+  function renderSources() {
+    MOCK_SOURCES.forEach((s, idx) => {
+      const div = document.createElement('div');
+      div.className = 'source';
+      div.style.animationDelay = (idx * 80) + 'ms';
+      div.innerHTML = `
+        <span class="source-num">[${s.num}]</span>
+        <a href="#" class="source-title">${s.title}</a>
+        <div class="source-url">${s.url}</div>
+        <div class="source-snippet">${s.snippet}</div>
+        <div class="source-tags">${s.tags.map(t => `<span class="tag ${t[0]}">${t[1]}</span>`).join('')}</div>
+      `;
+      sourcesList.appendChild(div);
+    });
+    setTimeout(() => followup.classList.add('active'), MOCK_SOURCES.length * 80 + 200);
+  }
+
+  go.addEventListener('click', () => runSearch(q.value));
+  q.addEventListener('keydown', (e) => { if (e.key === 'Enter') runSearch(q.value); });
+  document.getElementById('qFollow').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      q.value = e.target.value;
+      runSearch(e.target.value);
+      e.target.value = '';
+    }
+  });
+  document.querySelectorAll('.example-chip').forEach(b => {
+    b.addEventListener('click', () => { q.value = b.dataset.q; runSearch(b.dataset.q); });
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === '/' && document.activeElement !== q) { e.preventDefault(); q.focus(); }
+    if (e.key === 'Escape') {
+      stage.classList.remove('results');
+      stage.classList.add('landing');
+      examples.style.display = '';
+      hints.style.display = '';
+      answer.classList.remove('active');
+      sources.classList.remove('active');
+      followup.classList.remove('active');
+      phase.classList.remove('active');
+      q.value = '';
+      q.focus();
+    }
+  });
+  moreBtn.addEventListener('click', () => metaDetail.classList.toggle('open'));
+</script>
+
+</body>
+</html>
