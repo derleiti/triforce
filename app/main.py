@@ -100,6 +100,7 @@ from .routes.nova_frontend import public_router as nova_frontend_public_router
 from .routes.nova_frontend import router as nova_frontend_router
 from .routes.nova_playground import router as nova_playground_router
 from .routes.nova_wordpress import router as nova_wordpress_router
+from .routes.nova_operator import router as nova_operator_router
 
 # Import routers from the top-level app directory
 from .routes_sd3 import router as sd3_router
@@ -438,6 +439,7 @@ def create_app() -> FastAPI:
     app.include_router(nova_frontend_router, prefix="/v1", tags=["Nova Frontend"])
     app.include_router(nova_playground_router, prefix="/v1", tags=["Nova Playground"])
     app.include_router(nova_wordpress_router, tags=["Nova WordPress"])
+    app.include_router(nova_operator_router, prefix="/v1", tags=["Nova Operator"])
 
     @app.middleware("http")
     async def public_discovery_options_middleware(request: Request, call_next):

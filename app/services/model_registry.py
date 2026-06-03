@@ -8,6 +8,7 @@ from dataclasses import dataclass, field
 from typing import Dict, Iterable, List, Optional
 
 import httpx
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from ..config import get_settings
 from ..utils.http_client import HttpClient
@@ -57,6 +58,54 @@ CAPABILITY_SORT_ORDER = {
 
 # Gemini models to exclude (experimental, deprecated, or specialized)
 GEMINI_EXCLUDE_PATTERN = re.compile(r"(aqa|attribution|legacy|tunedModels)", re.IGNORECASE)
+
+SENSITIVE_QUERY_KEYS = {
+    "key",
+    "api_key",
+    "apikey",
+    "token",
+    "access_token",
+    "auth",
+    "authorization",
+    "client_secret",
+    "secret",
+}
+
+
+def redact_url(value: object) -> str:
+    """Return a log-safe URL/string with credential query parameters redacted."""
+    raw = str(value)
+    try:
+        parsed = urlsplit(raw)
+    except Exception:
+        return raw
+    if not parsed.query:
+        return raw
+
+    redacted_query = urlencode(
+        [
+            (key, "[REDACTED]" if key.lower() in SENSITIVE_QUERY_KEYS else val)
+            for key, val in parse_qsl(parsed.query, keep_blank_values=True)
+        ],
+        doseq=True,
+    )
+    return urlunsplit((parsed.scheme, parsed.netloc, parsed.path, redacted_query, parsed.fragment))
+
+
+def safe_http_error(exc: httpx.HTTPError) -> str:
+    """Format httpx errors without leaking API keys embedded in request URLs."""
+    request = getattr(exc, "request", None)
+    response = getattr(exc, "response", None)
+    method = getattr(request, "method", None) if request else None
+    url = redact_url(getattr(request, "url", "")) if request else ""
+    status_code = getattr(response, "status_code", None) if response else None
+
+    parts = [exc.__class__.__name__]
+    if status_code is not None:
+        parts.append(f"status={status_code}")
+    if method or url:
+        parts.append(f"request={method or 'UNKNOWN'} {url}".strip())
+    return " | ".join(parts)
 
 # Model role mapping based on capabilities
 CAPABILITY_TO_ROLE = {
@@ -256,6 +305,7 @@ class ModelRegistry:
             results = await asyncio.gather(
                 self._discover_ollama(),
                 self._discover_gemini(),
+                self._discover_anthropic(),
                 self._discover_mistral(),
                 self._discover_groq(),
                 self._discover_cerebras(),
@@ -305,6 +355,54 @@ class ModelRegistry:
         cap_rank = min((CAPABILITY_SORT_ORDER.get(cap, 99) for cap in entry.capabilities), default=99)
         provider_rank = PROVIDER_SORT_ORDER.get(entry.provider, 99)
         return (cap_rank, provider_rank, entry.id.lower())
+
+    def model_catalog(self, models: List[ModelInfo]) -> Dict[str, object]:
+        """Build one shared frontend catalog from the registry model list.
+
+        AICoder, Nova AI, Discuss-with-AI and Playground should all consume this
+        structure. Playground can use the category buckets for media/vision/etc.
+        without maintaining its own divergent model list.
+        """
+        categories: Dict[str, List[Dict[str, object]]] = {
+            "chat": [],
+            "code": [],
+            "reasoning": [],
+            "vision": [],
+            "media_generation": [],
+            "audio": [],
+            "embedding": [],
+            "moderation": [],
+            "ocr": [],
+        }
+        serialized = [model.to_dict() for model in models]
+        by_provider: Dict[str, List[Dict[str, object]]] = {}
+        for model, item in zip(models, serialized):
+            by_provider.setdefault(model.provider, []).append(item)
+            caps = set(model.capabilities)
+            if "chat" in caps:
+                categories["chat"].append(item)
+            if "code" in caps:
+                categories["code"].append(item)
+            if "reasoning" in caps:
+                categories["reasoning"].append(item)
+            if "vision" in caps:
+                categories["vision"].append(item)
+            if caps & {"image_gen", "video_gen"}:
+                categories["media_generation"].append(item)
+            if "audio" in caps:
+                categories["audio"].append(item)
+            if "embedding" in caps:
+                categories["embedding"].append(item)
+            if "moderation" in caps:
+                categories["moderation"].append(item)
+            if "ocr" in caps:
+                categories["ocr"].append(item)
+        return {
+            "data": serialized,
+            "total": len(serialized),
+            "by_provider": by_provider,
+            "categories": categories,
+        }
 
     async def get_model(self, model_id: str) -> Optional[ModelInfo]:
         canonical_id = self._normalize_id(model_id)
@@ -450,7 +548,7 @@ class ModelRegistry:
             logger.warning("Failed to discover Gemini models: %s", exc)
             return self._gemini_fallback_models()
         except httpx.HTTPStatusError as exc:
-            logger.warning("Gemini API returned HTTP %s: %s", exc.response.status_code, exc)
+            logger.warning("Gemini API returned HTTP %s: %s", exc.response.status_code, safe_http_error(exc))
             return self._gemini_fallback_models()
 
         for model in data.get("models", []):
@@ -511,6 +609,49 @@ class ModelRegistry:
             ModelInfo(id="gemini/veo-2.0-generate-001", provider="gemini", capabilities=["video_gen"], roles=["video_generator"], api_method="predictLongRunning"),
             ModelInfo(id="gemini/gemini-embedding-001", provider="gemini", capabilities=["embedding"], roles=["embedder"]),
         ]
+    async def _discover_anthropic(self) -> List[ModelInfo]:
+        """Discover models from Anthropic API, falling back to documented static IDs."""
+        settings = self._settings
+        if not settings.anthropic_api_key:
+            return self._anthropic_static_models()
+
+        headers = {
+            "x-api-key": settings.anthropic_api_key,
+            "anthropic-version": "2023-06-01",
+        }
+        try:
+            async with httpx.AsyncClient(timeout=settings.request_timeout) as client:
+                response = await client.get("https://api.anthropic.com/v1/models", headers=headers)
+                response.raise_for_status()
+                payload = response.json()
+        except Exception as exc:
+            logger.warning("Failed to discover Anthropic models: %s", exc)
+            return self._anthropic_static_models()
+
+        items = payload.get("data", []) if isinstance(payload, dict) else []
+        models: List[ModelInfo] = []
+        for item in items:
+            if not isinstance(item, dict):
+                continue
+            model_id = item.get("id")
+            if not model_id:
+                continue
+            lower = str(model_id).lower()
+            capabilities = ["chat"]
+            roles = ["assistant"]
+            if "claude-3" in lower or "claude-opus" in lower or "claude-sonnet" in lower or "claude-haiku" in lower:
+                capabilities.append("vision")
+                roles.append("vision_analyst")
+            if "opus" in lower or "sonnet" in lower:
+                capabilities.append("code")
+                roles.append("code_assistant")
+            if "opus" in lower or "sonnet" in lower or "thinking" in lower:
+                capabilities.append("reasoning")
+                roles.append("reasoning_engine")
+            models.append(ModelInfo(id=f"anthropic/{model_id}", provider="anthropic", capabilities=sorted(set(capabilities)), roles=list(dict.fromkeys(roles))))
+
+        return models or self._anthropic_static_models()
+
 
     async def _discover_mistral(self) -> List[ModelInfo]:
         """Discover models from Mistral API."""
@@ -531,7 +672,7 @@ class ModelRegistry:
             logger.warning("Failed to discover Mistral models: %s", exc)
             return self._mistral_fallback_models()
         except httpx.HTTPStatusError as exc:
-            logger.warning("Mistral API returned HTTP %s: %s", exc.response.status_code, exc)
+            logger.warning("Mistral API returned HTTP %s: %s", exc.response.status_code, safe_http_error(exc))
             return self._mistral_fallback_models()
 
         for model in data.get("data", []):
@@ -635,7 +776,7 @@ class ModelRegistry:
             logger.warning("Failed to discover Groq models: %s", exc)
             return self._groq_fallback_models()
         except httpx.HTTPStatusError as exc:
-            logger.warning("Groq API returned HTTP %s: %s", exc.response.status_code, exc)
+            logger.warning("Groq API returned HTTP %s: %s", exc.response.status_code, safe_http_error(exc))
             return self._groq_fallback_models()
 
         for model in data.get("data", []):
@@ -692,7 +833,7 @@ class ModelRegistry:
             logger.warning("Failed to discover Cerebras models: %s", exc)
             return self._cerebras_fallback_models()
         except httpx.HTTPStatusError as exc:
-            logger.warning("Cerebras API returned HTTP %s: %s", exc.response.status_code, exc)
+            logger.warning("Cerebras API returned HTTP %s: %s", exc.response.status_code, safe_http_error(exc))
             return self._cerebras_fallback_models()
 
         for model in data.get("data", []):
@@ -741,7 +882,7 @@ class ModelRegistry:
             logger.warning("Failed to discover Cohere models: %s", exc)
             return self._cohere_fallback_models()
         except httpx.HTTPStatusError as exc:
-            logger.warning("Cohere API returned HTTP %s: %s", exc.response.status_code, exc)
+            logger.warning("Cohere API returned HTTP %s: %s", exc.response.status_code, safe_http_error(exc))
             return self._cohere_fallback_models()
 
         for model in data.get("models", []):
@@ -820,7 +961,7 @@ class ModelRegistry:
             logger.warning("Failed to discover OpenRouter models: %s", exc)
             return self._openrouter_fallback_models()
         except httpx.HTTPStatusError as exc:
-            logger.warning("OpenRouter API returned HTTP %s: %s", exc.response.status_code, exc)
+            logger.warning("OpenRouter API returned HTTP %s: %s", exc.response.status_code, safe_http_error(exc))
             return self._openrouter_fallback_models()
 
         for model in data.get("data", []):
@@ -895,7 +1036,7 @@ class ModelRegistry:
             logger.warning("Failed to discover Together AI models: %s", exc)
             return self._together_fallback_models()
         except httpx.HTTPStatusError as exc:
-            logger.warning("Together AI API returned HTTP %s: %s", exc.response.status_code, exc)
+            logger.warning("Together AI API returned HTTP %s: %s", exc.response.status_code, safe_http_error(exc))
             return self._together_fallback_models()
 
         for model in data if isinstance(data, list) else data.get("data", data.get("models", [])):
@@ -957,7 +1098,7 @@ class ModelRegistry:
             logger.warning("Failed to discover Fireworks AI models: %s", exc)
             return self._fireworks_fallback_models()
         except httpx.HTTPStatusError as exc:
-            logger.warning("Fireworks AI API returned HTTP %s: %s", exc.response.status_code, exc)
+            logger.warning("Fireworks AI API returned HTTP %s: %s", exc.response.status_code, safe_http_error(exc))
             return self._fireworks_fallback_models()
 
         for model in data.get("data", data.get("models", [])):
@@ -1013,7 +1154,7 @@ class ModelRegistry:
             logger.warning("Failed to discover Cloudflare models: %s", exc)
             return self._cloudflare_fallback_models()
         except httpx.HTTPStatusError as exc:
-            logger.warning("Cloudflare API returned HTTP %s: %s", exc.response.status_code, exc)
+            logger.warning("Cloudflare API returned HTTP %s: %s", exc.response.status_code, safe_http_error(exc))
             return self._cloudflare_fallback_models()
 
         for model in data.get("result", []):
@@ -1142,7 +1283,8 @@ class ModelRegistry:
         """Return documented hosted models that should be visible even without billing."""
         hosted: List[ModelInfo] = []
         hosted.extend(self._openai_static_models())
-        hosted.extend(self._anthropic_static_models())
+        # Anthropic is dynamically discovered via _discover_anthropic(); static fallback is used there.
+        # Avoid extending it here too, otherwise fallback/static entries mask account-specific discovery.
         hosted.extend(self._ollama_cloud_models())
         hosted.extend(self._gemini_fallback_models())
         hosted.extend(self._mistral_fallback_models())
@@ -1193,17 +1335,25 @@ class ModelRegistry:
         ]
 
     def _anthropic_static_models(self) -> List[ModelInfo]:
+        premium = ["chat", "vision", "code", "reasoning"]
+        premium_roles = ["assistant", "vision_analyst", "code_assistant", "reasoning_engine"]
+        vision = ["chat", "vision"]
+        vision_roles = ["assistant", "vision_analyst"]
         return [
-            ModelInfo(id="anthropic/claude-opus-4-1-20250805", provider="anthropic", capabilities=["chat", "vision", "code", "reasoning"], roles=["assistant", "vision_analyst", "code_assistant", "reasoning_engine"]),
-            ModelInfo(id="anthropic/claude-opus-4-20250514", provider="anthropic", capabilities=["chat", "vision", "code", "reasoning"], roles=["assistant", "vision_analyst", "code_assistant", "reasoning_engine"]),
-            ModelInfo(id="anthropic/claude-sonnet-4-20250514", provider="anthropic", capabilities=["chat", "vision", "code", "reasoning"], roles=["assistant", "vision_analyst", "code_assistant", "reasoning_engine"]),
-            ModelInfo(id="anthropic/claude-3-7-sonnet-20250219", provider="anthropic", capabilities=["chat", "vision", "code", "reasoning"], roles=["assistant", "vision_analyst", "code_assistant", "reasoning_engine"]),
-            ModelInfo(id="anthropic/claude-3-5-haiku-20241022", provider="anthropic", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
-            ModelInfo(id="anthropic/claude-3-haiku-20240307", provider="anthropic", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
-            ModelInfo(id="anthropic/claude-3-7-sonnet-latest", provider="anthropic", capabilities=["chat", "vision", "code", "reasoning"], roles=["assistant", "vision_analyst", "code_assistant", "reasoning_engine"]),
-            ModelInfo(id="anthropic/claude-3-5-haiku-latest", provider="anthropic", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
-            ModelInfo(id="anthropic/claude-sonnet-4-0", provider="anthropic", capabilities=["chat", "vision", "code", "reasoning"], roles=["assistant", "vision_analyst", "code_assistant", "reasoning_engine"]),
-            ModelInfo(id="anthropic/claude-opus-4-0", provider="anthropic", capabilities=["chat", "vision", "code", "reasoning"], roles=["assistant", "vision_analyst", "code_assistant", "reasoning_engine"]),
+            # Current/pinned direct Anthropic API IDs. OpenRouter IDs remain separate under provider=openrouter.
+            ModelInfo(id="anthropic/claude-opus-4-8", provider="anthropic", capabilities=premium, roles=premium_roles),
+            ModelInfo(id="anthropic/claude-opus-4-7", provider="anthropic", capabilities=premium, roles=premium_roles),
+            ModelInfo(id="anthropic/claude-opus-4-6", provider="anthropic", capabilities=premium, roles=premium_roles),
+            ModelInfo(id="anthropic/claude-opus-4-1-20250805", provider="anthropic", capabilities=premium, roles=premium_roles),
+            ModelInfo(id="anthropic/claude-opus-4-20250514", provider="anthropic", capabilities=premium, roles=premium_roles),
+            ModelInfo(id="anthropic/claude-sonnet-4-6", provider="anthropic", capabilities=premium, roles=premium_roles),
+            ModelInfo(id="anthropic/claude-sonnet-4-5", provider="anthropic", capabilities=premium, roles=premium_roles),
+            ModelInfo(id="anthropic/claude-sonnet-4-20250514", provider="anthropic", capabilities=premium, roles=premium_roles),
+            ModelInfo(id="anthropic/claude-haiku-4-5-20251001", provider="anthropic", capabilities=vision, roles=vision_roles),
+            ModelInfo(id="anthropic/claude-3-7-sonnet-20250219", provider="anthropic", capabilities=premium, roles=premium_roles),
+            ModelInfo(id="anthropic/claude-3-5-sonnet-20241022", provider="anthropic", capabilities=["chat", "vision", "code"], roles=["assistant", "vision_analyst", "code_assistant"]),
+            ModelInfo(id="anthropic/claude-3-5-haiku-20241022", provider="anthropic", capabilities=vision, roles=vision_roles),
+            ModelInfo(id="anthropic/claude-3-haiku-20240307", provider="anthropic", capabilities=vision, roles=vision_roles),
         ]
 
     def _ollama_cloud_models(self) -> List[ModelInfo]:
