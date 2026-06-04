@@ -86,6 +86,8 @@ class AILinux_User_Plugin {
      */
     public function redirect_wp_auth_to_ailinux_login() {
         if (isset($_GET['ailinux_wp_admin']) && $_GET['ailinux_wp_admin'] === '1') {
+            // Emergency/admin bypass: stop later login_init redirects from other plugins/themes.
+            remove_all_actions('login_init');
             return;
         }
 
