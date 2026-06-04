@@ -873,8 +873,13 @@ async def _video_proxy(req: VideoRequest) -> Dict[str, Any]:
         # seconds als int (nicht str), size als "WxH"-String.
         # FIX 2026-06-04: "openai/" prefix entfernen — API kennt nur "sora-2", "sora-2-pro" etc.
         openai_model = req.model.split("/", 1)[-1] if "/" in req.model else req.model
+        # FIX 2026-06-04: seconds MUSS string sein ("4"|"8"|"12"), nicht int.
+        # OpenAI Sora-2 lehnt int explicit ab: "expected one of '4', '8', or '12'".
+        seconds_str = str(int(req.seconds))
+        if seconds_str not in ("4", "8", "12"):
+            seconds_str = "4"  # closest valid default
         headers = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
-        payload = {"model": openai_model, "prompt": req.prompt, "seconds": int(req.seconds), "size": req.size}
+        payload = {"model": openai_model, "prompt": req.prompt, "seconds": seconds_str, "size": req.size}
         async with httpx.AsyncClient(timeout=300.0) as client:
             r = await client.post("https://api.openai.com/v1/videos", headers=headers, json=payload)
             if r.status_code >= 400:
