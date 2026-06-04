@@ -869,10 +869,12 @@ async def _video_proxy(req: VideoRequest) -> Dict[str, Any]:
         key = _openai_key()
         if not key:
             raise HTTPException(status_code=400, detail="OPENAI_API_KEY missing for Sora")
-        headers = {"Authorization": f"Bearer {key}"}
-        data = {"model": req.model, "prompt": req.prompt, "seconds": str(req.seconds), "size": req.size}
+        # FIX 2026-06-04: OpenAI /v1/videos verlangt JSON (kein form-urlencoded);
+        # seconds als int (nicht str), size als "WxH"-String.
+        headers = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
+        payload = {"model": req.model, "prompt": req.prompt, "seconds": int(req.seconds), "size": req.size}
         async with httpx.AsyncClient(timeout=300.0) as client:
-            r = await client.post("https://api.openai.com/v1/videos", headers=headers, data=data)
+            r = await client.post("https://api.openai.com/v1/videos", headers=headers, json=payload)
             if r.status_code >= 400:
                 raise HTTPException(status_code=r.status_code, detail=r.text)
             return {"ok": True, "mode": "media_video", "provider": "openai", "result": r.json()}
