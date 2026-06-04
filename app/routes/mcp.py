@@ -11,7 +11,7 @@ from typing import Any, Awaitable, Callable, Dict, Iterable, List, Optional
 import json
 
 from fastapi import APIRouter, Depends, Request, Response
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 
 from ..services.crawler.user_crawler import user_crawler
 from ..services.crawler.manager import crawler_manager
@@ -1422,7 +1422,7 @@ async def handle_initialize(params: Dict[str, Any], request: Optional[Request] =
     mcp_logger.info(f"MCP_INITIALIZE | Client: {client_name} v{client_version} | IP: {client_ip}")
 
     return {
-        "protocolVersion": "2024-11-05",
+        "protocolVersion": params.get("protocolVersion", "2024-11-05"),
         "serverInfo": {
             "name": "ailinux-mcp-server",
             "version": "2.80",
@@ -3615,18 +3615,48 @@ async def mcp_health_or_sse(request: Request):
     await require_mcp_auth(request)
 
     accept_header = request.headers.get("Accept", "")
-    if "text/event-stream" in accept_header:
-        # Redirect to SSE endpoint for proper handling
-        from fastapi.responses import RedirectResponse
-        return RedirectResponse(url="/v1/mcp/sse" + ("?" + request.url.query if request.url.query else ""), status_code=307)
-
     client_ip = request.client.host if request.client else "unknown"
+
+    if "text/event-stream" in accept_header:
+        # Streamable HTTP compatibility:
+        # Some web MCP connectors open GET on the canonical MCP endpoint itself.
+        # Return SSE directly on /v1/mcp instead of redirecting to /v1/mcp/sse.
+        session_id = request.headers.get("Mcp-Session-Id") or request.headers.get("mcp-session-id")
+        if not session_id:
+            session_id = str(uuid.uuid4()).replace("-", "")
+
+        session = _get_session(session_id)
+        mcp_logger.info(f"MCP_STREAMABLE_GET | IP: {client_ip} | Session: {session_id}")
+
+        async def streamable_mcp_events():
+            yield f": ailinux-mcp session={session_id}\n\n"
+            ping_counter = 0
+
+            while True:
+                try:
+                    response = await asyncio.wait_for(session["queue"].get(), timeout=30.0)
+                    yield f"event: message\ndata: {json.dumps(response)}\n\n"
+                except asyncio.TimeoutError:
+                    ping_counter += 1
+                    yield f": keepalive {ping_counter}\n\n"
+
+        return StreamingResponse(
+            streamable_mcp_events(),
+            media_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache, no-store",
+                "Connection": "keep-alive",
+                "X-Accel-Buffering": "no",
+                "Mcp-Session-Id": session_id,
+            },
+        )
+
     mcp_logger.info(f"MCP_HEALTH_CHECK | IP: {client_ip}")
 
     return JSONResponse({
         "jsonrpc": "2.0",
         "result": {
-            "protocolVersion": "2024-11-05",
+            "protocolVersion": params.get("protocolVersion", "2024-11-05"),
             "serverInfo": {
                 "name": "ailinux-mcp-server",
                 "version": "2.80",
@@ -3816,7 +3846,7 @@ async def mcp_messages_handler(request: Request, session_id: Optional[str] = Non
                 session["initialized"] = True
 
             result = {
-                "protocolVersion": "2024-11-05",
+                "protocolVersion": params.get("protocolVersion", "2024-11-05"),
                 "serverInfo": {
                     "name": "ailinux-mcp-server",
                     "version": "2.80"
@@ -3967,7 +3997,7 @@ async def _process_mcp_request(
             session["initialized"] = True
 
         result = {
-            "protocolVersion": "2024-11-05",
+            "protocolVersion": params.get("protocolVersion", "2024-11-05"),
             "serverInfo": {
                 "name": "ailinux-mcp-server",
                 "version": "2.80"
