@@ -495,12 +495,17 @@ class TriStarMCPService:
         }
 
         # Check systemd services
+        # systemd-services that actually exist on this host.
+        # Renamed 2026-06-04: ailinux-backend → triforce; the CLI agents
+        # (gemini-lead, claude-mcp, codex-mcp) are subprocesses of the backend,
+        # NOT systemd units — they should be checked via agent_review, not here.
         services = [
-            "ailinux-backend",
+            "triforce",
+            "triforce-docker",
             "ollama",
-            "gemini-lead",
-            "claude-mcp",
-            "codex-mcp",
+            "redis-server",
+            "nova-flarum-bot",
+            "nova-log-monitor",
         ]
         for service in services:
             try:
