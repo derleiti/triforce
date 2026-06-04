@@ -90,6 +90,7 @@ class HandlerRegistry:
         self._register_mesh_handlers()
         self._register_notification_handlers()
         self._register_dev_tool_handlers()
+        self._register_wordpress_handlers()
         # structured_admin LAST: real handlers override stubs from
         # _register_log_handlers / _register_remote_handlers / _register_system_handlers
         # (e.g. log_viewer, remote_status, service_status -> not_implemented stubs)
@@ -826,6 +827,19 @@ class HandlerRegistry:
             logger.warning(f"Notification handlers import failed: {e}")
         except Exception as e:
             logger.warning(f"Notification handlers registration failed: {e}")
+
+
+    def _register_wordpress_handlers(self):
+        """WordPress: posts/pages create, update, list, publish"""
+        try:
+            from app.mcp.handlers_wordpress import WORDPRESS_HANDLERS
+            self.register_many(WORDPRESS_HANDLERS)
+            logger.info(f"WordPress handlers registered: {list(WORDPRESS_HANDLERS.keys())}")
+        except ImportError as e:
+            logger.warning(f"WordPress handlers import failed: {e}")
+        except Exception as e:
+            logger.warning(f"WordPress handlers registration failed: {e}")
+
 
 
 # =============================================================================
