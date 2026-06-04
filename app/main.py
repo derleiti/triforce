@@ -237,6 +237,12 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         # import logging (centralized)
         logger.warning(f"Failed to setup Agent Bootstrap: {e}")
+    try:
+        from .mcp.notification_manager import start_pollers
+        start_pollers()
+        logger.info("Notification Manager started")
+    except Exception:
+        logger.warning("Notification Manager start skipped")
 
     # Initialize System Log Collector (collects kernel, apps, journald logs)
     if _HAS_SYSTEM_LOG_COLLECTOR:
