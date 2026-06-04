@@ -41,7 +41,7 @@ class AILinux_User_Plugin {
 
         // AILinux/TriForce ist Master für Account-Login und Passwort-Reset
         add_filter('lostpassword_url', [$this, 'ailinux_lostpassword_url'], 10, 2);
-        add_action('login_init', [$this, 'redirect_wp_auth_to_ailinux_login']);
+        add_action('login_init', [$this, 'redirect_wp_auth_to_ailinux_login'], 1);
         
         // Shortcodes
         add_shortcode('ailinux_dashboard', [$this, 'render_dashboard']);
@@ -92,12 +92,12 @@ class AILinux_User_Plugin {
         $action = isset($_REQUEST['action']) ? sanitize_key($_REQUEST['action']) : 'login';
 
         if (in_array($action, ['lostpassword', 'retrievepassword', 'rp', 'resetpass'], true)) {
-            wp_safe_redirect('https://login.ailinux.me/reset');
+            wp_redirect('https://login.ailinux.me/reset');
             exit;
         }
 
         if ($action === 'login') {
-            wp_safe_redirect('https://login.ailinux.me/');
+            wp_redirect('https://login.ailinux.me/');
             exit;
         }
     }
@@ -471,3 +471,8 @@ register_activation_hook(__FILE__, function() {
 register_deactivation_hook(__FILE__, function() {
     flush_rewrite_rules();
 });
+
+// Bootstrap plugin
+AILinux_User_Plugin::instance();
+
+
