@@ -19,9 +19,17 @@ import hashlib
 import secrets
 import jwt
 import logging
+import urllib.request
+import urllib.error
 
 # Pfad zur User-Datenbank
 USERS_FILE_PATH = Path(__file__).parent.parent.parent / "config" / "users.json"
+
+ALLOW_AUTO_REGISTER = os.environ.get("ALLOW_AUTO_REGISTER", "false").lower() in (
+    "1", "true", "yes", "on"
+)
+if ALLOW_AUTO_REGISTER:
+    logger.warning("ALLOW_AUTO_REGISTER is enabled - unknown login emails may create accounts")
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/auth", tags=["Client Auth"])
@@ -435,20 +443,24 @@ async def user_login(request: UserLoginRequest):
     email = request.email.lower().strip()
     user = USER_REGISTRY.get(email)
 
-    # Auto-Registrierung: Wenn User nicht existiert, registriere neuen User
+    # Login darf standardmäßig keine Accounts erzeugen.
+    # Registrierung läuft ausschließlich über /register bzw. WordPress/login.ailinux.me.
     if not user:
-        # Neuen User registrieren (erster Login = Registrierung)
-        logger.info(f"New user registration via login: {email}")
+        if not ALLOW_AUTO_REGISTER:
+            logger.warning(f"Login attempt for unknown email: {email}")
+            raise HTTPException(401, "Invalid email or password")
+
+        logger.warning(f"Auto-registering unknown email via login because ALLOW_AUTO_REGISTER=true: {email}")
         user = register_new_user(
             email=email,
             password=request.password,
             name=request.name if hasattr(request, 'name') and request.name else None,
-            tier="guest"  # Neue User starten als Gast-Tier
+            tier="guest"
         )
         if not user:
             logger.error(f"Failed to register new user: {email}")
             raise HTTPException(500, "Failed to register user")
-        logger.info(f"New user registered: {email} (tier: guest)")
+        logger.warning(f"New user auto-registered via login: {email} (tier: guest)")
     else:
         # Existierender User - Passwort prüfen
         if not verify_secret(request.password, user["password_hash"]):
