@@ -46,6 +46,7 @@ from ..mcp.specialists import specialist_router, SPECIALISTS
 from ..mcp.context import context_manager, prompt_library, workflow_manager
 from ..mcp.adaptive_code import ADAPTIVE_CODE_TOOLS, ADAPTIVE_CODE_HANDLERS
 from ..mcp.adaptive_code_v4 import ADAPTIVE_CODE_V4_TOOLS, ADAPTIVE_CODE_V4_HANDLERS
+from ..services.n8n_mcp import N8N_TOOLS, N8N_HANDLERS
 from ..mcp.tool_registry_v3 import (
     get_all_tools as registry_v3_get_all_tools,
     get_tool_count as registry_v3_tool_count,
@@ -1467,7 +1468,8 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
         
         tools = get_unified_tools(
             extra_tools=(WORDPRESS_TOOL_SCHEMAS + BROWSER_TOOL_SCHEMAS +
-                         PERFORMANCE_TOOL_SCHEMAS + REDIS_TOOL_SCHEMAS)
+                         PERFORMANCE_TOOL_SCHEMAS + REDIS_TOOL_SCHEMAS +
+                         N8N_TOOLS)
         )
         existing = {t.get("name") for t in tools}
         if "nova_chat_agent" not in existing:
@@ -2266,6 +2268,7 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
     tool_map.update(VAULT_HANDLERS)
     tool_map.update(CHAT_ROUTER_HANDLERS)
     tool_map.update(TASK_SPAWNER_HANDLERS)
+    tool_map.update(N8N_HANDLERS)
 
     handler = tool_map.get(tool_name)
     # Compatibility fallback
@@ -3536,6 +3539,7 @@ MCP_HANDLERS.update(ADAPTIVE_CODE_V4_HANDLERS)
 MCP_HANDLERS.update(LLM_COMPAT_HANDLERS)
 MCP_HANDLERS.update(HOTRELOAD_HANDLERS)
 MCP_HANDLERS.update(MEMORY_INDEX_HANDLERS)
+MCP_HANDLERS.update(N8N_HANDLERS)
 
 # Register all handlers with the tool_registry_v3
 register_handlers_from_dict(MCP_HANDLERS)
