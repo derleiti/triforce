@@ -440,7 +440,18 @@ class APIProxy:
                 "max_tokens": max_tokens
             }
             if system:
-                body["system"] = system
+                # Prompt-Caching: convert long system prompts into cacheable block.
+                # Threshold ~4000 chars (≈1024 tokens, Anthropic minimum for cache hit
+                # on Sonnet/Opus). Cache TTL 5 min, write=1.25x, read=0.1x normal cost.
+                # Patched 2026-06-04.
+                if isinstance(system, str) and len(system) >= 4000:
+                    body["system"] = [{
+                        "type": "text",
+                        "text": system,
+                        "cache_control": {"type": "ephemeral"},
+                    }]
+                else:
+                    body["system"] = system
             
             async with session.post(
                 "https://api.anthropic.com/v1/messages",
