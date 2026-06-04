@@ -88,6 +88,7 @@ class HandlerRegistry:
         self._register_init_handlers()
         self._register_gemini_handlers()
         self._register_mesh_handlers()
+        self._register_mail_handlers()
         self._register_notification_handlers()
         self._register_dev_tool_handlers()
         self._register_wordpress_handlers()
@@ -840,6 +841,56 @@ class HandlerRegistry:
         except Exception as e:
             logger.warning(f"WordPress handlers registration failed: {e}")
 
+
+    def _register_mail_handlers(self):
+        """Nova Mail: inbox, read, mark-seen, send via app.services.mail_service."""
+        try:
+            from app.services.mail_service import (
+                mail_inbox,
+                mail_read,
+                mail_mark_seen,
+                mail_send,
+            )
+
+            async def handle_mail_inbox(params):
+                return mail_inbox(
+                    limit=int(params.get("limit", 20)),
+                    folder=params.get("folder", "INBOX"),
+                )
+
+            async def handle_mail_read(params):
+                uid = params.get("uid")
+                if not uid:
+                    return {"error": "uid parameter required"}
+                return mail_read(uid=str(uid), folder=params.get("folder", "INBOX"))
+
+            async def handle_mail_mark_seen(params):
+                uid = params.get("uid")
+                if not uid:
+                    return {"error": "uid parameter required"}
+                return mail_mark_seen(uid=str(uid), folder=params.get("folder", "INBOX"))
+
+            async def handle_mail_send(params):
+                return mail_send(
+                    to=params.get("to"),
+                    subject=params.get("subject"),
+                    body=params.get("body"),
+                    cc=params.get("cc"),
+                    reply_to=params.get("reply_to"),
+                )
+
+            handlers = {
+                "mail_inbox": handle_mail_inbox,
+                "mail_read": handle_mail_read,
+                "mail_mark_seen": handle_mail_mark_seen,
+                "mail_send": handle_mail_send,
+            }
+            self.register_many(handlers)
+            logger.info(f"Mail handlers registered: {list(handlers.keys())}")
+        except ImportError as e:
+            logger.warning(f"Mail handlers import failed: {e}")
+        except Exception as e:
+            logger.warning(f"Mail handlers registration failed: {e}")
 
 
 # =============================================================================
