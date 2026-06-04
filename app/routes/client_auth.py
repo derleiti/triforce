@@ -19,8 +19,6 @@ import hashlib
 import secrets
 import jwt
 import logging
-import urllib.request
-import urllib.error
 
 logger = logging.getLogger(__name__)
 
