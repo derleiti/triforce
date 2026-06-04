@@ -170,6 +170,9 @@ docker/mailserver/state/
 docker/wordpress/html/
 !docker/wordpress/html/wp-content/plugins/nova-ai-frontend/
 
+# Lokale LemonSqueezy-Konfiguration (API-Keys/IDs lokal) — nie committen
+docker/wordpress/html/wp-content/plugins/nova-ai-frontend/config/lemonsqueezy.php
+
 # User-Datenbank (enthält Passwort-Hashes!)
 config/users.json
 users.json
