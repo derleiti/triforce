@@ -22,6 +22,8 @@ import logging
 import urllib.request
 import urllib.error
 
+logger = logging.getLogger(__name__)
+
 # Pfad zur User-Datenbank
 USERS_FILE_PATH = Path(__file__).parent.parent.parent / "config" / "users.json"
 
@@ -30,7 +32,6 @@ ALLOW_AUTO_REGISTER = os.environ.get("ALLOW_AUTO_REGISTER", "false").lower() in 
 )
 if ALLOW_AUTO_REGISTER:
     logger.warning("ALLOW_AUTO_REGISTER is enabled - unknown login emails may create accounts")
-logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/auth", tags=["Client Auth"])
 
