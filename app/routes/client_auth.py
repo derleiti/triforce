@@ -19,6 +19,8 @@ import hashlib
 import secrets
 import jwt
 import logging
+import urllib.request
+import urllib.error
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +32,9 @@ ALLOW_AUTO_REGISTER = os.environ.get("ALLOW_AUTO_REGISTER", "false").lower() in 
 )
 if ALLOW_AUTO_REGISTER:
     logger.warning("ALLOW_AUTO_REGISTER is enabled - unknown login emails may create accounts")
+
+GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "").strip()
+GOOGLE_TOKENINFO_URL = "https://oauth2.googleapis.com/tokeninfo?id_token="
 
 router = APIRouter(prefix="/auth", tags=["Client Auth"])
 
@@ -355,6 +360,16 @@ class UserLoginRequest(BaseModel):
     name: Optional[str] = Field(None, description="Display name (optional, for new users)")
 
 
+class GoogleLoginRequest(BaseModel):
+    """Sign in with Google credential from Google Identity Services."""
+    credential: str = Field(..., description="Google ID token / credential JWT")
+
+
+class AuthConfigResponse(BaseModel):
+    google_client_id: str = ""
+    google_enabled: bool = False
+
+
 class UserLoginResponse(BaseModel):
     """User Login Response"""
     user_id: str
@@ -429,10 +444,134 @@ class ClientRegisterResponse(BaseModel):
     message: str
 
 
+def issue_user_login_response(email: str, user: dict) -> UserLoginResponse:
+    """Create a normal AILinux session response for any authenticated user."""
+    email = email.lower().strip()
+    email_prefix = email.split("@")[0][:10]
+    client_id = f"client-{email_prefix}-{secrets.token_hex(8)}"
+
+    tier = normalize_tier(user.get("tier"))
+    entitlements = get_user_entitlements(user)
+    role, allowed, blocked = permissions_for_tier(tier)
+
+    token = create_jwt_token(
+        client_id,
+        tier,
+        email=email,
+        entitlements=entitlements,
+        name=user.get("name"),
+    )
+
+    CLIENT_REGISTRY[client_id] = {
+        "secret_hash": "",
+        "name": f"{user.get('name') or email}'s Client",
+        "role": role,
+        "created_at": datetime.now().isoformat(),
+        "email": email,
+        "allowed_tools": allowed,
+        "blocked_tools": blocked,
+    }
+
+    ACTIVE_SESSIONS[client_id] = {
+        "email": email,
+        "connected_at": datetime.now().isoformat(),
+        "last_seen": datetime.now().isoformat(),
+    }
+
+    return UserLoginResponse(
+        user_id=email,
+        token=token,
+        tier=tier,
+        client_id=client_id,
+        email=email,
+        name=user.get("name"),
+        nova_entitlements=entitlements,
+        entitlements=entitlements,
+    )
+
+
+def verify_google_credential(credential: str) -> dict:
+    """Validate a Google Identity Services ID token via Google's tokeninfo endpoint."""
+    if not GOOGLE_CLIENT_ID:
+        raise HTTPException(503, "Google login is not configured")
+    if not credential or len(credential) < 40:
+        raise HTTPException(400, "Missing Google credential")
+
+    url = GOOGLE_TOKENINFO_URL + credential
+    try:
+        with urllib.request.urlopen(url, timeout=8) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as e:
+        logger.warning("Google tokeninfo rejected credential: HTTP %s", e.code)
+        raise HTTPException(401, "Invalid Google credential")
+    except Exception as e:
+        logger.error("Google tokeninfo verification failed: %s", e)
+        raise HTTPException(502, "Google verification unavailable")
+
+    if data.get("aud") != GOOGLE_CLIENT_ID:
+        logger.warning("Google credential audience mismatch: %r", data.get("aud"))
+        raise HTTPException(401, "Invalid Google audience")
+    if data.get("email_verified") not in ("true", True):
+        raise HTTPException(401, "Google email is not verified")
+    if not data.get("email"):
+        raise HTTPException(401, "Google credential has no email")
+
+    return data
+
+
 # =============================================================================
 # Auth Endpoints
 # =============================================================================
 
+@router.get("/config", response_model=AuthConfigResponse)
+async def auth_config():
+    """Public auth frontend configuration."""
+    return AuthConfigResponse(
+        google_client_id=GOOGLE_CLIENT_ID,
+        google_enabled=bool(GOOGLE_CLIENT_ID),
+    )
+
+
+@router.post("/google", response_model=UserLoginResponse)
+async def google_login(request: GoogleLoginRequest):
+    """Sign in or register with Google Identity Services."""
+    profile = verify_google_credential(request.credential)
+    email = profile["email"].lower().strip()
+    name = profile.get("name") or email.split("@")[0]
+    sub = profile.get("sub") or ""
+
+    user = USER_REGISTRY.get(email)
+    if not user:
+        user = {
+            "password_hash": hash_secret(secrets.token_urlsafe(32)),
+            "tier": "pro",
+            "name": name,
+            "billing": False,
+            "nova_entitlements": {},
+            "auth_provider": "google",
+            "google_sub": sub,
+            "created_at": datetime.now().isoformat(),
+            "updated_at": datetime.now().isoformat(),
+        }
+        if not save_user_to_file(email, user):
+            raise HTTPException(500, "Failed to register Google user")
+        USER_REGISTRY[email] = user
+        logger.info("New Google user registered: %s", email)
+    else:
+        user["auth_provider"] = user.get("auth_provider") or "password+google"
+        if sub:
+            user["google_sub"] = sub
+        if name and not user.get("name"):
+            user["name"] = name
+        user["updated_at"] = datetime.now().isoformat()
+        save_user_to_file(email, user)
+
+    response = issue_user_login_response(email, user)
+    logger.info("Google user logged in: %s (%s) -> %s", email, response.tier, response.client_id)
+    return response
+
+
+@router.post("/auth/login", response_model=UserLoginResponse)  # Compatibility: ai-coder expects /v1/auth/login
 @router.post("/login", response_model=UserLoginResponse)
 async def user_login(request: UserLoginRequest):
     """
@@ -466,53 +605,9 @@ async def user_login(request: UserLoginRequest):
             logger.warning(f"Invalid password for: {email}")
             raise HTTPException(401, "Invalid email or password")
 
-    # Generate new client_id for this login session
-    email_prefix = email.split("@")[0][:10]
-    client_id = f"client-{email_prefix}-{secrets.token_hex(8)}"
-
-    tier = normalize_tier(user.get("tier"))
-    entitlements = get_user_entitlements(user)
-    role, allowed, blocked = permissions_for_tier(tier)
-
-    # Create JWT token MIT EMAIL (wichtig für Tier-Service!)
-    token = create_jwt_token(
-        client_id,
-        tier,
-        email=email,
-        entitlements=entitlements,
-        name=user.get("name"),
-    )
-
-    # Register client session
-    CLIENT_REGISTRY[client_id] = {
-        "secret_hash": "",
-        "name": f"{user['name']}'s Client",
-        "role": role,
-        "created_at": datetime.now().isoformat(),
-        "email": email,
-        "allowed_tools": allowed,
-        "blocked_tools": blocked
-    }
-
-    # Track session
-    ACTIVE_SESSIONS[client_id] = {
-        "email": email,
-        "connected_at": datetime.now().isoformat(),
-        "last_seen": datetime.now().isoformat()
-    }
-
-    logger.info(f"User logged in: {email} ({tier}) -> {client_id}")
-
-    return UserLoginResponse(
-        user_id=email,
-        token=token,
-        tier=tier,
-        client_id=client_id,
-        email=email,
-        name=user.get("name"),
-        nova_entitlements=entitlements,
-        entitlements=entitlements,
-    )
+    response = issue_user_login_response(email, user)
+    logger.info(f"User logged in: {email} ({response.tier}) -> {response.client_id}")
+    return response
 
 
 @router.get("/verify")
