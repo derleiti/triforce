@@ -350,6 +350,12 @@ async def require_mcp_auth(request: Request) -> str:
     """
     client_ip = request.client.host if request.client else "unknown"
     auth_header = request.headers.get("Authorization", "")
+    query_token = (
+        request.query_params.get("access_token")
+        or request.query_params.get("mcp_token")
+        or request.query_params.get("token")
+        or ""
+    ).strip()
     
     # Port-based auth decision
     forwarded_port = request.headers.get("X-Forwarded-Port", "")
@@ -366,6 +372,14 @@ async def require_mcp_auth(request: Request) -> str:
         logger.error("AUTH_ERROR | MCP_OAUTH_USER/PASS not configured")
         raise _unauthorized("Server authentication not configured")
     
+    # Method 0: query parameter fallback for MCP clients that drop headers
+    if query_token:
+        if is_valid_token(query_token):
+            logger.debug(f"AUTH_OK | IP: {client_ip} | Method: query-param")
+            return "oauth_client"
+        logger.warning(f"AUTH_FAIL | IP: {client_ip} | Reason: invalid_query_param")
+        raise _unauthorized("Invalid query credential")
+
     # Method 1: Bearer Token
     if auth_header.lower().startswith("bearer "):
         token = auth_header[7:].strip()

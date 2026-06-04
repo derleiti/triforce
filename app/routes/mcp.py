@@ -47,6 +47,7 @@ from ..mcp.context import context_manager, prompt_library, workflow_manager
 from ..mcp.adaptive_code import ADAPTIVE_CODE_TOOLS, ADAPTIVE_CODE_HANDLERS
 from ..mcp.adaptive_code_v4 import ADAPTIVE_CODE_V4_TOOLS, ADAPTIVE_CODE_V4_HANDLERS
 from ..services.n8n_mcp import N8N_TOOLS, N8N_HANDLERS
+from ..mcp.flarum_tools import FLARUM_TOOL_HANDLERS
 from ..mcp.tool_registry_v3 import (
     get_all_tools as registry_v3_get_all_tools,
     get_tool_count as registry_v3_tool_count,
@@ -1456,6 +1457,9 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
     if use_legacy:
         # Return all 134 tools from v3 for backwards compatibility
         tools = registry_v3_get_all_tools()
+        for tool in tools:
+            if isinstance(tool, dict) and "outputSchema" not in tool:
+                tool["outputSchema"] = {"type": "object", "additionalProperties": True}
         return {"tools": tools, "version": "v3", "count": len(tools)}
     
     # Primary: unified inventory (Pre-Killer style, full toolbox with handlers)
@@ -1502,6 +1506,10 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
         except Exception as e:
             logger.warning(f"V5_TOOLS load skipped: {e}")
         
+        for tool in tools:
+            if isinstance(tool, dict) and "outputSchema" not in tool:
+                tool["outputSchema"] = {"type": "object", "additionalProperties": True}
+
         return {
             "tools": tools,
             "version": "unified",
@@ -2269,6 +2277,7 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
     tool_map.update(CHAT_ROUTER_HANDLERS)
     tool_map.update(TASK_SPAWNER_HANDLERS)
     tool_map.update(N8N_HANDLERS)
+    tool_map.update(MCP_HANDLERS)
 
     handler = tool_map.get(tool_name)
     # Compatibility fallback
@@ -3539,6 +3548,7 @@ MCP_HANDLERS.update(ADAPTIVE_CODE_V4_HANDLERS)
 MCP_HANDLERS.update(LLM_COMPAT_HANDLERS)
 MCP_HANDLERS.update(HOTRELOAD_HANDLERS)
 MCP_HANDLERS.update(MEMORY_INDEX_HANDLERS)
+MCP_HANDLERS |= FLARUM_TOOL_HANDLERS
 MCP_HANDLERS.update(N8N_HANDLERS)
 
 # Register all handlers with the tool_registry_v3
@@ -3608,7 +3618,7 @@ async def mcp_health_or_sse(request: Request):
     if "text/event-stream" in accept_header:
         # Redirect to SSE endpoint for proper handling
         from fastapi.responses import RedirectResponse
-        return RedirectResponse(url="/v1/mcp/sse", status_code=307)
+        return RedirectResponse(url="/v1/mcp/sse" + ("?" + request.url.query if request.url.query else ""), status_code=307)
 
     client_ip = request.client.host if request.client else "unknown"
     mcp_logger.info(f"MCP_HEALTH_CHECK | IP: {client_ip}")
@@ -3690,6 +3700,9 @@ async def mcp_sse_connect(request: Request):
             # First message: Tell client where to POST messages
             # This is the critical message Cursor expects!
             messages_endpoint = f"/v1/mcp/messages/?session_id={session_id}"
+            access_token = request.query_params.get("access_token")
+            if access_token:
+                messages_endpoint += f"&access_token={access_token}"
             yield f"event: endpoint\ndata: {messages_endpoint}\n\n"
 
             mcp_logger.info(f"SSE_ENDPOINT_SENT | Session: {session_id} | Endpoint: {messages_endpoint}")
@@ -4060,7 +4073,7 @@ async def mcp_unified_endpoint(request: Request):
                 responses.append(response)
 
         if not responses:
-            return JSONResponse(status_code=202)  # All notifications, no response needed
+            return JSONResponse(content={"status":"accepted"}, status_code=202)  # All notifications, no response needed
 
         # Return batch response
         if wants_streaming:
@@ -4194,7 +4207,7 @@ async def mcp_delete_session(request: Request):
     if session_id in _mcp_sessions:
         del _mcp_sessions[session_id]
         mcp_logger.info(f"MCP_SESSION_DELETED | Session: {session_id}")
-        return JSONResponse(status_code=204)
+        return JSONResponse(content={"status":"deleted"}, status_code=200)
 
     return JSONResponse(
         content={"error": "Session not found"},
