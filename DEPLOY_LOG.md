@@ -26,3 +26,10 @@
 # Fetches /v1/models, filters against CURATED list, uses optgroups
 # Fallback: 14 hardcoded models if API fails
 # Display: clean names without ollama/ prefix and :cloud suffix
+
+## 2026-06-05 - Documentation and repository hygiene update
+
+- Documented runtime-artifact boundaries for logs, Python caches, Docker repository mirror state, generated client package builds, and local patch backups.
+- Clarified Git safety workflow: verify `pwd`, repository root, branch, and status before staging.
+- Confirmed that `app/routes_sd3.py` and `app/routes_vision.py` remain active compatibility modules while imported by `app/main.py`.
+- Validation target for docs-only hygiene work: `python3 -m compileall app -q`.

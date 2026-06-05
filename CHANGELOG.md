@@ -80,3 +80,10 @@ All notable changes to TriForce Backend.
 - Added compatibility for both `params` and `arguments`.
 - Verified OpenClaw MCP Node bridge with `client_file_list` and `client_shell_exec`.
 - Added OpenClaw MCP Node documentation.
+
+## Unreleased
+
+### Documentation
+- Added repository hygiene notes for runtime artifacts, generated build output, Python caches, Docker mirror state, and local backup/patch files.
+- Documented active image/vision route modules so legacy compatibility endpoints are not removed during cleanup.
+- Added Git safety guidance for distinguishing `/home/zombie/triforce`, `/home/zombie/triforce-review`, and `/home/zombie`.

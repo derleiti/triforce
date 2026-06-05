@@ -31,3 +31,12 @@
 ## Security & Configuration Tips
 - Never commit secrets; load keys via `.env` only. Redis and provider endpoints are assumed local by default—avoid embedding public URLs.
 - MCP/Tristar ports default to 9100; update scripts if you change them. Use localhost endpoints for agent calls to stay offline.
+
+## Repository Hygiene Rules for Agents
+
+- Never run `git add .` from `/home/zombie` or any user home directory. Confirm the repository root before staging changes.
+- Treat `.venv/`, `__pycache__/`, logs, Docker mirror data, generated Debian build directories, and patch/backups as non-source artifacts.
+- Prefer explicit paths with `git add README.md SERVER_DOCUMENTATION.md AGENTS.md` over broad staging.
+- Before deleting files, search active imports/references with `grep -R` and run `python3 -m compileall app -q`.
+- `app/routes_sd3.py` and `app/routes_vision.py` are active while `app/main.py` imports them; do not classify them as dead code solely because similar modules exist under `app/routes/`.
+- Back up production data outside the repository before cleanup. Suggested local scratch location: `/home/zombie/triforce-backup-cleanup/`.

@@ -259,3 +259,29 @@ MIT License - see [LICENSE](LICENSE)
 TriForce supports an OpenClaw-compatible MCP Node bridge. A local node connects via WebSocket to `/v1/mcp/node/connect`, authenticates through `/v1/auth/login`, and receives tool calls through `/v1/mcp/node/call`.
 
 See: `docs/MCP_NODE_OPENCLAW.md`
+---
+
+## Repository Hygiene and Runtime Artifacts
+
+TriForce keeps source code, configuration templates, scripts, and documentation in Git. Generated runtime state must stay out of commits. Treat the following paths as local/server state unless a maintainer explicitly asks for a migration commit:
+
+- `logs/`, `triforce/logs/`, `*.log.old` - runtime logs and rotated logs.
+- `.venv/`, `client-deploy/*/.venv/`, `__pycache__/`, `*.pyc` - local Python environments and bytecode caches.
+- `docker/repository/repo/`, `docker/repository/data/`, `docker/repository/etc/gnupg/` - repository mirror and signing/runtime state.
+- `client-deploy/debian-build/` - generated Debian package staging area.
+- `.backups/`, `.debug/`, `.patch_backups/`, `.repair-backup/`, `*.bak`, `*.orig`, `*.REMOVED.*` - local repair, patch, and review artifacts.
+
+Before deleting operational data, copy it outside the repository, for example to `/home/zombie/triforce-backup-cleanup/` or a host-specific backup location. Do not use `git add .` from `/home/zombie`; always confirm `pwd`, `git rev-parse --show-toplevel`, and `git branch --show-current` first.
+
+### Active route inventory
+
+The following route modules are active and intentionally coexist:
+
+| Module | Mounted path | Purpose |
+|---|---:|---|
+| `app/routes/vision.py` | `/v1/images/analyze`, `/v1/images/analyze/upload` | Vision v1 image analysis API |
+| `app/routes_vision.py` | `/vision/overlay-data` | Legacy/overlay vision data endpoint |
+| `app/routes_sd3.py` | `/v1/images/generate` | Stable Diffusion 3 image generation endpoint |
+| `app/routes/txt2img.py` | `/txt2img`, `/txt2img/queue`, `/txt2img/stream` | Text-to-image queue and streaming API |
+
+Do not remove `app/routes_sd3.py` or `app/routes_vision.py` until `app/main.py` has been migrated and `python3 -m compileall app -q` passes.
