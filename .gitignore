@@ -1,239 +1,51 @@
-# ============================================================================
-# TRIFORCE AI BACKEND - GIT IGNORE
-# ============================================================================
-
-# ============================================================================
-# ENVIRONMENT FILES - KRITISCH! Niemals committen!
-# ============================================================================
-
-.patch-bak/
-.repair-backup/
-*.BAD.*
-*.BAK.*
-*.bak.*
-*.broken.*
-*.tmp
-*~
-app/config.py#
-data/n8n/*.sqlite
-data/n8n/*.sqlite-shm
-data/n8n/*.sqlite-wal
-all-debug-messeges-*.sh
-gather.sh
-mcp_stress.sh
-upfix.sh
-update.sh
-.env
-*.env
-!*.env.example
-!.env.example
-triforce.env
-config/triforce.env
-config/*.env
-!config/*.env.example
-!config/triforce.env.example
-scripts/.env
-docker/.env
-docker/*/.env
-client-deploy/config/.env
-
-# Backup .env Dateien
-*.env.bak*
-*.env.backup*
-*.env.pre-*
-*.env.merged
-*.env.before_import
-
-# ============================================================================
 # Python
-# ============================================================================
 __pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-
-# Virtual Environment
+*.pyc
 .venv/
-venv/
-ENV/
-env/
+*.egg-info/
 
-# ============================================================================
-# Logs & Temp
-# ============================================================================
+# Logs
 logs/
 *.log
-tmp/
-temp/
-*.tmp
-*.bak
-*.swp
-*.swo
-*~
 
-# ============================================================================
-# Docker Daten (nicht den Code!)
-# ============================================================================
+# Secrets & Config
+.env
+config/triforce.env
+config/markus-*.env
+config/*-production.env
+*.bak
+
+# Docker Daten (nicht Code!)
 docker/repository/repo/
 docker/repository/data/
-docker/wordpress/html/wp-content/uploads/
-docker/wordpress/html/wp-content/cache/
-docker/flarum/data/
-docker/mailserver/data/
-docker/*/logs/
-
-# ============================================================================
-# Build Artefakte
-# ============================================================================
-*.deb
-*.rpm
-*.tar.gz
-*.zip
-build/ailinux-triforce-installer_*/
-build/triforce-setup_*/
-build/debian-pkg/
-
-# ============================================================================
-# Client Deploy (separate Repos)
-# ============================================================================
-client-deploy/ailinux-client/.venv/
-client-deploy/aiwindows-client/.venv/
-client-deploy/*/dist/
-client-deploy/*/build/
-
-# ============================================================================
-# IDE & Editor
-# ============================================================================
-.idea/
-.vscode/
-*.sublime-*
-.project
-.pydevproject
-.settings/
-
-# ============================================================================
-# OS Files
-# ============================================================================
-.DS_Store
-Thumbs.db
-desktop.ini
-
-# ============================================================================
-# Credentials & Secrets
-# ============================================================================
-*.pem
-*.key
-*.crt
-*.p12
-secrets/
-credentials/
-.secrets/
-
-# ============================================================================
-# Test & Coverage
-# ============================================================================
-.coverage
-htmlcov/
-.pytest_cache/
-.tox/
-.state/
-.vault/
--e 
-# Excluded directories with permission issues
-ailinux-iso/
-.claude/
-docker/repository/.claude/
-docker/repository/node_modules/
-node_modules/
--e app/services/txt2img_mcp.py
-persist/
-users/
-backend/
-docker/data/
-docker/mailserver/state/
 docker/wordpress/html/
-!docker/wordpress/html/wp-content/plugins/nova-ai-frontend/
+docker/flarum/data/
 
-# Lokale LemonSqueezy-Konfiguration (API-Keys/IDs lokal) — nie committen
-docker/wordpress/html/wp-content/plugins/nova-ai-frontend/config/lemonsqueezy.php
+# Build Artefakte
+*.deb
+*.tar.gz
+build/ailinux-triforce-installer_*/
 
-# User-Datenbank (enthält Passwort-Hashes!)
-config/users.json
-users.json
-client-deploy/zombie@*
-docker/flarum/
-config/federation_psk.key
-triforce/
-specs/tla/states/
-*.st
-*.fp
-.backups/
-.opencode/
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# GPG Keys
+docker/repository/etc/gnupg/private-keys-v1.d/
+docker/repository/etc/gnupg/secret.asc
+*.key
+*.pem
+
+# Docker Runtime-Daten (Berechtigungsprobleme)
+docker/mailserver/data/
 docker/repository/etc/gnupg/
-*.pyc
-__pycache__/
-.edit_log.jsonl
-app/mcp/structured_admin.py.bak2
-tests/
-
-# DKIM-Keys — private keys, never commit
-docker/mailserver/config/opendkim/
-
-# Temp/debug files
-*.bak
-*.bak.*
-*.BAD.*
-*.broken.*
-*.patch
-gather*.sh
-gather*.log
-verify_fix*.sh
-all-*.log
-*_debug_*.txt
-tmp_*.py
-upfix.sh
-bugreport.txt
-mcp_write_lock_*.txt
-*.bak
-*.bak.*
-*.bak-*
-fix_*.py
-
-# Agent caches & runtimes (nicht committen)
-config/agents/**/.bun/
-config/agents/**/.cache/
-config/agents/**/.local/
-config/agents/**/*.backup
-config/agents/**/node_modules/
-config/agents/**/__pycache__/
-*_bak
-*_bak.*
-*.py_*_bak
-*.py.bak_*
-*.bak[0-9]
-*_20260*_bak
-
-# Debug journals — contain credentials & sensitive state dumps
-.debug/
-
-# local secrets
-.env
-.env.*
-*.env
-*.env.*
+coordination/
+persist/cli-config/**/oauth_creds.json
+**/triforce.env.before_import
+**/*.env.before_import
+**/oauth_creds.json
+**/*.env.backup*
+**/*.env.before_import*
+persist/**
+build/
