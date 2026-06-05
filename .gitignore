@@ -237,3 +237,7 @@ config/agents/**/__pycache__/
 .env.*
 *.env
 *.env.*
+
+# Python bytecode
+__pycache__/
+*.pyc
