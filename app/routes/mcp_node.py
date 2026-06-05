@@ -160,6 +160,27 @@ def start_heartbeat_monitor():
 # =============================================================================
 
 CLIENT_SIDE_TOOLS = {
+    "tools_index": {
+        "description": "Listet verfügbare Client-Tools",
+        "inputSchema": {
+            "type": "object",
+            "properties": {}
+        }
+    },
+    "client_ping": {
+        "description": "Prüft ob der MCP Client erreichbar ist",
+        "inputSchema": {
+            "type": "object",
+            "properties": {}
+        }
+    },
+    "client_info": {
+        "description": "Liefert Informationen über den verbundenen MCP Client",
+        "inputSchema": {
+            "type": "object",
+            "properties": {}
+        }
+    },
     "client_file_read": {
         "description": "Liest Datei vom Client-Dateisystem",
         "inputSchema": {
@@ -251,6 +272,10 @@ class ProxyToolRequest(BaseModel):
     client_id: str
     tool: str
     params: Dict[str, Any] = {}
+    arguments: Dict[str, Any] = {}
+
+    def tool_args(self) -> Dict[str, Any]:
+        return self.arguments or self.params or {}
 
 
 class ProxyToolResponse(BaseModel):
@@ -500,7 +525,7 @@ async def call_client_tool(
     start_time = datetime.now()
 
     try:
-        result = await connection.send_tool_call(request.tool, request.params)
+        result = await connection.send_tool_call(request.tool, request.tool_args())
         latency = int((datetime.now() - start_time).total_seconds() * 1000)
 
         logger.info(f"Proxy call success: {request.tool} on {client_id} ({latency}ms)")
