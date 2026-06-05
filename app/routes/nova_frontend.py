@@ -75,6 +75,29 @@ def _pick(d: Dict[str, Any], *keys: str, default=None):
             return d[k]
     return default
 
+
+def _lower_values(value: Any) -> set[str]:
+    if value in (None, "", []):
+        return set()
+    if isinstance(value, (list, tuple, set)):
+        return {str(v).lower() for v in value if v not in (None, "")}
+    return {str(value).lower()}
+
+
+def _openrouter_has_image_output(model: Dict[str, Any]) -> bool:
+    arch = model.get("architecture") if isinstance(model.get("architecture"), dict) else {}
+    outputs = set()
+    outputs |= _lower_values(arch.get("output_modalities"))
+    outputs |= _lower_values(arch.get("outputModalities"))
+    outputs |= _lower_values(model.get("output_modalities"))
+    outputs |= _lower_values(model.get("outputModalities"))
+    return "image" in outputs
+
+
+def _blocked_openrouter_image_model(model_id: str) -> bool:
+    mid = str(model_id or "").lower().removeprefix("openrouter/")
+    return mid in {"black-forest-labs/flux.2-pro"}
+
 class ChatRequest(BaseModel):
     model: str
     # Accept single-turn (message: str) OR multi-turn (messages: list) from JS
@@ -247,6 +270,9 @@ def _categorize(model: Dict[str, Any]) -> Dict[str, Any]:
             "image generation", "text-to-image", "image_gen",
     ])):
         caps["media_image"] = True
+
+    if provider == "openrouter" and caps["media_image"] and not _openrouter_has_image_output(model):
+        caps["media_image"] = False
 
     if "video_gen" in caps_set or any(x in blob for x in ["sora", "veo", "video generation", "text-to-video", "video_gen", "hailuo"]):
         caps["media_video"] = True
@@ -697,6 +723,15 @@ async def _image_proxy(req: ImageRequest) -> Dict[str, Any]:
         if not or_key:
             raise HTTPException(status_code=503, detail="OpenRouter API Key fehlt (OPENROUTER_API_KEY)")
         or_model = req.model[len("openrouter/"):]
+        if _blocked_openrouter_image_model(or_model):
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    f"OpenRouter-Modell '{or_model}' ist in Nova nicht als Bildgenerator verfuegbar, "
+                    "weil OpenRouter dafuer keinen Image-Output-Endpunkt anbietet. "
+                    "Bitte Gemini Imagen, Cloudflare Flux, Replicate Flux oder OpenAI gpt-image waehlen."
+                ),
+            )
         _or_aspect_map = {
             "512x512": "1:1", "768x768": "1:1", "1024x1024": "1:1",
             "640x360": "16:9", "1280x720": "16:9", "1920x1080": "16:9",
