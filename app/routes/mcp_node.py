@@ -526,7 +526,6 @@ async def call_client_tool(
 
     try:
         result = await connection.send_tool_call(request.tool, request.tool_args())
-        result = await connection.send_tool_call(request.tool, (request.params or request.arguments or {}))
         latency = int((datetime.now() - start_time).total_seconds() * 1000)
 
         logger.info(f"Proxy call success: {request.tool} on {client_id} ({latency}ms)")
