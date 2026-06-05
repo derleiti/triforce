@@ -69,6 +69,7 @@ services:
       - ${WP_HTML_PATH:-./html}:/var/www/html:delegated
       - ${WP_PHP_CUSTOM_INI:-./php/custom.ini}:/usr/local/etc/php/conf.d/99-custom.ini:ro
       - ./php/opcache-boost.ini:/usr/local/etc/php/conf.d/98-opcache.ini:ro
+      - ./php/zz-ailinux-opcache.ini:/usr/local/etc/php/conf.d/zz-ailinux-opcache.ini:ro
       - ${WP_PHP_WWW_CONF:-./php/www.conf}:/usr/local/etc/php-fpm.d/www.conf
     healthcheck:
       test: ["CMD-SHELL", "php-fpm --test 2>&1 | grep -q test"]

@@ -100,6 +100,7 @@ from .routes.nova_frontend import public_router as nova_frontend_public_router
 from .routes.nova_frontend import router as nova_frontend_router
 from .routes.nova_playground import router as nova_playground_router
 from .routes.nova_wordpress import router as nova_wordpress_router
+from .routes.nova_operator import router as nova_operator_router
 
 # Import routers from the top-level app directory
 from .routes_sd3 import router as sd3_router
@@ -236,6 +237,12 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         # import logging (centralized)
         logger.warning(f"Failed to setup Agent Bootstrap: {e}")
+    try:
+        from .mcp.notification_manager import start_pollers
+        start_pollers()
+        logger.info("Notification Manager started")
+    except Exception:
+        logger.warning("Notification Manager start skipped")
 
     # Initialize System Log Collector (collects kernel, apps, journald logs)
     if _HAS_SYSTEM_LOG_COLLECTOR:
@@ -438,6 +445,7 @@ def create_app() -> FastAPI:
     app.include_router(nova_frontend_router, prefix="/v1", tags=["Nova Frontend"])
     app.include_router(nova_playground_router, prefix="/v1", tags=["Nova Playground"])
     app.include_router(nova_wordpress_router, tags=["Nova WordPress"])
+    app.include_router(nova_operator_router, prefix="/v1", tags=["Nova Operator"])
 
     @app.middleware("http")
     async def public_discovery_options_middleware(request: Request, call_next):

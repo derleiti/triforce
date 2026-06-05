@@ -212,7 +212,12 @@ def mail_send(
             server.starttls(context=context)
             server.ehlo(ehlo_name)
         if user and password:
-            server.login(user, password)
+            try:
+                server.login(user, password)
+            except smtplib.SMTPNotSupportedError:
+                # Local trusted relay may not advertise AUTH.
+                # Continue without login when SMTP AUTH is unavailable.
+                pass
         server.send_message(msg)
 
     return {"ok": True, "to": to, "subject": subject, "from": from_addr}

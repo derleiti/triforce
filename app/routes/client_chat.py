@@ -179,6 +179,37 @@ def normalize_openrouter_model(model: str) -> str:
     return model
 
 
+def route_cloud_model(model: str) -> tuple[str, str]:
+    """
+    Entscheidet Provider und provider-spezifische Model-ID.
+
+    Wichtig:
+    - openrouter/<vendor>/<model> geht zu OpenRouter als <vendor>/<model>
+    - mistral/<model> geht NICHT zu OpenRouter
+    - unbekannte vendor/model IDs bleiben OpenRouter-kompatibel
+    """
+    if model.startswith("openrouter/"):
+        return "openrouter", model[len("openrouter/"):]
+
+    if model.startswith("mistral/"):
+        return "mistral", model[len("mistral/"):]
+
+    if model.startswith("groq/"):
+        return "groq", model[len("groq/"):]
+
+    if model.startswith("gemini/"):
+        return "gemini", model[len("gemini/"):]
+
+    if model.startswith("cerebras/"):
+        return "cerebras", model[len("cerebras/"):]
+
+    if model.startswith("cloudflare/"):
+        return "cloudflare", model[len("cloudflare/"):]
+
+    # OpenRouter-native IDs wie mistralai/mistral-large, anthropic/..., openai/...
+    return "openrouter", model
+
+
 async def call_ollama(
     model: str,
     messages: List[dict],
@@ -310,8 +341,8 @@ async def call_openrouter(
         )
 
         # Bei 402 (Payment Required) → Fallback zu Ollama
-        if response.status_code == 402:
-            logger.warning(f"OpenRouter 402 für {model} - Fallback zu Ollama")
+        if response.status_code in (402, 429, 500, 502, 503, 504):
+            logger.warning(f"OpenRouter {response.status_code} für {model} - Fallback zu Ollama")
             # Markiere Model als unavailable
             availability_service.mark_error(model, 402, "Payment Required")
             # Fallback zu Ollama (kostenlos)
@@ -421,18 +452,29 @@ async def client_chat(
                 if not limit_check["allowed"]:
                     raise HTTPException(429, f"Token-Limit erreicht ({limit_check['limit']}/Tag). Nutze Ollama-Modelle für unlimited.")
 
-            # OpenRouter-Prefix entfernen
-            if model.startswith("openrouter/"):
-                model = model[11:]
+            provider, routed_model = route_cloud_model(model)
 
-            # OpenRouter Call
-            result = await call_openrouter(
-                model=model,
-                messages=messages,
-                temperature=request.temperature,
-                max_tokens=request.max_tokens
-            )
-            backend = "openrouter"
+            if provider == "openrouter":
+                result = await call_openrouter(
+                    model=routed_model,
+                    messages=messages,
+                    temperature=request.temperature,
+                    max_tokens=request.max_tokens
+                )
+                backend = "openrouter"
+            elif provider == "mistral":
+                routed = routed_model
+                if not routed.startswith("mistralai/"):
+                    routed = "mistralai/" + routed
+                result = await call_openrouter(
+                    model=routed,
+                    messages=messages,
+                    temperature=request.temperature,
+                    max_tokens=request.max_tokens
+                )
+                backend = "openrouter"
+            else:
+                raise HTTPException(501, "Provider not wired in client chat")
 
     # Response extrahieren
     response_text = result.get("choices", [{}])[0].get("message", {}).get("content", "")

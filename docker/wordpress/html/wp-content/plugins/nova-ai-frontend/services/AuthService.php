@@ -678,10 +678,27 @@ HTML;
     // LOGIN / REGISTER REDIRECTS
     // =========================================================================
 
+    private function is_ailinux_wp_admin_bypass(): bool {
+        if (isset($_GET['ailinux_wp_admin']) && $_GET['ailinux_wp_admin'] === '1') {
+            return true;
+        }
+
+        $redirect_to = $_GET['redirect_to'] ?? '';
+        if (is_string($redirect_to) && strpos($redirect_to, 'ailinux_wp_admin=1') !== false) {
+            return true;
+        }
+
+        return false;
+    }
+
     public function maybe_redirect_login(): void {
         $redirect    = isset($_GET['redirect_to']) ? $_GET['redirect_to'] : home_url();
         $use_ailinux = get_option('nova_ai_use_unified_login', true);
         if ($use_ailinux && !isset($_GET['wp_login'])) {
+            if ($this->is_ailinux_wp_admin_bypass()) {
+                return;
+            }
+
             wp_redirect($this->login_page . '?redirect=' . urlencode(wp_validate_redirect($redirect, home_url())));
             exit;
         }

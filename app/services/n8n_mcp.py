@@ -2,7 +2,11 @@ from __future__ import annotations
 
 import logging
 import re
+import json as _stdlib_json
+import os
 import time
+
+import httpx
 from typing import Any, Dict, List, Optional
 
 from app.config import get_settings
@@ -193,6 +197,112 @@ async def handle_n8n_workflow_create(arguments: Dict[str, Any]) -> Dict[str, Any
     }
 
 
+
+
+# ============================================================================
+# Remote n8n MCP client — proxy to external n8n MCP server (added 2026-06-04)
+# Restored from auto-stash backup (stash@{2})
+# ============================================================================
+
+DEFAULT_N8N_MCP_URL = "https://n8n.ailinux.me/mcp-server/http"
+
+N8N_MCP_TOOL_SCHEMA: Dict[str, Any] = {
+    "name": "n8n_mcp_call",
+    "description": (
+        "Call the configured remote n8n MCP server via streamable HTTP/SSE. "
+        "Use method like tools/list, search_workflows, get_workflow_details, "
+        "validate_workflow, or create_workflow_from_code."
+    ),
+    "inputSchema": {
+        "type": "object",
+        "properties": {
+            "method": {
+                "type": "string",
+                "description": "Remote MCP JSON-RPC method, e.g. tools/list, search_workflows",
+            },
+            "params": {
+                "type": "object",
+                "description": "Remote MCP params object",
+                "additionalProperties": True,
+            },
+            "id": {"type": ["string", "integer"], "description": "Optional JSON-RPC id"},
+            "timeout": {"type": "number", "description": "Request timeout in seconds", "default": 60},
+        },
+        "required": ["method"],
+        "additionalProperties": False,
+    },
+}
+
+
+def _extract_sse_json(text: str) -> Dict[str, Any]:
+    """Extract the first JSON object from a text/event-stream response."""
+    for line in text.splitlines():
+        line = line.strip()
+        if not line.startswith("data:"):
+            continue
+        data = line[5:].strip()
+        if not data or data == "[DONE]":
+            continue
+        parsed = _stdlib_json.loads(data)
+        if not isinstance(parsed, dict):
+            raise ValueError("Remote n8n MCP data event is not a JSON object")
+        return parsed
+
+    stripped = text.strip()
+    if stripped.startswith("{"):
+        parsed = _stdlib_json.loads(stripped)
+        if isinstance(parsed, dict):
+            return parsed
+
+    raise ValueError("Remote n8n MCP returned no JSON data event")
+
+
+async def handle_n8n_mcp_call(arguments: Dict[str, Any]) -> Dict[str, Any]:
+    """Proxy a JSON-RPC call to the configured n8n MCP server."""
+    method = arguments.get("method")
+    if not method or not isinstance(method, str):
+        raise ValueError("'method' parameter is required")
+
+    remote_params = arguments.get("params") or {}
+    if not isinstance(remote_params, dict):
+        raise ValueError("'params' must be an object when provided")
+
+    url = os.environ.get("N8N_MCP_URL", DEFAULT_N8N_MCP_URL).strip()
+    token = os.environ.get("N8N_MCP_TOKEN", "").strip()
+    if not token:
+        raise ValueError("N8N_MCP_TOKEN is not configured in the TriForce environment")
+
+    payload = {
+        "jsonrpc": "2.0",
+        "id": arguments.get("id", 1),
+        "method": method,
+        "params": remote_params,
+    }
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json",
+        "Accept": "application/json, text/event-stream",
+    }
+
+    async with httpx.AsyncClient(timeout=float(arguments.get("timeout", 60))) as client:
+        response = await client.post(url, json=payload, headers=headers)
+
+    if response.status_code >= 400:
+        raise ValueError(f"n8n MCP HTTP {response.status_code}: {response.text[:500]}")
+
+    data = _extract_sse_json(response.text)
+    if "error" in data:
+        raise ValueError(f"n8n MCP error: {data['error']}")
+
+    return {
+        "remote": "n8n",
+        "url": url,
+        "method": method,
+        "response": data,
+        "result": data.get("result"),
+    }
+
+
 N8N_TOOLS = [
     {
         "name": "n8n.workflow.create",
@@ -211,9 +321,11 @@ N8N_TOOLS = [
                 "description": {"type": "string", "description": "Sticky note text stored in workflow"},
             },
         },
-    }
+    },
+    N8N_MCP_TOOL_SCHEMA,
 ]
 
 N8N_HANDLERS = {
     "n8n.workflow.create": handle_n8n_workflow_create,
+    "n8n_mcp_call": handle_n8n_mcp_call,
 }

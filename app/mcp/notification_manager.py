@@ -1325,8 +1325,10 @@ async def handle_notify_status(params: Dict[str, Any]) -> Dict:
     try:
         return {
             "status": "ok", "stats": get_stats(),
-            "pollers": {n: {"status": s, "seen": len(_last_seen.get(n,set()))}
-                       for n, s in _poller_status.items()},
+            "pollers": {
+                n: {"status": _poller_status.get(n, "unknown"), "seen": len(_last_seen.get(n, set()))}
+                for n in ("mail", "forum", "wordpress")
+            },
             "dispatch_rules": len(EVENT_TYPES),
             "dedup_windows": {"error_s": DEDUP_WINDOW_ERROR, "content_s": DEDUP_WINDOW_CONTENT},
             "store": str(STORE_FILE), "max_entries": MAX_ENTRIES,

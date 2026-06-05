@@ -38,6 +38,10 @@ class AILinux_User_Plugin {
         add_action('user_register', [$this, 'on_user_register']);
         add_action('admin_menu', [$this, 'add_admin_menu']);
         add_action('wp_enqueue_scripts', [$this, 'enqueue_scripts']);
+
+        // AILinux/TriForce ist Master für Account-Login und Passwort-Reset
+        add_filter('lostpassword_url', [$this, 'ailinux_lostpassword_url'], 10, 2);
+        add_action('login_init', [$this, 'redirect_wp_auth_to_ailinux_login'], 1);
         
         // Shortcodes
         add_shortcode('ailinux_dashboard', [$this, 'render_dashboard']);
@@ -66,6 +70,38 @@ class AILinux_User_Plugin {
             'show_ui' => true,
             'menu_icon' => 'dashicons-cloud',
         ]);
+    }
+
+    /**
+     * AILinux/TriForce ist Master für Account-Passwörter.
+     * WordPress-Passwort-Reset wird deshalb auf login.ailinux.me umgeleitet.
+     */
+    public function ailinux_lostpassword_url($url, $redirect) {
+        return 'https://login.ailinux.me/reset';
+    }
+
+    /**
+     * Verhindert, dass User WordPress als Passwort-Master benutzen.
+     * Admin-Login bleibt erreichbar mit ?ailinux_wp_admin=1
+     */
+    public function redirect_wp_auth_to_ailinux_login() {
+        if (isset($_GET['ailinux_wp_admin']) && $_GET['ailinux_wp_admin'] === '1') {
+            // Emergency/admin bypass: stop later login_init redirects from other plugins/themes.
+            remove_all_actions('login_init');
+            return;
+        }
+
+        $action = isset($_REQUEST['action']) ? sanitize_key($_REQUEST['action']) : 'login';
+
+        if (in_array($action, ['lostpassword', 'retrievepassword', 'rp', 'resetpass'], true)) {
+            wp_redirect('https://login.ailinux.me/reset');
+            exit;
+        }
+
+        if ($action === 'login') {
+            wp_redirect('https://login.ailinux.me/');
+            exit;
+        }
     }
     
     /**
@@ -262,7 +298,7 @@ class AILinux_User_Plugin {
      */
     public function render_dashboard($atts) {
         if (!is_user_logged_in()) {
-            return '<p>Bitte <a href="' . wp_login_url() . '">einloggen</a> um das Dashboard zu sehen.</p>';
+            return '<p>Bitte <a href="https://login.ailinux.me/">mit deinem AILinux Account einloggen</a> um das Dashboard zu sehen.</p>';
         }
         
         $user_id = get_current_user_id();
@@ -437,3 +473,8 @@ register_activation_hook(__FILE__, function() {
 register_deactivation_hook(__FILE__, function() {
     flush_rewrite_rules();
 });
+
+// Bootstrap plugin
+AILinux_User_Plugin::instance();
+
+

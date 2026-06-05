@@ -103,11 +103,36 @@ class AuthMiddleware(BaseHTTPMiddleware):
         logger.debug(f"AUTH_CHECK | IP: {client_ip} | X-Fwd-Port: {forwarded_port} | Path: {path}")
         
         auth_header = request.headers.get("Authorization", "")
+        x_mcp_token = request.headers.get("X-MCP-Token", "").strip()
+        query_token = (
+            request.query_params.get("access_token")
+            or request.query_params.get("mcp_token")
+            or request.query_params.get("token")
+            or ""
+        ).strip()
 
         # Check if auth is configured
         if not MCP_AUTH_USER or not MCP_AUTH_PASS:
             logger.error(f"AUTH_ERROR | IP: {client_ip} | Reason: auth_not_configured")
             return self._unauthorized_response(request, "Server authentication not configured")
+
+        # Method 0a: X-MCP-Token header (avoids clients overwriting Authorization)
+        if x_mcp_token:
+            if is_valid_token(x_mcp_token):
+                logger.debug(f"AUTH_OK | IP: {client_ip} | X-Fwd-Port: {forwarded_port} | Method: x-mcp-token")
+                return await call_next(request)
+            else:
+                logger.warning(f"AUTH_FAIL | IP: {client_ip} | Reason: invalid_x_mcp_token")
+                return self._unauthorized_response(request, "Invalid X-MCP-Token")
+
+        # Method 0b: query token fallback for MCP clients that drop custom headers on SSE
+        if query_token:
+            if is_valid_token(query_token):
+                logger.debug(f"AUTH_OK | IP: {client_ip} | X-Fwd-Port: {forwarded_port} | Method: query-token")
+                return await call_next(request)
+            else:
+                logger.warning(f"AUTH_FAIL | IP: {client_ip} | Reason: invalid_query_token")
+                return self._unauthorized_response(request, "Invalid query token")
 
         # Method 1: Bearer Token
         if auth_header.lower().startswith("bearer "):
