@@ -1,5 +1,21 @@
 # Changelog
 
+
+<!-- AILINUX_STATUS_START -->
+## 2026-06-05
+
+### Changed
+- Documented the current production baseline: branch `nova-nextlevel-20260603`, head `16f43b8a`.
+- Documented Gemma 4 12B as the active default route: `ollama/gemma4:12b`.
+- Updated Server, Agent, OpenClaw, Quickstart, and documentation-index guidance.
+- Documented the ignored crawler spool runtime directory and the GitHub documentation source of truth.
+
+### Operations
+- Reconfirmed that production runs from `/home/zombie/triforce` via `triforce.service`.
+- Reconfirmed health check expectations for `https://api.ailinux.me/health`.
+- Noted that the service auto-update branch should match the production branch before unattended updates are relied on.
+<!-- AILINUX_STATUS_END -->
+
 All notable changes to TriForce Backend.
 
 ## [2.80] - 2026-01-02

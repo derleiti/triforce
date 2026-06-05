@@ -1,5 +1,21 @@
 # TriForce AI Platform
 
+
+<!-- AILINUX_STATUS_START -->
+## Current production snapshot
+
+- Production branch: `nova-nextlevel-20260603`.
+- Current production HEAD: `16f43b8a` (`chore: ignore crawler spool runtime directory`).
+- API base URL: `https://api.ailinux.me`.
+- Health check: `GET /health` returns `{"ok": true, "status": "ok"}` when healthy.
+- Systemd service: `triforce.service`, working directory `/home/zombie/triforce`, Uvicorn on port `9000`.
+- Default chat model: `ollama/gemma4:12b`; local Ollama tag is `gemma4:12b`.
+- OpenClaw gateway: `ws://127.0.0.1:18789`.
+- Runtime hygiene: logs, local env files, runtime spools, Docker/n8n volumes, virtualenvs, backup files, and build outputs stay out of Git.
+- Git safety: use explicit pathspecs; avoid broad cleanup commands in production checkouts.
+- Auto-update note: if service logs say branch `master` while the checkout is `nova-nextlevel-20260603`, align the updater before relying on unattended updates.
+<!-- AILINUX_STATUS_END -->
+
 <div align="center">
 
 ![Version](https://img.shields.io/badge/version-2.80-blue)

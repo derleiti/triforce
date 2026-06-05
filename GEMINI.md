@@ -1,5 +1,16 @@
 # Gemini Workspace Analysis
 
+
+<!-- AILINUX_STATUS_START -->
+## Current TriForce coordination defaults
+
+TriForce remains a multi-provider platform, but the default local route is now `ollama/gemma4:12b`.
+
+Gemini integrations remain available for explicit Gemini tasks and function-calling paths. The service currently logs a warning about the deprecated `google.generativeai` package, so migration to `google.genai` should be planned.
+
+When updating Gemini-specific code, preserve provider boundaries and do not replace Ollama defaults unless explicitly requested.
+<!-- AILINUX_STATUS_END -->
+
 This document provides a comprehensive overview of the **TriForce AI Backend** project (`ailinux-ai-server-backend`). It is intended to be used as a guide for developers and AI agents to understand the codebase, architecture, and development conventions.
 
 ## Project Overview

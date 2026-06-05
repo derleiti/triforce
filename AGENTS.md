@@ -1,5 +1,18 @@
 # Repository Guidelines
 
+
+<!-- AILINUX_STATUS_START -->
+## Active agent and model policy
+
+- Default server chat model: `ollama/gemma4:12b`.
+- Local Ollama tag: `gemma4:12b`.
+- OpenClaw primary model should stay on the Ollama Gemma 4 12B route.
+- AI-Coder selected and fallback model should be `ollama/gemma4:12b`.
+- Provider-specific models remain available as explicit alternatives, but must not silently replace the default route.
+
+Agent workspace rules: edit tracked source/docs only; keep runtime data, local env files, logs, Docker/n8n volumes, package caches, and generated binaries out of Git. Use explicit pathspecs when staging changes.
+<!-- AILINUX_STATUS_END -->
+
 ## Project Structure & Module Organization
 - `app/`: FastAPI backend with routes (`routes/`), services (`services/`), MCP handlers (`mcp/`), and shared utilities (`config.py`, `main.py`).
 - `tests/`: Pytest suite covering MCP, integrations, and services.

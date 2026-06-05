@@ -1,4 +1,45 @@
 # AILinux TriForce Backend v2.80
+
+<!-- AILINUX_STATUS_START -->
+## Production operations snapshot
+
+| Area | Current value |
+| --- | --- |
+| Production checkout | `/home/zombie/triforce` |
+| Branch | `nova-nextlevel-20260603` |
+| Expected HEAD | `16f43b8a` |
+| Service | `triforce.service` |
+| API URL | `https://api.ailinux.me` |
+| Local port | `9000` via Uvicorn |
+| Default model | `ollama/gemma4:12b` |
+| Ollama local tag | `gemma4:12b` |
+| OpenClaw gateway | `ws://127.0.0.1:18789` |
+
+### Standard health checks
+
+```bash
+cd /home/zombie/triforce
+git status --short --branch
+git log --oneline -3
+systemctl is-active triforce
+curl -sS https://api.ailinux.me/health | jq .
+```
+
+Expected baseline: clean branch status, active service, and a health JSON with `ok: true`.
+
+### Runtime directories
+
+`data/crawler_spool/` is runtime state and is intentionally ignored. Recreate it if needed with `mkdir -p /home/zombie/triforce/data/crawler_spool`.
+
+### Model defaults
+
+Server, OpenClaw, and AI-Coder defaults should point to `ollama/gemma4:12b`. Direct local Ollama runs use `ollama run gemma4:12b`.
+
+### Auto-update branch alignment
+
+If the service log says the updater targets `master` while the checkout is on `nova-nextlevel-20260603`, updates are skipped. Align the systemd drop-in only after confirming the production branch.
+<!-- AILINUX_STATUS_END -->
+
 ## Server Documentation
 
 ### Architektur-Übersicht

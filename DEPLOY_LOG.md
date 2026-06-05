@@ -1,4 +1,19 @@
 # Discuss with AI Fix — 2026-03-22
+
+<!-- AILINUX_STATUS_START -->
+## 2026-06-05 documentation refresh
+
+- Production checkout: `/home/zombie/triforce`.
+- Production branch: `nova-nextlevel-20260603`.
+- Published HEAD: `16f43b8a`.
+- Service: `triforce.service`.
+- API health endpoint: `https://api.ailinux.me/health`.
+- Default model route: `ollama/gemma4:12b`.
+- Runtime spool: `/home/zombie/triforce/data/crawler_spool/` is ignored and should exist locally.
+
+Validation checklist: clean branch status, successful Python compile, active service, and healthy API response.
+<!-- AILINUX_STATUS_END -->
+
 # Deployed directly to Docker containers (wordpress_fpm)
 # Files: ailinux-nova-dark/assets/js/app.js + dist/app.js
 # Also: ailinux-nova-dark-dev same files
