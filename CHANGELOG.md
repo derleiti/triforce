@@ -72,3 +72,11 @@ All notable changes to TriForce Backend.
 | Manifest | https://update.ailinux.me/manifest.json | ✅ |
 | Linux DEB | https://update.ailinux.me/client/linux/ailinux-client_4.3.3_amd64.deb | ✅ |
 | Android APK | https://update.ailinux.me/client/android/ailinux-1.0.0-arm64-v8a-debug.apk | ✅ |
+
+
+## MCP Node / OpenClaw
+
+- Fixed `/v1/mcp/node/call` argument forwarding.
+- Added compatibility for both `params` and `arguments`.
+- Verified OpenClaw MCP Node bridge with `client_file_list` and `client_shell_exec`.
+- Added OpenClaw MCP Node documentation.

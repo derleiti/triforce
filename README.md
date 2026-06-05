@@ -252,3 +252,10 @@ MIT License - see [LICENSE](LICENSE)
 [GitHub](https://github.com/derleiti/triforce) • [API Docs](https://api.ailinux.me/docs) • [Updates](https://update.ailinux.me)
 
 </div>
+
+
+## OpenClaw MCP Node
+
+TriForce supports an OpenClaw-compatible MCP Node bridge. A local node connects via WebSocket to `/v1/mcp/node/connect`, authenticates through `/v1/auth/login`, and receives tool calls through `/v1/mcp/node/call`.
+
+See: `docs/MCP_NODE_OPENCLAW.md`
