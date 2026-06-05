@@ -273,9 +273,12 @@ class ProxyToolRequest(BaseModel):
     tool: str
     params: Dict[str, Any] = {}
     arguments: Dict[str, Any] = {}
+<<<<<<< HEAD
 
     def tool_args(self) -> Dict[str, Any]:
         return self.arguments or self.params or {}
+=======
+>>>>>>> 4f1b69d7 (Fix MCP node proxy argument forwarding)
 
 
 class ProxyToolResponse(BaseModel):
@@ -525,7 +528,11 @@ async def call_client_tool(
     start_time = datetime.now()
 
     try:
+<<<<<<< HEAD
         result = await connection.send_tool_call(request.tool, request.tool_args())
+=======
+        result = await connection.send_tool_call(request.tool, (request.params or request.arguments or {}))
+>>>>>>> 4f1b69d7 (Fix MCP node proxy argument forwarding)
         latency = int((datetime.now() - start_time).total_seconds() * 1000)
 
         logger.info(f"Proxy call success: {request.tool} on {client_id} ({latency}ms)")

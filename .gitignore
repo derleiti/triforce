@@ -231,3 +231,9 @@ config/agents/**/__pycache__/
 
 # Debug journals — contain credentials & sensitive state dumps
 .debug/
+
+# local secrets
+.env
+.env.*
+*.env
+*.env.*
