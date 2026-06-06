@@ -352,14 +352,12 @@ async def require_mcp_auth(request: Request) -> str:
     auth_header = request.headers.get("Authorization", "")
     query_token = ""
     if os.environ.get("ALLOW_QUERY_TOKEN_AUTH") == "1":
-        query_token = ""
-        if os.environ.get("ALLOW_QUERY_TOKEN_AUTH") == "1":
-            query_token = (
-                request.query_params.get("access_token")
-                or request.query_params.get("mcp_token")
-                or request.query_params.get("token")
-                or ""
-            ).strip()
+        query_token = (
+            request.query_params.get("access_token")
+            or request.query_params.get("mcp_token")
+            or request.query_params.get("token")
+            or ""
+        ).strip()
     
     # Port-based auth decision
     forwarded_port = request.headers.get("X-Forwarded-Port", "")
