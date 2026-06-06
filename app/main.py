@@ -385,7 +385,7 @@ def create_app() -> FastAPI:
     app.include_router(crawler_router, prefix="/v1", tags=["Crawler"])
     app.include_router(health_router, tags=["Monitoring"])
     app.include_router(rag_router, prefix="/v1", tags=["RAG"])
-        app.include_router(mcp_public_router, prefix="/v1", tags=["MCP"])
+    app.include_router(mcp_public_router, prefix="/v1", tags=["MCP"])
     app.include_router(mcp_router, prefix="/v1", tags=["MCP"])
     app.include_router(mcp_node_router, prefix="/v1", tags=["MCP Node"])
     app.include_router(mcp_remote_router, tags=["MCP Remote Server"])
