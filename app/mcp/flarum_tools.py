@@ -27,7 +27,10 @@ logger = logging.getLogger("ailinux.mcp.flarum")
 FLARUM_API   = "http://172.19.0.4:8888/api"
 FLARUM_TOKEN = os.environ.get("FLARUM_TOKEN")
 if not FLARUM_TOKEN:
-    raise RuntimeError("FLARUM_TOKEN is not set. Use environment/vault; do not hardcode secrets.")
+    import logging as _logging
+    _logging.getLogger(__name__).warning(
+        "FLARUM_TOKEN is not set; Flarum MCP tools are running in degraded mode"
+    )
 NOVA_USER_ID = 2
 TIMEOUT      = 15
 

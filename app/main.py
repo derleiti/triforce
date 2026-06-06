@@ -101,6 +101,7 @@ from .routes.nova_frontend import router as nova_frontend_router
 from .routes.nova_playground import router as nova_playground_router
 from .routes.nova_wordpress import router as nova_wordpress_router
 from .routes.nova_operator import router as nova_operator_router
+from .routes.rag import router as rag_router
 
 # Import routers from the top-level app directory
 from .routes_sd3 import router as sd3_router
@@ -383,6 +384,7 @@ def create_app() -> FastAPI:
     app.include_router(chat_router, prefix="/v1", tags=["Chat"])
     app.include_router(crawler_router, prefix="/v1", tags=["Crawler"])
     app.include_router(health_router, tags=["Monitoring"])
+    app.include_router(rag_router, prefix="/v1", tags=["RAG"])
     app.include_router(mcp_public_router, prefix="/v1", tags=["MCP"])
     app.include_router(mcp_router, prefix="/v1", tags=["MCP"])
     app.include_router(mcp_node_router, prefix="/v1", tags=["MCP Node"])
