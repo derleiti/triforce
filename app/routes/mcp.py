@@ -3,6 +3,7 @@ from .widget_handlers import handle_weather, handle_crypto_prices, handle_stock_
 
 import base64
 import logging
+import os
 from datetime import datetime, timezone
 
 # Logger für MCP Routes
@@ -3730,7 +3731,13 @@ async def mcp_sse_connect(request: Request):
             # First message: Tell client where to POST messages
             # This is the critical message Cursor expects!
             messages_endpoint = f"/v1/mcp/messages/?session_id={session_id}"
-            access_token = request.query_params.get("access_token")
+            access_token = None
+            if os.environ.get("ALLOW_QUERY_TOKEN_AUTH") == "1":
+                access_token = None
+            if os.environ.get("ALLOW_QUERY_TOKEN_AUTH") == "1":
+                access_token = None
+            if os.environ.get("ALLOW_QUERY_TOKEN_AUTH") == "1":
+                access_token = request.query_params.get("access_token")
             if access_token:
                 messages_endpoint += f"&access_token={access_token}"
             yield f"event: endpoint\ndata: {messages_endpoint}\n\n"
