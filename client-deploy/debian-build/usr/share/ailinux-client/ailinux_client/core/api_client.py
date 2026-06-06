@@ -9,28 +9,18 @@ import json
 import logging
 from typing import Optional, Dict, Any, List
 from pathlib import Path
-import ssl
-
-# Cert paths for mTLS
-CERT_DIR = Path(__file__).parent.parent / "certs"
-CA_CERT = CERT_DIR / "ca.crt"
-CLIENT_CERT = CERT_DIR / "client.pem"
-
-def get_ssl_context():
-    """Create SSL context with client certificate for mTLS"""
-    if CA_CERT.exists() and CLIENT_CERT.exists():
-        ctx = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
-        ctx.load_verify_locations(str(CA_CERT))
-        ctx.load_cert_chain(str(CLIENT_CERT))
-        return ctx
-    return True  # Fallback to default verification
 
 try:
     import httpx
     HAS_HTTPX = True
+    HTTPStatusError = httpx.HTTPStatusError
 except ImportError:
     import requests
     HAS_HTTPX = False
+    HTTPStatusError = requests.HTTPError
+
+# Backend error logging
+from .backend_error_logger import log_backend_error
 
 logger = logging.getLogger("ailinux.api_client")
 
@@ -125,32 +115,64 @@ class APIClient:
         data: Dict = None,
         timeout: float = 60.0
     ) -> Dict[str, Any]:
-        """Make HTTP request"""
+        """Make HTTP request with error logging"""
         url = f"{self.base_url}{endpoint}"
 
-        if HAS_HTTPX:
-            ssl_ctx = get_ssl_context()
-            with httpx.Client(timeout=timeout, verify=ssl_ctx) as client:
-                response = client.request(
+        try:
+            if HAS_HTTPX:
+                with httpx.Client(timeout=timeout) as client:
+                    response = client.request(
+                        method,
+                        url,
+                        headers=self._headers(),
+                        json=data
+                    )
+                    response.raise_for_status()
+                    return response.json()
+            else:
+                response = requests.request(
                     method,
                     url,
                     headers=self._headers(),
-                    json=data
+                    json=data,
+                    timeout=timeout
                 )
                 response.raise_for_status()
                 return response.json()
-        else:
-            response = requests.request(
-                method,
-                url,
-                headers=self._headers(),
-                json=data,
-                timeout=timeout,
-                cert=str(CLIENT_CERT) if CLIENT_CERT.exists() else None,
-                verify=str(CA_CERT) if CA_CERT.exists() else True
+                
+        except HTTPStatusError as e:
+            # Log backend error
+            status_code = e.response.status_code if hasattr(e, 'response') else 0
+            response_text = ""
+            try:
+                response_text = e.response.text[:500] if hasattr(e, 'response') else ""
+            except:
+                pass
+            
+            log_backend_error(
+                endpoint=endpoint,
+                method=method,
+                status_code=status_code,
+                error_message=str(e),
+                response_body=response_text,
+                request_data=data,
+                user_id=self.user_id,
+                tier=self.tier
             )
-            response.raise_for_status()
-            return response.json()
+            raise
+            
+        except Exception as e:
+            # Log connection errors
+            log_backend_error(
+                endpoint=endpoint,
+                method=method,
+                status_code=0,
+                error_message=f"Connection error: {e}",
+                request_data=data,
+                user_id=self.user_id,
+                tier=self.tier
+            )
+            raise
 
     # =========================================================================
     # Authentication
@@ -160,8 +182,7 @@ class APIClient:
         """Login with email/password - server assigns client_id"""
         try:
             if HAS_HTTPX:
-                ssl_ctx = get_ssl_context()
-                with httpx.Client(timeout=30.0, verify=ssl_ctx) as client:
+                with httpx.Client(timeout=30.0) as client:
                     response = client.post(
                         f"{self.base_url}/v1/auth/login",
                         json={"email": email, "password": password}
@@ -172,9 +193,7 @@ class APIClient:
                 response = requests.post(
                     f"{self.base_url}/v1/auth/login",
                     json={"email": email, "password": password},
-                    timeout=30.0,
-                    cert=str(CLIENT_CERT) if CLIENT_CERT.exists() else None,
-                    verify=str(CA_CERT) if CA_CERT.exists() else True
+                    timeout=30.0
                 )
                 response.raise_for_status()
                 result = response.json()
@@ -215,8 +234,7 @@ class APIClient:
         """Get auth token using client credentials"""
         try:
             if HAS_HTTPX:
-                ssl_ctx = get_ssl_context()
-                with httpx.Client(timeout=30.0, verify=ssl_ctx) as client:
+                with httpx.Client(timeout=30.0) as client:
                     response = client.post(
                         f"{self.base_url}/v1/auth/token",
                         headers={
@@ -233,9 +251,7 @@ class APIClient:
                         "client_id": client_id,
                         "client_secret": client_secret
                     },
-                    timeout=30.0,
-                    cert=str(CLIENT_CERT) if CLIENT_CERT.exists() else None,
-                    verify=str(CA_CERT) if CA_CERT.exists() else True
+                    timeout=30.0
                 )
                 response.raise_for_status()
                 result = response.json()
@@ -255,6 +271,14 @@ class APIClient:
     def is_authenticated(self) -> bool:
         """Check if authenticated"""
         return bool(self.token)
+
+    def get(self, endpoint: str, timeout: float = 60.0) -> Dict[str, Any]:
+        """Public GET helper for modules that expect get/post wrappers."""
+        return self._request("GET", endpoint, None, timeout=timeout)
+
+    def post(self, endpoint: str, json: Dict[str, Any] = None, timeout: float = 60.0) -> Dict[str, Any]:
+        """Public POST helper for modules that expect get/post wrappers."""
+        return self._request("POST", endpoint, json or {}, timeout=timeout)
 
     # =========================================================================
     # Chat
@@ -279,13 +303,38 @@ class APIClient:
 
         return self._request("POST", "/v1/client/chat", data, timeout=120.0)
 
-    def get_models(self) -> List[str]:
-        """Get available models"""
+    def get_models(self) -> Dict[str, Any]:
+        """
+        Get available models from server based on user tier.
+        
+        Returns:
+            Dict with:
+            - tier: str (free/pro/enterprise)
+            - tier_name: str (display name)
+            - model_count: int
+            - models: List[str] (model IDs)
+            - backend: str (ollama/openrouter)
+            - upgrade_available: bool
+        """
         try:
             result = self._request("GET", "/v1/client/models")
-            return result.get("models", [])
-        except:
-            return []
+            logger.info(f"Got {result.get('model_count', 0)} models from server (tier: {result.get('tier')})")
+            return result
+        except Exception as e:
+            logger.warning(f"Failed to get models from server: {e}")
+            return {
+                "tier": "free",
+                "tier_name": "Free (Offline)",
+                "model_count": 0,
+                "models": [],
+                "backend": "ollama",
+                "upgrade_available": True
+            }
+    
+    def get_model_list(self) -> List[str]:
+        """Get just the model ID list"""
+        result = self.get_models()
+        return result.get("models", [])
 
     def get_tier_info(self) -> Dict[str, Any]:
         """Get tier information"""
@@ -312,6 +361,58 @@ class APIClient:
             "tool": tool,
             "params": params or {}
         })
+
+    # =========================================================================
+    # RAG / Project Knowledge
+    # =========================================================================
+
+    def rag_health(self) -> Dict[str, Any]:
+        """Get RAG service health and indexed projects."""
+        return self._request("GET", "/v1/rag/health", timeout=30.0)
+
+    def rag_projects(self) -> List[Dict[str, Any]]:
+        """List indexed RAG projects."""
+        try:
+            result = self._request("GET", "/v1/rag/projects", timeout=30.0)
+            return result.get("projects", [])
+        except Exception as e:
+            logger.warning(f"Failed to list RAG projects: {e}")
+            return []
+
+    def rag_index(
+        self,
+        project: str,
+        path: str,
+        exclude_dirs: List[str] = None,
+        chunk_chars: int = 2200,
+        overlap_chars: int = 250,
+    ) -> Dict[str, Any]:
+        """Index a local project directory on the TriForce backend."""
+        data = {
+            "project": project,
+            "path": path,
+            "exclude_dirs": exclude_dirs or [
+                ".git", ".venv", "node_modules", "__pycache__",
+                "data", "docker", "logs", "backup", "backups",
+                "dist", "build",
+            ],
+            "chunk_chars": chunk_chars,
+            "overlap_chars": overlap_chars,
+        }
+        return self._request("POST", "/v1/rag/index", data, timeout=300.0)
+
+    def rag_query(
+        self,
+        project: str,
+        query: str,
+        top_k: int = 8,
+    ) -> Dict[str, Any]:
+        """Query an indexed RAG project."""
+        return self._request("POST", "/v1/rag/query", {
+            "project": project,
+            "query": query,
+            "top_k": top_k,
+        }, timeout=60.0)
 
     # =========================================================================
     # Settings
