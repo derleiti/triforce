@@ -139,7 +139,7 @@ class MCPNodeThread(QThread):
                         logger.info("MCP Node disabled (server endpoint not available)")
                         self.error.emit("MCP Node endpoint not available")
                         break
-                    
+
                     success = await self.mcp_client.connect()
                     if success:
                         logger.info(f"MCP Node connected (session: {self.mcp_client.session_id})")
@@ -164,7 +164,7 @@ class MCPNodeThread(QThread):
                 if self.running and not self.mcp_client._disabled:
                     delay = self.mcp_client._reconnect_delay
                     await asyncio.sleep(delay)
-            
+
             # Cleanup
             if self.mcp_client:
                 await self.mcp_client.disconnect()
@@ -967,7 +967,7 @@ class MainWindow(QMainWindow):
                                           "Lock Screen", "System")
             self.shortcut_manager.register("F11", self._toggle_fullscreen, ShortcutContext.GLOBAL,
                                           "Toggle Fullscreen", "View")
-            
+
             # Quick focus shortcuts (alternative to Ctrl+F1-F4)
             self.shortcut_manager.register("Alt+1", self._toggle_browser, ShortcutContext.GLOBAL,
                                           "Focus Browser", "Navigation")
@@ -1014,8 +1014,8 @@ class MainWindow(QMainWindow):
                                           "Previous Tab", "Browser")
             # Quick tab access (Ctrl+1 to Ctrl+9)
             for i in range(1, 10):
-                self.shortcut_manager.register(f"Ctrl+{i}", 
-                                              lambda idx=i-1: self._browser_goto_tab(idx), 
+                self.shortcut_manager.register(f"Ctrl+{i}",
+                                              lambda idx=i-1: self._browser_goto_tab(idx),
                                               ShortcutContext.BROWSER,
                                               f"Go to Tab {i}", "Browser")
             # Additional browser shortcuts
@@ -1213,7 +1213,7 @@ class MainWindow(QMainWindow):
         QShortcut(QKeySequence("Ctrl+F2"), self, self._toggle_file_browser)
         QShortcut(QKeySequence("Ctrl+F3"), self, self._toggle_chat)
         QShortcut(QKeySequence("Ctrl+F4"), self, self._toggle_terminal)
-        
+
         # Alt+1-4: Quick focus (alternative)
         QShortcut(QKeySequence("Alt+1"), self, self._toggle_browser)
         QShortcut(QKeySequence("Alt+2"), self, self._toggle_file_browser)
@@ -1261,7 +1261,7 @@ class MainWindow(QMainWindow):
         self.conn_indicator = QLabel("⚫")
         self.conn_indicator.setStyleSheet("color: #666; font-size: 10px;")
         self.statusbar.addWidget(self.conn_indicator)
-        
+
         # Server connection label
         self.conn_label = QLabel("Server: Verbinde...")
         self.conn_label.setStyleSheet("color: #888; margin-right: 16px;")
@@ -1309,7 +1309,7 @@ class MainWindow(QMainWindow):
         self._ping_timer = QTimer(self)
         self._ping_timer.timeout.connect(self._update_ping)
         self._ping_timer.start(5000)  # Every 5 seconds
-        
+
         # Initial ping
         QTimer.singleShot(500, self._update_ping)
 
@@ -1322,13 +1322,13 @@ class MainWindow(QMainWindow):
             if self.api_client:
                 result = self.api_client._request("GET", "/health")
                 ping_ms = int((time.time() - start) * 1000)
-                
+
                 # Update connection status
                 self.conn_indicator.setText("🟢")
                 self.conn_indicator.setStyleSheet("color: #4ade80; font-size: 10px;")
                 self.conn_label.setText("Server: Online")
                 self.conn_label.setStyleSheet("color: #4ade80;")
-                
+
                 # Update ping with color coding
                 if ping_ms < 100:
                     ping_color = "#4ade80"  # Green
@@ -1336,7 +1336,7 @@ class MainWindow(QMainWindow):
                     ping_color = "#facc15"  # Yellow
                 else:
                     ping_color = "#f87171"  # Red
-                
+
                 self.ping_label.setText(f"Ping: {ping_ms}ms")
                 self.ping_label.setStyleSheet(f"color: {ping_color};")
             else:
@@ -1359,7 +1359,7 @@ class MainWindow(QMainWindow):
             time_str = f"{response_ms}ms"
         else:
             time_str = f"{response_ms/1000:.1f}s"
-        
+
         # Color code response time
         if response_ms < 2000:
             color = "#4ade80"  # Green
@@ -1367,10 +1367,10 @@ class MainWindow(QMainWindow):
             color = "#facc15"  # Yellow
         else:
             color = "#f87171"  # Red
-        
+
         self.response_label.setText(f"Response: {time_str}")
         self.response_label.setStyleSheet(f"color: {color};")
-        
+
         if model:
             # Shorten model name if too long
             if len(model) > 25:
@@ -2326,38 +2326,38 @@ CLI Agents: {len(self.cli_agents)}
                 color: #e0e0e0;
             }
         """)
-        
+
         layout = QVBoxLayout(dialog)
         layout.setSpacing(16)
         layout.setContentsMargins(24, 24, 24, 24)
-        
+
         # User icon and name
         user_label = QLabel(f"🔐 {username}")
         user_label.setStyleSheet("font-size: 18px; font-weight: bold; color: #60a5fa;")
         user_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(user_label)
-        
+
         # Password field
         password_input = QLineEdit()
         password_input.setPlaceholderText("Enter your password...")
         password_input.setEchoMode(QLineEdit.EchoMode.Password)
         layout.addWidget(password_input)
-        
+
         # Buttons
         btn_layout = QHBoxLayout()
         btn_layout.setSpacing(12)
-        
+
         cancel_btn = QPushButton("Cancel")
         cancel_btn.setObjectName("cancelBtn")
         cancel_btn.clicked.connect(dialog.reject)
         btn_layout.addWidget(cancel_btn)
-        
+
         unlock_btn = QPushButton("🔓 Unlock")
         unlock_btn.setDefault(True)
         btn_layout.addWidget(unlock_btn)
-        
+
         layout.addLayout(btn_layout)
-        
+
         # Handle unlock
         def try_unlock():
             password = password_input.text()
@@ -2371,13 +2371,13 @@ CLI Agents: {len(self.cli_agents)}
                     password_input.clear()
                     password_input.setPlaceholderText("Wrong password - try again")
                     QTimer.singleShot(2000, lambda: password_input.setPlaceholderText("Enter your password..."))
-        
+
         unlock_btn.clicked.connect(try_unlock)
         password_input.returnPressed.connect(try_unlock)
-        
+
         # Focus password field
         password_input.setFocus()
-        
+
         dialog.exec()
 
     def _verify_password(self, username: str, password: str) -> bool:
@@ -3147,25 +3147,25 @@ CLI Agents: {len(self.cli_agents)}
     def _show_about(self):
         """Show about dialog with header image"""
         from ..version import VERSION, BUILD_DATE
-        
+
         # Find icon path for header image
         icon_path = None
         assets_path = Path(__file__).parent.parent / "assets" / "icon.jpg"
         root_path = Path(__file__).parent.parent.parent / "icon.jpg"
-        
+
         if assets_path.exists():
             icon_path = str(assets_path)
         elif root_path.exists():
             icon_path = str(root_path)
-        
+
         # Create custom About dialog with image header
         dialog = QDialog(self)
         dialog.setWindowTitle(tr("About AILinux Client"))
         dialog.setMinimumSize(450, 500)
-        
+
         layout = QVBoxLayout(dialog)
         layout.setSpacing(15)
-        
+
         # Header image
         if icon_path:
             from PyQt6.QtGui import QPixmap
@@ -3176,17 +3176,17 @@ CLI Agents: {len(self.cli_agents)}
             header_label.setPixmap(scaled)
             header_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             layout.addWidget(header_label)
-        
+
         # Title
         title_label = QLabel("<h1 style='color: #7c3aed;'>AILinux Client</h1>")
         title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(title_label)
-        
+
         # Version info
         version_label = QLabel(f"<p style='font-size: 14px;'>Version <b>{VERSION}</b><br/>Build: {BUILD_DATE}</p>")
         version_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(version_label)
-        
+
         # Description
         desc_html = """
         <div style='text-align: center; padding: 10px;'>
@@ -3211,18 +3211,18 @@ CLI Agents: {len(self.cli_agents)}
         desc_label.setOpenExternalLinks(True)
         desc_label.setWordWrap(True)
         layout.addWidget(desc_label)
-        
+
         # OK button
         ok_btn = QPushButton(tr("OK"))
         ok_btn.setFixedWidth(100)
         ok_btn.clicked.connect(dialog.accept)
-        
+
         btn_layout = QHBoxLayout()
         btn_layout.addStretch()
         btn_layout.addWidget(ok_btn)
         btn_layout.addStretch()
         layout.addLayout(btn_layout)
-        
+
         dialog.exec()
 
     def _show_shortcuts(self):
