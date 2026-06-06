@@ -1,5 +1,5 @@
 # ============================================================================
-# TRIFORCE AI BACKEND - GIT IGNORE
+# TRIFORCE AI BACKEND - GIT IGNORE  
 # ============================================================================
 
 # ============================================================================
@@ -154,8 +154,11 @@ htmlcov/
 .tox/
 .state/
 .vault/
--e 
+-e
+
+# ============================================================================
 # Excluded directories with permission issues
+# ============================================================================
 ailinux-iso/
 .claude/
 docker/repository/.claude/
@@ -210,9 +213,6 @@ tmp_*.py
 upfix.sh
 bugreport.txt
 mcp_write_lock_*.txt
-*.bak
-*.bak.*
-*.bak-*
 fix_*.py
 
 # Agent caches & runtimes (nicht committen)
@@ -232,16 +232,10 @@ config/agents/**/__pycache__/
 # Debug journals — contain credentials & sensitive state dumps
 .debug/
 
-# local secrets
-.env
-.env.*
-*.env
-*.env.*
-
-# Python bytecode
-__pycache__/
-*.pyc
-
-# Python bytecode
-__pycache__/
-*.pyc
+# ============================================================================
+# CLEANUP 2026-06-06: Removed dead backup directories and placeholder files
+# ============================================================================
+.backup_*/
+.patch_backups/
+patch_backups/
+ss
