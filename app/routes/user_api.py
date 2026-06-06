@@ -28,6 +28,15 @@ from ..services.user_system.user_manager import (
 
 logger = logging.getLogger("ailinux.user_api")
 
+# Module-level JWT secret — initialize once at import time.
+# Prefer environment variable JWT_SECRET; fallback: generate once at process start.
+import os
+_JWT_SECRET_MODULE = os.environ.get("JWT_SECRET")
+if not _JWT_SECRET_MODULE:
+    # Generate a stable value at process start if none provided (development fallback).
+    # In production, consider failing startup if JWT_SECRET is not explicitly set.
+    _JWT_SECRET_MODULE = secrets.token_hex(32)
+
 router = APIRouter()
 
 # ============================================================================
@@ -471,7 +480,7 @@ async def get_auth_token(
 
     # Base64url encode
     def b64url_encode(data: bytes) -> str:
-        return base64.urlsafe_b64encode(data).rstrip(b'=').decode('ascii')
+        return base64.urlsafe_b64encode(data).rstrip(b'=') .decode('ascii')
 
     header_b64 = b64url_encode(json.dumps(header).encode())
     payload_b64 = b64url_encode(json.dumps(payload).encode())
@@ -499,30 +508,3 @@ async def get_auth_token(
 # ============================================================================
 # Admin Endpoints
 # ============================================================================
-
-@router.get("/admin/users")
-async def list_all_users(active_only: bool = True):
-    """Listet alle User (Admin-Endpoint)"""
-    users = await user_manager.list_users(active_only=active_only)
-    return {"users": users, "count": len(users)}
-
-
-@router.get("/admin/stats")
-async def get_admin_stats():
-    """Statistiken über alle User"""
-    all_users = await user_manager.list_users(active_only=False)
-    
-    stats = {
-        "total_users": len(all_users),
-        "by_tier": {"free": 0, "pro": 0, "enterprise": 0},
-        "total_devices": 0,
-    }
-    
-    for user_id in all_users:
-        user = await user_manager.get_user(user_id)
-        if user:
-            tier = user.quota.tier.value if hasattr(user.quota.tier, 'value') else user.quota.tier
-            stats["by_tier"][tier] = stats["by_tier"].get(tier, 0) + 1
-            stats["total_devices"] += len(user.devices)
-    
-    return stats
