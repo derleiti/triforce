@@ -253,3 +253,21 @@ data/crawler_spool/
 data/rag/
 curl
 .config
+
+# TriForce cleanup / security hygiene
+.backup_*/
+.patch_backups/
+*.bak
+*.tmp
+*.log
+.screenshot.lock
+screenshot-wrapper.log
+game_state.json
+latest_comment.txt
+latest_vision.txt
+data/crawler_spool/
+docker/wordpress/html/
+.env
+*.env
+!*.env.example
+!*.env.template
