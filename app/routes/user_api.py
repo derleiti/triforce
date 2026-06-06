@@ -1,4 +1,5 @@
 # app/routes/user_api.py
+import os
 import secrets
 """
 AILinux User API Routes
@@ -27,6 +28,11 @@ from ..services.user_system.user_manager import (
 )
 
 logger = logging.getLogger("ailinux.user_api")
+
+# Stable process-level JWT secret. Production should set JWT_SECRET via environment/vault.
+_JWT_SECRET_MODULE = os.environ.get("JWT_SECRET")
+if not _JWT_SECRET_MODULE:
+    _JWT_SECRET_MODULE = secrets.token_hex(32)
 
 router = APIRouter()
 
@@ -451,7 +457,7 @@ async def get_auth_token(
     import base64
     import json
 
-    jwt_secret = os.environ.get("JWT_SECRET", secrets.token_hex(32))
+    jwt_secret = _JWT_SECRET_MODULE
     expires_in = 3600  # 1 Stunde
 
     # JWT Header

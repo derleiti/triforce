@@ -28,12 +28,16 @@ def _flarum_ip():
     except Exception:
         return "172.19.0.4"
 FLARUM_API = f"http://{_flarum_ip()}:8888/api"
-FLARUM_TOKEN    = "b799c9a01a24b3eb22c2b1a92cc21f622c6f6f24"
+FLARUM_TOKEN = os.environ.get("FLARUM_TOKEN")
+if not FLARUM_TOKEN:
+    raise RuntimeError("FLARUM_TOKEN is not set. Use environment/vault; do not hardcode secrets.")
 NOVA_USER_ID    = 4
 
 TRIFORCE_URL    = "http://127.0.0.1:9000/v1/chat"
 TRIFORCE_USER   = "nova-bot@ailinux.me"
-TRIFORCE_PASS   = "TriForceBot2026!"
+TRIFORCE_PASS = os.environ.get("TRIFORCE_PASS")
+if not TRIFORCE_PASS:
+    raise RuntimeError("TRIFORCE_PASS is not set. Use environment/vault; do not hardcode secrets.")
 
 POLL_INTERVAL   = 30          # Sekunden zwischen Polls
 STATE_FILE      = "/var/lib/nova-flarum-bot/state.json"

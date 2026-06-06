@@ -238,8 +238,8 @@ class APIClient:
                     response = client.post(
                         f"{self.base_url}/v1/auth/token",
                         headers={
-                            "client_id": client_id,
-                            "client_secret": client_secret
+                            "client-id": client_id,
+                            "client-secret": client_secret
                         }
                     )
                     response.raise_for_status()
@@ -248,8 +248,8 @@ class APIClient:
                 response = requests.post(
                     f"{self.base_url}/v1/auth/token",
                     headers={
-                        "client_id": client_id,
-                        "client_secret": client_secret
+                        "client-id": client_id,
+                        "client-secret": client_secret
                     },
                     timeout=30.0
                 )
