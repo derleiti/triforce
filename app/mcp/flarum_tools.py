@@ -1,3 +1,4 @@
+import os
 """
 Flarum MCP Tools v1.0
 ======================
@@ -24,7 +25,7 @@ logger = logging.getLogger("ailinux.mcp.flarum")
 
 # ── Config ────────────────────────────────────────────────────────────────────
 FLARUM_API   = "http://172.19.0.4:8888/api"
-FLARUM_TOKEN = "49c60abc7f8e4d1a9b2c3d4e5f6a7b8c"
+FLARUM_TOKEN = os.environ.get("FLARUM_TOKEN")
 NOVA_USER_ID = 2
 TIMEOUT      = 15
 
