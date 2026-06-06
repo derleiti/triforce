@@ -105,12 +105,14 @@ class AuthMiddleware(BaseHTTPMiddleware):
         
         auth_header = request.headers.get("Authorization", "")
         x_mcp_token = request.headers.get("X-MCP-Token", "").strip()
-        query_token = (
-            request.query_params.get("access_token")
-            or request.query_params.get("mcp_token")
-            or request.query_params.get("token")
-            or ""
-        ).strip()
+        query_token = ""
+        if os.environ.get("ALLOW_QUERY_TOKEN_AUTH") == "1":
+            query_token = (
+                request.query_params.get("access_token")
+                or request.query_params.get("mcp_token")
+                or request.query_params.get("token")
+                or ""
+            ).strip()
 
         # Check if auth is configured
         if not MCP_AUTH_USER or not MCP_AUTH_PASS:

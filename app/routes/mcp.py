@@ -3733,10 +3733,6 @@ async def mcp_sse_connect(request: Request):
             messages_endpoint = f"/v1/mcp/messages/?session_id={session_id}"
             access_token = None
             if os.environ.get("ALLOW_QUERY_TOKEN_AUTH") == "1":
-                access_token = None
-            if os.environ.get("ALLOW_QUERY_TOKEN_AUTH") == "1":
-                access_token = None
-            if os.environ.get("ALLOW_QUERY_TOKEN_AUTH") == "1":
                 access_token = request.query_params.get("access_token")
             if access_token:
                 messages_endpoint += f"&access_token={access_token}"
