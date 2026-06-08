@@ -1,147 +1,190 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <title>AILinux TriForce — Multi-LLM Backend</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="AILinux TriForce — Self-hosted Multi-LLM Orchestration Backend mit 631+ Modellen, Swarm Intelligence und 260 MCP Tools. Gebaut von einem Entwickler." />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="AILinux TriForce API — Status, MCP, Multi-LLM Backend und Entwickler-Endpunkte.">
+  <title>AILinux TriForce API</title>
   <style>
-    :root { color-scheme: dark; }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      color-scheme: dark;
+      --bg: #070b18;
+      --bg2: #0c1430;
+      --panel: rgba(17, 25, 54, .78);
+      --panel2: rgba(9, 16, 35, .72);
+      --border: rgba(123, 164, 255, .22);
+      --text: #eef4ff;
+      --muted: #9fb0d4;
+      --blue: #62a8ff;
+      --cyan: #58f2d0;
+      --green: #53f18a;
+      --yellow: #ffd166;
+      --red: #ff6b86;
+      --shadow: 0 24px 70px rgba(0,0,0,.45);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
     body {
-      font-family: system-ui, -apple-system, sans-serif;
-      background: #0d1117;
-      color: #e6edf3;
-      line-height: 1.6;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 20% 10%, rgba(98,168,255,.25), transparent 34rem),
+        radial-gradient(circle at 82% 0%, rgba(88,242,208,.16), transparent 30rem),
+        linear-gradient(135deg, var(--bg), var(--bg2) 54%, #090b17);
+      color: var(--text);
+      line-height: 1.55;
+      overflow-x: hidden;
     }
-    .hero {
-      text-align: center;
-      padding: 4rem 1.5rem 2.5rem;
-      background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #0d1117 100%);
-      border-bottom: 1px solid #21262d;
+    body:before {
+      content: "";
+      position: fixed; inset: 0;
+      background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+      background-size: 56px 56px;
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,.8), transparent 80%);
+      pointer-events: none;
     }
-    h1 { color: #58a6ff; font-size: 2.2rem; margin-bottom: 0.3rem; }
-    .subtitle { color: #8b949e; font-size: 1.1rem; margin-bottom: 0.5rem; }
-    .tagline { color: #c9d1d9; font-size: 0.95rem; max-width: 600px; margin: 1rem auto; }
-    .status {
-      display: inline-flex; align-items: center; gap: 0.5rem;
-      margin: 1.5rem 0; padding: 0.6rem 1.2rem;
-      background: rgba(35,134,54,.15); border: 1px solid rgba(35,134,54,.4);
-      border-radius: 2rem; color: #3fb950; font-weight: 600;
+    a { color: inherit; }
+    .wrap { width: min(1120px, calc(100% - 32px)); margin: 0 auto; position: relative; z-index: 1; }
+    header { padding: 28px 0 12px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .brand { display: flex; gap: 12px; align-items: center; font-weight: 800; letter-spacing: .02em; }
+    .logo {
+      width: 42px; height: 42px; border-radius: 14px;
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      display: grid; place-items: center; color: #07101f; box-shadow: 0 0 36px rgba(98,168,255,.35);
+      font-weight: 950;
     }
-    .status::before { content: ''; width: 10px; height: 10px; background: #3fb950; border-radius: 50%; animation: pulse 2s infinite; }
-    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
-
-    .stats {
-      display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;
-      margin: 1.5rem 0;
+    nav { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+    nav a, .btn {
+      text-decoration: none; border: 1px solid var(--border); color: var(--text);
+      padding: 9px 13px; border-radius: 999px; background: rgba(255,255,255,.045);
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+      font-size: 14px;
     }
-    .stat { text-align: center; }
-    .stat-num { font-size: 1.8rem; font-weight: 700; color: #58a6ff; }
-    .stat-label { font-size: 0.8rem; color: #8b949e; text-transform: uppercase; letter-spacing: 0.05em; }
-
-    .links { display: flex; gap: 0.8rem; flex-wrap: wrap; margin: 1.5rem 0; justify-content: center; }
-    .links a {
-      padding: 0.6rem 1.2rem; border-radius: 6px; text-decoration: none;
-      background: #21262d; color: #58a6ff; border: 1px solid #30363d;
-      font-weight: 500; transition: all .2s;
+    nav a:hover, .btn:hover { transform: translateY(-1px); border-color: rgba(88,242,208,.55); background: rgba(88,242,208,.08); }
+    .hero { padding: 72px 0 34px; display: grid; grid-template-columns: 1.18fr .82fr; gap: 28px; align-items: stretch; }
+    .eyebrow { color: var(--cyan); font-weight: 750; text-transform: uppercase; letter-spacing: .16em; font-size: 13px; margin-bottom: 12px; }
+    h1 { font-size: clamp(42px, 7vw, 82px); line-height: .96; margin: 0 0 18px; letter-spacing: -.06em; }
+    .gradient { background: linear-gradient(90deg, #fff, var(--blue), var(--cyan)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .lead { color: var(--muted); font-size: clamp(17px, 2.2vw, 21px); max-width: 720px; margin: 0 0 24px; }
+    .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+    .btn.primary { background: linear-gradient(135deg, rgba(98,168,255,.95), rgba(88,242,208,.9)); color: #061020; font-weight: 800; border: 0; }
+    .terminal, .panel {
+      background: linear-gradient(180deg, rgba(20,30,66,.86), rgba(9,15,34,.86));
+      border: 1px solid var(--border); border-radius: 24px; box-shadow: var(--shadow);
+      overflow: hidden;
     }
-    .links a:hover { background: #30363d; border-color: #58a6ff; }
-
-    .container { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
-    h2 { color: #58a6ff; margin: 2rem 0 1rem; font-size: 1.4rem; border-bottom: 1px solid #21262d; padding-bottom: 0.3rem; }
-
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; }
-    .card {
-      background: #161b22; border: 1px solid #21262d; border-radius: 8px;
-      padding: 1rem 1.2rem; transition: border-color .2s;
-    }
-    .card:hover { border-color: #58a6ff; }
-    .card-title { font-weight: 600; color: #e6edf3; margin-bottom: 0.3rem; }
-    .card-desc { color: #8b949e; font-size: 0.85rem; }
-    .badge {
-      display: inline-block; padding: 0.15rem 0.5rem; border-radius: 1rem;
-      font-size: 0.7rem; font-weight: 600; margin-left: 0.3rem;
-    }
-    .badge-new { background: rgba(35,134,54,.2); color: #3fb950; border: 1px solid rgba(35,134,54,.4); }
-    .badge-swarm { background: rgba(130,80,223,.2); color: #bc8cff; border: 1px solid rgba(130,80,223,.4); }
-
-    .provider-list { color: #8b949e; font-size: 0.9rem; margin: 0.5rem 0; }
-    .muted { color: #8b949e; font-size: 0.85rem; }
-    footer { text-align: center; padding: 2rem; color: #484f58; font-size: 0.8rem; border-top: 1px solid #21262d; }
-    footer a { color: #58a6ff; text-decoration: none; }
+    .terminal-head { display:flex; align-items:center; gap:7px; padding: 15px 16px; border-bottom:1px solid var(--border); background: rgba(255,255,255,.035); }
+    .dot { width:11px; height:11px; border-radius:50%; background:#ff5f57; } .dot:nth-child(2){background:#ffbd2e}.dot:nth-child(3){background:#28c840}
+    pre { margin: 0; padding: 18px; white-space: pre-wrap; color: #d6e4ff; font-size: 13px; line-height: 1.7; }
+    .ok { color: var(--green); } .cyan { color: var(--cyan); } .blue { color: var(--blue); } .muted { color: var(--muted); }
+    .status-row { display:grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin: 18px 0 42px; }
+    .card, .panel { padding: 20px; background: var(--panel); border: 1px solid var(--border); border-radius: 22px; box-shadow: var(--shadow); }
+    .card h3 { margin: 0 0 6px; font-size: 15px; color: var(--muted); font-weight: 650; }
+    .value { font-size: 28px; font-weight: 850; letter-spacing: -.04em; }
+    .pill { display:inline-flex; gap:8px; align-items:center; border:1px solid rgba(83,241,138,.28); background:rgba(83,241,138,.08); color:var(--green); border-radius:999px; padding:7px 10px; font-weight:700; font-size:13px; }
+    .pulse { width:9px; height:9px; border-radius:50%; background:var(--green); box-shadow:0 0 18px var(--green); animation:pulse 1.6s infinite; }
+    @keyframes pulse { 50% { opacity:.35; transform:scale(.82); } }
+    section { margin: 0 0 28px; }
+    .grid { display:grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .panel h2, section h2 { margin: 0 0 12px; font-size: 24px; letter-spacing: -.03em; }
+    .feature h3 { margin: 0 0 8px; font-size: 17px; } .feature p { color: var(--muted); margin: 0; font-size: 14px; }
+    code { background: rgba(255,255,255,.065); border: 1px solid rgba(255,255,255,.08); border-radius: 7px; padding: 2px 6px; color: #d9e8ff; }
+    .endpoints { display:grid; gap: 10px; margin-top: 12px; }
+    .endpoint { display:flex; justify-content:space-between; gap:12px; align-items:center; padding: 12px 14px; border-radius: 14px; background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.07); }
+    .method { color: var(--cyan); font-weight: 850; font-size: 12px; letter-spacing:.08em; min-width:52px; }
+    .path { flex: 1; color: #dbe8ff; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; overflow-wrap:anywhere; }
+    footer { color: var(--muted); text-align:center; padding: 32px 0 54px; font-size: 13px; }
+    @media (max-width: 900px) { .hero { grid-template-columns: 1fr; padding-top: 44px; } .status-row { grid-template-columns: repeat(2,1fr); } .grid { grid-template-columns: 1fr; } header { align-items:flex-start; flex-direction:column; } nav { justify-content:flex-start; } }
+    @media (max-width: 560px) { .status-row { grid-template-columns: 1fr; } .endpoint { align-items:flex-start; flex-direction:column; } }
   </style>
 </head>
 <body>
+  <div class="wrap">
+    <header>
+      <div class="brand"><div class="logo">AI</div><div>AILinux TriForce API</div></div>
+      <nav>
+        <a href="/health">Health</a>
+        <a href="/docs">Docs</a>
+        <a href="/openapi.json">OpenAPI</a>
+        <a href="/v1/mcp/sse">MCP SSE</a>
+      </nav>
+    </header>
 
-<div class="hero">
-  <h1>🔱 AILinux TriForce</h1>
-  <p class="subtitle">Self-Hosted Multi-LLM Orchestration Backend</p>
-  <div class="status">Backend Online — v2.85</div>
+    <main>
+      <section class="hero">
+        <div>
+          <div class="eyebrow">Self-hosted Multi-LLM Backend</div>
+          <h1><span class="gradient">TriForce</span><br>API Gateway</h1>
+          <p class="lead">Zentraler AILinux-Endpunkt für MCP, Chat-Orchestration, lokale Modelle, externe Provider und Systemautomation. Gebaut für OpenClaw, Agents und schnelle Debugbarkeit.</p>
+          <div class="pill"><span class="pulse"></span><span id="live-status">prüfe Backend…</span></div>
+          <div class="actions">
+            <a class="btn primary" href="/docs">API Docs öffnen</a>
+            <a class="btn" href="/health">Health JSON</a>
+            <a class="btn" href="https://ailinux.me">AILinux Home</a>
+          </div>
+        </div>
+        <div class="terminal" aria-label="API quickstart terminal">
+          <div class="terminal-head"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+          <pre><span class="muted">$</span> curl https://api.ailinux.me/health
+<span class="ok">{"ok":true,"status":"ok"}</span>
 
-  <p class="tagline">Ein selbst-gehostetes KI-Backend das 631+ Modelle von 10 Providern orchestriert — mit Swarm Intelligence, Multi-AI Group Chat, Browser-Automatisierung und 260 MCP Tools. Gebaut als Solo-Projekt.</p>
+<span class="muted">$</span> openclaw mcp show triforce --json
+{
+  <span class="blue">"url"</span>: <span class="cyan">"http://127.0.0.1:9000/v1/mcp/sse"</span>,
+  <span class="blue">"transport"</span>: <span class="cyan">"sse"</span>
+}
 
-  <div class="stats">
-    <div class="stat"><div class="stat-num">631+</div><div class="stat-label">AI Modelle</div></div>
-    <div class="stat"><div class="stat-num">10</div><div class="stat-label">Provider</div></div>
-    <div class="stat"><div class="stat-num">260</div><div class="stat-label">MCP Tools</div></div>
-    <div class="stat"><div class="stat-num">3</div><div class="stat-label">Federation Nodes</div></div>
+<span class="muted">$</span> openclaw mcp doctor triforce --probe
+<span class="ok">- triforce: ok</span></pre>
+        </div>
+      </section>
+
+      <div class="status-row">
+        <div class="card"><h3>Backend</h3><div class="value" id="backend-value">online</div></div>
+        <div class="card"><h3>Transport</h3><div class="value">SSE</div></div>
+        <div class="card"><h3>Runtime</h3><div class="value">Uvicorn</div></div>
+        <div class="card"><h3>Edge</h3><div class="value">Apache</div></div>
+      </div>
+
+      <section class="grid">
+        <div class="card feature"><h3>MCP-ready</h3><p>Server-Sent Events für Tool-Discovery, Agent-Kommandos und OpenClaw-Integration.</p></div>
+        <div class="card feature"><h3>Multi-Provider</h3><p>TriForce orchestriert lokale Ollama-Modelle und externe LLM-Provider über ein Backend.</p></div>
+        <div class="card feature"><h3>Ops-first</h3><p>Health, Metrics, Docs und Debug-Endpunkte sind direkt über die API-Domain erreichbar.</p></div>
+      </section>
+
+      <section class="panel">
+        <h2>Wichtige Endpunkte</h2>
+        <div class="endpoints">
+          <div class="endpoint"><span class="method">GET</span><span class="path">/health</span><span class="muted">Backend status</span></div>
+          <div class="endpoint"><span class="method">GET</span><span class="path">/docs</span><span class="muted">Swagger UI</span></div>
+          <div class="endpoint"><span class="method">GET</span><span class="path">/openapi.json</span><span class="muted">API schema</span></div>
+          <div class="endpoint"><span class="method">SSE</span><span class="path">/v1/mcp/sse</span><span class="muted">MCP stream</span></div>
+          <div class="endpoint"><span class="method">POST</span><span class="path">/v1/mcp/messages/?session_id=…</span><span class="muted">MCP messages</span></div>
+        </div>
+      </section>
+    </main>
+
+    <footer>AILinux TriForce API · Recreated landing page · Browser-safe root, API routes preserved.</footer>
   </div>
 
-  <div class="links">
-    <a href="https://ailinux.me">🌐 AILinux.me</a>
-    <a href="https://forum.ailinux.me">💬 Community Forum</a>
-    <a href="https://github.com/derleiti">🐙 GitHub</a>
-  </div>
-</div>
-
-<div class="container">
-
-  <h2>🧠 AI Swarm Intelligence <span class="badge badge-swarm">NEU</span></h2>
-  <p class="muted">Sendet einen Prompt gleichzeitig an alle 631+ Modelle. Sammelt Antworten parallel, bewertet Qualität, rankt Ergebnisse und konsolidiert die besten Ideen über Gemini 2.5 Flash.</p>
-  <div class="grid">
-    <div class="card"><div class="card-title">Broadcast → Score → Rank</div><div class="card-desc">Alle Modelle gleichzeitig befragen, Antworten nach Relevanz und Qualität bewerten</div></div>
-    <div class="card"><div class="card-title">Consolidate → Code</div><div class="card-desc">Lead-AI fasst alle Perspektiven zusammen, Coding-Agents setzen den Plan um</div></div>
-  </div>
-  <p class="muted" style="margin-top:0.8rem;">Erster Live-Test: 20 Modelle, 8 einzigartige Antworten, 23 Sekunden. Kein einzelnes Modell hätte alle 5 Ideen generiert.</p>
-
-  <h2>👥 Multi-AI Group Chat <span class="badge badge-swarm">NEU</span></h2>
-  <p class="muted">12 KI-Teilnehmer — Gemini Lead, Claude-Web, ChatGPT-Web, 4 CLI-Agents, API-Provider — arbeiten in Phasen an komplexen Aufgaben zusammen. Der Lead analysiert, delegiert Sub-Tasks und konsolidiert Ergebnisse.</p>
-
-  <h2>🌐 Browser-Automatisierung <span class="badge badge-new">NEU</span></h2>
-  <p class="muted">Headless Chromium via Playwright — KI-Agents können im Web browsen, Seiten lesen, Formulare ausfüllen, Screenshots machen und Suchergebnisse verarbeiten. Direkt als MCP-Tool ansteuerbar.</p>
-
-  <h2>📝 WordPress CMS Integration <span class="badge badge-new">NEU</span></h2>
-  <p class="muted">Vollständige CMS-Steuerung via MCP — Posts erstellen, bearbeiten, publizieren, löschen. Inklusive Multi-AI-Post: Jeder Provider schreibt seinen eigenen Blogpost zu einem Thema.</p>
-
-  <h2>🏗️ Architektur</h2>
-  <div class="grid">
-    <div class="card"><div class="card-title">FastAPI + uvicorn</div><div class="card-desc">Async Python-Backend, Apache Reverse Proxy, Redis Cache, 3-Node WireGuard Federation</div></div>
-    <div class="card"><div class="card-title">260 MCP Tools</div><div class="card-desc">Shell, Code, Git, Docker, System-Diagnostik, Memory, Mail, Forum, WordPress, Browser</div></div>
-    <div class="card"><div class="card-title">4 CLI Agents</div><div class="card-desc">claude-mcp, codex-mcp, gemini-mcp (Lead), opencode-mcp — on-demand Subprozesse</div></div>
-    <div class="card"><div class="card-title">4-Layer Memory</div><div class="card-desc">Prisma Persistent Memory mit 38+ aktiven Einträgen, automatischem Pruning und Shard-System</div></div>
-  </div>
-
-  <h2>📡 Provider</h2>
-  <p class="provider-list">Groq (18) · Cerebras (2) · Mistral (58) · Google Gemini (43) · Anthropic (8) · OpenRouter (346) · Cloudflare Workers AI (88) · GitHub Models (22) · Ollama Cloud (45) · Ollama Local</p>
-
-  <h2>🖥️ Hardware</h2>
-  <p class="muted">Hetzner EX63 Dedicated — Intel Core Ultra 7 265 (Arrow Lake), 64GB RAM, AVX-VNNI AI-Beschleunigung. Backup VPS + lokale Maschine via WireGuard Mesh.</p>
-
-  <h2>📋 Projekt-Info</h2>
-  <div class="grid">
-    <div class="card"><div class="card-title">AILinux Distribution</div><div class="card-desc">Bleeding-edge Linux (Ubuntu 24.04 LTS) für Entwickler und Creator. KI-Assistenten direkt in Desktop und Terminal.</div></div>
-    <div class="card"><div class="card-title">Open Source</div><div class="card-desc">GitHub: <a href="https://github.com/derleiti" style="color:#58a6ff">derleiti</a> — triforce, ailinux-client, aiwindows-client, ai-twitch-bot</div></div>
-    <div class="card"><div class="card-title">AUR Package</div><div class="card-desc">ailinux-client im AUR verfügbar. GPG: 59FAE19560F5E25B</div></div>
-    <div class="card"><div class="card-title">Solo-Projekt</div><div class="card-desc">Gebaut von einem Entwickler in Warzenried, Oberpfalz. Produktionsreifes KI-Ökosystem — was Teams bauen würden.</div></div>
-  </div>
-
-</div>
-
-<footer>
-  <p>Gebaut von <a href="https://github.com/derleiti">Markus Leitermann</a> in Warzenried, Oberpfalz</p>
-  <p>AILinux TriForce v2.85 · <em>Efficiency beats enthusiasm.</em></p>
-</footer>
-
+  <script>
+    (async () => {
+      const label = document.getElementById('live-status');
+      const value = document.getElementById('backend-value');
+      try {
+        const res = await fetch('/health', { cache: 'no-store' });
+        const json = await res.json();
+        if (res.ok && json.ok) {
+          label.textContent = 'Backend online';
+          value.textContent = 'online';
+          return;
+        }
+        label.textContent = 'Backend antwortet ungewöhnlich';
+        value.textContent = 'check';
+      } catch (e) {
+        label.textContent = 'Backend nicht erreichbar';
+        value.textContent = 'offline';
+      }
+    })();
+  </script>
 </body>
 </html>

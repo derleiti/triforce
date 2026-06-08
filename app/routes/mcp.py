@@ -1423,7 +1423,7 @@ async def handle_initialize(params: Dict[str, Any], request: Optional[Request] =
     mcp_logger.info(f"MCP_INITIALIZE | Client: {client_name} v{client_version} | IP: {client_ip}")
 
     return {
-        "protocolVersion": params.get("protocolVersion", "2024-11-05"),
+        "protocolVersion": "2024-11-05",
         "serverInfo": {
             "name": "ailinux-mcp-server",
             "version": "2.80",
