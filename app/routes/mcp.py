@@ -3720,6 +3720,8 @@ async def mcp_sse_connect(request: Request):
 
     # Create session with response queue
     session = _get_session(session_id)
+    session["authenticated"] = True
+    session["last_seen"] = datetime.now(timezone.utc)
 
     mcp_logger.info(f"SSE_CONNECT | IP: {client_ip} | Session: {session_id}")
 
@@ -3790,6 +3792,10 @@ async def mcp_sse_connect(request: Request):
 # Handles JSON-RPC requests from Cursor
 # ============================================================================
 
+@public_router.post("/mcp/messages", tags=["MCP"], summary="MCP messages endpoint for JSON-RPC (session-aware)")
+@public_router.post("/mcp/messages/", tags=["MCP"], summary="MCP messages endpoint for JSON-RPC (session-aware)")
+@public_router.post("/messages", tags=["MCP"], summary="MCP messages alias (session-aware)")
+@public_router.post("/messages/", tags=["MCP"], summary="MCP messages alias (session-aware)")
 @router.post("/mcp/messages", tags=["MCP"], summary="MCP messages endpoint for JSON-RPC")
 @router.post("/mcp/messages/", tags=["MCP"], summary="MCP messages endpoint for JSON-RPC")
 @router.post("/messages", tags=["MCP"], summary="MCP messages (alias)")
@@ -3806,8 +3812,6 @@ async def mcp_messages_handler(request: Request, session_id: Optional[str] = Non
     import time as _time
     from ..utils.triforce_logging import multi_logger
 
-    await require_mcp_auth(request)
-
     client_ip = request.client.host if request.client else "unknown"
     start_time = _time.time()
     method = None
@@ -3816,6 +3820,14 @@ async def mcp_messages_handler(request: Request, session_id: Optional[str] = Non
 
     # Get session if exists
     session = _mcp_sessions.get(session_id) if session_id else None
+
+    # Legacy SSE transport:
+    # The initial GET /v1/mcp/sse is authenticated and creates the session.
+    # Some MCP clients do not resend Authorization on POST /messages.
+    if session and session.get("authenticated"):
+        session["last_seen"] = datetime.now(timezone.utc)
+    else:
+        await require_mcp_auth(request)
 
     mcp_logger.info(f"MCP_MESSAGE | IP: {client_ip} | Session: {session_id or 'none'}")
 
