@@ -212,11 +212,39 @@ def _safe_compare(a: str, b: str) -> bool:
 
 
 def _validate_credentials(username: str, password: str) -> bool:
-    """Validate username/password against .env credentials."""
-    if not MCP_AUTH_USER or not MCP_AUTH_PASS:
-        logger.error("Auth credentials not configured (MCP_OAUTH_USER/MCP_OAUTH_PASS)")
+    """
+    Validate OAuth username/password or static client_id/client_secret
+    against MCP_OAUTH_USER / MCP_OAUTH_PASS from the live environment.
+    Reads os.environ at call time so systemd/env rotations work after restart.
+    """
+    import os
+    import secrets
+    import logging
+
+    expected_user = os.getenv("MCP_OAUTH_USER", "").strip()
+    expected_pass = os.getenv("MCP_OAUTH_PASS", "").strip()
+
+    username = (username or "").strip()
+    password = (password or "").strip()
+
+    if not expected_user or not expected_pass:
+        logging.getLogger("ailinux.auth").error(
+            "AUTH_ERROR | MCP_OAUTH_USER/PASS not configured"
+        )
         return False
-    return _safe_compare(username, MCP_AUTH_USER) and _safe_compare(password, MCP_AUTH_PASS)
+
+    ok = (
+        secrets.compare_digest(username, expected_user)
+        and secrets.compare_digest(password, expected_pass)
+    )
+
+    if not ok:
+        logging.getLogger("ailinux.auth").warning(
+            "AUTH_FAIL | user_len=%s expected_user_len=%s pass_len=%s expected_pass_len=%s",
+            len(username), len(expected_user), len(password), len(expected_pass)
+        )
+
+    return ok
 
 
 def _extract_basic_auth(request: Request) -> Tuple[str, str]:

@@ -111,6 +111,17 @@ fi
 
 # Start uvicorn
 log "Starting uvicorn on port 9000..."
+
+# --- OAuth env hard-sync: project .env wins directly before uvicorn ---
+if [ -f "/home/zombie/triforce/.env" ]; then
+  MCP_OAUTH_USER="$(grep -m1 '^MCP_OAUTH_USER=' /home/zombie/triforce/.env | cut -d= -f2- | sed -E 's/^["'"'"']|["'"'"']$//g')"
+  MCP_OAUTH_PASS="$(grep -m1 '^MCP_OAUTH_PASS=' /home/zombie/triforce/.env | cut -d= -f2- | sed -E 's/^["'"'"']|["'"'"']$//g')"
+  export MCP_OAUTH_USER
+  export MCP_OAUTH_PASS
+  echo "[$(date '+%F %T')] OAuth env synced for uvicorn: user_len=${#MCP_OAUTH_USER}, pass_len=${#MCP_OAUTH_PASS}"
+fi
+# --- end OAuth env hard-sync ---
+
 exec "$REPO_DIR/.venv/bin/python" -m uvicorn app.main:app \
     --host 0.0.0.0 \
     --port 9000 \
