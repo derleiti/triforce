@@ -31,10 +31,12 @@ FLARUM_API = f"http://{_flarum_ip()}:8888/api"
 FLARUM_TOKEN = os.environ.get("FLARUM_TOKEN")
 if not FLARUM_TOKEN:
     raise RuntimeError("FLARUM_TOKEN is not set. Use environment/vault; do not hardcode secrets.")
-NOVA_USER_ID    = 4
+# Bot kann je nach Flarum-Token als Nova-User oder Admin posten.
+# Beobachtet: aktuelle API-Posts kommen als user_id=1, alte Ziel-ID war 4.
+NOVA_USER_IDS   = {int(x) for x in os.environ.get("NOVA_FLARUM_OWN_USER_IDS", "1,4").split(",") if x.strip().isdigit()}
 
 TRIFORCE_URL    = "http://127.0.0.1:9000/v1/chat"
-TRIFORCE_USER   = "nova-bot@ailinux.me"
+TRIFORCE_USER   = "admin@ailinux.me"
 TRIFORCE_PASS = os.environ.get("TRIFORCE_PASS")
 if not TRIFORCE_PASS:
     raise RuntimeError("TRIFORCE_PASS is not set. Use environment/vault; do not hardcode secrets.")
@@ -103,7 +105,7 @@ def get_recent_posts(since_id=0):
             attrs = p.get("attributes", {})
             # Eigene Posts ignorieren — aber last_post_id trotzdem hochsetzen!
             author_id = p.get("relationships", {}).get("user", {}).get("data", {}).get("id")
-            if str(author_id) == str(NOVA_USER_ID):
+            if str(author_id).isdigit() and int(author_id) in NOVA_USER_IDS:
                 # BUG FIX: Ohne dieses Update sieht der Bot eigene Posts endlos wieder
                 # (get_recent_posts gibt pid > since_id zurück, since_id wird nie erhöht)
                 new_posts.append({
@@ -187,7 +189,7 @@ def ask_nova(post_content, discussion_id, reason):
             "Content-Type": "application/json"
         }
         payload = {
-            "model": "anthropic/claude-sonnet-4",
+            "model": "openrouter/anthropic/claude-sonnet-4",
             "messages": [
                 {"role": "system", "content": system},
                 {"role": "user", "content": f"Forum Post:\n\n{post_content}"}
