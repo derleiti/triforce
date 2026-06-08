@@ -32,8 +32,9 @@ FLARUM_TOKEN = os.environ.get("FLARUM_TOKEN")
 if not FLARUM_TOKEN:
     raise RuntimeError("FLARUM_TOKEN is not set. Use environment/vault; do not hardcode secrets.")
 # Bot kann je nach Flarum-Token als Nova-User oder Admin posten.
-# Beobachtet: aktuelle API-Posts kommen als user_id=1, alte Ziel-ID war 4.
-NOVA_USER_IDS   = {int(x) for x in os.environ.get("NOVA_FLARUM_OWN_USER_IDS", "1,4").split(",") if x.strip().isdigit()}
+# Aktuell beobachtet: admin/zombie=user_id 1, nova-ai=user_id 2, 4=Legacy-ID.
+# Wichtig: Alle eigenen Bot-/Admin-Identitäten ignorieren, sonst Self-Reply-Loop.
+NOVA_USER_IDS   = {int(x) for x in os.environ.get("NOVA_FLARUM_OWN_USER_IDS", "1,2,4").split(",") if x.strip().isdigit()}
 
 TRIFORCE_URL    = "http://127.0.0.1:9000/v1/chat"
 TRIFORCE_USER   = "admin@ailinux.me"
@@ -213,6 +214,7 @@ def ask_nova(post_content, discussion_id, reason):
 # ── Main Loop ─────────────────────────────────────────────────────────────────
 def main():
     log.info("Nova Flarum Bot gestartet")
+    log.info(f"Ignoriere eigene Flarum user_ids: {sorted(NOVA_USER_IDS)}")
     state = load_state()
 
     # Beim ersten Start: aktuellen höchsten Post-ID als Baseline setzen (kein Spam)
@@ -254,8 +256,26 @@ def main():
                     log.info(f"Post {pid} → Nova sagt SKIP")
                 else:
                     try:
-                        flarum_post(post["discussion_id"], answer)
-                        log.info(f"Post {pid} → Nova geantwortet in Discussion {post['discussion_id']}")
+                        created = flarum_post(post["discussion_id"], answer)
+                        created_id = 0
+                        try:
+                            created_id = int(created.get("data", {}).get("id") or 0)
+                        except Exception:
+                            created_id = 0
+
+                        if created_id:
+                            # Defensive Loop-Sicherung: direkt nach eigener Antwort den Pointer
+                            # auf die erzeugte Reply-ID ziehen. Damit wird die eigene Antwort
+                            # nicht im nächsten Poll erneut verarbeitet, selbst wenn Author-Mapping
+                            # im Forum später anders aussieht.
+                            state["last_post_id"] = max(state["last_post_id"], created_id)
+                            processed = state.get("processed", [])
+                            processed.append(created_id)
+                            state["processed"] = processed[-500:]
+                            save_state(state)
+                            log.info(f"Post {pid} → Nova geantwortet in Discussion {post['discussion_id']} | reply_post_id={created_id}")
+                        else:
+                            log.info(f"Post {pid} → Nova geantwortet in Discussion {post['discussion_id']} | reply_post_id=unknown")
                     except Exception as e:
                         log.error(f"Post {pid} → Flarum post error: {e}")
 
