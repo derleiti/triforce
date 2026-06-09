@@ -777,6 +777,9 @@ class AgentController:
             # Nutze die env aus der Config - die Wrapper-Scripts setzen HOME korrekt
             env = os.environ.copy()
             env.update(instance.config.env)
+            env = _inject_chatgpt_env(env)
+            env = _inject_google_env(env)
+            env = _inject_claude_env(env)
             env = _inject_nova_env(env)
             # Stelle sicher dass PATH die npm-global binaries enthält
             env["PATH"] = "/root/.npm-global/bin:/usr/local/bin:/usr/bin:/bin"
