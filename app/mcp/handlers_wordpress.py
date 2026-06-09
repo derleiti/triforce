@@ -12,31 +12,30 @@ DEFAULT_FEATURED_MEDIA = 97318
 
 # Internal WordPress API via curl (bypasses Cloudflare)
 async def _wp_api(method: str, endpoint: str, data: dict = None) -> dict:
-    """Call WordPress REST API via local HTTPS (bypass Cloudflare)."""
-    import asyncio
+    """Call WordPress REST API via local HTTPS using httpx."""
+    import httpx
+
     user = os.getenv("WORDPRESS_APP_USER", os.getenv("WORDPRESS_USER", "ailinux-nova-ai"))
     passwd = os.getenv("WORDPRESS_APP_PASSWORD", os.getenv("WORDPRESS_PASSWORD", ""))
-    
-    cmd = [
-        "curl", "-s", "-k", "-X", method,
-        f"https://127.0.0.1/wp-json/wp/v2/{endpoint}",
-        "-H", "Host: ailinux.me",
-        "-H", "Content-Type: application/json",
-        "-u", f"{user}:{passwd}"
-    ]
-    if data:
-        cmd.extend(["-d", json.dumps(data)])
-    
-    proc = await asyncio.create_subprocess_exec(
-        *cmd,
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE
-    )
-    stdout, stderr = await proc.communicate()
+    url = f"https://127.0.0.1/wp-json/wp/v2/{endpoint}"
+    headers = {
+        "Host": "ailinux.me",
+        "Content-Type": "application/json",
+    }
+
     try:
-        return json.loads(stdout.decode())
+        async with httpx.AsyncClient(verify=True, timeout=30.0) as client:
+            response = await client.request(
+                method,
+                url,
+                headers=headers,
+                auth=(user, passwd),
+                json=data if data else None,
+            )
+            response.raise_for_status()
+            return response.json()
     except Exception as e:
-        return {"error": str(e), "raw": stdout.decode()[:500]}
+        return {"error": str(e)}
 
 
 async def handle_wp_publish_post(arguments: Dict[str, Any]) -> str:

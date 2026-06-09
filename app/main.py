@@ -184,8 +184,9 @@ async def lifespan(app: FastAPI):
         from .services.server_federation import federation_manager
         from .services.federation_websocket import federation_lb
         import socket
+        node_id_env = os.environ.get("NODE_ID")
         _hostname = socket.gethostname().lower()
-        node_id = "backup" if "backup" in _hostname else "zombie-pc" if "zombie" in _hostname else "hetzner"
+        node_id = node_id_env or ("backup" if "backup" in _hostname else "zombie-pc" if "zombie" in _hostname else "hetzner")
         await federation_manager.initialize(node_id=node_id)
         await federation_lb.start()
         logger.info("Federation Manager started")
@@ -241,7 +242,7 @@ async def lifespan(app: FastAPI):
     try:
         from .mcp.notification_manager import start_pollers
         start_pollers()
-        logger.info("Notification Manager started")
+        logger.info("Notification Manager pollers requested")
     except Exception:
         logger.warning("Notification Manager start skipped")
 

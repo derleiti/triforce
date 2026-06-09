@@ -2177,7 +2177,7 @@ async def handle_execute_mcp_tool(params: Dict[str, Any]) -> Dict[str, Any]:
             if v4_result:
                 return {"content": [{"type": "text", "text": json.dumps(v4_result, separators=(chr(44), chr(58)))}], "isError": False}
         except Exception:
-            pass  # Fall through to error
+            continue
 
     if not handler:
         raise ValueError(f"Unknown tool: {tool_name}")
@@ -2294,7 +2294,7 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
             if v4_result:
                 return {"content": [{"type": "text", "text": json.dumps(v4_result, separators=(chr(44), chr(58)))}], "isError": False}
         except Exception:
-            pass  # Fall through to error
+            continue
 
     if not handler:
         raise ValueError(f"Unknown tool: {tool_name}")

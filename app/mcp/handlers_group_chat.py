@@ -237,14 +237,26 @@ async def handle_group_chat_consolidate(params: Dict[str, Any]) -> Dict[str, Any
     return await group_chat.consolidate(session_id)
 
 
-async def handle_group_chat_assign(params: Dict[str, Any]) -> Dict[str, Any]:
+async def handle_group_chat_assign(params: Dict[str, Any], request=None) -> Dict[str, Any]:
     from app.services.group_chat import group_chat, DEFAULT_PARTICIPANTS
+    from app.utils.mcp_security import is_internal_full_request
+
     session_id = params.get("session_id", "")
     coder = str(params.get("coder", "auto")).strip()
     context = params.get("context", "")
     ALLOWED_CODERS = {"auto", "claude-mcp", "codex-mcp", "gemini-mcp", "claude-web", "chatgpt-web"}
+    CLI_CODERS = {"claude-mcp", "codex-mcp", "gemini-mcp"}
+
     if coder not in ALLOWED_CODERS and coder not in DEFAULT_PARTICIPANTS:
         return {"error": f"Invalid coder: {coder}. Allowed: {', '.join(sorted(ALLOWED_CODERS))}"}
+
+    if request is not None and coder in CLI_CODERS and not is_internal_full_request(request):
+        return {
+            "ok": False,
+            "error": "External callers may not assign CLI coders",
+            "code": "EXTERNAL_CLI_BLOCKED",
+        }
+
     return await group_chat.assign_coding_task(session_id, coder, context)
 
 

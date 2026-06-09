@@ -58,8 +58,8 @@ class Settings(BaseSettings):
     stable_diffusion_api_key: Optional[str] = Field(default=None, validation_alias="STABLE_DIFFUSION_API_KEY")
 
     # TriStar GUI Authentication
-    tristar_gui_user: str = Field(default="admin", validation_alias="TRISTAR_GUI_USER")
-    tristar_gui_password: str = Field(default="changeme", validation_alias="TRISTAR_GUI_PASSWORD")
+    tristar_gui_user: str = Field(default="zombie", validation_alias="TRISTAR_GUI_USER")
+    tristar_gui_password: str = Field(default="", validation_alias="TRISTAR_GUI_PASSWORD")
 
     # MCP Authentication (User/Password only - no API keys)
     mcp_oauth_user: Optional[str] = Field(default=None, validation_alias="MCP_OAUTH_USER")
