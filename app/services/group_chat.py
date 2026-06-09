@@ -22,6 +22,7 @@ Author: Markus Leitermann (derleiti)
 from __future__ import annotations
 
 import asyncio
+import copy
 import json
 import logging
 import time
@@ -305,13 +306,13 @@ class GroupChatOrchestrator:
         if participants:
             for pid in participants:
                 if pid in DEFAULT_PARTICIPANTS:
-                    session.participants[pid] = DEFAULT_PARTICIPANTS[pid]
+                    session.participants[pid] = copy.deepcopy(DEFAULT_PARTICIPANTS[pid])
             if not session.participants:
                 raise ValueError(
                     f"No valid participants. Allowed: {', '.join(sorted(DEFAULT_PARTICIPANTS.keys()))}"
                 )
         else:
-            session.participants = dict(DEFAULT_PARTICIPANTS)
+            session.participants = copy.deepcopy(DEFAULT_PARTICIPANTS)
 
         # System-Nachricht
         session.add_message(
