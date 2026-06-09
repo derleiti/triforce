@@ -2177,7 +2177,7 @@ async def handle_execute_mcp_tool(params: Dict[str, Any]) -> Dict[str, Any]:
             if v4_result:
                 return {"content": [{"type": "text", "text": json.dumps(v4_result, separators=(chr(44), chr(58)))}], "isError": False}
         except Exception:
-            continue
+            pass
 
     if not handler:
         raise ValueError(f"Unknown tool: {tool_name}")
@@ -2294,7 +2294,7 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
             if v4_result:
                 return {"content": [{"type": "text", "text": json.dumps(v4_result, separators=(chr(44), chr(58)))}], "isError": False}
         except Exception:
-            continue
+            pass
 
     if not handler:
         raise ValueError(f"Unknown tool: {tool_name}")
@@ -2512,11 +2512,11 @@ async def handle_codebase_structure(params: Dict[str, Any]) -> Dict[str, Any]:
             filtered_items = []
             for item in items:
                 if item.name.startswith(".") or item.name == "__pycache__":
-                    continue
+                    pass
                 if item.is_file() and not include_files:
-                    continue
+                    pass
                 if item.is_file() and item.suffix not in ALLOWED_EXTENSIONS:
-                    continue
+                    pass
                 filtered_items.append(item)
 
             for i, item in enumerate(filtered_items):
@@ -3040,9 +3040,9 @@ async def handle_codebase_search(params: Dict[str, Any]) -> Dict[str, Any]:
 
     for py_file in safe_root.rglob(file_pattern):
         if "__pycache__" in str(py_file):
-            continue
+            pass
         if py_file.suffix not in ALLOWED_EXTENSIONS:
-            continue
+            pass
 
         try:
             lines = py_file.read_text(encoding="utf-8").splitlines()
@@ -3059,7 +3059,7 @@ async def handle_codebase_search(params: Dict[str, Any]) -> Dict[str, Any]:
                     if len(results) >= max_results:
                         break
         except (PermissionError, UnicodeDecodeError):
-            continue
+            pass
 
         if len(results) >= max_results:
             break
@@ -3087,7 +3087,7 @@ async def handle_codebase_routes(params: Dict[str, Any]) -> Dict[str, Any]:
 
     for py_file in routes_dir.glob("*.py"):
         if py_file.name.startswith("_"):
-            continue
+            pass
 
         try:
             content = py_file.read_text(encoding="utf-8")
@@ -3116,7 +3116,7 @@ async def handle_codebase_routes(params: Dict[str, Any]) -> Dict[str, Any]:
                         "line": i + 1,
                     })
         except (PermissionError, UnicodeDecodeError):
-            continue
+            pass
 
     # Group by file
     by_file = {}
@@ -3149,7 +3149,7 @@ async def handle_codebase_services(params: Dict[str, Any]) -> Dict[str, Any]:
 
         for item in sorted(service_path.iterdir()):
             if item.name.startswith("_") and item.name != "__init__.py":
-                continue
+                pass
 
             if item.is_dir():
                 results.extend(scan_service(item, f"{prefix}{item.name}/"))
@@ -3186,7 +3186,7 @@ async def handle_codebase_services(params: Dict[str, Any]) -> Dict[str, Any]:
                             "lines": len(lines),
                         })
                 except (PermissionError, UnicodeDecodeError):
-                    continue
+                    pass
 
         return results
 
