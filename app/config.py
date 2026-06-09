@@ -65,6 +65,11 @@ class Settings(BaseSettings):
     mcp_oauth_user: Optional[str] = Field(default=None, validation_alias="MCP_OAUTH_USER")
     mcp_oauth_pass: Optional[str] = Field(default=None, validation_alias="MCP_OAUTH_PASS")
 
+    # MCP Mesh WebSocket
+    mcp_ws_host: str = Field(default="0.0.0.0", validation_alias="MCP_WS_HOST")
+    mcp_ws_port: int = Field(default=44433, validation_alias="MCP_WS_PORT")
+    mcp_ws_enable_ipv6: bool = Field(default=False, validation_alias="MCP_WS_ENABLE_IPV6")
+
     # GPT-OSS
     gpt_oss_api_key: str | None = Field(default=None, validation_alias="GPT_OSS_API_KEY")
     gpt_oss_base_url: AnyHttpUrl | None = Field(default=None, validation_alias="GPT_OSS_BASE_URL")
