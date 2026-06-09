@@ -213,11 +213,11 @@ async def lifespan(app: FastAPI):
         # import logging (centralized)
         logger.warning(f"Failed to start MCP Brain: {e}")
 
-    # Start MCP WebSocket Server (Port 44433)
+    # Start MCP WebSocket Server
     try:
         from .services.mcp_ws_server import mcp_ws_server
         await mcp_ws_server.start()
-        logger.info("MCP WebSocket Server started on port 44433")
+        logger.info(f"MCP WebSocket Server started on port {settings.mcp_ws_port}")
     except Exception as e:
         logger.warning(f"Failed to start MCP WebSocket Server: {e}")
 
