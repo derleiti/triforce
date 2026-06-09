@@ -372,7 +372,6 @@ class SwarmBroadcast:
             "tts",
             "speech",
             "voice",
-            "orpheus",
         )
         return not any(fragment in mid for fragment in blocked_fragments)
 
