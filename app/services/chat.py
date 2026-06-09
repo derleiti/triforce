@@ -13,7 +13,6 @@ from fastapi import HTTPException
 from pydantic import AnyHttpUrl
 
 from ..utils.http_client import HttpClient
-import google.generativeai as genai
 
 from ..config import get_settings
 from ..services.model_registry import ModelInfo
@@ -1004,6 +1003,7 @@ async def _stream_gemini(
     stream: bool,
     timeout: float,
 ) -> AsyncGenerator[str, None]:
+    import google.generativeai as genai
     genai.configure(api_key=api_key)
     # Map legacy model names to current models
     target_model = GEMINI_MODEL_ALIASES.get(model)

@@ -49,6 +49,7 @@ from .api_vault import VAULT_TOOLS, VAULT_HANDLERS, api_vault
 from .chat_router import CHAT_ROUTER_TOOLS, CHAT_ROUTER_HANDLERS
 from .task_spawner import TASK_SPAWNER_TOOLS, TASK_SPAWNER_HANDLERS
 from .txt2img_mcp import TXT2IMG_TOOLS, TXT2IMG_HANDLERS
+from .nova_chat_agent import nova_chat_agent_service as account_specialists
 
 # Constants
 BACKEND_ROOT = Path("/home/zombie/triforce")
@@ -562,6 +563,18 @@ async def handle_specialists_invoke(params: Dict[str, Any]) -> Dict[str, Any]:
 
     if not message:
         raise ValueError("'message' parameter is required")
+
+    if specialist_id and specialist_id.startswith("nova-account/"):
+        return await account_specialists.invoke_specialized_agent(
+            specialist_id=specialist_id,
+            message=message,
+            messages=params.get("messages"),
+            system=params.get("system", ""),
+            model=params.get("model"),
+            temperature=params.get("temperature", 0.4),
+            max_tokens=params.get("max_tokens", 1200),
+            timeout=params.get("timeout", 120),
+        )
 
     # Get specialist - either specified or auto-routed
     if specialist_id:

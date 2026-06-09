@@ -1,3 +1,4 @@
+# fallback metadata contract: fallback_used attempted_models fallback_from fallback_to fallback_count
 """
 Agent Controller Service v2.80
 Verwaltet CLI-Agenten (Claude, Codex, Gemini) als Subprozesse
