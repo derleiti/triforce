@@ -451,6 +451,7 @@ class SwarmBroadcast:
                 score += speed_score
 
             score = max(0.0, score - hidden_reasoning_penalty)
+            score = max(0.0, score - hidden_reasoning_penalty)
             resp.quality_score = round(min(score, 1.0), 3)
 
     # -------------------------------------------------------------------------
