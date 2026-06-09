@@ -3566,6 +3566,7 @@ except Exception as e:
 
 
 from fastapi.responses import StreamingResponse
+from ..mcp.structured_admin import record_mcp_call
 import uuid
 import asyncio
 from typing import Dict, Any as TypingAny
@@ -3925,6 +3926,8 @@ async def mcp_messages_handler(request: Request, session_id: Optional[str] = Non
                     caller = "claude"
                 elif "gemini" in user_agent.lower() or "google" in user_agent.lower():
                     caller = "gemini"
+                elif "codex" in user_agent.lower():
+                    caller = "codex"
             await multi_logger.log_mcp_tool_call(
                 tool_name=tool_name,
                 params=tool_args,
@@ -3933,6 +3936,7 @@ async def mcp_messages_handler(request: Request, session_id: Optional[str] = Non
                 caller=caller,
                 result_preview=str(result)[:300] if result else None
             )
+            record_mcp_call(tool_name, latency_ms, "success", "mcp_messages_handler", result_size=len(str(result)) if result else 0)
 
         response = {"jsonrpc": "2.0", "result": result, "id": req_id}
 
@@ -3944,6 +3948,9 @@ async def mcp_messages_handler(request: Request, session_id: Optional[str] = Non
 
     except ValueError as exc:
         error_msg = str(exc)
+        tn = params.get("name", method or "unknown") if isinstance(params, dict) else (method or "unknown")
+        _err_latency = (_time.time() - start_time) * 1000
+        record_mcp_call(tn, _err_latency, "error", "mcp_messages_handler", error=error_msg)
         return JSONResponse(
             content={"jsonrpc": "2.0", "error": {"code": -32000, "message": error_msg}, "id": None},
             status_code=400
@@ -3951,6 +3958,9 @@ async def mcp_messages_handler(request: Request, session_id: Optional[str] = Non
     except Exception as exc:
         error_msg = str(exc)
         mcp_logger.error(f"MCP_ERROR | Session: {session_id} | Error: {error_msg}")
+        tn = params.get("name", method or "unknown") if isinstance(params, dict) else (method or "unknown")
+        _err_latency = (_time.time() - start_time) * 1000
+        record_mcp_call(tn, _err_latency, "error", "mcp_messages_handler", error=error_msg)
         return JSONResponse(
             content={"jsonrpc": "2.0", "error": {"code": -32000, "message": "Internal error", "data": error_msg}, "id": None},
             status_code=500

@@ -76,6 +76,14 @@ class Settings(BaseSettings):
 
     # Gemini
     gemini_api_key: str | None = Field(default=None, validation_alias="GEMINI_API_KEY")
+    google_url: Optional[str] = Field(default=None, validation_alias="GOOGLE_URL")
+    google_user: Optional[str] = Field(default=None, validation_alias="GOOGLE_USER")
+    google_pass: Optional[str] = Field(default=None, validation_alias="GOOGLE_PASS")
+    gemini_agent_id: Optional[str] = Field(default=None, validation_alias="GEMINI_AGENT_ID")
+    claude_url: Optional[str] = Field(default=None, validation_alias="CLAUDE_URL")
+    claude_user: Optional[str] = Field(default=None, validation_alias="CLAUDE_USER")
+    claude_pass: Optional[str] = Field(default=None, validation_alias="CLAUDE_PASS")
+
 
     # Mistral
     mistral_api_key: str | None = Field(default=None, validation_alias="MISTRAL_API_KEY")

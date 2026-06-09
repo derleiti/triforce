@@ -387,16 +387,19 @@ async def require_mcp_auth(request: Request) -> str:
             or ""
         ).strip()
     
-    # Port-based auth decision
+    # Port/header-based auth decision
     forwarded_port = request.headers.get("X-Forwarded-Port", "")
+    forwarded_for = request.headers.get("X-Forwarded-For", "")
     
-    # No X-Forwarded-Port = internal/public → bypass
-    if forwarded_port != "9100":
+    # No forwarding headers = trusted internal call → bypass
+    # Forwarded internal requests must still authenticate because they originated externally.
+    if forwarded_port != "9100" and not forwarded_for:
+        request.state.mcp_auth_user = "internal"
         logger.debug(f"AUTH_OK | IP: {client_ip} | X-Fwd-Port: {forwarded_port or 'none'} | Method: port_bypass")
         return "internal"
     
-    # External request (port 9100) → requires auth
-    logger.debug(f"AUTH_CHECK | IP: {client_ip} | X-Fwd-Port: {forwarded_port}")
+    # External/forwarded request → requires auth
+    logger.debug(f"AUTH_CHECK | IP: {client_ip} | X-Fwd-Port: {forwarded_port or 'none'} | X-Fwd-For: {forwarded_for or 'none'}")
     
     if not MCP_AUTH_USER or not MCP_AUTH_PASS:
         logger.error("AUTH_ERROR | MCP_OAUTH_USER/PASS not configured")

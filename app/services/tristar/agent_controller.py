@@ -237,33 +237,77 @@ DEFAULT_AGENTS: List[Dict[str, Any]] = [
 ]
 
 
+def _set_env_if_present(env: Dict[str, str], values: Dict[str, Any]) -> Dict[str, str]:
+    """Set environment keys only when values exist and the caller did not set them."""
+    for key, value in values.items():
+        if value and not env.get(key):
+            env[key] = str(value)
+    return env
+
+
+def _inject_chatgpt_env(env: Dict[str, str]) -> Dict[str, str]:
+    """Inject ChatGPT account environment for CLI wrappers."""
+    from ...config import get_settings
+    settings = get_settings()
+    return _set_env_if_present(env, {
+        "CHATGPT_URL": settings.chatgpt_url,
+        "CHATGPT_USER": settings.chatgpt_user,
+        "CHATGPT_PASS": settings.chatgpt_pass,
+        "NOVA_CHATGPT_URL": settings.nova_chatgpt_url,
+        "NOVA_CHATGPT_USER": settings.nova_chatgpt_user,
+        "NOVA_CHATGPT_PASS": settings.nova_chatgpt_pass,
+        "NOVA_CHATGPT_AGENT_ID": settings.nova_chatgpt_agent_id,
+    })
+
+
+def _inject_google_env(env: Dict[str, str]) -> Dict[str, str]:
+    """Inject Google/Gemini account environment for CLI wrappers."""
+    from ...config import get_settings
+    settings = get_settings()
+    return _set_env_if_present(env, {
+        "GOOGLE_URL": settings.google_url,
+        "GOOGLE_USER": settings.google_user,
+        "GOOGLE_PASS": settings.google_pass,
+        "GEMINI_AGENT_ID": settings.gemini_agent_id,
+        "GEMINI_API_KEY": settings.gemini_api_key,
+        "NOVA_GOOGLE_URL": settings.nova_google_url,
+        "NOVA_GOOGLE_USER": settings.nova_google_user,
+        "NOVA_GOOGLE_PASS": settings.nova_google_pass,
+        "NOVA_GEMINI_AGENT_ID": settings.nova_gemini_agent_id,
+    })
+
+
+def _inject_claude_env(env: Dict[str, str]) -> Dict[str, str]:
+    """Inject Claude account environment for CLI wrappers."""
+    from ...config import get_settings
+    settings = get_settings()
+    return _set_env_if_present(env, {
+        "CLAUDE_URL": settings.claude_url,
+        "CLAUDE_USER": settings.claude_user,
+        "CLAUDE_PASS": settings.claude_pass,
+        "CLAUDE_AGENT_ID": settings.claude_agent_id or settings.nova_claude_agent_id,
+        "NOVA_CLAUDE_URL": settings.nova_claude_url,
+        "NOVA_CLAUDE_USER": settings.nova_claude_user,
+        "NOVA_CLAUDE_PASS": settings.nova_claude_pass,
+        "NOVA_CLAUDE_AGENT_ID": settings.nova_claude_agent_id,
+    })
+
+
 def _inject_nova_env(env: Dict[str, str]) -> Dict[str, str]:
     """Inject Nova account routing settings into spawned agent environments."""
     try:
         from ...config import get_settings
         settings = get_settings()
+        env = _inject_chatgpt_env(env)
+        env = _inject_google_env(env)
+        env = _inject_claude_env(env)
         values = {
-            "NOVA_CHATGPT_URL": settings.nova_chatgpt_url,
-            "NOVA_CHATGPT_USER": settings.nova_chatgpt_user,
-            "NOVA_CHATGPT_PASS": settings.nova_chatgpt_pass,
-            "NOVA_CHATGPT_AGENT_ID": settings.nova_chatgpt_agent_id,
-            "NOVA_GOOGLE_URL": settings.nova_google_url,
-            "NOVA_GOOGLE_USER": settings.nova_google_user,
-            "NOVA_GOOGLE_PASS": settings.nova_google_pass,
-            "NOVA_GEMINI_AGENT_ID": settings.nova_gemini_agent_id,
-            "NOVA_CLAUDE_URL": settings.nova_claude_url,
-            "NOVA_CLAUDE_USER": settings.nova_claude_user,
-            "NOVA_CLAUDE_PASS": settings.nova_claude_pass,
-            "NOVA_CLAUDE_AGENT_ID": settings.nova_claude_agent_id,
-            "CLAUDE_AGENT_ID": settings.claude_agent_id or settings.nova_claude_agent_id,
             "NOVA_MISTRAL_URL": settings.nova_mistral_url,
             "NOVA_MISTRAL_USER": settings.nova_mistral_user,
             "NOVA_MISTRAL_PASS": settings.nova_mistral_pass,
             "NOVA_MISTRAL_AGENT_ID": settings.nova_mistral_agent_id,
         }
-        for key, value in values.items():
-            if value and not env.get(key):
-                env[key] = str(value)
+        _set_env_if_present(env, values)
     except Exception as exc:
         logger.warning("Failed to inject Nova agent environment: %s", exc)
     return env
@@ -489,6 +533,9 @@ class AgentController:
                 # Wir nutzen die env aus der Config, nicht überschreiben!
                 env = os.environ.copy()
                 env.update(instance.config.env)
+                env = _inject_chatgpt_env(env)
+                env = _inject_google_env(env)
+                env = _inject_claude_env(env)
                 env = _inject_nova_env(env)
                 # USER für Prozess-Kontext setzen
                 env["USER"] = "zombie"
@@ -733,7 +780,10 @@ class AgentController:
             # Nutze die env aus der Config - die Wrapper-Scripts setzen HOME korrekt
             env = os.environ.copy()
             env.update(instance.config.env)
-            env = _inject_nova_env(env)
+            env = _inject_chatgpt_env(env)
+                env = _inject_google_env(env)
+                env = _inject_claude_env(env)
+                env = _inject_nova_env(env)
             # Stelle sicher dass PATH die npm-global binaries enthält
             env["PATH"] = "/root/.npm-global/bin:/usr/local/bin:/usr/bin:/bin"
 
