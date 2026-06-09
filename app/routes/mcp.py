@@ -2118,6 +2118,22 @@ async def _handle_tools_list_LEGACY(params: Dict[str, Any]) -> Dict[str, Any]:
         }
     ])
 
+
+    tools.append({
+        "name": "mcp_write_fallback",
+        "description": "Store denied MCP write attempts for safe manual review and retry.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "tool_name": {"type": "string", "description": "Original MCP tool name"},
+                "arguments": {"type": "object", "description": "Original MCP tool arguments"},
+                "reason": {"type": "string", "description": "Reason the write path was denied"},
+                "caller": {"type": "string", "description": "Optional caller identity"},
+            },
+            "required": ["tool_name"],
+        },
+    })
+
     return {"tools": tools}
 
 
@@ -2140,6 +2156,30 @@ async def handle_restart_backend(params: Dict[str, Any]) -> Dict[str, Any]:
 async def handle_restart_agent(params: Dict[str, Any]) -> Dict[str, Any]:
     """Handle restart_agent tool."""
     return await system_control.restart_agent(params.get("agent_id", ""))
+
+
+
+_MCP_WRITE_FALLBACK_STORE: List[Dict[str, Any]] = []
+
+
+async def _store_mcp_write_fallback(payload: Dict[str, Any]) -> Dict[str, Any]:
+    """Store a denied MCP write attempt for later manual review."""
+    entry = {
+        "id": f"mcp-write-fallback-{len(_MCP_WRITE_FALLBACK_STORE) + 1}",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "tool_name": payload.get("tool_name") or payload.get("name") or "unknown",
+        "arguments": payload.get("arguments") or payload.get("params") or {},
+        "reason": payload.get("reason", "write path denied"),
+        "caller": payload.get("caller", "mcp"),
+    }
+    _MCP_WRITE_FALLBACK_STORE.append(entry)
+    mcp_logger.warning("MCP_WRITE_FALLBACK_STORED | %s", entry["tool_name"])
+    return {"ok": True, "stored": True, "fallback": entry}
+
+
+async def handle_mcp_write_fallback(params: Dict[str, Any]) -> Dict[str, Any]:
+    """MCP tool handler for write-fallback queueing."""
+    return await _store_mcp_write_fallback(params)
 
 
 async def handle_execute_mcp_tool(params: Dict[str, Any]) -> Dict[str, Any]:
@@ -2257,6 +2297,7 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
             "restart_backend": handle_restart_backend,
             "restart_agent": handle_restart_agent,
             "execute_mcp_tool": handle_execute_mcp_tool,
+            "mcp_write_fallback": handle_mcp_write_fallback,
         }
     # Merge with dynamic handlers from services
     tool_map.update(OLLAMA_HANDLERS)
@@ -4271,3 +4312,21 @@ async def mcp_delete_session(request: Request):
 
 
 # Connection management endpoints removed - stateless API key auth only
+
+
+@router.post("/mcp_write_fallback", tags=["MCP"], summary="Store MCP write fallback")
+async def mcp_write_fallback_endpoint(request: Request):
+    """HTTP endpoint for clients that need to queue denied write operations."""
+    payload = await request.json()
+    result = await handle_mcp_write_fallback(payload)
+    result["endpoint"] = "/v1/mcp_write_fallback"
+    return JSONResponse(content=result)
+
+
+@router.post("/mcp/trigger_mcp_write_fallback", tags=["MCP"], summary="Trigger MCP write fallback")
+async def trigger_mcp_write_fallback_endpoint(request: Request):
+    """Compatibility endpoint for MCP write fallback trigger calls."""
+    payload = await request.json()
+    result = await handle_mcp_write_fallback(payload)
+    result["endpoint"] = "/v1/mcp/trigger_mcp_write_fallback"
+    return JSONResponse(content=result)
