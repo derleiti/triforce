@@ -1308,3 +1308,8 @@ GEMINI_ACCESS_HANDLERS = {
     "gemini_function_call": handle_gemini_function_call,
     "gemini_code_exec": handle_gemini_code_exec,
 }
+
+
+# Backward-compatible singleton used by mesh/group-chat services.
+gemini_access_point = GeminiAccessPoint()
+gemini_service = gemini_access_point

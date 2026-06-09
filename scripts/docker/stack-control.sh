@@ -6,7 +6,7 @@ set -e
 TRIFORCE_DIR="${TRIFORCE_DIR:-$HOME/triforce}"
 cd "$TRIFORCE_DIR"
 
-STACKS="wordpress flarum searxng mailserver repository"
+STACKS="wordpress flarum mailserver repository"  # searxng removed: runs from parent docker-compose.yml (project=docker, shared triforce-net)
 
 usage() {
     echo "Usage: $0 {start|stop|restart|status|logs} [stack]"

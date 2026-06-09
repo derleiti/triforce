@@ -58,13 +58,13 @@ OLLAMA_MODELS = {
 
 # Cloud-Modelle (via Mesh)
 CLOUD_MODELS = {
-    "gemini/gemini-2.5-flash": {
+    "gemini/gemini-3.5-flash": {
         "role": "lead",
         "provider": "gemini",
         "capabilities": ["reasoning", "code", "vision", "search"],
         "system_prompt_key": "gemini-lead",
     },
-    "gemini/gemini-2.0-flash": {
+    "gemini/gemini-3.5-flash": {
         "role": "lead",
         "provider": "gemini",
         "capabilities": ["reasoning", "code", "vision", "search"],
@@ -76,7 +76,7 @@ CLOUD_MODELS = {
         "capabilities": ["reasoning", "code", "long-context"],
         "system_prompt_key": "gemini-lead",
     },
-    "mistral/mistral-large": {
+    "mistral/mistral-medium-3.5": {
         "role": "reviewer",
         "provider": "mistral",
         "capabilities": ["code", "review", "multilingual"],
@@ -97,8 +97,8 @@ CLOUD_MODELS = {
 }
 
 GEMINI_MODEL_IDS = {
-    "flash": "gemini/gemini-2.5-flash",
-    "standard": "gemini/gemini-2.0-flash",
+    "flash": "gemini/gemini-3.5-flash",
+    "standard": "gemini/gemini-3.5-flash",
 }
 
 
