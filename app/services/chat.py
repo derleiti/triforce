@@ -29,6 +29,12 @@ logger = __import__("logging").getLogger("ailinux.chat")
 # =============================================================================
 
 
+NOVA_FALLBACK_CASCADE = [
+    "gpt-oss:120b-cloud",
+    "gpt-oss:20b-cloud",
+    "openai/gpt-oss-120b:free",
+]
+
 async def _fallback_to_ollama(
     messages: List[dict[str, str]],
     temperature: Optional[float],
