@@ -1950,6 +1950,10 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
         }
     ])
 
+    # MCP tool names must match ^[a-zA-Z0-9_-]{1,64}$ for strict clients.
+    # Keep internal handler aliases intact, but export normalized names only.
+    for tool in tools:
+        tool["name"] = str(tool.get("name", "")).replace(".", "_").replace("-", "_")
     return {"tools": tools}
 
 async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
