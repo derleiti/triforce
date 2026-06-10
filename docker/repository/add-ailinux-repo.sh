@@ -146,13 +146,13 @@ get_mirror_repo_specs() {
     local codename="$1"
     cat <<EOF
 repo.ailinux.me|${codename}|main|amd64,i386|${codename}|AILinux Local|${KEYRING_PATH}|
-archive.ubuntu.com/ubuntu|${codename},${codename}-updates|main,restricted,universe,multiverse|amd64,i386|${codename}|Ubuntu Base|/usr/share/keyrings/ubuntu-archive-keyring.gpg|
-security.ubuntu.com/ubuntu|${codename}-security|main,restricted,universe,multiverse|amd64,i386|${codename}-security|Ubuntu Security|/usr/share/keyrings/ubuntu-archive-keyring.gpg|
-archive.neon.kde.org/user|${codename}|main|amd64|${codename}|KDE neon|/usr/share/keyrings/kde-neon-archive-keyring.gpg|${SHARED_KEYS_URL}/kde-neon.gpg
+archive.ubuntu.com/ubuntu|${codename},${codename}-updates|main,restricted,universe,multiverse|amd64,i386|${codename}|Ubuntu Base|${KEYRING_PATH}|
+security.ubuntu.com/ubuntu|${codename}-security|main,restricted,universe,multiverse|amd64,i386|${codename}-security|Ubuntu Security|${KEYRING_PATH}|
+archive.neon.kde.org/user|${codename}|main|amd64|${codename}|KDE neon|${KEYRING_PATH}|
 deb.nodesource.com/node_22.x|nodistro|main|amd64|nodistro|NodeSource 22.x|/usr/share/keyrings/ailinux-archive-keyring.gpg|
-dl.google.com/linux/chrome/deb|stable|main|amd64|stable|Google Chrome|/usr/share/keyrings/google-linux-signing-keyring.gpg|${SHARED_KEYS_URL}/google.gpg
+dl.google.com/linux/chrome/deb|stable|main|amd64|stable|Google Chrome|${KEYRING_PATH}|
 dl.winehq.org/wine-builds/ubuntu|${codename}|main|amd64|${codename}|WineHQ|/usr/share/keyrings/ailinux-archive-keyring.gpg|
-download.docker.com/linux/ubuntu|${codename}|stable|amd64|${codename}|Docker CE|/usr/share/keyrings/docker-archive-keyring.gpg|${SHARED_KEYS_URL}/docker.gpg
+download.docker.com/linux/ubuntu|${codename}|stable|amd64|${codename}|Docker CE|${KEYRING_PATH}|
 # VS Code is installed via --third-party manifest; do not mirror it here to avoid stale CDN index mismatches.
 ppa.launchpadcontent.net/cappelikan/ppa/ubuntu|${codename}|main|amd64|${codename}|Cappelikan PPA|${KEYRING_PATH}|
 ppa.launchpadcontent.net/graphics-drivers/ppa/ubuntu|${codename}|main|amd64|${codename}|Graphics Drivers PPA|${KEYRING_PATH}|
