@@ -9,8 +9,6 @@ from app.utils.errors import api_error
 from app.utils.http_client import HttpClient, client
 from app.utils.triforce_logging import multi_logger
 
-# Compatibility marker for legacy contract tests: temp_client = HttpClient(
-
 class WordPressService:
     def __init__(self) -> None:
         self._client: Optional[HttpClient] = None
