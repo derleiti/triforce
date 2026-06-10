@@ -225,7 +225,6 @@ async def lifespan(app: FastAPI):
     # Auto-Bootstrap CLI Agents (wenn konfiguriert)
     try:
         from .services.agent_bootstrap import bootstrap_service
-        import os
         auto_bootstrap = os.environ.get("AUTO_BOOTSTRAP_AGENTS", "false").lower() == "true"
         if auto_bootstrap:
             # import logging (centralized)
