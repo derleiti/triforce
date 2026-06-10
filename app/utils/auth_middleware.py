@@ -164,7 +164,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
     def _unauthorized_response(self, request: Request, detail: str) -> JSONResponse:
         """Return 401 with proper WWW-Authenticate header."""
         base_url = str(request.base_url).rstrip("/")
-        auth_server = f"{base_url}/v1/.well-known/oauth-authorization-server"
+        auth_server = f"{base_url}/v1" + "/.well-known/oauth-authorization-server"
 
         return JSONResponse(
             status_code=401,

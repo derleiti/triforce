@@ -5,7 +5,7 @@ from typing import Dict, List, Optional
 
 import httpx
 from app.config import get_settings
-from app.utils.http_client import HttpClient
+from app.utils.http_client import HttpClient, client
 
 class WordPressService:
     def __init__(self) -> None:

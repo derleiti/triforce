@@ -78,6 +78,16 @@ router = APIRouter(dependencies=[Depends(require_mcp_auth)])
 public_router = APIRouter()
 
 
+def _maybe_block_write_tool(tool_name: str, arguments: Dict[str, Any], request: Optional[Request] = None) -> Optional[Dict[str, Any]]:
+    """Compatibility hook for blocking unsafe write tools from external callers."""
+    return None
+
+
+def _filter_tools_for_client(tools: List[Dict[str, Any]], request: Optional[Request] = None) -> List[Dict[str, Any]]:
+    """Compatibility hook for client-aware tools/list filtering."""
+    return tools
+
+
 @public_router.get("/.well-known/oauth-authorization-server")
 async def oauth_authorization_server_metadata(request: Request) -> JSONResponse:
     """Public OAuth metadata for MCP client discovery."""

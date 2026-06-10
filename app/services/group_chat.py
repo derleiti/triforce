@@ -354,6 +354,18 @@ class GroupChatOrchestrator:
     # Phase 1: Gemini Lead Analysis
     # -------------------------------------------------------------------------
 
+    async def _chat_with_lead_model(self, messages, temperature: float = 0.3, max_tokens: int = 4096):
+        """Call the lead model. Split out so tests and adapters can override it."""
+        from app.services.chat_router import api_proxy
+
+        analysis = await api_proxy.chat(
+            model="gemini/gemini-2.5-flash",
+            messages=messages,
+            temperature=temperature,
+            max_tokens=max_tokens,
+        )
+        return analysis, "gemini/gemini-2.5-flash"
+
     async def start_discussion(self, session_id: str) -> Dict[str, Any]:
         """
         Gemini Lead analysiert die Frage und erstellt Sub-Tasks für Web-AIs.
@@ -368,14 +380,15 @@ class GroupChatOrchestrator:
         analysis_prompt = self._build_analysis_prompt(session)
 
         try:
-            from app.services.chat_router import api_proxy
-
-            analysis = await api_proxy.chat(
-                model="gemini/gemini-2.5-flash",
+            analysis_result = await self._chat_with_lead_model(
                 messages=[{"role": "user", "content": analysis_prompt}],
                 temperature=0.3,
                 max_tokens=4096,
             )
+            if isinstance(analysis_result, tuple):
+                analysis, lead_model = analysis_result
+            else:
+                analysis, lead_model = analysis_result, "gemini/gemini-2.5-flash"
 
 
 
@@ -390,7 +403,7 @@ class GroupChatOrchestrator:
                 sender="gemini-lead",
                 msg_type=MessageType.ANALYSIS,
                 content=analysis,
-                metadata={"model": "gemini/gemini-2.5-flash"},
+                metadata={"model": lead_model},
             )
 
             # Sub-Tasks für Web-AIs extrahieren und posten
