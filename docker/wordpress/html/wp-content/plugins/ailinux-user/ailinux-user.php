@@ -19,7 +19,7 @@ if (!defined('ABSPATH')) exit;
 
 define('AILINUX_VERSION', '1.0.0');
 define('AILINUX_API_URL', 'https://api.ailinux.me/v1');
-define('AILINUX_WEBHOOK_SECRET', 'ailinux-webhook-secret-change-me'); // In wp-config.php überschreiben!
+if (!defined('AILINUX_WEBHOOK_SECRET') && getenv('WEBHOOK_SECRET')) { define('AILINUX_WEBHOOK_SECRET', getenv('WEBHOOK_SECRET')); } // Set via wp-config.php or env
 
 class AILinux_User_Plugin {
     
