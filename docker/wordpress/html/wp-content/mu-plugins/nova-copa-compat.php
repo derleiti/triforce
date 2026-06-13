@@ -47,13 +47,37 @@ function nova_copa_admin_allowed(): bool {
 function nova_copa_headers_for_backend(): array {
     $headers = ['Content-Type' => 'application/json'];
 
-    if (defined('NOVA_AI_INTERNAL_KEY') && NOVA_AI_INTERNAL_KEY) {
-        $headers['X-Internal-Key'] = NOVA_AI_INTERNAL_KEY;
-    } else {
+    $secret = '';
+
+    // Env is authoritative. Constants may be stale from wp-config.php.
+    foreach (['NOVA_AI_INTERNAL_KEY', 'WEBHOOK_SECRET', 'TRIFORCE_ADMIN_SECRET', 'MCP_ADMIN_TOKEN', 'MCP_AUTH_TOKEN'] as $env_key) {
+        $value = getenv($env_key);
+        if (is_string($value) && $value !== '') {
+            $secret = $value;
+            break;
+        }
+    }
+
+    if ($secret === '') {
+        foreach (['NOVA_AI_INTERNAL_KEY', 'TRIFORCE_ADMIN_SECRET', 'MCP_ADMIN_TOKEN', 'MCP_AUTH_TOKEN'] as $constant) {
+            if (defined($constant) && constant($constant)) {
+                $secret = (string) constant($constant);
+                break;
+            }
+        }
+    }
+
+    if ($secret === '') {
         $settings = get_option('nova_ai_settings', []);
         if (!empty($settings['internal_key'])) {
-            $headers['X-Internal-Key'] = $settings['internal_key'];
+            $secret = (string) $settings['internal_key'];
         }
+    }
+
+    if ($secret !== '') {
+        $headers['X-Internal-Key'] = $secret;
+        $headers['X-Nova-Webhook-Secret'] = $secret;
+        $headers['Authorization'] = 'Bearer ' . $secret;
     }
 
     return $headers;
@@ -163,32 +187,85 @@ function nova_copa_set_user_state(int $uid, array $data): array {
     ];
 }
 
-function nova_copa_sync_backend(int $uid): void {
+function nova_copa_sync_backend(int $uid): array {
     $user = get_userdata($uid);
     if (!$user) {
-        return;
+        return [
+            'ok' => false,
+            'error' => 'wp_user_missing',
+        ];
     }
 
     $payload = [
         'email' => $user->user_email,
         'name' => $user->display_name,
         'tier' => get_user_meta($uid, 'nova_tier', true) ?: 'free',
+        'billing' => !empty(get_user_meta($uid, 'nova_entitlements', true)),
         'nova_entitlements' => (array)(get_user_meta($uid, 'nova_entitlements', true) ?: []),
         'source' => 'wordpress_admin_or_webhook',
     ];
+
+    $results = [];
 
     foreach ([
         '/v1/admin/users/entitlements',
         '/v1/users/entitlements',
         '/v1/user/entitlements',
     ] as $path) {
-        wp_remote_post(nova_copa_backend_base() . $path, [
+        $url = nova_copa_backend_base() . $path;
+        $response = wp_remote_post($url, [
             'headers' => nova_copa_headers_for_backend(),
             'body' => wp_json_encode($payload),
-            'timeout' => 8,
-            'blocking' => false,
+            'timeout' => 12,
+            'blocking' => true,
         ]);
+
+        if (is_wp_error($response)) {
+            $results[] = [
+                'path' => $path,
+                'ok' => false,
+                'error' => $response->get_error_message(),
+            ];
+            continue;
+        }
+
+        $code = (int) wp_remote_retrieve_response_code($response);
+        $body = wp_remote_retrieve_body($response);
+
+        $results[] = [
+            'path' => $path,
+            'ok' => ($code >= 200 && $code < 300),
+            'http_code' => $code,
+            'body' => json_decode($body, true) ?: $body,
+        ];
+
+        if ($code >= 200 && $code < 300) {
+            update_option('nova_last_triforce_sync', [
+                'timestamp' => time(),
+                'email' => $user->user_email,
+                'path' => $path,
+                'http_code' => $code,
+            ], false);
+
+            return [
+                'ok' => true,
+                'path' => $path,
+                'http_code' => $code,
+                'results' => $results,
+            ];
+        }
     }
+
+    update_option('nova_last_triforce_sync_error', [
+        'timestamp' => time(),
+        'email' => $user->user_email,
+        'results' => $results,
+    ], false);
+
+    return [
+        'ok' => false,
+        'results' => $results,
+    ];
 }
 
 function nova_copa_verify_ls_signature(WP_REST_Request $request): bool {
@@ -326,7 +403,7 @@ function nova_copa_handle_payment(WP_REST_Request $request): WP_REST_Response {
         'nova_entitlements' => $entitlements,
     ]);
 
-    nova_copa_sync_backend($uid);
+    $sync = nova_copa_sync_backend($uid);
 
     update_option('nova_last_webhook', [
         'timestamp' => time(),
@@ -341,6 +418,7 @@ function nova_copa_handle_payment(WP_REST_Request $request): WP_REST_Response {
         'user_id' => $uid,
         'email' => $email,
         'state' => $state,
+        'sync' => $sync ?? null,
     ], 200);
 }
 
@@ -365,13 +443,14 @@ function nova_copa_admin_upsert(WP_REST_Request $request): WP_REST_Response {
         'nova_entitlements' => $p['nova_entitlements'] ?? $p['entitlements'] ?? [],
     ]);
 
-    nova_copa_sync_backend($uid);
+    $sync = nova_copa_sync_backend($uid);
 
     return new WP_REST_Response([
         'ok' => true,
         'user_id' => $uid,
         'email' => $email,
         'state' => $state,
+        'sync' => $sync ?? null,
     ], 200);
 }
 
@@ -484,3 +563,40 @@ add_action('rest_api_init', function () {
         'permission_callback' => 'nova_copa_admin_allowed',
     ], true);
 }, 30);
+
+
+add_action('wp_login', function ($user_login, $user) {
+    if (!$user || empty($user->ID) || empty($user->user_email)) {
+        return;
+    }
+
+    $uid = (int) $user->ID;
+    $email = sanitize_email($user->user_email);
+
+    if (!$email) {
+        return;
+    }
+
+    update_user_meta($uid, 'nova_ailinux_email', $email);
+
+    foreach ([
+        'nova_removed',
+        'nova_deleted',
+        'nova_account_removed',
+        'account_removed',
+        'deleted',
+        'removed',
+    ] as $meta_key) {
+        delete_user_meta($uid, $meta_key);
+    }
+
+    // Preserve existing entitlements. If missing, keep free state.
+    if (get_user_meta($uid, 'nova_tier', true) === '') {
+        update_user_meta($uid, 'nova_tier', 'free');
+    }
+
+    if (function_exists('nova_copa_sync_backend')) {
+        nova_copa_sync_backend($uid);
+    }
+}, 20, 2);
+
