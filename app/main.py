@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pathlib import Path
-from fastapi_limiter import FastAPILimiter
+from .utils.rate_limit_compat import FastAPILimiter
 from typing import Optional
 
 # Unified logging für alle Komponenten
@@ -103,6 +103,7 @@ from .routes.nova_playground import router as nova_playground_router
 from .routes.nova_wordpress import router as nova_wordpress_router
 from .routes.nova_operator import router as nova_operator_router
 from .routes.rag import router as rag_router
+from app.routes.admin_users import router as admin_users_router
 
 # Import routers from the top-level app directory
 from .routes_sd3 import router as sd3_router
@@ -495,3 +496,5 @@ def create_app() -> FastAPI:
 
 # Uvicorn Entry
 app = create_app()
+
+app.include_router(admin_users_router, prefix="/v1", tags=["Admin Users"])

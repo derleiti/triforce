@@ -252,6 +252,55 @@ def build_verified_session(payload: dict) -> Dict[str, Any]:
     }
 
 
+
+def verify_wordpress_login(email: str, password: str) -> dict | None:
+    """
+    Validate login against WordPress, which is the source of truth for passwords.
+    Returns WordPress user payload on success, otherwise None.
+    """
+    import urllib.request
+    import urllib.error
+
+    base = os.environ.get("WORDPRESS_AUTH_VALIDATE_URL", "https://ailinux.me/wp-json/nova-ai/v1/auth/validate")
+    secret = (
+        os.environ.get("NOVA_AI_INTERNAL_KEY")
+        or os.environ.get("WEBHOOK_SECRET")
+        or os.environ.get("TRIFORCE_ADMIN_SECRET")
+        or ""
+    )
+
+    if not secret:
+        logger.warning("WordPress auth fallback unavailable: no internal secret configured")
+        return None
+
+    body = json.dumps({"email": email, "password": password}).encode("utf-8")
+    req = urllib.request.Request(
+        base,
+        data=body,
+        method="POST",
+        headers={
+            "Content-Type": "application/json",
+            "X-Nova-Webhook-Secret": secret,
+        },
+    )
+
+    try:
+        with urllib.request.urlopen(req, timeout=8) as r:
+            payload = json.loads(r.read().decode("utf-8"))
+    except Exception as exc:
+        logger.warning("WordPress auth fallback failed for %s: %s", email, exc)
+        return None
+
+    if not payload.get("ok"):
+        return None
+
+    user = payload.get("user") or {}
+    if not isinstance(user, dict):
+        return None
+
+    return user
+
+
 # =============================================================================
 # User Registry (Simple User/Pass Auth)
 # =============================================================================
@@ -581,29 +630,53 @@ async def user_login(request: UserLoginRequest):
     email = request.email.lower().strip()
     user = USER_REGISTRY.get(email)
 
-    # Login darf standardmäßig keine Accounts erzeugen.
-    # Registrierung läuft ausschließlich über /register bzw. WordPress/login.ailinux.me.
-    if not user:
-        if not ALLOW_AUTO_REGISTER:
-            logger.warning(f"Login attempt for unknown email: {email}")
-            raise HTTPException(401, "Invalid email or password")
+    # WordPress is the source of truth for login/password.
+    # TriForce users.json is only the client/entitlement mirror.
+    needs_wp_auth = (not user) or (not isinstance(user, dict)) or (not user.get("password_hash"))
 
-        logger.warning(f"Auto-registering unknown email via login because ALLOW_AUTO_REGISTER=true: {email}")
-        user = register_new_user(
-            email=email,
-            password=request.password,
-            name=request.name if hasattr(request, 'name') and request.name else None,
-            tier="guest"
-        )
-        if not user:
-            logger.error(f"Failed to register new user: {email}")
-            raise HTTPException(500, "Failed to register user")
-        logger.warning(f"New user auto-registered via login: {email} (tier: guest)")
+    if needs_wp_auth:
+        wp_user = verify_wordpress_login(email, request.password)
+        if not wp_user:
+            if not user and ALLOW_AUTO_REGISTER:
+                logger.warning(f"Auto-registering unknown email via login because ALLOW_AUTO_REGISTER=true: {email}")
+                user = register_new_user(
+                    email=email,
+                    password=request.password,
+                    name=request.name if hasattr(request, 'name') and request.name else None,
+                    tier="guest"
+                )
+                if not user:
+                    logger.error(f"Failed to register new user: {email}")
+                    raise HTTPException(500, "Failed to register user")
+            else:
+                logger.warning(f"WordPress login failed for: {email}")
+                raise HTTPException(401, "Invalid email or password")
+        else:
+            existing = user if isinstance(user, dict) else {}
+            user = {
+                **existing,
+                "tier": wp_user.get("tier") or existing.get("tier") or "free",
+                "name": wp_user.get("name") or existing.get("name") or email.split("@", 1)[0],
+                "billing": existing.get("billing", False),
+                "nova_entitlements": wp_user.get("nova_entitlements") or existing.get("nova_entitlements") or {},
+                "auth_provider": "wordpress",
+            }
+            save_user_to_file(email, user)
+            USER_REGISTRY[email] = user
+            logger.info(f"WordPress-authenticated user: {email}")
     else:
-        # Existierender User - Passwort prüfen
+        # Existing local TriForce password hash.
         if not verify_secret(request.password, user["password_hash"]):
-            logger.warning(f"Invalid password for: {email}")
-            raise HTTPException(401, "Invalid email or password")
+            wp_user = verify_wordpress_login(email, request.password)
+            if not wp_user:
+                logger.warning(f"Invalid password for: {email}")
+                raise HTTPException(401, "Invalid email or password")
+            user["auth_provider"] = "wordpress"
+            user["tier"] = wp_user.get("tier") or user.get("tier") or "free"
+            user["name"] = wp_user.get("name") or user.get("name") or email.split("@", 1)[0]
+            user["nova_entitlements"] = wp_user.get("nova_entitlements") or user.get("nova_entitlements") or {}
+            save_user_to_file(email, user)
+            USER_REGISTRY[email] = user
 
     response = issue_user_login_response(email, user)
     logger.info(f"User logged in: {email} ({response.tier}) -> {response.client_id}")
