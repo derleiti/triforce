@@ -373,15 +373,41 @@ class APIProxy:
             Assistant-Antwort als String
         """
         from .api_vault import api_vault
-        
-        if not api_vault.is_unlocked:
-            raise RuntimeError("API Vault is locked - cannot access API keys")
-        
+
+        # ENV-Fallback: Wenn Vault locked/uninitialisiert ODER Key nicht im Vault,
+        # versuche os.environ. Konsistent mit handlers_v4 und nova_frontend.
+        # Reaktiviert 2026-06-15 — Vault wurde nie initialisiert, blockt sonst Group Chat.
+        import os
+        _PROVIDER_ENV = {
+            "openai":    ("OPENAI_API_KEY",),
+            "anthropic": ("ANTHROPIC_API_KEY",),
+            "google":    ("GEMINI_API_KEY", "GOOGLE_AI_STUDIO_KEY"),
+            "gemini":    ("GEMINI_API_KEY", "GOOGLE_AI_STUDIO_KEY"),
+            "mistral":   ("MISTRAL_API_KEY",),
+            "groq":      ("GROQ_API_KEY",),
+            "cerebras":  ("CEREBRAS_API_KEY",),
+            "openrouter":("OPENROUTER_API_KEY",),
+        }
+
         provider, model_id = model.split("/", 1)
-        api_key = api_vault.get_key(provider)
-        
+
+        api_key = None
+        if api_vault.is_unlocked:
+            api_key = api_vault.get_key(provider)
+
         if not api_key:
-            raise RuntimeError(f"No API key for provider: {provider}")
+            for env_name in _PROVIDER_ENV.get(provider, ()):
+                v = os.environ.get(env_name)
+                if v:
+                    api_key = v
+                    break
+
+        if not api_key:
+            raise RuntimeError(
+                f"No API key for provider '{provider}' "
+                f"(vault {'unlocked' if api_vault.is_unlocked else 'locked'}, "
+                f"ENV checked: {_PROVIDER_ENV.get(provider, ())})"
+            )
         
         # Provider-spezifische Implementierung
         if provider == "openai":
