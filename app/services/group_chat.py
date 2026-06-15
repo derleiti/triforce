@@ -355,16 +355,44 @@ class GroupChatOrchestrator:
     # -------------------------------------------------------------------------
 
     async def _chat_with_lead_model(self, messages, temperature: float = 0.3, max_tokens: int = 4096):
-        """Call the lead model. Split out so tests and adapters can override it."""
-        from app.services.chat_router import api_proxy
+        """Call the lead model with fallback chain. Tests/adapters can override.
 
-        analysis = await api_proxy.chat(
-            model="gemini/gemini-2.5-flash",
-            messages=messages,
-            temperature=temperature,
-            max_tokens=max_tokens,
-        )
-        return analysis, "gemini/gemini-2.5-flash"
+        Reihenfolge konfigurierbar via ENV GROUP_CHAT_LEAD_MODELS
+        (komma-separiert, z.B. "mistral/mistral-medium-3.5,groq/llama-3.3-70b-versatile").
+        Default-Chain: Gemini -> Mistral -> Groq -> Cerebras.
+        Patched 2026-06-15: Gemini-Quota-Ausfall darf nicht den Lead blockieren.
+        """
+        from app.services.chat_router import api_proxy
+        import os
+
+        env_chain = os.environ.get("GROUP_CHAT_LEAD_MODELS", "").strip()
+        if env_chain:
+            chain = [m.strip() for m in env_chain.split(",") if m.strip()]
+        else:
+            chain = [
+                "gemini/gemini-2.5-flash",
+                "mistral/mistral-medium-latest",
+                "groq/llama-3.3-70b-versatile",
+                "cerebras/llama-3.3-70b",
+            ]
+
+        last_err = None
+        for model in chain:
+            try:
+                analysis = await api_proxy.chat(
+                    model=model,
+                    messages=messages,
+                    temperature=temperature,
+                    max_tokens=max_tokens,
+                )
+                if model != chain[0]:
+                    logger.warning(f"Lead-Model Fallback aktiv: {model} (primary failed)")
+                return analysis, model
+            except Exception as e:
+                last_err = e
+                logger.warning(f"Lead-Model {model} failed: {e}")
+                continue
+        raise RuntimeError(f"All lead models failed. Last error: {last_err}")
 
     async def start_discussion(self, session_id: str) -> Dict[str, Any]:
         """
@@ -684,14 +712,16 @@ Format: Problem → Lösung → Code-Skizze (wenn relevant)."""
         consolidation_prompt = self._build_consolidation_prompt(session)
 
         try:
-            from app.services.chat_router import api_proxy
-
-            summary = await api_proxy.chat(
-                model="gemini/gemini-2.5-flash",
+            # Nutze dieselbe Lead-Fallback-Chain wie in der Analysephase
+            summary_result = await self._chat_with_lead_model(
                 messages=[{"role": "user", "content": consolidation_prompt}],
                 temperature=0.2,
                 max_tokens=6000,
             )
+            if isinstance(summary_result, tuple):
+                summary, lead_model = summary_result
+            else:
+                summary, lead_model = summary_result, "gemini/gemini-2.5-flash"
 
 
 
@@ -705,7 +735,7 @@ Format: Problem → Lösung → Code-Skizze (wenn relevant)."""
                 sender="gemini-lead",
                 msg_type=MessageType.SUMMARY,
                 content=summary,
-                metadata={"model": "gemini/gemini-2.5-flash", "phase": "consolidation"},
+                metadata={"model": lead_model, "phase": "consolidation"},
             )
 
             session.final_summary = summary
