@@ -1,13 +1,16 @@
 # ========================================
 # AILinux AI Server Backend - Dependencies
-# Cutting-edge stable versions (2025)
+# Cutting-edge stable versions (2026)
 # ========================================
 
-# Core Framework - Latest Stable (FastAPI 0.118 available!)
+# Build Toolchain Constraints
+setuptools<82
+
+# Core Framework
 fastapi==0.118.0
 uvicorn[standard]==0.37.0
-pydantic==2.11.10
-pydantic-settings==2.11.0
+pydantic>=2.13,<3
+pydantic-settings>=2.11,<3
 
 # HTTP Clients & Async
 httpx[http2]==0.28.1
