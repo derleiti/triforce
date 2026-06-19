@@ -17,7 +17,7 @@ async def _wp_api(method: str, endpoint: str, data: dict = None) -> dict:
 
     user = os.getenv("WORDPRESS_APP_USER", os.getenv("WORDPRESS_USER", "ailinux-nova-ai"))
     passwd = os.getenv("WORDPRESS_APP_PASSWORD", os.getenv("WORDPRESS_PASSWORD", ""))
-    url = f"https://127.0.0.1/wp-json/wp/v2/{endpoint}"
+    url = f"https://ailinux.me/wp-json/wp/v2/{endpoint}"
     headers = {
         "Host": "ailinux.me",
         "Content-Type": "application/json",

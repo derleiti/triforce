@@ -203,8 +203,8 @@ DEFAULT_AGENTS: List[Dict[str, Any]] = [
         "agent_type": "codex",
         "name": "OpenAI Codex MCP Agent (Full-Auto)",
         "description": "Codex CLI im Full-Auto Modus ohne Sandbox",
-        # Wrapper fügt hinzu: exec --full-auto --dangerously-skip-permissions
-        "command": [f"{TRIFORCE_BIN}/codex-triforce", "exec"],
+        # Wrapper fügt bereits hinzu: exec --full-auto --dangerously...
+        "command": [f"{TRIFORCE_BIN}/codex-triforce"],
         "env": {
             "PATH": f"{TRIFORCE_BIN}:{CLI_BIN}:/usr/local/bin:/usr/bin:/bin",
             "CODEX_DISABLE_TELEMETRY": "1",
@@ -215,7 +215,7 @@ DEFAULT_AGENTS: List[Dict[str, Any]] = [
         "agent_type": "gemini",
         "name": "Google Gemini Lead Agent (YOLO Mode)",
         "description": "Gemini CLI im YOLO-Modus ohne Sandbox",
-        # Wrapper fügt hinzu: --yolo --approval-mode yolo
+        # Wrapper fügt bereits hinzu: --yolo --approval-mode yolo
         "command": [f"{TRIFORCE_BIN}/gemini-triforce"],
         "env": {
             "PATH": f"{TRIFORCE_BIN}:{CLI_BIN}:/usr/local/bin:/usr/bin:/bin",
@@ -227,8 +227,8 @@ DEFAULT_AGENTS: List[Dict[str, Any]] = [
         "agent_type": "opencode",
         "name": "OpenCode AI Agent (Auto Mode)",
         "description": "OpenCode CLI im Auto-Modus",
-        # Wrapper fügt hinzu: run --auto
-        "command": [f"{TRIFORCE_BIN}/opencode-triforce", "run"],
+        # Wrapper fügt bereits hinzu: run --auto
+        "command": [f"{TRIFORCE_BIN}/opencode-triforce"],
         "env": {
             "PATH": f"{TRIFORCE_BIN}:{CLI_BIN}:/usr/local/bin:/usr/bin:/bin",
             "OPENCODE_DISABLE_TELEMETRY": "1",
@@ -792,21 +792,21 @@ class AgentController:
             # Hole HOME aus der Agent-Config für explizites Setzen im Bash-Befehl
             agent_home = instance.config.env.get("HOME", "/root")
 
-            # Nutze TriForce Wrapper - diese setzen HOME/ENV korrekt
+            # Nutze TriForce Wrapper - diese setzen HOME/ENV/FLAGS bereits korrekt
             if agent_type == AgentType.CLAUDE:
                 cmd = [
                     "bash", "-c",
-                    f"echo {safe_msg} | {TRIFORCE_BIN}/claude-triforce -p --output-format text 2>&1"
+                    f"echo {safe_msg} | {TRIFORCE_BIN}/claude-triforce 2>&1"
                 ]
             elif agent_type == AgentType.CODEX:
                 cmd = [
                     "bash", "-c",
-                    f"echo {safe_msg} | {TRIFORCE_BIN}/codex-triforce exec - --full-auto 2>&1"
+                    f"echo {safe_msg} | {TRIFORCE_BIN}/codex-triforce 2>&1"
                 ]
             elif agent_type == AgentType.GEMINI:
                 cmd = [
                     "bash", "-c",
-                    f"echo {safe_msg} | {TRIFORCE_BIN}/gemini-triforce --yolo 2>&1"
+                    f"echo {safe_msg} | {TRIFORCE_BIN}/gemini-triforce 2>&1"
                 ]
             elif agent_type == AgentType.OPENCODE:
                 # WICHTIG: Sauberes Workspace ohne CLAUDE.md um unerwartete Task-Ausführung zu vermeiden
@@ -815,7 +815,7 @@ class AgentController:
                 
                 cmd = [
                     "bash", "-c",
-                    f"cd {opencode_workspace} && {TRIFORCE_BIN}/opencode-triforce run {safe_msg} 2>&1"
+                    f"cd {opencode_workspace} && echo {safe_msg} | {TRIFORCE_BIN}/opencode-triforce 2>&1"
                 ]
             else:
                 cmd = instance.config.command + [message]

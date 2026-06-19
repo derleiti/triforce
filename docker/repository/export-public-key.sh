@@ -7,12 +7,12 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 REPO_ROOT="${REPO_ROOT:-$SCRIPT_DIR}"
-SIGNING_KEY_ID="2B320747C602A195"
-OUTPUT_FILE="${REPO_ROOT}/repo/mirror/ailinux-archive-key.gpg"
+SIGNING_KEY_ID="59FAE19560F5E25B"
+OUTPUT_FILE="${OUTPUT_FILE:-${REPO_ROOT}/repo/mirror/ailinux-archive-key.gpg}"
 
 # Use repository's GNUPGHOME if available, otherwise fall back to default
 DEFAULT_GNUPGHOME="${REPO_ROOT}/etc/gnupg"
-if [[ -d "$DEFAULT_GNUPGHOME" ]]; then
+if [[ -d "$DEFAULT_GNUPGHOME" && -r "$DEFAULT_GNUPGHOME" && -w "$DEFAULT_GNUPGHOME" ]]; then
   export GNUPGHOME="$DEFAULT_GNUPGHOME"
 fi
 
@@ -46,7 +46,12 @@ fi
 mkdir -p "$(dirname "$OUTPUT_FILE")"
 
 # Install the key
-install -Dm0644 "$TMP_KEY" "$OUTPUT_FILE"
+cp "$TMP_KEY" "$OUTPUT_FILE"
+
+# Compatibility aliases for older install instructions and direct root downloads
+cp "$TMP_KEY" "${REPO_ROOT}/repo/mirror/ailinux-mirror-signing-key.gpg"
+cp "$TMP_KEY" "${REPO_ROOT}/repo/ailinux-archive-key.gpg"
+cp "$TMP_KEY" "${REPO_ROOT}/repo/ailinux-mirror-signing-key.gpg"
 
 echo "✓ Key exported successfully"
 echo ""

@@ -67,7 +67,7 @@ deploy_node() {
 deploy_node "10.10.0.2" "zombie"     "/home/zombie/triforce"     "zombie-pc"
 
 # Deploy auf backup
-deploy_node "10.10.0.3" "backupuser" "/home/backupuser/triforce" "backup"
+deploy_node "10.10.0.3" "zombie" "/home/zombie/triforce" "backup"
 
 log ""
 log "=== Deploy abgeschlossen ==="
@@ -76,4 +76,4 @@ log "Logs: <TRIFORCE_DIR>/logs/node-sync.log"
 log ""
 log "Status prüfen mit:"
 log "  ssh zombie@10.10.0.2 'systemctl status triforce-node-sync.timer'"
-log "  ssh backupuser@10.10.0.3 'systemctl status triforce-node-sync.timer'"
+log "  ssh zombie@10.10.0.3 'systemctl status triforce-node-sync.timer'"

@@ -4,7 +4,7 @@ from time import perf_counter
 from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
-from fastapi_limiter.depends import RateLimiter
+from ..utils.rate_limit_compat import RateLimiter
 
 from ..services import chat as chat_service
 from ..services.model_registry import registry

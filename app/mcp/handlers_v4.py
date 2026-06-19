@@ -88,6 +88,7 @@ class HandlerRegistry:
         self._register_init_handlers()
         self._register_gemini_handlers()
         self._register_mesh_handlers()
+        self._register_group_chat_handlers()
         self._register_mail_handlers()
         self._register_notification_handlers()
         self._register_dev_tool_handlers()
@@ -357,45 +358,58 @@ class HandlerRegistry:
                 return {"agents": agents, "count": len(agents)}
 
             async def handle_agent_call(params):
-                """Send message to specific agent and get response"""
-                agent_id = params.get("agent")
-                message = params.get("message")
+                """Send message to specific agent and get response.
+
+                Accept both legacy params (agent) and V5 schema params
+                (agent_id). Some MCP clients cache schema versions, so keeping
+                both avoids a discovery/runtime contract split.
+                """
+                agent_id = params.get("agent_id") or params.get("agent")
+                message = params.get("message") or params.get("command")
                 timeout = params.get("timeout", 120)
                 if not agent_id or not message:
-                    return {"error": "agent and message required"}
+                    return {"error": "agent_id and message required"}
                 return await agent_controller.call_agent(agent_id, message, timeout)
 
             async def handle_agent_broadcast(params):
-                """Broadcast message to all agents"""
-                message = params.get("message")
+                """Broadcast message to all agents.
+
+                Accept message (current schema) and command (older runtime
+                wrapper/schema variants). Delegates to the controller's
+                broadcast implementation so agent_ids filtering and future
+                behavior stay centralized.
+                """
+                message = params.get("message") or params.get("command")
                 strategy = params.get("strategy", "parallel")
                 if not message:
                     return {"error": "message required"}
-                agents = await agent_controller.list_agents()
-                results = {}
-                for agent in agents:
-                    agent_id = agent.get("agent_id", agent.get("id"))
-                    if agent.get("status") == "running":
+                agent_ids = params.get("agent_ids") or params.get("agents")
+                timeout = int(params.get("timeout", 60))
+                if agent_ids:
+                    results = {}
+                    for agent_id in agent_ids:
                         try:
-                            result = await agent_controller.call_agent(agent_id, message, timeout=60)
-                            results[agent_id] = result
+                            results[agent_id] = await agent_controller.call_agent(agent_id, message, timeout=timeout)
                         except Exception as e:
                             results[agent_id] = {"error": str(e)}
-                return {"strategy": strategy, "results": results}
+                    return {"broadcast": True, "strategy": strategy, "results": results}
+                result = await agent_controller.broadcast(message)
+                result["strategy"] = strategy
+                return result
 
             async def handle_agent_start(params):
                 """Start a CLI agent"""
-                agent_id = params.get("agent")
+                agent_id = params.get("agent_id") or params.get("agent")
                 if not agent_id:
-                    return {"error": "agent required"}
+                    return {"error": "agent_id required"}
                 return await agent_controller.start_agent(agent_id)
 
             async def handle_agent_stop(params):
                 """Stop a running CLI agent"""
-                agent_id = params.get("agent")
+                agent_id = params.get("agent_id") or params.get("agent")
                 force = params.get("force", False)
                 if not agent_id:
-                    return {"error": "agent required"}
+                    return {"error": "agent_id required"}
                 return await agent_controller.stop_agent(agent_id, force)
 
             self.register("agents", handle_agents_list)
@@ -840,6 +854,18 @@ class HandlerRegistry:
             logger.warning(f"WordPress handlers import failed: {e}")
         except Exception as e:
             logger.warning(f"WordPress handlers registration failed: {e}")
+
+
+    def _register_group_chat_handlers(self):
+        """Group Chat: group_chat_create, group_chat_ask, group_chat_message, etc."""
+        try:
+            from app.mcp.handlers_group_chat import GROUP_CHAT_HANDLERS
+            self.register_many(GROUP_CHAT_HANDLERS)
+            logger.info(f"Group chat handlers registered: {list(GROUP_CHAT_HANDLERS.keys())}")
+        except ImportError as e:
+            logger.warning(f"Group chat handlers import failed: {e}")
+        except Exception as e:
+            logger.warning(f"Group chat handlers registration failed: {e}")
 
 
     def _register_mail_handlers(self):

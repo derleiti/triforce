@@ -284,7 +284,14 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
       <div class="field"><label>Passwort</label>
         <div class="pw-wrap"><input type="password" id="l-pass" placeholder="••••••••" required autocomplete="current-password"><button type="button" class="pw-eye" data-target="l-pass">👁</button></div>
       </div>
-      <button type="submit" class="btn-main" id="l-btn">Anmelden</button>
+            <button type="submit" class="btn-main" id="l-btn">Anmelden</button>
+      <div class="footer-links" style="margin-top:.9rem"><a href="#" id="forgot-link">Passwort vergessen?</a></div>
+    </form>
+
+    <form id="forgot-form" style="display:none">
+      <div class="field"><label>E-Mail</label><input type="email" id="forgot-email" placeholder="deine@email.de" required autocomplete="email"></div>
+      <button type="submit" class="btn-main" id="forgot-btn">Reset-Link senden</button>
+      <div class="footer-links" style="margin-top:.9rem"><a href="#" id="forgot-back">Zurück zum Login</a></div>
     </form>
 
     <!-- Register Form -->
@@ -504,6 +511,17 @@ function isAdmin(t){return ['enterprise','admin','unlimited'].includes(t?.toLowe
 function lsGet(k){try{return localStorage.getItem(k)}catch{return null}}
 function lsSet(k,v){try{localStorage.setItem(k,v)}catch{}}
 function lsDel(...keys){keys.forEach(k=>{try{localStorage.removeItem(k)}catch{}})}
+function clearAilinuxAuthState(){
+  lsDel('ailinux_token','ailinux_email','ailinux_tier','ailinux_client_id','ailinux_name','ailinux_wp_last_sync','ailinux_wp_can_admin');
+  try{ sessionStorage.clear(); }catch{}
+  const expired='=; Max-Age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Lax; Secure';
+  ['ailinux_token','nova_session','ailinux_logout'].forEach(function(name){
+    try{ document.cookie=name+expired; }catch{}
+    try{ document.cookie=name+expired+'; domain=.ailinux.me'; }catch{}
+    try{ document.cookie=name+expired+'; domain=login.ailinux.me'; }catch{}
+  });
+  try{ if(window.google?.accounts?.id) google.accounts.id.disableAutoSelect(); }catch{}
+}
 
 // ── Tab switching (login view) ───────────────────────────────────────────────
 document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
@@ -598,7 +616,9 @@ function initGoogleLogin(){
       callback:handleGoogleCredential,
       ux_mode:'popup',
       auto_select:false,
-      cancel_on_tap_outside:true
+      cancel_on_tap_outside:true,
+      use_fedcm_for_prompt:false,
+      use_fedcm_for_button:false
     });
     google.accounts.id.renderButton(document.getElementById('google-signin-button'),{
       theme:'filled_black',size:'large',type:'standard',shape:'pill',text:'continue_with',logo_alignment:'left',width:340
@@ -610,7 +630,12 @@ function initGoogleLogin(){
     let tries=0;
     const timer=setInterval(()=>{tries++; if(render()||tries>20)clearInterval(timer)},250);
   }
-  fallback.addEventListener('click',()=>{try{google.accounts.id.prompt()}catch{showMsg('login-msg','Google Login konnte nicht geöffnet werden')}});
+  fallback.addEventListener('click',()=>{
+    const ok = render();
+    if(!ok){
+      showMsg('login-msg','Google Login konnte nicht geladen werden. Bitte Seite neu laden oder Passwort-Login verwenden.');
+    }
+  });
 }
 
 async function handleGoogleCredential(response){
@@ -625,15 +650,69 @@ async function handleGoogleCredential(response){
       lsSet('ailinux_tier',d.tier);
       lsSet('ailinux_client_id',d.client_id||'');
       lsSet('ailinux_name',d.name||'');
-      showMsg('login-msg','Google Login erfolgreich! 🎉','ok');
+      showMsg('login-msg','Google Login erfolgreich! WordPress-Session wird gesetzt …','ok');
+      if (wpLoginBridge(d, d.user_id || d.email)) return;
       setTimeout(()=>showDashboard(d.user_id||d.email,d.tier,d.client_id,d.name),300);
-      wpSync(d.token);
       try{window.opener?.postMessage({type:'ailinux_login',token:d.token,email:d.user_id||d.email,tier:d.tier},'*')}catch{}
     }else{
       showMsg('login-msg',d.detail||d.error||'Google Login fehlgeschlagen');
     }
   }catch(err){showMsg('login-msg','Google Verbindungsfehler: '+err.message)}
 }
+
+
+// ── Password reset by e-mail ─────────────────────────────────────────────────
+function showForgotForm(){
+  const email=document.getElementById('l-email')?.value.trim() || '';
+  document.getElementById('login-form').style.display='none';
+  document.getElementById('reg-form').style.display='none';
+  document.getElementById('forgot-form').style.display='';
+  if(email)document.getElementById('forgot-email').value=email;
+  document.getElementById('login-msg').className='msg';
+}
+
+function showLoginForm(){
+  document.getElementById('forgot-form').style.display='none';
+  document.getElementById('login-form').style.display='';
+  document.getElementById('reg-form').style.display='none';
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab==='login'));
+  document.getElementById('login-msg').className='msg';
+}
+
+document.getElementById('forgot-link')?.addEventListener('click',e=>{e.preventDefault();showForgotForm()});
+document.getElementById('forgot-back')?.addEventListener('click',e=>{e.preventDefault();showLoginForm()});
+
+async function requestPasswordReset(email){
+  return fetch(WP_API+'/auth/lost-password',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({email})
+  });
+}
+
+document.getElementById('forgot-form')?.addEventListener('submit',async e=>{
+  e.preventDefault();
+  const btn=document.getElementById('forgot-btn');
+  const email=document.getElementById('forgot-email').value.trim();
+  btn.disabled=true;
+  btn.classList.add('loading');
+
+  try{
+    const r=await requestPasswordReset(email);
+    const d=await r.json().catch(()=>({}));
+    if(r.ok&&d.ok){
+      showMsg('login-msg','Wenn ein Konto existiert, wurde eine E-Mail zum Zurücksetzen verschickt.','ok');
+    }else{
+      showMsg('login-msg',d.message||d.error||'Reset-Mail konnte nicht angefordert werden.');
+    }
+  }catch(err){
+    showMsg('login-msg','Verbindungsfehler: '+err.message);
+  }
+
+  btn.disabled=false;
+  btn.classList.remove('loading');
+});
+
 
 // ── Login Form ───────────────────────────────────────────────────────────────
 document.getElementById('login-form').addEventListener('submit',async e=>{
@@ -651,10 +730,8 @@ document.getElementById('login-form').addEventListener('submit',async e=>{
       lsSet('ailinux_tier',d.tier);
       lsSet('ailinux_client_id',d.client_id||'');
       lsSet('ailinux_name',d.name||'');
-      showMsg('login-msg','Willkommen! 🎉','ok');
-      setTimeout(()=>showDashboard(d.user_id,d.tier,d.client_id,d.name),400);
-      // WP-Sync: Token an WordPress senden
-      wpSync(d.token);
+      showMsg('login-msg','Willkommen! WordPress-Session wird gesetzt …','ok');
+      if (wpLoginBridge(d, d.user_id || email)) return;
       // postMessage für Parent-Fenster
       try{window.opener?.postMessage({type:'ailinux_login',token:d.token,email:d.user_id,tier:d.tier},'*')}catch{}
     }else{
@@ -693,14 +770,23 @@ document.getElementById('reg-form').addEventListener('submit',async e=>{
 });
 
 // ── WP Sync ──────────────────────────────────────────────────────────────────
-async function wpSync(token){
-  if(!token)return;
-  try{
-    const redirect=new URLSearchParams(location.search).get('redirect')||'';
-    await fetch(WP_API+'/auth/sync',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token,redirect_url:redirect})});
-  }catch{}
+function buildWpLoginUrl(data, fallbackEmail){
+  const redirect = new URLSearchParams(location.search).get('redirect') || 'https://ailinux.me/';
+  const url = new URL(WP_API + '/auth/wp-login');
+  url.searchParams.set('token', data.token || '');
+  url.searchParams.set('email', data.user_id || data.email || fallbackEmail || '');
+  url.searchParams.set('tier', data.tier || 'free');
+  url.searchParams.set('name', data.name || '');
+  url.searchParams.set('client_id', data.client_id || '');
+  url.searchParams.set('redirect', redirect);
+  return url.toString();
 }
 
+function wpLoginBridge(data, fallbackEmail){
+  if(!data || !data.token)return false;
+  window.location.href = buildWpLoginUrl(data, fallbackEmail);
+  return true;
+}
 // ── Verify token via Backend ──────────────────────────────────────────────────
 async function verifyAndRestoreSession(){
   const token=lsGet('ailinux_token');
@@ -841,9 +927,9 @@ document.getElementById('cancel-sub-btn')?.addEventListener('click',async()=>{
 // ── Logout ────────────────────────────────────────────────────────────────────
 document.getElementById('logout-btn').addEventListener('click',async()=>{
   const token=lsGet('ailinux_token');
-  lsDel('ailinux_token','ailinux_email','ailinux_tier','ailinux_client_id','ailinux_name');
+  clearAilinuxAuthState();
   try{await fetch(WP_API+'/auth/logout',{method:'POST',headers:token?{'Content-Type':'application/json'}:{},body:JSON.stringify({token})})}catch{}
-  location.reload();
+  window.location.href='https://login.ailinux.me/?action=logout&ts='+Date.now();
 });
 
 // ── App opener ────────────────────────────────────────────────────────────────
@@ -857,6 +943,11 @@ function openApp(){
 (async function init(){
   const params=new URLSearchParams(location.search);
   const view=params.get('view');
+  if(params.get('action')==='logout' || params.get('reset')==='1'){
+    clearAilinuxAuthState();
+    try{history.replaceState(null,'',location.pathname+(params.get('redirect')?'?redirect='+encodeURIComponent(params.get('redirect')):''));}catch{}
+    showMsg('login-msg','Abgemeldet. Du kannst dich jetzt neu anmelden.','ok');
+  }
 
   await loadAuthConfig();
 

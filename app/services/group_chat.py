@@ -25,6 +25,7 @@ import asyncio
 import copy
 import json
 import logging
+import os
 import time
 import uuid
 from dataclasses import dataclass, field
@@ -36,8 +37,42 @@ from typing import Any, Dict, List, Optional, Set
 logger = logging.getLogger("ailinux.group_chat")
 
 # Persistence
-GROUP_CHAT_DIR = Path("/var/tristar/group_chat")
-GROUP_CHAT_DIR.mkdir(parents=True, exist_ok=True)
+def _configured_group_chat_dir() -> Path:
+    explicit_dir = os.getenv("TRISTAR_GROUP_CHAT_DIR")
+    if explicit_dir:
+        return Path(explicit_dir)
+    return Path(os.getenv("TRISTAR_STATE_DIR", "/var/tristar")) / "group_chat"
+
+
+GROUP_CHAT_DIR = _configured_group_chat_dir()
+
+
+def _fallback_group_chat_dir() -> Path:
+    return Path(os.getenv("TRISTAR_FALLBACK_STATE_DIR", "/tmp/tristar")) / "group_chat"
+
+
+def _switch_to_fallback_group_chat_dir(exc: OSError) -> Path:
+    global GROUP_CHAT_DIR
+    fallback_dir = _fallback_group_chat_dir()
+    fallback_dir.mkdir(parents=True, exist_ok=True)
+    if GROUP_CHAT_DIR != fallback_dir:
+        logger.warning(
+            "Group chat state dir %s unavailable (%s); using %s",
+            GROUP_CHAT_DIR,
+            exc,
+            fallback_dir,
+        )
+        GROUP_CHAT_DIR = fallback_dir
+    return GROUP_CHAT_DIR
+
+
+def _ensure_group_chat_dir() -> Path:
+    """Return a writable group-chat state dir, falling back for tests/sandboxes."""
+    try:
+        GROUP_CHAT_DIR.mkdir(parents=True, exist_ok=True)
+        return GROUP_CHAT_DIR
+    except OSError as exc:
+        return _switch_to_fallback_group_chat_dir(exc)
 
 
 # =============================================================================
@@ -1115,7 +1150,8 @@ Format:
 
     def _save_session(self, session: GroupChatSession):
         """Speichert Session als JSON."""
-        filepath = GROUP_CHAT_DIR / f"{session.id}.json"
+        directory = _ensure_group_chat_dir()
+        filepath = directory / f"{session.id}.json"
         data = {
             "id": session.id,
             "topic": session.topic,
@@ -1129,11 +1165,22 @@ Format:
             "final_summary": session.final_summary,
             "error": session.error,
         }
-        filepath.write_text(json.dumps(data, indent=2, ensure_ascii=False))
+        serialized = json.dumps(data, indent=2, ensure_ascii=False)
+        try:
+            filepath.write_text(serialized)
+        except OSError as exc:
+            directory = _switch_to_fallback_group_chat_dir(exc)
+            filepath = directory / f"{session.id}.json"
+            filepath.write_text(serialized)
 
     def _load_sessions(self):
         """Lädt alle Sessions aus dem Dateisystem."""
-        for filepath in GROUP_CHAT_DIR.glob("gc-*.json"):
+        try:
+            directory = _ensure_group_chat_dir()
+        except OSError as exc:
+            logger.warning("Group chat sessions not loaded; state dir unavailable: %s", exc)
+            return
+        for filepath in directory.glob("gc-*.json"):
             try:
                 data = json.loads(filepath.read_text())
                 session = GroupChatSession(

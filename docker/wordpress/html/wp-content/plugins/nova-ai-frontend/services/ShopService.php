@@ -203,21 +203,42 @@ class ShopService {
      * @param  int    $wp_user_id  WordPress user ID (0 for guests)
      * @return string              Checkout URL, or empty string on failure.
      */
-    public function create_checkout(string $variant_id, int $wp_user_id = 0): string {
+    public function create_checkout(string $variant_id, int $wp_user_id = 0, array $product = []): string {
         $store_id = $this->store_id();
-        if (empty($store_id) || empty($variant_id)) {
+        if (empty($store_id) || empty($variant_id) || $wp_user_id <= 0) {
             return '';
         }
+
+        $user = get_userdata($wp_user_id);
+        if (!$user) {
+            return '';
+        }
+
+        $email = sanitize_email((string) $user->user_email);
+        $name  = trim((string) ($user->display_name ?: $user->user_login));
+        $product_id = sanitize_text_field((string) ($product['id'] ?? ''));
+        $product_name = sanitize_text_field((string) ($product['name'] ?? ''));
 
         $body = [
             'data' => [
                 'type'       => 'checkouts',
                 'attributes' => [
                     'checkout_data'   => [
-                        'custom' => ['wp_user_id' => (string) $wp_user_id],
+                        'email'  => $email,
+                        'name'   => $name,
+                        'custom' => [
+                            'wp_user_id'    => (string) $wp_user_id,
+                            'wp_user_email' => $email,
+                            'product_id'    => $product_id,
+                            'product_name'  => $product_name,
+                            'variant_id'    => sanitize_text_field($variant_id),
+                            'source'        => 'ailinux_shop',
+                        ],
                     ],
                     'product_options' => [
-                        'redirect_url' => home_url(),
+                        'redirect_url'        => home_url('/account/?shop=success'),
+                        'receipt_button_text' => 'Back to AILinux',
+                        'receipt_link_url'    => home_url('/account/'),
                     ],
                     'checkout_options' => [
                         'button_color' => '#6366f1',
@@ -232,7 +253,11 @@ class ShopService {
         ];
 
         $response = $this->api_request('/checkouts', 'POST', $body);
-        return $response['data']['attributes']['url'] ?? '';
+        if ($this->is_error($response)) {
+            return '';
+        }
+
+        return esc_url_raw($response['data']['attributes']['url'] ?? '');
     }
 
     /**

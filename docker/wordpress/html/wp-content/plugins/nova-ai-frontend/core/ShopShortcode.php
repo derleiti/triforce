@@ -31,7 +31,7 @@ class ShopShortcode {
         register_rest_route('nova-ai/v1', '/shop/checkout', [
             'methods'             => 'POST',
             'callback'            => [static::class, 'rest_create_checkout'],
-            'permission_callback' => '__return_true',
+            'permission_callback' => 'is_user_logged_in',
             'args' => [
                 'product_id' => [
                     'required'          => true,
@@ -47,7 +47,7 @@ class ShopShortcode {
      */
     public static function rest_create_checkout(\WP_REST_Request $request): \WP_REST_Response {
         $product_id = $request->get_param('product_id');
-        $wp_user_id = is_user_logged_in() ? get_current_user_id() : 0;
+        $wp_user_id = get_current_user_id();
 
         $shop     = \NovAI\Services\ShopService::instance();
         $products = $shop->get_products();
@@ -66,14 +66,14 @@ class ShopShortcode {
 
         // Try custom checkout (with wp_user_id) if we have a variant_id
         if (!empty($product['variant_id'])) {
-            $url = $shop->create_checkout($product['variant_id'], $wp_user_id);
+            $url = $shop->create_checkout((string) $product['variant_id'], $wp_user_id, $product);
             if (!empty($url)) {
                 return new \WP_REST_Response(['url' => $url], 200);
             }
         }
 
         // Fallback: direct buy_now_url from LS product
-        if (!empty($product['buy_now_url'])) {
+        if (false && !empty($product['buy_now_url'])) {
             return new \WP_REST_Response(['url' => $product['buy_now_url']], 200);
         }
 
