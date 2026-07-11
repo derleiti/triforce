@@ -30,7 +30,10 @@ import json
 logger = logging.getLogger("ailinux.system.collector")
 
 # Base directories
-BACKEND_LOG_BASE = Path(__file__).parent.parent.parent / "triforce" / "logs"
+# FIX 2026-07-11: war `.../ "triforce" / "logs"` -> ergab den Doppelpfad
+# ~/triforce/triforce/logs (Split-Brain mit dem echten ~/triforce/logs).
+# parent.parent.parent ist bereits der Projektroot ~/triforce.
+BACKEND_LOG_BASE = Path(__file__).parent.parent.parent / "logs"
 TRIFORCE_LOG_BASE = BACKEND_LOG_BASE
 
 # Ensure directories exist
