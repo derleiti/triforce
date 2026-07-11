@@ -74,6 +74,9 @@ services:
     volumes:
       - ${WP_HTML_PATH:-./html}:/var/www/html:delegated
       - ${WP_PHP_CUSTOM_INI:-./php/custom.ini}:/usr/local/etc/php/conf.d/99-custom.ini:ro
+      # WP-CLI dauerhaft verfuegbar (read-only, ausserhalb Webroot) - 2026-07-11
+      - ./bin/wp-cli.phar:/usr/local/bin/wp-cli.phar:ro
+      - ./bin/wp:/usr/local/bin/wp:ro
       - ./php/opcache-boost.ini:/usr/local/etc/php/conf.d/98-opcache.ini:ro
       - ./php/zz-ailinux-opcache.ini:/usr/local/etc/php/conf.d/zz-ailinux-opcache.ini:ro
       - ${WP_PHP_WWW_CONF:-./php/www.conf}:/usr/local/etc/php-fpm.d/www.conf
