@@ -93,8 +93,8 @@ IGNORE_PATTERNS = [
     r"--\s*$",                   # Leere journal Trennzeilen
     r"systemd\[1\]: nova-log-monitor.*: Deactivated",
     r"drkonqi-coredump-launcher",  # KDE Desktop Noise — kein Server-Event
-    r"mcp\.notifications.*NOTIFY",  # TriForce INFO-Logs die WARNING im Body haben
-    r"\|NOTIFY \|",                # Notification-Log-Zeilen generell filtern
+    r"mcp\.notifications.*(NOTIFY|EVENT|DISPATCH)",  # Eigene Notification-Events nicht rekursiv alarmieren
+    r"\|(NOTIFY|EVENT|DISPATCH) \|",                # Notification- und Dispatch-Log-Zeilen generell filtern
     r"AUTH_BYPASS",                  # Interne MCP-Auth — kein Sicherheitsproblem
     r"trusted_internal_bypass",      # Doppel-Filter AUTH_BYPASS
     r"heartbeat_ack",                # Federation Heartbeats — normaler Betrieb
