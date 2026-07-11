@@ -20,7 +20,7 @@ from ..utils.errors import api_error
 from ..utils.http import extract_http_error
 from ..utils.model_helpers import strip_provider_prefix
 from . import web_search
-from .crawler.manager import crawler_manager
+# Crawler manager is imported lazily where needed to avoid optional dependency on playwright
 
 logger = __import__("logging").getLogger("ailinux.chat")
 
@@ -634,7 +634,8 @@ async def stream_chat(
             keywords = ["information"] # Default keyword if none provided
 
         try:
-                job = await crawler_manager.create_job(
+                from .crawler.manager import crawler_manager as _crawler_manager
+                job = await _crawler_manager.create_job(
                     keywords=keywords,
                     seeds=urls,
                     max_depth=5,
@@ -652,7 +653,7 @@ async def stream_chat(
                 job_status = job.status
                 while job_status in ["queued", "running"]:
                     await asyncio.sleep(5) # Poll every 5 seconds
-                    updated_job = await crawler_manager.get_job(job.id)
+                    updated_job = await _crawler_manager.get_job(job.id)
                     if updated_job:
                         job_status = updated_job.status
                         yield f"Crawl job {job.id} Status: {job_status}. Seiten gecrawlt: {updated_job.pages_crawled}.\n"
@@ -665,7 +666,7 @@ async def stream_chat(
                     
                     crawl_results_context = "Gecrawlte Ergebnisse:\n"
                     for result_id in updated_job.results[:3]: # Limit context to top 3 results
-                        result = await crawler_manager.get_result(result_id)
+                        result = await _crawler_manager.get_result(result_id)
                         if result:
                             title = result.title or "Kein Titel"
                             url = result.url or "Keine URL"

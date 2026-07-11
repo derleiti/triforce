@@ -20,20 +20,11 @@ API Structure:
 - /tristar/*, /triforce/* - Root aliases
 """
 
-from . import (
-    agents,
-    chat,
-    crawler,
-    models,
-    vision,
-    admin_crawler,
-    openai_compat,
-    text_analysis,
-    mcp,
-    tristar,
-    triforce,
-    client_logs,
-)
+"""Route package init.
+
+Do not import route submodules at package import time to keep imports lightweight for tests.
+Import specific routes explicitly, e.g. `from app.routes import nova_operator`.
+"""
 
 __version__ = "2.80"
 

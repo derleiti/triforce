@@ -39,7 +39,7 @@ from ..config import get_settings
 logger = logging.getLogger("ailinux.auth")
 
 # Log directory
-_LOG_DIR = Path(__file__).parent.parent.parent / "triforce" / "logs"
+_LOG_DIR = Path(__file__).parent.parent.parent / "logs"
 _LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 # File handler for auth log

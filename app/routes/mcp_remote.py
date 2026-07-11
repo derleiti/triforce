@@ -37,7 +37,7 @@ from pydantic import BaseModel
 
 from ..services.model_registry import registry
 from ..services import chat as chat_service
-from ..services.crawler.user_crawler import user_crawler
+from ..services.crawler.user_crawler import get_user_crawler
 from ..services.crawler.manager import crawler_manager
 from ..services.wordpress import wordpress_service
 from ..services.ollama_mcp import OLLAMA_TOOLS, OLLAMA_HANDLERS
@@ -1112,7 +1112,7 @@ async def handle_crawl_url(arguments: Dict[str, Any]) -> Dict[str, Any]:
     keywords = arguments.get("keywords")
     max_pages = arguments.get("max_pages", 10)
 
-    job = await user_crawler.crawl_url(
+    job = await get_user_crawler().crawl_url(
         url=url,
         keywords=list(keywords) if keywords else None,
         max_pages=int(max_pages),
@@ -1153,9 +1153,10 @@ async def handle_crawl_status(arguments: Dict[str, Any]) -> Dict[str, Any]:
     include_results = arguments.get("include_results", False)
 
     # Try user crawler first
-    job = await user_crawler.get_job(job_id)
+    _uc = get_user_crawler()
+    job = await _uc.get_job(job_id)
     source = "user"
-    manager = user_crawler
+    manager = _uc
     if not job:
         job = await crawler_manager.get_job(job_id)
         source = "manager"

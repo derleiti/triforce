@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 from typing import Any, Awaitable, Callable, Dict, Iterable, List, Optional
 from pathlib import Path
 
-from .crawler.user_crawler import user_crawler
+from .crawler.user_crawler import get_user_crawler
 from .crawler.manager import crawler_manager
 from .wordpress import wordpress_service
 from . import chat as chat_service
@@ -196,7 +196,7 @@ async def handle_crawl_url(params: Dict[str, Any]) -> Dict[str, Any]:
     if keywords is not None and not isinstance(keywords, Iterable):
         raise ValueError("'keywords' must be an iterable of strings")
 
-    job = await user_crawler.crawl_url(
+    job = await get_user_crawler().crawl_url(
         url=url,
         keywords=list(keywords) if keywords else None,
         max_pages=int(params.get("max_pages", 10)),
@@ -235,9 +235,10 @@ async def handle_crawl_status(params: Dict[str, Any]) -> Dict[str, Any]:
     if not job_id:
         raise ValueError("'job_id' parameter is required for crawl.status")
 
-    job = await user_crawler.get_job(job_id)
+    _uc = get_user_crawler()
+    job = await _uc.get_job(job_id)
     source = "user"
-    manager = user_crawler
+    manager = _uc
     if not job:
         job = await crawler_manager.get_job(job_id)
         source = "manager"
