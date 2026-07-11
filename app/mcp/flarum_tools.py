@@ -24,7 +24,7 @@ from typing import Any, Dict, Optional
 logger = logging.getLogger("ailinux.mcp.flarum")
 
 # ── Config ────────────────────────────────────────────────────────────────────
-FLARUM_API   = "http://172.19.0.4:8888/api"
+FLARUM_API   = os.getenv("FLARUM_API", "http://127.0.0.1:9080/api")
 
 
 def _env_value(name: str) -> Optional[str]:

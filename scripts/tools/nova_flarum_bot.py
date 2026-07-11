@@ -27,7 +27,10 @@ def _flarum_ip():
         return r
     except Exception:
         return "172.19.0.4"
-FLARUM_API = f"http://{_flarum_ip()}:8888/api"
+# FIX 2026-07-11: Bot laeuft auf dem HOST, nicht im Docker-Netz -> Container-IP:8888
+# ist von hier nicht routbar. Flarum ist auf Host-Port 9080 gemappt (9080:8888).
+# ENV FLARUM_API hat Vorrang, Default = Host-Port. _flarum_ip() bleibt als Fallback.
+FLARUM_API = os.environ.get("FLARUM_API", "http://127.0.0.1:9080/api")
 FLARUM_TOKEN = os.environ.get("FLARUM_TOKEN")
 if not FLARUM_TOKEN:
     raise RuntimeError("FLARUM_TOKEN is not set. Use environment/vault; do not hardcode secrets.")
