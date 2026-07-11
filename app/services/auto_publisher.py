@@ -5,7 +5,7 @@ import logging
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
-from .crawler.manager import crawler_manager
+# crawler_manager imported lazily to avoid optional playwright dependency
 from .wordpress import wordpress_service
 from . import chat as chat_service
 from ..config import get_settings
@@ -74,7 +74,8 @@ class AutoPublisher:
             one_hour_ago = datetime.now(timezone.utc) - timedelta(hours=1)
 
             # Suche nach hochqualitativen Ergebnissen
-            results = await crawler_manager.search(
+            from .crawler.manager import crawler_manager as _crawler_manager
+            results = await _crawler_manager.search(
                 query="",  # Leer = alle
                 limit=20,
                 min_score=self._min_score,
@@ -102,7 +103,7 @@ class AutoPublisher:
                     if not result_id:
                         continue
 
-                    result = await crawler_manager.get_result(result_id)
+                    result = await _crawler_manager.get_result(result_id)
                     if not result or result.posted_at:
                         continue
 
@@ -209,12 +210,18 @@ Nutze professionellen Journalismus-Stil, sei objektiv und informativ."""
             # Markiere als gepostet
             result.posted_at = datetime.now(timezone.utc)
             result.post_id = wp_result.get("id")
-            await crawler_manager._store.update(result)
+            await _crawler_manager._store.update(result)
 
             logger.info("Created WordPress post: %s (ID: %s)", result.title, result.post_id)
 
         except Exception as exc:
             logger.error("Error creating WordPress post: %s", exc, exc_info=True)
 
-# Globale Instanz
-auto_publisher = AutoPublisher()
+# Global instance (lazy)
+_auto_publisher: Optional[AutoPublisher] = None
+
+def get_auto_publisher() -> AutoPublisher:
+    global _auto_publisher
+    if _auto_publisher is None:
+        _auto_publisher = AutoPublisher()
+    return _auto_publisher

@@ -139,5 +139,12 @@ class UserCrawler:
         return await self._manager.get_result(result_id)
 
 
-# Global user crawler instance
-user_crawler = UserCrawler()
+# Global user crawler instance (lazy)
+_user_crawler: Optional[UserCrawler] = None
+
+def get_user_crawler() -> UserCrawler:
+    """Return a lazily-initialized global UserCrawler instance."""
+    global _user_crawler
+    if _user_crawler is None:
+        _user_crawler = UserCrawler()
+    return _user_crawler
