@@ -12,17 +12,29 @@ Stand: 2025-12-13
 
 from fastapi import APIRouter, HTTPException, Depends, Header
 from pydantic import BaseModel, Field
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Tuple
 from datetime import datetime, timedelta
 from enum import Enum
 import hashlib
 import secrets
 import jwt
 import logging
+import urllib.request
+import urllib.error
+
+logger = logging.getLogger(__name__)
 
 # Pfad zur User-Datenbank
 USERS_FILE_PATH = Path(__file__).parent.parent.parent / "config" / "users.json"
-logger = logging.getLogger(__name__)
+
+ALLOW_AUTO_REGISTER = os.environ.get("ALLOW_AUTO_REGISTER", "false").lower() in (
+    "1", "true", "yes", "on"
+)
+if ALLOW_AUTO_REGISTER:
+    logger.warning("ALLOW_AUTO_REGISTER is enabled - unknown login emails may create accounts")
+
+GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "").strip()
+GOOGLE_TOKENINFO_URL = "https://oauth2.googleapis.com/tokeninfo?id_token="
 
 router = APIRouter(prefix="/auth", tags=["Client Auth"])
 
@@ -94,23 +106,142 @@ def generate_client_secret() -> str:
     return secrets.token_urlsafe(32)
 
 
+def normalize_tier(tier: Optional[str]) -> str:
+    """Normalize legacy/client tier names to the server-side tier contract."""
+    raw = (tier or "guest").strip().lower()
+    aliases = {
+        "free": "guest",
+        "basic": "guest",
+        "paid": "pro",
+        "premium": "pro",
+        "admin": "enterprise",
+        "unlimited": "enterprise",
+    }
+    normalized = aliases.get(raw, raw)
+    if normalized in {"guest", "registered", "pro", "enterprise"}:
+        return normalized
+    logger.warning("Unknown user tier %r, falling back to guest", tier)
+    return "guest"
+
+
+CANONICAL_ENTITLEMENTS = {
+    "copa_ocr": "copa_ocr",
+    "copa-ocr": "copa_ocr",
+    "copa ocr": "copa_ocr",
+    "copaocr": "copa_ocr",
+    "Copa OCR": "copa_ocr",
+    "970007": "copa_ocr",
+}
+
+
+def normalize_entitlements(raw: Any) -> Dict[str, bool]:
+    """Normalize all entitlement shapes to canonical keys.
+
+    Canonical Copa key: copa_ocr.
+    Only truthy values survive. False/null means no entitlement.
+    """
+    out: Dict[str, bool] = {}
+
+    def canon(k: Any) -> str:
+        text = str(k).strip()
+        return CANONICAL_ENTITLEMENTS.get(text, CANONICAL_ENTITLEMENTS.get(text.lower(), text))
+
+    if not raw:
+        return out
+
+    if isinstance(raw, dict):
+        for k, v in raw.items():
+            ck = canon(k)
+            if ck and bool(v):
+                out[ck] = True
+        return out
+
+    if isinstance(raw, (list, tuple, set)):
+        for item in raw:
+            ck = canon(item)
+            if ck:
+                out[ck] = True
+        return out
+
+    if isinstance(raw, str):
+        ck = canon(raw)
+        if ck:
+            out[ck] = True
+
+    return out
+
+
+def get_user_entitlements(user: Optional[dict]) -> Dict[str, Any]:
+    """Return canonical product entitlements from current server user state.
+
+    nova_entitlements is canonical.
+    entitlements is a legacy mirror only if nova_entitlements is absent.
+    """
+    if not user:
+        return {}
+
+    if "nova_entitlements" in user:
+        return normalize_entitlements(user.get("nova_entitlements") or {})
+
+    if "entitlements" in user:
+        return normalize_entitlements(user.get("entitlements") or {})
+
+    return {}
+
+def permissions_for_tier(tier: str) -> Tuple[ClientRole, List[str], List[str]]:
+    """Map a user tier to client role and MCP tool permissions."""
+    tier = normalize_tier(tier)
+    if tier == "enterprise":
+        return ClientRole.ADMIN, ["*"], []
+    if tier == "pro":
+        return (
+            ClientRole.DESKTOP,
+            [
+                "chat", "chat_smart", "weather", "current_time",
+                "web_search", "smart_search", "client_*", "tristar_memory_*",
+            ],
+            ["codebase_*", "restart_*", "vault_*", "tristar_shell_exec"],
+        )
+    if tier == "registered":
+        return (
+            ClientRole.DESKTOP,
+            ["chat", "chat_smart", "weather", "current_time", "web_search", "client_*"],
+            ["codebase_*", "restart_*", "vault_*", "tristar_shell_exec"],
+        )
+    return (
+        ClientRole.DESKTOP,
+        ["chat", "weather", "current_time", "web_search"],
+        ["codebase_*", "restart_*", "vault_*", "tristar_*"],
+    )
+
+
 def create_jwt_token(
     client_id: str, 
     role: str, 
     email: str = None,
+    entitlements: Optional[Dict[str, Any]] = None,
+    name: Optional[str] = None,
     expires_hours: int = JWT_EXPIRY_HOURS
 ) -> str:
     """JWT Token erstellen - enthält Email für Tier-Lookup"""
+    client_roles = {item.value for item in ClientRole}
+    is_client_role = role in client_roles
+    role = role if is_client_role else normalize_tier(role)
     payload = {
         "client_id": client_id,
         "role": role,  # tier: guest, registered, pro, enterprise
         "exp": datetime.utcnow() + timedelta(hours=expires_hours),
         "iat": datetime.utcnow()
     }
+    if not is_client_role:
+        payload["tier"] = role
     # Email im Token speichern für Tier-Service
     if email:
         payload["email"] = email
         payload["sub"] = email  # Standard JWT subject claim
+    if name:
+        payload["name"] = name
+    # Do not embed entitlements in JWT. Token is auth only; license state is fetched live.
     
     return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
@@ -123,6 +254,97 @@ def decode_jwt_token(token: str) -> dict:
         raise HTTPException(401, "Token expired")
     except jwt.InvalidTokenError:
         raise HTTPException(401, "Invalid token")
+
+
+def decode_authorization_header(authorization: Optional[str]) -> dict:
+    """Decode a Bearer Authorization header."""
+    if not authorization:
+        raise HTTPException(401, "Authorization header required")
+    parts = authorization.strip().split()
+    if len(parts) == 2 and parts[0].lower() == "bearer":
+        token = parts[1]
+    else:
+        token = authorization.replace("Bearer ", "", 1).strip()
+    if not token:
+        raise HTTPException(401, "Authorization header required")
+    return decode_jwt_token(token)
+
+
+def build_verified_session(payload: dict) -> Dict[str, Any]:
+    """Build the public auth session shape used by ai-coder and Copa."""
+    email = (payload.get("email") or payload.get("sub") or "").lower()
+    user = USER_REGISTRY.get(email, {}) if email else {}
+    tier_source = payload.get("tier") or user.get("tier")
+    if not tier_source and payload.get("role") in {"guest", "registered", "pro", "enterprise", "free"}:
+        tier_source = payload.get("role")
+    tier = normalize_tier(tier_source)
+    # Entitlements are always read from current server-side USER_REGISTRY.
+    # JWT payload entitlements are stale and must never unlock Copa OCR.
+    entitlements = get_user_entitlements(user)
+
+    client_id = payload.get("client_id")
+    return {
+        "valid": True,
+        "user_id": email or client_id,
+        "email": email,
+        "client_id": client_id,
+        "tier": tier,
+        "role": tier,
+        "name": payload.get("name") or user.get("name"),
+        "nova_entitlements": entitlements,
+        "entitlements": entitlements,
+        "expires_at": payload.get("exp"),
+        "issued_at": payload.get("iat"),
+    }
+
+
+
+def verify_wordpress_login(email: str, password: str) -> dict | None:
+    """
+    Validate login against WordPress, which is the source of truth for passwords.
+    Returns WordPress user payload on success, otherwise None.
+    """
+    import urllib.request
+    import urllib.error
+
+    base = os.environ.get("WORDPRESS_AUTH_VALIDATE_URL", "https://ailinux.me/wp-json/nova-ai/v1/auth/validate")
+    secret = (
+        os.environ.get("NOVA_AI_INTERNAL_KEY")
+        or os.environ.get("WEBHOOK_SECRET")
+        or os.environ.get("TRIFORCE_ADMIN_SECRET")
+        or ""
+    )
+
+    if not secret:
+        logger.warning("WordPress auth fallback unavailable: no internal secret configured")
+        return None
+
+    body = json.dumps({"email": email, "password": password}).encode("utf-8")
+    req = urllib.request.Request(
+        base,
+        data=body,
+        method="POST",
+        headers={
+            "Content-Type": "application/json",
+            "X-Nova-Webhook-Secret": secret,
+        },
+    )
+
+    try:
+        with urllib.request.urlopen(req, timeout=8) as r:
+            payload = json.loads(r.read().decode("utf-8"))
+    except Exception as exc:
+        logger.warning("WordPress auth fallback failed for %s: %s", email, exc)
+        return None
+
+    if not payload.get("ok"):
+        return None
+
+    user = payload.get("user") or {}
+    if not isinstance(user, dict):
+        return None
+
+    return user
 
 
 # =============================================================================
@@ -148,7 +370,9 @@ def load_users_from_file() -> dict:
             "password_hash": hash_secret(admin_password),
             "tier": "enterprise",
             "name": "Admin",
-            "billing": False,
+            "billing": True,
+            "nova_entitlements": {},
+            "entitlements": {},
         }
     
     # 2. Lade registrierte User aus users.json
@@ -191,7 +415,7 @@ def save_user_to_file(email: str, user_data: dict) -> bool:
         return False
 
 
-def register_new_user(email: str, password: str, name: str = None, tier: str = "free") -> dict:
+def register_new_user(email: str, password: str, name: str = None, tier: str = "guest") -> dict:
     """Registriere einen neuen User und speichere in users.json"""
     email = email.lower().strip()
     
@@ -202,9 +426,10 @@ def register_new_user(email: str, password: str, name: str = None, tier: str = "
     # Erstelle User-Daten
     user_data = {
         "password_hash": hash_secret(password),
-        "tier": tier,
+        "tier": normalize_tier(tier),
         "name": name or email.split("@")[0],
         "billing": False,
+        "nova_entitlements": {},
         "created_at": datetime.now().isoformat(),
     }
     
@@ -232,12 +457,28 @@ class UserLoginRequest(BaseModel):
     name: Optional[str] = Field(None, description="Display name (optional, for new users)")
 
 
+class GoogleLoginRequest(BaseModel):
+    """Sign in with Google credential from Google Identity Services."""
+    credential: str = Field(..., description="Google ID token / credential JWT")
+
+
+class AuthConfigResponse(BaseModel):
+    google_client_id: str = ""
+    google_enabled: bool = False
+
+
 class UserLoginResponse(BaseModel):
     """User Login Response"""
     user_id: str
     token: str
+    token_type: str = "Bearer"
+    expires_in: int = JWT_EXPIRY_HOURS * 3600
     tier: str
     client_id: str  # Server-assigned per login
+    email: str
+    name: Optional[str] = None
+    nova_entitlements: Dict[str, Any] = Field(default_factory=dict)
+    entitlements: Dict[str, Any] = Field(default_factory=dict)
 
 
 
@@ -300,10 +541,134 @@ class ClientRegisterResponse(BaseModel):
     message: str
 
 
+def issue_user_login_response(email: str, user: dict) -> UserLoginResponse:
+    """Create a normal AILinux session response for any authenticated user."""
+    email = email.lower().strip()
+    email_prefix = email.split("@")[0][:10]
+    client_id = f"client-{email_prefix}-{secrets.token_hex(8)}"
+
+    tier = normalize_tier(user.get("tier"))
+    entitlements = get_user_entitlements(user)
+    role, allowed, blocked = permissions_for_tier(tier)
+
+    token = create_jwt_token(
+        client_id,
+        tier,
+        email=email,
+        entitlements=entitlements,
+        name=user.get("name"),
+    )
+
+    CLIENT_REGISTRY[client_id] = {
+        "secret_hash": "",
+        "name": f"{user.get('name') or email}'s Client",
+        "role": role,
+        "created_at": datetime.now().isoformat(),
+        "email": email,
+        "allowed_tools": allowed,
+        "blocked_tools": blocked,
+    }
+
+    ACTIVE_SESSIONS[client_id] = {
+        "email": email,
+        "connected_at": datetime.now().isoformat(),
+        "last_seen": datetime.now().isoformat(),
+    }
+
+    return UserLoginResponse(
+        user_id=email,
+        token=token,
+        tier=tier,
+        client_id=client_id,
+        email=email,
+        name=user.get("name"),
+        nova_entitlements=entitlements,
+        entitlements=entitlements,
+    )
+
+
+def verify_google_credential(credential: str) -> dict:
+    """Validate a Google Identity Services ID token via Google's tokeninfo endpoint."""
+    if not GOOGLE_CLIENT_ID:
+        raise HTTPException(503, "Google login is not configured")
+    if not credential or len(credential) < 40:
+        raise HTTPException(400, "Missing Google credential")
+
+    url = GOOGLE_TOKENINFO_URL + credential
+    try:
+        with urllib.request.urlopen(url, timeout=8) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as e:
+        logger.warning("Google tokeninfo rejected credential: HTTP %s", e.code)
+        raise HTTPException(401, "Invalid Google credential")
+    except Exception as e:
+        logger.error("Google tokeninfo verification failed: %s", e)
+        raise HTTPException(502, "Google verification unavailable")
+
+    if data.get("aud") != GOOGLE_CLIENT_ID:
+        logger.warning("Google credential audience mismatch: %r", data.get("aud"))
+        raise HTTPException(401, "Invalid Google audience")
+    if data.get("email_verified") not in ("true", True):
+        raise HTTPException(401, "Google email is not verified")
+    if not data.get("email"):
+        raise HTTPException(401, "Google credential has no email")
+
+    return data
+
+
 # =============================================================================
 # Auth Endpoints
 # =============================================================================
 
+@router.get("/config", response_model=AuthConfigResponse)
+async def auth_config():
+    """Public auth frontend configuration."""
+    return AuthConfigResponse(
+        google_client_id=GOOGLE_CLIENT_ID,
+        google_enabled=bool(GOOGLE_CLIENT_ID),
+    )
+
+
+@router.post("/google", response_model=UserLoginResponse)
+async def google_login(request: GoogleLoginRequest):
+    """Sign in or register with Google Identity Services."""
+    profile = verify_google_credential(request.credential)
+    email = profile["email"].lower().strip()
+    name = profile.get("name") or email.split("@")[0]
+    sub = profile.get("sub") or ""
+
+    user = USER_REGISTRY.get(email)
+    if not user:
+        user = {
+            "password_hash": hash_secret(secrets.token_urlsafe(32)),
+            "tier": "pro",
+            "name": name,
+            "billing": False,
+            "nova_entitlements": {},
+            "auth_provider": "google",
+            "google_sub": sub,
+            "created_at": datetime.now().isoformat(),
+            "updated_at": datetime.now().isoformat(),
+        }
+        if not save_user_to_file(email, user):
+            raise HTTPException(500, "Failed to register Google user")
+        USER_REGISTRY[email] = user
+        logger.info("New Google user registered: %s", email)
+    else:
+        user["auth_provider"] = user.get("auth_provider") or "password+google"
+        if sub:
+            user["google_sub"] = sub
+        if name and not user.get("name"):
+            user["name"] = name
+        user["updated_at"] = datetime.now().isoformat()
+        save_user_to_file(email, user)
+
+    response = issue_user_login_response(email, user)
+    logger.info("Google user logged in: %s (%s) -> %s", email, response.tier, response.client_id)
+    return response
+
+
+@router.post("/auth/login", response_model=UserLoginResponse)  # Compatibility: ai-coder expects /v1/auth/login
 @router.post("/login", response_model=UserLoginResponse)
 async def user_login(request: UserLoginRequest):
     """
@@ -313,74 +678,150 @@ async def user_login(request: UserLoginRequest):
     email = request.email.lower().strip()
     user = USER_REGISTRY.get(email)
 
-    # Auto-Registrierung: Wenn User nicht existiert, registriere neuen User
-    if not user:
-        # Neuen User registrieren (erster Login = Registrierung)
-        logger.info(f"New user registration via login: {email}")
-        user = register_new_user(
-            email=email,
-            password=request.password,
-            name=request.name if hasattr(request, 'name') and request.name else None,
-            tier="free"  # Neue User starten als "free"
-        )
-        if not user:
-            logger.error(f"Failed to register new user: {email}")
-            raise HTTPException(500, "Failed to register user")
-        logger.info(f"New user registered: {email} (tier: free)")
-    else:
-        # Existierender User - Passwort prüfen
-        if not verify_secret(request.password, user["password_hash"]):
-            logger.warning(f"Invalid password for: {email}")
-            raise HTTPException(401, "Invalid email or password")
-
-    # Generate new client_id for this login session
-    email_prefix = email.split("@")[0][:10]
-    client_id = f"client-{email_prefix}-{secrets.token_hex(8)}"
-
-    # Determine role based on tier
-    if user["tier"] == "enterprise":
-        role = ClientRole.ADMIN
-        allowed = ["*"]
-        blocked = []
-    elif user["tier"] == "pro":
-        role = ClientRole.DESKTOP
-        allowed = ["chat", "chat_smart", "weather", "current_time",
-                   "web_search", "smart_search", "client_*", "tristar_memory_*"]
-        blocked = ["codebase_*", "restart_*", "vault_*", "tristar_shell_exec"]
-    else:  # free
-        role = ClientRole.DESKTOP
-        allowed = ["chat", "weather", "current_time", "web_search"]
-        blocked = ["codebase_*", "restart_*", "vault_*", "tristar_*"]
-
-    # Create JWT token MIT EMAIL (wichtig für Tier-Service!)
-    token = create_jwt_token(client_id, user["tier"], email=email)
-
-    # Register client session
-    CLIENT_REGISTRY[client_id] = {
-        "secret_hash": "",
-        "name": f"{user['name']}'s Client",
-        "role": role,
-        "created_at": datetime.now().isoformat(),
-        "email": email,
-        "allowed_tools": allowed,
-        "blocked_tools": blocked
-    }
-
-    # Track session
-    ACTIVE_SESSIONS[client_id] = {
-        "email": email,
-        "connected_at": datetime.now().isoformat(),
-        "last_seen": datetime.now().isoformat()
-    }
-
-    logger.info(f"User logged in: {email} ({user['tier']}) -> {client_id}")
-
-    return UserLoginResponse(
-        user_id=email,
-        token=token,
-        tier=user["tier"],
-        client_id=client_id
+    logger.info(
+        "COPA_LOGIN_DEBUG start email=%s local_user=%s has_hash=%s tier=%s ents=%s",
+        email,
+        bool(user),
+        bool(user.get("password_hash")) if isinstance(user, dict) else False,
+        user.get("tier") if isinstance(user, dict) else None,
+        list((get_user_entitlements(user) or {}).keys()) if isinstance(user, dict) else [],
     )
+
+    # WordPress is the source of truth for login/password.
+    # TriForce users.json is only the client/entitlement mirror.
+    needs_wp_auth = (not user) or (not isinstance(user, dict)) or (not user.get("password_hash"))
+    logger.info("COPA_LOGIN_DEBUG needs_wp_auth email=%s needs_wp_auth=%s", email, needs_wp_auth)
+
+    if needs_wp_auth:
+        wp_user = verify_wordpress_login(email, request.password)
+        if not wp_user:
+            if not user and ALLOW_AUTO_REGISTER:
+                logger.warning(f"Auto-registering unknown email via login because ALLOW_AUTO_REGISTER=true: {email}")
+                user = register_new_user(
+                    email=email,
+                    password=request.password,
+                    name=request.name if hasattr(request, 'name') and request.name else None,
+                    tier="guest"
+                )
+                if not user:
+                    logger.error(f"Failed to register new user: {email}")
+                    raise HTTPException(500, "Failed to register user")
+            else:
+                logger.warning(f"WordPress login failed for: {email}")
+                raise HTTPException(401, "Invalid email or password")
+        else:
+            existing = user if isinstance(user, dict) else {}
+            wp_entitlements = normalize_entitlements(
+                wp_user.get("nova_entitlements") if "nova_entitlements" in wp_user else wp_user.get("entitlements")
+            )
+            user = {
+                **existing,
+                "tier": wp_user.get("tier") or existing.get("tier") or "free",
+                "name": wp_user.get("name") or existing.get("name") or email.split("@", 1)[0],
+                "billing": existing.get("billing", False),
+                "nova_entitlements": wp_entitlements,
+                "entitlements": wp_entitlements,
+                "auth_provider": "wordpress",
+            }
+            save_user_to_file(email, user)
+            USER_REGISTRY[email] = user
+            logger.info(f"WordPress-authenticated user: {email}")
+    else:
+        # Existing local TriForce password hash.
+        local_hash_ok = verify_secret(request.password, user["password_hash"])
+        logger.info("COPA_LOGIN_DEBUG local_hash email=%s ok=%s", email, local_hash_ok)
+        if not local_hash_ok:
+            logger.info("COPA_LOGIN_DEBUG wordpress_fallback_start email=%s", email)
+            wp_user = verify_wordpress_login(email, request.password)
+            logger.info(
+                "COPA_LOGIN_DEBUG wordpress_fallback_result email=%s ok=%s wp_keys=%s",
+                email,
+                bool(wp_user),
+                list(wp_user.keys()) if isinstance(wp_user, dict) else [],
+            )
+            if not wp_user:
+                logger.warning(f"Invalid password for: {email}")
+                raise HTTPException(401, "Invalid email or password")
+            user["auth_provider"] = "wordpress"
+            user["tier"] = wp_user.get("tier") or user.get("tier") or "free"
+            user["name"] = wp_user.get("name") or user.get("name") or email.split("@", 1)[0]
+            wp_entitlements = normalize_entitlements(
+                wp_user.get("nova_entitlements") if "nova_entitlements" in wp_user else wp_user.get("entitlements")
+            )
+            user["nova_entitlements"] = wp_entitlements
+            user["entitlements"] = wp_entitlements
+            save_user_to_file(email, user)
+            USER_REGISTRY[email] = user
+
+    response = issue_user_login_response(email, user)
+    logger.info(
+        "COPA_LOGIN_DEBUG success email=%s tier=%s ents=%s token_len=%s client_id=%s",
+        email,
+        response.tier,
+        list((response.nova_entitlements or {}).keys()),
+        len(response.token or ""),
+        response.client_id,
+    )
+    logger.info(f"User logged in: {email} ({response.tier}) -> {response.client_id}")
+    return response
+
+
+@router.get("/verify")
+async def verify_auth(authorization: str = Header(None)):
+    """
+    Validate a user/client JWT and return the session contract used by desktop clients.
+    """
+    payload = decode_authorization_header(authorization)
+    return build_verified_session(payload)
+
+
+@router.get("/client/handshake")
+async def client_handshake(authorization: str = Header(None)):
+    """
+    Return client capabilities and canonical endpoint paths after authentication.
+    """
+    payload = decode_authorization_header(authorization)
+    session = build_verified_session(payload)
+    tier = session["tier"]
+    default_role, default_allowed, default_blocked = permissions_for_tier(tier)
+
+    client_id = session.get("client_id")
+    client = CLIENT_REGISTRY.get(client_id, {}) if client_id else {}
+    allowed_tools = client.get("allowed_tools") or default_allowed
+    blocked_tools = client.get("blocked_tools") or default_blocked
+    role = client.get("role") or default_role
+    role_value = role.value if isinstance(role, ClientRole) else role
+
+    if client_id in ACTIVE_SESSIONS:
+        ACTIVE_SESSIONS[client_id]["last_seen"] = datetime.now().isoformat()
+
+    return {
+        "ok": True,
+        "valid": True,
+        "client_id": client_id,
+        "user_id": session.get("user_id"),
+        "email": session.get("email"),
+        "tier": tier,
+        "role": role_value,
+        "allowed_tools": allowed_tools,
+        "blocked_tools": blocked_tools,
+        "capabilities": {
+            "chat": True,
+            "models": True,
+            "mcp": True,
+            "ocr": bool(session.get("nova_entitlements", {}).get("copa_ocr")),
+        },
+        "endpoints": {
+            "auth_verify": "/v1/auth/verify",
+            "chat": "/v1/client/chat",
+            "models": "/v1/client/models",
+            "mcp": "/v1/mcp",
+            "ocr_mistral": "/v1/client/ocr/mistral",
+            "ocr_status": "/v1/client/ocr/status",
+        },
+        "nova_entitlements": session.get("nova_entitlements", {}),
+        "entitlements": session.get("entitlements", {}),
+    }
 
 
 @router.post("/register", response_model=UserRegisterResponse)

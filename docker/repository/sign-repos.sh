@@ -183,10 +183,11 @@ for ddir in "${DIST_DIRS[@]}"; do
     echo "   📝 Release: $suite (Archs: ${ARCHS[*]})"
 
     # Alte Signaturen löschen
-    rm -f "${suite_dir}/InRelease" "${suite_dir}/Release.gpg"
+    rm -f "${suite_dir}/InRelease" "${suite_dir}/Release.gpg" "${suite_dir}/Release"
 
     # Config
     tmpconf=$(mktemp)
+    tmprelease=$(mktemp)
     {
       echo 'APT::FTPArchive::Release {'
       echo "  Suite \"${suite}\";"
@@ -198,7 +199,8 @@ for ddir in "${DIST_DIRS[@]}"; do
     } > "$tmpconf"
 
     # 1. Release Datei erstellen
-    if apt-ftparchive -c "$tmpconf" release "$suite_dir" > "${suite_dir}/Release"; then
+    if apt-ftparchive -c "$tmpconf" release "$suite_dir" > "$tmprelease"; then
+        mv "$tmprelease" "${suite_dir}/Release"
         if [[ "$repo_root" == *"archive.neon.kde.org"* ]] && [[ -f "${suite_dir}/main/neon/pins" ]]; then
            add_release_entry "${suite_dir}/Release" "main/neon/pins"
         fi
@@ -216,7 +218,7 @@ for ddir in "${DIST_DIRS[@]}"; do
     else
         err "      apt-ftparchive fehlgeschlagen bei $suite"
     fi
-    rm -f "$tmpconf"
+    rm -f "$tmpconf" "${tmprelease:-}"
   done
 done
 

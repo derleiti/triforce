@@ -1,3 +1,4 @@
+import os
 from contextlib import asynccontextmanager
 import logging
 # import logging (centralized)
@@ -9,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pathlib import Path
-from fastapi_limiter import FastAPILimiter
+from .utils.rate_limit_compat import FastAPILimiter
 from typing import Optional
 
 # Unified logging für alle Komponenten
@@ -70,6 +71,7 @@ from .routes.agents import router as agents_router
 from .routes.chat import router as chat_router
 from .routes.crawler import router as crawler_router
 from .routes.health import router as health_router
+from .routes.mcp import public_router as mcp_public_router
 from .routes.mcp import router as mcp_router
 from .routes.mcp_node import router as mcp_node_router
 from .routes.mcp_remote import router as mcp_remote_router
@@ -92,7 +94,16 @@ from .routes.client_chat import router as client_chat_router
 from .routes.client_auth import router as client_auth_router
 from .routes.client_update import router as client_update_router
 from .routes.client_logs import router as client_logs_router
+from .routes.client_ocr import router as client_ocr_router
 from .routes.federation import router as federation_router
+from .routes.nova_chat_agent import router as nova_chat_agent_router
+from .routes.nova_frontend import public_router as nova_frontend_public_router
+from .routes.nova_frontend import router as nova_frontend_router
+from .routes.nova_playground import router as nova_playground_router
+from .routes.nova_wordpress import router as nova_wordpress_router
+from .routes.nova_operator import router as nova_operator_router
+from .routes.rag import router as rag_router
+from app.routes.admin_users import router as admin_users_router
 
 # Import routers from the top-level app directory
 from .routes_sd3 import router as sd3_router
@@ -175,8 +186,9 @@ async def lifespan(app: FastAPI):
         from .services.server_federation import federation_manager
         from .services.federation_websocket import federation_lb
         import socket
+        node_id_env = os.environ.get("NODE_ID")
         _hostname = socket.gethostname().lower()
-        node_id = "backup" if "backup" in _hostname else "zombie-pc" if "zombie" in _hostname else "hetzner"
+        node_id = node_id_env or ("backup" if "backup" in _hostname else "zombie-pc" if "zombie" in _hostname else "hetzner")
         await federation_manager.initialize(node_id=node_id)
         await federation_lb.start()
         logger.info("Federation Manager started")
@@ -204,18 +216,17 @@ async def lifespan(app: FastAPI):
         # import logging (centralized)
         logger.warning(f"Failed to start MCP Brain: {e}")
 
-    # Start MCP WebSocket Server (Port 44433)
+    # Start MCP WebSocket Server
     try:
         from .services.mcp_ws_server import mcp_ws_server
         await mcp_ws_server.start()
-        logger.info("MCP WebSocket Server started on port 44433")
+        logger.info(f"MCP WebSocket Server started on port {settings.mcp_ws_port}")
     except Exception as e:
         logger.warning(f"Failed to start MCP WebSocket Server: {e}")
 
     # Auto-Bootstrap CLI Agents (wenn konfiguriert)
     try:
         from .services.agent_bootstrap import bootstrap_service
-        import os
         auto_bootstrap = os.environ.get("AUTO_BOOTSTRAP_AGENTS", "false").lower() == "true"
         if auto_bootstrap:
             # import logging (centralized)
@@ -229,6 +240,12 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         # import logging (centralized)
         logger.warning(f"Failed to setup Agent Bootstrap: {e}")
+    try:
+        from .mcp.notification_manager import start_pollers
+        start_pollers()
+        logger.info("Notification Manager pollers requested")
+    except Exception:
+        logger.warning("Notification Manager start skipped")
 
     # Initialize System Log Collector (collects kernel, apps, journald logs)
     if _HAS_SYSTEM_LOG_COLLECTOR:
@@ -369,6 +386,8 @@ def create_app() -> FastAPI:
     app.include_router(chat_router, prefix="/v1", tags=["Chat"])
     app.include_router(crawler_router, prefix="/v1", tags=["Crawler"])
     app.include_router(health_router, tags=["Monitoring"])
+    app.include_router(rag_router, prefix="/v1", tags=["RAG"])
+    app.include_router(mcp_public_router, prefix="/v1", tags=["MCP"])
     app.include_router(mcp_router, prefix="/v1", tags=["MCP"])
     app.include_router(mcp_node_router, prefix="/v1", tags=["MCP Node"])
     app.include_router(mcp_remote_router, tags=["MCP Remote Server"])
@@ -423,15 +442,25 @@ def create_app() -> FastAPI:
     app.include_router(client_auth_router, prefix="/v1", tags=["Client Auth"])
     app.include_router(client_update_router, prefix="/v1", tags=["Client Update"])
     app.include_router(client_logs_router, tags=["Client Logs"])
+    app.include_router(client_ocr_router, prefix="/v1", tags=["Client OCR"])
     app.include_router(federation_router, prefix="/v1", tags=["Federation"])
+    app.include_router(nova_chat_agent_router, prefix="/v1", tags=["Nova Chat Agent"])
+    app.include_router(nova_frontend_public_router, prefix="/v1", tags=["Nova Frontend Public"])
+    app.include_router(nova_frontend_router, prefix="/v1", tags=["Nova Frontend"])
+    app.include_router(nova_playground_router, prefix="/v1", tags=["Nova Playground"])
+    app.include_router(nova_wordpress_router, tags=["Nova WordPress"])
+    app.include_router(nova_operator_router, prefix="/v1", tags=["Nova Operator"])
 
-    # Import and include txt2img router
-    try:
-        from .routes.txt2img import router as txt2img_router
-        app.include_router(txt2img_router, prefix="/v1", tags=["Text-to-Image"])
-    except ImportError as e:
-        # import logging (centralized)
-        logger.warning(f"Could not import txt2img router: {e}")
+    @app.middleware("http")
+    async def public_discovery_options_middleware(request: Request, call_next):
+        public_discovery_paths = {
+            "/v1/.well-known/mcp",
+            "/v1/.well-known/oauth-authorization-server",
+        }
+        if request.method == "OPTIONS":
+            if request.url.path in public_discovery_paths:
+                return Response(status_code=204)
+        return await call_next(request)
 
     # Prometheus Metrics Setup
     if _HAS_INSTRUMENTATOR:
@@ -467,3 +496,5 @@ def create_app() -> FastAPI:
 
 # Uvicorn Entry
 app = create_app()
+
+app.include_router(admin_users_router, prefix="/v1", tags=["Admin Users"])

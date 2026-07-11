@@ -2,7 +2,9 @@ from __future__ import annotations
 from .widget_handlers import handle_weather, handle_crypto_prices, handle_stock_indices, handle_market_overview, handle_google_deep_search, handle_current_time, handle_list_timezones
 
 import base64
+import inspect
 import logging
+import os
 from datetime import datetime, timezone
 
 # Logger für MCP Routes
@@ -11,7 +13,7 @@ from typing import Any, Awaitable, Callable, Dict, Iterable, List, Optional
 import json
 
 from fastapi import APIRouter, Depends, Request, Response
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 
 from ..services.crawler.user_crawler import user_crawler
 from ..services.crawler.manager import crawler_manager
@@ -46,6 +48,10 @@ from ..mcp.specialists import specialist_router, SPECIALISTS
 from ..mcp.context import context_manager, prompt_library, workflow_manager
 from ..mcp.adaptive_code import ADAPTIVE_CODE_TOOLS, ADAPTIVE_CODE_HANDLERS
 from ..mcp.adaptive_code_v4 import ADAPTIVE_CODE_V4_TOOLS, ADAPTIVE_CODE_V4_HANDLERS
+from ..mcp.handlers_group_chat import GROUP_CHAT_HANDLERS
+from ..mcp.handlers_swarm import SWARM_HANDLERS
+from ..services.n8n_mcp import N8N_TOOLS, N8N_HANDLERS
+from ..mcp.flarum_tools import FLARUM_TOOL_HANDLERS
 from ..mcp.tool_registry_v3 import (
     get_all_tools as registry_v3_get_all_tools,
     get_tool_count as registry_v3_tool_count,
@@ -67,11 +73,124 @@ from ..services.memory_index import MEMORY_INDEX_HANDLERS
 from ..services.mcp_debugger import mcp_debugger
 from ..services.llm_compat import LLM_COMPAT_HANDLERS
 from ..utils.mcp_auth import require_mcp_auth
+from ..utils.mcp_security import (
+    filter_tools_for_external,
+    is_internal_full_request,
+    is_tool_allowed,
+)
 import logging
 
 mcp_logger = logging.getLogger("ailinux.mcp")
 
 router = APIRouter(dependencies=[Depends(require_mcp_auth)])
+public_router = APIRouter()
+
+
+def _maybe_block_write_tool(
+    tool_name: str,
+    arguments: Dict[str, Any],
+    request: Optional[Request] = None,
+    requested_tool_name: Optional[str] = None,
+) -> Optional[Dict[str, Any]]:
+    """Block tools that are not allowed for the current MCP client."""
+    if request is None or is_tool_allowed(tool_name, request):
+        return None
+    payload = {
+        "ok": False,
+        "error": "Tool is not allowed for this MCP client",
+        "code": "MCP_TOOL_FORBIDDEN",
+        "tool_name": requested_tool_name or tool_name,
+        "resolved_tool_name": tool_name,
+    }
+    mcp_logger.warning("MCP_TOOL_FORBIDDEN | tool=%s", tool_name)
+    return {
+        "content": [{"type": "text", "text": json.dumps(payload, separators=(",", ":"))}],
+        "isError": True,
+    }
+
+
+def _tool_handler_accepts_request(handler: Callable[..., Awaitable[Any]]) -> bool:
+    try:
+        return "request" in inspect.signature(handler).parameters
+    except (TypeError, ValueError):
+        return False
+
+
+async def _call_tool_handler(
+    handler: Callable[..., Awaitable[Any]],
+    arguments: Dict[str, Any],
+    request: Optional[Request] = None,
+) -> Any:
+    if request is not None and _tool_handler_accepts_request(handler):
+        request_kwargs = {"request": request}
+        return await handler(arguments, **request_kwargs)
+    return await handler(arguments)
+
+
+async def _call_mcp_method_handler(
+    method: str,
+    handler: Callable[..., Awaitable[Any]],
+    params: Dict[str, Any],
+    request: Request,
+) -> Any:
+    if method in {"tools/list", "tools/call"}:
+        return await handler(params, request=request)
+    return await handler(params)
+
+
+def _finish_tools_list(
+    tools: List[Dict[str, Any]],
+    version: str,
+    request: Optional[Request] = None,
+    note: Optional[str] = None,
+) -> Dict[str, Any]:
+    filtered_tools = _filter_tools_for_client(tools, request)
+    result: Dict[str, Any] = {
+        "tools": filtered_tools,
+        "version": version,
+        "count": len(filtered_tools),
+    }
+    if note:
+        result["note"] = note
+    return result
+
+
+def _filter_tools_for_client(tools: List[Dict[str, Any]], request: Optional[Request] = None) -> List[Dict[str, Any]]:
+    """Default-deny tools/list for non-internal MCP clients."""
+    if request is None or is_internal_full_request(request):
+        return tools
+    return filter_tools_for_external(tools)
+
+
+@public_router.get("/.well-known/oauth-authorization-server")
+async def oauth_authorization_server_metadata(request: Request) -> JSONResponse:
+    """Public OAuth metadata for MCP client discovery."""
+    base = str(request.base_url).rstrip("/")
+    return JSONResponse({
+        "issuer": base,
+        "authorization_endpoint": f"{base}/authorize",
+        "token_endpoint": f"{base}/token",
+        "response_types_supported": ["code"],
+        "grant_types_supported": ["authorization_code", "refresh_token"],
+        "code_challenge_methods_supported": ["S256"],
+    })
+
+
+public_oauth_authorization_server_metadata = oauth_authorization_server_metadata
+
+
+@public_router.get("/.well-known/mcp")
+async def public_mcp_metadata(request: Request) -> Dict[str, Any]:
+    """Public MCP server metadata for desktop and web clients."""
+    base = str(request.base_url).rstrip("/")
+    return {
+        "name": "ailinux-mcp-server",
+        "version": "2.80",
+        "transport": "streamable-http",
+        "endpoint": f"{base}/v1/mcp",
+        "authorization_server": f"{base}/v1/.well-known/oauth-authorization-server",
+        "protocol_versions": ["2024-11-05", "2025-03-26"],
+    }
 
 
 def _estimate_tokens(text: str) -> int:
@@ -674,6 +793,22 @@ async def handle_specialists_invoke(params: Dict[str, Any]) -> Dict[str, Any]:
 
     result["specialist"] = specialist.to_dict()
     return result
+
+
+async def handle_nova_chat_agent(params: Dict[str, Any]) -> Dict[str, Any]:
+    """Invoke Nova's account-backed chat agent."""
+    from ..services.nova_chat_agent import nova_chat_agent_service
+
+    return await nova_chat_agent_service.chat(
+        provider=params.get("provider", "auto"),
+        message=params.get("message", ""),
+        messages=params.get("messages"),
+        system=params.get("system", ""),
+        model=params.get("model"),
+        temperature=float(params.get("temperature", 0.4)),
+        max_tokens=int(params.get("max_tokens", 1200)),
+        timeout=int(params.get("timeout", 120)),
+    )
 
 
 # =============================================================================
@@ -1394,19 +1529,23 @@ async def handle_initialize(params: Dict[str, Any], request: Optional[Request] =
     }
 
 
-async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
+async def handle_tools_list(params: Dict[str, Any], request: Optional[Request] = None) -> Dict[str, Any]:
     """MCP tools/list - unified inventory (v4 + extras + V5).
     
     Wiederhergestellt nach dem Stash-Merge-Verlust vom 2026-04-20.
     Vorher: nur 52 v4-Tools. Jetzt: ~142 (v4 + WP/Browser/Redis/Performance + V5).
     """
+    inventory = str(params.get("inventory", "all"))
     # Check if client wants legacy (v3) tools
-    use_legacy = params.get("legacy", False) or params.get("v3", False)
+    use_legacy = inventory in {"legacy", "v3"} or params.get("legacy", False) or params.get("v3", False)
     
     if use_legacy:
         # Return all 134 tools from v3 for backwards compatibility
         tools = registry_v3_get_all_tools()
-        return {"tools": tools, "version": "v3", "count": len(tools)}
+        for tool in tools:
+            if isinstance(tool, dict) and "outputSchema" not in tool:
+                tool["outputSchema"] = {"type": "object", "additionalProperties": True}
+        return _finish_tools_list(tools, "v3", request)
     
     # Primary: unified inventory (Pre-Killer style, full toolbox with handlers)
     try:
@@ -1418,9 +1557,29 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
         
         tools = get_unified_tools(
             extra_tools=(WORDPRESS_TOOL_SCHEMAS + BROWSER_TOOL_SCHEMAS +
-                         PERFORMANCE_TOOL_SCHEMAS + REDIS_TOOL_SCHEMAS)
+                         PERFORMANCE_TOOL_SCHEMAS + REDIS_TOOL_SCHEMAS +
+                         N8N_TOOLS)
         )
         existing = {t.get("name") for t in tools}
+        if "nova_chat_agent" not in existing:
+            tools.append({
+                "name": "nova_chat_agent",
+                "description": "Chat through Nova's configured account-backed agent bridge.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "provider": {"type": "string", "default": "auto"},
+                        "message": {"type": "string"},
+                        "messages": {"type": "array", "items": {"type": "object"}},
+                        "system": {"type": "string"},
+                        "model": {"type": "string"},
+                        "temperature": {"type": "number"},
+                        "max_tokens": {"type": "integer"},
+                    },
+                    "required": ["message"],
+                },
+            })
+            existing.add("nova_chat_agent")
         
         # V5 extension tools (deduplicated)
         try:
@@ -1432,23 +1591,27 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
         except Exception as e:
             logger.warning(f"V5_TOOLS load skipped: {e}")
         
-        return {
-            "tools": tools,
-            "version": "unified",
-            "count": len(tools),
-            "note": "v4 + WordPress/Browser/Redis/Performance + V5 (restored 2026-04-27)"
-        }
+        for tool in tools:
+            if isinstance(tool, dict) and "outputSchema" not in tool:
+                tool["outputSchema"] = {"type": "object", "additionalProperties": True}
+
+        return _finish_tools_list(
+            tools,
+            "unified",
+            request,
+            note="v4 + WordPress/Browser/Redis/Performance + V5 (restored 2026-04-27)",
+        )
     except Exception as e:
         logger.warning(f"Unified tools failed, falling back to v4: {e}")
     
     # Fallback: v4 only (52 tools)
     tools = registry_v4_get_all_tools()
-    return {
-        "tools": tools, 
-        "version": "v4-fallback", 
-        "count": len(tools),
-        "note": "Fallback to v4 due to unified registry failure - check logs"
-    }
+    return _finish_tools_list(
+        tools,
+        "v4-fallback",
+        request,
+        note="Fallback to v4 due to unified registry failure - check logs",
+    )
 
 
 async def _handle_tools_list_LEGACY(params: Dict[str, Any]) -> Dict[str, Any]:
@@ -1484,6 +1647,23 @@ async def _handle_tools_list_LEGACY(params: Dict[str, Any]) -> Dict[str, Any]:
             "name": "list_models",
             "description": "List all available AI models with their capabilities",
             "inputSchema": {"type": "object", "properties": {}},
+        },
+        {
+            "name": "nova_chat_agent",
+            "description": "Chat through Nova's configured account-backed agent bridge.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "provider": {"type": "string", "default": "auto"},
+                    "message": {"type": "string"},
+                    "messages": {"type": "array", "items": {"type": "object"}},
+                    "system": {"type": "string"},
+                    "model": {"type": "string"},
+                    "temperature": {"type": "number"},
+                    "max_tokens": {"type": "integer"},
+                },
+                "required": ["message"],
+            },
         },
         {
             "name": "ask_specialist",
@@ -2022,6 +2202,22 @@ async def _handle_tools_list_LEGACY(params: Dict[str, Any]) -> Dict[str, Any]:
         }
     ])
 
+
+    tools.append({
+        "name": "mcp_write_fallback",
+        "description": "Store denied MCP write attempts for safe manual review and retry.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "tool_name": {"type": "string", "description": "Original MCP tool name"},
+                "arguments": {"type": "object", "description": "Original MCP tool arguments"},
+                "reason": {"type": "string", "description": "Reason the write path was denied"},
+                "caller": {"type": "string", "description": "Optional caller identity"},
+            },
+            "required": ["tool_name"],
+        },
+    })
+
     return {"tools": tools}
 
 
@@ -2044,6 +2240,30 @@ async def handle_restart_backend(params: Dict[str, Any]) -> Dict[str, Any]:
 async def handle_restart_agent(params: Dict[str, Any]) -> Dict[str, Any]:
     """Handle restart_agent tool."""
     return await system_control.restart_agent(params.get("agent_id", ""))
+
+
+
+_MCP_WRITE_FALLBACK_STORE: List[Dict[str, Any]] = []
+
+
+async def _store_mcp_write_fallback(payload: Dict[str, Any]) -> Dict[str, Any]:
+    """Store a denied MCP write attempt for later manual review."""
+    entry = {
+        "id": f"mcp-write-fallback-{len(_MCP_WRITE_FALLBACK_STORE) + 1}",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "tool_name": payload.get("tool_name") or payload.get("name") or "unknown",
+        "arguments": payload.get("arguments") or payload.get("params") or {},
+        "reason": payload.get("reason", "write path denied"),
+        "caller": payload.get("caller", "mcp"),
+    }
+    _MCP_WRITE_FALLBACK_STORE.append(entry)
+    mcp_logger.warning("MCP_WRITE_FALLBACK_STORED | %s", entry["tool_name"])
+    return {"ok": True, "stored": True, "fallback": entry}
+
+
+async def handle_mcp_write_fallback(params: Dict[str, Any]) -> Dict[str, Any]:
+    """MCP tool handler for write-fallback queueing."""
+    return await _store_mcp_write_fallback(params)
 
 
 async def handle_execute_mcp_tool(params: Dict[str, Any]) -> Dict[str, Any]:
@@ -2081,7 +2301,7 @@ async def handle_execute_mcp_tool(params: Dict[str, Any]) -> Dict[str, Any]:
             if v4_result:
                 return {"content": [{"type": "text", "text": json.dumps(v4_result, separators=(chr(44), chr(58)))}], "isError": False}
         except Exception:
-            pass  # Fall through to error
+            pass
 
     if not handler:
         raise ValueError(f"Unknown tool: {tool_name}")
@@ -2090,10 +2310,15 @@ async def handle_execute_mcp_tool(params: Dict[str, Any]) -> Dict[str, Any]:
     return await handler(tool_params)
 
 
-async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
+async def handle_tools_call(params: Dict[str, Any], request: Optional[Request] = None) -> Dict[str, Any]:
     """MCP tools/call method - executes a tool."""
-    tool_name = params.get("name")
+    requested_tool_name = params.get("name")
+    tool_name = requested_tool_name
     arguments = params.get("arguments", {})
+
+    # Resolve unified registry aliases before legacy/v4 normalization.
+    from ..mcp.tool_registry_unified import resolve_tool_name_for_call
+    tool_name = resolve_tool_name_for_call(tool_name) if tool_name else tool_name
 
     # Resolve v4 short names to internal names
     tool_name = resolve_alias_reverse(tool_name) if tool_name else tool_name
@@ -2101,11 +2326,16 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
     if not tool_name:
         raise ValueError("'name' parameter is required for tools/call")
 
+    blocked = _maybe_block_write_tool(tool_name, arguments, request, requested_tool_name)
+    if blocked is not None:
+        return blocked
+
     # Map tool names to internal handlers
     tool_map = {
         "acknowledge_policy": handle_acknowledge_policy,
         "chat": handle_llm_invoke,
         "list_models": handle_models_list,
+        "nova_chat_agent": handle_nova_chat_agent,
         "ask_specialist": handle_specialists_invoke,
         "crawl_url": handle_crawl_url,
         "web_search": handle_web_search,
@@ -2150,12 +2380,20 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
         "cli-agents_broadcast": handle_cli_agents_broadcast,
         "cli-agents_output": handle_cli_agents_output,
         "cli-agents_stats": handle_cli_agents_stats,
+        # V5 canonical agent tool names. Keep these direct so tools listed
+        # from V5 are not dependent on the v4 fallback path.
+        "agents": handle_cli_agents_list,
+        "agent_call": handle_cli_agents_call,
+        "agent_broadcast": handle_cli_agents_broadcast,
+        "agent_start": handle_cli_agents_start,
+        "agent_stop": handle_cli_agents_stop,
         # System & Compatibility
         "check_compatibility": handle_check_compatibility,
         "debug_mcp_request": handle_debug_mcp_request,
             "restart_backend": handle_restart_backend,
             "restart_agent": handle_restart_agent,
             "execute_mcp_tool": handle_execute_mcp_tool,
+            "mcp_write_fallback": handle_mcp_write_fallback,
         }
     # Merge with dynamic handlers from services
     tool_map.update(OLLAMA_HANDLERS)
@@ -2176,6 +2414,10 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
     tool_map.update(VAULT_HANDLERS)
     tool_map.update(CHAT_ROUTER_HANDLERS)
     tool_map.update(TASK_SPAWNER_HANDLERS)
+    tool_map.update(N8N_HANDLERS)
+    tool_map.update(GROUP_CHAT_HANDLERS)
+    tool_map.update(SWARM_HANDLERS)
+    tool_map.update(MCP_HANDLERS)
 
     handler = tool_map.get(tool_name)
     # Compatibility fallback
@@ -2188,15 +2430,18 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
     if not handler:
         try:
             v4_result = await call_v4_tool(tool_name, arguments)
-            if v4_result:
+            if v4_result is not None:
                 return {"content": [{"type": "text", "text": json.dumps(v4_result, separators=(chr(44), chr(58)))}], "isError": False}
-        except Exception:
-            pass  # Fall through to error
+        except Exception as e:
+            mcp_logger.error(f"v4 handler failed for {tool_name}: {e}")
+            # Do not pass, let it fall through or raise if we are sure it's the right place
+            # Actually, if v4 handler failed, we should probably report THAT error instead of "Unknown tool"
+            return {"content": [{"type": "text", "text": f"Error in v4 handler for {tool_name}: {e}"}], "isError": True}
 
     if not handler:
         raise ValueError(f"Unknown tool: {tool_name}")
 
-    result = await handler(arguments)
+    result = await _call_tool_handler(handler, arguments, request)
     return {
         "content": [
             {"type": "text", "text": json.dumps(result, separators=(',', ':'))}
@@ -3112,7 +3357,7 @@ async def handle_cli_agents_list(params: Dict[str, Any]) -> Dict[str, Any]:
     
     summary = []
     for a in agents:
-        agent_id = a.get("id", "unknown")
+        agent_id = a.get("agent_id") or a.get("id", "unknown")
         agent_status = a.get("status", "unknown")
         pid = a.get("pid", "-")
         summary.append(f"{agent_id}: {agent_status} (pid={pid})")
@@ -3127,7 +3372,7 @@ async def handle_cli_agents_get(params: Dict[str, Any]) -> Dict[str, Any]:
     """Get details for a specific CLI agent."""
     from ..services.tristar.agent_controller import agent_controller
 
-    agent_id = params.get("agent_id")
+    agent_id = params.get("agent_id") or params.get("agent")
     if not agent_id:
         raise ValueError("'agent_id' parameter is required")
 
@@ -3142,7 +3387,7 @@ async def handle_cli_agents_start(params: Dict[str, Any]) -> Dict[str, Any]:
     """Start a CLI agent subprocess."""
     from ..services.tristar.agent_controller import agent_controller
 
-    agent_id = params.get("agent_id")
+    agent_id = params.get("agent_id") or params.get("agent")
     if not agent_id:
         raise ValueError("'agent_id' parameter is required")
 
@@ -3157,7 +3402,7 @@ async def handle_cli_agents_stop(params: Dict[str, Any]) -> Dict[str, Any]:
     """Stop a CLI agent subprocess."""
     from ..services.tristar.agent_controller import agent_controller
 
-    agent_id = params.get("agent_id")
+    agent_id = params.get("agent_id") or params.get("agent")
     if not agent_id:
         raise ValueError("'agent_id' parameter is required")
 
@@ -3174,7 +3419,7 @@ async def handle_cli_agents_restart(params: Dict[str, Any]) -> Dict[str, Any]:
     """Restart a CLI agent."""
     from ..services.tristar.agent_controller import agent_controller
 
-    agent_id = params.get("agent_id")
+    agent_id = params.get("agent_id") or params.get("agent")
     if not agent_id:
         raise ValueError("'agent_id' parameter is required")
 
@@ -3189,8 +3434,8 @@ async def handle_cli_agents_call(params: Dict[str, Any]) -> Dict[str, Any]:
     """Send a message to a CLI agent."""
     from ..services.tristar.agent_controller import agent_controller
 
-    agent_id = params.get("agent_id")
-    message = params.get("message")
+    agent_id = params.get("agent_id") or params.get("agent")
+    message = params.get("message") or params.get("command")
 
     if not agent_id:
         raise ValueError("'agent_id' parameter is required")
@@ -3210,11 +3455,11 @@ async def handle_cli_agents_broadcast(params: Dict[str, Any]) -> Dict[str, Any]:
     """Broadcast a message to multiple CLI agents."""
     from ..services.tristar.agent_controller import agent_controller
 
-    message = params.get("message")
+    message = params.get("message") or params.get("command")
     if not message:
         raise ValueError("'message' parameter is required")
 
-    agent_ids = params.get("agent_ids")  # Optional, None = all agents
+    agent_ids = params.get("agent_ids") or params.get("agents")  # Optional, None = all agents
 
     result = await agent_controller.broadcast(message, agent_ids=agent_ids)
     return result
@@ -3224,7 +3469,7 @@ async def handle_cli_agents_output(params: Dict[str, Any]) -> Dict[str, Any]:
     """Get output buffer for a CLI agent."""
     from ..services.tristar.agent_controller import agent_controller
 
-    agent_id = params.get("agent_id")
+    agent_id = params.get("agent_id") or params.get("agent")
     if not agent_id:
         raise ValueError("'agent_id' parameter is required")
 
@@ -3338,12 +3583,13 @@ async def handle_resources_read_mcp(params: Dict[str, Any]) -> Dict[str, Any]:
     raise ValueError(f"Resource not found: {uri}")
 
 
-Handler = Callable[[Dict[str, Any]], Awaitable[Any]]
+Handler = Callable[..., Awaitable[Any]]
 MCP_HANDLERS: Dict[str, Handler] = {
     # Standard MCP Protocol Methods (Slash notation - required for Gemini/Claude/Codex compatibility)
     "initialize": handle_initialize,
     "tools/list": handle_tools_list,
     "tools/call": handle_tools_call,
+    "nova_chat_agent": handle_nova_chat_agent,
     "prompts/list": handle_prompts_list_mcp,
     "prompts/get": handle_prompts_render,  # prompts/get maps to render
     "resources/list": handle_resources_list_mcp,
@@ -3421,6 +3667,12 @@ MCP_HANDLERS: Dict[str, Handler] = {
     "cli-agents_stats": handle_cli_agents_stats,
     "cli-agents_update-prompt": handle_cli_agents_update_prompt,
     "cli-agents_reload-prompts": handle_cli_agents_reload_prompts,
+    # V5 canonical agent tool names
+    "agents": handle_cli_agents_list,
+    "agent_call": handle_cli_agents_call,
+    "agent_broadcast": handle_cli_agents_broadcast,
+    "agent_start": handle_cli_agents_start,
+    "agent_stop": handle_cli_agents_stop,
     
     # MCP Node Clients (WebSocket connections)
     "mcp_node_clients": handle_mcp_node_clients,
@@ -3445,6 +3697,10 @@ MCP_HANDLERS.update(ADAPTIVE_CODE_V4_HANDLERS)
 MCP_HANDLERS.update(LLM_COMPAT_HANDLERS)
 MCP_HANDLERS.update(HOTRELOAD_HANDLERS)
 MCP_HANDLERS.update(MEMORY_INDEX_HANDLERS)
+MCP_HANDLERS |= FLARUM_TOOL_HANDLERS
+MCP_HANDLERS.update(N8N_HANDLERS)
+MCP_HANDLERS.update(GROUP_CHAT_HANDLERS)
+MCP_HANDLERS.update(SWARM_HANDLERS)
 
 # Register all handlers with the tool_registry_v3
 register_handlers_from_dict(MCP_HANDLERS)
@@ -3460,6 +3716,7 @@ except Exception as e:
 
 
 from fastapi.responses import StreamingResponse
+from ..mcp.structured_admin import record_mcp_call
 import uuid
 import asyncio
 from typing import Dict, Any as TypingAny
@@ -3510,18 +3767,53 @@ async def mcp_health_or_sse(request: Request):
     await require_mcp_auth(request)
 
     accept_header = request.headers.get("Accept", "")
-    if "text/event-stream" in accept_header:
-        # Redirect to SSE endpoint for proper handling
-        from fastapi.responses import RedirectResponse
-        return RedirectResponse(url="/v1/mcp/sse", status_code=307)
-
     client_ip = request.client.host if request.client else "unknown"
+
+    if "text/event-stream" in accept_header:
+        # Streamable HTTP compatibility:
+        # Some web MCP connectors open GET on the canonical MCP endpoint itself.
+        # Return SSE directly on /v1/mcp instead of redirecting to /v1/mcp/sse.
+        session_id = request.headers.get("Mcp-Session-Id") or request.headers.get("mcp-session-id")
+        if not session_id:
+            session_id = str(uuid.uuid4()).replace("-", "")
+
+        session = _get_session(session_id)
+        mcp_logger.info(f"MCP_STREAMABLE_GET | IP: {client_ip} | Session: {session_id}")
+
+        async def streamable_mcp_events():
+            yield f": ailinux-mcp session={session_id}\n\n"
+            ping_counter = 0
+
+            while True:
+                try:
+                    response = await asyncio.wait_for(session["queue"].get(), timeout=30.0)
+                    yield f"event: message\ndata: {json.dumps(response)}\n\n"
+                except asyncio.TimeoutError:
+                    ping_counter += 1
+                    yield f": keepalive {ping_counter}\n\n"
+
+        return StreamingResponse(
+            streamable_mcp_events(),
+            media_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache, no-store",
+                "Connection": "keep-alive",
+                "X-Accel-Buffering": "no",
+                "Mcp-Session-Id": session_id,
+            },
+        )
+
     mcp_logger.info(f"MCP_HEALTH_CHECK | IP: {client_ip}")
+    protocol_version = (
+        request.query_params.get("protocolVersion")
+        or request.headers.get("Mcp-Protocol-Version")
+        or "2024-11-05"
+    )
 
     return JSONResponse({
         "jsonrpc": "2.0",
         "result": {
-            "protocolVersion": "2024-11-05",
+            "protocolVersion": protocol_version,
             "serverInfo": {
                 "name": "ailinux-mcp-server",
                 "version": "2.80",
@@ -3584,6 +3876,8 @@ async def mcp_sse_connect(request: Request):
 
     # Create session with response queue
     session = _get_session(session_id)
+    session["authenticated"] = True
+    session["last_seen"] = datetime.now(timezone.utc)
 
     mcp_logger.info(f"SSE_CONNECT | IP: {client_ip} | Session: {session_id}")
 
@@ -3595,6 +3889,11 @@ async def mcp_sse_connect(request: Request):
             # First message: Tell client where to POST messages
             # This is the critical message Cursor expects!
             messages_endpoint = f"/v1/mcp/messages/?session_id={session_id}"
+            access_token = None
+            if os.environ.get("ALLOW_QUERY_TOKEN_AUTH") == "1":
+                access_token = request.query_params.get("access_token")
+            if access_token:
+                messages_endpoint += f"&access_token={access_token}"
             yield f"event: endpoint\ndata: {messages_endpoint}\n\n"
 
             mcp_logger.info(f"SSE_ENDPOINT_SENT | Session: {session_id} | Endpoint: {messages_endpoint}")
@@ -3649,6 +3948,10 @@ async def mcp_sse_connect(request: Request):
 # Handles JSON-RPC requests from Cursor
 # ============================================================================
 
+@public_router.post("/mcp/messages", tags=["MCP"], summary="MCP messages endpoint for JSON-RPC (session-aware)")
+@public_router.post("/mcp/messages/", tags=["MCP"], summary="MCP messages endpoint for JSON-RPC (session-aware)")
+@public_router.post("/messages", tags=["MCP"], summary="MCP messages alias (session-aware)")
+@public_router.post("/messages/", tags=["MCP"], summary="MCP messages alias (session-aware)")
 @router.post("/mcp/messages", tags=["MCP"], summary="MCP messages endpoint for JSON-RPC")
 @router.post("/mcp/messages/", tags=["MCP"], summary="MCP messages endpoint for JSON-RPC")
 @router.post("/messages", tags=["MCP"], summary="MCP messages (alias)")
@@ -3665,8 +3968,6 @@ async def mcp_messages_handler(request: Request, session_id: Optional[str] = Non
     import time as _time
     from ..utils.triforce_logging import multi_logger
 
-    await require_mcp_auth(request)
-
     client_ip = request.client.host if request.client else "unknown"
     start_time = _time.time()
     method = None
@@ -3675,6 +3976,14 @@ async def mcp_messages_handler(request: Request, session_id: Optional[str] = Non
 
     # Get session if exists
     session = _mcp_sessions.get(session_id) if session_id else None
+
+    # Legacy SSE transport:
+    # The initial GET /v1/mcp/sse is authenticated and creates the session.
+    # Some MCP clients do not resend Authorization on POST /messages.
+    if session and session.get("authenticated"):
+        session["last_seen"] = datetime.now(timezone.utc)
+    else:
+        await require_mcp_auth(request)
 
     mcp_logger.info(f"MCP_MESSAGE | IP: {client_ip} | Session: {session_id or 'none'}")
 
@@ -3708,7 +4017,7 @@ async def mcp_messages_handler(request: Request, session_id: Optional[str] = Non
                 session["initialized"] = True
 
             result = {
-                "protocolVersion": "2024-11-05",
+                "protocolVersion": params.get("protocolVersion", "2024-11-05"),
                 "serverInfo": {
                     "name": "ailinux-mcp-server",
                     "version": "2.80"
@@ -3749,11 +4058,9 @@ async def mcp_messages_handler(request: Request, session_id: Optional[str] = Non
                 status_code=404
             )
 
-        # Execute handler
-        if method == "initialize":
-            result = await handler(params, request=request)
-        else:
-            result = await handler(params)
+        # Execute handler. Request-aware standard MCP methods enforce
+        # client-specific tool visibility and call permissions.
+        result = await _call_mcp_method_handler(method, handler, params, request)
 
         latency_ms = (_time.time() - start_time) * 1000
 
@@ -3772,6 +4079,8 @@ async def mcp_messages_handler(request: Request, session_id: Optional[str] = Non
                     caller = "claude"
                 elif "gemini" in user_agent.lower() or "google" in user_agent.lower():
                     caller = "gemini"
+                elif "codex" in user_agent.lower():
+                    caller = "codex"
             await multi_logger.log_mcp_tool_call(
                 tool_name=tool_name,
                 params=tool_args,
@@ -3780,6 +4089,7 @@ async def mcp_messages_handler(request: Request, session_id: Optional[str] = Non
                 caller=caller,
                 result_preview=str(result)[:300] if result else None
             )
+            record_mcp_call(tool_name, latency_ms, "success", "mcp_messages_handler", result_size=len(str(result)) if result else 0)
 
         response = {"jsonrpc": "2.0", "result": result, "id": req_id}
 
@@ -3791,6 +4101,9 @@ async def mcp_messages_handler(request: Request, session_id: Optional[str] = Non
 
     except ValueError as exc:
         error_msg = str(exc)
+        tn = params.get("name", method or "unknown") if isinstance(params, dict) else (method or "unknown")
+        _err_latency = (_time.time() - start_time) * 1000
+        record_mcp_call(tn, _err_latency, "error", "mcp_messages_handler", error=error_msg)
         return JSONResponse(
             content={"jsonrpc": "2.0", "error": {"code": -32000, "message": error_msg}, "id": None},
             status_code=400
@@ -3798,6 +4111,9 @@ async def mcp_messages_handler(request: Request, session_id: Optional[str] = Non
     except Exception as exc:
         error_msg = str(exc)
         mcp_logger.error(f"MCP_ERROR | Session: {session_id} | Error: {error_msg}")
+        tn = params.get("name", method or "unknown") if isinstance(params, dict) else (method or "unknown")
+        _err_latency = (_time.time() - start_time) * 1000
+        record_mcp_call(tn, _err_latency, "error", "mcp_messages_handler", error=error_msg)
         return JSONResponse(
             content={"jsonrpc": "2.0", "error": {"code": -32000, "message": "Internal error", "data": error_msg}, "id": None},
             status_code=500
@@ -3859,7 +4175,7 @@ async def _process_mcp_request(
             session["initialized"] = True
 
         result = {
-            "protocolVersion": "2024-11-05",
+            "protocolVersion": params.get("protocolVersion", "2024-11-05"),
             "serverInfo": {
                 "name": "ailinux-mcp-server",
                 "version": "2.80"
@@ -3895,7 +4211,7 @@ async def _process_mcp_request(
 
     # Execute handler
     try:
-        result = await handler(params)
+        result = await _call_mcp_method_handler(method, handler, params, request)
         latency_ms = (_time.time() - start_time) * 1000
         await multi_logger.log_mcp(method, params, result, latency_ms)
         return {"jsonrpc": "2.0", "result": result, "id": req_id}
@@ -3965,7 +4281,7 @@ async def mcp_unified_endpoint(request: Request):
                 responses.append(response)
 
         if not responses:
-            return JSONResponse(status_code=202)  # All notifications, no response needed
+            return JSONResponse(content={"status":"accepted"}, status_code=202)  # All notifications, no response needed
 
         # Return batch response
         if wants_streaming:
@@ -4099,7 +4415,7 @@ async def mcp_delete_session(request: Request):
     if session_id in _mcp_sessions:
         del _mcp_sessions[session_id]
         mcp_logger.info(f"MCP_SESSION_DELETED | Session: {session_id}")
-        return JSONResponse(status_code=204)
+        return JSONResponse(content={"status":"deleted"}, status_code=200)
 
     return JSONResponse(
         content={"error": "Session not found"},
@@ -4108,3 +4424,21 @@ async def mcp_delete_session(request: Request):
 
 
 # Connection management endpoints removed - stateless API key auth only
+
+
+@router.post("/mcp_write_fallback", tags=["MCP"], summary="Store MCP write fallback")
+async def mcp_write_fallback_endpoint(request: Request):
+    """HTTP endpoint for clients that need to queue denied write operations."""
+    payload = await request.json()
+    result = await handle_mcp_write_fallback(payload)
+    result["endpoint"] = "/v1/mcp_write_fallback"
+    return JSONResponse(content=result)
+
+
+@router.post("/mcp/trigger_mcp_write_fallback", tags=["MCP"], summary="Trigger MCP write fallback")
+async def trigger_mcp_write_fallback_endpoint(request: Request):
+    """Compatibility endpoint for MCP write fallback trigger calls."""
+    payload = await request.json()
+    result = await handle_mcp_write_fallback(payload)
+    result["endpoint"] = "/v1/mcp/trigger_mcp_write_fallback"
+    return JSONResponse(content=result)

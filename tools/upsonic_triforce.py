@@ -16,7 +16,7 @@ class TriForceMCP:
         resp = self.session.post(f"{self.base_url}/v1/mcp", json=payload, timeout=30)
         data = resp.json()
         if "error" in data:
-            raise Exception(f"MCP Error: {data[error]}")
+            raise Exception(f"MCP Error: {data['error']}")
         return data.get("result")
     
     def list_tools(self) -> List[Dict]:

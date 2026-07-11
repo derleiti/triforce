@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AILinux — Account</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -222,6 +223,42 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
   .main-content{min-height:60vh;padding:1.25rem}
 }
 @keyframes spin{to{transform:rotate(360deg)}}
+
+
+/* ── Nova polish pass 2026-06 ───────────────────────────────────────────── */
+:root{--glass:rgba(20,20,32,.72);--glow:0 0 0 1px rgba(255,255,255,.04),0 28px 90px rgba(0,0,0,.55),0 0 60px rgba(59,130,246,.10)}
+body{background:
+  radial-gradient(circle at 18% 12%,rgba(59,130,246,.20),transparent 30%),
+  radial-gradient(circle at 82% 18%,rgba(139,92,246,.18),transparent 28%),
+  radial-gradient(circle at 50% 100%,rgba(6,182,212,.10),transparent 36%),var(--bg)}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(circle at center,black,transparent 78%)}
+.login-card{position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(20,20,32,.88),rgba(15,15,26,.78));backdrop-filter:blur(18px);box-shadow:var(--glow)}
+.login-card::before{content:'';position:absolute;inset:0 0 auto 0;height:3px;background:linear-gradient(90deg,var(--blue),var(--purple),var(--cyan));opacity:.95}
+.login-card::after{content:'';position:absolute;width:170px;height:170px;right:-70px;top:-70px;background:radial-gradient(circle,rgba(6,182,212,.16),transparent 68%);pointer-events:none}
+.login-logo .robot,.brand-icon{animation:novaFloat 4.5s ease-in-out infinite}
+@keyframes novaFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.tabs{border:1px solid rgba(255,255,255,.06);box-shadow:inset 0 1px 0 rgba(255,255,255,.03)}
+.tab{position:relative}.tab.active{box-shadow:0 8px 22px rgba(59,130,246,.22),inset 0 1px 0 rgba(255,255,255,.18)}
+.field input{background:rgba(4,7,18,.55);border-color:rgba(148,163,184,.18);box-shadow:inset 0 1px 0 rgba(255,255,255,.03)}
+.field input:hover{border-color:rgba(148,163,184,.32)}
+.btn-main,.btn-upgrade{box-shadow:0 10px 28px rgba(59,130,246,.22),inset 0 1px 0 rgba(255,255,255,.18)}
+.btn-main:active,.btn-upgrade:active{transform:translateY(0)}
+.footer-links{display:flex;justify-content:center;gap:.75rem;flex-wrap:wrap}
+.trust-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin:1.25rem 0 0}
+.trust-pill{padding:.55rem .6rem;border-radius:12px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.06);color:var(--muted);font-size:.72rem;text-align:center;white-space:nowrap}
+.sidebar,.card,.features-box,.sub-status-card,.plan-card,.settings-section,.admin-link-card{backdrop-filter:blur(14px);box-shadow:0 14px 38px rgba(0,0,0,.20)}
+.card,.features-box,.sub-status-card,.plan-card,.settings-section{background:linear-gradient(180deg,rgba(20,20,32,.88),rgba(15,15,26,.76));border-color:rgba(148,163,184,.13)}
+.nav-item.active{box-shadow:inset 3px 0 0 var(--blue)}
+.panel-title{letter-spacing:-.02em}.panel-title::after{content:'';display:block;width:56px;height:3px;border-radius:99px;background:var(--grad);margin-top:.55rem}
+@media(max-width:560px){.login-card{padding:1.5rem;border-radius:20px}.trust-row{grid-template-columns:1fr}.login-logo h1{font-size:1.7rem}.login-logo .robot{font-size:3rem}}
+
+
+.google-login-wrap{margin:1rem 0 .5rem;display:none}
+.google-login-label{font-size:.75rem;color:var(--muted);text-align:center;margin-bottom:.6rem}
+.google-login-fallback{width:100%;padding:.85rem 1rem;border-radius:14px;border:1px solid rgba(148,163,184,.22);background:rgba(255,255,255,.04);color:var(--text);font-size:.92rem;font-weight:600;cursor:pointer;font-family:inherit;display:none;align-items:center;justify-content:center;gap:.6rem;transition:all .2s}
+.google-login-fallback:hover{border-color:rgba(59,130,246,.55);background:rgba(59,130,246,.09)}
+.google-login-hint{display:none;margin-top:.55rem;color:var(--muted2);font-size:.72rem;text-align:center}
+
 </style>
 </head>
 <body>
@@ -261,6 +298,13 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
       <div class="field"><label>Beta-Code <small>(optional)</small></label><input type="text" id="r-code" placeholder="AILINUX2026"></div>
       <button type="submit" class="btn-main" id="r-btn">Konto erstellen</button>
     </form>
+
+    <div class="google-login-wrap" id="google-login-wrap">
+      <div class="google-login-label">Schnell anmelden</div>
+      <div id="google-signin-button"></div>
+      <button type="button" class="google-login-fallback" id="google-login-fallback">🔐 Mit Google anmelden</button>
+      <div class="google-login-hint" id="google-login-hint">Google Login ist noch nicht konfiguriert.</div>
+    </div>
 
     <div class="divider">oder</div>
     <div class="footer-links"><a href="https://ailinux.me">← Zurück zur Website</a></div>
@@ -404,7 +448,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
           <p style="color:var(--muted);font-size:.875rem;margin-bottom:.5rem">Client-ID:</p>
           <div class="code-row"><code id="set-client-id">Lade…</code><button class="btn-copy" data-target="set-client-id">📋</button></div>
           <p style="color:var(--muted);font-size:.875rem;margin-bottom:.5rem">Login-Endpoint:</p>
-          <div class="code-row"><code>https://api.ailinux.me/v1/client/login</code><button class="btn-copy" data-clipboard="https://api.ailinux.me/v1/client/login">📋</button></div>
+          <div class="code-row"><code>https://api.ailinux.me/v1/auth/login</code><button class="btn-copy" data-clipboard="https://api.ailinux.me/v1/auth/login">📋</button></div>
         </div>
       </section>
 
@@ -438,6 +482,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:
 <script>
 const API = 'https://api.ailinux.me/v1';
 const WP_API = 'https://ailinux.me/wp-json/nova-ai/v1';
+let AUTH_CONFIG = {google_enabled:false, google_client_id:''};
 
 // ── Tier Helpers ────────────────────────────────────────────────────────────
 const TIER_LABELS = {free:'FREE',pro:'PRO',enterprise:'ENTERPRISE',unlimited:'UNLIMITED',admin:'ADMIN',paid:'PRO'};
@@ -525,6 +570,69 @@ function showDashboard(email,tier,clientId,name){
   fetch(WP_API+'/health').then(r=>r.json()).then(d=>{
     document.getElementById('ov-backend').textContent=d.status==='ok'||d.ok?'✅ Online':'⚠ '+d.status;
   }).catch(()=>{document.getElementById('ov-backend').textContent='⚠ Offline'});
+}
+
+// ── Google Sign-In ───────────────────────────────────────────────────────────
+async function loadAuthConfig(){
+  try{
+    const r=await fetch(API+'/auth/config',{cache:'no-store'});
+    if(r.ok)AUTH_CONFIG=await r.json();
+  }catch{}
+  initGoogleLogin();
+}
+
+function initGoogleLogin(){
+  const wrap=document.getElementById('google-login-wrap');
+  const hint=document.getElementById('google-login-hint');
+  const fallback=document.getElementById('google-login-fallback');
+  if(!wrap)return;
+  wrap.style.display='block';
+  if(!AUTH_CONFIG.google_enabled||!AUTH_CONFIG.google_client_id){
+    hint.style.display='block';
+    return;
+  }
+  const render=()=>{
+    if(!window.google?.accounts?.id){fallback.style.display='flex';return false;}
+    google.accounts.id.initialize({
+      client_id:AUTH_CONFIG.google_client_id,
+      callback:handleGoogleCredential,
+      ux_mode:'popup',
+      auto_select:false,
+      cancel_on_tap_outside:true
+    });
+    google.accounts.id.renderButton(document.getElementById('google-signin-button'),{
+      theme:'filled_black',size:'large',type:'standard',shape:'pill',text:'continue_with',logo_alignment:'left',width:340
+    });
+    fallback.style.display='none';
+    return true;
+  };
+  if(!render()){
+    let tries=0;
+    const timer=setInterval(()=>{tries++; if(render()||tries>20)clearInterval(timer)},250);
+  }
+  fallback.addEventListener('click',()=>{try{google.accounts.id.prompt()}catch{showMsg('login-msg','Google Login konnte nicht geöffnet werden')}});
+}
+
+async function handleGoogleCredential(response){
+  const credential=response?.credential;
+  if(!credential){showMsg('login-msg','Google Login hat kein Token geliefert');return;}
+  try{
+    const r=await fetch(API+'/auth/google',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({credential})});
+    const d=await r.json();
+    if(r.ok){
+      lsSet('ailinux_token',d.token);
+      lsSet('ailinux_email',d.user_id||d.email);
+      lsSet('ailinux_tier',d.tier);
+      lsSet('ailinux_client_id',d.client_id||'');
+      lsSet('ailinux_name',d.name||'');
+      showMsg('login-msg','Google Login erfolgreich! 🎉','ok');
+      setTimeout(()=>showDashboard(d.user_id||d.email,d.tier,d.client_id,d.name),300);
+      wpSync(d.token);
+      try{window.opener?.postMessage({type:'ailinux_login',token:d.token,email:d.user_id||d.email,tier:d.tier},'*')}catch{}
+    }else{
+      showMsg('login-msg',d.detail||d.error||'Google Login fehlgeschlagen');
+    }
+  }catch(err){showMsg('login-msg','Google Verbindungsfehler: '+err.message)}
 }
 
 // ── Login Form ───────────────────────────────────────────────────────────────
@@ -750,6 +858,8 @@ function openApp(){
   const params=new URLSearchParams(location.search);
   const view=params.get('view');
 
+  await loadAuthConfig();
+
   // Restore session via Backend verify
   const restored=await verifyAndRestoreSession();
 
@@ -766,5 +876,106 @@ function openApp(){
   if(storedClientId){document.getElementById('set-client-id').textContent=storedClientId;document.getElementById('ov-client-id').textContent=storedClientId}
 })();
 </script>
+<script id="ailinux-login-redirect-bridge">
+(function(){
+  if (window.__ailinuxLoginRedirectBridgeInstalled) return;
+  window.__ailinuxLoginRedirectBridgeInstalled = true;
+
+  function setLocal(k, v){
+    if (v === undefined || v === null || v === '') return;
+    try {
+      if (typeof lsSet === 'function') lsSet(k, String(v));
+      else localStorage.setItem(k, String(v));
+    } catch(e) {}
+  }
+
+  function setSharedCookie(k, v){
+    if (v === undefined || v === null || v === '') return;
+    try {
+      document.cookie =
+        k + '=' + encodeURIComponent(String(v)) +
+        '; Domain=.ailinux.me; Path=/; Max-Age=86400; SameSite=Lax; Secure';
+    } catch(e) {}
+  }
+
+  function safeRedirectTarget(){
+    const params = new URLSearchParams(location.search);
+    const wanted =
+      params.get('redirect') ||
+      params.get('return') ||
+      params.get('return_to') ||
+      params.get('continue') ||
+      params.get('next') ||
+      'https://ailinux.me/';
+
+    try {
+      const u = new URL(wanted, location.href);
+      if (u.hostname === 'ailinux.me' || u.hostname.endsWith('.ailinux.me')) {
+        return u.href;
+      }
+    } catch(e) {}
+
+    return 'https://ailinux.me/';
+  }
+
+  function persistLoginPayload(data){
+    if (!data || typeof data !== 'object') return false;
+
+    const token = data.token || data.access_token || data.jwt || data.auth_token;
+    if (!token) return false;
+
+    const email = data.email || data.user_email || data.user_id || '';
+    const tier = data.tier || data.role || '';
+    const clientId = data.client_id || '';
+    const name = data.name || data.display_name || '';
+
+    setLocal('ailinux_token', token);
+    setLocal('ailinux_email', email);
+    setLocal('ailinux_tier', tier);
+    setLocal('ailinux_client_id', clientId);
+    setLocal('ailinux_name', name);
+
+    setSharedCookie('ailinux_token', token);
+    setSharedCookie('ailinux_email', email);
+    setSharedCookie('ailinux_tier', tier);
+    setSharedCookie('ailinux_client_id', clientId);
+    setSharedCookie('ailinux_name', name);
+
+    return true;
+  }
+
+  const nativeFetch = window.fetch ? window.fetch.bind(window) : null;
+  if (!nativeFetch) return;
+
+  window.fetch = async function(input, init){
+    const res = await nativeFetch(input, init);
+
+    try {
+      const url = (typeof input === 'string') ? input : (input && input.url ? input.url : '');
+      const method = ((init && init.method) || (input && input.method) || 'GET').toUpperCase();
+
+      const isLoginCall =
+        method !== 'GET' &&
+        /\/(?:auth\/)?(?:login|google)(?:[/?#]|$)/i.test(url);
+
+      if (isLoginCall) {
+        res.clone().json().then(function(data){
+          if (!res.ok) return;
+          if (!persistLoginPayload(data)) return;
+
+          if (location.hostname === 'login.ailinux.me') {
+            setTimeout(function(){
+              window.location.assign(safeRedirectTarget());
+            }, 300);
+          }
+        }).catch(function(){});
+      }
+    } catch(e) {}
+
+    return res;
+  };
+})();
+</script><!-- /ailinux-login-redirect-bridge -->
+
 </body>
 </html>

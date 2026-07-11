@@ -4,7 +4,7 @@ VERSION = "2.81"
 from functools import lru_cache
 from typing import Dict, List, Optional
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import AnyHttpUrl, Field
+from pydantic import AliasChoices, AnyHttpUrl, Field
 
 DEFAULT_ALLOWED_ORIGINS = [
     "http://localhost",
@@ -58,12 +58,17 @@ class Settings(BaseSettings):
     stable_diffusion_api_key: Optional[str] = Field(default=None, validation_alias="STABLE_DIFFUSION_API_KEY")
 
     # TriStar GUI Authentication
-    tristar_gui_user: str = Field(default="admin", validation_alias="TRISTAR_GUI_USER")
-    tristar_gui_password: str = Field(default="changeme", validation_alias="TRISTAR_GUI_PASSWORD")
+    tristar_gui_user: str = Field(default="zombie", validation_alias="TRISTAR_GUI_USER")
+    tristar_gui_password: str = Field(default="", validation_alias="TRISTAR_GUI_PASSWORD")
 
     # MCP Authentication (User/Password only - no API keys)
     mcp_oauth_user: Optional[str] = Field(default=None, validation_alias="MCP_OAUTH_USER")
     mcp_oauth_pass: Optional[str] = Field(default=None, validation_alias="MCP_OAUTH_PASS")
+
+    # MCP Mesh WebSocket
+    mcp_ws_host: str = Field(default="0.0.0.0", validation_alias="MCP_WS_HOST")
+    mcp_ws_port: int = Field(default=44433, validation_alias="MCP_WS_PORT")
+    mcp_ws_enable_ipv6: bool = Field(default=False, validation_alias="MCP_WS_ENABLE_IPV6")
 
     # GPT-OSS
     gpt_oss_api_key: str | None = Field(default=None, validation_alias="GPT_OSS_API_KEY")
@@ -71,6 +76,14 @@ class Settings(BaseSettings):
 
     # Gemini
     gemini_api_key: str | None = Field(default=None, validation_alias="GEMINI_API_KEY")
+    google_url: Optional[str] = Field(default=None, validation_alias="GOOGLE_URL")
+    google_user: Optional[str] = Field(default=None, validation_alias="GOOGLE_USER")
+    google_pass: Optional[str] = Field(default=None, validation_alias="GOOGLE_PASS")
+    gemini_agent_id: Optional[str] = Field(default=None, validation_alias="GEMINI_AGENT_ID")
+    claude_url: Optional[str] = Field(default=None, validation_alias="CLAUDE_URL")
+    claude_user: Optional[str] = Field(default=None, validation_alias="CLAUDE_USER")
+    claude_pass: Optional[str] = Field(default=None, validation_alias="CLAUDE_PASS")
+
 
     # Mistral
     mistral_api_key: str | None = Field(default=None, validation_alias="MISTRAL_API_KEY")
@@ -152,6 +165,26 @@ class Settings(BaseSettings):
 
     # OpenAI compatibility
     openai_model_aliases: Dict[str, str] = Field(default_factory=dict, validation_alias="OPENAI_MODEL_ALIASES")
+    chatgpt_url: Optional[str] = Field(default=None, validation_alias="CHATGPT_URL")
+    chatgpt_user: Optional[str] = Field(default=None, validation_alias="CHATGPT_USER")
+    chatgpt_pass: Optional[str] = Field(default=None, validation_alias="CHATGPT_PASS")
+    nova_chatgpt_url: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_CHATGPT_URL", "CHATGPT_URL"))
+    nova_chatgpt_user: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_CHATGPT_USER", "CHATGPT_USER"))
+    nova_chatgpt_pass: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_CHATGPT_PASS", "CHATGPT_PASS"))
+    nova_chatgpt_agent_id: Optional[str] = Field(default=None, validation_alias="NOVA_CHATGPT_AGENT_ID")
+    nova_google_url: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_GOOGLE_URL", "GOOGLE_URL"))
+    nova_google_user: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_GOOGLE_USER", "GOOGLE_USER"))
+    nova_google_pass: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_GOOGLE_PASS", "GOOGLE_PASS"))
+    nova_gemini_agent_id: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_GEMINI_AGENT_ID", "GEMINI_AGENT_ID"))
+    nova_claude_url: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_CLAUDE_URL", "CLAUDE_URL"))
+    nova_claude_user: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_CLAUDE_USER", "CLAUDE_USER"))
+    nova_claude_pass: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_CLAUDE_PASS", "CLAUDE_PASS"))
+    nova_claude_agent_id: Optional[str] = Field(default=None, validation_alias=AliasChoices("NOVA_CLAUDE_AGENT_ID", "CLAUDE_AGENT_ID"))
+    claude_agent_id: Optional[str] = Field(default=None, validation_alias=AliasChoices("CLAUDE_AGENT_ID", "NOVA_CLAUDE_AGENT_ID"))
+    nova_mistral_url: Optional[str] = Field(default=None, validation_alias="NOVA_MISTRAL_URL")
+    nova_mistral_user: Optional[str] = Field(default=None, validation_alias="NOVA_MISTRAL_USER")
+    nova_mistral_pass: Optional[str] = Field(default=None, validation_alias="NOVA_MISTRAL_PASS")
+    nova_mistral_agent_id: Optional[str] = Field(default=None, validation_alias="NOVA_MISTRAL_AGENT_ID")
 
     # WordPress / bbPress
     wordpress_url: AnyHttpUrl | None = Field(default=None, validation_alias="WORDPRESS_URL")
@@ -187,6 +220,11 @@ class Settings(BaseSettings):
     mail_smtp_user: Optional[str] = Field(default=None, validation_alias="MAIL_SMTP_USER")
     mail_smtp_pass: Optional[str] = Field(default=None, validation_alias="MAIL_SMTP_PASS")
     mail_smtp_starttls: Optional[bool] = Field(default=None, validation_alias="MAIL_SMTP_STARTTLS")
+    mail_imap_host: Optional[str] = Field(default=None, validation_alias="MAIL_IMAP_HOST")
+    mail_imap_port: Optional[int] = Field(default=None, validation_alias="MAIL_IMAP_PORT")
+    mail_imap_user: Optional[str] = Field(default=None, validation_alias="MAIL_IMAP_USER")
+    mail_imap_pass: Optional[str] = Field(default=None, validation_alias="MAIL_IMAP_PASS")
+    mail_imap_ssl: Optional[bool] = Field(default=None, validation_alias="MAIL_IMAP_SSL")
     mail_recipient_allowlist: Optional[str] = Field(default=None, validation_alias="MAIL_RECIPIENT_ALLOWLIST")
     mail_rate_per_min: Optional[int] = Field(default=None, validation_alias="MAIL_RATE_PER_MIN")
 

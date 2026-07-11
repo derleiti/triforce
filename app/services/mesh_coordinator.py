@@ -168,7 +168,7 @@ class MeshCoordinator:
             id="gemini-lead",
             name="Gemini Mesh Lead",
             role=AgentRole.LEAD,
-            model="gemini/gemini-2.0-flash",
+            model="gemini/gemini-3.5-flash",
             capabilities={"coordinate", "research", "search", "evaluate", "plan"},
             mcp_filtered=False,  # Lead darf MCP direkt nutzen
         ))
@@ -178,7 +178,7 @@ class MeshCoordinator:
             id="claude-worker",
             name="Claude Mesh Worker",
             role=AgentRole.WORKER,
-            model="anthropic/claude-sonnet-4",
+            model="anthropic/claude-sonnet-4-6",
             capabilities={"code", "analyze", "document", "test"},
             mcp_filtered=True,
         ))
@@ -188,7 +188,7 @@ class MeshCoordinator:
             id="codex-worker",
             name="Codex Mesh Worker",
             role=AgentRole.WORKER,
-            model="openai/gpt-4",
+            model="openai/gpt-5.4-mini",
             capabilities={"code", "optimize", "refactor"},
             mcp_filtered=True,
         ))
@@ -198,7 +198,7 @@ class MeshCoordinator:
             id="deepseek-worker",
             name="DeepSeek Mesh Worker",
             role=AgentRole.WORKER,
-            model="deepseek/deepseek-coder",
+            model="openrouter/deepseek/deepseek-chat-v3.1",
             capabilities={"code", "analyze", "debug"},
             mcp_filtered=True,
         ))
@@ -208,7 +208,7 @@ class MeshCoordinator:
             id="mistral-reviewer",
             name="Mistral Code Reviewer",
             role=AgentRole.REVIEWER,
-            model="mistral/mistral-large",
+            model="mistral/mistral-medium-3.5",
             capabilities={"review", "security", "best-practices"},
             mcp_filtered=True,
         ))
@@ -337,21 +337,23 @@ class MeshCoordinator:
 
         try:
             # Web Search über TriForce API
-            from .gemini_access import gemini_service
+            from .gemini_access import gemini_access_point
 
             # Recherche-Query erstellen
             query = f"Best practices implementation: {task.title} - {task.description[:200]}"
 
             # Gemini Research durchführen
-            research = await gemini_service.research(
+            research = await gemini_access_point.process_request(
                 query=query,
+                research=True,
                 store_findings=True,
+                include_context=True,
             )
 
             task.research_results.append({
                 "type": "web_research",
                 "query": query,
-                "findings": research.get("findings", []),
+                "findings": research.get("response", ""),
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             })
 
@@ -397,15 +399,28 @@ Gib eine kurze Empfehlung (max 200 Wörter).
     async def _query_agent(self, agent: MeshAgent, question: str) -> str:
         """Fragt einen Agent und erhält Antwort"""
         try:
-            from .chat import chat_service
+            from . import chat as chat_service
+            from .model_registry import registry
 
-            response = await chat_service.chat(
-                model=agent.model,
-                messages=[{"role": "user", "content": question}],
-                max_tokens=500,
-            )
+            model = await registry.get_model(agent.model)
+            if not model:
+                raise ValueError(f"Model not available in registry: {agent.model}")
 
-            return response.get("content", response.get("text", str(response)))
+            messages = [{"role": "user", "content": question}]
+            chunks: List[str] = []
+            async for chunk in chat_service.stream_chat(
+                model,
+                agent.model,
+                iter(messages),
+                stream=True,
+                temperature=0.2,
+            ):
+                if isinstance(chunk, dict):
+                    chunks.append(str(chunk.get("content") or chunk.get("text") or ""))
+                else:
+                    chunks.append(str(chunk))
+
+            return "".join(chunks).strip()
 
         except Exception as e:
             logger.error(f"Failed to query agent {agent.id}: {e}")

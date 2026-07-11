@@ -36,8 +36,8 @@ fi
 mkdir -p logs
 touch /tmp/mesh-guardian.log 2>/dev/null || true
 
-# Fix paths in guardian for backupuser
-sed -i 's|/home/zombie|/home/backupuser|g' scripts/mesh-guardian.py 2>/dev/null || true
+# Backup node now uses user zombie
+sed -i 's|/home/backupuser|/home/zombie|g' scripts/mesh-guardian.py 2>/dev/null || true
 
 # Test run
 echo "Testing guardian..."

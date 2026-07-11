@@ -1,16 +1,20 @@
 # ========================================
 # AILinux AI Server Backend - Dependencies
-# Cutting-edge stable versions (2025)
+# Cutting-edge stable versions (2026)
 # ========================================
 
-# Core Framework - Latest Stable (FastAPI 0.118 available!)
+# Build Toolchain Constraints
+setuptools<82
+
+# Core Framework
 fastapi==0.118.0
 uvicorn[standard]==0.37.0
-pydantic==2.11.10
-pydantic-settings==2.11.0
+pydantic>=2.13,<3
+pydantic-settings>=2.11,<3
 
 # HTTP Clients & Async
 httpx[http2]==0.28.1
+a
 aiohttp==3.13.4
 
 # Rate Limiting & Caching
@@ -24,7 +28,9 @@ openai==2.1.0
 mistralai==1.9.11  # Latest stable (Dec 2024)
 
 # Data Processing & Validation
-python-multipart==0.0.26
+
+
+python-multipart==0.0.31
 email-validator==2.3.0
 Pillow==12.2.0
 
@@ -56,3 +62,4 @@ tenacity==9.1.2
 python-jose[cryptography]==3.5.0
 passlib[bcrypt]==1.7.4
 websockets>=12.0
+PyJWT>=2.8.0

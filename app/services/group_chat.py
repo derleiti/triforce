@@ -22,8 +22,10 @@ Author: Markus Leitermann (derleiti)
 from __future__ import annotations
 
 import asyncio
+import copy
 import json
 import logging
+import os
 import time
 import uuid
 from dataclasses import dataclass, field
@@ -35,8 +37,42 @@ from typing import Any, Dict, List, Optional, Set
 logger = logging.getLogger("ailinux.group_chat")
 
 # Persistence
-GROUP_CHAT_DIR = Path("/var/tristar/group_chat")
-GROUP_CHAT_DIR.mkdir(parents=True, exist_ok=True)
+def _configured_group_chat_dir() -> Path:
+    explicit_dir = os.getenv("TRISTAR_GROUP_CHAT_DIR")
+    if explicit_dir:
+        return Path(explicit_dir)
+    return Path(os.getenv("TRISTAR_STATE_DIR", "/var/tristar")) / "group_chat"
+
+
+GROUP_CHAT_DIR = _configured_group_chat_dir()
+
+
+def _fallback_group_chat_dir() -> Path:
+    return Path(os.getenv("TRISTAR_FALLBACK_STATE_DIR", "/tmp/tristar")) / "group_chat"
+
+
+def _switch_to_fallback_group_chat_dir(exc: OSError) -> Path:
+    global GROUP_CHAT_DIR
+    fallback_dir = _fallback_group_chat_dir()
+    fallback_dir.mkdir(parents=True, exist_ok=True)
+    if GROUP_CHAT_DIR != fallback_dir:
+        logger.warning(
+            "Group chat state dir %s unavailable (%s); using %s",
+            GROUP_CHAT_DIR,
+            exc,
+            fallback_dir,
+        )
+        GROUP_CHAT_DIR = fallback_dir
+    return GROUP_CHAT_DIR
+
+
+def _ensure_group_chat_dir() -> Path:
+    """Return a writable group-chat state dir, falling back for tests/sandboxes."""
+    try:
+        GROUP_CHAT_DIR.mkdir(parents=True, exist_ok=True)
+        return GROUP_CHAT_DIR
+    except OSError as exc:
+        return _switch_to_fallback_group_chat_dir(exc)
 
 
 # =============================================================================
@@ -305,13 +341,13 @@ class GroupChatOrchestrator:
         if participants:
             for pid in participants:
                 if pid in DEFAULT_PARTICIPANTS:
-                    session.participants[pid] = DEFAULT_PARTICIPANTS[pid]
+                    session.participants[pid] = copy.deepcopy(DEFAULT_PARTICIPANTS[pid])
             if not session.participants:
                 raise ValueError(
                     f"No valid participants. Allowed: {', '.join(sorted(DEFAULT_PARTICIPANTS.keys()))}"
                 )
         else:
-            session.participants = dict(DEFAULT_PARTICIPANTS)
+            session.participants = copy.deepcopy(DEFAULT_PARTICIPANTS)
 
         # System-Nachricht
         session.add_message(
@@ -353,6 +389,46 @@ class GroupChatOrchestrator:
     # Phase 1: Gemini Lead Analysis
     # -------------------------------------------------------------------------
 
+    async def _chat_with_lead_model(self, messages, temperature: float = 0.3, max_tokens: int = 4096):
+        """Call the lead model with fallback chain. Tests/adapters can override.
+
+        Reihenfolge konfigurierbar via ENV GROUP_CHAT_LEAD_MODELS
+        (komma-separiert, z.B. "mistral/mistral-medium-3.5,groq/llama-3.3-70b-versatile").
+        Default-Chain: Gemini -> Mistral -> Groq -> Cerebras.
+        Patched 2026-06-15: Gemini-Quota-Ausfall darf nicht den Lead blockieren.
+        """
+        from app.services.chat_router import api_proxy
+        import os
+
+        env_chain = os.environ.get("GROUP_CHAT_LEAD_MODELS", "").strip()
+        if env_chain:
+            chain = [m.strip() for m in env_chain.split(",") if m.strip()]
+        else:
+            chain = [
+                "gemini/gemini-2.5-flash",
+                "mistral/mistral-medium-latest",
+                "groq/llama-3.3-70b-versatile",
+                "cerebras/llama-3.3-70b",
+            ]
+
+        last_err = None
+        for model in chain:
+            try:
+                analysis = await api_proxy.chat(
+                    model=model,
+                    messages=messages,
+                    temperature=temperature,
+                    max_tokens=max_tokens,
+                )
+                if model != chain[0]:
+                    logger.warning(f"Lead-Model Fallback aktiv: {model} (primary failed)")
+                return analysis, model
+            except Exception as e:
+                last_err = e
+                logger.warning(f"Lead-Model {model} failed: {e}")
+                continue
+        raise RuntimeError(f"All lead models failed. Last error: {last_err}")
+
     async def start_discussion(self, session_id: str) -> Dict[str, Any]:
         """
         Gemini Lead analysiert die Frage und erstellt Sub-Tasks für Web-AIs.
@@ -367,14 +443,15 @@ class GroupChatOrchestrator:
         analysis_prompt = self._build_analysis_prompt(session)
 
         try:
-            from app.services.chat_router import api_proxy
-
-            analysis = await api_proxy.chat(
-                model="gemini/gemini-2.5-flash",
+            analysis_result = await self._chat_with_lead_model(
                 messages=[{"role": "user", "content": analysis_prompt}],
                 temperature=0.3,
                 max_tokens=4096,
             )
+            if isinstance(analysis_result, tuple):
+                analysis, lead_model = analysis_result
+            else:
+                analysis, lead_model = analysis_result, "gemini/gemini-2.5-flash"
 
 
 
@@ -389,7 +466,7 @@ class GroupChatOrchestrator:
                 sender="gemini-lead",
                 msg_type=MessageType.ANALYSIS,
                 content=analysis,
-                metadata={"model": "gemini/gemini-2.5-flash"},
+                metadata={"model": lead_model},
             )
 
             # Sub-Tasks für Web-AIs extrahieren und posten
@@ -670,14 +747,16 @@ Format: Problem → Lösung → Code-Skizze (wenn relevant)."""
         consolidation_prompt = self._build_consolidation_prompt(session)
 
         try:
-            from app.services.chat_router import api_proxy
-
-            summary = await api_proxy.chat(
-                model="gemini/gemini-2.5-flash",
+            # Nutze dieselbe Lead-Fallback-Chain wie in der Analysephase
+            summary_result = await self._chat_with_lead_model(
                 messages=[{"role": "user", "content": consolidation_prompt}],
                 temperature=0.2,
                 max_tokens=6000,
             )
+            if isinstance(summary_result, tuple):
+                summary, lead_model = summary_result
+            else:
+                summary, lead_model = summary_result, "gemini/gemini-2.5-flash"
 
 
 
@@ -691,7 +770,7 @@ Format: Problem → Lösung → Code-Skizze (wenn relevant)."""
                 sender="gemini-lead",
                 msg_type=MessageType.SUMMARY,
                 content=summary,
-                metadata={"model": "gemini/gemini-2.5-flash", "phase": "consolidation"},
+                metadata={"model": lead_model, "phase": "consolidation"},
             )
 
             session.final_summary = summary
@@ -1071,7 +1150,8 @@ Format:
 
     def _save_session(self, session: GroupChatSession):
         """Speichert Session als JSON."""
-        filepath = GROUP_CHAT_DIR / f"{session.id}.json"
+        directory = _ensure_group_chat_dir()
+        filepath = directory / f"{session.id}.json"
         data = {
             "id": session.id,
             "topic": session.topic,
@@ -1085,11 +1165,22 @@ Format:
             "final_summary": session.final_summary,
             "error": session.error,
         }
-        filepath.write_text(json.dumps(data, indent=2, ensure_ascii=False))
+        serialized = json.dumps(data, indent=2, ensure_ascii=False)
+        try:
+            filepath.write_text(serialized)
+        except OSError as exc:
+            directory = _switch_to_fallback_group_chat_dir(exc)
+            filepath = directory / f"{session.id}.json"
+            filepath.write_text(serialized)
 
     def _load_sessions(self):
         """Lädt alle Sessions aus dem Dateisystem."""
-        for filepath in GROUP_CHAT_DIR.glob("gc-*.json"):
+        try:
+            directory = _ensure_group_chat_dir()
+        except OSError as exc:
+            logger.warning("Group chat sessions not loaded; state dir unavailable: %s", exc)
+            return
+        for filepath in directory.glob("gc-*.json"):
             try:
                 data = json.loads(filepath.read_text())
                 session = GroupChatSession(

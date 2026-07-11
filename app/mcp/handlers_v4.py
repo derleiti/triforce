@@ -88,7 +88,11 @@ class HandlerRegistry:
         self._register_init_handlers()
         self._register_gemini_handlers()
         self._register_mesh_handlers()
+        self._register_group_chat_handlers()
+        self._register_mail_handlers()
         self._register_notification_handlers()
+        self._register_dev_tool_handlers()
+        self._register_wordpress_handlers()
         # structured_admin LAST: real handlers override stubs from
         # _register_log_handlers / _register_remote_handlers / _register_system_handlers
         # (e.g. log_viewer, remote_status, service_status -> not_implemented stubs)
@@ -354,45 +358,58 @@ class HandlerRegistry:
                 return {"agents": agents, "count": len(agents)}
 
             async def handle_agent_call(params):
-                """Send message to specific agent and get response"""
-                agent_id = params.get("agent")
-                message = params.get("message")
+                """Send message to specific agent and get response.
+
+                Accept both legacy params (agent) and V5 schema params
+                (agent_id). Some MCP clients cache schema versions, so keeping
+                both avoids a discovery/runtime contract split.
+                """
+                agent_id = params.get("agent_id") or params.get("agent")
+                message = params.get("message") or params.get("command")
                 timeout = params.get("timeout", 120)
                 if not agent_id or not message:
-                    return {"error": "agent and message required"}
+                    return {"error": "agent_id and message required"}
                 return await agent_controller.call_agent(agent_id, message, timeout)
 
             async def handle_agent_broadcast(params):
-                """Broadcast message to all agents"""
-                message = params.get("message")
+                """Broadcast message to all agents.
+
+                Accept message (current schema) and command (older runtime
+                wrapper/schema variants). Delegates to the controller's
+                broadcast implementation so agent_ids filtering and future
+                behavior stay centralized.
+                """
+                message = params.get("message") or params.get("command")
                 strategy = params.get("strategy", "parallel")
                 if not message:
                     return {"error": "message required"}
-                agents = await agent_controller.list_agents()
-                results = {}
-                for agent in agents:
-                    agent_id = agent.get("agent_id", agent.get("id"))
-                    if agent.get("status") == "running":
+                agent_ids = params.get("agent_ids") or params.get("agents")
+                timeout = int(params.get("timeout", 60))
+                if agent_ids:
+                    results = {}
+                    for agent_id in agent_ids:
                         try:
-                            result = await agent_controller.call_agent(agent_id, message, timeout=60)
-                            results[agent_id] = result
+                            results[agent_id] = await agent_controller.call_agent(agent_id, message, timeout=timeout)
                         except Exception as e:
                             results[agent_id] = {"error": str(e)}
-                return {"strategy": strategy, "results": results}
+                    return {"broadcast": True, "strategy": strategy, "results": results}
+                result = await agent_controller.broadcast(message)
+                result["strategy"] = strategy
+                return result
 
             async def handle_agent_start(params):
                 """Start a CLI agent"""
-                agent_id = params.get("agent")
+                agent_id = params.get("agent_id") or params.get("agent")
                 if not agent_id:
-                    return {"error": "agent required"}
+                    return {"error": "agent_id required"}
                 return await agent_controller.start_agent(agent_id)
 
             async def handle_agent_stop(params):
                 """Stop a running CLI agent"""
-                agent_id = params.get("agent")
+                agent_id = params.get("agent_id") or params.get("agent")
                 force = params.get("force", False)
                 if not agent_id:
-                    return {"error": "agent required"}
+                    return {"error": "agent_id required"}
                 return await agent_controller.stop_agent(agent_id, force)
 
             self.register("agents", handle_agents_list)
@@ -651,6 +668,20 @@ class HandlerRegistry:
         except ImportError as e:
             logger.warning(f"System handlers import failed: {e}")
 
+
+    def _register_dev_tool_handlers(self):
+        """Dev Tools v5: dev_analyze, dev_lint, dev_debug, dev_summarize, dev_links, dev_refactor, git."""
+        try:
+            from app.mcp.dev_tools import DEV_TOOL_HANDLERS
+        except ImportError as e:
+            logger.warning(f"Dev tool handlers import failed: {e}")
+            return
+        try:
+            n = self.register_many(DEV_TOOL_HANDLERS)
+            logger.info(f"Dev tool handlers registered: {n} tools")
+        except Exception as e:
+            logger.warning(f"Dev tool handlers registration failed: {e}")
+
     def _register_structured_admin_handlers(self):
         """Structured Admin handlers from app/mcp/structured_admin.py.
 
@@ -811,6 +842,81 @@ class HandlerRegistry:
             logger.warning(f"Notification handlers import failed: {e}")
         except Exception as e:
             logger.warning(f"Notification handlers registration failed: {e}")
+
+
+    def _register_wordpress_handlers(self):
+        """WordPress: posts/pages create, update, list, publish"""
+        try:
+            from app.mcp.handlers_wordpress import WORDPRESS_HANDLERS
+            self.register_many(WORDPRESS_HANDLERS)
+            logger.info(f"WordPress handlers registered: {list(WORDPRESS_HANDLERS.keys())}")
+        except ImportError as e:
+            logger.warning(f"WordPress handlers import failed: {e}")
+        except Exception as e:
+            logger.warning(f"WordPress handlers registration failed: {e}")
+
+
+    def _register_group_chat_handlers(self):
+        """Group Chat: group_chat_create, group_chat_ask, group_chat_message, etc."""
+        try:
+            from app.mcp.handlers_group_chat import GROUP_CHAT_HANDLERS
+            self.register_many(GROUP_CHAT_HANDLERS)
+            logger.info(f"Group chat handlers registered: {list(GROUP_CHAT_HANDLERS.keys())}")
+        except ImportError as e:
+            logger.warning(f"Group chat handlers import failed: {e}")
+        except Exception as e:
+            logger.warning(f"Group chat handlers registration failed: {e}")
+
+
+    def _register_mail_handlers(self):
+        """Nova Mail: inbox, read, mark-seen, send via app.services.mail_service."""
+        try:
+            from app.services.mail_service import (
+                mail_inbox,
+                mail_read,
+                mail_mark_seen,
+                mail_send,
+            )
+
+            async def handle_mail_inbox(params):
+                return mail_inbox(
+                    limit=int(params.get("limit", 20)),
+                    folder=params.get("folder", "INBOX"),
+                )
+
+            async def handle_mail_read(params):
+                uid = params.get("uid")
+                if not uid:
+                    return {"error": "uid parameter required"}
+                return mail_read(uid=str(uid), folder=params.get("folder", "INBOX"))
+
+            async def handle_mail_mark_seen(params):
+                uid = params.get("uid")
+                if not uid:
+                    return {"error": "uid parameter required"}
+                return mail_mark_seen(uid=str(uid), folder=params.get("folder", "INBOX"))
+
+            async def handle_mail_send(params):
+                return mail_send(
+                    to=params.get("to"),
+                    subject=params.get("subject"),
+                    body=params.get("body"),
+                    cc=params.get("cc"),
+                    reply_to=params.get("reply_to"),
+                )
+
+            handlers = {
+                "mail_inbox": handle_mail_inbox,
+                "mail_read": handle_mail_read,
+                "mail_mark_seen": handle_mail_mark_seen,
+                "mail_send": handle_mail_send,
+            }
+            self.register_many(handlers)
+            logger.info(f"Mail handlers registered: {list(handlers.keys())}")
+        except ImportError as e:
+            logger.warning(f"Mail handlers import failed: {e}")
+        except Exception as e:
+            logger.warning(f"Mail handlers registration failed: {e}")
 
 
 # =============================================================================

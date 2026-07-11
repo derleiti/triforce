@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import time
 from fastapi import APIRouter, Depends, Query
-from fastapi_limiter.depends import RateLimiter
+from ..utils.rate_limit_compat import RateLimiter
 
 from ..services.openai_compat import (
     OpenAIChatCompletionRequest,

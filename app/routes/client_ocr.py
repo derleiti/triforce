@@ -23,7 +23,7 @@ import httpx
 from fastapi import APIRouter, Header, HTTPException
 from pydantic import BaseModel, Field
 
-from .client_auth import JWT_SECRET, JWT_ALGORITHM
+from .client_auth import JWT_SECRET, JWT_ALGORITHM, USER_REGISTRY, get_user_entitlements
 from .client_chat import extract_user_and_tier_from_token
 
 logger = logging.getLogger("ailinux.client_ocr")
@@ -37,7 +37,9 @@ MISTRAL_TIMEOUT_S = float(os.environ.get("MISTRAL_OCR_TIMEOUT_S", "30"))
 
 DEMO_MONTHLY_LIMIT = 15  # Copa OCR demo quota — reduced from 50 based on unit-economics
 MAX_IMAGE_BYTES = 8 * 1024 * 1024  # 8 MB upper bound
-ENTITLED_TIERS = {"pro", "unlimited", "enterprise", "admin"}
+# Copa OCR is a standalone product entitlement.
+# Do not unlock Copa based on subscription tier; only `copa_ocr` may unlock it.
+ENTITLED_TIERS = set()
 
 
 # ──────────────────────────────────────────────────────────────
@@ -101,29 +103,37 @@ async def _incr_demo_usage(email: str) -> int:
 # ──────────────────────────────────────────────────────────────
 
 def _has_copa_entitlement(tier: Optional[str]) -> bool:
-    """Pro/Unlimited/Enterprise tiers get unlimited OCR as part of their plan.
+    """Legacy tier hook intentionally disabled.
 
-    Dedicated `copa_ocr` product entitlement (from LemonSqueezy one-time
-    purchase) is checked via WordPress; that check happens at /auth/verify
-    time and is stored in the JWT under `nova_entitlements.copa_ocr`.
+    Copa OCR unlocks only via the explicit product entitlement
+    `nova_entitlements.copa_ocr` / `entitlements.copa_ocr`.
+    Subscription tiers such as pro/enterprise must not unlock Copa by themselves.
     """
-    if not tier:
-        return False
-    return tier.lower() in ENTITLED_TIERS
+    return False
 
 
 def _jwt_entitlements(authorization: Optional[str]) -> dict:
-    """Extract `nova_entitlements` dict from JWT payload. Empty on failure."""
+    """Return current server-side entitlements for the JWT subject.
+
+    JWT-payload entitlements are intentionally ignored because they can be stale.
+    Copa OCR must be demo unless current USER_REGISTRY[email].nova_entitlements
+    contains copa_ocr right now.
+    """
     if not authorization:
         return {}
     try:
         import jwt
         token = authorization.replace("Bearer ", "").strip()
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-        ents = payload.get("nova_entitlements") or payload.get("entitlements") or {}
-        return ents if isinstance(ents, dict) else {}
+        email = (payload.get("email") or payload.get("sub") or "").lower().strip()
+        if not email:
+            return {}
+        user = USER_REGISTRY.get(email) or {}
+        return get_user_entitlements(user)
     except Exception:
         return {}
+
+
 
 
 # ──────────────────────────────────────────────────────────────
@@ -157,10 +167,10 @@ async def ocr_mistral(
     if not email:
         raise HTTPException(status_code=401, detail="Invalid or missing token")
 
-    # 2. Determine entitlement (tier OR explicit product entitlement)
+    # 2. Determine entitlement (explicit Copa product entitlement only)
     ents = _jwt_entitlements(authorization)
     has_product = bool(ents.get("copa_ocr"))
-    entitled = _has_copa_entitlement(tier) or has_product
+    entitled = has_product
 
     # 3. Demo-limit gate for non-entitled users
     used_before: Optional[int] = None
@@ -260,7 +270,7 @@ async def ocr_status(authorization: Optional[str] = Header(None)):
         raise HTTPException(status_code=401, detail="Invalid or missing token")
 
     ents = _jwt_entitlements(authorization)
-    entitled = _has_copa_entitlement(tier) or bool(ents.get("copa_ocr"))
+    entitled = bool(ents.get("copa_ocr"))
 
     if entitled:
         return {"entitled": True, "remaining": None, "used": None, "limit": None}

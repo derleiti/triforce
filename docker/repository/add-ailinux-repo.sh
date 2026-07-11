@@ -145,24 +145,58 @@ has_release() {
 get_mirror_repo_specs() {
     local codename="$1"
     cat <<EOF
-repo.ailinux.me|${codename}|main|amd64,i386|${codename}|AILinux Local
-archive.ubuntu.com/ubuntu|${codename},${codename}-updates|main,restricted,universe,multiverse|amd64,i386|${codename}|Ubuntu Base
-security.ubuntu.com/ubuntu|${codename}-security|main,restricted,universe,multiverse|amd64,i386|${codename}-security|Ubuntu Security
-archive.neon.kde.org/user|${codename}|main|amd64|${codename}|KDE neon
-deb.nodesource.com/node_22.x|nodistro|main|amd64|nodistro|NodeSource 22.x
-dl.google.com/linux/chrome/deb|stable|main|amd64|stable|Google Chrome
-dl.winehq.org/wine-builds/ubuntu|${codename}|main|amd64,i386|${codename}|WineHQ
-download.docker.com/linux/ubuntu|${codename}|stable|amd64|${codename}|Docker CE
-packages.microsoft.com/repos/code|stable|main|amd64|stable|VS Code
-ppa.launchpadcontent.net/cappelikan/ppa/ubuntu|${codename}|main|amd64|${codename}|Cappelikan PPA
-ppa.launchpadcontent.net/graphics-drivers/ppa/ubuntu|${codename}|main|amd64|${codename}|Graphics Drivers PPA
-ppa.launchpadcontent.net/libreoffice/ppa/ubuntu|${codename}|main|amd64|${codename}|LibreOffice PPA
-repo.steampowered.com/steam|stable|steam|amd64,i386|stable|Steam
+repo.ailinux.me|${codename}|main|amd64,i386|${codename}|AILinux Local|${KEYRING_PATH}|
+archive.ubuntu.com/ubuntu|${codename},${codename}-updates|main,restricted,universe,multiverse|amd64,i386|${codename}|Ubuntu Base|${KEYRING_PATH}|
+security.ubuntu.com/ubuntu|${codename}-security|main,restricted,universe,multiverse|amd64,i386|${codename}-security|Ubuntu Security|${KEYRING_PATH}|
+archive.neon.kde.org/user|${codename}|main|amd64|${codename}|KDE neon|${KEYRING_PATH}|
+deb.nodesource.com/node_22.x|nodistro|main|amd64|nodistro|NodeSource 22.x|/usr/share/keyrings/ailinux-archive-keyring.gpg|
+dl.google.com/linux/chrome/deb|stable|main|amd64|stable|Google Chrome|${KEYRING_PATH}|
+dl.winehq.org/wine-builds/ubuntu|${codename}|main|amd64|${codename}|WineHQ|/usr/share/keyrings/ailinux-archive-keyring.gpg|
+download.docker.com/linux/ubuntu|${codename}|stable|amd64|${codename}|Docker CE|${KEYRING_PATH}|
+# VS Code is installed via --third-party manifest; do not mirror it here to avoid stale CDN index mismatches.
+ppa.launchpadcontent.net/cappelikan/ppa/ubuntu|${codename}|main|amd64|${codename}|Cappelikan PPA|${KEYRING_PATH}|
+ppa.launchpadcontent.net/graphics-drivers/ppa/ubuntu|${codename}|main|amd64|${codename}|Graphics Drivers PPA|${KEYRING_PATH}|
+ppa.launchpadcontent.net/libreoffice/ppa/ubuntu|${codename}|main|amd64|${codename}|LibreOffice PPA|${KEYRING_PATH}|
+repo.steampowered.com/steam|stable|steam|amd64,i386|stable|Steam|/usr/share/keyrings/ailinux-archive-keyring.gpg|
 EOF
 }
 
+install_extra_keyring() {
+    local keyring_path="$1"
+    local key_url="$2"
+
+    [[ -n "$keyring_path" ]] || return 0
+    [[ "$keyring_path" != "$KEYRING_PATH" ]] || return 0
+    [[ -n "$key_url" ]] || return 0
+
+    if [[ $DRY_RUN -eq 1 ]]; then
+        log_info "[DRY-RUN] Would install keyring: ${key_url} -> ${keyring_path}"
+        return 0
+    fi
+
+    if [[ -s "$keyring_path" ]]; then
+        chmod 644 "$keyring_path" 2>/dev/null || true
+        return 0
+    fi
+
+    log_info "Installing keyring for mirrored upstream: ${keyring_path}"
+    mkdir -p "$(dirname "$keyring_path")"
+    curl "${CURL_OPTS[@]}" -fsSL "$key_url" -o "$keyring_path" || {
+        log_warn "Could not install keyring from ${key_url}; skipping repos that require ${keyring_path}"
+        rm -f "$keyring_path"
+        return 1
+    }
+    chmod 644 "$keyring_path"
+}
+
+keyring_is_usable() {
+    local keyring_path="$1"
+    [[ -n "$keyring_path" ]] || return 1
+    [[ -s "$keyring_path" ]] || return 1
+}
+
 install_mirror_repos() {
-    local codename repo_spec repo_path suites components archs probe_dist label
+    local codename repo_spec repo_path suites components archs probe_dist label signed_by key_url
     local list_content discovered=0
 
     codename=$(detect_codename)
@@ -190,7 +224,7 @@ install_mirror_repos() {
 # Auto-generated: $(date -u +%Y-%m-%dT%H:%M:%S+00:00)
 # Base URL: $BASE_URL
 # System: $codename
-# Keyring: $KEYRING_PATH
+# Keyrings: per-repository Signed-By values
 # ============================================
 # --- MIRRORED REPOS ---
 EOF
@@ -198,7 +232,18 @@ EOF
 
     while IFS= read -r repo_spec; do
         [[ -n "$repo_spec" ]] || continue
-        IFS='|' read -r repo_path suites components archs probe_dist label <<<"$repo_spec"
+        IFS='|' read -r repo_path suites components archs probe_dist label signed_by key_url <<<"$repo_spec"
+        signed_by="${signed_by:-$KEYRING_PATH}"
+
+        if ! install_extra_keyring "$signed_by" "${key_url:-}"; then
+            log_debug "Skipping ${repo_path} (keyring unavailable: ${signed_by})"
+            continue
+        fi
+        if ! keyring_is_usable "$signed_by"; then
+            log_warn "Skipping ${repo_path} (missing keyring: ${signed_by})"
+            continue
+        fi
+
         if ! has_release "$BASE_URL/${repo_path}" "$probe_dist"; then
             log_debug "Skipping ${repo_path} (missing Release for ${probe_dist})"
             continue
@@ -209,7 +254,7 @@ EOF
 
         local suite component
         for suite in ${suites//,/ }; do
-            list_content+=$'\n'"deb [arch=${archs} signed-by=${KEYRING_PATH}] ${BASE_URL}/${repo_path} ${suite}"
+            list_content+=$'\n'"deb [arch=${archs} signed-by=${signed_by}] ${BASE_URL}/${repo_path} ${suite}"
             for component in ${components//,/ }; do
                 list_content+=" ${component}"
             done
