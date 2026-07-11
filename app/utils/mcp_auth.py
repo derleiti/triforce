@@ -408,6 +408,8 @@ async def require_mcp_auth(request: Request) -> str:
     # Method 0: query parameter fallback for MCP clients that drop headers
     if query_token:
         if is_valid_token(query_token):
+            request.state.mcp_auth_user = "oauth_client"
+            request.state.mcp_auth_method = "query"
             logger.debug(f"AUTH_OK | IP: {client_ip} | Method: query-param")
             return "oauth_client"
         logger.warning(f"AUTH_FAIL | IP: {client_ip} | Reason: invalid_query_param")
@@ -417,6 +419,8 @@ async def require_mcp_auth(request: Request) -> str:
     if auth_header.lower().startswith("bearer "):
         token = auth_header[7:].strip()
         if is_valid_token(token):
+            request.state.mcp_auth_user = "oauth_client"
+            request.state.mcp_auth_method = "bearer"
             logger.debug(f"AUTH_OK | IP: {client_ip} | Method: bearer")
             return "oauth_client"
         # JWT Bridge: Akzeptiere JWTs vom /v1/client/login als gültige MCP-Bearer
@@ -432,6 +436,8 @@ async def require_mcp_auth(request: Request) -> str:
     if auth_header.lower().startswith("basic "):
         username, password = _extract_basic_auth(request)
         if _validate_credentials(username, password):
+            request.state.mcp_auth_user = username
+            request.state.mcp_auth_method = "basic"
             logger.debug(f"AUTH_OK | IP: {client_ip} | Method: basic | User: {username}")
             return username
         else:
