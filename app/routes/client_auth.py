@@ -124,17 +124,69 @@ def normalize_tier(tier: Optional[str]) -> str:
     return "guest"
 
 
+CANONICAL_ENTITLEMENTS = {
+    "copa_ocr": "copa_ocr",
+    "copa-ocr": "copa_ocr",
+    "copa ocr": "copa_ocr",
+    "copaocr": "copa_ocr",
+    "Copa OCR": "copa_ocr",
+    "970007": "copa_ocr",
+}
+
+
+def normalize_entitlements(raw: Any) -> Dict[str, bool]:
+    """Normalize all entitlement shapes to canonical keys.
+
+    Canonical Copa key: copa_ocr.
+    Only truthy values survive. False/null means no entitlement.
+    """
+    out: Dict[str, bool] = {}
+
+    def canon(k: Any) -> str:
+        text = str(k).strip()
+        return CANONICAL_ENTITLEMENTS.get(text, CANONICAL_ENTITLEMENTS.get(text.lower(), text))
+
+    if not raw:
+        return out
+
+    if isinstance(raw, dict):
+        for k, v in raw.items():
+            ck = canon(k)
+            if ck and bool(v):
+                out[ck] = True
+        return out
+
+    if isinstance(raw, (list, tuple, set)):
+        for item in raw:
+            ck = canon(item)
+            if ck:
+                out[ck] = True
+        return out
+
+    if isinstance(raw, str):
+        ck = canon(raw)
+        if ck:
+            out[ck] = True
+
+    return out
+
+
 def get_user_entitlements(user: Optional[dict]) -> Dict[str, Any]:
-    """Return Nova/Copa product entitlements in a stable dict form."""
+    """Return canonical product entitlements from current server user state.
+
+    nova_entitlements is canonical.
+    entitlements is a legacy mirror only if nova_entitlements is absent.
+    """
     if not user:
         return {}
-    entitlements = user.get("nova_entitlements") or user.get("entitlements") or {}
-    if isinstance(entitlements, dict):
-        return entitlements
-    if isinstance(entitlements, list):
-        return {str(item): True for item in entitlements}
-    return {}
 
+    if "nova_entitlements" in user:
+        return normalize_entitlements(user.get("nova_entitlements") or {})
+
+    if "entitlements" in user:
+        return normalize_entitlements(user.get("entitlements") or {})
+
+    return {}
 
 def permissions_for_tier(tier: str) -> Tuple[ClientRole, List[str], List[str]]:
     """Map a user tier to client role and MCP tool permissions."""
@@ -189,9 +241,7 @@ def create_jwt_token(
         payload["sub"] = email  # Standard JWT subject claim
     if name:
         payload["name"] = name
-    if entitlements:
-        payload["nova_entitlements"] = entitlements
-        payload["entitlements"] = entitlements
+    # Do not embed entitlements in JWT. Token is auth only; license state is fetched live.
     
     return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
@@ -228,13 +278,9 @@ def build_verified_session(payload: dict) -> Dict[str, Any]:
     if not tier_source and payload.get("role") in {"guest", "registered", "pro", "enterprise", "free"}:
         tier_source = payload.get("role")
     tier = normalize_tier(tier_source)
-    entitlements = (
-        payload.get("nova_entitlements")
-        or payload.get("entitlements")
-        or get_user_entitlements(user)
-    )
-    if not isinstance(entitlements, dict):
-        entitlements = {}
+    # Entitlements are always read from current server-side USER_REGISTRY.
+    # JWT payload entitlements are stale and must never unlock Copa OCR.
+    entitlements = get_user_entitlements(user)
 
     client_id = payload.get("client_id")
     return {
@@ -324,7 +370,9 @@ def load_users_from_file() -> dict:
             "password_hash": hash_secret(admin_password),
             "tier": "enterprise",
             "name": "Admin",
-            "billing": False,
+            "billing": True,
+            "nova_entitlements": {},
+            "entitlements": {},
         }
     
     # 2. Lade registrierte User aus users.json
@@ -630,9 +678,19 @@ async def user_login(request: UserLoginRequest):
     email = request.email.lower().strip()
     user = USER_REGISTRY.get(email)
 
+    logger.info(
+        "COPA_LOGIN_DEBUG start email=%s local_user=%s has_hash=%s tier=%s ents=%s",
+        email,
+        bool(user),
+        bool(user.get("password_hash")) if isinstance(user, dict) else False,
+        user.get("tier") if isinstance(user, dict) else None,
+        list((get_user_entitlements(user) or {}).keys()) if isinstance(user, dict) else [],
+    )
+
     # WordPress is the source of truth for login/password.
     # TriForce users.json is only the client/entitlement mirror.
     needs_wp_auth = (not user) or (not isinstance(user, dict)) or (not user.get("password_hash"))
+    logger.info("COPA_LOGIN_DEBUG needs_wp_auth email=%s needs_wp_auth=%s", email, needs_wp_auth)
 
     if needs_wp_auth:
         wp_user = verify_wordpress_login(email, request.password)
@@ -653,12 +711,16 @@ async def user_login(request: UserLoginRequest):
                 raise HTTPException(401, "Invalid email or password")
         else:
             existing = user if isinstance(user, dict) else {}
+            wp_entitlements = normalize_entitlements(
+                wp_user.get("nova_entitlements") if "nova_entitlements" in wp_user else wp_user.get("entitlements")
+            )
             user = {
                 **existing,
                 "tier": wp_user.get("tier") or existing.get("tier") or "free",
                 "name": wp_user.get("name") or existing.get("name") or email.split("@", 1)[0],
                 "billing": existing.get("billing", False),
-                "nova_entitlements": wp_user.get("nova_entitlements") or existing.get("nova_entitlements") or {},
+                "nova_entitlements": wp_entitlements,
+                "entitlements": wp_entitlements,
                 "auth_provider": "wordpress",
             }
             save_user_to_file(email, user)
@@ -666,19 +728,40 @@ async def user_login(request: UserLoginRequest):
             logger.info(f"WordPress-authenticated user: {email}")
     else:
         # Existing local TriForce password hash.
-        if not verify_secret(request.password, user["password_hash"]):
+        local_hash_ok = verify_secret(request.password, user["password_hash"])
+        logger.info("COPA_LOGIN_DEBUG local_hash email=%s ok=%s", email, local_hash_ok)
+        if not local_hash_ok:
+            logger.info("COPA_LOGIN_DEBUG wordpress_fallback_start email=%s", email)
             wp_user = verify_wordpress_login(email, request.password)
+            logger.info(
+                "COPA_LOGIN_DEBUG wordpress_fallback_result email=%s ok=%s wp_keys=%s",
+                email,
+                bool(wp_user),
+                list(wp_user.keys()) if isinstance(wp_user, dict) else [],
+            )
             if not wp_user:
                 logger.warning(f"Invalid password for: {email}")
                 raise HTTPException(401, "Invalid email or password")
             user["auth_provider"] = "wordpress"
             user["tier"] = wp_user.get("tier") or user.get("tier") or "free"
             user["name"] = wp_user.get("name") or user.get("name") or email.split("@", 1)[0]
-            user["nova_entitlements"] = wp_user.get("nova_entitlements") or user.get("nova_entitlements") or {}
+            wp_entitlements = normalize_entitlements(
+                wp_user.get("nova_entitlements") if "nova_entitlements" in wp_user else wp_user.get("entitlements")
+            )
+            user["nova_entitlements"] = wp_entitlements
+            user["entitlements"] = wp_entitlements
             save_user_to_file(email, user)
             USER_REGISTRY[email] = user
 
     response = issue_user_login_response(email, user)
+    logger.info(
+        "COPA_LOGIN_DEBUG success email=%s tier=%s ents=%s token_len=%s client_id=%s",
+        email,
+        response.tier,
+        list((response.nova_entitlements or {}).keys()),
+        len(response.token or ""),
+        response.client_id,
+    )
     logger.info(f"User logged in: {email} ({response.tier}) -> {response.client_id}")
     return response
 
@@ -726,7 +809,7 @@ async def client_handshake(authorization: str = Header(None)):
             "chat": True,
             "models": True,
             "mcp": True,
-            "ocr": bool(session.get("nova_entitlements", {}).get("copa_ocr")) or tier in {"pro", "enterprise"},
+            "ocr": bool(session.get("nova_entitlements", {}).get("copa_ocr")),
         },
         "endpoints": {
             "auth_verify": "/v1/auth/verify",

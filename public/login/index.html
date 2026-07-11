@@ -876,5 +876,106 @@ function openApp(){
   if(storedClientId){document.getElementById('set-client-id').textContent=storedClientId;document.getElementById('ov-client-id').textContent=storedClientId}
 })();
 </script>
+<script id="ailinux-login-redirect-bridge">
+(function(){
+  if (window.__ailinuxLoginRedirectBridgeInstalled) return;
+  window.__ailinuxLoginRedirectBridgeInstalled = true;
+
+  function setLocal(k, v){
+    if (v === undefined || v === null || v === '') return;
+    try {
+      if (typeof lsSet === 'function') lsSet(k, String(v));
+      else localStorage.setItem(k, String(v));
+    } catch(e) {}
+  }
+
+  function setSharedCookie(k, v){
+    if (v === undefined || v === null || v === '') return;
+    try {
+      document.cookie =
+        k + '=' + encodeURIComponent(String(v)) +
+        '; Domain=.ailinux.me; Path=/; Max-Age=86400; SameSite=Lax; Secure';
+    } catch(e) {}
+  }
+
+  function safeRedirectTarget(){
+    const params = new URLSearchParams(location.search);
+    const wanted =
+      params.get('redirect') ||
+      params.get('return') ||
+      params.get('return_to') ||
+      params.get('continue') ||
+      params.get('next') ||
+      'https://ailinux.me/';
+
+    try {
+      const u = new URL(wanted, location.href);
+      if (u.hostname === 'ailinux.me' || u.hostname.endsWith('.ailinux.me')) {
+        return u.href;
+      }
+    } catch(e) {}
+
+    return 'https://ailinux.me/';
+  }
+
+  function persistLoginPayload(data){
+    if (!data || typeof data !== 'object') return false;
+
+    const token = data.token || data.access_token || data.jwt || data.auth_token;
+    if (!token) return false;
+
+    const email = data.email || data.user_email || data.user_id || '';
+    const tier = data.tier || data.role || '';
+    const clientId = data.client_id || '';
+    const name = data.name || data.display_name || '';
+
+    setLocal('ailinux_token', token);
+    setLocal('ailinux_email', email);
+    setLocal('ailinux_tier', tier);
+    setLocal('ailinux_client_id', clientId);
+    setLocal('ailinux_name', name);
+
+    setSharedCookie('ailinux_token', token);
+    setSharedCookie('ailinux_email', email);
+    setSharedCookie('ailinux_tier', tier);
+    setSharedCookie('ailinux_client_id', clientId);
+    setSharedCookie('ailinux_name', name);
+
+    return true;
+  }
+
+  const nativeFetch = window.fetch ? window.fetch.bind(window) : null;
+  if (!nativeFetch) return;
+
+  window.fetch = async function(input, init){
+    const res = await nativeFetch(input, init);
+
+    try {
+      const url = (typeof input === 'string') ? input : (input && input.url ? input.url : '');
+      const method = ((init && init.method) || (input && input.method) || 'GET').toUpperCase();
+
+      const isLoginCall =
+        method !== 'GET' &&
+        /\/(?:auth\/)?(?:login|google)(?:[/?#]|$)/i.test(url);
+
+      if (isLoginCall) {
+        res.clone().json().then(function(data){
+          if (!res.ok) return;
+          if (!persistLoginPayload(data)) return;
+
+          if (location.hostname === 'login.ailinux.me') {
+            setTimeout(function(){
+              window.location.assign(safeRedirectTarget());
+            }, 300);
+          }
+        }).catch(function(){});
+      }
+    } catch(e) {}
+
+    return res;
+  };
+})();
+</script><!-- /ailinux-login-redirect-bridge -->
+
 </body>
 </html>
