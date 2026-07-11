@@ -15,8 +15,7 @@ import json
 from fastapi import APIRouter, Depends, Request, Response
 from fastapi.responses import JSONResponse, StreamingResponse
 
-from ..services.crawler.user_crawler import user_crawler
-from ..services.crawler.manager import crawler_manager
+# Crawler imports are loaded lazily inside handlers to avoid heavy startup imports and optional dependencies (playwright).
 from ..services.wordpress import wordpress_service
 from ..services import chat as chat_service
 from ..services.model_registry import registry
@@ -214,7 +213,8 @@ async def handle_crawl_url(params: Dict[str, Any]) -> Dict[str, Any]:
     if keywords is not None and not isinstance(keywords, Iterable):
         raise ValueError("'keywords' must be an iterable of strings")
 
-    job = await user_crawler.crawl_url(
+    from ..services.crawler.user_crawler import get_user_crawler
+    job = await get_user_crawler().crawl_url(
         url=url,
         keywords=list(keywords) if keywords else None,
         max_pages=int(params.get("max_pages", 10)),
@@ -236,7 +236,8 @@ async def handle_crawl_site(params: Dict[str, Any]) -> Dict[str, Any]:
     if keywords and not isinstance(keywords, Iterable):
         raise ValueError("'keywords' must be iterable when provided")
 
-    job = await crawler_manager.create_job(
+    from ..services.crawler.manager import crawler_manager as _crawler_manager
+    job = await _crawler_manager.create_job(
         keywords=list(keywords) if keywords else [site_url],
         seeds=[str(seed) for seed in seeds],
         max_depth=int(params.get("max_depth", 2)),
@@ -255,13 +256,17 @@ async def handle_crawl_status(params: Dict[str, Any]) -> Dict[str, Any]:
     if not job_id:
         raise ValueError("'job_id' parameter is required for crawl.status")
 
-    job = await user_crawler.get_job(job_id)
+    from ..services.crawler.user_crawler import get_user_crawler
+    job = await get_user_crawler().get_job(job_id)
     source = "user"
-    manager = user_crawler
+    from ..services.crawler.user_crawler import get_user_crawler
+    manager = get_user_crawler()
     if not job:
-        job = await crawler_manager.get_job(job_id)
+        from ..services.crawler.manager import crawler_manager as _crawler_manager
+        job = await _crawler_manager.get_job(job_id)
         source = "manager"
-        manager = crawler_manager
+        from ..services.crawler.manager import crawler_manager as _crawler_manager
+        manager = _crawler_manager
     if not job:
         raise ValueError(f"Crawler job '{job_id}' not found")
 
