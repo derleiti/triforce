@@ -79,7 +79,7 @@ class AuditLogger:
 
     def __init__(
         self,
-        log_dir: str = "/home/zombie/triforce/triforce/logs",
+        log_dir: str = "/home/zombie/triforce/logs",
         buffer_size: int = 1000,
         flush_threshold: int = 100
     ):
