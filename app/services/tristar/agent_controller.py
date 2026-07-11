@@ -756,13 +756,13 @@ class AgentController:
         if not instance:
             raise ValueError(f"Agent not found: {agent_id}")
 
-        if instance.status != AgentStatus.RUNNING:
+        if instance.status != AgentStatus.RUNNING and instance.config.agent_type != AgentType.CODEX:
             # Starte Agent wenn nicht laufend
             await self.start_agent(agent_id)
             await asyncio.sleep(3)  # Warte auf Start
             instance = self.agents.get(agent_id)
 
-        if not instance or not instance.process:
+        if not instance or (not instance.process and instance.config.agent_type != AgentType.CODEX):
             return {
                 "agent_id": agent_id,
                 "status": "error",
@@ -782,7 +782,7 @@ class AgentController:
             env = _inject_claude_env(env)
             env = _inject_nova_env(env)
             # Stelle sicher dass PATH die npm-global binaries enthält
-            env["PATH"] = "/root/.npm-global/bin:/usr/local/bin:/usr/bin:/bin"
+            env["PATH"] = f"{TRIFORCE_BIN}:{CLI_BIN}:/home/zombie/.npm-global/bin:/root/.npm-global/bin:/usr/local/bin:/usr/bin:/bin"
 
             # Baue Command basierend auf Agent-Typ
             # Nutze Shell-Pipeline für stdin-basierte Kommunikation
@@ -799,9 +799,11 @@ class AgentController:
                     f"echo {safe_msg} | {TRIFORCE_BIN}/claude-triforce 2>&1"
                 ]
             elif agent_type == AgentType.CODEX:
+                env["CODEX_PROMPT"] = message
+                inner_timeout = max(10, int(timeout) - 15)
                 cmd = [
-                    "bash", "-c",
-                    f"echo {safe_msg} | {TRIFORCE_BIN}/codex-triforce 2>&1"
+                    "bash", "-lc",
+                    f"timeout --kill-after=5s {inner_timeout}s {TRIFORCE_BIN}/codex-triforce-call 2>&1"
                 ]
             elif agent_type == AgentType.GEMINI:
                 cmd = [
@@ -832,7 +834,7 @@ class AgentController:
             try:
                 stdout, _ = await asyncio.wait_for(
                     process.communicate(),
-                    timeout=timeout
+                    timeout=timeout + 20
                 )
                 response = stdout.decode("utf-8", errors="replace").strip()
 
