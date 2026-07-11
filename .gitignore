@@ -1,11 +1,7 @@
 # ============================================================================
 # TRIFORCE AI BACKEND - GIT IGNORE
-# ============================================================================
 
-# ============================================================================
 # ENVIRONMENT FILES - KRITISCH! Niemals committen!
-# ============================================================================
-
 .patch-bak/
 .repair-backup/
 *.BAD.*
@@ -36,17 +32,13 @@ scripts/.env
 docker/.env
 docker/*/.env
 client-deploy/config/.env
-
 # Backup .env Dateien
 *.env.bak*
 *.env.backup*
 *.env.pre-*
 *.env.merged
 *.env.before_import
-
-# ============================================================================
 # Python
-# ============================================================================
 __pycache__/
 *.py[cod]
 *$py.class
@@ -67,29 +59,20 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-
 # Virtual Environment
 .venv/
 venv/
 ENV/
 env/
-
-# ============================================================================
 # Logs & Temp
-# ============================================================================
 logs/
 *.log
 tmp/
 temp/
-*.tmp
 *.bak
 *.swp
 *.swo
-*~
-
-# ============================================================================
 # Docker Daten (nicht den Code!)
-# ============================================================================
 docker/repository/repo/
 docker/repository/data/
 docker/wordpress/html/wp-content/uploads/
@@ -97,10 +80,7 @@ docker/wordpress/html/wp-content/cache/
 docker/flarum/data/
 docker/mailserver/data/
 docker/*/logs/
-
-# ============================================================================
 # Build Artefakte
-# ============================================================================
 *.deb
 *.rpm
 *.tar.gz
@@ -108,35 +88,23 @@ docker/*/logs/
 build/ailinux-triforce-installer_*/
 build/triforce-setup_*/
 build/debian-pkg/
-
-# ============================================================================
 # Client Deploy (separate Repos)
-# ============================================================================
 client-deploy/ailinux-client/.venv/
 client-deploy/aiwindows-client/.venv/
 client-deploy/*/dist/
 client-deploy/*/build/
-
-# ============================================================================
 # IDE & Editor
-# ============================================================================
 .idea/
 .vscode/
 *.sublime-*
 .project
 .pydevproject
 .settings/
-
-# ============================================================================
 # OS Files
-# ============================================================================
 .DS_Store
 Thumbs.db
 desktop.ini
-
-# ============================================================================
 # Credentials & Secrets
-# ============================================================================
 *.pem
 *.key
 *.crt
@@ -144,17 +112,14 @@ desktop.ini
 secrets/
 credentials/
 .secrets/
-
-# ============================================================================
 # Test & Coverage
-# ============================================================================
 .coverage
 htmlcov/
 .pytest_cache/
 .tox/
 .state/
 .vault/
--e 
+-e
 # Excluded directories with permission issues
 ailinux-iso/
 .claude/
@@ -169,10 +134,8 @@ docker/data/
 docker/mailserver/state/
 docker/wordpress/html/
 !docker/wordpress/html/wp-content/plugins/nova-ai-frontend/
-
 # Lokale LemonSqueezy-Konfiguration (API-Keys/IDs lokal) — nie committen
 docker/wordpress/html/wp-content/plugins/nova-ai-frontend/config/lemonsqueezy.php
-
 # User-Datenbank (enthält Passwort-Hashes!)
 config/users.json
 users.json
@@ -187,19 +150,12 @@ specs/tla/states/
 .opencode/
 docker/repository/etc/gnupg/
 *.pyc
-__pycache__/
 .edit_log.jsonl
 app/mcp/structured_admin.py.bak2
 tests/
-
 # DKIM-Keys — private keys, never commit
 docker/mailserver/config/opendkim/
-
 # Temp/debug files
-*.bak
-*.bak.*
-*.BAD.*
-*.broken.*
 *.patch
 gather*.sh
 gather*.log
@@ -207,14 +163,10 @@ verify_fix*.sh
 all-*.log
 *_debug_*.txt
 tmp_*.py
-upfix.sh
 bugreport.txt
 mcp_write_lock_*.txt
-*.bak
-*.bak.*
 *.bak-*
 fix_*.py
-
 # Agent caches & runtimes (nicht committen)
 config/agents/**/.bun/
 config/agents/**/.cache/
@@ -228,20 +180,38 @@ config/agents/**/__pycache__/
 *.py.bak_*
 *.bak[0-9]
 *_20260*_bak
-
 # Debug journals — contain credentials & sensitive state dumps
 .debug/
-
 # local secrets
-.env
 .env.*
-*.env
 *.env.*
-
+# Runtime spool directories
+/data/crawler_spool/
+# Security / local runtime secrets
+!*.env.template
+# Runtime / backups / local artifacts
+.backup_*/
+.patch_backups/
+.screenshot.lock
+screenshot-wrapper.log
+game_state.json
+latest_comment.txt
+latest_vision.txt
+data/crawler_spool/
+data/rag/
+curl
+.config
+# TriForce cleanup / security hygiene
+kimi-moonshot/
+.venv
 # Python bytecode
-__pycache__/
-*.pyc
+# CLEANUP 2026-06-06: Removed dead backup directories and placeholder files
+patch_backups/
+ss
+docker/mailserver/config/postfix-accounts.cf
+docker/repository/
+docker/wordpress/
+docker/mailserver/
 
-# Python bytecode
-__pycache__/
-*.pyc
+/backups/
+*.backup-20*

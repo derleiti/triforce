@@ -64,6 +64,12 @@ services:
       REDIS_PASSWORD: ${WP_REDIS_PASSWORD:-}
       WORDPRESS_REDIS_HOST: ${WP_REDIS_HOST:-wordpress_redis}
       WORDPRESS_REDIS_PORT: ${WP_REDIS_PORT:-6379}
+      # Nova/COPA/LemonSqueezy bridge; values come from docker/wordpress/.env
+      LEMONSQUEEZY_WEBHOOK_SECRET: ${LEMONSQUEEZY_WEBHOOK_SECRET:-}
+      NOVA_LS_WEBHOOK_SECRET: ${NOVA_LS_WEBHOOK_SECRET:-}
+      NOVA_PAYMENT_PROVIDER: ${NOVA_PAYMENT_PROVIDER:-lemonsqueezy}
+      NOVA_AI_INTERNAL_KEY: ${WEBHOOK_SECRET:-}
+      TRIFORCE_API_BASE: ${TRIFORCE_API_BASE:-https://api.ailinux.me}
       # WICHTIG: Kein WORDPRESS_CONFIG_EXTRA mehr -> kein eval-Parse-Error
     volumes:
       - ${WP_HTML_PATH:-./html}:/var/www/html:delegated

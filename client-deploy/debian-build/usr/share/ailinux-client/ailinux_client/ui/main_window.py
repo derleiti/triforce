@@ -20,8 +20,10 @@ from PyQt6.QtGui import QAction, QKeySequence, QIcon, QShortcut, QScreen
 import os
 import sys
 import json
+import mimetypes
 import logging
 import subprocess
+import hashlib
 from typing import Optional
 from pathlib import Path
 
@@ -34,6 +36,7 @@ from ..translations import tr, set_language, get_current_language, SUPPORTED_LAN
 from .chat_widget import ChatWidget
 from .terminal_widget import TerminalWidget
 from .file_browser import FileBrowser
+from .rag_widget import RagWidget
 from .desktop_panel import DesktopPanel
 
 # Import core components
@@ -49,6 +52,36 @@ try:
 except ImportError:
     HAS_MCP_NODE = False
     logger.warning("MCP Node client not available")
+
+# Shortcut manager
+try:
+    from ..core.shortcut_manager import ShortcutManager, ShortcutContext, get_shortcut_manager
+    HAS_SHORTCUT_MANAGER = True
+except ImportError:
+    HAS_SHORTCUT_MANAGER = False
+    logger.warning("Shortcut manager not available")
+
+# Highlight frame for active widget indication
+try:
+    from .highlight_frame import HighlightManager
+    HAS_HIGHLIGHT_MANAGER = True
+except ImportError:
+    HAS_HIGHLIGHT_MANAGER = False
+
+# Multiprocess widget support (optional, for better performance)
+try:
+    from .embedded_widget import (
+        ProcessWidgetWrapper,
+        create_process_browser,
+        create_process_terminal,
+        create_process_file_browser,
+        create_process_chat
+    )
+    from ..core.widget_process import WidgetType, get_widget_manager
+    HAS_MULTIPROCESS_WIDGETS = True
+except ImportError:
+    HAS_MULTIPROCESS_WIDGETS = False
+    logger.info("Multiprocess widgets not available - using in-process mode")
 
 
 # =============================================================================
@@ -98,26 +131,43 @@ class MCPNodeThread(QThread):
             self.mcp_client.on_error = on_error
             self.mcp_client.on_tool_call = on_tool_call
 
-            # Connect with auto-reconnect
+            # Connect with auto-reconnect (but respect disabled state)
             while self.running:
                 try:
+                    # Check if client is disabled (too many failures)
+                    if self.mcp_client._disabled:
+                        logger.info("MCP Node disabled (server endpoint not available)")
+                        self.error.emit("MCP Node endpoint not available")
+                        break
+
                     success = await self.mcp_client.connect()
                     if success:
                         logger.info(f"MCP Node connected (session: {self.mcp_client.session_id})")
 
                         # Wait while connected
                         while self.running and self.mcp_client.is_connected():
-                            await asyncio.sleep(0.1)
+                            await asyncio.sleep(0.5)
                     else:
+                        # Connection failed - check if we should stop
+                        if self.mcp_client._disabled:
+                            break
                         self.error.emit("Connection failed")
 
+                except asyncio.CancelledError:
+                    break
                 except Exception as e:
                     logger.error(f"MCP Node error: {e}")
                     self.error.emit(str(e))
                     self.disconnected.emit()
 
-                if self.running:
-                    await asyncio.sleep(5)  # Reconnect delay
+                # Use the client's reconnect delay (exponential backoff)
+                if self.running and not self.mcp_client._disabled:
+                    delay = self.mcp_client._reconnect_delay
+                    await asyncio.sleep(delay)
+
+            # Cleanup
+            if self.mcp_client:
+                await self.mcp_client.disconnect()
 
         asyncio.run(connect_loop())
 
@@ -143,10 +193,22 @@ class MainWindow(QMainWindow):
     - MCP Node connection
     """
 
-    def __init__(self, api_client: APIClient = None, desktop_mode: bool = False):
+    def __init__(
+        self,
+        api_client: APIClient = None,
+        desktop_mode: bool = False,
+        enable_local_mcp: bool = True,
+        enable_mcp_node: bool = True,
+    ):
         super().__init__()
+
+        # Load application icon from main folder
+        self._setup_app_icon()
+
         self.api_client = api_client or APIClient()
         self.desktop_mode = desktop_mode
+        self.enable_local_mcp = enable_local_mcp
+        self.enable_mcp_node = enable_mcp_node
         self.mcp_node_thread: Optional[MCPNodeThread] = None
         self.local_mcp = LocalMCPExecutor()
         self.local_mcp_process: Optional[subprocess.Popen] = None
@@ -164,20 +226,57 @@ class MainWindow(QMainWindow):
         self._setup_shortcuts()
 
         # Start local MCP server
-        self._start_local_mcp_server()
+        if self.enable_local_mcp:
+            self._start_local_mcp_server()
+        else:
+            self.mcp_status_label.setText(tr("MCP: Local disabled"))
+            self.mcp_status_label.setStyleSheet("color: #888; padding: 0 8px;")
+            logger.info("Local MCP startup disabled by runtime flag")
 
         # Detect CLI agents
         self._detect_cli_agents()
 
         # Connect MCP Node if authenticated (registered users get limited MCP)
-        if self.api_client.user_id and HAS_MCP_NODE:
-            self._connect_mcp_node()
+        # Use a timer to allow async operations to complete and retry if needed
+        if HAS_MCP_NODE and self.enable_mcp_node:
+            if self.api_client.user_id or self.api_client.token:
+                self._connect_mcp_node()
+            else:
+                # Retry connection after a delay (user might be authenticating)
+                QTimer.singleShot(2000, self._retry_mcp_connection)
+        elif HAS_MCP_NODE and not self.enable_mcp_node:
+            logger.info("Remote MCP node disabled by runtime flag")
 
         # Window settings
         self._load_window_settings()
 
         # Apply saved theme colors
         self._apply_theme_colors()
+
+        # Setup focus tracking for context-aware shortcuts
+        if HAS_SHORTCUT_MANAGER:
+            self._setup_focus_tracking()
+
+    def _setup_app_icon(self):
+        """Load and set application icon from main folder"""
+        # Try multiple icon file formats in order of preference
+        icon_names = ["icon.png", "icon.jpg", "icon.ico", "icon.svg"]
+        base_path = Path(__file__).parent.parent.parent  # Go up to ailinux-client root
+
+        for icon_name in icon_names:
+            icon_path = base_path / icon_name
+            if icon_path.exists():
+                icon = QIcon(str(icon_path))
+                if not icon.isNull():
+                    self.setWindowIcon(icon)
+                    # Also set for application-wide
+                    app = QApplication.instance()
+                    if app:
+                        app.setWindowIcon(icon)
+                    logger.info(f"Loaded application icon: {icon_path}")
+                    return
+
+        logger.debug("No application icon found in main folder")
 
     def _detect_aspect_ratio(self) -> str:
         """
@@ -314,9 +413,23 @@ class MainWindow(QMainWindow):
         self.main_splitter = QSplitter(Qt.Orientation.Horizontal)
         layout.addWidget(self.main_splitter, 1)
 
+        # Check if multiprocess mode is enabled
+        self.multiprocess_mode = self.settings.value("multiprocess_widgets", False, type=bool)
+        if self.multiprocess_mode and HAS_MULTIPROCESS_WIDGETS:
+            logger.info("Using multiprocess widget mode for better performance")
+            self._create_multiprocess_widgets()
+        else:
+            if self.multiprocess_mode and not HAS_MULTIPROCESS_WIDGETS:
+                logger.warning("Multiprocess mode requested but not available, using in-process mode")
+            self._create_inprocess_widgets()
+
+    def _create_inprocess_widgets(self):
+        """Create widgets in the same process (traditional mode)"""
         # LEFT: File browser (full height, compact)
         self.file_browser = FileBrowser()
         self.file_browser.file_selected.connect(self._on_file_selected)
+        self.file_browser.open_terminal_requested.connect(self._on_open_terminal_requested)
+        self.file_browser.analyze_file_requested.connect(self._analyze_file_with_ai)
         self.file_browser.setMinimumWidth(150)
         self.main_splitter.addWidget(self.file_browser)
 
@@ -334,10 +447,12 @@ class MainWindow(QMainWindow):
             logger.error(f"Failed to load browser widget: {e}")
             self.browser_widget = QWidget()
             browser_layout = QVBoxLayout(self.browser_widget)
-            browser_label = QLabel(f"🌐 Browser - Error: {str(e)[:100]}")
+            browser_label = QLabel(f"Browser - Error: {str(e)[:100]}")
             browser_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             browser_label.setStyleSheet("color: #888; font-size: 16px;")
             browser_layout.addWidget(browser_label)
+        if hasattr(self.browser_widget, "text_selected"):
+            self.browser_widget.text_selected.connect(self._on_browser_ai_selected)
         self.browser_widget.setMinimumHeight(100)
         self.center_splitter.addWidget(self.browser_widget)
 
@@ -346,10 +461,86 @@ class MainWindow(QMainWindow):
         self.terminal_widget.setMinimumHeight(100)
         self.center_splitter.addWidget(self.terminal_widget)
 
-        # RIGHT: Chat widget (full height, same size as Files)
+        # RIGHT: Chat + Project RAG panel
+        self.right_splitter = QSplitter(Qt.Orientation.Vertical)
+        self.right_splitter.setChildrenCollapsible(False)
+
         self.chat_widget = ChatWidget(self.api_client)
         self.chat_widget.setMinimumWidth(200)
+        self.right_splitter.addWidget(self.chat_widget)
+
+        self.rag_widget = RagWidget(self.api_client)
+        self.rag_widget.setMinimumHeight(180)
+        self.right_splitter.addWidget(self.rag_widget)
+
+        self.file_browser.directory_changed.connect(self.rag_widget.set_project_path)
+        self.rag_widget.set_project_path(self.file_browser.current_path)
+
+        self.main_splitter.addWidget(self.right_splitter)
+
+        # Continue UI setup
+        self._setup_ui_continued()
+
+    def _create_multiprocess_widgets(self):
+        """Create widgets in separate processes (high-performance mode)"""
+        # Initialize widget process manager
+        self.widget_manager = get_widget_manager({
+            'server_url': self.api_client.base_url,
+            'home_url': self.settings.value("browser_home", "https://www.google.com")
+        })
+
+        # LEFT: File browser (process mode)
+        self.file_browser = ProcessWidgetWrapper(WidgetType.FILE_BROWSER, self)
+        self.file_browser.ready.connect(lambda: logger.info("File browser process ready"))
+        self.file_browser.error.connect(lambda e: logger.error(f"File browser error: {e}"))
+        self.file_browser.start()
+        self.file_browser.setMinimumWidth(150)
+        self.main_splitter.addWidget(self.file_browser)
+
+        # CENTER: Browser (top, large) + Terminal (bottom, small)
+        self.center_splitter = QSplitter(Qt.Orientation.Vertical)
+        self.center_splitter.setChildrenCollapsible(False)
+        self.main_splitter.addWidget(self.center_splitter)
+
+        # Center-Top: Browser (process mode)
+        self.browser_widget = ProcessWidgetWrapper(WidgetType.BROWSER, self)
+        self.browser_widget.ready.connect(lambda: logger.info("Browser process ready"))
+        self.browser_widget.error.connect(lambda e: logger.error(f"Browser error: {e}"))
+        self.browser_widget.start({'home_url': self.settings.value("browser_home", "https://www.google.com")})
+        self.browser_widget.setMinimumHeight(100)
+        self.center_splitter.addWidget(self.browser_widget)
+
+        # Center-Bottom: Terminal (process mode)
+        self.terminal_widget = ProcessWidgetWrapper(WidgetType.TERMINAL, self)
+        self.terminal_widget.ready.connect(lambda: logger.info("Terminal process ready"))
+        self.terminal_widget.error.connect(lambda e: logger.error(f"Terminal error: {e}"))
+        self.terminal_widget.start()
+        self.terminal_widget.setMinimumHeight(100)
+        self.center_splitter.addWidget(self.terminal_widget)
+
+        # RIGHT: Chat widget (process mode)
+        self.chat_widget = ProcessWidgetWrapper(WidgetType.CHAT, self)
+        self.chat_widget.ready.connect(lambda: logger.info("Chat process ready"))
+        self.chat_widget.error.connect(lambda e: logger.error(f"Chat error: {e}"))
+        self.chat_widget.start({'server_url': self.api_client.base_url})
+        self.chat_widget.setMinimumWidth(200)
         self.main_splitter.addWidget(self.chat_widget)
+
+        # Setup polling timer for multiprocess communication
+        self._mp_poll_timer = QTimer(self)
+        self._mp_poll_timer.timeout.connect(self._poll_widget_processes)
+        self._mp_poll_timer.start(100)  # Poll every 100ms
+
+        # Continue UI setup
+        self._setup_ui_continued()
+
+    def _poll_widget_processes(self):
+        """Poll widget processes for responses (multiprocess mode only)"""
+        if hasattr(self, 'widget_manager') and self.widget_manager:
+            self.widget_manager.poll()
+
+    def _setup_ui_continued(self):
+        """Continue UI setup after widget creation"""
 
         # Allow all splitter sections to be resized freely
         self.main_splitter.setChildrenCollapsible(False)
@@ -372,7 +563,8 @@ class MainWindow(QMainWindow):
             'browser': True,
             'files': True,
             'chat': True,
-            'terminal': True
+            'terminal': True,
+            'rag': True
         }
 
         # Keep tabs reference for compatibility (hidden, for additional tabs)
@@ -429,7 +621,7 @@ class MainWindow(QMainWindow):
         file_menu.addAction(action_new_chat)
 
         action_new_terminal = QAction(tr("New Terminal"), self)
-        action_new_terminal.setShortcut(QKeySequence("Ctrl+Shift+N"))
+        # Shortcut handled by ShortcutManager to avoid conflicts
         action_new_terminal.triggered.connect(self._new_terminal)
         file_menu.addAction(action_new_terminal)
 
@@ -448,7 +640,7 @@ class MainWindow(QMainWindow):
         file_menu.addSeparator()
 
         action_settings = QAction(tr("Settings"), self)
-        action_settings.setShortcut(QKeySequence("Ctrl+,"))
+        # Shortcut handled by ShortcutManager to avoid conflicts
         action_settings.triggered.connect(self._open_settings)
         file_menu.addAction(action_settings)
 
@@ -470,28 +662,28 @@ class MainWindow(QMainWindow):
 
         # Widget toggles with checkboxes
         self.action_toggle_browser = QAction(tr("Browser"), self)
-        self.action_toggle_browser.setShortcut(QKeySequence("Ctrl+Shift+B"))
+        # Shortcut handled by ShortcutManager to avoid conflicts
         self.action_toggle_browser.setCheckable(True)
         self.action_toggle_browser.setChecked(True)
         self.action_toggle_browser.triggered.connect(self._toggle_browser)
         view_menu.addAction(self.action_toggle_browser)
 
         self.action_toggle_filebrowser = QAction(tr("File Browser"), self)
-        self.action_toggle_filebrowser.setShortcut(QKeySequence("Ctrl+B"))
+        # Shortcut handled by ShortcutManager to avoid conflicts
         self.action_toggle_filebrowser.setCheckable(True)
         self.action_toggle_filebrowser.setChecked(True)
         self.action_toggle_filebrowser.triggered.connect(self._toggle_file_browser)
         view_menu.addAction(self.action_toggle_filebrowser)
 
         self.action_toggle_chat = QAction(tr("Chat"), self)
-        self.action_toggle_chat.setShortcut(QKeySequence("Ctrl+Shift+C"))
+        # Shortcut handled by ShortcutManager to avoid conflicts
         self.action_toggle_chat.setCheckable(True)
         self.action_toggle_chat.setChecked(True)
         self.action_toggle_chat.triggered.connect(self._toggle_chat)
         view_menu.addAction(self.action_toggle_chat)
 
         self.action_toggle_terminal = QAction(tr("Terminal"), self)
-        self.action_toggle_terminal.setShortcut(QKeySequence("Ctrl+T"))
+        # Shortcut handled by ShortcutManager to avoid conflicts
         self.action_toggle_terminal.setCheckable(True)
         self.action_toggle_terminal.setChecked(True)
         self.action_toggle_terminal.triggered.connect(self._toggle_terminal)
@@ -500,7 +692,7 @@ class MainWindow(QMainWindow):
         view_menu.addSeparator()
 
         action_auto_sort = QAction(tr("Auto Sort Layout"), self)
-        action_auto_sort.setShortcut(QKeySequence("Ctrl+Shift+S"))
+        # Shortcut handled by ShortcutManager to avoid conflicts
         action_auto_sort.triggered.connect(self._auto_sort_layout)
         view_menu.addAction(action_auto_sort)
 
@@ -517,12 +709,12 @@ class MainWindow(QMainWindow):
         view_menu.addSeparator()
 
         action_focus = QAction(tr("Focus Mode (Hide All)"), self)
-        action_focus.setShortcut(QKeySequence("Ctrl+Shift+F"))
+        # Shortcut handled by ShortcutManager to avoid conflicts
         action_focus.triggered.connect(self._focus_mode)
         view_menu.addAction(action_focus)
 
         action_show_all = QAction(tr("Show All"), self)
-        action_show_all.setShortcut(QKeySequence("Ctrl+Shift+A"))
+        # Shortcut handled by ShortcutManager to avoid conflicts
         action_show_all.triggered.connect(self._show_all_widgets)
         view_menu.addAction(action_show_all)
 
@@ -546,6 +738,26 @@ class MainWindow(QMainWindow):
 
         tools_menu.addSeparator()
 
+        action_hwinfo = QAction(tr("Hardware Info"), self)
+        action_hwinfo.triggered.connect(self._show_hardware_info)
+        tools_menu.addAction(action_hwinfo)
+
+        tools_menu.addSeparator()
+
+        action_browser_summary = QAction(tr("Summarize Browser Page to Chat"), self)
+        action_browser_summary.triggered.connect(lambda: self.analyze_browser_page_in_chat(mode="summarize"))
+        tools_menu.addAction(action_browser_summary)
+
+        action_send_compact = QAction(tr("Send Compact Prompt to Agent"), self)
+        action_send_compact.triggered.connect(self._send_compact_prompt_to_agent)
+        tools_menu.addAction(action_send_compact)
+
+        action_send_cmd = QAction(tr("Send Last AI Command to Terminal"), self)
+        action_send_cmd.triggered.connect(self._send_last_ai_command_to_terminal)
+        tools_menu.addAction(action_send_cmd)
+
+        tools_menu.addSeparator()
+
         # CLI Agents submenu
         self.cli_agents_menu = tools_menu.addMenu(tr("CLI Agents"))
         # Will be populated in _detect_cli_agents()
@@ -554,7 +766,6 @@ class MainWindow(QMainWindow):
         help_menu = menubar.addMenu(tr("Help"))
 
         action_readme = QAction(tr("README"), self)
-        action_readme.setShortcut(QKeySequence("F1"))
         action_readme.triggered.connect(self._show_readme)
         help_menu.addAction(action_readme)
 
@@ -712,6 +923,16 @@ class MainWindow(QMainWindow):
         self.mcp_status_label.setStyleSheet("color: #888; padding: 0 8px;")
         toolbar.addWidget(self.mcp_status_label)
 
+        self.btn_compact_agent = QPushButton("📤 Plan→Agent")
+        self.btn_compact_agent.setToolTip("Send compact prompt from current chat to coding agent")
+        self.btn_compact_agent.clicked.connect(self._send_compact_prompt_to_agent)
+        toolbar.addWidget(self.btn_compact_agent)
+
+        self.btn_ai_terminal = QPushButton("💻 AI→Terminal")
+        self.btn_ai_terminal.setToolTip("Send last AI shell command directly to terminal")
+        self.btn_ai_terminal.clicked.connect(self._send_last_ai_command_to_terminal)
+        toolbar.addWidget(self.btn_ai_terminal)
+
         # Spacer
         spacer = QWidget()
         spacer.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
@@ -724,12 +945,291 @@ class MainWindow(QMainWindow):
         self._update_user_label()
 
     def _setup_shortcuts(self):
-        """Setup keyboard shortcuts"""
+        """Setup keyboard shortcuts using centralized ShortcutManager"""
+        if HAS_SHORTCUT_MANAGER:
+            # Initialize shortcut manager with this window as parent
+            self.shortcut_manager = get_shortcut_manager(self)
+
+            # ====== GLOBAL SHORTCUTS ======
+            # Widget toggles: Ctrl+F1-F4 (avoid conflicts with widget-specific F-keys)
+            # F2 = Rename in File Browser, so we use Ctrl+F2 for global toggle
+            self.shortcut_manager.register("Ctrl+F1", self._toggle_browser, ShortcutContext.GLOBAL,
+                                          "Toggle Browser", "View")
+            self.shortcut_manager.register("Ctrl+F2", self._toggle_file_browser, ShortcutContext.GLOBAL,
+                                          "Toggle File Browser", "View")
+            self.shortcut_manager.register("Ctrl+F3", self._toggle_chat, ShortcutContext.GLOBAL,
+                                          "Toggle Chat", "View")
+            self.shortcut_manager.register("Ctrl+F4", self._toggle_terminal, ShortcutContext.GLOBAL,
+                                          "Toggle Terminal", "View")
+
+            # System shortcuts (F5, F11 are standard and don't conflict)
+            self.shortcut_manager.register("F5", self._toggle_lock_screen, ShortcutContext.GLOBAL,
+                                          "Lock Screen", "System")
+            self.shortcut_manager.register("F11", self._toggle_fullscreen, ShortcutContext.GLOBAL,
+                                          "Toggle Fullscreen", "View")
+
+            # Quick focus shortcuts (alternative to Ctrl+F1-F4)
+            self.shortcut_manager.register("Alt+1", self._toggle_browser, ShortcutContext.GLOBAL,
+                                          "Focus Browser", "Navigation")
+            self.shortcut_manager.register("Alt+2", self._toggle_file_browser, ShortcutContext.GLOBAL,
+                                          "Focus File Browser", "Navigation")
+            self.shortcut_manager.register("Alt+3", self._toggle_chat, ShortcutContext.GLOBAL,
+                                          "Focus Chat", "Navigation")
+            self.shortcut_manager.register("Alt+4", self._toggle_terminal, ShortcutContext.GLOBAL,
+                                          "Focus Terminal", "Navigation")
+
+            # Alt+Tab: Cycle through widgets
+            self.shortcut_manager.register("Alt+Tab", self._cycle_widget_focus, ShortcutContext.GLOBAL,
+                                          "Next Widget", "Navigation")
+            self.shortcut_manager.register("Alt+Shift+Tab", self._cycle_widget_focus_reverse, ShortcutContext.GLOBAL,
+                                          "Previous Widget", "Navigation")
+
+            # CLI Agent shortcuts (Global)
+            self.shortcut_manager.register("Alt+C", lambda: self._launch_cli_agent("claude"), ShortcutContext.GLOBAL,
+                                          "Launch Claude CLI", "CLI Agents")
+            self.shortcut_manager.register("Alt+G", lambda: self._launch_cli_agent("gemini"), ShortcutContext.GLOBAL,
+                                          "Launch Gemini CLI", "CLI Agents")
+            self.shortcut_manager.register("Alt+X", lambda: self._launch_cli_agent("codex"), ShortcutContext.GLOBAL,
+                                          "Launch Codex CLI", "CLI Agents")
+            self.shortcut_manager.register("Alt+O", lambda: self._launch_cli_agent("opencode"), ShortcutContext.GLOBAL,
+                                          "Launch OpenCode CLI", "CLI Agents")
+
+            # ====== Browser-specific shortcuts (Chrome/Firefox-like) ======
+            self.shortcut_manager.register("Ctrl+T", self._browser_new_tab, ShortcutContext.BROWSER,
+                                          "New Tab", "Browser")
+            self.shortcut_manager.register("Ctrl+W", self._browser_close_tab, ShortcutContext.BROWSER,
+                                          "Close Tab", "Browser")
+            self.shortcut_manager.register("Ctrl+R", self._browser_refresh, ShortcutContext.BROWSER,
+                                          "Refresh", "Browser")
+            self.shortcut_manager.register("Alt+Left", self._browser_back, ShortcutContext.BROWSER,
+                                          "Back", "Browser")
+            self.shortcut_manager.register("Alt+Right", self._browser_forward, ShortcutContext.BROWSER,
+                                          "Forward", "Browser")
+            self.shortcut_manager.register("Ctrl+L", self._browser_focus_address, ShortcutContext.BROWSER,
+                                          "Focus Address Bar", "Browser")
+            # Tab navigation (Ctrl+Tab, Ctrl+1-9)
+            self.shortcut_manager.register("Ctrl+Tab", self._browser_next_tab, ShortcutContext.BROWSER,
+                                          "Next Tab", "Browser")
+            self.shortcut_manager.register("Ctrl+Shift+Tab", self._browser_prev_tab, ShortcutContext.BROWSER,
+                                          "Previous Tab", "Browser")
+            # Quick tab access (Ctrl+1 to Ctrl+9)
+            for i in range(1, 10):
+                self.shortcut_manager.register(f"Ctrl+{i}",
+                                              lambda idx=i-1: self._browser_goto_tab(idx),
+                                              ShortcutContext.BROWSER,
+                                              f"Go to Tab {i}", "Browser")
+            # Additional browser shortcuts
+            self.shortcut_manager.register("Ctrl+D", self._browser_bookmark, ShortcutContext.BROWSER,
+                                          "Add Bookmark", "Browser")
+            self.shortcut_manager.register("Ctrl+H", self._browser_history, ShortcutContext.BROWSER,
+                                          "Show History", "Browser")
+            self.shortcut_manager.register("Ctrl+Shift+T", self._browser_reopen_tab, ShortcutContext.BROWSER,
+                                          "Reopen Closed Tab", "Browser")
+            self.shortcut_manager.register("Ctrl+F", self._browser_find, ShortcutContext.BROWSER,
+                                          "Find in Page", "Browser")
+            self.shortcut_manager.register("Escape", self._browser_stop, ShortcutContext.BROWSER,
+                                          "Stop Loading", "Browser")
+
+            # ====== Terminal-specific shortcuts ======
+            self.shortcut_manager.register("Ctrl+T", self._terminal_new_tab, ShortcutContext.TERMINAL,
+                                          "New Terminal Tab", "Terminal")
+            self.shortcut_manager.register("Ctrl+W", self._terminal_close_tab, ShortcutContext.TERMINAL,
+                                          "Close Terminal Tab", "Terminal")
+            self.shortcut_manager.register("Ctrl+Shift+C", self._terminal_copy, ShortcutContext.TERMINAL,
+                                          "Copy", "Terminal")
+            self.shortcut_manager.register("Ctrl+Shift+V", self._terminal_paste, ShortcutContext.TERMINAL,
+                                          "Paste", "Terminal")
+            self.shortcut_manager.register("Ctrl+L", self._terminal_clear, ShortcutContext.TERMINAL,
+                                          "Clear Screen", "Terminal")
+            self.shortcut_manager.register("Ctrl+C", self._terminal_interrupt, ShortcutContext.TERMINAL,
+                                          "Interrupt/Cancel", "Terminal")
+            self.shortcut_manager.register("Ctrl+Tab", self._terminal_next_tab, ShortcutContext.TERMINAL,
+                                          "Next Terminal Tab", "Terminal")
+            self.shortcut_manager.register("Ctrl+Shift+Tab", self._terminal_prev_tab, ShortcutContext.TERMINAL,
+                                          "Previous Terminal Tab", "Terminal")
+
+            # ====== File Browser-specific shortcuts ======
+            self.shortcut_manager.register("Ctrl+N", self._filebrowser_new_folder, ShortcutContext.FILE_BROWSER,
+                                          "New Folder", "File Browser")
+            self.shortcut_manager.register("Ctrl+R", self._filebrowser_refresh, ShortcutContext.FILE_BROWSER,
+                                          "Refresh", "File Browser")
+            self.shortcut_manager.register("Delete", self._filebrowser_delete, ShortcutContext.FILE_BROWSER,
+                                          "Delete", "File Browser")
+            self.shortcut_manager.register("F2", self._filebrowser_rename, ShortcutContext.FILE_BROWSER,
+                                          "Rename", "File Browser")
+            self.shortcut_manager.register("Return", self._filebrowser_open, ShortcutContext.FILE_BROWSER,
+                                          "Open", "File Browser")
+
+            # ====== Chat-specific shortcuts ======
+            self.shortcut_manager.register("Ctrl+Return", self._chat_send, ShortcutContext.CHAT,
+                                          "Send Message", "Chat")
+            self.shortcut_manager.register("Ctrl+L", self._chat_clear, ShortcutContext.CHAT,
+                                          "Clear Chat", "Chat")
+            self.shortcut_manager.register("Ctrl+K", self._chat_send_to_agent, ShortcutContext.CHAT,
+                                          "Send to CLI Agent", "Chat")
+            self.shortcut_manager.register("Ctrl+Shift+E", self._send_compact_prompt_to_agent, ShortcutContext.GLOBAL,
+                                          "Send Compact Prompt to Agent", "Tools")
+            self.shortcut_manager.register("Ctrl+Shift+S", lambda: self.analyze_browser_page_in_chat(mode="summarize"), ShortcutContext.BROWSER,
+                                          "Summarize Browser Page to Chat", "Browser")
+            self.shortcut_manager.register("Ctrl+Shift+Return", self._send_last_ai_command_to_terminal, ShortcutContext.CHAT,
+                                          "Send Last AI Command to Terminal", "Chat")
+
+            logger.info(f"Registered {len(self.shortcut_manager.get_all_shortcuts())} shortcuts (global + widget-specific)")
+
+        else:
+            # Fallback to old QShortcut method
+            self._setup_shortcuts_fallback()
+
+    def _setup_focus_tracking(self):
+        """Setup focus change tracking for context-aware shortcuts and visual highlighting"""
+        # Install event filter on application to track focus changes
+        app = QApplication.instance()
+        if app:
+            app.focusChanged.connect(self._on_focus_changed)
+
+        # Register widget contexts
+        if hasattr(self, 'shortcut_manager'):
+            self.shortcut_manager.register_widget_context(
+                self.terminal_widget, ShortcutContext.TERMINAL
+            )
+            self.shortcut_manager.register_widget_context(
+                self.chat_widget, ShortcutContext.CHAT
+            )
+            self.shortcut_manager.register_widget_context(
+                self.file_browser, ShortcutContext.FILE_BROWSER
+            )
+            if hasattr(self, 'browser_widget'):
+                self.shortcut_manager.register_widget_context(
+                    self.browser_widget, ShortcutContext.BROWSER
+                )
+
+        # Track main widgets for highlighting
+        self._main_widgets = [
+            self.terminal_widget,
+            self.chat_widget,
+            self.file_browser,
+        ]
+        if hasattr(self, 'browser_widget'):
+            self._main_widgets.append(self.browser_widget)
+
+        # Store original stylesheets for restoration
+        self._widget_original_styles = {}
+
+        # Active highlight color from theme
+        self._active_highlight_color = self.settings.value("theme_color_primary", "#3b82f6")
+
+    def _on_focus_changed(self, old_widget: QWidget, new_widget: QWidget):
+        """Handle focus change to update shortcut context and visual highlighting"""
+        if new_widget is None:
+            return
+
+        # Update shortcut context
+        if HAS_SHORTCUT_MANAGER and hasattr(self, 'shortcut_manager'):
+            widget = new_widget
+            while widget is not None:
+                context = self.shortcut_manager.get_widget_context(widget)
+                if context:
+                    self.shortcut_manager.set_context(context)
+                    logger.debug(f"Shortcut context changed to: {context.name}")
+                    break
+                widget = widget.parent() if hasattr(widget, 'parent') else None
+            else:
+                self.shortcut_manager.set_context(ShortcutContext.GLOBAL)
+
+        # Update visual highlighting
+        self._update_widget_highlight(new_widget)
+
+    def _update_widget_highlight(self, focused_widget: QWidget):
+        """Update visual highlight for the active widget"""
+        if not hasattr(self, '_main_widgets'):
+            return
+
+        # Find which main widget contains the focused widget
+        active_main_widget = None
+        widget = focused_widget
+        while widget is not None:
+            if widget in self._main_widgets:
+                active_main_widget = widget
+                break
+            widget = widget.parent() if hasattr(widget, 'parent') else None
+
+        # Skip if same widget is already highlighted
+        if hasattr(self, '_current_highlighted') and self._current_highlighted == active_main_widget:
+            return
+
+        # Remove highlight from previously active widget
+        if hasattr(self, '_current_highlighted') and self._current_highlighted:
+            self._remove_highlight(self._current_highlighted)
+
+        # Add highlight to new active widget
+        if active_main_widget:
+            self._apply_active_highlight(active_main_widget, self._active_highlight_color)
+            self._current_highlighted = active_main_widget
+        else:
+            self._current_highlighted = None
+
+    def _apply_active_highlight(self, widget: QWidget, color: str):
+        """Apply active highlight style to widget using a subtle glow border"""
+        # Use QGraphicsDropShadowEffect for a nice glow
+        from PyQt6.QtWidgets import QGraphicsDropShadowEffect
+        from PyQt6.QtGui import QColor
+
+        # Store original effect if any
+        if id(widget) not in self._widget_original_styles:
+            self._widget_original_styles[id(widget)] = widget.graphicsEffect()
+
+        # Create glow effect
+        glow = QGraphicsDropShadowEffect(widget)
+        glow.setBlurRadius(15)
+        glow.setOffset(0, 0)
+        glow.setColor(QColor(color))
+
+        widget.setGraphicsEffect(glow)
+
+        # Also update statusbar to show active widget
+        widget_names = {
+            self.terminal_widget: "Terminal",
+            self.chat_widget: "Chat",
+            self.file_browser: "File Browser",
+        }
+        if hasattr(self, 'browser_widget'):
+            widget_names[self.browser_widget] = "Browser"
+
+        widget_name = widget_names.get(widget, "Unknown")
+        self.statusbar.showMessage(f"Active: {widget_name}", 2000)
+
+    def _remove_highlight(self, widget: QWidget):
+        """Remove highlight glow from widget"""
+        # Restore original effect (usually None)
+        if id(widget) in self._widget_original_styles:
+            widget.setGraphicsEffect(self._widget_original_styles[id(widget)])
+        else:
+            widget.setGraphicsEffect(None)
+
+    def _setup_shortcuts_fallback(self):
+        """Fallback shortcut setup using QShortcut directly"""
+        # Ctrl+F1-F4: Widget toggles (avoid conflict with widget-specific F-keys)
+        QShortcut(QKeySequence("Ctrl+F1"), self, self._toggle_browser)
+        QShortcut(QKeySequence("Ctrl+F2"), self, self._toggle_file_browser)
+        QShortcut(QKeySequence("Ctrl+F3"), self, self._toggle_chat)
+        QShortcut(QKeySequence("Ctrl+F4"), self, self._toggle_terminal)
+
+        # Alt+1-4: Quick focus (alternative)
+        QShortcut(QKeySequence("Alt+1"), self, self._toggle_browser)
+        QShortcut(QKeySequence("Alt+2"), self, self._toggle_file_browser)
+        QShortcut(QKeySequence("Alt+3"), self, self._toggle_chat)
+        QShortcut(QKeySequence("Alt+4"), self, self._toggle_terminal)
+
+        # F5: Lock screen, F11: Fullscreen (standard, no conflicts)
+        QShortcut(QKeySequence("F5"), self, self._toggle_lock_screen)
+        QShortcut(QKeySequence("F11"), self, self._toggle_fullscreen)
+
         # CLI agent shortcuts
         QShortcut(QKeySequence("Alt+C"), self, lambda: self._launch_cli_agent("claude"))
         QShortcut(QKeySequence("Alt+G"), self, lambda: self._launch_cli_agent("gemini"))
         QShortcut(QKeySequence("Alt+X"), self, lambda: self._launch_cli_agent("codex"))
         QShortcut(QKeySequence("Alt+O"), self, lambda: self._launch_cli_agent("opencode"))
+        QShortcut(QKeySequence("Ctrl+Shift+E"), self, self._send_compact_prompt_to_agent)
 
         # Tab navigation
         QShortcut(QKeySequence("Ctrl+Tab"), self, self._next_tab)
@@ -741,25 +1241,142 @@ class MainWindow(QMainWindow):
         QShortcut(QKeySequence("Ctrl+`"), self, self._focus_terminal)
 
     def _setup_statusbar(self):
-        """Setup status bar"""
+        """Setup status bar with connection info, ping, and response time"""
         self.statusbar = QStatusBar()
         self.setStatusBar(self.statusbar)
         self.statusbar.setStyleSheet("""
             QStatusBar {
-                background: rgba(15, 15, 25, 0.9);
+                background: rgba(15, 15, 25, 0.95);
                 color: #888;
                 border-top: 1px solid rgba(255, 255, 255, 0.08);
-                padding: 2px 8px;
+                padding: 4px 12px;
+                font-size: 12px;
+            }
+            QStatusBar::item {
+                border: none;
             }
         """)
 
-        # Connection status
-        self.conn_label = QLabel("Server: --")
+        # Connection status indicator
+        self.conn_indicator = QLabel("⚫")
+        self.conn_indicator.setStyleSheet("color: #666; font-size: 10px;")
+        self.statusbar.addWidget(self.conn_indicator)
+
+        # Server connection label
+        self.conn_label = QLabel("Server: Verbinde...")
+        self.conn_label.setStyleSheet("color: #888; margin-right: 16px;")
         self.statusbar.addWidget(self.conn_label)
 
-        # Tier info
+        # Separator
+        sep1 = QLabel("|")
+        sep1.setStyleSheet("color: #444; margin: 0 8px;")
+        self.statusbar.addWidget(sep1)
+
+        # Ping label
+        self.ping_label = QLabel("Ping: --")
+        self.ping_label.setStyleSheet("color: #888; margin-right: 16px;")
+        self.statusbar.addWidget(self.ping_label)
+
+        # Separator
+        sep2 = QLabel("|")
+        sep2.setStyleSheet("color: #444; margin: 0 8px;")
+        self.statusbar.addWidget(sep2)
+
+        # Response time label
+        self.response_label = QLabel("Response: --")
+        self.response_label.setStyleSheet("color: #888; margin-right: 16px;")
+        self.statusbar.addWidget(self.response_label)
+
+        # Separator
+        sep3 = QLabel("|")
+        sep3.setStyleSheet("color: #444; margin: 0 8px;")
+        self.statusbar.addWidget(sep3)
+
+        # Model label
+        self.model_label = QLabel("Modell: --")
+        self.model_label.setStyleSheet("color: #888;")
+        self.statusbar.addWidget(self.model_label)
+
+        # Spacer
+        self.statusbar.addWidget(QLabel(""), 1)
+
+        # Tier info (right side)
         self.tier_label = QLabel()
+        self.tier_label.setStyleSheet("color: #4ade80; font-weight: bold;")
         self.statusbar.addPermanentWidget(self.tier_label)
+
+        # Start ping timer
+        self._ping_timer = QTimer(self)
+        self._ping_timer.timeout.connect(self._update_ping)
+        self._ping_timer.start(5000)  # Every 5 seconds
+
+        # Initial ping
+        QTimer.singleShot(500, self._update_ping)
+
+    def _update_ping(self):
+        """Update ping to server"""
+        import time
+        try:
+            start = time.time()
+            # Simple health check
+            if self.api_client:
+                result = self.api_client._request("GET", "/health")
+                ping_ms = int((time.time() - start) * 1000)
+
+                # Update connection status
+                self.conn_indicator.setText("🟢")
+                self.conn_indicator.setStyleSheet("color: #4ade80; font-size: 10px;")
+                self.conn_label.setText("Server: Online")
+                self.conn_label.setStyleSheet("color: #4ade80;")
+
+                # Update ping with color coding
+                if ping_ms < 100:
+                    ping_color = "#4ade80"  # Green
+                elif ping_ms < 300:
+                    ping_color = "#facc15"  # Yellow
+                else:
+                    ping_color = "#f87171"  # Red
+
+                self.ping_label.setText(f"Ping: {ping_ms}ms")
+                self.ping_label.setStyleSheet(f"color: {ping_color};")
+            else:
+                self._set_offline_status()
+        except Exception as e:
+            self._set_offline_status()
+
+    def _set_offline_status(self):
+        """Set offline status in statusbar"""
+        self.conn_indicator.setText("🔴")
+        self.conn_indicator.setStyleSheet("color: #f87171; font-size: 10px;")
+        self.conn_label.setText("Server: Offline")
+        self.conn_label.setStyleSheet("color: #f87171;")
+        self.ping_label.setText("Ping: --")
+        self.ping_label.setStyleSheet("color: #666;")
+
+    def update_response_time(self, response_ms: int, model: str = None):
+        """Update response time in statusbar (called from chat widget)"""
+        if response_ms < 1000:
+            time_str = f"{response_ms}ms"
+        else:
+            time_str = f"{response_ms/1000:.1f}s"
+
+        # Color code response time
+        if response_ms < 2000:
+            color = "#4ade80"  # Green
+        elif response_ms < 5000:
+            color = "#facc15"  # Yellow
+        else:
+            color = "#f87171"  # Red
+
+        self.response_label.setText(f"Response: {time_str}")
+        self.response_label.setStyleSheet(f"color: {color};")
+
+        if model:
+            # Shorten model name if too long
+            if len(model) > 25:
+                model = model[:22] + "..."
+            self.model_label.setText(f"Modell: {model}")
+            self.model_label.setStyleSheet("color: #60a5fa;")
 
     # =========================================================================
     # CLI Agent Integration
@@ -845,8 +1462,8 @@ class MainWindow(QMainWindow):
             logger.info(f"Local MCP server started (PID: {self.local_mcp_process.pid}, Tier: {tier})")
             self.statusbar.showMessage(f"MCP Server gestartet (Tier: {tier.upper()})", 3000)
 
-            # Update MCP status in toolbar
-            self.mcp_status_label.setText(tr("MCP: Connected"))
+            # Update MCP status in toolbar - show local ready, node status will update separately
+            self.mcp_status_label.setText(tr("MCP: Local ready"))
             self.mcp_status_label.setStyleSheet("color: #4ade80; padding: 0 8px;")
 
         except Exception as e:
@@ -959,16 +1576,295 @@ class MainWindow(QMainWindow):
         self.statusbar.showMessage(f"Launched {agent.display_name}", 3000)
 
     # =========================================================================
+    # Widget-Specific Shortcut Handlers
+    # =========================================================================
+
+    # Browser shortcuts
+    def _browser_new_tab(self):
+        """Create new browser tab"""
+        if hasattr(self, 'browser_widget') and hasattr(self.browser_widget, 'add_tab'):
+            self.browser_widget.add_tab()
+        elif hasattr(self, 'browser_widget') and hasattr(self.browser_widget, 'new_tab'):
+            self.browser_widget.new_tab()
+
+    def _browser_close_tab(self):
+        """Close current browser tab"""
+        if hasattr(self, 'browser_widget') and hasattr(self.browser_widget, 'close_current_tab'):
+            self.browser_widget.close_current_tab()
+
+    def _browser_refresh(self):
+        """Refresh current browser page"""
+        if hasattr(self, 'browser_widget') and hasattr(self.browser_widget, 'reload'):
+            self.browser_widget.reload()
+        elif hasattr(self, 'browser_widget') and hasattr(self.browser_widget, 'refresh'):
+            self.browser_widget.refresh()
+
+    def _browser_back(self):
+        """Go back in browser history"""
+        if hasattr(self, 'browser_widget') and hasattr(self.browser_widget, 'back'):
+            self.browser_widget.back()
+
+    def _browser_forward(self):
+        """Go forward in browser history"""
+        if hasattr(self, 'browser_widget') and hasattr(self.browser_widget, 'forward'):
+            self.browser_widget.forward()
+
+    def _browser_focus_address(self):
+        """Focus the browser address bar"""
+        if hasattr(self, 'browser_widget') and hasattr(self.browser_widget, 'focus_address_bar'):
+            self.browser_widget.focus_address_bar()
+        elif hasattr(self, 'browser_widget') and hasattr(self.browser_widget, 'url_bar'):
+            self.browser_widget.url_bar.setFocus()
+            self.browser_widget.url_bar.selectAll()
+
+    def _browser_next_tab(self):
+        """Switch to next browser tab"""
+        if hasattr(self, 'browser_widget') and hasattr(self.browser_widget, 'tab_widget'):
+            tw = self.browser_widget.tab_widget
+            next_idx = (tw.currentIndex() + 1) % tw.count()
+            tw.setCurrentIndex(next_idx)
+
+    def _browser_prev_tab(self):
+        """Switch to previous browser tab"""
+        if hasattr(self, 'browser_widget') and hasattr(self.browser_widget, 'tab_widget'):
+            tw = self.browser_widget.tab_widget
+            prev_idx = (tw.currentIndex() - 1) % tw.count()
+            tw.setCurrentIndex(prev_idx)
+
+    def _browser_goto_tab(self, index: int):
+        """Switch to specific browser tab by index (0-8)"""
+        if hasattr(self, 'browser_widget') and hasattr(self.browser_widget, 'tab_widget'):
+            tw = self.browser_widget.tab_widget
+            if index < tw.count():
+                tw.setCurrentIndex(index)
+            elif index == 8:  # Ctrl+9 goes to last tab
+                tw.setCurrentIndex(tw.count() - 1)
+
+    def _browser_bookmark(self):
+        """Add current page to bookmarks"""
+        if hasattr(self, 'browser_widget') and hasattr(self.browser_widget, 'toggle_bookmark'):
+            self.browser_widget.toggle_bookmark()
+
+    def _browser_history(self):
+        """Show browser history"""
+        if hasattr(self, 'browser_widget') and hasattr(self.browser_widget, 'show_history'):
+            self.browser_widget.show_history()
+
+    def _browser_reopen_tab(self):
+        """Reopen last closed tab"""
+        if hasattr(self, 'browser_widget') and hasattr(self.browser_widget, 'reopen_closed_tab'):
+            self.browser_widget.reopen_closed_tab()
+
+    def _browser_find(self):
+        """Open find in page dialog"""
+        if hasattr(self, 'browser_widget'):
+            tab = self.browser_widget.current_tab()
+            if tab and hasattr(tab, 'web_view'):
+                # Trigger browser's built-in find (Ctrl+F)
+                tab.web_view.page().triggerAction(
+                    tab.web_view.page().WebAction.FindInPage
+                )
+
+    def _browser_stop(self):
+        """Stop loading current page"""
+        if hasattr(self, 'browser_widget'):
+            tab = self.browser_widget.current_tab()
+            if tab and hasattr(tab, 'web_view'):
+                tab.web_view.stop()
+
+    # Terminal shortcuts
+    def _terminal_copy(self):
+        """Copy selection from terminal"""
+        if hasattr(self.terminal_widget, 'copy_selection'):
+            self.terminal_widget.copy_selection()
+        elif hasattr(self.terminal_widget, 'copy'):
+            self.terminal_widget.copy()
+
+    def _terminal_paste(self):
+        """Paste clipboard to terminal"""
+        if hasattr(self.terminal_widget, 'paste_clipboard'):
+            self.terminal_widget.paste_clipboard()
+        elif hasattr(self.terminal_widget, 'paste'):
+            self.terminal_widget.paste()
+
+    def _terminal_clear(self):
+        """Clear terminal screen"""
+        if hasattr(self.terminal_widget, 'clear'):
+            self.terminal_widget.clear()
+        elif hasattr(self.terminal_widget, 'send_input'):
+            # Send clear command
+            self.terminal_widget.send_input("clear\n")
+
+    def _terminal_interrupt(self):
+        """Send interrupt signal (Ctrl+C) to terminal"""
+        if hasattr(self.terminal_widget, 'send_signal'):
+            import signal
+            self.terminal_widget.send_signal(signal.SIGINT)
+        elif hasattr(self.terminal_widget, 'send_input'):
+            # Send Ctrl+C character
+            self.terminal_widget.send_input('\x03')
+
+    def _terminal_new_tab(self):
+        """Open new terminal tab (Ctrl+T)"""
+        if hasattr(self.terminal_widget, 'add_tab'):
+            self.terminal_widget.add_tab()
+        elif hasattr(self.terminal_widget, 'new_tab'):
+            self.terminal_widget.new_tab()
+        else:
+            logger.debug("Terminal widget doesn't support tabs")
+
+    def _terminal_close_tab(self):
+        """Close current terminal tab (Ctrl+W)"""
+        if hasattr(self.terminal_widget, 'close_current_tab'):
+            self.terminal_widget.close_current_tab()
+        elif hasattr(self.terminal_widget, 'close_tab'):
+            self.terminal_widget.close_tab()
+        else:
+            logger.debug("Terminal widget doesn't support closing tabs")
+
+    def _terminal_next_tab(self):
+        """Switch to next terminal tab (Ctrl+Tab)"""
+        if hasattr(self.terminal_widget, 'next_tab'):
+            self.terminal_widget.next_tab()
+        elif hasattr(self.terminal_widget, 'tab_widget'):
+            tw = self.terminal_widget.tab_widget
+            if tw.count() > 1:
+                next_idx = (tw.currentIndex() + 1) % tw.count()
+                tw.setCurrentIndex(next_idx)
+
+    def _terminal_prev_tab(self):
+        """Switch to previous terminal tab (Ctrl+Shift+Tab)"""
+        if hasattr(self.terminal_widget, 'prev_tab'):
+            self.terminal_widget.prev_tab()
+        elif hasattr(self.terminal_widget, 'tab_widget'):
+            tw = self.terminal_widget.tab_widget
+            if tw.count() > 1:
+                prev_idx = (tw.currentIndex() - 1) % tw.count()
+                tw.setCurrentIndex(prev_idx)
+
+    # File Browser shortcuts
+    def _filebrowser_new_folder(self):
+        """Create new folder in file browser"""
+        if hasattr(self.file_browser, 'create_new_folder'):
+            self.file_browser.create_new_folder()
+        elif hasattr(self.file_browser, 'new_folder'):
+            self.file_browser.new_folder()
+
+    def _filebrowser_refresh(self):
+        """Refresh file browser"""
+        if hasattr(self.file_browser, 'refresh'):
+            self.file_browser.refresh()
+        elif hasattr(self.file_browser, 'reload'):
+            self.file_browser.reload()
+
+    def _filebrowser_delete(self):
+        """Delete selected file/folder"""
+        if hasattr(self.file_browser, 'delete_selected'):
+            self.file_browser.delete_selected()
+
+    def _filebrowser_rename(self):
+        """Rename selected file/folder"""
+        if hasattr(self.file_browser, 'rename_selected'):
+            self.file_browser.rename_selected()
+
+    def _filebrowser_open(self):
+        """Open selected file/folder"""
+        if hasattr(self.file_browser, 'open_selected'):
+            self.file_browser.open_selected()
+
+    # Chat shortcuts
+    def _chat_send(self):
+        """Send current chat message"""
+        if hasattr(self.chat_widget, 'send_message'):
+            self.chat_widget.send_message()
+        elif hasattr(self.chat_widget, '_send_message'):
+            self.chat_widget._send_message()
+
+    def _chat_clear(self):
+        """Clear chat history"""
+        if hasattr(self.chat_widget, 'clear_chat'):
+            self.chat_widget.clear_chat()
+        elif hasattr(self.chat_widget, 'clear_history'):
+            self.chat_widget.clear_history()
+
+    def _chat_send_to_agent(self):
+        """Send chat content to CLI agent"""
+        if hasattr(self.chat_widget, 'send_to_agent'):
+            self.chat_widget.send_to_agent()
+        elif hasattr(self.chat_widget, 'send_to_mcp_cli_agent'):
+            # Get current input and send to agent selection dialog
+            self._show_agent_send_dialog()
+
+    def _show_agent_send_dialog(self):
+        """Show dialog to select CLI agent for sending message"""
+        if not self.cli_agents:
+            QMessageBox.information(
+                self, "No CLI Agents",
+                "No CLI agents detected.\n\nInstall Claude, Gemini, Codex, or OpenCode to use this feature."
+            )
+            return
+
+        # Get available agents
+        agent_names = [a.display_name for a in self.cli_agents if a.mcp_supported]
+        if not agent_names:
+            return
+
+        from PyQt6.QtWidgets import QInputDialog
+        agent_name, ok = QInputDialog.getItem(
+            self, "Send to CLI Agent",
+            "Select agent to send chat content:",
+            agent_names, 0, False
+        )
+
+        if ok and agent_name:
+            # Find agent
+            for agent in self.cli_agents:
+                if agent.display_name == agent_name:
+                    # Get chat content
+                    if hasattr(self.chat_widget, 'get_input_text'):
+                        content = self.chat_widget.get_input_text()
+                    elif hasattr(self.chat_widget, 'input_field'):
+                        content = self.chat_widget.input_field.get_text()
+                    else:
+                        content = ""
+
+                    if content:
+                        # Send to agent via MCP
+                        if hasattr(self.chat_widget, 'send_to_mcp_cli_agent'):
+                            self.chat_widget.send_to_mcp_cli_agent(message=content, agent_id=agent.name)
+                        else:
+                            self.statusbar.showMessage(f"Sent to {agent_name}", 3000)
+                    break
+
+    # =========================================================================
     # MCP Node Connection
     # =========================================================================
 
+    def _retry_mcp_connection(self):
+        """Retry MCP Node connection if not yet connected"""
+        if not HAS_MCP_NODE or not self.enable_mcp_node:
+            return
+
+        # Check if we now have authentication
+        if (self.api_client.user_id or self.api_client.token) and not self.mcp_node_thread:
+            logger.info("Retrying MCP Node connection after authentication")
+            self._connect_mcp_node()
+        elif not self.mcp_node_thread:
+            # Still not authenticated, update status
+            self.mcp_status_label.setText(tr("MCP: Local only"))
+            self.mcp_status_label.setStyleSheet("color: #fbbf24; padding: 0 8px;")
+
     def _connect_mcp_node(self):
         """Connect to MCP Node WebSocket"""
-        if not HAS_MCP_NODE:
+        if not HAS_MCP_NODE or not self.enable_mcp_node:
             return
 
         if self.mcp_node_thread and self.mcp_node_thread.isRunning():
             return
+
+        # Update status to show connecting
+        self.mcp_status_label.setText(tr("MCP: Connecting..."))
+        self.mcp_status_label.setStyleSheet("color: #60a5fa; padding: 0 8px;")
 
         self.mcp_node_thread = MCPNodeThread(self.api_client)
         self.mcp_node_thread.connected.connect(self._on_mcp_connected)
@@ -992,6 +1888,10 @@ class MainWindow(QMainWindow):
 
     def _reconnect_mcp_node(self):
         """Reconnect MCP Node"""
+        if not self.enable_mcp_node:
+            self.statusbar.showMessage("MCP Node is disabled (runtime flag)", 3000)
+            return
+
         if self.mcp_node_thread:
             self.mcp_node_thread.stop()
             self.mcp_node_thread.wait()
@@ -1002,12 +1902,15 @@ class MainWindow(QMainWindow):
     def _show_mcp_status(self):
         """Show MCP status dialog"""
         # Local MCP server status
-        local_status = "Running" if self.local_mcp_process else "Stopped"
+        local_status = "Disabled" if not self.enable_local_mcp else ("Running" if self.local_mcp_process else "Stopped")
         local_pid = self.local_mcp_process.pid if self.local_mcp_process else "N/A"
 
         # MCP Node status (optional remote connection)
         node_connected = self.mcp_node_thread and self.mcp_node_thread.running and self.mcp_node_thread.mcp_client
-        node_status = "Connected" if node_connected else "Not connected"
+        if not self.enable_mcp_node:
+            node_status = "Disabled"
+        else:
+            node_status = "Connected" if node_connected else "Not connected"
 
         # Get session info from MCP client if available
         session_id = "N/A"
@@ -1036,6 +1939,50 @@ CLI Agents: {len(self.cli_agents)}
             msg += f"  - {agent.display_name}: {agent.path}\n"
 
         QMessageBox.information(self, tr("MCP Status"), msg)
+
+    def _show_hardware_info(self):
+        """Show hardware information dialog"""
+        try:
+            from ..core.hardware_detect import hardware_detector
+            info = hardware_detector.get_summary()
+
+            dialog = QDialog(self)
+            dialog.setWindowTitle(tr("Hardware Info"))
+            dialog.setMinimumSize(600, 500)
+            dialog.setStyleSheet("background: #1e1e1e;")
+
+            layout = QVBoxLayout(dialog)
+
+            # Text browser for hardware info
+            from PyQt6.QtWidgets import QTextBrowser
+            text_browser = QTextBrowser()
+            text_browser.setStyleSheet("""
+                QTextBrowser {
+                    background: #252525;
+                    color: #e0e0e0;
+                    border: 1px solid #333;
+                    border-radius: 4px;
+                    padding: 10px;
+                    font-family: monospace;
+                    font-size: 12px;
+                }
+            """)
+            text_browser.setPlainText(info)
+            layout.addWidget(text_browser)
+
+            # Close button
+            close_btn = QPushButton(tr("Close"))
+            close_btn.clicked.connect(dialog.accept)
+            layout.addWidget(close_btn)
+
+            dialog.exec()
+
+        except Exception as e:
+            QMessageBox.warning(
+                self,
+                tr("Error"),
+                f"Hardware detection failed: {e}"
+            )
 
     # =========================================================================
     # Tab Management
@@ -1098,6 +2045,74 @@ CLI Agents: {len(self.cli_agents)}
                 self.terminal_widget.focus_current()
                 break
 
+    def _get_focusable_widgets(self):
+        """Get list of visible, focusable widgets in order"""
+        widgets = []
+        # Order: File Browser, Browser, Terminal, Chat
+        if hasattr(self, 'file_browser') and self.file_browser.isVisible():
+            widgets.append(('files', self.file_browser))
+        if hasattr(self, 'browser_widget') and self.browser_widget.isVisible():
+            widgets.append(('browser', self.browser_widget))
+        if hasattr(self, 'terminal_widget') and self.terminal_widget.isVisible():
+            widgets.append(('terminal', self.terminal_widget))
+        if hasattr(self, 'chat_widget') and self.chat_widget.isVisible():
+            widgets.append(('chat', self.chat_widget))
+        return widgets
+
+    def _get_current_focused_widget_index(self, widgets):
+        """Find which widget currently has focus"""
+        focused = QApplication.focusWidget()
+        if not focused:
+            return -1
+
+        for i, (name, widget) in enumerate(widgets):
+            # Check if focused widget is the widget or a child of it
+            if focused == widget or widget.isAncestorOf(focused):
+                return i
+        return -1
+
+    def _focus_widget(self, name: str, widget):
+        """Focus a specific widget based on its type"""
+        if name == 'terminal':
+            self.terminal_widget.focus_current()
+        elif name == 'chat':
+            self.chat_widget.focus_input()
+        elif name == 'browser':
+            # Focus the current tab's web view
+            tab = self.browser_widget.current_tab()
+            if tab and hasattr(tab, 'focus_web_view'):
+                tab.focus_web_view()
+            else:
+                self.browser_widget.url_bar.setFocus()
+        elif name == 'files':
+            self.file_browser.tree_view.setFocus()
+        else:
+            widget.setFocus()
+
+    def _cycle_widget_focus(self):
+        """Cycle focus to the next visible widget (Alt+Tab)"""
+        widgets = self._get_focusable_widgets()
+        if not widgets:
+            return
+
+        current_idx = self._get_current_focused_widget_index(widgets)
+        next_idx = (current_idx + 1) % len(widgets)
+        name, widget = widgets[next_idx]
+        self._focus_widget(name, widget)
+        logger.debug(f"Focused widget: {name}")
+
+    def _cycle_widget_focus_reverse(self):
+        """Cycle focus to the previous visible widget (Alt+Shift+Tab)"""
+        widgets = self._get_focusable_widgets()
+        if not widgets:
+            return
+
+        current_idx = self._get_current_focused_widget_index(widgets)
+        prev_idx = (current_idx - 1) % len(widgets)
+        name, widget = widgets[prev_idx]
+        self._focus_widget(name, widget)
+        logger.debug(f"Focused widget: {name}")
+
     # =========================================================================
     # View Actions - Toggleable Widgets
     # =========================================================================
@@ -1153,6 +2168,307 @@ CLI Agents: {len(self.cli_agents)}
             self.showNormal()
         else:
             self.showFullScreen()
+
+    def _toggle_lock_screen(self):
+        """Toggle lock screen - F5 to lock, F5 again to unlock with password"""
+        if hasattr(self, '_lock_overlay') and self._lock_overlay and self._lock_overlay.isVisible():
+            # Already locked - show unlock dialog
+            self._show_unlock_dialog()
+        else:
+            # Lock the screen
+            self._lock_screen()
+
+    def _lock_screen(self):
+        """Show lock screen overlay"""
+        from PyQt6.QtWidgets import QFrame, QLabel
+        from PyQt6.QtCore import Qt
+
+        # Create lock overlay if not exists
+        if not hasattr(self, '_lock_overlay') or not self._lock_overlay:
+            self._lock_overlay = QFrame(self)
+
+            # Get wallpaper from settings
+            bg_image = self.settings.value("desktop_background", "")
+
+            # Check default wallpaper paths
+            default_wallpapers = [
+                "/usr/share/backgrounds/ailinux-wallpaper.jpg",
+                "/usr/share/backgrounds/default.jpg",
+                os.path.expanduser("~/.config/ailinux/wallpaper.jpg"),
+            ]
+
+            if not bg_image or not os.path.exists(bg_image):
+                for wp in default_wallpapers:
+                    if os.path.exists(wp):
+                        bg_image = wp
+                        break
+
+            if bg_image and os.path.exists(bg_image):
+                # Wallpaper with dark overlay
+                self._lock_overlay.setStyleSheet(f"""
+                    QFrame {{
+                        background-image: url({bg_image});
+                        background-position: center;
+                        background-repeat: no-repeat;
+                        border: none;
+                    }}
+                """)
+            else:
+                # Gradient fallback
+                self._lock_overlay.setStyleSheet("""
+                    QFrame {
+                        background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                            stop:0 #0a0a1a,
+                            stop:0.3 #1a1a3e,
+                            stop:0.6 #0f2027,
+                            stop:1 #203a43);
+                    }
+                """)
+
+            lock_layout = QVBoxLayout(self._lock_overlay)
+            lock_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+            # Semi-transparent container for lock content
+            lock_container = QFrame()
+            lock_container.setStyleSheet("""
+                QFrame {
+                    background: rgba(10, 10, 20, 0.85);
+                    border-radius: 20px;
+                    padding: 40px;
+                }
+            """)
+            lock_container.setFixedSize(300, 280)
+            container_layout = QVBoxLayout(lock_container)
+            container_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+            # Lock icon
+            lock_icon = QLabel("🔒")
+            lock_icon.setStyleSheet("font-size: 80px; color: #60a5fa; background: transparent;")
+            lock_icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            container_layout.addWidget(lock_icon)
+
+            # Lock message
+            lock_msg = QLabel("Screen Locked")
+            lock_msg.setStyleSheet("font-size: 24px; color: #e0e0e0; margin-top: 20px; background: transparent;")
+            lock_msg.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            container_layout.addWidget(lock_msg)
+
+            # Unlock hint
+            unlock_hint = QLabel("Press F5 to unlock")
+            unlock_hint.setStyleSheet("font-size: 14px; color: #888; margin-top: 30px; background: transparent;")
+            unlock_hint.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            container_layout.addWidget(unlock_hint)
+
+            lock_layout.addWidget(lock_container)
+
+        # Show overlay fullscreen over the window
+        self._lock_overlay.setGeometry(self.rect())
+        self._lock_overlay.raise_()
+        self._lock_overlay.show()
+
+        logger.info("Screen locked")
+
+    def _show_unlock_dialog(self):
+        """Show styled password dialog to unlock screen with system credentials"""
+        import pwd
+        import os
+        from PyQt6.QtWidgets import QDialog, QVBoxLayout, QLabel, QLineEdit, QPushButton, QHBoxLayout
+
+        # Get current username
+        username = pwd.getpwuid(os.getuid()).pw_name
+
+        # Create custom styled unlock dialog
+        dialog = QDialog(self._lock_overlay)
+        dialog.setWindowTitle("🔓 Unlock Screen")
+        dialog.setFixedSize(350, 220)
+        dialog.setStyleSheet("""
+            QDialog {
+                background: rgba(15, 15, 30, 0.95);
+                border: 1px solid rgba(96, 165, 250, 0.3);
+                border-radius: 16px;
+            }
+            QLabel {
+                color: #e0e0e0;
+                background: transparent;
+            }
+            QLineEdit {
+                background: rgba(30, 30, 50, 0.9);
+                color: #e0e0e0;
+                border: 1px solid rgba(255, 255, 255, 0.15);
+                border-radius: 8px;
+                padding: 10px 14px;
+                font-size: 14px;
+            }
+            QLineEdit:focus {
+                border-color: #60a5fa;
+            }
+            QPushButton {
+                background: #3b82f6;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                padding: 10px 24px;
+                font-size: 14px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background: #2563eb;
+            }
+            QPushButton:pressed {
+                background: #1d4ed8;
+            }
+            QPushButton#cancelBtn {
+                background: rgba(255, 255, 255, 0.1);
+                color: #a0a0a0;
+            }
+            QPushButton#cancelBtn:hover {
+                background: rgba(255, 255, 255, 0.15);
+                color: #e0e0e0;
+            }
+        """)
+
+        layout = QVBoxLayout(dialog)
+        layout.setSpacing(16)
+        layout.setContentsMargins(24, 24, 24, 24)
+
+        # User icon and name
+        user_label = QLabel(f"🔐 {username}")
+        user_label.setStyleSheet("font-size: 18px; font-weight: bold; color: #60a5fa;")
+        user_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(user_label)
+
+        # Password field
+        password_input = QLineEdit()
+        password_input.setPlaceholderText("Enter your password...")
+        password_input.setEchoMode(QLineEdit.EchoMode.Password)
+        layout.addWidget(password_input)
+
+        # Buttons
+        btn_layout = QHBoxLayout()
+        btn_layout.setSpacing(12)
+
+        cancel_btn = QPushButton("Cancel")
+        cancel_btn.setObjectName("cancelBtn")
+        cancel_btn.clicked.connect(dialog.reject)
+        btn_layout.addWidget(cancel_btn)
+
+        unlock_btn = QPushButton("🔓 Unlock")
+        unlock_btn.setDefault(True)
+        btn_layout.addWidget(unlock_btn)
+
+        layout.addLayout(btn_layout)
+
+        # Handle unlock
+        def try_unlock():
+            password = password_input.text()
+            if password:
+                if self._verify_password(username, password):
+                    dialog.accept()
+                    self._unlock_screen()
+                else:
+                    # Shake animation for wrong password
+                    password_input.setStyleSheet(password_input.styleSheet() + "border-color: #ef4444;")
+                    password_input.clear()
+                    password_input.setPlaceholderText("Wrong password - try again")
+                    QTimer.singleShot(2000, lambda: password_input.setPlaceholderText("Enter your password..."))
+
+        unlock_btn.clicked.connect(try_unlock)
+        password_input.returnPressed.connect(try_unlock)
+
+        # Focus password field
+        password_input.setFocus()
+
+        dialog.exec()
+
+    def _verify_password(self, username: str, password: str) -> bool:
+        """Verify user password using PAM authentication"""
+        # Try PAM first (most reliable)
+        try:
+            import pam
+            p = pam.pam()
+            if p.authenticate(username, password):
+                return True
+        except ImportError:
+            logger.debug("python-pam not installed, trying alternatives")
+        except Exception as e:
+            logger.warning(f"PAM authentication error: {e}")
+
+        # Fallback: Use pkexec with polkit (non-interactive check)
+        try:
+            import subprocess
+            import crypt
+            import spwd
+
+            # Try to read shadow password (requires root or shadow group)
+            try:
+                shadow = spwd.getspnam(username)
+                encrypted = shadow.sp_pwdp
+
+                # Verify password
+                if encrypted and encrypted != '!' and encrypted != '*':
+                    result = crypt.crypt(password, encrypted)
+                    if result == encrypted:
+                        return True
+            except (KeyError, PermissionError):
+                pass
+
+            # Last resort: use 'su' with expect-like approach via pty
+            import pty
+            import select
+
+            master, slave = pty.openpty()
+            proc = subprocess.Popen(
+                ['su', '-c', 'echo OK', username],
+                stdin=slave,
+                stdout=slave,
+                stderr=slave,
+                close_fds=True
+            )
+
+            os.close(slave)
+
+            # Wait for password prompt
+            output = b''
+            for _ in range(50):  # Max 5 seconds
+                if select.select([master], [], [], 0.1)[0]:
+                    try:
+                        data = os.read(master, 1024)
+                        if not data:
+                            break
+                        output += data
+                        if b'assword' in output or b'Password' in output:
+                            # Send password
+                            os.write(master, (password + '\n').encode())
+                            output = b''
+                        elif b'OK' in output:
+                            os.close(master)
+                            proc.wait()
+                            return True
+                        elif b'failure' in output.lower() or b'incorrect' in output.lower():
+                            break
+                    except OSError:
+                        break
+
+            os.close(master)
+            proc.wait(timeout=2)
+            return False
+
+        except Exception as e:
+            logger.warning(f"Password verification failed: {e}")
+
+        return False
+
+    def _unlock_screen(self):
+        """Hide lock screen overlay"""
+        if hasattr(self, '_lock_overlay') and self._lock_overlay:
+            self._lock_overlay.hide()
+            logger.info("Screen unlocked")
+
+    def resizeEvent(self, event):
+        """Handle resize to keep lock overlay fullscreen"""
+        super().resizeEvent(event)
+        if hasattr(self, '_lock_overlay') and self._lock_overlay and self._lock_overlay.isVisible():
+            self._lock_overlay.setGeometry(self.rect())
 
     def _auto_sort_layout(self):
         """Auto-sort layout to optimal proportions based on visible widgets and aspect ratio.
@@ -1331,6 +2647,290 @@ CLI Agents: {len(self.cli_agents)}
         """Handle file selection in browser"""
         # Could open in editor tab
         self.statusbar.showMessage(f"Selected: {file_path}", 3000)
+
+    def _dispatch_prompt_to_chat(self, prompt: str, auto_send: bool = True):
+        """Send generated prompt to chat widget (in-process mode)."""
+        if not hasattr(self, "chat_widget"):
+            self.statusbar.showMessage("Chat widget not available", 3000)
+            return
+
+        if hasattr(self.chat_widget, "send_external_prompt"):
+            self.chat_widget.send_external_prompt(prompt, auto_send=auto_send)
+            return
+
+        self.statusbar.showMessage("Prompt dispatch requires in-process chat widget", 5000)
+
+    def _on_open_terminal_requested(self, command_or_path: str):
+        """Handle file browser terminal open requests."""
+        if not hasattr(self, "terminal_widget"):
+            return
+        if hasattr(self.terminal_widget, "send_to_current"):
+            cmd = command_or_path
+            if "&&" not in cmd and not cmd.strip().startswith("cd "):
+                cmd = f"cd '{cmd}'"
+            self.terminal_widget.send_to_current(cmd + "\n")
+
+    def _is_text_file_path(self, file_path: str) -> bool:
+        text_ext = {
+            ".txt", ".md", ".rst", ".log", ".json", ".yaml", ".yml", ".toml",
+            ".ini", ".cfg", ".conf", ".sh", ".bash", ".zsh", ".py", ".js", ".ts",
+            ".tsx", ".jsx", ".css", ".scss", ".html", ".xml", ".csv", ".sql",
+            ".env", ".dockerfile", ".gitignore",
+        }
+        suffix = Path(file_path).suffix.lower()
+        if suffix in text_ext:
+            return True
+        try:
+            with open(file_path, "rb") as f:
+                sample = f.read(4096)
+            if b"\x00" in sample:
+                return False
+            return True
+        except Exception:
+            return False
+
+    def _build_text_file_analysis_prompt(self, file_path: str) -> str:
+        max_chars = 14000
+        with open(file_path, "r", encoding="utf-8", errors="replace") as f:
+            content = f.read(max_chars)
+
+        if len(content) >= max_chars:
+            content += "\n\n[TRUNCATED]"
+
+        return (
+            "Analysiere die folgende Datei technisch und gib konkrete Empfehlungen:\n"
+            "1. Kurz-Zusammenfassung\n"
+            "2. Risiken/Bugs/Sicherheitsprobleme\n"
+            "3. Konkrete Verbesserungsvorschläge\n"
+            "4. Falls Code: optional kleiner Patch-Vorschlag\n\n"
+            f"Datei: {file_path}\n\n"
+            "Inhalt:\n"
+            "```text\n"
+            f"{content}\n"
+            "```"
+        )
+
+    def _build_binary_file_analysis_prompt(self, file_path: str) -> str:
+        p = Path(file_path)
+        st = p.stat()
+        mime, _ = mimetypes.guess_type(str(p))
+        with open(file_path, "rb") as f:
+            head = f.read(64)
+        sha256 = hashlib.sha256(head).hexdigest()
+
+        return (
+            "Die Datei ist vermutlich binär. Analysiere anhand der Metadaten, "
+            "ob es eher kritische/anwendungsrelevante Daten oder normale Distro-Datei sein könnte.\n"
+            "Gib eine Risiko-Einschätzung (niedrig/mittel/hoch) und kurze Begründung.\n"
+            "Wenn unsicher, gib an welche Online-Recherche sinnvoll wäre.\n\n"
+            f"Pfad: {file_path}\n"
+            f"Dateiname: {p.name}\n"
+            f"Suffix: {p.suffix or 'none'}\n"
+            f"MIME guess: {mime or 'unknown'}\n"
+            f"Größe (Bytes): {st.st_size}\n"
+            f"Zuletzt geändert (epoch): {int(st.st_mtime)}\n"
+            f"Berechtigungen (octal): {oct(st.st_mode & 0o777)}\n"
+            f"Header SHA256 (erste 64 bytes): {sha256}\n"
+            f"Header Hex: {head.hex()}\n"
+        )
+
+    def _analyze_file_with_ai(self, file_path: str):
+        """Analyze selected file with AI and push prompt into chat."""
+        try:
+            if not os.path.isfile(file_path):
+                self.statusbar.showMessage("Nur Dateien können analysiert werden", 3000)
+                return
+
+            if self._is_text_file_path(file_path):
+                prompt = self._build_text_file_analysis_prompt(file_path)
+            else:
+                prompt = self._build_binary_file_analysis_prompt(file_path)
+
+            self._dispatch_prompt_to_chat(prompt, auto_send=True)
+            self.statusbar.showMessage(f"AI-Analyse gestartet: {file_path}", 4000)
+        except Exception as e:
+            logger.error(f"File analysis failed: {e}")
+            self.statusbar.showMessage(f"Datei-Analyse Fehler: {e}", 5000)
+
+    def open_url_in_browser(self, url: str):
+        """Open URL in current browser tab."""
+        if not hasattr(self, "browser_widget"):
+            return
+        if hasattr(self.browser_widget, "navigate"):
+            self.browser_widget.navigate(url)
+            return
+        if hasattr(self.browser_widget, "navigate_to"):
+            self.browser_widget.navigate_to(url)
+            return
+        if hasattr(self.browser_widget, "current_tab"):
+            tab = self.browser_widget.current_tab()
+            if tab and hasattr(tab, "navigate"):
+                tab.navigate(url)
+
+    def _collect_browser_links(self, callback):
+        """Collect visible links from current browser page."""
+        try:
+            if not hasattr(self, "browser_widget") or not hasattr(self.browser_widget, "current_tab"):
+                callback([])
+                return
+            tab = self.browser_widget.current_tab()
+            if not tab or not hasattr(tab, "web_view"):
+                callback([])
+                return
+
+            js = """
+            (function() {
+                const links = Array.from(document.querySelectorAll('a[href]'))
+                  .map(a => ({title: (a.innerText || '').trim(), href: a.href}))
+                  .filter(x => x.href)
+                  .slice(0, 30);
+                return JSON.stringify(links);
+            })();
+            """
+            tab.web_view.page().runJavaScript(js, lambda raw: callback(json.loads(raw) if raw else []))
+        except Exception:
+            callback([])
+
+    def _on_browser_ai_selected(self, payload: str):
+        """Handle browser AI context menu events and forward to chat."""
+        try:
+            if not payload:
+                return
+
+            if payload.startswith("page_"):
+                kind, body = payload.split(":", 1)
+                action = kind.replace("page_", "", 1)
+                url, page_text = body.split("|", 1) if "|" in body else ("", body)
+
+                def _send_with_links(links):
+                    link_lines = "\n".join(
+                        f"- {item.get('title') or '(no title)'} -> {item.get('href')}"
+                        for item in links[:20]
+                    ) if links else "(keine Links gefunden)"
+                    prompt = (
+                        f"Analysiere diese Webseite ({action}) und antworte strukturiert.\n"
+                        f"URL: {url}\n\n"
+                        "Erkannte Links:\n"
+                        f"{link_lines}\n\n"
+                        "Seiteninhalt (gekürzt):\n"
+                        "```text\n"
+                        f"{page_text[:12000]}\n"
+                        "```"
+                    )
+                    self._dispatch_prompt_to_chat(prompt, auto_send=True)
+
+                self._collect_browser_links(_send_with_links)
+                return
+
+            action, text = payload.split(":", 1) if ":" in payload else ("summarize", payload)
+            prompt = (
+                f"Browser Text-Aktion: {action}\n"
+                "Bitte antworte präzise und kontextbezogen.\n\n"
+                "Text:\n"
+                "```text\n"
+                f"{text[:8000]}\n"
+                "```"
+            )
+            self._dispatch_prompt_to_chat(prompt, auto_send=True)
+        except Exception as e:
+            logger.error(f"Browser AI payload handling failed: {e}")
+
+    def analyze_browser_page_in_chat(self, mode: str = "summarize"):
+        """Analyze current browser page (text + links) and send to chat."""
+        if not hasattr(self, "browser_widget") or not hasattr(self.browser_widget, "current_tab"):
+            self.statusbar.showMessage("Browser nicht verfügbar", 3000)
+            return
+        tab = self.browser_widget.current_tab()
+        if not tab or not hasattr(tab, "web_view"):
+            self.statusbar.showMessage("Kein aktiver Browser-Tab", 3000)
+            return
+
+        js = """
+        (function() {
+            const body = document.body ? document.body.innerText || '' : '';
+            const title = document.title || '';
+            const url = window.location.href || '';
+            const links = Array.from(document.querySelectorAll('a[href]'))
+              .map(a => ({title: (a.innerText || '').trim(), href: a.href}))
+              .filter(x => x.href)
+              .slice(0, 30);
+            return JSON.stringify({title, url, text: body.slice(0, 14000), links});
+        })();
+        """
+
+        def _on_page(raw):
+            if not raw:
+                self.statusbar.showMessage("Seitenanalyse fehlgeschlagen", 4000)
+                return
+            try:
+                data = json.loads(raw)
+            except Exception:
+                self.statusbar.showMessage("Seitenanalyse-Daten ungültig", 4000)
+                return
+
+            links = data.get("links") or []
+            links_text = "\n".join(
+                f"- {item.get('title') or '(no title)'} -> {item.get('href')}"
+                for item in links[:20]
+            ) if links else "(keine Links gefunden)"
+            prompt = (
+                f"Webseitenanalyse Modus: {mode}\n"
+                f"Titel: {data.get('title','')}\n"
+                f"URL: {data.get('url','')}\n\n"
+                "Vorhandene Links:\n"
+                f"{links_text}\n\n"
+                "Seiteninhalt:\n"
+                "```text\n"
+                f"{(data.get('text') or '')[:12000]}\n"
+                "```\n\n"
+                "Erstelle eine harmonische Zusammenfassung und schlage 3 sinnvolle Folgefragen vor."
+            )
+            self._dispatch_prompt_to_chat(prompt, auto_send=True)
+
+        tab.web_view.page().runJavaScript(js, _on_page)
+
+    def _send_compact_prompt_to_agent(self):
+        """Send compact prompt from chat history to a preferred coding agent."""
+        if not hasattr(self, "chat_widget") or not hasattr(self.chat_widget, "send_compact_prompt_to_agent"):
+            self.statusbar.showMessage("Compact prompt dispatch not available", 4000)
+            return
+
+        preferred = "codex-mcp"
+        available = {a.name for a in self.cli_agents} if self.cli_agents else set()
+        if "codex" not in available and "claude" in available:
+            preferred = "claude-mcp"
+        elif "codex" not in available and "gemini" in available:
+            preferred = "gemini-mcp"
+
+        ok = self.chat_widget.send_compact_prompt_to_agent(preferred)
+        self.statusbar.showMessage(
+            f"Compact prompt {'gesendet' if ok else 'fehlgeschlagen'} ({preferred})",
+            5000
+        )
+
+    def send_command_to_terminal(self, command: str, execute: bool = True) -> bool:
+        """Send command text to terminal widget, optionally execute immediately."""
+        if not hasattr(self, "terminal_widget"):
+            return False
+        if not hasattr(self.terminal_widget, "send_to_current"):
+            return False
+
+        payload = command if not execute else command + "\n"
+        try:
+            self.terminal_widget.send_to_current(payload)
+            self.statusbar.showMessage(f"Terminal command sent: {command[:120]}", 4000)
+            return True
+        except Exception as e:
+            logger.error(f"Failed to send command to terminal: {e}")
+            self.statusbar.showMessage(f"Terminal send failed: {e}", 4000)
+            return False
+
+    def _send_last_ai_command_to_terminal(self):
+        """Send last AI shell command from chat to terminal and execute it."""
+        if not hasattr(self, "chat_widget") or not hasattr(self.chat_widget, "send_last_command_to_terminal"):
+            self.statusbar.showMessage("Chat command bridge not available", 4000)
+            return
+        self.chat_widget.send_last_command_to_terminal(execute=True)
 
     # =========================================================================
     # Settings & Dialogs
@@ -1545,38 +3145,136 @@ CLI Agents: {len(self.cli_agents)}
             self.chat_widget.apply_settings()
 
     def _show_about(self):
-        """Show about dialog"""
-        QMessageBox.about(
-            self,
-            "About AILinux Client",
-            """<h2>AILinux Client</h2>
-            <p>Desktop client for AILinux AI platform.</p>
-            <p>Features:</p>
-            <ul>
-                <li>AI Chat with local/cloud models</li>
-                <li>Terminal with tabs</li>
-                <li>CLI Agent integration (Claude, Gemini, Codex)</li>
-                <li>MCP Node connection</li>
-                <li>Desktop panel mode</li>
-            </ul>
-            <p>Version: 1.0.0</p>
-            """
-        )
+        """Show about dialog with header image"""
+        from ..version import VERSION, BUILD_DATE
+
+        # Find icon path for header image
+        icon_path = None
+        assets_path = Path(__file__).parent.parent / "assets" / "icon.jpg"
+        root_path = Path(__file__).parent.parent.parent / "icon.jpg"
+
+        if assets_path.exists():
+            icon_path = str(assets_path)
+        elif root_path.exists():
+            icon_path = str(root_path)
+
+        # Create custom About dialog with image header
+        dialog = QDialog(self)
+        dialog.setWindowTitle(tr("About AILinux Client"))
+        dialog.setMinimumSize(450, 500)
+
+        layout = QVBoxLayout(dialog)
+        layout.setSpacing(15)
+
+        # Header image
+        if icon_path:
+            from PyQt6.QtGui import QPixmap
+            header_label = QLabel()
+            pixmap = QPixmap(icon_path)
+            # Scale to fit width while keeping aspect ratio
+            scaled = pixmap.scaledToWidth(400, Qt.TransformationMode.SmoothTransformation)
+            header_label.setPixmap(scaled)
+            header_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            layout.addWidget(header_label)
+
+        # Title
+        title_label = QLabel("<h1 style='color: #7c3aed;'>AILinux Client</h1>")
+        title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(title_label)
+
+        # Version info
+        version_label = QLabel(f"<p style='font-size: 14px;'>Version <b>{VERSION}</b><br/>Build: {BUILD_DATE}</p>")
+        version_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(version_label)
+
+        # Description
+        desc_html = """
+        <div style='text-align: center; padding: 10px;'>
+            <p>Desktop Client für die AILinux KI-Plattform</p>
+            <p style='color: #666; font-size: 12px;'>
+                <b>Features:</b><br/>
+                • AI Chat mit lokalen & Cloud-Modellen<br/>
+                • Terminal mit Tabs<br/>
+                • CLI Agent Integration (Claude, Gemini, Codex)<br/>
+                • MCP Node Verbindung<br/>
+                • Desktop Panel Modus
+            </p>
+            <hr style='border: 1px solid #ddd; margin: 15px 0;'/>
+            <p style='font-size: 11px; color: #888;'>
+                © 2024-2025 AILinux Project<br/>
+                Entwickelt von Markus Leitermann<br/>
+                <a href='https://ailinux.me' style='color: #7c3aed;'>https://ailinux.me</a>
+            </p>
+        </div>
+        """
+        desc_label = QLabel(desc_html)
+        desc_label.setOpenExternalLinks(True)
+        desc_label.setWordWrap(True)
+        layout.addWidget(desc_label)
+
+        # OK button
+        ok_btn = QPushButton(tr("OK"))
+        ok_btn.setFixedWidth(100)
+        ok_btn.clicked.connect(dialog.accept)
+
+        btn_layout = QHBoxLayout()
+        btn_layout.addStretch()
+        btn_layout.addWidget(ok_btn)
+        btn_layout.addStretch()
+        layout.addLayout(btn_layout)
+
+        dialog.exec()
 
     def _show_shortcuts(self):
-        """Show keyboard shortcuts"""
-        QMessageBox.information(
-            self,
-            "Keyboard Shortcuts",
-            """<h3>View Controls</h3>
+        """Show keyboard shortcuts - uses ShortcutManager if available"""
+        if HAS_SHORTCUT_MANAGER and hasattr(self, 'shortcut_manager'):
+            # Generate shortcuts from manager
+            shortcuts_html = self.shortcut_manager.get_shortcuts_html()
+            content = f"""
+            <style>
+                table {{ border-collapse: collapse; width: 100%; }}
+                td {{ padding: 4px 8px; }}
+                td:first-child {{ font-weight: bold; white-space: nowrap; }}
+            </style>
+            {shortcuts_html}
+
+            <h3>Terminal Shortcuts</h3>
+            <table>
+            <tr><td>Ctrl+T</td><td>New Terminal Tab</td></tr>
+            <tr><td>Ctrl+W</td><td>Close Terminal Tab</td></tr>
+            <tr><td>Ctrl+Tab</td><td>Next Terminal Tab</td></tr>
+            <tr><td>Ctrl+Shift+Tab</td><td>Previous Terminal Tab</td></tr>
+            <tr><td>Tab</td><td>Tab completion</td></tr>
+            <tr><td>Ctrl+C</td><td>Interrupt (SIGINT)</td></tr>
+            <tr><td>Ctrl+D</td><td>EOF / Exit</td></tr>
+            <tr><td>Ctrl+Z</td><td>Suspend (SIGTSTP)</td></tr>
+            <tr><td>Ctrl+L</td><td>Clear screen</td></tr>
+            <tr><td>Ctrl+Shift+C</td><td>Copy selection</td></tr>
+            <tr><td>Ctrl+Shift+V</td><td>Paste</td></tr>
+            <tr><td>Shift+PageUp/Down</td><td>Scroll history</td></tr>
+            </table>
+            """
+        else:
+            # Fallback static content
+            content = """<h3>Quick Toggles (F-Keys)</h3>
+            <table>
+            <tr><td><b>F1</b></td><td>Toggle Browser</td></tr>
+            <tr><td><b>F2</b></td><td>Toggle File Browser</td></tr>
+            <tr><td><b>F3</b></td><td>Toggle Chat</td></tr>
+            <tr><td><b>F4</b></td><td>Toggle Terminal</td></tr>
+            <tr><td><b>F5</b></td><td>Lock/Unlock Screen</td></tr>
+            <tr><td>F11</td><td>Toggle Fullscreen</td></tr>
+            </table>
+
+            <h3>View Controls</h3>
             <table>
             <tr><td>Ctrl+B</td><td>Toggle File Browser</td></tr>
+            <tr><td>Ctrl+Shift+B</td><td>Toggle Browser</td></tr>
             <tr><td>Ctrl+Shift+C</td><td>Toggle Chat</td></tr>
-            <tr><td>Ctrl+Shift+T</td><td>Toggle Terminal</td></tr>
+            <tr><td>Ctrl+T</td><td>Toggle Terminal</td></tr>
             <tr><td>Ctrl+Shift+P</td><td>Toggle Desktop Panel</td></tr>
             <tr><td>Ctrl+Shift+F</td><td>Focus Mode (hide all)</td></tr>
             <tr><td>Ctrl+Shift+A</td><td>Show All Widgets</td></tr>
-            <tr><td>F11</td><td>Toggle Fullscreen</td></tr>
             </table>
 
             <h3>Navigation</h3>
@@ -1596,7 +3294,8 @@ CLI Agents: {len(self.cli_agents)}
             <tr><td>Alt+O</td><td>Launch OpenCode</td></tr>
             </table>
             """
-        )
+
+        QMessageBox.information(self, "Keyboard Shortcuts", content)
 
     # =========================================================================
     # File Menu Actions

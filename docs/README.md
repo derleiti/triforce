@@ -1,5 +1,23 @@
 # TriForce Documentation
 
+
+<!-- AILINUX_STATUS_START -->
+## Documentation map and production baseline
+
+Authoritative project documentation starts with:
+
+- `README.md` for the public overview.
+- `SERVER_DOCUMENTATION.md` for production operations.
+- `AGENTS.md` for agent workspace rules.
+- `docs/MCP_NODE_OPENCLAW.md` for OpenClaw/MCP node operation.
+- `docs/API_DOCUMENTATION.md` and `docs/api/REST.md` for API details.
+- `docs/ARCHITECTURE.md` and `docs/architecture/OVERVIEW.md` for architecture notes.
+
+Current baseline: branch `nova-nextlevel-20260603`, head `16f43b8a`, service `triforce.service`, API `https://api.ailinux.me`, default model `ollama/gemma4:12b`.
+
+Generated, cache, backup, vendor, and runtime folders are not authoritative documentation sources.
+<!-- AILINUX_STATUS_END -->
+
 ## Übersicht
 
 | Dokument | Beschreibung |

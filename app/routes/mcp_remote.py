@@ -1736,10 +1736,10 @@ async def mcp_discovery(request: Request):
     }
 
 
-@router.get("/mcp")
-@router.get("/mcp/")
-@router.get("/mcp/sse")
-@router.get("/sse")
+@router.get("/_legacy_mcp_disabled")
+@router.get("/_legacy_mcp_disabled/")
+@router.get("/_legacy_mcp_disabled/sse")
+@router.get("/_legacy_mcp_disabled/sse-alias")
 async def mcp_sse_endpoint(request: Request):
     """
     SSE endpoint for MCP communication.
@@ -1790,8 +1790,8 @@ async def mcp_sse_endpoint(request: Request):
 _mcp_sessions: Dict[str, datetime] = {}
 
 
-@router.post("/mcp")
-@router.post("/mcp/")
+@router.post("/_legacy_mcp_disabled")
+@router.post("/_legacy_mcp_disabled/")
 async def mcp_rpc_endpoint(request: Request):
     """
     JSON-RPC endpoint for MCP tool calls.

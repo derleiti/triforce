@@ -61,7 +61,7 @@ fi
 # Mirror paths - auto-detected from ./repo/mirror
 MIRROR_ROOT="${REPO_ROOT}/repo/mirror"
 GNUPG_HOME="${REPO_ROOT}/etc/gnupg"
-SIGNING_KEY_ID="2B320747C602A195"
+SIGNING_KEY_ID="59FAE19560F5E25B"
 
 # Runtime options
 SKIP_DOWNLOAD=0

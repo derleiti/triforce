@@ -20,7 +20,13 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import Qt
 # IMPORTANT: Import WebEngine BEFORE QApplication is created
-from PyQt6.QtWebEngineWidgets import QWebEngineView  # noqa: F401
+WEBENGINE_AVAILABLE = True
+try:
+    from PyQt6.QtWebEngineWidgets import QWebEngineView  # noqa: F401
+except Exception as e:
+    WEBENGINE_AVAILABLE = False
+    QWebEngineView = None  # type: ignore[assignment]
+    logging.getLogger("ailinux.main").warning("Qt WebEngine unavailable; browser widget will use fallback: %s", e)
 
 # Setup logging
 logging.basicConfig(

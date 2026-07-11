@@ -1,5 +1,17 @@
 # OpenClaw MCP Node Integration
 
+
+<!-- AILINUX_STATUS_START -->
+## Current OpenClaw / MCP node baseline
+
+- Gateway target: `ws://127.0.0.1:18789`.
+- User services: `ailinux-mcp-node.service` and `openclaw-gateway.service`.
+- Primary/default model route: `ollama/gemma4:12b`.
+- Validate with `openclaw doctor` or `openclaw`.
+- `openclaw primary: ...` is status text, not a shell command.
+- If OpenClaw reports stale or invalid plugin configuration, prefer `openclaw doctor --fix`, then re-check with `openclaw doctor`.
+<!-- AILINUX_STATUS_END -->
+
 This document describes the OpenClaw MCP Node bridge for TriForce.
 
 ## Architecture

@@ -58,7 +58,7 @@ def _headers(beta: str = None) -> dict:
 async def handle_anthropic_chat(params: Dict[str, Any]) -> Dict[str, Any]:
     """POST /v1/messages - Chat with Claude"""
     message = params.get("message")
-    model = params.get("model", "claude-sonnet-4-5-20250929")
+    model = params.get("model", "claude-sonnet-4-6")
     system = params.get("system")
     max_tokens = params.get("max_tokens", 4096)
     temperature = params.get("temperature", 1.0)
@@ -102,7 +102,7 @@ async def handle_anthropic_vision(params: Dict[str, Any]) -> Dict[str, Any]:
     image_url = params.get("image_url")
     image_base64 = params.get("image_base64")
     media_type = params.get("media_type", "image/jpeg")
-    model = params.get("model", "claude-sonnet-4-5-20250929")
+    model = params.get("model", "claude-sonnet-4-6")
     
     content = []
     if image_url:
@@ -126,7 +126,7 @@ async def handle_anthropic_vision(params: Dict[str, Any]) -> Dict[str, Any]:
 async def handle_anthropic_count_tokens(params: Dict[str, Any]) -> Dict[str, Any]:
     """POST /v1/messages/count_tokens - Count tokens before sending"""
     text = params.get("text")
-    model = params.get("model", "claude-sonnet-4-5-20250929")
+    model = params.get("model", "claude-sonnet-4-6")
     system = params.get("system")
     
     payload = {"model": model, "messages": [{"role": "user", "content": text}]}
@@ -309,7 +309,7 @@ ANTHROPIC_TOOLS = [
     {"name": "anthropic_chat", "description": "Chat with Claude AI. Supports system prompts, tool use, and multi-turn conversations",
      "inputSchema": {"type": "object", "properties": {
          "message": {"type": "string", "description": "Message to send"},
-         "model": {"type": "string", "default": "claude-sonnet-4-5-20250929", "description": "claude-opus-4-5, claude-sonnet-4-5, claude-haiku-4-5"},
+         "model": {"type": "string", "default": "claude-sonnet-4-6", "description": "claude-opus-4-8, claude-sonnet-4-6, claude-haiku-4-5"},
          "system": {"type": "string", "description": "System prompt"},
          "max_tokens": {"type": "integer", "default": 4096},
          "temperature": {"type": "number", "default": 1.0},
@@ -320,12 +320,12 @@ ANTHROPIC_TOOLS = [
     {"name": "anthropic_vision", "description": "Analyze images with Claude Vision (JPEG, PNG, GIF, WebP)",
      "inputSchema": {"type": "object", "properties": {
          "prompt": {"type": "string"}, "image_url": {"type": "string"}, "image_base64": {"type": "string"},
-         "media_type": {"type": "string", "default": "image/jpeg"}, "model": {"type": "string", "default": "claude-sonnet-4-5-20250929"}
+         "media_type": {"type": "string", "default": "image/jpeg"}, "model": {"type": "string", "default": "claude-sonnet-4-6"}
      }, "required": ["prompt"]}},
     
     {"name": "anthropic_count_tokens", "description": "Count tokens before sending to manage costs",
      "inputSchema": {"type": "object", "properties": {
-         "text": {"type": "string"}, "model": {"type": "string", "default": "claude-sonnet-4-5-20250929"},
+         "text": {"type": "string"}, "model": {"type": "string", "default": "claude-sonnet-4-6"},
          "system": {"type": "string"}
      }, "required": ["text"]}},
     
@@ -398,7 +398,7 @@ ANTHROPIC_HANDLERS = {
 async def handle_anthropic_thinking(params):
     """Extended Thinking mit sichtbarem Denkprozess"""
     message = params.get("message")
-    model = params.get("model", "claude-sonnet-4-5-20250929")
+    model = params.get("model", "claude-sonnet-4-6")
     budget = params.get("budget_tokens", 5000)
     
     async with httpx.AsyncClient(timeout=180.0) as client:
@@ -436,7 +436,7 @@ async def handle_anthropic_cite(params):
 async def handle_anthropic_compare(params):
     """Multi-Model-Vergleich"""
     msg = params.get("message")
-    models = params.get("models", ["claude-haiku-4-5-20251001", "claude-sonnet-4-5-20250929"])
+    models = params.get("models", ["claude-haiku-4-5-20251001", "claude-sonnet-4-6"])
     results = {}
     import time
     async with httpx.AsyncClient(timeout=120.0) as client:
@@ -455,7 +455,7 @@ async def handle_anthropic_compare(params):
 
 async def handle_anthropic_cost_estimate(params):
     """Kosten-Schätzung"""
-    text, model = params.get("text"), params.get("model", "claude-sonnet-4-5-20250929")
+    text, model = params.get("text"), params.get("model", "claude-sonnet-4-6")
     async with httpx.AsyncClient(timeout=30.0) as client:
         r = await client.post(f"{ANTHROPIC_API_URL}/messages/count_tokens", headers=_headers(),
             json={"model": model, "messages": [{"role": "user", "content": text}]})

@@ -16,6 +16,7 @@ from pathlib import Path
 from ..services.user_tiers import tier_service, UserTier
 from ..services.user_system.user_manager import user_manager
 from ..routes.client_auth import decode_jwt_token, CLIENT_REGISTRY
+from ..utils.admin_auth import require_admin, validate_allowed_paths
 
 logger = logging.getLogger("ailinux.client_mcp")
 
@@ -373,13 +374,13 @@ async def grant_file_access(
 
     Nur für Enterprise-Tier oder Admin-Clients
     """
-    if ctx["tier"] != UserTier.ENTERPRISE:
-        raise HTTPException(403, "Enterprise Tier erforderlich")
+    require_admin(ctx)
+    validated_paths = validate_allowed_paths(paths)
 
     # User für target_client finden
     # Format: {type}_{user_id}_{suffix}
     parts = target_client_id.split("_")
-    if len(parts) < 2:
+    if len(parts) < 3:
         raise HTTPException(400, "Ungültige Client-ID")
 
     user_id = parts[1]
@@ -391,17 +392,18 @@ async def grant_file_access(
     # Device finden und Berechtigung setzen
     for device in user.devices:
         if device.client_id == target_client_id:
-            device.allowed_paths = paths
+            device.allowed_paths = validated_paths
             device.allow_file_write = write_access
             user_manager._save_user(user)
 
-            logger.info(f"File access granted: {target_client_id} -> {paths} (write={write_access})")
+            logger.info(f"File access granted: {target_client_id} -> {validated_paths} (write={write_access})")
 
             return {
                 "success": True,
                 "client_id": target_client_id,
-                "allowed_paths": paths,
-                "write_access": write_access
+                "allowed_paths": validated_paths,
+                "write_access": write_access,
+                "granted_by": ctx.get("user_id"),
             }
 
     raise HTTPException(404, "Device nicht gefunden")
@@ -416,11 +418,10 @@ async def grant_bash_access(
     """
     Admin: Gewährt/entzieht Shell-Zugriff für einen Client
     """
-    if ctx["tier"] != UserTier.ENTERPRISE:
-        raise HTTPException(403, "Enterprise Tier erforderlich")
+    require_admin(ctx)
 
     parts = target_client_id.split("_")
-    if len(parts) < 2:
+    if len(parts) < 3:
         raise HTTPException(400, "Ungültige Client-ID")
 
     user_id = parts[1]
@@ -439,7 +440,8 @@ async def grant_bash_access(
             return {
                 "success": True,
                 "client_id": target_client_id,
-                "bash_access": enabled
+                "bash_access": enabled,
+                "granted_by": ctx.get("user_id"),
             }
 
     raise HTTPException(404, "Device nicht gefunden")

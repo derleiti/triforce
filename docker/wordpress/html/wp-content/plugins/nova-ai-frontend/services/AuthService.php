@@ -272,9 +272,19 @@ class AuthService {
     }
 
     private static function clear_session_cookie(): void {
-        $cookie_name = defined('NOVA_SESSION_COOKIE') ? NOVA_SESSION_COOKIE : 'nova_session';
-        if (isset($_COOKIE[$cookie_name])) {
+        $cookie_names = array_unique([
+            defined('NOVA_SESSION_COOKIE') ? NOVA_SESSION_COOKIE : 'nova_session',
+            'nova_session',
+            'ailinux_token',
+            'ailinux_logout',
+        ]);
+
+        foreach ($cookie_names as $cookie_name) {
+            if (!$cookie_name) {
+                continue;
+            }
             setcookie($cookie_name, '', time() - 3600, '/', '', is_ssl(), true);
+            setcookie($cookie_name, '', time() - 3600, '/', '.ailinux.me', is_ssl(), true);
             unset($_COOKIE[$cookie_name]);
         }
     }
@@ -396,6 +406,13 @@ HTML;
             'callback'            => [$this, 'api_logout'],
             'permission_callback' => '__return_true',
         ]);
+
+        register_rest_route('nova-ai/v1', '/auth/lost-password', [
+            'methods'             => 'POST',
+            'callback'            => [$this, 'api_lost_password'],
+            'permission_callback' => '__return_true',
+        ]);
+
 
         register_rest_route('nova-ai/v1', '/auth/profile', [
             'methods'             => 'POST',
@@ -1079,6 +1096,46 @@ HTML;
     }
 
     /**
+     * Request a WordPress password reset mail.
+     * Generic response avoids account enumeration.
+     */
+    public function api_lost_password(\WP_REST_Request $request): \WP_REST_Response {
+        $email = sanitize_email((string) $request->get_param('email'));
+
+        if (!is_email($email)) {
+            return new \WP_REST_Response([
+                'ok'      => false,
+                'error'   => 'invalid_email',
+                'message' => 'Bitte eine gültige E-Mail-Adresse eingeben.',
+            ], 400);
+        }
+
+        $user = get_user_by('email', $email);
+
+        if (!$user) {
+            return new \WP_REST_Response([
+                'ok'      => true,
+                'message' => 'Wenn ein Konto existiert, wurde eine E-Mail zum Zurücksetzen verschickt.',
+            ], 200);
+        }
+
+        $result = retrieve_password($user->user_login);
+
+        if (is_wp_error($result)) {
+            return new \WP_REST_Response([
+                'ok'      => false,
+                'error'   => 'mail_failed',
+                'message' => 'Reset-Mail konnte nicht versendet werden. Bitte später erneut versuchen.',
+            ], 500);
+        }
+
+        return new \WP_REST_Response([
+            'ok'      => true,
+            'message' => 'Wenn ein Konto existiert, wurde eine E-Mail zum Zurücksetzen verschickt.',
+        ], 200);
+    }
+
+    /**
      * GET /wp-json/nova-ai/v1/auth/wp-login?token=...&email=...&tier=...&redirect=...
      * Setzt WP-Auth-Cookie und redirectet — löst Cross-Domain SameSite Problem.
      * Browser navigiert direkt auf ailinux.me, daher Cookie korrekt gesetzt.
@@ -1114,8 +1171,11 @@ HTML;
         update_user_meta($user_id, 'nova_ailinux_email', $email);
         if ($client_id) update_user_meta($user_id, 'nova_client_id', $client_id);
 
+        // Always reset stale WP/auth cookies before issuing a fresh bridge login cookie.
+        wp_clear_auth_cookie();
+        self::clear_session_cookie();
         wp_set_current_user($user_id);
-        wp_set_auth_cookie($user_id, true);
+        wp_set_auth_cookie($user_id, true, is_ssl());
 
         $safe = (strpos($redirect, home_url()) === 0) ? $redirect : home_url('/');
         wp_redirect($safe);
