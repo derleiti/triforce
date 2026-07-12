@@ -215,3 +215,7 @@ docker/mailserver/
 
 /backups/
 *.backup-20*
+
+# Mirror-Update-Logs (nicht versionieren)
+docker/repository/log/*.log
+docker/repository/log/*.log.old
