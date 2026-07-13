@@ -1,135 +1,182 @@
-# Folge-Prompt (Stand 2026-07-13, nach der venv/Leak/Shop-Session)
+# Folge-Prompt — TriForce / AILinux (Stand 2026-07-13, 20:15)
 
-Kontext: Ich bin Markus (derleiti). TriForce laeuft auf Hetzner (Prod + Entwicklungsstufe),
-zombie-pc ist die lokale Maschine (10.10.0.2, WireGuard). Am 13.07.2026 wurde in einer
-langen Session der venv neu gebaut, ein oeffentliches Secret-Leck geschlossen und die
-LemonSqueezy-/Entitlement-Kette repariert.
+Ich bin Markus (derleiti). TriForce laeuft auf Hetzner (Prod + Entwicklungsstufe),
+zombie-pc ist die lokale Maschine (10.10.0.2, WireGuard).
 
-**Lies zuerst `docs/SESSION-2026-07-13.md` im Repo** - da steht alles Erledigte drin,
-inkl. Commits, Backups und Begruendungen. Diese Datei ist die Kurzfassung fuer den Rest.
+Am 13.07.2026 lief eine lange Session: venv neu gebaut, oeffentliches Secret-Leck
+geschlossen, LemonSqueezy-/Entitlement-Kette repariert.
+**Lies zuerst `docs/SESSION-2026-07-13.md`** — dort steht alles Erledigte mit
+Commits, Backups und Begruendungen.
 
 ---
 
-## ARBEITSREGELN (wichtig, aus Fehlern der letzten Session)
+## ARBEITSREGELN (aus konkreten Fehlern entstanden — bitte einhalten)
 
-1. **Der MCP-Server IST TriForce.** `systemctl stop/restart triforce` aus einer MCP-Shell
-   killt den eigenen Prozess (SIGTERM) und bricht die laufende Befehlskette ab.
-   Immer stattdessen:
-   `sudo systemd-run --on-active=5 --unit=tf-restart-$(date +%s) /bin/systemctl restart triforce`
-2. **Ursache vor Fix. Planung vor Code. Bild vor Detail.** Nicht raten, wenn pruefbar.
-3. **Vor jedem Eingriff ein Backup.** Zielordner: `~/triforce/.backups/`
-4. **Nichts loeschen, was ich nicht ausdruecklich freigegeben habe.** Kein `rm -rf`,
-   kein `git reset --hard`, kein `git stash drop`, kein `--delete`-rsync ohne Rueckfrage.
-5. **Meine uncommitteten Dateien sind meine Arbeit - nicht anfassen, nicht committen,
-   nicht wegstashen.** (Aktuell: `.gitignore`, `app/utils/system_log_collector.py`,
-   `scripts/tools/nova_log_monitor.py`, `scripts/rotate-proxy-token.sh`,
-   `scripts/tools/archive/`)
+1. **Der MCP-Server IST TriForce.** `systemctl stop/restart triforce` aus einer
+   MCP-Shell killt den eigenen Prozess (SIGTERM) und bricht die Befehlskette ab.
+   Immer: `sudo systemd-run --on-active=5 --unit=tf-restart-$(date +%s) /bin/systemctl restart triforce`
+2. **Ursache vor Fix. Planung vor Code.** Nicht raten, wenn pruefbar.
+3. **Backup vor jedem Eingriff** nach `~/triforce/.backups/`
+4. **Nichts loeschen ohne meine ausdrueckliche Freigabe.** Kein `rm -rf`,
+   kein `reset --hard`, kein `stash drop`, kein `stash pop`, kein `rsync --delete`.
+5. **Meine uncommitteten Dateien sind meine Arbeit** — nicht anfassen, nicht
+   committen, nicht wegstashen.
 6. **Erfolg messen, nicht annehmen.** HTTP 200 und `ok:true` beweisen nichts.
    Immer den tatsaechlich gespeicherten Endzustand pruefen.
-7. **Secrets niemals im Klartext ausgeben** - auch nicht in Debug-Output. Maskieren oder
-   Pruefsummen vergleichen.
-8. Ausgabe auf Deutsch, nummerierte Schritte bei Komplexem.
+   (Das Backend hat Kaeufe monatelang mit `ok:true` quittiert und weggeworfen.)
+7. **Secrets nie im Klartext ausgeben**, auch nicht im Debug-Output. Maskieren
+   oder Pruefsummen vergleichen.
+8. **Vor Aenderungen an WordPress/Shop: mu-plugins pruefen.** Sie werden zwangs-
+   geladen und ueberschreiben Plugin-Routen per `rest_pre_dispatch`.
+9. Deutsch, nummerierte Schritte bei Komplexem.
 
 ---
 
-## PRIORITAET 1 - SICHERHEIT (offen, dringend)
+## PRIORITAET 1 — SECRETS ROTIEREN (offen, dringend)
 
-**Alle 34 Secrets aus `config/triforce.env` rotieren.**
-Die Datei war bis 13.07. oeffentlich unter
-`https://ailinux.me/wp-content/plugins/nova-ai-frontend/config/triforce.env`
-mit HTTP 200 abrufbar (578 Zeilen, Last-Modified 17. Juni, Expositionsdauer unbekannt),
-zusaetzlich im Cloudflare-Cache. Das Leck ist geschlossen (Apache-Deny + Datei aus dem
-Webroot entfernt), aber die Werte gelten als kompromittiert.
+Alle 34 Secrets aus `config/triforce.env` gelten als kompromittiert. Die Datei war
+bis 13.07. oeffentlich abrufbar (HTTP 200, 578 Zeilen, Last-Modified 17. Juni,
+Expositionsdauer unbekannt), zusaetzlich im Cloudflare-Cache.
+Das Leck ist geschlossen — die Werte bleiben verbrannt.
 
 Reihenfolge:
-1. LemonSqueezy API-Key + Webhook-Secret (sonst: gefaelschte `order_created`-Events
-   -> Gratis-Lizenzen)
-2. `NOVA_AI_INTERNAL_KEY` - **muss identisch mit `INTERNAL_API_KEY` bleiben**, sonst
-   brechen alle `/v1/frontend/dashboard/*` mit 403
+1. LemonSqueezy API-Key + Webhook-Secret
+   (kompromittierter Webhook-Secret = gefaelschte `order_created`-Events = Gratis-Lizenzen)
+2. `NOVA_AI_INTERNAL_KEY` — **muss identisch mit `INTERNAL_API_KEY` bleiben**,
+   sonst 403 auf allen `/v1/frontend/dashboard/*`
 3. `NOVA_MCP_PASS`
-4. restliche Eintraege durchgehen
+4. Rest durchgehen
 
-Nach der Rotation: `docker compose up -d wordpress_fpm` + TriForce neu starten (Regel 1).
-
-Zusaetzlich pruefen: Sind ausser `triforce.env` weitere sensible Dateien im Webroot?
-`~/triforce/.backups/` enthaelt Secrets (chmod 600) - beim Aufraeumen daran denken.
+Danach: `docker compose up -d wordpress_fpm` + TriForce neu starten (Regel 1).
 
 ---
 
-## PRIORITAET 2 - COPA OCR GO-LIVE
+## PRIORITAET 2 — COPA OCR GO-LIVE
 
 Die Kette ist repariert und Ende-zu-Ende verifiziert:
-`Checkout (signierte Custom-URL mit wp_user_id) -> Webhook (HMAC-SHA256)
--> Mapping 970007 -> copa_ocr -> Account nova_entitlements {"copa_ocr": true}`
+`Checkout -> Webhook (HMAC-SHA256) -> Mapping 970007 -> copa_ocr -> Account {"copa_ocr": true}`
 
 Offen:
-- [ ] LemonSqueezy: Produkt steht auf `test_mode=1` -> auf Live umstellen, Live-API-Key holen
-      (Live- und Test-Keys sind verschieden)
-- [ ] `NOVA_LS_TEST_MODE=false` in `config/triforce.env`, dann `docker compose up -d wordpress_fpm`
-- [ ] Webhook-URL im LS-Dashboard eintragen:
+- [ ] LS-Produkt steht auf `test_mode=1` -> auf Live (Live-Keys sind andere Keys)
+- [ ] `NOVA_LS_TEST_MODE=false` in `config/triforce.env`
+- [ ] Webhook-URL im LS-Dashboard:
       `https://ailinux.me/wp-json/nova-ai/v1/payments/webhook/lemonsqueezy`
-- [ ] Echten Testkauf (LS-Testkarte), danach Account pruefen
-- [ ] Demo-Modus in Copa OCR abschalten
+- [ ] Echter Testkauf -> Account pruefen
+- [ ] Demo-Modus in Copa OCR aus
 
-Verifikationsbefehle stehen in `docs/SESSION-2026-07-13.md`.
+### ENTSCHEIDUNG offen: mu-plugin `ailinux-nova-checkout-override.php`
+
+Dieses mu-plugin kapert `/nova-ai/v1/shop/checkout` per `rest_pre_dispatch` und
+liefert den generischen **`buy_now_url` statt des Custom-Checkouts**. Es stammt vom
+29.06. und war offensichtlich ein Workaround fuer den `variant_id`-Bug — **der ist
+seit 13.07. gefixt** (Commit `cb64b9aa`), der Override also technisch ueberfluessig.
+
+Konsequenz heute: Der Kauf traegt **kein `wp_user_id`**. Die Zuordnung laeuft ueber
+`resolve_user_id($hint, $email)` -> Fallback `email_exists()`.
+**Das funktioniert nur, wenn die Zahlungs-E-Mail der Account-E-Mail entspricht.**
+Zahlt jemand mit anderer Adresse (PayPal, Firmenmail, Tippfehler): `user_id = 0`,
+Log-Warnung "Could not resolve WP user", **bezahlt ohne Lizenz**.
+
+Der Custom-Checkout ist geprueft nutzbar (URL liefert HTTP 200).
+Vorschlag: **nach** der Key-Rotation, noch im LS-Testmodus, den Override deaktivieren,
+einen Testkauf mit abweichender E-Mail durchfuehren und pruefen, ob das Entitlement
+trotzdem ankommt. Wenn ja -> Override endgueltig raus. **Nicht kurz vor dem Go-Live
+ungetestet umstellen.**
 
 ---
 
-## PRIORITAET 3 - ZOMBIE-PC GIT SORTIEREN (heikel, nichts ueberfahren)
+## PRIORITAET 3 — ZOMBIE-PC GIT SORTIEREN (heikel)
 
-Zustand: `ahead 6, behind 117`, **197 uncommittete Dateien**.
-- 157 davon sind **reine chmod-Mode-Changes** (Rauschen, entstanden durch den alten
-  `rsync -a --delete` des node-sync, der direkt ins Git-Arbeitsverzeichnis synchronisierte)
-- 55 Dateien mit echtem Inhalt (grosse Loeschungen alter `.bak`/`.REMOVED`-Leichen)
-- **8 untrackte Dateien mit echter Arbeit**: `mcp-auth-proxy.py`, `app/services/orcid.py`,
-  `scripts/tools/nova_forum_watchdog.py` u.a. - **diese zuerst sichern**
-- Ein Doppel-Commit: `ad181cc3` und `bed18f10`, identische Message
+`ahead 6, behind 117`, 197 uncommittete Dateien:
+- 157 reine chmod-Mode-Changes (Rauschen vom alten `rsync -a --delete` des node-sync,
+  der direkt ins Git-Arbeitsverzeichnis synchronisierte)
+- 55 mit echtem Inhalt (grosse Loeschungen alter `.bak`/`.REMOVED`-Leichen)
+- **8 untrackte Dateien mit echter Arbeit** (`mcp-auth-proxy.py`,
+  `app/services/orcid.py`, `scripts/tools/nova_forum_watchdog.py` u.a.) -> zuerst sichern
+- Doppel-Commit `ad181cc3` / `bed18f10` (identische Message)
 
-Der `triforce-node-sync.timer` ist auf zombie-pc bereits disabled. Beim Wiederaufsetzen:
-**nie mit `rsync --delete` in ein Git-Arbeitsverzeichnis.** Nodes brauchen ein Deploy-Ziel
+`triforce-node-sync.timer` ist bereits disabled. Beim Wiederaufsetzen: **nie mit
+`--delete` in ein Git-Arbeitsverzeichnis** — Nodes brauchen ein Deploy-Ziel
 (z.B. `/opt/triforce`), kein Dev-Checkout.
 
-Vorgehen: erst die 8 untrackten Dateien sichern, dann Mode-Changes vom Inhalt trennen,
-dann entscheiden. Kein `reset --hard`.
+Vorgehen: untrackte Dateien sichern -> Mode-Changes vom Inhalt trennen -> entscheiden.
+Kein `reset --hard`.
+
+**UNGEKLAERT:** Am 12.07. um 22:36/22:37 hat etwas auf zombie-pc `.env.example` und
+`app/mcp/tool_registry_unified.py` geschrieben. Der node-sync war zu dem Zeitpunkt
+seit 5 Wochen tot, kann es also nicht gewesen sein. Wenn ich (Markus) das nicht selbst
+war: herausfinden, was dort schreibt.
 
 ---
 
-## PRIORITAET 4 - KLEINERE BAUSTELLEN
+## PRIORITAET 4 — STASHES (4 Stueck, NICHT blind poppen)
 
-- [ ] Meine 4 uncommitteten Dateien auf Hetzner (Log-Baustelle vom 12.07.) durchsehen
-      und committen - **ich entscheide, was rein soll**
-- [ ] Stashes vom 19.06. pruefen und dann entsorgen:
-      - `stash@{2}`: Shop/Auth-Arbeit, 6 von 7 Dateien sind heute identisch im Repo,
-        die verlorene TEST_MODE-Zeile ist wiederhergestellt -> **kann weg**
-      - `stash@{1}`: 59 Dateien, u.a. `login/index.html` (1806 Zeilen) -> **vor dem
-        Loeschen durchsehen**
-- [ ] `app/routes/txt2img.py` importiert `comfy_client` - existiert nirgends im Repo.
-      Route ist tot (schon vor der Session). Entweder Modul nachliefern oder Route entfernen.
-- [ ] `.github/dependabot.yml`: `pytest*` in eine `groups`-Definition, sonst reisst der
-      naechste Major dieselbe Luecke wieder auf (pytest 9 vs. pytest-asyncio <9).
-- [ ] Federation: `Connection error to zombie-pc: [Errno 111] Connection refused` im Log.
-      Ursache: zombie-pc erreicht Hetzner per SSH nicht mehr (Key nicht mehr in
-      authorized_keys). Bewusst so oder reparieren? -> entscheiden.
-- [ ] `wp-config.php` ist gitignored (enthaelt Secrets, korrekt so), aber die heutigen
-      Aenderungen liegen nur auf der Platte. Backup: `~/triforce/.backups/`.
-      Ueberlegen: Secrets raus, Datei versionierbar machen?
-- [ ] `~/triforce/.venv.bak-*` und `.venv.old` auf zombie-pc aufraeumen, falls noch da
-- [ ] Aeltere TODOs: DMARC von `p=quarantine pct=25` auf `pct=100`, dann `p=reject`.
+- `stash@{0}` "compose wip" (11.07.): enthaelt exakt die compose-Reparatur, die am
+  13.07. vollstaendig umgesetzt wurde -> **redundant**. ACHTUNG: der Stash **loescht
+  nebenbei den Volume-Mount** `/var/www/update.ailinux.me`. Ein `pop` wuerde
+  update.ailinux.me aushaengen. -> pruefen, dann verwerfen.
+- `stash@{1}` (19.06., auto-stash): 59 Dateien, u.a. `login/index.html` (1806 Zeilen).
+  -> **vor dem Loeschen durchsehen**
+- `stash@{2}` (19.06., auto-stash): Shop/Auth-Arbeit. 6 von 7 Dateien sind heute
+  identisch im Repo, die verlorene TEST_MODE-Zeile ist wiederhergestellt. -> **kann weg**
+- `stash@{3}` "wip-before-rebase" (05.06.): 11 Dateien, u.a.
+  `docker/wordpress/search-root/index.html` (2221 Zeilen geaendert) + vhost-search.conf
+  -> **durchsehen, das ist echte Arbeit**
+
+`rescue/master-failed-merge-20260619-174248`: **0 eigene Commits** -> nichts verloren,
+Branch kann geloescht werden.
+
+---
+
+## PRIORITAET 5 — KLEINERES
+
+- [ ] **`wp-config.php` enthaelt Secrets im Klartext** (`NOVA_AI_INTERNAL_KEY`,
+      `NOVA_MCP_PASS` hartkodiert). Datei ist gitignored — korrekt, aber die
+      Aenderungen liegen nur auf Platte. Besser: Werte per `getenv()` aus der
+      Container-Env ziehen (wie `NOVA_LS_*`), dann ist die Datei secret-frei und
+      versionierbar.
+- [ ] 4 uncommittete Dateien auf Hetzner (Log-Baustelle 12.07., 22:08) durchsehen
+      und committen — **ich entscheide, was rein soll**
+- [ ] 7 verbliebene `.bak`-Dateien im Webroot (themes/, mu-plugins/). Alle liefern
+      403, sollten aber trotzdem raus — Deny-Regel ist eine Fehlkonfiguration
+      vom Wegfallen entfernt. (31 andere wurden am 13.07. bereits nach
+      `~/triforce/.backups/webroot-bak-cleanup-*` verschoben, darunter ein
+      `wp-config.php.bak.*` mit Secrets.)
+- [ ] `app/routes/txt2img.py` importiert `comfy_client` — existiert nirgends im Repo.
+      Route ist tot (schon vor der Session). Modul nachliefern oder Route entfernen.
+- [ ] `.github/dependabot.yml`: `pytest*` gruppieren (pytest 9 vs. pytest-asyncio <9).
+- [ ] Federation: `Connection error to zombie-pc: [Errno 111] Connection refused`.
+      zombie-pc erreicht Hetzner per SSH nicht mehr (Key nicht in authorized_keys).
+      Bewusst so oder reparieren? -> entscheiden.
+- [ ] `~/triforce/.backups/` enthaelt Secrets (chmod 600) — beim Aufraeumen daran denken.
+- [ ] DMARC: `pct=25` -> `100` -> `p=reject`.
       Backup-Server (5.104.107.103) laeuft nur bis ~April 2027 -> Migration planen.
 
 ---
 
-## WAS BEREITS ERLEDIGT IST (nicht nochmal machen)
+## BEREITS ERLEDIGT (nicht wiederholen)
 
-- venv Hetzner: 5.9 GB / 218 Pakete -> 648 MB / 114 Pakete, 178 Tests gruen
-  (torch/CUDA/transformers/chromadb/crawlee/python-jose/passlib/tenacity raus -
-  alle ungenutzt oder lazy hinter try/except)
-- venv zombie-pc: neu gebaut, `pydantic>=2.13` (alter Pin 2.11.10 hatte kein cp314-Wheel)
-- `requirements.txt`: `a` (Tippfehler) raus, `aiofiles`/`fakeredis`/`requests`/`PyYAML`/
-  `cryptography`/`rich`/`textual`/`orjson` ergaenzt (wurden hart importiert, nie deklariert)
-- Secret-Leck geschlossen: Apache-Deny-Snippet, CF-Cache gepurgt, Dateien aus dem Webroot
-- Auto-Update auf Hetzner strukturell aus (`/etc/systemd/system-preset/10-triforce-no-autoupdate.preset`)
-- node-sync auf zombie-pc disabled (war seit 05.06. defekt, 10.356 lautlose Fehlversuche)
-- Shop/Entitlements: 3 Brueche repariert (fehlender Auth-Header + `blocking=false`;
-  `INTERNAL_API_KEY` fehlte in `_allowed_secrets()`; `UserUpsertPayload` hatte kein Feld
-  `extra` -> pydantic verwarf Kaeufe still). Commits `c1278305`, `cb64b9aa`.
+- **venv Hetzner**: 5.9 GB / 218 Pakete -> 648 MB / 114 Pakete, 178 Tests gruen.
+  Raus: torch, CUDA, transformers, sentence-transformers, onnxruntime, chromadb,
+  llama-index, crawlee, python-jose, passlib, tenacity (ungenutzt oder lazy hinter
+  try/except). Rein: aiofiles, requests, PyYAML, cryptography, rich, textual, orjson,
+  fakeredis (wurden hart importiert, waren nie deklariert).
+- **venv zombie-pc** neu gebaut (`pydantic>=2.13`; alter Pin 2.11.10 hatte kein
+  cp314-Wheel -> Rust-Build -> PyO3 kann kein Python 3.14).
+- **requirements.txt**: Zeile `a` entfernt (Tippfehler aus Merge-Resolve, zog ein
+  fremdes PyPI-Paket), pytest-asyncio 1.2.0 -> 1.3.0.
+- **Secret-Leck geschlossen**: Apache-Deny-Snippet (`AllowOverride` ist aus, .htaccess
+  greift nicht), Cloudflare-Cache gepurgt, 34 sensible Dateien aus dem Webroot entfernt.
+  ACME-Challenge geprueft: funktioniert weiter (Certs gueltig bis 04.09.).
+- **Auto-Update Hetzner strukturell aus**
+  (`/etc/systemd/system-preset/10-triforce-no-autoupdate.preset`). Am 19.06. hatte
+  `auto-stash` + `hard reset` uncommittete Arbeit weggeraeumt.
+- **node-sync zombie-pc disabled** (seit 05.06. defekt, 10.356 lautlose Fehlversuche
+  mit `exit 0`).
+- **Shop/Entitlements repariert** (Commits `c1278305`, `cb64b9aa`):
+  fehlender Auth-Header + `blocking=false` -> 401 unsichtbar;
+  `INTERNAL_API_KEY` fehlte in `_allowed_secrets()`;
+  `UserUpsertPayload` hatte kein Feld `extra` -> pydantic verwarf Kaeufe still;
+  `ShopService`: Produkt-ID aus `attributes.product_id` statt
+  `relationships.product.data.id` (LS liefert dort nur `.links`).
+  Auth am Endpunkt verifiziert: 401 ohne Key, 401 mit falschem Key.
