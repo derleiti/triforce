@@ -64,7 +64,13 @@ class ShopService {
             if (($included['type'] ?? '') !== 'variants') {
                 continue;
             }
-            $pid = $included['relationships']['product']['data']['id'] ?? '';
+            // LemonSqueezy liefert bei included-Varianten nur relationships.product.links,
+            // keinen Resource-Identifier (.data.id). Die Produkt-ID steht in attributes.product_id.
+            $pid = (string) (
+                $included['relationships']['product']['data']['id']
+                ?? $included['attributes']['product_id']
+                ?? ''
+            );
             if ($pid && !isset($variant_map[$pid])) {
                 $variant_map[$pid] = $included['id'];
             }

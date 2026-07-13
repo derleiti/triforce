@@ -77,8 +77,17 @@ class EntitlementsService {
 
         $ents = self::get_entitlements($user_id);
 
-        wp_remote_post($endpoint . '/v1/users/entitlements', [
-            'headers'  => ['Content-Type' => 'application/json'],
+        // TriForce /v1/users/entitlements verlangt einen Schluessel (X-Internal-Key,
+        // X-Nova-Webhook-Secret oder Bearer). Fehlte er, antwortete das Backend mit 401 -
+        // und wegen 'blocking' => false hat WordPress das nie gesehen. Ergebnis: Kauf stand
+        // in user_meta, kam aber nie in TriForce an.
+        $headers = ['Content-Type' => 'application/json'];
+        if (defined('NOVA_AI_INTERNAL_KEY') && NOVA_AI_INTERNAL_KEY !== '') {
+            $headers['X-Internal-Key'] = NOVA_AI_INTERNAL_KEY;
+        }
+
+        $response = wp_remote_post($endpoint . '/v1/users/entitlements', [
+            'headers'  => $headers,
             'body'     => wp_json_encode([
                 'email'  => $user->user_email,
                 'tier'   => $ents['tier'],
@@ -86,8 +95,17 @@ class EntitlementsService {
                 'source' => 'wordpress',
             ]),
             'timeout'  => 8,
-            'blocking' => false,
+            'blocking' => true,
         ]);
+
+        if (is_wp_error($response)) {
+            error_log('[nova] entitlement-sync fehlgeschlagen: ' . $response->get_error_message());
+            return;
+        }
+        $code = wp_remote_retrieve_response_code($response);
+        if ($code < 200 || $code >= 300) {
+            error_log(sprintf('[nova] entitlement-sync HTTP %s fuer user %d', $code, $user_id));
+        }
     }
 
     /**
