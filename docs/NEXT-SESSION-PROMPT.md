@@ -1,12 +1,17 @@
-# Folge-Prompt — TriForce / AILinux (Stand 2026-07-13, 20:15)
+# Folge-Prompt — TriForce / AILinux (Stand 2026-07-14, 18:40)
 
 Ich bin Markus (derleiti). TriForce laeuft auf Hetzner (Prod + Entwicklungsstufe),
 zombie-pc ist die lokale Maschine (10.10.0.2, WireGuard).
 
 Am 13.07.2026 lief eine lange Session: venv neu gebaut, oeffentliches Secret-Leck
 geschlossen, LemonSqueezy-/Entitlement-Kette repariert.
-**Lies zuerst `docs/SESSION-2026-07-13.md`** — dort steht alles Erledigte mit
-Commits, Backups und Begruendungen.
+Am 14.07.2026 wurden drei Regressionen daraus geschlossen (uvloop-Verlust,
+ImportError im Gemini-Key-Resolver, kaputte dependabot.yml).
+**Lies zuerst `docs/SESSION-2026-07-13.md` und `docs/SESSION-2026-07-14.md`** —
+dort steht alles Erledigte mit Commits, Backups und Begruendungen.
+
+> **Offen und wichtig:** Der Restart, der uvloop scharf schaltet, steht noch aus.
+> Regel 1 beachten — niemals `systemctl restart triforce` direkt aus einer MCP-Shell.
 
 ---
 
@@ -45,7 +50,9 @@ Reihenfolge:
 2. `NOVA_AI_INTERNAL_KEY` — **muss identisch mit `INTERNAL_API_KEY` bleiben**,
    sonst 403 auf allen `/v1/frontend/dashboard/*`
 3. `NOVA_MCP_PASS`
-4. Rest durchgehen
+4. `OLLAMA_API_KEY` — stand am 14.07. im Klartext in einem Chat-Log
+   (kam aus `/etc/systemd/system/ollama.service.d/api-key.conf`)
+5. Rest durchgehen
 
 Danach: `docker compose up -d wordpress_fpm` + TriForce neu starten (Regel 1).
 
@@ -130,29 +137,50 @@ Branch kann geloescht werden.
 
 ## PRIORITAET 5 — KLEINERES
 
+### Erledigt am 14.07. (nicht wiederholen)
+- [x] `.github/dependabot.yml` — stand mit `package-ecosystem: ""` da (unausgefuellte
+      GitHub-Vorlage, ungueltig). Neu: pip + github-actions, Gruppen fuer pytest/server/linters.
+- [x] uvloop/httptools/watchfiles waren seit dem 13.07. **deinstalliert** — `google-antigravity`
+      fordert nacktes `uvicorn` und hat die `[standard]`-Extras verdraengt. Wiederhergestellt,
+      requirements.txt haelt jetzt `uvicorn[standard]>=0.51` fest.
+- [x] `resolve_gemini_api_key()` warf `ImportError` (`from ..config import settings` —
+      existiert nicht, nur `get_settings()`). Jede Gemini-Vision-Anfrage crashte damit.
+
+### Offen
+- [ ] **Vault ist gesperrt** (`vault_keys` → "Vault is locked"). Deshalb loest
+      `GEMINI_API_KEY` **nirgends** auf: nicht in `.env`, nicht in `config/triforce.env`,
+      nicht in der Prozess-Env, kein `.secrets.json`. -> Vault entsperren oder Key in die Env.
+      Das ist die zweite Haelfte der Gemini-401s.
+- [ ] **`prometheus_fastapi_instrumentator` fehlt** im venv. `app/main.py:28` importiert es
+      hinter `try/except` -> Metriken sind still aus. Nachziehen oder bewusst rauswerfen.
+- [ ] **Drei Tool-Registries** (v3/v4/v5) laufen laut Chat vom 13.07. parallel, die SSE-Route
+      lieferte 145 Tools aus unklarer vierter Quelle. Noch nicht verifiziert.
 - [ ] **`wp-config.php` enthaelt Secrets im Klartext** (`NOVA_AI_INTERNAL_KEY`,
       `NOVA_MCP_PASS` hartkodiert). Datei ist gitignored — korrekt, aber die
       Aenderungen liegen nur auf Platte. Besser: Werte per `getenv()` aus der
-      Container-Env ziehen (wie `NOVA_LS_*`), dann ist die Datei secret-frei und
-      versionierbar.
+      Container-Env ziehen (wie `NOVA_LS_*`), dann ist die Datei secret-frei.
 - [ ] 4 uncommittete Dateien auf Hetzner (Log-Baustelle 12.07., 22:08) durchsehen
-      und committen — **ich entscheide, was rein soll**
-- [ ] 7 verbliebene `.bak`-Dateien im Webroot (themes/, mu-plugins/). Alle liefern
-      403, sollten aber trotzdem raus — Deny-Regel ist eine Fehlkonfiguration
-      vom Wegfallen entfernt. (31 andere wurden am 13.07. bereits nach
-      `~/triforce/.backups/webroot-bak-cleanup-*` verschoben, darunter ein
-      `wp-config.php.bak.*` mit Secrets.)
-- [ ] `app/routes/txt2img.py` importiert `comfy_client` — existiert nirgends im Repo.
-      Route ist tot (schon vor der Session). Modul nachliefern oder Route entfernen.
-- [ ] `.github/dependabot.yml`: `pytest*` gruppieren (pytest 9 vs. pytest-asyncio <9).
+      und committen — **Markus entscheidet, was rein soll**. Dazu neu: untrackter
+      Ordner `scripts/tools/archive/` mit `fix-mcp-access.sh` (11.07.).
+- [ ] 7 verbliebene `.bak`-Dateien im Webroot (themes/, mu-plugins/). Alle liefern 403,
+      sollten aber trotzdem raus — die Deny-Regel ist eine Fehlkonfiguration vom
+      Wegfallen entfernt.
+- [ ] `app/routes/txt2img.py` importiert `comfy_client` — existiert nicht.
+      **Geprueft am 14.07.: die Route ist in `main.py` nirgends registriert**, der Import
+      laeuft nie, der Code ist tot und harmlos. Entfernen oder Modul nachliefern —
+      Entscheidung offen, kein Zeitdruck.
+- [ ] `hardware_accel.get_uvicorn_config()` meldet hart `loop="uvloop"` / `http="httptools"`,
+      obwohl die Werte nie an uvicorn gehen (nur `to_dict()` liest sie). Kosmetik, aber
+      irrefuehrend — die Diagnose hat am 13.07. genau deshalb daneben gezeigt.
+- [ ] **Ollama:** laeuft auf beiden Nodes korrekt (0.0.0.0:11434, enabled). Aber die Unit
+      haengt an `WantedBy=default.target` statt `multi-user.target` — bricht, sobald
+      jemand `set-default multi-user` setzt. Port **11435 (IPEX-LLM / Intel iGPU) ist tot** (HTTP 000).
 - [ ] Federation: `Connection error to zombie-pc: [Errno 111] Connection refused`.
       zombie-pc erreicht Hetzner per SSH nicht mehr (Key nicht in authorized_keys).
       Bewusst so oder reparieren? -> entscheiden.
 - [ ] `~/triforce/.backups/` enthaelt Secrets (chmod 600) — beim Aufraeumen daran denken.
 - [ ] DMARC: `pct=25` -> `100` -> `p=reject`.
       Backup-Server (5.104.107.103) laeuft nur bis ~April 2027 -> Migration planen.
-
----
 
 ## BEREITS ERLEDIGT (nicht wiederholen)
 

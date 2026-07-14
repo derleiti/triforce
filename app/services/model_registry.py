@@ -1442,9 +1442,15 @@ registry = ModelRegistry()
 
 
 def resolve_gemini_api_key() -> str | None:
-    """Resolve Gemini API key: settings.gemini_api_key → GEMINI_API_KEY env → GOOGLE_API_KEY env."""
+    """Resolve Gemini API key: settings.gemini_api_key → GEMINI_API_KEY env → GOOGLE_API_KEY env.
+
+    app.config exposes get_settings() only — there is no module-level `settings`.
+    The previous `from ..config import settings` raised ImportError at call time,
+    which broke every Gemini vision request (vision.py:154).
+    """
     import os
-    from ..config import settings
+    from ..config import get_settings
+    settings = get_settings()
     return (
         getattr(settings, "gemini_api_key", None)
         or os.getenv("GEMINI_API_KEY")
