@@ -94,6 +94,8 @@ IGNORE_PATTERNS = [
     r"systemd\[1\]: nova-log-monitor.*: Deactivated",
     r"drkonqi-coredump-launcher",  # KDE Desktop Noise — kein Server-Event
     r"mcp\.notifications.*(NOTIFY|EVENT|DISPATCH)",  # Eigene Notification-Events nicht rekursiv alarmieren
+    r"nova-log-monitor\[",             # Globales Journal darf den Monitor nicht selbst erneut melden
+    r"mcp\.tools.*TOOL_CALL\s*\|.*\|\s*OK\s*\|",  # Erfolgreiche Tool-Ergebnisse können eingebetteten ERROR-Text enthalten
     r"\|(NOTIFY|EVENT|DISPATCH) \|",                # Notification- und Dispatch-Log-Zeilen generell filtern
     r"AUTH_BYPASS",                  # Interne MCP-Auth — kein Sicherheitsproblem
     r"trusted_internal_bypass",      # Doppel-Filter AUTH_BYPASS

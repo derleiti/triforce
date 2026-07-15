@@ -8,6 +8,7 @@ from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, Header, HTTPException, Request
 from pydantic import BaseModel, EmailStr, Field
+from app.routes.client_auth import normalize_entitlements
 
 
 router = APIRouter()
@@ -18,6 +19,10 @@ USERS_FILE = Path(os.getenv("TRIFORCE_USERS_FILE", "config/users.json"))
 
 def _allowed_secrets() -> set[str]:
     keys = [
+        # INTERNAL_API_KEY ist der kanonische Schluessel zwischen WordPress und TriForce
+        # (WP: NOVA_AI_INTERNAL_KEY == TF: INTERNAL_API_KEY). Er fehlte hier, weshalb der
+        # Entitlement-Sync aus WordPress dauerhaft mit 401 abgewiesen wurde.
+        "INTERNAL_API_KEY",
         "NOVA_AI_INTERNAL_KEY",
         "WEBHOOK_SECRET",
         "TRIFORCE_ADMIN_SECRET",
@@ -87,6 +92,10 @@ class UserUpsertPayload(BaseModel):
     client_id: Optional[str] = None
     nova_entitlements: Dict[str, bool] = Field(default_factory=dict)
     entitlements: Dict[str, bool] = Field(default_factory=dict)
+    # WordPress (EntitlementsService::sync_to_backend) schickt gekaufte Produkte als
+    # Liste roher LemonSqueezy-Produkt-IDs, z.B. ["970007"]. Ohne dieses Feld hat
+    # pydantic sie stillschweigend verworfen -> Kauf kam nie im Account an.
+    extra: Any = None
 
 
 def _merge_user(payload: UserUpsertPayload) -> Dict[str, Any]:
@@ -106,6 +115,11 @@ def _merge_user(payload: UserUpsertPayload) -> Dict[str, Any]:
 
     entitlements.update({k: bool(v) for k, v in payload.entitlements.items()})
     entitlements.update({k: bool(v) for k, v in payload.nova_entitlements.items()})
+
+    # Rohe Produkt-IDs/Slugs aus 'extra' auf kanonische Schluessel abbilden
+    # ("970007" -> "copa_ocr", "Copa OCR" -> "copa_ocr", ...)
+    if payload.extra:
+        entitlements.update(normalize_entitlements(payload.extra))
 
     billing = payload.billing
     if billing is None:

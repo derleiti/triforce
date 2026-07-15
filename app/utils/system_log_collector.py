@@ -19,6 +19,7 @@ Provides:
 import asyncio
 import logging
 import subprocess
+import shutil
 import os
 import re
 from datetime import datetime, timezone
@@ -277,17 +278,18 @@ class SystemLogCollector:
         """Collect GPU-related logs (NVIDIA, AMD)"""
         gpu_info = []
 
-        # Try nvidia-smi
-        nvidia_output = await self._run_command(["nvidia-smi", "-q"])
-        if nvidia_output:
-            gpu_info.append("=== NVIDIA GPU ===\n")
-            gpu_info.append(nvidia_output)
+        # Probe only tools that are installed; absent vendor utilities are normal.
+        if shutil.which("nvidia-smi"):
+            nvidia_output = await self._run_command(["nvidia-smi", "-q"])
+            if nvidia_output:
+                gpu_info.append("=== NVIDIA GPU ===\n")
+                gpu_info.append(nvidia_output)
 
-        # Try rocm-smi for AMD
-        amd_output = await self._run_command(["rocm-smi"])
-        if amd_output:
-            gpu_info.append("\n=== AMD GPU (ROCm) ===\n")
-            gpu_info.append(amd_output)
+        if shutil.which("rocm-smi"):
+            amd_output = await self._run_command(["rocm-smi"])
+            if amd_output:
+                gpu_info.append("\n=== AMD GPU (ROCm) ===\n")
+                gpu_info.append(amd_output)
 
         if gpu_info:
             output_file = KERNEL_LOG_DIR / "gpu.log"
