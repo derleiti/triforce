@@ -14,12 +14,12 @@
 setuptools<82
 
 # Core Framework
-fastapi==0.118.0
+fastapi==0.139.0
 # [standard] = uvloop + httptools + watchfiles. NICHT auf nacktes "uvicorn" reduzieren --
 # google-antigravity fordert uvicorn ohne Extras und wirft uvloop/httptools sonst raus (2026-07-13).
 uvicorn[standard]>=0.51
-pydantic>=2.13,<3
-pydantic-settings>=2.11,<3
+pydantic>=2.13.4,<3
+pydantic-settings>=2.14.2,<3
 
 # HTTP Clients & Async
 httpx[http2]==0.28.1
@@ -38,7 +38,7 @@ openai==2.1.0
 mistralai==1.9.11
 
 # Data Processing & Validation
-python-multipart==0.0.31   # FastAPI Form()/UploadFile
+python-multipart==0.0.32   # FastAPI Form()/UploadFile
 email-validator==2.3.0     # pydantic EmailStr
 Pillow==12.2.0
 PyYAML>=6.0.2,<7
@@ -72,9 +72,9 @@ pytest-mock==3.15.1
 fakeredis>=2.26
 
 # Code Quality
-ruff==0.13.3
-black==26.3.1
-mypy==1.18.2
+ruff==0.15.21
+black==26.5.1
+mypy==2.3.0
 # Antigravity-IDE-SDK (Dev-Tooling, vom Server nicht importiert).
 # Achtung: zieht "uvicorn" ohne Extras -> immer zusammen mit uvicorn[standard] oben installieren.
 google-antigravity==0.1.6
