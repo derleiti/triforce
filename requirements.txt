@@ -1,58 +1,80 @@
 # ========================================
-# AILinux AI Server Backend - Dependencies
-# Cutting-edge stable versions (2025)
+# TriForce Backend - Dependencies
+# Python 3.14 | Stand: 2026-07
+#
+# Regeln:
+#  - Nur was der Code auch wirklich importiert (AST-verifiziert).
+#  - Optionale Features (torch, transformers, onnxruntime, llama-cpp,
+#    sentence-transformers) sind in app/services/compute_backend.py
+#    hinter try/except mit Fallback -> bewusst NICHT hier.
+#    Bei Bedarf: requirements-ml.txt
 # ========================================
 
-# Core Framework - Latest Stable (FastAPI 0.118 available!)
-fastapi==0.118.0
-uvicorn[standard]==0.37.0
-pydantic==2.11.10
-pydantic-settings==2.11.0
+# Build
+setuptools<82
+
+# Core Framework
+fastapi==0.139.0
+# [standard] = uvloop + httptools + watchfiles. NICHT auf nacktes "uvicorn" reduzieren --
+# google-antigravity fordert uvicorn ohne Extras und wirft uvloop/httptools sonst raus (2026-07-13).
+uvicorn[standard]>=0.51
+pydantic>=2.13.4,<3
+pydantic-settings>=2.14.2,<3
 
 # HTTP Clients & Async
 httpx[http2]==0.28.1
-aiohttp==3.14.0
+aiohttp==3.14.1
+aiofiles==25.1.0
+requests>=2.32,<3
 
 # Rate Limiting & Caching
 fastapi-limiter==0.1.6
 redis==6.4.0
 
-# AI Provider SDKs (cutting-edge)
+# AI Provider SDKs
 google-generativeai==0.8.5
 anthropic==0.69.0
 openai==2.1.0
-mistralai==1.9.11  # Latest stable (Dec 2024)
+mistralai==1.9.11
 
 # Data Processing & Validation
-python-multipart==0.0.27
-email-validator==2.3.0
+python-multipart==0.0.32   # FastAPI Form()/UploadFile
+email-validator==2.3.0     # pydantic EmailStr
 Pillow==12.2.0
+PyYAML>=6.0.2,<7
+orjson>=3.10
 
-# Testing & Development
-pytest==9.0.3
-pytest-asyncio==1.2.0
-pytest-cov==7.0.0
-pytest-mock==3.15.1
-
-# Code Quality & Linting
-ruff==0.13.3
-black==26.3.1
-mypy==1.18.2
-
-# Optional: Performance & Monitoring
-psutil==7.1.0
-prometheus-client==0.23.1
-
-# Crawler dependencies
+# Crawler / Scraping
 playwright>=1.55.0
-crawlee>=1.0.0
 beautifulsoup4>=4.14.2
 python-dateutil==2.9.0.post0
 rank-bm25>=0.2.2
 jsonlines>=4.0.0
-tenacity==9.1.2
 
 # Security & Auth
-python-jose[cryptography]==3.5.0
-passlib[bcrypt]==1.7.4
+PyJWT>=2.8.0
+cryptography>=44        # app/services/api_vault.py
 websockets>=12.0
+
+# CLI / TUI
+rich>=13                # app/cli/tristar_tui.py
+textual>=1.0            # app/cli/tristar_tui.py
+
+# Monitoring
+psutil==7.1.0
+prometheus-client==0.23.1
+
+# Testing
+pytest==9.1.1
+pytest-asyncio==1.4.0
+pytest-cov==7.1.0
+pytest-mock==3.15.1
+fakeredis>=2.26
+
+# Code Quality
+ruff==0.15.21
+black==26.5.1
+mypy==2.3.0
+# Antigravity-IDE-SDK (Dev-Tooling, vom Server nicht importiert).
+# Achtung: zieht "uvicorn" ohne Extras -> immer zusammen mit uvicorn[standard] oben installieren.
+google-antigravity==0.1.6

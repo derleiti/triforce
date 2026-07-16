@@ -336,13 +336,13 @@ $uid = 'nova-shop-' . $instance_count;
 
             <div class="ns-card-footer">
                 <?php echo $price_label; ?>
-                <button class="ns-buy-btn"
+                <button class="ns-buy-btn" type="button"
                         data-product-id="<?php echo esc_attr($product['id']); ?>"
-                        data-buy-url="<?php echo esc_url($product['buy_now_url']); ?>"
+                        data-variant-id="<?php echo esc_attr($product['variant_id']); ?>"
                         data-checkout-api="<?php echo esc_url($shop_data['checkout_url']); ?>"
                         data-nonce="<?php echo esc_attr($shop_data['checkout_nonce']); ?>">
                     <span class="ns-spinner"></span>
-                    <span class="ns-btn-label">Jetzt kaufen</span>
+                    <span class="ns-btn-label">Buy now</span>
                 </button>
             </div>
         </div>
@@ -361,15 +361,15 @@ $uid = 'nova-shop-' . $instance_count;
     if (!wrapper) return;
 
     wrapper.querySelectorAll('.ns-buy-btn').forEach(function(btn){
-        btn.addEventListener('click', function(){
+        btn.addEventListener('click', function(event){
+            event.preventDefault();
+            event.stopPropagation();
             var productId = btn.dataset.productId;
-            var buyUrl    = btn.dataset.buyUrl;
             var apiUrl    = btn.dataset.checkoutApi;
             var nonce     = btn.dataset.nonce;
 
-            // Immediate fallback if no API configured
             if (!apiUrl) {
-                if (buyUrl) window.location.href = buyUrl;
+                alert('Checkout is not ready yet. Please try again later.');
                 return;
             }
 
@@ -388,8 +388,6 @@ $uid = 'nova-shop-' . $instance_count;
             .then(function(data){
                 if (data.url) {
                     window.location.href = data.url;
-                } else if (buyUrl) {
-                    window.location.href = buyUrl;
                 } else {
                     alert('Checkout-URL konnte nicht geladen werden.');
                     btn.classList.remove('ns-loading');
@@ -397,13 +395,9 @@ $uid = 'nova-shop-' . $instance_count;
                 }
             })
             .catch(function(){
-                // Network error → fall back to buy_now_url
-                if (buyUrl) {
-                    window.location.href = buyUrl;
-                } else {
-                    btn.classList.remove('ns-loading');
-                    btn.disabled = false;
-                }
+                btn.classList.remove('ns-loading');
+                btn.disabled = false;
+                alert('Checkout could not be loaded. Please try again later.');
             });
         });
     });

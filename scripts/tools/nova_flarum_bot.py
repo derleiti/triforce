@@ -27,13 +27,23 @@ def _flarum_ip():
         return r
     except Exception:
         return "172.19.0.4"
-FLARUM_API = f"http://{_flarum_ip()}:8888/api"
-FLARUM_TOKEN    = "b799c9a01a24b3eb22c2b1a92cc21f622c6f6f24"
-NOVA_USER_ID    = 4
+# FIX 2026-07-11: Bot laeuft auf dem HOST, nicht im Docker-Netz -> Container-IP:8888
+# ist von hier nicht routbar. Flarum ist auf Host-Port 9080 gemappt (9080:8888).
+# ENV FLARUM_API hat Vorrang, Default = Host-Port. _flarum_ip() bleibt als Fallback.
+FLARUM_API = os.environ.get("FLARUM_API", "http://127.0.0.1:9080/api")
+FLARUM_TOKEN = os.environ.get("FLARUM_TOKEN")
+if not FLARUM_TOKEN:
+    raise RuntimeError("FLARUM_TOKEN is not set. Use environment/vault; do not hardcode secrets.")
+# Bot kann je nach Flarum-Token als Nova-User oder Admin posten.
+# Aktuell beobachtet: admin/zombie=user_id 1, nova-ai=user_id 2, 4=Legacy-ID.
+# Wichtig: Alle eigenen Bot-/Admin-Identitäten ignorieren, sonst Self-Reply-Loop.
+NOVA_USER_IDS   = {int(x) for x in os.environ.get("NOVA_FLARUM_OWN_USER_IDS", "1,2,4").split(",") if x.strip().isdigit()}
 
 TRIFORCE_URL    = "http://127.0.0.1:9000/v1/chat"
-TRIFORCE_USER   = "nova-bot@ailinux.me"
-TRIFORCE_PASS   = "TriForceBot2026!"
+TRIFORCE_USER   = "admin@ailinux.me"
+TRIFORCE_PASS = os.environ.get("TRIFORCE_PASS")
+if not TRIFORCE_PASS:
+    raise RuntimeError("TRIFORCE_PASS is not set. Use environment/vault; do not hardcode secrets.")
 
 POLL_INTERVAL   = 30          # Sekunden zwischen Polls
 STATE_FILE      = "/var/lib/nova-flarum-bot/state.json"
@@ -99,7 +109,7 @@ def get_recent_posts(since_id=0):
             attrs = p.get("attributes", {})
             # Eigene Posts ignorieren — aber last_post_id trotzdem hochsetzen!
             author_id = p.get("relationships", {}).get("user", {}).get("data", {}).get("id")
-            if str(author_id) == str(NOVA_USER_ID):
+            if str(author_id).isdigit() and int(author_id) in NOVA_USER_IDS:
                 # BUG FIX: Ohne dieses Update sieht der Bot eigene Posts endlos wieder
                 # (get_recent_posts gibt pid > since_id zurück, since_id wird nie erhöht)
                 new_posts.append({
@@ -183,7 +193,7 @@ def ask_nova(post_content, discussion_id, reason):
             "Content-Type": "application/json"
         }
         payload = {
-            "model": "anthropic/claude-sonnet-4",
+            "model": "openrouter/anthropic/claude-sonnet-4",
             "messages": [
                 {"role": "system", "content": system},
                 {"role": "user", "content": f"Forum Post:\n\n{post_content}"}
@@ -207,6 +217,7 @@ def ask_nova(post_content, discussion_id, reason):
 # ── Main Loop ─────────────────────────────────────────────────────────────────
 def main():
     log.info("Nova Flarum Bot gestartet")
+    log.info(f"Ignoriere eigene Flarum user_ids: {sorted(NOVA_USER_IDS)}")
     state = load_state()
 
     # Beim ersten Start: aktuellen höchsten Post-ID als Baseline setzen (kein Spam)
@@ -248,8 +259,26 @@ def main():
                     log.info(f"Post {pid} → Nova sagt SKIP")
                 else:
                     try:
-                        flarum_post(post["discussion_id"], answer)
-                        log.info(f"Post {pid} → Nova geantwortet in Discussion {post['discussion_id']}")
+                        created = flarum_post(post["discussion_id"], answer)
+                        created_id = 0
+                        try:
+                            created_id = int(created.get("data", {}).get("id") or 0)
+                        except Exception:
+                            created_id = 0
+
+                        if created_id:
+                            # Defensive Loop-Sicherung: direkt nach eigener Antwort den Pointer
+                            # auf die erzeugte Reply-ID ziehen. Damit wird die eigene Antwort
+                            # nicht im nächsten Poll erneut verarbeitet, selbst wenn Author-Mapping
+                            # im Forum später anders aussieht.
+                            state["last_post_id"] = max(state["last_post_id"], created_id)
+                            processed = state.get("processed", [])
+                            processed.append(created_id)
+                            state["processed"] = processed[-500:]
+                            save_state(state)
+                            log.info(f"Post {pid} → Nova geantwortet in Discussion {post['discussion_id']} | reply_post_id={created_id}")
+                        else:
+                            log.info(f"Post {pid} → Nova geantwortet in Discussion {post['discussion_id']} | reply_post_id=unknown")
                     except Exception as e:
                         log.error(f"Post {pid} → Flarum post error: {e}")
 

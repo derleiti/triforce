@@ -1157,7 +1157,13 @@ add_action('wp_logout', function() {
     ]);
 });
 add_filter('logout_redirect', function($redirect_to, $requested_redirect_to, $user) {
-    return home_url('/');
+    if (!empty($requested_redirect_to)) {
+        $host = wp_parse_url($requested_redirect_to, PHP_URL_HOST);
+        if ($host && in_array(strtolower($host), ['ailinux.me', 'login.ailinux.me'], true)) {
+            return $requested_redirect_to;
+        }
+    }
+    return 'https://login.ailinux.me/?action=logout&redirect=' . rawurlencode(home_url('/'));
 }, 10, 3);
 
 // ── Auth status endpoint for login.ailinux.me sync ──────────────────────
