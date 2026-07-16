@@ -756,3 +756,6 @@ main() {
 }
 
 main "$@"
+
+# Sign Repos trigger
+./sign-repos.sh
