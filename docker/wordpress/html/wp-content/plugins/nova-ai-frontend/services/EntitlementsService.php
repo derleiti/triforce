@@ -54,6 +54,22 @@ class EntitlementsService {
     }
 
     /**
+     * Remove selected one-time purchase entitlements.
+     */
+    public static function remove_entitlements(int $user_id, array $items): void {
+        $existing = array_map(
+            'strval',
+            (array) (get_user_meta($user_id, 'nova_entitlements', true) ?: [])
+        );
+        $remove = array_map(
+            'strval',
+            array_map('sanitize_text_field', $items)
+        );
+        $remaining = array_values(array_diff($existing, $remove));
+        update_user_meta($user_id, 'nova_entitlements', $remaining);
+    }
+
+    /**
      * Downgrade a user to the free tier (e.g. on subscription expiry).
      */
     public static function downgrade_to_free(int $user_id): void {
@@ -89,10 +105,11 @@ class EntitlementsService {
         $response = wp_remote_post($endpoint . '/v1/users/entitlements', [
             'headers'  => $headers,
             'body'     => wp_json_encode([
-                'email'  => $user->user_email,
-                'tier'   => $ents['tier'],
-                'extra'  => $ents['extra'],
-                'source' => 'wordpress',
+                'email'   => $user->user_email,
+                'tier'    => $ents['tier'],
+                'billing' => !empty($ents['extra']),
+                'extra'   => $ents['extra'],
+                'source'  => 'wordpress',
             ]),
             'timeout'  => 8,
             'blocking' => true,

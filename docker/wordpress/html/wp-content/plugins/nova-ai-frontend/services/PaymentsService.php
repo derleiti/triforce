@@ -195,6 +195,11 @@ class PaymentsService {
                 ]);
                 EntitlementsService::sync_to_backend($user_id);
                 break;
+
+            case 'refund':
+                EntitlementsService::remove_entitlements($user_id, $ents['extra']);
+                EntitlementsService::sync_to_backend($user_id);
+                break;
         }
     }
 

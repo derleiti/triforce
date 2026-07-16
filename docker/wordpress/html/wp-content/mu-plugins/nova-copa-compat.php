@@ -529,8 +529,10 @@ function nova_copa_auth_validate(WP_REST_Request $request): WP_REST_Response {
 add_action('rest_api_init', function () {
     $ns = 'nova-ai/v1';
 
+    // The canonical signed Lemon Squeezy route is owned by PaymentsService.
+    // Keep only legacy aliases here so this compatibility layer cannot override
+    // idempotency, paid-status checks, product mapping, or refund handling.
     foreach ([
-        '/payments/webhook/lemonsqueezy',
         '/webhook/payment-success',
         '/payments/payment-success',
         '/payment-success',

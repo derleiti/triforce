@@ -109,17 +109,18 @@ def _merge_user(payload: UserUpsertPayload) -> Dict[str, Any]:
     name = payload.name or current.get("name") or email.split("@", 1)[0]
     tier = payload.tier or current.get("tier") or "free"
 
-    entitlements = {}
-    if isinstance(current.get("nova_entitlements"), dict):
-        entitlements.update(current["nova_entitlements"])
+    # When WordPress sends `extra`, it is the complete current set of
+    # one-time product entitlements. Treat even an empty list as authoritative
+    # so refunds can revoke a previously granted product.
+    if payload.extra is not None:
+        entitlements = normalize_entitlements(payload.extra)
+    else:
+        entitlements = {}
+        if isinstance(current.get("nova_entitlements"), dict):
+            entitlements.update(current["nova_entitlements"])
 
     entitlements.update({k: bool(v) for k, v in payload.entitlements.items()})
     entitlements.update({k: bool(v) for k, v in payload.nova_entitlements.items()})
-
-    # Rohe Produkt-IDs/Slugs aus 'extra' auf kanonische Schluessel abbilden
-    # ("970007" -> "copa_ocr", "Copa OCR" -> "copa_ocr", ...)
-    if payload.extra:
-        entitlements.update(normalize_entitlements(payload.extra))
 
     billing = payload.billing
     if billing is None:
