@@ -38,7 +38,7 @@ openai==2.1.0
 mistralai==1.9.11
 
 # Data Processing & Validation
-python-multipart==0.0.31   # FastAPI Form()/UploadFile
+python-multipart==0.0.32   # FastAPI Form()/UploadFile
 email-validator==2.3.0     # pydantic EmailStr
 Pillow==12.2.0
 PyYAML>=6.0.2,<7

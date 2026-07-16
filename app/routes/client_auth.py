@@ -359,35 +359,40 @@ def verify_wordpress_login(email: str, password: str) -> dict | None:
 USER_REGISTRY: Dict[str, dict] = {}
 
 def load_users_from_file() -> dict:
-    """Lade alle User aus users.json"""
+    """Load users while preserving persisted entitlements for the ENV admin."""
     users = {}
-    
-    # 1. Lade Admin aus ENV (falls gesetzt)
-    admin_email = os.environ.get("ADMIN_EMAIL")
-    admin_password = os.environ.get("ADMIN_PASSWORD")
-    if admin_email and admin_password:
-        users[admin_email.lower()] = {
-            "password_hash": hash_secret(admin_password),
-            "tier": "enterprise",
-            "name": "Admin",
-            "billing": True,
-            "nova_entitlements": {},
-            "entitlements": {},
-        }
-    
-    # 2. Lade registrierte User aus users.json
+
+    # Load persisted account state first. Product entitlements are billing state
+    # and must survive service restarts, including for ADMIN_EMAIL.
     if USERS_FILE_PATH.exists():
         try:
-            with open(USERS_FILE_PATH, 'r') as f:
+            with USERS_FILE_PATH.open("r", encoding="utf-8") as f:
                 saved_users = json.load(f)
-                for email, data in saved_users.items():
-                    # Überschreibe nicht den Admin
-                    if email.lower() not in users:
-                        users[email.lower()] = data
-            logger.info(f"Loaded {len(saved_users)} users from {USERS_FILE_PATH}")
-        except Exception as e:
-            logger.error(f"Failed to load users: {e}")
-    
+            if isinstance(saved_users, dict):
+                users.update({email.lower(): data for email, data in saved_users.items()})
+                logger.info("Loaded %d users from %s", len(saved_users), USERS_FILE_PATH)
+        except Exception as exc:
+            logger.error("Failed to load users: %s", exc)
+
+    # ADMIN_PASSWORD remains authoritative for authentication and the admin tier,
+    # but it must not erase entitlements written by WordPress/Lemon Squeezy.
+    admin_email = (os.environ.get("ADMIN_EMAIL") or "").lower().strip()
+    admin_password = os.environ.get("ADMIN_PASSWORD")
+    if admin_email and admin_password:
+        current = users.get(admin_email)
+        if not isinstance(current, dict):
+            current = {}
+        entitlements = get_user_entitlements(current)
+        users[admin_email] = {
+            **current,
+            "password_hash": hash_secret(admin_password),
+            "tier": "enterprise",
+            "name": current.get("name") or "Admin",
+            "billing": True,
+            "nova_entitlements": entitlements,
+            "entitlements": entitlements,
+        }
+
     return users
 
 
