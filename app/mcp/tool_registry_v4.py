@@ -770,7 +770,7 @@ TOOL_ALIASES: Dict[str, str] = {
     "cli-agents_broadcast": "agent_broadcast",
     "cli-agents_start": "agent_start",
     "cli-agents_stop": "agent_stop",
-    "queue_broadcast": "agent_broadcast",
+    # "queue_broadcast": "agent_broadcast",  # DEPRECATED: causes schema collision (message vs command)
     "codebase_file": "code_read",
     "codebase_search": "code_search",
     "codebase_edit": "code_edit",

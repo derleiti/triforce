@@ -13,7 +13,6 @@ from fastapi import HTTPException
 from pydantic import AnyHttpUrl
 
 from ..utils.http_client import HttpClient
-import google.generativeai as genai
 
 from ..config import get_settings
 from ..services.model_registry import ModelInfo
@@ -21,7 +20,7 @@ from ..utils.errors import api_error
 from ..utils.http import extract_http_error
 from ..utils.model_helpers import strip_provider_prefix
 from . import web_search
-from .crawler.manager import crawler_manager
+# Crawler manager is imported lazily where needed to avoid optional dependency on playwright
 
 logger = __import__("logging").getLogger("ailinux.chat")
 
@@ -29,6 +28,12 @@ logger = __import__("logging").getLogger("ailinux.chat")
 # UTILITY FUNCTIONS
 # =============================================================================
 
+
+NOVA_FALLBACK_CASCADE = [
+    "gpt-oss:120b-cloud",
+    "gpt-oss:20b-cloud",
+    "openai/gpt-oss-120b:free",
+]
 
 async def _fallback_to_ollama(
     messages: List[dict[str, str]],
@@ -60,12 +65,12 @@ MISTRAL_MODEL_ALIASES = {
     "mistral/open-mixtral-8x7b": "open-mixtral-8x7b",
     "mistral/mixtral-8x7b": "open-mixtral-8x7b",
     # Current generation (map to latest versions)
-    "mistral/large": "mistral-large-latest",
+    "mistral/large": "mistral-medium-3.5",
     "mistral/medium": "mistral-medium-latest",
     "mistral/small": "mistral-small-latest",
     "mistral/tiny": "ministral-3b-latest",
     # Shorthand aliases
-    "large": "mistral-large-latest",
+    "large": "mistral-medium-3.5",
     "medium": "mistral-medium-latest",
     "small": "mistral-small-latest",
     "tiny": "ministral-3b-latest",
@@ -80,9 +85,17 @@ MISTRAL_MODEL_ALIASES = {
 }
 
 GEMINI_MODEL_ALIASES = {
-    # Gemini 3 Models (Preview)
-    "gemini/gemini-3-pro": "gemini-3-pro-preview",
-    "gemini-3-pro": "gemini-3-pro-preview",
+    # Gemini 3.x current generation
+    "gemini/gemini-3.5-flash": "gemini-3.5-flash",
+    "gemini-3.5-flash": "gemini-3.5-flash",
+    "gemini/gemini-3.1-pro": "gemini-3.1-pro-preview",
+    "gemini/gemini-3.1-pro-preview": "gemini-3.1-pro-preview",
+    "gemini-3.1-pro": "gemini-3.1-pro-preview",
+    "gemini-3.1-pro-preview": "gemini-3.1-pro-preview",
+    "gemini/gemini-3.1-flash-lite": "gemini-3.1-flash-lite",
+    "gemini-3.1-flash-lite": "gemini-3.1-flash-lite",
+    "gemini/gemini-3-pro": "gemini-3.1-pro-preview",
+    "gemini-3-pro": "gemini-3.1-pro-preview",
     # Gemini 2.5 Models (use simple names, no preview suffix needed)
     "gemini/gemini-2.5-pro": "gemini-2.5-pro",
     "gemini/gemini-2.5-flash": "gemini-2.5-flash",
@@ -96,12 +109,12 @@ GEMINI_MODEL_ALIASES = {
     "gemini/gemini-1.5-flash": "gemini-1.5-flash",
     "gemini/gemini-1.5-flash-8b": "gemini-1.5-flash-8b",
     "gemini/gemini-1.5-pro": "gemini-1.5-pro",
-    # Legacy aliases (map to latest stable 2.5)
-    "gemini/gemini-pro": "gemini-2.5-flash",
-    "gemini/pro": "gemini-2.5-flash",
-    "gemini/gemini-pro-vision": "gemini-2.5-flash",
-    "gemini-pro": "gemini-2.5-flash",
-    "pro": "gemini-2.5-flash",
+    # Legacy aliases (map to current stable Gemini 3.5 Flash)
+    "gemini/gemini-pro": "gemini-3.5-flash",
+    "gemini/pro": "gemini-3.5-flash",
+    "gemini/gemini-pro-vision": "gemini-3.5-flash",
+    "gemini-pro": "gemini-3.5-flash",
+    "pro": "gemini-3.5-flash",
 }
 
 OLLAMA_MODEL_ALIASES = {
@@ -113,16 +126,16 @@ OLLAMA_MODEL_ALIASES = {
 
 ANTHROPIC_MODEL_ALIASES = {
     # Claude 4 Series (Latest - use model IDs from Anthropic API)
-    "anthropic/claude-sonnet-4": "claude-sonnet-4-20250514",
-    "anthropic/claude-opus-4": "claude-opus-4-20250514",
-    "claude-sonnet-4": "claude-sonnet-4-20250514",
-    "claude-opus-4": "claude-opus-4-20250514",
+    "anthropic/claude-sonnet-4": "claude-sonnet-4-6",
+    "anthropic/claude-opus-4": "claude-opus-4-8",
+    "claude-sonnet-4": "claude-sonnet-4-6",
+    "claude-opus-4": "claude-opus-4-8",
     # Claude 3.5 Series
-    "anthropic/claude-3.5-sonnet": "claude-sonnet-4-20250514",
+    "anthropic/claude-3.5-sonnet": "claude-sonnet-4-6",
     "anthropic/claude-3.5-haiku": "claude-3-5-haiku-20241022",
-    "claude-3.5-sonnet": "claude-sonnet-4-20250514",
+    "claude-3.5-sonnet": "claude-sonnet-4-6",
     "claude-3.5-haiku": "claude-3-5-haiku-20241022",
-    "claude-3-5-sonnet": "claude-sonnet-4-20250514",
+    "claude-3-5-sonnet": "claude-sonnet-4-6",
     "claude-3-5-haiku": "claude-3-5-haiku-20241022",
     # Claude 3 Series
     "anthropic/claude-3-opus": "claude-3-opus-20240229",
@@ -132,8 +145,8 @@ ANTHROPIC_MODEL_ALIASES = {
     "claude-3-sonnet": "claude-3-sonnet-20240229",
     "claude-3-haiku": "claude-3-haiku-20240307",
     # Legacy aliases (defaults to latest Sonnet)
-    "anthropic/claude": "claude-sonnet-4-20250514",
-    "claude": "claude-sonnet-4-20250514",
+    "anthropic/claude": "claude-sonnet-4-6",
+    "claude": "claude-sonnet-4-6",
 }
 
 # OpenAI-compatible providers (Groq, Cerebras, Together, Fireworks, OpenRouter)
@@ -621,7 +634,8 @@ async def stream_chat(
             keywords = ["information"] # Default keyword if none provided
 
         try:
-                job = await crawler_manager.create_job(
+                from .crawler.manager import crawler_manager as _crawler_manager
+                job = await _crawler_manager.create_job(
                     keywords=keywords,
                     seeds=urls,
                     max_depth=5,
@@ -639,7 +653,7 @@ async def stream_chat(
                 job_status = job.status
                 while job_status in ["queued", "running"]:
                     await asyncio.sleep(5) # Poll every 5 seconds
-                    updated_job = await crawler_manager.get_job(job.id)
+                    updated_job = await _crawler_manager.get_job(job.id)
                     if updated_job:
                         job_status = updated_job.status
                         yield f"Crawl job {job.id} Status: {job_status}. Seiten gecrawlt: {updated_job.pages_crawled}.\n"
@@ -652,7 +666,7 @@ async def stream_chat(
                     
                     crawl_results_context = "Gecrawlte Ergebnisse:\n"
                     for result_id in updated_job.results[:3]: # Limit context to top 3 results
-                        result = await crawler_manager.get_result(result_id)
+                        result = await _crawler_manager.get_result(result_id)
                         if result:
                             title = result.title or "Kein Titel"
                             url = result.url or "Keine URL"
@@ -996,6 +1010,7 @@ async def _stream_gemini(
     stream: bool,
     timeout: float,
 ) -> AsyncGenerator[str, None]:
+    import google.generativeai as genai
     genai.configure(api_key=api_key)
     # Map legacy model names to current models
     target_model = GEMINI_MODEL_ALIASES.get(model)

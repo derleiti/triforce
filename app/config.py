@@ -58,12 +58,17 @@ class Settings(BaseSettings):
     stable_diffusion_api_key: Optional[str] = Field(default=None, validation_alias="STABLE_DIFFUSION_API_KEY")
 
     # TriStar GUI Authentication
-    tristar_gui_user: str = Field(default="admin", validation_alias="TRISTAR_GUI_USER")
-    tristar_gui_password: str = Field(default="changeme", validation_alias="TRISTAR_GUI_PASSWORD")
+    tristar_gui_user: str = Field(default="zombie", validation_alias="TRISTAR_GUI_USER")
+    tristar_gui_password: str = Field(default="", validation_alias="TRISTAR_GUI_PASSWORD")
 
     # MCP Authentication (User/Password only - no API keys)
     mcp_oauth_user: Optional[str] = Field(default=None, validation_alias="MCP_OAUTH_USER")
     mcp_oauth_pass: Optional[str] = Field(default=None, validation_alias="MCP_OAUTH_PASS")
+
+    # MCP Mesh WebSocket
+    mcp_ws_host: str = Field(default="0.0.0.0", validation_alias="MCP_WS_HOST")
+    mcp_ws_port: int = Field(default=44433, validation_alias="MCP_WS_PORT")
+    mcp_ws_enable_ipv6: bool = Field(default=False, validation_alias="MCP_WS_ENABLE_IPV6")
 
     # GPT-OSS
     gpt_oss_api_key: str | None = Field(default=None, validation_alias="GPT_OSS_API_KEY")
@@ -71,6 +76,14 @@ class Settings(BaseSettings):
 
     # Gemini
     gemini_api_key: str | None = Field(default=None, validation_alias="GEMINI_API_KEY")
+    google_url: Optional[str] = Field(default=None, validation_alias="GOOGLE_URL")
+    google_user: Optional[str] = Field(default=None, validation_alias="GOOGLE_USER")
+    google_pass: Optional[str] = Field(default=None, validation_alias="GOOGLE_PASS")
+    gemini_agent_id: Optional[str] = Field(default=None, validation_alias="GEMINI_AGENT_ID")
+    claude_url: Optional[str] = Field(default=None, validation_alias="CLAUDE_URL")
+    claude_user: Optional[str] = Field(default=None, validation_alias="CLAUDE_USER")
+    claude_pass: Optional[str] = Field(default=None, validation_alias="CLAUDE_PASS")
+
 
     # Mistral
     mistral_api_key: str | None = Field(default=None, validation_alias="MISTRAL_API_KEY")
@@ -207,6 +220,11 @@ class Settings(BaseSettings):
     mail_smtp_user: Optional[str] = Field(default=None, validation_alias="MAIL_SMTP_USER")
     mail_smtp_pass: Optional[str] = Field(default=None, validation_alias="MAIL_SMTP_PASS")
     mail_smtp_starttls: Optional[bool] = Field(default=None, validation_alias="MAIL_SMTP_STARTTLS")
+    mail_imap_host: Optional[str] = Field(default=None, validation_alias="MAIL_IMAP_HOST")
+    mail_imap_port: Optional[int] = Field(default=None, validation_alias="MAIL_IMAP_PORT")
+    mail_imap_user: Optional[str] = Field(default=None, validation_alias="MAIL_IMAP_USER")
+    mail_imap_pass: Optional[str] = Field(default=None, validation_alias="MAIL_IMAP_PASS")
+    mail_imap_ssl: Optional[bool] = Field(default=None, validation_alias="MAIL_IMAP_SSL")
     mail_recipient_allowlist: Optional[str] = Field(default=None, validation_alias="MAIL_RECIPIENT_ALLOWLIST")
     mail_rate_per_min: Optional[int] = Field(default=None, validation_alias="MAIL_RATE_PER_MIN")
 

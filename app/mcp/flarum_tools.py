@@ -24,17 +24,47 @@ from typing import Any, Dict, Optional
 logger = logging.getLogger("ailinux.mcp.flarum")
 
 # ── Config ────────────────────────────────────────────────────────────────────
-FLARUM_API   = "http://172.19.0.4:8888/api"
-FLARUM_TOKEN = os.environ.get("FLARUM_TOKEN")
-NOVA_USER_ID = 2
+FLARUM_API   = os.getenv("FLARUM_API", "http://127.0.0.1:9080/api")
+
+
+def _env_value(name: str) -> Optional[str]:
+    """Read config from process env first, then local dotenv-style files."""
+    value = os.environ.get(name)
+    if value:
+        return value
+    for env_path in ("/home/zombie/triforce/.env", "/home/zombie/triforce/.env.local", "/etc/triforce.env"):
+        try:
+            with open(env_path, "r", encoding="utf-8") as fh:
+                for line in fh:
+                    s = line.strip()
+                    if not s or s.startswith("#") or "=" not in s:
+                        continue
+                    key, raw = s.split("=", 1)
+                    if key.strip() == name:
+                        val = raw.strip().strip('"').strip("'")
+                        return val or None
+        except FileNotFoundError:
+            continue
+        except Exception as exc:
+            logger.debug("Could not read env file %s: %s", env_path, exc)
+    return None
+
+
+FLARUM_TOKEN = _env_value("FLARUM_TOKEN")
+NOVA_USER_ID = int(_env_value("FLARUM_USER_ID") or _env_value("NOVA_USER_ID") or "2")
 TIMEOUT      = 15
 
+JSON_API_MIME = "application/vnd.api+json"
+
 # ── HTTP Client ───────────────────────────────────────────────────────────────
-def _headers(token: str = FLARUM_TOKEN) -> Dict[str, str]:
+def _headers(token: Optional[str] = None) -> Dict[str, str]:
+    token = token or FLARUM_TOKEN
+    if not token:
+        raise RuntimeError("Flarum API auth missing")
     return {
         "Authorization": f"Token {token}; userId={NOVA_USER_ID}",
-        "Content-Type": "application/json",
-        "Accept": "application/json",
+        "Content-Type": JSON_API_MIME,
+        "Accept": JSON_API_MIME,
     }
 
 def _get(path: str, params: Dict = None) -> Dict:
@@ -45,16 +75,28 @@ def _get(path: str, params: Dict = None) -> Dict:
 def _post(path: str, payload: Dict) -> Dict:
     # ensure_ascii=False: Umlaute/Unicode korrekt senden, nicht als \uXXXX escapen
     body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
-    hdrs = {**_headers(), "Content-Type": "application/json; charset=utf-8"}
+    hdrs = {**_headers(), "Content-Type": JSON_API_MIME}
     r = requests.post(f"{FLARUM_API}{path}", headers=hdrs, data=body, timeout=TIMEOUT)
-    r.raise_for_status()
+    if r.status_code >= 400:
+        try:
+            err_body = r.json()
+        except ValueError:
+            err_body = r.text
+        logger.error("Flarum POST %s failed: HTTP %s — %s", path, r.status_code, err_body)
+        raise RuntimeError(f"Flarum POST {path} failed: HTTP {r.status_code} — {err_body}")
     return r.json()
 
 def _patch(path: str, payload: Dict) -> Dict:
     body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
-    hdrs = {**_headers(), "Content-Type": "application/json; charset=utf-8"}
+    hdrs = {**_headers(), "Content-Type": JSON_API_MIME}
     r = requests.patch(f"{FLARUM_API}{path}", headers=hdrs, data=body, timeout=TIMEOUT)
-    r.raise_for_status()
+    if r.status_code >= 400:
+        try:
+            err_body = r.json()
+        except ValueError:
+            err_body = r.text
+        logger.error("Flarum PATCH %s failed: HTTP %s — %s", path, r.status_code, err_body)
+        raise RuntimeError(f"Flarum PATCH {path} failed: HTTP {r.status_code} — {err_body}")
     return r.json()
 
 def _delete(path: str) -> bool:
@@ -292,7 +334,7 @@ async def handle_flarum_discussion_create(params: Dict[str, Any]) -> Dict:
     try:
         title   = params.get("title", "").strip()
         content = params.get("content", "").strip()
-        tag_ids = params.get("tag_ids", [])
+        tag_ids = params.get("tags", params.get("tag_ids", [])) or []
         if not title:
             return _err("Parameter 'title' fehlt")
         if not content:

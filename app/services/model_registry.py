@@ -589,6 +589,10 @@ class ModelRegistry:
         """Fallback Gemini models if API discovery fails."""
         return [
             # Gemini text / multimodal
+            ModelInfo(id="gemini/gemini-3.5-flash", provider="gemini", capabilities=["chat", "vision", "reasoning", "code", "function_calling"], roles=["assistant", "vision_analyst", "reasoning_engine", "code_assistant", "tool_user"]),
+            ModelInfo(id="gemini/gemini-3.1-pro-preview", provider="gemini", capabilities=["chat", "vision", "reasoning", "code", "function_calling"], roles=["assistant", "vision_analyst", "reasoning_engine", "code_assistant", "tool_user"]),
+            ModelInfo(id="gemini/gemini-3.1-pro-preview-customtools", provider="gemini", capabilities=["chat", "vision", "reasoning", "code", "function_calling"], roles=["assistant", "vision_analyst", "reasoning_engine", "code_assistant", "tool_user"]),
+            ModelInfo(id="gemini/gemini-3.1-flash-lite", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
             ModelInfo(id="gemini/gemini-3-pro-preview", provider="gemini", capabilities=["chat", "vision", "reasoning", "code"], roles=["assistant", "vision_analyst", "reasoning_engine", "code_assistant"]),
             ModelInfo(id="gemini/gemini-2.5-pro", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
             ModelInfo(id="gemini/gemini-2.5-flash", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
@@ -741,6 +745,9 @@ class ModelRegistry:
         """Fallback Mistral models if API discovery fails."""
         return [
             # Current generation models
+            ModelInfo(id="mistral/mistral-medium-3.5", provider="mistral", capabilities=["chat", "vision", "code", "function_calling"], roles=["assistant", "vision_analyst", "code_assistant", "tool_user"]),
+            ModelInfo(id="mistral/mistral-large-3", provider="mistral", capabilities=["chat", "vision", "function_calling"], roles=["assistant", "vision_analyst", "tool_user"]),
+            ModelInfo(id="mistral/devstral-2", provider="mistral", capabilities=["chat", "code"], roles=["assistant", "code_assistant"]),
             ModelInfo(id="mistral/mistral-large-latest", provider="mistral", capabilities=["chat", "vision", "function_calling"], roles=["assistant", "vision_analyst", "tool_user"]),
             ModelInfo(id="mistral/mistral-medium-latest", provider="mistral", capabilities=["chat", "function_calling"], roles=["assistant", "tool_user"]),
             ModelInfo(id="mistral/mistral-small-latest", provider="mistral", capabilities=["chat", "function_calling"], roles=["assistant", "tool_user"]),
@@ -1012,9 +1019,12 @@ class ModelRegistry:
             ModelInfo(id="openrouter/meta-llama/llama-3.3-70b-instruct:free", provider="openrouter", capabilities=["chat"], roles=["assistant"]),
             ModelInfo(id="openrouter/google/gemma-2-9b-it:free", provider="openrouter", capabilities=["chat"], roles=["assistant"]),
             ModelInfo(id="openrouter/mistralai/mistral-7b-instruct:free", provider="openrouter", capabilities=["chat"], roles=["assistant"]),
+            ModelInfo(id="openrouter/openai/gpt-5.5", provider="openrouter", capabilities=["chat", "vision", "reasoning", "code"], roles=["assistant", "vision_analyst", "reasoning_engine", "code_assistant"]),
+            ModelInfo(id="openrouter/openai/gpt-5.4-mini", provider="openrouter", capabilities=["chat", "vision", "reasoning", "code"], roles=["assistant", "vision_analyst", "reasoning_engine", "code_assistant"]),
             ModelInfo(id="openrouter/openai/gpt-5.2", provider="openrouter", capabilities=["chat", "vision", "reasoning", "code"], roles=["assistant", "vision_analyst", "reasoning_engine", "code_assistant"]),
-            ModelInfo(id="openrouter/anthropic/claude-sonnet-4", provider="openrouter", capabilities=["chat", "vision", "code"], roles=["assistant", "vision_analyst", "code_assistant"]),
-            ModelInfo(id="openrouter/google/gemini-2.5-flash", provider="openrouter", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
+            ModelInfo(id="openrouter/anthropic/claude-sonnet-4-6", provider="openrouter", capabilities=["chat", "vision", "code"], roles=["assistant", "vision_analyst", "code_assistant"]),
+            ModelInfo(id="openrouter/google/gemini-3.5-flash", provider="openrouter", capabilities=["chat", "vision", "reasoning", "code"], roles=["assistant", "vision_analyst", "reasoning_engine", "code_assistant"]),
+            ModelInfo(id="openrouter/deepseek/deepseek-chat-v3.1", provider="openrouter", capabilities=["chat", "code", "reasoning"], roles=["assistant", "code_assistant", "reasoning_engine"]),
         ]
 
     async def _discover_together(self) -> List[ModelInfo]:
@@ -1296,6 +1306,10 @@ class ModelRegistry:
 
     def _openai_static_models(self) -> List[ModelInfo]:
         return [
+            ModelInfo(id="openai/gpt-5.5", provider="openai", capabilities=["chat", "vision", "reasoning", "code", "function_calling"], roles=["assistant", "vision_analyst", "reasoning_engine", "code_assistant", "tool_user"]),
+            ModelInfo(id="openai/gpt-5.4", provider="openai", capabilities=["chat", "vision", "reasoning", "code", "function_calling"], roles=["assistant", "vision_analyst", "reasoning_engine", "code_assistant", "tool_user"]),
+            ModelInfo(id="openai/gpt-5.4-mini", provider="openai", capabilities=["chat", "vision", "reasoning", "code", "function_calling"], roles=["assistant", "vision_analyst", "reasoning_engine", "code_assistant", "tool_user"]),
+            ModelInfo(id="openai/gpt-5.4-nano", provider="openai", capabilities=["chat", "vision", "reasoning", "function_calling"], roles=["assistant", "vision_analyst", "reasoning_engine", "tool_user"]),
             ModelInfo(id="openai/gpt-5.2", provider="openai", capabilities=["chat", "vision", "reasoning", "code"], roles=["assistant", "vision_analyst", "reasoning_engine", "code_assistant"]),
             ModelInfo(id="openai/gpt-5.2-pro", provider="openai", capabilities=["chat", "vision", "reasoning", "code"], roles=["assistant", "vision_analyst", "reasoning_engine", "code_assistant"]),
             ModelInfo(id="openai/gpt-5.1", provider="openai", capabilities=["chat", "vision", "reasoning", "code"], roles=["assistant", "vision_analyst", "reasoning_engine", "code_assistant"]),
@@ -1428,9 +1442,15 @@ registry = ModelRegistry()
 
 
 def resolve_gemini_api_key() -> str | None:
-    """Resolve Gemini API key: settings.gemini_api_key → GEMINI_API_KEY env → GOOGLE_API_KEY env."""
+    """Resolve Gemini API key: settings.gemini_api_key → GEMINI_API_KEY env → GOOGLE_API_KEY env.
+
+    app.config exposes get_settings() only — there is no module-level `settings`.
+    The previous `from ..config import settings` raised ImportError at call time,
+    which broke every Gemini vision request (vision.py:154).
+    """
     import os
-    from ..config import settings
+    from ..config import get_settings
+    settings = get_settings()
     return (
         getattr(settings, "gemini_api_key", None)
         or os.getenv("GEMINI_API_KEY")

@@ -1,3 +1,4 @@
+import os
 from contextlib import asynccontextmanager
 import logging
 # import logging (centralized)
@@ -9,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pathlib import Path
-from fastapi_limiter import FastAPILimiter
+from .utils.rate_limit_compat import FastAPILimiter
 from typing import Optional
 
 # Unified logging für alle Komponenten
@@ -102,6 +103,7 @@ from .routes.nova_playground import router as nova_playground_router
 from .routes.nova_wordpress import router as nova_wordpress_router
 from .routes.nova_operator import router as nova_operator_router
 from .routes.rag import router as rag_router
+from app.routes.admin_users import router as admin_users_router
 
 # Import routers from the top-level app directory
 from .routes_sd3 import router as sd3_router
@@ -184,8 +186,9 @@ async def lifespan(app: FastAPI):
         from .services.server_federation import federation_manager
         from .services.federation_websocket import federation_lb
         import socket
+        node_id_env = os.environ.get("NODE_ID")
         _hostname = socket.gethostname().lower()
-        node_id = "backup" if "backup" in _hostname else "zombie-pc" if "zombie" in _hostname else "hetzner"
+        node_id = node_id_env or ("backup" if "backup" in _hostname else "zombie-pc" if "zombie" in _hostname else "hetzner")
         await federation_manager.initialize(node_id=node_id)
         await federation_lb.start()
         logger.info("Federation Manager started")
@@ -213,18 +216,17 @@ async def lifespan(app: FastAPI):
         # import logging (centralized)
         logger.warning(f"Failed to start MCP Brain: {e}")
 
-    # Start MCP WebSocket Server (Port 44433)
+    # Start MCP WebSocket Server
     try:
         from .services.mcp_ws_server import mcp_ws_server
         await mcp_ws_server.start()
-        logger.info("MCP WebSocket Server started on port 44433")
+        logger.info(f"MCP WebSocket Server started on port {settings.mcp_ws_port}")
     except Exception as e:
         logger.warning(f"Failed to start MCP WebSocket Server: {e}")
 
     # Auto-Bootstrap CLI Agents (wenn konfiguriert)
     try:
         from .services.agent_bootstrap import bootstrap_service
-        import os
         auto_bootstrap = os.environ.get("AUTO_BOOTSTRAP_AGENTS", "false").lower() == "true"
         if auto_bootstrap:
             # import logging (centralized)
@@ -241,7 +243,7 @@ async def lifespan(app: FastAPI):
     try:
         from .mcp.notification_manager import start_pollers
         start_pollers()
-        logger.info("Notification Manager started")
+        logger.info("Notification Manager pollers requested")
     except Exception:
         logger.warning("Notification Manager start skipped")
 
@@ -494,3 +496,5 @@ def create_app() -> FastAPI:
 
 # Uvicorn Entry
 app = create_app()
+
+app.include_router(admin_users_router, prefix="/v1", tags=["Admin Users"])

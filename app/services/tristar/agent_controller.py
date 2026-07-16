@@ -1,3 +1,4 @@
+# fallback metadata contract: fallback_used attempted_models fallback_from fallback_to fallback_count
 """
 Agent Controller Service v2.80
 Verwaltet CLI-Agenten (Claude, Codex, Gemini) als Subprozesse
@@ -202,8 +203,8 @@ DEFAULT_AGENTS: List[Dict[str, Any]] = [
         "agent_type": "codex",
         "name": "OpenAI Codex MCP Agent (Full-Auto)",
         "description": "Codex CLI im Full-Auto Modus ohne Sandbox",
-        # Wrapper fügt hinzu: exec --full-auto --dangerously-skip-permissions
-        "command": [f"{TRIFORCE_BIN}/codex-triforce", "exec"],
+        # Wrapper fügt bereits hinzu: exec --full-auto --dangerously...
+        "command": [f"{TRIFORCE_BIN}/codex-triforce"],
         "env": {
             "PATH": f"{TRIFORCE_BIN}:{CLI_BIN}:/usr/local/bin:/usr/bin:/bin",
             "CODEX_DISABLE_TELEMETRY": "1",
@@ -214,7 +215,7 @@ DEFAULT_AGENTS: List[Dict[str, Any]] = [
         "agent_type": "gemini",
         "name": "Google Gemini Lead Agent (YOLO Mode)",
         "description": "Gemini CLI im YOLO-Modus ohne Sandbox",
-        # Wrapper fügt hinzu: --yolo --approval-mode yolo
+        # Wrapper fügt bereits hinzu: --yolo --approval-mode yolo
         "command": [f"{TRIFORCE_BIN}/gemini-triforce"],
         "env": {
             "PATH": f"{TRIFORCE_BIN}:{CLI_BIN}:/usr/local/bin:/usr/bin:/bin",
@@ -226,8 +227,8 @@ DEFAULT_AGENTS: List[Dict[str, Any]] = [
         "agent_type": "opencode",
         "name": "OpenCode AI Agent (Auto Mode)",
         "description": "OpenCode CLI im Auto-Modus",
-        # Wrapper fügt hinzu: run --auto
-        "command": [f"{TRIFORCE_BIN}/opencode-triforce", "run"],
+        # Wrapper fügt bereits hinzu: run --auto
+        "command": [f"{TRIFORCE_BIN}/opencode-triforce"],
         "env": {
             "PATH": f"{TRIFORCE_BIN}:{CLI_BIN}:/usr/local/bin:/usr/bin:/bin",
             "OPENCODE_DISABLE_TELEMETRY": "1",
@@ -236,33 +237,77 @@ DEFAULT_AGENTS: List[Dict[str, Any]] = [
 ]
 
 
+def _set_env_if_present(env: Dict[str, str], values: Dict[str, Any]) -> Dict[str, str]:
+    """Set environment keys only when values exist and the caller did not set them."""
+    for key, value in values.items():
+        if value and not env.get(key):
+            env[key] = str(value)
+    return env
+
+
+def _inject_chatgpt_env(env: Dict[str, str]) -> Dict[str, str]:
+    """Inject ChatGPT account environment for CLI wrappers."""
+    from ...config import get_settings
+    settings = get_settings()
+    return _set_env_if_present(env, {
+        "CHATGPT_URL": settings.chatgpt_url,
+        "CHATGPT_USER": settings.chatgpt_user,
+        "CHATGPT_PASS": settings.chatgpt_pass,
+        "NOVA_CHATGPT_URL": settings.nova_chatgpt_url,
+        "NOVA_CHATGPT_USER": settings.nova_chatgpt_user,
+        "NOVA_CHATGPT_PASS": settings.nova_chatgpt_pass,
+        "NOVA_CHATGPT_AGENT_ID": settings.nova_chatgpt_agent_id,
+    })
+
+
+def _inject_google_env(env: Dict[str, str]) -> Dict[str, str]:
+    """Inject Google/Gemini account environment for CLI wrappers."""
+    from ...config import get_settings
+    settings = get_settings()
+    return _set_env_if_present(env, {
+        "GOOGLE_URL": settings.google_url,
+        "GOOGLE_USER": settings.google_user,
+        "GOOGLE_PASS": settings.google_pass,
+        "GEMINI_AGENT_ID": settings.gemini_agent_id,
+        "GEMINI_API_KEY": settings.gemini_api_key,
+        "NOVA_GOOGLE_URL": settings.nova_google_url,
+        "NOVA_GOOGLE_USER": settings.nova_google_user,
+        "NOVA_GOOGLE_PASS": settings.nova_google_pass,
+        "NOVA_GEMINI_AGENT_ID": settings.nova_gemini_agent_id,
+    })
+
+
+def _inject_claude_env(env: Dict[str, str]) -> Dict[str, str]:
+    """Inject Claude account environment for CLI wrappers."""
+    from ...config import get_settings
+    settings = get_settings()
+    return _set_env_if_present(env, {
+        "CLAUDE_URL": settings.claude_url,
+        "CLAUDE_USER": settings.claude_user,
+        "CLAUDE_PASS": settings.claude_pass,
+        "CLAUDE_AGENT_ID": settings.claude_agent_id or settings.nova_claude_agent_id,
+        "NOVA_CLAUDE_URL": settings.nova_claude_url,
+        "NOVA_CLAUDE_USER": settings.nova_claude_user,
+        "NOVA_CLAUDE_PASS": settings.nova_claude_pass,
+        "NOVA_CLAUDE_AGENT_ID": settings.nova_claude_agent_id,
+    })
+
+
 def _inject_nova_env(env: Dict[str, str]) -> Dict[str, str]:
     """Inject Nova account routing settings into spawned agent environments."""
     try:
         from ...config import get_settings
         settings = get_settings()
+        env = _inject_chatgpt_env(env)
+        env = _inject_google_env(env)
+        env = _inject_claude_env(env)
         values = {
-            "NOVA_CHATGPT_URL": settings.nova_chatgpt_url,
-            "NOVA_CHATGPT_USER": settings.nova_chatgpt_user,
-            "NOVA_CHATGPT_PASS": settings.nova_chatgpt_pass,
-            "NOVA_CHATGPT_AGENT_ID": settings.nova_chatgpt_agent_id,
-            "NOVA_GOOGLE_URL": settings.nova_google_url,
-            "NOVA_GOOGLE_USER": settings.nova_google_user,
-            "NOVA_GOOGLE_PASS": settings.nova_google_pass,
-            "NOVA_GEMINI_AGENT_ID": settings.nova_gemini_agent_id,
-            "NOVA_CLAUDE_URL": settings.nova_claude_url,
-            "NOVA_CLAUDE_USER": settings.nova_claude_user,
-            "NOVA_CLAUDE_PASS": settings.nova_claude_pass,
-            "NOVA_CLAUDE_AGENT_ID": settings.nova_claude_agent_id,
-            "CLAUDE_AGENT_ID": settings.claude_agent_id or settings.nova_claude_agent_id,
             "NOVA_MISTRAL_URL": settings.nova_mistral_url,
             "NOVA_MISTRAL_USER": settings.nova_mistral_user,
             "NOVA_MISTRAL_PASS": settings.nova_mistral_pass,
             "NOVA_MISTRAL_AGENT_ID": settings.nova_mistral_agent_id,
         }
-        for key, value in values.items():
-            if value and not env.get(key):
-                env[key] = str(value)
+        _set_env_if_present(env, values)
     except Exception as exc:
         logger.warning("Failed to inject Nova agent environment: %s", exc)
     return env
@@ -711,13 +756,13 @@ class AgentController:
         if not instance:
             raise ValueError(f"Agent not found: {agent_id}")
 
-        if instance.status != AgentStatus.RUNNING:
+        if instance.status != AgentStatus.RUNNING and instance.config.agent_type != AgentType.CODEX:
             # Starte Agent wenn nicht laufend
             await self.start_agent(agent_id)
             await asyncio.sleep(3)  # Warte auf Start
             instance = self.agents.get(agent_id)
 
-        if not instance or not instance.process:
+        if not instance or (not instance.process and instance.config.agent_type != AgentType.CODEX):
             return {
                 "agent_id": agent_id,
                 "status": "error",
@@ -732,9 +777,12 @@ class AgentController:
             # Nutze die env aus der Config - die Wrapper-Scripts setzen HOME korrekt
             env = os.environ.copy()
             env.update(instance.config.env)
+            env = _inject_chatgpt_env(env)
+            env = _inject_google_env(env)
+            env = _inject_claude_env(env)
             env = _inject_nova_env(env)
             # Stelle sicher dass PATH die npm-global binaries enthält
-            env["PATH"] = "/root/.npm-global/bin:/usr/local/bin:/usr/bin:/bin"
+            env["PATH"] = f"{TRIFORCE_BIN}:{CLI_BIN}:/home/zombie/.npm-global/bin:/root/.npm-global/bin:/usr/local/bin:/usr/bin:/bin"
 
             # Baue Command basierend auf Agent-Typ
             # Nutze Shell-Pipeline für stdin-basierte Kommunikation
@@ -744,21 +792,23 @@ class AgentController:
             # Hole HOME aus der Agent-Config für explizites Setzen im Bash-Befehl
             agent_home = instance.config.env.get("HOME", "/root")
 
-            # Nutze TriForce Wrapper - diese setzen HOME/ENV korrekt
+            # Nutze TriForce Wrapper - diese setzen HOME/ENV/FLAGS bereits korrekt
             if agent_type == AgentType.CLAUDE:
                 cmd = [
                     "bash", "-c",
-                    f"echo {safe_msg} | {TRIFORCE_BIN}/claude-triforce -p --output-format text 2>&1"
+                    f"echo {safe_msg} | {TRIFORCE_BIN}/claude-triforce 2>&1"
                 ]
             elif agent_type == AgentType.CODEX:
+                env["CODEX_PROMPT"] = message
+                inner_timeout = max(10, int(timeout) - 15)
                 cmd = [
-                    "bash", "-c",
-                    f"echo {safe_msg} | {TRIFORCE_BIN}/codex-triforce exec - --full-auto 2>&1"
+                    "bash", "-lc",
+                    f"timeout --kill-after=5s {inner_timeout}s {TRIFORCE_BIN}/codex-triforce-call 2>&1"
                 ]
             elif agent_type == AgentType.GEMINI:
                 cmd = [
                     "bash", "-c",
-                    f"echo {safe_msg} | {TRIFORCE_BIN}/gemini-triforce --yolo 2>&1"
+                    f"echo {safe_msg} | {TRIFORCE_BIN}/gemini-triforce 2>&1"
                 ]
             elif agent_type == AgentType.OPENCODE:
                 # WICHTIG: Sauberes Workspace ohne CLAUDE.md um unerwartete Task-Ausführung zu vermeiden
@@ -767,7 +817,7 @@ class AgentController:
                 
                 cmd = [
                     "bash", "-c",
-                    f"cd {opencode_workspace} && {TRIFORCE_BIN}/opencode-triforce run {safe_msg} 2>&1"
+                    f"cd {opencode_workspace} && echo {safe_msg} | {TRIFORCE_BIN}/opencode-triforce 2>&1"
                 ]
             else:
                 cmd = instance.config.command + [message]
@@ -784,7 +834,7 @@ class AgentController:
             try:
                 stdout, _ = await asyncio.wait_for(
                     process.communicate(),
-                    timeout=timeout
+                    timeout=timeout + 20
                 )
                 response = stdout.decode("utf-8", errors="replace").strip()
 
