@@ -1,0 +1,46 @@
+# Dependabot-Konfiguration TriForce
+# Die Vorlage stand bis 2026-07-14 mit package-ecosystem: "" im Repo -> ungueltig,
+# Dependabot hat sie ignoriert bzw. unzuverlaessig verarbeitet.
+version: 2
+updates:
+  # --- Python (requirements.txt im Repo-Root) ---
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    groups:
+      # pytest 9 vs. pytest-asyncio <9: einzeln gebumpt reisst das die Testsuite auseinander.
+      pytest:
+        patterns:
+          - "pytest"
+          - "pytest-*"
+      # Server-Stack zusammen halten (uvicorn-Extras sind empfindlich, siehe requirements.txt)
+      server:
+        patterns:
+          - "fastapi"
+          - "uvicorn*"
+          - "starlette"
+          - "pydantic*"
+      linters:
+        patterns:
+          - "ruff"
+          - "black"
+          - "mypy"
+    ignore:
+      # Wird bewusst gepinnt gehalten (Build-Bruch bei >=82)
+      - dependency-name: "setuptools"
+        versions: [">=82"]
+
+  # --- GitHub Actions Workflows ---
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 3
+    groups:
+      actions:
+        patterns:
+          - "*"

@@ -1,0 +1,15 @@
+Source: triforce-backend
+Section: net
+Priority: optional
+Maintainer: Markus Leitermann <admin@ailinux.me>
+Homepage: https://ailinux.me
+Build-Depends: debhelper-compat (= 13)
+
+Package: triforce-backend
+Architecture: all
+Depends: python3 (>= 3.11), python3-venv, python3-pip, redis-server
+Recommends: docker.io
+Description: AILinux TriForce Multi-LLM Backend
+ TriForce is a FastAPI-based multi-LLM orchestration backend supporting
+ 600+ AI models across 9 providers with 134+ MCP tools, RBAC, federation
+ mesh, and 4-layer memory. Powers the AILinux ecosystem.

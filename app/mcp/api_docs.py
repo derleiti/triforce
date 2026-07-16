@@ -1,5 +1,5 @@
 """
-API Documentation for MCP Server v2.81
+API Documentation for MCP Server v2.80
 
 Provides comprehensive API documentation that Claude can query
 to understand how to interact with the AILinux backend.
@@ -1876,7 +1876,7 @@ Returns base64-encoded PNG image.
         },
         "huggingface": {
             "description": "Hugging Face Inference API (Free Tier)",
-            "base_url": "https://router.huggingface.co",
+            "base_url": "https://router.huggingface.co/hf-inference",
             "models": {
                 "text_generation": ["meta-llama/Llama-3.2-3B-Instruct", "mistralai/Mistral-7B-Instruct-v0.3", "Qwen/Qwen2.5-7B-Instruct"],
                 "embeddings": ["sentence-transformers/all-MiniLM-L6-v2", "BAAI/bge-small-en-v1.5"],

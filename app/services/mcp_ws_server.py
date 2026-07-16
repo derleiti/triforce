@@ -16,19 +16,18 @@ Jeder verbundene Client ist ein Node im Mesh.
 """
 
 import asyncio
+import socket
 import json
 import ssl
 import logging
 import uuid
 from pathlib import Path
-from app.config import get_settings
-from app.config import get_settings
-from app.config import get_settings
-from app.config import get_settings
 from typing import Dict, Set, Any, Optional, List
 from datetime import datetime
 from collections import defaultdict
 from dataclasses import dataclass, field
+
+from ..config import get_settings
 
 try:
     import websockets
@@ -47,29 +46,16 @@ MCP_WS_ENABLE_IPV6 = _settings.mcp_ws_enable_ipv6
 CERT_DIR = Path("/home/zombie/triforce/certs/client-auth")
 
 
-def _port_available(host: str, port: int, enable_ipv6: bool = True) -> bool:
-    import socket
-
-    family = socket.AF_INET6 if (":" in host or host == "::") else socket.AF_INET
-    sock = socket.socket(family, socket.SOCK_STREAM)
+def _port_available(host: str, port: int) -> bool:
+    """Return True if the configured WebSocket bind port is available."""
+    family = socket.AF_INET6 if MCP_WS_ENABLE_IPV6 else socket.AF_INET
     try:
-        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        if family == socket.AF_INET6:
-            try:
-                sock.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_V6ONLY, 0 if enable_ipv6 else 1)
-            except Exception:
-                pass
-            sock.bind((host, port, 0, 0))
-        else:
+        with socket.socket(family, socket.SOCK_STREAM) as sock:
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             sock.bind((host, port))
-        return True
+            return True
     except OSError:
         return False
-    finally:
-        try:
-            sock.close()
-        except Exception:
-            pass
 
 
 @dataclass
@@ -127,37 +113,20 @@ class MCPMeshServer:
         }
     
     def _get_ssl_context(self) -> Optional[ssl.SSLContext]:
-        """Create SSL context (optional mTLS).
-
-        Erwartet in CERT_DIR:
-          server.crt + server.key  — Server-Zertifikat (von interner CA signiert)
-          ca.crt                   — CA-Zertifikat fuer Peer-Verifikation (mTLS)
-
-        Fallback auf ca.crt/ca.key fuer Rueckwaertskompatibilitaet.
-        Federation laeuft ueber WireGuard (bereits verschluesselt) —
-        TLS ist zusaetzliche Schicht, kein Let's Encrypt benoetigt.
-        """
+        """Create SSL context (optional mTLS)"""
         try:
-            # Bevorzuge server.crt/server.key (korrekte Trennung CA vs Server-Cert)
-            server_cert = CERT_DIR / "server.crt"
-            server_key  = CERT_DIR / "server.key"
-            ca_cert     = CERT_DIR / "ca.crt"
-
-            # Fallback: altes Schema (ca.crt als Server-Cert)
-            if not server_cert.exists() or not server_key.exists():
-                server_cert = CERT_DIR / "ca.crt"
-                server_key  = CERT_DIR / "ca.key"
-
-            if not server_cert.exists() or not server_key.exists():
+            ca_cert = CERT_DIR / "ca.crt"
+            ca_key = CERT_DIR / "ca.key"
+            
+            if not ca_cert.exists() or not ca_key.exists():
                 logger.warning("No certificates - running without TLS")
                 return None
-
+            
             ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-            ctx.load_cert_chain(str(server_cert), str(server_key))
+            ctx.load_cert_chain(str(ca_cert), str(ca_key))
             ctx.verify_mode = ssl.CERT_OPTIONAL  # mTLS optional
-            if ca_cert.exists():
-                ctx.load_verify_locations(str(ca_cert))
-
+            ctx.load_verify_locations(str(ca_cert))
+            
             return ctx
         except Exception as e:
             logger.error(f"SSL setup failed: {e}")
@@ -177,7 +146,7 @@ class MCPMeshServer:
                 old = self.nodes[node_id]
                 try:
                     await old.websocket.close()
-                except Exception:
+                except:
                     pass
             
             node = MeshNode(
@@ -227,7 +196,7 @@ class MCPMeshServer:
             await node.websocket.send(json.dumps(message))
             self.stats["total_messages"] += 1
             return True
-        except Exception:
+        except:
             return False
     
     async def broadcast(self, message: Dict, exclude: Set[str] = None):
@@ -267,7 +236,7 @@ class MCPMeshServer:
         self._request_counter += 1
         req_id = f"hub_{self._request_counter}"
         
-        fut = asyncio.get_running_loop().create_future()
+        fut = asyncio.get_event_loop().create_future()
         self.pending_requests[req_id] = fut
         
         # Send to node
@@ -454,17 +423,16 @@ class MCPMeshServer:
             logger.error("websockets library not installed")
             return
         
-        # Guard: check if port is already in use (expected in multi-worker mode)
-        if not _port_available(MCP_WS_HOST, MCP_WS_PORT, MCP_WS_ENABLE_IPV6):
-            logger.info(f"Port {MCP_WS_PORT} on {MCP_WS_HOST} already in use (multi-worker: another worker owns it)")
-            self._running = False
-            return
-        
         ssl_ctx = self._get_ssl_context()
         self._running = True
         self.stats["started_at"] = datetime.now().isoformat()
         
         try:
+            if not _port_available(MCP_WS_HOST, MCP_WS_PORT):
+                logger.warning(f"MCP WebSocket port already in use: {MCP_WS_HOST}:{MCP_WS_PORT}")
+                self._running = False
+                return
+
             self.server = await serve(
                 self._handle_client,
                 MCP_WS_HOST,
@@ -475,8 +443,7 @@ class MCPMeshServer:
             )
             logger.info(f"MCP Mesh Server v{self.VERSION} started on port {MCP_WS_PORT}")
         except Exception as e:
-            # In multi-worker mode, race between test-socket and actual bind is possible
-            logger.info(f"MCP WS Server bind race: {e} (another worker likely claimed the port)")
+            logger.error(f"Failed to start server: {e}")
             self._running = False
     
     async def stop(self):

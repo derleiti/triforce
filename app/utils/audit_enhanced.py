@@ -61,9 +61,9 @@ class EnhancedAuditLogger:
         backup_count: int = 10,
         retention_days: int = 30
     ):
-        # Default: ./triforce/logs/audit
+        # Default: ./logs/audit
         if log_dir is None:
-            self.log_dir = Path(__file__).parent.parent.parent / "triforce" / "logs" / "audit"
+            self.log_dir = Path(__file__).parent.parent.parent / "logs" / "audit"
         else:
             self.log_dir = Path(log_dir)
         self.log_dir.mkdir(parents=True, exist_ok=True)

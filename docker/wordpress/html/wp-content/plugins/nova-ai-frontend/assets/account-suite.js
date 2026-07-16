@@ -96,11 +96,17 @@ function initAuthForms(root){
           localStorage.setItem('ailinux_tier',d.tier||'free');
           localStorage.setItem('ailinux_client_id',d.client_id||'');
           showAuthMsg('Welcome! Loading dashboard…','ok');
-          // Sync WP session
-          try{
-            await fetch(WP_SYNC+'?token='+encodeURIComponent(d.token)+'&email='+encodeURIComponent(d.user_id||email)+'&tier='+encodeURIComponent(d.tier||'free')+'&redirect='+encodeURIComponent(location.href),{credentials:'same-origin'});
-          }catch(se){console.warn('WP sync failed:',se)}
-          setTimeout(function(){location.reload()},600);
+          // FIX 2026-04-24: Full-Page-Navigation statt fetch.
+          // Backend-Endpoint macht wp_set_auth_cookie() + wp_redirect() + exit.
+          // fetch() folgt dem 302 transparent aber setzt den Set-Cookie-Header
+          // im Redirect-Response nicht im Browser-Cookie-Jar (SameSite/CORS).
+          // Native Navigation behandelt den 302+Cookie wie jede andere Nav.
+          window.location.href = WP_SYNC
+            + '?token='    + encodeURIComponent(d.token)
+            + '&email='    + encodeURIComponent(d.user_id || email)
+            + '&tier='     + encodeURIComponent(d.tier || 'free')
+            + '&redirect=' + encodeURIComponent(location.href);
+          return;
         }else{
           showAuthMsg(d.detail||d.message||'Login failed.');
           if(typeof turnstile!=='undefined')turnstile.reset();
@@ -140,10 +146,12 @@ function initAuthForms(root){
             localStorage.setItem('ailinux_token',d.token);
             localStorage.setItem('ailinux_email',d.user_id||email);
             localStorage.setItem('ailinux_tier',d.tier||'free');
-            try{
-              await fetch(WP_SYNC+'?token='+encodeURIComponent(d.token)+'&email='+encodeURIComponent(d.user_id||email)+'&tier='+encodeURIComponent(d.tier||'free')+'&redirect='+encodeURIComponent(location.href),{credentials:'same-origin'});
-            }catch(se){}
-            setTimeout(function(){location.reload()},600);
+            window.location.href = WP_SYNC
+              + '?token='    + encodeURIComponent(d.token)
+              + '&email='    + encodeURIComponent(d.user_id || email)
+              + '&tier='     + encodeURIComponent(d.tier || 'free')
+              + '&redirect=' + encodeURIComponent(location.href);
+            return;
           }else{
             // Auto-login after registration
             root.querySelector('#nas-email').value=email;

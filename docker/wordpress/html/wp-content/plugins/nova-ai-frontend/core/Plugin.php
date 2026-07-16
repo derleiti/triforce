@@ -66,16 +66,16 @@ class Plugin {
         
         wp_enqueue_style(
             'nov-ai-frontend',
-            NOV_AI_PLUGIN_URL . 'frontend/css/nova-ai.css',
+            \NOVA_AI_PLUGIN_URL . 'frontend/css/nova-ai.css',
             [],
-            NOV_AI_VERSION . ($debug_mode ? '.debug' : '')
+            \NOVA_AI_VERSION . ($debug_mode ? '.debug' : '')
         );
 
         wp_enqueue_script(
             'nov-ai-frontend',
-            NOV_AI_PLUGIN_URL . 'frontend/js/' . $js_file,
+            \NOVA_AI_PLUGIN_URL . 'frontend/js/' . $js_file,
             [],
-            NOV_AI_VERSION . ($debug_mode ? '.debug' : ''),
+            \NOVA_AI_VERSION . ($debug_mode ? '.debug' : ''),
             true
         );
 
@@ -87,7 +87,7 @@ class Plugin {
             'restUrl' => rest_url('nova-ai/v1'),
             'debugMode' => $debug_mode,
             'defaultModel' => $this->settings['default_model'] ?? 'openai/gpt-oss-120b:free',
-            'version' => NOV_AI_VERSION,
+            'version' => \NOVA_AI_VERSION,
         ]);
     }
 
@@ -96,16 +96,16 @@ class Plugin {
 
         wp_enqueue_style(
             'nov-ai-admin',
-            NOV_AI_PLUGIN_URL . 'admin/css/admin.css',
+            \NOVA_AI_PLUGIN_URL . 'admin/css/admin.css',
             [],
-            NOV_AI_VERSION
+            \NOVA_AI_VERSION
         );
 
         wp_enqueue_script(
             'nov-ai-admin',
-            NOV_AI_PLUGIN_URL . 'admin/js/admin.js',
+            \NOVA_AI_PLUGIN_URL . 'admin/js/admin.js',
             [],
-            NOV_AI_VERSION,
+            \NOVA_AI_VERSION,
             true
         );
 
@@ -115,7 +115,7 @@ class Plugin {
             'apiEndpoint' => $this->settings['api_endpoint'] ?? 'https://api.ailinux.me',
             'mcpEndpoint' => $this->settings['mcp_endpoint'] ?? 'https://api.ailinux.me',
             'restUrl'     => rest_url('nova-ai/v1'),
-            'version'     => NOV_AI_VERSION,
+            'version'     => \NOVA_AI_VERSION,
         ]);
     }
 

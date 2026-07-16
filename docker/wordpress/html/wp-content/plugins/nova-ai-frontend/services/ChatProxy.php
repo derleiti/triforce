@@ -302,12 +302,32 @@ class ChatProxy {
             'model' => $model,
             'messages' => $messages,
             'temperature' => floatval($data['temperature'] ?? 0.7),
-            'max_tokens' => intval($data['max_tokens'] ?? 4096)
+            'max_tokens' => intval($data['max_tokens'] ?? 4096),
+            'stream' => false,  // force JSON envelope; backend defaults to text/plain stream otherwise
         ];
 
-        // Use raw API request to handle text/plain responses
-        $url = rtrim($this->api_base, '/') . '/v1/chat';
-        $this->debug_log('CHAT REQUEST', ['url' => $url, 'model' => $model]);
+        // Tier-aware routing: forward Authorization Bearer if frontend provided one.
+        // With Bearer  → /v1/client/chat (per-user JWT-validated, tier limits enforced).
+        // Without Bearer → /v1/chat (anonymous/guest, no tier enforcement; legacy default).
+        $forwarded_auth = '';
+        if (!empty($_SERVER['HTTP_AUTHORIZATION'])) {
+            $forwarded_auth = (string) $_SERVER['HTTP_AUTHORIZATION'];
+        } elseif (function_exists('getallheaders')) {
+            foreach ((array) getallheaders() as $hk => $hv) {
+                if (strcasecmp($hk, 'Authorization') === 0 && stripos($hv, 'Bearer ') === 0) {
+                    $forwarded_auth = $hv;
+                    break;
+                }
+            }
+        }
+
+        $endpoint_path = $forwarded_auth ? '/v1/client/chat' : '/v1/chat';
+        $url = rtrim($this->api_base, '/') . $endpoint_path;
+        $this->debug_log('CHAT REQUEST', [
+            'url' => $url,
+            'model' => $model,
+            'tier_aware' => $forwarded_auth ? 'yes' : 'no',
+        ]);
 
         $args = [
             'method' => 'POST',
@@ -318,6 +338,9 @@ class ChatProxy {
             ],
             'body' => json_encode($request_data),
         ];
+        if ($forwarded_auth) {
+            $args['headers']['Authorization'] = $forwarded_auth;
+        }
 
         $response = wp_remote_request($url, $args);
 
@@ -346,7 +369,16 @@ class ChatProxy {
         $decoded = json_decode($body, true);
         if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
             // Response is JSON - extract content
-            $content = $decoded['content'] ?? $decoded['response'] ?? $decoded['choices'][0]['message']['content'] ?? $body;
+            // Accepted shapes:
+            //   /v1/chat        → {"text": "..."}
+            //   /v1/client/chat → {"response": "...", "model": "...", "tier": "...", ...}
+            //   OpenAI-compat   → {"choices":[{"message":{"content":"..."}}]}
+            //   Generic         → {"content": "..."}
+            $content = $decoded['content']
+                ?? $decoded['response']
+                ?? $decoded['text']
+                ?? $decoded['choices'][0]['message']['content']
+                ?? $body;
             echo json_encode(['content' => $content, 'model' => $model]);
         } else {
             // Response is plain text

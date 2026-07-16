@@ -1,3 +1,4 @@
+# fallback metadata contract: fallback_used attempted_models fallback_from fallback_to fallback_count
 """
 API-based Agent Runner — Direct Provider API with Tool Calling
 ==============================================================

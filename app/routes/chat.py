@@ -1,13 +1,6 @@
 from __future__ import annotations
 from typing import AsyncGenerator, List, Literal, Optional
 from time import perf_counter
-
-# Dynamic Router — Swarm-Generated #1 Feature
-try:
-    from app.services.dynamic_router import get_router as _get_dynamic_router
-    _HAS_ROUTER = True
-except Exception:
-    _HAS_ROUTER = False
 from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
@@ -36,17 +29,14 @@ class ChatRequest(BaseModel):
     messages: List[ChatMessage]
     stream: bool = True
     temperature: Optional[float] = Field(None, ge=0.0, le=2.0)
-    no_fallback: bool = False  # Swarm: skip Ollama fallback on provider error
 
-async def _chat_generator(payload: ChatRequest) -> AsyncGenerator[str, None]:
-    model = await registry.get_model(payload.model)
-    if not model or "chat" not in model.capabilities:
-        # BUGFIX 2026-03-11: Never raise HTTPException inside a streaming generator —
-        # headers are already sent at this point, causing "response already started" crash.
-        # The endpoint now pre-validates before creating StreamingResponse, so this path
-        # is only hit for non-stream calls and yields a safe error chunk instead.
-        yield '{"error":{"message":"Requested model does not support chat","code":"model_not_found"}}'
-        return
+async def _chat_generator(payload: ChatRequest, model=None) -> AsyncGenerator[str, None]:
+    # Model can be pre-validated by caller (avoids 404-mid-stream bug).
+    # Fallback: validate here (back-compat for non-streaming callers).
+    if model is None:
+        model = await registry.get_model(payload.model)
+        if not model or "chat" not in model.capabilities:
+            raise api_error("Requested model does not support chat", status_code=404, code="model_not_found")
 
     # Model-Latenz-Tracking
     model_start = perf_counter()
@@ -60,7 +50,6 @@ async def _chat_generator(payload: ChatRequest) -> AsyncGenerator[str, None]:
                 (m.model_dump() for m in payload.messages),
                 stream=payload.stream,
                 temperature=payload.temperature,
-                no_fallback=payload.no_fallback,
             ):
                 if chunk:
                     yield chunk
@@ -77,39 +66,103 @@ async def _chat_generator(payload: ChatRequest) -> AsyncGenerator[str, None]:
             if _HAS_PERF_MONITOR:
                 latency_ms = (perf_counter() - model_start) * 1000
                 perf_monitor.record_model(payload.model, latency_ms, error=error_occurred)
-            # Dynamic Router — track latency per model for intelligent routing
-            if _HAS_ROUTER:
-                try:
-                    import asyncio
-                    latency_ms = (perf_counter() - model_start) * 1000
-                    asyncio.ensure_future(_get_dynamic_router().record(payload.model, latency_ms, error=error_occurred))
-                except Exception:
-                    pass
 
 @router.post("/chat", dependencies=[Depends(RateLimiter(times=5, seconds=10))])
 async def chat_endpoint(payload: ChatRequest):
     if not payload.messages:
         raise api_error("At least one message is required", status_code=422, code="missing_messages")
 
-    # PRE-VALIDATE model BEFORE creating StreamingResponse.
-    # BUGFIX 2026-03-11: Without this, the generator raises HTTPException after headers
-    # are already sent → RuntimeError: "Caught handled exception, but response already started."
-    model_check = await registry.get_model(payload.model)
-    if not model_check or "chat" not in model_check.capabilities:
+    # Pre-validate model BEFORE creating StreamingResponse — otherwise the
+    # 404 would be raised mid-stream after headers already flushed (results
+    # in HTTP 200 + empty body + ASGI RuntimeError). Bug fixed 2026-06-04.
+    model = await registry.get_model(payload.model)
+    if not model or "chat" not in model.capabilities:
         raise api_error("Requested model does not support chat", status_code=404, code="model_not_found")
 
     if payload.stream:
-        return StreamingResponse(_chat_generator(payload), media_type="text/plain")
+        return StreamingResponse(_chat_generator(payload, model=model), media_type="text/plain")
 
     collected: List[str] = []
-    async for chunk in _chat_generator(payload):
+    async for chunk in _chat_generator(payload, model=model):
         collected.append(chunk)
     return {"text": "".join(collected)}
 
+async def _openai_stream_wrapper(payload: ChatRequest, model) -> AsyncGenerator[str, None]:
+    """Wraps _chat_generator output into OpenAI-compatible SSE chunks."""
+    import json as _json
+    import time as _time
+    import uuid as _uuid
+    chat_id = f"chatcmpl-{_uuid.uuid4().hex[:24]}"
+    created = int(_time.time())
+    async for chunk in _chat_generator(payload, model=model):
+        if not chunk:
+            continue
+        sse_payload = {
+            "id": chat_id,
+            "object": "chat.completion.chunk",
+            "created": created,
+            "model": payload.model,
+            "choices": [{
+                "index": 0,
+                "delta": {"role": "assistant", "content": chunk},
+                "finish_reason": None,
+            }],
+        }
+        yield f"data: {_json.dumps(sse_payload)}\n\n"
+    # Final chunk
+    final = {
+        "id": chat_id,
+        "object": "chat.completion.chunk",
+        "created": created,
+        "model": payload.model,
+        "choices": [{"index": 0, "delta": {}, "finish_reason": "stop"}],
+    }
+    yield f"data: {_json.dumps(final)}\n\n"
+    yield "data: [DONE]\n\n"
+
+
 @router.post("/chat/completions", dependencies=[Depends(RateLimiter(times=5, seconds=10))])
 async def chat_completions_alias(payload: ChatRequest):
+    """OpenAI-compatible chat completions endpoint.
+    Returns proper OpenAI format (choices[].message.content) instead of {"text":"..."}.
     """
-    Alias for /chat endpoint for backwards compatibility.
-    Redirects to the main chat endpoint implementation.
-    """
-    return await chat_endpoint(payload)
+    if not payload.messages:
+        raise api_error("At least one message is required", status_code=422, code="missing_messages")
+
+    # Pre-validate model BEFORE creating StreamingResponse
+    model = await registry.get_model(payload.model)
+    if not model or "chat" not in model.capabilities:
+        raise api_error("Requested model does not support chat", status_code=404, code="model_not_found")
+
+    if payload.stream:
+        return StreamingResponse(
+            _openai_stream_wrapper(payload, model),
+            media_type="text/event-stream",
+        )
+
+    # Non-streaming: collect and wrap in OpenAI completion format
+    import time as _time
+    import uuid as _uuid
+    collected: list = []
+    async for chunk in _chat_generator(payload, model=model):
+        if chunk:
+            collected.append(chunk)
+    content = "".join(collected)
+    prompt_tokens = sum(len(m.content.split()) for m in payload.messages)  # rough estimate
+    completion_tokens = len(content.split())
+    return {
+        "id": f"chatcmpl-{_uuid.uuid4().hex[:24]}",
+        "object": "chat.completion",
+        "created": int(_time.time()),
+        "model": payload.model,
+        "choices": [{
+            "index": 0,
+            "message": {"role": "assistant", "content": content},
+            "finish_reason": "stop",
+        }],
+        "usage": {
+            "prompt_tokens": prompt_tokens,
+            "completion_tokens": completion_tokens,
+            "total_tokens": prompt_tokens + completion_tokens,
+        },
+    }

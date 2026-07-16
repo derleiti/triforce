@@ -1,0 +1,27 @@
+#!/usr/bin/make -f
+%:
+	dh $@
+
+override_dh_auto_install:
+	install -d $(CURDIR)/debian/triforce-backend/opt/triforce
+	# Copy app code
+	cp -r app $(CURDIR)/debian/triforce-backend/opt/triforce/
+	cp -r scripts $(CURDIR)/debian/triforce-backend/opt/triforce/
+	cp -r config $(CURDIR)/debian/triforce-backend/opt/triforce/
+	cp requirements.txt $(CURDIR)/debian/triforce-backend/opt/triforce/
+	cp VERSION $(CURDIR)/debian/triforce-backend/opt/triforce/
+	# Systemd service
+	install -d $(CURDIR)/debian/triforce-backend/etc/systemd/system
+	install -m 644 debian/triforce-backend.service $(CURDIR)/debian/triforce-backend/etc/systemd/system/triforce.service
+
+override_dh_auto_build:
+	@echo "No build needed"
+
+override_dh_auto_test:
+	@echo "Skipping tests"
+
+override_dh_shlibdeps:
+	@echo "No shared libs"
+
+override_dh_strip:
+	@echo "No stripping"

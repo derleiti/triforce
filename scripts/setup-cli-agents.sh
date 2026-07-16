@@ -489,11 +489,10 @@ LOG_FILE="${BASE_DIR}/logs/${AGENT_NAME}.log"
 export HOME="${BASE_DIR}/config/agents/${AGENT_NAME}"
 
 # API Keys laden
-if [ -f "${BASE_DIR}/auth/.env.agents" ]; then
-    source "${BASE_DIR}/auth/.env.agents"
-fi
 if [ -f "${BASE_DIR}/bin/load-chatgpt-env.sh" ]; then
     source "${BASE_DIR}/bin/load-chatgpt-env.sh"
+elif [ -f "${BASE_DIR}/auth/.env.agents" ]; then
+    source "${BASE_DIR}/auth/.env.agents"
 fi
 
 # Logging
@@ -532,11 +531,10 @@ LOG_FILE="${BASE_DIR}/logs/${AGENT_NAME}.log"
 export HOME="${BASE_DIR}/config/agents/${AGENT_NAME}"
 
 # API Keys laden
-if [ -f "${BASE_DIR}/auth/.env.agents" ]; then
-    source "${BASE_DIR}/auth/.env.agents"
-fi
 if [ -f "${BASE_DIR}/bin/load-chatgpt-env.sh" ]; then
     source "${BASE_DIR}/bin/load-chatgpt-env.sh"
+elif [ -f "${BASE_DIR}/auth/.env.agents" ]; then
+    source "${BASE_DIR}/auth/.env.agents"
 fi
 
 # Logging
@@ -573,11 +571,10 @@ LOG_FILE="${BASE_DIR}/logs/${AGENT_NAME}.log"
 export HOME="${BASE_DIR}/config/agents/${AGENT_NAME}"
 
 # API Keys laden
-if [ -f "${BASE_DIR}/auth/.env.agents" ]; then
-    source "${BASE_DIR}/auth/.env.agents"
-fi
 if [ -f "${BASE_DIR}/bin/load-chatgpt-env.sh" ]; then
     source "${BASE_DIR}/bin/load-chatgpt-env.sh"
+elif [ -f "${BASE_DIR}/auth/.env.agents" ]; then
+    source "${BASE_DIR}/auth/.env.agents"
 fi
 
 # Logging
@@ -618,11 +615,10 @@ export XDG_DATA_HOME="${HOME}/.local/share"
 export XDG_CONFIG_HOME="${HOME}/.config"
 
 # API Keys laden
-if [ -f "${BASE_DIR}/auth/.env.agents" ]; then
-    source "${BASE_DIR}/auth/.env.agents"
-fi
 if [ -f "${BASE_DIR}/bin/load-chatgpt-env.sh" ]; then
     source "${BASE_DIR}/bin/load-chatgpt-env.sh"
+elif [ -f "${BASE_DIR}/auth/.env.agents" ]; then
+    source "${BASE_DIR}/auth/.env.agents"
 fi
 
 # Logging

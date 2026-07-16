@@ -1,4 +1,19 @@
 # Discuss with AI Fix — 2026-03-22
+
+<!-- AILINUX_STATUS_START -->
+## 2026-06-05 documentation refresh
+
+- Production checkout: `/home/zombie/triforce`.
+- Production branch: `nova-nextlevel-20260603`.
+- Published HEAD: `16f43b8a`.
+- Service: `triforce.service`.
+- API health endpoint: `https://api.ailinux.me/health`.
+- Default model route: `ollama/gemma4:12b`.
+- Runtime spool: `/home/zombie/triforce/data/crawler_spool/` is ignored and should exist locally.
+
+Validation checklist: clean branch status, successful Python compile, active service, and healthy API response.
+<!-- AILINUX_STATUS_END -->
+
 # Deployed directly to Docker containers (wordpress_fpm)
 # Files: ailinux-nova-dark/assets/js/app.js + dist/app.js
 # Also: ailinux-nova-dark-dev same files
@@ -26,3 +41,10 @@
 # Fetches /v1/models, filters against CURATED list, uses optgroups
 # Fallback: 14 hardcoded models if API fails
 # Display: clean names without ollama/ prefix and :cloud suffix
+
+## 2026-06-05 - Documentation and repository hygiene update
+
+- Documented runtime-artifact boundaries for logs, Python caches, Docker repository mirror state, generated client package builds, and local patch backups.
+- Clarified Git safety workflow: verify `pwd`, repository root, branch, and status before staging.
+- Confirmed that `app/routes_sd3.py` and `app/routes_vision.py` remain active compatibility modules while imported by `app/main.py`.
+- Validation target for docs-only hygiene work: `python3 -m compileall app -q`.

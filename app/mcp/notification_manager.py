@@ -49,7 +49,17 @@ SRC_MCP = "mcp"
 SRC_MANUAL = "manual"
 SRC_WORDPRESS = "wordpress"
 
-MAIL_POLL_INTERVAL = 300
+# -----------------------------------------------------------------------------
+# AUTO-ACTION KILL-SWITCH (vom Betreiber explizit deaktiviert)
+# -----------------------------------------------------------------------------
+# Agents handeln NICHT autonom auf Events. Stattdessen wird bei HIGH/CRITICAL
+# eine strukturierte Vorschlag-Mail an die Admin-Postfaecher geschickt.
+# Markus entscheidet, ob/wie reagiert wird.
+AUTO_AGENT_ACTIONS_ENABLED = False
+SUGGEST_RECIPIENTS = ["nova@ailinux.me", "admin@ailinux.me"]
+# -----------------------------------------------------------------------------
+
+MAIL_POLL_INTERVAL = 60
 FORUM_POLL_INTERVAL = 300
 WP_POLL_INTERVAL = 600
 DEDUP_WINDOW_ERROR = 3600
@@ -233,7 +243,8 @@ async def create_event(
                 logger.debug(f"DEDUP: {fp} seen {count}x -> suppressed (already promoted)")
                 return None
         else:
-            logger.debug(f"DEDUP: skipped {fp} (seen {count}x)")
+            if count <= 10 or count % 50 == 0:
+                logger.debug(f"DEDUP: skipped {fp} (seen {count}x)")
             return None
     entry = {
         "id": str(uuid.uuid4())[:8], "title": title, "body": body,
@@ -544,6 +555,10 @@ ISSUE_MAP = {
 
 async def _cloud_mail_fallback(event: Dict) -> bool:
     """Fallback: reply to mail events via Groq cloud API when CLI agents are exhausted."""
+    # SUGGEST-ONLY: kein automatisches Antworten auf Mails mehr.
+    if not AUTO_AGENT_ACTIONS_ENABLED:
+        logger.debug("cloud_mail_fallback: skipped (AUTO_AGENT_ACTIONS_ENABLED=False)")
+        return False
     metadata = event.get("metadata", {})
     uid = metadata.get("uid", "")
     sender = metadata.get("from", "")
@@ -610,6 +625,10 @@ async def _cloud_mail_fallback(event: Dict) -> bool:
 
 async def _direct_mail_reply(event: Dict) -> bool:
     """Fallback: Reply to mail events directly via Groq API when CLI agents are unavailable."""
+    # SUGGEST-ONLY: kein automatisches Antworten auf Mails mehr.
+    if not AUTO_AGENT_ACTIONS_ENABLED:
+        logger.debug("direct_mail_reply: skipped (AUTO_AGENT_ACTIONS_ENABLED=False)")
+        return False
     metadata = event.get("metadata", {})
     uid = metadata.get("uid", "")
     sender = metadata.get("from", "")
@@ -690,6 +709,86 @@ async def _direct_mail_reply(event: Dict) -> bool:
         logger.warning(f"direct_mail_reply failed: {e}")
         return False
 
+async def _send_suggestion_mail(event: Dict) -> bool:
+    """Suggest-only Modus: schickt eine strukturierte Vorschlag-Mail an die
+    Admin-Postfaecher (nova@, admin@) statt einen Agent auto-handeln zu lassen.
+
+    Inhalt: Event-Metadaten + vorgeschlagenes Vorgehen aus TASK_PROMPTS.
+    Es passiert KEINE Aktion ausser dieser Benachrichtigung.
+    """
+    try:
+        from app.services.mail_service import mail_send
+        title = event.get("title", "")
+        body = event.get("body", "")
+        event_type = event.get("event_type", "")
+        priority = event.get("priority", "normal")
+        source = event.get("source", "")
+        event_id = event.get("id", "")
+        metadata = event.get("metadata", {}) or {}
+        action_url = event.get("action_url", "")
+
+        # Vorgeschlagenes Vorgehen aus den vorhandenen Task-Prompts ableiten,
+        # damit Markus auf einen Blick sieht, was ein Agent *tun wuerde*.
+        try:
+            template = TASK_PROMPTS.get(event_type, _DEFAULT_TASK_PROMPT)
+            suggested = template.format(
+                event_id=event_id,
+                uid=metadata.get("uid", ""),
+                discussion_id=metadata.get("discussion_id", ""),
+                comment_id=metadata.get("comment_id", ""),
+                author=metadata.get("author", ""),
+                subject=metadata.get("subject", ""),
+            )
+        except Exception:
+            suggested = "(kein passender Task-Prompt — manuelle Pruefung)"
+
+        try:
+            metadata_str = json.dumps(metadata, indent=2, ensure_ascii=False, default=str)[:1500]
+        except Exception:
+            metadata_str = str(metadata)[:1500]
+
+        mail_body = (
+            f"[Nova Suggest-Mode] Neues Event — KEINE Auto-Aktion ausgefuehrt.\n"
+            f"\n"
+            f"Event-ID  : {event_id}\n"
+            f"Type      : {event_type}\n"
+            f"Priority  : {priority}\n"
+            f"Source    : {source}\n"
+            f"Action-URL: {action_url}\n"
+            f"\n"
+            f"--- TITEL ---\n{title}\n"
+            f"\n"
+            f"--- BODY ---\n{(body or '')[:3000]}\n"
+            f"\n"
+            f"--- VORGESCHLAGENES VORGEHEN (zur Pruefung) ---\n{suggested}\n"
+            f"\n"
+            f"--- METADATA ---\n{metadata_str}\n"
+            f"\n"
+            f"-- \nNova AI (Suggest-Mode aktiv, AUTO_AGENT_ACTIONS_ENABLED=False)\n"
+        )
+
+        sent_to = []
+        for recipient in SUGGEST_RECIPIENTS:
+            try:
+                mail_send(
+                    to=recipient,
+                    subject=f"[Nova-Vorschlag] [{priority.upper()}] {title[:80]}",
+                    body=mail_body,
+                )
+                sent_to.append(recipient)
+            except Exception as _se:
+                logger.warning(f"SUGGEST mail to {recipient} failed: {_se}")
+
+        if sent_to:
+            logger.info(f"SUGGEST: vorschlag verschickt an {sent_to} | {event_type} | {event_id}")
+            return True
+        logger.warning(f"SUGGEST: keine Mail rausgegangen fuer event {event_id}")
+        return False
+    except Exception as e:
+        logger.error(f"_send_suggestion_mail error: {e}")
+        return False
+
+
 async def _dispatch_event(event: Dict) -> None:
     """Dispatch event to the appropriate agent with task-specific prompt."""
     event_type = event.get("event_type", "")
@@ -710,6 +809,23 @@ async def _dispatch_event(event: Dict) -> None:
 
     if priority not in (PRIO_HIGH, PRIO_CRITICAL):
         return
+
+    # ----------------------------------------------------------------------
+    # SUGGEST-ONLY MODUS: keine Agent-Auto-Aktionen mehr.
+    # Stattdessen Vorschlag-Mail an nova@ + admin@ und fertig.
+    # ----------------------------------------------------------------------
+    if not AUTO_AGENT_ACTIONS_ENABLED:
+        # Cooldown beachten, sonst spammen wir die Postfaecher
+        now_s = time.time()
+        last_s = _DISPATCH_COOLDOWN.get(event_type, 0)
+        if now_s - last_s < DISPATCH_COOLDOWN_S:
+            return
+        _DISPATCH_COOLDOWN[event_type] = now_s
+        ok = await _send_suggestion_mail(event)
+        if ok:
+            _mark_dispatched(event_id, "suggest-mail", None)
+        return
+    # ----------------------------------------------------------------------
     rule = EVENT_TYPES.get(event_type, {})
     agent_id = rule.get("agent")
     if not agent_id:
@@ -1064,6 +1180,36 @@ _poller_status: Dict[str, str] = {}
 
 
 def start_pollers():
+    """Start pollers with Redis lock — only one uvicorn worker runs them."""
+    global _poller_tasks
+    asyncio.create_task(_start_pollers_with_lock())
+
+
+async def _start_pollers_with_lock():
+    """Acquire Redis lock before starting poller tasks."""
+    global _poller_tasks
+    r = await _get_redis()
+    if r is None:
+        logger.warning("Pollers: Redis unavailable, starting without lock (risk of duplicates)")
+        _launch_pollers()
+        return
+    # Try to acquire lock — only one worker wins
+    locked = await r.set("notify:poller_lock", "1", nx=True, ex=120)
+    if not locked:
+        logger.info("Pollers: another worker holds the lock, skipping")
+        return
+    logger.info("Pollers: acquired lock, starting as leader")
+    _launch_pollers()
+    # Refresh lock periodically so it doesn't expire while pollers run
+    while True:
+        await asyncio.sleep(60)
+        try:
+            await r.set("notify:poller_lock", "1", ex=120)
+        except Exception:
+            break
+
+
+def _launch_pollers():
     global _poller_tasks
     for name, coro in [("mail",_poll_mail),("forum",_poll_forum),("wordpress",_poll_wordpress)]:
         task = asyncio.create_task(coro())
@@ -1179,8 +1325,10 @@ async def handle_notify_status(params: Dict[str, Any]) -> Dict:
     try:
         return {
             "status": "ok", "stats": get_stats(),
-            "pollers": {n: {"status": s, "seen": len(_last_seen.get(n,set()))}
-                       for n, s in _poller_status.items()},
+            "pollers": {
+                n: {"status": _poller_status.get(n, "unknown"), "seen": len(_last_seen.get(n, set()))}
+                for n in ("mail", "forum", "wordpress")
+            },
             "dispatch_rules": len(EVENT_TYPES),
             "dedup_windows": {"error_s": DEDUP_WINDOW_ERROR, "content_s": DEDUP_WINDOW_CONTENT},
             "store": str(STORE_FILE), "max_entries": MAX_ENTRIES,

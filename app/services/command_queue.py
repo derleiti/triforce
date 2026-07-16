@@ -499,7 +499,7 @@ class CommandQueue:
         if targets:
             agent_ids = targets
         else:
-            agent_ids = self._agents.keys()
+            agent_ids = list(self._agents.keys())
 
         for agent_id in agent_ids:
             cmd = await self.enqueue(

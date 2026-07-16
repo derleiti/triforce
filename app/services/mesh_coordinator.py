@@ -13,7 +13,6 @@ Version: 1.0.0
 """
 
 import asyncio
-import heapq
 import json
 import logging
 import time
@@ -21,7 +20,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple
+from typing import Any, Callable, Dict, List, Optional, Set
 
 logger = logging.getLogger("ailinux.mesh_coordinator")
 
@@ -150,9 +149,7 @@ class MeshCoordinator:
     def __init__(self):
         self._agents: Dict[str, MeshAgent] = {}
         self._tasks: Dict[str, MeshTask] = {}
-        # Priority heap: (priority, counter, MCPCommand) tuples for O(log n) insert/pop
-        self._mcp_queue: List[Tuple[int, int, MCPCommand]] = []
-        self._mcp_queue_counter: int = 0
+        self._mcp_queue: List[MCPCommand] = []
         self._lock = asyncio.Lock()
         self._running = False
         self._mcp_processor_task: Optional[asyncio.Task] = None
@@ -171,7 +168,7 @@ class MeshCoordinator:
             id="gemini-lead",
             name="Gemini Mesh Lead",
             role=AgentRole.LEAD,
-            model="gemini/gemini-2.0-flash",
+            model="gemini/gemini-3.5-flash",
             capabilities={"coordinate", "research", "search", "evaluate", "plan"},
             mcp_filtered=False,  # Lead darf MCP direkt nutzen
         ))
@@ -181,7 +178,7 @@ class MeshCoordinator:
             id="claude-worker",
             name="Claude Mesh Worker",
             role=AgentRole.WORKER,
-            model="anthropic/claude-sonnet-4",
+            model="anthropic/claude-sonnet-4-6",
             capabilities={"code", "analyze", "document", "test"},
             mcp_filtered=True,
         ))
@@ -191,7 +188,7 @@ class MeshCoordinator:
             id="codex-worker",
             name="Codex Mesh Worker",
             role=AgentRole.WORKER,
-            model="openai/gpt-4",
+            model="openai/gpt-5.4-mini",
             capabilities={"code", "optimize", "refactor"},
             mcp_filtered=True,
         ))
@@ -201,7 +198,7 @@ class MeshCoordinator:
             id="deepseek-worker",
             name="DeepSeek Mesh Worker",
             role=AgentRole.WORKER,
-            model="deepseek/deepseek-coder",
+            model="openrouter/deepseek/deepseek-chat-v3.1",
             capabilities={"code", "analyze", "debug"},
             mcp_filtered=True,
         ))
@@ -211,7 +208,7 @@ class MeshCoordinator:
             id="mistral-reviewer",
             name="Mistral Code Reviewer",
             role=AgentRole.REVIEWER,
-            model="mistral/mistral-large",
+            model="mistral/mistral-medium-3.5",
             capabilities={"review", "security", "best-practices"},
             mcp_filtered=True,
         ))
@@ -340,21 +337,23 @@ class MeshCoordinator:
 
         try:
             # Web Search über TriForce API
-            from .gemini_access import gemini_service
+            from .gemini_access import gemini_access_point
 
             # Recherche-Query erstellen
             query = f"Best practices implementation: {task.title} - {task.description[:200]}"
 
             # Gemini Research durchführen
-            research = await gemini_service.research(
+            research = await gemini_access_point.process_request(
                 query=query,
+                research=True,
                 store_findings=True,
+                include_context=True,
             )
 
             task.research_results.append({
                 "type": "web_research",
                 "query": query,
-                "findings": research.get("findings", []),
+                "findings": research.get("response", ""),
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             })
 
@@ -400,15 +399,28 @@ Gib eine kurze Empfehlung (max 200 Wörter).
     async def _query_agent(self, agent: MeshAgent, question: str) -> str:
         """Fragt einen Agent und erhält Antwort"""
         try:
-            from .chat import chat_service
+            from . import chat as chat_service
+            from .model_registry import registry
 
-            response = await chat_service.chat(
-                model=agent.model,
-                messages=[{"role": "user", "content": question}],
-                max_tokens=500,
-            )
+            model = await registry.get_model(agent.model)
+            if not model:
+                raise ValueError(f"Model not available in registry: {agent.model}")
 
-            return response.get("content", response.get("text", str(response)))
+            messages = [{"role": "user", "content": question}]
+            chunks: List[str] = []
+            async for chunk in chat_service.stream_chat(
+                model,
+                agent.model,
+                iter(messages),
+                stream=True,
+                temperature=0.2,
+            ):
+                if isinstance(chunk, dict):
+                    chunks.append(str(chunk.get("content") or chunk.get("text") or ""))
+                else:
+                    chunks.append(str(chunk))
+
+            return "".join(chunks).strip()
 
         except Exception as e:
             logger.error(f"Failed to query agent {agent.id}: {e}")
@@ -560,8 +572,9 @@ Gib ein kurzes Review mit Status: APPROVED / CHANGES_REQUESTED / REJECTED
         )
 
         async with self._lock:
-            heapq.heappush(self._mcp_queue, (cmd.priority, self._mcp_queue_counter, cmd))
-            self._mcp_queue_counter += 1
+            self._mcp_queue.append(cmd)
+            # Sort by priority
+            self._mcp_queue.sort(key=lambda x: x.priority)
 
         logger.debug(f"MCP Command queued: {cmd.command} from {source_agent}")
 
@@ -589,7 +602,7 @@ Gib ein kurzes Review mit Status: APPROVED / CHANGES_REQUESTED / REJECTED
                         await asyncio.sleep(0.5)
                         continue
 
-                    _, _, cmd = heapq.heappop(self._mcp_queue)
+                    cmd = self._mcp_queue.pop(0)
 
                 cmd.status = "executing"
                 logger.info(f"Executing MCP Command: {cmd.command}")
@@ -624,16 +637,13 @@ Gib ein kurzes Review mit Status: APPROVED / CHANGES_REQUESTED / REJECTED
 
     def get_status(self) -> Dict[str, Any]:
         """Gibt den aktuellen Status des Mesh Systems zurück"""
-        completed_phases = {TaskPhase.COMPLETED, TaskPhase.FAILED}
         return {
             "running": self._running,
             "agents": {
                 agent_id: agent.to_dict()
                 for agent_id, agent in self._agents.items()
             },
-            "active_tasks": sum(
-                1 for t in self._tasks.values() if t.phase not in completed_phases
-            ),
+            "active_tasks": len([t for t in self._tasks.values() if t.phase not in [TaskPhase.COMPLETED, TaskPhase.FAILED]]),
             "mcp_queue_size": len(self._mcp_queue),
             "tasks": {
                 task_id: task.to_dict()

@@ -260,9 +260,9 @@ class TriForceCentralLogger:
         flush_interval: float = 5.0,  # seconds
         flush_threshold: int = 100,   # entries
     ):
-        # Default: ./triforce/logs/central
+        # Default: ./logs/central
         if log_dir is None:
-            self.log_dir = Path(__file__).parent.parent.parent / "triforce" / "logs" / "central"
+            self.log_dir = Path(__file__).parent.parent.parent / "logs" / "central"
         else:
             self.log_dir = Path(log_dir)
         self.log_dir.mkdir(parents=True, exist_ok=True)
@@ -749,9 +749,9 @@ class MultiFileLogger:
     """
 
     def __init__(self, log_dir: Optional[str] = None):
-        # Default: ./triforce/logs
+        # Default: ./logs
         if log_dir is None:
-            self.log_dir = Path(__file__).parent.parent.parent / "triforce" / "logs"
+            self.log_dir = Path(__file__).parent.parent.parent / "logs"
         else:
             self.log_dir = Path(log_dir)
         self.log_dir.mkdir(parents=True, exist_ok=True)

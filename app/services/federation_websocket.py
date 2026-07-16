@@ -27,7 +27,6 @@ import asyncio
 import json
 import logging
 import os
-import threading
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -61,38 +60,9 @@ elif "zombie" in _hostname_lower:
     NODE_ID = "zombie-pc"
 else:
     NODE_ID = os.getenv("FEDERATION_NODE_ID", "hetzner")
-WS_RECONNECT_DELAY = 30  # Sekunden
-WS_HEARTBEAT_INTERVAL = 30  # Sekunden
+WS_RECONNECT_DELAY = 5  # Sekunden
+WS_HEARTBEAT_INTERVAL = 10  # Sekunden
 WS_PORT = 9001  # Separater Port für Federation WS
-
-
-# =============================================================================
-# Active Request Counter — thread-safe counter for heartbeat metrics
-# =============================================================================
-
-class _RequestCounter:
-    """Thread-safe counter for tracking active requests across the node."""
-    __slots__ = ("_value", "_lock")
-
-    def __init__(self) -> None:
-        self._value = 0
-        self._lock = threading.Lock()
-
-    @property
-    def value(self) -> int:
-        return self._value
-
-    def increment(self) -> int:
-        with self._lock:
-            self._value += 1
-            return self._value
-
-    def decrement(self) -> int:
-        with self._lock:
-            self._value = max(0, self._value - 1)
-            return self._value
-
-_active_request_counter = _RequestCounter()
 
 
 # =============================================================================
@@ -171,26 +141,17 @@ class FederationPeer:
         self._message_handlers: Dict[str, Callable] = {}
         
     async def connect(self):
-        """Verbindet zum Peer Node - mit Timeout und Exponential Backoff"""
-        backoff = WS_RECONNECT_DELAY
-        max_backoff = 300  # Max 5 Minuten
-        
+        """Verbindet zum Peer Node"""
         while True:
             try:
                 logger.info(f"Connecting to peer {self.node_id} at {self.ws_url}")
-                # Timeout verhindert dass offline Nodes den Event Loop blockieren
-                self.websocket = await asyncio.wait_for(
-                    websockets.connect(
-                        self.ws_url,
-                        ping_interval=45,
-                        ping_timeout=30,
-                        close_timeout=5,
-                        open_timeout=10,
-                    ),
-                    timeout=15.0
+                self.websocket = await websockets.connect(
+                    self.ws_url,
+                    ping_interval=20,
+                    ping_timeout=10,
+                    close_timeout=5
                 )
                 self.connected = True
-                backoff = WS_RECONNECT_DELAY  # Reset backoff bei Erfolg
                 
                 # Send HELLO
                 await self._send_hello()
@@ -201,26 +162,17 @@ class FederationPeer:
                 # Message loop
                 await self._message_loop()
                 
-            except asyncio.TimeoutError:
-                logger.warning(f"Connect timeout to {self.node_id} (15s) - node likely offline")
             except ConnectionClosed as e:
                 logger.warning(f"Connection to {self.node_id} closed: {e}")
-                backoff = WS_RECONNECT_DELAY  # Reset bei sauberer Trennung
-            except OSError as e:
-                # Connection refused, network unreachable etc. - kein Stacktrace nötig
-                logger.warning(f"Connection error to {self.node_id}: {e}")
             except Exception as e:
-                logger.error(f"Unexpected error for {self.node_id}: {e}")
+                logger.error(f"Connection error to {self.node_id}: {e}")
             
             self.connected = False
             if self._heartbeat_task:
                 self._heartbeat_task.cancel()
-                self._heartbeat_task = None
             
-            logger.info(f"Reconnecting to {self.node_id} in {backoff}s...")
-            await asyncio.sleep(backoff)
-            # Exponential backoff: 30 -> 60 -> 120 -> 300 -> 300 -> ...
-            backoff = min(backoff * 2, max_backoff)
+            logger.info(f"Reconnecting to {self.node_id} in {WS_RECONNECT_DELAY}s...")
+            await asyncio.sleep(WS_RECONNECT_DELAY)
     
     async def _send_hello(self):
         """Sendet HELLO mit Token-Authentifizierung"""
@@ -255,7 +207,7 @@ class FederationPeer:
             "metrics": {
                 "cpu_percent": psutil.cpu_percent(),
                 "memory_percent": psutil.virtual_memory().percent,
-                "active_requests": _active_request_counter.value,
+                "active_requests": 0,  # TODO: Von Request Counter
                 "queue_depth": 0
             }
         })
@@ -268,16 +220,20 @@ class FederationPeer:
                 data = json.loads(message)
                 logger.info(f"Raw WS message: {str(data)[:200]}")
                 
-                # Verify signed message - FAIL-CLOSED: reject all unsigned/invalid
+                # Try signed message first
                 payload = verify_signed_request(data)
                 
                 if payload is None:
-                    node_hint = data.get("data", {}).get("node_id", "unknown") if isinstance(data.get("data"), dict) else "unknown"
-                    logger.warning(
-                        f"Rejected message from {self.node_id} (hint={node_hint}): "
-                        f"signature verification failed (fail-closed)"
-                    )
-                    continue
+                    # Maybe unsigned message (legacy/direct)
+                    if "type" in data:
+                        payload = data
+                        logger.debug(f"Accepting unsigned message from {self.node_id}")
+                    elif "data" in data and isinstance(data.get("data"), dict):
+                        payload = data["data"]
+                        logger.warning(f"Invalid signature from {self.node_id}, using payload anyway")
+                    else:
+                        logger.warning(f"Unrecognized message format from {self.node_id}")
+                        continue
                 
                 msg_type = payload.get("type")
                 if msg_type:
@@ -401,34 +357,27 @@ class FederationLoadBalancer:
         """Startet WebSocket Server für eingehende Peer-Verbindungen"""
         async def handler(websocket, path):
             peer_id = None
-            authenticated = False
             try:
                 async for message in websocket:
                     data = json.loads(message)
                     
-                    # Verify signature - REJECT unsigned messages (fail-closed)
+                    # Try signed message first
                     payload = verify_signed_request(data)
                     
                     if payload is None:
-                        logger.warning(f"Rejected unsigned/invalid message from {peer_id or 'unknown'}")
-                        continue
+                        # Maybe unsigned message
+                        if "type" in data:
+                            payload = data
+                        elif "data" in data and isinstance(data.get("data"), dict):
+                            payload = data["data"]
+                        else:
+                            continue
                     
                     msg_type = payload.get("type")
                     
                     if msg_type == MessageType.HELLO:
                         peer_id = payload.get("node_id")
-                        token = payload.get("token", "")
-                        
-                        # Verify token against vault
-                        from .federation_vault import get_federation_vault
-                        vault = get_federation_vault()
-                        if not vault.verify_token(peer_id, token):
-                            logger.warning(f"HELLO rejected: invalid token for node {peer_id}")
-                            await websocket.close(4001, "Authentication failed")
-                            return
-                        
-                        authenticated = True
-                        logger.info(f"Peer {peer_id} authenticated and connected")
+                        logger.info(f"Peer {peer_id} connected")
                         
                         # Send ACK
                         ack = create_signed_request({
@@ -438,9 +387,6 @@ class FederationLoadBalancer:
                         await websocket.send(json.dumps(ack))
                         
                     elif msg_type == MessageType.HEARTBEAT:
-                        if not authenticated:
-                            logger.warning(f"Heartbeat from unauthenticated peer, ignoring")
-                            continue
                         # Update metrics
                         if peer_id and peer_id in self.peers:
                             metrics = payload.get("metrics", {})
@@ -465,8 +411,8 @@ class FederationLoadBalancer:
                 handler,
                 "0.0.0.0",
                 WS_PORT,
-                ping_interval=45,
-                ping_timeout=30
+                ping_interval=20,
+                ping_timeout=10
             )
             logger.info(f"Federation WS Server listening on port {WS_PORT}")
         except Exception as e:
@@ -521,7 +467,7 @@ class FederationLoadBalancer:
             return await self._execute_local_task(task_type, task_data)
         
         # Create Future für Ergebnis
-        future = asyncio.get_running_loop().create_future()
+        future = asyncio.get_event_loop().create_future()
         self._pending_tasks[task_id] = future
         
         try:

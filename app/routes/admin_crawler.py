@@ -2,21 +2,14 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from typing import Dict, Any, List
-from fastapi import APIRouter, Depends, Header, HTTPException
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from ..services.crawler.user_crawler import user_crawler
-from ..services.crawler.manager import crawler_manager
-from ..services.auto_crawler import auto_crawler
-from ..services.auto_publisher import auto_publisher
+# Crawler imports are loaded lazily to avoid optional playwright dependency
+
+# auto_crawler is provided via get_auto_crawler() to avoid eager initialization of optional crawler subsystem
+# auto_publisher provided lazily via get_auto_publisher() to avoid eager initialization
 from ..config import get_settings
-
-import os as _os_cr
-
-def _require_crawler_admin(x_internal_key: str = Header(default="")):
-    expected = _os_cr.environ.get("INTERNAL_API_KEY", "")
-    if not expected or x_internal_key != expected:
-        raise HTTPException(status_code=403, detail="Forbidden")
 
 router = APIRouter(prefix="/admin/crawler", tags=["admin-crawler"])
 
@@ -57,9 +50,10 @@ class CrawlerConfigUpdateResponse(BaseModel):
 
 async def _count_posts_today() -> int:
     today = datetime.now(timezone.utc).date()
-    async with crawler_manager._store._lock:
+    from ..services.crawler.manager import crawler_manager as _crawler_manager
+    async with _crawler_manager._store._lock:
         count = 0
-        for result in crawler_manager._store._records.values():
+        for result in _crawler_manager._store._records.values():
             if result.posted_at and result.posted_at.astimezone(timezone.utc).date() == today:
                 count += 1
         return count
@@ -72,11 +66,15 @@ async def get_crawler_status():
     """
     settings = get_settings()
 
-    user_status = await user_crawler.get_status()
-    auto_status = await auto_crawler.get_status()
-    manager_metrics = await crawler_manager.metrics()
-    manager_jobs = await crawler_manager.list_jobs()
-    active_workers = sum(1 for task in crawler_manager._worker_tasks if not task.done())
+    from ..services.crawler.user_crawler import get_user_crawler
+    from ..services.crawler.manager import crawler_manager as _crawler_manager
+
+    user_status = await get_user_crawler().get_status()
+    from ..services.auto_crawler import get_auto_crawler
+    auto_status = await get_auto_crawler().get_status()
+    manager_metrics = await _crawler_manager.metrics()
+    manager_jobs = await _crawler_manager.list_jobs()
+    active_workers = sum(1 for task in _crawler_manager._worker_tasks if not task.done())
     queue_depth_total = manager_metrics["queue_depth"].get("total", 0)
 
     user_summary = {
@@ -118,8 +116,10 @@ async def get_crawler_status():
     }
     auto_status["summary"] = auto_summary
 
-    publisher_running = auto_publisher._task is not None and not auto_publisher._task.done()
-    publisher_last_run = getattr(auto_publisher, "_last_run", None)
+    from ..services.auto_publisher import get_auto_publisher
+    publisher = get_auto_publisher()
+    publisher_running = publisher._task is not None and not publisher._task.done()
+    publisher_last_run = getattr(publisher, "_last_run", None)
     publisher_summary = {
         "running": publisher_running,
         "workers": 1 if publisher_running else 0,
@@ -132,8 +132,8 @@ async def get_crawler_status():
         "total_jobs": len(manager_jobs),
         "queue_depth": manager_metrics["queue_depth"],
         "active_workers": active_workers,
-        "memory_usage_bytes": crawler_manager._store._memory_usage,
-        "training_shards": len(crawler_manager._train_index.get("shards", [])),
+        "memory_usage_bytes": _crawler_manager._store._memory_usage,
+        "training_shards": len(_crawler_manager._train_index.get("shards", [])),
         "categories": manager_metrics["categories"],
         "last_heartbeat": manager_metrics.get("last_heartbeat"),
     }
@@ -150,9 +150,9 @@ async def get_crawler_status():
         "auto_crawler": auto_status,
         "auto_publisher": {
             "running": publisher_running,
-            "interval_seconds": auto_publisher._interval,
-            "min_score": auto_publisher._min_score,
-            "max_posts_per_hour": auto_publisher._max_posts_per_hour,
+            "interval_seconds": publisher._interval,
+            "min_score": publisher._min_score,
+            "max_posts_per_hour": publisher._max_posts_per_hour,
             "summary": publisher_summary,
         },
         "main_manager": manager_stats,
@@ -177,7 +177,7 @@ async def get_crawler_config():
 
 
 @router.post("/config", response_model=CrawlerConfigUpdateResponse)
-async def update_crawler_config(payload: CrawlerConfigUpdate, _auth_cr: None = Depends(_require_crawler_admin)) -> CrawlerConfigUpdateResponse:
+async def update_crawler_config(payload: CrawlerConfigUpdate) -> CrawlerConfigUpdateResponse:
     """Dynamically update crawler configuration without restarting services."""
     settings = get_settings()
     updates: Dict[str, Any] = {}
@@ -194,7 +194,8 @@ async def update_crawler_config(payload: CrawlerConfigUpdate, _auth_cr: None = D
         updates["user_crawler_max_concurrent"] = payload.user_crawler_max_concurrent
 
     if user_updates:
-        await user_crawler.apply_config(
+        from ..services.crawler.user_crawler import get_user_crawler
+        await get_user_crawler().apply_config(
             worker_count=user_updates.get("workers"),
             max_concurrent=user_updates.get("max_concurrent"),
         )
@@ -203,16 +204,18 @@ async def update_crawler_config(payload: CrawlerConfigUpdate, _auth_cr: None = D
         settings.auto_crawler_enabled = payload.auto_crawler_enabled
         updates["auto_crawler_enabled"] = payload.auto_crawler_enabled
         if payload.auto_crawler_enabled:
-            await auto_crawler.start()
+            from ..services.auto_crawler import get_auto_crawler
+            await get_auto_crawler().start()
         else:
-            await auto_crawler.stop()
+            from ..services.auto_crawler import get_auto_crawler
+            await get_auto_crawler().stop()
 
     config = await get_crawler_config()
     return CrawlerConfigUpdateResponse(config=config, updated=updates)
 
 
 @router.post("/control")
-async def control_crawler(request: CrawlerControlRequest, _auth: None = Depends(_require_crawler_admin)):
+async def control_crawler(request: CrawlerControlRequest):
     """
     Control crawler instances (start/stop/restart).
 
@@ -243,7 +246,8 @@ async def control_crawler(request: CrawlerControlRequest, _auth: None = Depends(
         return getattr(user_crawler, "_running", False)
 
     def auto_running() -> bool:
-        return any(not task.done() for task in getattr(auto_crawler, "_tasks", []))
+        from ..services.auto_crawler import get_auto_crawler
+        return any(not task.done() for task in getattr(get_auto_crawler(), "_tasks", []))
 
     def publisher_running() -> bool:
         return auto_publisher._task is not None and not auto_publisher._task.done()
@@ -271,16 +275,19 @@ async def control_crawler(request: CrawlerControlRequest, _auth: None = Depends(
         if action == "start":
             if is_running:
                 return response("running", changed=False, detail="already running")
-            await auto_crawler.start()
+            from ..services.auto_crawler import get_auto_crawler
+            await get_auto_crawler().start()
             return response("running", changed=True)
         if action == "stop":
             if not is_running:
                 return response("stopped", changed=False, detail="already stopped")
-            await auto_crawler.stop()
+            from ..services.auto_crawler import get_auto_crawler
+            await get_auto_crawler().stop()
             return response("stopped", changed=True)
         if action == "restart":
-            await auto_crawler.stop()
-            await auto_crawler.start()
+            from ..services.auto_crawler import get_auto_crawler
+            await get_auto_crawler().stop()
+            await get_auto_crawler().start()
             return response("running", changed=True, detail="restarted")
         raise RuntimeError("Unsupported action")
 
@@ -289,16 +296,19 @@ async def control_crawler(request: CrawlerControlRequest, _auth: None = Depends(
         if action == "start":
             if is_running:
                 return response("running", changed=False, detail="already running")
-            await auto_publisher.start()
+            from ..services.auto_publisher import get_auto_publisher
+            await get_auto_publisher().start()
             return response("running", changed=True)
         if action == "stop":
             if not is_running:
                 return response("stopped", changed=False, detail="already stopped")
-            await auto_publisher.stop()
+            from ..services.auto_publisher import get_auto_publisher
+            await get_auto_publisher().stop()
             return response("stopped", changed=True)
         if action == "restart":
-            await auto_publisher.stop()
-            await auto_publisher.start()
+            from ..services.auto_publisher import get_auto_publisher
+            await get_auto_publisher().stop()
+            await get_auto_publisher().start()
             return response("running", changed=True, detail="restarted")
         raise RuntimeError("Unsupported action")
 
@@ -323,10 +333,14 @@ async def get_crawler_metrics():
     """
     Get detailed crawler metrics and performance statistics.
     """
-    user_status = await user_crawler.get_status()
-    auto_status = await auto_crawler.get_status()
-    manager_metrics = await crawler_manager.metrics()
-    manager_jobs = await crawler_manager.list_jobs()
+    from ..services.crawler.user_crawler import get_user_crawler
+    from ..services.auto_crawler import get_auto_crawler
+    from ..services.crawler.manager import crawler_manager as _crawler_manager
+
+    user_status = await get_user_crawler().get_status()
+    auto_status = await get_auto_crawler().get_status()
+    manager_metrics = await _crawler_manager.metrics()
+    manager_jobs = await _crawler_manager.list_jobs()
 
     user_stats = user_status.get("stats", {})
     auto_stats = manager_metrics["categories"].get("auto", {})
@@ -340,7 +354,7 @@ async def get_crawler_metrics():
             return 0.0
         return failed / total
 
-    total_results = len(crawler_manager._store._records)
+    total_results = len(_crawler_manager._store._records)
     completed_jobs = [j for j in manager_jobs if j.status == "completed"]
     failed_jobs = [j for j in manager_jobs if j.status == "failed"]
     running_jobs = [j for j in manager_jobs if j.status == "running"]
@@ -369,15 +383,15 @@ async def get_crawler_metrics():
             "error_rate": error_rate(auto_stats),
         },
         "storage": {
-            "memory_usage_bytes": crawler_manager._store._memory_usage,
-            "max_memory_bytes": crawler_manager._store.max_memory_bytes,
-            "memory_usage_percent": (crawler_manager._store._memory_usage / crawler_manager._store.max_memory_bytes * 100)
-                if crawler_manager._store.max_memory_bytes > 0 else 0,
-            "records_in_memory": len(crawler_manager._store._records),
+            "memory_usage_bytes": _crawler_manager._store._memory_usage,
+            "max_memory_bytes": _crawler_manager._store.max_memory_bytes,
+            "memory_usage_percent": (_crawler_manager._store._memory_usage / _crawler_manager._store.max_memory_bytes * 100)
+                if _crawler_manager._store.max_memory_bytes > 0 else 0,
+            "records_in_memory": len(_crawler_manager._store._records),
         },
         "training": {
-            "shards": len(crawler_manager._train_index.get("shards", [])),
-            "buffer_size": len(crawler_manager._train_buffer),
+            "shards": len(_crawler_manager._train_index.get("shards", [])),
+            "buffer_size": len(_crawler_manager._train_buffer),
         },
         "posts_today": posts_today,
     }

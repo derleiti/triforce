@@ -1160,71 +1160,6 @@ V5_TOOLS: List[Dict[str, Any]] = [
         },
     },
 
-    # =========================================================================
-    # SWARM BROADCAST (631+ Model Collective Intelligence)
-    # =========================================================================
-    {
-        "name": "swarm_broadcast",
-        "description": (
-            "Sende einen Prompt an ALLE 631+ registrierten AI-Modelle. "
-            "Sammelt Antworten parallel (batched per Provider, Rate-Limit-aware), "
-            "bewertet Qualitaet, und gibt Top-Ergebnisse zurueck. "
-            "Dauert ca. 2-5 Minuten fuer alle Provider."
-        ),
-        "inputSchema": {
-            "type": "object",
-            "required": ["question"],
-            "properties": {
-                "question":       {"type": "string",  "description": "Die Frage/Aufgabe fuer den Schwarm"},
-                "max_tokens":     {"type": "integer", "description": "Max Tokens pro Modell-Antwort (default: 200)"},
-                "top_n":          {"type": "integer", "description": "Anzahl Top-Ergebnisse (default: 20)"},
-                "skip_providers": {"type": "array", "items": {"type": "string"}, "description": "Provider ueberspringen (z.B. ['anthropic'])"},
-                "only_providers": {"type": "array", "items": {"type": "string"}, "description": "NUR diese Provider nutzen (z.B. ['mistral','groq'])"},
-            },
-        },
-    },
-    {
-        "name": "swarm_status",
-        "description": "Status einer Swarm-Broadcast Session abrufen.",
-        "inputSchema": {
-            "type": "object",
-            "required": ["session_id"],
-            "properties": {
-                "session_id": {"type": "string", "description": "Swarm Session ID"},
-            },
-        },
-    },
-    {
-        "name": "swarm_top_results",
-        "description": (
-            "Top-Ergebnisse einer Swarm-Session abrufen. Zeigt die besten "
-            "Antworten aller Modelle sortiert nach Quality-Score."
-        ),
-        "inputSchema": {
-            "type": "object",
-            "required": ["session_id"],
-            "properties": {
-                "session_id": {"type": "string", "description": "Swarm Session ID"},
-                "limit":      {"type": "integer", "description": "Max Ergebnisse (default: 20)"},
-            },
-        },
-    },
-    {
-        "name": "swarm_consolidated",
-        "description": (
-            "Generiert einen konsolidierten Prompt aus den Top-Ergebnissen "
-            "einer Swarm-Session. Kann direkt an Gemini Lead oder einen "
-            "Coding-Agent uebergeben werden."
-        ),
-        "inputSchema": {
-            "type": "object",
-            "required": ["session_id"],
-            "properties": {
-                "session_id": {"type": "string", "description": "Swarm Session ID"},
-            },
-        },
-    },
-
 ]
 
 # =============================================================================
@@ -1662,3 +1597,36 @@ V5_TOOLS += [
         }},
     },
 ]
+
+
+# =============================================================================
+# DEDUPLICATION GUARD — Bug-Fix 2026-04-28 (Code Review)
+# Removes accidental duplicate tool definitions (e.g. flarum_* re-definitions
+# in the V5_TOOLS += [...] block). First occurrence wins — preserves the
+# canonical schemas defined in the initial V5_TOOLS block.
+# =============================================================================
+def _v5_dedup_tools() -> int:
+    """Remove duplicate tool definitions (first-occurrence wins). Returns count removed."""
+    seen: set = set()
+    deduped: List[Dict[str, Any]] = []
+    for _t in V5_TOOLS:
+        _name = _t.get("name") if isinstance(_t, dict) else None
+        if not _name:
+            continue
+        if _name in seen:
+            continue
+        seen.add(_name)
+        deduped.append(_t)
+    removed = len(V5_TOOLS) - len(deduped)
+    V5_TOOLS.clear()
+    V5_TOOLS.extend(deduped)
+    return removed
+
+
+_REMOVED = _v5_dedup_tools()
+if _REMOVED:
+    import logging as _logging
+    _logging.getLogger("ailinux.mcp.registry").info(
+        f"V5 registry: removed {_REMOVED} duplicate tool definition(s)"
+    )
+del _REMOVED

@@ -1,7 +1,0 @@
-{
-  "backup_dir": "/home/zombie/triforce/.backups/group_chat_hardening_20260403_045118",
-  "patched_file": "/home/zombie/triforce/app/services/group_chat.py",
-  "test_file": "/home/zombie/triforce/tests/test_group_chat_hardening_unittest.py",
-  "patch_file": "/home/zombie/triforce/patches/group_chat_hardening_20260403.patch",
-  "test_command": "python3 -m unittest tests.test_group_chat_hardening_unittest -v"
-}

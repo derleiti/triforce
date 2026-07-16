@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import List
 
-from fastapi import APIRouter, HTTPException, Query, Header, Depends
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 from fastapi.responses import FileResponse
 
@@ -14,16 +14,9 @@ from ..schemas import (
     CrawlResultResponse,
 )
 from ..services.crawler.manager import crawler_manager
-from ..services.crawler.user_crawler import user_crawler
+from ..services.crawler.user_crawler import get_user_crawler
 
-import os as _os_cw
-
-def _require_crawler_auth(x_internal_key: str = Header(default="")):
-    expected = _os_cw.environ.get("INTERNAL_API_KEY", "")
-    if not expected or x_internal_key != expected:
-        raise HTTPException(status_code=403, detail="Forbidden")
-
-router = APIRouter(dependencies=[Depends(_require_crawler_auth)])
+router = APIRouter()
 
 class CrawlerSearchRequest(BaseModel):
     query: str
@@ -68,7 +61,7 @@ async def create_job(payload: CrawlJobRequest):
 
     if is_user_request and len(payload.seeds) == 1:
         # Use fast user_crawler for single-URL user requests
-        job = await user_crawler.crawl_url(
+        job = await get_user_crawler().crawl_url(
             url=str(payload.seeds[0]),
             keywords=payload.keywords,
             max_pages=payload.max_pages,

@@ -5,7 +5,7 @@ source "$(dirname "$0")/triforce-env.sh"
 # npm auto-update (24h Cooldown, non-blocking)
 _auto_update_npm "opencode-ai"
 
-DEFAULT_MODEL="${OPENCODE_MODEL:-openrouter/openai/gpt-oss-120b:free}"
+DEFAULT_MODEL="${OPENCODE_MODEL:-mistral/mistral-small-latest}"
 
 HAS_MODEL=false
 for arg in "$@"; do

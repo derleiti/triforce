@@ -90,26 +90,26 @@ AVAILABLE_MODELS = {
     ),
     
     # === Cloud APIs ===
-    "openai/gpt-4o": ModelConfig(
+    "openai/gpt-5.5": ModelConfig(
         provider=ModelProvider.OPENAI,
-        model_id="gpt-4o",
-        display_name="GPT-4o",
+        model_id="gpt-5.5",
+        display_name="GPT-5.5",
         context_length=128000,
         strengths=["reasoning", "code", "creative", "vision"],
         cost_tier="high"
     ),
-    "openai/gpt-4o-mini": ModelConfig(
+    "openai/gpt-5.4-mini": ModelConfig(
         provider=ModelProvider.OPENAI,
-        model_id="gpt-4o-mini",
-        display_name="GPT-4o Mini",
+        model_id="gpt-5.4-mini",
+        display_name="GPT-5.4 Mini",
         context_length=128000,
         strengths=["general", "fast"],
         cost_tier="low"
     ),
-    "anthropic/claude-sonnet-4-20250514": ModelConfig(
+    "anthropic/claude-sonnet-4-6": ModelConfig(
         provider=ModelProvider.ANTHROPIC,
-        model_id="claude-sonnet-4-20250514",
-        display_name="Claude Sonnet 4",
+        model_id="claude-sonnet-4-6",
+        display_name="Claude Sonnet 4.6",
         context_length=200000,
         strengths=["code", "reasoning", "creative"],
         cost_tier="medium"
@@ -122,10 +122,10 @@ AVAILABLE_MODELS = {
         strengths=["fast", "general"],
         cost_tier="low"
     ),
-    "gemini/gemini-2.5-flash": ModelConfig(
+    "gemini/gemini-3.5-flash": ModelConfig(
         provider=ModelProvider.GEMINI,
-        model_id="gemini-2.5-flash",
-        display_name="Gemini 2.5 Flash",
+        model_id="gemini-3.5-flash",
+        display_name="Gemini 3.5 Flash",
         context_length=1000000,
         strengths=["fast", "reasoning", "vision"],
         cost_tier="low"
@@ -138,10 +138,10 @@ AVAILABLE_MODELS = {
         strengths=["reasoning", "code", "creative"],
         cost_tier="medium"
     ),
-    "mistral/mistral-large-latest": ModelConfig(
+    "mistral/mistral-medium-3.5": ModelConfig(
         provider=ModelProvider.MISTRAL,
-        model_id="mistral-large-latest",
-        display_name="Mistral Large",
+        model_id="mistral-medium-3.5",
+        display_name="Mistral Medium 3.5",
         context_length=128000,
         strengths=["reasoning", "multilingual"],
         cost_tier="medium"
@@ -179,7 +179,7 @@ class ChatRouter:
     def __init__(self, ollama_url: str = "http://localhost:11434"):
         self.ollama_url = ollama_url
         self.default_local = "ollama/qwen2.5:14b"
-        self.default_cloud = "anthropic/claude-sonnet-4-20250514"
+        self.default_cloud = "anthropic/claude-sonnet-4-6"
     
     def detect_task_type(self, message: str) -> List[str]:
         """Erkennt den Task-Typ aus der Nachricht"""
@@ -361,10 +361,10 @@ class APIProxy:
         max_tokens: int = 4096
     ) -> str:
         """
-        Chat mit Cloud-API (mit LLM Response Cache)
+        Chat mit Cloud-API
         
         Args:
-            model: Model-ID (z.B. "openai/gpt-4o")
+            model: Model-ID (z.B. "openai/gpt-5.5")
             messages: Chat-Messages [{role, content}]
             temperature: Sampling-Temperatur
             max_tokens: Max Output Tokens
@@ -372,58 +372,58 @@ class APIProxy:
         Returns:
             Assistant-Antwort als String
         """
-        # === SWARM-IMPROVEMENT #1: LLM Response Cache (Mistral-Vorschlag) ===
-        try:
-            from .redis_optimizer import get_cache
-            cache = get_cache()
-            cached = await cache.get(model, messages)
-            if cached:
-                return cached
-        except Exception:
-            pass  # Cache miss or unavailable — continue normally
-        
         from .api_vault import api_vault
-        
+
+        # ENV-Fallback: Wenn Vault locked/uninitialisiert ODER Key nicht im Vault,
+        # versuche os.environ. Konsistent mit handlers_v4 und nova_frontend.
+        # Reaktiviert 2026-06-15 — Vault wurde nie initialisiert, blockt sonst Group Chat.
+        import os
+        _PROVIDER_ENV = {
+            "openai":    ("OPENAI_API_KEY",),
+            "anthropic": ("ANTHROPIC_API_KEY",),
+            "google":    ("GEMINI_API_KEY", "GOOGLE_AI_STUDIO_KEY"),
+            "gemini":    ("GEMINI_API_KEY", "GOOGLE_AI_STUDIO_KEY"),
+            "mistral":   ("MISTRAL_API_KEY",),
+            "groq":      ("GROQ_API_KEY",),
+            "cerebras":  ("CEREBRAS_API_KEY",),
+            "openrouter":("OPENROUTER_API_KEY",),
+        }
+
         provider, model_id = model.split("/", 1)
-        # get_key() hat ENV-Fallback - kein Vault-Lock noetig
-        api_key = api_vault.get_key(provider)
-        
+
+        api_key = None
+        if api_vault.is_unlocked:
+            api_key = api_vault.get_key(provider)
+
         if not api_key:
-            # Federation-Proxy: route through master node if we're not the master
-            return await self._federation_proxy_chat(model, messages, temperature, max_tokens)
+            for env_name in _PROVIDER_ENV.get(provider, ()):
+                v = os.environ.get(env_name)
+                if v:
+                    api_key = v
+                    break
+
+        if not api_key:
+            raise RuntimeError(
+                f"No API key for provider '{provider}' "
+                f"(vault {'unlocked' if api_vault.is_unlocked else 'locked'}, "
+                f"ENV checked: {_PROVIDER_ENV.get(provider, ())})"
+            )
         
         # Provider-spezifische Implementierung
-        result = None
         if provider == "openai":
-            result = await self._openai_chat(api_key, model_id, messages, temperature, max_tokens)
+            return await self._openai_chat(api_key, model_id, messages, temperature, max_tokens)
         elif provider == "anthropic":
-            result = await self._anthropic_chat(api_key, model_id, messages, temperature, max_tokens)
+            return await self._anthropic_chat(api_key, model_id, messages, temperature, max_tokens)
         elif provider in ("google", "gemini"):
-            result = await self._gemini_chat(api_key, model_id, messages, temperature, max_tokens)
+            return await self._gemini_chat(api_key, model_id, messages, temperature, max_tokens)
         elif provider == "mistral":
-            result = await self._mistral_chat(api_key, model_id, messages, temperature, max_tokens)
+            return await self._mistral_chat(api_key, model_id, messages, temperature, max_tokens)
         elif provider == "groq":
-            result = await self._groq_chat(api_key, model_id, messages, temperature, max_tokens)
+            return await self._groq_chat(api_key, model_id, messages, temperature, max_tokens)
         elif provider == "cerebras":
-            result = await self._cerebras_chat(api_key, model_id, messages, temperature, max_tokens)
-        elif provider == "openrouter":
-            result = await self._openrouter_chat(api_key, model_id, messages, temperature, max_tokens)
-        elif provider == "cloudflare":
-            result = await self._cloudflare_chat(api_key, model_id, messages, temperature, max_tokens)
-        elif provider == "github":
-            result = await self._github_chat(api_key, model_id, messages, temperature, max_tokens)
+            return await self._cerebras_chat(api_key, model_id, messages, temperature, max_tokens)
         else:
             raise RuntimeError(f"Unknown provider: {provider}")
-        
-        # === SWARM-IMPROVEMENT #1b: Cache successful response ===
-        if result:
-            try:
-                from .redis_optimizer import get_cache
-                await get_cache().set(model, messages, result)
-            except Exception:
-                pass
-        
-        return result
     
     async def _openai_chat(self, api_key: str, model: str, messages: list, temp: float, max_tokens: int) -> str:
         """OpenAI API Call"""
@@ -466,7 +466,18 @@ class APIProxy:
                 "max_tokens": max_tokens
             }
             if system:
-                body["system"] = system
+                # Prompt-Caching: convert long system prompts into cacheable block.
+                # Threshold ~4000 chars (≈1024 tokens, Anthropic minimum for cache hit
+                # on Sonnet/Opus). Cache TTL 5 min, write=1.25x, read=0.1x normal cost.
+                # Patched 2026-06-04.
+                if isinstance(system, str) and len(system) >= 4000:
+                    body["system"] = [{
+                        "type": "text",
+                        "text": system,
+                        "cache_control": {"type": "ephemeral"},
+                    }]
+                else:
+                    body["system"] = system
             
             async with session.post(
                 "https://api.anthropic.com/v1/messages",
@@ -577,115 +588,6 @@ class APIProxy:
                     raise RuntimeError(f"Cerebras API error: {error}")
                 data = await resp.json()
                 return data["choices"][0]["message"]["content"]
-
-
-    async def _openrouter_chat(self, api_key: str, model: str, messages: list, temp: float, max_tokens: int) -> str:
-        """OpenRouter API Call (OpenAI-compatible)"""
-        from ..utils.model_helpers import strip_provider_prefix
-        model_id = strip_provider_prefix(model)
-        async with aiohttp.ClientSession(timeout=self.timeout) as session:
-            async with session.post(
-                "https://openrouter.ai/api/v1/chat/completions",
-                headers={
-                    "Authorization": f"Bearer {api_key}",
-                    "Content-Type": "application/json",
-                    "HTTP-Referer": "https://api.ailinux.me",
-                    "X-Title": "AILinux TriForce",
-                },
-                json={
-                    "model": model_id,
-                    "messages": messages,
-                    "temperature": temp,
-                    "max_tokens": max_tokens
-                }
-            ) as resp:
-                if resp.status != 200:
-                    error = await resp.text()
-                    raise RuntimeError(f"OpenRouter API error: {error}")
-                data = await resp.json()
-                return data["choices"][0]["message"]["content"]
-
-    async def _cloudflare_chat(self, api_key: str, model: str, messages: list, temp: float, max_tokens: int) -> str:
-        """Cloudflare Workers AI"""
-        from .chat import _stream_cloudflare
-        from ..config import get_settings
-        settings = get_settings()
-        chunks = []
-        async for chunk in _stream_cloudflare(
-            f"cloudflare/{model}", messages,
-            account_id=settings.cloudflare_account_id,
-            api_token=api_key,
-            temperature=temp, stream=True, timeout=30.0,
-        ):
-            chunks.append(chunk)
-        return "".join(chunks)
-
-    async def _github_chat(self, api_key: str, model: str, messages: list, temp: float, max_tokens: int) -> str:
-        """GitHub Models (OpenAI-compatible)"""
-        async with aiohttp.ClientSession(timeout=self.timeout) as session:
-            async with session.post(
-                "https://models.github.ai/inference/chat/completions",
-                headers={
-                    "Authorization": f"Bearer {api_key}",
-                    "Content-Type": "application/json",
-                },
-                json={"model": model, "messages": messages, "temperature": temp, "max_tokens": max_tokens},
-            ) as resp:
-                if resp.status != 200:
-                    error = await resp.text()
-                    raise RuntimeError(f"GitHub Models error: {error[:200]}")
-                data = await resp.json()
-                return data["choices"][0]["message"]["content"]
-
-    async def _federation_proxy_chat(
-        self, model: str, messages: list, temp: float, max_tokens: int
-    ) -> str:
-        """Proxy chat request through federation master (hetzner) when no local API key."""
-        import os, json as _json, base64
-        node_id = os.getenv("FEDERATION_NODE_ID", "")
-        if node_id in ("hetzner", ""):
-            raise RuntimeError(f"No API key for provider: {model.split('/')[0]} (master node, no fallback)")
-        
-        master_url = "http://10.10.0.1:9000"
-        fed_token = os.getenv("FEDERATION_TOKEN", "")
-        _creds = os.getenv("FEDERATION_BASIC_AUTH", "")
-        if not _creds:
-            raise RuntimeError(f"No API key for provider: {model.split('/')[0]} (no FEDERATION_BASIC_AUTH for proxy)")
-        basic_auth = base64.b64encode(_creds.encode()).decode()
-        
-        import logging
-        logging.getLogger("ailinux.chat_router").info(
-            "Federation proxy: routing %s through master (%s)", model, master_url
-        )
-        
-        payload = {
-            "model": model,
-            "messages": messages,
-            "temperature": temp,
-            "max_tokens": max_tokens,
-            "stream": False,
-        }
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Basic {basic_auth}",
-        }
-        
-        async with aiohttp.ClientSession(timeout=self.timeout) as session:
-            async with session.post(
-                f"{master_url}/v1/chat/completions",
-                headers=headers,
-                json=payload,
-            ) as resp:
-                if resp.status != 200:
-                    error = await resp.text()
-                    raise RuntimeError(f"Federation proxy error ({resp.status}): {error[:500]}")
-                data = await resp.json()
-                # OpenAI-compat format
-                choices = data.get("choices", [])
-                if choices:
-                    return choices[0].get("message", {}).get("content", "")
-                # Fallback: direct text
-                return data.get("text", data.get("content", str(data)))
 
 
 # Singletons

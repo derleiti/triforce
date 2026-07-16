@@ -19,6 +19,7 @@ Provides:
 import asyncio
 import logging
 import subprocess
+import shutil
 import os
 import re
 from datetime import datetime, timezone
@@ -30,6 +31,9 @@ import json
 logger = logging.getLogger("ailinux.system.collector")
 
 # Base directories
+# FIX 2026-07-11: war `.../ "triforce" / "logs"` -> ergab den Doppelpfad
+# ~/triforce/triforce/logs (Split-Brain mit dem echten ~/triforce/logs).
+# parent.parent.parent ist bereits der Projektroot ~/triforce.
 BACKEND_LOG_BASE = Path(__file__).parent.parent.parent / "logs"
 TRIFORCE_LOG_BASE = BACKEND_LOG_BASE
 
@@ -274,17 +278,18 @@ class SystemLogCollector:
         """Collect GPU-related logs (NVIDIA, AMD)"""
         gpu_info = []
 
-        # Try nvidia-smi
-        nvidia_output = await self._run_command(["nvidia-smi", "-q"])
-        if nvidia_output:
-            gpu_info.append("=== NVIDIA GPU ===\n")
-            gpu_info.append(nvidia_output)
+        # Probe only tools that are installed; absent vendor utilities are normal.
+        if shutil.which("nvidia-smi"):
+            nvidia_output = await self._run_command(["nvidia-smi", "-q"])
+            if nvidia_output:
+                gpu_info.append("=== NVIDIA GPU ===\n")
+                gpu_info.append(nvidia_output)
 
-        # Try rocm-smi for AMD
-        amd_output = await self._run_command(["rocm-smi"])
-        if amd_output:
-            gpu_info.append("\n=== AMD GPU (ROCm) ===\n")
-            gpu_info.append(amd_output)
+        if shutil.which("rocm-smi"):
+            amd_output = await self._run_command(["rocm-smi"])
+            if amd_output:
+                gpu_info.append("\n=== AMD GPU (ROCm) ===\n")
+                gpu_info.append(amd_output)
 
         if gpu_info:
             output_file = KERNEL_LOG_DIR / "gpu.log"
@@ -331,50 +336,14 @@ class SystemLogCollector:
                 ])
 
                 if output and output.strip():
+                    # Write to system error log
                     error_file = ERROR_DEBUG_DIR / "system-errors.log"
                     with open(error_file, "a", encoding="utf-8") as f:
                         f.write(f"\n--- {datetime.now().isoformat()} ---\n")
                         f.write(output)
+
+                    # Also extract and log via Python logging
                     self._extract_and_log_errors("journald", output)
-                    # ── LOG → NOTIFY BRIDGE ──────────────────────────────
-                    # Kritische Signale direkt an Notifier → AgentSpawner
-                    CRITICAL = [
-                        ("kernel panic", "Kernel Panic", "critical"),
-                        ("oom-killer", "OOM Killer", "critical"),
-                        ("out of memory", "Out of Memory", "critical"),
-                        ("no space left", "Disk Full", "critical"),
-                        ("segfault", "Segmentation Fault", "critical"),
-                        ("triforce.*failed", "TriForce Failed", "critical"),
-                        ("service.*entered failed", "Service Failed", "critical"),
-                        ("docker.*failed", "Docker Failed", "critical"),
-                        (r"Traceback \(most recent", "Python Traceback", "high"),
-                        ("connection refused", "Connection Refused", "high"),
-                        ("authentication failure", "Auth Failure", "high"),
-                        ("invalid user.*from", "Invalid Login", "high"),
-                        ("certificate.*expired", "Certificate Expired", "high"),
-                    ]
-                    import re as _re, time as _time
-                    _cooldown = getattr(self, "_notify_cooldown", {})
-                    self._notify_cooldown = _cooldown
-                    for line in output.split("\n"):
-                        for pattern, signal, prio in CRITICAL:
-                            if _re.search(pattern, line, _re.I):
-                                key = f"journald::{signal}"
-                                if _time.time() - _cooldown.get(key, 0) >= 600:
-                                    _cooldown[key] = _time.time()
-                                    try:
-                                        from app.mcp.notification_manager import create_notification
-                                        create_notification({
-                                            "title": f"{'🚨' if prio == 'critical' else '⚠️'} [journald] {signal}",
-                                            "body": line.strip()[:600],
-                                            "source": "system",
-                                            "priority": prio,
-                                            "tags": ["log-monitor", "journald", signal.lower().replace(" ", "-")]
-                                        })
-                                        logger.info(f"log_notify: [{prio}] {signal}")
-                                    except Exception:
-                                        pass
-                                break
 
             except asyncio.CancelledError:
                 break

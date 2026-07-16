@@ -39,7 +39,12 @@ def _imap_connect() -> imaplib.IMAP4_SSL | imaplib.IMAP4:
 
     use_ssl = s.mail_imap_ssl if s.mail_imap_ssl is not None else True
     if use_ssl:
-        conn = imaplib.IMAP4_SSL(host, port)
+        # FIX: kein Cert-Check fuer internen Mailserver (self-signed / IP)
+        import ssl as _ssl
+        _ctx = _ssl.create_default_context()
+        _ctx.check_hostname = False
+        _ctx.verify_mode = _ssl.CERT_NONE
+        conn = imaplib.IMAP4_SSL(host, port, ssl_context=_ctx)
     else:
         conn = imaplib.IMAP4(host, port)
 
@@ -207,7 +212,12 @@ def mail_send(
             server.starttls(context=context)
             server.ehlo(ehlo_name)
         if user and password:
-            server.login(user, password)
+            try:
+                server.login(user, password)
+            except smtplib.SMTPNotSupportedError:
+                # Local trusted relay may not advertise AUTH.
+                # Continue without login when SMTP AUTH is unavailable.
+                pass
         server.send_message(msg)
 
     return {"ok": True, "to": to, "subject": subject, "from": from_addr}

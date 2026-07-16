@@ -1,0 +1,17 @@
+triforce-backend (2.86.0-1) noble; urgency=medium
+
+  * Version 2.86.0 Release
+  * Auth: X-Internal-Key support in central_auth_middleware
+  * Auth: Request path logging for 401 debugging
+  * Frontend: Dynamic model loading in Discuss widget (696 models)
+  * Frontend: 10 high-contrast theme switcher presets
+  * Frontend: Account dropdown js-ready class fix
+  * Security: CSP admin exclusion in Apache vhost
+  * Security: Hardcoded credentials externalized to wp-config.php
+  * Security: REST auth bypass scope tightened
+  * Performance: Duplicate CSS enqueue removed
+  * Performance: Targeted cache flush replaces nuclear wp_cache_flush
+  * Backup: Federation backup script with auto-detect, 2h interval
+  * Backup: Deployed to all 3 federation nodes
+
+ -- Markus Leitermann <admin@ailinux.me>  Sat, 11 Apr 2026 21:00:00 +0200

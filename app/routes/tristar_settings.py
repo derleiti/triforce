@@ -7,7 +7,7 @@ from __future__ import annotations
 import logging
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, HTTPException, Depends, Query, Header
+from fastapi import APIRouter, HTTPException, Depends, Query
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pydantic import BaseModel, Field
 import secrets
@@ -16,14 +16,7 @@ from ..config import get_settings
 from ..services.tristar.settings_controller import settings_controller
 
 logger = logging.getLogger(__name__)
-import os as _os_ts
-
-def _require_ts_auth(x_internal_key: str = Header(default="")):
-    expected = _os_ts.environ.get("INTERNAL_API_KEY", "")
-    if not expected or x_internal_key != expected:
-        raise HTTPException(status_code=403, detail="Forbidden")
-
-router = APIRouter(prefix="/tristar/settings", tags=["TriStar Settings"], dependencies=[Depends(_require_ts_auth)])
+router = APIRouter(prefix="/tristar/settings", tags=["TriStar Settings"])
 
 # Security
 security = HTTPBasic()
@@ -391,10 +384,7 @@ async def update_api_key(
         result = await settings_controller.set_api_key(update.key_name, update.value, modified_by=user)
         return {"success": True, "api_keys": result}
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e)[:200])
-    except Exception as e:
-        logger.error("Unexpected error: %s", e, exc_info=True)
-        raise HTTPException(status_code=500, detail="Internal server error") from e
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @router.put("/api-keys")

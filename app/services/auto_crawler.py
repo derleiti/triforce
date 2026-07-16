@@ -5,7 +5,7 @@ import logging
 from datetime import datetime, timezone
 from typing import List, Dict, Optional
 
-from .crawler.manager import crawler_manager
+# Crawler manager is imported lazily to avoid optional playwright dependency
 from ..config import get_settings
 
 logger = logging.getLogger("ailinux.auto_crawler")
@@ -13,11 +13,6 @@ logger = logging.getLogger("ailinux.auto_crawler")
 
 # Kategorien mit wichtigen Quellen für 24/7 Crawling
 CRAWL_SOURCES = {
-    "ailinux": [
-        "https://ailinux.me/",
-        "https://www.ailinux.me/",
-        "https://ailinux.me/news/",
-    ],
     "ai_tech": [
         "https://news.ycombinator.com/",
         "https://www.reddit.com/r/artificial/",
@@ -55,7 +50,6 @@ CRAWL_SOURCES = {
 
 # Crawl-Intervalle pro Kategorie (in Sekunden)
 CRAWL_INTERVALS = {
-    "ailinux": 3600,
     "ai_tech": 3600,      # 1 Stunde (höchste Priorität)
     "media": 7200,        # 2 Stunden
     "games": 10800,       # 3 Stunden
@@ -95,7 +89,8 @@ class AutoCrawler:
         self._stop_event.clear()
         self._tasks = []  # Clear any old completed tasks
 
-        await crawler_manager.start(worker_count=max(1, self._settings.auto_crawler_workers))
+        from .crawler.manager import crawler_manager as _crawler_manager
+        await _crawler_manager.start(worker_count=max(1, self._settings.auto_crawler_workers))
 
         # Starte einen Task pro Kategorie
         for category in CRAWL_SOURCES.keys():
@@ -135,7 +130,8 @@ class AutoCrawler:
 
                     try:
                         # Erstelle Crawl-Job mit priority
-                        job = await crawler_manager.create_job(
+                        from .crawler.manager import crawler_manager as _crawler_manager
+                        job = await _crawler_manager.create_job(
                             keywords=[category, "tech", "news"],
                             seeds=[url],
                             max_pages=10,
@@ -190,5 +186,11 @@ class AutoCrawler:
         return status
 
 
-# Singleton-Instanz
-auto_crawler = AutoCrawler()
+# Singleton-Instanz (lazy)
+_auto_crawler: Optional[AutoCrawler] = None
+
+def get_auto_crawler() -> AutoCrawler:
+    global _auto_crawler
+    if _auto_crawler is None:
+        _auto_crawler = AutoCrawler()
+    return _auto_crawler

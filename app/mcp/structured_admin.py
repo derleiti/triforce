@@ -227,7 +227,7 @@ logger.info(f"Structured Admin API loaded: {len(STRUCTURED_ADMIN_TOOLS)} tools")
 
 FEDERATION_NODES = {
     "hetzner": {"host": "10.10.0.1", "user": "zombie", "port": 22},
-    "backup":  {"host": "10.10.0.3", "user": "backupuser", "port": 22},
+    "backup":  {"host": "10.10.0.3", "user": "zombie", "port": 22},
     "zombie-pc": {"host": "10.10.0.2", "user": "zombie", "port": 22},
 }
 
@@ -467,7 +467,7 @@ logger.info(f"Structured Admin API extended: {len(STRUCTURED_ADMIN_TOOLS)} total
 # Known hosts from federation config (SSH via WireGuard VPN)
 REMOTE_HOSTS = {
     "hetzner": {"ip": "10.10.0.1", "user": "zombie", "desc": "Hetzner EX63 Master"},
-    "backup":  {"ip": "10.10.0.3", "user": "backupuser", "desc": "Backup VPS Hub"},
+    "backup":  {"ip": "10.10.0.3", "user": "zombie", "desc": "Backup VPS Hub"},
     "zombie-pc": {"ip": "10.10.0.2", "user": "zombie", "desc": "Home PC Hub"},
 }
 
@@ -1626,7 +1626,7 @@ async def handle_mcp_analytics(a):
 async def _analytics_from_logfile(a):
     """Parse MCP tool call stats from unified log file."""
     log_path = "/home/zombie/triforce/logs/unified.log"
-    n_lines = min(a.get("lines", 500), 2000)
+    n_lines = min(a.get("lines", 5000), 20000)
     try:
         r = await _run(["tail", "-n", str(n_lines), log_path], timeout=5)
         if not r["success"]:
@@ -1634,26 +1634,24 @@ async def _analytics_from_logfile(a):
         lines = r["output"].split("\n")
         tool_calls = []
         for line in lines:
-            if "TOOL_CALL_OK" in line or "TOOL_CALL" in line:
-                parts = line.split("|")
-                if len(parts) >= 4:
-                    tool_part = parts[2].strip() if len(parts) > 2 else ""
-                    # Extract tool name and latency
-                    tool_name = ""
-                    latency = 0
-                    for p in parts:
-                        p = p.strip()
-                        if p.startswith("TOOL_CALL"):
-                            pieces = p.split()
-                            if len(pieces) >= 3:
-                                tool_name = pieces[2]
-                        if "ms" in p and any(c.isdigit() for c in p):
-                            try:
-                                latency = float(''.join(c for c in p if c.isdigit() or c == '.'))
-                            except ValueError:
-                                pass
-                    if tool_name:
-                        tool_calls.append({"tool": tool_name, "latency_ms": latency})
+            # Nur den finalen TOOL_CALL-Record zaehlen, nicht START/OK-Duplikate,
+            # sonst wird jeder Call 2-3x gezaehlt.
+            if "|TOOL_CALL |" not in line:
+                continue
+            parts = [p.strip() for p in line.split("|")]
+            # Format: ...|mcp.tools|TOOL_CALL | <tool> | <OK|ERR> | {...}
+            # Der Toolname steht im Feld NACH dem "TOOL_CALL"-Feld.
+            tool_name = ""
+            latency = 0.0
+            for i, p in enumerate(parts):
+                if p == "TOOL_CALL" and i + 1 < len(parts):
+                    tool_name = parts[i + 1]
+                    break
+            for p in parts:
+                if p.endswith("ms") and p[:-2].replace(".", "").isdigit():
+                    latency = float(p[:-2])
+            if tool_name:
+                tool_calls.append({"tool": tool_name, "latency_ms": latency})
 
         # Aggregate
         tool_stats = _defaultdict(lambda: {"count": 0, "total_ms": 0})

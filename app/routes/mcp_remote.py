@@ -1,5 +1,5 @@
 """
-MCP Remote Server for Claude.ai / ChatGPT Connectors
+MCP Remote Server for Claude.ai Connectors
 
 This module implements the Model Context Protocol (MCP) Remote Server specification
 for integration with Claude.ai custom connectors.
@@ -24,7 +24,6 @@ Endpoints:
 from __future__ import annotations
 
 import json
-import logging
 import uuid
 import secrets
 from datetime import datetime, timezone
@@ -38,7 +37,7 @@ from pydantic import BaseModel
 
 from ..services.model_registry import registry
 from ..services import chat as chat_service
-from ..services.crawler.user_crawler import user_crawler
+from ..services.crawler.user_crawler import get_user_crawler
 from ..services.crawler.manager import crawler_manager
 from ..services.wordpress import wordpress_service
 from ..services.ollama_mcp import OLLAMA_TOOLS, OLLAMA_HANDLERS
@@ -51,13 +50,11 @@ from ..services.gemini_access import GEMINI_ACCESS_TOOLS, GEMINI_ACCESS_HANDLERS
 from ..services.command_queue import QUEUE_TOOLS, QUEUE_HANDLERS
 from ..services.huggingface_inference import HF_INFERENCE_TOOLS, HF_HANDLERS
 from ..mcp.adaptive_code import ADAPTIVE_CODE_TOOLS, ADAPTIVE_CODE_HANDLERS
-from ..mcp.admin_ops import ADMIN_OPS_TOOLS, ADMIN_OPS_HANDLERS
 from ..mcp.structured_admin import STRUCTURED_ADMIN_TOOLS, STRUCTURED_ADMIN_HANDLERS
 from ..utils.throttle import request_slot
 from ..mcp.api_docs import get_api_docs, API_DOCUMENTATION
 from ..mcp.specialists import specialist_router, SPECIALISTS
 from ..mcp.context import context_manager, prompt_library
-from ..mcp.runtime_registry import get_runtime_registry
 from ..utils.mcp_auth import (
     AUTH_ENABLED,
     MCP_AUTH_USER,
@@ -74,14 +71,6 @@ from ..utils.mcp_auth import (
 )
 
 router = APIRouter(tags=["MCP Remote Server"])
-logger = logging.getLogger("ailinux.mcp_remote")
-
-
-def _public_tool_error_message(tool_name: str) -> str:
-    """Return a client-safe MCP tool error without leaking internal exception text."""
-    if tool_name:
-        return f"Tool '{tool_name}' failed. See server logs for details."
-    return "Tool execution failed. See server logs for details."
 
 
 # NOTE: OAuth metadata endpoints are now in oauth_service.py
@@ -93,8 +82,8 @@ def _public_tool_error_message(tool_name: str) -> str:
 
 MCP_SERVER_INFO = {
     "name": "AILinux API",
-    "version": "2.85",
-    "description": "AILinux AI Backend v2.82 - TriStar/TriForce Multi-LLM Orchestration with CLI Agents, Codebase Access, Self-Development, Read-Only Diagnostics, and MCP Tool Telemetry",
+    "version": "2.80",
+    "description": "AILinux AI Backend v2.80 - TriStar/TriForce Multi-LLM Orchestration with CLI Agents, Codebase Access, and Self-Development capabilities",
     "vendor": "AILinux",
 }
 
@@ -104,76 +93,6 @@ MCP_CAPABILITIES = {
     "resources": False,
     "logging": False,
 }
-
-# ============================================================================
-# MCP Tool Annotations — ChatGPT readOnlyHint Classification
-# ============================================================================
-# ChatGPT treats tools WITHOUT readOnlyHint as write actions.
-# Write actions can be "temporarily disabled" by ChatGPT beta restrictions.
-# By explicitly marking read-only tools, they bypass the write-action gate.
-# Ref: platform.openai.com/docs/guides/developer-mode
-#      modelcontextprotocol.io/legacy/concepts/tools
-
-_WRITE_TOOLS = {
-    "create_post", "crawl_url", "crawl_site", "crawl",
-    "tristar_init", "tristar_memory_store",
-    "cli-agents_start", "cli-agents_stop", "cli-agents_restart",
-    "cli-agents_call", "cli-agents_broadcast",
-    "tristar_shell_exec", "shell",
-    "ollama_pull", "ollama_delete",
-    "vault_add", "vault_add_key",
-    "config_set", "tristar_settings_set",
-    "codebase_edit", "codebase_create", "code_edit", "code_patch",
-    "queue_submit", "queue_clear",
-    "agent_start", "agent_stop", "agent_call", "agent_broadcast",
-    "evolve", "memory_store", "memory_clear",
-    "restart", "hot_reload", "remote_task",
-    "prompt_set", "git", "dev_refactor",
-    # Structured Admin Ops (write actions)
-    "package_manager", "service_control", "container_control", "file_ops",
-    "task_runner", "binary_exec", "remote_admin", "custom_exec",
-}
-
-_DESTRUCTIVE_TOOLS = {
-    "tristar_shell_exec", "shell", "ollama_delete",
-    "memory_clear", "queue_clear", "remote_task",
-    "task_runner",  # executes arbitrary encoded shell commands
-}
-
-_OPEN_WORLD_TOOLS = {
-    "web_search", "search", "crawl_url", "crawl_site",
-    "smart_search", "multi_search", "google_deep_search",
-    "chat", "ask_specialist", "specialist",
-    "image_search", "weather", "crypto_prices",
-    "stock_indices", "market_overview",
-}
-
-
-def _inject_annotations(tools):
-    """Inject MCP tool annotations. PATCH v2.82: respects pre-set annotations."""
-    try:
-        from ..utils.tool_normalizer import is_readonly_tool as _is_ro
-    except ImportError:
-        _is_ro = lambda name: name not in _WRITE_TOOLS
-    out = []
-    for tool in tools:
-        t = dict(tool)
-        name = t.get("name", "")
-        ex = t.get("annotations") or {}
-        if isinstance(ex, dict) and "readOnlyHint" in ex:
-            ro = ex["readOnlyHint"]
-        else:
-            ro = _is_ro(name)
-        destr = name in _DESTRUCTIVE_TOOLS
-        t["annotations"] = {
-            "title": ex.get("title", t.get("description", name)[:80]) if isinstance(ex, dict) else t.get("description", name)[:80],
-            "readOnlyHint": ro,
-            "destructiveHint": ex.get("destructiveHint", destr) if isinstance(ex, dict) else destr,
-            "idempotentHint": ex.get("idempotentHint", not destr) if isinstance(ex, dict) else not destr,
-            "openWorldHint": ex.get("openWorldHint", name in _OPEN_WORLD_TOOLS) if isinstance(ex, dict) else name in _OPEN_WORLD_TOOLS,
-        }
-        out.append(t)
-    return out
 
 # ============================================================================
 # Authentication - Uses central mcp_auth module
@@ -192,11 +111,7 @@ async def auto_authorize(request: Request):
     from ..utils.mcp_auth import store_auth_code
 
     try:
-        try:
-            data = await request.json()
-        except Exception as exc:
-            raise HTTPException(status_code=400, detail="Invalid JSON body") from exc
-
+        data = await request.json()
         auth_url = data.get("auth_url")
         username = data.get("username")
         password = data.get("password")
@@ -233,22 +148,6 @@ async def auto_authorize(request: Request):
             user=username,
         )
 
-        # --- SSRF Protection: only allow localhost callbacks ---
-        from urllib.parse import urlparse as _urlparse
-        parsed_redirect = _urlparse(redirect_uri)
-        allowed_hosts = {"127.0.0.1", "localhost", "[::1]", "::1"}
-        if parsed_redirect.hostname not in allowed_hosts:
-            logger.warning(
-                "SSRF blocked: auto_authorize redirect_uri host=%s (allowed: %s)",
-                parsed_redirect.hostname, allowed_hosts,
-            )
-            raise HTTPException(
-                status_code=400,
-                detail="redirect_uri must point to localhost (127.0.0.1, localhost, or [::1])",
-            )
-        if parsed_redirect.scheme not in ("http", "https"):
-            raise HTTPException(status_code=400, detail="redirect_uri must use http or https scheme")
-
         # Construct Callback URL
         callback_params = {"code": code, "state": state}
         callback_url = f"{redirect_uri}?{urlencode(callback_params)}"
@@ -256,15 +155,13 @@ async def auto_authorize(request: Request):
         # Perform the callback (HIT the CLI tool's local server)
         import httpx
         async with httpx.AsyncClient(timeout=5.0) as client:
+            # CLI tools usually expect a GET request to their callback
             await client.get(callback_url)
 
         return {"status": "success", "callback_url": callback_url}
 
-    except HTTPException:
-        raise
     except Exception as e:
-        logger.error("Auto authorize failed: %s", e, exc_info=True)
-        return JSONResponse(status_code=500, content={"error": "Internal server error"})
+        return JSONResponse(status_code=500, content={"error": str(e)})
 
 
 # NOTE: /token endpoint is now handled by oauth_service.py
@@ -283,7 +180,7 @@ async def create_persistent_token(request: Request):
     """
     try:
         data = await request.json()
-    except Exception:
+    except:
         raise HTTPException(status_code=400, detail="JSON body required")
 
     username = data.get("username", "")
@@ -635,7 +532,7 @@ def get_tools() -> List[Dict[str, Any]]:
         # =================================================================
         {
             "name": "web_search",
-            "description": "Search the web via SearXNG (Bing, Brave, DDG, Startpage) + Wikipedia, Wiby, Grokipedia, AILinux News.",
+            "description": "Search the web for information using AI-powered search",
             "inputSchema": {
                 "type": "object",
                 "properties": {
@@ -1028,8 +925,10 @@ def get_tools() -> List[Dict[str, Any]]:
         *ADAPTIVE_CODE_TOOLS,
 
         # =================================================================
-        # Structured Admin API (v2.81) — AI-optimized system management
+        # Structured Admin Tools
         # =================================================================
+        # Exposes tools already registered in app/mcp/structured_admin.py.
+        # NOTE: Some of these are write/exec capable. Keep MCP auth strong.
         *STRUCTURED_ADMIN_TOOLS,
     ]
 
@@ -1047,24 +946,7 @@ def _serialize_job(job) -> Dict[str, Any]:
 
 async def handle_chat(arguments: Dict[str, Any]) -> Dict[str, Any]:
     """Handle chat tool invocation - supports both 'message' (string) and 'messages' (array)."""
-    model_id = arguments.get("model", "")
-    
-    # v2.83: Health-aware default model with fallback chain
-    if not model_id:
-        _fallback_chain = [
-            "mistral/mistral-large-latest",
-            "groq/llama-3.3-70b-versatile",
-            "openrouter/meta-llama/llama-3.3-70b-instruct:free",
-            "gemini/gemini-2.0-flash",
-            "ollama/llama3.2",
-        ]
-        for _candidate in _fallback_chain:
-            _m = await registry.get_model(_candidate)
-            if _m:
-                model_id = _candidate
-                break
-        if not model_id:
-            model_id = "mistral/mistral-large-latest"  # absolute fallback
+    model_id = arguments.get("model", "gpt-oss:20b-cloud")
     temperature = arguments.get("temperature", arguments.get("options", {}).get("temperature", 0.7))
     
     # Support both formats: 'message' (string) or 'messages' (array)
@@ -1084,35 +966,12 @@ async def handle_chat(arguments: Dict[str, Any]) -> Dict[str, Any]:
     else:
         raise ValueError("'message' or 'messages' is required")
     
-    # --- PATCH v2.82: Provider-striktes Routing ---
-    # Detect explicit provider prefix to prevent wrong Ollama fallback
-    _known_providers = {"anthropic", "gemini", "mistral", "ollama", "gpt-oss",
-                        "groq", "cerebras", "together", "fireworks", "openrouter",
-                        "cohere", "cloudflare"}
-    _explicit_provider = None
-    for _prefix in _known_providers:
-        if model_id.startswith(f"{_prefix}/"):
-            _explicit_provider = _prefix
-            break
-
     model = await registry.get_model(model_id)
-
-    if not model and not _explicit_provider:
-        # Nur Ollama-Fallback wenn KEIN Provider explizit angegeben wurde
-        model = await registry.get_model(f"ollama/{model_id}")
-
     if not model:
-        _provider_hint = f" (provider: {_explicit_provider})" if _explicit_provider else ""
-        raise ValueError(
-            f"Model '{model_id}' not found or not available{_provider_hint}. "
-            f"Use 'list_models' to see available models. "
-            f"Check that the provider API key is configured."
-        )
-
+        model = await registry.get_model(f"ollama/{model_id}")
     valid_caps = {"chat", "code", "reasoning"}
-    if not any(cap in model.capabilities for cap in valid_caps):
-        raise ValueError(f"Model '{model_id}' does not support chat/code/reasoning")
-    # --- END PATCH v2.82 ---
+    if not model or not any(cap in model.capabilities for cap in valid_caps):
+        raise ValueError(f"Model '{model_id}' not found or does not support chat/code")
     
     chunks = []
     async with request_slot():
@@ -1245,51 +1104,15 @@ async def handle_analyze_image(arguments: Dict[str, Any]) -> Dict[str, Any]:
 
 
 async def handle_crawl_url(arguments: Dict[str, Any]) -> Dict[str, Any]:
-    """Handle single URL crawl. FIX 2026-04-03: direct httpx fetch for reliability."""
-    import httpx as _hxc
+    """Handle single URL crawl."""
     url = arguments.get("url")
     if not url:
         raise ValueError("'url' is required")
 
     keywords = arguments.get("keywords")
     max_pages = arguments.get("max_pages", 10)
-    _explicit_max = "max_pages" in arguments
 
-    # Direct fetch for single-URL calls (faster + crawler workers unreliable)
-    if int(max_pages) <= 1 or not _explicit_max:
-        try:
-            async with _hxc.AsyncClient(follow_redirects=True, timeout=15.0,
-                verify=False, headers={"User-Agent": "AILinux-Crawl/2.85"}) as cl:
-                r = await cl.get(url); r.raise_for_status()
-                from html.parser import HTMLParser as _HP
-                import re as _rc
-                class _TE(_HP):
-                    def __init__(self):
-                        super().__init__(); self._t, self._s = [], False
-                        self._st = {"script","style","noscript","svg"}
-                    def handle_starttag(self, t, a):
-                        if t in self._st: self._s = True
-                    def handle_endtag(self, t):
-                        if t in self._st: self._s = False
-                    def handle_data(self, d):
-                        v = d.strip()
-                        if v and not self._s: self._t.append(v)
-                ct = r.headers.get("content-type", "")
-                if "html" in ct:
-                    te = _TE(); te.feed(r.text)
-                    text = _rc.sub(r"\n{3,}", "\n\n", "\n".join(te._t))
-                else:
-                    text = r.text
-                return {
-                    "job": {"id": "direct-fetch", "status": "completed",
-                            "pages_crawled": 1,
-                            "results": [{"url": url, "content": text[:30000]}]},
-                    "message": f"Direct fetch completed for {url}",
-                }
-        except Exception:
-            pass  # Fall through to crawler
-
-    job = await user_crawler.crawl_url(
+    job = await get_user_crawler().crawl_url(
         url=url,
         keywords=list(keywords) if keywords else None,
         max_pages=int(max_pages),
@@ -1330,9 +1153,10 @@ async def handle_crawl_status(arguments: Dict[str, Any]) -> Dict[str, Any]:
     include_results = arguments.get("include_results", False)
 
     # Try user crawler first
-    job = await user_crawler.get_job(job_id)
+    _uc = get_user_crawler()
+    job = await _uc.get_job(job_id)
     source = "user"
-    manager = user_crawler
+    manager = _uc
     if not job:
         job = await crawler_manager.get_job(job_id)
         source = "manager"
@@ -1360,14 +1184,20 @@ async def handle_crawl_status(arguments: Dict[str, Any]) -> Dict[str, Any]:
 
 
 async def handle_create_post(arguments: Dict[str, Any]) -> Dict[str, Any]:
-    """Create WordPress post (via local curl, bypasses Cloudflare)."""
-    from app.mcp.handlers_wordpress import handle_wp_publish_post
-    import json as _json
-    result_str = await handle_wp_publish_post(arguments)
-    try:
-        return _json.loads(result_str)
-    except Exception:
-        return {"result": result_str}
+    """Create WordPress post."""
+    title = arguments.get("title")
+    content = arguments.get("content")
+    status = arguments.get("status", "draft")
+
+    if not title or not content:
+        raise ValueError("'title' and 'content' are required")
+
+    result = await wordpress_service.create_post(
+        title=title,
+        content=content,
+        status=status,
+    )
+    return result
 
 
 async def handle_conversation(arguments: Dict[str, Any]) -> Dict[str, Any]:
@@ -1489,34 +1319,15 @@ async def handle_api_docs(arguments: Dict[str, Any]) -> Dict[str, Any]:
 
 
 async def handle_web_search(arguments: Dict[str, Any]) -> Dict[str, Any]:
-    """Handle web search via SearXNG Multi-Search (v2.85)."""
-    from ..services.multi_search import multi_search
+    """Handle web search."""
+    from ..services import web_search
+
     query = arguments.get("query")
     if not query:
         raise ValueError("'query' is required")
-    return await multi_search(
-        query=query,
-        max_results=arguments.get("max_results", 50),
-        lang=arguments.get("lang", "de"),
-    )
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    results = await web_search.search_web(query)
+    return {"results": results, "query": query}
 
 
 # ============================================================================
@@ -1575,23 +1386,6 @@ async def handle_codebase_services(arguments: Dict[str, Any]) -> Dict[str, Any]:
     """Get codebase services."""
     from ..routes.mcp import handle_codebase_services as _handler
     return await _handler(arguments)
-
-
-async def handle_status_remote(arguments: Dict[str, Any]) -> Dict[str, Any]:
-    """Get full system status (v4 canonical: status → tristar_status). NOVA-PATCH"""
-    from ..services.tristar_mcp import handle_tristar_status as _handler
-    return await _handler(arguments)
-
-
-async def handle_health_remote(arguments: Dict[str, Any]) -> Dict[str, Any]:
-    """Lightweight health check — ChatGPT-safe read-only tool. NOVA-PATCH"""
-    import time
-    return {
-        "status": "ok",
-        "backend": "triforce",
-        "version": "2.85",
-        "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-    }
 
 
 # ============================================================================
@@ -1800,325 +1594,6 @@ async def handle_list_timezones_remote(arguments: Dict[str, Any]) -> Dict[str, A
 
 
 
-
-async def handle_fetch(arguments: Dict[str, Any]) -> Dict[str, Any]:
-    """Fetch content from a URL. FIX 2026-04-03: httpx direct instead of crawler."""
-    import httpx
-    from html.parser import HTMLParser
-    import re as _re
-    url = arguments.get("url")
-    if not url:
-        raise ValueError("'url' is required")
-    class _TextExtractor(HTMLParser):
-        def __init__(self):
-            super().__init__()
-            self._text, self._skip = [], False
-            self._skip_tags = {"script","style","noscript","svg","nav"}
-        def handle_starttag(self, tag, attrs):
-            if tag in self._skip_tags: self._skip = True
-        def handle_endtag(self, tag):
-            if tag in self._skip_tags: self._skip = False
-        def handle_data(self, data):
-            s = data.strip()
-            if s and not self._skip: self._text.append(s)
-        def get_text(self): return "\n".join(self._text)
-    try:
-        async with httpx.AsyncClient(follow_redirects=True, timeout=15.0,
-            headers={"User-Agent": "AILinux-Fetch/2.85"}, verify=False) as client:
-            resp = await client.get(url)
-            resp.raise_for_status()
-            ct = resp.headers.get("content-type", "")
-            if "html" in ct:
-                ex = _TextExtractor(); ex.feed(resp.text)
-                text = _re.sub(r"\n{3,}", "\n\n", ex.get_text())
-            else:
-                text = resp.text
-        return {"content": text[:50000], "url": url}
-    except Exception as e:
-        return {"content": f"Error fetching {url}: {str(e)}", "url": url}
-
-
-# ============================================================================
-# V4 Canonical Alias Tool Definitions
-# ============================================================================
-# These mirror existing tools under shorter, canonical names for ChatGPT/Claude
-# compatibility. They use the same handlers but are listed separately so
-# tools/list includes them with proper schemas.
-
-_V4_ALIAS_TOOLS = [
-    {
-        "name": "search",
-        "description": "Search the web via SearXNG (Bing, Brave, DDG, Startpage) + Wikipedia, Wiby, Grokipedia, AILinux News.",
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "query": {"type": "string", "description": "Search query"}
-            },
-            "required": ["query"]
-        }
-    },
-    {
-        "name": "fetch",
-        "description": "Fetch and extract content from a URL. Returns the page text content.",
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "url": {"type": "string", "description": "URL to fetch content from"}
-            },
-            "required": ["url"]
-        }
-    },
-    {
-        "name": "models",
-        "description": "List all available AI models with their capabilities, grouped by provider.",
-        "inputSchema": {"type": "object", "properties": {}, "required": []}
-    },
-    {
-        "name": "specialist",
-        "description": "Route a task to the best specialist model based on task type (code, math, creative, analysis, research).",
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "task": {"type": "string", "description": "Task type: code, math, creative, analysis, research"},
-                "message": {"type": "string", "description": "The actual message/prompt"}
-            },
-            "required": ["message", "task"]
-        }
-    },
-    {
-        "name": "health",
-        "description": "Quick health check of all services (backend, ollama, redis, searxng, API keys).",
-        "inputSchema": {"type": "object", "properties": {}, "required": []}
-    },
-    {
-        "name": "status",
-        "description": "Get full system status: services, agents, memory, uptime.",
-        "inputSchema": {"type": "object", "properties": {}, "required": []}
-    },
-    {
-        "name": "agents",
-        "description": "List all CLI agents (Claude, Codex, Gemini, OpenCode) with status and stats.",
-        "inputSchema": {"type": "object", "properties": {}, "required": []}
-    },
-    {
-        "name": "agent_call",
-        "description": "Send a message/task to a specific CLI agent and get response.",
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "agent": {"type": "string", "description": "Agent ID (gemini-mcp, claude-mcp, codex-mcp, opencode-mcp)"},
-                "message": {"type": "string", "description": "Message to send"}
-            },
-            "required": ["agent", "message"]
-        }
-    },
-    {
-        "name": "agent_broadcast",
-        "description": "Send message to all agents for parallel processing / consensus.",
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "message": {"type": "string", "description": "Message to broadcast"}
-            },
-            "required": ["message"]
-        }
-    },
-    {
-        "name": "code_tree",
-        "description": "Show directory structure of the codebase with optional depth limit.",
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "path": {"type": "string", "description": "Directory path (default: project root)", "default": "."},
-                "depth": {"type": "integer", "description": "Max depth (default: 3)", "default": 3}
-            },
-            "required": []
-        }
-    },
-    {
-        "name": "code_read",
-        "description": "Read a file from the codebase.",
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "path": {"type": "string", "description": "File path relative to project root"}
-            },
-            "required": ["path"]
-        }
-    },
-    {
-        "name": "code_search",
-        "description": "Search for patterns/text in the codebase (regex supported).",
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "query": {"type": "string", "description": "Search pattern (regex supported)"},
-                "path": {"type": "string", "description": "Limit search to path"},
-                "regex": {"type": "boolean", "description": "Enable regex", "default": False},
-                "max_results": {"type": "integer", "description": "Max results", "default": 20}
-            },
-            "required": ["query"]
-        }
-    },
-    {
-        "name": "memory_search",
-        "description": "Search persistent memory for relevant information.",
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "query": {"type": "string", "description": "Search query"},
-                "limit": {"type": "integer", "description": "Max results", "default": 10}
-            },
-            "required": ["query"]
-        }
-    },
-    {
-        "name": "memory_store",
-        "description": "Store knowledge/facts/decisions in persistent memory.",
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "content": {"type": "string", "description": "Content to store"},
-                "tags": {"type": "array", "items": {"type": "string"}, "description": "Tags for categorization"}
-            },
-            "required": ["content"]
-        }
-    },
-    {
-        "name": "crawl",
-        "description": "Crawl a website and extract content.",
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "url": {"type": "string", "description": "URL to crawl"},
-                "keywords": {"type": "array", "items": {"type": "string"}, "description": "Optional keyword filter"}
-            },
-            "required": ["url"]
-        }
-    },
-    {
-        "name": "smart_search",
-        "description": "Use this for comprehensive AI-ranked search results from multiple engines.",
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "query": {"type": "string", "description": "Search query"},
-                "num_results": {"type": "integer", "description": "Max results", "default": 10}
-            },
-            "required": ["query"]
-        }
-    },
-    {
-        "name": "multi_search",
-        "description": "Use this to search across multiple engines simultaneously (SearxNG, Google, etc.).",
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "query": {"type": "string", "description": "Search query"},
-                "engines": {"type": "array", "items": {"type": "string"}, "description": "Engines to use"}
-            },
-            "required": ["query"]
-        }
-    },
-    {
-        "name": "shell",
-        "description": "Execute shell commands on the server. Admin only.",
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "command": {"type": "string", "description": "Shell command"}
-            },
-            "required": ["command"]
-        }
-    },
-    {
-        "name": "task_runner",
-        "description": "Execute system commands via encoded payloads. Use action=encode first, then action=execute.",
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "action": {"type": "string", "enum": ["execute", "execute_remote", "encode", "decode", "quick_reference"]},
-                "task_data": {"type": "string", "description": "Encoded payload"},
-                "text": {"type": "string", "description": "Text to encode"},
-                "format": {"type": "string", "enum": ["b64", "hex", "rot"]},
-                "host": {"type": "string", "enum": ["hetzner", "backup", "zombie-pc"]},
-                "elevated": {"type": "boolean", "default": False}
-            },
-            "required": ["action"]
-        }
-    },
-    {
-        "name": "custom_exec",
-        "description": "Run predefined system command templates. Use action=list to see available templates.",
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "action": {"type": "string", "enum": ["list", "run", "run_on_remote"]},
-                "template": {"type": "string"},
-                "host": {"type": "string", "enum": ["hetzner", "backup", "zombie-pc"]}
-            },
-            "required": ["action"]
-        }
-    },
-    {
-        "name": "remote_admin",
-        "description": "Manage remote federation nodes: list hosts, check connectivity, restart services, view logs.",
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "action": {"type": "string", "enum": ["list_hosts", "ping_all", "system_overview", "service_status", "service_restart", "docker_status", "disk_usage", "memory_usage", "read_file", "tail_log", "check_connectivity"]},
-                "host": {"type": "string", "enum": ["hetzner", "backup", "zombie-pc"]},
-                "service": {"type": "string"},
-                "log": {"type": "string", "enum": ["syslog", "triforce", "errors", "auth"]}
-            },
-            "required": ["action"]
-        }
-    },
-    {
-        "name": "code_edit",
-        "description": "Edit a file: replace, insert, append, or delete lines.",
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "mode": {"type": "string", "enum": ["replace", "insert", "append", "delete"]},
-                "path": {"type": "string"},
-                "old_text": {"type": "string"},
-                "new_text": {"type": "string"}
-            },
-            "required": ["mode", "path"]
-        }
-    },
-    {
-        "name": "code_patch",
-        "description": "Apply a unified diff patch to the codebase.",
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "patch": {"type": "string", "description": "Unified diff content"},
-                "path": {"type": "string"}
-            },
-            "required": ["patch"]
-        }
-    },
-    {
-        "name": "config",
-        "description": "Get all configuration settings (sensitive values masked).",
-        "inputSchema": {"type": "object", "properties": {}, "required": []}
-    },
-    {
-        "name": "config_set",
-        "description": "Set a configuration value.",
-        "inputSchema": {
-            "type": "object",
-            "properties": {
-                "key": {"type": "string"},
-                "value": {"type": "string"}
-            },
-            "required": ["key", "value"]
-        }
-    },
-]
-
 TOOL_HANDLERS = {
     # Core
     "chat": handle_chat,
@@ -2191,27 +1666,6 @@ TOOL_HANDLERS = {
     # Adaptive Code Illumination Tools (v2.80)
     **ADAPTIVE_CODE_HANDLERS,
 
-    # Structured Admin API (v2.81)
-    **STRUCTURED_ADMIN_HANDLERS,
-
-    # v4 canonical name aliases (NOVA-PATCH: ChatGPT-Kompatibilität)
-    "models": handle_list_models,
-    "status": handle_status_remote,         # NOVA-PATCH: tristar_status alias
-    "health": handle_health_remote,         # NOVA-PATCH: lightweight health check
-    "search": handle_web_search,
-    "fetch": handle_fetch,  # OpenAI Deep Research / Company Knowledge compatibility
-    "agents": handle_cli_agents_list,
-    "agent_call": handle_cli_agents_call,
-    "agent_broadcast": handle_cli_agents_broadcast,
-    "agent_start": handle_cli_agents_start,
-    "agent_stop": handle_cli_agents_stop,
-    "agent_output": handle_cli_agents_output,
-    "code_tree": handle_codebase_structure,
-    "code_read": handle_codebase_file,
-    "code_search": handle_codebase_search,
-    "memory_search": handle_tristar_memory_search,
-    "memory_store": handle_tristar_memory_store,
-    "crawl": handle_crawl_url,
     # Extended Search Tools (v4.0)
     "multi_search": handle_multi_search_remote,
     "smart_search": handle_smart_search_remote,
@@ -2231,16 +1685,13 @@ TOOL_HANDLERS = {
     "list_timezones": handle_list_timezones_remote,
 }
 
+# Structured Admin Tools
+TOOL_HANDLERS.update(STRUCTURED_ADMIN_HANDLERS)
+
 
 # ============================================================================
 # MCP Protocol Endpoints
 # ============================================================================
-
-def _is_local_mcp_request(request: Request) -> bool:
-    forwarded_port = request.headers.get("X-Forwarded-Port", "")
-    host = (request.url.hostname or "").lower()
-    return not forwarded_port and host in {"localhost", "127.0.0.1", "::1", "host.docker.internal"}
-
 
 @router.get("/.well-known/mcp.json")
 @router.get("/v1/mcp/.well-known/mcp.json")
@@ -2268,15 +1719,6 @@ async def mcp_discovery(request: Request):
     # Standard MCP endpoint is /v1/mcp
     mcp_url = f"{base_url}/v1/mcp"
 
-    auth_config = {
-        "type": "none",
-        "description": "Local loopback MCP access bypasses auth"
-    } if _is_local_mcp_request(request) else {
-        "type": "http",
-        "scheme": "basic",
-        "description": "Use Basic Auth with username:password from .env (MCP_OAUTH_USER:MCP_OAUTH_PASS)"
-    }
-
     return {
         "mcp_version": "2024-11-05",
         "server": MCP_SERVER_INFO,
@@ -2286,14 +1728,19 @@ async def mcp_discovery(request: Request):
             "sse": f"{mcp_url}/sse",
             "rpc": mcp_url
         },
-        "authentication": auth_config
+        # Simple HTTP Auth - NO OAuth redirect, NO login form!
+        "authentication": {
+            "type": "http",
+            "scheme": "basic",
+            "description": "Use Basic Auth with username:password from .env (MCP_OAUTH_USER:MCP_OAUTH_PASS)"
+        }
     }
 
 
-@router.get("/mcp")
-@router.get("/mcp/")
-@router.get("/mcp/sse")
-@router.get("/sse")
+@router.get("/_legacy_mcp_disabled")
+@router.get("/_legacy_mcp_disabled/")
+@router.get("/_legacy_mcp_disabled/sse")
+@router.get("/_legacy_mcp_disabled/sse-alias")
 async def mcp_sse_endpoint(request: Request):
     """
     SSE endpoint for MCP communication.
@@ -2344,8 +1791,8 @@ async def mcp_sse_endpoint(request: Request):
 _mcp_sessions: Dict[str, datetime] = {}
 
 
-@router.post("/mcp")
-@router.post("/mcp/")
+@router.post("/_legacy_mcp_disabled")
+@router.post("/_legacy_mcp_disabled/")
 async def mcp_rpc_endpoint(request: Request):
     """
     JSON-RPC endpoint for MCP tool calls.
@@ -2379,21 +1826,9 @@ async def mcp_rpc_endpoint(request: Request):
             }
         )
 
-    if not isinstance(body, dict):
-        return JSONResponse(
-            status_code=400,
-            content={
-                "jsonrpc": "2.0",
-                "error": {"code": -32600, "message": "Invalid Request: body must be a JSON object"},
-                "id": None
-            }
-        )
-
     jsonrpc = body.get("jsonrpc")
     method = body.get("method")
     params = body.get("params", {})
-    if not isinstance(params, dict):
-        params = {}
     req_id = body.get("id")
     # Log the incoming MCP request
     _log.info(f"MCP request: method={method}")
@@ -2431,16 +1866,7 @@ async def mcp_rpc_endpoint(request: Request):
                         "tools": {"listChanged": False},
                         "prompts": {"listChanged": False},
                         "resources": {"listChanged": False},
-                    },
-                    "instructions": (
-                        "AILinux MCP Server v2.82. "
-                        "Read-only diagnostics: safe_probe, agent_review, service_status, container_status, file_read, remote_status. "
-                        "Write tools: system_info, package_manager, service_control, container_control, file_ops, network_info, log_viewer, remote_admin, custom_exec. "
-                        "For arbitrary commands: task_runner(action='encode', text='cmd', format='b64') "
-                        "then task_runner(action='execute', task_data='b64:...'). elevated=true for root. "
-                        "binary_exec runs 60+ programs by name. Do NOT use raw 'shell' tool. "
-                        "Provider-strict routing: use 'anthropic/model-name' or 'gemini/model-name' prefixes for explicit provider selection."
-                    ),
+                    }
                 },
                 "id": req_id
             },
@@ -2451,38 +1877,7 @@ async def mcp_rpc_endpoint(request: Request):
         )
 
     elif method == "tools/list":
-        runtime_registry = get_runtime_registry()
-
-        # ALLE Tools für ALLE — kein Filter, kein remote_only
-        tools_result = runtime_registry.list_tools(remote_only=False)
-        if not tools_result:
-            tools_result = get_tools() + _V4_ALIAS_TOOLS
-
-        # Inject MCP annotations for ChatGPT compatibility
-        tools_result = _inject_annotations(tools_result)
-
-        # Cap tools for agents with function declaration limits (Gemini API: max 512)
-        # CLI agents add ~50-100 built-in tools, so cap MCP tools at 400
-        _user_agent = request.headers.get("user-agent", "").lower()
-        _max_tools = 400  # default safe cap
-        if "gemini" in _user_agent or "google" in _user_agent:
-            _max_tools = 250  # Gemini CLI adds ~200+ built-in tools
-        if len(tools_result) > _max_tools:
-            # Prioritize: keep tools with shorter names (core tools) over aliases
-            tools_result = sorted(tools_result, key=lambda t: len(t.get("name", "")))[:_max_tools]
-            logger.info(f"tools/list capped to {_max_tools} (was {len(tools_result) + (len(tools_result) - _max_tools)})")
-
-        # Einzige Einschränkung: memory_store + vault für non-admin Swarm-Clients
-        _auth_header = request.headers.get("Authorization", "")
-        if _auth_header.startswith("Bearer ") and "." in _auth_header[7:]:
-            try:
-                from .client_auth import decode_jwt_token
-                from ..services.user_tiers import ADMIN_ONLY_TOOLS
-                _jwt_payload = decode_jwt_token(_auth_header[7:].strip())
-                if _jwt_payload.get("account_role") == "client":
-                    tools_result = [t for t in tools_result if t.get("name", "") not in ADMIN_ONLY_TOOLS]
-            except Exception:
-                pass
+        tools_result = get_tools()
 
         latency_ms = (_time.time() - start_time) * 1000
         await multi_logger.log_mcp(method, params, {"tools_count": len(tools_result)}, latency_ms)
@@ -2496,53 +1891,10 @@ async def mcp_rpc_endpoint(request: Request):
         )
 
     elif method == "tools/call":
-        from ..utils.tool_normalizer import normalize_tool_name as _norm_tool
-        tool_name = _norm_tool(params.get("name", ""))
+        tool_name = params.get("name")
         arguments = params.get("arguments", {})
 
-        # ── Swarm Tool-Policy: memory_store + vault nur für Admin ──
-        from ..services.user_tiers import is_tool_allowed_for_role
-        _account_role = getattr(request.state, "account_role", "admin")
-        # Basic Auth (internal/oauth_client) = admin
-        _auth_user = getattr(request.state, "mcp_auth_user", "internal")
-        if _auth_user in ("internal", "oauth_client", MCP_AUTH_USER):
-            _account_role = "admin"
-
-        if not is_tool_allowed_for_role(tool_name, _account_role):
-            return JSONResponse(
-                content={
-                    "jsonrpc": "2.0",
-                    "error": {"code": -32600, "message": f"Tool '{tool_name}' ist nur für Admins verfügbar."},
-                    "id": req_id
-                },
-                headers=response_headers
-            )
-
-        runtime_registry = get_runtime_registry()
-
-        # Enforce runtime policy (classification, min_tier, preview_only)
-        _tool_entry = runtime_registry.get_entry(tool_name)
-        if _tool_entry:
-            _client_profile = runtime_registry.resolve_client_profile(
-                request_meta={"source_ip": request.client.host if request.client else ""},
-                tier=_account_role,
-            )
-            _policy = runtime_registry.evaluate_policy(_tool_entry, client_profile=_client_profile, arguments=arguments)
-            if _policy.get("decision") not in ("allow", "preview_only"):
-                _reason = _policy.get("reason", "blocked by runtime policy")
-                return JSONResponse(
-                    content={
-                        "jsonrpc": "2.0",
-                        "result": {
-                            "content": [{"type": "text", "text": f"Blocked: {_reason}"}],
-                            "isError": True
-                        },
-                        "id": req_id
-                    },
-                    headers=response_headers
-                )
-
-        handler = runtime_registry.get_handler(tool_name) or TOOL_HANDLERS.get(tool_name)
+        handler = TOOL_HANDLERS.get(tool_name)
         if not handler:
             return JSONResponse(
                 content={
@@ -2557,13 +1909,6 @@ async def mcp_rpc_endpoint(request: Request):
             result = await handler(arguments)
             latency_ms = (_time.time() - start_time) * 1000
             await multi_logger.log_mcp(f"tools/call:{tool_name}", arguments, result, latency_ms)
-            # v2.82: Telemetry recording
-            try:
-                from ..mcp.structured_admin import mcp_telemetry
-                _rchars = len(json.dumps(result, separators=(',',':'))) if result else 0
-                mcp_telemetry.record(tool_name, latency_ms, success=True, response_chars=_rchars)
-            except Exception:
-                pass  # Telemetry must never break tool calls
             # v2.82: Dedicated tool call logging
             await multi_logger.log_mcp_tool_call(
                 tool_name=tool_name,
@@ -2573,13 +1918,6 @@ async def mcp_rpc_endpoint(request: Request):
                 caller="mcp_remote",
                 result_preview=str(result)[:300] if result else None
             )
-            # v2.82: In-memory analytics for mcp_analytics tool
-            try:
-                from ..mcp.structured_admin import record_mcp_call as _rec
-                _rsz = len(json.dumps(result, separators=(',',':'))) if result else 0
-                _rec(tool_name, latency_ms, "success", "mcp_remote", result_size=_rsz)
-            except Exception:
-                pass
             return JSONResponse(
                 content={
                     "jsonrpc": "2.0",
@@ -2596,12 +1934,6 @@ async def mcp_rpc_endpoint(request: Request):
         except Exception as exc:
             latency_ms = (_time.time() - start_time) * 1000
             await multi_logger.log_mcp(f"tools/call:{tool_name}", arguments, None, latency_ms, str(exc))
-            # v2.82: Telemetry recording (error)
-            try:
-                from ..mcp.structured_admin import mcp_telemetry
-                mcp_telemetry.record(tool_name, latency_ms, success=False, error=str(exc))
-            except Exception:
-                pass
             # v2.82: Log failed tool calls
             await multi_logger.log_mcp_tool_call(
                 tool_name=tool_name,
@@ -2611,18 +1943,12 @@ async def mcp_rpc_endpoint(request: Request):
                 caller="mcp_remote",
                 error=str(exc)
             )
-            # v2.82: In-memory analytics for mcp_analytics tool
-            try:
-                from ..mcp.structured_admin import record_mcp_call as _rec
-                _rec(tool_name, latency_ms, "error", "mcp_remote", error=str(exc))
-            except Exception:
-                pass
             return JSONResponse(
                 content={
                     "jsonrpc": "2.0",
                     "result": {
                         "content": [
-                            {"type": "text", "text": _public_tool_error_message(tool_name)}
+                            {"type": "text", "text": f"Error: {str(exc)}"}
                         ],
                         "isError": True
                     },
@@ -2733,21 +2059,9 @@ async def _handle_agent_mcp_call(agent_id: str, request: Request):
             }
         )
 
-    if not isinstance(body, dict):
-        return JSONResponse(
-            status_code=400,
-            content={
-                "jsonrpc": "2.0",
-                "error": {"code": -32600, "message": "Invalid Request: body must be a JSON object"},
-                "id": None
-            }
-        )
-
     jsonrpc = body.get("jsonrpc")
     method = body.get("method")
     params = body.get("params", {})
-    if not isinstance(params, dict):
-        params = {}
     req_id = body.get("id")
 
     if jsonrpc != "2.0":
@@ -2781,7 +2095,7 @@ async def _handle_agent_mcp_call(agent_id: str, request: Request):
                     "protocolVersion": "2024-11-05",
                     "serverInfo": {
                         "name": agent.get("name", agent_id),
-                        "version": "2.85",
+                        "version": "2.80",
                         "description": f"Direct MCP access to {agent_id} CLI agent"
                     },
                     "capabilities": {
@@ -2901,7 +2215,6 @@ async def _handle_agent_mcp_call(agent_id: str, request: Request):
                 }
             }
         ]
-        tools = _inject_annotations(tools)  # NOVA-PATCH: readOnlyHint für ChatGPT
         return JSONResponse(
             content={
                 "jsonrpc": "2.0",

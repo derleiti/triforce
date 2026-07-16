@@ -8,7 +8,7 @@ import re
 from typing import Any, Dict, List, Optional
 
 import httpx
-from fastapi import APIRouter, Depends, File, Form, Header, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, Form, Header, HTTPException, Response, UploadFile
 from pydantic import BaseModel
 
 # BUG-005 FIX 2026-03-10: prefix /v1 wird jetzt konsistent über main.py gesetzt
@@ -23,6 +23,41 @@ router = APIRouter(prefix="/frontend/dashboard", tags=["nova-frontend"], depende
 # Public sub-router ohne Auth — nur für /models (WP Plugin braucht das ohne Key)
 public_router = APIRouter(prefix="/frontend/dashboard", tags=["nova-frontend-public"])
 logger = logging.getLogger("ailinux.nova_frontend")
+
+CATEGORY_ORDER = {
+    "chat": 0,
+    "vision": 1,
+    "media_image": 2,
+    "media_video": 3,
+    "audio": 4,
+    "ocr": 5,
+    "embedding": 6,
+    "code": 7,
+    "reasoning": 8,
+}
+
+PROVIDER_ORDER = {
+    "chat": ["openai", "anthropic", "gemini", "mistral", "groq", "cerebras", "cohere", "openrouter", "ollama", "cloudflare", "github", "together", "fireworks"],
+    "vision": ["openai", "anthropic", "gemini", "mistral", "cohere", "openrouter", "ollama", "cloudflare", "github", "together", "fireworks"],
+    "media_image": ["openai", "gemini", "cloudflare", "openrouter", "together", "fireworks", "replicate", "huggingface"],
+    "media_video": ["openai", "gemini", "cloudflare", "openrouter", "replicate"],
+    "audio": ["openai", "gemini", "groq", "mistral", "cloudflare"],
+    "ocr": ["mistral", "cohere", "openai", "gemini"],
+    "embedding": ["openai", "cohere", "mistral", "gemini", "cloudflare", "fireworks"],
+}
+
+
+def _primary_category(item: Dict[str, Any]) -> str:
+    cats = item.get("categories") or []
+    return min(cats, key=lambda c: CATEGORY_ORDER.get(c, 99), default="chat")
+
+
+def _model_sort_key(item: Dict[str, Any]) -> tuple[int, int, str]:
+    category = _primary_category(item)
+    providers = PROVIDER_ORDER.get(category, [])
+    provider = str(item.get("provider") or "other")
+    provider_rank = providers.index(provider) if provider in providers else 99
+    return (CATEGORY_ORDER.get(category, 99), provider_rank, str(item.get("name") or item.get("id") or "").lower())
 
 def _base_url() -> str:
     return (
@@ -39,6 +74,29 @@ def _pick(d: Dict[str, Any], *keys: str, default=None):
         if k in d and d[k] not in (None, "", []):
             return d[k]
     return default
+
+
+def _lower_values(value: Any) -> set[str]:
+    if value in (None, "", []):
+        return set()
+    if isinstance(value, (list, tuple, set)):
+        return {str(v).lower() for v in value if v not in (None, "")}
+    return {str(value).lower()}
+
+
+def _openrouter_has_image_output(model: Dict[str, Any]) -> bool:
+    arch = model.get("architecture") if isinstance(model.get("architecture"), dict) else {}
+    outputs = set()
+    outputs |= _lower_values(arch.get("output_modalities"))
+    outputs |= _lower_values(arch.get("outputModalities"))
+    outputs |= _lower_values(model.get("output_modalities"))
+    outputs |= _lower_values(model.get("outputModalities"))
+    return "image" in outputs
+
+
+def _blocked_openrouter_image_model(model_id: str) -> bool:
+    mid = str(model_id or "").lower().removeprefix("openrouter/")
+    return mid in {"black-forest-labs/flux.2-pro"}
 
 class ChatRequest(BaseModel):
     model: str
@@ -71,6 +129,15 @@ class VideoRequest(BaseModel):
     seconds: int = 8
     size: str = "1280x720"
 
+
+def _parse_size(size: str, default: tuple[int, int] = (1024, 1024)) -> tuple[int, int]:
+    try:
+        width, height = str(size or "").lower().split("x", 1)
+        return int(width), int(height)
+    except Exception:
+        return default
+
+
 def _provider(model: Dict[str, Any]) -> str:
     raw = str(_pick(model, "provider", "owned_by", "vendor", default="")).lower()
     mid = str(_pick(model, "id", "model", "name", default="")).lower()
@@ -83,6 +150,8 @@ def _provider(model: Dict[str, Any]) -> str:
         return "cloudflare"
     if mid.startswith("github/"):
         return "github"
+    if mid.startswith("openai/"):
+        return "openai"
     if mid.startswith("groq/"):
         return "groq"
     if mid.startswith("gemini/") or mid.startswith("google/"):
@@ -95,6 +164,9 @@ def _provider(model: Dict[str, Any]) -> str:
         return "ollama"
 
     # Fallback: raw provider field
+    for known in ("openai", "anthropic", "google", "gemini", "mistral", "groq", "cloudflare", "cerebras", "cohere", "openrouter", "ollama", "github", "together", "fireworks"):
+        if known in raw:
+            return "gemini" if known == "google" else known
     if "openai" in raw or mid.startswith("gpt-") or "dall-e" in mid or "gpt-image" in mid or "sora" in mid:
         return "openai"
     if "anthropic" in raw or "claude" in mid:
@@ -126,6 +198,11 @@ def _categorize(model: Dict[str, Any]) -> Dict[str, Any]:
         "vision": False,
         "media_image": False,
         "media_video": False,
+        "audio": False,
+        "embedding": False,
+        "ocr": False,
+        "code": False,
+        "reasoning": False,
         "backend_supported": False,
     }
 
@@ -160,6 +237,19 @@ def _categorize(model: Dict[str, Any]) -> Dict[str, Any]:
 
     # image_gen: check capabilities list from model_registry output
     caps_list = model.get("capabilities", [])
+    if not isinstance(caps_list, list):
+        caps_list = []
+    caps_set = {str(c).lower() for c in caps_list}
+    if "audio" in caps_set or any(x in blob for x in ["audio", "whisper", "transcribe", "tts", "voxtral", "realtime"]):
+        caps["audio"] = True
+    if "embedding" in caps_set or "embed" in blob:
+        caps["embedding"] = True
+    if "ocr" in caps_set or "document ai" in blob or "ocr" in blob:
+        caps["ocr"] = True
+    if "code" in caps_set or any(x in blob for x in ["codex", "codestral", "devstral", "coder", "qwen3-coder"]):
+        caps["code"] = True
+    if "reasoning" in caps_set or any(x in blob for x in ["reasoning", "thinking", "gpt-oss", "magistral", " o3", "/o3", "o4-mini"]):
+        caps["reasoning"] = True
     # Exclude img2img, inpainting, audio and other non-text2image models
     _img_blacklist = ["img2img", "inpainting", "deepgram", "whisper", "aura-", "melotts",
                       "reranker", "embed", "stt", "tts", "transcribe", "guard", "classification",
@@ -167,7 +257,7 @@ def _categorize(model: Dict[str, Any]) -> Dict[str, Any]:
     _is_blacklisted = any(x in blob for x in _img_blacklist)
     # OpenRouter: image gen works via /chat/completions with modalities: ["image","text"]
     # → DO NOT blacklist OpenRouter image models
-    if not _is_blacklisted and ("image_gen" in caps_list or any(x in blob for x in [
+    if not _is_blacklisted and ("image_gen" in caps_set or any(x in blob for x in [
             # OpenAI image models
             "gpt-image", "gpt-5-image", "dall-e",
             # Google image models
@@ -181,24 +271,31 @@ def _categorize(model: Dict[str, Any]) -> Dict[str, Any]:
     ])):
         caps["media_image"] = True
 
-    if "video_gen" in caps_list or any(x in blob for x in ["sora", "veo", "video generation", "text-to-video", "video_gen"]):
+    if provider == "openrouter" and caps["media_image"] and not _openrouter_has_image_output(model):
+        caps["media_image"] = False
+
+    if "video_gen" in caps_set or any(x in blob for x in ["sora", "veo", "video generation", "text-to-video", "video_gen", "hailuo"]):
         caps["media_video"] = True
 
-    if provider in {"openai", "anthropic", "google", "gemini", "mistral", "groq", "cloudflare", "cerebras", "openrouter", "ollama", "github"}:
-        caps["backend_supported"] = caps["chat"] or caps["vision"]
+    if caps["media_image"] or caps["media_video"] or caps["audio"] or caps["embedding"] or caps["ocr"]:
+        caps["chat"] = caps["chat"] and not (caps["media_image"] or caps["media_video"] or caps["embedding"])
+
+    if provider in {"openai", "anthropic", "google", "gemini", "mistral", "groq", "cloudflare", "cerebras", "cohere", "openrouter", "ollama", "github", "together", "fireworks"}:
+        caps["backend_supported"] = any(caps[k] for k in ("chat", "vision", "media_image", "media_video", "audio", "ocr", "embedding"))
 
     return {
         "id": mid,
         "name": name,
         "provider": provider,
         **caps,
-        "categories": [k for k in ("chat", "vision", "media_image", "media_video") if caps[k]],
+        "categories": [k for k in ("chat", "vision", "media_image", "media_video", "audio", "ocr", "embedding", "code", "reasoning") if caps[k]],
     }
 
 async def _get_models() -> List[Dict[str, Any]]:
     urls = [
-        f"{_base_url()}/v1/models",
-        f"{_base_url()}/models",
+        f"{_base_url()}/v1/models/all",
+        f"{_base_url()}/v1/models?include_unavailable=true",
+        f"{_base_url()}/models?include_unavailable=true",
         f"{_base_url()}/v1/tristar/models",
     ]
     async with httpx.AsyncClient(timeout=15.0) as client:
@@ -293,13 +390,86 @@ async def _vision_proxy(model: str, prompt: str, image_url: Optional[str], image
             raise HTTPException(status_code=r.status_code, detail=r.text)
         return r.json()
 
+async def _image_fallback(req: ImageRequest, exclude_prefixes: tuple[str, ...] = ()) -> Optional[Dict[str, Any]]:
+    """Try configured image providers when a selected provider is unavailable."""
+    candidates: list[str] = []
+    if os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_AI_STUDIO_KEY"):
+        candidates.append("gemini/gemini-2.5-flash-image")
+    if _openai_key():
+        candidates.append("openai/gpt-image-1-mini")
+    if os.getenv("OPENROUTER_API_KEY"):
+        candidates.extend([
+            "openrouter/google/gemini-2.5-flash-image",
+            "openrouter/openai/gpt-5-image-mini",
+        ])
+    if os.getenv("REPLICATE_API_KEY"):
+        candidates.append("replicate/black-forest-labs/flux-schnell")
+
+    tried_errors: list[str] = []
+    for model in candidates:
+        if any(model.startswith(prefix) for prefix in exclude_prefixes):
+            continue
+        try:
+            fallback_req = ImageRequest(
+                model=model,
+                prompt=req.prompt,
+                size=req.size,
+                quality=req.quality,
+                n=req.n,
+            )
+            result = await _image_proxy(fallback_req)
+            result["fallback_from"] = req.model
+            return result
+        except HTTPException as exc:
+            tried_errors.append(f"{model}: {exc.detail}")
+        except Exception as exc:
+            tried_errors.append(f"{model}: {exc}")
+    if tried_errors:
+        logger.warning("Image fallback failed after %d attempt(s): %s", len(tried_errors), tried_errors[:3])
+    return None
+
 async def _image_proxy(req: ImageRequest) -> Dict[str, Any]:
     """
     Multi-provider image generation:
     - OpenAI (gpt-image, dall-e) -> OpenAI API direct
-    - SD/ComfyUI/FLUX/others     -> internal /v1/txt2img
+    - Replicate (replicate/... or bare owner/name like black-forest-labs/flux-*) -> Replicate Predictions
+    - Gemini (imagen, nano-banana, flash-image, pro-image) -> Gemini API
+    - Cloudflare (@cf/...) -> Workers AI
+    - OpenRouter (openrouter/...) -> OpenRouter chat with image modality
+    - HuggingFace (hf/...) -> HF Inference API
+    - Bare 'owner/name' without prefix -> assume Replicate (frontend strips prefix)
+    - Otherwise -> internal /v1/txt2img (ComfyUI legacy path, will 503 if not configured)
     """
     m = req.model.lower()
+
+    # Frontend-ID normalization: WP plugin's PHP mapper splits 'provider/...' on
+    # the first slash and uses the right side as 'name', which the JS then
+    # apparently sends back as the model ID. Result: '@cf/...' instead of
+    # 'cloudflare/@cf/...', or 'black-forest-labs/...' instead of 'replicate/...'.
+    # We compensate by re-prefixing here.
+
+    # Cloudflare Workers AI: bare '@cf/...' → 'cloudflare/@cf/...'
+    if m.startswith("@cf/"):
+        logger.info("Normalizing bare CF model '%s' to 'cloudflare/%s'", req.model, req.model)
+        req = ImageRequest(model=f"cloudflare/{req.model}", prompt=req.prompt,
+                           size=req.size, quality=req.quality, n=req.n)
+        m = req.model.lower()
+
+    # Replicate: 'owner/name' without known provider prefix → 'replicate/owner/name'
+    _known_prefixes = ("replicate/", "cloudflare/", "openrouter/", "hf/",
+                       "gemini/", "openai/", "anthropic/", "ollama/",
+                       "mistral/", "groq/", "cerebras/", "github/", "@cf/")
+    if "/" in m and not any(m.startswith(p) for p in _known_prefixes) \
+            and "gpt-image" not in m and "dall-e" not in m:
+        logger.info("Normalizing bare model '%s' to 'replicate/%s'", req.model, req.model)
+        req = ImageRequest(
+            model=f"replicate/{req.model}",
+            prompt=req.prompt,
+            size=req.size,
+            quality=req.quality,
+            n=req.n,
+        )
+        m = req.model.lower()
 
     # OpenAI direct path
     if "gpt-image" in m or "dall-e" in m:
@@ -313,6 +483,59 @@ async def _image_proxy(req: ImageRequest) -> Dict[str, Any]:
             if r.status_code >= 400:
                 raise HTTPException(status_code=r.status_code, detail=r.text)
             return {"ok": True, "mode": "media_image", "provider": "openai", "result": r.json()}
+
+    # ── Replicate image generation (FLUX, SDXL) ──
+    if m.startswith("replicate/"):
+        from ..config import get_settings as _gs
+        _s = _gs()
+        rep_key = _s.replicate_api_key
+        if not rep_key:
+            raise HTTPException(status_code=503, detail="Replicate API key not configured")
+        rep_model = m.replace("replicate/", "", 1)
+        # Map size to aspect_ratio for FLUX models
+        _SIZE_TO_AR = {"1024x1024": "1:1", "1792x1024": "16:9", "1024x1792": "9:16", "512x512": "1:1"}
+        rep_payload: dict = {"input": {"prompt": req.prompt}}
+        if "flux" in rep_model.lower():
+            rep_payload["input"]["aspect_ratio"] = _SIZE_TO_AR.get(req.size, "1:1")
+            rep_payload["input"]["num_outputs"] = min(req.n, 4)
+            # jpg works for all FLUX variants (Schnell/Dev/Pro/Pro Ultra);
+            # webp is rejected by flux-1.1-pro-ultra (HTTP 422 enum mismatch).
+            rep_payload["input"]["output_format"] = "jpg"
+            rep_payload["input"]["output_quality"] = 90 if req.quality == "hd" else 80
+        else:
+            # SDXL / other models use width/height
+            parts = req.size.split("x")
+            if len(parts) == 2:
+                rep_payload["input"]["width"] = int(parts[0])
+                rep_payload["input"]["height"] = int(parts[1])
+            rep_payload["input"]["num_outputs"] = min(req.n, 4)
+        async with httpx.AsyncClient(timeout=120.0) as client:
+            r = await client.post(
+                f"https://api.replicate.com/v1/models/{rep_model}/predictions",
+                headers={"Authorization": f"Bearer {rep_key}", "Content-Type": "application/json", "Prefer": "wait=60"},
+                json=rep_payload,
+            )
+            if r.status_code not in (200, 201):
+                raise HTTPException(status_code=r.status_code, detail=r.text)
+            rdata = r.json()
+            # Poll if not yet done
+            if rdata.get("status") in ("starting", "processing"):
+                import asyncio
+                get_url = rdata.get("urls", {}).get("get", "")
+                for _ in range(60):
+                    await asyncio.sleep(2)
+                    pr = await client.get(get_url, headers={"Authorization": f"Bearer {rep_key}"})
+                    pd = pr.json()
+                    if pd.get("status") == "succeeded":
+                        rdata = pd
+                        break
+                    elif pd.get("status") in ("failed", "canceled"):
+                        raise HTTPException(status_code=500, detail=f"Replicate {pd['status']}: {pd.get('error')}")
+            output = rdata.get("output", [])
+            if isinstance(output, str):
+                output = [output]
+            images = [{"url": u} for u in output if isinstance(u, str) and u.startswith("http")]
+            return {"ok": True, "mode": "media_image", "provider": "replicate", "result": {"data": images}}
 
     # Gemini native image generation (gemini-2.5-flash-image = "nano banana" — FREE tier 500 RPD)
     # Uses generateContent with responseModalities=["image","text"]
@@ -421,9 +644,16 @@ async def _image_proxy(req: ImageRequest) -> Dict[str, Any]:
     if m.startswith("cloudflare/@cf/"):
         import os as _os
         cf_account = _os.getenv("CLOUDFLARE_ACCOUNT_ID", "")
-        cf_token   = _os.getenv("CLOUDFLARE_API_TOKEN", "")
+        # Workers-AI-spezifischer Token (cfut_…) hat Vorrang — der generische
+        # CLOUDFLARE_API_TOKEN ist oft ein Global API Key (37-char hex), der
+        # für /ai/run mit Bearer-Auth nicht akzeptiert wird (CF Code 10000).
+        cf_token = (
+            _os.getenv("CLOUDFLARE_AI_WORKERS_API")
+            or _os.getenv("CLOUDFLARE_API_TOKEN")
+            or ""
+        ).strip()
         if not cf_account or not cf_token:
-            raise HTTPException(status_code=503, detail="Cloudflare Workers AI nicht konfiguriert (CLOUDFLARE_ACCOUNT_ID/CLOUDFLARE_API_TOKEN fehlen)")
+            raise HTTPException(status_code=503, detail="Cloudflare Workers AI nicht konfiguriert (CLOUDFLARE_ACCOUNT_ID/CLOUDFLARE_AI_WORKERS_API fehlen)")
         # Modell-ID ohne "cloudflare/" prefix
         cf_model = req.model[len("cloudflare/"):]  # z.B. @cf/black-forest-labs/flux-1-schnell
         cf_url = f"https://api.cloudflare.com/client/v4/accounts/{cf_account}/ai/run/{cf_model}"
@@ -457,6 +687,10 @@ async def _image_proxy(req: ImageRequest) -> Dict[str, Any]:
                     err_msg = str(err_body.get("errors", err_body))[:200]
                 except Exception:
                     err_msg = r.text[:200]
+                if r.status_code in (401, 403) or "authentication" in err_msg.lower() or "'code': 10000" in err_msg:
+                    fallback = await _image_fallback(req, exclude_prefixes=("cloudflare/", "@cf/"))
+                    if fallback:
+                        return fallback
                 raise HTTPException(status_code=r.status_code,
                     detail=f"Cloudflare Workers AI Fehler: {err_msg}")
             # CF returns raw PNG bytes OR JSON depending on model
@@ -489,6 +723,15 @@ async def _image_proxy(req: ImageRequest) -> Dict[str, Any]:
         if not or_key:
             raise HTTPException(status_code=503, detail="OpenRouter API Key fehlt (OPENROUTER_API_KEY)")
         or_model = req.model[len("openrouter/"):]
+        if _blocked_openrouter_image_model(or_model):
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    f"OpenRouter-Modell '{or_model}' ist in Nova nicht als Bildgenerator verfuegbar, "
+                    "weil OpenRouter dafuer keinen Image-Output-Endpunkt anbietet. "
+                    "Bitte Gemini Imagen, Cloudflare Flux, Replicate Flux oder OpenAI gpt-image waehlen."
+                ),
+            )
         _or_aspect_map = {
             "512x512": "1:1", "768x768": "1:1", "1024x1024": "1:1",
             "640x360": "16:9", "1280x720": "16:9", "1920x1080": "16:9",
@@ -630,17 +873,20 @@ async def _image_proxy(req: ImageRequest) -> Dict[str, Any]:
                 pass
             raise HTTPException(status_code=500, detail="HuggingFace: Unerwartetes Antwortformat")
 
-    # Internal txt2img path (SD, ComfyUI, FLUX via together, etc.)
+    # Internal image path. ComfyUI/A1111 txt2img is obsolete; route all
+    # remaining server-side generation through the cloud-provider endpoint.
     base = _base_url()
-    payload = {"prompt": req.prompt, "model": req.model, "size": req.size, "n": req.n}
+    width, height = _parse_size(req.size)
+    payload = {
+        "prompt": req.prompt,
+        "model": req.model,
+        "width": width,
+        "height": height,
+    }
     async with httpx.AsyncClient(timeout=180.0) as client:
-        r = await client.post(f"{base}/v1/txt2img", json=payload)
+        r = await client.post(f"{base}/v1/images/generate", json=payload)
         if r.status_code == 200:
             return {"ok": True, "mode": "media_image", "provider": "internal", "result": r.json()}
-        # Fallback: try sd3 /images/generate endpoint
-        r2 = await client.post(f"{base}/v1/images/generate", json={"prompt": req.prompt, "model": req.model})
-        if r2.status_code == 200:
-            return {"ok": True, "mode": "media_image", "provider": "internal_sd3", "result": r2.json()}
         raise HTTPException(
             status_code=503,
             detail=f"Bild-Generierung für Modell '{req.model}' nicht verfügbar. Bitte ein anderes Modell wählen."
@@ -658,10 +904,19 @@ async def _video_proxy(req: VideoRequest) -> Dict[str, Any]:
         key = _openai_key()
         if not key:
             raise HTTPException(status_code=400, detail="OPENAI_API_KEY missing for Sora")
-        headers = {"Authorization": f"Bearer {key}"}
-        data = {"model": req.model, "prompt": req.prompt, "seconds": str(req.seconds), "size": req.size}
+        # FIX 2026-06-04: OpenAI /v1/videos verlangt JSON (kein form-urlencoded);
+        # seconds als int (nicht str), size als "WxH"-String.
+        # FIX 2026-06-04: "openai/" prefix entfernen — API kennt nur "sora-2", "sora-2-pro" etc.
+        openai_model = req.model.split("/", 1)[-1] if "/" in req.model else req.model
+        # FIX 2026-06-04: seconds MUSS string sein ("4"|"8"|"12"), nicht int.
+        # OpenAI Sora-2 lehnt int explicit ab: "expected one of '4', '8', or '12'".
+        seconds_str = str(int(req.seconds))
+        if seconds_str not in ("4", "8", "12"):
+            seconds_str = "4"  # closest valid default
+        headers = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
+        payload = {"model": openai_model, "prompt": req.prompt, "seconds": seconds_str, "size": req.size}
         async with httpx.AsyncClient(timeout=300.0) as client:
-            r = await client.post("https://api.openai.com/v1/videos", headers=headers, data=data)
+            r = await client.post("https://api.openai.com/v1/videos", headers=headers, json=payload)
             if r.status_code >= 400:
                 raise HTTPException(status_code=r.status_code, detail=r.text)
             return {"ok": True, "mode": "media_video", "provider": "openai", "result": r.json()}
@@ -764,16 +1019,16 @@ async def config() -> Dict[str, Any]:
     }
 
 @public_router.get("/models")
-async def models() -> Dict[str, Any]:
+async def models(response: Response) -> Dict[str, Any]:
+    # Tell CF + browser to keep this fresh — model list changes whenever
+    # a provider key is added/removed or discovery picks up new models.
+    # 60s edge cache + must-revalidate keeps the dashboard responsive
+    # without staleness blocking new providers from showing up.
+    response.headers["Cache-Control"] = "public, max-age=60, must-revalidate"
     raw = await _get_models()
     items = [_categorize(m) for m in raw]
-    # Mark paused providers (Anthropic API limit until 2026-04-01)
-    _PAUSED_PROVIDERS = {"anthropic"}  # Remove from set when API resumes
-    for m in items:
-        if m.get("provider") in _PAUSED_PROVIDERS:
-            m["name"] = m["name"] + " ⏸ (paused)"
-            m["paused"] = True
-    items.sort(key=lambda x: (x.get("paused", False), not x["backend_supported"], x["provider"], x["name"].lower()))
+    # Paused-flag entfernt 2026-04-20 — Anthropic API-Pause lief am 2026-04-01 aus
+    items.sort(key=lambda x: (not x["backend_supported"], *_model_sort_key(x)))
     return {
         "ok": True,
         "count": len(items),
@@ -782,6 +1037,11 @@ async def models() -> Dict[str, Any]:
             "vision": [m for m in items if m["vision"]],
             "media_image": [m for m in items if m["media_image"]],
             "media_video": [m for m in items if m["media_video"]],
+            "audio": [m for m in items if m["audio"]],
+            "ocr": [m for m in items if m["ocr"]],
+            "embedding": [m for m in items if m["embedding"]],
+            "code": [m for m in items if m["code"]],
+            "reasoning": [m for m in items if m["reasoning"]],
         },
         "models": items,
     }
@@ -843,7 +1103,47 @@ async def vision_upload(
 
 @router.post("/media/image")
 async def media_image(req: ImageRequest) -> Dict[str, Any]:
-    return await _image_proxy(req)
+    """Generate an image and return it in MULTIPLE formats so any frontend JS
+    schema (legacy ComfyUI-style, OpenAI-style, dashboard-style) finds the
+    image data on first try.
+
+    Output keys (all populated):
+    - ok / mode / provider / result.data[]    – canonical dashboard format
+    - images[]   – array of "data:image/png;base64,..." URLs (legacy ComfyUI shape)
+    - urls[]     – same as images[] (some JS pipelines look for this name)
+    - data[]     – top-level mirror of result.data[] (OpenAI-style)
+    - url        – first image URL (single-image case)
+    """
+    proxy_result = await _image_proxy(req)
+    data_blocks = (proxy_result.get("result", {}) or {}).get("data", []) or []
+    data_urls: List[str] = []
+    for item in data_blocks:
+        if not isinstance(item, dict):
+            continue
+        if item.get("b64_json"):
+            ct = item.get("content_type", "image/png") or "image/png"
+            data_urls.append(f"data:{ct};base64,{item['b64_json']}")
+        elif item.get("url"):
+            try:
+                async with httpx.AsyncClient(timeout=60.0) as _cli:
+                    _r = await _cli.get(item["url"])
+                    if _r.status_code == 200:
+                        _ct = _r.headers.get("content-type", "image/png").split(";")[0]
+                        _b64 = base64.b64encode(_r.content).decode("utf-8")
+                        data_urls.append(f"data:{_ct};base64,{_b64}")
+                    else:
+                        logger.warning("media_image: failed to fetch %s (HTTP %d)",
+                                       item["url"], _r.status_code)
+            except Exception as _exc:
+                logger.warning("media_image: image URL fetch failed: %s", _exc)
+
+    # Multi-format response so any JS schema finds the data
+    proxy_result["images"] = data_urls
+    proxy_result["urls"] = data_urls
+    proxy_result["data"] = data_blocks
+    if data_urls:
+        proxy_result["url"] = data_urls[0]
+    return proxy_result
 
 @router.post("/media/video")
 async def media_video(req: VideoRequest) -> Dict[str, Any]:

@@ -110,7 +110,7 @@ class ModelAvailabilityService:
         self._quota_cooldown = timedelta(hours=24)
         
         self._api_keys = {
-            "gemini": ((os.getenv("GOOGLE_AI_STUDIO_KEY") or "").strip() or (os.getenv("GEMINI_API_KEY") or "").strip() or (os.getenv("GOOGLE_GEMINI_KEY") or "").strip()),
+            "gemini": os.getenv("GEMINI_API_KEY", os.getenv("GOOGLE_GEMINI_KEY", "")),
             "anthropic": os.getenv("ANTHROPIC_API_KEY", ""),
             "openai": os.getenv("OPENAI_API_KEY", ""),
             "groq": os.getenv("GROQ_API_KEY", ""),
@@ -216,7 +216,7 @@ class ModelAvailabilityService:
                 async with httpx.AsyncClient(timeout=5) as client:
                     resp = await client.get("http://localhost:11434/api/tags")
                     results["status"] = "healthy" if resp.status_code == 200 else "offline"
-            except Exception:
+            except:
                 results["status"] = "offline"
         
         return results

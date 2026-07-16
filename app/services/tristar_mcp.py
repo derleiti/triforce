@@ -90,9 +90,8 @@ class TriStarMCPService:
         # Parse logs
         for log_file in log_files[:10]:  # Limit files
             try:
-                from collections import deque
                 with open(log_file, "r", encoding="utf-8", errors="ignore") as f:
-                    lines = list(deque(f, maxlen=limit))
+                    lines = f.readlines()[-limit:]
                     for line in lines:
                         line = line.strip()
                         if not line:
@@ -123,20 +122,19 @@ class TriStarMCPService:
 
     async def get_agent_logs(self, agent_id: str, lines: int = 50) -> Dict[str, Any]:
         """Get logs for a specific agent via journalctl."""
-        import asyncio
+        import subprocess
 
         try:
-            # Try systemd journal first (async to avoid blocking event loop)
-            proc = await asyncio.create_subprocess_exec(
-                "journalctl", "-u", f"{agent_id}.service", "-n", str(lines), "--no-pager", "-o", "json",
-                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
+            # Try systemd journal first
+            result = subprocess.run(
+                ["journalctl", "-u", f"{agent_id}.service", "-n", str(lines), "--no-pager", "-o", "json"],
+                capture_output=True,
+                text=True,
+                timeout=10,
             )
-            stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=10)
-            result_stdout = stdout.decode() if stdout else ""
-            result_returncode = proc.returncode
-            if result_returncode == 0:
+            if result.returncode == 0:
                 entries = []
-                for line in result_stdout.strip().split("\n"):
+                for line in result.stdout.strip().split("\n"):
                     if line:
                         try:
                             entries.append(json.loads(line))
@@ -497,49 +495,29 @@ class TriStarMCPService:
         }
 
         # Check systemd services
-        # NOTE: Older versions referenced unit names that may not exist on this host.
-        # We map logical services to the actual units used in production.
-        service_map = {
-            # Core backend
-            "backend": "triforce",
-            # Local LLM runtime — runs as ollama.service (not ollama-ipex which is legacy IPEX docker)
-            "ollama": "ollama",
-            # Infra
-            "redis": "redis-server",
-            # Optional/update related
-            "triforce-docker": "triforce-docker",
-            # triforce-hub-sync removed: service is disabled/legacy, replaced by federation-node/mesh logic
-        }
-
-        # Also expose legacy keys for backward compatibility
-        legacy_aliases = {
-            "ailinux-backend": "triforce",
-            "gemini-lead": None,   # CLI agents are managed separately (not systemd units)
-            "claude-mcp": None,
-            "codex-mcp": None,
-        }
-
-        async def _is_active(unit: str) -> str:
+        # systemd-services that actually exist on this host.
+        # Renamed 2026-06-04: ailinux-backend → triforce; the CLI agents
+        # (gemini-lead, claude-mcp, codex-mcp) are subprocesses of the backend,
+        # NOT systemd units — they should be checked via agent_review, not here.
+        services = [
+            "triforce",
+            "triforce-docker",
+            "ollama",
+            "redis-server",
+            "nova-flarum-bot",
+            "nova-log-monitor",
+        ]
+        for service in services:
             try:
-                proc = await asyncio.create_subprocess_exec(
-                    "systemctl", "is-active", f"{unit}.service",
-                    stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
+                result = subprocess.run(
+                    ["systemctl", "is-active", f"{service}.service"],
+                    capture_output=True,
+                    text=True,
+                    timeout=5,
                 )
-                stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=5)
-                out = (stdout.decode() if stdout else "").strip()
-                if out:
-                    return out
-                return (stderr.decode() if stderr else "").strip() or "unknown"
+                status["services"][service] = result.stdout.strip()
             except Exception:
-                return "unknown"
-
-        # Primary services
-        for key, unit in service_map.items():
-            status["services"][key] = await _is_active(unit)
-
-        # Legacy service keys
-        for legacy_key, unit in legacy_aliases.items():
-            status["services"][legacy_key] = await _is_active(unit) if unit else "not_applicable"
+                status["services"][service] = "unknown"
 
         # Check directories
         for name, path in [

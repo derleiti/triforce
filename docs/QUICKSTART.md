@@ -1,5 +1,19 @@
 # TriForce Quickstart
 
+
+<!-- AILINUX_STATUS_START -->
+## Current quickstart baseline
+
+- Production branch: `nova-nextlevel-20260603`.
+- Expected HEAD: `16f43b8a`.
+- API health URL: `https://api.ailinux.me/health`.
+- Healthy response: `{"ok": true, "status": "ok"}`.
+- Default local Ollama tag: `gemma4:12b`.
+- TriForce and AI-Coder model route: `ollama/gemma4:12b`.
+- Validate Python sources with `python3 -m compileall app -q`.
+- Inspect repository state with `git status --short --branch`.
+<!-- AILINUX_STATUS_END -->
+
 **In 5 Minuten zur ersten KI-Antwort.**
 
 ---

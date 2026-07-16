@@ -272,9 +272,19 @@ class AuthService {
     }
 
     private static function clear_session_cookie(): void {
-        $cookie_name = defined('NOVA_SESSION_COOKIE') ? NOVA_SESSION_COOKIE : 'nova_session';
-        if (isset($_COOKIE[$cookie_name])) {
+        $cookie_names = array_unique([
+            defined('NOVA_SESSION_COOKIE') ? NOVA_SESSION_COOKIE : 'nova_session',
+            'nova_session',
+            'ailinux_token',
+            'ailinux_logout',
+        ]);
+
+        foreach ($cookie_names as $cookie_name) {
+            if (!$cookie_name) {
+                continue;
+            }
             setcookie($cookie_name, '', time() - 3600, '/', '', is_ssl(), true);
+            setcookie($cookie_name, '', time() - 3600, '/', '.ailinux.me', is_ssl(), true);
             unset($_COOKIE[$cookie_name]);
         }
     }
@@ -396,6 +406,13 @@ HTML;
             'callback'            => [$this, 'api_logout'],
             'permission_callback' => '__return_true',
         ]);
+
+        register_rest_route('nova-ai/v1', '/auth/lost-password', [
+            'methods'             => 'POST',
+            'callback'            => [$this, 'api_lost_password'],
+            'permission_callback' => '__return_true',
+        ]);
+
 
         register_rest_route('nova-ai/v1', '/auth/profile', [
             'methods'             => 'POST',
@@ -678,10 +695,27 @@ HTML;
     // LOGIN / REGISTER REDIRECTS
     // =========================================================================
 
+    private function is_ailinux_wp_admin_bypass(): bool {
+        if (isset($_GET['ailinux_wp_admin']) && $_GET['ailinux_wp_admin'] === '1') {
+            return true;
+        }
+
+        $redirect_to = $_GET['redirect_to'] ?? '';
+        if (is_string($redirect_to) && strpos($redirect_to, 'ailinux_wp_admin=1') !== false) {
+            return true;
+        }
+
+        return false;
+    }
+
     public function maybe_redirect_login(): void {
         $redirect    = isset($_GET['redirect_to']) ? $_GET['redirect_to'] : home_url();
         $use_ailinux = get_option('nova_ai_use_unified_login', true);
         if ($use_ailinux && !isset($_GET['wp_login'])) {
+            if ($this->is_ailinux_wp_admin_bypass()) {
+                return;
+            }
+
             wp_redirect($this->login_page . '?redirect=' . urlencode(wp_validate_redirect($redirect, home_url())));
             exit;
         }
@@ -701,7 +735,9 @@ HTML;
 
     private function verify_ailinux_token(string $email, string $token) {
         $endpoint = $this->get_server_api_endpoint();
-        $response = wp_remote_get($endpoint . '/v1/auth/verify', [
+        // FIX 2026-04-24: /v1/auth/verify existiert nicht — korrekter Endpoint ist /v1/auth/client/me.
+        // HTTP 200 == gültiger Token. Email liegt unter body.session.email, nicht top-level.
+        $response = wp_remote_get($endpoint . '/v1/auth/client/me', [
             'headers' => ['Authorization' => 'Bearer ' . $token],
             'timeout' => 10,
         ]);
@@ -709,13 +745,25 @@ HTML;
         if (is_wp_error($response)) {
             return false;
         }
-
-        $body = json_decode(wp_remote_retrieve_body($response), true);
-        if (!is_array($body) || empty($body['valid'])) {
+        if (wp_remote_retrieve_response_code($response) !== 200) {
             return false;
         }
-        if (!empty($body['email']) && strtolower($body['email']) !== strtolower($email)) {
+
+        $body = json_decode(wp_remote_retrieve_body($response), true);
+        if (!is_array($body)) {
             return false;
+        }
+
+        // Email kann an mehreren Stellen stehen (neue API: session.email; ältere: top-level)
+        $verified_email = $body['session']['email'] ?? ($body['email'] ?? '');
+        if ($verified_email && strtolower($verified_email) !== strtolower($email)) {
+            return false;
+        }
+
+        // Shim: Shape angleichen an das, was Rest-of-Code erwartet (top-level 'email', 'valid')
+        $body['valid'] = true;
+        if (!isset($body['email']) && $verified_email) {
+            $body['email'] = $verified_email;
         }
         return $body;
     }
@@ -1048,6 +1096,46 @@ HTML;
     }
 
     /**
+     * Request a WordPress password reset mail.
+     * Generic response avoids account enumeration.
+     */
+    public function api_lost_password(\WP_REST_Request $request): \WP_REST_Response {
+        $email = sanitize_email((string) $request->get_param('email'));
+
+        if (!is_email($email)) {
+            return new \WP_REST_Response([
+                'ok'      => false,
+                'error'   => 'invalid_email',
+                'message' => 'Bitte eine gültige E-Mail-Adresse eingeben.',
+            ], 400);
+        }
+
+        $user = get_user_by('email', $email);
+
+        if (!$user) {
+            return new \WP_REST_Response([
+                'ok'      => true,
+                'message' => 'Wenn ein Konto existiert, wurde eine E-Mail zum Zurücksetzen verschickt.',
+            ], 200);
+        }
+
+        $result = retrieve_password($user->user_login);
+
+        if (is_wp_error($result)) {
+            return new \WP_REST_Response([
+                'ok'      => false,
+                'error'   => 'mail_failed',
+                'message' => 'Reset-Mail konnte nicht versendet werden. Bitte später erneut versuchen.',
+            ], 500);
+        }
+
+        return new \WP_REST_Response([
+            'ok'      => true,
+            'message' => 'Wenn ein Konto existiert, wurde eine E-Mail zum Zurücksetzen verschickt.',
+        ], 200);
+    }
+
+    /**
      * GET /wp-json/nova-ai/v1/auth/wp-login?token=...&email=...&tier=...&redirect=...
      * Setzt WP-Auth-Cookie und redirectet — löst Cross-Domain SameSite Problem.
      * Browser navigiert direkt auf ailinux.me, daher Cookie korrekt gesetzt.
@@ -1083,8 +1171,11 @@ HTML;
         update_user_meta($user_id, 'nova_ailinux_email', $email);
         if ($client_id) update_user_meta($user_id, 'nova_client_id', $client_id);
 
+        // Always reset stale WP/auth cookies before issuing a fresh bridge login cookie.
+        wp_clear_auth_cookie();
+        self::clear_session_cookie();
         wp_set_current_user($user_id);
-        wp_set_auth_cookie($user_id, true);
+        wp_set_auth_cookie($user_id, true, is_ssl());
 
         $safe = (strpos($redirect, home_url()) === 0) ? $redirect : home_url('/');
         wp_redirect($safe);

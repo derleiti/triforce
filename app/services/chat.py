@@ -13,19 +13,6 @@ from fastapi import HTTPException
 from pydantic import AnyHttpUrl
 
 from ..utils.http_client import HttpClient
-# BUG-015 FIX 2026-03-10: Optional import — verhindert Startup-Crash wenn Paket fehlt
-# FutureWarning supprimiert: google-generativeai ist deprecated, Nachfolger ist google-genai.
-# Migration ist ein Breaking Change (_stream_gemini muss komplett umgeschrieben werden).
-# GOOGLE_AI_STUDIO_KEY == GEMINI_API_KEY — beides ist derselbe Schluessel.
-import warnings as _warnings
-try:
-    with _warnings.catch_warnings():
-        _warnings.simplefilter("ignore", FutureWarning)
-        import google.generativeai as genai
-    _HAS_GENAI = True
-except ImportError:
-    genai = None  # type: ignore
-    _HAS_GENAI = False
 
 from ..config import get_settings
 from ..services.model_registry import ModelInfo
@@ -33,7 +20,7 @@ from ..utils.errors import api_error
 from ..utils.http import extract_http_error
 from ..utils.model_helpers import strip_provider_prefix
 from . import web_search
-from .crawler.manager import crawler_manager
+# Crawler manager is imported lazily where needed to avoid optional dependency on playwright
 
 logger = __import__("logging").getLogger("ailinux.chat")
 
@@ -42,24 +29,10 @@ logger = __import__("logging").getLogger("ailinux.chat")
 # =============================================================================
 
 
-# ── Nova Fallback Cascade v2.0 ──────────────────────────────────────────
-# Tries multiple models in order until one responds.
-# Guarantees an answer for Nova-AI-Frontend users.
 NOVA_FALLBACK_CASCADE = [
-    # 1. Ollama Cloud models (free, high quality)
-    ("ollama", "deepseek-v3.2:cloud"),
-    ("ollama", "kimi-k2-thinking:cloud"),
-    ("ollama", "glm-5:cloud"),
-    ("ollama", "qwen3-coder:480b-cloud"),
-    ("ollama", "gpt-oss:120b-cloud"),
-    # 2. OpenRouter Free models (rate-limited but reliable)
-    ("openrouter", "openai/gpt-oss-120b:free"),
-    ("openrouter", "stepfun/step-3.5-flash:free"),
-    ("openrouter", "mistralai/mistral-small-3.1-24b-instruct:free"),
-    # 3. Local Ollama (always available, no network needed)
-    ("ollama", "glm-4.7-flash:latest"),
-    # 4. Tiny local fallback (last resort, 5GB)
-    ("ollama", "qwen3:8b"),
+    "gpt-oss:120b-cloud",
+    "gpt-oss:20b-cloud",
+    "openai/gpt-oss-120b:free",
 ]
 
 async def _fallback_to_ollama(
@@ -70,59 +43,14 @@ async def _fallback_to_ollama(
     original_error: Exception,
     fallback_model: str | None = None,
 ) -> AsyncGenerator[str, None]:
-    """Deep fallback cascade — tries Ollama Cloud → OpenRouter Free → Local Ollama.
-    Guarantees a response for Nova-AI-Frontend users."""
+    """Unified fallback logic - streams from Ollama when primary provider fails."""
     settings = get_settings()
-    logger.warning("%s failed (%s), starting fallback cascade", original_provider, original_error)
-
-    # If specific fallback model requested, try it first
-    if fallback_model:
-        try:
-            yield f"[⚡ Fallback: {fallback_model}]\n\n"
-            async for chunk in _stream_ollama(
-                fallback_model, messages, temperature=temperature, stream=True, timeout=timeout
-            ):
-                yield chunk
-            return  # Success — exit cascade
-        except Exception as e:
-            logger.warning("Specific fallback %s failed: %s", fallback_model, e)
-
-    # Walk through the cascade
-    last_error = original_error
-    for provider, model in NOVA_FALLBACK_CASCADE:
-        try:
-            if provider == "ollama":
-                logger.info("Fallback cascade: trying ollama/%s", model)
-                yield f"[⚡ Fallback: {model}]\n\n"
-                async for chunk in _stream_ollama(
-                    model, messages, temperature=temperature, stream=True, timeout=timeout
-                ):
-                    yield chunk
-                return  # Success
-            elif provider == "openrouter":
-                or_key = getattr(settings, "openrouter_api_key", None)
-                if not or_key:
-                    continue
-                logger.info("Fallback cascade: trying openrouter/%s", model)
-                yield f"[⚡ Fallback: {model}]\n\n"
-                async for chunk in _stream_openai_compatible(
-                    model, messages,
-                    base_url="https://openrouter.ai/api/v1",
-                    api_key=or_key,
-                    extra_headers={"HTTP-Referer": "https://ailinux.me", "X-Title": "AILinux Nova"},
-                    temperature=temperature, stream=True, timeout=timeout,
-                    provider="openrouter",
-                ):
-                    yield chunk
-                return  # Success
-        except Exception as e:
-            last_error = e
-            logger.warning("Fallback cascade: %s/%s failed: %s", provider, model, e)
-            continue
-
-    # All failed — raise last error
-    logger.error("Fallback cascade exhausted — all %d models failed", len(NOVA_FALLBACK_CASCADE))
-    raise last_error
+    model = fallback_model or settings.ollama_fallback_model
+    logger.warning("%s failed (%s), falling back to %s", original_provider, original_error, model)
+    async for chunk in _stream_ollama(
+        model, messages, temperature=temperature, stream=True, timeout=timeout
+    ):
+        yield chunk
 
 STRUCTURE_PROMPT_MARKER = "nova_format_guideline"
 STRUCTURE_PROMPT = (
@@ -137,12 +65,12 @@ MISTRAL_MODEL_ALIASES = {
     "mistral/open-mixtral-8x7b": "open-mixtral-8x7b",
     "mistral/mixtral-8x7b": "open-mixtral-8x7b",
     # Current generation (map to latest versions)
-    "mistral/large": "mistral-large-latest",
+    "mistral/large": "mistral-medium-3.5",
     "mistral/medium": "mistral-medium-latest",
     "mistral/small": "mistral-small-latest",
     "mistral/tiny": "ministral-3b-latest",
     # Shorthand aliases
-    "large": "mistral-large-latest",
+    "large": "mistral-medium-3.5",
     "medium": "mistral-medium-latest",
     "small": "mistral-small-latest",
     "tiny": "ministral-3b-latest",
@@ -157,9 +85,17 @@ MISTRAL_MODEL_ALIASES = {
 }
 
 GEMINI_MODEL_ALIASES = {
-    # Gemini 3 Models (Preview)
-    "gemini/gemini-3-pro": "gemini-3-pro-preview",
-    "gemini-3-pro": "gemini-3-pro-preview",
+    # Gemini 3.x current generation
+    "gemini/gemini-3.5-flash": "gemini-3.5-flash",
+    "gemini-3.5-flash": "gemini-3.5-flash",
+    "gemini/gemini-3.1-pro": "gemini-3.1-pro-preview",
+    "gemini/gemini-3.1-pro-preview": "gemini-3.1-pro-preview",
+    "gemini-3.1-pro": "gemini-3.1-pro-preview",
+    "gemini-3.1-pro-preview": "gemini-3.1-pro-preview",
+    "gemini/gemini-3.1-flash-lite": "gemini-3.1-flash-lite",
+    "gemini-3.1-flash-lite": "gemini-3.1-flash-lite",
+    "gemini/gemini-3-pro": "gemini-3.1-pro-preview",
+    "gemini-3-pro": "gemini-3.1-pro-preview",
     # Gemini 2.5 Models (use simple names, no preview suffix needed)
     "gemini/gemini-2.5-pro": "gemini-2.5-pro",
     "gemini/gemini-2.5-flash": "gemini-2.5-flash",
@@ -173,33 +109,33 @@ GEMINI_MODEL_ALIASES = {
     "gemini/gemini-1.5-flash": "gemini-1.5-flash",
     "gemini/gemini-1.5-flash-8b": "gemini-1.5-flash-8b",
     "gemini/gemini-1.5-pro": "gemini-1.5-pro",
-    # Legacy aliases (map to latest stable 2.5)
-    "gemini/gemini-pro": "gemini-2.5-flash",
-    "gemini/pro": "gemini-2.5-flash",
-    "gemini/gemini-pro-vision": "gemini-2.5-flash",
-    "gemini-pro": "gemini-2.5-flash",
-    "pro": "gemini-2.5-flash",
+    # Legacy aliases (map to current stable Gemini 3.5 Flash)
+    "gemini/gemini-pro": "gemini-3.5-flash",
+    "gemini/pro": "gemini-3.5-flash",
+    "gemini/gemini-pro-vision": "gemini-3.5-flash",
+    "gemini-pro": "gemini-3.5-flash",
+    "pro": "gemini-3.5-flash",
 }
 
 OLLAMA_MODEL_ALIASES = {
     "gpt-oss:cloud/120b": "gpt-oss:120b-cloud",
     "gpt-oss:cloud/20b": "gpt-oss:20b-cloud",
-    "llama3.2:latest": "qwen3:8b",
-    "llama3.2": "qwen3:8b",
+    "llama3.2:latest": "gpt-oss:20b-cloud",
+    "llama3.2": "gpt-oss:20b-cloud",
 }
 
 ANTHROPIC_MODEL_ALIASES = {
     # Claude 4 Series (Latest - use model IDs from Anthropic API)
-    "anthropic/claude-sonnet-4": "claude-sonnet-4-20250514",
-    "anthropic/claude-opus-4": "claude-opus-4-20250514",
-    "claude-sonnet-4": "claude-sonnet-4-20250514",
-    "claude-opus-4": "claude-opus-4-20250514",
+    "anthropic/claude-sonnet-4": "claude-sonnet-4-6",
+    "anthropic/claude-opus-4": "claude-opus-4-8",
+    "claude-sonnet-4": "claude-sonnet-4-6",
+    "claude-opus-4": "claude-opus-4-8",
     # Claude 3.5 Series
-    "anthropic/claude-3.5-sonnet": "claude-sonnet-4-20250514",
+    "anthropic/claude-3.5-sonnet": "claude-sonnet-4-6",
     "anthropic/claude-3.5-haiku": "claude-3-5-haiku-20241022",
-    "claude-3.5-sonnet": "claude-sonnet-4-20250514",
+    "claude-3.5-sonnet": "claude-sonnet-4-6",
     "claude-3.5-haiku": "claude-3-5-haiku-20241022",
-    "claude-3-5-sonnet": "claude-sonnet-4-20250514",
+    "claude-3-5-sonnet": "claude-sonnet-4-6",
     "claude-3-5-haiku": "claude-3-5-haiku-20241022",
     # Claude 3 Series
     "anthropic/claude-3-opus": "claude-3-opus-20240229",
@@ -209,8 +145,8 @@ ANTHROPIC_MODEL_ALIASES = {
     "claude-3-sonnet": "claude-3-sonnet-20240229",
     "claude-3-haiku": "claude-3-haiku-20240307",
     # Legacy aliases (defaults to latest Sonnet)
-    "anthropic/claude": "claude-sonnet-4-20250514",
-    "claude": "claude-sonnet-4-20250514",
+    "anthropic/claude": "claude-sonnet-4-6",
+    "claude": "claude-sonnet-4-6",
 }
 
 # OpenAI-compatible providers (Groq, Cerebras, Together, Fireworks, OpenRouter)
@@ -248,25 +184,6 @@ OPENAI_COMPATIBLE_PROVIDERS = {
             "HTTP-Referer": "https://api.ailinux.me",
             "X-Title": "AILinux TriForce",
         },
-    },
-    # GitHub Models (OpenAI-compatible, uses Azure inference endpoint)
-    # NOTE: Requires GitHub fine-grained PAT with "Models" permission
-    # Classic PATs (ghp_) also work; fine-grained PATs need "Models" scope
-    "github": {
-        "base_url": "https://models.github.ai/inference",
-        "api_key_setting": "github_models_token",
-        "timeout_setting": "groq_timeout_ms",  # reuse a sane ms timeout
-        "headers": {
-            "Accept": "application/vnd.github+json",
-            "X-GitHub-Api-Version": "2022-11-28",
-        },
-    },
-    # HuggingFace Inference API (OpenAI-compatible)
-    "huggingface": {
-        "base_url": "https://router.huggingface.co/v1",
-        "api_key_setting": "huggingface_api_key",
-        "timeout_setting": "openrouter_timeout_ms",  # 120000ms, huggingface_timeout ist in sec
-        "headers": {},
     },
 }
 
@@ -317,11 +234,8 @@ BLOCKED_IP_RANGES = [
     ipaddress.ip_network("fe80::/10"),         # IPv6 link-local
 ]
 
-# SSRF Protection: blocked TLDs as frozenset for O(1) lookup
-_BLOCKED_TLDS: frozenset[str] = frozenset({".local", ".internal", ".localhost", ".lan"})
 
-
-async def _is_ssrf_safe(url: str) -> bool:
+def _is_ssrf_safe(url: str) -> bool:
     """Check if URL is safe from SSRF attacks.
 
     Returns True if URL points to a public internet address,
@@ -344,16 +258,14 @@ async def _is_ssrf_safe(url: str) -> bool:
             logger.warning(f"SSRF blocked: hostname '{hostname}' is blocked")
             return False
 
-        # Block .local, .internal, .localhost, .lan TLDs — O(1) frozenset lookup
-        hostname_lower = hostname.lower()
-        if any(hostname_lower.endswith(tld) for tld in _BLOCKED_TLDS):
+        # Block .local, .internal, .localhost TLDs
+        if any(hostname.lower().endswith(tld) for tld in [".local", ".internal", ".localhost", ".lan"]):
             logger.warning(f"SSRF blocked: hostname '{hostname}' has blocked TLD")
             return False
 
-        # Resolve hostname and check IP — run in thread executor to avoid blocking
+        # Resolve hostname and check IP
         try:
-            loop = asyncio.get_event_loop()
-            ip_str = await loop.run_in_executor(None, socket.gethostbyname, hostname)
+            ip_str = socket.gethostbyname(hostname)
             ip = ipaddress.ip_address(ip_str)
 
             for blocked_range in BLOCKED_IP_RANGES:
@@ -373,7 +285,7 @@ async def _is_ssrf_safe(url: str) -> bool:
         return False
 
 
-async def _extract_safe_urls(text: str) -> List[str]:
+def _extract_safe_urls(text: str) -> List[str]:
     """Extract URLs from text and filter out SSRF-unsafe ones."""
     raw_urls = re.findall(r"(https?://[^\s]+)", text)
     safe_urls = []
@@ -382,7 +294,7 @@ async def _extract_safe_urls(text: str) -> List[str]:
         # Clean URL (remove trailing punctuation)
         url = url.rstrip(".,;:!?\"')")
 
-        if await _is_ssrf_safe(url):
+        if _is_ssrf_safe(url):
             safe_urls.append(url)
         else:
             logger.info(f"Filtered unsafe URL from user input: {url[:50]}...")
@@ -416,7 +328,6 @@ async def _get_initial_response(
     messages: List[dict[str, str]],
     temperature: Optional[float],
     settings,
-    no_fallback: bool = False,
 ) -> str:
     chunks = []
     if model.provider == "ollama":
@@ -443,14 +354,6 @@ async def _get_initial_response(
             ):
                 chunks.append(chunk)
         except Exception as exc:
-            # PATCH v2.82: No Ollama fallback for config/auth errors
-            _emsg = str(exc).lower()
-            # DEBUG: Log the actual error for GitHub models
-            if model.provider == "github":
-                logger.error(f"GITHUB_DEBUG: api_key_setting={provider_config[api_key_setting]}, api_key_present={bool(api_key)}, api_key_prefix={str(api_key)[:8] if api_key else None}, base_url={provider_config[base_url]}, error={_emsg[:200]}")
-            if any(kw in _emsg for kw in ("api key", "unauthorized", "403", "401", "not configured", "forbidden")):
-                raise
-            if no_fallback: raise
             async for chunk in _fallback_to_ollama(messages, temperature, settings.request_timeout, "Mistral", exc):
                 chunks.append(chunk)
     elif model.provider == "gemini":
@@ -467,38 +370,25 @@ async def _get_initial_response(
             ):
                 chunks.append(chunk)
         except Exception as exc:
-            # PATCH v2.82: No Ollama fallback for config/auth errors
-            _emsg = str(exc).lower()
-            if any(kw in _emsg for kw in ("api key", "unauthorized", "403", "401", "not configured", "forbidden")):
-                raise
-            if no_fallback: raise
             async for chunk in _fallback_to_ollama(messages, temperature, settings.request_timeout, "Gemini", exc):
                 chunks.append(chunk)
     elif model.provider == "gpt-oss":
         if not settings.gpt_oss_api_key or not settings.gpt_oss_base_url:
-            # No native GPT-OSS API → route directly through ollama cloud
-            logger.info(f"gpt-oss: no API key, routing {model.id} via ollama cloud")
-            async for chunk in _stream_ollama(model.id, messages, temperature, settings.request_timeout):
+            raise api_error("GPT-OSS support is not configured (missing API key or base URL)", status_code=503, code="gpt_oss_unavailable")
+        try:
+            async for chunk in _stream_gpt_oss(
+                model.id,
+                messages,
+                api_key=settings.gpt_oss_api_key,
+                base_url=settings.gpt_oss_base_url,
+                temperature=temperature,
+                stream=True,
+                timeout=int(settings.request_timeout),
+            ):
                 chunks.append(chunk)
-        else:
-            try:
-                async for chunk in _stream_gpt_oss(
-                    model.id,
-                    messages,
-                    api_key=settings.gpt_oss_api_key,
-                    base_url=settings.gpt_oss_base_url,
-                    temperature=temperature,
-                    stream=True,
-                    timeout=int(settings.request_timeout),
-                ):
-                    chunks.append(chunk)
-            except Exception as exc:
-                _emsg = str(exc).lower()
-                if any(kw in _emsg for kw in ("api key", "unauthorized", "403", "401", "not configured", "forbidden")):
-                    raise
-                if no_fallback: raise
-                async for chunk in _fallback_to_ollama(messages, temperature, settings.request_timeout, "GPT-OSS", exc):
-                    chunks.append(chunk)
+        except Exception as exc:
+            async for chunk in _fallback_to_ollama(messages, temperature, settings.request_timeout, "GPT-OSS", exc):
+                chunks.append(chunk)
     elif model.provider == "anthropic":
         if not settings.anthropic_api_key:
             raise api_error("Anthropic Claude support is not configured", status_code=503, code="anthropic_unavailable")
@@ -514,11 +404,6 @@ async def _get_initial_response(
             ):
                 chunks.append(chunk)
         except Exception as exc:
-            # PATCH v2.82: No Ollama fallback for config/auth errors
-            _emsg = str(exc).lower()
-            if any(kw in _emsg for kw in ("api key", "unauthorized", "403", "401", "not configured", "forbidden")):
-                raise
-            if no_fallback: raise
             async for chunk in _fallback_to_ollama(messages, temperature, settings.request_timeout, "Anthropic", exc):
                 chunks.append(chunk)
     elif model.provider in OPENAI_COMPATIBLE_PROVIDERS:
@@ -542,18 +427,6 @@ async def _get_initial_response(
             ):
                 chunks.append(chunk)
         except Exception as exc:
-            # PATCH v2.82: No Ollama fallback for config/auth errors
-            _emsg = str(exc).lower()
-            # GitHub: spezifische Fehlermeldung für fehlende "Models" Permission
-            if model.provider == "github" and "models" in _emsg and ("permission" in _emsg or "401" in _emsg):
-                raise api_error(
-                    "GitHub Models: Dein PAT benötigt die 'Models' Permission. "
-                    "→ github.com → Settings → Developer settings → Personal access tokens → Token bearbeiten → Models aktivieren",
-                    status_code=503, code="github_models_permission_missing"
-                )
-            if any(kw in _emsg for kw in ("api key", "unauthorized", "403", "401", "not configured", "forbidden")):
-                raise
-            if no_fallback: raise
             async for chunk in _fallback_to_ollama(messages, temperature, settings.request_timeout, model.provider.title(), exc):
                 chunks.append(chunk)
     elif model.provider == "cohere":
@@ -570,11 +443,6 @@ async def _get_initial_response(
             ):
                 chunks.append(chunk)
         except Exception as exc:
-            # PATCH v2.82: No Ollama fallback for config/auth errors
-            _emsg = str(exc).lower()
-            if any(kw in _emsg for kw in ("api key", "unauthorized", "403", "401", "not configured", "forbidden")):
-                raise
-            if no_fallback: raise
             async for chunk in _fallback_to_ollama(messages, temperature, settings.request_timeout, "Cohere", exc):
                 chunks.append(chunk)
     elif model.provider == "cloudflare":
@@ -592,11 +460,6 @@ async def _get_initial_response(
             ):
                 chunks.append(chunk)
         except Exception as exc:
-            # PATCH v2.82: No Ollama fallback for config/auth errors
-            _emsg = str(exc).lower()
-            if any(kw in _emsg for kw in ("api key", "unauthorized", "403", "401", "not configured", "forbidden")):
-                raise
-            if no_fallback: raise
             async for chunk in _fallback_to_ollama(messages, temperature, settings.request_timeout, "Cloudflare", exc):
                 chunks.append(chunk)
     else:
@@ -645,8 +508,6 @@ async def generate_response(
     return full_response
 
 
-_NO_FALLBACK_FLAG = False
-
 async def stream_chat(
     model: ModelInfo,
     request_model: str,
@@ -654,7 +515,6 @@ async def stream_chat(
     *,
     stream: bool,
     temperature: Optional[float] = None,
-    no_fallback: bool = False,
 ) -> AsyncGenerator[str, None]:
     settings = get_settings()
     formatted_messages = _ensure_structure_prompt(_format_messages(messages))
@@ -688,7 +548,7 @@ async def stream_chat(
         logger.warning(f"MCP Filter error (non-fatal): {mcp_exc}")
 
     # Get initial response
-    initial_response = await _get_initial_response(model, request_model, formatted_messages, temperature, settings, no_fallback=no_fallback)
+    initial_response = await _get_initial_response(model, request_model, formatted_messages, temperature, settings)
 
     # Check for uncertainty (web search)
     if any(phrase in initial_response.lower() for phrase in UNCERTAINTY_PHRASES):
@@ -731,21 +591,17 @@ async def stream_chat(
                     yield chunk
             elif model.provider == "gpt-oss":
                 if not settings.gpt_oss_api_key:
-                    # No native GPT-OSS API → route via ollama cloud
-                    logger.info(f"gpt-oss: no API key, routing {model.id} via ollama (non-stream)")
-                    async for chunk in _stream_ollama(model.id, augmented_messages, temperature, settings.request_timeout):
-                        yield chunk
-                else:
-                    async for chunk in _stream_gpt_oss(
-                        model.id,
-                        augmented_messages,
-                        api_key=settings.gpt_oss_api_key,
-                        base_url=settings.gpt_oss_base_url,
-                        temperature=temperature,
-                        stream=stream,
-                        timeout=int(settings.request_timeout),
-                    ):
-                        yield chunk
+                    raise api_error("GPT-OSS support is not configured", status_code=503, code="gpt_oss_unavailable")
+                async for chunk in _stream_gpt_oss(
+                    model.id,
+                    augmented_messages,
+                    api_key=settings.gpt_oss_api_key,
+                    base_url=settings.gpt_oss_base_url,
+                    temperature=temperature,
+                    stream=stream,
+                    timeout=int(settings.request_timeout),
+                ):
+                    yield chunk
             elif model.provider == "anthropic":
                 if not settings.anthropic_api_key:
                     raise api_error("Anthropic Claude support is not configured", status_code=503, code="anthropic_unavailable")
@@ -767,7 +623,7 @@ async def stream_chat(
         yield "Okay, ich werde versuchen, die angeforderten Informationen zu crawlen...\n\n"
 
         # Extract potential URLs from the user query with SSRF protection
-        urls = await _extract_safe_urls(user_query)
+        urls = _extract_safe_urls(user_query)
         if not urls:
             yield "Ich konnte keine sicheren Links in Ihrer Anfrage finden, die ich crawlen könnte."
             return
@@ -778,7 +634,8 @@ async def stream_chat(
             keywords = ["information"] # Default keyword if none provided
 
         try:
-                job = await crawler_manager.create_job(
+                from .crawler.manager import crawler_manager as _crawler_manager
+                job = await _crawler_manager.create_job(
                     keywords=keywords,
                     seeds=urls,
                     max_depth=5,
@@ -796,7 +653,7 @@ async def stream_chat(
                 job_status = job.status
                 while job_status in ["queued", "running"]:
                     await asyncio.sleep(5) # Poll every 5 seconds
-                    updated_job = await crawler_manager.get_job(job.id)
+                    updated_job = await _crawler_manager.get_job(job.id)
                     if updated_job:
                         job_status = updated_job.status
                         yield f"Crawl job {job.id} Status: {job_status}. Seiten gecrawlt: {updated_job.pages_crawled}.\n"
@@ -809,7 +666,7 @@ async def stream_chat(
                     
                     crawl_results_context = "Gecrawlte Ergebnisse:\n"
                     for result_id in updated_job.results[:3]: # Limit context to top 3 results
-                        result = await crawler_manager.get_result(result_id)
+                        result = await _crawler_manager.get_result(result_id)
                         if result:
                             title = result.title or "Kein Titel"
                             url = result.url or "Keine URL"
@@ -1060,7 +917,6 @@ async def _stream_mistral(
         "model": target_model,
         "messages": messages,
     }
-    # Mistral: temperature immer setzen
     if temperature is not None:
         body["temperature"] = max(0.0, min(temperature, 2.0))
 
@@ -1154,6 +1010,7 @@ async def _stream_gemini(
     stream: bool,
     timeout: float,
 ) -> AsyncGenerator[str, None]:
+    import google.generativeai as genai
     genai.configure(api_key=api_key)
     # Map legacy model names to current models
     target_model = GEMINI_MODEL_ALIASES.get(model)
@@ -1512,8 +1369,7 @@ async def _stream_openai_compatible(
         "model": target_model,
         "messages": messages,
     }
-    # GitHub Models: einige Modelle (GPT-5, o3) unterstuetzen keine custom temperature
-    if temperature is not None and provider != "github":
+    if temperature is not None:
         body["temperature"] = max(0.0, min(temperature, 2.0))
 
     url = f"{base_url.rstrip('/')}/chat/completions"

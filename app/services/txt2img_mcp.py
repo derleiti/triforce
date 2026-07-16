@@ -114,63 +114,21 @@ TXT2IMG_TOOLS: List[Dict[str, Any]] = [
 # ============================================================================
 
 async def handle_txt2img_generate(params: Dict[str, Any]) -> Dict[str, Any]:
-    """Generate an image from text prompt."""
-    from ..services.sd3 import sd3_service
-    from ..config import get_settings
+    """Generate an image from text prompt.
 
-    prompt = params.get("prompt")
-    if not prompt:
-        return {"error": "prompt is required", "success": False}
-
-    # Normalize dimensions to multiples of 64
-    width = params.get("width", 512)
-    height = params.get("height", 512)
-    width = max(64, min(2048, (width // 64) * 64))
-    height = max(64, min(2048, (height // 64) * 64))
-
-    try:
-        result = await sd3_service.generate_image(
-            prompt=prompt,
-            negative_prompt=params.get("negative_prompt"),
-            width=width,
-            height=height,
-            steps=params.get("steps", 20),
-            cfg_scale=params.get("cfg_scale", 7.0),
-            seed=params.get("seed", -1),
-            model=params.get("model"),
-            sampler_name=params.get("sampler", "euler")
-        )
-
-        # Check if we got images
-        images = result.get("images", [])
-        if images:
-            return {
-                "success": True,
-                "images": images,
-                "count": len(images),
-                "parameters": {
-                    "prompt": prompt,
-                    "width": width,
-                    "height": height,
-                    "steps": params.get("steps", 20),
-                    "cfg_scale": params.get("cfg_scale", 7.0),
-                    "seed": params.get("seed", -1)
-                }
-            }
-        else:
-            return {
-                "success": False,
-                "error": result.get("error", "No images generated"),
-                "hint": "ComfyUI backend may not be running. Check with txt2img_status."
-            }
-
-    except Exception as e:
-        logger.exception("Image generation failed: %s", e)
-        return {
-            "success": False,
-            "error": str(e),
-            "hint": "Ensure ComfyUI is running and configured in settings"
-        }
+    DEPRECATED: This MCP handler used the local ComfyUI/A1111 sd3_service
+    which has been removed (legacy GPU-server era). For image generation
+    use the cloud-provider routed /v1/images/generate endpoint instead
+    (Replicate FLUX, Cloudflare Workers AI, OpenRouter image, Gemini Imagen).
+    """
+    return {
+        "success": False,
+        "error": "txt2img_generate (local ComfyUI) is deprecated",
+        "hint": "Use POST /v1/images/generate with a cloud provider model "
+                "(e.g. 'replicate/black-forest-labs/flux-1.1-pro-ultra', "
+                "'cloudflare/@cf/black-forest-labs/flux-1-schnell', "
+                "'openrouter/google/gemini-2.5-flash-image').",
+    }
 
 
 async def handle_txt2img_models(params: Dict[str, Any]) -> Dict[str, Any]:

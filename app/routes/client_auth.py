@@ -12,19 +12,29 @@ Stand: 2025-12-13
 
 from fastapi import APIRouter, HTTPException, Depends, Header
 from pydantic import BaseModel, Field
-from typing import Optional, List, Dict, Any
-from datetime import datetime, timedelta, timezone
+from typing import Optional, List, Dict, Any, Tuple
+from datetime import datetime, timedelta
 from enum import Enum
 import hashlib
 import secrets
+import jwt
 import logging
-import hmac
-import base64
-import json as jsonlib
+import urllib.request
+import urllib.error
+
+logger = logging.getLogger(__name__)
 
 # Pfad zur User-Datenbank
 USERS_FILE_PATH = Path(__file__).parent.parent.parent / "config" / "users.json"
-logger = logging.getLogger(__name__)
+
+ALLOW_AUTO_REGISTER = os.environ.get("ALLOW_AUTO_REGISTER", "false").lower() in (
+    "1", "true", "yes", "on"
+)
+if ALLOW_AUTO_REGISTER:
+    logger.warning("ALLOW_AUTO_REGISTER is enabled - unknown login emails may create accounts")
+
+GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "").strip()
+GOOGLE_TOKENINFO_URL = "https://oauth2.googleapis.com/tokeninfo?id_token="
 
 router = APIRouter(prefix="/auth", tags=["Client Auth"])
 
@@ -77,157 +87,6 @@ DEFAULT_CLIENT_PERMISSIONS = {
     }
 }
 
-
-# ═══ WordPress Auth Bridge ═══════════════════════════════════════════════════
-# Swarm-Clients melden sich über login.ailinux.me (WordPress) an.
-# Validierung über WP-CLI check-password im wordpress_fpm Container.
-
-WP_CONTAINER = "wordpress_fpm"
-WP_CLI = "php /var/www/html/wp-cli.phar --allow-root --path=/var/www/html"
-
-def _wp_cmd(cmd: str, json_output: bool = False) -> str:
-    """WP-CLI im Docker-Container ausführen."""
-    import subprocess
-    fmt = " --format=json" if json_output else ""
-    full = f"docker exec {WP_CONTAINER} {WP_CLI} {cmd}{fmt}"
-    try:
-        r = subprocess.run(full, shell=True, capture_output=True, text=True, timeout=3)
-        out = r.stdout.strip()
-        # WP-CLI Notices filtern
-        lines = [l for l in out.splitlines()
-                 if not l.startswith("Notice:") and not l.startswith("Warning:")
-                 and "sendmail" not in l and "textdomain" not in l.lower()]
-        return "\n".join(lines).strip()
-    except Exception as e:
-        logger.warning(f"WP-CLI failed: {e}")
-        return ""
-
-
-def wp_verify_password(login: str, password: str) -> bool:
-    """WordPress-Passwort validieren via WP-CLI check-password."""
-    import shlex
-    safe_login = shlex.quote(login)
-    safe_pass = shlex.quote(password)
-    result = _wp_cmd(f"user check-password {safe_login} {safe_pass}")
-    # check-password gibt nichts aus bei Erfolg (exit 0), "Error" bei Fehler
-    return "Error" not in result and "error" not in result.lower()
-
-
-def wp_get_user(login_or_email: str) -> Optional[dict]:
-    """WordPress-Userdaten holen (ID, login, email, roles, display_name)."""
-    import shlex, json as _json
-    safe = shlex.quote(login_or_email)
-    raw = _wp_cmd(f"user get {safe} --fields=ID,user_login,user_email,display_name,roles", json_output=True)
-    if not raw:
-        return None
-    try:
-        data = _json.loads(raw)
-        return data
-    except Exception:
-        return None
-
-
-def wp_authenticate(email: str, password: str) -> Optional[dict]:
-    """
-    Kompletter WordPress-Auth-Flow mit Redis-Cache (60s TTL).
-    """
-    import hashlib, json as _json
-    # Cache-Key: sha256(email+password) — sicher, kein Klartext in Redis
-    _cache_key = "wp_auth:" + hashlib.sha256(f"{email}:{password}".encode()).hexdigest()
-    try:
-        import redis as _rl
-        _redis = _rl.from_url("redis://localhost:6379/0", decode_responses=True, socket_connect_timeout=1)
-        _cached = _redis.get(_cache_key)
-        if _cached:
-            return _json.loads(_cached)
-    except Exception:
-        _redis = None
-
-    # Erst als Email probieren, dann als Username
-    verified = wp_verify_password(email, password)
-    if not verified:
-        # Vielleicht ist es der Username statt Email
-        user_data = wp_get_user(email)
-        if user_data:
-            verified = wp_verify_password(user_data.get("user_login", email), password)
-        if not verified:
-            return None
-
-    # Userdaten holen
-    user = wp_get_user(email)
-    if not user:
-        return None
-
-    wp_roles = user.get("roles", "subscriber").lower()
-
-    # Role-Mapping: WP → TriForce
-    if "administrator" in wp_roles:
-        account_role = "admin"
-        tier = "subscription"  # Admin = voller Zugang
-    elif "editor" in wp_roles or "author" in wp_roles:
-        account_role = "client"
-        tier = "subscription"
-    else:
-        # subscriber / contributor / default
-        account_role = "client"
-        tier = "free"  # Free bis Abo abgeschlossen
-
-    _result = {
-        "email": user.get("user_email", email),
-        "name": user.get("display_name", email.split("@")[0]),
-        "tier": tier,
-        "account_role": account_role,
-        "wp_roles": wp_roles,
-        "wp_id": user.get("ID"),
-    }
-    # Im Cache speichern (60s TTL)
-    try:
-        if _redis:
-            _redis.setex(_cache_key, 60, _json.dumps(_result))
-    except Exception:
-        pass
-    return _result
-
-
-def _wp_create_user(
-    email: str,
-    password: str,
-    first_name: str = "",
-    last_name: str = "",
-    display_name: str = "",
-    role: str = "subscriber",
-) -> bool:
-    """Neuen WordPress-User anlegen via WP-CLI.
-    Gibt True zurück wenn erfolgreich."""
-    import shlex
-    safe_email = shlex.quote(email)
-    safe_pass = shlex.quote(password)
-    login = email.split("@")[0][:20].replace(".", "").replace("+", "")
-    safe_login = shlex.quote(login)
-    safe_display = shlex.quote(display_name or f"{first_name} {last_name}".strip() or login)
-    safe_first = shlex.quote(first_name)
-    safe_last = shlex.quote(last_name)
-
-    cmd = (
-        f"user create {safe_login} {safe_email}"
-        f" --user_pass={safe_pass}"
-        f" --display_name={safe_display}"
-        f" --first_name={safe_first}"
-        f" --last_name={safe_last}"
-        f" --role={role}"
-    )
-    result = _wp_cmd(cmd)
-    if "Success" in result or "Created" in result or "already exists" in result.lower():
-        logger.info(f"WordPress user created: {email} ({role})")
-        return True
-    if "already exists" in result.lower():
-        logger.info(f"WordPress user already exists: {email}")
-        return True
-    logger.warning(f"WordPress user creation unclear: {result}")
-    return "error" not in result.lower()
-
-
-
 # Aktive Sessions
 ACTIVE_SESSIONS: Dict[str, dict] = {}
 
@@ -247,82 +106,245 @@ def generate_client_secret() -> str:
     return secrets.token_urlsafe(32)
 
 
-def _b64url_encode(data: bytes) -> str:
-    return base64.urlsafe_b64encode(data).rstrip(b"=").decode("utf-8")
+def normalize_tier(tier: Optional[str]) -> str:
+    """Normalize legacy/client tier names to the server-side tier contract."""
+    raw = (tier or "guest").strip().lower()
+    aliases = {
+        "free": "guest",
+        "basic": "guest",
+        "paid": "pro",
+        "premium": "pro",
+        "admin": "enterprise",
+        "unlimited": "enterprise",
+    }
+    normalized = aliases.get(raw, raw)
+    if normalized in {"guest", "registered", "pro", "enterprise"}:
+        return normalized
+    logger.warning("Unknown user tier %r, falling back to guest", tier)
+    return "guest"
 
 
-def _b64url_decode(data: str) -> bytes:
-    padding = "=" * (-len(data) % 4)
-    return base64.urlsafe_b64decode(data + padding)
+CANONICAL_ENTITLEMENTS = {
+    "copa_ocr": "copa_ocr",
+    "copa-ocr": "copa_ocr",
+    "copa ocr": "copa_ocr",
+    "copaocr": "copa_ocr",
+    "Copa OCR": "copa_ocr",
+    "970007": "copa_ocr",
+}
+
+
+def normalize_entitlements(raw: Any) -> Dict[str, bool]:
+    """Normalize all entitlement shapes to canonical keys.
+
+    Canonical Copa key: copa_ocr.
+    Only truthy values survive. False/null means no entitlement.
+    """
+    out: Dict[str, bool] = {}
+
+    def canon(k: Any) -> str:
+        text = str(k).strip()
+        return CANONICAL_ENTITLEMENTS.get(text, CANONICAL_ENTITLEMENTS.get(text.lower(), text))
+
+    if not raw:
+        return out
+
+    if isinstance(raw, dict):
+        for k, v in raw.items():
+            ck = canon(k)
+            if ck and bool(v):
+                out[ck] = True
+        return out
+
+    if isinstance(raw, (list, tuple, set)):
+        for item in raw:
+            ck = canon(item)
+            if ck:
+                out[ck] = True
+        return out
+
+    if isinstance(raw, str):
+        ck = canon(raw)
+        if ck:
+            out[ck] = True
+
+    return out
+
+
+def get_user_entitlements(user: Optional[dict]) -> Dict[str, Any]:
+    """Return canonical product entitlements from current server user state.
+
+    nova_entitlements is canonical.
+    entitlements is a legacy mirror only if nova_entitlements is absent.
+    """
+    if not user:
+        return {}
+
+    if "nova_entitlements" in user:
+        return normalize_entitlements(user.get("nova_entitlements") or {})
+
+    if "entitlements" in user:
+        return normalize_entitlements(user.get("entitlements") or {})
+
+    return {}
+
+def permissions_for_tier(tier: str) -> Tuple[ClientRole, List[str], List[str]]:
+    """Map a user tier to client role and MCP tool permissions."""
+    tier = normalize_tier(tier)
+    if tier == "enterprise":
+        return ClientRole.ADMIN, ["*"], []
+    if tier == "pro":
+        return (
+            ClientRole.DESKTOP,
+            [
+                "chat", "chat_smart", "weather", "current_time",
+                "web_search", "smart_search", "client_*", "tristar_memory_*",
+            ],
+            ["codebase_*", "restart_*", "vault_*", "tristar_shell_exec"],
+        )
+    if tier == "registered":
+        return (
+            ClientRole.DESKTOP,
+            ["chat", "chat_smart", "weather", "current_time", "web_search", "client_*"],
+            ["codebase_*", "restart_*", "vault_*", "tristar_shell_exec"],
+        )
+    return (
+        ClientRole.DESKTOP,
+        ["chat", "weather", "current_time", "web_search"],
+        ["codebase_*", "restart_*", "vault_*", "tristar_*"],
+    )
 
 
 def create_jwt_token(
-    client_id: str,
-    role: str,
+    client_id: str, 
+    role: str, 
     email: str = None,
-    expires_hours: int = JWT_EXPIRY_HOURS,
-    account_role: str = "admin",
+    entitlements: Optional[Dict[str, Any]] = None,
+    name: Optional[str] = None,
+    expires_hours: int = JWT_EXPIRY_HOURS
 ) -> str:
-    """JWT Token erstellen mit account_role für RBAC (HS256, ohne externe Lib)
-    
-    role = Tier/Plan (free/subscription/software) — für Model-Zugang
-    account_role = RBAC-Rolle (admin/client) — für Server-Verwaltung
-    Bestehende Tokens ohne account_role → default "admin" (Markus nie aussperren)
-    """
-    header = {"alg": "HS256", "typ": "JWT"}
+    """JWT Token erstellen - enthält Email für Tier-Lookup"""
+    client_roles = {item.value for item in ClientRole}
+    is_client_role = role in client_roles
+    role = role if is_client_role else normalize_tier(role)
     payload = {
         "client_id": client_id,
-        "role": role,  # tier: free/subscription/software
-        "account_role": account_role,  # RBAC: "admin" oder "client"
-        "exp": int((datetime.now(timezone.utc) + timedelta(hours=expires_hours)).timestamp()),
-        "iat": int(datetime.now(timezone.utc).timestamp())
+        "role": role,  # tier: guest, registered, pro, enterprise
+        "exp": datetime.utcnow() + timedelta(hours=expires_hours),
+        "iat": datetime.utcnow()
     }
+    if not is_client_role:
+        payload["tier"] = role
+    # Email im Token speichern für Tier-Service
     if email:
         payload["email"] = email
-        payload["sub"] = email
-
-    signing_input = ".".join([
-        _b64url_encode(jsonlib.dumps(header, separators=(",", ":"), sort_keys=True).encode("utf-8")),
-        _b64url_encode(jsonlib.dumps(payload, separators=(",", ":"), sort_keys=True).encode("utf-8"))
-    ])
-    signature = hmac.new(
-        JWT_SECRET.encode("utf-8"),
-        signing_input.encode("utf-8"),
-        digestmod=hashlib.sha256
-    ).digest()
-    return signing_input + "." + _b64url_encode(signature)
+        payload["sub"] = email  # Standard JWT subject claim
+    if name:
+        payload["name"] = name
+    # Do not embed entitlements in JWT. Token is auth only; license state is fetched live.
+    
+    return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
 
 def decode_jwt_token(token: str) -> dict:
-    """JWT Token dekodieren und Signatur prüfen (HS256)"""
-    parts = token.split(".")
-    if len(parts) != 3:
+    """JWT Token dekodieren"""
+    try:
+        return jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(401, "Token expired")
+    except jwt.InvalidTokenError:
         raise HTTPException(401, "Invalid token")
 
-    signing_input = ".".join(parts[:2])
-    signature = parts[2]
-    expected_sig = _b64url_encode(
-        hmac.new(
-            JWT_SECRET.encode("utf-8"),
-            signing_input.encode("utf-8"),
-            digestmod=hashlib.sha256
-        ).digest()
+
+def decode_authorization_header(authorization: Optional[str]) -> dict:
+    """Decode a Bearer Authorization header."""
+    if not authorization:
+        raise HTTPException(401, "Authorization header required")
+    parts = authorization.strip().split()
+    if len(parts) == 2 and parts[0].lower() == "bearer":
+        token = parts[1]
+    else:
+        token = authorization.replace("Bearer ", "", 1).strip()
+    if not token:
+        raise HTTPException(401, "Authorization header required")
+    return decode_jwt_token(token)
+
+
+def build_verified_session(payload: dict) -> Dict[str, Any]:
+    """Build the public auth session shape used by ai-coder and Copa."""
+    email = (payload.get("email") or payload.get("sub") or "").lower()
+    user = USER_REGISTRY.get(email, {}) if email else {}
+    tier_source = payload.get("tier") or user.get("tier")
+    if not tier_source and payload.get("role") in {"guest", "registered", "pro", "enterprise", "free"}:
+        tier_source = payload.get("role")
+    tier = normalize_tier(tier_source)
+    # Entitlements are always read from current server-side USER_REGISTRY.
+    # JWT payload entitlements are stale and must never unlock Copa OCR.
+    entitlements = get_user_entitlements(user)
+
+    client_id = payload.get("client_id")
+    return {
+        "valid": True,
+        "user_id": email or client_id,
+        "email": email,
+        "client_id": client_id,
+        "tier": tier,
+        "role": tier,
+        "name": payload.get("name") or user.get("name"),
+        "nova_entitlements": entitlements,
+        "entitlements": entitlements,
+        "expires_at": payload.get("exp"),
+        "issued_at": payload.get("iat"),
+    }
+
+
+
+def verify_wordpress_login(email: str, password: str) -> dict | None:
+    """
+    Validate login against WordPress, which is the source of truth for passwords.
+    Returns WordPress user payload on success, otherwise None.
+    """
+    import urllib.request
+    import urllib.error
+
+    base = os.environ.get("WORDPRESS_AUTH_VALIDATE_URL", "https://ailinux.me/wp-json/nova-ai/v1/auth/validate")
+    secret = (
+        os.environ.get("NOVA_AI_INTERNAL_KEY")
+        or os.environ.get("WEBHOOK_SECRET")
+        or os.environ.get("TRIFORCE_ADMIN_SECRET")
+        or ""
     )
-    if not hmac.compare_digest(signature, expected_sig):
-        raise HTTPException(401, "Invalid token signature")
+
+    if not secret:
+        logger.warning("WordPress auth fallback unavailable: no internal secret configured")
+        return None
+
+    body = json.dumps({"email": email, "password": password}).encode("utf-8")
+    req = urllib.request.Request(
+        base,
+        data=body,
+        method="POST",
+        headers={
+            "Content-Type": "application/json",
+            "X-Nova-Webhook-Secret": secret,
+        },
+    )
 
     try:
-        payload = jsonlib.loads(_b64url_decode(parts[1]))
-    except Exception:
-        raise HTTPException(401, "Invalid token payload")
+        with urllib.request.urlopen(req, timeout=8) as r:
+            payload = json.loads(r.read().decode("utf-8"))
+    except Exception as exc:
+        logger.warning("WordPress auth fallback failed for %s: %s", email, exc)
+        return None
 
-    exp = payload.get("exp")
-    if exp and datetime.now(timezone.utc).timestamp() > float(exp):
-        raise HTTPException(401, "Token expired")
-    # SWARM RBAC: bestehende Tokens ohne account_role → "admin" (backward compat)
-    if "account_role" not in payload:
-        payload["account_role"] = "admin"
-    return payload
+    if not payload.get("ok"):
+        return None
+
+    user = payload.get("user") or {}
+    if not isinstance(user, dict):
+        return None
+
+    return user
 
 
 # =============================================================================
@@ -337,33 +359,40 @@ def decode_jwt_token(token: str) -> dict:
 USER_REGISTRY: Dict[str, dict] = {}
 
 def load_users_from_file() -> dict:
-    """Lade alle User aus users.json"""
+    """Load users while preserving persisted entitlements for the ENV admin."""
     users = {}
-    
-    # 1. Lade Admin aus ENV (falls gesetzt)
-    admin_email = os.environ.get("ADMIN_EMAIL")
-    admin_password = os.environ.get("ADMIN_PASSWORD")
-    if admin_email and admin_password:
-        users[admin_email.lower()] = {
-            "password_hash": hash_secret(admin_password),
-            "tier": "enterprise",
-            "name": "Admin",
-            "billing": False,
-        }
-    
-    # 2. Lade registrierte User aus users.json
+
+    # Load persisted account state first. Product entitlements are billing state
+    # and must survive service restarts, including for ADMIN_EMAIL.
     if USERS_FILE_PATH.exists():
         try:
-            with open(USERS_FILE_PATH, 'r') as f:
+            with USERS_FILE_PATH.open("r", encoding="utf-8") as f:
                 saved_users = json.load(f)
-                for email, data in saved_users.items():
-                    # Überschreibe nicht den Admin
-                    if email.lower() not in users:
-                        users[email.lower()] = data
-            logger.info(f"Loaded {len(saved_users)} users from {USERS_FILE_PATH}")
-        except Exception as e:
-            logger.error(f"Failed to load users: {e}")
-    
+            if isinstance(saved_users, dict):
+                users.update({email.lower(): data for email, data in saved_users.items()})
+                logger.info("Loaded %d users from %s", len(saved_users), USERS_FILE_PATH)
+        except Exception as exc:
+            logger.error("Failed to load users: %s", exc)
+
+    # ADMIN_PASSWORD remains authoritative for authentication and the admin tier,
+    # but it must not erase entitlements written by WordPress/Lemon Squeezy.
+    admin_email = (os.environ.get("ADMIN_EMAIL") or "").lower().strip()
+    admin_password = os.environ.get("ADMIN_PASSWORD")
+    if admin_email and admin_password:
+        current = users.get(admin_email)
+        if not isinstance(current, dict):
+            current = {}
+        entitlements = get_user_entitlements(current)
+        users[admin_email] = {
+            **current,
+            "password_hash": hash_secret(admin_password),
+            "tier": "enterprise",
+            "name": current.get("name") or "Admin",
+            "billing": True,
+            "nova_entitlements": entitlements,
+            "entitlements": entitlements,
+        }
+
     return users
 
 
@@ -391,19 +420,7 @@ def save_user_to_file(email: str, user_data: dict) -> bool:
         return False
 
 
-def register_new_user(
-    email: str,
-    password: str,
-    name: str = None,
-    tier: str = "free",
-    first_name: str = "",
-    last_name: str = "",
-    date_of_birth: str = "",
-    street: str = "",
-    zip_code: str = "",
-    city: str = "",
-    country: str = "DE",
-) -> dict:
+def register_new_user(email: str, password: str, name: str = None, tier: str = "guest") -> dict:
     """Registriere einen neuen User und speichere in users.json"""
     email = email.lower().strip()
     
@@ -412,22 +429,12 @@ def register_new_user(
         return None
     
     # Erstelle User-Daten
-    display_name = name or f"{first_name} {last_name}".strip() or email.split("@")[0]
     user_data = {
         "password_hash": hash_secret(password),
-        "tier": tier,
-        "name": display_name,
-        "first_name": first_name,
-        "last_name": last_name,
-        "date_of_birth": date_of_birth,
-        "address": {
-            "street": street,
-            "zip_code": zip_code,
-            "city": city,
-            "country": country,
-        },
+        "tier": normalize_tier(tier),
+        "name": name or email.split("@")[0],
         "billing": False,
-        "account_role": "client",
+        "nova_entitlements": {},
         "created_at": datetime.now().isoformat(),
     }
     
@@ -455,32 +462,38 @@ class UserLoginRequest(BaseModel):
     name: Optional[str] = Field(None, description="Display name (optional, for new users)")
 
 
+class GoogleLoginRequest(BaseModel):
+    """Sign in with Google credential from Google Identity Services."""
+    credential: str = Field(..., description="Google ID token / credential JWT")
+
+
+class AuthConfigResponse(BaseModel):
+    google_client_id: str = ""
+    google_enabled: bool = False
+
+
 class UserLoginResponse(BaseModel):
     """User Login Response"""
     user_id: str
     token: str
-    tier: str                        # free/subscription/software
-    plan: str                        # free/subscription/software
-    is_paid: bool                    # Abo aktiv?
-    client_id: str                   # Server-assigned per login
-    account_role: str = "client"     # RBAC: admin/client
+    token_type: str = "Bearer"
+    expires_in: int = JWT_EXPIRY_HOURS * 3600
+    tier: str
+    client_id: str  # Server-assigned per login
+    email: str
+    name: Optional[str] = None
+    nova_entitlements: Dict[str, Any] = Field(default_factory=dict)
+    entitlements: Dict[str, Any] = Field(default_factory=dict)
 
 
 
 # User Register Models (für explizite Registrierung mit Beta-Code)
 class UserRegisterRequest(BaseModel):
-    """User Registration Request — Pflichtfelder für Vermarktung + Recovery"""
+    """User Registration Request"""
     email: str = Field(..., description="Email address")
     password: str = Field(..., min_length=6, description="Password (min 6 chars)")
-    first_name: str = Field(..., min_length=1, description="Vorname")
-    last_name: str = Field(..., min_length=1, description="Nachname")
-    date_of_birth: str = Field(..., description="Geburtsdatum (YYYY-MM-DD) — Pflicht für Account-Recovery")
-    street: str = Field(..., min_length=1, description="Straße + Hausnummer")
-    zip_code: str = Field(..., min_length=3, description="Postleitzahl")
-    city: str = Field(..., min_length=1, description="Stadt")
-    country: str = Field("DE", description="Land (ISO 3166-1 alpha-2, z.B. DE, AT, CH)")
+    name: Optional[str] = Field(None, description="Display name")
     beta_code: Optional[str] = Field(None, description="Beta code for tier upgrade")
-    accept_terms: bool = Field(False, description="AGB + Datenschutz akzeptiert")
 
 
 class UserRegisterResponse(BaseModel):
@@ -489,17 +502,14 @@ class UserRegisterResponse(BaseModel):
     message: str
     tier: str
     email: str
-    user_id: Optional[str] = None
-    wp_synced: bool = False
 
 
 # Beta codes für Tier-Upgrades
 BETA_CODES = {
-    "AILINUX2026": "subscription",
-    "TRIFORCE": "subscription",
-    "SWARM2026": "subscription",
-    "MARKUS": "subscription",   # Admin-Rolle wird separat über account_role gesetzt
-    "ADMIN": "subscription",
+    "AILINUX2026": "pro",
+    "TRIFORCE": "pro",
+    "MARKUS": "enterprise",
+    "ADMIN": "enterprise",
 }
 
 class ClientAuthRequest(BaseModel):
@@ -536,10 +546,134 @@ class ClientRegisterResponse(BaseModel):
     message: str
 
 
+def issue_user_login_response(email: str, user: dict) -> UserLoginResponse:
+    """Create a normal AILinux session response for any authenticated user."""
+    email = email.lower().strip()
+    email_prefix = email.split("@")[0][:10]
+    client_id = f"client-{email_prefix}-{secrets.token_hex(8)}"
+
+    tier = normalize_tier(user.get("tier"))
+    entitlements = get_user_entitlements(user)
+    role, allowed, blocked = permissions_for_tier(tier)
+
+    token = create_jwt_token(
+        client_id,
+        tier,
+        email=email,
+        entitlements=entitlements,
+        name=user.get("name"),
+    )
+
+    CLIENT_REGISTRY[client_id] = {
+        "secret_hash": "",
+        "name": f"{user.get('name') or email}'s Client",
+        "role": role,
+        "created_at": datetime.now().isoformat(),
+        "email": email,
+        "allowed_tools": allowed,
+        "blocked_tools": blocked,
+    }
+
+    ACTIVE_SESSIONS[client_id] = {
+        "email": email,
+        "connected_at": datetime.now().isoformat(),
+        "last_seen": datetime.now().isoformat(),
+    }
+
+    return UserLoginResponse(
+        user_id=email,
+        token=token,
+        tier=tier,
+        client_id=client_id,
+        email=email,
+        name=user.get("name"),
+        nova_entitlements=entitlements,
+        entitlements=entitlements,
+    )
+
+
+def verify_google_credential(credential: str) -> dict:
+    """Validate a Google Identity Services ID token via Google's tokeninfo endpoint."""
+    if not GOOGLE_CLIENT_ID:
+        raise HTTPException(503, "Google login is not configured")
+    if not credential or len(credential) < 40:
+        raise HTTPException(400, "Missing Google credential")
+
+    url = GOOGLE_TOKENINFO_URL + credential
+    try:
+        with urllib.request.urlopen(url, timeout=8) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as e:
+        logger.warning("Google tokeninfo rejected credential: HTTP %s", e.code)
+        raise HTTPException(401, "Invalid Google credential")
+    except Exception as e:
+        logger.error("Google tokeninfo verification failed: %s", e)
+        raise HTTPException(502, "Google verification unavailable")
+
+    if data.get("aud") != GOOGLE_CLIENT_ID:
+        logger.warning("Google credential audience mismatch: %r", data.get("aud"))
+        raise HTTPException(401, "Invalid Google audience")
+    if data.get("email_verified") not in ("true", True):
+        raise HTTPException(401, "Google email is not verified")
+    if not data.get("email"):
+        raise HTTPException(401, "Google credential has no email")
+
+    return data
+
+
 # =============================================================================
 # Auth Endpoints
 # =============================================================================
 
+@router.get("/config", response_model=AuthConfigResponse)
+async def auth_config():
+    """Public auth frontend configuration."""
+    return AuthConfigResponse(
+        google_client_id=GOOGLE_CLIENT_ID,
+        google_enabled=bool(GOOGLE_CLIENT_ID),
+    )
+
+
+@router.post("/google", response_model=UserLoginResponse)
+async def google_login(request: GoogleLoginRequest):
+    """Sign in or register with Google Identity Services."""
+    profile = verify_google_credential(request.credential)
+    email = profile["email"].lower().strip()
+    name = profile.get("name") or email.split("@")[0]
+    sub = profile.get("sub") or ""
+
+    user = USER_REGISTRY.get(email)
+    if not user:
+        user = {
+            "password_hash": hash_secret(secrets.token_urlsafe(32)),
+            "tier": "pro",
+            "name": name,
+            "billing": False,
+            "nova_entitlements": {},
+            "auth_provider": "google",
+            "google_sub": sub,
+            "created_at": datetime.now().isoformat(),
+            "updated_at": datetime.now().isoformat(),
+        }
+        if not save_user_to_file(email, user):
+            raise HTTPException(500, "Failed to register Google user")
+        USER_REGISTRY[email] = user
+        logger.info("New Google user registered: %s", email)
+    else:
+        user["auth_provider"] = user.get("auth_provider") or "password+google"
+        if sub:
+            user["google_sub"] = sub
+        if name and not user.get("name"):
+            user["name"] = name
+        user["updated_at"] = datetime.now().isoformat()
+        save_user_to_file(email, user)
+
+    response = issue_user_login_response(email, user)
+    logger.info("Google user logged in: %s (%s) -> %s", email, response.tier, response.client_id)
+    return response
+
+
+@router.post("/auth/login", response_model=UserLoginResponse)  # Compatibility: ai-coder expects /v1/auth/login
 @router.post("/login", response_model=UserLoginResponse)
 async def user_login(request: UserLoginRequest):
     """
@@ -547,137 +681,151 @@ async def user_login(request: UserLoginRequest):
     Server assigns a new client_id per login
     """
     email = request.email.lower().strip()
+    user = USER_REGISTRY.get(email)
 
-    # ═══ SCHRITT 1: WordPress-Auth (login.ailinux.me) ═══
-    # Swarm-Clients melden sich über WordPress an
-    wp_user = None
-    try:
-        wp_user = wp_authenticate(email, request.password)
-    except Exception as e:
-        logger.warning(f"WordPress auth unavailable: {e}")
+    logger.info(
+        "COPA_LOGIN_DEBUG start email=%s local_user=%s has_hash=%s tier=%s ents=%s",
+        email,
+        bool(user),
+        bool(user.get("password_hash")) if isinstance(user, dict) else False,
+        user.get("tier") if isinstance(user, dict) else None,
+        list((get_user_entitlements(user) or {}).keys()) if isinstance(user, dict) else [],
+    )
 
-    if wp_user:
-        # WordPress-User gefunden und Passwort korrekt
-        logger.info(f"WordPress auth OK: {email} (wp_roles={wp_user['wp_roles']})")
-        user = {
-            "password_hash": "",  # nicht nötig, WP hat validiert
-            "tier": wp_user["tier"],
-            "name": wp_user["name"],
-            "billing": wp_user["tier"] == "subscription",
-            "_account_role": wp_user["account_role"],
-            "_source": "wordpress",
-        }
-    else:
-        # ═══ SCHRITT 2: Fallback auf lokale users.json ═══
-        USER_REGISTRY.update(load_users_from_file())
-        user = USER_REGISTRY.get(email)
+    # WordPress is the source of truth for login/password.
+    # TriForce users.json is only the client/entitlement mirror.
+    needs_wp_auth = (not user) or (not isinstance(user, dict)) or (not user.get("password_hash"))
+    logger.info("COPA_LOGIN_DEBUG needs_wp_auth email=%s needs_wp_auth=%s", email, needs_wp_auth)
 
-        if not user:
-            # Auto-Registrierung: neuer lokaler User
-            logger.info(f"New local user registration: {email}")
-            user = register_new_user(
-                email=email,
-                password=request.password,
-                name=request.name if hasattr(request, 'name') and request.name else None,
-                tier="free"
-            )
-            if not user:
-                logger.error(f"Failed to register new user: {email}")
-                raise HTTPException(500, "Failed to register user")
-            logger.info(f"New local user registered: {email} (tier: free)")
+    if needs_wp_auth:
+        wp_user = verify_wordpress_login(email, request.password)
+        if not wp_user:
+            if not user and ALLOW_AUTO_REGISTER:
+                logger.warning(f"Auto-registering unknown email via login because ALLOW_AUTO_REGISTER=true: {email}")
+                user = register_new_user(
+                    email=email,
+                    password=request.password,
+                    name=request.name if hasattr(request, 'name') and request.name else None,
+                    tier="guest"
+                )
+                if not user:
+                    logger.error(f"Failed to register new user: {email}")
+                    raise HTTPException(500, "Failed to register user")
+            else:
+                logger.warning(f"WordPress login failed for: {email}")
+                raise HTTPException(401, "Invalid email or password")
         else:
-            # Lokaler User — Passwort prüfen
-            if not verify_secret(request.password, user["password_hash"]):
+            existing = user if isinstance(user, dict) else {}
+            wp_entitlements = normalize_entitlements(
+                wp_user.get("nova_entitlements") if "nova_entitlements" in wp_user else wp_user.get("entitlements")
+            )
+            user = {
+                **existing,
+                "tier": wp_user.get("tier") or existing.get("tier") or "free",
+                "name": wp_user.get("name") or existing.get("name") or email.split("@", 1)[0],
+                "billing": existing.get("billing", False),
+                "nova_entitlements": wp_entitlements,
+                "entitlements": wp_entitlements,
+                "auth_provider": "wordpress",
+            }
+            save_user_to_file(email, user)
+            USER_REGISTRY[email] = user
+            logger.info(f"WordPress-authenticated user: {email}")
+    else:
+        # Existing local TriForce password hash.
+        local_hash_ok = verify_secret(request.password, user["password_hash"])
+        logger.info("COPA_LOGIN_DEBUG local_hash email=%s ok=%s", email, local_hash_ok)
+        if not local_hash_ok:
+            logger.info("COPA_LOGIN_DEBUG wordpress_fallback_start email=%s", email)
+            wp_user = verify_wordpress_login(email, request.password)
+            logger.info(
+                "COPA_LOGIN_DEBUG wordpress_fallback_result email=%s ok=%s wp_keys=%s",
+                email,
+                bool(wp_user),
+                list(wp_user.keys()) if isinstance(wp_user, dict) else [],
+            )
+            if not wp_user:
                 logger.warning(f"Invalid password for: {email}")
                 raise HTTPException(401, "Invalid email or password")
+            user["auth_provider"] = "wordpress"
+            user["tier"] = wp_user.get("tier") or user.get("tier") or "free"
+            user["name"] = wp_user.get("name") or user.get("name") or email.split("@", 1)[0]
+            wp_entitlements = normalize_entitlements(
+                wp_user.get("nova_entitlements") if "nova_entitlements" in wp_user else wp_user.get("entitlements")
+            )
+            user["nova_entitlements"] = wp_entitlements
+            user["entitlements"] = wp_entitlements
+            save_user_to_file(email, user)
+            USER_REGISTRY[email] = user
 
-    # Generate new client_id for this login session
-    email_prefix = email.split("@")[0][:10]
-    client_id = f"client-{email_prefix}-{secrets.token_hex(8)}"
-
-    # Determine role: Admin (WP admin / enterprise) vs Desktop (alle anderen)
-    # Alle Tools offen für jeden — kein Tool-Filtering
-    from ..services.user_tiers import has_full_access
-    _is_admin = user.get("_account_role") == "admin" or user["tier"] in ("enterprise", "admin")
-    role = ClientRole.ADMIN if _is_admin else ClientRole.DESKTOP
-    allowed = ["*"]  # Alle Tools offen
-    blocked = []
-
-    # Create JWT token MIT EMAIL + account_role
-    from ..services.user_tiers import normalize_tier
-    _norm_tier = normalize_tier(user["tier"]).value  # → "free"/"subscription"/"software"
-    # SWARM RBAC: WP-Rolle hat Vorrang, sonst aus Tier ableiten
-    _account_role = user.get("_account_role") or ("admin" if user["tier"] in ("enterprise", "admin") else "client")
-    token = create_jwt_token(client_id, _norm_tier, email=email, account_role=_account_role)
-
-    # Register client session
-    CLIENT_REGISTRY[client_id] = {
-        "secret_hash": "",
-        "name": f"{user['name']}'s Client",
-        "role": role,
-        "created_at": datetime.now().isoformat(),
-        "email": email,
-        "allowed_tools": allowed,
-        "blocked_tools": blocked
-    }
-
-    # Track session
-    ACTIVE_SESSIONS[client_id] = {
-        "email": email,
-        "connected_at": datetime.now().isoformat(),
-        "last_seen": datetime.now().isoformat()
-    }
-
-    logger.info(f"User logged in: {email} ({user['tier']}) -> {client_id}")
-
-    from ..services.subscription import tier_to_plan
-    _plan = tier_to_plan(user["tier"])
-
-    return UserLoginResponse(
-        user_id=email,
-        token=token,
-        tier=_norm_tier,
-        plan=_plan.value,
-        is_paid=_plan.value == "subscription",
-        client_id=client_id,
-        account_role=_account_role,
+    response = issue_user_login_response(email, user)
+    logger.info(
+        "COPA_LOGIN_DEBUG success email=%s tier=%s ents=%s token_len=%s client_id=%s",
+        email,
+        response.tier,
+        list((response.nova_entitlements or {}).keys()),
+        len(response.token or ""),
+        response.client_id,
     )
+    logger.info(f"User logged in: {email} ({response.tier}) -> {response.client_id}")
+    return response
 
 
 @router.get("/verify")
-async def verify_token(authorization: str = Header(None), token: str = None):
+async def verify_auth(authorization: str = Header(None)):
     """
-    Verify JWT tokens for external callers (WordPress, clients).
-    Accepts Authorization: Bearer <token> or query/body param `token`.
+    Validate a user/client JWT and return the session contract used by desktop clients.
     """
-    raw = None
-    if authorization and authorization.lower().startswith("bearer "):
-        raw = authorization.split(" ", 1)[1].strip()
-    elif token:
-        raw = token.strip()
+    payload = decode_authorization_header(authorization)
+    return build_verified_session(payload)
 
-    if not raw:
-        raise HTTPException(401, "Missing token")
 
-    payload = decode_jwt_token(raw)
-    email = payload.get("email") or payload.get("sub")
-    role = payload.get("role") or payload.get("tier")
-    client_id = payload.get("client_id")
+@router.get("/client/handshake")
+async def client_handshake(authorization: str = Header(None)):
+    """
+    Return client capabilities and canonical endpoint paths after authentication.
+    """
+    payload = decode_authorization_header(authorization)
+    session = build_verified_session(payload)
+    tier = session["tier"]
+    default_role, default_allowed, default_blocked = permissions_for_tier(tier)
 
-    from ..services.subscription import tier_to_plan
-    _vplan = tier_to_plan(role)
-    _acct_role = payload.get("account_role", "admin")  # backward compat
+    client_id = session.get("client_id")
+    client = CLIENT_REGISTRY.get(client_id, {}) if client_id else {}
+    allowed_tools = client.get("allowed_tools") or default_allowed
+    blocked_tools = client.get("blocked_tools") or default_blocked
+    role = client.get("role") or default_role
+    role_value = role.value if isinstance(role, ClientRole) else role
+
+    if client_id in ACTIVE_SESSIONS:
+        ACTIVE_SESSIONS[client_id]["last_seen"] = datetime.now().isoformat()
 
     return {
+        "ok": True,
         "valid": True,
-        "email": email,
-        "tier": role,
-        "plan": _vplan.value,
-        "is_paid": _vplan.value == "subscription",
-        "account_role": _acct_role,
         "client_id": client_id,
-        "exp": payload.get("exp"),
-        "iat": payload.get("iat"),
+        "user_id": session.get("user_id"),
+        "email": session.get("email"),
+        "tier": tier,
+        "role": role_value,
+        "allowed_tools": allowed_tools,
+        "blocked_tools": blocked_tools,
+        "capabilities": {
+            "chat": True,
+            "models": True,
+            "mcp": True,
+            "ocr": bool(session.get("nova_entitlements", {}).get("copa_ocr")),
+        },
+        "endpoints": {
+            "auth_verify": "/v1/auth/verify",
+            "chat": "/v1/client/chat",
+            "models": "/v1/client/models",
+            "mcp": "/v1/mcp",
+            "ocr_mistral": "/v1/client/ocr/mistral",
+            "ocr_status": "/v1/client/ocr/status",
+        },
+        "nova_entitlements": session.get("nova_entitlements", {}),
+        "entitlements": session.get("entitlements", {}),
     }
 
 
@@ -685,178 +833,42 @@ async def verify_token(authorization: str = Header(None), token: str = None):
 async def user_register(request: UserRegisterRequest):
     """
     Register a new user account.
-    Erweitert mit Name, Geburtsdatum, Anschrift für Vermarktung.
+    Beta phase: All accounts get PRO tier automatically!
     """
     email = request.email.lower().strip()
-
-    # AGB-Check
-    if not request.accept_terms:
-        raise HTTPException(400, "Du musst die AGB und Datenschutzerklärung akzeptieren.")
-
-    # Alters-Check (optional, wenn Geburtsdatum angegeben)
-    if request.date_of_birth:
-        try:
-            from datetime import date
-            dob = date.fromisoformat(request.date_of_birth)
-            age = (date.today() - dob).days // 365
-            if age < 16:
-                raise HTTPException(400, "Mindestalter: 16 Jahre.")
-        except ValueError:
-            raise HTTPException(400, "Ungültiges Geburtsdatum. Format: YYYY-MM-DD")
-
+    
     # Prüfe ob User bereits existiert
-    USER_REGISTRY.update(load_users_from_file())
     if email in USER_REGISTRY:
         raise HTTPException(400, "Email already registered. Please login instead.")
-
-    # WordPress-User prüfen
-    wp_exists = wp_get_user(email)
-    if wp_exists:
-        raise HTTPException(400, "Email bereits bei login.ailinux.me registriert. Bitte dort einloggen.")
-
+    
     # Bestimme Tier basierend auf Beta-Code
-    tier = "free"  # Default: Free
+    tier = "pro"  # Beta: Alle bekommen PRO!
     if request.beta_code:
         beta_tier = BETA_CODES.get(request.beta_code.upper())
         if beta_tier:
-            from ..services.user_tiers import normalize_tier
-            tier = normalize_tier(beta_tier).value
+            tier = beta_tier
             logger.info(f"Beta code used: {request.beta_code} -> {tier}")
-
-    # Registriere lokal
+    
+    # Registriere neuen User
     user = register_new_user(
         email=email,
         password=request.password,
-        first_name=request.first_name,
-        last_name=request.last_name,
-        date_of_birth=request.date_of_birth or "",
-        street=request.street or "",
-        zip_code=request.zip_code or "",
-        city=request.city or "",
-        country=request.country or "DE",
-        tier=tier,
+        name=request.name,
+        tier=tier
     )
-
+    
     if not user:
         raise HTTPException(500, "Failed to register user")
-
-    # WordPress-User anlegen (Sync)
-    wp_synced = False
-    try:
-        wp_synced = _wp_create_user(
-            email=email,
-            password=request.password,
-            first_name=request.first_name,
-            last_name=request.last_name,
-            display_name=user["name"],
-        )
-    except Exception as e:
-        logger.warning(f"WordPress user sync failed (nicht kritisch): {e}")
-
-    logger.info(f"New user registered: {email} (tier: {tier}, wp_synced={wp_synced})")
-
+    
+    logger.info(f"New user registered: {email} (tier: {tier})")
+    
     return UserRegisterResponse(
         success=True,
-        message=f"Account erstellt! Willkommen bei AILinux.",
+        message=f"Account created! Tier: {tier.upper()}",
         tier=tier,
-        email=email,
-        user_id=email,
-        wp_synced=wp_synced,
+        email=email
     )
 
-
-
-
-# =============================================================================
-# Identity-based Account Recovery (kein Email-Zugang nötig)
-# =============================================================================
-
-class IdentityRecoveryRequest(BaseModel):
-    """Account-Recovery über persönliche Daten — wenn Email-Zugang verloren."""
-    email: str = Field(..., description="Email des Accounts")
-    first_name: str = Field(..., description="Vorname (wie bei Registrierung)")
-    last_name: str = Field(..., description="Nachname")
-    date_of_birth: str = Field(..., description="Geburtsdatum (YYYY-MM-DD)")
-    zip_code: str = Field(..., description="PLZ (wie bei Registrierung)")
-    new_password: str = Field(..., min_length=6, description="Neues Passwort")
-    new_email: Optional[str] = Field(None, description="Neue Email (optional, wenn alte nicht mehr erreichbar)")
-
-
-@router.post("/recover-identity")
-async def recover_by_identity(request: IdentityRecoveryRequest):
-    """
-    Account-Recovery über Identitätsverifizierung.
-    Prüft: Email + Vorname + Nachname + Geburtsdatum + PLZ.
-    Alle 5 müssen übereinstimmen → neues Passwort setzen.
-    """
-    email = request.email.lower().strip()
-
-    # User laden
-    USER_REGISTRY.update(load_users_from_file())
-    user = USER_REGISTRY.get(email)
-
-    if not user:
-        # Kein User-Enumeration: gleiche Antwort wie bei Mismatch
-        logger.warning(f"Identity recovery: user not found {email}")
-        raise HTTPException(400, "Identität konnte nicht verifiziert werden.")
-
-    # Alle 5 Felder müssen matchen (case-insensitive, stripped)
-    checks = [
-        (user.get("first_name", "").strip().lower(), request.first_name.strip().lower(), "first_name"),
-        (user.get("last_name", "").strip().lower(), request.last_name.strip().lower(), "last_name"),
-        (user.get("date_of_birth", "").strip(), request.date_of_birth.strip(), "dob"),
-        (user.get("address", {}).get("zip_code", "").strip(), request.zip_code.strip(), "zip"),
-    ]
-
-    mismatches = [name for stored, given, name in checks if stored != given]
-    if mismatches:
-        logger.warning(f"Identity recovery failed for {email}: mismatches={mismatches}")
-        raise HTTPException(400, "Identität konnte nicht verifiziert werden.")
-
-    # Verifiziert → Passwort ändern
-    user["password_hash"] = hash_secret(request.new_password)
-
-    # Optional: Email ändern
-    if request.new_email and request.new_email.lower().strip() != email:
-        new_email = request.new_email.lower().strip()
-        if new_email in USER_REGISTRY:
-            raise HTTPException(400, "Die neue Email ist bereits vergeben.")
-        # Alten Eintrag entfernen, neuen anlegen
-        save_user_to_file(new_email, user)
-        USER_REGISTRY[new_email] = user
-        # Alten löschen
-        users = {}
-        if USERS_FILE_PATH.exists():
-            with open(USERS_FILE_PATH, 'r') as f:
-                users = json.load(f)
-        if email in users:
-            del users[email]
-            with open(USERS_FILE_PATH, 'w') as f:
-                json.dump(users, f, indent=2)
-        if email in USER_REGISTRY:
-            del USER_REGISTRY[email]
-        logger.info(f"Identity recovery: email changed {email} → {new_email}")
-        email = new_email
-    else:
-        save_user_to_file(email, user)
-        USER_REGISTRY[email] = user
-
-    # WordPress-Passwort auch updaten
-    try:
-        import shlex
-        safe_email = shlex.quote(email)
-        safe_pass = shlex.quote(request.new_password)
-        _wp_cmd(f"user update {safe_email} --user_pass={safe_pass}")
-        logger.info(f"WordPress password updated for {email}")
-    except Exception as e:
-        logger.warning(f"WordPress password sync failed: {e}")
-
-    logger.info(f"Identity recovery successful for {email}")
-    return {
-        "ok": True,
-        "email": email,
-        "message": "Identität verifiziert. Passwort wurde zurückgesetzt.",
-    }
 
 
 @router.post("/client", response_model=ClientAuthResponse)
@@ -882,10 +894,8 @@ async def client_auth(request: ClientAuthRequest):
         client["secret_hash"] = hash_secret(request.client_secret)
         logger.info(f"First login for client: {request.client_id}, secret set")
     
-    # Token generieren (FIX 2026-03-11: normalize legacy tier to free/paid)
-    from ..services.user_tiers import normalize_tier as _nt
-    _role_norm = _nt(client["role"].value if hasattr(client["role"], "value") else str(client["role"])).value
-    token = create_jwt_token(request.client_id, _role_norm)
+    # Token generieren
+    token = create_jwt_token(request.client_id, client["role"].value)
     
     # Session tracken
     ACTIVE_SESSIONS[request.client_id] = {
@@ -925,7 +935,7 @@ async def register_client(
         payload = decode_jwt_token(token)
         if payload.get("role") != "admin":
             raise HTTPException(403, "Admin access required")
-    except Exception:
+    except:
         raise HTTPException(403, "Admin access required")
     
     # Prüfen ob Client schon existiert
@@ -1125,156 +1135,3 @@ async def require_admin(authorization: str = Header(None)) -> dict:
         raise HTTPException(403, "Admin access required")
     
     return client
-
-
-# =============================================================================
-# Handshake Endpoint — Client-Init beim Connect
-# =============================================================================
-
-@router.get("/client/handshake")
-async def client_handshake(authorization: str = Header(None)):
-    """
-    Client-Handshake beim Start.
-    Gibt Plan, Quota, erlaubte Tools und Context-Limit zurueck.
-    Kein zweiter Request nötig.
-    """
-    if not authorization:
-        raise HTTPException(401, "Authorization header required")
-
-    token = authorization.replace("Bearer ", "")
-    payload = decode_jwt_token(token)
-
-    client_id = payload.get("client_id")
-    user_id   = payload.get("sub") or client_id
-    role      = payload.get("role", "guest")
-
-
-    from ..services.subscription import subscription_service, PlanType, tier_to_plan
-
-    plan = tier_to_plan(role)
-    quota = subscription_service.get_quota(user_id, plan)
-
-    # Erlaubte Tools
-    from ..routes.client_mcp import get_tools_for_tier, FREE_TIER_TOOLS, ENTERPRISE_TIER_TOOLS
-    from ..services.user_tiers import UserTier
-    try:
-        tier_obj = UserTier(role)
-    except ValueError:
-        tier_obj = UserTier.FREE
-    tools = get_tools_for_tier(tier_obj)
-
-    return {
-        "client_id":     client_id,
-        "user_id":       user_id,
-        "plan":          plan.value,
-        "context_limit": subscription_service.get_context_limit(plan),
-        "tools":         tools,
-        "tool_count":    len(tools),
-        "quota":         quota.to_api(),
-    }
-
-
-# =============================================================================
-# Password Reset (Forgot Password)
-# =============================================================================
-
-# In-Memory Reset-Token Store (Redis wäre besser, reicht für jetzt)
-_RESET_TOKENS: Dict[str, dict] = {}  # token → {email, expires}
-
-
-class PasswordResetRequestModel(BaseModel):
-    email: str = Field(..., description="E-Mail-Adresse des Accounts")
-
-
-class PasswordResetModel(BaseModel):
-    token: str = Field(..., description="Reset-Token aus der E-Mail")
-    new_password: str = Field(..., min_length=6, description="Neues Passwort (min 6 Zeichen)")
-
-
-@router.post("/forgot-password")
-async def forgot_password(request: PasswordResetRequestModel):
-    """
-    Passwort-Reset anfordern — sendet E-Mail mit Reset-Link an nova@ailinux.me.
-    Gibt immer 200 zurück (kein User-Enumeration).
-    """
-    email = request.email.lower().strip()
-
-    # Prüfe ob User existiert (still, kein 404)
-    USER_REGISTRY.update(load_users_from_file())
-    user = USER_REGISTRY.get(email)
-
-    if user:
-        # Reset-Token generieren (1h gültig)
-        token = secrets.token_urlsafe(32)
-        _RESET_TOKENS[token] = {
-            "email": email,
-            "expires": (datetime.now(timezone.utc) + timedelta(hours=1)).timestamp()
-        }
-
-        reset_url = f"https://login.ailinux.me/?reset_token={token}"
-
-        # Mail direkt via mail_service.mail_send (SMTP)
-        try:
-            import asyncio as _aio
-            from app.services.mail_service import mail_send as _mail_send
-            _body = (
-                f"Hallo,\n\n"
-                f"du hast einen Passwort-Reset für deinen AILinux-Account ({email}) angefordert.\n\n"
-                f"Klicke auf diesen Link um ein neues Passwort zu setzen (gültig 1 Stunde):\n"
-                f"{reset_url}\n\n"
-                f"Falls du das nicht warst, ignoriere diese E-Mail.\n\n"
-                f"– Nova / AILinux Team\n"
-                f"nova@ailinux.me | https://ailinux.me"
-            )
-            # mail_send ist sync — in threadpool mit Timeout
-            try:
-                result = await _aio.wait_for(
-                    _aio.get_event_loop().run_in_executor(
-                        None, lambda: _mail_send(
-                            to=email,
-                            subject="AILinux – Passwort zurücksetzen",
-                            body=_body,
-                            reply_to="nova@ailinux.me",
-                        )
-                    ),
-                    timeout=10.0
-                )
-                logger.info(f"Password reset mail sent to {email}: {result}")
-            except _aio.TimeoutError:
-                logger.warning(f"Reset mail timeout for {email} — mail queued anyway")
-        except Exception as e:
-            logger.warning(f"Reset mail failed: {e}")
-
-    return {"ok": True, "message": "Falls ein Account mit dieser E-Mail existiert, wurde ein Reset-Link gesendet."}
-
-
-@router.post("/reset-password")
-async def reset_password(request: PasswordResetModel):
-    """
-    Passwort mit Reset-Token setzen.
-    """
-    token_data = _RESET_TOKENS.get(request.token)
-    if not token_data:
-        raise HTTPException(400, "Ungültiger oder abgelaufener Reset-Token")
-
-    if datetime.now(timezone.utc).timestamp() > token_data["expires"]:
-        del _RESET_TOKENS[request.token]
-        raise HTTPException(400, "Reset-Token abgelaufen (gültig 1 Stunde)")
-
-    email = token_data["email"]
-
-    # Neues Passwort speichern
-    USER_REGISTRY.update(load_users_from_file())
-    user = USER_REGISTRY.get(email)
-    if not user:
-        raise HTTPException(404, "User nicht gefunden")
-
-    user["password_hash"] = hash_secret(request.new_password)
-    save_user_to_file(email, user)
-    USER_REGISTRY[email] = user
-
-    # Token invalidieren
-    del _RESET_TOKENS[request.token]
-
-    logger.info(f"Password reset successful for {email}")
-    return {"ok": True, "message": "Passwort erfolgreich geändert. Du kannst dich jetzt einloggen."}

@@ -10,8 +10,7 @@ from datetime import datetime, timezone
 from typing import Any, Awaitable, Callable, Dict, Iterable, List, Optional
 from pathlib import Path
 
-import aiofiles
-from .crawler.user_crawler import user_crawler
+from .crawler.user_crawler import get_user_crawler
 from .crawler.manager import crawler_manager
 from .wordpress import wordpress_service
 from . import chat as chat_service
@@ -45,15 +44,12 @@ from .system_control import system_control
 from .mcp_debugger import mcp_debugger
 from .huggingface_inference import HF_INFERENCE_TOOLS, HF_HANDLERS
 from .remote_task import remote_task_service, TaskType, TaskStatus
-from .n8n_mcp import N8N_TOOLS, N8N_HANDLERS
 # === NEW CLIENT-SERVER ARCHITECTURE TOOLS ===
 from .api_vault import VAULT_TOOLS, VAULT_HANDLERS, api_vault
 from .chat_router import CHAT_ROUTER_TOOLS, CHAT_ROUTER_HANDLERS
-from .nova_chat_agent import nova_chat_agent_service
 from .task_spawner import TASK_SPAWNER_TOOLS, TASK_SPAWNER_HANDLERS
 from .txt2img_mcp import TXT2IMG_TOOLS, TXT2IMG_HANDLERS
-from ..mcp.tool_registry_unified import resolve_tool_name_for_call
-from ..utils.tool_normalizer import normalize_tool_name
+from .nova_chat_agent import nova_chat_agent_service as account_specialists
 
 # Constants
 BACKEND_ROOT = Path("/home/zombie/triforce")
@@ -97,8 +93,6 @@ ALLOWED_EXTENSIONS = {
     ".hs", ".lhs", ".ml", ".mli", ".fs", ".fsi", ".fsx",  # Functional
     ".coffee", ".litcoffee",  # CoffeeScript
 }
-# Dateien ohne Extension die erlaubt sind
-ALLOWED_EXTENSIONLESS = {"VERSION", "Makefile", "Dockerfile", "LICENSE", "CHANGELOG", "README", "PKGBUILD", "Procfile", "Gemfile", "Rakefile", ".gitignore", ".dockerignore", ".env", ".editorconfig"}
 BLOCKED_PATHS = {
     ".env", ".git", ".ssh", "secrets", "credentials",
     "__pycache__", ".venv", "node_modules", ".claude",
@@ -183,31 +177,16 @@ def _create_backup(file_path: Path) -> Optional[Path]:
     shutil.copy2(file_path, backup_path)
     return backup_path
 
-async def _log_edit(action: str, path: str, details: Dict[str, Any]):
-    """Logs edit operations for audit trail (async to avoid blocking the event loop)."""
+def _log_edit(action: str, path: str, details: Dict[str, Any]):
+    """Logs edit operations for audit trail."""
     log_entry = {
         "timestamp": datetime.now().isoformat(),
         "action": action,
         "path": path,
         "details": details,
     }
-def _normalize_exported_tools(tools: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """Export only normalized external tool names while keeping alias-compatible calls."""
-    normalized_tools: List[Dict[str, Any]] = []
-    seen = set()
-    for tool in tools:
-        cloned = dict(tool)
-        name = resolve_tool_name_for_call(cloned.get("name", ""))
-        if not name or name in seen:
-            continue
-        cloned["name"] = name
-        normalized_tools.append(cloned)
-        seen.add(name)
-    return normalized_tools
-
-
-    async with aiofiles.open(EDIT_LOG_FILE, "a") as f:
-        await f.write(json.dumps(log_entry) + "\n")
+    with open(EDIT_LOG_FILE, "a") as f:
+        f.write(json.dumps(log_entry) + "\n")
 async def handle_crawl_url(params: Dict[str, Any]) -> Dict[str, Any]:
     url = params.get("url")
     if not url:
@@ -217,7 +196,7 @@ async def handle_crawl_url(params: Dict[str, Any]) -> Dict[str, Any]:
     if keywords is not None and not isinstance(keywords, Iterable):
         raise ValueError("'keywords' must be an iterable of strings")
 
-    job = await user_crawler.crawl_url(
+    job = await get_user_crawler().crawl_url(
         url=url,
         keywords=list(keywords) if keywords else None,
         max_pages=int(params.get("max_pages", 10)),
@@ -256,9 +235,10 @@ async def handle_crawl_status(params: Dict[str, Any]) -> Dict[str, Any]:
     if not job_id:
         raise ValueError("'job_id' parameter is required for crawl.status")
 
-    job = await user_crawler.get_job(job_id)
+    _uc = get_user_crawler()
+    job = await _uc.get_job(job_id)
     source = "user"
-    manager = user_crawler
+    manager = _uc
     if not job:
         job = await crawler_manager.get_job(job_id)
         source = "manager"
@@ -550,13 +530,9 @@ async def handle_models_list(_: Dict[str, Any]) -> Dict[str, Any]:
 
 async def handle_specialists_list(_: Dict[str, Any]) -> Dict[str, Any]:
     """List all available model specialists."""
-    account_specialists = nova_chat_agent_service.list_specialized_agents()["specialized_agents"]
     return {
         "specialists": specialist_router.list_specialists(),
-        "account_specialists": account_specialists,
-        "count": len(SPECIALISTS) + len(account_specialists),
-        "model_specialist_count": len(SPECIALISTS),
-        "account_specialist_count": len(account_specialists),
+        "count": len(SPECIALISTS)
     }
 
 async def handle_specialists_route(params: Dict[str, Any]) -> Dict[str, Any]:
@@ -589,19 +565,20 @@ async def handle_specialists_invoke(params: Dict[str, Any]) -> Dict[str, Any]:
     if not message:
         raise ValueError("'message' parameter is required")
 
+    if specialist_id and specialist_id.startswith("nova-account/"):
+        return await account_specialists.invoke_specialized_agent(
+            specialist_id=specialist_id,
+            message=message,
+            messages=params.get("messages"),
+            system=params.get("system", ""),
+            model=params.get("model"),
+            temperature=params.get("temperature", 0.4),
+            max_tokens=params.get("max_tokens", 1200),
+            timeout=params.get("timeout", 120),
+        )
+
     # Get specialist - either specified or auto-routed
     if specialist_id:
-        if specialist_id.startswith("nova-account/"):
-            return await nova_chat_agent_service.invoke_specialized_agent(
-                specialist_id=specialist_id,
-                message=message,
-                messages=params.get("messages"),
-                system=str(params.get("system", "")),
-                model=params.get("model"),
-                temperature=float(params.get("temperature", 0.4)),
-                max_tokens=int(params.get("max_tokens", 1200)),
-                timeout=int(params.get("timeout", 120)),
-            )
         specialist = specialist_router.get_specialist_by_id(specialist_id)
         if not specialist:
             raise ValueError(f"Specialist '{specialist_id}' not found")
@@ -902,7 +879,7 @@ async def handle_codebase_structure(params: Dict[str, Any]) -> Dict[str, Any]:
                     continue
                 if item.is_file() and not include_files:
                     continue
-                if item.is_file() and item.suffix not in ALLOWED_EXTENSIONS and item.name not in ALLOWED_EXTENSIONLESS:
+                if item.is_file() and item.suffix not in ALLOWED_EXTENSIONS:
                     continue
                 filtered_items.append(item)
 
@@ -939,7 +916,7 @@ async def handle_codebase_file(params: Dict[str, Any]) -> Dict[str, Any]:
     if not safe_path or not safe_path.exists():
         raise ValueError(f"File not found: {file_path}")
 
-    if safe_path.suffix not in ALLOWED_EXTENSIONS and safe_path.name not in ALLOWED_EXTENSIONLESS:
+    if safe_path.suffix not in ALLOWED_EXTENSIONS:
         raise ValueError(f"File type not allowed: {safe_path.suffix}")
 
     if safe_path.stat().st_size > 500_000:  # 500KB limit
@@ -975,7 +952,7 @@ async def handle_codebase_search(params: Dict[str, Any]) -> Dict[str, Any]:
     for py_file in safe_root.rglob(file_pattern):
         if "__pycache__" in str(py_file):
             continue
-        if py_file.suffix not in ALLOWED_EXTENSIONS and py_file.name not in ALLOWED_EXTENSIONLESS:
+        if py_file.suffix not in ALLOWED_EXTENSIONS:
             continue
 
         try:
@@ -1147,7 +1124,7 @@ async def handle_codebase_edit(params: Dict[str, Any]) -> Dict[str, Any]:
     if not safe_path.exists():
         raise ValueError(f"File not found: {file_path}")
 
-    if safe_path.suffix not in ALLOWED_EXTENSIONS and safe_path.name not in ALLOWED_EXTENSIONLESS:
+    if safe_path.suffix not in ALLOWED_EXTENSIONS:
         raise ValueError(f"File type not allowed for editing: {safe_path.suffix}")
 
     try:
@@ -1249,7 +1226,7 @@ async def handle_codebase_edit(params: Dict[str, Any]) -> Dict[str, Any]:
 
         safe_path.write_text(new_content, encoding="utf-8")
 
-        await _log_edit("edit", file_path, {
+        _log_edit("edit", file_path, {
             "mode": mode,
             "original_lines": original_line_count,
             "new_lines": new_line_count,
@@ -1318,7 +1295,7 @@ async def handle_codebase_backup(params: Dict[str, Any]) -> Dict[str, Any]:
             raise ValueError(f"File not found: {file_path}")
 
         backup_path = _create_backup(safe_path)
-        await _log_edit("backup_create", file_path, {"backup": str(backup_path)})
+        _log_edit("backup_create", file_path, {"backup": str(backup_path)})
 
         return {
             "action": "create",
@@ -1341,7 +1318,7 @@ async def handle_codebase_backup(params: Dict[str, Any]) -> Dict[str, Any]:
         latest = backups[0]
         import shutil
         shutil.copy2(latest, safe_path)
-        await _log_edit("restore", file_path, {"from": str(latest)})
+        _log_edit("restore", file_path, {"from": str(latest)})
         
         return {
             "action": "restore",
@@ -1925,7 +1902,6 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
     tools.extend(ADAPTIVE_CODE_V4_TOOLS)  # Enhanced: LRU Cache, Async I/O, Delta Sync, Agent-Aware
     tools.extend(HF_INFERENCE_TOOLS)
     tools.extend(REMOTE_TASK_TOOLS)
-    tools.extend(N8N_TOOLS)
     
     # === NEW CLIENT-SERVER ARCHITECTURE TOOLS ===
     tools.extend(VAULT_TOOLS)
@@ -1975,12 +1951,15 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
         }
     ])
 
-    return {"tools": _normalize_exported_tools(tools)}
+    # MCP tool names must match ^[a-zA-Z0-9_-]{1,64}$ for strict clients.
+    # Keep internal handler aliases intact, but export normalized names only.
+    for tool in tools:
+        tool["name"] = str(tool.get("name", "")).replace(".", "_").replace("-", "_")
+    return {"tools": tools}
 
 async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
     """MCP tools/call method - executes a tool."""
-    raw_tool_name = params.get("name")
-    tool_name = resolve_tool_name_for_call(normalize_tool_name(raw_tool_name or ""))
+    tool_name = params.get("name")
     arguments = params.get("arguments", {})
 
     if not tool_name:
@@ -2038,7 +2017,6 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
     tool_map.update(ADAPTIVE_CODE_V4_HANDLERS)  # Enhanced V4 handlers
     tool_map.update(HF_HANDLERS)
     tool_map.update(REMOTE_TASK_HANDLERS)  # Remote Task Execution via SSH
-    tool_map.update(N8N_HANDLERS)
     
     # === NEW CLIENT-SERVER ARCHITECTURE HANDLERS ===
     tool_map.update(VAULT_HANDLERS)
@@ -2046,15 +2024,9 @@ async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:
     tool_map.update(TASK_SPAWNER_HANDLERS)
     tool_map.update(TXT2IMG_HANDLERS)  # Stable Diffusion / Image Generation
 
-    # Accept legacy aliases and dotted names, but execute canonical normalized tools.
-    for alias_name, handler in list(tool_map.items()):
-        canonical_name = resolve_tool_name_for_call(normalize_tool_name(alias_name))
-        if canonical_name:
-            tool_map.setdefault(canonical_name, handler)
-
     handler = tool_map.get(tool_name)
     if not handler:
-        raise ValueError(f"Unknown tool: {raw_tool_name}")
+        raise ValueError(f"Unknown tool: {tool_name}")
 
     result = await handler(arguments)
     return {

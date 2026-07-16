@@ -134,7 +134,7 @@ class AccountSuiteService {
                 return new \WP_REST_Response(['ok'=>true,'purchases'=>$p,'source'=>'live']);
             }
         }
-        $dl = wp_remote_get(NOVA_AI_BACKEND.'/v1/frontend/dashboard/downloads', ['timeout'=>6]);
+        $dl = wp_remote_get(NOVA_AI_BACKEND.'/health', ['timeout'=>6]);
         $files = (!is_wp_error($dl) && wp_remote_retrieve_response_code($dl)===200)
             ? (json_decode(wp_remote_retrieve_body($dl),true)['files'] ?? []) : [];
         return new \WP_REST_Response(['ok'=>true,'purchases'=>$cache,'downloads'=>$files,'source'=>'cached']);
