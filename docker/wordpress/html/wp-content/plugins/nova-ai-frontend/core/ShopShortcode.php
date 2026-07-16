@@ -64,6 +64,19 @@ class ShopShortcode {
             return new \WP_REST_Response(['error' => 'Produkt nicht gefunden'], 404);
         }
 
+        // Live share links can carry prefilled customer fields and custom
+        // webhook metadata without using test-mode API credentials.
+        if ($shop->is_live_checkout_configured()) {
+            $url = $shop->create_live_checkout_url($wp_user_id, $product);
+            if (!empty($url)) {
+                return new \WP_REST_Response([
+                    'url'       => $url,
+                    'source'    => 'live_share_url',
+                    'test_mode' => false,
+                ], 200);
+            }
+        }
+
         // Try custom checkout (with wp_user_id) if we have a variant_id
         if (!empty($product['variant_id'])) {
             $url = $shop->create_checkout((string) $product['variant_id'], $wp_user_id, $product);
