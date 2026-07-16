@@ -78,6 +78,9 @@ class ShopService {
             $attrs      = $item['attributes'] ?? [];
             $product_id = (string) $item['id'];
             $admin_meta = $product_meta[$product_id] ?? [];
+            $live_mode  = $this->is_live_checkout_configured();
+            $live_url   = $this->live_buy_url();
+            $live_price = $this->live_price();
 
             // Skip unpublished
             if (($attrs['status'] ?? '') !== 'published') {
@@ -89,13 +92,17 @@ class ShopService {
                 'name'            => $attrs['name'] ?? '',
                 'slug'            => $attrs['slug'] ?? '',
                 'description'     => $attrs['description'] ?? '',
-                'price'           => (int) ($attrs['price'] ?? 0),
-                'price_formatted' => $attrs['price_formatted'] ?? '',
+                'price'           => $live_mode && $live_price !== null
+                    ? $live_price
+                    : (int) ($attrs['price'] ?? 0),
+                'price_formatted' => $live_mode && $live_price !== null
+                    ? number_format($live_price / 100, 2, ',', '.') . ' €'
+                    : ($attrs['price_formatted'] ?? ''),
                 'thumb_url'       => $attrs['thumb_url'] ?? '',
                 'large_thumb_url' => $attrs['large_thumb_url'] ?? '',
-                'buy_now_url'     => $attrs['buy_now_url'] ?? '',
+                'buy_now_url'     => $live_mode ? $live_url : ($attrs['buy_now_url'] ?? ''),
                 'status'          => $attrs['status'] ?? '',
-                'test_mode'       => (bool) ($attrs['test_mode'] ?? false),
+                'test_mode'       => $live_mode ? false : (bool) ($attrs['test_mode'] ?? false),
                 'variant_id'      => $variant_map[$product_id] ?? '',
                 // Admin meta overrides
                 'is_new'          => (bool) ($admin_meta['is_new'] ?? false),
@@ -236,6 +243,47 @@ class ShopService {
     }
 
     /**
+     * Build a live share checkout URL without the API.
+     *
+     * Lemon Squeezy supports prefilled fields and custom webhook data directly
+     * on /checkout/buy/ URLs. This keeps user attribution intact while the
+     * API credentials remain separated between test and live mode.
+     */
+    public function create_live_checkout_url(int $wp_user_id, array $product = []): string {
+        if (!$this->is_live_checkout_configured() || $wp_user_id <= 0) {
+            return '';
+        }
+
+        $user = get_userdata($wp_user_id);
+        if (!$user) {
+            return '';
+        }
+
+        $email        = sanitize_email((string) $user->user_email);
+        $name         = trim((string) ($user->display_name ?: $user->user_login));
+        $product_id   = sanitize_text_field((string) ($product['id'] ?? ''));
+        $product_name = sanitize_text_field((string) ($product['name'] ?? ''));
+
+        return esc_url_raw(add_query_arg([
+            'checkout[email]'                => $email,
+            'checkout[name]'                 => $name,
+            'checkout[custom][wp_user_id]'   => (string) $wp_user_id,
+            'checkout[custom][wp_user_email]'=> $email,
+            'checkout[custom][product_id]'   => $product_id,
+            'checkout[custom][product_name]' => $product_name,
+            'checkout[custom][source]'       => 'ailinux_shop',
+        ], $this->live_buy_url()));
+    }
+
+    public function is_live_checkout_configured(): bool {
+        $test_mode = defined('NOVA_LS_TEST_MODE')
+            ? filter_var(NOVA_LS_TEST_MODE, FILTER_VALIDATE_BOOLEAN)
+            : true;
+
+        return !$test_mode && !empty($this->live_buy_url());
+    }
+
+    /**
      * Test API connection by fetching store info.
      * Returns ['name' => ..., 'slug' => ...] or ['error' => ...].
      */
@@ -368,6 +416,30 @@ class ShopService {
 
     private function store_id(): string {
         return defined('NOVA_LS_STORE_ID') ? (string) NOVA_LS_STORE_ID : '';
+    }
+
+    private function live_buy_url(): string {
+        $url = defined('NOVA_LS_LIVE_BUY_URL') ? (string) NOVA_LS_LIVE_BUY_URL : '';
+        if (!$url || !wp_http_validate_url($url)) {
+            return '';
+        }
+
+        $host = strtolower((string) wp_parse_url($url, PHP_URL_HOST));
+        $path = (string) wp_parse_url($url, PHP_URL_PATH);
+        if ($host !== 'ailinuxshop.lemonsqueezy.com' || !str_starts_with($path, '/checkout/buy/')) {
+            return '';
+        }
+
+        return esc_url_raw($url);
+    }
+
+    private function live_price(): ?int {
+        if (!defined('NOVA_LS_LIVE_PRICE')) {
+            return null;
+        }
+
+        $price = filter_var(NOVA_LS_LIVE_PRICE, FILTER_VALIDATE_INT);
+        return $price !== false && $price >= 0 ? $price : null;
     }
 
     public function is_configured(): bool {
