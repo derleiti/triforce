@@ -8,7 +8,9 @@ from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, Header, HTTPException, Request
 from pydantic import BaseModel, EmailStr, Field
+  master
 from app.routes.client_auth import USER_REGISTRY, normalize_entitlements
+  nova-nextlevel-20260603
 
 
 router = APIRouter()
