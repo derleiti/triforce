@@ -40,6 +40,7 @@ PROVIDER_SORT_ORDER = {
     "together": 10,
     "fireworks": 11,
     "github": 12,
+    "huggingface": 13,
 }
 
 CAPABILITY_SORT_ORDER = {
@@ -315,6 +316,7 @@ class ModelRegistry:
                 self._discover_fireworks(),
                 self._discover_cloudflare(),
                 self._discover_github_models(),
+                self._discover_huggingface(),
                 return_exceptions=True
             )
 
@@ -866,8 +868,9 @@ class ModelRegistry:
     def _cerebras_fallback_models(self) -> List[ModelInfo]:
         """Fallback Cerebras models if API discovery fails."""
         return [
-            ModelInfo(id="cerebras/llama3.1-8b", provider="cerebras", capabilities=["chat"], roles=["assistant"]),
-            ModelInfo(id="cerebras/gpt-oss-120b", provider="cerebras", capabilities=["chat", "reasoning"], roles=["assistant", "reasoning_engine"]),
+            ModelInfo(id="cerebras/gpt-oss-120b", provider="cerebras", capabilities=["chat", "reasoning", "function_calling"], roles=["assistant", "reasoning_engine", "tool_user"]),
+            ModelInfo(id="cerebras/zai-glm-4.7", provider="cerebras", capabilities=["chat", "reasoning", "function_calling"], roles=["assistant", "reasoning_engine", "tool_user"]),
+            ModelInfo(id="cerebras/gemma-4-31b", provider="cerebras", capabilities=["chat"], roles=["assistant"]),
         ]
 
     async def _discover_cohere(self) -> List[ModelInfo]:
@@ -1215,54 +1218,39 @@ class ModelRegistry:
 
 
     async def _discover_github_models(self) -> List[ModelInfo]:
-        """Discover models from GitHub Models API (Free with PAT)."""
+        """Discover the current GitHub Models catalog (free PAT quota)."""
         settings = self._settings
         if not settings.github_token:
             return []
-        
-        # GitHub Models - curated list (API doesn't list all)
-        github_models = [
-            # OpenAI Models
-            ("gpt-4o", ["chat", "code", "vision"], ["lead", "worker"]),
-            ("gpt-4o-mini", ["chat", "code"], ["worker"]),
-            ("gpt-4.1", ["chat", "code", "vision"], ["lead", "worker"]),
-            ("gpt-4.1-mini", ["chat", "code"], ["worker"]),
-            ("gpt-4.1-nano", ["chat"], ["worker"]),
-            ("o1", ["chat", "reasoning"], ["lead"]),
-            ("o1-mini", ["chat", "reasoning"], ["worker"]),
-            ("o3-mini", ["chat", "reasoning"], ["worker"]),
-            # Meta Llama
-            ("Meta-Llama-3.1-405B-Instruct", ["chat", "code"], ["lead"]),
-            ("Meta-Llama-3.1-70B-Instruct", ["chat", "code"], ["worker"]),
-            ("Meta-Llama-3.1-8B-Instruct", ["chat"], ["worker"]),
-            ("Llama-3.3-70B-Instruct", ["chat", "code"], ["worker"]),
-            # DeepSeek
-            ("DeepSeek-R1", ["chat", "reasoning", "code"], ["lead", "worker"]),
-            ("DeepSeek-R1-0528", ["chat", "reasoning", "code"], ["worker"]),
-            ("DeepSeek-V3-0324", ["chat", "code"], ["worker"]),
-            # Mistral
-            ("Mistral-Small-3.1", ["chat", "code"], ["worker"]),
-            ("Codestral-2501", ["code"], ["worker"]),
-            # Cohere
-            ("Cohere-command-a", ["chat"], ["worker"]),
-            # Microsoft Phi
-            ("Phi-4", ["chat", "code"], ["worker"]),
-            ("Phi-4-multimodal-instruct", ["chat", "vision"], ["worker"]),
-            # xAI
-            ("Grok-3", ["chat", "reasoning"], ["lead"]),
-            ("Grok-3-Mini", ["chat"], ["worker"]),
-        ]
-        
+        try:
+            async with httpx.AsyncClient(timeout=15.0) as client:
+                response = await client.get(
+                    "https://models.github.ai/catalog/models",
+                    headers={
+                        "Authorization": f"Bearer {settings.github_token}",
+                        "Accept": "application/json",
+                    },
+                )
+                response.raise_for_status()
+                data = response.json()
+        except (httpx.RequestError, httpx.HTTPStatusError) as exc:
+            logger.warning("Failed to discover GitHub Models: %s", safe_http_error(exc))
+            return []
+
         models = []
-        for model_id, capabilities, roles in github_models:
+        for item in data if isinstance(data, list) else []:
+            model_id = item.get("id", "")
+            if not model_id:
+                continue
+            capabilities, roles, api_method = detect_capabilities(model_id)
             models.append(ModelInfo(
                 id=f"github/{model_id}",
                 provider="github",
                 capabilities=capabilities,
                 roles=roles,
+                api_method=api_method,
             ))
-        
-        logger.info("Discovered %d GitHub Models (curated list)", len(models))
+        logger.info("Discovered %d GitHub Models from catalog", len(models))
         return models
 
     def _cloudflare_fallback_models(self) -> List[ModelInfo]:
@@ -1288,6 +1276,59 @@ class ModelRegistry:
     # =========================================================================
     # STATIC HOSTED MODELS
     # =========================================================================
+
+    async def _discover_huggingface(self) -> List[ModelInfo]:
+        """Discover all chat models on HF's OpenAI-compatible provider router."""
+        api_key = self._settings.huggingface_api_key
+        if not api_key:
+            return []
+        try:
+            async with httpx.AsyncClient(timeout=15.0) as client:
+                response = await client.get(
+                    "https://router.huggingface.co/v1/models",
+                    headers={"Authorization": f"Bearer {api_key}"},
+                )
+                response.raise_for_status()
+                data = response.json()
+        except (httpx.RequestError, httpx.HTTPStatusError) as exc:
+            logger.warning("Failed to discover Hugging Face models: %s", safe_http_error(exc))
+            return self._huggingface_fallback_models()
+
+        models = []
+        for item in data.get("data", []):
+            model_id = item.get("id", "")
+            if not model_id:
+                continue
+            capabilities, roles, api_method = detect_capabilities(model_id)
+            if "chat" not in capabilities:
+                capabilities.append("chat")
+                roles.append("assistant")
+            models.append(ModelInfo(
+                id=f"huggingface/{model_id}:fastest",
+                provider="huggingface",
+                capabilities=sorted(set(capabilities)),
+                roles=sorted(set(roles)),
+                api_method=api_method,
+            ))
+        return models or self._huggingface_fallback_models()
+
+    @staticmethod
+    def _huggingface_fallback_models() -> List[ModelInfo]:
+        return [
+            ModelInfo(
+                id="huggingface/openai/gpt-oss-120b:fastest",
+                provider="huggingface",
+                capabilities=["chat", "reasoning", "function_calling"],
+                roles=["assistant", "reasoning_engine", "tool_user"],
+            ),
+            ModelInfo(
+                id="huggingface/openai/gpt-oss-20b:fastest",
+                provider="huggingface",
+                capabilities=["chat", "reasoning", "function_calling"],
+                roles=["assistant", "reasoning_engine", "tool_user"],
+            ),
+        ]
+
 
     def _discover_static_hosted(self) -> Iterable[ModelInfo]:
         """Return documented hosted models that should be visible even without billing."""
@@ -1371,43 +1412,11 @@ class ModelRegistry:
         ]
 
     def _ollama_cloud_models(self) -> List[ModelInfo]:
+        # One source of truth with the authenticated free catalog.
+        from .user_tiers import OLLAMA_MODELS
         cloud_ids = [
-            "gpt-oss:120b-cloud",
-            "gpt-oss:20b-cloud",
-            "qwen3-coder:480b-cloud",
-            "qwen3-vl:235b-instruct-cloud",
-            "deepseek-v3.2:cloud",
-            "deepseek-v3.1:671b-cloud",
-            "kimi-k2-thinking:cloud",
-            "kimi-k2:1t-cloud",
-            "glm-4.6:cloud",
-            "kimi-k2.6:cloud",
-            "deepseek-v4-pro:cloud",
-            "deepseek-v4-flash:cloud",
-            "glm-5.1:cloud",
-            "gemma4:31b-cloud",
-            "nemotron-3-super:cloud",
-            "minimax-m2.7:cloud",
-            "minimax-m2.1:cloud",
-            "cogito-2.1:671b-cloud",
-            "gemini-3-flash-preview:cloud",
-            "minimax-m2:cloud",
-            "devstral-2:123b-cloud",
-            "glm-4.7:cloud",
-            "devstral-small-2:24b-cloud",
-            "nemotron-3-nano:30b-cloud",
-            "qwen3-next:80b-cloud",
-            "kimi-k2.5:cloud",
-            "ministral-3:14b-cloud",
-            "ministral-3:8b-cloud",
-            "ministral-3:3b-cloud",
-            "rnj-1:8b-cloud",
-            "qwen3-vl:235b-cloud",
-            "qwen3-coder-next:cloud",
-            "glm-5:cloud",
-            "qwen3.5:cloud",
-            "qwen3.5:397b-cloud",
-            "minimax-m2.5:cloud",
+            model[len("ollama/"):] if model.startswith("ollama/") else model
+            for model in OLLAMA_MODELS
         ]
         models: List[ModelInfo] = []
         for model_id in cloud_ids:

@@ -8,7 +8,9 @@ from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, Header, HTTPException, Request
 from pydantic import BaseModel, EmailStr, Field
-from app.routes.client_auth import normalize_entitlements
+  master
+from app.routes.client_auth import USER_REGISTRY, normalize_entitlements
+  nova-nextlevel-20260603
 
 
 router = APIRouter()
@@ -131,6 +133,7 @@ def _merge_user(payload: UserUpsertPayload) -> Dict[str, Any]:
         "name": name,
         "billing": bool(billing),
         "nova_entitlements": entitlements,
+        "entitlements": entitlements,
     }
 
     if payload.source:
@@ -145,6 +148,7 @@ def _merge_user(payload: UserUpsertPayload) -> Dict[str, Any]:
 
     users[email] = merged
     _atomic_write_users(users)
+    USER_REGISTRY[email] = merged
 
     return merged
 
