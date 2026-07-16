@@ -113,18 +113,37 @@ class LemonSqueezyProvider implements PaymentProviderInterface {
                 $status = strtolower((string) ($attrs['status'] ?? ''));
                 if ($product_id && (!$status || $status === 'paid')) {
                     $base['action'] = 'purchase';
-                    $base['extra']  = [sanitize_text_field($product_id)];
+                    $base['extra']  = [$this->entitlement_for_product($product_id)];
                 }
                 break;
 
             case 'order_refunded':
                 if ($product_id) {
                     $base['action'] = 'refund';
-                    $base['extra']  = [sanitize_text_field($product_id)];
+                    $base['extra']  = [$this->entitlement_for_product($product_id)];
                 }
                 break;
         }
 
         return $base;
+    }
+
+    /**
+     * Map Lemon Squeezy product IDs to stable application entitlement keys.
+     * Format: "970007:copa_ocr,969895:ailinux_premium".
+     */
+    private function entitlement_for_product(string $product_id): string {
+        $mapping = defined('NOVA_LS_PRODUCT_ENTITLEMENTS')
+            ? (string) NOVA_LS_PRODUCT_ENTITLEMENTS
+            : '';
+
+        foreach (array_filter(array_map('trim', explode(',', $mapping))) as $pair) {
+            [$id, $entitlement] = array_pad(array_map('trim', explode(':', $pair, 2)), 2, '');
+            if ($id === $product_id && $entitlement !== '') {
+                return sanitize_key($entitlement);
+            }
+        }
+
+        return 'ls_product_' . sanitize_key($product_id);
     }
 }

@@ -80,10 +80,10 @@ class EntitlementsService {
     /**
      * Sync user entitlements to the AILinux backend (fire-and-forget).
      */
-    public static function sync_to_backend(int $user_id): void {
+    public static function sync_to_backend(int $user_id): bool {
         $user = get_userdata($user_id);
         if (!$user) {
-            return;
+            return false;
         }
 
         $settings = get_option('nova_ai_settings', []);
@@ -117,12 +117,15 @@ class EntitlementsService {
 
         if (is_wp_error($response)) {
             error_log('[nova] entitlement-sync fehlgeschlagen: ' . $response->get_error_message());
-            return;
+            return false;
         }
         $code = wp_remote_retrieve_response_code($response);
         if ($code < 200 || $code >= 300) {
             error_log(sprintf('[nova] entitlement-sync HTTP %s fuer user %d', $code, $user_id));
+            return false;
         }
+
+        return true;
     }
 
     /**

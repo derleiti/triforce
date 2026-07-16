@@ -39,7 +39,8 @@ class ShopService {
      * @return array  Array of product arrays, empty on error / missing config.
      */
     public function get_products(): array {
-        $cached = get_transient('nova_ls_products');
+        $cache_key = $this->cache_key('products');
+        $cached = get_transient($cache_key);
         if ($cached !== false) {
             return $cached;
         }
@@ -58,21 +59,36 @@ class ShopService {
             return [];
         }
 
-        // Build variant_id map: product_id → first variant id
+        // Build product_id → best variant map. Never select a pending/draft variant
+        // when a published variant exists; checkout creation requires a usable variant.
         $variant_map = [];
         foreach ($response['included'] ?? [] as $included) {
             if (($included['type'] ?? '') !== 'variants') {
                 continue;
             }
-            // LemonSqueezy liefert bei included-Varianten nur relationships.product.links,
-            // keinen Resource-Identifier (.data.id). Die Produkt-ID steht in attributes.product_id.
+            $variant_attrs = $included['attributes'] ?? [];
             $pid = (string) (
                 $included['relationships']['product']['data']['id']
-                ?? $included['attributes']['product_id']
+                ?? $variant_attrs['product_id']
                 ?? ''
             );
-            if ($pid && !isset($variant_map[$pid])) {
-                $variant_map[$pid] = $included['id'];
+            if ($pid === '') {
+                continue;
+            }
+            $candidate = [
+                'id'              => (string) ($included['id'] ?? ''),
+                'status'          => (string) ($variant_attrs['status'] ?? ''),
+                'test_mode'       => (bool) ($variant_attrs['test_mode'] ?? false),
+                'price'           => (int) ($variant_attrs['price'] ?? 0),
+                'price_formatted' => (string) ($variant_attrs['price_formatted'] ?? ''),
+                'sort'            => (int) ($variant_attrs['sort'] ?? PHP_INT_MAX),
+            ];
+            $current = $variant_map[$pid] ?? null;
+            $candidate_published = $candidate['status'] === 'published';
+            $current_published = is_array($current) && ($current['status'] ?? '') === 'published';
+            if ($current === null || ($candidate_published && !$current_published) ||
+                ($candidate_published === $current_published && $candidate['sort'] < ($current['sort'] ?? PHP_INT_MAX))) {
+                $variant_map[$pid] = $candidate;
             }
         }
 
@@ -84,25 +100,36 @@ class ShopService {
             $attrs      = $item['attributes'] ?? [];
             $product_id = (string) $item['id'];
             $admin_meta = $product_meta[$product_id] ?? [];
+            $variant    = $variant_map[$product_id] ?? [];
 
-            // Skip unpublished
+            // Skip unpublished products, but retain published products with an
+            // unusable variant so the UI can explain why checkout is disabled.
             if (($attrs['status'] ?? '') !== 'published') {
                 continue;
             }
+
+            $product_test_mode = (bool) ($attrs['test_mode'] ?? false);
+            $mode_matches = $product_test_mode === $this->test_mode();
+            $variant_ready = !empty($variant['id'])
+                && ($variant['status'] ?? '') === 'published'
+                && (bool) ($variant['test_mode'] ?? false) === $this->test_mode();
 
             $products[] = [
                 'id'              => $product_id,
                 'name'            => $attrs['name'] ?? '',
                 'slug'            => $attrs['slug'] ?? '',
                 'description'     => $attrs['description'] ?? '',
-                'price'           => (int) ($attrs['price'] ?? 0),
-                'price_formatted' => $attrs['price_formatted'] ?? '',
+                'price'           => isset($variant['price']) ? (int) $variant['price'] : (int) ($attrs['price'] ?? 0),
+                'price_formatted' => !empty($variant['price_formatted']) ? $variant['price_formatted'] : ($attrs['price_formatted'] ?? ''),
                 'thumb_url'       => $attrs['thumb_url'] ?? '',
                 'large_thumb_url' => $attrs['large_thumb_url'] ?? '',
                 'buy_now_url'     => $attrs['buy_now_url'] ?? '',
                 'status'          => $attrs['status'] ?? '',
-                'test_mode'       => (bool) ($attrs['test_mode'] ?? false),
-                'variant_id'      => $variant_map[$product_id] ?? '',
+                'test_mode'       => $product_test_mode,
+                'variant_id'      => (string) ($variant['id'] ?? ''),
+                'variant_status'  => (string) ($variant['status'] ?? 'missing'),
+                'mode_matches'    => $mode_matches,
+                'checkout_ready'  => $mode_matches && $variant_ready,
                 // Admin meta overrides
                 'is_new'          => (bool) ($admin_meta['is_new'] ?? false),
                 'is_sale'         => (bool) ($admin_meta['is_sale'] ?? false),
@@ -112,7 +139,7 @@ class ShopService {
             ];
         }
 
-        set_transient('nova_ls_products', $products, self::CACHE_TTL);
+        set_transient($cache_key, $products, self::CACHE_TTL);
         return $products;
     }
 
@@ -122,7 +149,8 @@ class ShopService {
      * Cached in transient 'nova_ls_discounts'.
      */
     public function get_active_discounts(): array {
-        $cached = get_transient('nova_ls_discounts');
+        $cache_key = $this->cache_key('discounts');
+        $cached = get_transient($cache_key);
         if ($cached !== false) {
             return $cached;
         }
@@ -166,7 +194,7 @@ class ShopService {
             ];
         }
 
-        set_transient('nova_ls_discounts', $discounts, self::CACHE_TTL);
+        set_transient($cache_key, $discounts, self::CACHE_TTL);
         return $discounts;
     }
 
@@ -214,6 +242,12 @@ class ShopService {
         if (empty($store_id) || empty($variant_id) || $wp_user_id <= 0) {
             return '';
         }
+        if (empty($product['checkout_ready'])) {
+            return '';
+        }
+        if ($this->test_mode() && !$this->allow_test_checkout()) {
+            return '';
+        }
 
         $user = get_userdata($wp_user_id);
         if (!$user) {
@@ -237,6 +271,7 @@ class ShopService {
                             'wp_user_email' => $email,
                             'product_id'    => $product_id,
                             'product_name'  => $product_name,
+                            'product_slug'  => sanitize_text_field((string) ($product['slug'] ?? '')),
                             'variant_id'    => sanitize_text_field($variant_id),
                             'source'        => 'ailinux_shop',
                         ],
@@ -297,8 +332,13 @@ class ShopService {
      * Delete all cached shop data.
      */
     public function clear_cache(): void {
+        // Remove legacy keys and both mode-scoped keys so mode/key switches are immediate.
         delete_transient('nova_ls_products');
         delete_transient('nova_ls_discounts');
+        foreach ([false, true] as $test_mode) {
+            delete_transient($this->cache_key('products', $test_mode));
+            delete_transient($this->cache_key('discounts', $test_mode));
+        }
     }
 
     // =========================================================================
@@ -399,6 +439,28 @@ class ShopService {
 
     private function store_id(): string {
         return defined('NOVA_LS_STORE_ID') ? (string) NOVA_LS_STORE_ID : '';
+    }
+
+    private function test_mode(): bool {
+        return defined('NOVA_LS_TEST_MODE') ? (bool) NOVA_LS_TEST_MODE : true;
+    }
+
+    private function allow_test_checkout(): bool {
+        return defined('NOVA_LS_ALLOW_TEST_CHECKOUT') && (bool) NOVA_LS_ALLOW_TEST_CHECKOUT;
+    }
+
+    private function cache_key(string $kind, ?bool $test_mode = null): string {
+        $mode = ($test_mode ?? $this->test_mode()) ? 'test' : 'live';
+        $scope = hash('sha256', $this->store_id() . '|' . $this->api_key() . '|' . $mode);
+        return 'nova_ls_' . sanitize_key($kind) . '_' . substr($scope, 0, 16);
+    }
+
+    public function is_test_mode(): bool {
+        return $this->test_mode();
+    }
+
+    public function test_checkout_allowed(): bool {
+        return $this->allow_test_checkout();
     }
 
     public function is_configured(): bool {

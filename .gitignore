@@ -153,6 +153,9 @@ docker/repository/etc/gnupg/
 .edit_log.jsonl
 app/mcp/structured_admin.py.bak2
 tests/
+!tests/
+tests/*
+!tests/test_lemonsqueezy_shop_contract.py
 # DKIM-Keys — private keys, never commit
 docker/mailserver/config/opendkim/
 # Temp/debug files

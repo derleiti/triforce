@@ -13,6 +13,7 @@ $products  = $shop_data['products'];
 $discounts = $shop_data['discounts'];
 $columns   = $shop_data['columns'];
 $layout    = $shop_data['layout'];
+$test_checkout_blocked = $shop_data['is_test_mode'] && !$shop_data['allow_test_checkout'];
 
 // Unique ID for CSS scoping (multiple shortcodes on one page)
 static $instance_count = 0;
@@ -252,6 +253,13 @@ $uid = 'nova-shop-' . $instance_count;
 
 <div id="<?php echo esc_attr($uid); ?>">
 
+<?php if ($shop_data['is_configured'] && $shop_data['is_test_mode']): ?>
+    <div class="ns-notice" style="margin-bottom:1rem">
+        🧪 Lemon Squeezy Test Mode ist aktiv. Preise und Produkte stammen aus dem Test-Store.
+        <?php if ($test_checkout_blocked): ?>Öffentliche Test-Checkouts sind gesperrt.<?php endif; ?>
+    </div>
+<?php endif; ?>
+
 <?php if (!$shop_data['is_configured']): ?>
     <div class="ns-notice">
         🔌 Shop nicht konfiguriert – bitte <code>NOVA_LS_API_KEY</code> und <code>NOVA_LS_STORE_ID</code>
@@ -296,6 +304,16 @@ $uid = 'nova-shop-' . $instance_count;
         $price_label = ($product['price'] === 0)
             ? '<span class="ns-price ns-price-free">Kostenlos</span>'
             : '<span class="ns-price">' . esc_html($product['price_formatted']) . '</span>';
+        $product_checkout_ready = !empty($product['checkout_ready']) && !$test_checkout_blocked;
+        if (!$product_checkout_ready) {
+            $button_label = (($product['variant_status'] ?? '') !== 'published')
+                ? 'Nicht verfügbar'
+                : 'Checkout gesperrt';
+        } elseif (!$shop_data['is_logged_in']) {
+            $button_label = 'Anmelden & kaufen';
+        } else {
+            $button_label = $product['test_mode'] ? 'Test checkout' : 'Buy now';
+        }
     ?>
     <div class="ns-card">
 
@@ -340,9 +358,12 @@ $uid = 'nova-shop-' . $instance_count;
                         data-product-id="<?php echo esc_attr($product['id']); ?>"
                         data-variant-id="<?php echo esc_attr($product['variant_id']); ?>"
                         data-checkout-api="<?php echo esc_url($shop_data['checkout_url']); ?>"
-                        data-nonce="<?php echo esc_attr($shop_data['checkout_nonce']); ?>">
+                        data-nonce="<?php echo esc_attr($shop_data['checkout_nonce']); ?>"
+                        data-login-url="<?php echo esc_url($shop_data['login_url']); ?>"
+                        data-logged-in="<?php echo $shop_data['is_logged_in'] ? '1' : '0'; ?>"
+                        <?php disabled(!$product_checkout_ready); ?>>
                     <span class="ns-spinner"></span>
-                    <span class="ns-btn-label">Buy now</span>
+                    <span class="ns-btn-label"><?php echo esc_html($button_label); ?></span>
                 </button>
             </div>
         </div>
@@ -368,6 +389,11 @@ $uid = 'nova-shop-' . $instance_count;
             var apiUrl    = btn.dataset.checkoutApi;
             var nonce     = btn.dataset.nonce;
 
+            if (btn.dataset.loggedIn !== '1') {
+                window.location.href = btn.dataset.loginUrl || '/wp-login.php';
+                return;
+            }
+
             if (!apiUrl) {
                 alert('Checkout is not ready yet. Please try again later.');
                 return;
@@ -389,7 +415,7 @@ $uid = 'nova-shop-' . $instance_count;
                 if (data.url) {
                     window.location.href = data.url;
                 } else {
-                    alert('Checkout-URL konnte nicht geladen werden.');
+                    alert(data.error || 'Checkout-URL konnte nicht geladen werden.');
                     btn.classList.remove('ns-loading');
                     btn.disabled = false;
                 }

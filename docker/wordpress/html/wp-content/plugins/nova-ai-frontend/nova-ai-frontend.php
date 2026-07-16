@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Nova AI Frontend
  * Description: AILinux AI Playground & Downloads — Chat, Vision, Media Generation + Admin Dashboard
- * Version: 6.5.7
+ * Version: 6.5.8
  * Author: zombie@ailinux
  * Text Domain: nova-ai-frontend
  */
@@ -12,10 +12,31 @@ defined('ABSPATH') || exit;
 // FIX 2026-04-11: Credentials aus wp-config.php laden (Fallbacks für Abwärtskompatibilität)
 if ( ! defined( 'NOVA_AI_BACKEND' ) )       define('NOVA_AI_BACKEND',      'http://172.18.0.1:9000');
 if ( ! defined( 'NOVA_AI_LOCAL_BACKEND' ) )  define('NOVA_AI_LOCAL_BACKEND', 'http://localhost:9000');
-if ( ! defined( 'NOVA_AI_INTERNAL_KEY' ) )   define('NOVA_AI_INTERNAL_KEY',  '');
-define('NOVA_AI_VERSION', '6.5.7');
+if ( ! defined( 'NOVA_AI_INTERNAL_KEY' ) )   define('NOVA_AI_INTERNAL_KEY',  getenv('NOVA_AI_INTERNAL_KEY') ?: '');
+define('NOVA_AI_VERSION', '6.5.8');
 define('NOVA_AI_PLUGIN_URL',  plugin_dir_url(__FILE__));
 define('NOVA_AI_PLUGIN_DIR',  plugin_dir_path(__FILE__));
+
+// Lemon Squeezy runtime config lives in the versioned bootstrap so fresh
+// deployments do not depend on a locally generated, gitignored config file.
+if (!function_exists('nova_env_bool')) {
+    function nova_env_bool(string $key, bool $default = false): bool {
+        $value = getenv($key);
+        if ($value === false || $value === '') {
+            return $default;
+        }
+        return filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? $default;
+    }
+}
+if (!defined('NOVA_LS_API_KEY'))               define('NOVA_LS_API_KEY', getenv('NOVA_LS_API_KEY') ?: getenv('LEMONSQUEEZY_API_KEY') ?: '');
+if (!defined('NOVA_LS_STORE_ID'))              define('NOVA_LS_STORE_ID', getenv('NOVA_LS_STORE_ID') ?: '');
+if (!defined('NOVA_LS_VARIANT_ID'))            define('NOVA_LS_VARIANT_ID', getenv('NOVA_LS_VARIANT_ID') ?: '');
+if (!defined('NOVA_LS_WEBHOOK_SECRET'))        define('NOVA_LS_WEBHOOK_SECRET', getenv('NOVA_LS_WEBHOOK_SECRET') ?: getenv('LEMONSQUEEZY_WEBHOOK_SECRET') ?: '');
+if (!defined('NOVA_LS_TEST_MODE'))             define('NOVA_LS_TEST_MODE', nova_env_bool('NOVA_LS_TEST_MODE', true));
+if (!defined('NOVA_LS_ALLOW_TEST_CHECKOUT'))   define('NOVA_LS_ALLOW_TEST_CHECKOUT', nova_env_bool('NOVA_LS_ALLOW_TEST_CHECKOUT', false));
+if (!defined('NOVA_LS_WEBHOOK_DIRECT'))        define('NOVA_LS_WEBHOOK_DIRECT', nova_env_bool('NOVA_LS_WEBHOOK_DIRECT', true));
+if (!defined('NOVA_PAYMENT_PROVIDER'))         define('NOVA_PAYMENT_PROVIDER', getenv('NOVA_PAYMENT_PROVIDER') ?: 'lemonsqueezy');
+if (!defined('NOVA_LS_PRODUCT_ENTITLEMENTS'))  define('NOVA_LS_PRODUCT_ENTITLEMENTS', getenv('NOVA_LS_PRODUCT_ENTITLEMENTS') ?: getenv('LEMONSQUEEZY_PRODUCT_ENTITLEMENTS') ?: '');
 
 // 2026-04-24: PSR-4 Autoloader + Plugin bootstrap
 require_once NOVA_AI_PLUGIN_DIR . 'includes/autoloader.php';
@@ -172,18 +193,58 @@ function nova_maybe_upgrade_legacy_backend_settings(): void {
     }
 }
 
-// /account/ nie cachen — enthält isLoggedIn + Nonce
+// Account und Shop nie cachen — beide enthalten Loginstatus und REST-Nonce.
 add_action('send_headers', function() {
-    if (is_page('account') || strpos($_SERVER['REQUEST_URI'] ?? '', '/account') !== false) {
+    $request_uri = $_SERVER['REQUEST_URI'] ?? '';
+    $dynamic_page = is_page('account') || is_page('ailinux-shop')
+        || strpos($request_uri, '/account') !== false
+        || strpos($request_uri, '/ailinux-shop') !== false;
+
+    if ($dynamic_page) {
         header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
         header('Pragma: no-cache');
         header('Surrogate-Control: no-store');
-        // WP Cloudflare Super Cache bypass
-        define('DONOTCACHEPAGE', true);
+        if (!defined('DONOTCACHEPAGE')) {
+            define('DONOTCACHEPAGE', true);
+        }
     }
 }, 1);
 
+/**
+ * Persist the shop exclusion in Super Page Cache without replacing existing rules.
+ * The version option keeps this cross-plugin compatibility write strictly one-shot.
+ */
+function nova_ensure_shop_page_cache_exclusion(): void {
+    if (get_option('nova_shop_cache_policy_version') === '1') {
+        return;
+    }
+    if (!class_exists('\SPC\Services\Settings_Store') || !class_exists('\SPC\Constants')) {
+        return;
+    }
+
+    try {
+        $store = \SPC\Services\Settings_Store::get_instance();
+        $urls = array_values(array_filter(array_map('trim', (array) $store->get(\SPC\Constants::SETTING_EXCLUDED_URLS, []))));
+        foreach (['/ailinux-shop/', '/ailinux-shop*'] as $pattern) {
+            if (!in_array($pattern, $urls, true)) {
+                $urls[] = $pattern;
+            }
+        }
+        $store->set(\SPC\Constants::SETTING_EXCLUDED_URLS, $urls)->save();
+
+        if (class_exists('\SPC\Loader')) {
+            $fallback = \SPC\Loader::get()->fallback_cache();
+            $fallback->fallback_cache_save_config();
+            $fallback->fallback_cache_purge_urls([home_url('/ailinux-shop/'), home_url('/ailinux-shop')]);
+        }
+        update_option('nova_shop_cache_policy_version', '1', false);
+    } catch (\Throwable $error) {
+        error_log('[nova] shop cache exclusion failed: ' . $error->getMessage());
+    }
+}
+
 add_action('plugins_loaded', 'nova_maybe_upgrade_legacy_backend_settings', 1);
+add_action('admin_init', 'nova_ensure_shop_page_cache_exclusion', 50);
 
 /* ── FIX: Cloudflare Rocket Loader / WP Page Cache – exclude nova-ai.js ──── */
 add_filter('script_loader_tag', function (string $tag, string $handle): string {
