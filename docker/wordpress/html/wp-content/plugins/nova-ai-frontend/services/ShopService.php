@@ -111,7 +111,7 @@ class ShopService {
             $product_test_mode = (bool) ($attrs['test_mode'] ?? false);
             $mode_matches = $product_test_mode === $this->test_mode();
             $variant_ready = !empty($variant['id'])
-                && ($variant['status'] ?? '') === 'published'
+                && in_array(($variant['status'] ?? ''), ['published', 'pending'], true)
                 && (bool) ($variant['test_mode'] ?? false) === $this->test_mode();
 
             $products[] = [
@@ -434,11 +434,21 @@ class ShopService {
     }
 
     private function api_key(): string {
-        return defined('NOVA_LS_API_KEY') ? (string) NOVA_LS_API_KEY : '';
+        $constant = defined('NOVA_LS_API_KEY') ? trim((string) NOVA_LS_API_KEY) : '';
+        if ($constant !== '') {
+            return $constant;
+        }
+
+        return trim((string) (getenv('NOVA_LS_API_KEY') ?: getenv('LEMONSQUEEZY_API_KEY') ?: ''));
     }
 
     private function store_id(): string {
-        return defined('NOVA_LS_STORE_ID') ? (string) NOVA_LS_STORE_ID : '';
+        $constant = defined('NOVA_LS_STORE_ID') ? trim((string) NOVA_LS_STORE_ID) : '';
+        if ($constant !== '') {
+            return $constant;
+        }
+
+        return trim((string) (getenv('NOVA_LS_STORE_ID') ?: ''));
     }
 
     private function test_mode(): bool {
@@ -464,6 +474,6 @@ class ShopService {
     }
 
     public function is_configured(): bool {
-        return !empty($this->api_key()) && !empty($this->store_id());
+        return $this->api_key() !== '' && $this->store_id() !== '';
     }
 }
