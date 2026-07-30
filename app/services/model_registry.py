@@ -4,6 +4,7 @@ import asyncio
 import logging
 import json
 import re
+import os
 from dataclasses import dataclass, field
 from typing import Dict, Iterable, List, Optional
 
@@ -19,7 +20,7 @@ logger = logging.getLogger("ailinux.model_registry")
 VISION_PATTERN = re.compile(r"(llava|vision|vl|moondream|llama-vision|bakllava|pixtral|minicpm|qwen3-vl)", re.IGNORECASE)
 IMAGE_GEN_PATTERN = re.compile(r"(flux|stable-diffusion|sd-|sdxl|dall-e|dalle|gpt-image|imagen|image-gen|text-to-image)", re.IGNORECASE)
 VIDEO_GEN_PATTERN = re.compile(r"(veo|video-gen|sora)", re.IGNORECASE)
-AUDIO_PATTERN = re.compile(r"(audio|tts|transcribe|voxtral|whisper)", re.IGNORECASE)
+AUDIO_PATTERN = re.compile(r"(audio|tts|transcribe|voxtral|whisper|orpheus)", re.IGNORECASE)
 CODE_PATTERN = re.compile(r"(codestral|devstral|code|coder)", re.IGNORECASE)
 EMBEDDING_PATTERN = re.compile(r"(embed)", re.IGNORECASE)
 REASONING_PATTERN = re.compile(r"(thinking|reason|magistral|o1|o3)", re.IGNORECASE)
@@ -35,7 +36,8 @@ PROVIDER_SORT_ORDER = {
     "cerebras": 5,
     "cohere": 6,
     "openrouter": 7,
-    "ollama": 8,
+    "kimi": 8,
+    "ollama": 9,
     "cloudflare": 9,
     "together": 10,
     "fireworks": 11,
@@ -258,6 +260,10 @@ class ModelRegistry:
         """Force a discovery cycle and return the latest model list."""
         return await self.list_models(force_refresh=True)
 
+    def _cached_provider(self, provider: str) -> List[ModelInfo]:
+        """Keep the last API-verified provider catalog during transient outages."""
+        return [m for m in (self._cache or []) if m.provider == provider]
+
     async def _refresh_loop(self) -> None:
         while True:
             try:
@@ -305,11 +311,13 @@ class ModelRegistry:
             # Note: Stable Diffusion discovery disabled - use ComfyUI txt2img endpoint directly
             results = await asyncio.gather(
                 self._discover_ollama(),
+                self._discover_openai(),
                 self._discover_gemini(),
                 self._discover_anthropic(),
                 self._discover_mistral(),
                 self._discover_groq(),
                 self._discover_cerebras(),
+                self._discover_kimi(),
                 self._discover_cohere(),
                 self._discover_openrouter(),
                 self._discover_together(),
@@ -325,10 +333,6 @@ class ModelRegistry:
                     logger.warning("Model discovery failed: %s", result)
                 elif isinstance(result, list):
                     models.extend(result)
-
-            # Add documented static models even when the local account lacks billing
-            # or an API key. Dynamic discovery above augments this list when possible.
-            models.extend(self._discover_static_hosted())
 
             # Deduplicate by canonical ID and merge capabilities/roles if the same model was discovered multiple times
             deduped: Dict[str, ModelInfo] = {}
@@ -531,6 +535,42 @@ class ModelRegistry:
         model_names = [name.strip() for name in configured.split(",") if name.strip()]
         return [ModelInfo(id=name, provider="sd", capabilities=["image_gen"]) for name in model_names]
 
+    async def _discover_openai(self) -> List[ModelInfo]:
+        """Discover only models accessible to the configured OpenAI project."""
+        settings = self._settings
+        if not settings.openai_api_key:
+            return []
+        try:
+            async with httpx.AsyncClient(timeout=15.0) as client:
+                response = await client.get(
+                    "https://api.openai.com/v1/models",
+                    headers={"Authorization": f"Bearer {settings.openai_api_key}"},
+                )
+                response.raise_for_status()
+                data = response.json()
+        except (httpx.RequestError, httpx.HTTPStatusError) as exc:
+            logger.warning("Failed to discover OpenAI models: %s", safe_http_error(exc))
+            return self._cached_provider("openai")
+
+        models: List[ModelInfo] = []
+        chat_prefixes = ("gpt-", "chatgpt-", "o1", "o3", "o4", "codex", "computer-use")
+        for item in data.get("data", []):
+            model_id = str(item.get("id") or "")
+            if not model_id or model_id.startswith("ft:"):
+                continue
+            capabilities, roles, api_method = detect_capabilities(model_id)
+            if capabilities == ["chat"] and not model_id.lower().startswith(chat_prefixes):
+                continue
+            models.append(ModelInfo(
+                id=f"openai/{model_id}",
+                provider="openai",
+                capabilities=sorted(set(capabilities)),
+                roles=sorted(set(roles)),
+                api_method=api_method,
+            ))
+        logger.info("Discovered %d OpenAI models from API", len(models))
+        return models
+
     async def _discover_gemini(self) -> List[ModelInfo]:
         """Discover models from Google Gemini API."""
         settings = self._settings
@@ -691,7 +731,7 @@ class ModelRegistry:
             roles = []
             model_caps = model.get("capabilities", {})
 
-            if model_caps.get("completion_chat", True):
+            if model_caps.get("completion_chat", False):
                 capabilities.append("chat")
                 roles.append("assistant")
             if model_caps.get("vision", False):
@@ -700,6 +740,18 @@ class ModelRegistry:
             if model_caps.get("function_calling", False):
                 capabilities.append("function_calling")
                 roles.append("tool_user")
+            if model_caps.get("reasoning", False):
+                capabilities.append("reasoning")
+                roles.append("reasoning_engine")
+            if model_caps.get("ocr", False):
+                capabilities.extend(["ocr", "vision"])
+                roles.extend(["document_reader", "vision_analyst"])
+            if model_caps.get("moderation", False):
+                capabilities.append("moderation")
+                roles.append("content_moderator")
+            if model_caps.get("audio", False) or model_caps.get("audio_transcription", False) or model_caps.get("audio_speech", False):
+                capabilities.append("audio")
+                roles.append("audio_processor")
 
             # Check for special model types using patterns
             if CODE_PATTERN.search(model_id):
@@ -794,6 +846,12 @@ class ModelRegistry:
                 continue
 
             capabilities, roles, api_method = detect_capabilities(model_id)
+            if "orpheus" in model_id.lower():
+                capabilities = ["audio"]
+                roles = ["audio_processor"]
+            elif "prompt-guard" in model_id.lower() or "safeguard" in model_id.lower():
+                capabilities = ["moderation"]
+                roles = ["content_moderator"]
 
             models.append(ModelInfo(
                 id=f"groq/{model_id}",
@@ -873,6 +931,43 @@ class ModelRegistry:
             ModelInfo(id="cerebras/gemma-4-31b", provider="cerebras", capabilities=["chat"], roles=["assistant"]),
         ]
 
+    async def _discover_kimi(self) -> List[ModelInfo]:
+        """Discover Moonshot/Kimi models exposed to the configured account."""
+        api_key = os.getenv("KIMI_API_KEY")
+        base_url = os.getenv("KIMI_BASE_URL", "https://api.moonshot.ai/v1")
+        if not api_key:
+            return []
+        try:
+            async with httpx.AsyncClient(timeout=15.0) as client:
+                response = await client.get(
+                    f"{base_url.rstrip('/')}/models",
+                    headers={"Authorization": f"Bearer {api_key}"},
+                )
+                response.raise_for_status()
+                data = response.json()
+        except (httpx.RequestError, httpx.HTTPStatusError) as exc:
+            logger.warning("Failed to discover Kimi models: %s", safe_http_error(exc))
+            return self._cached_provider("kimi")
+
+        models: List[ModelInfo] = []
+        for item in data.get("data", []):
+            model_id = str(item.get("id") or "")
+            if not model_id:
+                continue
+            capabilities, roles, api_method = detect_capabilities(model_id)
+            if "chat" not in capabilities:
+                capabilities.append("chat")
+                roles.append("assistant")
+            models.append(ModelInfo(
+                id=f"kimi/{model_id}",
+                provider="kimi",
+                capabilities=sorted(set(capabilities)),
+                roles=sorted(set(roles)),
+                api_method=api_method,
+            ))
+        logger.info("Discovered %d Kimi models from API", len(models))
+        return models
+
     async def _discover_cohere(self) -> List[ModelInfo]:
         """Discover models from Cohere API (Best RAG & Embeddings)."""
         settings = self._settings
@@ -950,6 +1045,8 @@ class ModelRegistry:
     async def _discover_openrouter(self) -> List[ModelInfo]:
         """Discover models from OpenRouter API (300+ models, one API key)."""
         settings = self._settings
+        if not settings.openrouter_api_key:
+            return []
 
         models: List[ModelInfo] = []
         try:
@@ -985,22 +1082,29 @@ class ModelRegistry:
 
             capabilities, roles, api_method = detect_capabilities(model_id)
 
-            # Check architecture for vision support
+            # OpenRouter publishes authoritative input/output modalities.
             architecture = model.get("architecture", {})
-            if architecture.get("modality") == "multimodal" or "vision" in model_id.lower():
-                if "vision" not in capabilities:
-                    capabilities.append("vision")
-                    roles.append("vision_analyst")
-
-            # Detect image/video generation from output_modalities (OpenRouter API truth source)
-            # Catches gemini-*-image, gpt-*-image, nano-banana etc. that the regex misses.
+            input_mods = set(architecture.get("input_modalities") or [])
             output_mods = set(architecture.get("output_modalities") or [])
+            if "text" in output_mods:
+                if "chat" not in capabilities:
+                    capabilities.append("chat")
+                    roles.append("assistant")
+            else:
+                capabilities = [c for c in capabilities if c != "chat"]
+                roles = [r for r in roles if r != "assistant"]
+            if "image" in input_mods and "vision" not in capabilities:
+                capabilities.append("vision")
+                roles.append("vision_analyst")
             if "image" in output_mods and "image_gen" not in capabilities:
                 capabilities.append("image_gen")
                 roles.append("image_generator")
             if "video" in output_mods and "video_gen" not in capabilities:
                 capabilities.append("video_gen")
                 roles.append("video_generator")
+            if "audio" in output_mods and "audio" not in capabilities:
+                capabilities.append("audio")
+                roles.append("audio_processor")
 
             models.append(ModelInfo(
                 id=f"openrouter/{model_id}",
@@ -1159,6 +1263,7 @@ class ModelRegistry:
             async with httpx.AsyncClient(timeout=10.0) as client:
                 response = await client.get(
                     f"https://api.cloudflare.com/client/v4/accounts/{settings.cloudflare_account_id}/ai/models/search",
+                    params={"per_page": 1000},
                     headers={"Authorization": f"Bearer {settings.cloudflare_api_token}"}
                 )
                 response.raise_for_status()
@@ -1200,8 +1305,8 @@ class ModelRegistry:
                 capabilities.append("translation")
                 roles.append("translator")
             else:
-                capabilities.append("chat")
-                roles.append("assistant")
+                # Unknown/specialized Workers AI tasks are not chat-compatible.
+                continue
 
             models.append(ModelInfo(
                 id=f"cloudflare/{model_id}",
@@ -1242,7 +1347,23 @@ class ModelRegistry:
             model_id = item.get("id", "")
             if not model_id:
                 continue
+            input_mods = set(item.get("supported_input_modalities") or [])
+            output_mods = set(item.get("supported_output_modalities") or [])
+            github_caps = set(item.get("capabilities") or [])
             capabilities, roles, api_method = detect_capabilities(model_id)
+            if "text" in output_mods:
+                if "chat" not in capabilities:
+                    capabilities.append("chat")
+                    roles.append("assistant")
+            else:
+                capabilities = [c for c in capabilities if c != "chat"]
+                roles = [r for r in roles if r != "assistant"]
+            if "image" in input_mods and "vision" not in capabilities:
+                capabilities.append("vision")
+                roles.append("vision_analyst")
+            if "tool-calling" in github_caps and "function_calling" not in capabilities:
+                capabilities.append("function_calling")
+                roles.append("tool_user")
             models.append(ModelInfo(
                 id=f"github/{model_id}",
                 provider="github",
@@ -1292,7 +1413,7 @@ class ModelRegistry:
                 data = response.json()
         except (httpx.RequestError, httpx.HTTPStatusError) as exc:
             logger.warning("Failed to discover Hugging Face models: %s", safe_http_error(exc))
-            return self._huggingface_fallback_models()
+            return self._cached_provider("huggingface")
 
         models = []
         for item in data.get("data", []):
@@ -1331,19 +1452,8 @@ class ModelRegistry:
 
 
     def _discover_static_hosted(self) -> Iterable[ModelInfo]:
-        """Return documented hosted models that should be visible even without billing."""
-        hosted: List[ModelInfo] = []
-        hosted.extend(self._openai_static_models())
-        # Anthropic is dynamically discovered via _discover_anthropic(); static fallback is used there.
-        # Avoid extending it here too, otherwise fallback/static entries mask account-specific discovery.
-        hosted.extend(self._ollama_cloud_models())
-        hosted.extend(self._gemini_fallback_models())
-        hosted.extend(self._mistral_fallback_models())
-        hosted.extend(self._groq_fallback_models())
-        hosted.extend(self._cerebras_fallback_models())
-        hosted.extend(self._cohere_fallback_models())
-        hosted.extend(self._cloudflare_fallback_models())
-        return hosted
+        """Compatibility hook: live catalogs now come only from configured APIs."""
+        return []
 
     def _openai_static_models(self) -> List[ModelInfo]:
         return [

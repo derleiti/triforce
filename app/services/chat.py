@@ -3,6 +3,7 @@ from __future__ import annotations
 import ipaddress
 import json
 import re
+import os
 import asyncio
 import socket
 from typing import AsyncGenerator, Iterable, List, Optional
@@ -152,6 +153,13 @@ ANTHROPIC_MODEL_ALIASES = {
 # OpenAI-compatible providers (Groq, Cerebras, Together, Fireworks, OpenRouter)
 # These all use the same API format but different base URLs
 OPENAI_COMPATIBLE_PROVIDERS = {
+    "openai": {
+        "base_url": "https://api.openai.com/v1",
+        "api_key_setting": "openai_api_key",
+        "api_key_env": "OPENAI_API_KEY",
+        "timeout_setting": "openai_timeout_ms",
+        "headers": {},
+    },
     "groq": {
         "base_url": "https://api.groq.com/openai/v1",
         "api_key_setting": "groq_api_key",
@@ -163,6 +171,32 @@ OPENAI_COMPATIBLE_PROVIDERS = {
         "api_key_setting": "cerebras_api_key",
         "timeout_setting": "cerebras_timeout_ms",
         "headers": {},
+    },
+    "kimi": {
+        "base_url": "https://api.moonshot.ai/v1",
+        "api_key_setting": "kimi_api_key",
+        "api_key_env": "KIMI_API_KEY",
+        "timeout_setting": "kimi_timeout_ms",
+        "timeout_ms": 120000,
+        "headers": {},
+    },
+    "huggingface": {
+        "base_url": "https://router.huggingface.co/v1",
+        "api_key_setting": "huggingface_api_key",
+        "api_key_env": "HUGGINGFACE_API_KEY",
+        "timeout_setting": "huggingface_timeout_ms",
+        "timeout_ms": 120000,
+        "headers": {},
+    },
+    "github": {
+        "base_url": "https://models.github.ai/inference",
+        "api_key_setting": "github_token",
+        "api_key_env": "GITHUB_TOKEN",
+        "timeout_setting": "github_models_timeout_ms",
+        "headers": {
+            "Accept": "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2026-03-10",
+        },
     },
     "together": {
         "base_url": "https://api.together.xyz/v1",
@@ -409,10 +443,15 @@ async def _get_initial_response(
     elif model.provider in OPENAI_COMPATIBLE_PROVIDERS:
         # Handle Groq, Cerebras, Together, Fireworks, OpenRouter
         provider_config = OPENAI_COMPATIBLE_PROVIDERS[model.provider]
-        api_key = getattr(settings, provider_config["api_key_setting"], None)
+        api_key = (
+            getattr(settings, provider_config["api_key_setting"], None)
+            or os.getenv(provider_config.get("api_key_env", ""))
+        )
         if not api_key:
             raise api_error(f"{model.provider.title()} support is not configured", status_code=503, code=f"{model.provider}_unavailable")
-        timeout_ms = getattr(settings, provider_config["timeout_setting"], 30000)
+        timeout_ms = provider_config.get("timeout_ms") or getattr(
+            settings, provider_config["timeout_setting"], 30000
+        )
         try:
             async for chunk in _stream_openai_compatible(
                 request_model,

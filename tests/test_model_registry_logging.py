@@ -29,3 +29,44 @@ def test_safe_http_error_does_not_leak_query_api_key():
     assert "key=" in formatted
     assert "%5BREDACTED%5D" in formatted or "[REDACTED]" in formatted
     assert "status=400" in formatted
+
+
+def test_groq_orpheus_is_audio_not_chat():
+    from app.services.model_registry import detect_capabilities
+    capabilities, _, _ = detect_capabilities("canopylabs/orpheus-arabic-saudi")
+    assert "audio" in capabilities
+    assert "chat" not in capabilities
+
+
+def test_specialized_models_do_not_default_to_chat():
+    from app.services.model_registry import detect_capabilities
+    cases = {
+        "whisper-large-v3": "audio",
+        "text-embedding-3-small": "embedding",
+        "omni-moderation-latest": "moderation",
+        "sora-2": "video_gen",
+        "gpt-image-1": "image_gen",
+    }
+    for model_id, expected in cases.items():
+        capabilities, _, _ = detect_capabilities(model_id)
+        assert expected in capabilities
+        assert "chat" not in capabilities
+
+
+def test_static_catalog_is_not_injected():
+    from app.services.model_registry import ModelRegistry
+    assert list(ModelRegistry()._discover_static_hosted()) == []
+
+
+
+def test_openai_compatible_provider_prefixes_are_stripped():
+    from app.utils.model_helpers import strip_provider_prefix
+
+    cases = {
+        "openai/gpt-4.1-mini": "gpt-4.1-mini",
+        "kimi/moonshot-v1-8k": "moonshot-v1-8k",
+        "huggingface/allenai/Olmo-3-7B-Instruct:fastest": "allenai/Olmo-3-7B-Instruct:fastest",
+        "github/openai/gpt-4.1-mini": "openai/gpt-4.1-mini",
+    }
+    for model_id, expected in cases.items():
+        assert strip_provider_prefix(model_id) == expected
