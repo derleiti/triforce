@@ -509,7 +509,11 @@ function isAdmin(t){return ['enterprise','admin','unlimited'].includes(t?.toLowe
 
 // ── Storage helpers ──────────────────────────────────────────────────────────
 function lsGet(k){try{return localStorage.getItem(k)}catch{return null}}
-function lsSet(k,v){try{localStorage.setItem(k,v)}catch{}}
+function setSharedAuthCookie(token){
+  if(!token)return;
+  try{document.cookie='ailinux_token='+encodeURIComponent(token)+'; Max-Age=86400; path=/; domain=.ailinux.me; SameSite=Lax; Secure'}catch{}
+}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch{} if(k==='ailinux_token')setSharedAuthCookie(v)}
 function lsDel(...keys){keys.forEach(k=>{try{localStorage.removeItem(k)}catch{}})}
 function clearAilinuxAuthState(){
   lsDel('ailinux_token','ailinux_email','ailinux_tier','ailinux_client_id','ailinux_name','ailinux_wp_last_sync','ailinux_wp_can_admin');
@@ -772,6 +776,13 @@ document.getElementById('reg-form').addEventListener('submit',async e=>{
 // ── WP Sync ──────────────────────────────────────────────────────────────────
 function buildWpLoginUrl(data, fallbackEmail){
   const redirect = new URLSearchParams(location.search).get('redirect') || 'https://ailinux.me/';
+  try{
+    const target=new URL(redirect);
+    if(target.protocol==='https:' && (target.hostname==='ai.ailinux.me' || target.hostname.endsWith('.ailinux.me'))){
+      setSharedAuthCookie(data.token||'');
+      return target.toString();
+    }
+  }catch{}
   const url = new URL(WP_API + '/auth/wp-login');
   url.searchParams.set('token', data.token || '');
   url.searchParams.set('email', data.user_id || data.email || fallbackEmail || '');
@@ -953,6 +964,17 @@ function openApp(){
 
   // Restore session via Backend verify
   const restored=await verifyAndRestoreSession();
+  const redirect=params.get('redirect');
+  if(restored && redirect){
+    try{
+      const target=new URL(redirect);
+      if(target.protocol==='https:' && (target.hostname==='ai.ailinux.me' || target.hostname.endsWith('.ailinux.me'))){
+        setSharedAuthCookie(lsGet('ailinux_token'));
+        location.replace(target.toString());
+        return;
+      }
+    }catch{}
+  }
 
   // If logged in and view param → switch to that panel
   if(restored&&view){

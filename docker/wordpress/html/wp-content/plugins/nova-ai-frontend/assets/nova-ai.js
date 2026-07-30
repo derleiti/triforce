@@ -10,6 +10,12 @@
   const NONCE = () => window.novaAiConfig?.nonce || null;
   const nonceHeader = () => { var n = NONCE(); return n ? {'X-WP-Nonce': n} : {}; };
   const DEBUG = false;
+  // Prefer quota-backed chat models; first available entry becomes the UI default.
+  const DEFAULT_CHAT_MODELS = [
+    'mistral/mistral-small-latest',
+    'groq/llama-3.1-8b-instant',
+    'openrouter/inclusionai/ling-3.0-flash:free',
+  ];
   const MODEL_KIND_ORDER = ['chat','vision','media_image','media_video','audio','ocr','embedding','code','reasoning'];
   const PROVIDER_ORDER = {
     chat: ['openai','anthropic','gemini','mistral','groq','cerebras','cohere','openrouter','ollama','cloudflare','github','together','fireworks','other'],
@@ -30,8 +36,69 @@
     return idx >= 0 ? idx : 99;
   }
 
+
+  function selectPreferredChatModel(selectEl) {
+    for (const modelId of DEFAULT_CHAT_MODELS) {
+      const option = selectEl.querySelector(`option[value="${modelId}"]`);
+      if (option) {
+        option.selected = true;
+        return modelId;
+      }
+    }
+    return '';
+  }
+
+  const PROVIDER_LABELS = {
+    openai: 'OpenAI', anthropic: 'Anthropic', gemini: 'Google Gemini',
+    mistral: 'Mistral AI', groq: 'Groq', cerebras: 'Cerebras',
+    cohere: 'Cohere', kimi: 'Kimi / Moonshot AI', openrouter: 'OpenRouter',
+    ollama: 'Ollama (lokal)', cloudflare: 'Cloudflare Workers AI',
+    github: 'GitHub Models', together: 'Together AI', fireworks: 'Fireworks AI',
+    replicate: 'Replicate', huggingface: 'Hugging Face', other: 'Weitere Anbieter',
+  };
+
+  function providerLabel(provider) {
+    const key = (provider || 'other').toLowerCase();
+    return PROVIDER_LABELS[key] || key.replace(/(^|[-_])([a-z])/g, (_, sep, char) => (sep ? ' ' : '') + char.toUpperCase());
+  }
+
   function modelLabel(m) {
     return m.name || m.id || m.model || '';
+  }
+
+  function modelIdentity(m) {
+    const provider = (m.provider || 'other').toLowerCase();
+    let id = String(m.id || m.model || m.name || '').toLowerCase();
+    if (id.startsWith(provider + '/')) id = id.slice(provider.length + 1);
+    const routeMatch = id.match(/:(batch|free|thinking|fastest|preferred|cheapest)$/);
+    const route = routeMatch ? routeMatch[0] : '';
+    let base = route ? id.slice(0, -route.length) : id;
+    base = base.replace(/-(20\d{2}-\d{2}-\d{2}|20\d{6}|20\d{4}|\d{4})$/, '');
+    base = base.replace(/-(latest|preview)$/, '');
+    return provider + '|' + base + route;
+  }
+
+  function modelPreference(m) {
+    const id = String(m.id || m.model || m.name || '').toLowerCase().replace(/:(batch|free|thinking|fastest|preferred|cheapest)$/, '');
+    if (/-latest$/.test(id)) return 0;
+    if (!/-(preview|20\d{2}-\d{2}-\d{2}|20\d{6}|20\d{4}|\d{4})$/.test(id)) return 1;
+    if (/-preview$/.test(id)) return 2;
+    return 3;
+  }
+
+  function dedupeModels(models) {
+    const unique = new Map();
+    models.forEach(m => {
+      const key = modelIdentity(m);
+      const current = unique.get(key);
+      const score = modelPreference(m);
+      const currentScore = current ? modelPreference(current) : Number.POSITIVE_INFINITY;
+      if (!current || score < currentScore ||
+          (score === currentScore && modelLabel(m).localeCompare(modelLabel(current)) > 0)) {
+        unique.set(key, m);
+      }
+    });
+    return Array.from(unique.values());
   }
 
   function normalizeCategories(m) {
@@ -55,20 +122,20 @@
       const ar = providerRank(kind, a);
       const br = providerRank(kind, b);
       if (ar !== br) return ar - br;
-      return a.localeCompare(b);
+      return providerLabel(a).localeCompare(providerLabel(b));
     });
   }
 
   function appendModelGroups(selectEl, list, kind) {
     const groups = {};
-    list.forEach(m => {
+    dedupeModels(list).forEach(m => {
       const p = (m.provider || 'other').toLowerCase();
       (groups[p] = groups[p] || []).push(m);
     });
     selectEl.innerHTML = '';
     sortModelGroups(groups, kind).forEach(([prov, ms]) => {
       const og = document.createElement('optgroup');
-      og.label = prov;
+      og.label = providerLabel(prov);
       ms.sort((a,b) => modelLabel(a).localeCompare(modelLabel(b))).forEach(m => {
         const o = document.createElement('option');
         o.value = m.id || m.model || m.name;
@@ -203,6 +270,7 @@
         sel.innerHTML = '';
         if (!list.length) { sel.innerHTML = '<option value="">— keine Modelle —</option>'; return; }
         appendModelGroups(sel, list, sel.dataset.model);
+        if (sel.dataset.model === 'chat') selectPreferredChatModel(sel);
       });
     } catch(e) { DEBUG && console.warn('[Nova] Model load failed:', e); }
   }
@@ -999,11 +1067,7 @@
       });
       if (!filtered.length) return;
       appendModelGroups(modelSel, filtered, 'chat');
-      const preferred = ['openai/gpt-5.2','anthropic/claude-sonnet-4-20250514','gemini/gemini-2.5-flash','groq/meta-llama/llama-4-scout-17b-16e-instruct'];
-      for (const p of preferred) {
-        const opt = modelSel.querySelector(`option[value="${p}"]`);
-        if (opt) { opt.selected = true; break; }
-      }
+      selectPreferredChatModel(modelSel);
     }
 
     // ── Panel open/close ─────────────────────────────────────────────────────
@@ -1125,11 +1189,7 @@
                 return !m.media_image && !m.media_video && !cats.includes('media_image') && !cats.includes('media_video') && !cats.includes('embedding');
               });
               appendModelGroups(modelSel, chatModels, 'chat');
-              const preferred = ['openai/gpt-5.2','anthropic/claude-sonnet-4-20250514','gemini/gemini-2.5-flash','groq/meta-llama/llama-4-scout-17b-16e-instruct'];
-              for (const p of preferred) {
-                const opt = modelSel.querySelector('option[value="'+p+'"]');
-                if (opt) { opt.selected = true; break; }
-              }
+              selectPreferredChatModel(modelSel);
             }
           }).catch(function(){});
       }
