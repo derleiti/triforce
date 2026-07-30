@@ -52,7 +52,15 @@ if [[ -z "${GNUPGHOME:-}" ]]; then
   fi
 fi
 
-SIGNING_KEY_ID="59FAE19560F5E25B"
+# Signing key: shared signing-key.env if available, else built-in default.
+# Keep the fallback in sync with signing-key.env (see that file for details).
+for _keyenv in "${REPO_PATH}/signing-key.env" \
+               "${SCRIPT_DIR}/signing-key.env" \
+               "/var/spool/apt-mirror/var/signing-key.env"; do
+  [[ -r "$_keyenv" ]] && { . "$_keyenv"; break; }
+done
+SIGNING_KEY_ID="${SIGNING_KEY_ID:-59FAE19560F5E25B}"
+
 # Erstes Argument oder aktuelles Verzeichnis
 BASE_DIR_INPUT="${1:-$(pwd)}"
 BASE_DIR="$(realpath --no-symlinks "$BASE_DIR_INPUT" 2>/dev/null || echo "$BASE_DIR_INPUT")"
@@ -226,7 +234,8 @@ done
 log "Suche nach Flat-Repositories (ohne dists/)..."
 
 # Finde Verzeichnisse mit Packages-Datei aber ohne dists/ Unterverzeichnis
-mapfile -t FLAT_DIRS < <(find "$BASE_DIR" -name "Packages" -type f ! -path "*/dists/*" -exec dirname {} \; | sort -u)
+# -printf '%h\n' yields the parent dir without forking a dirname per match
+mapfile -t FLAT_DIRS < <(find "$BASE_DIR" -name "Packages" -type f ! -path "*/dists/*" -printf '%h\n' | sort -u)
 
 if [ ${#FLAT_DIRS[@]} -gt 0 ]; then
   log "Gefunden: ${#FLAT_DIRS[@]} Flat-Repositories"

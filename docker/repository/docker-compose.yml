@@ -50,6 +50,8 @@ services:
       # Scripts for post-mirror processing
       - ./postmirror.sh:/var/spool/apt-mirror/var/postmirror.sh:ro
       - ./sign-repos.sh:/var/spool/apt-mirror/var/sign-repos.sh:ro
+      # Shared signing key id (single source of truth for the scripts above)
+      - ./signing-key.env:/var/spool/apt-mirror/var/signing-key.env:ro
       - ./fix-packages-compression.sh:/usr/local/bin/fix-packages-compression.sh:ro
       # GPG for signing
       - ./etc/gnupg:/root/.gnupg

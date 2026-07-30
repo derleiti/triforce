@@ -7,7 +7,11 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 REPO_ROOT="${REPO_ROOT:-$SCRIPT_DIR}"
-SIGNING_KEY_ID="59FAE19560F5E25B"
+
+# Signing key: shared signing-key.env if available, else built-in default.
+# Keep the fallback in sync with signing-key.env (see that file for details).
+[[ -r "${REPO_ROOT}/signing-key.env" ]] && . "${REPO_ROOT}/signing-key.env"
+SIGNING_KEY_ID="${SIGNING_KEY_ID:-59FAE19560F5E25B}"
 OUTPUT_FILE="${OUTPUT_FILE:-${REPO_ROOT}/repo/mirror/ailinux-archive-key.gpg}"
 
 # Use repository's GNUPGHOME if available, otherwise fall back to default
@@ -45,13 +49,31 @@ fi
 # Create output directory if needed
 mkdir -p "$(dirname "$OUTPUT_FILE")"
 
-# Install the key
-cp "$TMP_KEY" "$OUTPUT_FILE"
+# Install the key, plus every published alias.
+#
+# All of these are reachable over HTTPS, so any copy left behind becomes a
+# stale key that clients may install and then fail to verify with. Keep this
+# list in sync with the paths add-ailinux-repo.sh and the docs hand out.
+PUBLISHED_KEYS=(
+  "$OUTPUT_FILE"
+  # name clients install as (KEYRING_PATH in add-ailinux-repo.sh)
+  "${REPO_ROOT}/repo/mirror/ailinux-archive-keyring.gpg"
+  # compatibility aliases for older install instructions
+  "${REPO_ROOT}/repo/mirror/ailinux-mirror-signing-key.gpg"
+  # direct root downloads
+  "${REPO_ROOT}/repo/ailinux-archive-key.gpg"
+  "${REPO_ROOT}/repo/ailinux-mirror-signing-key.gpg"
+  # copy served from inside the mirrored AILinux tree
+  "${REPO_ROOT}/repo/mirror/repo.ailinux.me/ailinux-archive-key.gpg"
+)
 
-# Compatibility aliases for older install instructions and direct root downloads
-cp "$TMP_KEY" "${REPO_ROOT}/repo/mirror/ailinux-mirror-signing-key.gpg"
-cp "$TMP_KEY" "${REPO_ROOT}/repo/ailinux-archive-key.gpg"
-cp "$TMP_KEY" "${REPO_ROOT}/repo/ailinux-mirror-signing-key.gpg"
+for dest in "${PUBLISHED_KEYS[@]}"; do
+  if install -Dm0644 "$TMP_KEY" "$dest" 2>/dev/null; then
+    echo "  ✓ $dest"
+  else
+    echo "  ⚠ could not write $dest (permissions?)" >&2
+  fi
+done
 
 echo "✓ Key exported successfully"
 echo ""

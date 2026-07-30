@@ -61,7 +61,11 @@ fi
 # Mirror paths - auto-detected from ./repo/mirror
 MIRROR_ROOT="${REPO_ROOT}/repo/mirror"
 GNUPG_HOME="${REPO_ROOT}/etc/gnupg"
-SIGNING_KEY_ID="59FAE19560F5E25B"
+
+# Signing key: shared signing-key.env if available, else built-in default.
+# Keep the fallback in sync with signing-key.env (see that file for details).
+[[ -r "${REPO_ROOT}/signing-key.env" ]] && . "${REPO_ROOT}/signing-key.env"
+SIGNING_KEY_ID="${SIGNING_KEY_ID:-59FAE19560F5E25B}"
 
 # Runtime options
 SKIP_DOWNLOAD=0
@@ -334,19 +338,25 @@ step_permissions() {
     if [[ -d "${REPO_ROOT}/repo/mirror" ]]; then
         log "Changing ownership of mirror files to ${current_user}:${current_group}..."
 
-        # Use sudo to change ownership (required because files are owned by root)
-        if sudo chown -R "${current_user}:${current_group}" "${REPO_ROOT}/repo/mirror" 2>/dev/null; then
+        # Only chown what is actually mis-owned. The mirror is ~180k inodes and
+        # almost nothing changes between runs, so an unconditional `chown -R`
+        # rewrites every inode for no reason.
+        if sudo find "${REPO_ROOT}/repo/mirror" \
+             \( ! -user "$current_user" -o ! -group "$current_group" \) \
+             -exec chown "${current_user}:${current_group}" {} + 2>/dev/null; then
             log_ok "Ownership changed to ${current_user}:${current_group}"
         else
             log_warn "Could not change ownership (may need manual: sudo chown -R ${current_user}:${current_group} ${REPO_ROOT}/repo/mirror)"
         fi
 
-        # Fix permissions: directories 755, files 644
+        # Fix permissions: directories 755, files 644.
+        # Filter on the current mode and batch with `-exec ... +`; the old
+        # `-exec ... \;` forked one chmod per path and cost ~3.5 min per run.
         log "Setting directory permissions to 755..."
-        find "${REPO_ROOT}/repo/mirror" -type d -exec chmod 755 {} \; 2>/dev/null || true
+        find "${REPO_ROOT}/repo/mirror" -type d ! -perm 755 -exec chmod 755 {} + 2>/dev/null || true
 
         log "Setting file permissions to 644..."
-        find "${REPO_ROOT}/repo/mirror" -type f -exec chmod 644 {} \; 2>/dev/null || true
+        find "${REPO_ROOT}/repo/mirror" -type f ! -perm 644 -exec chmod 644 {} + 2>/dev/null || true
     fi
 
     # Also fix GNUPG home ownership and permissions
@@ -354,7 +364,7 @@ step_permissions() {
         log "Fixing GPG home ownership and permissions..."
         sudo chown -R "${current_user}:${current_group}" "$GNUPG_HOME" 2>/dev/null || true
         chmod 700 "$GNUPG_HOME" 2>/dev/null || true
-        find "$GNUPG_HOME" -type f -exec chmod 600 {} \; 2>/dev/null || true
+        find "$GNUPG_HOME" -type f ! -perm 600 -exec chmod 600 {} + 2>/dev/null || true
     fi
 
     log_ok "Permissions updated"
@@ -418,6 +428,10 @@ step_generate_packages() {
           echo 'apt-ftparchive not found in container' >&2
           exit 1
         fi
+
+        # Per-run cache for dpkg-scanpackages output, keyed by (pool_dir, arch).
+        scan_cache=\$(mktemp -d)
+        trap 'rm -rf \"\$scan_cache\"' EXIT
 
         write_binary_release() {
           local out_file=\"\$1\"
@@ -489,9 +503,20 @@ EOF
               out_dir=\"\$component_dir/binary-\$arch\"
               mkdir -p \"\$out_dir\"
 
-              if ! dpkg-scanpackages -a \"\$arch\" \"\$pool_dir\" /dev/null > \"\$out_dir/Packages\"; then
-                : > \"\$out_dir/Packages\"
+              # dpkg-scanpackages decompresses every .deb in the pool, so it is
+              # by far the most expensive part of this step. Suites that share a
+              # pool and an arch (e.g. noble+resolute on amd64) would otherwise
+              # scan the same GBs repeatedly, so memoise the result per
+              # (pool_dir, arch). The output is byte-identical either way.
+              cache_key=\$(printf '%s|%s' \"\$pool_dir\" \"\$arch\" | md5sum | cut -d' ' -f1)
+              cache_file=\"\$scan_cache/\$cache_key\"
+
+              if [[ ! -f \"\$cache_file\" ]]; then
+                if ! dpkg-scanpackages -a \"\$arch\" \"\$pool_dir\" /dev/null > \"\$cache_file\" 2>/dev/null; then
+                  : > \"\$cache_file\"
+                fi
               fi
+              cp \"\$cache_file\" \"\$out_dir/Packages\"
 
               gzip -9c \"\$out_dir/Packages\" > \"\$out_dir/Packages.gz\"
               xz -c \"\$out_dir/Packages\" > \"\$out_dir/Packages.xz\"
