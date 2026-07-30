@@ -5,7 +5,7 @@
 ## Current production snapshot
 
 - Production branch: `nova-nextlevel-20260603`.
-- Current production HEAD: `16f43b8a` (`chore: ignore crawler spool runtime directory`).
+- Current production HEAD: `0a5738a6` (`fix: remove merge artifacts and restore runtime dependencies`).
 - API base URL: `https://api.ailinux.me`.
 - Health check: `GET /health` returns `{"ok": true, "status": "ok"}` when healthy.
 - Systemd service: `triforce.service`, working directory `/home/zombie/triforce`, Uvicorn on port `9000`.
@@ -18,11 +18,11 @@
 
 <div align="center">
 
-![Version](https://img.shields.io/badge/version-2.80-blue)
+![Version](https://img.shields.io/badge/version-2.81-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Nodes](https://img.shields.io/badge/federation-3%20nodes-orange)
-![Models](https://img.shields.io/badge/models-686%2B-purple)
-![MCP Tools](https://img.shields.io/badge/MCP%20tools-134-red)
+![Models](https://img.shields.io/badge/models-925%2B-purple)
+![MCP Tools](https://img.shields.io/badge/MCP%20tools-145-red)
 
 **Multi-LLM Orchestration Platform with Federation Support**
 
@@ -34,13 +34,13 @@
 
 ## 🚀 Overview
 
-TriForce is a decentralized AI platform that unifies **686+ LLM models** from **9 providers** into a single API. It features a federated mesh network, local Ollama integration, **134 MCP tools**, and **4 autonomous CLI agents**.
+TriForce is a decentralized AI platform that unifies **925+ LLM models** from **9 providers** into a single API. It features a federated mesh network, local Ollama integration, **145 MCP tools**, and **4 autonomous CLI agents**.
 
 ### Key Features
 
 - **Multi-Provider**: Gemini, Anthropic, Groq, Cerebras, Mistral, OpenRouter, GitHub, Cloudflare, Ollama
 - **Federation**: Distributed compute across multiple nodes (64 cores, 156GB RAM)
-- **MCP Tools**: 134 integrated tools for code, search, memory, files
+- **MCP Tools**: 145 integrated tools for code, search, memory, files
 - **CLI Agents**: 4 autonomous AI agents (Claude, Codex, Gemini, OpenCode)
 - **Auto-Sync**: Automatic hub synchronization via update.ailinux.me (hourly)
 - **Local Models**: Ollama integration for private inference
@@ -125,7 +125,7 @@ systemctl list-timers triforce-hub-sync.timer
 
 ```bash
 # Bump version in app/config.py, then:
-./scripts/create-release.sh 2.81
+./scripts/create-release.sh 2.82
 
 # All federation hubs auto-sync within 1 hour
 ```
@@ -172,7 +172,7 @@ curl -X POST https://api.ailinux.me/v1/agents/cli/claude-mcp/stop
 
 ## 🔧 MCP Tools
 
-134 integrated tools organized in categories:
+145 integrated tools. Selected categories (excerpt, not the full inventory):
 
 | Category | Tools | Examples |
 |----------|-------|----------|
