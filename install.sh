@@ -22,7 +22,7 @@ DOMAIN="example.com"
 TIMEZONE="Europe/Berlin"
 LOG_LEVEL="INFO"
 ENABLE_DOCKER_SERVICE="false"
-ENABLE_FEDERATION_SERVICE="true"
+ENABLE_FEDERATION_SERVICE="false"   # federation_node.py existiert nicht mehr; Node laeuft ueber triforce.service
 INSTALL_SYSTEMD="true"
 START_SYSTEMD="true"
 INSTALL_SHORTCUT="true"
@@ -55,7 +55,7 @@ Options:
   --timezone <tz>                Timezone (default: Europe/Berlin)
   --log-level <level>            LOG_LEVEL in .env (default: INFO)
   --enable-docker-service        Install/enable triforce-docker.service
-  --disable-federation-service   Skip federation-node.service install
+  --enable-federation-service    Install legacy federation-node.service (DEPRECATED, kaputt)
   --skip-systemd                 Do not install/start systemd services
   --skip-deps                    Skip pip upgrade + requirements install
   --no-shortcut                  Do not create desktop shortcut
@@ -109,8 +109,10 @@ parse_args() {
         LOG_LEVEL="$2"; shift 2 ;;
       --enable-docker-service)
         ENABLE_DOCKER_SERVICE="true"; shift ;;
+      --enable-federation-service)
+        ENABLE_FEDERATION_SERVICE="true"; shift ;;
       --disable-federation-service)
-        ENABLE_FEDERATION_SERVICE="false"; shift ;;
+        ENABLE_FEDERATION_SERVICE="false"; shift ;;   # Rueckwaerts-Kompatibilitaet (jetzt Default)
       --skip-systemd)
         INSTALL_SYSTEMD="false"; shift ;;
       --skip-deps)

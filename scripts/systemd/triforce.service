@@ -1,43 +1,44 @@
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # TRIFORCE BACKEND SERVICE
-# Installation: sudo cp triforce.service /etc/systemd/system/
-#               sudo systemctl enable --now triforce.service
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Gilt für Master UND Hub-Nodes. Installation via install.sh
+# oder: sudo install -m 644 triforce.service /etc/systemd/system/
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 [Unit]
 Description=TriForce AI Backend Server
 Documentation=https://ailinux.me/docs/triforce
-After=network-online.target docker.service ollama.service
+After=network-online.target redis-server.service ollama.service docker.service
 Wants=network-online.target
-Requires=docker.service
+# KEIN Requires=docker.service — Hub-Nodes laufen ohne Docker
 
 [Service]
 Type=simple
 User=zombie
 Group=zombie
 WorkingDirectory=/home/zombie/triforce
-Environment="PATH=/usr/local/bin:/usr/bin:/bin"
+Environment="PATH=/home/zombie/.local/bin:/usr/local/bin:/usr/bin:/bin"
 Environment="TRIFORCE_DIR=/home/zombie/triforce"
+Environment="TRIFORCE_AUTO_UPDATE=0"
 EnvironmentFile=-/home/zombie/triforce/config/triforce.env
 
-# Start Backend
-ExecStart=/home/zombie/triforce/scripts/start-backend.sh
+# Laufzeit-Workspace. Die App legt darunter selbst Unterordner an
+# (agents, prompts, ...), deshalb muss das ELTERNverzeichnis zombie gehoeren.
+# '+' = als root ausgefuehrt, User=zombie darf unter /var nichts anlegen.
+ExecStartPre=+/usr/bin/install -d -o zombie -g zombie -m 755 /var/tristar
 
-# Graceful Shutdown
+ExecStart=/home/zombie/triforce/scripts/start-triforce.sh
+
 ExecStop=/bin/kill -SIGTERM $MAINPID
 TimeoutStopSec=30
 
-# Restart Policy
 Restart=on-failure
 RestartSec=10
 StartLimitIntervalSec=300
 StartLimitBurst=5
 
-# Logging
 StandardOutput=journal
 StandardError=journal
 SyslogIdentifier=triforce
 
-# Security
 NoNewPrivileges=false
 ProtectSystem=false
 PrivateTmp=false

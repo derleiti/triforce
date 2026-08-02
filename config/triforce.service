@@ -1,16 +1,47 @@
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# TRIFORCE BACKEND SERVICE
+# Gilt für Master UND Hub-Nodes. Installation via install.sh
+# oder: sudo install -m 644 triforce.service /etc/systemd/system/
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 [Unit]
-Description=TriForce Multi-LLM Backend
-After=network.target
+Description=TriForce AI Backend Server
+Documentation=https://ailinux.me/docs/triforce
+After=network-online.target redis-server.service ollama.service docker.service
+Wants=network-online.target
+# KEIN Requires=docker.service — Hub-Nodes laufen ohne Docker
 
 [Service]
 Type=simple
 User=zombie
-WorkingDirectory=/home/zombie/triforce/backend
+Group=zombie
+WorkingDirectory=/home/zombie/triforce
 Environment="PATH=/home/zombie/.local/bin:/usr/local/bin:/usr/bin:/bin"
-EnvironmentFile=/home/zombie/triforce/config/.env
-ExecStart=/usr/bin/python3 -m uvicorn app.main:app --host ${TRIFORCE_BIND_HOST:-127.0.0.1} --port ${TRIFORCE_API_PORT:-9100}
-Restart=always
-RestartSec=5
+Environment="TRIFORCE_DIR=/home/zombie/triforce"
+Environment="TRIFORCE_AUTO_UPDATE=0"
+EnvironmentFile=-/home/zombie/triforce/config/triforce.env
+
+# Laufzeit-Workspace. Die App legt darunter selbst Unterordner an
+# (agents, prompts, ...), deshalb muss das ELTERNverzeichnis zombie gehoeren.
+# '+' = als root ausgefuehrt, User=zombie darf unter /var nichts anlegen.
+ExecStartPre=+/usr/bin/install -d -o zombie -g zombie -m 755 /var/tristar
+
+ExecStart=/home/zombie/triforce/scripts/start-triforce.sh
+
+ExecStop=/bin/kill -SIGTERM $MAINPID
+TimeoutStopSec=30
+
+Restart=on-failure
+RestartSec=10
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=triforce
+
+NoNewPrivileges=false
+ProtectSystem=false
+PrivateTmp=false
 
 [Install]
 WantedBy=multi-user.target
