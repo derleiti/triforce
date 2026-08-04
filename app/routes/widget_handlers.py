@@ -43,7 +43,7 @@ async def handle_google_deep_search(params: Dict[str, Any]) -> Dict[str, Any]:
 
 
 async def handle_current_time(params: Dict[str, Any]) -> Dict[str, Any]:
-    """Get current time with timezone support (WorldTimeAPI)."""
+    """Get current time from the local IANA timezone database."""
     from ..services.multi_search import get_current_time
     timezone = params.get("timezone", "Europe/Berlin")
     location = params.get("location")

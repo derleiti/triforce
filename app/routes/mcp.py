@@ -85,6 +85,28 @@ router = APIRouter(dependencies=[Depends(require_mcp_auth)])
 public_router = APIRouter()
 
 
+def _build_tool_result(result: Any, *, is_error: bool = False) -> Dict[str, Any]:
+    """Build an MCP tool result compatible with legacy and structured clients.
+
+    MCP clients that consume ``outputSchema`` expect ``structuredContent`` to
+    be a JSON object. Legacy clients still read serialized JSON from the text
+    content block, so both representations share one canonical serialization.
+    """
+    text = json.dumps(
+        result,
+        separators=(",", ":"),
+        ensure_ascii=False,
+        default=str,
+    )
+    json_value = json.loads(text)
+    structured_content = json_value if isinstance(json_value, dict) else {"result": json_value}
+    return {
+        "content": [{"type": "text", "text": text}],
+        "structuredContent": structured_content,
+        "isError": is_error,
+    }
+
+
 def _maybe_block_write_tool(
     tool_name: str,
     arguments: Dict[str, Any],
@@ -102,10 +124,7 @@ def _maybe_block_write_tool(
         "resolved_tool_name": tool_name,
     }
     mcp_logger.warning("MCP_TOOL_FORBIDDEN | tool=%s", tool_name)
-    return {
-        "content": [{"type": "text", "text": json.dumps(payload, separators=(",", ":"))}],
-        "isError": True,
-    }
+    return _build_tool_result(payload, is_error=True)
 
 
 def _tool_handler_accepts_request(handler: Callable[..., Awaitable[Any]]) -> bool:
@@ -1831,7 +1850,7 @@ async def _handle_tools_list_LEGACY(params: Dict[str, Any]) -> Dict[str, Any]:
         },
         {
             "name": "current_time",
-            "description": "Get current time with timezone support via WorldTimeAPI. Returns date, time, weekday in DE/EN.",
+            "description": "Get current time from the local IANA timezone database. Returns date, time, weekday in DE/EN.",
             "inputSchema": {
                 "type": "object",
                 "properties": {
@@ -1842,7 +1861,7 @@ async def _handle_tools_list_LEGACY(params: Dict[str, Any]) -> Dict[str, Any]:
         },
         {
             "name": "list_timezones",
-            "description": "List available timezones from WorldTimeAPI.",
+            "description": "List available IANA timezones from the local timezone database.",
             "inputSchema": {
                 "type": "object",
                 "properties": {
@@ -2436,23 +2455,19 @@ async def handle_tools_call(params: Dict[str, Any], request: Optional[Request] =
         try:
             v4_result = await call_v4_tool(tool_name, arguments)
             if v4_result is not None:
-                return {"content": [{"type": "text", "text": json.dumps(v4_result, separators=(chr(44), chr(58)))}], "isError": False}
+                return _build_tool_result(v4_result)
         except Exception as e:
             mcp_logger.error(f"v4 handler failed for {tool_name}: {e}")
-            # Do not pass, let it fall through or raise if we are sure it's the right place
-            # Actually, if v4 handler failed, we should probably report THAT error instead of "Unknown tool"
-            return {"content": [{"type": "text", "text": f"Error in v4 handler for {tool_name}: {e}"}], "isError": True}
+            return _build_tool_result(
+                {"error": str(e), "tool_name": tool_name, "source": "v4"},
+                is_error=True,
+            )
 
     if not handler:
         raise ValueError(f"Unknown tool: {tool_name}")
 
     result = await _call_tool_handler(handler, arguments, request)
-    return {
-        "content": [
-            {"type": "text", "text": json.dumps(result, separators=(',', ':'))}
-        ],
-        "isError": False,
-    }
+    return _build_tool_result(result)
 
 
 # ============================================================================
