@@ -15,6 +15,7 @@ Aktionen:
 """
 
 import asyncio
+import hashlib
 import json
 import logging
 import re
@@ -35,6 +36,8 @@ log = logging.getLogger("nova.log_monitor")
 MCP_BASE = "http://127.0.0.1:9000/v1/mcp"
 STATE_FILE = Path("/var/lib/nova-log-monitor/state.json")
 ESCALATE_AFTER_SEC = 300  # 5 Minuten
+NOTIFY_COOLDOWN_SEC = 900  # Gleiches Ereignis maximal einmal je 15 Minuten melden
+COOLDOWN_MAX_ENTRIES = 2048
 
 # ── Log-Level Klassifikation ──────────────────────────────────────────────────
 
@@ -94,6 +97,7 @@ IGNORE_PATTERNS = [
     r"systemd\[1\]: nova-log-monitor.*: Deactivated",
     r"drkonqi-coredump-launcher",  # KDE Desktop Noise — kein Server-Event
     r"mcp\.notifications.*(NOTIFY|EVENT|DISPATCH)",  # Eigene Notification-Events nicht rekursiv alarmieren
+    r"mcp\.(handlers|tools).*notify_send",  # notify_send darf sich bei Fehlern nie selbst erneut triggern
     r"nova-log-monitor\[",             # Globales Journal darf den Monitor nicht selbst erneut melden
     r"mcp\.tools.*TOOL_CALL\s*\|.*\|\s*OK\s*\|",  # Erfolgreiche Tool-Ergebnisse können eingebetteten ERROR-Text enthalten
     r"\|(NOTIFY|EVENT|DISPATCH) \|",                # Notification- und Dispatch-Log-Zeilen generell filtern
@@ -184,6 +188,37 @@ def classify_line(line: str) -> str | None:
     return None
 
 
+_TIMESTAMP_RE = re.compile(
+    r"\b\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}"
+    r"(?:[.,]\d+)?(?:Z|[+-]\d{2}:\d{2})?\b"
+)
+
+
+def normalize_event_line(line: str) -> str:
+    """Entfernt volatile Felder, damit dasselbe Ereignis denselben Key behält."""
+    normalized = _TIMESTAMP_RE.sub("<ts>", line)
+    normalized = re.sub(r"\[\d+\]", "[pid]", normalized)
+    normalized = re.sub(r"\bport\s+\d+\b", "port <n>", normalized, flags=re.IGNORECASE)
+    normalized = re.sub(
+        r"\b(id|request_id|attempt)\s*[=:]\s*\d+\b",
+        r"\1=<n>",
+        normalized,
+        flags=re.IGNORECASE,
+    )
+    normalized = re.sub(r"\s+", " ", normalized).strip()
+
+    # journalctl-Transportprefix und den inneren Logger-Zeitstempel entfernen.
+    normalized = re.sub(r"^<ts>\s+\S+\s+\S+\[pid\]:\s*", "", normalized)
+    normalized = re.sub(r"^<ts>\s*\|?\s*", "", normalized)
+    return normalized
+
+
+def event_fingerprint(source: str, level: str, line: str) -> str:
+    """Stabiler, kompakter Fingerprint für den lokalen Cooldown."""
+    payload = f"{source}|{level}|{normalize_event_line(line)}"
+    return hashlib.sha256(payload.encode("utf-8", errors="replace")).hexdigest()
+
+
 # ── State (offene Notifications für Eskalation) ───────────────────────────────
 
 def load_state() -> dict:
@@ -247,7 +282,10 @@ async def watch_source(src: dict):
 
     log.info(f"[{name}] Starte Überwachung: {' '.join(cmd[:3])}...")
 
-    cooldown = {}  # title -> timestamp (Spam-Schutz: gleiche Notification max 1x/60s)
+    # Fingerprint -> timestamp. Der Fingerprint ignoriert Zeitstempel/PIDs;
+    # andernfalls wäre jede Journal-Zeile einzigartig und der Dict würde
+    # unbegrenzt wachsen.
+    cooldown: dict[str, float] = {}
 
     while True:
         try:
@@ -273,12 +311,26 @@ async def watch_source(src: dict):
                 prio_map = {"critical": "critical", "error": "high", "warning": "normal"}
                 prio = prio_map.get(level, "normal")
 
-                # Spam-Schutz
-                title = f"[{name.upper()}] {level.upper()}: {line[:80]}"
+                # Spam-Schutz auf normalisiertem Ereignis statt auf der rohen
+                # Journal-Zeile. Zeitstempel und PID dürfen den Key nicht ändern.
+                normalized_line = normalize_event_line(line)
+                title = f"[{name.upper()}] {level.upper()}: {normalized_line[:80]}"
                 now = time.time()
-                if title in cooldown and now - cooldown[title] < 60:
+                event_key = event_fingerprint(name, level, line)
+                last_seen = cooldown.get(event_key)
+                if last_seen is not None and now - last_seen < NOTIFY_COOLDOWN_SEC:
                     continue
-                cooldown[title] = now
+                cooldown[event_key] = now
+
+                # Harte Obergrenze gegen Langzeit-Memory-Leaks bei vielen
+                # unterschiedlichen Fehlern.
+                if len(cooldown) > COOLDOWN_MAX_ENTRIES:
+                    cutoff = now - NOTIFY_COOLDOWN_SEC
+                    cooldown = {
+                        key: seen_at
+                        for key, seen_at in cooldown.items()
+                        if seen_at >= cutoff
+                    }
 
                 log.warning(f"[{name}] {level.upper()}: {line[:120]}")
 
