@@ -1,189 +1,136 @@
 <!doctype html>
-<html lang="de">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="AILinux TriForce API — Status, MCP, Multi-LLM Backend und Entwickler-Endpunkte.">
-  <title>AILinux TriForce API</title>
+  <meta name="description" content="AILinux TriForce — the AI control plane for AILinux, ai-coder, Nova, MCP tools, model routing and federation.">
+  <title>AILinux TriForce — AI Control Plane</title>
   <style>
     :root {
       color-scheme: dark;
-      --bg: #070b18;
-      --bg2: #0c1430;
-      --panel: rgba(17, 25, 54, .78);
-      --panel2: rgba(9, 16, 35, .72);
-      --border: rgba(123, 164, 255, .22);
-      --text: #eef4ff;
-      --muted: #9fb0d4;
-      --blue: #62a8ff;
-      --cyan: #58f2d0;
-      --green: #53f18a;
-      --yellow: #ffd166;
-      --red: #ff6b86;
-      --shadow: 0 24px 70px rgba(0,0,0,.45);
+      --bg:#070b18; --bg2:#0c1430; --panel:rgba(17,25,54,.80); --panel2:rgba(9,16,35,.75);
+      --border:rgba(123,164,255,.22); --text:#eef4ff; --muted:#9fb0d4;
+      --blue:#62a8ff; --cyan:#58f2d0; --green:#53f18a; --amber:#ffd166;
+      --shadow:0 24px 70px rgba(0,0,0,.45);
     }
-    * { box-sizing: border-box; }
-    html, body { margin: 0; min-height: 100%; }
-    body {
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at 20% 10%, rgba(98,168,255,.25), transparent 34rem),
-        radial-gradient(circle at 82% 0%, rgba(88,242,208,.16), transparent 30rem),
-        linear-gradient(135deg, var(--bg), var(--bg2) 54%, #090b17);
-      color: var(--text);
-      line-height: 1.55;
-      overflow-x: hidden;
-    }
-    body:before {
-      content: "";
-      position: fixed; inset: 0;
-      background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
-      background-size: 56px 56px;
-      mask-image: linear-gradient(to bottom, rgba(0,0,0,.8), transparent 80%);
-      pointer-events: none;
-    }
-    a { color: inherit; }
-    .wrap { width: min(1120px, calc(100% - 32px)); margin: 0 auto; position: relative; z-index: 1; }
-    header { padding: 28px 0 12px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-    .brand { display: flex; gap: 12px; align-items: center; font-weight: 800; letter-spacing: .02em; }
-    .logo {
-      width: 42px; height: 42px; border-radius: 14px;
-      background: linear-gradient(135deg, var(--blue), var(--cyan));
-      display: grid; place-items: center; color: #07101f; box-shadow: 0 0 36px rgba(98,168,255,.35);
-      font-weight: 950;
-    }
-    nav { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
-    nav a, .btn {
-      text-decoration: none; border: 1px solid var(--border); color: var(--text);
-      padding: 9px 13px; border-radius: 999px; background: rgba(255,255,255,.045);
-      transition: transform .18s ease, border-color .18s ease, background .18s ease;
-      font-size: 14px;
-    }
-    nav a:hover, .btn:hover { transform: translateY(-1px); border-color: rgba(88,242,208,.55); background: rgba(88,242,208,.08); }
-    .hero { padding: 72px 0 34px; display: grid; grid-template-columns: 1.18fr .82fr; gap: 28px; align-items: stretch; }
-    .eyebrow { color: var(--cyan); font-weight: 750; text-transform: uppercase; letter-spacing: .16em; font-size: 13px; margin-bottom: 12px; }
-    h1 { font-size: clamp(42px, 7vw, 82px); line-height: .96; margin: 0 0 18px; letter-spacing: -.06em; }
-    .gradient { background: linear-gradient(90deg, #fff, var(--blue), var(--cyan)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-    .lead { color: var(--muted); font-size: clamp(17px, 2.2vw, 21px); max-width: 720px; margin: 0 0 24px; }
-    .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
-    .btn.primary { background: linear-gradient(135deg, rgba(98,168,255,.95), rgba(88,242,208,.9)); color: #061020; font-weight: 800; border: 0; }
-    .terminal, .panel {
-      background: linear-gradient(180deg, rgba(20,30,66,.86), rgba(9,15,34,.86));
-      border: 1px solid var(--border); border-radius: 24px; box-shadow: var(--shadow);
-      overflow: hidden;
-    }
-    .terminal-head { display:flex; align-items:center; gap:7px; padding: 15px 16px; border-bottom:1px solid var(--border); background: rgba(255,255,255,.035); }
-    .dot { width:11px; height:11px; border-radius:50%; background:#ff5f57; } .dot:nth-child(2){background:#ffbd2e}.dot:nth-child(3){background:#28c840}
-    pre { margin: 0; padding: 18px; white-space: pre-wrap; color: #d6e4ff; font-size: 13px; line-height: 1.7; }
-    .ok { color: var(--green); } .cyan { color: var(--cyan); } .blue { color: var(--blue); } .muted { color: var(--muted); }
-    .status-row { display:grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin: 18px 0 42px; }
-    .card, .panel { padding: 20px; background: var(--panel); border: 1px solid var(--border); border-radius: 22px; box-shadow: var(--shadow); }
-    .card h3 { margin: 0 0 6px; font-size: 15px; color: var(--muted); font-weight: 650; }
-    .value { font-size: 28px; font-weight: 850; letter-spacing: -.04em; }
-    .pill { display:inline-flex; gap:8px; align-items:center; border:1px solid rgba(83,241,138,.28); background:rgba(83,241,138,.08); color:var(--green); border-radius:999px; padding:7px 10px; font-weight:700; font-size:13px; }
-    .pulse { width:9px; height:9px; border-radius:50%; background:var(--green); box-shadow:0 0 18px var(--green); animation:pulse 1.6s infinite; }
-    @keyframes pulse { 50% { opacity:.35; transform:scale(.82); } }
-    section { margin: 0 0 28px; }
-    .grid { display:grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-    .panel h2, section h2 { margin: 0 0 12px; font-size: 24px; letter-spacing: -.03em; }
-    .feature h3 { margin: 0 0 8px; font-size: 17px; } .feature p { color: var(--muted); margin: 0; font-size: 14px; }
-    code { background: rgba(255,255,255,.065); border: 1px solid rgba(255,255,255,.08); border-radius: 7px; padding: 2px 6px; color: #d9e8ff; }
-    .endpoints { display:grid; gap: 10px; margin-top: 12px; }
-    .endpoint { display:flex; justify-content:space-between; gap:12px; align-items:center; padding: 12px 14px; border-radius: 14px; background: rgba(255,255,255,.045); border: 1px solid rgba(255,255,255,.07); }
-    .method { color: var(--cyan); font-weight: 850; font-size: 12px; letter-spacing:.08em; min-width:52px; }
-    .path { flex: 1; color: #dbe8ff; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; overflow-wrap:anywhere; }
-    footer { color: var(--muted); text-align:center; padding: 32px 0 54px; font-size: 13px; }
-    @media (max-width: 900px) { .hero { grid-template-columns: 1fr; padding-top: 44px; } .status-row { grid-template-columns: repeat(2,1fr); } .grid { grid-template-columns: 1fr; } header { align-items:flex-start; flex-direction:column; } nav { justify-content:flex-start; } }
-    @media (max-width: 560px) { .status-row { grid-template-columns: 1fr; } .endpoint { align-items:flex-start; flex-direction:column; } }
+    *{box-sizing:border-box} html,body{margin:0;min-height:100%}
+    body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at 20% 10%,rgba(98,168,255,.25),transparent 34rem),radial-gradient(circle at 82% 0%,rgba(88,242,208,.16),transparent 30rem),linear-gradient(135deg,var(--bg),var(--bg2) 54%,#090b17);color:var(--text);line-height:1.55;overflow-x:hidden}
+    body:before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:56px 56px;mask-image:linear-gradient(to bottom,rgba(0,0,0,.8),transparent 80%);pointer-events:none}
+    a{color:inherit}.wrap{width:min(1140px,calc(100% - 32px));margin:0 auto;position:relative;z-index:1}
+    header{padding:28px 0 12px;display:flex;align-items:center;justify-content:space-between;gap:16px}.brand{display:flex;gap:12px;align-items:center;font-weight:800;letter-spacing:.02em}.logo{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,var(--blue),var(--cyan));display:grid;place-items:center;color:#07101f;box-shadow:0 0 36px rgba(98,168,255,.35);font-weight:950}
+    nav{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}nav a,.btn{text-decoration:none;border:1px solid var(--border);color:var(--text);padding:9px 13px;border-radius:999px;background:rgba(255,255,255,.045);transition:transform .18s ease,border-color .18s ease,background .18s ease;font-size:14px}nav a:hover,.btn:hover{transform:translateY(-1px);border-color:rgba(88,242,208,.55);background:rgba(88,242,208,.08)}
+    .hero{padding:72px 0 34px;display:grid;grid-template-columns:1.16fr .84fr;gap:28px;align-items:stretch}.eyebrow{color:var(--cyan);font-weight:750;text-transform:uppercase;letter-spacing:.16em;font-size:13px;margin-bottom:12px}h1{font-size:clamp(42px,7vw,80px);line-height:.96;margin:0 0 18px;letter-spacing:-.06em}.gradient{background:linear-gradient(90deg,#fff,var(--blue),var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent}.lead{color:var(--muted);font-size:clamp(17px,2.2vw,21px);max-width:760px;margin:0 0 24px}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}.btn.primary{background:linear-gradient(135deg,rgba(98,168,255,.95),rgba(88,242,208,.9));color:#061020;font-weight:800;border:0}
+    .terminal,.panel{background:linear-gradient(180deg,rgba(20,30,66,.86),rgba(9,15,34,.86));border:1px solid var(--border);border-radius:24px;box-shadow:var(--shadow);overflow:hidden}.terminal-head{display:flex;align-items:center;gap:7px;padding:15px 16px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.035)}.dot{width:11px;height:11px;border-radius:50%;background:#ff5f57}.dot:nth-child(2){background:#ffbd2e}.dot:nth-child(3){background:#28c840}pre{margin:0;padding:18px;white-space:pre-wrap;color:#d6e4ff;font-size:13px;line-height:1.7}.ok{color:var(--green)}.cyan{color:var(--cyan)}.blue{color:var(--blue)}.muted{color:var(--muted)}
+    .status-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:18px 0 42px}.card,.panel{padding:20px;background:var(--panel);border:1px solid var(--border);border-radius:22px;box-shadow:var(--shadow)}.card h3{margin:0 0 6px;font-size:15px;color:var(--muted);font-weight:650}.value{font-size:26px;font-weight:850;letter-spacing:-.04em}.pill{display:inline-flex;gap:8px;align-items:center;border:1px solid rgba(83,241,138,.28);background:rgba(83,241,138,.08);color:var(--green);border-radius:999px;padding:7px 10px;font-weight:700;font-size:13px}.pulse{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 18px var(--green);animation:pulse 1.6s infinite}@keyframes pulse{50%{opacity:.35;transform:scale(.82)}}
+    section{margin:0 0 28px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.grid.three{grid-template-columns:repeat(3,1fr)}.panel h2,section h2{margin:0 0 12px;font-size:24px;letter-spacing:-.03em}.feature h3{margin:0 0 8px;font-size:17px}.feature p,.feature .small{color:var(--muted);margin:0;font-size:14px}.feature .link{display:inline-block;margin-top:12px;color:var(--cyan);text-decoration:none;font-weight:700;font-size:13px}
+    .flow{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}.node{position:relative;padding:18px 14px;border:1px solid var(--border);border-radius:16px;background:rgba(255,255,255,.035);text-align:center}.node strong{display:block}.node span{display:block;color:var(--muted);font-size:12px;margin-top:5px}.node:not(:last-child):after{content:"→";position:absolute;right:-14px;top:50%;transform:translateY(-50%);z-index:2;color:var(--cyan);font-weight:900}
+    code{background:rgba(255,255,255,.065);border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:2px 6px;color:#d9e8ff}.endpoints{display:grid;gap:10px;margin-top:12px}.endpoint{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.07)}.method{color:var(--cyan);font-weight:850;font-size:12px;letter-spacing:.08em;min-width:52px}.path{flex:1;color:#dbe8ff;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;overflow-wrap:anywhere}.integration{margin-top:16px;padding:14px 16px;border-left:3px solid var(--blue);border-radius:10px;background:rgba(98,168,255,.055);color:var(--muted);font-size:13px}footer{color:var(--muted);text-align:center;padding:32px 0 54px;font-size:13px}
+    @media(max-width:900px){.hero{grid-template-columns:1fr;padding-top:44px}.status-row{grid-template-columns:repeat(2,1fr)}.grid,.grid.three{grid-template-columns:1fr}.flow{grid-template-columns:1fr 1fr}.node:after{display:none}header{align-items:flex-start;flex-direction:column}nav{justify-content:flex-start}}
+    @media(max-width:560px){.status-row,.flow{grid-template-columns:1fr}.endpoint{align-items:flex-start;flex-direction:column}}
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
-      <div class="brand"><div class="logo">AI</div><div>AILinux TriForce API</div></div>
+      <div class="brand"><div class="logo">AI</div><div>AILinux TriForce</div></div>
       <nav>
-        <a href="/health">Health</a>
-        <a href="/docs">Docs</a>
+        <a href="/docs">API Docs</a>
+        <a href="/redoc">ReDoc</a>
         <a href="/openapi.json">OpenAPI</a>
-        <a href="/v1/mcp/sse">MCP SSE</a>
+        <a href="/health">Health</a>
+        <a href="https://ailinux.me">AILinux</a>
       </nav>
     </header>
 
     <main>
       <section class="hero">
         <div>
-          <div class="eyebrow">Self-hosted Multi-LLM Backend</div>
-          <h1><span class="gradient">TriForce</span><br>API Gateway</h1>
-          <p class="lead">Zentraler AILinux-Endpunkt für MCP, Chat-Orchestration, lokale Modelle, externe Provider und Systemautomation. Gebaut für OpenClaw, Agents und schnelle Debugbarkeit.</p>
-          <div class="pill"><span class="pulse"></span><span id="live-status">prüfe Backend…</span></div>
+          <div class="eyebrow">AILinux platform backend</div>
+          <h1><span class="gradient">TriForce</span><br>AI Control Plane</h1>
+          <p class="lead">One backend for AILinux 26.04, ai-coder, Nova and MCP-enabled workflows. TriForce connects authentication, model routing, provider fallback, system tools and federation without tying the platform to a single AI vendor.</p>
+          <div class="pill"><span class="pulse"></span><span id="live-status">checking backend…</span></div>
           <div class="actions">
-            <a class="btn primary" href="/docs">API Docs öffnen</a>
-            <a class="btn" href="/health">Health JSON</a>
-            <a class="btn" href="https://ailinux.me">AILinux Home</a>
+            <a class="btn primary" href="/docs">Explore the API</a>
+            <a class="btn" href="https://ailinux.me/ai-coder/">ai-coder 0.9.5</a>
+            <a class="btn" href="https://ailinux.me/ailinux/">AILinux Platform</a>
           </div>
         </div>
-        <div class="terminal" aria-label="API quickstart terminal">
+
+        <div class="terminal" aria-label="TriForce API quickstart">
           <div class="terminal-head"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
           <pre><span class="muted">$</span> curl https://api.ailinux.me/health
 <span class="ok">{"ok":true,"status":"ok"}</span>
 
-<span class="muted">$</span> openclaw mcp show triforce --json
-{
-  <span class="blue">"url"</span>: <span class="cyan">"http://127.0.0.1:9000/v1/mcp/sse"</span>,
-  <span class="blue">"transport"</span>: <span class="cyan">"sse"</span>
-}
+<span class="muted">$</span> curl https://api.ailinux.me/v1/client/models
+<span class="cyan"># models available for the current access tier</span>
 
-<span class="muted">$</span> openclaw mcp doctor triforce --probe
-<span class="ok">- triforce: ok</span></pre>
+<span class="muted">$</span> curl https://api.ailinux.me/openapi.json
+<span class="blue"># machine-readable TriForce API schema</span>
+
+<span class="muted">$</span> <span class="ok">AILinux → ai-coder → TriForce → model/tool provider</span></pre>
         </div>
       </section>
 
       <div class="status-row">
         <div class="card"><h3>Backend</h3><div class="value" id="backend-value">online</div></div>
-        <div class="card"><h3>Transport</h3><div class="value">SSE</div></div>
-        <div class="card"><h3>Runtime</h3><div class="value">Uvicorn</div></div>
-        <div class="card"><h3>Edge</h3><div class="value">Apache</div></div>
+        <div class="card"><h3>Client API</h3><div class="value">Chat + Models</div></div>
+        <div class="card"><h3>Tool Layer</h3><div class="value">MCP</div></div>
+        <div class="card"><h3>Routing</h3><div class="value">Multi-provider</div></div>
       </div>
 
+      <section class="panel">
+        <div class="eyebrow">Architecture</div>
+        <h2>AI is replaceable. The platform stays yours.</h2>
+        <p class="muted">TriForce sits between AILinux clients and the intelligence/tool layer. Models can change, providers can fail, quotas can run out — the platform keeps a stable API and can route work to another configured path.</p>
+        <div class="flow">
+          <div class="node"><strong>AILinux / Nova</strong><span>Desktop, web and user workflows</span></div>
+          <div class="node"><strong>ai-coder</strong><span>Agent planning, execution and verification</span></div>
+          <div class="node"><strong>TriForce + MCP</strong><span>Auth, tools, routing, policies and federation</span></div>
+          <div class="node"><strong>AI Providers</strong><span>Hosted or local inference</span></div>
+        </div>
+      </section>
+
       <section class="grid">
-        <div class="card feature"><h3>MCP-ready</h3><p>Server-Sent Events für Tool-Discovery, Agent-Kommandos und OpenClaw-Integration.</p></div>
-        <div class="card feature"><h3>Multi-Provider</h3><p>TriForce orchestriert lokale Ollama-Modelle und externe LLM-Provider über ein Backend.</p></div>
-        <div class="card feature"><h3>Ops-first</h3><p>Health, Metrics, Docs und Debug-Endpunkte sind direkt über die API-Domain erreichbar.</p></div>
+        <div class="card feature"><h3>Model routing & fallback</h3><p>Expose configured chat-capable models through one client API, track provider availability and recover from unusable routes instead of hard-wiring the system to one vendor.</p></div>
+        <div class="card feature"><h3>MCP tool execution</h3><p>Connect agents to code, files, Git, diagnostics, services, containers, search, federation and other operational tools through a controlled tool layer.</p></div>
+        <div class="card feature"><h3>AILinux client platform</h3><p>The same backend powers ai-coder, native AILinux clients and browser-facing Nova workflows, keeping authentication and model access consistent across interfaces.</p></div>
+        <div class="card feature"><h3>Federation & infrastructure</h3><p>TriForce can coordinate across the AILinux server, workstation and connected nodes while keeping health, logs and operations visible through one control plane.</p></div>
+      </section>
+
+      <section class="grid three">
+        <div class="card feature"><h3>AILinux 26.04</h3><p>The operating-system layer: local files, packages, services, containers and desktop execution.</p><a class="link" href="https://ailinux.me/ailinux/">Platform overview →</a></div>
+        <div class="card feature"><h3>ai-coder 0.9.5</h3><p>The coding and DevOps agent: plans work, calls tools, changes the system and verifies results.</p><a class="link" href="https://ailinux.me/ai-coder/">ai-coder →</a></div>
+        <div class="card feature"><h3>Nova</h3><p>The user-facing AI environment connected to the same TriForce model and service infrastructure.</p><a class="link" href="https://ailinux.me/nova-ai-console-playground">Open Nova →</a></div>
       </section>
 
       <section class="panel">
-        <h2>Wichtige Endpunkte</h2>
+        <h2>Core public endpoints</h2>
         <div class="endpoints">
-          <div class="endpoint"><span class="method">GET</span><span class="path">/health</span><span class="muted">Backend status</span></div>
-          <div class="endpoint"><span class="method">GET</span><span class="path">/docs</span><span class="muted">Swagger UI</span></div>
-          <div class="endpoint"><span class="method">GET</span><span class="path">/openapi.json</span><span class="muted">API schema</span></div>
-          <div class="endpoint"><span class="method">SSE</span><span class="path">/v1/mcp/sse</span><span class="muted">MCP stream</span></div>
-          <div class="endpoint"><span class="method">POST</span><span class="path">/v1/mcp/messages/?session_id=…</span><span class="muted">MCP messages</span></div>
+          <div class="endpoint"><span class="method">GET</span><span class="path">/health</span><span class="muted">Backend health</span></div>
+          <div class="endpoint"><span class="method">GET</span><span class="path">/docs</span><span class="muted">Interactive Swagger documentation</span></div>
+          <div class="endpoint"><span class="method">GET</span><span class="path">/redoc</span><span class="muted">Readable API reference</span></div>
+          <div class="endpoint"><span class="method">GET</span><span class="path">/openapi.json</span><span class="muted">OpenAPI schema</span></div>
+          <div class="endpoint"><span class="method">GET</span><span class="path">/v1/client/models</span><span class="muted">Tier-aware model catalog</span></div>
+          <div class="endpoint"><span class="method">POST</span><span class="path">/v1/client/chat</span><span class="muted">Client chat + provider routing</span></div>
+          <div class="endpoint"><span class="method">MCP</span><span class="path">/v1/mcp</span><span class="muted">Tool discovery and execution</span></div>
         </div>
+        <div class="integration"><strong>Compatible integrations:</strong> TriForce exposes standard API and MCP interfaces, so external MCP clients — including OpenClaw where useful — can connect as integrations. They are clients of the platform, not the center of it.</div>
       </section>
     </main>
 
-    <footer>AILinux TriForce API · Recreated landing page · Browser-safe root, API routes preserved.</footer>
+    <footer>AILinux TriForce · AI control plane for AILinux, ai-coder, Nova and MCP workflows.</footer>
   </div>
 
   <script>
-    (async () => {
-      const label = document.getElementById('live-status');
-      const value = document.getElementById('backend-value');
-      try {
-        const res = await fetch('/health', { cache: 'no-store' });
-        const json = await res.json();
-        if (res.ok && json.ok) {
-          label.textContent = 'Backend online';
-          value.textContent = 'online';
-          return;
-        }
-        label.textContent = 'Backend antwortet ungewöhnlich';
-        value.textContent = 'check';
-      } catch (e) {
-        label.textContent = 'Backend nicht erreichbar';
-        value.textContent = 'offline';
-      }
+    (async()=>{
+      const label=document.getElementById('live-status');
+      const value=document.getElementById('backend-value');
+      try{
+        const res=await fetch('/health',{cache:'no-store'});
+        const json=await res.json();
+        if(res.ok&&json.ok){label.textContent='Backend online';value.textContent='online';return;}
+        label.textContent='Backend responding';value.textContent='check';
+      }catch(e){label.textContent='Backend unavailable';value.textContent='offline';}
     })();
   </script>
 </body>

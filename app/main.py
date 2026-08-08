@@ -7,6 +7,7 @@ from fastapi import FastAPI, Request, status, HTTPException
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, HTMLResponse, FileResponse, RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.docs import get_swagger_ui_oauth2_redirect_html
 from fastapi.staticfiles import StaticFiles
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pathlib import Path
@@ -319,8 +320,10 @@ def create_app() -> FastAPI:
     # import logging (centralized)
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     app = FastAPI(
-        title="AILinux AI Server", 
+        title="AILinux AI Server",
         lifespan=lifespan,
+        docs_url=None,
+        redoc_url=None,
         redirect_slashes=False  # Verhindert 307 Redirect bei trailing slash
     )
 
@@ -482,8 +485,47 @@ def create_app() -> FastAPI:
     if _HAS_TRIFORCE_LOGGING:
         app.add_middleware(TriForceLoggingMiddleware, central_logger=central_logger)
 
-    # Mount static files for GUI
     static_dir = Path(__file__).parent / "static"
+    docs_static_dir = static_dir / "docs"
+
+    @app.get("/docs", include_in_schema=False)
+    async def custom_swagger_ui():
+        swagger_css = (docs_static_dir / "swagger-ui.css").read_text(encoding="utf-8")
+        swagger_js = (docs_static_dir / "swagger-ui-bundle.js").read_text(encoding="utf-8")
+        html = (
+            "<!doctype html><html><head><meta charset='utf-8'>"
+            "<meta name='viewport' content='width=device-width,initial-scale=1'>"
+            f"<title>{app.title} - Swagger UI</title><style>{swagger_css}</style>"
+            "</head><body><div id='swagger-ui'></div>"
+            f"<script>{swagger_js}</script>"
+            "<script>window.ui=SwaggerUIBundle({"
+            "url:'/openapi.json',dom_id:'#swagger-ui',layout:'BaseLayout',deepLinking:true,"
+            "showExtensions:true,showCommonExtensions:true,"
+            "oauth2RedirectUrl:window.location.origin+'/docs/oauth2-redirect',"
+            "presets:[SwaggerUIBundle.presets.apis,SwaggerUIBundle.SwaggerUIStandalonePreset]"
+            "});</script></body></html>"
+        )
+        return HTMLResponse(html)
+
+    @app.get(app.swagger_ui_oauth2_redirect_url, include_in_schema=False)
+    async def swagger_ui_redirect():
+        return get_swagger_ui_oauth2_redirect_html()
+
+    @app.get("/redoc", include_in_schema=False)
+    async def custom_redoc():
+        redoc_js = (docs_static_dir / "redoc.standalone.js").read_text(encoding="utf-8")
+        html = (
+            "<!doctype html><html><head><meta charset='utf-8'>"
+            "<meta name='viewport' content='width=device-width,initial-scale=1'>"
+            f"<title>{app.title} - ReDoc</title>"
+            "<style>body{margin:0;padding:0}</style></head><body><div id='redoc'></div>"
+            f"<script>{redoc_js}</script>"
+            "<script>Redoc.init('/openapi.json',{},document.getElementById('redoc'));</script>"
+            "</body></html>"
+        )
+        return HTMLResponse(html)
+
+    # Existing GUI/static assets remain available on the normal path.
     if static_dir.exists():
         app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
 
