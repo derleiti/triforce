@@ -125,6 +125,11 @@ class Settings(BaseSettings):
     cerebras_default_model: str = Field(default="llama3.1-70b", validation_alias="CEREBRAS_DEFAULT_MODEL")
     cerebras_timeout_ms: int = Field(default=30000, validation_alias="CEREBRAS_TIMEOUT_MS")
 
+    # NVIDIA NIM hosted API (OpenAI-compatible; models discovered from /v1/models)
+    nvidia_api_key: str | None = Field(default=None, validation_alias="NVIDIA_API_KEY")
+    nvidia_base_url: str = Field(default="https://integrate.api.nvidia.com/v1", validation_alias="NVIDIA_BASE_URL")
+    nvidia_timeout_ms: int = Field(default=120000, validation_alias="NVIDIA_TIMEOUT_MS")
+
     # Cohere (Best RAG & Embeddings)
     cohere_api_key: str | None = Field(default=None, validation_alias="COHERE_API_KEY")
     cohere_default_model: str = Field(default="command-r-plus", validation_alias="COHERE_DEFAULT_MODEL")

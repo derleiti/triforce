@@ -160,7 +160,7 @@ class ModelsResponse(BaseModel):
 
 SUPPORTED_CHAT_PROVIDERS = {
     "ollama", "openai", "anthropic", "gemini", "mistral", "groq",
-    "cerebras", "cohere", "openrouter", "together", "fireworks",
+    "cerebras", "nvidia", "cohere", "openrouter", "together", "fireworks",
     "cloudflare", "huggingface", "github",
 }
 
@@ -174,6 +174,7 @@ PROVIDER_KEY_ENVS = {
     "mistral": ("MISTRAL_API_KEY",),
     "groq": ("GROQ_API_KEY",),
     "cerebras": ("CEREBRAS_API_KEY",),
+    "nvidia": ("NVIDIA_API_KEY",),
     "cohere": ("COHERE_API_KEY",),
     "openrouter": ("OPENROUTER_API_KEY",),
     "together": ("TOGETHER_API_KEY",),
@@ -205,12 +206,61 @@ def chat_capable_model_ids(models) -> List[str]:
     ]
 
 
+GUEST_FREE_PROVIDER_KEYS = {
+    "mistral": "MISTRAL_API_KEY",
+    "nvidia": "NVIDIA_API_KEY",
+}
+
+NVIDIA_AICODER_FREE_MODELS = {
+    "nvidia/poolside/laguna-xs-2.1",
+    "nvidia/z-ai/glm-5.2",
+    "nvidia/minimaxai/minimax-m3",
+    "nvidia/openai/gpt-oss-120b",
+    "nvidia/openai/gpt-oss-20b",
+    "nvidia/nvidia/nemotron-3-super-120b-a12b",
+    "nvidia/nvidia/nemotron-3-ultra-550b-a55b",
+    "nvidia/nvidia/nemotron-3-nano-30b-a3b",
+    "nvidia/nvidia/nemotron-nano-3-30b-a3b",
+    "nvidia/nvidia/nvidia-nemotron-nano-9b-v2",
+    "nvidia/mistralai/codestral-22b-instruct-v0.1",
+    "nvidia/ibm/granite-34b-code-instruct",
+    "nvidia/ibm/granite-8b-code-instruct",
+    "nvidia/google/codegemma-7b",
+    "nvidia/google/codegemma-1.1-7b",
+    "nvidia/deepseek-ai/deepseek-coder-6.7b-instruct",
+    "nvidia/bigcode/starcoder2-15b",
+    "nvidia/meta/codellama-70b",
+}
+
 REGISTERED_FREE_PROVIDER_KEYS = {
+    "mistral": "MISTRAL_API_KEY",
     "groq": "GROQ_API_KEY",
     "cerebras": "CEREBRAS_API_KEY",
+    "nvidia": "NVIDIA_API_KEY",
     "cloudflare": "CLOUDFLARE_API_TOKEN",
     "huggingface": "HUGGINGFACE_API_KEY",
 }
+
+def is_guest_free_model(model: str) -> bool:
+    """Guest policy: verified Ollama plus configured Mistral and verified NVIDIA chat models."""
+    if model.startswith("ollama/"):
+        return True
+    provider = model.split("/", 1)[0]
+    env_name = GUEST_FREE_PROVIDER_KEYS.get(provider)
+    if not env_name or not os.getenv(env_name):
+        return False
+    if provider == "mistral":
+        return True
+    if provider == "nvidia":
+        return model in NVIDIA_AICODER_FREE_MODELS
+    return False
+
+def guest_free_model_ids(models) -> List[str]:
+    return [
+        model.id for model in models
+        if "chat" in (getattr(model, "capabilities", None) or set())
+        and is_guest_free_model(model.id)
+    ]
 
 
 def is_registered_free_model(model: str) -> bool:
@@ -470,15 +520,26 @@ async def call_registered_model(
     if not model_info or "chat" not in model_info.capabilities:
         raise HTTPException(404, f"Chat model not available: {model}")
 
-    result = await chat_completion(
-        model_info,
-        model,
-        messages,
-        temperature=temperature,
-        max_tokens=max_tokens,
-        tools=tools,
-        tool_choice=tool_choice,
-    )
+    try:
+        result = await chat_completion(
+            model_info,
+            model,
+            messages,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            tools=tools,
+            tool_choice=tool_choice,
+        )
+    except HTTPException as exc:
+        # Provider discovery can advertise models that the configured account
+        # cannot actually invoke (notably NVIDIA NIM account-scoped functions).
+        # Feed real execution failures back into the availability filter so a
+        # broken model disappears from subsequent /client/models responses.
+        availability_service.mark_error(model, exc.status_code, str(exc.detail))
+        raise
+    else:
+        availability_service.mark_success(model)
+
     content = result.get("content", "")
     tool_calls = result.get("tool_calls") or []
     prompt_tokens = sum(len(str(item.get("content", "")).split()) for item in messages)
@@ -537,22 +598,34 @@ async def client_chat(
     # Model bestimmen
     model = request.model or get_default_model(tier)
 
-    # === GUEST: Ollama only, no MCP tools ===
+    # === GUEST: Ollama + NVIDIA NIM, no MCP tools ===
     if tier == UserTier.GUEST:
-        if not model.startswith("ollama/"):
-            model = f"ollama/{model}"
-        if not tier_service.is_model_allowed(user_id, model):
+        if not is_guest_free_model(model):
+            logger.warning("Guest requested unavailable model %s; using local fallback", model)
             model = LOCAL_FALLBACK_MODEL
         limit_check = tier_service.check_token_limit(user_id, model)
         if not limit_check["allowed"]:
             raise HTTPException(429, f"Token-Limit erreicht ({limit_check['limit']}/Tag)")
-        result = await call_ollama(
-            model=model,
-            messages=messages,
-            temperature=request.temperature,
-            max_tokens=request.max_tokens,
-        )
-        backend = "ollama"
+        if model.startswith("ollama/") or tier_service.is_ollama_model(model):
+            if not model.startswith("ollama/"):
+                model = f"ollama/{model}"
+            result = await call_ollama(
+                model=model,
+                messages=messages,
+                temperature=request.temperature,
+                max_tokens=request.max_tokens,
+            )
+            backend = "ollama"
+        else:
+            result = await call_registered_model(
+                model=model,
+                messages=messages,
+                temperature=request.temperature,
+                max_tokens=request.max_tokens,
+                tools=None,
+                tool_choice="none",
+            )
+            backend = model.split("/", 1)[0]
 
     # === REGISTERED: Ollama Cloud/local + configured free-quota providers ===
     elif tier == UserTier.REGISTERED:
@@ -657,7 +730,7 @@ async def get_client_models(
     """
     Hole verfügbare Modelle für den Client
 
-    - Guest: verifizierte Ollama-Modelle
+    - Guest: verifizierte Ollama-Modelle + NVIDIA NIM Chat-Modelle
     - Registered: Ollama + konfigurierte Free-Quota-Modelle
     - Pro/Enterprise: alle konfigurierten Chat-Modelle + Ollama
     
@@ -671,8 +744,13 @@ async def get_client_models(
     config = tier_service.get_tier_info(tier)
 
     if tier == UserTier.GUEST:
+        all_models = await registry.list_models()
+        free_cloud = availability_service.filter_available(
+            guest_free_model_ids(all_models)
+        )
         models = list(FREE_MODELS_OLLAMA)
-        backend = "ollama"
+        models.extend(model for model in free_cloud if model not in models)
+        backend = "mixed-free"
     elif tier == UserTier.REGISTERED:
         all_models = await registry.list_models()
         free_cloud = availability_service.filter_available(

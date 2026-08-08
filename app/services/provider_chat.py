@@ -386,6 +386,7 @@ async def _compatible(
         "mistral": ("https://api.mistral.ai/v1", "mistral_api_key", ("MISTRAL_API_KEY",), 120.0),
         "groq": (str(getattr(settings, "groq_base_url", "https://api.groq.com/openai/v1")), "groq_api_key", ("GROQ_API_KEY",), 30.0),
         "cerebras": (str(getattr(settings, "cerebras_base_url", "https://api.cerebras.ai/v1")), "cerebras_api_key", ("CEREBRAS_API_KEY",), 30.0),
+        "nvidia": (str(getattr(settings, "nvidia_base_url", "https://integrate.api.nvidia.com/v1")), "nvidia_api_key", ("NVIDIA_API_KEY",), 120.0),
         "openrouter": (str(getattr(settings, "openrouter_base_url", "https://openrouter.ai/api/v1")), "openrouter_api_key", ("OPENROUTER_API_KEY",), 120.0),
         "kimi": (str(getattr(settings, "kimi_base_url", "https://api.moonshot.ai/v1")), "kimi_api_key", ("KIMI_API_KEY",), 120.0),
         "together": (str(getattr(settings, "together_base_url", "https://api.together.xyz/v1")), "together_api_key", ("TOGETHER_API_KEY",), 120.0),
@@ -470,7 +471,7 @@ async def chat_completion(
     if provider == "cohere":
         return await _cohere(model, messages, schemas, tool_choice, temperature, max_tokens)
     if provider in {
-        "mistral", "groq", "cerebras", "openrouter", "together",
+        "mistral", "groq", "cerebras", "nvidia", "openrouter", "together",
         "fireworks", "huggingface", "github", "kimi",
     }:
         return await _compatible(

@@ -34,15 +34,16 @@ PROVIDER_SORT_ORDER = {
     "mistral": 3,
     "groq": 4,
     "cerebras": 5,
-    "cohere": 6,
-    "openrouter": 7,
-    "kimi": 8,
-    "ollama": 9,
-    "cloudflare": 9,
-    "together": 10,
-    "fireworks": 11,
-    "github": 12,
-    "huggingface": 13,
+    "nvidia": 6,
+    "cohere": 7,
+    "openrouter": 8,
+    "kimi": 9,
+    "ollama": 10,
+    "cloudflare": 10,
+    "together": 11,
+    "fireworks": 12,
+    "github": 13,
+    "huggingface": 14,
 }
 
 CAPABILITY_SORT_ORDER = {
@@ -317,6 +318,7 @@ class ModelRegistry:
                 self._discover_mistral(),
                 self._discover_groq(),
                 self._discover_cerebras(),
+                self._discover_nvidia(),
                 self._discover_kimi(),
                 self._discover_cohere(),
                 self._discover_openrouter(),
@@ -930,6 +932,64 @@ class ModelRegistry:
             ModelInfo(id="cerebras/zai-glm-4.7", provider="cerebras", capabilities=["chat", "reasoning", "function_calling"], roles=["assistant", "reasoning_engine", "tool_user"]),
             ModelInfo(id="cerebras/gemma-4-31b", provider="cerebras", capabilities=["chat"], roles=["assistant"]),
         ]
+
+    async def _discover_nvidia(self) -> List[ModelInfo]:
+        """Discover the hosted NVIDIA NIM catalog from its OpenAI-compatible API."""
+        settings = self._settings
+        if not settings.nvidia_api_key:
+            return []
+
+        try:
+            async with httpx.AsyncClient(timeout=15.0) as client:
+                response = await client.get(
+                    f"{settings.nvidia_base_url.rstrip('/')}/models",
+                    headers={"Authorization": f"Bearer {settings.nvidia_api_key}"},
+                )
+                response.raise_for_status()
+                data = response.json()
+        except (httpx.RequestError, httpx.HTTPStatusError) as exc:
+            logger.warning("Failed to discover NVIDIA NIM models: %s", safe_http_error(exc))
+            return self._cached_provider("nvidia")
+
+        # NVIDIA's /models endpoint can include NIMs that are globally
+        # discoverable but not executable by the configured account. Keep an
+        # account-specific denylist so those entries are not advertised to
+        # clients after a backend restart. Values are raw NVIDIA model IDs.
+        disabled_models = {
+            item.strip()
+            for item in os.getenv("NVIDIA_DISABLED_MODELS", "").split(",")
+            if item.strip()
+        }
+
+        models: List[ModelInfo] = []
+        for item in data.get("data", []):
+            model_id = str(item.get("id") or "")
+            if not model_id or model_id in disabled_models:
+                continue
+
+            capabilities, roles, api_method = detect_capabilities(model_id)
+            lower = model_id.lower()
+            # /v1/models is broader than chat: keep obvious non-chat entries out of AICoder.
+            if EMBEDDING_PATTERN.search(lower):
+                capabilities = ["embedding"]
+                roles = ["embedder"]
+            elif MODERATION_PATTERN.search(lower):
+                capabilities = ["moderation"]
+                roles = ["content_moderator"]
+            elif any(token in lower for token in ("deplot", "kosmos", "fuyu")):
+                capabilities = ["vision"]
+                roles = ["vision_analyst"]
+
+            models.append(ModelInfo(
+                id=f"nvidia/{model_id}",
+                provider="nvidia",
+                capabilities=sorted(set(capabilities)),
+                roles=list(dict.fromkeys(roles)),
+                api_method=api_method,
+            ))
+
+        logger.info("Discovered %d NVIDIA NIM models from API", len(models))
+        return models
 
     async def _discover_kimi(self) -> List[ModelInfo]:
         """Discover Moonshot/Kimi models exposed to the configured account."""
