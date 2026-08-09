@@ -5,7 +5,7 @@
  * Rendert Login/Register oder Logout direkt im Menü – server-seitig,
  * kein Flackern durch JS-Zustandserkennung.
  *
- * Nicht eingeloggt:  [🔐 Login]  [✨ Registrieren]
+ * Nicht eingeloggt:  [🔐 Login]  [✨ Register]
  * Eingeloggt:        [👤 name · TIER]  (Dropdown: Profil | Käufe | Subscription | Logout)
  *
  * @version 2.1.0 — 2026-03-11 — multi-menu support, purchases link, improved UX
@@ -122,7 +122,7 @@ class AILinux_MenuAuth_Service {
             🔐 Login
         </a>
         <a href="' . $register_href . '" class="ailinux-register-btn">
-            ✨ Registrieren
+            ✨ Register
         </a>
 
     </div>

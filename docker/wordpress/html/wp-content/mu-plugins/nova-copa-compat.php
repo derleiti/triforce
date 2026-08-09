@@ -11,7 +11,14 @@ if (!defined('NOVA_LS_WEBHOOK_DIRECT')) {
 }
 
 add_action('plugins_loaded', function () {
-    $base = WP_CONTENT_DIR . '/plugins/nova-ai-frontend/';
+    // The compatibility bridge must never bootstrap Nova on its own.
+    // Active plugins are loaded before plugins_loaded; if this constant is absent,
+    // nova-ai-frontend is inactive/unavailable and its config may not be loaded safely.
+    if (!defined('NOVA_AI_PLUGIN_DIR')) {
+        return;
+    }
+
+    $base = NOVA_AI_PLUGIN_DIR;
 
     if (is_file($base . 'config/lemonsqueezy.php')) {
         require_once $base . 'config/lemonsqueezy.php';

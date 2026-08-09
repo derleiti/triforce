@@ -77,7 +77,7 @@ class AILinux_User_Plugin {
      * WordPress-Passwort-Reset wird deshalb auf login.ailinux.me umgeleitet.
      */
     public function ailinux_lostpassword_url($url, $redirect) {
-        return 'https://login.ailinux.me/reset';
+        return 'https://ailinux.me/wp-login.php?action=lostpassword&ailinux_wp_admin=1';
     }
 
     /**
@@ -85,17 +85,19 @@ class AILinux_User_Plugin {
      * Admin-Login bleibt erreichbar mit ?ailinux_wp_admin=1
      */
     public function redirect_wp_auth_to_ailinux_login() {
+        $action = isset($_REQUEST['action']) ? sanitize_key($_REQUEST['action']) : 'login';
+
+        // Never redirect the native WordPress password-reset actions. The reset
+        // form posts to action=resetpass without our custom bypass parameter;
+        // redirecting that POST discards pass1/pass2 and creates an endless loop.
+        if (in_array($action, ['lostpassword', 'retrievepassword', 'rp', 'resetpass'], true)) {
+            return;
+        }
+
         if (isset($_GET['ailinux_wp_admin']) && $_GET['ailinux_wp_admin'] === '1') {
             // Emergency/admin bypass: stop later login_init redirects from other plugins/themes.
             remove_all_actions('login_init');
             return;
-        }
-
-        $action = isset($_REQUEST['action']) ? sanitize_key($_REQUEST['action']) : 'login';
-
-        if (in_array($action, ['lostpassword', 'retrievepassword', 'rp', 'resetpass'], true)) {
-            wp_redirect('https://login.ailinux.me/reset');
-            exit;
         }
 
         if ($action === 'login') {

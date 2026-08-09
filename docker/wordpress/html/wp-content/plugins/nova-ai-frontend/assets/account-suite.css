@@ -1,5 +1,5 @@
 /* Nova AI — Account Suite CSS v1.0 */
-:root{--nas-bg:#07070f;--nas-surface:#0f0f1a;--nas-card:#141420;--nas-border:#1e1e2e;--nas-border2:#2a2a3a;--nas-blue:#3b82f6;--nas-purple:#8b5cf6;--nas-cyan:#06b6d4;--nas-green:#10b981;--nas-red:#ef4444;--nas-amber:#f59e0b;--nas-text:#f1f5f9;--nas-muted:#94a3b8;--nas-muted2:#64748b;--nas-grad:linear-gradient(135deg,#3b82f6,#8b5cf6)}
+:root{--nas-bg:#08111b;--nas-surface:#0b1520;--nas-card:#0f1b28;--nas-border:#233447;--nas-border2:#2d4257;--nas-blue:#3b82f6;--nas-purple:#22d3ee;--nas-cyan:#22d3ee;--nas-green:#72e85c;--nas-red:#ef4444;--nas-amber:#f59e0b;--nas-text:#edf5fb;--nas-muted:#8fa5b8;--nas-muted2:#647b8d;--nas-grad:linear-gradient(135deg,#2563eb,#22d3ee)}
 .nas-wrap{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;color:var(--nas-text);line-height:1.6}
 .nas-auth-panel{display:flex;align-items:center;justify-content:center;min-height:70vh;padding:2rem}
 .nas-auth-inner{background:var(--nas-card);border:1px solid var(--nas-border2);border-radius:24px;padding:2.5rem;width:100%;max-width:420px;box-shadow:0 40px 80px -20px rgba(0,0,0,.6)}
@@ -177,3 +177,39 @@
   transition:border-color .15s, color .15s;
 }
 .nas-btn-outline:hover { border-color:var(--nas-accent,#7c6aff); color:var(--nas-accent,#7c6aff); }
+
+
+/* Mobile account/login hardening — keep the suite inside the WordPress content viewport. */
+.nas-wrap,.nas-wrap *{box-sizing:border-box}
+.nas-wrap{width:100%;max-width:100%;min-width:0;overflow-x:hidden}
+.nas-auth-panel{width:100%;max-width:100%;min-width:0;padding:clamp(.75rem,4vw,2rem)}
+.nas-auth-inner{width:100%;max-width:min(420px,100%);min-width:0}
+.nas-form,.nas-field,.nas-field input,.nas-tabs,.nas-google-login{width:100%;max-width:100%;min-width:0}
+.nas-google-login{margin:0 0 1rem}
+.nas-google-btn{display:flex;align-items:center;justify-content:center;gap:.7rem;width:100%;min-height:46px;padding:.72rem 1rem;background:#fff;border:1px solid #dadce0;border-radius:12px;color:#202124!important;font-size:.9rem;font-weight:600;text-decoration:none!important;box-shadow:0 1px 2px rgba(0,0,0,.15);transition:box-shadow .18s ease,background .18s ease,transform .18s ease}
+.nas-google-btn:hover,.nas-google-btn:focus-visible{background:#f8faff;color:#202124!important;box-shadow:0 3px 10px rgba(0,0,0,.22);transform:translateY(-1px)}
+.nas-google-btn svg{display:block;flex:0 0 20px;width:20px;height:20px;border-radius:0}
+.nas-auth-divider{display:flex;align-items:center;gap:.75rem;margin:.9rem 0 0;color:var(--nas-muted2);font-size:.75rem;text-transform:uppercase;letter-spacing:.08em}
+.nas-auth-divider::before,.nas-auth-divider::after{content:'';height:1px;flex:1;background:var(--nas-border2)}
+.nas-auth-divider span{flex:0 0 auto}
+.nas-pw-toggle{box-shadow:none!important;transform:translateY(-50%)!important}
+.nas-pw-toggle:hover,.nas-pw-toggle:focus-visible{transform:translateY(-50%)!important;box-shadow:none!important}
+.cf-turnstile{max-width:100%;overflow:hidden}
+@media(max-width:640px){
+  .nas-auth-panel{min-height:0;padding:.5rem;align-items:flex-start}
+  .nas-auth-inner{max-width:100%;padding:1rem;border-radius:16px}
+  .nas-logo{margin-bottom:1.1rem}
+  .nas-logo span{font-size:2.4rem;margin-bottom:.25rem}
+  .nas-logo h2{font-size:clamp(1.35rem,7vw,1.65rem);overflow-wrap:anywhere}
+  .nas-tabs{margin-bottom:1rem}
+  .nas-tab{padding:.65rem .4rem;min-width:0;font-size:.82rem}
+  .nas-field input{font-size:16px;padding:.8rem .85rem}
+  .nas-btn-primary{padding:.85rem;font-size:.95rem}
+  .nas-google-btn{min-height:44px;padding:.68rem .75rem;font-size:.86rem}
+  .nas-msg{font-size:.82rem;padding:.65rem .75rem}
+}
+
+/* AILinux 2026 account surface */
+.nas-auth-inner,.nas-dashboard,.nas-card,.nas-features-box,.nas-plan-card{box-shadow:0 18px 45px rgba(0,0,0,.18)}
+.nas-auth-inner{background:radial-gradient(circle at 90% 10%,rgba(34,211,238,.09),transparent 32%),var(--nas-card)}
+.nas-card-link:hover,.nas-plan-card.nas-plan-featured{border-color:rgba(34,211,238,.42)}

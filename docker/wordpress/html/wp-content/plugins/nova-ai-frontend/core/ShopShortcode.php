@@ -128,7 +128,7 @@ class ShopShortcode {
 
         $product_id = sanitize_text_field($_POST['product_id'] ?? '');
         if (empty($product_id)) {
-            wp_send_json_error('Keine product_id');
+            wp_send_json_error('Missing product_id');
         }
 
         $data = [

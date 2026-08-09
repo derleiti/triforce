@@ -316,7 +316,7 @@ class ShopService {
 
         $response = $this->api_request('/stores/' . urlencode($store_id));
         if ($this->is_error($response)) {
-            return ['error' => $response['_error_msg'] ?? 'API-Fehler'];
+            return ['error' => $response['_error_msg'] ?? 'API error'];
         }
 
         $attrs = $response['data']['attributes'] ?? [];

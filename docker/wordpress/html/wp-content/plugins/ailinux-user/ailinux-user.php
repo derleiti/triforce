@@ -85,22 +85,18 @@ class AILinux_User_Plugin {
      * Admin-Login bleibt erreichbar mit ?ailinux_wp_admin=1
      */
     public function redirect_wp_auth_to_ailinux_login() {
-        if (isset($_GET['ailinux_wp_admin']) && $_GET['ailinux_wp_admin'] === '1') {
-            // Emergency/admin bypass: stop later login_init redirects from other plugins/themes.
-            remove_all_actions('login_init');
+        $action = isset($_REQUEST['action']) ? sanitize_key($_REQUEST['action']) : 'login';
+
+        // Never redirect the native WordPress password-reset actions. The reset
+        // form posts to action=resetpass without our custom bypass parameter;
+        // redirecting that POST discards pass1/pass2 and creates an endless loop.
+        if (in_array($action, ['lostpassword', 'retrievepassword', 'rp', 'resetpass'], true)) {
             return;
         }
 
-        $action = isset($_REQUEST['action']) ? sanitize_key($_REQUEST['action']) : 'login';
-
-        if (in_array($action, ['lostpassword', 'retrievepassword', 'rp', 'resetpass'], true)) {
-            // Allow WordPress password reset flow explicitly via admin bypass.
-            if (!isset($_GET['ailinux_wp_admin']) || $_GET['ailinux_wp_admin'] !== '1') {
-                $target = add_query_arg('ailinux_wp_admin', '1', wp_login_url());
-                $target = add_query_arg('action', $action, $target);
-                wp_safe_redirect($target);
-                exit;
-            }
+        if (isset($_GET['ailinux_wp_admin']) && $_GET['ailinux_wp_admin'] === '1') {
+            // Emergency/admin bypass: stop later login_init redirects from other plugins/themes.
+            remove_all_actions('login_init');
             return;
         }
 

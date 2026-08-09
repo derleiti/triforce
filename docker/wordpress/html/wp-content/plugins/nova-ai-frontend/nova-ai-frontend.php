@@ -444,10 +444,10 @@ function nova_proxy_vision_upload(WP_REST_Request $r): WP_REST_Response {
     $files = $r->get_file_params();
     $body  = $r->get_body_params();
     $model  = sanitize_text_field($body['model']  ?? '');
-    $prompt = sanitize_textarea_field($body['prompt'] ?? 'Beschreibe dieses Bild detailliert.');
+    $prompt = sanitize_textarea_field($body['prompt'] ?? 'Describe this image in detail.');
 
     if (empty($files['image_file']) || empty($files['image_file']['tmp_name'])) {
-        return new WP_REST_Response(['ok'=>false,'error'=>'Keine Datei empfangen'], 400);
+        return new WP_REST_Response(['ok'=>false,'error'=>'No file received'], 400);
     }
     $tmp_path = $files['image_file']['tmp_name'];
     $orig_name = $files['image_file']['name'] ?: 'upload.jpg';
@@ -462,7 +462,7 @@ function nova_proxy_vision_upload(WP_REST_Request $r): WP_REST_Response {
 
     $raw_bytes = file_get_contents($tmp_path);
     if ($raw_bytes === false) {
-        return new WP_REST_Response(['ok'=>false,'error'=>'Datei konnte nicht gelesen werden'], 500);
+        return new WP_REST_Response(['ok'=>false,'error'=>'The file could not be read'], 500);
     }
 
     // Build multipart body manually (wp_remote_request supports raw body
@@ -1111,7 +1111,7 @@ function nova_render_admin_page(): void {
 add_shortcode('ailinux_ai_playground', function ($atts): string {
     $label = esc_attr($atts['label'] ?? 'AILINUX AI PLAYGROUND');
     $title = esc_html($atts['title'] ?? 'Nova Frontend');
-    $desc  = esc_html($atts['desc']  ?? 'Chat, Vision Analyse und Media Generation mit backend-seitiger Modellsortierung.');
+    $desc  = esc_html($atts['desc']  ?? 'Chat, vision analysis and media generation with backend-managed model routing.');
     ob_start(); ?>
 <div class="nova-ai-shell" data-nova-theme="auto">
   <div class="nova-hero">
@@ -1119,108 +1119,108 @@ add_shortcode('ailinux_ai_playground', function ($atts): string {
     <h2 class="nova-hero-title"><?= $title ?></h2>
     <p class="nova-hero-desc"><?= $desc ?></p>
     <div class="nova-hero-badges">
-      <span class="nova-badge" data-health-badge>Prüfe Backend…</span>
+      <span class="nova-badge" data-health-badge>Checking backend…</span>
       <span class="nova-badge" data-model-count>—</span>
     </div>
   </div>
   <div class="nova-toolbar">
     <button class="nova-tab active" data-tab="nova-panel-chat">Chat</button>
-    <button class="nova-tab" data-tab="nova-panel-vision">Vision Analyse</button>
+    <button class="nova-tab" data-tab="nova-panel-vision">Vision Analysis</button>
     <button class="nova-tab" data-tab="nova-panel-media">Media Generation</button>
   </div>
   <div class="nova-panel active" id="nova-panel-chat">
     <div class="nova-form-row-inline">
       <div class="nova-form-group" style="flex:1">
-        <label class="nova-label" for="nova-chat-model">Chat Modell</label>
+        <label class="nova-label" for="nova-chat-model">Chat Model</label>
         <select id="nova-chat-model" name="nova-chat-model" class="nova-select nova-chat-model" data-model="chat"></select>
       </div>
-      <button class="nova-chat-clear" title="Chat leeren">🗑</button>
+      <button class="nova-chat-clear" title="Clear chat">🗑</button>
     </div>
     <button class="nova-system-show nova-small-btn">+ System Prompt</button>
     <div class="nova-form-group nova-system-group nova-hidden">
       <label class="nova-label" for="nova-chat-system">System-Prompt <button class="nova-system-toggle">▲</button></label>
-      <textarea id="nova-chat-system" name="nova-chat-system" class="nova-textarea nova-chat-system" rows="3" placeholder="Du bist ein hilfreicher Assistent…"></textarea>
+      <textarea id="nova-chat-system" name="nova-chat-system" class="nova-textarea nova-chat-system" rows="3" placeholder="You are a helpful assistant…"></textarea>
     </div>
     <div class="nova-chat-history" role="log" aria-live="polite">
       <div class="nova-chat-welcome">
         <div class="nova-chat-welcome-icon">✦</div>
-        <p>Frag mich etwas — <kbd>Enter</kbd> sendet, <kbd>Shift+Enter</kbd> neue Zeile</p>
+        <p>Ask me anything — <kbd>Enter</kbd> sendet, <kbd>Shift+Enter</kbd> new line</p>
       </div>
     </div>
     <div class="nova-input-area">
       <div class="nova-input-row">
-        <textarea id="nova-chat-prompt" name="nova-chat-prompt" class="nova-prompt nova-chat-prompt" placeholder="Nachricht eingeben…" rows="1" aria-label="Nachricht"></textarea>
-        <button class="nova-send-btn nova-chat-send" aria-label="Senden">
+        <textarea id="nova-chat-prompt" name="nova-chat-prompt" class="nova-prompt nova-chat-prompt" placeholder="Type a message…" rows="1" aria-label="Message"></textarea>
+        <button class="nova-send-btn nova-chat-send" aria-label="Send">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M.5 1.163A1 1 0 0 1 1.97.28l12.868 6.837a1 1 0 0 1 0 1.766L1.969 15.72A1 1 0 0 1 .5 14.836V10.33a1 1 0 0 1 .816-.983L8.5 8 1.316 6.653A1 1 0 0 1 .5 5.67V1.163Z"/></svg>
         </button>
       </div>
       <div class="nova-shortcuts-hint">
-        <span><kbd class="nova-key">↑</kbd> letzte Eingabe</span>
-        <span><kbd class="nova-key">Esc</kbd> löschen</span>
-        <span><kbd class="nova-key">Ctrl+K</kbd> neuer Chat</span>
+        <span><kbd class="nova-key">↑</kbd> previous input</span>
+        <span><kbd class="nova-key">Esc</kbd> clear</span>
+        <span><kbd class="nova-key">Ctrl+K</kbd> new chat</span>
       </div>
     </div>
   </div>
   <div class="nova-panel" id="nova-panel-vision">
     <div class="nova-form-group">
-      <label class="nova-label" for="nova-vision-model">Vision Modell</label>
+      <label class="nova-label" for="nova-vision-model">Vision Model</label>
       <select id="nova-vision-model" name="nova-vision-model" class="nova-select nova-vision-model" data-model="vision"></select>
     </div>
     <div class="nova-form-group">
-      <label class="nova-label" for="nova-vision-url">Bild URL</label>
+      <label class="nova-label" for="nova-vision-url">Image URL</label>
       <input type="url" id="nova-vision-url" name="nova-vision-url" class="nova-input nova-vision-url" placeholder="https://…">
     </div>
     <div class="nova-form-group">
-      <label class="nova-label" for="nova-vision-file">Oder Datei hochladen <small style="opacity:.6">(jpg / png / webp / gif — nur für Analyse, keine Speicherung)</small></label>
+      <label class="nova-label" for="nova-vision-file">Or upload a file <small style="opacity:.6">(jpg / png / webp / gif — analysis only, not stored)</small></label>
       <input type="file" id="nova-vision-file" name="nova-vision-file" class="nova-input nova-vision-file"
              accept="image/jpeg,image/png,image/webp,image/gif" style="padding:6px;cursor:pointer;">
       <div class="nova-vision-preview"></div>
     </div>
     <div class="nova-form-group">
-      <label class="nova-label" for="nova-vision-task">Analyseauftrag</label>
-      <input type="text" id="nova-vision-task" name="nova-vision-task" class="nova-input nova-vision-task" value="Beschreibe dieses Bild detailliert.">
+      <label class="nova-label" for="nova-vision-task">Analysis task</label>
+      <input type="text" id="nova-vision-task" name="nova-vision-task" class="nova-input nova-vision-task" value="Describe this image in detail.">
     </div>
-    <button class="nova-action-btn nova-vision-btn">Bild analysieren</button>
+    <button class="nova-action-btn nova-vision-btn">Analyze image</button>
     <div class="nova-output-box">
-      <div class="nova-output-label">Ergebnis</div>
+      <div class="nova-output-label">Result</div>
       <div class="nova-output-text nova-vision-output"></div>
     </div>
   </div>
   <div class="nova-panel" id="nova-panel-media">
     <div class="nova-subtabs">
-      <button class="nova-subtab active" data-subtab="bild">Bild</button>
+      <button class="nova-subtab active" data-subtab="bild">Image</button>
       <button class="nova-subtab" data-subtab="video">Video</button>
     </div>
     <div id="nova-media-bild" class="nova-subpanel active">
       <div class="nova-form-group">
-        <label class="nova-label" for="nova-img-model">Bildmodell</label>
+        <label class="nova-label" for="nova-img-model">Image model</label>
         <select id="nova-img-model" name="nova-img-model" class="nova-select nova-img-model" data-model="media_image"></select>
       </div>
       <div class="nova-form-group">
         <label class="nova-label">Prompt</label>
-        <textarea id="nova-img-prompt" name="nova-img-prompt" class="nova-textarea nova-img-prompt" rows="4" placeholder="Ein brauner Bär…"></textarea>
+        <textarea id="nova-img-prompt" name="nova-img-prompt" class="nova-textarea nova-img-prompt" rows="4" placeholder="A brown bear…"></textarea>
       </div>
       <div class="nova-form-row-inline">
         <div class="nova-form-group">
-          <label class="nova-label" for="nova-img-count">Anzahl</label>
+          <label class="nova-label" for="nova-img-count">Count</label>
           <input type="number" id="nova-img-count" name="nova-img-count" class="nova-input nova-img-count" value="1" min="1" max="4">
         </div>
         <div class="nova-form-group">
           <label class="nova-label" for="nova-img-aspect">Format</label>
           <select id="nova-img-aspect" class="nova-select nova-img-aspect">
-            <option value="1:1" selected>1:1 – Quadrat</option>
-            <option value="16:9">16:9 – Breitbild</option>
+            <option value="1:1" selected>1:1 – Square</option>
+            <option value="16:9">16:9 – Widescreen</option>
             <option value="4:3">4:3 – Standard</option>
-            <option value="3:4">3:4 – Hochformat</option>
+            <option value="3:4">3:4 – Portrait</option>
             <option value="9:16">9:16 – Smartphone</option>
           </select>
         </div>
         <div class="nova-form-group" style="flex:1">
-          <label class="nova-label" for="nova-img-size">Auflösung</label>
+          <label class="nova-label" for="nova-img-size">Resolution</label>
           <select id="nova-img-size" class="nova-select nova-img-size"></select>
         </div>
       </div>
-      <button class="nova-action-btn nova-img-btn">Bild erzeugen</button>
+      <button class="nova-action-btn nova-img-btn">Generate image</button>
       <div class="nova-progress nova-img-progress"><div class="nova-progress-bar" style="width:0%"></div></div>
       <div class="nova-output-box nova-img-output"><div class="nova-output-text"></div></div>
     </div>
@@ -1231,26 +1231,26 @@ add_shortcode('ailinux_ai_playground', function ($atts): string {
       </div>
       <div class="nova-form-group">
         <label class="nova-label" for="nova-vid-prompt">Prompt</label>
-        <textarea id="nova-vid-prompt" name="nova-vid-prompt" class="nova-textarea nova-vid-prompt" rows="4" placeholder="Ein Braunbär kämpft…"></textarea>
+        <textarea id="nova-vid-prompt" name="nova-vid-prompt" class="nova-textarea nova-vid-prompt" rows="4" placeholder="A brown bear running through a forest…"></textarea>
       </div>
       <div class="nova-form-row-inline">
         <div class="nova-form-group">
-          <label class="nova-label" for="nova-vid-duration">Dauer (s)</label>
+          <label class="nova-label" for="nova-vid-duration">Duration (s)</label>
           <input type="number" id="nova-vid-duration" name="nova-vid-duration" class="nova-input nova-vid-duration" value="8" min="4" max="30">
         </div>
         <div class="nova-form-group">
           <label class="nova-label" for="nova-vid-aspect">Format</label>
           <select id="nova-vid-aspect" class="nova-select nova-vid-aspect">
-            <option value="16:9" selected>16:9 – Breitbild</option>
-            <option value="9:16">9:16 – Hochformat</option>
+            <option value="16:9" selected>16:9 – Widescreen</option>
+            <option value="9:16">9:16 – Portrait</option>
           </select>
         </div>
         <div class="nova-form-group" style="flex:1">
-          <label class="nova-label" for="nova-vid-resolution">Auflösung</label>
+          <label class="nova-label" for="nova-vid-resolution">Resolution</label>
           <select id="nova-vid-resolution" class="nova-select nova-vid-resolution"></select>
         </div>
       </div>
-      <button class="nova-action-btn nova-vid-btn">Video starten</button>
+      <button class="nova-action-btn nova-vid-btn">Generate video</button>
       <div class="nova-progress nova-vid-progress"><div class="nova-progress-bar" style="width:0%"></div></div>
       <div class="nova-output-box nova-vid-output"><div class="nova-output-text"></div></div>
     </div>
@@ -1260,7 +1260,7 @@ add_shortcode('ailinux_ai_playground', function ($atts): string {
       <div class="nova-account-container" id="nova-account-panel">
         <div style="text-align:center;padding:2rem;color:#94a3b8">
           <div style="font-size:2rem;margin-bottom:.5rem">&#128100;</div>
-          <div>Lade Account…</div>
+          <div>Loading account…</div>
         </div>
       </div>
     </div>
@@ -1273,7 +1273,7 @@ add_shortcode('ailinux_ai_playground', function ($atts): string {
 add_shortcode('ailinux_downloads', function ($atts): string {
     $label = esc_attr($atts['label'] ?? 'AILINUX DOWNLOADS');
     $title = esc_html($atts['title'] ?? 'Downloads');
-    $desc  = esc_html($atts['desc']  ?? 'Dateien & Pakete zum Download.');
+    $desc  = esc_html($atts['desc']  ?? 'Files and packages ready to download.');
     $raw   = wp_remote_get(nova_get_backend_base().'/health', ['timeout'=>10, 'headers'=>['X-Internal-Key' => defined('NOVA_AI_INTERNAL_KEY') ? NOVA_AI_INTERNAL_KEY : (get_option('nova_ai_settings', [])['internal_key'] ?? '')]]);
     $tree  = null;
     if (!is_wp_error($raw)) {
@@ -1306,10 +1306,10 @@ add_shortcode('ailinux_downloads', function ($atts): string {
     <p class="nova-dl-hero__desc"><?= $desc ?></p>
     <?php if ($tree): ?>
     <div class="nova-dl-hero__stats">
-      <span class="nova-dl-stat"><strong><?= $total_files ?></strong> Dateien</span>
-      <span class="nova-dl-stat"><strong><?= count($tree['folders'] ?? []) ?></strong> Ordner</span>
+      <span class="nova-dl-stat"><strong><?= $total_files ?></strong> files</span>
+      <span class="nova-dl-stat"><strong><?= count($tree['folders'] ?? []) ?></strong> folders</span>
       <?php if ($total_bytes > 0): ?>
-      <span class="nova-dl-stat"><strong><?= $fmt($total_bytes) ?></strong> gesamt</span>
+      <span class="nova-dl-stat"><strong><?= $fmt($total_bytes) ?></strong> total</span>
       <?php endif; ?>
     </div>
     <?php endif; ?>
@@ -1629,7 +1629,7 @@ add_shortcode('ailinux_downloads', function ($atts): string {
       /* Back button */
       if (pathStack.length > 0) {
         grid.appendChild(makeCard(
-          '↩', '<em>Zurück</em>', '', '', '', 'is-back',
+          '↩', '<em>Back</em>', '', '', '', 'is-back',
           function(){ pathStack.pop(); render(); }
         ));
       }
@@ -1639,7 +1639,7 @@ add_shortcode('ailinux_downloads', function ($atts): string {
         var desc = f.description
           ? '<span class="nova-dl-ai-badge">✦ KI</span>'+esc(f.description)
           : '';
-        var meta = (f.file_count != null ? '<span>'+f.file_count+' Dateien</span>' : '')
+        var meta = (f.file_count != null ? '<span>'+f.file_count+' files</span>' : '')
                  + (f.total_size_formatted || f.total_size ? '<span>'+(f.total_size_formatted||fmt(f.total_size))+'</span>' : '');
         grid.appendChild(makeCard(
           f.icon||'📁',
@@ -1663,16 +1663,16 @@ add_shortcode('ailinux_downloads', function ($atts): string {
                  + (f.modified ? '<span>'+esc(f.modified)+'</span>' : '')
                  + (f.sha1 ? '<span class="nova-dl-sha">SHA1: '+esc(f.sha1.substring(0,12))+'…</span>' : '');
         var action = f.url
-          ? '<a class="nova-dl-btn" href="'+esc(f.url)+'" download onclick="event.stopPropagation()" title="Herunterladen">↓</a>'
+          ? '<a class="nova-dl-btn" href="'+esc(f.url)+'" download onclick="event.stopPropagation()" title="Download">↓</a>'
           : '';
         grid.appendChild(makeCard(f.icon||'📄', nameHtml, desc, meta, action, 'is-file', null));
       });
 
       /* Empty */
       if (!node.folders?.length && !node.files?.length && pathStack.length === 0) {
-        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted,#a9b3c0)">📂 Keine Dateien verfügbar.</div>';
+        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted,#a9b3c0)">📂 No files available.</div>';
       } else if (!node.folders?.length && !node.files?.length) {
-        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted,#a9b3c0)">📂 Leerer Ordner.</div>';
+        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted,#a9b3c0)">📂 Empty folder.</div>';
       }
     }
     render();
@@ -1725,8 +1725,8 @@ if (false) { // Dead code — kept for reference
     </div>
     <div id="ai-discuss-output" class="ai-discuss-status"></div>
     <div class="ai-discuss-input-row">
-      <textarea id="ai-discuss-input" class="ai-discuss-input" placeholder="Frage zum Artikel&hellip;" rows="2" aria-label="Nachricht"></textarea>
-      <button id="ai-discuss-send" class="ai-discuss-send" aria-label="Senden">
+      <textarea id="ai-discuss-input" class="ai-discuss-input" placeholder="Ask about this article&hellip;" rows="2" aria-label="Message"></textarea>
+      <button id="ai-discuss-send" class="ai-discuss-send" aria-label="Send">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M.5 1.163A1 1 0 0 1 1.97.28l12.868 6.837a1 1 0 0 1 0 1.766L1.969 15.72A1 1 0 0 1 .5 14.836V10.33a1 1 0 0 1 .816-.983L8.5 8 1.316 6.653A1 1 0 0 1 .5 5.67V1.163Z"/></svg>
       </button>
     </div>
@@ -1742,13 +1742,6 @@ add_shortcode('ailinux_downloads', function($atts) {
     $base = '/var/www/html/downloads';
     $urlbase = home_url('/downloads');
     $out = '<div class="nova-dl-wrap"><h2>AILinux Downloads</h2>';
-    $out .= '<div style="margin:12px 0 22px;padding:16px;border:1px solid #3aa0ff;border-radius:12px;background:#111827;color:#e8edf2">';
-    $out .= '<h3 style="margin:0 0 8px">Copa OCR</h3>';
-    $out .= '<p style="margin:0 0 12px;color:#a9b3c0">OCR desktop tool for Linux and Windows. €15 one-time license, lifetime updates.</p>';
-    $out .= '<a style="display:inline-block;margin:4px 8px 4px 0;padding:10px 14px;background:#3aa0ff;color:#07111f;border-radius:8px;text-decoration:none;font-weight:700" href="'.esc_url(home_url('/downloads/copa-ocr/copa_2.0.9_amd64.deb')).'" download>Linux .deb</a>';
-    $out .= '<a style="display:inline-block;margin:4px 8px 4px 0;padding:10px 14px;background:#3aa0ff;color:#07111f;border-radius:8px;text-decoration:none;font-weight:700" href="'.esc_url(home_url('/downloads/copa-ocr/copa-2.0.9-windows-x64.zip')).'" download>Windows ZIP</a>';
-    $out .= '<a style="display:inline-block;margin:4px 8px 4px 0;padding:10px 14px;border:1px solid #3aa0ff;color:#e8edf2;border-radius:8px;text-decoration:none;font-weight:700" href="https://www.youtube.com/watch?v=WWWm8bpocGk" target="_blank" rel="noopener">Demo Video</a>';
-    $out .= '</div>';
     if (!is_dir($base)) return $out.'<p>Downloads path not found.</p></div>';
     $files = [];
     $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($base, FilesystemIterator::SKIP_DOTS));
@@ -1758,7 +1751,7 @@ add_shortcode('ailinux_downloads', function($atts) {
         $files[] = [$rel, $f->getSize(), $f->getMTime()];
     }
     sort($files);
-    $out .= '<p><strong>'.count($files).'</strong> Dateien verfügbar</p><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">';
+    $out .= '<p><strong>'.count($files).'</strong> files available</p><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">';
     foreach ($files as [$rel,$size,$mtime]) {
         $href = trailingslashit($urlbase).implode('/', array_map('rawurlencode', explode('/', $rel)));
         $mb = $size >= 1048576 ? round($size/1048576,1).' MB' : round($size/1024,1).' KB';
