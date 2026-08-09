@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # ============================================================================
-# AILinux Repo Adder v6.2
+# AILinux Repo Adder v6.3
 # ============================================================================
 
 DEFAULT_BASE="https://repo.ailinux.me/mirror"
@@ -46,7 +46,7 @@ log_debug() { [[ $VERBOSE -eq 1 ]] && echo -e "${CYAN}[DBG]${NC} $*" >&2 || true
 
 usage() {
     cat <<'EOF'
-AILinux Repo Adder v6.2
+AILinux Repo Adder v6.3
 
 Usage:
   curl -fsSL https://repo.ailinux.me/mirror/add-ailinux-repo.sh | sudo bash
@@ -139,7 +139,11 @@ detect_codename() {
 has_release() {
     local url="$1"
     local dist="$2"
-    curl "${CURL_OPTS[@]}" -fsSL "${url}/dists/${dist}/Release" -o /dev/null 2>/dev/null
+    if [[ "$dist" == "@flat" ]]; then
+        curl "${CURL_OPTS[@]}" -fsSL "${url}/Release" -o /dev/null 2>/dev/null
+    else
+        curl "${CURL_OPTS[@]}" -fsSL "${url}/dists/${dist}/Release" -o /dev/null 2>/dev/null
+    fi
 }
 
 get_mirror_repo_specs() {
@@ -155,9 +159,11 @@ dl.winehq.org/wine-builds/ubuntu|${codename}|main|amd64|${codename}|WineHQ|/usr/
 download.docker.com/linux/ubuntu|${codename}|stable|amd64|${codename}|Docker CE|${KEYRING_PATH}|
 # VS Code is installed via --third-party manifest; do not mirror it here to avoid stale CDN index mismatches.
 ppa.launchpadcontent.net/cappelikan/ppa/ubuntu|${codename}|main|amd64|${codename}|Cappelikan PPA|${KEYRING_PATH}|
-ppa.launchpadcontent.net/graphics-drivers/ppa/ubuntu|${codename}|main|amd64|${codename}|Graphics Drivers PPA|${KEYRING_PATH}|
+ppa.launchpadcontent.net/kisak/kisak-mesa/ubuntu|${codename}|main|amd64,i386|${codename}|Kisak Mesa PPA|${KEYRING_PATH}|
+ppa.launchpadcontent.net/graphics-drivers/ppa/ubuntu|${codename}|main|amd64,i386|${codename}|Graphics Drivers PPA|${KEYRING_PATH}|
 ppa.launchpadcontent.net/libreoffice/ppa/ubuntu|${codename}|main|amd64|${codename}|LibreOffice PPA|${KEYRING_PATH}|
 repo.steampowered.com/steam|stable|steam|amd64,i386|stable|Steam|/usr/share/keyrings/ailinux-archive-keyring.gpg|
+developer.download.nvidia.com/compute/cuda/repos/ubuntu2604/x86_64|/||amd64|@flat|NVIDIA CUDA 26.04|${KEYRING_PATH}|
 EOF
 }
 
@@ -251,6 +257,11 @@ EOF
 
         ((discovered++)) || true
         list_content+=$'\n'"# ${label} (${repo_path})"
+
+        if [[ "$probe_dist" == "@flat" ]]; then
+            list_content+=$'\n'"deb [arch=${archs} signed-by=${signed_by}] ${BASE_URL}/${repo_path} /"
+            continue
+        fi
 
         local suite component
         for suite in ${suites//,/ }; do
@@ -388,7 +399,7 @@ main() {
     parse_args "$@"
 
     echo -e "\n${BOLD}╔════════════════════════════════════════════╗${NC}"
-    echo -e "${BOLD}║  AILinux Repo Adder v6.2                   ║${NC}"
+    echo -e "${BOLD}║  AILinux Repo Adder v6.3                   ║${NC}"
     echo -e "${BOLD}║  https://repo.ailinux.me                   ║${NC}"
     echo -e "${BOLD}╚════════════════════════════════════════════╝${NC}\n"
 
