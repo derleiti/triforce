@@ -78,6 +78,8 @@ class HandlerRegistry:
         self._register_memory_handlers()
         self._register_agent_handlers()
         self._register_code_handlers()
+        self._register_doc_handlers()
+        self._register_flarum_handlers()
         self._register_ollama_handlers()
         self._register_log_handlers()
         self._register_config_handlers()
@@ -294,11 +296,31 @@ class HandlerRegistry:
                     logger.error(f"Chat error: {e}")
                     return {"error": str(e)}
 
-            # Wrapper for models - list available models
+            # Wrapper for models - use the live shared ModelRegistry.
+            # Do not maintain a second/static model inventory in MCP.
             async def handle_list_models(params):
-                from app.services.model_registry import list_models
-                models = list_models()
-                return {"models": models}
+                from app.services.model_registry import registry
+
+                provider = str(params.get("provider") or "").strip().lower()
+                capability = str(params.get("capability") or "all").strip().lower()
+                capability = "embedding" if capability == "embed" else capability
+
+                models = await registry.list_models()
+                if provider:
+                    models = [m for m in models if m.provider.lower() == provider]
+                if capability and capability != "all":
+                    models = [m for m in models if capability in m.capabilities]
+
+                serialized = [m.to_dict() for m in models]
+                return {
+                    "models": serialized,
+                    "total": len(serialized),
+                    "filters": {
+                        "provider": provider or None,
+                        "capability": capability if capability != "all" else None,
+                    },
+                    "source": "model_registry",
+                }
 
             # Wrapper for specialist
             async def handle_specialist(params):
@@ -313,14 +335,14 @@ class HandlerRegistry:
     def _register_search_handlers(self):
         """Search: search, crawl"""
         try:
-            from app.services.search_mcp import handle_web_search
+            from app.services.search_mcp import handle_search
             from app.services.mcp_service import handle_crawl_url
 
             # Wrapper for crawl - uses crawl_url as default
             async def handle_crawl(params):
                 return await handle_crawl_url(params)
 
-            self.register("search", handle_web_search)
+            self.register("search", handle_search)
             self.register("crawl", handle_crawl)
         except ImportError as e:
             logger.warning(f"Search handlers import failed: {e}")
@@ -432,18 +454,18 @@ class HandlerRegistry:
             
             # Use existing handlers with new names
             async def handle_code_read(params):
-                from app.services.tristar_mcp import handle_codebase_file
+                from app.services.mcp_service import handle_codebase_file
                 return await handle_codebase_file(params)
             
             async def handle_code_search(params):
                 # Combine codebase_search and ram_search
                 if params.get("regex"):
                     return await handle_ram_search(params)
-                from app.services.tristar_mcp import handle_codebase_search
+                from app.services.mcp_service import handle_codebase_search
                 return await handle_codebase_search(params)
             
             async def handle_code_edit(params):
-                from app.services.tristar_mcp import handle_codebase_edit
+                from app.services.mcp_service import handle_codebase_edit
                 return await handle_codebase_edit(params)
             
             self.register("code_read", handle_code_read)
@@ -453,6 +475,28 @@ class HandlerRegistry:
             self.register("code_patch", handle_patch)
         except ImportError as e:
             logger.warning(f"Code handlers import failed: {e}")
+
+    def _register_doc_handlers(self):
+        """Documentation browser tools exposed by the unified V5 registry."""
+        try:
+            from app.mcp.doc_browser import DOC_TOOL_HANDLERS
+            n = self.register_many(DOC_TOOL_HANDLERS)
+            logger.info(f"Doc browser handlers registered: {n} tools")
+        except ImportError as e:
+            logger.warning(f"Doc browser handlers import failed: {e}")
+        except Exception as e:
+            logger.warning(f"Doc browser handlers registration failed: {e}")
+
+    def _register_flarum_handlers(self):
+        """Flarum forum tools, including V5 compatibility aliases."""
+        try:
+            from app.mcp.flarum_tools import FLARUM_TOOL_HANDLERS
+            n = self.register_many(FLARUM_TOOL_HANDLERS)
+            logger.info(f"Flarum handlers registered: {n} tools")
+        except ImportError as e:
+            logger.warning(f"Flarum handlers import failed: {e}")
+        except Exception as e:
+            logger.warning(f"Flarum handlers registration failed: {e}")
     
     def _register_ollama_handlers(self):
         """Ollama: ollama_list, ollama_pull, ollama_delete, ollama_run, ollama_embed, ollama_status"""
@@ -550,19 +594,49 @@ class HandlerRegistry:
                 return await handle_tristar_shell_exec(params)
 
             async def handle_restart(params):
-                """Restart the TriForce backend service via systemd.
-
-                Bridges the v4 'restart' tool to the existing
-                system_control.restart_backend() implementation that the
-                legacy 'restart_backend' route already uses.
-                """
+                """Restart the backend or a named CLI agent."""
                 try:
-                    from app.services import system_control
+                    from app.services.system_control import system_control as system_control_service
                 except ImportError as e:
                     logger.error(f"system_control import failed: {e}")
                     return {"status": "error", "message": f"system_control unavailable: {e}"}
-                delay = params.get("delay", 2)
-                return await system_control.restart_backend(delay)
+
+                target = params.get("target", "backend") or "backend"
+                if target == "backend":
+                    return await system_control_service.restart_backend(int(params.get("delay", 2)))
+                return await system_control_service.restart_agent(target)
+
+            async def handle_hot_reload(params):
+                """Reload a module, service group, route group, or all safe modules."""
+                try:
+                    from app.services.system_control import (
+                        hot_reloader,
+                        system_control as system_control_service,
+                    )
+                except ImportError as e:
+                    logger.error(f"system_control import failed: {e}")
+                    return {"status": "error", "message": f"system_control unavailable: {e}"}
+
+                scope = params.get("scope", "all")
+                if scope == "module":
+                    module_name = params.get("module", "")
+                    if not module_name:
+                        return {"status": "error", "error": "module is required when scope=module"}
+                    return await system_control_service.hot_reload_module(module_name)
+                if scope == "services":
+                    return await system_control_service.hot_reload_services()
+                if scope == "routes":
+                    results = hot_reloader.reload_routes()
+                    return {
+                        "scope": "routes",
+                        "reloaded": sum(1 for result in results if result.success),
+                        "failed": sum(1 for result in results if not result.success),
+                        "results": [
+                            {"module": result.module_name, "success": result.success, "error": result.error}
+                            for result in results
+                        ],
+                    }
+                return await system_control_service.hot_reload_all()
 
             async def handle_health(params):
                 """Comprehensive health check of all services"""
@@ -655,14 +729,19 @@ class HandlerRegistry:
                 except ImportError as e:
                     logger.error(f"mcp_debugger import failed: {e}")
                     return {"status": "error", "message": f"mcp_debugger unavailable: {e}"}
+                tool_name = params.get("tool_name", "")
                 return await mcp_debugger.debug_mcp_request(
-                    tool_name=params.get("tool_name", ""),
-                    params=params.get("params", {}),
+                    method="tools/call",
+                    params={
+                        "name": tool_name,
+                        "arguments": params.get("params", {}),
+                    },
                 )
 
             self.register("status", handle_status)
             self.register("shell", handle_shell_exec)
             self.register("restart", handle_restart)
+            self.register("hot_reload", handle_hot_reload)
             self.register("health", handle_health)
             self.register("debug", handle_debug)
         except ImportError as e:

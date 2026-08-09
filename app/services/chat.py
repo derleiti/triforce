@@ -172,6 +172,13 @@ OPENAI_COMPATIBLE_PROVIDERS = {
         "timeout_setting": "cerebras_timeout_ms",
         "headers": {},
     },
+    "nvidia": {
+        "base_url": "https://integrate.api.nvidia.com/v1",
+        "api_key_setting": "nvidia_api_key",
+        "api_key_env": "NVIDIA_API_KEY",
+        "timeout_setting": "nvidia_timeout_ms",
+        "headers": {},
+    },
     "kimi": {
         "base_url": "https://api.moonshot.ai/v1",
         "api_key_setting": "kimi_api_key",

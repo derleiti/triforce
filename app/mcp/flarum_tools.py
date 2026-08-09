@@ -219,6 +219,22 @@ async def handle_flarum_discussion(params: Dict[str, Any]) -> Dict:
 
 
 # =============================================================================
+# flarum_post_get — Einzelnen Post lesen
+# =============================================================================
+async def handle_flarum_post_get(params: Dict[str, Any]) -> Dict:
+    """Read a single Flarum post by ID."""
+    try:
+        post_id = params.get("id") or params.get("post_id")
+        if not post_id:
+            return _err("Parameter 'id' fehlt")
+
+        data = _get(f"/posts/{post_id}")
+        return {"post": _fmt_post(data.get("data", {}))}
+    except Exception as e:
+        return _err("flarum_post_get failed", e)
+
+
+# =============================================================================
 # flarum_posts — Neueste Posts listen
 # =============================================================================
 async def handle_flarum_posts(params: Dict[str, Any]) -> Dict:
@@ -448,6 +464,8 @@ async def handle_flarum_refresh(params: Dict[str, Any]) -> Dict:
 FLARUM_TOOL_HANDLERS = {
     "flarum_discussions":        handle_flarum_discussions,
     "flarum_discussion":         handle_flarum_discussion,
+    "flarum_discussion_get":     handle_flarum_discussion,
+    "flarum_post_get":           handle_flarum_post_get,
     "flarum_posts":              handle_flarum_posts,
     "flarum_post_create":        handle_flarum_post_create,
     "flarum_post_edit":          handle_flarum_post_edit,

@@ -45,6 +45,7 @@ from ..mcp.api_docs import get_api_docs, get_endpoint_for_task
 from ..mcp.translation import BidirectionalTranslator, APIToMCPTranslator, MCPToAPITranslator
 from ..mcp.specialists import specialist_router, SPECIALISTS
 from ..mcp.context import context_manager, prompt_library, workflow_manager
+from ..mcp.agent_instructions import build_mcp_instructions
 from ..mcp.adaptive_code import ADAPTIVE_CODE_TOOLS, ADAPTIVE_CODE_HANDLERS
 from ..mcp.adaptive_code_v4 import ADAPTIVE_CODE_V4_TOOLS, ADAPTIVE_CODE_V4_HANDLERS
 from ..mcp.handlers_group_chat import GROUP_CHAT_HANDLERS
@@ -1550,6 +1551,7 @@ async def handle_initialize(params: Dict[str, Any], request: Optional[Request] =
             "prompts": {},
             "resources": {},
         },
+        "instructions": build_mcp_instructions(),
     }
 
 
@@ -3848,7 +3850,8 @@ async def mcp_health_or_sse(request: Request):
             "endpoints": {
                 "sse": "/v1/mcp/sse",
                 "messages": "/v1/mcp/messages"
-            }
+            },
+            "instructions": build_mcp_instructions()
         }
     })
 
@@ -4046,7 +4049,8 @@ async def mcp_messages_handler(request: Request, session_id: Optional[str] = Non
                     "tools": {"listChanged": True},
                     "prompts": {"listChanged": True},
                     "resources": {"listChanged": True}
-                }
+                },
+                "instructions": build_mcp_instructions()
             }
             response = {"jsonrpc": "2.0", "result": result, "id": req_id}
 
@@ -4204,7 +4208,8 @@ async def _process_mcp_request(
                 "tools": {"listChanged": True},
                 "prompts": {"listChanged": True},
                 "resources": {"listChanged": True}
-            }
+            },
+            "instructions": build_mcp_instructions()
         }
         latency_ms = (_time.time() - start_time) * 1000
         await multi_logger.log_mcp(method, params, result, latency_ms)

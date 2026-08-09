@@ -38,6 +38,7 @@ from ..services.memory_index import MEMORY_INDEX_TOOLS
 from ..services.system_control import HOTRELOAD_TOOLS
 from ..services.llm_compat import LLM_COMPAT_TOOLS
 from ..mcp.api_docs import API_DOCUMENTATION
+from ..mcp.agent_instructions import build_mcp_instructions
 
 logger = logging.getLogger("ailinux.init_service")
 
@@ -280,75 +281,19 @@ class InitService:
         self._initialized = False
 
     def _generate_default_system_prompt(self) -> str:
+        """Return the current provider-neutral MCP operating policy.
+
+        Detailed tool inventories are intentionally not embedded here because
+        client-visible tools can change by deployment, tier, and permission.
+        The live ``tools/list`` response is authoritative.
         """
-        Generiert den Default-System-Prompt für alle Agents.
-        Enthält alles was bei /v1/mcp/init erwartet wird.
-        """
-        return """# TriForce MCP System v2.80
-## API Endpoints
-- REST: https://api.ailinux.me/v1/
-- MCP: https://api.ailinux.me/mcp/
-- TriForce: https://api.ailinux.me/triforce/
-
-## CLI Coding Agents (4 aktive + 16 konfigurierte)
-| Agent | Typ | Befehl | Features |
-|-------|-----|--------|----------|
-| claude-mcp | Claude Code | claude-triforce -p | Code-Review, Architektur, Debugging, Patches |
-| codex-mcp | OpenAI Codex | codex-triforce exec --full-auto | Autonome Code-Generierung, Full-Auto Mode |
-| gemini-mcp | Gemini Lead | gemini-triforce --yolo | Koordination, Research, Multi-LLM Orchestrierung |
-| opencode-mcp | OpenCode | opencode-triforce run | Code-Ausführung, Refactoring |
-
-### Weitere Agents (konfiguriert)
-mistral, deepseek, nova, qwen, kimi, cogito
-
-### Agent-Fähigkeiten
-- **Analyse:** Architektur-Review, Debugging, Code-Qualität
-- **Code:** Generierung, Refactoring, Patches, Tests
-- **Research:** Web-Recherche, Dokumentation, Kontext
-- **Koordination:** Task-Verteilung, Parallelisierung, Konsens
-
-## Shortcode Protocol v2.0
-AGENTS: @c=claude @g=gemini @x=codex @o=opencode @m=mistral @d=deepseek @n=nova @q=qwen @k=kimi @co=cogito @*=all @mcp=server
-ACTIONS: !g=generate !c=code !r=review !s=search !f=fix !a=analyze !d=delegate !m=mem !?=query !x=exec !t=test !e=explain !sum=summarize
-FLOW: >=send <=ret >>=chain <<=final |=pipe
-OUTPUT: =[var] @[var] [outputtoken] [prompt] [result]
-PRIORITY: !!!=critical !!=high ~=low #=tag
-
-## Tool Categories (131 MCP Tools, 19 Kategorien)
-- core(4): chat, list_models, ask_specialist, crawl_url
-- search(8): web_search, smart_search, multi_search, google_deep_search, ailinux_search, grokipedia_search
-- realtime(6): weather, crypto_prices, stock_indices, market_overview, current_time
-- codebase(20): codebase_structure/file/search/edit/create, code_scout/probe, ram_search, *_v4 Tools
-- agents(9): cli-agents_list/get/start/stop/restart/call/broadcast/output/stats
-- memory(7): tristar_memory_store/search, memory_index_add/search/get/compact/stats
-- ollama(12): ollama_list/show/pull/push/copy/delete/create/ps/generate/chat/embed/health
-- mesh(7): mesh_submit_task/queue_command/get_status/list_agents/get_task/filter_check/audit
-- queue(6): queue_enqueue/research/status/get/agents/broadcast
-- gemini(9): gemini_research/coordinate/quick/update/function_call/code_exec/init_all/init_model/get_models
-- tristar(21): tristar_models/init/logs/prompts/settings/conversations/agents/status/shell_exec
-- triforce(5): triforce_logs_recent/errors/api/trace/stats
-- init(7): init, compact_init, tool_lookup, decode/execute_shortcode, loadbalancer/mcp_brain_status
-- bootstrap(6): bootstrap_agents, wakeup_agent, bootstrap_status, process_agent_output, rate_limit/execution_log
-- evolve(3): evolve_analyze/history/broadcast
-- llm_compat(2): llm_compat_convert/parse
-- hotreload(6): hot_reload_module/services/all, list_reloadable_modules, reinit_service, reload_history
-- huggingface(7): hf_generate/chat/embed/image/summarize/translate/models
-- debug(6): debug_mcp_request, check_compatibility, restart_backend/agent, debug_toolchain, execute_mcp_tool
-
-## Usage Examples
-@g>!s"linux kernel"=[r]>>@c>!sum@[r]  -> Gemini sucht, Claude fasst zusammen
-@c>!code"REST API"#backend!!          -> Claude schreibt Code, high priority
-@*>!query"status"                      -> Broadcast an alle Agents
-@x>!exec"python script">>@m>!review   -> Codex führt aus, Mistral reviewt
-
-## Agent-Kommunikation
-cli-agents_call(agent_id, message)     -> Direkter Agent-Aufruf
-cli-agents_broadcast(message)          -> An alle Agents senden
-gemini_coordinate(task, targets)       -> Gemini koordiniert Multi-Agent Task
-
-## Parse Mode
-Diese Referenz ist zum Anwenden, nicht zum Memorieren.
-Bei Tool-Bedarf: tool_lookup(name) aufrufen."""
+        return (
+            build_mcp_instructions()
+            + "\n\nOptional internal orchestration: TriForce Shortcode Protocol v2.0 "
+              "is available for explicit agent-to-agent workflows. Do not use "
+              "shortcodes when a normal MCP tool call is clearer. Discover "
+              "current tools with tools/list instead of memorizing inventories."
+        )
 
     async def get_init_response(
         self,
@@ -357,6 +302,7 @@ Bei Tool-Bedarf: tool_lookup(name) aufrufen."""
         include_docs: bool = True,
         include_tools: bool = True,
         decode_shortcode: Optional[str] = None,
+        compact: bool = False,
     ) -> Dict[str, Any]:
         """
         Generiert Init-Response für einen Endpoint.
@@ -371,6 +317,32 @@ Bei Tool-Bedarf: tool_lookup(name) aufrufen."""
         Returns:
             Vollständige Init-Response
         """
+        if compact:
+            from ..mcp.agent_instructions import AGENT_ROLE_OVERLAYS
+
+            response = {
+                "endpoint": endpoint,
+                "version": self._version,
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "mode": "compact",
+                "system_prompt": self._generate_default_system_prompt(),
+                "capabilities": {
+                    "mcp_endpoint": "/v1/mcp",
+                    "tool_discovery": "tools/list",
+                    "tool_execution": "tools/call",
+                    "model_discovery": "models",
+                },
+                "instruction": (
+                    "Discover current tools and models from the live MCP session, follow the "
+                    "selected tool schema, and verify observable results before reporting success."
+                ),
+            }
+            if agent_id:
+                response["agent_id"] = agent_id
+                if agent_id in AGENT_ROLE_OVERLAYS:
+                    response["role"] = AGENT_ROLE_OVERLAYS[agent_id]
+            return response
+
         from .tristar.shortcodes import (
             get_shortcode_documentation,
             auto_decode_shortcode,
@@ -698,38 +670,24 @@ class CompactInitGenerator:
     # TRIFORCE BACKEND KURZREFERENZ (Kapitel 1 - am Anfang jeder Init)
     # ============================================================================
 
-    BACKEND_OVERVIEW = """[TRIFORCE BACKEND v2.80]
-ARCHITEKTUR:
-├── API: https://api.ailinux.me/v1/ (REST) | /mcp/ (MCP Protocol) | /triforce/ (Mesh)
-├── AUTH: Bearer Token via X-MCP-Key Header | OAuth2 via /auth/
-├── AGENTS: 10 CLI-Agents (Claude,Codex,Gemini,OpenCode,Mistral,DeepSeek,Nova,Qwen,Kimi,Cogito)
-├── MESH: Gemini-Lead koordiniert, Workers führen aus, Reviewer prüfen
-└── MEMORY: Shared Memory mit Confidence-Scoring, persistiert in /var/tristar/
-
-CLI CODING AGENTS:
-├── claude-mcp: Code-Review, Architektur, Debugging, Patches (claude-triforce -p)
-├── codex-mcp: Autonome Code-Generierung, Full-Auto Mode (codex-triforce exec --full-auto)
-├── gemini-mcp: Koordination, Research, Multi-LLM Orchestrierung (gemini-triforce --yolo)
-└── opencode-mcp: Code-Ausführung, Refactoring (opencode-triforce run)
-
-KOMMUNIKATION:
-1. REST→POST /v1/chat {model,messages} | /v1/models | /v1/search
-2. MCP→POST /mcp {"jsonrpc":"2.0","method":"tools/call","params":{"name":"..","arguments":{}}}
-3. SHORTCODE→@agent>!action"param"=[var] (intern, zwischen Agents)
-4. MESH→/triforce/mesh/call | /mesh/broadcast | /mesh/consensus
-5. AGENT→cli-agents_call(agent_id,msg) | cli-agents_broadcast(msg)
-
-TOOLS: 131 MCP-Tools in 19 Kategorien (core,search,realtime,codebase,agents,memory,ollama,mesh,queue,gemini,tristar,triforce,init,bootstrap,evolve,llm_compat,hotreload,huggingface,debug)
+    BACKEND_OVERVIEW = """[AILINUX TRIFORCE MCP]
+ROLE: control and tool plane for AILinux clients and agents
+ENDPOINT: /v1/mcp
+DISCOVERY: tools/list is authoritative for the current client, tier and deployment
+WORKFLOW: inspect -> plan -> smallest action -> verify
+TOOLS: prefer specific typed tools; binary_exec for direct programs; task_runner for compound shell tasks
+SAFETY: read before write; least privilege; preserve unrelated changes; never expose secrets
+FAILURES: inspect errors, change approach before retrying, avoid identical retry loops
+MODELS: choose by current capability/availability; fallback must be a distinct usable route
 """
 
     # Meta-Instruktion: Parse-Only (nicht memorieren, sondern anwenden)
-    META_INSTRUCTION = """[PARSE-MODE]
-Diese MCP-Referenz ist NICHT zum Memorieren.
-Behandle als ausführbare Grammatik - parse bei Bedarf:
-- Lookup bei Tool-Nutzung, nicht speichern
-- Pattern-Match auf Shortcodes, nicht auswendig lernen
-- Bei Unklarheit: tools/list aufrufen, nicht raten
-[/PARSE-MODE]"""
+    META_INSTRUCTION = """[DISCOVERY-MODE]
+Do not memorize static inventories.
+- Use tools/list and current schemas before tool use.
+- Prefer targeted reads/searches over broad dumps.
+- Verify observable results before reporting success.
+[/DISCOVERY-MODE]"""
 
     # ============================================================================
     # SHORTCODE SPRACHE (Kapitel 2 - Token-effiziente Agent-Kommunikation)
@@ -816,12 +774,11 @@ EX:@g>!s"query"=[r]>>@c>!sum@[r] | @g>>@c!code"feat"#urgent"""
 
     # Tool-Nutzungsmuster (für aktive Anwendung)
     USAGE_PATTERNS = """USE:
-1.search→smart_search(query) oder web_search(query)
-2.code→codebase_structure()→codebase_file(path)→codebase_edit(path,mode,text)
-3.agent→cli-agents_list()→cli-agents_call(id,msg)
-4.memory→tristar_memory_store(content,type)→tristar_memory_search(query)
-5.chain→debug_toolchain(preset) für Kombination
-PRESETS:full_trace_analysis,agent_health_check,error_investigation,tool_performance"""
+1.discovery -> tools/list -> inspect the selected tool schema
+2.code -> search/read -> edit/patch -> tests -> git diff/status
+3.system -> read-only status/logs -> smallest typed action -> health verification
+4.remote -> discover host/state -> explicit target -> verify remote result
+5.failure -> read error -> change input/approach -> retry only with new evidence"""
 
     # ============================================================================
     # VOLLSTÄNDIGE TOOL-LISTE (alle 123 MCP Tools)
@@ -955,26 +912,16 @@ PRESETS:full_trace_analysis,agent_health_check,error_investigation,tool_performa
             else:
                 parts.append(self.SHORTCODE_COMPACT)
 
-        # Tool-Kategorien (kompakt oder vollständig)
+        # Tool inventory is intentionally discovered live. Client-visible tools
+        # can differ by permissions/tier and change without a prompt release.
         if include_tools:
-            # Zähle alle Tools
-            total_tools = sum(len(tools) for tools in self.ALL_TOOLS_BY_CATEGORY.values())
-            tool_lines = [f"[{total_tools} MCP TOOLS]"]
-
-            for cat, tools in self.ALL_TOOLS_BY_CATEGORY.items():
-                # Zeige alle Tools pro Kategorie
-                tool_str = ",".join(tools[:6])
-                if len(tools) > 6:
-                    tool_str += f"+{len(tools)-6}"
-                tool_lines.append(f"{cat}({len(tools)}):{tool_str}")
-
-            parts.append("\n".join(tool_lines))
+            parts.append("TOOLS:discover live with tools/list; current schemas are authoritative")
 
         # Nutzungsmuster
         parts.append(self.USAGE_PATTERNS)
 
         # Wichtige Hinweise (minimal)
-        parts.append("NOTE:tools/call→method,params|chains→use debug_toolchain(preset)|tool_lookup(name)→Details")
+        parts.append("NOTE: use tools/call with the current schema; verify results; do not assume static tool counts")
 
         result = "\n".join(parts)
 
@@ -1174,13 +1121,15 @@ INIT_TOOLS = [
 
 
 async def handle_init(params: Dict[str, Any]) -> Dict[str, Any]:
-    """Handle init tool"""
+    """Handle init tool, including the V5 compact session contract."""
+    compact = bool(params.get("compact", False))
     return await init_service.get_init_response(
         endpoint=params.get("endpoint", "mcp"),
-        agent_id=params.get("agent_id"),
-        include_docs=params.get("include_docs", True),
-        include_tools=params.get("include_tools", True),
+        agent_id=params.get("agent_id") or params.get("agent"),
+        include_docs=False if compact else params.get("include_docs", True),
+        include_tools=False if compact else params.get("include_tools", True),
         decode_shortcode=params.get("decode_shortcode"),
+        compact=compact,
     )
 
 
@@ -1231,7 +1180,7 @@ async def handle_compact_init(params: Dict[str, Any]) -> Dict[str, Any]:
 
     # Füge Parse-Mode Hinweis hinzu
     result["parse_mode"] = True
-    result["instruction"] = "NICHT memorieren. Bei Tool-Bedarf: tool_lookup(name) aufrufen."
+    result["instruction"] = "Do not memorize inventories. Discover current tools with tools/list and follow the live schema."
 
     return result
 

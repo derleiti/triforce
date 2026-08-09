@@ -46,10 +46,23 @@ else
   export ANTHROPIC_API_KEY  # Fallback auf API-Key wenn OAuth abgelaufen
 fi
 
-# Gemini: OAuth aus ~/.gemini/oauth_creds.json
-unset GEMINI_API_KEY
-unset GOOGLE_AI_STUDIO_KEY
-unset GOOGLE_GEMINI_KEY
+# Gemini: prefer OAuth when credentials exist; otherwise map configured API-key aliases
+# to the variable expected by @google/gemini-cli.
+if [[ -s /home/zombie/.gemini/oauth_creds.json ]]; then
+  unset GEMINI_API_KEY
+  unset GOOGLE_AI_STUDIO_KEY
+  unset GOOGLE_GEMINI_KEY
+else
+  if [[ -z "${GEMINI_API_KEY:-}" ]]; then
+    if [[ -n "${GOOGLE_GEMINI_KEY:-}" ]]; then
+      export GEMINI_API_KEY="$GOOGLE_GEMINI_KEY"
+    elif [[ -n "${GOOGLE_AI_STUDIO_KEY:-}" ]]; then
+      export GEMINI_API_KEY="$GOOGLE_AI_STUDIO_KEY"
+    fi
+  fi
+  unset GOOGLE_AI_STUDIO_KEY
+  unset GOOGLE_GEMINI_KEY
+fi
 
 # Codex: Account-Token aus ~/.codex/auth.json
 unset OPENAI_API_KEY

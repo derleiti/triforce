@@ -8,6 +8,7 @@ _auto_update_npm "@google/gemini-cli"
 # Gemini nutzt OAuth-Credentials aus ~/.gemini/oauth_creds.json
 # XDG_CONFIG_HOME gesetzt in triforce-env.sh
 export XDG_CONFIG_HOME="/home/zombie/.config"
+export GEMINI_CLI_TRUST_WORKSPACE="true"
 
 _log_agent_start "gemini" "gemini-2.5-flash" "$@"
 exec gemini "$@"

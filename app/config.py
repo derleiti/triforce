@@ -75,7 +75,15 @@ class Settings(BaseSettings):
     gpt_oss_base_url: AnyHttpUrl | None = Field(default=None, validation_alias="GPT_OSS_BASE_URL")
 
     # Gemini
-    gemini_api_key: str | None = Field(default=None, validation_alias="GEMINI_API_KEY")
+    gemini_api_key: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices(
+            "GEMINI_API_KEY",
+            "GOOGLE_GEMINI_KEY",
+            "GOOGLE_AI_STUDIO_KEY",
+            "GOOGLE_API_KEY",
+        ),
+    )
     google_url: Optional[str] = Field(default=None, validation_alias="GOOGLE_URL")
     google_user: Optional[str] = Field(default=None, validation_alias="GOOGLE_USER")
     google_pass: Optional[str] = Field(default=None, validation_alias="GOOGLE_PASS")

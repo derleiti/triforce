@@ -124,8 +124,22 @@ class MCPDebugger:
             trace["routing"]["type"] = "tool_call"
             trace["routing"]["target_tool"] = tool_name
 
-            # Check handler
+            # Check direct/legacy handlers first, then the unified v4 registry.
             handler = TOOL_HANDLERS.get(tool_name) or MCP_HANDLERS.get(tool_name)
+            resolved_tool_name = tool_name
+            if not handler:
+                try:
+                    from app.mcp.tool_registry_unified import resolve_tool_name_for_call
+                    from app.mcp.handlers_v4 import get_tool_handler
+
+                    resolved_tool_name = resolve_tool_name_for_call(tool_name)
+                    handler = get_tool_handler(resolved_tool_name)
+                    if handler:
+                        trace["routing"]["registry"] = "unified_v4"
+                        trace["routing"]["resolved_tool"] = resolved_tool_name
+                except Exception as exc:
+                    trace["routing"]["registry_error"] = str(exc)
+
             if handler:
                 trace["routing"]["status"] = "found"
                 trace["handler_info"]["function"] = handler.__name__

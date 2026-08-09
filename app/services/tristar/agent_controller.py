@@ -27,6 +27,8 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 import aiohttp
 
+from ...mcp.agent_instructions import build_agent_system_prompt
+
 logger = logging.getLogger("ailinux.tristar.agent_controller")
 
 # SECURITY: Whitelist of allowed command executables
@@ -338,12 +340,15 @@ class AgentController:
 
         self.data_dir.mkdir(parents=True, exist_ok=True)
 
-        # Lade gespeicherte Konfigurationen
+        # Lade gespeicherte Konfigurationen. Known legacy built-in prompts are
+        # migrated in-memory to the shared core + role overlay and persisted.
         await self._load_configs()
 
         # Registriere Default-Agenten wenn keine vorhanden
         if not self.agents:
             await self._register_default_agents()
+        else:
+            await self._save_configs()
 
         # Starte Health Monitor
         self._monitor_task = asyncio.create_task(self._health_monitor())
@@ -391,6 +396,20 @@ class AgentController:
                         skipped_count += 1
                         continue
 
+                    stored_prompt = agent_data.get("system_prompt", "")
+                    stored_source = agent_data.get("system_prompt_source", "triforce")
+                    legacy_prefixes = {
+                        "claude-mcp": "Du bist claude-mcp,",
+                        "gemini-mcp": "Du bist gemini-mcp,",
+                        "codex-mcp": "Du bist codex-mcp,",
+                        "opencode-mcp": "Du bist opencode-mcp,",
+                    }
+                    legacy_prefix = legacy_prefixes.get(agent_id)
+                    if legacy_prefix and stored_prompt.lstrip().startswith(legacy_prefix):
+                        stored_prompt = build_agent_system_prompt(agent_id)
+                        stored_source = "triforce"
+                        logger.info("Migrated legacy built-in prompt for %s", agent_id)
+
                     config = AgentConfig(
                         agent_id=agent_data["agent_id"],
                         agent_type=AgentType(agent_data["agent_type"]),
@@ -398,8 +417,8 @@ class AgentController:
                         command=command,
                         working_dir=agent_data.get("working_dir", "/home/zombie/triforce"),
                         env=agent_data.get("env", {}),
-                        system_prompt=agent_data.get("system_prompt", ""),
-                        system_prompt_source=agent_data.get("system_prompt_source", "triforce"),
+                        system_prompt=stored_prompt,
+                        system_prompt_source=stored_source,
                         mcp_enabled=agent_data.get("mcp_enabled", True),
                         mcp_port=agent_data.get("mcp_port"),
                         auto_restart=agent_data.get("auto_restart", True),
@@ -844,11 +863,23 @@ class AgentController:
                 if len(instance.output_buffer) > 100:
                     instance.output_buffer = instance.output_buffer[-100:]
 
+                exit_code = process.returncode
+                if exit_code == 0:
+                    return {
+                        "agent_id": agent_id,
+                        "status": "success",
+                        "response": response,
+                        "exit_code": exit_code,
+                    }
+
+                error_message = response or f"Agent exited with code {exit_code}"
+                instance.last_error = error_message[:500]
                 return {
                     "agent_id": agent_id,
-                    "status": "success",
+                    "status": "error",
+                    "error": error_message,
                     "response": response,
-                    "exit_code": process.returncode,
+                    "exit_code": exit_code,
                 }
 
             except asyncio.TimeoutError:
