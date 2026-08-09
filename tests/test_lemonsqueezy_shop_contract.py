@@ -10,7 +10,10 @@ def read(path: Path) -> str:
 
 
 def test_shop_config_exposes_required_runtime_flags() -> None:
-    config = read(PLUGIN / "config/lemonsqueezy.php")
+    # Runtime flags live in the versioned plugin bootstrap. The optional local
+    # config/lemonsqueezy.php is intentionally gitignored and must not be
+    # required for a clean checkout/deployment.
+    config = read(PLUGIN / "nova-ai-frontend.php")
     for name in (
         "NOVA_LS_API_KEY",
         "NOVA_LS_STORE_ID",

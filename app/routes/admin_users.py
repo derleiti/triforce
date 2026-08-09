@@ -116,9 +116,12 @@ def _merge_user(payload: UserUpsertPayload) -> Dict[str, Any]:
     entitlements.update({k: bool(v) for k, v in payload.entitlements.items()})
     entitlements.update({k: bool(v) for k, v in payload.nova_entitlements.items()})
 
-    # Rohe Produkt-IDs/Slugs aus 'extra' auf kanonische Schluessel abbilden
-    # ("970007" -> "copa_ocr", "Copa OCR" -> "copa_ocr", ...)
-    if payload.extra:
+    # Rohe Produkt-IDs/Slugs aus 'extra' auf kanonische Schluessel abbilden.
+    # Fuer WordPress ist 'extra' die autoritative Kauf-/Refund-Liste: auch eine
+    # explizit leere Liste muss bestehende Entitlements entfernen.
+    if payload.source == "wordpress" and payload.extra is not None:
+        entitlements = normalize_entitlements(payload.extra)
+    elif payload.extra:
         entitlements.update(normalize_entitlements(payload.extra))
 
     billing = payload.billing
