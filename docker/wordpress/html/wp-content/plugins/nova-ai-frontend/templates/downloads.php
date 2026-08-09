@@ -12,7 +12,7 @@ $data    = $service->get_directory_contents($path);
 <div class="nov-dl" data-base-url="<?php echo esc_attr(home_url('/downloads')); ?>">
 
     <?php /* ── Breadcrumb ─────────────────────────────────────── */ ?>
-    <nav class="nov-dl__crumb" aria-label="Pfad-Navigation">
+    <nav class="nov-dl__crumb" aria-label="Path navigation">
         <?php foreach ($data['breadcrumb'] as $i => $crumb): ?>
             <?php if ($i > 0): ?><span class="nov-dl__crumb-sep">›</span><?php endif; ?>
             <?php if ($i === count($data['breadcrumb']) - 1): ?>
@@ -28,7 +28,7 @@ $data    = $service->get_directory_contents($path);
     <?php if (empty($data['files'])): ?>
         <div class="nov-dl__empty">
             <span class="nov-dl__empty-icon">📂</span>
-            <p>Dieser Ordner ist leer.</p>
+            <p>This folder is empty.</p>
         </div>
     <?php else: ?>
         <div class="nov-dl__grid">
@@ -51,7 +51,7 @@ $data    = $service->get_directory_contents($path);
 
                         <?php if (!empty($file['description'])): ?>
                             <p class="nov-dl__card-desc">
-                                <span class="nov-dl__ai-badge" title="KI-Beschreibung">✦ KI</span>
+                                <span class="nov-dl__ai-badge" title="AI description">✦ AI</span>
                                 <?php echo esc_html($file['description']); ?>
                             </p>
                         <?php endif; ?>
@@ -65,11 +65,11 @@ $data    = $service->get_directory_contents($path);
                     <div class="nov-dl__card-action">
                         <?php if ($file['type'] === 'folder'): ?>
                             <button class="nov-dl__btn nov-dl__btn--open" data-path="<?php echo esc_attr($file['path']); ?>"
-                                    title="Ordner öffnen">›</button>
+                                    title="Open folder">›</button>
                         <?php else: ?>
                             <a class="nov-dl__btn nov-dl__btn--dl"
                                href="<?php echo esc_url($file['url']); ?>"
-                               download title="Herunterladen">↓</a>
+                               download title="Download">↓</a>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -293,7 +293,7 @@ html[data-theme='light'] .nov-dl__btn {
             var parent = container.parentNode;
 
             if (!data.files || data.files.length === 0) {
-                parent.innerHTML += '<div class="nov-dl__empty"><span class="nov-dl__empty-icon">📂</span><p>Dieser Ordner ist leer.</p></div>';
+                parent.innerHTML += '<div class="nov-dl__empty"><span class="nov-dl__empty-icon">📂</span><p>This folder is empty.</p></div>';
                 if (container.classList) container.remove();
                 return;
             }
@@ -302,14 +302,14 @@ html[data-theme='light'] .nov-dl__btn {
             data.files.forEach(function(f){
                 var isFolder = f.type === 'folder';
                 var desc = f.description
-                    ? '<p class="nov-dl__card-desc"><span class="nov-dl__ai-badge" title="KI-Beschreibung">✦ KI</span>' + escHtml(f.description) + '</p>'
+                    ? '<p class="nov-dl__card-desc"><span class="nov-dl__ai-badge" title="AI description">✦ AI</span>' + escHtml(f.description) + '</p>'
                     : '';
                 var nameHtml = isFolder
                     ? '<button class="nov-dl__folder-btn" data-path="' + escHtml(f.path) + '">' + escHtml(f.name) + '</button>'
                     : '<span>' + escHtml(f.name) + '</span>';
                 var action = isFolder
-                    ? '<button class="nov-dl__btn nov-dl__btn--open" data-path="' + escHtml(f.path) + '" title="Öffnen">›</button>'
-                    : '<a class="nov-dl__btn nov-dl__btn--dl" href="' + escHtml(f.url) + '" download title="Herunterladen">↓</a>';
+                    ? '<button class="nov-dl__btn nov-dl__btn--open" data-path="' + escHtml(f.path) + '" title="Open">›</button>'
+                    : '<a class="nov-dl__btn nov-dl__btn--dl" href="' + escHtml(f.url) + '" download title="Download">↓</a>';
 
                 html += '<div class="nov-dl__card ' + (isFolder ? 'is-folder' : 'is-file') + '" data-path="' + escHtml(f.path) + '">'
                     + '<div class="nov-dl__card-icon">' + f.icon + '</div>'

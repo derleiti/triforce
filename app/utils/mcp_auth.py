@@ -39,7 +39,7 @@ from ..config import get_settings
 logger = logging.getLogger("ailinux.auth")
 
 # Log directory
-_LOG_DIR = Path(__file__).parent.parent.parent / "triforce" / "logs"
+_LOG_DIR = Path(__file__).parent.parent.parent / "logs"
 _LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 # File handler for auth log
@@ -212,11 +212,39 @@ def _safe_compare(a: str, b: str) -> bool:
 
 
 def _validate_credentials(username: str, password: str) -> bool:
-    """Validate username/password against .env credentials."""
-    if not MCP_AUTH_USER or not MCP_AUTH_PASS:
-        logger.error("Auth credentials not configured (MCP_OAUTH_USER/MCP_OAUTH_PASS)")
+    """
+    Validate OAuth username/password or static client_id/client_secret
+    against MCP_OAUTH_USER / MCP_OAUTH_PASS from the live environment.
+    Reads os.environ at call time so systemd/env rotations work after restart.
+    """
+    import os
+    import secrets
+    import logging
+
+    expected_user = os.getenv("MCP_OAUTH_USER", "").strip()
+    expected_pass = os.getenv("MCP_OAUTH_PASS", "").strip()
+
+    username = (username or "").strip()
+    password = (password or "").strip()
+
+    if not expected_user or not expected_pass:
+        logging.getLogger("ailinux.auth").error(
+            "AUTH_ERROR | MCP_OAUTH_USER/PASS not configured"
+        )
         return False
-    return _safe_compare(username, MCP_AUTH_USER) and _safe_compare(password, MCP_AUTH_PASS)
+
+    ok = (
+        secrets.compare_digest(username, expected_user)
+        and secrets.compare_digest(password, expected_pass)
+    )
+
+    if not ok:
+        logging.getLogger("ailinux.auth").warning(
+            "AUTH_FAIL | user_len=%s expected_user_len=%s pass_len=%s expected_pass_len=%s",
+            len(username), len(expected_user), len(password), len(expected_pass)
+        )
+
+    return ok
 
 
 def _extract_basic_auth(request: Request) -> Tuple[str, str]:
@@ -350,23 +378,28 @@ async def require_mcp_auth(request: Request) -> str:
     """
     client_ip = request.client.host if request.client else "unknown"
     auth_header = request.headers.get("Authorization", "")
-    query_token = (
-        request.query_params.get("access_token")
-        or request.query_params.get("mcp_token")
-        or request.query_params.get("token")
-        or ""
-    ).strip()
+    query_token = ""
+    if os.environ.get("ALLOW_QUERY_TOKEN_AUTH") == "1":
+        query_token = (
+            request.query_params.get("access_token")
+            or request.query_params.get("mcp_token")
+            or request.query_params.get("token")
+            or ""
+        ).strip()
     
-    # Port-based auth decision
+    # Port/header-based auth decision
     forwarded_port = request.headers.get("X-Forwarded-Port", "")
+    forwarded_for = request.headers.get("X-Forwarded-For", "")
     
-    # No X-Forwarded-Port = internal/public → bypass
-    if forwarded_port != "9100":
+    # No forwarding headers = trusted internal call → bypass
+    # Forwarded internal requests must still authenticate because they originated externally.
+    if forwarded_port != "9100" and not forwarded_for:
+        request.state.mcp_auth_user = "internal"
         logger.debug(f"AUTH_OK | IP: {client_ip} | X-Fwd-Port: {forwarded_port or 'none'} | Method: port_bypass")
         return "internal"
     
-    # External request (port 9100) → requires auth
-    logger.debug(f"AUTH_CHECK | IP: {client_ip} | X-Fwd-Port: {forwarded_port}")
+    # External/forwarded request → requires auth
+    logger.debug(f"AUTH_CHECK | IP: {client_ip} | X-Fwd-Port: {forwarded_port or 'none'} | X-Fwd-For: {forwarded_for or 'none'}")
     
     if not MCP_AUTH_USER or not MCP_AUTH_PASS:
         logger.error("AUTH_ERROR | MCP_OAUTH_USER/PASS not configured")
@@ -375,6 +408,8 @@ async def require_mcp_auth(request: Request) -> str:
     # Method 0: query parameter fallback for MCP clients that drop headers
     if query_token:
         if is_valid_token(query_token):
+            request.state.mcp_auth_user = "oauth_client"
+            request.state.mcp_auth_method = "query"
             logger.debug(f"AUTH_OK | IP: {client_ip} | Method: query-param")
             return "oauth_client"
         logger.warning(f"AUTH_FAIL | IP: {client_ip} | Reason: invalid_query_param")
@@ -384,6 +419,8 @@ async def require_mcp_auth(request: Request) -> str:
     if auth_header.lower().startswith("bearer "):
         token = auth_header[7:].strip()
         if is_valid_token(token):
+            request.state.mcp_auth_user = "oauth_client"
+            request.state.mcp_auth_method = "bearer"
             logger.debug(f"AUTH_OK | IP: {client_ip} | Method: bearer")
             return "oauth_client"
         # JWT Bridge: Akzeptiere JWTs vom /v1/client/login als gültige MCP-Bearer
@@ -399,6 +436,8 @@ async def require_mcp_auth(request: Request) -> str:
     if auth_header.lower().startswith("basic "):
         username, password = _extract_basic_auth(request)
         if _validate_credentials(username, password):
+            request.state.mcp_auth_user = username
+            request.state.mcp_auth_method = "basic"
             logger.debug(f"AUTH_OK | IP: {client_ip} | Method: basic | User: {username}")
             return username
         else:

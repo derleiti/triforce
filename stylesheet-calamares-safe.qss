@@ -1,0 +1,206 @@
+/* AILinuX Nova Dark — Calamares-safe theme */
+QWidget {
+    background-color: #0e1116;
+    color: #e3e8f1;
+    font-family: "Inter", "Noto Sans", sans-serif;
+}
+
+QMainWindow,
+QDialog,
+QWidget#centralWidget,
+QWidget#mainWidget {
+    background-color: #0e1116;
+}
+
+QLabel {
+    background: transparent;
+    color: #e3e8f1;
+}
+
+QLabel:disabled {
+    color: #64748b;
+}
+
+#sidebarApp {
+    background-color: #131822;
+    color: #a9b3c0;
+    border-right: 1px solid #263040;
+}
+
+#sidebarApp QLabel {
+    color: #a9b3c0;
+}
+
+QGroupBox {
+    background-color: #131822;
+    border: 1px solid #263040;
+    border-radius: 10px;
+    margin-top: 12px;
+    padding-top: 8px;
+    font-weight: 600;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    left: 12px;
+    padding: 0 5px;
+    color: #7bd7ff;
+}
+
+QPushButton {
+    background-color: #1b2330;
+    color: #e3e8f1;
+    border: 1px solid #2f3a4e;
+    border-radius: 7px;
+    padding: 6px 14px;
+    font-weight: 600;
+}
+
+QPushButton:hover {
+    background-color: #243146;
+    border-color: #3aa0ff;
+}
+
+QPushButton:pressed,
+QPushButton:checked {
+    background-color: #2f7df4;
+    border-color: #7bd7ff;
+    color: #ffffff;
+}
+
+QPushButton:default {
+    background-color: #3aa0ff;
+    border-color: #60b4ff;
+    color: #0e1116;
+}
+
+QPushButton:default:hover {
+    background-color: #44d19a;
+    border-color: #7bdcb5;
+}
+
+QPushButton:disabled {
+    background-color: #161b22;
+    border-color: #242933;
+    color: #64748b;
+}
+
+QLineEdit,
+QTextEdit,
+QPlainTextEdit,
+QSpinBox,
+QDoubleSpinBox,
+QComboBox {
+    background-color: #131822;
+    color: #e3e8f1;
+    border: 1px solid #2a3441;
+    border-radius: 6px;
+    padding: 4px 6px;
+    selection-background-color: #2f7df4;
+    selection-color: #ffffff;
+}
+
+QLineEdit:focus,
+QTextEdit:focus,
+QPlainTextEdit:focus,
+QSpinBox:focus,
+QDoubleSpinBox:focus,
+QComboBox:focus {
+    border-color: #3aa0ff;
+}
+
+QComboBox::drop-down {
+    border: 0;
+    width: 24px;
+}
+
+QComboBox QAbstractItemView {
+    background-color: #1b2330;
+    color: #e3e8f1;
+    border: 1px solid #3aa0ff;
+    outline: 0;
+    selection-background-color: #2f7df4;
+    selection-color: #ffffff;
+}
+
+/* Do not alter item geometry: Calamares partition delegates paint themselves. */
+QTreeView,
+QTableView,
+QListView {
+    background-color: #131822;
+    alternate-background-color: #161d28;
+    color: #e3e8f1;
+    border: 1px solid #263040;
+    selection-background-color: #2f7df4;
+    selection-color: #ffffff;
+    outline: 0;
+}
+
+QTreeView::item,
+QTableView::item,
+QListView::item {
+    border: 0;
+    padding: 0;
+}
+
+QHeaderView::section {
+    background-color: #1b2330;
+    color: #a9b3c0;
+    border: 0;
+    border-right: 1px solid #263040;
+    border-bottom: 1px solid #263040;
+    padding: 5px 7px;
+    font-weight: 600;
+}
+
+QCheckBox,
+QRadioButton {
+    spacing: 6px;
+    color: #e3e8f1;
+}
+
+QProgressBar {
+    background-color: #131822;
+    color: #e3e8f1;
+    border: 1px solid #263040;
+    border-radius: 6px;
+    text-align: center;
+}
+
+QProgressBar::chunk {
+    background-color: #3aa0ff;
+    border-radius: 5px;
+}
+
+QScrollBar:vertical,
+QScrollBar:horizontal {
+    background: #0e1116;
+    border: none;
+    width: 12px;
+    height: 12px;
+}
+
+QScrollBar::handle:vertical,
+QScrollBar::handle:horizontal {
+    background: #334155;
+    border-radius: 6px;
+    min-height: 28px;
+    min-width: 28px;
+}
+
+QScrollBar::handle:hover {
+    background: #3aa0ff;
+}
+
+QScrollBar::add-line,
+QScrollBar::sub-line {
+    width: 0;
+    height: 0;
+}
+
+QToolTip {
+    background-color: #1b2330;
+    color: #e3e8f1;
+    border: 1px solid #3aa0ff;
+    padding: 5px;
+}

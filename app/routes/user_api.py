@@ -25,8 +25,18 @@ from ..services.user_system.user_manager import (
     SubscriptionTier,
     UserSettings
 )
+from ..utils.admin_auth import require_read_access
 
 logger = logging.getLogger("ailinux.user_api")
+
+# Module-level JWT secret — initialize once at import time.
+# Prefer environment variable JWT_SECRET; fallback: generate once at process start.
+import os
+_JWT_SECRET_MODULE = os.environ.get("JWT_SECRET")
+if not _JWT_SECRET_MODULE:
+    # Generate a stable value at process start if none provided (development fallback).
+    # In production, consider failing startup if JWT_SECRET is not explicitly set.
+    _JWT_SECRET_MODULE = secrets.token_hex(32)
 
 router = APIRouter()
 
@@ -232,7 +242,7 @@ async def create_user(request: UserCreateRequest):
 
 
 @router.get("/users/{user_id}")
-async def get_user(user_id: str):
+async def get_user(user_id: str, _: None = Depends(require_read_access)):
     """Holt User-Informationen"""
     user = await user_manager.get_user(user_id)
     if not user:
@@ -247,7 +257,7 @@ async def get_user(user_id: str):
 
 
 @router.get("/users/{user_id}/quota")
-async def get_user_quota(user_id: str):
+async def get_user_quota(user_id: str, _: None = Depends(require_read_access)):
     """Holt Quota-Status"""
     quota = await user_manager.check_quota(user_id)
     if "error" in quota:
@@ -296,7 +306,7 @@ async def register_device(user_id: str, request: DeviceRegisterRequest):
 
 
 @router.get("/users/{user_id}/devices")
-async def list_devices(user_id: str):
+async def list_devices(user_id: str, _: None = Depends(require_read_access)):
     """Listet alle Geräte eines Users"""
     user = await user_manager.get_user(user_id)
     if not user:
@@ -338,7 +348,7 @@ async def revoke_device(user_id: str, device_id: str):
 # ============================================================================
 
 @router.get("/users/{user_id}/settings")
-async def get_settings(user_id: str):
+async def get_settings(user_id: str, _: None = Depends(require_read_access)):
     """Holt aktuelle User-Settings"""
     settings = await user_manager.get_settings(user_id)
     if not settings:
@@ -365,7 +375,7 @@ async def sync_settings(user_id: str, request: SettingsSyncRequest):
 # ============================================================================
 
 @router.get("/users/{user_id}/credentials")
-async def list_credentials(user_id: str):
+async def list_credentials(user_id: str, _: None = Depends(require_read_access)):
     """Listet Provider mit gespeicherten Keys (Keys selbst werden nicht zurückgegeben!)"""
     user = await user_manager.get_user(user_id)
     if not user:
@@ -471,7 +481,7 @@ async def get_auth_token(
 
     # Base64url encode
     def b64url_encode(data: bytes) -> str:
-        return base64.urlsafe_b64encode(data).rstrip(b'=').decode('ascii')
+        return base64.urlsafe_b64encode(data).rstrip(b'=') .decode('ascii')
 
     header_b64 = b64url_encode(json.dumps(header).encode())
     payload_b64 = b64url_encode(json.dumps(payload).encode())
@@ -499,30 +509,3 @@ async def get_auth_token(
 # ============================================================================
 # Admin Endpoints
 # ============================================================================
-
-@router.get("/admin/users")
-async def list_all_users(active_only: bool = True):
-    """Listet alle User (Admin-Endpoint)"""
-    users = await user_manager.list_users(active_only=active_only)
-    return {"users": users, "count": len(users)}
-
-
-@router.get("/admin/stats")
-async def get_admin_stats():
-    """Statistiken über alle User"""
-    all_users = await user_manager.list_users(active_only=False)
-    
-    stats = {
-        "total_users": len(all_users),
-        "by_tier": {"free": 0, "pro": 0, "enterprise": 0},
-        "total_devices": 0,
-    }
-    
-    for user_id in all_users:
-        user = await user_manager.get_user(user_id)
-        if user:
-            tier = user.quota.tier.value if hasattr(user.quota.tier, 'value') else user.quota.tier
-            stats["by_tier"][tier] = stats["by_tier"].get(tier, 0) + 1
-            stats["total_devices"] += len(user.devices)
-    
-    return stats

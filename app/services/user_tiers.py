@@ -35,43 +35,31 @@ class TierConfig:
     daily_token_limit: int = 0  # 0 = unlimited
     ollama_unlimited: bool = False  # Ollama immer ohne Limit
 
-# Ollama Cloud-Proxy Modelle (Default für alle Tiers) - 20 Modelle
+# Free catalog for authenticated users. Every cloud entry below completed a
+# live one-token chat probe on 2026-07-14; retired/subscription-only tags stay hidden.
 OLLAMA_MODELS = [
-    # DeepSeek Familie
-    "ollama/deepseek-v3.1:671b-cloud",
-    "ollama/deepseek-v3.2:cloud",
-    # Qwen Familie
-    "ollama/qwen3-coder:480b-cloud",
-    "ollama/qwen3-vl:235b-cloud",
-    "ollama/qwen3-next:80b-cloud",
-    # Kimi/Moonshot
-    "ollama/kimi-k2:1t-cloud",
-    "ollama/kimi-k2-thinking:cloud",
-    # GPT-OSS (OpenAI Open Source)
-    "ollama/gpt-oss:120b-cloud",
-    "ollama/gpt-oss:20b-cloud",
-    # Google
-    "ollama/gemini-3-pro-preview:latest",
-    # MiniMax
-    "ollama/minimax-m2:cloud",
-    # GLM (Zhipu)
-    "ollama/glm-4.6:cloud",
-    # Mistral Familie
-    "ollama/ministral-3:14b-cloud",
-    "ollama/ministral-3:8b-cloud",
-    "ollama/ministral-3:3b-cloud",
+    "ollama/llama3.2:latest",
     "ollama/devstral-2:123b-cloud",
     "ollama/devstral-small-2:24b-cloud",
-    # NVIDIA Nemotron
+    "ollama/gemma4:31b-cloud",
+    "ollama/gemma4:cloud",
+    "ollama/glm-4.7:cloud",
+    "ollama/gpt-oss:120b-cloud",
+    "ollama/gpt-oss:20b-cloud",
+    "ollama/minimax-m2.1:cloud",
+    "ollama/minimax-m2.5:cloud",
+    "ollama/minimax-m3:cloud",
+    "ollama/ministral-3:14b-cloud",
+    "ollama/ministral-3:3b-cloud",
+    "ollama/ministral-3:8b-cloud",
     "ollama/nemotron-3-nano:30b-cloud",
-    # Cogito
-    "ollama/cogito-2.1:671b-cloud",
-    # Essential AI
-    "ollama/rnj-1:8b-cloud",
+    "ollama/nemotron-3-super:cloud",
+    "ollama/qwen3-coder:480b-cloud",
+    "ollama/qwen3-coder-next:cloud",
 ]
 
 # Lokales Fallback-Modell (läuft direkt auf Server, kein Cloud-Proxy)
-LOCAL_FALLBACK_MODEL = "ollama/ministral-3:14b"
+LOCAL_FALLBACK_MODEL = "ollama/llama3.2:latest"
 
 # Aliases für Kompatibilität
 FREE_MODELS_OLLAMA = OLLAMA_MODELS
@@ -99,7 +87,7 @@ TIER_CONFIGS: Dict[UserTier, TierConfig] = {
         priority_queue=False, support_level="none",
         daily_token_limit=50_000,
         ollama_unlimited=False,
-        features=["20 Ollama Cloud-Modelle", "50k Tokens/Tag", "Kein MCP", "🐻 Brumo dabei"]
+        features=[f"{len(OLLAMA_MODELS)} freie Ollama-Modelle", "50k Tokens/Tag", "Kein MCP", "🐻 Brumo dabei"]
     ),
     UserTier.REGISTERED: TierConfig(
         name="registered", display_name="Registriert",
@@ -108,7 +96,7 @@ TIER_CONFIGS: Dict[UserTier, TierConfig] = {
         priority_queue=False, support_level="community",
         daily_token_limit=100_000,
         ollama_unlimited=False,
-        features=["20 Ollama Cloud-Modelle", "MCP Tools ✓", "CLI Agents ✓", "100k Tokens/Tag", "Community Support"]
+        features=[f"{len(OLLAMA_MODELS)} freie Ollama-Modelle + Free-Provider", "MCP Tools ✓", "CLI Agents ✓", "100k Tokens/Tag", "Community Support"]
     ),
     UserTier.PRO: TierConfig(
         name="pro", display_name="Pro",
@@ -297,7 +285,7 @@ class UserTierService:
     
     def get_tier_info(self, tier: UserTier) -> Dict:
         cfg = TIER_CONFIGS[tier]
-        # Model count: Ollama = 12, All = "alle Server-Modelle"
+        # Model count: freie Ollama-Liste oder alle Server-Modelle
         cnt = len(OLLAMA_MODELS) if cfg.models == "ollama_only" else "all"
         return {
             "tier": tier.value,

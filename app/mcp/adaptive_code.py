@@ -34,8 +34,8 @@ class CacheEntry:
     mtime: float
 
 class AdaptiveCodeIlluminator:
-    def __init__(self, root_dir: str = "/home/zombie/triforce"):
-        self.root_dir = Path(root_dir)
+    def __init__(self, root_dir: str | None = None):
+        self.root_dir = Path(root_dir or os.environ.get("TRIFORCE_ROOT", Path(__file__).resolve().parents[2]))
         self.default_ttl = INDEX_TTL
         self.ignored_patterns = [
             ".git", "__pycache__", "*.pyc", "node_modules", ".venv",

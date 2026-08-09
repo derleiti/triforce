@@ -58,8 +58,8 @@ $stats = $service->get_stats();
 .nov-early-access {
     max-width: 500px;
     margin: 2rem auto;
-    background: var(--nov-bg-secondary, #161b22);
-    border: 1px solid var(--nov-border, #30363d);
+    background: linear-gradient(145deg, #0f1b28, #0a1420);
+    border: 1px solid #27384a;
     border-radius: 12px;
     padding: 2rem;
 }
@@ -69,7 +69,7 @@ $stats = $service->get_stats();
 }
 .nov-ea-badge {
     display: inline-block;
-    background: linear-gradient(135deg, #238636, #2ea043);
+    background: linear-gradient(135deg, #2563eb, #22d3ee);
     color: white;
     padding: 6px 16px;
     border-radius: 20px;
@@ -111,7 +111,7 @@ $stats = $service->get_stats();
 }
 .nov-ea-submit {
     width: 100%;
-    background: linear-gradient(135deg, #58a6ff, #a371f7);
+    background: linear-gradient(135deg, #2563eb, #22d3ee);
     border: none;
     color: white;
     padding: 14px 24px;

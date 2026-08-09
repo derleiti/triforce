@@ -16,6 +16,7 @@ Jeder verbundene Client ist ein Node im Mesh.
 """
 
 import asyncio
+import socket
 import json
 import ssl
 import logging
@@ -25,6 +26,8 @@ from typing import Dict, Set, Any, Optional, List
 from datetime import datetime
 from collections import defaultdict
 from dataclasses import dataclass, field
+
+from ..config import get_settings
 
 try:
     import websockets
@@ -36,9 +39,23 @@ except ImportError:
 logger = logging.getLogger("mcp_ws_server")
 
 # Config
-MCP_WS_HOST = "0.0.0.0"
-MCP_WS_PORT = 44433
+_settings = get_settings()
+MCP_WS_HOST = _settings.mcp_ws_host
+MCP_WS_PORT = _settings.mcp_ws_port
+MCP_WS_ENABLE_IPV6 = _settings.mcp_ws_enable_ipv6
 CERT_DIR = Path("/home/zombie/triforce/certs/client-auth")
+
+
+def _port_available(host: str, port: int) -> bool:
+    """Return True if the configured WebSocket bind port is available."""
+    family = socket.AF_INET6 if MCP_WS_ENABLE_IPV6 else socket.AF_INET
+    try:
+        with socket.socket(family, socket.SOCK_STREAM) as sock:
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            sock.bind((host, port))
+            return True
+    except OSError:
+        return False
 
 
 @dataclass
@@ -411,6 +428,11 @@ class MCPMeshServer:
         self.stats["started_at"] = datetime.now().isoformat()
         
         try:
+            if not _port_available(MCP_WS_HOST, MCP_WS_PORT):
+                logger.warning(f"MCP WebSocket port already in use: {MCP_WS_HOST}:{MCP_WS_PORT}")
+                self._running = False
+                return
+
             self.server = await serve(
                 self._handle_client,
                 MCP_WS_HOST,

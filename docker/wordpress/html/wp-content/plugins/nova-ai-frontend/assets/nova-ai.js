@@ -10,6 +10,12 @@
   const NONCE = () => window.novaAiConfig?.nonce || null;
   const nonceHeader = () => { var n = NONCE(); return n ? {'X-WP-Nonce': n} : {}; };
   const DEBUG = false;
+  // Prefer quota-backed chat models; first available entry becomes the UI default.
+  const DEFAULT_CHAT_MODELS = [
+    'mistral/mistral-small-latest',
+    'groq/llama-3.1-8b-instant',
+    'openrouter/inclusionai/ling-3.0-flash:free',
+  ];
   const MODEL_KIND_ORDER = ['chat','vision','media_image','media_video','audio','ocr','embedding','code','reasoning'];
   const PROVIDER_ORDER = {
     chat: ['openai','anthropic','gemini','mistral','groq','cerebras','cohere','openrouter','ollama','cloudflare','github','together','fireworks','other'],
@@ -30,8 +36,69 @@
     return idx >= 0 ? idx : 99;
   }
 
+
+  function selectPreferredChatModel(selectEl) {
+    for (const modelId of DEFAULT_CHAT_MODELS) {
+      const option = selectEl.querySelector(`option[value="${modelId}"]`);
+      if (option) {
+        option.selected = true;
+        return modelId;
+      }
+    }
+    return '';
+  }
+
+  const PROVIDER_LABELS = {
+    openai: 'OpenAI', anthropic: 'Anthropic', gemini: 'Google Gemini',
+    mistral: 'Mistral AI', groq: 'Groq', cerebras: 'Cerebras',
+    cohere: 'Cohere', kimi: 'Kimi / Moonshot AI', openrouter: 'OpenRouter',
+    ollama: 'Ollama (lokal)', cloudflare: 'Cloudflare Workers AI',
+    github: 'GitHub Models', together: 'Together AI', fireworks: 'Fireworks AI',
+    replicate: 'Replicate', huggingface: 'Hugging Face', other: 'Weitere Anbieter',
+  };
+
+  function providerLabel(provider) {
+    const key = (provider || 'other').toLowerCase();
+    return PROVIDER_LABELS[key] || key.replace(/(^|[-_])([a-z])/g, (_, sep, char) => (sep ? ' ' : '') + char.toUpperCase());
+  }
+
   function modelLabel(m) {
     return m.name || m.id || m.model || '';
+  }
+
+  function modelIdentity(m) {
+    const provider = (m.provider || 'other').toLowerCase();
+    let id = String(m.id || m.model || m.name || '').toLowerCase();
+    if (id.startsWith(provider + '/')) id = id.slice(provider.length + 1);
+    const routeMatch = id.match(/:(batch|free|thinking|fastest|preferred|cheapest)$/);
+    const route = routeMatch ? routeMatch[0] : '';
+    let base = route ? id.slice(0, -route.length) : id;
+    base = base.replace(/-(20\d{2}-\d{2}-\d{2}|20\d{6}|20\d{4}|\d{4})$/, '');
+    base = base.replace(/-(latest|preview)$/, '');
+    return provider + '|' + base + route;
+  }
+
+  function modelPreference(m) {
+    const id = String(m.id || m.model || m.name || '').toLowerCase().replace(/:(batch|free|thinking|fastest|preferred|cheapest)$/, '');
+    if (/-latest$/.test(id)) return 0;
+    if (!/-(preview|20\d{2}-\d{2}-\d{2}|20\d{6}|20\d{4}|\d{4})$/.test(id)) return 1;
+    if (/-preview$/.test(id)) return 2;
+    return 3;
+  }
+
+  function dedupeModels(models) {
+    const unique = new Map();
+    models.forEach(m => {
+      const key = modelIdentity(m);
+      const current = unique.get(key);
+      const score = modelPreference(m);
+      const currentScore = current ? modelPreference(current) : Number.POSITIVE_INFINITY;
+      if (!current || score < currentScore ||
+          (score === currentScore && modelLabel(m).localeCompare(modelLabel(current)) > 0)) {
+        unique.set(key, m);
+      }
+    });
+    return Array.from(unique.values());
   }
 
   function normalizeCategories(m) {
@@ -55,20 +122,20 @@
       const ar = providerRank(kind, a);
       const br = providerRank(kind, b);
       if (ar !== br) return ar - br;
-      return a.localeCompare(b);
+      return providerLabel(a).localeCompare(providerLabel(b));
     });
   }
 
   function appendModelGroups(selectEl, list, kind) {
     const groups = {};
-    list.forEach(m => {
+    dedupeModels(list).forEach(m => {
       const p = (m.provider || 'other').toLowerCase();
       (groups[p] = groups[p] || []).push(m);
     });
     selectEl.innerHTML = '';
     sortModelGroups(groups, kind).forEach(([prov, ms]) => {
       const og = document.createElement('optgroup');
-      og.label = prov;
+      og.label = providerLabel(prov);
       ms.sort((a,b) => modelLabel(a).localeCompare(modelLabel(b))).forEach(m => {
         const o = document.createElement('option');
         o.value = m.id || m.model || m.name;
@@ -201,8 +268,9 @@
       container.querySelectorAll('[data-model]').forEach(sel => {
         const list = kinds[sel.dataset.model] || [];
         sel.innerHTML = '';
-        if (!list.length) { sel.innerHTML = '<option value="">— keine Modelle —</option>'; return; }
+        if (!list.length) { sel.innerHTML = '<option value="">— no models —</option>'; return; }
         appendModelGroups(sel, list, sel.dataset.model);
+        if (sel.dataset.model === 'chat') selectPreferredChatModel(sel);
       });
     } catch(e) { DEBUG && console.warn('[Nova] Model load failed:', e); }
   }
@@ -235,7 +303,7 @@
         const data = await resp.json();
         typingEl.remove();
         if (!resp.ok || data.error) {
-          appendMsg('assistant', '⚠️ Fehler: ' + (data.message||data.error||data.detail||JSON.stringify(data)), true);
+          appendMsg('assistant', '⚠️ Error: ' + (data.message||data.error||data.detail||JSON.stringify(data)), true);
           messages.pop();
         } else {
           const reply = data.content || data.response || data.message || data.text || JSON.stringify(data);
@@ -243,7 +311,7 @@
           appendMsg('assistant', reply);
           if (messages.length > 80) messages = messages.slice(-80);
         }
-      } catch(e) { typingEl.remove(); appendMsg('assistant', '⚠️ Verbindungsfehler: '+e.message, true); messages.pop(); }
+      } catch(e) { typingEl.remove(); appendMsg('assistant', '⚠️ Connection error: '+e.message, true); messages.pop(); }
       busy = false; sendBtn.disabled = false; prompt.focus();
     }
 
@@ -386,9 +454,9 @@
     btn.addEventListener('click', async () => {
       const url    = imgUrl?.value.trim() || '';
       const file   = fileInput?.files?.[0] || null;
-      const prompt = task?.value.trim() || 'Beschreibe dieses Bild detailliert.';
+      const prompt = task?.value.trim() || 'Describe this image in detail.';
       const mdl    = model?.value || '';
-      if (!url && !file) { setOutput(out, '⚠️ Bitte Bild-URL eingeben oder Datei hochladen.', 'error'); return; }
+      if (!url && !file) { setOutput(out, '⚠️ Enter an image URL or upload a file.', 'error'); return; }
       btn.disabled = true; setOutput(out, '⏳ Analysiere…', '');
       try {
         let json, httpOk = true;
@@ -406,7 +474,7 @@
             json = await resp.json();
           } catch(_je) {
             // Backend war kurz offline (Neustart) — HTML statt JSON erhalten
-            json = { ok: false, error: 'Server vorübergehend nicht erreichbar. Bitte erneut versuchen.' };
+            json = { ok: false, error: 'Server temporarily unavailable. Please try again.' };
             httpOk = false;
           }
         } else {
@@ -427,7 +495,7 @@
           return typeof inner === 'string' ? inner : (inner ? JSON.stringify(inner) : JSON.stringify(v));
         };
         if (!httpOk || json.ok === false) {
-          const errStr = safeErr(json.message) || safeErr(json.error) || safeErr(json.detail) || safeErr(json) || 'Unbekannter Fehler';
+          const errStr = safeErr(json.message) || safeErr(json.error) || safeErr(json.detail) || safeErr(json) || 'Unknown error';
           setOutput(out, '❌ ' + errStr, 'error');
           return;
         }
@@ -439,7 +507,7 @@
                      (typeof raw === 'string' ? raw : null);
         if (text) setOutput(out, renderMd(text), 'success');
         else setOutput(out, '<pre style="font-size:11px;text-align:left">' + JSON.stringify(raw, null, 2) + '</pre>', 'success');
-      } catch (e) { setOutput(out, '🔌 Verbindungsfehler: ' + e.message, 'error'); }
+      } catch (e) { setOutput(out, '🔌 Connection error: ' + e.message, 'error'); }
       finally {
         btn.disabled = false;
         if (preview) preview.innerHTML = '';
@@ -495,10 +563,10 @@
     const imgProg   = container.querySelector('.nova-img-progress');
     if (imgBtn && imgOut) imgBtn.addEventListener('click', async () => {
       const prompt = imgPrompt?.value.trim()||'';
-      if (!prompt) { setOutput(imgOut,'Fehler: Prompt eingeben.','error'); return; }
+      if (!prompt) { setOutput(imgOut,'Error: Enter a prompt.','error'); return; }
       imgBtn.disabled = true; imgProg?.classList.add('active');
       imgOut.querySelectorAll('.nova-img-result,.nova-img-wrap').forEach(i=>i.remove());
-      setOutput(imgOut,'⏳ Generiere Bild…','');
+      setOutput(imgOut,'⏳ Generating image…','');
       try {
         const resp = await fetch(API+'/media/image', {method:'POST',headers:Object.assign({'Content-Type':'application/json'},nonceHeader()),
           body:JSON.stringify({model:imgModel?.value||'',prompt,n:parseInt(imgCount?.value||'1'),size:imgSize?.value||'1024x1024'})});
@@ -507,7 +575,7 @@
         // Robuste Fehler-Extraktion — verhindert [object Object]
         const safeErrImg = (v) => { if (!v) return null; if (typeof v==='string') return v; const i=v?.message||v?.detail||v?.error; return typeof i==='string'?i:(i?JSON.stringify(i):JSON.stringify(v)); };
         if (!resp.ok || json.ok===false || json.error) {
-          setOutput(imgOut,'Fehler: '+(safeErrImg(json.message)||safeErrImg(json.error)||safeErrImg(json.detail)||safeErrImg(json)||'Unbekannt'),'error');
+          setOutput(imgOut,'Error: '+(safeErrImg(json.message)||safeErrImg(json.error)||safeErrImg(json.detail)||safeErrImg(json)||'Unknown'),'error');
         } else {
           setOutput(imgOut,'','success');
           // Extrahiere Bild-URLs auch aus verschachteltem result (CF Workers AI Format)
@@ -555,7 +623,7 @@
             const fname = rndName() + '.' + ext;
             dlBtn.textContent = '⬇ ' + fname;
             dlBtn.style.cssText='font-size:11px;color:#60a5fa;cursor:pointer;text-decoration:underline;word-break:break-all;';
-            dlBtn.title = 'Bild herunterladen';
+            dlBtn.title = 'Download image';
             if (isHttp) {
               // For URL-based images: direct download attribute, fallback to new tab on CORS
               dlBtn.href = src; dlBtn.target='_blank'; dlBtn.download = fname; dlBtn.rel='noopener';
@@ -579,7 +647,7 @@
           });
           if (!urls.length) setOutput(imgOut,JSON.stringify(json,null,2),'success');
         }
-      } catch(e) { imgProg?.classList.remove('active'); setOutput(imgOut,'Verbindungsfehler: '+e.message,'error'); }
+      } catch(e) { imgProg?.classList.remove('active'); setOutput(imgOut,'Connection error: '+e.message,'error'); }
       imgBtn.disabled = false;
     });
 
@@ -601,7 +669,7 @@
     const vidProg   = container.querySelector('.nova-vid-progress');
     if (vidBtn && vidOut) vidBtn.addEventListener('click', async () => {
       const prompt = vidPrompt?.value.trim()||'';
-      if (!prompt) { setOutput(vidOut,'Fehler: Prompt eingeben.','error'); return; }
+      if (!prompt) { setOutput(vidOut,'Error: Enter a prompt.','error'); return; }
       vidBtn.disabled = true; vidProg?.classList.add('active');
       vidOut.querySelectorAll('.nova-video-result').forEach(v=>v.remove());
       setOutput(vidOut,'⏳ Starte Video-Generierung…','');
@@ -612,7 +680,7 @@
         const safeErrVid = (v) => { if (!v) return null; if (typeof v==='string') return v; const i=v?.message||v?.detail||v?.error; return typeof i==='string'?i:(i?JSON.stringify(i):JSON.stringify(v)); };
         if (!resp.ok||json.ok===false||json.error) {
           vidProg?.classList.remove('active'); vidBtn.disabled=false;
-          setOutput(vidOut,'Fehler: '+(safeErrVid(json.message)||safeErrVid(json.error)||safeErrVid(json.detail)||safeErrVid(json)||'Unbekannt'),'error'); return;
+          setOutput(vidOut,'Error: '+(safeErrVid(json.message)||safeErrVid(json.error)||safeErrVid(json.detail)||safeErrVid(json)||'Unknown'),'error'); return;
         }
         const jobId = json.job_id||json.id||null;
         const _vidB64 = json.result?.data?.[0]?.b64_json || json.b64_json || null;
@@ -628,14 +696,14 @@
           vidProg?.classList.remove('active'); setOutput(vidOut,'✅ Fertig.','success');
           appendVideo(vidOut, json.url||json.video_url); vidBtn.disabled=false;
         } else { vidProg?.classList.remove('active'); setOutput(vidOut,JSON.stringify(json),'success'); vidBtn.disabled=false; }
-      } catch(e) { vidProg?.classList.remove('active'); setOutput(vidOut,'Verbindungsfehler: '+e.message,'error'); vidBtn.disabled=false; }
+      } catch(e) { vidProg?.classList.remove('active'); setOutput(vidOut,'Connection error: '+e.message,'error'); vidBtn.disabled=false; }
     });
   }
 
   async function pollVideoJob(jobId, out, prog, btn) {
     let attempts = 0;
     const timer = setInterval(async () => {
-      if (++attempts > 60) { clearInterval(timer); prog?.classList.remove('active'); setOutput(out,'Fehler: Timeout.','error'); if(btn) btn.disabled=false; return; }
+      if (++attempts > 60) { clearInterval(timer); prog?.classList.remove('active'); setOutput(out,'Error: Timeout.','error'); if(btn) btn.disabled=false; return; }
       try {
         const resp = await fetch(API+'/media/video/status/'+jobId, {headers:nonceHeader()});
         const json = await resp.json();
@@ -648,7 +716,7 @@
           const url=json.url||json.video_url; if(url) appendVideo(out,url); else setOutput(out,JSON.stringify(json),'success');
         } else if (status==='failed'||status==='error') {
           clearInterval(timer); prog?.classList.remove('active'); if(btn) btn.disabled=false;
-          setOutput(out,'Fehler: '+(json.error||json.message||status),'error');
+          setOutput(out,'Error: '+(json.error||json.message||status),'error');
         } else setOutput(out,'⏳ Status: '+(status||'läuft')+(pct?' ('+pct+'%)':''),'');
       } catch(e) {}
     }, 5000);
@@ -679,7 +747,7 @@
       if (json.ok||json.status==='ok'||json.status==='healthy') {
         badge.textContent='Backend: ok'; badge.className='nova-badge ok';
         const mb=container.querySelector('.nova-model-count,[data-model-count]');
-        if(mb&&json.model_count) mb.textContent='Modelle: '+json.model_count;
+        if(mb&&json.model_count) mb.textContent='Models: '+json.model_count;
       } else { badge.textContent='Backend: ⚠️'; badge.className='nova-badge warn'; }
     } catch { badge.textContent='Backend: offline'; badge.className='nova-badge err'; }
   }
@@ -765,7 +833,7 @@
       ]);
       const d   = await accResp.json();
       const sub = subResp && subResp.ok ? await subResp.json().catch(() => ({})) : {};
-      if (!d.ok) throw new Error(d.error || 'Fehler');
+      if (!d.ok) throw new Error(d.error || 'Error');
       if (!d.logged_in) {
         panel.innerHTML = `
           <div style="text-align:center;padding:2rem">
@@ -774,7 +842,7 @@
             <p style="color:#94a3b8;margin-bottom:1.5rem">Melde dich an um dein Abo, gekaufte Apps und Downloads zu sehen.</p>
             <a href="${d.login_url||'https://ailinux.me/account'}" target="_blank"
                style="display:inline-block;padding:.75rem 2rem;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:white;border-radius:10px;text-decoration:none;font-weight:600">
-              \u{1F511} Anmelden / Registrieren
+              \u{1F511} Sign in / Register
             </a>
           </div>`;
         return;
@@ -814,7 +882,7 @@
             <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem">
               <div>
                 <div style="color:#93c5fd;font-weight:500">Free — 0 €/Monat</div>
-                <div style="color:#64748b;font-size:.8rem">57 Modelle · Ollama + Small Models</div>
+                <div style="color:#64748b;font-size:.8rem">57 models · Ollama + small models</div>
               </div>
               <a href="${d.shop_url||'https://ailinux.me/shop'}" target="_blank"
                  style="padding:.5rem 1.25rem;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:white;border-radius:8px;text-decoration:none;font-size:.85rem;font-weight:600">
@@ -831,8 +899,8 @@
             <div style="color:#64748b;font-size:.75rem">${f.type||''} ${f.size_formatted||''}</div>
           </div>
           ${f.url?`<a href="${f.url}" download style="padding:.4rem 1rem;background:#3b82f6;color:white;border-radius:6px;text-decoration:none;font-size:.8rem;font-weight:600">\u2193 Download</a>`:'<span style="color:#64748b;font-size:.8rem">Nicht verfügbar</span>'}
-        </div>`).join('') : '<div style="color:#64748b;font-size:.875rem">Keine Downloads verfügbar.</div>';
-      const entHTML = ents.length ? `<div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.5rem">${ents.map(e=>`<span style="padding:.25rem .75rem;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);border-radius:20px;font-size:.75rem;color:#93c5fd">${e}</span>`).join('')}</div>` : '<div style="color:#64748b;font-size:.875rem">Keine zusätzlichen Berechtigungen.</div>';
+        </div>`).join('') : '<div style="color:#64748b;font-size:.875rem">No downloads available.</div>';
+      const entHTML = ents.length ? `<div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.5rem">${ents.map(e=>`<span style="padding:.25rem .75rem;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);border-radius:20px;font-size:.75rem;color:#93c5fd">${e}</span>`).join('')}</div>` : '<div style="color:#64748b;font-size:.875rem">No additional permissions.</div>';
 
       panel.innerHTML = `
         <div style="max-width:600px;margin:0 auto">
@@ -865,7 +933,7 @@
       const cancelBtn = panel.querySelector('#nova-sub-cancel-btn');
       if (cancelBtn) {
         cancelBtn.addEventListener('click', async function() {
-          if (!confirm('Abo wirklich kündigen? Dein Pro-Zugang läuft bis zum Ende des Abrechnungszeitraums weiter.')) return;
+          if (!confirm('Cancel your subscription? Your Pro access will remain active until the end of the billing period.')) return;
           cancelBtn.disabled = true; cancelBtn.textContent = 'Wird gekündigt…';
           try {
             const cr = await fetch(API + '/subscription/cancel', {
@@ -879,10 +947,10 @@
               cancelBtn.textContent = '\u2713 Kündigung bestätigt';
             } else {
               cancelBtn.disabled = false;
-              cancelBtn.textContent = 'Fehler: ' + (cd.error||cd.message||'Retry');
+              cancelBtn.textContent = 'Error: ' + (cd.error||cd.message||'Retry');
             }
           } catch(err) {
-            cancelBtn.disabled = false; cancelBtn.textContent = 'Verbindungsfehler';
+            cancelBtn.disabled = false; cancelBtn.textContent = 'Connection error';
           }
         });
       }
@@ -960,7 +1028,7 @@
       // Zeige sofort Lade-Indikator
       if (modelSel.options.length <= 1) {
         const loadOpt = document.createElement('option');
-        loadOpt.textContent = '⏳ Modelle werden geladen…';
+        loadOpt.textContent = '⏳ Loading models…';
         loadOpt.disabled = true;
         modelSel.appendChild(loadOpt);
       }
@@ -999,11 +1067,7 @@
       });
       if (!filtered.length) return;
       appendModelGroups(modelSel, filtered, 'chat');
-      const preferred = ['openai/gpt-5.2','anthropic/claude-sonnet-4-20250514','gemini/gemini-2.5-flash','groq/meta-llama/llama-4-scout-17b-16e-instruct'];
-      for (const p of preferred) {
-        const opt = modelSel.querySelector(`option[value="${p}"]`);
-        if (opt) { opt.selected = true; break; }
-      }
+      selectPreferredChatModel(modelSel);
     }
 
     // ── Panel open/close ─────────────────────────────────────────────────────
@@ -1125,11 +1189,7 @@
                 return !m.media_image && !m.media_video && !cats.includes('media_image') && !cats.includes('media_video') && !cats.includes('embedding');
               });
               appendModelGroups(modelSel, chatModels, 'chat');
-              const preferred = ['openai/gpt-5.2','anthropic/claude-sonnet-4-20250514','gemini/gemini-2.5-flash','groq/meta-llama/llama-4-scout-17b-16e-instruct'];
-              for (const p of preferred) {
-                const opt = modelSel.querySelector('option[value="'+p+'"]');
-                if (opt) { opt.selected = true; break; }
-              }
+              selectPreferredChatModel(modelSel);
             }
           }).catch(function(){});
       }

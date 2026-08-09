@@ -43,6 +43,12 @@ BOOTSTRAP_ORDER = [
     "opencode-mcp", # Worker - Alternative
 ]
 
+# Ein Agent gilt als erfolgreich gebootet, wenn er gestartet ODER (im
+# on-demand-Modus) als 'initialized' markiert wurde. FIX 2026-07-11:
+# _start_and_init_agent liefert "initialized", der Zaehler pruefte aber nur
+# "success" -> meldete faelschlich 0/4 + Phantom "Lead agent failed".
+BOOTSTRAP_OK_STATES = {"success", "initialized", "already_initialized"}
+
 # Rate Limiting Konfiguration
 RATE_LIMIT_CONFIG = {
     "per_minute": 60,
@@ -596,7 +602,7 @@ class AgentBootstrapService:
                 lead_result = await self._start_and_init_agent(lead_agent)
                 results["agents"][lead_agent] = lead_result
 
-                if lead_result.get("status") != "success":
+                if lead_result.get("status") not in BOOTSTRAP_OK_STATES:
                     results["errors"].append(f"Lead agent failed: {lead_result.get('error')}")
 
                 # Dann Worker parallel
@@ -631,7 +637,7 @@ class AgentBootstrapService:
             results["duration_seconds"] = time.time() - self._boot_start
             results["success_count"] = sum(
                 1 for r in results["agents"].values()
-                if r.get("status") == "success"
+                if r.get("status") in BOOTSTRAP_OK_STATES
             )
 
             logger.info(f"Bootstrap complete: {results['success_count']}/{len(BOOTSTRAP_ORDER)} agents")

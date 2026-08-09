@@ -30,8 +30,11 @@ class LemonSqueezyProvider implements PaymentProviderInterface {
             throw new \RuntimeException('NOVA_LS_WEBHOOK_SECRET is not configured');
         }
 
-        // Header may come in as 'x-signature' (lowercase) or 'X-Signature'
-        $received_sig = $headers['x-signature'] ?? $headers['X-Signature'] ?? '';
+        // WP_REST_Request normalizes HTTP header dashes to underscores.
+        $received_sig = $headers['x-signature']
+            ?? $headers['x_signature']
+            ?? $headers['X-Signature']
+            ?? '';
         if (empty($received_sig)) {
             throw new \RuntimeException('Missing X-Signature header');
         }
@@ -57,12 +60,25 @@ class LemonSqueezyProvider implements PaymentProviderInterface {
         $event_name     = $event['meta']['event_name'] ?? '';
         $custom_data    = $event['meta']['custom_data'] ?? [];
         $wp_user_id     = (int) ($custom_data['wp_user_id'] ?? 0);
-        $email          = $event['data']['attributes']['user_email'] ?? '';
-        $subscription_id = $event['data']['id'] ?? '';
-        $attrs          = $event['data']['attributes'] ?? [];
-        $customer_id    = (string) ($attrs['customer_id'] ?? '');
-        $variant_id     = (string) ($attrs['variant_id'] ?? '');
-        $product_id     = (string) ($attrs['product_id'] ?? '');
+        $attrs            = $event['data']['attributes'] ?? [];
+        $first_order_item = is_array($attrs['first_order_item'] ?? null)
+            ? $attrs['first_order_item']
+            : [];
+        $email            = $attrs['user_email'] ?? ($custom_data['wp_user_email'] ?? '');
+        $subscription_id  = $event['data']['id'] ?? '';
+        $customer_id      = (string) ($attrs['customer_id'] ?? '');
+        $variant_id       = (string) (
+            $attrs['variant_id']
+            ?? $first_order_item['variant_id']
+            ?? $custom_data['variant_id']
+            ?? ''
+        );
+        $product_id       = (string) (
+            $attrs['product_id']
+            ?? $first_order_item['product_id']
+            ?? $custom_data['product_id']
+            ?? ''
+        );
 
         // Map variant_id to tier. Configurable via filter.
         $tier_map = apply_filters('nova_ls_variant_tier_map', []);
@@ -87,19 +103,47 @@ class LemonSqueezyProvider implements PaymentProviderInterface {
                 break;
 
             case 'subscription_expired':
-            case 'order_refunded':
                 $base['action'] = 'deactivate';
                 $base['tier']   = 'free';
                 break;
 
             case 'order_created':
-                $base['action'] = 'purchase';
+                // Lemon Squeezy emits order_created for successful orders. Still require
+                // a paid status when one is present, so unpaid orders never unlock Copa.
+                $status = strtolower((string) ($attrs['status'] ?? ''));
+                if ($product_id && (!$status || $status === 'paid')) {
+                    $base['action'] = 'purchase';
+                    $base['extra']  = [$this->entitlement_for_product($product_id)];
+                }
+                break;
+
+            case 'order_refunded':
                 if ($product_id) {
-                    $base['extra'] = [sanitize_text_field($product_id)];
+                    $base['action'] = 'refund';
+                    $base['extra']  = [$this->entitlement_for_product($product_id)];
                 }
                 break;
         }
 
         return $base;
+    }
+
+    /**
+     * Map Lemon Squeezy product IDs to stable application entitlement keys.
+     * Format: "970007:copa_ocr,969895:ailinux_premium".
+     */
+    private function entitlement_for_product(string $product_id): string {
+        $mapping = defined('NOVA_LS_PRODUCT_ENTITLEMENTS')
+            ? (string) NOVA_LS_PRODUCT_ENTITLEMENTS
+            : '';
+
+        foreach (array_filter(array_map('trim', explode(',', $mapping))) as $pair) {
+            [$id, $entitlement] = array_pad(array_map('trim', explode(':', $pair, 2)), 2, '');
+            if ($id === $product_id && $entitlement !== '') {
+                return sanitize_key($entitlement);
+            }
+        }
+
+        return 'ls_product_' . sanitize_key($product_id);
     }
 }

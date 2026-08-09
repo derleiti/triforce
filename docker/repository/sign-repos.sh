@@ -52,7 +52,15 @@ if [[ -z "${GNUPGHOME:-}" ]]; then
   fi
 fi
 
-SIGNING_KEY_ID="59FAE19560F5E25B"
+# Signing key: shared signing-key.env if available, else built-in default.
+# Keep the fallback in sync with signing-key.env (see that file for details).
+for _keyenv in "${REPO_PATH}/signing-key.env" \
+               "${SCRIPT_DIR}/signing-key.env" \
+               "/var/spool/apt-mirror/var/signing-key.env"; do
+  [[ -r "$_keyenv" ]] && { . "$_keyenv"; break; }
+done
+SIGNING_KEY_ID="${SIGNING_KEY_ID:-59FAE19560F5E25B}"
+
 # Erstes Argument oder aktuelles Verzeichnis
 BASE_DIR_INPUT="${1:-$(pwd)}"
 BASE_DIR="$(realpath --no-symlinks "$BASE_DIR_INPUT" 2>/dev/null || echo "$BASE_DIR_INPUT")"
@@ -183,10 +191,11 @@ for ddir in "${DIST_DIRS[@]}"; do
     echo "   📝 Release: $suite (Archs: ${ARCHS[*]})"
 
     # Alte Signaturen löschen
-    rm -f "${suite_dir}/InRelease" "${suite_dir}/Release.gpg"
+    rm -f "${suite_dir}/InRelease" "${suite_dir}/Release.gpg" "${suite_dir}/Release"
 
     # Config
     tmpconf=$(mktemp)
+    tmprelease=$(mktemp)
     {
       echo 'APT::FTPArchive::Release {'
       echo "  Suite \"${suite}\";"
@@ -198,7 +207,8 @@ for ddir in "${DIST_DIRS[@]}"; do
     } > "$tmpconf"
 
     # 1. Release Datei erstellen
-    if apt-ftparchive -c "$tmpconf" release "$suite_dir" > "${suite_dir}/Release"; then
+    if apt-ftparchive -c "$tmpconf" release "$suite_dir" > "$tmprelease"; then
+        mv "$tmprelease" "${suite_dir}/Release"
         if [[ "$repo_root" == *"archive.neon.kde.org"* ]] && [[ -f "${suite_dir}/main/neon/pins" ]]; then
            add_release_entry "${suite_dir}/Release" "main/neon/pins"
         fi
@@ -216,7 +226,7 @@ for ddir in "${DIST_DIRS[@]}"; do
     else
         err "      apt-ftparchive fehlgeschlagen bei $suite"
     fi
-    rm -f "$tmpconf"
+    rm -f "$tmpconf" "${tmprelease:-}"
   done
 done
 
@@ -224,7 +234,8 @@ done
 log "Suche nach Flat-Repositories (ohne dists/)..."
 
 # Finde Verzeichnisse mit Packages-Datei aber ohne dists/ Unterverzeichnis
-mapfile -t FLAT_DIRS < <(find "$BASE_DIR" -name "Packages" -type f ! -path "*/dists/*" -exec dirname {} \; | sort -u)
+# -printf '%h\n' yields the parent dir without forking a dirname per match
+mapfile -t FLAT_DIRS < <(find "$BASE_DIR" -name "Packages" -type f ! -path "*/dists/*" -printf '%h\n' | sort -u)
 
 if [ ${#FLAT_DIRS[@]} -gt 0 ]; then
   log "Gefunden: ${#FLAT_DIRS[@]} Flat-Repositories"

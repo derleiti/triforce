@@ -14,7 +14,7 @@ from ..schemas import (
     CrawlResultResponse,
 )
 from ..services.crawler.manager import crawler_manager
-from ..services.crawler.user_crawler import user_crawler
+from ..services.crawler.user_crawler import get_user_crawler
 
 router = APIRouter()
 
@@ -61,7 +61,7 @@ async def create_job(payload: CrawlJobRequest):
 
     if is_user_request and len(payload.seeds) == 1:
         # Use fast user_crawler for single-URL user requests
-        job = await user_crawler.crawl_url(
+        job = await get_user_crawler().crawl_url(
             url=str(payload.seeds[0]),
             keywords=payload.keywords,
             max_pages=payload.max_pages,

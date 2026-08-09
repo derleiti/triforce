@@ -10,7 +10,7 @@ Endpoints:
   GET  /v1/search/widget/crypto   — Crypto-Widget (CoinGecko, kein API-Key)
   GET  /v1/search/health          — Status aller Backends
 
-Modi: web | images | videos | news | docs | code | science
+Modi: auto | web | images | videos | files | downloads | news | docs | code | science
 
 Author: Markus Leitermann (derleiti) + Nova
 """
@@ -21,6 +21,7 @@ import asyncio
 import json
 import logging
 import time
+import re
 from typing import Any, Dict, List, Optional
 from urllib.parse import urlparse
 
@@ -48,7 +49,21 @@ SEO_BLOCKLIST_PATTERNS = {
     "ezinearticles.com", "ehow.com",
     "pinterest.", "instagram.com", "tiktok.com",
     "amazon.", "ebay.", "aliexpress.",
+    "search.google", "google.com", "google.de", "bing.com",
+    "search.yahoo.com", "duckduckgo.com", "startpage.com",
 }
+
+OFFICIAL_SOURCE_PATTERNS = {
+    "github.com", "gitlab.com", "codeberg.org", "sourceforge.net",
+    "launchpad.net", "docker.com", "hub.docker.com", "pypi.org",
+    "npmjs.com", "crates.io", "kernel.org", "debian.org", "ubuntu.com",
+    "archlinux.org", "fedoraproject.org", "opensuse.org", "ailinux.me",
+}
+
+DOWNLOAD_PATH_HINTS = (
+    "/download", "/downloads", "/release", "/releases", "/dist/", "/iso/",
+    ".deb", ".rpm", ".appimage", ".iso", ".zip", ".tar.gz", ".tgz",
+)
 
 SUBSTANCE_DOMAINS = {
     "github.com", "gitlab.com", "codeberg.org",
@@ -60,11 +75,119 @@ SUBSTANCE_DOMAINS = {
 }
 
 
+
+_FILE_EXTENSIONS = ("pdf", "doc", "docx", "odt", "txt", "md", "csv", "xls", "xlsx", "ppt", "pptx", "epub")
+_DOWNLOAD_EXTENSIONS = ("deb", "rpm", "appimage", "zip", "tar.gz", "tgz", "7z", "exe", "msi", "dmg", "pkg", "iso")
+
+def _detect_mode(query: str, requested: str = "auto") -> str:
+    requested = (requested or "auto").lower().strip()
+    if requested != "auto":
+        return requested
+    q = query.lower().strip()
+    if any(k in q for k in ("bild", "bilder", "image", "images", "foto", "photos", "wallpaper")):
+        return "images"
+    if any(k in q for k in ("video", "videos", "youtube", "tutorial ansehen", "clip")):
+        return "videos"
+    if any(k in q for k in ("download", "herunterladen", "installer", "paket", "iso", "appimage", ".deb", ".rpm")):
+        return "downloads"
+    if any(k in q for k in ("datei", "file", "pdf", "dokument", "handbuch", "datasheet", "datenblatt")):
+        return "files"
+    if any(k in q for k in ("dokumentation", "documentation", "docs", "manual", "wiki", "api reference", "oauth")):
+        return "docs"
+    if any(k in q for k in ("github", "gitlab", "source code", "quellcode", "repository", "repo")):
+        return "code"
+    if any(k in q for k in ("news", "nachrichten", "aktuell", "latest", "heute")):
+        return "news"
+    if len(q.split()) >= 7 or q.endswith("?") or re.match(r"^(wie|warum|was|welche|wer|wo|wann|how|why|what|which|who)\b", q):
+        return "web"
+    return "web"
+
+def _extension_query(query: str, extensions: tuple[str, ...]) -> str:
+    """Build a compact file query; huge OR expressions confuse some engines."""
+    selected = extensions[:4]
+    return f"{query} " + " ".join(f"filetype:{ext}" for ext in selected)
+
+
+def _merge_results(*groups: Dict[str, Any]) -> Dict[str, Any]:
+    merged: List[Dict[str, Any]] = []
+    seen: set[str] = set()
+    sources: Dict[str, int] = {}
+    for group in groups:
+        for name, count in (group.get("sources") or {}).items():
+            sources[name] = sources.get(name, 0) + int(count or 0)
+        for item in group.get("results", []):
+            url = item.get("url") or item.get("source_url") or item.get("image_url")
+            if not url or url in seen:
+                continue
+            seen.add(url)
+            merged.append(item)
+    return {"results": merged, "sources": sources}
+
+
 def _domain(url: str) -> str:
     try:
         return urlparse(url).netloc.lower()
     except Exception:
         return ""
+
+
+def _identity_terms(query: str) -> List[str]:
+    generic = {
+        "download", "downloads", "herunterladen", "iso", "file", "files",
+        "datei", "dateien", "docs", "documentation", "dokumentation",
+        "manual", "wiki", "video", "videos", "image", "images", "bilder",
+        "official", "release", "releases", "web", "website", "latest",
+    }
+    return [
+        t for t in re.findall(r"[a-z0-9.+_-]{3,}", query.lower())
+        if t not in generic
+    ]
+
+
+def _term_present(term: str, text: str) -> bool:
+    return re.search(rf"(?<![a-z0-9]){re.escape(term)}(?![a-z0-9])", text) is not None
+
+
+def _score_result(item: Dict[str, Any], query: str, mode: str, index: int) -> float:
+    url = (item.get("url") or "").lower()
+    title = (item.get("title") or "").lower()
+    snippet = (item.get("snippet") or "").lower()
+    domain = _domain(url)
+    haystack = f"{title} {snippet} {url}"
+    terms = _identity_terms(query)
+    score = max(0.0, 30.0 - index * 0.8)
+    score += min(30.0, sum(6.0 for term in terms if _term_present(term, haystack)))
+    if any(p in domain for p in OFFICIAL_SOURCE_PATTERNS):
+        score += 35.0
+    if any(h in url for h in DOWNLOAD_PATH_HINTS):
+        score += 35.0 if mode == "downloads" else 10.0
+    if mode == "docs" and ("docs." in domain or "/docs" in url or "documentation" in haystack or "manual" in haystack):
+        score += 35.0
+    if mode == "code" and any(p in domain for p in ("github.com", "gitlab.com", "codeberg.org")):
+        score += 40.0
+    if mode == "videos" and any(p in domain for p in ("youtube.com", "youtu.be", "vimeo.com", "peertube")):
+        score += 40.0
+    return round(score, 2)
+
+def _first_party_fallback(query: str, mode: str) -> List[Dict[str, Any]]:
+    q = query.lower()
+    if "ailinux" not in q:
+        return []
+    results = [
+        {
+            "url": "https://ailinux.me/",
+            "title": "AILinux – offizielle Website",
+            "snippet": "Offizielle Projektseite für AILinux, Neuigkeiten, Dokumentation und veröffentlichte Downloads.",
+            "source": "first-party",
+        },
+        {
+            "url": "https://repo.ailinux.me/",
+            "title": "AILinux – offizielles Paket-Repository",
+            "snippet": "Offizielles APT-Repository und Paketquelle des AILinux-Projekts.",
+            "source": "first-party",
+        },
+    ]
+    return results if mode in {"web", "downloads", "files", "docs", "code"} else []
 
 
 def _classify_substance(url: str) -> str:
@@ -84,7 +207,7 @@ def _classify_substance(url: str) -> str:
     return "web"
 
 
-def _curate_results(raw_results: List[Dict[str, Any]], max_out: int = 15) -> Dict[str, Any]:
+def _curate_results(raw_results: List[Dict[str, Any]], query: str, mode: str, max_out: int = 15) -> Dict[str, Any]:
     kept: List[Dict[str, Any]] = []
     dropped_seo = 0
     seen_domains: Dict[str, int] = {}
@@ -94,6 +217,10 @@ def _curate_results(raw_results: List[Dict[str, Any]], max_out: int = 15) -> Dic
         if not url:
             continue
         d = _domain(url)
+        identity_terms = _identity_terms(query)
+        haystack = f"{r.get('title', '')} {r.get('snippet', '')} {url}".lower()
+        if identity_terms and not any(_term_present(term, haystack) for term in identity_terms):
+            continue
 
         if any(p in d for p in SEO_BLOCKLIST_PATTERNS):
             dropped_seo += 1
@@ -105,14 +232,16 @@ def _curate_results(raw_results: List[Dict[str, Any]], max_out: int = 15) -> Dic
 
         tag = _classify_substance(url)
         boost = 0.15 if any(s in d for s in SUBSTANCE_DOMAINS) else 0.0
+        score = _score_result(r, query, mode, idx) + boost * 10
 
         r["_substance_tag"] = tag
         r["_substance_boost"] = boost
+        r["_quality_score"] = round(score, 2)
         r["_domain"] = d
         r["_orig_rank"] = idx
         kept.append(r)
 
-    kept.sort(key=lambda x: x["_orig_rank"] - x["_substance_boost"] * 5)
+    kept.sort(key=lambda x: (-x["_quality_score"], x["_orig_rank"]))
 
     return {
         "results": kept[:max_out],
@@ -176,7 +305,7 @@ async def _synthesize(query: str, sources: List[Dict[str, Any]], lang: str = "de
 
 
 async def _search_by_mode(query: str, mode: str = "web", max_results: int = 30, lang: str = "de") -> Dict[str, Any]:
-    mode = (mode or "web").lower()
+    mode = _detect_mode(query, mode)
     if mode == "images":
         # Patched 2026-05-01: image_search() returns dict with key "images", not "results".
         # Also normalize: copy source_url -> url so _curate_results can process
@@ -196,6 +325,38 @@ async def _search_by_mode(query: str, mode: str = "web", max_results: int = 30, 
     if mode == "science":
         r = await search_science(query, max_results=max_results, lang=lang)
         return {"results": r.get("results", []), "sources": r.get("sources", {})}
+    if mode == "files":
+        searches = await asyncio.gather(
+            multi_search(
+                query=f'"{query}" filetype:pdf', max_results=max_results, lang=lang,
+                use_wikipedia=False, use_grokipedia=False, use_ailinux_news=False,
+            ),
+            multi_search(
+                query=f'"{query}" documentation manual', max_results=max_results, lang=lang,
+                use_wikipedia=False, use_grokipedia=False, use_ailinux_news=False,
+            ),
+            return_exceptions=True,
+        )
+        groups = [g for g in searches if isinstance(g, dict)]
+        return _merge_results(*groups)
+    if mode == "downloads":
+        searches = await asyncio.gather(
+            multi_search(
+                query=f'"{query}" official download', max_results=max_results, lang=lang,
+                use_wikipedia=False, use_grokipedia=False, use_ailinux_news=False,
+            ),
+            multi_search(
+                query=f'"{query}" release github', max_results=max_results, lang=lang,
+                use_wikipedia=False, use_grokipedia=False, use_ailinux_news=False,
+            ),
+            multi_search(
+                query=f'"{query}" site:ailinux.me OR site:github.com', max_results=max_results, lang=lang,
+                use_wikipedia=False, use_grokipedia=False, use_ailinux_news=False,
+            ),
+            return_exceptions=True,
+        )
+        groups = [g for g in searches if isinstance(g, dict)]
+        return _merge_results(*groups)
     if mode == "videos":
         r = await multi_search(
             query=f"{query} site:youtube.com OR site:vimeo.com OR site:peertube.tv",
@@ -216,7 +377,7 @@ async def _search_by_mode(query: str, mode: str = "web", max_results: int = 30, 
 
 class CuratedSearchRequest(BaseModel):
     query: str = Field(..., min_length=1, max_length=400)
-    mode: str = Field(default="web")
+    mode: str = Field(default="auto")
     max_results: int = Field(default=15, ge=3, le=50)
     lang: str = Field(default="de")
     synthesize: bool = Field(default=True)
@@ -226,15 +387,21 @@ class CuratedSearchRequest(BaseModel):
 async def curated_search(req: CuratedSearchRequest) -> Dict[str, Any]:
     t0 = time.time()
     raw = await _search_by_mode(req.query, req.mode, max_results=max(30, req.max_results), lang=req.lang)
-    curated = _curate_results(raw["results"], max_out=req.max_results)
+    detected_mode = _detect_mode(req.query, req.mode)
+    curated = _curate_results(raw["results"], req.query, detected_mode, max_out=req.max_results)
+    if not curated["results"]:
+        fallback = _first_party_fallback(req.query, detected_mode)
+        if fallback:
+            curated = _curate_results(fallback, req.query, detected_mode, max_out=req.max_results)
 
     answer_block = {"answer": "", "model_used": None, "ms": 0}
-    if req.synthesize and req.mode not in ("images", "videos") and curated["results"]:
+    if req.synthesize and detected_mode not in ("images", "videos") and curated["results"]:
         answer_block = await _synthesize(req.query, curated["results"], lang=req.lang)
 
     return {
         "query": req.query,
-        "mode": req.mode,
+        "mode": detected_mode,
+        "requested_mode": req.mode,
         "lang": req.lang,
         "answer": answer_block.get("answer", ""),
         "results": curated["results"],
@@ -259,7 +426,7 @@ def _sse(event: str, data: Any) -> bytes:
 async def curated_search_stream(
     request: Request,
     q: str = Query(..., min_length=1, max_length=400),
-    mode: str = Query(default="web"),
+    mode: str = Query(default="auto"),
     max_results: int = Query(default=15, ge=3, le=50),
     lang: str = Query(default="de"),
     synthesize: bool = Query(default=True),
@@ -279,7 +446,12 @@ async def curated_search_stream(
             return
 
         yield _sse("status", {"phase": "ranking", "msg": "Filtere und ranke…"})
-        curated = _curate_results(raw["results"], max_out=max_results)
+        detected_mode = _detect_mode(q, mode)
+        curated = _curate_results(raw["results"], q, detected_mode, max_out=max_results)
+        if not curated["results"]:
+            fallback = _first_party_fallback(q, detected_mode)
+            if fallback:
+                curated = _curate_results(fallback, q, detected_mode, max_out=max_results)
 
         yield _sse("sources", {
             "results": curated["results"],
@@ -295,7 +467,7 @@ async def curated_search_stream(
         if await request.is_disconnected():
             return
 
-        if synthesize and mode not in ("images", "videos") and curated["results"]:
+        if synthesize and detected_mode not in ("images", "videos") and curated["results"]:
             yield _sse("status", {"phase": "synthesis", "msg": "Schreibe Zusammenfassung…"})
             ans = await _synthesize(q, curated["results"], lang=lang)
             yield _sse("answer", {

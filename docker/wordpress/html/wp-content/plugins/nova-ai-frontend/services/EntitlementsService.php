@@ -54,6 +54,22 @@ class EntitlementsService {
     }
 
     /**
+     * Remove selected one-time purchase entitlements.
+     */
+    public static function remove_entitlements(int $user_id, array $items): void {
+        $existing = array_map(
+            'strval',
+            (array) (get_user_meta($user_id, 'nova_entitlements', true) ?: [])
+        );
+        $remove = array_map(
+            'strval',
+            array_map('sanitize_text_field', $items)
+        );
+        $remaining = array_values(array_diff($existing, $remove));
+        update_user_meta($user_id, 'nova_entitlements', $remaining);
+    }
+
+    /**
      * Downgrade a user to the free tier (e.g. on subscription expiry).
      */
     public static function downgrade_to_free(int $user_id): void {
@@ -64,10 +80,10 @@ class EntitlementsService {
     /**
      * Sync user entitlements to the AILinux backend (fire-and-forget).
      */
-    public static function sync_to_backend(int $user_id): void {
+    public static function sync_to_backend(int $user_id): bool {
         $user = get_userdata($user_id);
         if (!$user) {
-            return;
+            return false;
         }
 
         $settings = get_option('nova_ai_settings', []);
@@ -77,17 +93,39 @@ class EntitlementsService {
 
         $ents = self::get_entitlements($user_id);
 
-        wp_remote_post($endpoint . '/v1/users/entitlements', [
-            'headers'  => ['Content-Type' => 'application/json'],
+        // TriForce /v1/users/entitlements verlangt einen Schluessel (X-Internal-Key,
+        // X-Nova-Webhook-Secret oder Bearer). Fehlte er, antwortete das Backend mit 401 -
+        // und wegen 'blocking' => false hat WordPress das nie gesehen. Ergebnis: Kauf stand
+        // in user_meta, kam aber nie in TriForce an.
+        $headers = ['Content-Type' => 'application/json'];
+        if (defined('NOVA_AI_INTERNAL_KEY') && NOVA_AI_INTERNAL_KEY !== '') {
+            $headers['X-Internal-Key'] = NOVA_AI_INTERNAL_KEY;
+        }
+
+        $response = wp_remote_post($endpoint . '/v1/users/entitlements', [
+            'headers'  => $headers,
             'body'     => wp_json_encode([
-                'email'  => $user->user_email,
-                'tier'   => $ents['tier'],
-                'extra'  => $ents['extra'],
-                'source' => 'wordpress',
+                'email'   => $user->user_email,
+                'tier'    => $ents['tier'],
+                'billing' => !empty($ents['extra']),
+                'extra'   => $ents['extra'],
+                'source'  => 'wordpress',
             ]),
             'timeout'  => 8,
-            'blocking' => false,
+            'blocking' => true,
         ]);
+
+        if (is_wp_error($response)) {
+            error_log('[nova] entitlement-sync fehlgeschlagen: ' . $response->get_error_message());
+            return false;
+        }
+        $code = wp_remote_retrieve_response_code($response);
+        if ($code < 200 || $code >= 300) {
+            error_log(sprintf('[nova] entitlement-sync HTTP %s fuer user %d', $code, $user_id));
+            return false;
+        }
+
+        return true;
     }
 
     /**

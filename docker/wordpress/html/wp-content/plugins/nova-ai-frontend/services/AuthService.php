@@ -272,9 +272,19 @@ class AuthService {
     }
 
     private static function clear_session_cookie(): void {
-        $cookie_name = defined('NOVA_SESSION_COOKIE') ? NOVA_SESSION_COOKIE : 'nova_session';
-        if (isset($_COOKIE[$cookie_name])) {
+        $cookie_names = array_unique([
+            defined('NOVA_SESSION_COOKIE') ? NOVA_SESSION_COOKIE : 'nova_session',
+            'nova_session',
+            'ailinux_token',
+            'ailinux_logout',
+        ]);
+
+        foreach ($cookie_names as $cookie_name) {
+            if (!$cookie_name) {
+                continue;
+            }
             setcookie($cookie_name, '', time() - 3600, '/', '', is_ssl(), true);
+            setcookie($cookie_name, '', time() - 3600, '/', '.ailinux.me', is_ssl(), true);
             unset($_COOKIE[$cookie_name]);
         }
     }
@@ -396,6 +406,13 @@ HTML;
             'callback'            => [$this, 'api_logout'],
             'permission_callback' => '__return_true',
         ]);
+
+        register_rest_route('nova-ai/v1', '/auth/lost-password', [
+            'methods'             => 'POST',
+            'callback'            => [$this, 'api_lost_password'],
+            'permission_callback' => '__return_true',
+        ]);
+
 
         register_rest_route('nova-ai/v1', '/auth/profile', [
             'methods'             => 'POST',
@@ -851,14 +868,39 @@ HTML;
 
         if ($atts['style'] === 'iframe') { ?>
             <iframe src="<?php echo esc_url($this->login_page); ?>?embed=1"
-                    style="width:100%;height:500px;border:none;border-radius:12px;"
-                    allow="clipboard-write"></iframe>
+                    class="ailinux-login-iframe"
+                    title="AILinux Account Login"
+                    loading="eager"
+                    scrolling="no"
+                    referrerpolicy="strict-origin-when-cross-origin"
+                    style="width:100%;max-width:100%;min-width:0;height:820px;border:none;border-radius:12px;display:block;overflow:hidden;"
+                    allow="clipboard-write; identity-credentials-get"></iframe>
+            <style>
+            .ailinux-login-iframe{width:100%!important;max-width:100%!important;min-width:0!important;display:block;margin:0 auto;background:transparent}
+            @media(max-width:640px){.ailinux-login-iframe{height:780px!important;border-radius:10px!important}}
+            </style>
+            <script>
+            (function(){
+                if(window.__ailinuxLoginIframeResizeInstalled)return;
+                window.__ailinuxLoginIframeResizeInstalled=true;
+                window.addEventListener('message',function(event){
+                    if(event.origin!=='https://login.ailinux.me')return;
+                    var data=event.data;
+                    if(!data||data.type!=='ailinux_login_resize')return;
+                    var height=Math.max(420,Math.min(1800,Number(data.height)||0));
+                    if(!height)return;
+                    document.querySelectorAll('.ailinux-login-iframe').forEach(function(frame){
+                        frame.style.setProperty('height',height+'px','important');
+                    });
+                });
+            })();
+            </script>
         <?php } elseif ($atts['style'] === 'form') { ?>
             <div class="ailinux-login-form" id="ailinux-login-form" data-redirect="<?php echo esc_attr($redirect_url); ?>">
                 <div class="ailinux-logo">🤖 AILinux</div>
                 <input type="email" id="ailinux-email" placeholder="Email" required>
                 <input type="password" id="ailinux-password" placeholder="Passwort" required>
-                <button type="button" onclick="ailinuxLogin()">Anmelden</button>
+                <button type="button" onclick="ailinuxLogin()">Sign in</button>
                 <p class="ailinux-register-link">
                     <a href="<?php echo esc_url($this->login_page); ?>?tab=register">Account erstellen</a>
                 </p>
@@ -878,7 +920,7 @@ HTML;
             </style>
         <?php } else { ?>
             <a href="<?php echo esc_url($this->login_page . '?redirect=' . urlencode($redirect_url)); ?>"
-               class="ailinux-auth-btn">🔐 Anmelden</a>
+               class="ailinux-auth-btn">🔐 Sign in</a>
             <style>
             .ailinux-auth-btn{display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 1.5rem;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:#fff;text-decoration:none;border-radius:10px;font-weight:600;transition:all .2s}
             .ailinux-auth-btn:hover{transform:translateY(-2px);box-shadow:0 10px 20px rgba(59,130,246,.3);color:#fff}
@@ -893,7 +935,7 @@ HTML;
 
         ob_start(); ?>
         <div class="ailinux-account" id="ailinux-account">
-            <div class="ailinux-account-loading">Lade Account...</div>
+            <div class="ailinux-account-loading">Loading account...</div>
         </div>
         <style>
         .ailinux-account{padding:1.5rem;background:#12121a;border-radius:16px;border:1px solid #2a2a3a;max-width:400px}
@@ -914,7 +956,7 @@ HTML;
             if (token && email) {
                 container.innerHTML = '<div class="ailinux-account-info"><div class="ailinux-account-avatar">👤</div><div class="ailinux-account-details"><h3>' + email + '</h3><span class="ailinux-account-tier">' + tier.toUpperCase() + '</span></div></div><div class="ailinux-account-actions"><a href="https://ailinux.me/account">Account</a><a href="https://update.ailinux.me">Downloads</a><a href="#" onclick="ailinuxLogout();return false;">Abmelden</a></div>';
             } else {
-                container.innerHTML = '<p style="color:#94a3b8;text-align:center">Nicht angemeldet</p><a href="https://ailinux.me/account" class="ailinux-auth-btn" style="display:block;text-align:center;margin-top:1rem">🔐 Anmelden</a>';
+                container.innerHTML = '<p style="color:#94a3b8;text-align:center">Not signed in</p><a href="https://ailinux.me/account" class="ailinux-auth-btn" style="display:block;text-align:center;margin-top:1rem">🔐 Sign in</a>';
             }
         });
         function ailinuxLogout() {
@@ -946,7 +988,7 @@ HTML;
     public function render_auth_button($atts): string {
         ob_start(); ?>
         <div class="ailinux-auth-toggle" id="ailinux-auth-toggle">
-            <a href="https://ailinux.me/account" class="ailinux-auth-btn">🔐 Anmelden</a>
+            <a href="https://ailinux.me/account" class="ailinux-auth-btn">🔐 Sign in</a>
         </div>
         <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -1079,6 +1121,46 @@ HTML;
     }
 
     /**
+     * Request a WordPress password reset mail.
+     * Generic response avoids account enumeration.
+     */
+    public function api_lost_password(\WP_REST_Request $request): \WP_REST_Response {
+        $email = sanitize_email((string) $request->get_param('email'));
+
+        if (!is_email($email)) {
+            return new \WP_REST_Response([
+                'ok'      => false,
+                'error'   => 'invalid_email',
+                'message' => 'Please enter a valid email address.',
+            ], 400);
+        }
+
+        $user = get_user_by('email', $email);
+
+        if (!$user) {
+            return new \WP_REST_Response([
+                'ok'      => true,
+                'message' => 'If an account exists, a password reset email has been sent.',
+            ], 200);
+        }
+
+        $result = retrieve_password($user->user_login);
+
+        if (is_wp_error($result)) {
+            return new \WP_REST_Response([
+                'ok'      => false,
+                'error'   => 'mail_failed',
+                'message' => 'The password reset email could not be sent. Please try again later.',
+            ], 500);
+        }
+
+        return new \WP_REST_Response([
+            'ok'      => true,
+            'message' => 'If an account exists, a password reset email has been sent.',
+        ], 200);
+    }
+
+    /**
      * GET /wp-json/nova-ai/v1/auth/wp-login?token=...&email=...&tier=...&redirect=...
      * Setzt WP-Auth-Cookie und redirectet — löst Cross-Domain SameSite Problem.
      * Browser navigiert direkt auf ailinux.me, daher Cookie korrekt gesetzt.
@@ -1114,8 +1196,11 @@ HTML;
         update_user_meta($user_id, 'nova_ailinux_email', $email);
         if ($client_id) update_user_meta($user_id, 'nova_client_id', $client_id);
 
+        // Always reset stale WP/auth cookies before issuing a fresh bridge login cookie.
+        wp_clear_auth_cookie();
+        self::clear_session_cookie();
         wp_set_current_user($user_id);
-        wp_set_auth_cookie($user_id, true);
+        wp_set_auth_cookie($user_id, true, is_ssl());
 
         $safe = (strpos($redirect, home_url()) === 0) ? $redirect : home_url('/');
         wp_redirect($safe);

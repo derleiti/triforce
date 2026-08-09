@@ -1,5 +1,16 @@
 # Gemini Workspace Analysis
 
+
+<!-- AILINUX_STATUS_START -->
+## Current TriForce coordination defaults
+
+TriForce remains a multi-provider platform, but the default local route is now `ollama/gemma4:12b`.
+
+Gemini integrations remain available for explicit Gemini tasks and function-calling paths. The service currently logs a warning about the deprecated `google.generativeai` package, so migration to `google.genai` should be planned.
+
+When updating Gemini-specific code, preserve provider boundaries and do not replace Ollama defaults unless explicitly requested.
+<!-- AILINUX_STATUS_END -->
+
 This document provides a comprehensive overview of the **TriForce AI Backend** project (`ailinux-ai-server-backend`). It is intended to be used as a guide for developers and AI agents to understand the codebase, architecture, and development conventions.
 
 ## Project Overview
@@ -121,3 +132,9 @@ Optimized directives for coding agents (defined in `TSP_PROTOCOL.md`).
 *   `AGENTS.md`: Detailed guide on agent capabilities and configuration.
 *   `app/main.py`: Entry point for the FastAPI application.
 *   `app/routes/mcp.py`: Core logic for the Model Context Protocol endpoints.
+
+## Local Project Hygiene Context
+
+When assisting in this repository, distinguish source changes from runtime cleanup. The live project checkout is `/home/zombie/triforce`; the local review checkout may be `/home/zombie/triforce-review`. Always verify the root and branch before writing files.
+
+Generated or host-local assets such as `.venv/`, `__pycache__/`, Docker repository mirror data, generated Debian package staging, and backup/patch directories should be ignored or backed up outside Git rather than committed. Route cleanup must preserve active compatibility modules referenced by `app/main.py`, especially `app/routes_sd3.py` and `app/routes_vision.py`.

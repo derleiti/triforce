@@ -25,7 +25,7 @@ from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger("ailinux.mcp.docbrowser")
 
-PROJECT_ROOT = Path("/home/zombie/triforce")
+PROJECT_ROOT = Path(os.environ.get("TRIFORCE_ROOT", Path(__file__).resolve().parents[2]))
 
 # Dateitypen die der Browser kennt
 DOC_EXTENSIONS = {

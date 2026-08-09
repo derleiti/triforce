@@ -2,8 +2,8 @@
 # AILinux Mirror Configuration - OPTIMIZED
 # ============================================================================
 # Core: Ubuntu, KDE Neon, Docker, Wine, Steam, Chrome, Node, LibreOffice
-# Dev: VS Code, Lutris
-# AI/GPU: NVIDIA CUDA, Container Toolkit, Intel oneAPI, Graphics Drivers
+# Dev: VS Code
+# Gaming/AI/GPU: Kisak Mesa, NVIDIA CUDA, Container Toolkit, Graphics Drivers
 # ============================================================================
 
 # --- apt-mirror Settings ---
@@ -18,7 +18,7 @@ set nthreads          50
 set limit_rate        100m
 
 # ============================================================================
-# Ubuntu 24.04 LTS (Noble Numbat) - ESSENTIAL ONLY
+# Ubuntu 26.04 (Resolute) - ESSENTIAL ONLY
 # ============================================================================
 
 # --- Main Archive (amd64) ---
@@ -52,7 +52,7 @@ deb-amd64 https://dl.winehq.org/wine-builds/ubuntu/ resolute main
 # ============================================================================
 # Docker CE (Official)
 # ============================================================================
-deb-amd64 http://download.docker.com/linux/ubuntu noble stable
+deb-amd64 https://download.docker.com/linux/ubuntu resolute stable
 
 # ============================================================================
 # Steam (amd64 + i386 for gaming)
@@ -68,12 +68,12 @@ deb-amd64 http://deb.nodesource.com/node_22.x nodistro main
 # ============================================================================
 # LibreOffice Fresh PPA
 # ============================================================================
-deb-amd64 http://ppa.launchpadcontent.net/libreoffice/ppa/ubuntu noble main
+deb-amd64 http://ppa.launchpadcontent.net/libreoffice/ppa/ubuntu resolute main
 
 # ============================================================================
 # Cappelikan - Mainline Linux Kernels
 # ============================================================================
-deb-amd64 http://ppa.launchpadcontent.net/cappelikan/ppa/ubuntu noble main
+deb-amd64 http://ppa.launchpadcontent.net/cappelikan/ppa/ubuntu resolute main
 
 # ============================================================================
 # DEV: Visual Studio Code (Microsoft Official)
@@ -81,19 +81,27 @@ deb-amd64 http://ppa.launchpadcontent.net/cappelikan/ppa/ubuntu noble main
 deb-amd64 http://packages.microsoft.com/repos/code stable main
 
 # ============================================================================
-# GAMING: Lutris PPA (DISABLED - no noble support as of Dec 2025)
+# GAMING: Lutris PPA (DISABLED - no Resolute publication)
 # ============================================================================
-# deb-amd64 http://ppa.launchpadcontent.net/lutris-team/lutris/ubuntu noble main
+deb-amd64 http://ppa.launchpadcontent.net/lutris-team/lutris/ubuntu resolute main
+
+# ============================================================================
+# GAMING: Kisak Mesa (current Mesa for AMD/Intel, amd64 + i386)
+# Do not enable Oibaf in parallel; its Resolute package indexes are empty.
+# ============================================================================
+deb-amd64 http://ppa.launchpadcontent.net/kisak/kisak-mesa/ubuntu resolute main
+deb-i386 http://ppa.launchpadcontent.net/kisak/kisak-mesa/ubuntu resolute main
 
 # ============================================================================
 # DRIVERS: NVIDIA Proprietary Drivers PPA
 # ============================================================================
-deb-amd64 http://ppa.launchpadcontent.net/graphics-drivers/ppa/ubuntu noble main
+deb-amd64 http://ppa.launchpadcontent.net/graphics-drivers/ppa/ubuntu resolute main
+deb-i386 http://ppa.launchpadcontent.net/graphics-drivers/ppa/ubuntu resolute main
 
 # ============================================================================
-# AI/ML: NVIDIA CUDA Toolkit
+# AI/ML: NVIDIA CUDA Toolkit for Ubuntu 26.04
 # ============================================================================
-# deb-amd64 https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/ /
+deb-amd64 https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2604/x86_64/ /
 
 # ============================================================================
 # AI/ML: NVIDIA Container Toolkit (Docker GPU Support)
@@ -103,7 +111,12 @@ deb-amd64 https://nvidia.github.io/libnvidia-container/stable/deb/amd64 /
 # ============================================================================
 # AI/ML: Intel oneAPI (CPU/GPU Compute, MKL, OpenVINO)
 # ============================================================================
-# deb-amd64 https://apt.repos.intel.com/oneapi all main
+deb-amd64 https://apt.repos.intel.com/oneapi all main
+
+# ============================================================================
+# Anthropic Claude
+# =============================================================================
+deb-amd64 https://downloads.claude.ai/claude-desktop/apt/stable stable main
 
 # ============================================================================
 # Cleanup old/removed packages
@@ -120,7 +133,8 @@ clean http://ppa.launchpadcontent.net/libreoffice/ppa/ubuntu
 clean http://ppa.launchpadcontent.net/cappelikan/ppa/ubuntu
 clean https://packages.microsoft.com/repos/code
 clean http://ppa.launchpadcontent.net/lutris-team/lutris/ubuntu
+clean http://ppa.launchpadcontent.net/kisak/kisak-mesa/ubuntu
 clean http://ppa.launchpadcontent.net/graphics-drivers/ppa/ubuntu
-clean https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/
+clean https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2604/x86_64/
 clean https://nvidia.github.io/libnvidia-container/stable/deb/amd64
 clean https://apt.repos.intel.com/oneapi

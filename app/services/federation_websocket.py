@@ -60,7 +60,11 @@ elif "zombie" in _hostname_lower:
     NODE_ID = "zombie-pc"
 else:
     NODE_ID = os.getenv("FEDERATION_NODE_ID", "hetzner")
-WS_RECONNECT_DELAY = 5  # Sekunden
+WS_RECONNECT_DELAY = max(1, int(os.getenv("FEDERATION_WS_RECONNECT_BASE", "5")))
+WS_RECONNECT_MAX_DELAY = max(
+    WS_RECONNECT_DELAY,
+    int(os.getenv("FEDERATION_WS_RECONNECT_MAX", "300")),
+)
 WS_HEARTBEAT_INTERVAL = 10  # Sekunden
 WS_PORT = 9001  # Separater Port für Federation WS
 
@@ -139,40 +143,70 @@ class FederationPeer:
         self._reconnect_task: Optional[asyncio.Task] = None
         self._heartbeat_task: Optional[asyncio.Task] = None
         self._message_handlers: Dict[str, Callable] = {}
+        self._reconnect_attempt = 0
+        self._stop_requested = False
         
     async def connect(self):
-        """Verbindet zum Peer Node"""
-        while True:
+        """Verbindet zum Peer Node mit begrenztem exponentiellem Backoff."""
+        self._stop_requested = False
+        while not self._stop_requested:
+            connected_since: Optional[float] = None
             try:
                 logger.info(f"Connecting to peer {self.node_id} at {self.ws_url}")
                 self.websocket = await websockets.connect(
                     self.ws_url,
                     ping_interval=20,
                     ping_timeout=10,
-                    close_timeout=5
+                    close_timeout=5,
+                    open_timeout=10,
                 )
                 self.connected = True
-                
+                connected_since = time.monotonic()
+
                 # Send HELLO
                 await self._send_hello()
-                
+
                 # Start heartbeat
                 self._heartbeat_task = asyncio.create_task(self._heartbeat_loop())
-                
+
                 # Message loop
                 await self._message_loop()
-                
+
             except ConnectionClosed as e:
                 logger.warning(f"Connection to {self.node_id} closed: {e}")
             except Exception as e:
                 logger.error(f"Connection error to {self.node_id}: {e}")
-            
+
             self.connected = False
             if self._heartbeat_task:
                 self._heartbeat_task.cancel()
-            
-            logger.info(f"Reconnecting to {self.node_id} in {WS_RECONNECT_DELAY}s...")
-            await asyncio.sleep(WS_RECONNECT_DELAY)
+
+            if self._stop_requested:
+                break
+
+            # Kurze/fehlgeschlagene Verbindungen bekommen exponentielles
+            # Backoff. Nach mindestens drei Heartbeats gilt die Verbindung
+            # als stabil und der Zähler wird zurückgesetzt.
+            connection_age = (
+                time.monotonic() - connected_since
+                if connected_since is not None
+                else 0.0
+            )
+            if connection_age >= max(30, WS_HEARTBEAT_INTERVAL * 3):
+                self._reconnect_attempt = 0
+            else:
+                self._reconnect_attempt += 1
+
+            exponent = min(max(self._reconnect_attempt - 1, 0), 8)
+            reconnect_delay = min(
+                WS_RECONNECT_DELAY * (2 ** exponent),
+                WS_RECONNECT_MAX_DELAY,
+            )
+            logger.info(
+                f"Reconnecting to {self.node_id} in {reconnect_delay}s "
+                f"(attempt {self._reconnect_attempt})..."
+            )
+            await asyncio.sleep(reconnect_delay)
     
     async def _send_hello(self):
         """Sendet HELLO mit Token-Authentifizierung"""
@@ -301,7 +335,8 @@ class FederationPeer:
         self._message_handlers[msg_type] = handler
     
     async def disconnect(self):
-        """Trennt Verbindung"""
+        """Trennt Verbindung und verhindert automatischen Neuaufbau."""
+        self._stop_requested = True
         self.connected = False
         if self._heartbeat_task:
             self._heartbeat_task.cancel()

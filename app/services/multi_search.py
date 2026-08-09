@@ -683,10 +683,146 @@ async def get_crypto_prices(coins: List[str] = None) -> Dict[str, Any]:
     return {"error": "Crypto unavailable"}
 
 
+async def get_stock_indices() -> Dict[str, Any]:
+    """Return major stock indices from Yahoo Finance with partial-failure support."""
+    definitions = {
+        "DAX": "^GDAXI",
+        "S&P500": "^GSPC",
+        "NASDAQ": "^IXIC",
+    }
+
+    async def fetch_index(
+        session: aiohttp.ClientSession,
+        name: str,
+        symbol: str,
+    ) -> tuple[str, Dict[str, Any], Optional[str]]:
+        payload: Dict[str, Any] = {
+            "symbol": symbol,
+            "value": None,
+            "change": None,
+        }
+        try:
+            url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}"
+            async with session.get(
+                url,
+                params={"interval": "1d", "range": "5d"},
+            ) as resp:
+                if resp.status != 200:
+                    return name, payload, f"HTTP {resp.status}"
+                data = await resp.json()
+
+            results = data.get("chart", {}).get("result") or []
+            if not results:
+                return name, payload, "Yahoo Finance returned no chart result"
+
+            meta = results[0].get("meta", {})
+            price = meta.get("regularMarketPrice")
+            previous = meta.get("chartPreviousClose") or meta.get("previousClose")
+
+            if price is not None:
+                payload["value"] = round(float(price), 2)
+            if price is not None and previous not in (None, 0):
+                payload["change"] = round(
+                    ((float(price) - float(previous)) / float(previous)) * 100,
+                    2,
+                )
+            return name, payload, None
+        except Exception as exc:
+            logger.debug("Stock index %s failed: %s", name, exc)
+            return name, payload, str(exc)
+
+    timeout = aiohttp.ClientTimeout(total=10)
+    headers = {"User-Agent": "AILinux-MCP/2.80"}
+    async with aiohttp.ClientSession(timeout=timeout, headers=headers) as session:
+        rows = await asyncio.gather(
+            *(fetch_index(session, name, symbol) for name, symbol in definitions.items())
+        )
+
+    indices = {name: payload for name, payload, _ in rows}
+    errors = {name: error for name, _, error in rows if error}
+    response: Dict[str, Any] = {
+        "indices": indices,
+        "source": "yahoo_finance",
+        "timestamp": time.time(),
+    }
+    if errors:
+        response["errors"] = errors
+    return response
+
+
 async def get_market_overview() -> Dict[str, Any]:
-    """Marktübersicht"""
-    crypto = await get_crypto_prices()
-    return {"crypto": crypto}
+    """Return crypto and stock data without dropping one side on partial failure."""
+    crypto, stocks = await asyncio.gather(
+        get_crypto_prices(),
+        get_stock_indices(),
+        return_exceptions=True,
+    )
+    return {
+        "crypto": crypto if not isinstance(crypto, Exception) else {"error": str(crypto)},
+        "stocks": stocks if not isinstance(stocks, Exception) else {"error": str(stocks)},
+        "timestamp": time.time(),
+    }
+
+
+async def get_current_time(
+    timezone: str = "Europe/Berlin",
+    location: Optional[str] = None,
+) -> Dict[str, Any]:
+    """Return timezone-aware local time using the system IANA timezone database."""
+    from datetime import datetime
+    from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+
+    timezone_name = str(timezone or "Europe/Berlin").strip()
+    try:
+        tz = ZoneInfo(timezone_name)
+    except (ZoneInfoNotFoundError, ValueError) as exc:
+        raise ValueError(f"Unknown IANA timezone: {timezone_name}") from exc
+
+    now = datetime.now(tz)
+    offset = now.strftime("%z")
+    if len(offset) == 5:
+        offset = f"{offset[:3]}:{offset[3:]}"
+
+    weekdays_de = [
+        "Montag",
+        "Dienstag",
+        "Mittwoch",
+        "Donnerstag",
+        "Freitag",
+        "Samstag",
+        "Sonntag",
+    ]
+    return {
+        "timezone": timezone_name,
+        "location": location or timezone_name.split("/")[-1].replace("_", " "),
+        "datetime": now.isoformat(),
+        "date": now.strftime("%Y-%m-%d"),
+        "time": now.strftime("%H:%M:%S"),
+        "time_12h": now.strftime("%I:%M %p"),
+        "weekday": now.strftime("%A"),
+        "weekday_de": weekdays_de[now.weekday()],
+        "utc_offset": offset,
+        "unix_timestamp": int(now.timestamp()),
+        "source": "python_zoneinfo",
+    }
+
+
+async def list_timezones(region: Optional[str] = None) -> Dict[str, Any]:
+    """List IANA timezones, optionally restricted to a region prefix."""
+    from zoneinfo import available_timezones
+
+    zones = sorted(available_timezones())
+    region_name = str(region).strip().strip("/") if region else None
+    if region_name:
+        prefix = f"{region_name.lower()}/"
+        zones = [zone for zone in zones if zone.lower().startswith(prefix)]
+
+    return {
+        "timezones": zones,
+        "count": len(zones),
+        "region": region_name,
+        "source": "python_zoneinfo",
+    }
 
 
 # =============================================================================

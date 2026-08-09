@@ -74,17 +74,12 @@ RELEASEEOF
 
 # Checksums hinzufügen
 cd "$DISTS_DIR"
-{
-    echo "MD5Sum:"
-    find main -type f \( -name "Packages*" -o -name "Release" \) -exec md5sum {} \; | \
-        awk '{printf " %s %16d %s\n", $1, system("stat -c %s " $2), $2}'
-    
-    echo "SHA256:"
-    find main -type f \( -name "Packages*" -o -name "Release" \) -exec sha256sum {} \; | \
-        awk '{printf " %s %16d %s\n", $1, system("stat -c %s " $2), $2}'
-} >> "$RELEASE_FILE" 2>/dev/null || true
 
-# Einfachere Checksums
+# NOTE: an earlier find/awk block here was removed. It forked md5sum/sha256sum
+# per file and used awk's system() for the size, which returns the command's
+# exit status (not the size) and leaks stat's output to stdout -- so it emitted
+# a malformed MD5Sum/SHA256 section ahead of the correct ones below.
+# The explicit loops that follow produce the real checksums.
 echo "MD5Sum:" >> "$RELEASE_FILE"
 for f in main/binary-amd64/Packages main/binary-amd64/Packages.gz main/binary-i386/Packages main/binary-i386/Packages.gz; do
     if [ -f "$f" ]; then

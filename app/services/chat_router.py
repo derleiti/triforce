@@ -90,26 +90,26 @@ AVAILABLE_MODELS = {
     ),
     
     # === Cloud APIs ===
-    "openai/gpt-4o": ModelConfig(
+    "openai/gpt-5.5": ModelConfig(
         provider=ModelProvider.OPENAI,
-        model_id="gpt-4o",
-        display_name="GPT-4o",
+        model_id="gpt-5.5",
+        display_name="GPT-5.5",
         context_length=128000,
         strengths=["reasoning", "code", "creative", "vision"],
         cost_tier="high"
     ),
-    "openai/gpt-4o-mini": ModelConfig(
+    "openai/gpt-5.4-mini": ModelConfig(
         provider=ModelProvider.OPENAI,
-        model_id="gpt-4o-mini",
-        display_name="GPT-4o Mini",
+        model_id="gpt-5.4-mini",
+        display_name="GPT-5.4 Mini",
         context_length=128000,
         strengths=["general", "fast"],
         cost_tier="low"
     ),
-    "anthropic/claude-sonnet-4-20250514": ModelConfig(
+    "anthropic/claude-sonnet-4-6": ModelConfig(
         provider=ModelProvider.ANTHROPIC,
-        model_id="claude-sonnet-4-20250514",
-        display_name="Claude Sonnet 4",
+        model_id="claude-sonnet-4-6",
+        display_name="Claude Sonnet 4.6",
         context_length=200000,
         strengths=["code", "reasoning", "creative"],
         cost_tier="medium"
@@ -122,10 +122,10 @@ AVAILABLE_MODELS = {
         strengths=["fast", "general"],
         cost_tier="low"
     ),
-    "gemini/gemini-2.5-flash": ModelConfig(
+    "gemini/gemini-3.5-flash": ModelConfig(
         provider=ModelProvider.GEMINI,
-        model_id="gemini-2.5-flash",
-        display_name="Gemini 2.5 Flash",
+        model_id="gemini-3.5-flash",
+        display_name="Gemini 3.5 Flash",
         context_length=1000000,
         strengths=["fast", "reasoning", "vision"],
         cost_tier="low"
@@ -138,10 +138,10 @@ AVAILABLE_MODELS = {
         strengths=["reasoning", "code", "creative"],
         cost_tier="medium"
     ),
-    "mistral/mistral-large-latest": ModelConfig(
+    "mistral/mistral-medium-3.5": ModelConfig(
         provider=ModelProvider.MISTRAL,
-        model_id="mistral-large-latest",
-        display_name="Mistral Large",
+        model_id="mistral-medium-3.5",
+        display_name="Mistral Medium 3.5",
         context_length=128000,
         strengths=["reasoning", "multilingual"],
         cost_tier="medium"
@@ -179,7 +179,7 @@ class ChatRouter:
     def __init__(self, ollama_url: str = "http://localhost:11434"):
         self.ollama_url = ollama_url
         self.default_local = "ollama/qwen2.5:14b"
-        self.default_cloud = "anthropic/claude-sonnet-4-20250514"
+        self.default_cloud = "anthropic/claude-sonnet-4-6"
     
     def detect_task_type(self, message: str) -> List[str]:
         """Erkennt den Task-Typ aus der Nachricht"""
@@ -364,7 +364,7 @@ class APIProxy:
         Chat mit Cloud-API
         
         Args:
-            model: Model-ID (z.B. "openai/gpt-4o")
+            model: Model-ID (z.B. "openai/gpt-5.5")
             messages: Chat-Messages [{role, content}]
             temperature: Sampling-Temperatur
             max_tokens: Max Output Tokens
@@ -373,15 +373,41 @@ class APIProxy:
             Assistant-Antwort als String
         """
         from .api_vault import api_vault
-        
-        if not api_vault.is_unlocked:
-            raise RuntimeError("API Vault is locked - cannot access API keys")
-        
+
+        # ENV-Fallback: Wenn Vault locked/uninitialisiert ODER Key nicht im Vault,
+        # versuche os.environ. Konsistent mit handlers_v4 und nova_frontend.
+        # Reaktiviert 2026-06-15 — Vault wurde nie initialisiert, blockt sonst Group Chat.
+        import os
+        _PROVIDER_ENV = {
+            "openai":    ("OPENAI_API_KEY",),
+            "anthropic": ("ANTHROPIC_API_KEY",),
+            "google":    ("GEMINI_API_KEY", "GOOGLE_AI_STUDIO_KEY"),
+            "gemini":    ("GEMINI_API_KEY", "GOOGLE_AI_STUDIO_KEY"),
+            "mistral":   ("MISTRAL_API_KEY",),
+            "groq":      ("GROQ_API_KEY",),
+            "cerebras":  ("CEREBRAS_API_KEY",),
+            "openrouter":("OPENROUTER_API_KEY",),
+        }
+
         provider, model_id = model.split("/", 1)
-        api_key = api_vault.get_key(provider)
-        
+
+        api_key = None
+        if api_vault.is_unlocked:
+            api_key = api_vault.get_key(provider)
+
         if not api_key:
-            raise RuntimeError(f"No API key for provider: {provider}")
+            for env_name in _PROVIDER_ENV.get(provider, ()):
+                v = os.environ.get(env_name)
+                if v:
+                    api_key = v
+                    break
+
+        if not api_key:
+            raise RuntimeError(
+                f"No API key for provider '{provider}' "
+                f"(vault {'unlocked' if api_vault.is_unlocked else 'locked'}, "
+                f"ENV checked: {_PROVIDER_ENV.get(provider, ())})"
+            )
         
         # Provider-spezifische Implementierung
         if provider == "openai":

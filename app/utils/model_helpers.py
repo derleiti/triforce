@@ -4,9 +4,9 @@ from __future__ import annotations
 
 # All known provider prefixes
 PROVIDER_PREFIXES = (
-    "ollama/", "gemini/", "mistral/", "anthropic/", "groq/", 
-    "cerebras/", "cohere/", "openrouter/", "together/", 
-    "fireworks/", "cloudflare/", "gpt-oss/"
+    "ollama/", "gemini/", "mistral/", "anthropic/", "openai/", "groq/",
+    "cerebras/", "cohere/", "kimi/", "huggingface/", "github/",
+    "openrouter/", "together/", "fireworks/", "cloudflare/", "gpt-oss/",
 )
 
 # Default fallback model

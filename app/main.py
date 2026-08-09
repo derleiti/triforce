@@ -1,3 +1,4 @@
+import os
 from contextlib import asynccontextmanager
 import logging
 # import logging (centralized)
@@ -6,10 +7,11 @@ from fastapi import FastAPI, Request, status, HTTPException
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, HTMLResponse, FileResponse, RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.docs import get_swagger_ui_oauth2_redirect_html
 from fastapi.staticfiles import StaticFiles
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pathlib import Path
-from fastapi_limiter import FastAPILimiter
+from .utils.rate_limit_compat import FastAPILimiter
 from typing import Optional
 
 # Unified logging für alle Komponenten
@@ -101,6 +103,9 @@ from .routes.nova_frontend import router as nova_frontend_router
 from .routes.nova_playground import router as nova_playground_router
 from .routes.nova_wordpress import router as nova_wordpress_router
 from .routes.nova_operator import router as nova_operator_router
+from .routes.rag import router as rag_router
+from .routes.search_curated import router as search_curated_router
+from app.routes.admin_users import router as admin_users_router
 
 # Import routers from the top-level app directory
 from .routes_sd3 import router as sd3_router
@@ -183,8 +188,9 @@ async def lifespan(app: FastAPI):
         from .services.server_federation import federation_manager
         from .services.federation_websocket import federation_lb
         import socket
+        node_id_env = os.environ.get("NODE_ID")
         _hostname = socket.gethostname().lower()
-        node_id = "backup" if "backup" in _hostname else "zombie-pc" if "zombie" in _hostname else "hetzner"
+        node_id = node_id_env or ("backup" if "backup" in _hostname else "zombie-pc" if "zombie" in _hostname else "hetzner")
         await federation_manager.initialize(node_id=node_id)
         await federation_lb.start()
         logger.info("Federation Manager started")
@@ -212,18 +218,17 @@ async def lifespan(app: FastAPI):
         # import logging (centralized)
         logger.warning(f"Failed to start MCP Brain: {e}")
 
-    # Start MCP WebSocket Server (Port 44433)
+    # Start MCP WebSocket Server
     try:
         from .services.mcp_ws_server import mcp_ws_server
         await mcp_ws_server.start()
-        logger.info("MCP WebSocket Server started on port 44433")
+        logger.info(f"MCP WebSocket Server started on port {settings.mcp_ws_port}")
     except Exception as e:
         logger.warning(f"Failed to start MCP WebSocket Server: {e}")
 
     # Auto-Bootstrap CLI Agents (wenn konfiguriert)
     try:
         from .services.agent_bootstrap import bootstrap_service
-        import os
         auto_bootstrap = os.environ.get("AUTO_BOOTSTRAP_AGENTS", "false").lower() == "true"
         if auto_bootstrap:
             # import logging (centralized)
@@ -240,7 +245,7 @@ async def lifespan(app: FastAPI):
     try:
         from .mcp.notification_manager import start_pollers
         start_pollers()
-        logger.info("Notification Manager started")
+        logger.info("Notification Manager pollers requested")
     except Exception:
         logger.warning("Notification Manager start skipped")
 
@@ -316,8 +321,10 @@ def create_app() -> FastAPI:
     # import logging (centralized)
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     app = FastAPI(
-        title="AILinux AI Server", 
+        title="AILinux AI Server",
         lifespan=lifespan,
+        docs_url=None,
+        redoc_url=None,
         redirect_slashes=False  # Verhindert 307 Redirect bei trailing slash
     )
 
@@ -383,6 +390,8 @@ def create_app() -> FastAPI:
     app.include_router(chat_router, prefix="/v1", tags=["Chat"])
     app.include_router(crawler_router, prefix="/v1", tags=["Crawler"])
     app.include_router(health_router, tags=["Monitoring"])
+    app.include_router(rag_router, prefix="/v1", tags=["RAG"])
+    app.include_router(search_curated_router, prefix="/v1", tags=["Search Curated"])
     app.include_router(mcp_public_router, prefix="/v1", tags=["MCP"])
     app.include_router(mcp_router, prefix="/v1", tags=["MCP"])
     app.include_router(mcp_node_router, prefix="/v1", tags=["MCP Node"])
@@ -478,8 +487,47 @@ def create_app() -> FastAPI:
     if _HAS_TRIFORCE_LOGGING:
         app.add_middleware(TriForceLoggingMiddleware, central_logger=central_logger)
 
-    # Mount static files for GUI
     static_dir = Path(__file__).parent / "static"
+    docs_static_dir = static_dir / "docs"
+
+    @app.get("/docs", include_in_schema=False)
+    async def custom_swagger_ui():
+        swagger_css = (docs_static_dir / "swagger-ui.css").read_text(encoding="utf-8")
+        swagger_js = (docs_static_dir / "swagger-ui-bundle.js").read_text(encoding="utf-8")
+        html = (
+            "<!doctype html><html><head><meta charset='utf-8'>"
+            "<meta name='viewport' content='width=device-width,initial-scale=1'>"
+            f"<title>{app.title} - Swagger UI</title><style>{swagger_css}</style>"
+            "</head><body><div id='swagger-ui'></div>"
+            f"<script>{swagger_js}</script>"
+            "<script>window.ui=SwaggerUIBundle({"
+            "url:'/openapi.json',dom_id:'#swagger-ui',layout:'BaseLayout',deepLinking:true,"
+            "showExtensions:true,showCommonExtensions:true,"
+            "oauth2RedirectUrl:window.location.origin+'/docs/oauth2-redirect',"
+            "presets:[SwaggerUIBundle.presets.apis,SwaggerUIBundle.SwaggerUIStandalonePreset]"
+            "});</script></body></html>"
+        )
+        return HTMLResponse(html)
+
+    @app.get(app.swagger_ui_oauth2_redirect_url, include_in_schema=False)
+    async def swagger_ui_redirect():
+        return get_swagger_ui_oauth2_redirect_html()
+
+    @app.get("/redoc", include_in_schema=False)
+    async def custom_redoc():
+        redoc_js = (docs_static_dir / "redoc.standalone.js").read_text(encoding="utf-8")
+        html = (
+            "<!doctype html><html><head><meta charset='utf-8'>"
+            "<meta name='viewport' content='width=device-width,initial-scale=1'>"
+            f"<title>{app.title} - ReDoc</title>"
+            "<style>body{margin:0;padding:0}</style></head><body><div id='redoc'></div>"
+            f"<script>{redoc_js}</script>"
+            "<script>Redoc.init('/openapi.json',{},document.getElementById('redoc'));</script>"
+            "</body></html>"
+        )
+        return HTMLResponse(html)
+
+    # Existing GUI/static assets remain available on the normal path.
     if static_dir.exists():
         app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
 
@@ -492,3 +540,5 @@ def create_app() -> FastAPI:
 
 # Uvicorn Entry
 app = create_app()
+
+app.include_router(admin_users_router, prefix="/v1", tags=["Admin Users"])

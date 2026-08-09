@@ -1,12 +1,13 @@
 """
 AILinux Client Chat API
 Tier-basierter Chat:
-- Free: Ollama Backend (lokal auf Server)
-- Pro/Enterprise: OpenRouter + alle Cloud-Provider
+- Guest: verifizierte Ollama-Modelle
+- Registered: Ollama + konfigurierte Free-Quota-Provider
+- Pro/Enterprise: alle konfigurierten Chat-Provider
 """
 from fastapi import APIRouter, HTTPException, Header
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Any, Optional, List
 import httpx
 import os
 import logging
@@ -17,6 +18,7 @@ from ..services.user_tiers import (
     tier_service, UserTier, FREE_MODELS_OLLAMA, LOCAL_FALLBACK_MODEL
 )
 from ..services.model_registry import registry
+from ..services.provider_chat import chat_completion, normalize_tools
 from ..services.model_availability import availability_service
 
 logger = logging.getLogger("ailinux.client_chat")
@@ -131,13 +133,16 @@ class ChatRequest(BaseModel):
     system_prompt: Optional[str] = None
     temperature: Optional[float] = 0.7
     max_tokens: Optional[int] = 4096
+    tools: Optional[List[dict[str, Any]]] = None
+    tool_choice: Any = "auto"
 
 
 class ChatResponse(BaseModel):
     response: str
     model: str
     tier: str
-    backend: str  # "ollama" oder "openrouter"
+    backend: str  # "ollama" oder Provider-ID
+    tool_calls: List[dict[str, Any]] = []
     tokens_used: Optional[int] = None  # None bei Ollama für Pro (unlimited)
     tokens_unlimited: Optional[bool] = False  # True wenn Ollama für Pro/Enterprise
     latency_ms: Optional[int] = None
@@ -153,16 +158,140 @@ class ModelsResponse(BaseModel):
     upgrade_available: bool
 
 
+SUPPORTED_CHAT_PROVIDERS = {
+    "ollama", "openai", "anthropic", "gemini", "mistral", "groq",
+    "cerebras", "nvidia", "cohere", "openrouter", "together", "fireworks",
+    "cloudflare", "huggingface", "github",
+}
+
+PROVIDER_KEY_ENVS = {
+    "openai": ("OPENAI_API_KEY", "OPENROUTER_API_KEY"),
+    "anthropic": ("ANTHROPIC_API_KEY",),
+    "gemini": (
+        "GEMINI_API_KEY", "GOOGLE_AI_STUDIO_KEY", "GOOGLE_API_KEY",
+        "OPENROUTER_API_KEY",
+    ),
+    "mistral": ("MISTRAL_API_KEY",),
+    "groq": ("GROQ_API_KEY",),
+    "cerebras": ("CEREBRAS_API_KEY",),
+    "nvidia": ("NVIDIA_API_KEY",),
+    "cohere": ("COHERE_API_KEY",),
+    "openrouter": ("OPENROUTER_API_KEY",),
+    "together": ("TOGETHER_API_KEY",),
+    "fireworks": ("FIREWORKS_API_KEY",),
+    "huggingface": ("HUGGINGFACE_API_KEY", "HF_TOKEN"),
+    "github": ("GITHUB_TOKEN", "OPENROUTER_API_KEY"),
+}
+
+
+def provider_is_configured(provider: str) -> bool:
+    """Avoid advertising static models whose provider cannot execute chat."""
+    if provider == "ollama":
+        return True
+    if provider == "cloudflare":
+        return bool(
+            os.getenv("CLOUDFLARE_API_TOKEN")
+            and os.getenv("CLOUDFLARE_ACCOUNT_ID")
+        )
+    return any(os.getenv(name) for name in PROVIDER_KEY_ENVS.get(provider, ()))
+
+
+def chat_capable_model_ids(models) -> List[str]:
+    """Return only executable, configured chat entries for ai-coder."""
+    return [
+        model.id for model in models
+        if "chat" in (getattr(model, "capabilities", None) or set())
+        and getattr(model, "provider", "") in SUPPORTED_CHAT_PROVIDERS
+        and provider_is_configured(getattr(model, "provider", ""))
+    ]
+
+
+GUEST_FREE_PROVIDER_KEYS = {
+    "mistral": "MISTRAL_API_KEY",
+    "nvidia": "NVIDIA_API_KEY",
+}
+
+NVIDIA_AICODER_FREE_MODELS = {
+    "nvidia/poolside/laguna-xs-2.1",
+    "nvidia/z-ai/glm-5.2",
+    "nvidia/minimaxai/minimax-m3",
+    "nvidia/openai/gpt-oss-120b",
+    "nvidia/openai/gpt-oss-20b",
+    "nvidia/nvidia/nemotron-3-super-120b-a12b",
+    "nvidia/nvidia/nemotron-3-ultra-550b-a55b",
+    "nvidia/nvidia/nemotron-3-nano-30b-a3b",
+    "nvidia/nvidia/nemotron-nano-3-30b-a3b",
+    "nvidia/nvidia/nvidia-nemotron-nano-9b-v2",
+    "nvidia/mistralai/codestral-22b-instruct-v0.1",
+    "nvidia/ibm/granite-34b-code-instruct",
+    "nvidia/ibm/granite-8b-code-instruct",
+    "nvidia/google/codegemma-7b",
+    "nvidia/google/codegemma-1.1-7b",
+    "nvidia/deepseek-ai/deepseek-coder-6.7b-instruct",
+    "nvidia/bigcode/starcoder2-15b",
+    "nvidia/meta/codellama-70b",
+}
+
+REGISTERED_FREE_PROVIDER_KEYS = {
+    "mistral": "MISTRAL_API_KEY",
+    "groq": "GROQ_API_KEY",
+    "cerebras": "CEREBRAS_API_KEY",
+    "nvidia": "NVIDIA_API_KEY",
+    "cloudflare": "CLOUDFLARE_API_TOKEN",
+    "huggingface": "HUGGINGFACE_API_KEY",
+}
+
+def is_guest_free_model(model: str) -> bool:
+    """Guest policy: verified Ollama plus configured Mistral and verified NVIDIA chat models."""
+    if model.startswith("ollama/"):
+        return True
+    provider = model.split("/", 1)[0]
+    env_name = GUEST_FREE_PROVIDER_KEYS.get(provider)
+    if not env_name or not os.getenv(env_name):
+        return False
+    if provider == "mistral":
+        return True
+    if provider == "nvidia":
+        return model in NVIDIA_AICODER_FREE_MODELS
+    return False
+
+def guest_free_model_ids(models) -> List[str]:
+    return [
+        model.id for model in models
+        if "chat" in (getattr(model, "capabilities", None) or set())
+        and is_guest_free_model(model.id)
+    ]
+
+
+def is_registered_free_model(model: str) -> bool:
+    """Free-account policy: Ollama plus configured free-quota providers."""
+    if model.startswith("ollama/"):
+        return True
+    if model.startswith("openrouter/") and model.endswith(":free"):
+        return bool(os.getenv("OPENROUTER_API_KEY"))
+    provider = model.split("/", 1)[0]
+    env_name = REGISTERED_FREE_PROVIDER_KEYS.get(provider)
+    return bool(env_name and (os.getenv(env_name) or (env_name == "HUGGINGFACE_API_KEY" and os.getenv("HF_TOKEN"))))
+
+
+def registered_free_model_ids(models) -> List[str]:
+    return [
+        model.id for model in models
+        if "chat" in (getattr(model, "capabilities", None) or set())
+        and is_registered_free_model(model.id)
+    ]
+
+
 def get_default_ollama_model() -> str:
-    """Default Ollama-Modell für alle Tiers (Cloud-Proxy)"""
-    return "deepseek-v3.1:671b-cloud"
+    """Schnelles lokales Default-Modell für alle Tiers."""
+    return normalize_ollama_model(LOCAL_FALLBACK_MODEL)
 
 
 def get_default_model(tier: UserTier) -> str:
-    """Default-Modell basierend auf Tier - ALLE nutzen Ollama Cloud-Proxy"""
-    # Alle Tiers nutzen Ollama Cloud-Proxy (kostenlos, lokal gehostet)
-    # OpenRouter Free-Modelle brauchen trotzdem Credits
-    return "ollama/deepseek-v3.1:671b-cloud"
+    """Zuverlässiges lokales Default-Modell für alle Tiers."""
+    # Cloud-Free-Modelle bleiben auswählbar, sind aber nicht mehr der
+    # latenzkritische Default- und Notfallpfad.
+    return LOCAL_FALLBACK_MODEL
 
 
 def normalize_ollama_model(model: str) -> str:
@@ -215,12 +344,14 @@ async def call_ollama(
     messages: List[dict],
     temperature: float = 0.7,
     max_tokens: int = 4096,
-    is_fallback: bool = False
+    is_fallback: bool = False,
+    tools: Optional[List[dict[str, Any]]] = None,
+    tool_choice: Any = "auto",
 ) -> dict:
     """
     Call Ollama API (lokal auf Server)
     
-    Bei Cloud-Proxy Fehlern (502, 503, Timeout) → Fallback auf lokales ministral-3:14b
+    Bei Cloud-Proxy Fehlern (502, 503, Timeout) → konfiguriertes lokales Fallback
     """
 
     # Normalisiere Model-Name
@@ -235,6 +366,9 @@ async def call_ollama(
             "num_predict": max_tokens,
         }
     }
+    native_tools = normalize_tools(tools)
+    if native_tools:
+        payload["tools"] = native_tools
 
     async with httpx.AsyncClient(timeout=300.0) as client:
         try:
@@ -242,6 +376,15 @@ async def call_ollama(
                 f"{OLLAMA_BASE_URL}/api/chat",
                 json=payload
             )
+            # Not every Ollama model is tool-trained. Preserve chat by retrying
+            # without native tools; ai-coder's textual protocol remains active.
+            if response.status_code in (400, 404, 422) and payload.get("tools"):
+                fallback_payload = dict(payload)
+                fallback_payload.pop("tools", None)
+                response = await client.post(
+                    f"{OLLAMA_BASE_URL}/api/chat",
+                    json=fallback_payload,
+                )
 
             # Cloud-Proxy Fehler → Fallback auf lokales Modell
             if response.status_code in (502, 503, 504) and not is_fallback:
@@ -281,7 +424,8 @@ async def call_ollama(
                 "choices": [{
                     "message": {
                         "role": "assistant",
-                        "content": result.get("message", {}).get("content", "")
+                        "content": result.get("message", {}).get("content", ""),
+                        "tool_calls": result.get("message", {}).get("tool_calls", []),
                     }
                 }],
                 "usage": {
@@ -347,7 +491,7 @@ async def call_openrouter(
             availability_service.mark_error(model, 402, "Payment Required")
             # Fallback zu Ollama (kostenlos)
             return await call_ollama(
-                model="ollama/deepseek-v3.1:671b-cloud",
+                model=LOCAL_FALLBACK_MODEL,
                 messages=messages,
                 temperature=temperature,
                 max_tokens=max_tokens
@@ -363,6 +507,55 @@ async def call_openrouter(
         return response.json()
 
 
+async def call_registered_model(
+    model: str,
+    messages: List[dict],
+    temperature: float = 0.7,
+    max_tokens: int = 4096,
+    tools: Optional[List[dict[str, Any]]] = None,
+    tool_choice: Any = "auto",
+) -> dict:
+    """Call any chat-capable registry model through the normalized adapter."""
+    model_info = await registry.get_model(model)
+    if not model_info or "chat" not in model_info.capabilities:
+        raise HTTPException(404, f"Chat model not available: {model}")
+
+    try:
+        result = await chat_completion(
+            model_info,
+            model,
+            messages,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            tools=tools,
+            tool_choice=tool_choice,
+        )
+    except HTTPException as exc:
+        # Provider discovery can advertise models that the configured account
+        # cannot actually invoke (notably NVIDIA NIM account-scoped functions).
+        # Feed real execution failures back into the availability filter so a
+        # broken model disappears from subsequent /client/models responses.
+        availability_service.mark_error(model, exc.status_code, str(exc.detail))
+        raise
+    else:
+        availability_service.mark_success(model)
+
+    content = result.get("content", "")
+    tool_calls = result.get("tool_calls") or []
+    prompt_tokens = sum(len(str(item.get("content", "")).split()) for item in messages)
+    completion_tokens = len(content.split())
+    return {
+        "choices": [{"message": {
+            "role": "assistant",
+            "content": content,
+            "tool_calls": tool_calls,
+        }}],
+        "usage": {"total_tokens": result.get("usage_total") or prompt_tokens + completion_tokens},
+        "model_used": result.get("model_used") or model,
+        "is_fallback": False,
+    }
+
+
 @router.post("/chat", response_model=ChatResponse)
 async def client_chat(
     request: ChatRequest,
@@ -375,7 +568,7 @@ async def client_chat(
 
     Tier-Routing:
     - GUEST: Ollama only, kein MCP, 50k/Tag
-    - REGISTERED: Ollama only, MCP ✓, 100k/Tag
+    - REGISTERED: Ollama + Free-Quota-Provider, MCP ✓, 100k/Tag
     - PRO: Alle Modelle, Ollama ∞, Cloud 250k/Tag
     - ENTERPRISE: Alle Modelle unlimited
 
@@ -405,79 +598,99 @@ async def client_chat(
     # Model bestimmen
     model = request.model or get_default_model(tier)
 
-    # === GUEST / REGISTERED: Nur Ollama ===
-    if tier in (UserTier.GUEST, UserTier.REGISTERED):
-        # Erzwinge Ollama-Prefix
-        if not model.startswith("ollama/"):
-            model = f"ollama/{model}"
-
-        # Prüfen ob erlaubt
-        if not tier_service.is_model_allowed(user_id, model):
-            model = "ollama/deepseek-v3.1:671b-cloud"
-            logger.warning(f"Model nicht erlaubt für {tier.value}, Fallback: {model}")
-
-        # Token-Limit prüfen
+    # === GUEST: Ollama + NVIDIA NIM, no MCP tools ===
+    if tier == UserTier.GUEST:
+        if not is_guest_free_model(model):
+            logger.warning("Guest requested unavailable model %s; using local fallback", model)
+            model = LOCAL_FALLBACK_MODEL
         limit_check = tier_service.check_token_limit(user_id, model)
         if not limit_check["allowed"]:
             raise HTTPException(429, f"Token-Limit erreicht ({limit_check['limit']}/Tag)")
-
-        # Ollama Call
-        result = await call_ollama(
-            model=model,
-            messages=messages,
-            temperature=request.temperature,
-            max_tokens=request.max_tokens
-        )
-        backend = "ollama"
-
-    # === PRO / ENTERPRISE: Alle Modelle ===
-    else:
-        # Ollama-Modelle direkt über Ollama
         if model.startswith("ollama/") or tier_service.is_ollama_model(model):
             if not model.startswith("ollama/"):
                 model = f"ollama/{model}"
-            
-            # PRO: Ollama = unlimited (kein Limit-Check nötig)
             result = await call_ollama(
                 model=model,
                 messages=messages,
                 temperature=request.temperature,
-                max_tokens=request.max_tokens
+                max_tokens=request.max_tokens,
             )
             backend = "ollama"
         else:
-            # Cloud-Modelle: Token-Limit prüfen (außer Enterprise)
+            result = await call_registered_model(
+                model=model,
+                messages=messages,
+                temperature=request.temperature,
+                max_tokens=request.max_tokens,
+                tools=None,
+                tool_choice="none",
+            )
+            backend = model.split("/", 1)[0]
+
+    # === REGISTERED: Ollama Cloud/local + configured free-quota providers ===
+    elif tier == UserTier.REGISTERED:
+        if not is_registered_free_model(model):
+            logger.warning("Registered user requested non-free model %s; using local fallback", model)
+            model = LOCAL_FALLBACK_MODEL
+        limit_check = tier_service.check_token_limit(user_id, model)
+        if not limit_check["allowed"]:
+            raise HTTPException(429, f"Token-Limit erreicht ({limit_check['limit']}/Tag)")
+        if model.startswith("ollama/") or tier_service.is_ollama_model(model):
+            if not model.startswith("ollama/"):
+                model = f"ollama/{model}"
+            result = await call_ollama(
+                model=model,
+                messages=messages,
+                temperature=request.temperature,
+                max_tokens=request.max_tokens,
+                tools=request.tools,
+                tool_choice=request.tool_choice,
+            )
+            backend = "ollama"
+        else:
+            result = await call_registered_model(
+                model=model,
+                messages=messages,
+                temperature=request.temperature,
+                max_tokens=request.max_tokens,
+                tools=request.tools,
+                tool_choice=request.tool_choice,
+            )
+            backend = model.split("/", 1)[0]
+
+    # === PRO / ENTERPRISE: all configured chat providers ===
+    else:
+        if model.startswith("ollama/") or tier_service.is_ollama_model(model):
+            if not model.startswith("ollama/"):
+                model = f"ollama/{model}"
+            result = await call_ollama(
+                model=model,
+                messages=messages,
+                temperature=request.temperature,
+                max_tokens=request.max_tokens,
+                tools=request.tools,
+                tool_choice=request.tool_choice,
+            )
+            backend = "ollama"
+        else:
             if tier != UserTier.ENTERPRISE:
                 limit_check = tier_service.check_token_limit(user_id, model)
                 if not limit_check["allowed"]:
                     raise HTTPException(429, f"Token-Limit erreicht ({limit_check['limit']}/Tag). Nutze Ollama-Modelle für unlimited.")
+            result = await call_registered_model(
+                model=model,
+                messages=messages,
+                temperature=request.temperature,
+                max_tokens=request.max_tokens,
+                tools=request.tools,
+                tool_choice=request.tool_choice,
+            )
+            backend = model.split("/", 1)[0] if "/" in model else "registry"
 
-            provider, routed_model = route_cloud_model(model)
-
-            if provider == "openrouter":
-                result = await call_openrouter(
-                    model=routed_model,
-                    messages=messages,
-                    temperature=request.temperature,
-                    max_tokens=request.max_tokens
-                )
-                backend = "openrouter"
-            elif provider == "mistral":
-                routed = routed_model
-                if not routed.startswith("mistralai/"):
-                    routed = "mistralai/" + routed
-                result = await call_openrouter(
-                    model=routed,
-                    messages=messages,
-                    temperature=request.temperature,
-                    max_tokens=request.max_tokens
-                )
-                backend = "openrouter"
-            else:
-                raise HTTPException(501, "Provider not wired in client chat")
-
-    # Response extrahieren
-    response_text = result.get("choices", [{}])[0].get("message", {}).get("content", "")
+    # Response extrahieren (text plus provider-native tool calls)
+    response_message = result.get("choices", [{}])[0].get("message", {})
+    response_text = response_message.get("content", "") or ""
+    tool_calls = response_message.get("tool_calls") or []
     tokens = result.get("usage", {}).get("total_tokens")
     latency = int((datetime.now() - start_time).total_seconds() * 1000)
     fallback_used = result.get("is_fallback", False)
@@ -491,7 +704,7 @@ async def client_chat(
     is_unlimited = (tier in (UserTier.PRO, UserTier.ENTERPRISE) and is_ollama) or tier == UserTier.ENTERPRISE
 
     # Tokens tracken - NUR bei erfolgreicher Operation und NICHT für unlimited Ollama
-    if tokens and user_id != "anonymous" and response_text:
+    if tokens and user_id != "anonymous" and (response_text or tool_calls):
         # Pro mit Ollama = nicht tracken (unlimited)
         if not (tier == UserTier.PRO and is_ollama):
             tier_service.track_tokens(user_id, tokens, model)
@@ -501,6 +714,7 @@ async def client_chat(
         model=model,
         tier=tier.value,
         backend=backend,
+        tool_calls=tool_calls,
         tokens_used=tokens if not is_unlimited else None,  # Nicht anzeigen wenn unlimited
         tokens_unlimited=is_unlimited,
         latency_ms=latency,
@@ -516,8 +730,9 @@ async def get_client_models(
     """
     Hole verfügbare Modelle für den Client
 
-    - Guest/Registered: Ollama Default (20 Modelle)
-    - Pro/Enterprise: ALLE Server-Modelle + Ollama
+    - Guest: verifizierte Ollama-Modelle + NVIDIA NIM Chat-Modelle
+    - Registered: Ollama + konfigurierte Free-Quota-Modelle
+    - Pro/Enterprise: alle konfigurierten Chat-Modelle + Ollama
     
     Headers (Priorität):
         1. Authorization: Bearer <JWT-Token>
@@ -528,17 +743,26 @@ async def get_client_models(
     
     config = tier_service.get_tier_info(tier)
 
-    if tier in (UserTier.GUEST, UserTier.REGISTERED):
-        # Guest/Registered: Nur Ollama Modelle
-        models = FREE_MODELS_OLLAMA
-        backend = "ollama"
-    else:
-        # Pro/Enterprise: Alle Server-Modelle
+    if tier == UserTier.GUEST:
         all_models = await registry.list_models()
-        all_ids = [m.id for m in all_models]
-        # Filtere unavailable Models raus
+        free_cloud = availability_service.filter_available(
+            guest_free_model_ids(all_models)
+        )
+        models = list(FREE_MODELS_OLLAMA)
+        models.extend(model for model in free_cloud if model not in models)
+        backend = "mixed-free"
+    elif tier == UserTier.REGISTERED:
+        all_models = await registry.list_models()
+        free_cloud = availability_service.filter_available(
+            registered_free_model_ids(all_models)
+        )
+        models = list(FREE_MODELS_OLLAMA)
+        models.extend(model for model in free_cloud if model not in models)
+        backend = "mixed-free"
+    else:
+        all_models = await registry.list_models()
+        all_ids = chat_capable_model_ids(all_models)
         models = availability_service.filter_available(all_ids)
-        # Stelle sicher dass Ollama-Modelle immer dabei sind
         for om in FREE_MODELS_OLLAMA:
             if om not in models:
                 models.append(om)
@@ -568,7 +792,11 @@ async def get_client_tier(
     """
     user_id, tier = get_user_and_tier_from_headers(authorization, x_user_id)
     info = tier_service.get_tier_info(tier)
-    info["backend"] = "ollama" if tier == UserTier.GUEST else "openrouter"
+    info["backend"] = (
+        "ollama" if tier == UserTier.GUEST
+        else "mixed-free" if tier == UserTier.REGISTERED
+        else "mixed"
+    )
     info["user_id"] = user_id  # Für Debug
     return info
 

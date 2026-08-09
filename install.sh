@@ -4,8 +4,15 @@ set -Eeuo pipefail
 ROOT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 cd "$ROOT_DIR"
 
-RUN_USER="${SUDO_USER:-${USER}}"
-HOME_DIR="$(eval echo "~${RUN_USER}")"
+RUN_USER="${SUDO_USER:-${USER:-$(id -un)}}"
+HOME_DIR="$(getent passwd "$RUN_USER" 2>/dev/null | cut -d: -f6 || true)"
+if [[ -z "$HOME_DIR" ]]; then
+  if [[ "$RUN_USER" == "$(id -un)" ]]; then
+    HOME_DIR="${HOME:-$ROOT_DIR}"
+  else
+    HOME_DIR="$ROOT_DIR"
+  fi
+fi
 VENV_DIR="$ROOT_DIR/.venv"
 ENV_FILE="$ROOT_DIR/.env"
 ENV_EXAMPLE_FILE="$ROOT_DIR/.env.example"
@@ -22,7 +29,7 @@ DOMAIN="example.com"
 TIMEZONE="Europe/Berlin"
 LOG_LEVEL="INFO"
 ENABLE_DOCKER_SERVICE="false"
-ENABLE_FEDERATION_SERVICE="true"
+ENABLE_FEDERATION_SERVICE="false"   # federation_node.py existiert nicht mehr; Node laeuft ueber triforce.service
 INSTALL_SYSTEMD="true"
 START_SYSTEMD="true"
 INSTALL_SHORTCUT="true"
@@ -55,7 +62,7 @@ Options:
   --timezone <tz>                Timezone (default: Europe/Berlin)
   --log-level <level>            LOG_LEVEL in .env (default: INFO)
   --enable-docker-service        Install/enable triforce-docker.service
-  --disable-federation-service   Skip federation-node.service install
+  --enable-federation-service    Install legacy federation-node.service (DEPRECATED, kaputt)
   --skip-systemd                 Do not install/start systemd services
   --skip-deps                    Skip pip upgrade + requirements install
   --no-shortcut                  Do not create desktop shortcut
@@ -109,8 +116,10 @@ parse_args() {
         LOG_LEVEL="$2"; shift 2 ;;
       --enable-docker-service)
         ENABLE_DOCKER_SERVICE="true"; shift ;;
+      --enable-federation-service)
+        ENABLE_FEDERATION_SERVICE="true"; shift ;;
       --disable-federation-service)
-        ENABLE_FEDERATION_SERVICE="false"; shift ;;
+        ENABLE_FEDERATION_SERVICE="false"; shift ;;   # Rueckwaerts-Kompatibilitaet (jetzt Default)
       --skip-systemd)
         INSTALL_SYSTEMD="false"; shift ;;
       --skip-deps)
@@ -147,8 +156,8 @@ print_header() {
 
 prepare_dirs() {
   mkdir -p "$ROOT_DIR/logs" "$ROOT_DIR/data" "$ROOT_DIR/.state"
-  mkdir -p /var/tristar/{prompts,logs,memory,agents} 2>/dev/null || true
-  run_sudo chown -R "$RUN_USER:$RUN_USER" /var/tristar 2>/dev/null || true
+  run_sudo mkdir -p /var/tristar/{prompts,logs,memory,agents}
+  run_sudo chown -R "$RUN_USER:$RUN_USER" /var/tristar
   ok "Directories prepared"
 }
 
@@ -221,14 +230,19 @@ install_systemd_units() {
 
   require_file "$SYSTEMD_TEMPLATE"
 
-  local tmp_triforce tmp_docker tmp_federation
+  local tmp_triforce tmp_docker="" tmp_federation=""
   tmp_triforce="$(mktemp)"
-  tmp_docker="$(mktemp)"
-  tmp_federation="$(mktemp)"
-
   render_unit "$SYSTEMD_TEMPLATE" "$tmp_triforce"
-  render_unit "$SYSTEMD_DOCKER_TEMPLATE" "$tmp_docker"
-  if [[ -f "$FEDERATION_TEMPLATE" ]]; then
+
+  if [[ "$ENABLE_DOCKER_SERVICE" == "true" ]]; then
+    require_file "$SYSTEMD_DOCKER_TEMPLATE"
+    tmp_docker="$(mktemp)"
+    render_unit "$SYSTEMD_DOCKER_TEMPLATE" "$tmp_docker"
+  fi
+
+  if [[ "$ENABLE_FEDERATION_SERVICE" == "true" ]]; then
+    require_file "$FEDERATION_TEMPLATE"
+    tmp_federation="$(mktemp)"
     render_unit "$FEDERATION_TEMPLATE" "$tmp_federation"
   fi
 
@@ -236,7 +250,7 @@ install_systemd_units() {
   if [[ "$ENABLE_DOCKER_SERVICE" == "true" ]]; then
     run_sudo install -m 644 "$tmp_docker" /etc/systemd/system/triforce-docker.service
   fi
-  if [[ "$ENABLE_FEDERATION_SERVICE" == "true" && -f "$FEDERATION_TEMPLATE" ]]; then
+  if [[ "$ENABLE_FEDERATION_SERVICE" == "true" ]]; then
     run_sudo install -m 644 "$tmp_federation" /etc/systemd/system/federation-node.service
   fi
 
@@ -249,20 +263,16 @@ install_systemd_units() {
       run_sudo systemctl enable --now triforce-docker.service
     fi
 
-    if [[ "$ENABLE_FEDERATION_SERVICE" == "true" && -f "$FEDERATION_TEMPLATE" ]]; then
+    if [[ "$ENABLE_FEDERATION_SERVICE" == "true" ]]; then
       run_sudo systemctl enable --now federation-node.service
     fi
   else
-    run_sudo systemctl enable triforce.service
-    if [[ "$ENABLE_DOCKER_SERVICE" == "true" ]]; then
-      run_sudo systemctl enable triforce-docker.service
-    fi
-    if [[ "$ENABLE_FEDERATION_SERVICE" == "true" && -f "$FEDERATION_TEMPLATE" ]]; then
-      run_sudo systemctl enable federation-node.service
-    fi
+    log "Systemd units installed but not enabled or started (--no-start)"
   fi
 
-  rm -f "$tmp_triforce" "$tmp_docker" "$tmp_federation"
+  rm -f "$tmp_triforce"
+  [[ -z "$tmp_docker" ]] || rm -f "$tmp_docker"
+  [[ -z "$tmp_federation" ]] || rm -f "$tmp_federation"
   ok "Systemd units installed"
 }
 
@@ -326,12 +336,14 @@ main() {
   parse_args "$@"
   print_header
 
-  if [[ "$NON_INTERACTIVE" != "true" ]]; then
+  if [[ "$NON_INTERACTIVE" != "true" && -t 0 && -t 1 ]]; then
     read -r -p "Proceed with installation? [y/N] " answer
     if [[ ! "$answer" =~ ^[Yy]$ ]]; then
       warn "Installation aborted"
       exit 0
     fi
+  elif [[ "$NON_INTERACTIVE" != "true" ]]; then
+    log "No interactive terminal detected; continuing automatically"
   fi
 
   prepare_dirs

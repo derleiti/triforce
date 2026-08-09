@@ -329,6 +329,23 @@ def client_ip(request) -> Optional[str]:
     return None
 
 
+# --- OAuth/Basic-authentifizierte Caller = voller Tool-Zugriff --------------
+# require_mcp_auth legt die verifizierte Identity in request.state ab.
+# Bewusst NICHT enthalten: "internal" (Bypass ohne Credential) und rohe
+# JWT-User (Playground-Endnutzer). Nur echte MCP-Connector-Auth zählt.
+_FULL_ACCESS_AUTH_USERS = {"oauth_client"}
+_FULL_ACCESS_AUTH_METHODS = {"bearer", "basic", "query"}
+
+
+def _is_authenticated_full(request) -> bool:
+    st = getattr(request, "state", None)
+    if st is None:
+        return False
+    user = getattr(st, "mcp_auth_user", None)
+    method = getattr(st, "mcp_auth_method", None)
+    return user in _FULL_ACCESS_AUTH_USERS or method in _FULL_ACCESS_AUTH_METHODS
+
+
 def is_internal_full_request(request) -> bool:
     """
     True, wenn der Caller das internal_full Profil hat.
@@ -340,6 +357,8 @@ def is_internal_full_request(request) -> bool:
     """
     if request is None:
         return False
+    if _is_authenticated_full(request):
+        return True
     try:
         # HMAC-Token (2026-05-06 hardening)
         hmac_token = (request.headers.get("X-TriForce-Internal-Token") or "").strip()
@@ -388,9 +407,10 @@ def is_tool_allowed(tool_name: str, request) -> bool:
     - Privilegierte Tools: nur mit internal_full.
     - Sonst: Allowlist oder internal_full.
     """
-    if tool_name in PRIVILEGED_TOOLS:
+    name = tool_name[9:] if tool_name.startswith("triforce_") else tool_name
+    if name in PRIVILEGED_TOOLS:
         return is_internal_full_request(request)
-    if tool_name in EXTERNAL_TOOL_ALLOWLIST:
+    if name in EXTERNAL_TOOL_ALLOWLIST:
         return True
     # Unbekannte Tools: nur intern erlaubt (default-deny)
     return is_internal_full_request(request)

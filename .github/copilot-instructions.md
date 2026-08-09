@@ -1,5 +1,19 @@
 # Copilot Instructions — AILinux / TriForce
 
+
+<!-- AILINUX_STATUS_START -->
+## Repository-specific operating rules
+
+- Main production branch: `nova-nextlevel-20260603`.
+- Current production HEAD: `16f43b8a`.
+- Production checkout path: `/home/zombie/triforce`.
+- Default model route: `ollama/gemma4:12b`.
+- Runtime directories and local config files must not be committed.
+- Use explicit pathspecs when staging changes.
+- Preserve legacy route modules `app/routes_sd3.py` and `app/routes_vision.py` unless `app/main.py` imports are migrated in the same change.
+- Keep generated, cache, backup, vendor, and runtime documentation out of GitHub documentation refreshes.
+<!-- AILINUX_STATUS_END -->
+
 ## Project Context
 This is part of the AILinux ecosystem by Markus Leitermann (@derleiti, Warzenried, Oberpfalz).
 Backend: TriForce — FastAPI multi-LLM orchestration, 659+ models, MCP tools, WireGuard federation mesh.

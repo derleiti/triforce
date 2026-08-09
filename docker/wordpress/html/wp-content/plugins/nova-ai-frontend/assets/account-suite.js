@@ -8,11 +8,11 @@ const LOGIN_URL=CFG.loginUrl||'https://ailinux.me/account';
 const TIER_LABELS={free:'FREE',pro:'PRO',enterprise:'ENTERPRISE',unlimited:'UNLIMITED',admin:'ADMIN',paid:'PAID'};
 const TIER_CLASS={free:'nas-tier-free',pro:'nas-tier-pro',enterprise:'nas-tier-enterprise',unlimited:'nas-tier-unlimited',admin:'nas-tier-admin',paid:'nas-tier-paid'};
 const TIER_FEATURES={
-  free:['33+ lokale Modelle (Ollama)','Chat & Vision Analyse','Community Support','AILinux Beta-Zugang'],
-  paid:['617+ AI-Modelle (9 Provider)','Media Generation (Bild & Video)','Priority Support','Vollständige MCP Tools','Unbegrenzte API-Zugriffe'],
-  pro:['617+ AI-Modelle (9 Provider)','Media Generation (Bild & Video)','Priority Support','Vollständige MCP Tools','Unbegrenzte API-Zugriffe'],
-  enterprise:['Alle 617+ Modelle','Voller Admin-Zugriff','288+ MCP Tools','System-Kontrolle','Vault & CLI-Agents','Dedicated Support'],
-  admin:['Alle 617+ Modelle','Voller Admin-Zugriff','288+ MCP Tools','System-Kontrolle','Vault & CLI-Agents','Dedicated Support'],
+  free:['33+ local models (Ollama)','Chat & Vision analysis','Community Support','AILinux beta access'],
+  paid:['617+ AI models (9 providers)','Media generation (image & video)','Priority Support','Full MCP tools','Unlimited API access'],
+  pro:['617+ AI models (9 providers)','Media generation (image & video)','Priority Support','Full MCP tools','Unlimited API access'],
+  enterprise:['All 617+ models','Full admin access','288+ MCP tools','System control','Vault & CLI-Agents','Dedicated Support'],
+  admin:['All 617+ models','Full admin access','288+ MCP tools','System control','Vault & CLI-Agents','Dedicated Support'],
   unlimited:['Alles in Pro','Unbegrenzte Agents','Codebase Tools','Dedicated Support']
 };
 function tierLabel(t){return TIER_LABELS[t?.toLowerCase()]||t?.toUpperCase()||'FREE'}
@@ -115,7 +115,7 @@ function initAuthForms(root){
         showAuthMsg('Connection error. Please try again.');
         if(typeof turnstile!=='undefined')turnstile.reset();
       }
-      btn.disabled=false;btn.textContent='Anmelden';
+      btn.disabled=false;btn.textContent='Sign in';
     });
   }
 
@@ -365,7 +365,7 @@ async function loadDownloads(root){
       if(!files.length){
         filesEl.innerHTML='<div class="nas-loading-box">No downloads available</div>';
       }else{
-        filesEl.innerHTML='<table class="nas-dl-table"><thead><tr><th>Datei</th><th>Typ</th><th>Größe</th><th>Geändert</th><th>Download</th></tr></thead><tbody>'+files.map(function(f){var sz=fmtBytes(f.size||0);return'<tr><td>'+esc(f.name||'—')+'</td><td>'+esc((f.type||'').toUpperCase())+'</td><td>'+sz+'</td><td>'+esc(f.modified||'—')+'</td><td>'+(f.url?'<a href="'+esc(f.url)+'" download class="nas-dl-link">↓</a>':'—')+'</td></tr>'}).join('')+'</tbody></table>';
+        filesEl.innerHTML='<table class="nas-dl-table"><thead><tr><th>File</th><th>Type</th><th>Size</th><th>Modified</th><th>Download</th></tr></thead><tbody>'+files.map(function(f){var sz=fmtBytes(f.size||0);return'<tr><td>'+esc(f.name||'—')+'</td><td>'+esc((f.type||'').toUpperCase())+'</td><td>'+sz+'</td><td>'+esc(f.modified||'—')+'</td><td>'+(f.url?'<a href="'+esc(f.url)+'" download class="nas-dl-link">↓</a>':'—')+'</td></tr>'}).join('')+'</tbody></table>';
       }
     }
     if(loadEl)loadEl.style.display='none';
@@ -391,7 +391,7 @@ async function loadAdminOverview(root){
       <div class="nas-admin-stat-grid">
         <div class="nas-admin-stat"><div class="nas-admin-stat-icon">🔌</div><div class="nas-admin-stat-val">${health.status==='healthy'?'✅ Healthy':'⚠ '+health.status}</div><div class="nas-admin-stat-label">Backend</div></div>
         <div class="nas-admin-stat"><div class="nas-admin-stat-icon">🤖</div><div class="nas-admin-stat-val">${active}/${Array.isArray(agentList)?agentList.length:0}</div><div class="nas-admin-stat-label">Agents aktiv</div></div>
-        <div class="nas-admin-stat"><div class="nas-admin-stat-icon">🧠</div><div class="nas-admin-stat-val">${health.services?.ollama?.models_available||'?'}</div><div class="nas-admin-stat-label">Ollama Modelle</div></div>
+        <div class="nas-admin-stat"><div class="nas-admin-stat-icon">🧠</div><div class="nas-admin-stat-val">${health.services?.ollama?.models_available||'?'}</div><div class="nas-admin-stat-label">Ollama models</div></div>
         <div class="nas-admin-stat"><div class="nas-admin-stat-icon">🔴</div><div class="nas-admin-stat-val">${health.services?.redis?.status==='healthy'?'✅':'⚠'}</div><div class="nas-admin-stat-label">Redis</div></div>
         <div class="nas-admin-stat"><div class="nas-admin-stat-icon">🔍</div><div class="nas-admin-stat-val">${health.services?.searxng?.status==='healthy'?'✅':'⚠'}</div><div class="nas-admin-stat-label">SearxNG</div></div>
         <div class="nas-admin-stat"><div class="nas-admin-stat-icon">⚡</div><div class="nas-admin-stat-val">${health.response_time_ms||0}ms</div><div class="nas-admin-stat-label">Response</div></div>
@@ -405,7 +405,7 @@ async function loadAdminOverview(root){
 async function loadSystem(root){
   const el=root.querySelector('#nas-system-content');
   if(!el)return;
-  el.innerHTML='<div class="nas-loading-box">⏳ Lade System-Status…</div>';
+  el.innerHTML='<div class="nas-loading-box">⏳ Loading system status…</div>';
   try{
     const r=await fetch(API+'/admin/status',{credentials:'same-origin',headers:{'X-WP-Nonce':CFG.nonce||''}});
     const d=await r.json();
@@ -416,12 +416,12 @@ async function loadSystem(root){
       html+=`<div class="nas-sys-card ${ok?'ok':'warn'}">
         <div class="nas-sys-name">${k}</div>
         <div class="nas-sys-status">${ok?'✅':'⚠'} ${v.status||'unknown'}</div>
-        ${v.models_available?`<div class="nas-sys-detail">${v.models_available} Modelle</div>`:''}
+        ${v.models_available?`<div class="nas-sys-detail">${v.models_available} models</div>`:''}
         ${v.message?`<div class="nas-sys-detail">${esc(v.message)}</div>`:''}
       </div>`;
     }
     html+='</div>';
-    if(d.model_count)html+=`<div class="nas-info-bar">📊 Modelle gesamt: <strong>${d.model_count}</strong></div>`;
+    if(d.model_count)html+=`<div class="nas-info-bar">📊 Total models: <strong>${d.model_count}</strong></div>`;
     el.innerHTML=html;
   }catch(e){
     el.innerHTML='<div style="color:var(--nas-muted)">Error: '+e.message+'</div>';
@@ -431,7 +431,7 @@ async function loadSystem(root){
 async function loadAgents(root){
   const el=root.querySelector('#nas-agents-content');
   if(!el)return;
-  el.innerHTML='<div class="nas-loading-box">⏳ Lade Agents…</div>';
+  el.innerHTML='<div class="nas-loading-box">⏳ Loading agents…</div>';
   try{
     const r=await fetch(API+'/admin/agents',{credentials:'same-origin',headers:{'X-WP-Nonce':CFG.nonce||''}});
     const d=await r.json();
@@ -469,7 +469,7 @@ async function loadAgents(root){
           const key='agents_'+(root.id||'r');
           delete _loaded[key];
           loadAgents(root);
-        }catch(e){btn.disabled=false;btn.textContent='Fehler'}
+        }catch(e){btn.disabled=false;btn.textContent='Error'}
       });
     });
   }catch(e){
@@ -480,7 +480,7 @@ async function loadAgents(root){
 async function loadMcpTools(root){
   const el=root.querySelector('#nas-mcp-content');
   if(!el)return;
-  el.innerHTML='<div class="nas-loading-box">⏳ Lade MCP Tools…</div>';
+  el.innerHTML='<div class="nas-loading-box">⏳ Loading MCP tools…</div>';
   try{
     const r=await fetch(API+'/admin/mcp/tools',{credentials:'same-origin',headers:{'X-WP-Nonce':CFG.nonce||''}});
     const d=await r.json();
@@ -542,7 +542,7 @@ async function loadMcpTools(root){
 async function loadVault(root){
   const el=root.querySelector('#nas-vault-content');
   if(!el)return;
-  el.innerHTML='<div class="nas-loading-box">⏳ Lade Vault…</div>';
+  el.innerHTML='<div class="nas-loading-box">⏳ Loading vault…</div>';
   try{
     const r=await fetch(API+'/admin/vault/keys',{credentials:'same-origin',headers:{'X-WP-Nonce':CFG.nonce||''}});
     const d=await r.json();
@@ -579,7 +579,7 @@ async function loadVault(root){
 async function loadLogs(root){
   const el=root.querySelector('#nas-logs-content');
   if(!el)return;
-  el.innerHTML='<div class="nas-loading-box">⏳ Lade Logs…</div>';
+  el.innerHTML='<div class="nas-loading-box">⏳ Loading logs…</div>';
   try{
     const cat=root.querySelector('#nas-logs-cat')?.value||'all';
     const r=await fetch(API+'/admin/logs?category='+cat+'&limit=50',{credentials:'same-origin',headers:{'X-WP-Nonce':CFG.nonce||''}});

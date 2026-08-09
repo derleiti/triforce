@@ -1,12 +1,28 @@
 # TriForce AI Platform
 
+
+<!-- AILINUX_STATUS_START -->
+## Current production snapshot
+
+- Production branch: `nova-nextlevel-20260603`.
+- Current production HEAD: `0a5738a6` (`fix: remove merge artifacts and restore runtime dependencies`).
+- API base URL: `https://api.ailinux.me`.
+- Health check: `GET /health` returns `{"ok": true, "status": "ok"}` when healthy.
+- Systemd service: `triforce.service`, working directory `/home/zombie/triforce`, Uvicorn on port `9000`.
+- Default chat model: `ollama/gemma4:12b`; local Ollama tag is `gemma4:12b`.
+- OpenClaw gateway: `ws://127.0.0.1:18789`.
+- Runtime hygiene: logs, local env files, runtime spools, Docker/n8n volumes, virtualenvs, backup files, and build outputs stay out of Git.
+- Git safety: use explicit pathspecs; avoid broad cleanup commands in production checkouts.
+- Auto-update note: if service logs say branch `master` while the checkout is `nova-nextlevel-20260603`, align the updater before relying on unattended updates.
+<!-- AILINUX_STATUS_END -->
+
 <div align="center">
 
-![Version](https://img.shields.io/badge/version-2.80-blue)
+![Version](https://img.shields.io/badge/version-2.81-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Nodes](https://img.shields.io/badge/federation-3%20nodes-orange)
-![Models](https://img.shields.io/badge/models-686%2B-purple)
-![MCP Tools](https://img.shields.io/badge/MCP%20tools-134-red)
+![Models](https://img.shields.io/badge/models-925%2B-purple)
+![MCP Tools](https://img.shields.io/badge/MCP%20tools-145-red)
 
 **Multi-LLM Orchestration Platform with Federation Support**
 
@@ -18,13 +34,13 @@
 
 ## 🚀 Overview
 
-TriForce is a decentralized AI platform that unifies **686+ LLM models** from **9 providers** into a single API. It features a federated mesh network, local Ollama integration, **134 MCP tools**, and **4 autonomous CLI agents**.
+TriForce is a decentralized AI platform that unifies **925+ LLM models** from **9 providers** into a single API. It features a federated mesh network, local Ollama integration, **145 MCP tools**, and **4 autonomous CLI agents**.
 
 ### Key Features
 
 - **Multi-Provider**: Gemini, Anthropic, Groq, Cerebras, Mistral, OpenRouter, GitHub, Cloudflare, Ollama
 - **Federation**: Distributed compute across multiple nodes (64 cores, 156GB RAM)
-- **MCP Tools**: 134 integrated tools for code, search, memory, files
+- **MCP Tools**: 145 integrated tools for code, search, memory, files
 - **CLI Agents**: 4 autonomous AI agents (Claude, Codex, Gemini, OpenCode)
 - **Auto-Sync**: Automatic hub synchronization via update.ailinux.me (hourly)
 - **Local Models**: Ollama integration for private inference
@@ -109,7 +125,7 @@ systemctl list-timers triforce-hub-sync.timer
 
 ```bash
 # Bump version in app/config.py, then:
-./scripts/create-release.sh 2.81
+./scripts/create-release.sh 2.82
 
 # All federation hubs auto-sync within 1 hour
 ```
@@ -156,7 +172,7 @@ curl -X POST https://api.ailinux.me/v1/agents/cli/claude-mcp/stop
 
 ## 🔧 MCP Tools
 
-134 integrated tools organized in categories:
+145 integrated tools. Selected categories (excerpt, not the full inventory):
 
 | Category | Tools | Examples |
 |----------|-------|----------|
@@ -259,3 +275,29 @@ MIT License - see [LICENSE](LICENSE)
 TriForce supports an OpenClaw-compatible MCP Node bridge. A local node connects via WebSocket to `/v1/mcp/node/connect`, authenticates through `/v1/auth/login`, and receives tool calls through `/v1/mcp/node/call`.
 
 See: `docs/MCP_NODE_OPENCLAW.md`
+---
+
+## Repository Hygiene and Runtime Artifacts
+
+TriForce keeps source code, configuration templates, scripts, and documentation in Git. Generated runtime state must stay out of commits. Treat the following paths as local/server state unless a maintainer explicitly asks for a migration commit:
+
+- `logs/`, `triforce/logs/`, `*.log.old` - runtime logs and rotated logs.
+- `.venv/`, `client-deploy/*/.venv/`, `__pycache__/`, `*.pyc` - local Python environments and bytecode caches.
+- `docker/repository/repo/`, `docker/repository/data/`, `docker/repository/etc/gnupg/` - repository mirror and signing/runtime state.
+- `client-deploy/debian-build/` - generated Debian package staging area.
+- `.backups/`, `.debug/`, `.patch_backups/`, `.repair-backup/`, `*.bak`, `*.orig`, `*.REMOVED.*` - local repair, patch, and review artifacts.
+
+Before deleting operational data, copy it outside the repository, for example to `/home/zombie/triforce-backup-cleanup/` or a host-specific backup location. Do not use `git add .` from `/home/zombie`; always confirm `pwd`, `git rev-parse --show-toplevel`, and `git branch --show-current` first.
+
+### Active route inventory
+
+The following route modules are active and intentionally coexist:
+
+| Module | Mounted path | Purpose |
+|---|---:|---|
+| `app/routes/vision.py` | `/v1/images/analyze`, `/v1/images/analyze/upload` | Vision v1 image analysis API |
+| `app/routes_vision.py` | `/vision/overlay-data` | Legacy/overlay vision data endpoint |
+| `app/routes_sd3.py` | `/v1/images/generate` | Stable Diffusion 3 image generation endpoint |
+| `app/routes/txt2img.py` | `/txt2img`, `/txt2img/queue`, `/txt2img/stream` | Text-to-image queue and streaming API |
+
+Do not remove `app/routes_sd3.py` or `app/routes_vision.py` until `app/main.py` has been migrated and `python3 -m compileall app -q` passes.

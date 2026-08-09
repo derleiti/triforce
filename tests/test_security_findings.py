@@ -8,6 +8,8 @@ Ausfuehren:
 Alle Tests sollen nach dem Fix grueen sein.
 """
 
+import json
+
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 from fastapi import HTTPException
@@ -403,3 +405,60 @@ class TestJwtSecretStability:
         # Dieser Test prueft nur, dass er nicht leer wird
         assert mod._JWT_SECRET_MODULE is not None
         assert len(mod._JWT_SECRET_MODULE) >= 16
+
+
+# =============================================================================
+# MCP Runtime Allowlist + GET Health Regression
+# =============================================================================
+
+def _mock_mcp_request(headers=None, host="127.0.0.1"):
+    req = MagicMock()
+    req.headers = headers or {}
+    req.query_params = {}
+    req.client = MagicMock()
+    req.client.host = host
+    req.state = MagicMock()
+    return req
+
+
+class TestMcpRuntimeSecurity:
+    @pytest.mark.asyncio
+    async def test_get_mcp_health_does_not_reference_missing_params(self):
+        from app.routes.mcp import mcp_health_or_sse
+
+        response = await mcp_health_or_sse(_mock_mcp_request())
+        payload = json.loads(response.body)
+
+        assert response.status_code == 200
+        assert payload["result"]["protocolVersion"] == "2024-11-05"
+
+    @pytest.mark.asyncio
+    async def test_external_tools_list_filters_privileged_tools(self):
+        from app.routes import mcp as route_mcp
+
+        internal_payload = await route_mcp.handle_tools_list({})
+        internal_names = {tool["name"] for tool in internal_payload["tools"]}
+        assert "agent_start" in internal_names
+
+        external = _mock_mcp_request(headers={"X-Forwarded-Port": "9100"}, host="1.2.3.4")
+        external_payload = await route_mcp.handle_tools_list({}, request=external)
+        external_names = {tool["name"] for tool in external_payload["tools"]}
+
+        assert "chat" in external_names
+        assert "group_chat_create" in external_names
+        assert "agent_start" not in external_names
+
+    @pytest.mark.asyncio
+    async def test_external_tools_call_blocks_privileged_tools(self):
+        from app.routes import mcp as route_mcp
+
+        external = _mock_mcp_request(headers={"X-Forwarded-Port": "9100"}, host="1.2.3.4")
+        result = await route_mcp.handle_tools_call(
+            {"name": "agent_start", "arguments": {"agent": "codex-mcp"}},
+            request=external,
+        )
+        payload = json.loads(result["content"][0]["text"])
+
+        assert result["isError"] is True
+        assert payload["code"] == "MCP_TOOL_FORBIDDEN"
+        assert payload["tool_name"] == "agent_start"

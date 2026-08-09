@@ -700,16 +700,27 @@ add_filter( 'nav_menu_css_class', 'ailinux_nova_dark_menu_item_classes', 10, 2 )
 
 function ailinux_nova_dark_nav_menu_args( $args ) {
     if ( 'primary' === ( $args['theme_location'] ?? '' ) ) {
-        $args['container']   = false;
-        $args['menu_class']  = 'menu main-menu';
+        $args['container'] = false;
+
+        // Preserve context-specific classes supplied by header.php. Overwriting
+        // these removed `desktop-nav` and `mobile-menu`, so both navigations
+        // were rendered as desktop menus on small screens.
+        if ( empty( $args['menu_class'] ) ) {
+            $args['menu_class'] = 'menu main-menu';
+        }
+
         $args['menu_id']     = $args['menu_id'] ?? 'primary-menu';
         $args['depth']       = $args['depth'] ?? 3;
         $args['fallback_cb'] = $args['fallback_cb'] ?? false;
     }
 
     if ( 'footer' === ( $args['theme_location'] ?? '' ) ) {
-        $args['container']   = false;
-        $args['menu_class']  = 'menu footer-menu';
+        $args['container'] = false;
+
+        if ( empty( $args['menu_class'] ) ) {
+            $args['menu_class'] = 'menu footer-menu';
+        }
+
         $args['depth']       = $args['depth'] ?? 1;
         $args['fallback_cb'] = $args['fallback_cb'] ?? false;
     }
@@ -1157,7 +1168,13 @@ add_action('wp_logout', function() {
     ]);
 });
 add_filter('logout_redirect', function($redirect_to, $requested_redirect_to, $user) {
-    return home_url('/');
+    if (!empty($requested_redirect_to)) {
+        $host = wp_parse_url($requested_redirect_to, PHP_URL_HOST);
+        if ($host && in_array(strtolower($host), ['ailinux.me', 'login.ailinux.me'], true)) {
+            return $requested_redirect_to;
+        }
+    }
+    return 'https://login.ailinux.me/?action=logout&redirect=' . rawurlencode(home_url('/'));
 }, 10, 3);
 
 // ── Auth status endpoint for login.ailinux.me sync ──────────────────────

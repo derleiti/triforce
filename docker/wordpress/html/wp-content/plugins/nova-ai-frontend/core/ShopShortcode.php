@@ -31,7 +31,7 @@ class ShopShortcode {
         register_rest_route('nova-ai/v1', '/shop/checkout', [
             'methods'             => 'POST',
             'callback'            => [static::class, 'rest_create_checkout'],
-            'permission_callback' => '__return_true',
+            'permission_callback' => 'is_user_logged_in',
             'args' => [
                 'product_id' => [
                     'required'          => true,
@@ -47,14 +47,14 @@ class ShopShortcode {
      */
     public static function rest_create_checkout(\WP_REST_Request $request): \WP_REST_Response {
         $product_id = $request->get_param('product_id');
-        $wp_user_id = is_user_logged_in() ? get_current_user_id() : 0;
+        $wp_user_id = get_current_user_id();
 
         $shop     = \NovAI\Services\ShopService::instance();
         $products = $shop->get_products();
 
         $product = null;
         foreach ($products as $p) {
-            if ($p['id'] === $product_id) {
+            if ((string) $p['id'] === (string) $product_id) {
                 $product = $p;
                 break;
             }
@@ -64,16 +64,31 @@ class ShopShortcode {
             return new \WP_REST_Response(['error' => 'Produkt nicht gefunden'], 404);
         }
 
-        // Try custom checkout (with wp_user_id) if we have a variant_id
+        if (empty($product['checkout_ready'])) {
+            return new \WP_REST_Response([
+                'error'          => 'Checkout ist für dieses Produkt nicht freigegeben',
+                'variant_status' => $product['variant_status'] ?? 'missing',
+                'test_mode'      => (bool) ($product['test_mode'] ?? false),
+                'mode_matches'   => (bool) ($product['mode_matches'] ?? false),
+            ], 409);
+        }
+
+        if ($shop->is_test_mode() && !$shop->test_checkout_allowed()) {
+            return new \WP_REST_Response([
+                'error' => 'Test-Checkout ist auf der öffentlichen Shop-Seite deaktiviert',
+            ], 409);
+        }
+
+        // Create an attributed API checkout; direct buy_now URLs intentionally stay disabled.
         if (!empty($product['variant_id'])) {
-            $url = $shop->create_checkout($product['variant_id'], $wp_user_id);
+            $url = $shop->create_checkout((string) $product['variant_id'], $wp_user_id, $product);
             if (!empty($url)) {
                 return new \WP_REST_Response(['url' => $url], 200);
             }
         }
 
         // Fallback: direct buy_now_url from LS product
-        if (!empty($product['buy_now_url'])) {
+        if (false && !empty($product['buy_now_url'])) {
             return new \WP_REST_Response(['url' => $product['buy_now_url']], 200);
         }
 
@@ -113,7 +128,7 @@ class ShopShortcode {
 
         $product_id = sanitize_text_field($_POST['product_id'] ?? '');
         if (empty($product_id)) {
-            wp_send_json_error('Keine product_id');
+            wp_send_json_error('Missing product_id');
         }
 
         $data = [
@@ -159,10 +174,13 @@ class ShopShortcode {
             'columns'        => $columns,
             'layout'         => $layout,
             'highlight'      => $highlight,
-            'is_configured'  => $shop->is_configured(),
-            'checkout_url'   => rest_url('nova-ai/v1/shop/checkout'),
+            'is_configured'       => $shop->is_configured(),
+            'is_test_mode'        => $shop->is_test_mode(),
+            'allow_test_checkout' => $shop->test_checkout_allowed(),
+            'checkout_url'        => rest_url('nova-ai/v1/shop/checkout'),
             'checkout_nonce' => wp_create_nonce('wp_rest'),
             'is_logged_in'   => is_user_logged_in(),
+            'login_url'      => wp_login_url(get_permalink() ?: home_url('/ailinux-shop/')),
             'wp_user_id'     => get_current_user_id(),
         ];
     }

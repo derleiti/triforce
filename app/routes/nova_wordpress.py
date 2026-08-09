@@ -7,6 +7,7 @@ import logging
 import subprocess
 import json
 import re
+import shlex
 from fastapi import Depends, Header, APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional, List, Any
@@ -28,13 +29,23 @@ WP_CLI = f"wp --allow-root --path={WP_PATH}"
 
 # ─── Helper ───────────────────────────────────────────────────────────────────
 
-def wp(cmd: str, json_output: bool = True) -> Any:
-    """WP-CLI im wordpress_fpm Container ausführen."""
-    fmt = " --format=json" if json_output else ""
-    full_cmd = f"docker exec {WP_CONTAINER} {WP_CLI} {cmd}{fmt}"
+def wp(cmd, json_output: bool = True) -> Any:
+    """WP-CLI im wordpress_fpm Container ausführen.
+
+    cmd: str (sicher via shlex tokenisiert) ODER list[str] (verbatim,
+    injection-safe — User-Werte als eigene argv-Elemente übergeben).
+    Kein shell=True mehr: Metazeichen werden nie von einer Shell interpretiert.
+    """
+    base = ["docker", "exec", WP_CONTAINER, "wp", "--allow-root", f"--path={WP_PATH}"]
+    if isinstance(cmd, (list, tuple)):
+        args = [str(a) for a in cmd]
+    else:
+        args = shlex.split(cmd)
+    if json_output:
+        args = args + ["--format=json"]
     try:
         result = subprocess.run(
-            full_cmd, shell=True, capture_output=True, text=True, timeout=30
+            base + args, shell=False, capture_output=True, text=True, timeout=30
         )
         output = result.stdout.strip()
         # WP-CLI gibt Notices auf stdout — filtern
@@ -102,6 +113,8 @@ def list_posts(status: str = "any", limit: int = 20, post_type: str = "post"):
     valid_status = {"publish", "draft", "private", "any", "trash", "pending"}
     if status not in valid_status:
         raise HTTPException(400, f"Ungültiger Status: {status}")
+    if not re.match(r"^[a-z0-9_-]+$", post_type):
+        raise HTTPException(400, f"Ungültiger post_type: {post_type}")
     data = wp(f"post list --post_type={post_type} --post_status={status} "
               f"--posts_per_page={limit} --fields=ID,post_title,post_status,post_date,post_type")
     return {"ok": True, "posts": data if isinstance(data, list) else []}
@@ -109,25 +122,21 @@ def list_posts(status: str = "any", limit: int = 20, post_type: str = "post"):
 
 @router.post("/posts")
 def create_post(body: PostCreate, _auth: None = Depends(_require_wp_admin)):
-    """Neuen Post oder Page erstellen."""
-    # Titel + Content escapen
-    title = body.title.replace('"', '\\"')
-    content = body.content.replace('"', '\\"').replace('\n', '\\n')
-
+    """Neuen Post oder Page erstellen (arg-list, injection-safe)."""
     cmd_parts = [
-        f'post create --post_title="{title}"',
-        f'--post_content="{content}"',
-        f'--post_status={body.status}',
-        f'--post_type={body.post_type}',
-        f'--post_author={body.author}',
-        '--porcelain',
+        "post", "create",
+        f"--post_title={body.title}",
+        f"--post_content={body.content}",
+        f"--post_status={body.status}",
+        f"--post_type={body.post_type}",
+        f"--post_author={body.author}",
+        "--porcelain",
     ]
     if body.excerpt:
-        cmd_parts.append(f'--post_excerpt="{body.excerpt.replace(chr(34), chr(92)+chr(34))}"')
+        cmd_parts.append(f"--post_excerpt={body.excerpt}")
 
-    result = wp_raw(" ".join(cmd_parts))
+    result = wp_raw(cmd_parts)
 
-    # porcelain gibt nur die Post-ID zurück
     post_id = None
     for line in result.splitlines():
         line = line.strip()
@@ -139,29 +148,30 @@ def create_post(body: PostCreate, _auth: None = Depends(_require_wp_admin)):
         logger.error("WP post creation returned no post_id. Raw result: %s", result)
         raise HTTPException(500, "Post konnte nicht erstellt werden")
 
-    # Tags + Kategorien nachträglich setzen
     if body.categories:
-        wp_raw(f'post term set {post_id} category {body.categories.replace(",", " ")}')
+        wp_raw(["post", "term", "set", str(post_id), "category"]
+               + [c.strip() for c in body.categories.split(",") if c.strip()])
     if body.tags:
-        wp_raw(f'post term set {post_id} post_tag {body.tags.replace(",", " ")}')
+        wp_raw(["post", "term", "set", str(post_id), "post_tag"]
+               + [t.strip() for t in body.tags.split(",") if t.strip()])
 
     return {"ok": True, "post_id": post_id, "status": body.status, "type": body.post_type}
 
 
 @router.put("/posts/{post_id}")
 def update_post(post_id: int, body: PostUpdate, _auth: None = Depends(_require_wp_admin)):
-    """Post aktualisieren."""
-    cmd_parts = [f"post update {post_id}"]
+    """Post aktualisieren (arg-list, injection-safe)."""
+    cmd_parts = ["post", "update", str(post_id)]
     if body.title:
-        cmd_parts.append(f'--post_title="{body.title.replace(chr(34), chr(92)+chr(34))}"')
+        cmd_parts.append(f"--post_title={body.title}")
     if body.content:
-        cmd_parts.append(f'--post_content="{body.content.replace(chr(34), chr(92)+chr(34)).replace(chr(10), chr(92)+chr(110))}"')
+        cmd_parts.append(f"--post_content={body.content}")
     if body.status:
-        cmd_parts.append(f'--post_status={body.status}')
+        cmd_parts.append(f"--post_status={body.status}")
     if body.excerpt:
-        cmd_parts.append(f'--post_excerpt="{body.excerpt}"')
+        cmd_parts.append(f"--post_excerpt={body.excerpt}")
 
-    result = wp_raw(" ".join(cmd_parts))
+    result = wp_raw(cmd_parts)
     ok = "Success" in result or "Updated" in result
     return {"ok": ok, "post_id": post_id, "result": result}
 
@@ -169,7 +179,7 @@ def update_post(post_id: int, body: PostUpdate, _auth: None = Depends(_require_w
 @router.delete("/posts/{post_id}")
 def delete_post(post_id: int, force: bool = False, _auth: None = Depends(_require_wp_admin)):
     """Post löschen (Trash oder force-delete)."""
-    cmd = f"post delete {post_id}" + (" --force" if force else "")
+    cmd = ["post", "delete", str(post_id)] + (["--force"] if force else [])
     result = wp_raw(cmd)
     return {"ok": True, "post_id": post_id, "result": result}
 
@@ -198,6 +208,9 @@ def get_post(post_id: int):
 @router.get("/pages")
 def list_pages(status: str = "any", limit: int = 50):
     """Alle Seiten auflisten."""
+    valid_status = {"publish", "draft", "private", "any", "trash", "pending"}
+    if status not in valid_status:
+        raise HTTPException(400, f"Ungültiger Status: {status}")
     data = wp(f"post list --post_type=page --post_status={status} "
               f"--posts_per_page={limit} --fields=ID,post_title,post_status,post_date,post_parent")
     return {"ok": True, "pages": data if isinstance(data, list) else []}
@@ -218,9 +231,9 @@ def create_page(body: PageCreate, _auth: None = Depends(_require_wp_admin)):
     page_id = result["post_id"]
 
     if body.parent:
-        wp_raw(f"post update {page_id} --post_parent={body.parent}")
+        wp_raw(["post", "update", str(page_id), f"--post_parent={body.parent}"])
     if body.template:
-        wp_raw(f"post meta set {page_id} _wp_page_template {body.template}")
+        wp_raw(["post", "meta", "set", str(page_id), "_wp_page_template", str(body.template)])
 
     return {"ok": True, "page_id": page_id, "status": body.status}
 
@@ -302,23 +315,19 @@ def get_wp_settings():
 
 @router.post("/settings/email")
 def update_email_settings(body: EmailSettings, _auth: None = Depends(_require_wp_admin)):
-    """Admin-Email + MailPoet Absender konfigurieren."""
+    """Admin-Email + MailPoet Absender konfigurieren (arg-list, injection-safe)."""
     results = {}
 
-    # WP Admin Email
-    r = wp_raw(f'option update admin_email "{body.admin_email}"')
+    r = wp_raw(["option", "update", "admin_email", body.admin_email])
     results["admin_email"] = "updated" if "Success" in r or "unchanged" in r else r
 
-    # WP User 1 Email mitziehen
-    r2 = wp_raw(f'user update 1 --user_email="{body.admin_email}"')
+    r2 = wp_raw(["user", "update", "1", f"--user_email={body.admin_email}"])
     results["user_email"] = "updated" if "Success" in r2 else r2
 
-    # Blogname optional
     if body.blogname:
-        r3 = wp_raw(f'option update blogname "{body.blogname}"')
+        r3 = wp_raw(["option", "update", "blogname", body.blogname])
         results["blogname"] = "updated" if "Success" in r3 else r3
 
-    # MailPoet Sender via PHP-Snippet
     if body.mailpoet_sender_email or body.mailpoet_sender_name:
         mp_settings_raw = wp_raw("option get mailpoet_settings --format=json")
         try:
@@ -331,8 +340,7 @@ def update_email_settings(body: EmailSettings, _auth: None = Depends(_require_wp
             mp["sender"]["address"] = body.mailpoet_sender_email
         if body.mailpoet_sender_name:
             mp["sender"]["name"] = body.mailpoet_sender_name
-        new_mp = json.dumps(mp).replace('"', '\\"')
-        r4 = wp_raw(f'option update mailpoet_settings "{new_mp}"')
+        r4 = wp_raw(["option", "update", "mailpoet_settings", json.dumps(mp)])
         results["mailpoet"] = "updated" if "Success" in r4 else r4
 
     return {"ok": True, "results": results}
@@ -360,8 +368,10 @@ def list_plugins():
 
 @router.get("/search")
 def search_posts(q: str, post_type: str = "any", limit: int = 10):
-    """Posts/Pages durchsuchen."""
-    safe_q = re.sub(r'["\';\\]', '', q)
-    data = wp(f'post list --search="{safe_q}" --post_type={post_type} '
-              f'--posts_per_page={limit} --fields=ID,post_title,post_status,post_type,post_date')
+    """Posts/Pages durchsuchen (arg-list, injection-safe)."""
+    if not re.match(r"^[a-z0-9_-]+$", post_type):
+        raise HTTPException(400, f"Ungültiger post_type: {post_type}")
+    data = wp(["post", "list", f"--search={q}", f"--post_type={post_type}",
+               f"--posts_per_page={limit}",
+               "--fields=ID,post_title,post_status,post_type,post_date"])
     return {"ok": True, "results": data if isinstance(data, list) else []}

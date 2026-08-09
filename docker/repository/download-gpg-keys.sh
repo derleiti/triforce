@@ -104,7 +104,7 @@ download_key "HashiCorp" \
 
 # NVIDIA CUDA
 download_key "NVIDIA CUDA" \
-    "https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/3bf863cc.pub" \
+    "https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2604/x86_64/60DF8A40.pub" \
     "nvidia-cuda-keyring.gpg"
 
 # NVIDIA Container Toolkit

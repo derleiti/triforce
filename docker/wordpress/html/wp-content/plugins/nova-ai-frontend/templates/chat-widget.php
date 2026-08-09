@@ -10,16 +10,16 @@ defined('ABSPATH') || exit;
 
 $settings = get_option('nova_ai_settings', []);
 $position = $atts['position'] ?? $settings['widget_position'] ?? 'bottom-right';
-$color = $settings['widget_color'] ?? '#6366f1';
-$title = $settings['widget_title'] ?? 'BRUMO AI Chat';
+$color = $settings['widget_color'] ?? '#22d3ee';
+$title = $settings['widget_title'] ?? 'Nova AI Chat';
 $icon = $settings['widget_icon'] ?? '🐻';
-$welcome = $settings['widget_welcome'] ?? 'Hallo! Wie kann ich dir helfen?';
+$welcome = $settings['widget_welcome'] ?? 'Hi! How can I help you?';
 ?>
 
 <div id="nova-chat-widget" class="nova-chat-widget nova-chat-closed position-<?php echo esc_attr($position); ?>" style="--nova-accent: <?php echo esc_attr($color); ?>">
 
     <!-- Toggle Button -->
-    <button class="nova-chat-toggle" id="nova-chat-toggle" aria-label="<?php esc_attr_e('Chat öffnen', 'nov-ai-frontend'); ?>">
+    <button class="nova-chat-toggle" id="nova-chat-toggle" aria-label="<?php esc_attr_e('Open chat', 'nov-ai-frontend'); ?>">
         <span class="nova-chat-icon"><?php echo esc_html($icon); ?></span>
         <span class="nova-chat-close">×</span>
     </button>
@@ -28,7 +28,7 @@ $welcome = $settings['widget_welcome'] ?? 'Hallo! Wie kann ich dir helfen?';
     <div class="nova-chat-container" id="nova-chat-container">
         <div class="nova-chat-header">
             <span class="nova-chat-title"><?php echo esc_html($title); ?></span>
-            <button class="nova-chat-minimize" aria-label="<?php esc_attr_e('Minimieren', 'nov-ai-frontend'); ?>">−</button>
+            <button class="nova-chat-minimize" aria-label="<?php esc_attr_e('Minimize', 'nov-ai-frontend'); ?>">−</button>
         </div>
 
         <div class="nova-chat-messages" id="nova-chat-messages">
@@ -42,9 +42,9 @@ $welcome = $settings['widget_welcome'] ?? 'Hallo! Wie kann ich dir helfen?';
                 <input type="text"
                        id="nova-chat-input"
                        class="nova-chat-input"
-                       placeholder="<?php esc_attr_e('Nachricht eingeben...', 'nov-ai-frontend'); ?>"
+                       placeholder="<?php esc_attr_e('Type a message...', 'nov-ai-frontend'); ?>"
                        autocomplete="off">
-                <button type="submit" class="nova-chat-send" aria-label="<?php esc_attr_e('Senden', 'nov-ai-frontend'); ?>">
+                <button type="submit" class="nova-chat-send" aria-label="<?php esc_attr_e('Send', 'nov-ai-frontend'); ?>">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
                     </svg>
@@ -59,11 +59,11 @@ $welcome = $settings['widget_welcome'] ?? 'Hallo! Wie kann ich dir helfen?';
 /* Nova Chat Widget Styles */
 .nova-chat-widget {
     --nova-accent: #6366f1;
-    --nova-bg: #1d2125;
-    --nova-bg-dark: #0d1117;
-    --nova-border: #30363d;
-    --nova-text: #e6edf3;
-    --nova-text-muted: #8b949e;
+    --nova-bg: #0f1b28;
+    --nova-bg-dark: #08111b;
+    --nova-border: #27384a;
+    --nova-text: #edf5fb;
+    --nova-text-muted: #8fa5b8;
 
     position: fixed;
     z-index: 99999;
@@ -96,8 +96,8 @@ $welcome = $settings['widget_welcome'] ?? 'Hallo! Wie kann ich dir helfen?';
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background: var(--nova-accent);
-    border: none;
+    background: linear-gradient(135deg, #2563eb, var(--nova-accent));
+    border: 1px solid rgba(34,211,238,.28);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -149,8 +149,8 @@ $welcome = $settings['widget_welcome'] ?? 'Hallo! Wie kann ich dir helfen?';
     max-height: 500px;
     background: var(--nova-bg);
     border: 1px solid var(--nova-border);
-    border-radius: 12px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    border-radius: 16px;
+    box-shadow: 0 18px 45px rgba(0,0,0,0.38), 0 0 0 1px rgba(34,211,238,.03);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -185,7 +185,7 @@ $welcome = $settings['widget_welcome'] ?? 'Hallo! Wie kann ich dir helfen?';
     align-items: center;
     justify-content: space-between;
     padding: 14px 16px;
-    background: var(--nova-accent);
+    background: linear-gradient(135deg, #2563eb, var(--nova-accent));
     color: white;
 }
 
@@ -440,14 +440,14 @@ $welcome = $settings['widget_welcome'] ?? 'Hallo! Wie kann ich dir helfen?';
                 reply = data.choices[0].message.content;
             } else if (data.success === false) {
                 // WordPress error format
-                reply = 'Fehler: ' + (typeof data.data === 'string' ? data.data : (data.data?.error || 'Unbekannter Fehler'));
+                reply = 'Error: ' + (typeof data.data === 'string' ? data.data : (data.data?.error || 'Unknown error'));
             } else if (data.error) {
-                reply = 'Fehler: ' + (typeof data.error === 'string' ? data.error : data.error.message || JSON.stringify(data.error));
+                reply = 'Error: ' + (typeof data.error === 'string' ? data.error : data.error.message || JSON.stringify(data.error));
             }
 
             if (!reply) {
                 console.error('[Widget] Could not parse response:', data);
-                reply = 'Fehler: Unbekanntes Antwortformat';
+                reply = 'Error: Unknown response format';
             }
 
             chatHistory.push({ role: 'assistant', content: reply });
@@ -456,7 +456,7 @@ $welcome = $settings['widget_welcome'] ?? 'Hallo! Wie kann ich dir helfen?';
         } catch (error) {
             removeTyping(typingId);
             console.error('[Widget] Request failed:', error);
-            addMessage('Verbindungsfehler: ' + error.message, 'ai');
+            addMessage('Connection error: ' + error.message, 'ai');
         }
     });
 

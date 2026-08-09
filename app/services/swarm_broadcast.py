@@ -178,6 +178,9 @@ class SwarmBroadcast:
                 only_set = set(p.lower() for p in only_providers)
                 models = [m for m in models if m["provider"] in only_set]
 
+            # Exclude non-chat/audio/TTS/transcription models from chat broadcast.
+            models = [m for m in models if self._is_model_chat_eligible(m.get("id", ""))]
+
             logger.info(f"Swarm {session_id}: Broadcasting to {len(models)} models")
             session.phase = "broadcasting"
 
@@ -203,7 +206,11 @@ class SwarmBroadcast:
             self._score_responses(session, user_question)
 
             # Step 5: Rank and select top N
-            scored = sorted(session.responses, key=lambda r: r.quality_score, reverse=True)
+            scored = sorted(
+                (r for r in session.responses if r.quality_score > 0),
+                key=lambda r: r.quality_score,
+                reverse=True,
+            )
             session.top_results = scored[:top_n]
 
             session.phase = "completed"
@@ -265,7 +272,9 @@ class SwarmBroadcast:
                         latency_ms=0,
                         error=str(result),
                     ))
-                elif result.error:
+                elif result.error or self._looks_like_error_response(result.response):
+                    result.error = result.error or "error-like model response"
+                    result.quality_score = 0.0
                     session.errors.append(result)
                 else:
                     session.responses.append(result)
@@ -352,6 +361,45 @@ class SwarmBroadcast:
     # Quality Scoring
     # -------------------------------------------------------------------------
 
+    def _is_model_chat_eligible(self, model_id: str) -> bool:
+        """Return False for audio, transcription, TTS, and other non-chat model IDs."""
+        mid = (model_id or "").lower()
+        blocked_fragments = (
+            "whisper",
+            "audio",
+            "transcribe",
+            "transcription",
+            "tts",
+            "speech",
+            "voice",
+        )
+        return not any(fragment in mid for fragment in blocked_fragments)
+
+    def _looks_like_error_response(self, response: str) -> bool:
+        """Detect transport/provider errors that arrived as text responses."""
+        text = (response or "").strip().lower()
+        if not text:
+            return True
+
+        error_markers = (
+            "[fehler",
+            "[error",
+            "http 400",
+            "http 401",
+            "http 403",
+            "http 404",
+            "http 429",
+            "http 500",
+            "http 502",
+            "http 503",
+            "does not support chat completions",
+            "requires terms acceptance",
+            "backend exploded",
+            "error-like model response",
+            "fehler beim streaming",
+        )
+        return any(marker in text for marker in error_markers)
+
     def _score_responses(self, session: SwarmSession, user_question: str):
         """Score each response for quality/relevance."""
         question_words = set(user_question.lower().split())
@@ -360,9 +408,14 @@ class SwarmBroadcast:
             score = 0.0
             text = resp.response.strip()
 
-            if not text:
+            if not text or resp.error or self._looks_like_error_response(text):
                 resp.quality_score = 0.0
                 continue
+
+            hidden_reasoning_penalty = 0.0
+            lower_text = text.lower()
+            if "<think>" in lower_text or "</think>" in lower_text:
+                hidden_reasoning_penalty = 0.15
 
             # Length score (prefer 50-500 chars, penalize too short/long)
             length = len(text)
@@ -396,6 +449,8 @@ class SwarmBroadcast:
                 speed_score = max(0, 0.1 - (resp.latency_ms / 30000) * 0.1)
                 score += speed_score
 
+            score = max(0.0, score - hidden_reasoning_penalty)
+            score = max(0.0, score - hidden_reasoning_penalty)
             resp.quality_score = round(min(score, 1.0), 3)
 
     # -------------------------------------------------------------------------

@@ -46,7 +46,15 @@ if [[ -z "$DEFAULT_SIGNING_KEY_PATH" ]]; then
   fi
 fi
 SIGNING_KEY_PATH="${SIGNING_KEY_PATH:-$DEFAULT_SIGNING_KEY_PATH}"
-SIGNING_KEY_ID="2B320747C602A195"
+
+# Signing key: shared signing-key.env if available, else built-in default.
+# Keep the fallback in sync with signing-key.env (see that file for details).
+for _keyenv in "${REPO_PATH}/signing-key.env" \
+               "$(dirname "${BASH_SOURCE[0]}")/signing-key.env" \
+               "/var/spool/apt-mirror/var/signing-key.env"; do
+  [[ -r "$_keyenv" ]] && { . "$_keyenv"; break; }
+done
+SIGNING_KEY_ID="${SIGNING_KEY_ID:-59FAE19560F5E25B}"
 
 DEFAULT_GNUPGHOME="${REPO_PATH}/etc/gnupg"
 if [[ -z "${GNUPGHOME:-}" ]]; then

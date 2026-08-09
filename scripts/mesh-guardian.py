@@ -36,7 +36,7 @@ def find_triforce_dir() -> Path:
     candidates = [
         Path.home() / "triforce",
         Path("/home/zombie/triforce"),
-        Path("/home/backupuser/triforce"),
+        Path("/home/zombie/triforce"),
         Path.cwd(),
     ]
     for p in candidates:

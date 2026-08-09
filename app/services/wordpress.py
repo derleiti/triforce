@@ -5,7 +5,9 @@ from typing import Dict, List, Optional
 
 import httpx
 from app.config import get_settings
-from app.utils.http_client import HttpClient
+from app.utils.errors import api_error
+from app.utils.http_client import HttpClient, client
+from app.utils.triforce_logging import multi_logger
 
 class WordPressService:
     def __init__(self) -> None:
@@ -28,11 +30,34 @@ class WordPressService:
         self._client = HttpClient(base_url=self._wordpress_url, timeout_ms=settings.request_timeout * 1000)
 
     def _get_auth_headers(self) -> Dict[str, str]:
-        if not self._username or not self._password:
+        username = getattr(self, "_username", None)
+        password = getattr(self, "_password", None)
+        if not username or not password:
             raise RuntimeError("WordPress client not initialized. Call _ensure_client first.")
-        credentials = f"{self._username}:{self._password}"
+        credentials = f"{username}:{password}"
         encoded_credentials = base64.b64encode(credentials.encode()).decode("ascii")
         return {"Authorization": f"Basic {encoded_credentials}"}
+
+    async def _log_tls_fallback(self, message: str) -> None:
+        await multi_logger.log_error(
+            "wordpress",
+            "wordpress_tls_fallback",
+            message,
+        )
+
+    async def _request_json(self, method: str, path: str, **kwargs):
+        self._ensure_client()
+        if not self._wordpress_url:
+            raise RuntimeError("WordPress client not initialized.")
+
+        async with client(
+            base_url=self._wordpress_url,
+            timeout=get_settings().request_timeout,
+        ) as wp_client:
+            response = await getattr(wp_client, method)(path, **kwargs)
+            if hasattr(response, "json"):
+                return response.json()
+            return response
 
     async def create_post(self, title: str, content: str, status: str = "publish", categories: Optional[List[int]] = None, featured_media: Optional[int] = None) -> dict:
         self._ensure_client()

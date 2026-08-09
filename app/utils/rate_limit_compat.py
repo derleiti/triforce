@@ -65,37 +65,37 @@ class FastAPILimiter:
             await _UpstreamFastAPILimiter.close()
 
 
-if _UpstreamRateLimiter is not None and _HAS_LEGACY_RATE_LIMITER:
-    RateLimiter = _UpstreamRateLimiter
-else:
-    class RateLimiter:
-        """
-        Backward-compatible wrapper for the pre-0.2 fastapi-limiter API.
+class RateLimiter:
+    """Compatibility wrapper that is safe with nested FastAPI routers."""
 
-        The current environment has fastapi-limiter 0.2.x installed, which expects
-        a pyrate-limiter instance instead of times/seconds kwargs. This shim keeps
-        the existing route decorators working without forcing an immediate package
-        downgrade.
-        """
+    def __init__(
+        self,
+        times: int = 1,
+        seconds: int = 1,
+        identifier: Callable | None = None,
+        callback: Callable | None = None,
+        blocking: bool = False,
+        **_: Any,
+    ) -> None:
+        self._delegate = None
+        self._legacy = False
 
-        def __init__(
-            self,
-            times: int = 1,
-            seconds: int = 1,
-            identifier: Callable | None = None,
-            callback: Callable | None = None,
-            blocking: bool = False,
-            **_: Any,
-        ) -> None:
-            self._delegate = None
+        if _UpstreamRateLimiter is None:
+            _log_compat_once(
+                "fastapi-limiter is unavailable; request rate limiting is disabled"
+            )
+            return
 
-            if _UpstreamRateLimiter is None or Limiter is None or Rate is None or Duration is None:
-                _log_compat_once(
-                    "fastapi-limiter is unavailable or incompatible; request rate limiting is disabled"
+        try:
+            if _HAS_LEGACY_RATE_LIMITER:
+                self._delegate = _UpstreamRateLimiter(
+                    times=times,
+                    seconds=seconds,
+                    identifier=identifier,
+                    callback=callback,
                 )
-                return
-
-            try:
+                self._legacy = True
+            elif Limiter is not None and Rate is not None and Duration is not None:
                 limiter = Limiter(Rate(times, Duration.SECOND * seconds))
                 kwargs: dict[str, Any] = {"limiter": limiter, "blocking": blocking}
                 if identifier is not None:
@@ -106,10 +106,36 @@ else:
                 _log_compat_once(
                     "fastapi-limiter legacy API unavailable; using in-process compatibility rate limiting"
                 )
-            except Exception as exc:
-                logger.warning("Failed to initialize compatibility rate limiter: %s", exc)
+            else:
+                _log_compat_once(
+                    "fastapi-limiter is incompatible; request rate limiting is disabled"
+                )
+        except Exception as exc:
+            logger.warning("Failed to initialize compatibility rate limiter: %s", exc)
 
-        async def __call__(self, request: Request, response: Response) -> Any:
-            if self._delegate is None:
-                return None
+    async def __call__(self, request: Request, response: Response) -> Any:
+        if self._delegate is None:
+            return None
+        if not self._legacy:
             return await self._delegate(request=request, response=response)
+
+        # fastapi-limiter <=0.1 scans request.app.routes and assumes every entry
+        # is an APIRoute. FastAPI 0.116+ also stores _IncludedRouter entries.
+        upstream = _UpstreamFastAPILimiter
+        if upstream is None or not getattr(upstream, "redis", None):
+            raise RuntimeError("FastAPILimiter.init must run before requests")
+        identifier = self._delegate.identifier or upstream.identifier
+        callback = self._delegate.callback or upstream.http_callback
+        rate_key = await identifier(request)
+        route_key = f"{request.method}:{request.scope.get('path', '')}"
+        key = f"{upstream.prefix}:{rate_key}:{route_key}"
+        try:
+            pexpire = await self._delegate._check(key)
+        except Exception as exc:
+            if exc.__class__.__name__ != "NoScriptError":
+                raise
+            upstream.lua_sha = await upstream.redis.script_load(upstream.lua_script)
+            pexpire = await self._delegate._check(key)
+        if pexpire != 0:
+            return await callback(request, response, pexpire)
+        return None

@@ -1,5 +1,42 @@
 # Changelog
 
+
+<!-- AILINUX_STATUS_START -->
+## 2026-07-14
+
+### Fixed
+- `uvicorn[standard]` wiederhergestellt: uvloop, httptools und watchfiles waren seit dem
+  13.07.-Rebuild deinstalliert, weil `google-antigravity` nacktes `uvicorn` fordert und
+  die Extras verdraengt hat. Der Server lief auf dem asyncio-Standardloop.
+- `resolve_gemini_api_key()` (`app/services/model_registry.py`) warf zur Aufrufzeit
+  `ImportError: cannot import name 'settings' from 'app.config'` — `app.config` exportiert
+  nur `get_settings()`. Damit crashte jede Gemini-Vision-Anfrage (`app/services/vision.py`).
+- `.github/dependabot.yml` enthielt `package-ecosystem: ""` (unausgefuellte GitHub-Vorlage,
+  ungueltig). Neu: `pip` + `github-actions`, Gruppen fuer `pytest*`, Server-Stack und Linter.
+
+### Documentation
+- `docs/SESSION-2026-07-14.md` neu, `docs/NEXT-SESSION-PROMPT.md` fortgeschrieben.
+
+### Known Issues
+- Vault ist gesperrt — `GEMINI_API_KEY` loest derzeit nirgends auf.
+- `prometheus_fastapi_instrumentator` fehlt im venv, Metriken sind still deaktiviert.
+- `app/routes/txt2img.py` importiert das nicht existierende `comfy_client`
+  (Route ist nicht registriert, Code ist tot — kein Startrisiko).
+
+## 2026-06-05
+
+### Changed
+- Documented the current production baseline: branch `nova-nextlevel-20260603`, head `16f43b8a`.
+- Documented Gemma 4 12B as the active default route: `ollama/gemma4:12b`.
+- Updated Server, Agent, OpenClaw, Quickstart, and documentation-index guidance.
+- Documented the ignored crawler spool runtime directory and the GitHub documentation source of truth.
+
+### Operations
+- Reconfirmed that production runs from `/home/zombie/triforce` via `triforce.service`.
+- Reconfirmed health check expectations for `https://api.ailinux.me/health`.
+- Noted that the service auto-update branch should match the production branch before unattended updates are relied on.
+<!-- AILINUX_STATUS_END -->
+
 All notable changes to TriForce Backend.
 
 ## [2.80] - 2026-01-02
@@ -80,3 +117,10 @@ All notable changes to TriForce Backend.
 - Added compatibility for both `params` and `arguments`.
 - Verified OpenClaw MCP Node bridge with `client_file_list` and `client_shell_exec`.
 - Added OpenClaw MCP Node documentation.
+
+## Unreleased
+
+### Documentation
+- Added repository hygiene notes for runtime artifacts, generated build output, Python caches, Docker mirror state, and local backup/patch files.
+- Documented active image/vision route modules so legacy compatibility endpoints are not removed during cleanup.
+- Added Git safety guidance for distinguishing `/home/zombie/triforce`, `/home/zombie/triforce-review`, and `/home/zombie`.

@@ -770,7 +770,7 @@ TOOL_ALIASES: Dict[str, str] = {
     "cli-agents_broadcast": "agent_broadcast",
     "cli-agents_start": "agent_start",
     "cli-agents_stop": "agent_stop",
-    "queue_broadcast": "agent_broadcast",
+    # "queue_broadcast": "agent_broadcast",  # DEPRECATED: causes schema collision (message vs command)
     "codebase_file": "code_read",
     "codebase_search": "code_search",
     "codebase_edit": "code_edit",
@@ -816,11 +816,17 @@ def resolve_alias(tool_name: str) -> str:
 
 
 logger.info(f"MCP Tool Registry v4.0 loaded: {get_tool_count()} tools (optimized from 134)")
-# Reverse alias mapping
+# Reverse alias mapping. Canonical names must never be rewritten when a
+# canonical handler is registered. Several legacy names can map to the same
+# canonical tool (notably restart_backend/restart_agent -> restart), so a
+# simple dict inversion would silently select the last legacy alias.
 TOOL_ALIASES_REVERSE = {v: k for k, v in TOOL_ALIASES.items()}
 
 def resolve_alias_reverse(tool_name):
-    return TOOL_ALIASES_REVERSE.get(tool_name, tool_name)
+    if tool_name in _TOOL_HANDLERS:
+        return tool_name
+    matches = [old for old, new in TOOL_ALIASES.items() if new == tool_name]
+    return matches[0] if len(matches) == 1 else tool_name
 
 
 # =============================================================================

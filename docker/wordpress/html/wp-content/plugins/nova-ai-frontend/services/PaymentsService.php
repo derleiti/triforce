@@ -120,10 +120,24 @@ class PaymentsService {
         }
 
         $event_name = $event['meta']['event_name'] ?? 'unknown';
-        $event_id   = $event['data']['id'] ?? '';
+        $event_test_mode = (bool) ($event['meta']['test_mode'] ?? false);
+        $configured_test_mode = defined('NOVA_LS_TEST_MODE') ? (bool) NOVA_LS_TEST_MODE : true;
 
-        // Idempotency check
-        if (!$this->check_idempotency($event_id)) {
+        if ($event_test_mode !== $configured_test_mode) {
+            $this->log('ERROR', 'Webhook mode mismatch', [
+                'event' => $event_name,
+                'event_test_mode' => $event_test_mode,
+                'configured_test_mode' => $configured_test_mode,
+            ]);
+            return new \WP_REST_Response(['error' => 'Webhook mode mismatch'], 409);
+        }
+
+        // Lemon Squeezy does not provide a separate delivery UUID in this payload.
+        // Hash the exact signed body so retries deduplicate, while later updates of
+        // the same subscription/order remain processable.
+        $event_id = hash('sha256', $event_name . '|' . $raw_body);
+
+        if ($this->is_duplicate_event($event_id)) {
             $this->log('INFO', 'Duplicate event skipped', ['event_id' => $event_id, 'event' => $event_name]);
             return new \WP_REST_Response(['status' => 'already_processed'], 200);
         }
@@ -146,15 +160,30 @@ class PaymentsService {
             'tier'    => $ents['tier'],
         ]);
 
-        if ($user_id > 0) {
-            $this->apply_entitlements($user_id, $ents);
-        } else {
-            $this->log('WARN', 'Could not resolve WP user', [
+        if (($ents['action'] ?? 'none') === 'none') {
+            $this->mark_event_processed($event_id);
+            $this->log('INFO', 'Webhook event ignored (no entitlement action)', ['event' => $event_name]);
+            return new \WP_REST_Response(['status' => 'ignored'], 202);
+        }
+
+        if ($user_id <= 0) {
+            $this->log('ERROR', 'Could not resolve WP user', [
                 'event'       => $event_name,
                 'hint_uid'    => $ents['user_id'],
                 'email'       => $ents['email'],
             ]);
+            return new \WP_REST_Response(['error' => 'User attribution failed'], 422);
         }
+
+        if (!$this->apply_entitlements($user_id, $ents)) {
+            $this->log('ERROR', 'Entitlement backend sync failed', [
+                'event' => $event_name,
+                'user_id' => $user_id,
+            ]);
+            return new \WP_REST_Response(['error' => 'Entitlement sync failed'], 503);
+        }
+
+        $this->mark_event_processed($event_id);
 
         // Track last webhook
         update_option('nova_last_webhook', [
@@ -172,7 +201,7 @@ class PaymentsService {
     // Entitlement Application
     // -------------------------------------------------------------------------
 
-    private function apply_entitlements(int $user_id, array $ents): void {
+    private function apply_entitlements(int $user_id, array $ents): bool {
         switch ($ents['action']) {
             case 'activate':
                 EntitlementsService::set_entitlements($user_id, [
@@ -180,12 +209,10 @@ class PaymentsService {
                     'subscription_id' => $ents['subscription_id'],
                     'customer_id'     => $ents['customer_id'],
                 ]);
-                EntitlementsService::sync_to_backend($user_id);
                 break;
 
             case 'deactivate':
                 EntitlementsService::downgrade_to_free($user_id);
-                EntitlementsService::sync_to_backend($user_id);
                 break;
 
             case 'purchase':
@@ -193,9 +220,17 @@ class PaymentsService {
                     'customer_id' => $ents['customer_id'],
                     'extra'       => $ents['extra'],
                 ]);
-                EntitlementsService::sync_to_backend($user_id);
                 break;
+
+            case 'refund':
+                EntitlementsService::remove_entitlements($user_id, $ents['extra']);
+                break;
+
+            default:
+                return true;
         }
+
+        return EntitlementsService::sync_to_backend($user_id);
     }
 
     // -------------------------------------------------------------------------
@@ -257,16 +292,18 @@ class PaymentsService {
     // Idempotency
     // -------------------------------------------------------------------------
 
-    private function check_idempotency(string $event_id): bool {
-        if (empty($event_id)) {
-            return true; // No event_id → can't deduplicate, allow through
+    private function is_duplicate_event(string $event_id): bool {
+        if ($event_id === '') {
+            return false;
         }
-        $key = 'nova_ls_evt_' . md5($event_id);
-        if (get_transient($key)) {
-            return false; // Already processed
+        return (bool) get_transient('nova_ls_evt_' . md5($event_id));
+    }
+
+    private function mark_event_processed(string $event_id): void {
+        if ($event_id === '') {
+            return;
         }
-        set_transient($key, 1, self::IDEMPOTENCY_TTL);
-        return true;
+        set_transient('nova_ls_evt_' . md5($event_id), 1, self::IDEMPOTENCY_TTL);
     }
 
     // -------------------------------------------------------------------------

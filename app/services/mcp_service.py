@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 from typing import Any, Awaitable, Callable, Dict, Iterable, List, Optional
 from pathlib import Path
 
-from .crawler.user_crawler import user_crawler
+from .crawler.user_crawler import get_user_crawler
 from .crawler.manager import crawler_manager
 from .wordpress import wordpress_service
 from . import chat as chat_service
@@ -49,6 +49,7 @@ from .api_vault import VAULT_TOOLS, VAULT_HANDLERS, api_vault
 from .chat_router import CHAT_ROUTER_TOOLS, CHAT_ROUTER_HANDLERS
 from .task_spawner import TASK_SPAWNER_TOOLS, TASK_SPAWNER_HANDLERS
 from .txt2img_mcp import TXT2IMG_TOOLS, TXT2IMG_HANDLERS
+from .nova_chat_agent import nova_chat_agent_service as account_specialists
 
 # Constants
 BACKEND_ROOT = Path("/home/zombie/triforce")
@@ -195,7 +196,7 @@ async def handle_crawl_url(params: Dict[str, Any]) -> Dict[str, Any]:
     if keywords is not None and not isinstance(keywords, Iterable):
         raise ValueError("'keywords' must be an iterable of strings")
 
-    job = await user_crawler.crawl_url(
+    job = await get_user_crawler().crawl_url(
         url=url,
         keywords=list(keywords) if keywords else None,
         max_pages=int(params.get("max_pages", 10)),
@@ -234,9 +235,10 @@ async def handle_crawl_status(params: Dict[str, Any]) -> Dict[str, Any]:
     if not job_id:
         raise ValueError("'job_id' parameter is required for crawl.status")
 
-    job = await user_crawler.get_job(job_id)
+    _uc = get_user_crawler()
+    job = await _uc.get_job(job_id)
     source = "user"
-    manager = user_crawler
+    manager = _uc
     if not job:
         job = await crawler_manager.get_job(job_id)
         source = "manager"
@@ -562,6 +564,18 @@ async def handle_specialists_invoke(params: Dict[str, Any]) -> Dict[str, Any]:
 
     if not message:
         raise ValueError("'message' parameter is required")
+
+    if specialist_id and specialist_id.startswith("nova-account/"):
+        return await account_specialists.invoke_specialized_agent(
+            specialist_id=specialist_id,
+            message=message,
+            messages=params.get("messages"),
+            system=params.get("system", ""),
+            model=params.get("model"),
+            temperature=params.get("temperature", 0.4),
+            max_tokens=params.get("max_tokens", 1200),
+            timeout=params.get("timeout", 120),
+        )
 
     # Get specialist - either specified or auto-routed
     if specialist_id:
@@ -1937,6 +1951,10 @@ async def handle_tools_list(params: Dict[str, Any]) -> Dict[str, Any]:
         }
     ])
 
+    # MCP tool names must match ^[a-zA-Z0-9_-]{1,64}$ for strict clients.
+    # Keep internal handler aliases intact, but export normalized names only.
+    for tool in tools:
+        tool["name"] = str(tool.get("name", "")).replace(".", "_").replace("-", "_")
     return {"tools": tools}
 
 async def handle_tools_call(params: Dict[str, Any]) -> Dict[str, Any]:

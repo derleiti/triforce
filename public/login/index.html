@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AILinux — Account</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://accounts.google.com/gsi/client" async defer data-cfasync="false"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -259,9 +259,69 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
 .google-login-fallback:hover{border-color:rgba(59,130,246,.55);background:rgba(59,130,246,.09)}
 .google-login-hint{display:none;margin-top:.55rem;color:var(--muted2);font-size:.72rem;text-align:center}
 
+
+/* Embedded login inside ailinux.me: use the iframe viewport, never a desktop-sized card. */
+html.embed-mode,body.embed-mode{height:auto;min-height:0;overflow-x:hidden}
+body.embed-mode{background:transparent}
+body.embed-mode .bg-fx{display:none}
+body.embed-mode #login-view{min-height:0;padding:0;align-items:flex-start;justify-content:stretch}
+body.embed-mode .login-card{width:100%;max-width:none;margin:0;padding:1.5rem;border-radius:18px;box-shadow:none}
+body.embed-mode .login-logo{margin-bottom:1.25rem}
+body.embed-mode .login-logo .robot{font-size:2.75rem}
+body.embed-mode .login-logo h1{font-size:1.65rem}
+body.embed-mode .tabs{margin-bottom:1rem}
+body.embed-mode .trust-row{display:none}
+#google-signin-button{width:100%;min-height:44px;display:flex;justify-content:center;overflow:hidden}
+#google-signin-button>div,#google-signin-button iframe{max-width:100%!important}
+@media(max-width:560px){
+  #login-view{padding:.5rem}
+  .login-card{width:100%;max-width:100%;padding:1.25rem;border-radius:18px}
+  body.embed-mode .login-card{padding:1rem;border-radius:14px}
+  .login-logo{margin-bottom:1.25rem}
+  .login-logo .robot{font-size:2.65rem}
+  .login-logo h1{font-size:1.55rem}
+  .tabs{margin-bottom:1rem}
+  .tab{padding:.65rem .45rem}
+  .field input{font-size:16px}
+  .google-login-wrap{margin:.85rem 0 .35rem}
+}
+
 </style>
 </head>
 <body>
+<script id="ailinux-embed-mode">
+(function(){
+  const params=new URLSearchParams(location.search);
+  if(params.get('embed')!=='1')return;
+  document.documentElement.classList.add('embed-mode');
+  document.body.classList.add('embed-mode');
+
+  let parentOrigin='https://ailinux.me';
+  try{
+    const ref=new URL(document.referrer);
+    if(ref.protocol==='https:'&&(ref.hostname==='ailinux.me'||ref.hostname==='www.ailinux.me'))parentOrigin=ref.origin;
+  }catch{}
+
+  function reportHeight(){
+    const card=document.querySelector('.login-card');
+    const account=document.getElementById('account-view');
+    const visibleAccount=account&&getComputedStyle(account).display!=='none';
+    const target=visibleAccount?account:card;
+    const height=Math.ceil(Math.max(
+      target?.scrollHeight||0,
+      target?.getBoundingClientRect().height||0,
+      document.body.scrollHeight||0
+    ));
+    window.parent.postMessage({type:'ailinux_login_resize',height:Math.min(Math.max(height+8,420),1800)},parentOrigin);
+  }
+
+  addEventListener('load',reportHeight);
+  addEventListener('resize',reportHeight);
+  new MutationObserver(reportHeight).observe(document.body,{subtree:true,childList:true,attributes:true});
+  setTimeout(reportHeight,100);
+  setTimeout(reportHeight,800);
+})();
+</script>
 <div class="bg-fx"></div>
 
 <!-- ── LOGIN VIEW ──────────────────────────────────────────────────────── -->
@@ -600,69 +660,37 @@ function initGoogleLogin(){
       auto_select:false,
       cancel_on_tap_outside:true
     });
-    google.accounts.id.renderButton(document.getElementById('google-signin-button'),{
-      theme:'filled_black',size:'large',type:'standard',shape:'pill',text:'continue_with',logo_alignment:'left',width:340
+    const target=document.getElementById('google-signin-button');
+    const available=Math.floor(target?.parentElement?.getBoundingClientRect().width||340);
+    const buttonWidth=Math.max(220,Math.min(340,available));
+    if(target)target.innerHTML='';
+    google.accounts.id.renderButton(target,{
+      theme:'filled_black',size:'large',type:'standard',shape:'pill',text:'continue_with',logo_alignment:'left',width:buttonWidth
     });
     fallback.style.display='none';
+    setTimeout(()=>{
+      if(target&&!target.childElementCount)fallback.style.display='flex';
+    },900);
     return true;
   };
   if(!render()){
     let tries=0;
     const timer=setInterval(()=>{tries++; if(render()||tries>20)clearInterval(timer)},250);
   }
-  fallback.addEventListener('click',()=>{try{google.accounts.id.prompt()}catch{showMsg('login-msg','Google Login konnte nicht geöffnet werden')}});
-}
-
-async function handleGoogleCredential(response){
-  const credential=response?.credential;
-  if(!credential){showMsg('login-msg','Google Login hat kein Token geliefert');return;}
-  try{
-    const r=await fetch(API+'/auth/google',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({credential})});
-    const d=await r.json();
-    if(r.ok){
-      lsSet('ailinux_token',d.token);
-      lsSet('ailinux_email',d.user_id||d.email);
-      lsSet('ailinux_tier',d.tier);
-      lsSet('ailinux_client_id',d.client_id||'');
-      lsSet('ailinux_name',d.name||'');
-      showMsg('login-msg','Google Login erfolgreich! 🎉','ok');
-      setTimeout(()=>showDashboard(d.user_id||d.email,d.tier,d.client_id,d.name),300);
-      wpSync(d.token);
-      try{window.opener?.postMessage({type:'ailinux_login',token:d.token,email:d.user_id||d.email,tier:d.tier},'*')}catch{}
-    }else{
-      showMsg('login-msg',d.detail||d.error||'Google Login fehlgeschlagen');
+  fallback.addEventListener('click',()=>{
+    if(window.self!==window.top){
+      const url=new URL(location.href);
+      url.searchParams.delete('embed');
+      url.searchParams.set('google','1');
+      window.top.location.href=url.toString();
+      return;
     }
-  }catch(err){showMsg('login-msg','Google Verbindungsfehler: '+err.message)}
-}
-
-// ── Login Form ───────────────────────────────────────────────────────────────
-document.getElementById('login-form').addEventListener('submit',async e=>{
-  e.preventDefault();
-  const btn=document.getElementById('l-btn');
-  btn.disabled=true;btn.classList.add('loading');
-  const email=document.getElementById('l-email').value.trim();
-  const pass=document.getElementById('l-pass').value;
-  try{
-    const r=await fetch(API+'/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pass})});
-    const d=await r.json();
-    if(r.ok){
-      lsSet('ailinux_token',d.token);
-      lsSet('ailinux_email',d.user_id);
-      lsSet('ailinux_tier',d.tier);
-      lsSet('ailinux_client_id',d.client_id||'');
-      lsSet('ailinux_name',d.name||'');
-      showMsg('login-msg','Willkommen! 🎉','ok');
-      setTimeout(()=>showDashboard(d.user_id,d.tier,d.client_id,d.name),400);
-      // WP-Sync: Token an WordPress senden
-      wpSync(d.token);
-      // postMessage für Parent-Fenster
-      try{window.opener?.postMessage({type:'ailinux_login',token:d.token,email:d.user_id,tier:d.tier},'*')}catch{}
-    }else{
-      showMsg('login-msg',d.detail||d.error||'Login fehlgeschlagen');
+    try{
+      google.accounts.id.prompt();
+    }catch{
+      showMsg('login-msg','Google Login konnte nicht geöffnet werden. Bitte Seite neu laden oder Passwort-Login verwenden.');
     }
-  }catch(err){showMsg('login-msg','Verbindungsfehler: '+err.message)}
-  btn.disabled=false;btn.classList.remove('loading');
-});
+  });
 
 // ── Register Form ─────────────────────────────────────────────────────────────
 document.getElementById('reg-form').addEventListener('submit',async e=>{
@@ -859,6 +887,9 @@ function openApp(){
   const view=params.get('view');
 
   await loadAuthConfig();
+  if(params.get('google')==='1'){
+    setTimeout(()=>document.getElementById('google-login-fallback')?.click(),700);
+  }
 
   // Restore session via Backend verify
   const restored=await verifyAndRestoreSession();
@@ -876,5 +907,106 @@ function openApp(){
   if(storedClientId){document.getElementById('set-client-id').textContent=storedClientId;document.getElementById('ov-client-id').textContent=storedClientId}
 })();
 </script>
+<script id="ailinux-login-redirect-bridge">
+(function(){
+  if (window.__ailinuxLoginRedirectBridgeInstalled) return;
+  window.__ailinuxLoginRedirectBridgeInstalled = true;
+
+  function setLocal(k, v){
+    if (v === undefined || v === null || v === '') return;
+    try {
+      if (typeof lsSet === 'function') lsSet(k, String(v));
+      else localStorage.setItem(k, String(v));
+    } catch(e) {}
+  }
+
+  function setSharedCookie(k, v){
+    if (v === undefined || v === null || v === '') return;
+    try {
+      document.cookie =
+        k + '=' + encodeURIComponent(String(v)) +
+        '; Domain=.ailinux.me; Path=/; Max-Age=86400; SameSite=Lax; Secure';
+    } catch(e) {}
+  }
+
+  function safeRedirectTarget(){
+    const params = new URLSearchParams(location.search);
+    const wanted =
+      params.get('redirect') ||
+      params.get('return') ||
+      params.get('return_to') ||
+      params.get('continue') ||
+      params.get('next') ||
+      'https://ailinux.me/';
+
+    try {
+      const u = new URL(wanted, location.href);
+      if (u.hostname === 'ailinux.me' || u.hostname.endsWith('.ailinux.me')) {
+        return u.href;
+      }
+    } catch(e) {}
+
+    return 'https://ailinux.me/';
+  }
+
+  function persistLoginPayload(data){
+    if (!data || typeof data !== 'object') return false;
+
+    const token = data.token || data.access_token || data.jwt || data.auth_token;
+    if (!token) return false;
+
+    const email = data.email || data.user_email || data.user_id || '';
+    const tier = data.tier || data.role || '';
+    const clientId = data.client_id || '';
+    const name = data.name || data.display_name || '';
+
+    setLocal('ailinux_token', token);
+    setLocal('ailinux_email', email);
+    setLocal('ailinux_tier', tier);
+    setLocal('ailinux_client_id', clientId);
+    setLocal('ailinux_name', name);
+
+    setSharedCookie('ailinux_token', token);
+    setSharedCookie('ailinux_email', email);
+    setSharedCookie('ailinux_tier', tier);
+    setSharedCookie('ailinux_client_id', clientId);
+    setSharedCookie('ailinux_name', name);
+
+    return true;
+  }
+
+  const nativeFetch = window.fetch ? window.fetch.bind(window) : null;
+  if (!nativeFetch) return;
+
+  window.fetch = async function(input, init){
+    const res = await nativeFetch(input, init);
+
+    try {
+      const url = (typeof input === 'string') ? input : (input && input.url ? input.url : '');
+      const method = ((init && init.method) || (input && input.method) || 'GET').toUpperCase();
+
+      const isLoginCall =
+        method !== 'GET' &&
+        /\/(?:auth\/)?(?:login|google)(?:[/?#]|$)/i.test(url);
+
+      if (isLoginCall) {
+        res.clone().json().then(function(data){
+          if (!res.ok) return;
+          if (!persistLoginPayload(data)) return;
+
+          if (location.hostname === 'login.ailinux.me') {
+            setTimeout(function(){
+              window.location.assign(safeRedirectTarget());
+            }, 300);
+          }
+        }).catch(function(){});
+      }
+    } catch(e) {}
+
+    return res;
+  };
+})();
+</script><!-- /ailinux-login-redirect-bridge -->
+
 </body>
 </html>

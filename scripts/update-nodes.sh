@@ -4,7 +4,7 @@
 
 set -e
 
-NODES=("zombie@10.10.0.2:/home/zombie/triforce" "backupuser@10.10.0.3:/home/backupuser/triforce")
+NODES=("zombie@10.10.0.2:/home/zombie/triforce" "zombie@10.10.0.3:/home/zombie/triforce")
 SOURCE="/home/zombie/triforce"
 LOG="/home/zombie/triforce/logs/node-updates.log"
 

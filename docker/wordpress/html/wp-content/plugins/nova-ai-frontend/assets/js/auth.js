@@ -137,7 +137,7 @@
         const password = passwordEl.value;
 
         if (!email || !password) {
-            setMessage('Bitte Email und Passwort eingeben.', 'error');
+            setMessage('Please enter your email and password.', 'error');
             return;
         }
 
@@ -152,7 +152,7 @@
 
             const syncResult = await syncWordPress(authData);
             if (!syncResult.ok) {
-                setMessage('WordPress Login fehlgeschlagen.', 'error');
+                setMessage('WordPress sign-in failed.', 'error');
                 return;
             }
 
@@ -171,7 +171,7 @@
 
             window.location.href = redirectUrl || config.defaultRedirect || '/';
         } catch (err) {
-            setMessage('Login fehlgeschlagen. Bitte Zugangsdaten pruefen.', 'error');
+            setMessage('Sign-in failed. Please check your credentials.', 'error');
         } finally {
             if (button) {
                 button.disabled = false;
