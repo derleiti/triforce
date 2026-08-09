@@ -33,6 +33,55 @@ from .multi_search import (
 # MCP Handlers
 # ============================================================
 
+
+async def handle_search(params: Dict[str, Any]) -> Dict[str, Any]:
+    """Canonical intent-aware search used by MCP, agents and the web UI."""
+    query = (params.get("query") or "").strip()
+    if not query:
+        raise ValueError("'query' parameter is required")
+
+    # Legacy compatibility: old fast/smart/deep modes map to auto.
+    requested_mode = (params.get("mode") or "auto").lower().strip()
+    if requested_mode in {"fast", "smart", "deep"}:
+        requested_mode = "auto"
+
+    max_results = max(3, min(int(params.get("max_results", 15)), 50))
+    lang = params.get("lang", "de")
+    synthesize = bool(params.get("synthesize", False))
+
+    from app.routes.search_curated import (
+        _detect_mode, _search_by_mode, _curate_results, _synthesize, _first_party_fallback,
+    )
+
+    detected_mode = _detect_mode(query, requested_mode)
+    raw = await _search_by_mode(query, detected_mode, max_results=max(30, max_results), lang=lang)
+    curated = _curate_results(raw.get("results", []), query, detected_mode, max_out=max_results)
+    if not curated["results"]:
+        fallback = _first_party_fallback(query, detected_mode)
+        if fallback:
+            curated = _curate_results(fallback, query, detected_mode, max_out=max_results)
+
+    answer = {"answer": "", "model_used": None, "ms": 0}
+    if synthesize and detected_mode not in {"images", "videos"} and curated["results"]:
+        answer = await _synthesize(query, curated["results"], lang=lang)
+
+    return {
+        "query": query,
+        "mode": detected_mode,
+        "requested_mode": requested_mode,
+        "lang": lang,
+        "answer": answer.get("answer", ""),
+        "results": curated["results"],
+        "stats": {
+            "raw_count": curated["raw_count"],
+            "kept_count": curated["kept_count"],
+            "dropped_seo": curated["dropped_seo"],
+            "domains_unique": curated["domains_unique"],
+            "model_used": answer.get("model_used"),
+            "sources": raw.get("sources", {}),
+        },
+    }
+
 async def handle_multi_search(params: Dict[str, Any]) -> Dict[str, Any]:
     """Extended Multi-API Search with 6 providers."""
     query = params.get("query")
@@ -300,6 +349,7 @@ SEARCH_TOOLS: List[Dict[str, Any]] = [
 # ============================================================
 
 SEARCH_HANDLERS = {
+    "search": handle_search,
     "multi_search": handle_multi_search,
     "web_search": handle_web_search,
     "search_health": handle_search_health,

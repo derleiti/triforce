@@ -639,8 +639,9 @@ V5_TOOLS: List[Dict[str, Any]] = [
     {
         "name": "search",
         "description": (
-            "Unified web search. Queries SearXNG + DuckDuckGo + Wikipedia + AILinux news. "
-            "Smart mode uses LLM to expand and refine query. Returns ranked results with snippets."
+            "Unified intent-aware search for websites, images, videos, files, downloads, "
+            "documentation, code, news and science. mode=auto detects the intent and ranks "
+            "official/original sources above SEO pages. Legacy fast/smart/deep values remain compatible."
         ),
         "inputSchema": {
             "type": "object",
@@ -649,10 +650,11 @@ V5_TOOLS: List[Dict[str, Any]] = [
                 "max_results": {"type": "integer", "description": "Max results (default: 10)"},
                 "mode": {
                     "type": "string",
-                    "enum": ["fast", "smart", "deep"],
-                    "description": "Search mode: fast=direct, smart=LLM-enhanced, deep=multi-source (default: smart)",
+                    "enum": ["auto", "web", "images", "videos", "files", "downloads", "docs", "code", "news", "science", "fast", "smart", "deep"],
+                    "description": "Search intent (default: auto). fast/smart/deep are legacy aliases for auto.",
                 },
                 "lang": {"type": "string", "description": "Language code (default: de)"},
+                "synthesize": {"type": "boolean", "description": "Generate a source-grounded answer (default: false)"},
             },
             "required": ["query"],
         },
