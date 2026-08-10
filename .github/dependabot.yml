@@ -33,6 +33,41 @@ updates:
       - dependency-name: "setuptools"
         versions: [">=82"]
 
+  # --- Python Clients ---
+  # Mehrere Manifest-Verzeichnisse in einem Block; so werden Desktop-, Android-
+  # und gemeinsame Client-Abhaengigkeiten ebenfalls regelmaessig gepflegt.
+  - package-ecosystem: "pip"
+    directories:
+      - "/client-deploy"
+      - "/client-deploy/ailinux-desktop"
+      - "/client-deploy/ailinux-android-app"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    groups:
+      clients:
+        patterns:
+          - "*"
+
+  # --- Tracked Node lockfile (n8n custom nodes) ---
+  - package-ecosystem: "npm"
+    directory: "/data/n8n/nodes"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 3
+
+  # --- Dockerfiles ---
+  - package-ecosystem: "docker"
+    directories:
+      - "/agent"
+      - "/docker/repository"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 3
+
   # --- GitHub Actions Workflows ---
   - package-ecosystem: "github-actions"
     directory: "/"
