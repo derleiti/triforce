@@ -1,0 +1,8 @@
+name: Actions Probe
+on:
+  pull_request:
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo ACTIONS_PROBE_OK
