@@ -49,6 +49,11 @@ updates:
       clients:
         patterns:
           - "*"
+    ignore:
+      # KivyMD 2 removes widgets still used by the Android client
+      # (MDRaisedButton/MDFlatButton/OneLineListItem/TwoLineListItem).
+      - dependency-name: "kivymd"
+        versions: [">=2"]
 
   # --- Tracked Node lockfile (n8n custom nodes) ---
   - package-ecosystem: "npm"
