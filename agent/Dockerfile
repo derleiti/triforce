@@ -2,7 +2,7 @@
 # Codex MCP Agent Sidecar
 # Minimal image for TriForce MCP integration
 ################################################################################
-FROM node:20-slim
+FROM node:26-slim
 
 LABEL maintainer="Markus Leitermann <markus@ailinux.me>"
 LABEL description="Codex MCP Agent Sidecar für TriForce"
