@@ -57,7 +57,7 @@ cryptography>=44        # app/services/api_vault.py
 websockets>=12.0
 
 # CLI / TUI
-rich>=13                # app/cli/tristar_tui.py
+rich>=15.0.0                # app/cli/tristar_tui.py
 textual>=1.0            # app/cli/tristar_tui.py
 
 # Monitoring
