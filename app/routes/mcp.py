@@ -73,8 +73,10 @@ from ..services.memory_index import MEMORY_INDEX_HANDLERS
 from ..services.mcp_debugger import mcp_debugger
 from ..services.llm_compat import LLM_COMPAT_HANDLERS
 from ..utils.mcp_auth import require_mcp_auth
+from ..utils.tool_normalizer import is_readonly_tool
 from ..utils.mcp_security import (
     filter_tools_for_external,
+    is_ai_coder_request,
     is_internal_full_request,
     is_tool_allowed,
 )
@@ -163,7 +165,15 @@ def _finish_tools_list(
     request: Optional[Request] = None,
     note: Optional[str] = None,
 ) -> Dict[str, Any]:
-    filtered_tools = _filter_tools_for_client(tools, request)
+    filtered_tools = []
+    for tool in _filter_tools_for_client(tools, request):
+        # Do not mutate shared registry definitions while supplying the MCP
+        # safety metadata consumed by ai-coder's local approval broker.
+        decorated = dict(tool)
+        annotations = dict(decorated.get("annotations") or {})
+        annotations.setdefault("readOnlyHint", is_readonly_tool(str(decorated.get("name") or "")))
+        decorated["annotations"] = annotations
+        filtered_tools.append(decorated)
     result: Dict[str, Any] = {
         "tools": filtered_tools,
         "version": version,
@@ -176,9 +186,15 @@ def _finish_tools_list(
 
 def _filter_tools_for_client(tools: List[Dict[str, Any]], request: Optional[Request] = None) -> List[Dict[str, Any]]:
     """Default-deny tools/list for non-internal MCP clients."""
-    if request is None or is_internal_full_request(request):
+    if request is None:
         return tools
-    return filter_tools_for_external(tools)
+    # An explicit ai-coder profile is always restrictive, including when the
+    # backend is reached directly from a trusted network.
+    if is_ai_coder_request(request):
+        return filter_tools_for_external(tools, request=request)
+    if is_internal_full_request(request):
+        return tools
+    return filter_tools_for_external(tools, request=request)
 
 
 @public_router.get("/.well-known/oauth-authorization-server")

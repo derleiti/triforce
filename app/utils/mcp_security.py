@@ -177,13 +177,13 @@ EXTERNAL_TOOL_ALLOWLIST_REMOTE: Set[str] = {
 EXTERNAL_TOOL_ALLOWLIST_FULL: Set[str] = {
     # Core AI
     "chat", "list_models", "ask_specialist", "list_specialists",
-    "models",
+    "models", "specialist",
     # Vision
     "analyze_image",
     # Crawling
-    "crawl_url", "crawl_site", "crawl_status",
+    "crawl", "crawl_url", "crawl_site", "crawl_status",
     # Conversation/Prompt
-    "conversation", "prompt_template",
+    "conversation", "prompt_template", "prompts",
     # Docs & search
     "api_docs", "web_search", "search", "search_health",
     "multi_search", "smart_search", "quick_smart_search",
@@ -241,6 +241,9 @@ EXTERNAL_TOOL_ALLOWLIST_FULL: Set[str] = {
     "group_chat_ask", "group_chat_consolidate",
     "group_chat_create", "group_chat_message", "group_chat_assign",
     "group_chat_add", "group_chat_remove", "group_chat_models",
+    # ai-coder advisory workflow. This invokes models but grants no agent,
+    # shell, filesystem-write, service, or administrative capability.
+    "swarm_broadcast",
     # Mail send / WP / Forum write actions are PRIVILEGED, see below.
     # Notification mark-read
     "notify_read", "notify_send",
@@ -290,13 +293,22 @@ PRIVILEGED_TOOLS: Set[str] = {
     # Browser / external automation
     "browser_navigate", "browser_click", "browser_type", "browser_close",
     "browser_search", "browser_screenshot",
-    # Misc
-    "crawl",  # write-equivalent for queue
-    "specialist", "ask_specialist",  # specialist ruft trotzdem chat - aber nur als Wrapper, OK
 }
-# Hinweis: ask_specialist ist absichtlich in BEIDEN Listen - stand auf Allowlist
-# aber der entsprechende Wrapper "specialist" steht hier nur als Doku.
-PRIVILEGED_TOOLS.discard("ask_specialist")
+
+
+# Exact MCP surface used by the external ai-coder client. The client announces
+# this restrictive (not privileged) profile with X-Client-Profile. Keep this in
+# canonical v5 names because tools/call resolves aliases before policy checks.
+AI_CODER_TOOL_ALLOWLIST: Set[str] = {
+    "code_read", "code_search", "code_tree",
+    "dev_analyze", "dev_debug", "dev_lint", "dev_links",
+    "dev_refactor", "dev_summarize",
+    "doc_read", "doc_search",
+    "health", "search", "crawl",
+    "memory_search", "memory_store",
+    "models", "specialist", "prompts",
+    "swarm_broadcast",
+}
 
 
 # =============================================================================
@@ -395,9 +407,23 @@ def is_internal_full_request(request) -> bool:
     return False
 
 
-def filter_tools_for_external(tools: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """Default-deny: nur EXTERNAL_TOOL_ALLOWLIST Tools ueberleben."""
-    return [t for t in tools if t.get("name") in EXTERNAL_TOOL_ALLOWLIST]
+def is_ai_coder_request(request) -> bool:
+    """Return whether the caller requested ai-coder's restrictive profile."""
+    try:
+        profile = (request.headers.get("X-Client-Profile") or "").strip().lower()
+    except Exception:
+        return False
+    return profile == "ai-coder"
+
+
+def filter_tools_for_external(
+    tools: List[Dict[str, Any]], request=None,
+) -> List[Dict[str, Any]]:
+    """Default-deny and optionally narrow the catalogue to ai-coder tools."""
+    allowed = EXTERNAL_TOOL_ALLOWLIST
+    if request is not None and is_ai_coder_request(request):
+        allowed = allowed & AI_CODER_TOOL_ALLOWLIST
+    return [t for t in tools if t.get("name") in allowed]
 
 
 def is_tool_allowed(tool_name: str, request) -> bool:
@@ -408,6 +434,8 @@ def is_tool_allowed(tool_name: str, request) -> bool:
     - Sonst: Allowlist oder internal_full.
     """
     name = tool_name[9:] if tool_name.startswith("triforce_") else tool_name
+    if is_ai_coder_request(request) and name not in AI_CODER_TOOL_ALLOWLIST:
+        return False
     if name in PRIVILEGED_TOOLS:
         return is_internal_full_request(request)
     if name in EXTERNAL_TOOL_ALLOWLIST:
@@ -424,8 +452,10 @@ __all__ = [
     "EXTERNAL_TOOL_ALLOWLIST",
     "EXTERNAL_TOOL_ALLOWLIST_FULL",
     "EXTERNAL_TOOL_ALLOWLIST_REMOTE",
+    "AI_CODER_TOOL_ALLOWLIST",
     "PRIVILEGED_TOOLS",
     "client_ip",
+    "is_ai_coder_request",
     "is_internal_full_request",
     "filter_tools_for_external",
     "is_tool_allowed",

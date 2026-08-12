@@ -6,7 +6,7 @@ Tier-basierter Chat:
 - Pro/Enterprise: alle konfigurierten Chat-Provider
 """
 from fastapi import APIRouter, HTTPException, Header
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Any, Optional, List
 import httpx
 import os
@@ -142,7 +142,7 @@ class ChatResponse(BaseModel):
     model: str
     tier: str
     backend: str  # "ollama" oder Provider-ID
-    tool_calls: List[dict[str, Any]] = []
+    tool_calls: List[dict[str, Any]] = Field(default_factory=list)
     tokens_used: Optional[int] = None  # None bei Ollama für Pro (unlimited)
     tokens_unlimited: Optional[bool] = False  # True wenn Ollama für Pro/Enterprise
     latency_ms: Optional[int] = None
