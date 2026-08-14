@@ -1,6 +1,7 @@
 import asyncio
 import json
 import sys
+import tempfile
 import unittest
 from datetime import datetime, timezone
 from pathlib import Path
@@ -156,6 +157,34 @@ class TestMcpStructuredOutput(unittest.TestCase):
 
         self.assertEqual(error_result, {"entries": errors, "count": 1, "limit": 500})
         self.assertEqual(stats_result, stats)
+
+    def test_central_logger_stats_distinguish_log_errors_from_internal_errors(self):
+        from app.utils.triforce_logging import (
+            LogCategory,
+            LogLevel,
+            TriForceCentralLogger,
+            TriForceLogEntry,
+        )
+
+        with tempfile.TemporaryDirectory() as log_dir:
+            central = TriForceCentralLogger(log_dir=log_dir)
+            central.queue_log(
+                TriForceLogEntry(
+                    timestamp=datetime.now(timezone.utc).isoformat(),
+                    trace_id="stats-test",
+                    category=LogCategory.ERROR,
+                    level=LogLevel.ERROR,
+                    source="release-test",
+                    message="boom",
+                )
+            )
+            stats = central.get_stats()
+
+        self.assertEqual(stats["error_entries"], 1)
+        self.assertEqual(stats["internal_errors"], 0)
+        self.assertEqual(stats["category_counts"]["error"], 1)
+        self.assertEqual(stats["level_counts"]["error"], 1)
+        self.assertGreaterEqual(stats["uptime_seconds"], 0)
 
     def test_federation_source_never_logs_psk_material(self):
         source = (
