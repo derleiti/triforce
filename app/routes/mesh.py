@@ -458,7 +458,7 @@ async def handle_mesh_queue_command(params: Dict[str, Any]) -> Dict[str, Any]:
     if not source or not command:
         raise ValueError("'source_agent' and 'command' are required")
 
-    cmd = await queue_mcp_command(source, command, cmd_params)
+    cmd = await queue_mcp_command(source, command, cmd_params, priority=priority)
     return {
         "status": "queued",
         "command": cmd.to_dict(),

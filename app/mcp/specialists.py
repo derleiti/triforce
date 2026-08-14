@@ -407,7 +407,10 @@ class SpecialistRouter:
             "program": {SpecialistCapability.CODE_GENERATION},
             "function": {SpecialistCapability.CODE_GENERATION},
             "implement": {SpecialistCapability.CODE_GENERATION},
-            "write": {SpecialistCapability.CODE_GENERATION},
+            "write": {
+                SpecialistCapability.CODE_GENERATION,
+                SpecialistCapability.TECHNICAL_WRITING,
+            },
             "review": {SpecialistCapability.CODE_REVIEW},
             "refactor": {SpecialistCapability.CODE_REVIEW},
             "explain": {SpecialistCapability.CODE_EXPLANATION},
@@ -427,7 +430,6 @@ class SpecialistRouter:
             "document": {SpecialistCapability.DOCUMENTATION},
             "readme": {SpecialistCapability.DOCUMENTATION},
             "comment": {SpecialistCapability.DOCUMENTATION},
-            "write": {SpecialistCapability.TECHNICAL_WRITING},
             "article": {SpecialistCapability.CREATIVE_WRITING},
             "story": {SpecialistCapability.CREATIVE_WRITING},
 

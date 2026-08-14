@@ -677,9 +677,15 @@ async def queue_mcp_command(
     source: str,
     command: str,
     params: Dict[str, Any],
+    priority: int = 2,
 ) -> MCPCommand:
     """Queued einen MCP Command (für gefilterte Mesh AIs)"""
-    return await mesh_coordinator.enqueue_mcp_command(source, command, params)
+    return await mesh_coordinator.enqueue_mcp_command(
+        source,
+        command,
+        params,
+        priority=priority,
+    )
 
 
 def get_mesh_status() -> Dict[str, Any]:
