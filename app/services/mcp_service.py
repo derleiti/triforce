@@ -97,11 +97,12 @@ BLOCKED_PATHS = {
     ".env", ".git", ".ssh", "secrets", "credentials",
     "__pycache__", ".venv", "node_modules", ".claude",
 }
+SAFE_HIDDEN_PATHS = {".github", ".env.example"}
 BACKUP_DIR = BACKEND_ROOT / ".backups"
 EDIT_LOG_FILE = BACKEND_ROOT / ".edit_log.jsonl"
 EDIT_FORBIDDEN_PATHS = {
     ".env", ".env.local", ".env.production",
-    "credentials.json", "secrets.py", "config.py",
+    "credentials.json", "secrets.py",
 }
 
 _mcp_logger = logging.getLogger("ailinux.mcp.service")
@@ -131,10 +132,14 @@ def _safe_path(relative_path: str) -> Optional[Path]:
             
         path_parts = normalized_path.replace("\\", "/").split("/")
         for part in path_parts:
-            if part.lower() in BLOCKED_PATHS or part.startswith("."):
-                if part not in {".", ".."} and part != ".env.example":
-                    _mcp_logger.warning(f"Blocked path component: {part}")
-                    return None
+            lower_part = part.lower()
+            if lower_part in BLOCKED_PATHS or (
+                part.startswith(".")
+                and part not in {".", ".."}
+                and lower_part not in SAFE_HIDDEN_PATHS
+            ):
+                _mcp_logger.warning(f"Blocked path component: {part}")
+                return None
                     
         full_path = (BACKEND_ROOT / normalized_path).resolve()
         
@@ -161,6 +166,12 @@ def _validate_python_syntax(content: str) -> tuple[bool, Optional[str]]:
         return True, None
     except SyntaxError as e:
         return False, f"Line {e.lineno}: {e.msg}"
+
+def _is_edit_forbidden_path(file_path: str) -> bool:
+    normalized = unicodedata.normalize("NFC", file_path).replace("\\", "/")
+    parts = {part.lower() for part in normalized.split("/") if part}
+    return any(name.lower() in parts for name in EDIT_FORBIDDEN_PATHS)
+
 
 def _create_backup(file_path: Path) -> Optional[Path]:
     """Creates timestamped backup of file."""
@@ -1118,7 +1129,7 @@ async def handle_codebase_edit(params: Dict[str, Any]) -> Dict[str, Any]:
     if not safe_path:
         raise ValueError(f"Invalid path: {file_path}")
 
-    if any(forbidden in file_path for forbidden in EDIT_FORBIDDEN_PATHS):
+    if _is_edit_forbidden_path(file_path):
         raise ValueError(f"Editing forbidden for security-sensitive files: {file_path}")
 
     if not safe_path.exists():
@@ -1249,6 +1260,9 @@ async def handle_codebase_create(params: Dict[str, Any]) -> Dict[str, Any]:
     safe_path = _safe_path(file_path)
     if not safe_path:
         raise ValueError(f"Invalid path: {file_path}")
+
+    if _is_edit_forbidden_path(file_path):
+        raise ValueError(f"Creating forbidden for security-sensitive file: {file_path}")
 
     if safe_path.exists():
         raise ValueError(f"File already exists: {file_path}")

@@ -56,15 +56,20 @@ from dateutil import parser as dateparser
 import hashlib
 
 
-# SECURITY: SSRF Protection - Block requests to internal/private networks
+# SECURITY: SSRF Protection. Private RFC1918/ULA ranges are still blocked
+# by default and may only be enabled by a trusted internal MCP caller.
+PRIVATE_IP_RANGES = (
+    ipaddress.ip_network("10.0.0.0/8"),
+    ipaddress.ip_network("172.16.0.0/12"),
+    ipaddress.ip_network("192.168.0.0/16"),
+    ipaddress.ip_network("fc00::/7"),
+)
+
 BLOCKED_IP_RANGES = [
-    ipaddress.ip_network("10.0.0.0/8"),      # Private Class A
-    ipaddress.ip_network("172.16.0.0/12"),   # Private Class B
-    ipaddress.ip_network("192.168.0.0/16"),  # Private Class C
+    *PRIVATE_IP_RANGES,
     ipaddress.ip_network("127.0.0.0/8"),     # Loopback
     ipaddress.ip_network("169.254.0.0/16"),  # Link-local
     ipaddress.ip_network("::1/128"),         # IPv6 loopback
-    ipaddress.ip_network("fc00::/7"),        # IPv6 private
     ipaddress.ip_network("fe80::/10"),       # IPv6 link-local
     ipaddress.ip_network("0.0.0.0/8"),       # "This" network
     ipaddress.ip_network("100.64.0.0/10"),   # Carrier-grade NAT
@@ -89,7 +94,7 @@ BLOCKED_HOSTNAMES = frozenset([
 ])
 
 
-def is_ssrf_safe(url: str) -> Tuple[bool, str]:
+def is_ssrf_safe(url: str, *, allow_private_networks: bool = False) -> Tuple[bool, str]:
     """
     Check if a URL is safe from SSRF attacks.
 
@@ -121,6 +126,9 @@ def is_ssrf_safe(url: str) -> Tuple[bool, str]:
                 ip_str = sockaddr[0]
                 try:
                     ip = ipaddress.ip_address(ip_str)
+
+                    if allow_private_networks and any(ip in private for private in PRIVATE_IP_RANGES):
+                        continue
 
                     # Check against blocked ranges
                     for blocked_range in BLOCKED_IP_RANGES:
@@ -780,6 +788,7 @@ class CrawlerManager:
         user_context: Optional[str] = None,
         requested_by: Optional[str] = None,
         metadata: Optional[dict[str, Any]] = None,
+        allow_private_networks: bool = False,
         ollama_assisted: bool = False,
         ollama_query: Optional[str] = None,
         priority: str = "low", # New priority parameter
@@ -792,7 +801,7 @@ class CrawlerManager:
         safe_seeds = []
         blocked_seeds = []
         for seed in seeds:
-            is_safe, reason = is_ssrf_safe(seed)
+            is_safe, reason = is_ssrf_safe(seed, allow_private_networks=allow_private_networks)
             if is_safe:
                 safe_seeds.append(seed)
             else:
@@ -826,6 +835,8 @@ class CrawlerManager:
         normalized_seeds = [seed.strip() for seed in seeds if seed.strip()]
         allowed_domains = {urlparse(seed).netloc for seed in normalized_seeds}
         category = self._categorize_job(priority=priority, requested_by=requested_by)
+        job_metadata = dict(metadata or {})
+        job_metadata["allow_private_networks"] = bool(allow_private_networks)
         job = CrawlJob(
             id=str(uuid.uuid4()),
             keywords=normalized_keywords,
@@ -838,7 +849,7 @@ class CrawlerManager:
             rate_limit=max(0.1, min(rate_limit, 10.0)),
             user_context=user_context,
             requested_by=requested_by,
-            metadata=metadata or {},
+            metadata=job_metadata,
             ollama_assisted=ollama_assisted,
             ollama_query=ollama_query,
             priority=priority, # Pass priority to CrawlJob
@@ -1524,7 +1535,10 @@ class CrawlerManager:
                 continue
 
             # SECURITY: SSRF check for discovered links
-            is_safe, reason = is_ssrf_safe(absolute)
+            is_safe, reason = is_ssrf_safe(
+                absolute,
+                allow_private_networks=bool(job.metadata.get("allow_private_networks", False)),
+            )
             if not is_safe:
                 logger.debug("SECURITY: Skipping SSRF-unsafe link: %s - %s", absolute, reason)
                 continue

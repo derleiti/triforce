@@ -369,6 +369,28 @@ def _validate_jwt(token: str) -> Optional[Dict[str, Any]]:
         return None
 
 
+def _jwt_has_full_mcp_access(payload: Dict[str, Any]) -> bool:
+    """Grant full MCP access only to explicitly administrative JWT identities."""
+    role = str(payload.get("role") or "").strip().lower()
+    if role == "admin":
+        return True
+
+    user = str(payload.get("email") or payload.get("sub") or "").strip().lower()
+    if not user:
+        return False
+
+    admin_email = (os.environ.get("ADMIN_EMAIL") or "").strip().lower()
+    if admin_email and secrets.compare_digest(user, admin_email):
+        return True
+
+    admin_ids = {
+        value.strip().lower()
+        for value in (os.environ.get("ADMIN_USER_IDS") or "").split(",")
+        if value.strip()
+    }
+    return user in admin_ids
+
+
 async def require_mcp_auth(request: Request) -> str:
     """
     Unified MCP authentication - Port-based.
@@ -427,7 +449,14 @@ async def require_mcp_auth(request: Request) -> str:
         jwt_payload = _validate_jwt(token)
         if jwt_payload:
             user = jwt_payload.get("email") or jwt_payload.get("sub") or "jwt_user"
-            logger.debug(f"AUTH_OK | IP: {client_ip} | Method: jwt | User: {user}")
+            request.state.mcp_auth_user = user
+            request.state.mcp_auth_method = "jwt"
+            request.state.mcp_auth_full_access = _jwt_has_full_mcp_access(jwt_payload)
+            request.state.mcp_auth_client_id = jwt_payload.get("client_id")
+            logger.debug(
+                "AUTH_OK | IP: %s | Method: jwt | User: %s | FullAccess: %s",
+                client_ip, user, request.state.mcp_auth_full_access,
+            )
             return user
         logger.warning(f"AUTH_FAIL | IP: {client_ip} | Reason: invalid_bearer")
         raise _unauthorized("Invalid bearer token")

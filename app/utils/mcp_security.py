@@ -155,7 +155,7 @@ EXTERNAL_TOOL_ALLOWLIST_REMOTE: Set[str] = {
     # Vision
     "analyze_image",
     # Crawling
-    "crawl_url", "crawl_site", "crawl_status",
+    "crawl", "crawl_url", "crawl_site", "crawl_status",
     # Conversation/Prompts
     "conversation", "prompt_template",
     # Docs & Search
@@ -181,7 +181,7 @@ EXTERNAL_TOOL_ALLOWLIST_FULL: Set[str] = {
     # Vision
     "analyze_image",
     # Crawling
-    "crawl_url", "crawl_site", "crawl_status",
+    "crawl", "crawl_url", "crawl_site", "crawl_status",
     # Conversation/Prompt
     "conversation", "prompt_template",
     # Docs & search
@@ -291,7 +291,6 @@ PRIVILEGED_TOOLS: Set[str] = {
     "browser_navigate", "browser_click", "browser_type", "browser_close",
     "browser_search", "browser_screenshot",
     # Misc
-    "crawl",  # write-equivalent for queue
     "specialist", "ask_specialist",  # specialist ruft trotzdem chat - aber nur als Wrapper, OK
 }
 # Hinweis: ask_specialist ist absichtlich in BEIDEN Listen - stand auf Allowlist
@@ -341,6 +340,8 @@ def _is_authenticated_full(request) -> bool:
     st = getattr(request, "state", None)
     if st is None:
         return False
+    if getattr(st, "mcp_auth_full_access", False) is True:
+        return True
     user = getattr(st, "mcp_auth_user", None)
     method = getattr(st, "mcp_auth_method", None)
     return user in _FULL_ACCESS_AUTH_USERS or method in _FULL_ACCESS_AUTH_METHODS
