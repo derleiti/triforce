@@ -321,8 +321,10 @@ import hashlib
 import base64
 
 FEDERATION_PSK = os.getenv("FEDERATION_SECRET", "ailinux-federation-2025")
-logger.info(f"FEDERATION_PSK initialized: {FEDERATION_PSK[:20] if FEDERATION_PSK else "EMPTY"}...")
-logger.info(f"FEDERATION_PSK loaded: {FEDERATION_PSK[:20] if FEDERATION_PSK else "EMPTY"}...")
+if FEDERATION_PSK:
+    logger.info("Federation PSK configured")
+else:
+    logger.warning("Federation PSK is not configured")
 
 # Federation Node Configuration
 # vpn_ip: WireGuard VPN address for direct communication
@@ -397,7 +399,7 @@ def verify_signed_request(request: dict, secret: str = None, max_age: int = 300)
         if hmac.compare_digest(signature, expected):
             return data  # Gib das entpackte data dict zurück
         else:
-            logger.warning(f"Signed request: signature mismatch\n  secret={secret[:20]}...\n  expected={expected}\n  got={signature}\n  data={str(data)[:100]}...")
+            logger.warning("Signed request rejected: signature mismatch")
             return None
     except Exception as e:
         logger.error(f"Signed request verification error: {e}")

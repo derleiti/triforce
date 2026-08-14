@@ -529,18 +529,80 @@ class HandlerRegistry:
     def _register_log_handlers(self):
         """Logs: logs, logs_errors, logs_stats"""
         try:
-            # Log functions not yet implemented - create stubs
+            from app.utils.triforce_logging import central_logger
+
+            category_aliases = {
+                "api": {"api_request", "api_response"},
+                "llm": {"llm_call"},
+                "mcp": {"mcp_call", "tool_call"},
+                "error": {"error"},
+                "agent": {"agent"},
+            }
+            level_order = {
+                "debug": 10,
+                "info": 20,
+                "warning": 30,
+                "error": 40,
+                "critical": 50,
+            }
+
+            def bounded_limit(params, default):
+                try:
+                    value = int(params.get("limit", default))
+                except (TypeError, ValueError):
+                    value = default
+                return max(1, min(value, 500))
+
             async def handle_logs_recent(params):
-                logger.warning("logs_recent not yet implemented")
-                return {"status": "not_implemented", "logs": [], "message": "Logs recent function pending"}
+                limit = bounded_limit(params, 50)
+                category = str(params.get("category", "all")).lower()
+                level = str(params.get("level", "info")).lower()
+
+                if category != "all" and category not in category_aliases:
+                    return {
+                        "error": f"Unsupported log category: {category}",
+                        "available_categories": [*category_aliases, "all"],
+                    }
+                if level not in level_order:
+                    return {
+                        "error": f"Unsupported log level: {level}",
+                        "available_levels": ["debug", "info", "warning", "error"],
+                    }
+
+                # Fetch the full in-memory window before filtering so selective
+                # queries do not miss matching entries just outside `limit`.
+                entries = central_logger.get_recent(
+                    limit=getattr(central_logger, "buffer_size", 10_000)
+                )
+                allowed_categories = category_aliases.get(category)
+                minimum_level = level_order[level]
+                filtered = [
+                    entry
+                    for entry in entries
+                    if (
+                        allowed_categories is None
+                        or entry.get("category") in allowed_categories
+                    )
+                    and level_order.get(str(entry.get("level", "info")).lower(), 20)
+                    >= minimum_level
+                ][-limit:]
+                return {
+                    "entries": filtered,
+                    "count": len(filtered),
+                    "filters": {
+                        "category": category,
+                        "minimum_level": level,
+                        "limit": limit,
+                    },
+                }
 
             async def handle_logs_errors(params):
-                logger.warning("logs_errors not yet implemented")
-                return {"status": "not_implemented", "errors": [], "message": "Logs errors function pending"}
+                limit = bounded_limit(params, 50)
+                entries = central_logger.get_errors(limit=limit)
+                return {"entries": entries, "count": len(entries), "limit": limit}
 
             async def handle_logs_stats(params):
-                logger.warning("logs_stats not yet implemented")
-                return {"status": "not_implemented", "stats": {}, "message": "Logs stats function pending"}
+                return central_logger.get_stats()
 
             self.register("logs", handle_logs_recent)
             self.register("logs_errors", handle_logs_errors)

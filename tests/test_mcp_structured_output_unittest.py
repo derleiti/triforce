@@ -115,6 +115,99 @@ class TestMcpStructuredOutput(unittest.TestCase):
         self.assertIs(trace["handler_info"]["is_async"], True)
         self.assertTrue(trace["timestamp"].endswith("Z"))
 
+    def test_v4_log_handlers_use_central_logger_filters(self):
+        from app.mcp.handlers_v4 import HandlerRegistry
+        from app.utils.triforce_logging import central_logger
+
+        entries = [
+            {"category": "mcp_call", "level": "info", "message": "mcp info"},
+            {"category": "tool_call", "level": "error", "message": "tool error"},
+            {"category": "agent", "level": "critical", "message": "agent critical"},
+        ]
+        registry = HandlerRegistry()
+        registry._register_log_handlers()
+
+        with patch.object(central_logger, "get_recent", return_value=entries):
+            result = asyncio.run(
+                registry.call(
+                    "logs",
+                    {"category": "mcp", "level": "warning", "limit": 20},
+                )
+            )
+
+        self.assertEqual(result["count"], 1)
+        self.assertEqual(result["entries"][0]["message"], "tool error")
+        self.assertNotIn("status", result)
+
+    def test_v4_error_and_stats_log_handlers_are_implemented(self):
+        from app.mcp.handlers_v4 import HandlerRegistry
+        from app.utils.triforce_logging import central_logger
+
+        registry = HandlerRegistry()
+        registry._register_log_handlers()
+        errors = [{"category": "error", "level": "error", "message": "boom"}]
+        stats = {"total_logged": 7, "buffer_size": 3}
+
+        with patch.object(central_logger, "get_errors", return_value=errors), patch.object(
+            central_logger, "get_stats", return_value=stats
+        ):
+            error_result = asyncio.run(registry.call("logs_errors", {"limit": 9999}))
+            stats_result = asyncio.run(registry.call("logs_stats", {}))
+
+        self.assertEqual(error_result, {"entries": errors, "count": 1, "limit": 500})
+        self.assertEqual(stats_result, stats)
+
+    def test_federation_source_never_logs_psk_material(self):
+        source = (
+            Path(__file__).resolve().parents[1]
+            / "app"
+            / "services"
+            / "server_federation.py"
+        ).read_text(encoding="utf-8")
+
+        self.assertNotIn("FEDERATION_PSK[:", source)
+        self.assertNotIn("FEDERATION_PSK loaded:", source)
+        self.assertNotIn("secret[:", source)
+
+    def test_federation_signature_mismatch_does_not_log_auth_material(self):
+        from app.services.server_federation import (
+            create_signed_request,
+            verify_signed_request,
+        )
+
+        secret = "release-test-federation-secret"
+        request = create_signed_request({"private": "release-test-payload"}, secret)
+        request["signature"] = "0" * 64
+
+        with self.assertLogs("server_federation", level="WARNING") as captured:
+            result = verify_signed_request(request, secret)
+
+        output = "\n".join(captured.output)
+        self.assertIsNone(result)
+        self.assertNotIn(secret, output)
+        self.assertNotIn("release-test-payload", output)
+        self.assertNotIn(request["signature"], output)
+
+    def test_bootstrap_log_describes_on_demand_readiness(self):
+        from app import main
+        from app.services.agent_bootstrap import bootstrap_service
+
+        async def no_sleep(_seconds):
+            return None
+
+        async def fake_bootstrap_all(**_kwargs):
+            return {"success_count": 4}
+
+        with patch("asyncio.sleep", no_sleep), patch.object(
+            bootstrap_service, "bootstrap_all", fake_bootstrap_all
+        ), patch.object(main.logger, "info") as log_info:
+            asyncio.run(main._delayed_bootstrap())
+
+        log_info.assert_called_once_with(
+            "Agent Bootstrap complete: %s agents ready for on-demand calls",
+            4,
+        )
+
     def test_user_group_chat_logs_returned_response(self):
         from app.mcp import handlers_user_chat
         from app.services import agent_chat_logger

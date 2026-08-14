@@ -121,7 +121,10 @@ async def _delayed_bootstrap():
     try:
         from .services.agent_bootstrap import bootstrap_service
         result = await bootstrap_service.bootstrap_all(sequential_lead=True)
-        logger.info(f"Agent Bootstrap complete: {result.get('success_count', 0)} agents started")
+        logger.info(
+            "Agent Bootstrap complete: %s agents ready for on-demand calls",
+            result.get("success_count", 0),
+        )
     except Exception as e:
         logger.error(f"Agent Bootstrap failed: {e}")
 
