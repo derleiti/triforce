@@ -20,9 +20,10 @@ Features:
 """
 
 import logging
+import inspect
 import time
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Dict, Any, Optional, List, Tuple
 from dataclasses import dataclass, field, asdict
 from collections import defaultdict
@@ -110,7 +111,7 @@ class MCPDebugger:
 
         trace = {
             "trace_id": trace_id,
-            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
             "request": {"method": method, "params": params},
             "routing": {},
             "validation": {},
@@ -144,7 +145,7 @@ class MCPDebugger:
                 trace["routing"]["status"] = "found"
                 trace["handler_info"]["function"] = handler.__name__
                 trace["handler_info"]["module"] = handler.__module__
-                trace["handler_info"]["is_async"] = str(handler).startswith("<coroutine") or "async" in str(handler)
+                trace["handler_info"]["is_async"] = inspect.iscoroutinefunction(handler)
 
                 # Estimate latency based on historical data
                 if tool_name in self._performance_stats:
