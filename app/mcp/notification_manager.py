@@ -816,11 +816,12 @@ async def _dispatch_direct_mail(event: Dict) -> str:
         status_terms = ("status", "ueberblick", "überblick", "health", "gesundheit")
         if any(term in f"{subject} {mail_body}".lower() for term in status_terms):
             try:
-                from app.routes.mcp import MCP_HANDLERS
-                status_handler = MCP_HANDLERS.get("status")
-                if status_handler:
-                    status_result = await status_handler({})
-                    trusted_context = json.dumps(status_result, ensure_ascii=False, default=str)[:6000]
+                # Use the canonical TriStar status implementation directly.
+                # app.routes.mcp.MCP_HANDLERS is a legacy compatibility map and
+                # may not contain the current consolidated `status` handler.
+                from app.services.tristar_mcp import handle_tristar_status
+                status_result = await handle_tristar_status({})
+                trusted_context = json.dumps(status_result, ensure_ascii=False, default=str)[:6000]
             except Exception as status_e:
                 logger.debug(f"mail {uid}: status context unavailable: {status_e}")
 
