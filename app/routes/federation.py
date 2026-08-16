@@ -229,24 +229,38 @@ async def federation_websocket(websocket: WebSocket):
             await websocket.close(code=4001, reason="Expected HELLO message")
             return
         
-        # Validate peer via Federation Vault (token-based auth)
+        # --- Authentifizierung (verschaerft 2026-08-16) --------------------
+        # Vorher: ein fehlgeschlagener Token fiel auf "peer_id in FEDERATION_NODES"
+        # zurueck. Damit kam jeder rein, der sich "hetzner"/"backup"/"zombie-pc"
+        # nannte -- ohne jedes Geheimnis. Jetzt gilt:
+        #   1. HELLO MUSS eine gueltige PSK-Signatur tragen (harte Schranke).
+        #   2. Ist der Node im lokalen Vault registriert, MUSS zusaetzlich sein
+        #      Token stimmen. Nodes ohne eigenen Vault akzeptieren Schritt 1.
+        import logging as _logging
+        _authlog = _logging.getLogger("ailinux.federation.ws")
+        _client_ip = websocket.client.host if websocket.client else None
+
+        if not ("data" in data and isinstance(data.get("data"), dict)):
+            _authlog.warning(f"HELLO ohne Signaturhuelle abgewiesen: {peer_id} von {_client_ip}")
+            await websocket.close(code=4003, reason="Unsigned HELLO rejected")
+            return
+
+        if verify_signed_request(data) is None:
+            _authlog.warning(f"HELLO mit ungueltiger Signatur abgewiesen: {peer_id} von {_client_ip}")
+            await websocket.close(code=4003, reason="Invalid signature")
+            return
+
         from ..services.federation_vault import get_federation_vault
         vault = get_federation_vault()
-        
-        # Extract token from HELLO message
-        if "data" in data and isinstance(data.get("data"), dict):
-            peer_token = data["data"].get("token", "")
+        peer_token = data["data"].get("token", "")
+
+        if vault.get_node(peer_id) is not None:
+            if not (peer_token and vault.verify_token(peer_id, peer_token, _client_ip)):
+                _authlog.warning(f"Token-Pruefung fehlgeschlagen, Peer abgewiesen: {peer_id} von {_client_ip}")
+                await websocket.close(code=4003, reason="Invalid or missing node token")
+                return
         else:
-            peer_token = data.get("token", "")
-        
-        # Try vault auth first, fallback to legacy node list
-        if peer_token and vault.verify_token(peer_id, peer_token):
-            pass  # Token auth successful
-        elif peer_id in FEDERATION_NODES:
-            pass  # Legacy auth (known node)
-        else:
-            await websocket.close(code=4003, reason=f"Unknown or unauthorized peer: {peer_id}")
-            return
+            _authlog.info(f"Peer {peer_id} nicht im lokalen Vault - Zugang nur ueber gueltige PSK-Signatur")
         
         # Store connection
         _peer_connections[peer_id] = websocket

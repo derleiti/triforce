@@ -320,11 +320,18 @@ import hmac
 import hashlib
 import base64
 
-FEDERATION_PSK = os.getenv("FEDERATION_SECRET", "ailinux-federation-2025")
-if FEDERATION_PSK:
-    logger.info("Federation PSK configured")
-else:
-    logger.warning("Federation PSK is not configured")
+FEDERATION_PSK = os.getenv("FEDERATION_SECRET", "")
+if not FEDERATION_PSK:
+    # 2026-08-16: Vorher stand hier ein hartkodierter Default, der im
+    # oeffentlichen Repo einsehbar ist. Ohne gesetztes Secret lief die
+    # Federation dann mit einem allgemein bekannten Schluessel weiter und
+    # loggte trotzdem "PSK configured". Jetzt fail-closed.
+    raise RuntimeError(
+        "FEDERATION_SECRET ist nicht gesetzt. Federation-Nachrichten koennen "
+        "nicht signiert werden. Setze FEDERATION_SECRET in config/triforce.env "
+        "(auf allen Nodes derselbe Wert)."
+    )
+logger.info(f"Federation PSK configured (len={len(FEDERATION_PSK)})")
 
 # Federation Node Configuration
 # vpn_ip: WireGuard VPN address for direct communication
