@@ -1412,27 +1412,55 @@ def start_pollers():
 
 
 async def _start_pollers_with_lock():
-    """Acquire Redis lock before starting poller tasks."""
+    """Acquire and maintain the Redis poller-leader lock.
+
+    A freshly restarted process may see the previous process' lock until its TTL
+    expires. Keep retrying instead of permanently disabling all pollers for the
+    lifetime of the new backend process.
+    """
     global _poller_tasks
     r = await _get_redis()
     if r is None:
         logger.warning("Pollers: Redis unavailable, starting without lock (risk of duplicates)")
         _launch_pollers()
         return
-    # Try to acquire lock — only one worker wins
-    locked = await r.set("notify:poller_lock", "1", nx=True, ex=120)
-    if not locked:
-        logger.info("Pollers: another worker holds the lock, skipping")
-        return
-    logger.info("Pollers: acquired lock, starting as leader")
+
+    lock_key = "notify:poller_lock"
+    owner = f"{os.getpid()}:{uuid.uuid4().hex}"
+
+    while True:
+        try:
+            locked = await r.set(lock_key, owner, nx=True, ex=120)
+        except Exception as e:
+            logger.warning(f"Pollers: lock acquisition failed: {e}; retrying")
+            await asyncio.sleep(15)
+            r = await _get_redis()
+            if r is None:
+                continue
+            continue
+        if locked:
+            break
+        logger.info("Pollers: leader lock still held; retrying in 15s")
+        await asyncio.sleep(15)
+
+    logger.info("Pollers: acquired leader lock, starting pollers")
     _launch_pollers()
-    # Refresh lock periodically so it doesn't expire while pollers run
+
+    # Refresh only our own lock. If ownership is lost, stop local pollers to
+    # avoid two leaders processing the same external events.
     while True:
         await asyncio.sleep(60)
         try:
-            await r.set("notify:poller_lock", "1", ex=120)
-        except Exception:
-            break
+            current_owner = await r.get(lock_key)
+            if current_owner != owner:
+                logger.warning("Pollers: leader lock lost; stopping local pollers")
+                await stop_pollers()
+                return
+            await r.expire(lock_key, 120)
+        except Exception as e:
+            logger.warning(f"Pollers: failed to refresh leader lock: {e}; stopping pollers")
+            await stop_pollers()
+            return
 
 
 def _launch_pollers():
