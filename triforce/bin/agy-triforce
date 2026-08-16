@@ -1,74 +1,32 @@
 #!/usr/bin/env bash
-# agy-triforce v1.0 — Antigravity CLI wrapper for TriForce
+# agy-triforce v1.1 — Antigravity CLI wrapper for TriForce
 set -euo pipefail
 source "$(dirname "$0")/triforce-env.sh"
 
 AGY_BIN="${AGY_BIN:-/home/zombie/.local/bin/agy}"
 AGY_MCP_CONFIG="${AGY_MCP_CONFIG:-/home/zombie/.gemini/config/mcp_config.json}"
-AILINUX_MCP_URL="${AILINUX_MCP_URL:-https://api.ailinux.me/v1/mcp/sse}"
 
 if [[ ! -x "$AGY_BIN" ]]; then
   echo "agy-triforce: Antigravity CLI not found at $AGY_BIN" >&2
   exit 127
 fi
 
-# Antigravity uses the zombie user's signed-in account/keyring session. Never
-# let legacy Gemini API-key variables silently switch this wrapper to API billing.
+# Antigravity authentication belongs to the signed-in zombie account/keyring.
+# Never let legacy Gemini API-key variables silently switch this wrapper back
+# to API-key billing.
 unset GEMINI_API_KEY GOOGLE_AI_STUDIO_KEY GOOGLE_GEMINI_KEY
 
-# Antigravity uses the global HOME-level MCP config. Merge only our server so
-# existing user MCP entries survive. Credentials stay sourced from triforce.env
-# and the generated config is owner-only.
-_configure_ailinux_mcp() {
-  if [[ -z "${MCP_OAUTH_USER:-}" || -z "${MCP_OAUTH_PASS:-}" ]]; then
-    echo "agy-triforce: MCP_OAUTH_USER/PASS missing; AILinux MCP not configured" >&2
-    return 1
-  fi
-
-  local auth
-  auth="Basic $(printf '%s:%s' "$MCP_OAUTH_USER" "$MCP_OAUTH_PASS" | base64 -w0)"
-  install -d -m 700 "$(dirname "$AGY_MCP_CONFIG")"
-
-  AGY_MCP_AUTH="$auth" python3 - "$AGY_MCP_CONFIG" "$AILINUX_MCP_URL" <<'PY'
-import json
-import os
-import stat
-import sys
-from pathlib import Path
-
-path = Path(sys.argv[1])
-url = sys.argv[2]
-data = {}
-if path.exists() and path.stat().st_size:
-    try:
-        loaded = json.loads(path.read_text())
-        if isinstance(loaded, dict):
-            data = loaded
-    except (OSError, json.JSONDecodeError):
-        # Do not destroy a malformed user config. Fail loudly instead.
-        raise SystemExit(f"agy-triforce: invalid JSON in {path}")
-
-servers = data.setdefault("mcpServers", {})
-if not isinstance(servers, dict):
-    raise SystemExit(f"agy-triforce: mcpServers in {path} is not an object")
-
-servers["ailinux"] = {
-    "serverUrl": url,
-    "headers": {"Authorization": os.environ["AGY_MCP_AUTH"]},
-}
-
-tmp = path.with_name(path.name + f".tmp.{os.getpid()}")
-tmp.write_text(json.dumps(data, indent=2) + "\n")
-os.chmod(tmp, stat.S_IRUSR | stat.S_IWUSR)
-os.replace(tmp, path)
-PY
-  unset auth AGY_MCP_AUTH
-}
-
-_configure_ailinux_mcp
+# MCP is configured natively in Antigravity. The wrapper deliberately does not
+# generate, rewrite, or inject credentials into ~/.gemini/config/mcp_config.json.
+# Fail early only when the expected native MCP config is missing.
+if [[ ! -s "$AGY_MCP_CONFIG" ]]; then
+  echo "agy-triforce: Antigravity MCP config missing at $AGY_MCP_CONFIG" >&2
+  exit 78
+fi
 
 _log_agent_start "antigravity" "${AGY_MODEL:-default}" "$@"
 
 # TriForce calls are intentionally autonomous/non-interactive. Callers can
-# still pass --model/--agent/--effort; agy uses its logged-in account session.
+# still pass --model/--agent/--effort; agy uses its existing account session
+# and native MCP configuration.
 exec "$AGY_BIN" --dangerously-skip-permissions "$@"

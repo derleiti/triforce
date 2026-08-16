@@ -7,8 +7,11 @@ def test_antigravity_wrapper_uses_current_cli_and_global_mcp_config():
     text = (ROOT / "triforce/bin/agy-triforce").read_text()
     assert "/home/zombie/.local/bin/agy" in text
     assert "/home/zombie/.gemini/config/mcp_config.json" in text
-    assert '"serverUrl": url' in text
-    assert '"Authorization": os.environ["AGY_MCP_AUTH"]' in text
+    assert "MCP_OAUTH_USER" not in text
+    assert "MCP_OAUTH_PASS" not in text
+    assert "serverUrl" not in text
+    assert "Authorization" not in text
+    assert "does not" in text
     assert "--dangerously-skip-permissions" in text
 
 
