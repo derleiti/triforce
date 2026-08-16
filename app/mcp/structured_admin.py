@@ -20,8 +20,37 @@ READ_PATHS = ["/home/zombie/triforce", "/etc/systemd/system", "/etc/apache2",
 WRITE_PATHS = ["/home/zombie/triforce", "/tmp"]
 SERVICES = ["triforce","apache2","nginx","docker","wireguard","redis-server",
             "ollama","mesh-guardian","federation-node"]
-CONTAINERS = ["triforce-wordpress","triforce-mysql","triforce-redis","triforce-searxng",
-              "triforce-n8n","triforce-mailserver","triforce-flarum","triforce-repo","ollama"]
+CONTAINERS = ["wordpress_apache","wordpress_fpm","wordpress_db","wordpress_redis",
+              "flarum","flarum_db","n8n","mailserver","ailinux-repository","triforce-searxng"]
+
+# --- Unit-Aufloesung (Fix 2026-08-16) -----------------------------------------
+# Logischer Servicename -> tatsaechlich existierende systemd-Unit.
+# "wireguard" ist auf Ubuntu eine leere Meta-Unit, die nie aktiv wird.
+# Die echte Unit ist wg-quick@wg0.
+SERVICE_UNITS = {
+    "wireguard": "wg-quick@wg0.service",
+}
+
+def _unit(service: str) -> str:
+    """Resolve a logical service name to the systemd unit that actually exists."""
+    return SERVICE_UNITS.get(service, service)
+
+# systemctl show liefert pro -p Flag einen Wert, in Flag-Reihenfolge.
+_UNIT_STATE_CMD = ["systemctl", "show", "-p", "LoadState", "-p", "ActiveState", "--value"]
+
+def _parse_unit_state(output):
+    """Turn `systemctl show` output into an unambiguous status.
+
+    `systemctl is-active` liefert "inactive" sowohl fuer eine gestoppte Unit
+    als auch fuer eine Unit, die gar nicht existiert. LoadState trennt beides:
+    not-found -> "not-installed", sonst der echte ActiveState.
+    """
+    lines = [l.strip() for l in (output or "").splitlines() if l.strip()]
+    load = lines[0] if len(lines) > 0 else "unknown"
+    active = lines[1] if len(lines) > 1 else "unknown"
+    status = "not-installed" if load == "not-found" else active
+    return {"status": status, "load_state": load, "active_state": active}
+
 
 def _ok_path(p, allowed):
     try:
@@ -122,7 +151,9 @@ async def handle_system_info(a):
         return {"query":q,"data":r["output"]}
     elif q=="services":
         d={}
-        for s in SERVICES: d[s]=(await _run(["systemctl","is-active",s]))["output"]
+        for s in SERVICES:
+            r=await _run(_UNIT_STATE_CMD+[_unit(s)])
+            d[s]=_parse_unit_state(r["output"])["status"]
         return {"query":q,"data":d}
     return {"error":f"Unknown query: {q}"}
 
@@ -146,14 +177,15 @@ async def handle_package_manager(a):
 async def handle_service_control(a):
     act,svc=a.get("action"),a.get("service","")
     if svc not in SERVICES: return {"error":f"Not managed: {svc}. Allowed: {SERVICES}"}
-    if act=="status": return {"action":act,"service":svc,**(await _run(["systemctl","status",svc,"--no-pager","-l"]))}
-    elif act=="restart": return {"action":act,"service":svc,**(await _sudo(["systemctl","restart",svc]))}
-    elif act=="stop": return {"action":act,"service":svc,**(await _sudo(["systemctl","stop",svc]))}
-    elif act=="start": return {"action":act,"service":svc,**(await _sudo(["systemctl","start",svc]))}
+    u=_unit(svc)
+    if act=="status": return {"action":act,"service":svc,"unit":u,**(await _run(["systemctl","status",u,"--no-pager","-l"]))}
+    elif act=="restart": return {"action":act,"service":svc,"unit":u,**(await _sudo(["systemctl","restart",u]))}
+    elif act=="stop": return {"action":act,"service":svc,"unit":u,**(await _sudo(["systemctl","stop",u]))}
+    elif act=="start": return {"action":act,"service":svc,"unit":u,**(await _sudo(["systemctl","start",u]))}
     elif act=="logs":
         n=str(min(a.get("lines",50),200))
-        return {"action":act,"service":svc,**(await _run(["journalctl","-u",svc,"--no-pager","-n",n]))}
-    elif act in ("enable","disable"): return {"action":act,"service":svc,**(await _sudo(["systemctl",act,svc]))}
+        return {"action":act,"service":svc,"unit":u,**(await _run(["journalctl","-u",u,"--no-pager","-n",n]))}
+    elif act in ("enable","disable"): return {"action":act,"service":svc,"unit":u,**(await _sudo(["systemctl",act,u]))}
     return {"error":f"Unknown action: {act}"}
 
 async def handle_container_control(a):
@@ -583,15 +615,18 @@ async def handle_remote_admin(a):
 
     elif action == "service_status":
         service = a.get("service", "triforce")
-        r = await _ssh_run(host, ["systemctl", "is-active", service])
-        return {"action": action, "host": host, "service": service, "status": r["output"]}
+        u = _unit(service)
+        r = await _ssh_run(host, _UNIT_STATE_CMD + [u])
+        state = _parse_unit_state(r.get("output"))
+        return {"action": action, "host": host, "service": service, "unit": u, **state}
 
     elif action == "service_restart":
         service = a.get("service", "triforce")
         if service not in SERVICES:
             return {"error": f"Service '{service}' not in managed list"}
-        r = await _ssh_run(host, ["sudo", "systemctl", "restart", service], timeout=30)
-        return {"action": action, "host": host, "service": service, **r}
+        u = _unit(service)
+        r = await _ssh_run(host, ["sudo", "systemctl", "restart", u], timeout=30)
+        return {"action": action, "host": host, "service": service, "unit": u, **r}
 
     elif action == "docker_status":
         r = await _ssh_run(host, ["docker", "ps", "--format", "{{.Names}}\t{{.Status}}"])
@@ -1210,12 +1245,13 @@ async def handle_safe_probe(a):
         if service and service not in _SAFE_PROBE_SERVICES:
             return {"error": f"Service '{service}' not in allowlist: {_SAFE_PROBE_SERVICES}"}
         if service:
-            r = await _run(["systemctl", "status", service, "--no-pager", "-l"], timeout=10)
-            return {"action": "service_status", "service": service, **r}
+            r = await _run(["systemctl", "status", _unit(service), "--no-pager", "-l"], timeout=10)
+            return {"action": "service_status", "service": service, "unit": _unit(service), **r}
         else:
             data = {}
             for s in _SAFE_PROBE_SERVICES:
-                data[s] = (await _run(["systemctl", "is-active", s], timeout=5))["output"]
+                r = await _run(_UNIT_STATE_CMD + [_unit(s)], timeout=5)
+                data[s] = _parse_unit_state(r["output"])["status"]
             return {"action": "service_status", "services": data}
 
     elif action == "journal":
@@ -1223,7 +1259,7 @@ async def handle_safe_probe(a):
         unit = a.get("unit", "")
         cmd = ["journalctl", "--no-pager", "-n", n]
         if unit and unit in _SAFE_PROBE_SERVICES:
-            cmd.extend(["-u", unit])
+            cmd.extend(["-u", _unit(unit)])
         r = await _run(cmd, timeout=10)
         return {"action": "journal", "lines_requested": int(n), **r}
 
