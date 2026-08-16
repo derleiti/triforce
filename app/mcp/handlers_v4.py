@@ -1044,6 +1044,8 @@ class HandlerRegistry:
                     body=params.get("body"),
                     cc=params.get("cc"),
                     reply_to=params.get("reply_to"),
+                    in_reply_to=params.get("in_reply_to"),
+                    references=params.get("references"),
                 )
 
             handlers = {

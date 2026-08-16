@@ -923,6 +923,8 @@ V5_TOOLS: List[Dict[str, Any]] = [
                 "body": {"type": "string", "description": "Plain text email body"},
                 "cc": {"type": "string", "description": "CC recipient (optional)"},
                 "reply_to": {"type": "string", "description": "Reply-To address (optional)"},
+                "in_reply_to": {"type": "string", "description": "Original Message-ID for RFC reply threading (optional)"},
+                "references": {"type": "string", "description": "References header for RFC reply threading (optional)"},
             },
         },
     },

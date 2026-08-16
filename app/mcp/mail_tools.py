@@ -58,6 +58,8 @@ async def handle_mail_send(params: Dict[str, Any]) -> Dict:
             body=body,
             cc=params.get("cc"),
             reply_to=params.get("reply_to"),
+            in_reply_to=params.get("in_reply_to"),
+            references=params.get("references"),
         )
     except Exception as e:
         logger.error(f"mail_send error: {e}")
