@@ -254,13 +254,21 @@ async def federation_websocket(websocket: WebSocket):
         vault = get_federation_vault()
         peer_token = data["data"].get("token", "")
 
-        if vault.get_node(peer_id) is not None:
+        if vault.nodes:
+            # Dieser Host fuehrt eine Node-Registrierung: dann MUSS der Peer
+            # darin stehen und sein Token stimmen. Ein unbekannter node_id mit
+            # gueltiger Signatur reicht hier ausdruecklich nicht.
+            if vault.get_node(peer_id) is None:
+                _authlog.warning(f"Nicht registrierter Node abgewiesen: {peer_id} von {_client_ip}")
+                await websocket.close(code=4003, reason="Node not registered")
+                return
             if not (peer_token and vault.verify_token(peer_id, peer_token, _client_ip)):
                 _authlog.warning(f"Token-Pruefung fehlgeschlagen, Peer abgewiesen: {peer_id} von {_client_ip}")
                 await websocket.close(code=4003, reason="Invalid or missing node token")
                 return
         else:
-            _authlog.info(f"Peer {peer_id} nicht im lokalen Vault - Zugang nur ueber gueltige PSK-Signatur")
+            # Host ohne eigenen Vault (die Nodes): gueltige PSK-Signatur genuegt.
+            _authlog.info(f"Kein lokaler Vault - Peer {peer_id} allein ueber PSK-Signatur zugelassen")
         
         # Store connection
         _peer_connections[peer_id] = websocket
