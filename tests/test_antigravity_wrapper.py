@@ -34,3 +34,10 @@ def test_legacy_gemini_runtime_paths_use_antigravity_wrapper():
     assert '["gemini", "-p", prompt]' not in remote_task
     assert "agy-triforce" in task_spawner
     assert "agy-triforce" in remote_task
+
+
+def test_persisted_builtin_agent_is_migrated_to_antigravity():
+    text = (ROOT / "app/services/tristar/agent_controller.py").read_text()
+    assert 'agent_id == "gemini-mcp"' in text
+    assert 'command == [f"{TRIFORCE_BIN}/gemini-triforce"]' in text
+    assert 'command = [f"{TRIFORCE_BIN}/agy-triforce"]' in text

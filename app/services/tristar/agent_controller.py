@@ -396,6 +396,15 @@ class AgentController:
                         skipped_count += 1
                         continue
 
+                    # Migrate the built-in Google coding agent from the retired
+                    # Gemini CLI wrapper to Antigravity while preserving the public
+                    # gemini-mcp ID used by existing workflows and shortcuts.
+                    stored_name = agent_data.get("name", agent_id)
+                    if agent_id == "gemini-mcp" and command == [f"{TRIFORCE_BIN}/gemini-triforce"]:
+                        command = [f"{TRIFORCE_BIN}/agy-triforce"]
+                        stored_name = "Google Antigravity Lead Agent (Autonomous)"
+                        logger.info("Migrated built-in gemini-mcp runtime to Antigravity CLI")
+
                     stored_prompt = agent_data.get("system_prompt", "")
                     stored_source = agent_data.get("system_prompt_source", "triforce")
                     legacy_prefixes = {
@@ -413,7 +422,7 @@ class AgentController:
                     config = AgentConfig(
                         agent_id=agent_data["agent_id"],
                         agent_type=AgentType(agent_data["agent_type"]),
-                        name=agent_data["name"],
+                        name=stored_name,
                         command=command,
                         working_dir=agent_data.get("working_dir", "/home/zombie/triforce"),
                         env=agent_data.get("env", {}),
