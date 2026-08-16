@@ -818,25 +818,27 @@ class AgentController:
                     f"echo {safe_msg} | {TRIFORCE_BIN}/claude-triforce 2>&1"
                 ]
             elif agent_type == AgentType.CODEX:
-                env["CODEX_PROMPT"] = message
                 inner_timeout = max(10, int(timeout) - 15)
                 cmd = [
                     "bash", "-lc",
-                    f"timeout --kill-after=5s {inner_timeout}s {TRIFORCE_BIN}/codex-triforce-call 2>&1"
+                    f"timeout --kill-after=5s {inner_timeout}s {TRIFORCE_BIN}/codex-triforce --triforce-headless {safe_msg} 2>&1"
                 ]
             elif agent_type == AgentType.GEMINI:
+                # Gemini CLI defaults to TUI mode. -p is the supported
+                # non-interactive path; YOLO matches this agent's contract.
                 cmd = [
                     "bash", "-c",
-                    f"echo {safe_msg} | {TRIFORCE_BIN}/gemini-triforce 2>&1"
+                    f"{TRIFORCE_BIN}/gemini-triforce --yolo --output-format text --prompt {safe_msg} 2>&1"
                 ]
             elif agent_type == AgentType.OPENCODE:
-                # WICHTIG: Sauberes Workspace ohne CLAUDE.md um unerwartete Task-Ausführung zu vermeiden
+                # OpenCode defaults to its TUI too. Use the explicit one-shot
+                # runner so MCP calls terminate and return their result.
                 opencode_workspace = "/var/tristar/agents/opencode-workspace"
                 os.makedirs(opencode_workspace, exist_ok=True)
-                
+
                 cmd = [
                     "bash", "-c",
-                    f"cd {opencode_workspace} && echo {safe_msg} | {TRIFORCE_BIN}/opencode-triforce 2>&1"
+                    f"cd {opencode_workspace} && {TRIFORCE_BIN}/opencode-triforce run --auto {safe_msg} 2>&1"
                 ]
             else:
                 cmd = instance.config.command + [message]

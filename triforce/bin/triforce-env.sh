@@ -29,21 +29,13 @@ fi
 # API-Keys werden entfernt damit die Tools nicht auf API-Billing fallen.
 # Fallback: wenn OAuth-Token abgelaufen -> API-Key aus triforce.env benutzen.
 
-# Claude: OAuth aus ~/.claude/.credentials.json (Max-Subscription)
-_claude_oauth_valid() {
-  python3 -c "
-import json,time,sys
-try:
-    d=json.load(open('/home/zombie/.claude/.credentials.json'))
-    exp=d.get('claudeAiOauth',{}).get('expiresAt',0)/1000
-    sys.exit(0 if exp > time.time() else 1)
-except: sys.exit(1)
-" 2>/dev/null
-}
-if _claude_oauth_valid; then
-  unset ANTHROPIC_API_KEY   # OAuth aktiv -> kein API-Key-Billing
+# Claude: ein vorhandener Account-Login hat Vorrang. Claude Code verwaltet
+# Access-Token-Refresh selbst; ein abgelaufenes accessToken ist daher kein
+# Grund, still auf API-Key-Billing zurueckzufallen.
+if [[ -s /home/zombie/.claude/.credentials.json ]]; then
+  unset ANTHROPIC_API_KEY
 else
-  export ANTHROPIC_API_KEY  # Fallback auf API-Key wenn OAuth abgelaufen
+  export ANTHROPIC_API_KEY
 fi
 
 # Gemini: prefer OAuth when credentials exist; otherwise map configured API-key aliases
