@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # === TriForce MCP Client Setup ===
-# Configures Claude, Codex, and Gemini CLI MCP connections
+# Configures Claude, Codex, and Antigravity CLI MCP connections
 # Usage: bash setup_mcp_clients.sh [local|hetzner|backup]
 
 export PATH="${HOME}/.npm-global/bin:${HOME}/.local/bin:/usr/local/bin:/snap/bin:${PATH}"
@@ -11,9 +11,19 @@ NODE="${1:-local}"
 MCP_LOCAL="http://127.0.0.1:9000/v1/mcp"
 MCP_INTERNAL="http://10.10.0.1:9000/v1/mcp"
 MCP_EXTERNAL="https://api.ailinux.me/v1/mcp"
-MCP_USER="zombie"
-MCP_PASS="e9F8DuKbH-"
-AUTH_B64=$(echo -n "${MCP_USER}:${MCP_PASS}" | base64)
+TRIFORCE_ENV="/home/zombie/triforce/config/triforce.env"
+if [[ -f "$TRIFORCE_ENV" ]]; then
+  set -a
+  source "$TRIFORCE_ENV"
+  set +a
+fi
+MCP_USER="${MCP_OAUTH_USER:-}"
+MCP_PASS="${MCP_OAUTH_PASS:-}"
+if [[ -z "$MCP_USER" || -z "$MCP_PASS" ]]; then
+  echo "MCP_OAUTH_USER/PASS missing in $TRIFORCE_ENV" >&2
+  exit 1
+fi
+AUTH_B64=$(printf '%s:%s' "$MCP_USER" "$MCP_PASS" | base64 -w0)
 AUTH_HEADER="Authorization: Basic ${AUTH_B64}"
 
 OK=1
@@ -45,35 +55,19 @@ else
 fi
 echo ""
 
-# --- 1. Gemini CLI ---
-echo "[1/3] Gemini CLI..."
-if command -v gemini &>/dev/null; then
-  # Remove existing servers silently
-  for name in ailinux-local ailinux-internal ailinux-external; do
-    gemini mcp remove "$name" 2>/dev/null || true
-  done
-
-  # Add local + internal (no auth needed)
-  if gemini mcp add ailinux-local "$MCP_LOCAL" -t http --scope user --trust 2>/dev/null; then
-    ok "ailinux-local added"
+# --- 1. Antigravity CLI ---
+echo "[1/3] Antigravity CLI..."
+AGY_WRAPPER="/home/zombie/triforce/triforce/bin/agy-triforce"
+if [[ -x "$AGY_WRAPPER" ]] && command -v agy &>/dev/null; then
+  # The wrapper atomically merges the authenticated ailinux remote server into
+  # ~/.gemini/config/mcp_config.json without clobbering other MCP entries.
+  if "$AGY_WRAPPER" --help >/dev/null 2>&1; then
+    ok "ailinux Antigravity MCP configured"
   else
-    err "ailinux-local failed"
-  fi
-
-  if gemini mcp add ailinux-internal "$MCP_INTERNAL" -t http --scope user --trust 2>/dev/null; then
-    ok "ailinux-internal added"
-  else
-    err "ailinux-internal failed"
-  fi
-
-  # External with auth header
-  if gemini mcp add ailinux-external "$MCP_EXTERNAL" -t http --scope user --trust -H "${AUTH_HEADER}" 2>/dev/null; then
-    ok "ailinux-external added (with auth)"
-  else
-    err "ailinux-external failed"
+    err "Antigravity MCP configuration failed"
   fi
 else
-  err "Gemini CLI not found"
+  err "Antigravity CLI/wrapper not found"
 fi
 echo ""
 

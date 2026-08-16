@@ -215,10 +215,10 @@ DEFAULT_AGENTS: List[Dict[str, Any]] = [
     {
         "agent_id": "gemini-mcp",
         "agent_type": "gemini",
-        "name": "Google Gemini Lead Agent (YOLO Mode)",
-        "description": "Gemini CLI im YOLO-Modus ohne Sandbox",
-        # Wrapper fügt bereits hinzu: --yolo --approval-mode yolo
-        "command": [f"{TRIFORCE_BIN}/gemini-triforce"],
+        "name": "Google Antigravity Lead Agent (Autonomous)",
+        "description": "Antigravity CLI (agy) im autonomen Print-Modus",
+        # gemini-mcp bleibt als API-/Workflow-ID rückwärtskompatibel.
+        "command": [f"{TRIFORCE_BIN}/agy-triforce"],
         "env": {
             "PATH": f"{TRIFORCE_BIN}:{CLI_BIN}:/usr/local/bin:/usr/bin:/bin",
             "GEMINI_DISABLE_TELEMETRY": "1",
@@ -824,11 +824,11 @@ class AgentController:
                     f"timeout --kill-after=5s {inner_timeout}s {TRIFORCE_BIN}/codex-triforce --triforce-headless {safe_msg} 2>&1"
                 ]
             elif agent_type == AgentType.GEMINI:
-                # Gemini CLI defaults to TUI mode. -p is the supported
-                # non-interactive path; YOLO matches this agent's contract.
+                # The legacy gemini-mcp ID now runs Antigravity CLI. Print mode
+                # is the supported one-shot path; the wrapper auto-approves tools.
                 cmd = [
                     "bash", "-c",
-                    f"{TRIFORCE_BIN}/gemini-triforce --yolo --output-format text --prompt {safe_msg} 2>&1"
+                    f"{TRIFORCE_BIN}/agy-triforce --output-format text --print-timeout {max(10, int(timeout) - 5)}s --print {safe_msg} 2>&1"
                 ]
             elif agent_type == AgentType.OPENCODE:
                 # OpenCode defaults to its TUI too. Use the explicit one-shot
