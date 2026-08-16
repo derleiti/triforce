@@ -38,6 +38,7 @@ ALLOWED_COMMAND_EXECUTABLES = frozenset([
     # TriForce wrapper scripts (primary - set correct HOME/env)
     "/home/zombie/triforce/triforce/bin/claude-triforce",
     "/home/zombie/triforce/triforce/bin/codex-triforce",
+    "/home/zombie/triforce/triforce/bin/agy-triforce",
     "/home/zombie/triforce/triforce/bin/gemini-triforce",
     "/home/zombie/triforce/triforce/bin/opencode-triforce",
     # Legacy paths (backwards compatibility)
