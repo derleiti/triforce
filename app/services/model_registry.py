@@ -325,7 +325,8 @@ class ModelRegistry:
                 self._discover_together(),
                 self._discover_fireworks(),
                 self._discover_cloudflare(),
-                self._discover_github_models(),
+                # GitHub Models was retired on 2026-07-30. Keep the legacy
+                # helper/config for compatibility, but do not probe a dead API.
                 self._discover_huggingface(),
                 return_exceptions=True
             )

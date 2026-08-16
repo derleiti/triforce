@@ -93,6 +93,9 @@ class Settings(BaseSettings):
     claude_pass: Optional[str] = Field(default=None, validation_alias="CLAUDE_PASS")
 
 
+    # OpenAI
+    openai_api_key: str | None = Field(default=None, validation_alias="OPENAI_API_KEY")
+
     # Mistral
     mistral_api_key: str | None = Field(default=None, validation_alias="MISTRAL_API_KEY")
     mistral_organisation_id: str | None = Field(default=None, validation_alias="MISTRAL_ORG_ID")
