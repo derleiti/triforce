@@ -15,12 +15,14 @@ from typing import Dict, Optional, List
 from dataclasses import dataclass, asdict
 from datetime import datetime
 import logging
+import fcntl
 
 logger = logging.getLogger(__name__)
 
 VAULT_PATH = Path("/home/zombie/triforce/.vault")
 FEDERATION_VAULT_FILE = VAULT_PATH / "federation_nodes.enc"
 FEDERATION_TOKENS_FILE = VAULT_PATH / "federation_tokens.json"
+FEDERATION_LOCK_FILE = VAULT_PATH / ".federation_tokens.lock"
 
 
 @dataclass
@@ -82,63 +84,58 @@ class FederationVault:
                 self._shared_secret = secret_file.read_text().strip()
     
     def _save(self, only_node: Optional[str] = None):
-        """Save nodes to file.
-
-        2026-08-16: Vorher wurde die komplette In-Memory-Liste blind zurueck-
-        geschrieben. Ein zweiter Prozess (z.B. CLI-Rotation) verlor damit seine
-        Aenderung, sobald der laufende Server das naechste Mal speicherte
-        (Lost Update). Jetzt: Datei frisch einlesen, nur die eigenen Felder
-        mergen, atomar per os.replace ersetzen.
-
-        only_node: wenn gesetzt, wird ausschliesslich dieser Node gemergt.
-        """
+        """Merge and atomically persist node state under an inter-process lock."""
         import tempfile
+
         try:
-            on_disk: Dict[str, dict] = {}
-            if FEDERATION_TOKENS_FILE.exists():
-                try:
-                    with open(FEDERATION_TOKENS_FILE, 'r') as f:
+            # The lock covers the complete read -> merge -> replace sequence.
+            # Atomic replace alone protects readers from partial files but does
+            # not prevent two writers from overwriting each other.
+            with open(FEDERATION_LOCK_FILE, "a+") as lock_file:
+                os.chmod(FEDERATION_LOCK_FILE, 0o600)
+                fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
+
+                on_disk: Dict[str, dict] = {}
+                if FEDERATION_TOKENS_FILE.exists():
+                    with open(FEDERATION_TOKENS_FILE, "r") as f:
                         for nd in json.load(f).get("nodes", []):
                             on_disk[nd["node_id"]] = nd
-                except Exception as e:
-                    logger.warning(f"Vault re-read before save failed, writing from memory: {e}")
 
-            mine = self.nodes if only_node is None else {
-                k: v for k, v in self.nodes.items() if k == only_node
-            }
-            for node_id, node in mine.items():
-                on_disk[node_id] = node.to_dict()
+                mine = self.nodes if only_node is None else {
+                    k: v for k, v in self.nodes.items() if k == only_node
+                }
+                for node_id, node in mine.items():
+                    on_disk[node_id] = node.to_dict()
 
-            data = {
-                "nodes": list(on_disk.values()),
-                "updated_at": datetime.utcnow().isoformat(),
-            }
+                data = {
+                    "nodes": list(on_disk.values()),
+                    "updated_at": datetime.utcnow().isoformat(),
+                }
 
-            fd, tmp = tempfile.mkstemp(dir=str(VAULT_PATH), prefix=".tokens-", suffix=".tmp")
-            try:
-                with os.fdopen(fd, 'w') as f:
-                    json.dump(data, f, indent=2)
-                    f.flush()
-                    os.fsync(f.fileno())
-                os.chmod(tmp, 0o600)
-                os.replace(tmp, FEDERATION_TOKENS_FILE)
-            except Exception:
+                fd, tmp = tempfile.mkstemp(
+                    dir=str(VAULT_PATH), prefix=".tokens-", suffix=".tmp"
+                )
                 try:
-                    os.unlink(tmp)
-                except OSError:
-                    pass
-                raise
-
-            # In-Memory mit dem gemergten Stand angleichen, damit ein spaeterer
-            # Vollspeichervorgang keine fremde Aenderung erneut ueberschreibt.
-            for node_id, nd in on_disk.items():
-                try:
-                    self.nodes[node_id] = FederationNode.from_dict(nd)
+                    with os.fdopen(fd, "w") as f:
+                        json.dump(data, f, indent=2)
+                        f.flush()
+                        os.fsync(f.fileno())
+                    os.chmod(tmp, 0o600)
+                    os.replace(tmp, FEDERATION_TOKENS_FILE)
                 except Exception:
-                    continue
+                    try:
+                        os.unlink(tmp)
+                    except OSError:
+                        pass
+                    raise
+
+                # Align memory with the merged on-disk state so a later full
+                # save cannot resurrect stale values from another process.
+                for node_id, nd in on_disk.items():
+                    self.nodes[node_id] = FederationNode.from_dict(nd)
         except Exception as e:
             logger.error(f"Failed to save federation vault: {e}")
-    
+
     @property
     def shared_secret(self) -> str:
         """Get shared signing secret"""

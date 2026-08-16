@@ -254,10 +254,12 @@ async def federation_websocket(websocket: WebSocket):
         vault = get_federation_vault()
         peer_token = data["data"].get("token", "")
 
-        if vault.nodes:
-            # Dieser Host fuehrt eine Node-Registrierung: dann MUSS der Peer
-            # darin stehen und sein Token stimmen. Ein unbekannter node_id mit
-            # gueltiger Signatur reicht hier ausdruecklich nicht.
+        require_token = LOCAL_NODE_ID == "hetzner" or bool(vault.nodes)
+        if require_token:
+            # Der Hub MUSS immer ueber den Vault authentifizieren. Damit kann
+            # eine leere/defekte Vault-Datei nicht still auf PSK-only
+            # herunterstufen. Hosts mit vorhandenen Eintraegen verhalten sich
+            # ebenfalls fail-closed.
             if vault.get_node(peer_id) is None:
                 _authlog.warning(f"Nicht registrierter Node abgewiesen: {peer_id} von {_client_ip}")
                 await websocket.close(code=4003, reason="Node not registered")
@@ -293,11 +295,21 @@ async def federation_websocket(websocket: WebSocket):
             raw_msg = await websocket.receive_json()
             logger.info(f"WS Route received from {peer_id}: {str(raw_msg)[:150]}")
             
-            # Unwrap signed messages
-            if "data" in raw_msg and isinstance(raw_msg.get("data"), dict):
-                msg = raw_msg["data"]
-            else:
-                msg = raw_msg
+            # Signatur und Identitaet bleiben nach dem HELLO fuer jede
+            # Nachricht verpflichtend. Sonst waere der Handshake sicher,
+            # der anschliessende Datenpfad aber wieder offen.
+            msg = verify_signed_request(raw_msg)
+            if msg is None:
+                logger.warning(f"Ungueltige/unsignierte Nachricht von {peer_id} abgewiesen")
+                await websocket.close(code=4003, reason="Invalid message signature")
+                return
+            if msg.get("node_id") != peer_id:
+                logger.warning(
+                    f"Node-ID-Wechsel auf bestehender Federation-Verbindung abgewiesen: "
+                    f"{peer_id} -> {msg.get('node_id')}"
+                )
+                await websocket.close(code=4003, reason="Node identity mismatch")
+                return
             
             msg_type = msg.get("type", "unknown")
             
@@ -319,11 +331,12 @@ async def federation_websocket(websocket: WebSocket):
             
             elif msg_type == "task_submit":
                 # Handle incoming task from peer
-                await websocket.send_json({
+                await websocket.send_json(create_signed_request({
                     "type": "task_ack",
+                    "node_id": LOCAL_NODE_ID,
                     "task_id": msg.get("task_id"),
                     "status": "received"
-                })
+                }))
             
             elif msg_type == "task_result":
                 # Handle task result from peer

@@ -254,20 +254,16 @@ class FederationPeer:
                 data = json.loads(message)
                 logger.info(f"Raw WS message: {str(data)[:200]}")
                 
-                # Try signed message first
                 payload = verify_signed_request(data)
-                
                 if payload is None:
-                    # Maybe unsigned message (legacy/direct)
-                    if "type" in data:
-                        payload = data
-                        logger.debug(f"Accepting unsigned message from {self.node_id}")
-                    elif "data" in data and isinstance(data.get("data"), dict):
-                        payload = data["data"]
-                        logger.warning(f"Invalid signature from {self.node_id}, using payload anyway")
-                    else:
-                        logger.warning(f"Unrecognized message format from {self.node_id}")
-                        continue
+                    logger.warning(f"Invalid/unsigned message from {self.node_id} rejected")
+                    continue
+                if payload.get("node_id") != self.node_id:
+                    logger.warning(
+                        f"Message identity mismatch from {self.node_id}: "
+                        f"claimed {payload.get('node_id')}"
+                    )
+                    continue
                 
                 msg_type = payload.get("type")
                 if msg_type:
@@ -396,17 +392,10 @@ class FederationLoadBalancer:
                 async for message in websocket:
                     data = json.loads(message)
                     
-                    # Try signed message first
                     payload = verify_signed_request(data)
-                    
                     if payload is None:
-                        # Maybe unsigned message
-                        if "type" in data:
-                            payload = data
-                        elif "data" in data and isinstance(data.get("data"), dict):
-                            payload = data["data"]
-                        else:
-                            continue
+                        logger.warning("Invalid/unsigned federation message rejected")
+                        continue
                     
                     msg_type = payload.get("type")
                     
@@ -421,6 +410,13 @@ class FederationLoadBalancer:
                         })
                         await websocket.send(json.dumps(ack))
                         
+                    elif peer_id is None or payload.get("node_id") != peer_id:
+                        logger.warning(
+                            f"Federation message identity mismatch: established={peer_id}, "
+                            f"claimed={payload.get('node_id')}"
+                        )
+                        continue
+
                     elif msg_type == MessageType.HEARTBEAT:
                         # Update metrics
                         if peer_id and peer_id in self.peers:
