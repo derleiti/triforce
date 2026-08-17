@@ -118,7 +118,7 @@ def _maybe_block_write_tool(
     requested_tool_name: Optional[str] = None,
 ) -> Optional[Dict[str, Any]]:
     """Block tools that are not allowed for the current MCP client."""
-    if request is None or is_tool_allowed(tool_name, request):
+    if request is None or is_tool_allowed(tool_name, request, arguments):
         return None
     payload = {
         "ok": False,

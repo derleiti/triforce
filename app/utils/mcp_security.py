@@ -13,12 +13,15 @@ genau einmal definiert sind.
 Default-Deny: Wenn der Caller nicht "internal_full" ist, sieht und ruft er
 nur die Tools aus EXTERNAL_TOOL_ALLOWLIST.
 
-internal_full qualifiziert sich ueber:
-  1) X-TriForce-Internal Header == ENV MCP_INTERNAL_PROFILE_VALUE, oder
-  2) Source-IP in Loopback / WireGuard-Mesh (10.10.0.0/24).
+internal_full qualifiziert sich ueber explizite Autorisierung oder einen
+vertrauenswuerdigen internen Ursprung:
+  1) request.state.mcp_auth_full_access == True nach erfolgreicher AuthZ,
+  2) gueltiger interner HMAC/Secret-Header, oder
+  3) Source-IP in Loopback / WireGuard-Mesh (10.10.0.0/24).
 
-Der legacy Header X-TriForce-All wird nur akzeptiert, wenn die Source-IP
-ohnehin als intern gilt - so kann er nicht von extern missbraucht werden.
+Authentifizierungsmethoden wie Bearer/Basic/Query sind fuer sich allein keine
+Autorisierung. X-Forwarded-For wird nur von bekannten lokalen Proxy-Netzen
+akzeptiert. Der legacy Header X-TriForce-All gilt nur bei internem Ursprung.
 """
 from __future__ import annotations
 
@@ -316,23 +319,25 @@ AI_CODER_TOOL_ALLOWLIST: Set[str] = {
 # =============================================================================
 
 def _trusted_internal_networks():
-    """Loopback + WireGuard mesh."""
+    """Hosts that may directly receive internal_full privileges."""
     return [
         ipaddress.ip_network("127.0.0.0/8"),
         ipaddress.ip_network("::1/128"),
         ipaddress.ip_network("10.10.0.0/24"),
-        # Docker bridge networks koennen lokale Apache-Container sein -
-        # die kommen via reverse proxy mit X-Forwarded-For des echten Clients.
+    ]
+
+
+def _trusted_proxy_networks():
+    """Local reverse-proxy networks allowed to supply X-Forwarded-For."""
+    return [
+        ipaddress.ip_network("127.0.0.0/8"),
+        ipaddress.ip_network("::1/128"),
         ipaddress.ip_network("172.16.0.0/12"),
     ]
 
 
-def client_ip(request) -> Optional[str]:
+def _peer_ip(request) -> Optional[str]:
     try:
-        xff = request.headers.get("x-forwarded-for")
-        if xff:
-            # Erste IP in der Kette ist der echte Client
-            return xff.split(",")[0].strip()
         client = getattr(request, "client", None)
         if client and getattr(client, "host", None):
             return client.host
@@ -341,23 +346,34 @@ def client_ip(request) -> Optional[str]:
     return None
 
 
-# --- OAuth/Basic-authentifizierte Caller = voller Tool-Zugriff --------------
-# require_mcp_auth legt die verifizierte Identity in request.state ab.
-# Bewusst NICHT enthalten: "internal" (Bypass ohne Credential) und rohe
-# JWT-User (Playground-Endnutzer). Nur echte MCP-Connector-Auth zählt.
-_FULL_ACCESS_AUTH_USERS = {"oauth_client"}
-_FULL_ACCESS_AUTH_METHODS = {"bearer", "basic", "query"}
+def _peer_is_trusted_proxy(request) -> bool:
+    peer = _peer_ip(request)
+    if not peer:
+        return False
+    try:
+        ip = ipaddress.ip_address(peer)
+        return any(ip in net for net in _trusted_proxy_networks())
+    except ValueError:
+        return False
+
+
+def client_ip(request) -> Optional[str]:
+    """Return the effective client IP without trusting arbitrary XFF headers."""
+    try:
+        xff = request.headers.get("x-forwarded-for")
+        if xff and _peer_is_trusted_proxy(request):
+            return xff.split(",")[0].strip()
+        return _peer_ip(request)
+    except Exception:
+        return None
 
 
 def _is_authenticated_full(request) -> bool:
+    """Authentication is not authorization; only an explicit AuthZ flag grants full."""
     st = getattr(request, "state", None)
     if st is None:
         return False
-    if getattr(st, "mcp_auth_full_access", False) is True:
-        return True
-    user = getattr(st, "mcp_auth_user", None)
-    method = getattr(st, "mcp_auth_method", None)
-    return user in _FULL_ACCESS_AUTH_USERS or method in _FULL_ACCESS_AUTH_METHODS
+    return getattr(st, "mcp_auth_full_access", False) is True
 
 
 def is_internal_full_request(request) -> bool:
@@ -428,22 +444,36 @@ def filter_tools_for_external(
     return [t for t in tools if t.get("name") in allowed]
 
 
-def is_tool_allowed(tool_name: str, request) -> bool:
+def _external_action_is_read_only(name: str, arguments: Optional[Dict[str, Any]]) -> bool:
+    """Guard mixed read/write tools that remain useful in the external catalogue."""
+    args = arguments or {}
+    if name == "git":
+        return str(args.get("mode") or "status").lower() in {"status", "diff", "log", "branch"}
+    if name == "dev_lint":
+        return not bool(args.get("fix", False))
+    if name == "dev_refactor":
+        return not bool(args.get("apply", False))
+    return True
+
+
+def is_tool_allowed(tool_name: str, request, arguments: Optional[Dict[str, Any]] = None) -> bool:
     """
     Darf der Caller dieses Tool aufrufen?
 
     - Privilegierte Tools: nur mit internal_full.
+    - Gemischte Tools: extern nur in read-only Modi.
     - Sonst: Allowlist oder internal_full.
     """
     name = tool_name[9:] if tool_name.startswith("triforce_") else tool_name
+    internal_full = is_internal_full_request(request)
     if is_ai_coder_request(request) and name not in AI_CODER_TOOL_ALLOWLIST:
         return False
     if name in PRIVILEGED_TOOLS:
-        return is_internal_full_request(request)
+        return internal_full
     if name in EXTERNAL_TOOL_ALLOWLIST:
-        return True
+        return internal_full or _external_action_is_read_only(name, arguments)
     # Unbekannte Tools: nur intern erlaubt (default-deny)
-    return is_internal_full_request(request)
+    return internal_full
 
 
 # Legacy-Alias: EXTERNAL_TOOL_ALLOWLIST == FULL fuer Backward-Compat

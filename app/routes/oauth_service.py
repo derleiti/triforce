@@ -35,6 +35,8 @@ from ..utils.mcp_auth import (
     get_persistent_tokens,
     get_oauth_metadata,
     get_protected_resource_metadata,
+    get_token_scope,
+    filter_scopes,
     _validate_credentials,
     _extract_basic_auth,
 )
@@ -144,7 +146,11 @@ async def authorize_get(
     if response_type != "code":
         raise HTTPException(400, "Unsupported response_type. Use 'code'.")
 
-    # Generate authorization code - validation happens at /token
+    # Generate authorization code - validation happens at /token.
+    # Validate/narrow the requested scope to the supported set (RFC 8414 scope
+    # selection) before persisting it; the granted scope propagates into the
+    # token at exchange time.
+    granted_scope = filter_scopes(scope)
     code = secrets.token_urlsafe(24)
     store_auth_code(
         code=code,
@@ -152,7 +158,7 @@ async def authorize_get(
         redirect_uri=redirect_uri,
         code_challenge=code_challenge,
         code_challenge_method=code_challenge_method,
-        scope=scope,
+        scope=granted_scope,
         user=client_id,  # Use client_id as user for now
     )
 
@@ -215,9 +221,11 @@ async def token_endpoint(request: Request):
         if not _validate_credentials(username, password):
             raise HTTPException(401, "Invalid credentials")
 
+        # Password grant stays narrowly scoped ("mcp") — no admin widening here.
         token = create_token(user=username, scope="mcp")
-        logger.info(f"TOKEN_ISSUED | grant=password | user={username}")
-        return {"access_token": token, "token_type": "bearer", "scope": "mcp"}
+        granted_scope = get_token_scope(token)
+        logger.info(f"TOKEN_ISSUED | grant=password | user={username} | scope={granted_scope}")
+        return {"access_token": token, "token_type": "bearer", "scope": granted_scope}
 
     # === Authorization Code Grant ===
     if grant_type == "authorization_code":
@@ -241,8 +249,13 @@ async def token_endpoint(request: Request):
         if not token:
             raise HTTPException(400, "Invalid or expired authorization code")
 
-        logger.info(f"TOKEN_ISSUED | grant=authorization_code | client={client_id or 'public'}")
-        return {"access_token": token, "token_type": "bearer", "scope": "mcp"}
+        # Return the scope actually stored on the token, not a hardcoded "mcp".
+        # ChatGPT reads this to decide which permissions were granted.
+        granted_scope = get_token_scope(token)
+        logger.info(
+            f"TOKEN_ISSUED | grant=authorization_code | client={client_id or 'public'} | scope={granted_scope}"
+        )
+        return {"access_token": token, "token_type": "bearer", "scope": granted_scope}
 
     # === Client Credentials Grant ===
     if grant_type == "client_credentials":
@@ -256,9 +269,11 @@ async def token_endpoint(request: Request):
         if not _validate_credentials(client_id, client_secret):
             raise HTTPException(401, "Invalid client credentials")
 
+        # Client-credentials grant stays narrowly scoped ("mcp") — no admin widening.
         token = create_token(user=client_id, client_id=client_id, scope="mcp")
-        logger.info(f"TOKEN_ISSUED | grant=client_credentials | client={client_id}")
-        return {"access_token": token, "token_type": "bearer", "scope": "mcp"}
+        granted_scope = get_token_scope(token)
+        logger.info(f"TOKEN_ISSUED | grant=client_credentials | client={client_id} | scope={granted_scope}")
+        return {"access_token": token, "token_type": "bearer", "scope": granted_scope}
 
     raise HTTPException(400, f"Unsupported grant_type: {grant_type}")
 

@@ -25,9 +25,6 @@ set limit_rate        100m
 deb-amd64 http://archive.ubuntu.com/ubuntu resolute main restricted universe multiverse
 deb-amd64 http://archive.ubuntu.com/ubuntu resolute-updates main restricted universe multiverse
 deb-amd64 http://security.ubuntu.com/ubuntu resolute-security main restricted universe multiverse
-deb-arm64 http://archive.ubuntu.com/ubuntu resolute main restricted universe multiverse
-deb-arm64 http://archive.ubuntu.com/ubuntu resolute-updates main restricted universe multiverse
-deb-arm64 http://security.ubuntu.com/ubuntu resolute-security main restricted universe multiverse
 
 # --- i386 Support (for Wine, Steam, 32-bit compatibility) ---
 deb-i386 http://archive.ubuntu.com/ubuntu resolute main restricted universe multiverse
@@ -37,7 +34,7 @@ deb-i386 http://security.ubuntu.com/ubuntu resolute-security main restricted uni
 # ============================================================================
 # KDE Neon (User Edition)
 # ============================================================================
-# deb-amd64 http://archive.neon.kde.org/user noble main
+deb-amd64 http://archive.neon.kde.org/stable resolute main
 
 # ============================================================================
 # Google Chrome
@@ -73,7 +70,7 @@ deb-amd64 http://ppa.launchpadcontent.net/libreoffice/ppa/ubuntu resolute main
 # ============================================================================
 # Cappelikan - Mainline Linux Kernels
 # ============================================================================
-deb-amd64 http://ppa.launchpadcontent.net/cappelikan/ppa/ubuntu resolute main
+# deb-amd64 http://ppa.launchpadcontent.net/cappelikan/ppa/ubuntu resolute main
 
 # ============================================================================
 # DEV: Visual Studio Code (Microsoft Official)
@@ -83,7 +80,7 @@ deb-amd64 http://packages.microsoft.com/repos/code stable main
 # ============================================================================
 # GAMING: Lutris PPA (DISABLED - no Resolute publication)
 # ============================================================================
-deb-amd64 http://ppa.launchpadcontent.net/lutris-team/lutris/ubuntu resolute main
+# deb-amd64 http://ppa.launchpadcontent.net/lutris-team/lutris/ubuntu resolute main
 
 # ============================================================================
 # GAMING: Kisak Mesa (current Mesa for AMD/Intel, amd64 + i386)
