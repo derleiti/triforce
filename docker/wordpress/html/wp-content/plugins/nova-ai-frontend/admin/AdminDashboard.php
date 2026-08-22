@@ -1051,7 +1051,7 @@ $active_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'dashboa
                         </tr>
                     </table>
                     <div style="display:flex;gap:.5rem;margin-top:1rem">
-                        <input type="submit" class="button button-primary" value="💾 Speichern">
+                        <input type="submit" class="button button-primary" value="💾 Save">
                         <button type="button" class="button" id="ns-editor-cancel">Abbrechen</button>
                     </div>
                 </form>
@@ -1137,7 +1137,7 @@ $active_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'dashboa
                         result.textContent = '✅ Verbunden: ' + d.data.name + ' (' + d.data.currency + ')';
                         result.style.color = '#10b981';
                     } else {
-                        result.textContent = '❌ ' + (d.data || 'Fehler');
+                        result.textContent = '❌ ' + (d.data || 'Error');
                         result.style.color = '#ef4444';
                     }
                 })
@@ -1153,7 +1153,7 @@ $active_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'dashboa
                 fetch(btn.dataset.ajax + '?action=nova_ls_clear_cache&nonce=' + encodeURIComponent(btn.dataset.nonce))
                 .then(function(r){ return r.json(); })
                 .then(function(d){
-                    result.textContent = d.success ? '✅ Cache geleert' : '❌ Fehler';
+                    result.textContent = d.success ? '✅ Cache cleared' : '❌ Error';
                     result.style.color = d.success ? '#10b981' : '#ef4444';
                     if (d.success) setTimeout(function(){ window.location.reload(); }, 800);
                 })
@@ -1286,9 +1286,9 @@ $active_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'dashboa
                 })
                 .then(function(r){ return r.json(); })
                 .then(function(d){
-                    btn.textContent = d.success ? '✓ Erledigt' : '✗ Fehler';
+                    btn.textContent = d.success ? '✓ Done' : '✗ Error';
                 })
-                .catch(function(){ btn.textContent = '✗ Fehler'; });
+                .catch(function(){ btn.textContent = '✗ Error'; });
             });
         });
         </script>
@@ -1368,7 +1368,7 @@ $active_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'dashboa
             })
             .then(function(r){ return r.json(); })
             .then(function(d){ result.textContent = d.status === 'ok' ? '✓ Synced' : '✗ ' + JSON.stringify(d); })
-            .catch(function(e){ result.textContent = '✗ Fehler: ' + e.message; })
+            .catch(function(e){ result.textContent = '✗ Error: ' + e.message; })
             .finally(function(){ btn.disabled = false; });
         });
         </script>

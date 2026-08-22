@@ -213,3 +213,35 @@
 .nas-auth-inner,.nas-dashboard,.nas-card,.nas-features-box,.nas-plan-card{box-shadow:0 18px 45px rgba(0,0,0,.18)}
 .nas-auth-inner{background:radial-gradient(circle at 90% 10%,rgba(34,211,238,.09),transparent 32%),var(--nas-card)}
 .nas-card-link:hover,.nas-plan-card.nas-plan-featured{border-color:rgba(34,211,238,.42)}
+
+
+/* Site-theme bridge: account/login surfaces follow the same production palette
+   as the WordPress theme instead of remaining permanently dark. */
+.nas-wrap {
+  --nas-bg: var(--bg-0, #08111b);
+  --nas-surface: var(--bg-1, #0b1520);
+  --nas-card: var(--bg-2, #0f1b28);
+  --nas-card2: var(--bg-2, #0f1b28);
+  --nas-border: var(--line, #233447);
+  --nas-border2: var(--line, #2d4257);
+  --nas-blue: var(--accent-blue, #3b82f6);
+  --nas-purple: var(--accent-green, #22d3ee);
+  --nas-cyan: var(--accent-green, #22d3ee);
+  --nas-text: var(--text, #edf5fb);
+  --nas-muted: var(--muted, #8fa5b8);
+  --nas-muted2: var(--muted, #647b8d);
+  --nas-grad: linear-gradient(135deg, var(--accent-blue, #2563eb), var(--accent-green, #22d3ee));
+}
+.nas-tabs,
+.nas-field input,
+.nas-form .nas-field input,
+.nas-code-row { background: var(--nas-bg); }
+.nas-nav-item:hover { background: var(--overlay-light, rgba(255,255,255,.04)); }
+.nas-nav-item.active,
+.nas-plan-card.nas-plan-featured { background: var(--overlay-medium, rgba(59,130,246,.1)); }
+.nas-feature-item { background: var(--overlay-subtle, rgba(16,185,129,.04)); }
+html[data-theme='light'] .nas-auth-inner,
+html[data-theme='light'] .nas-dashboard,
+html[data-theme='light'] .nas-card,
+html[data-theme='light'] .nas-features-box,
+html[data-theme='light'] .nas-plan-card { box-shadow: 0 12px 30px rgba(15,23,42,.09); }

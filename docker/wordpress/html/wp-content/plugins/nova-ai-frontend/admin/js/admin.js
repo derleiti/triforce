@@ -92,7 +92,7 @@ async function loadLog() {
         setHTML('admin-log', html);
         const el = $('admin-log'); if (el) el.scrollTop = el.scrollHeight;
     } catch (e) {
-        setHTML('admin-log', `<span style="color:#f85149">Fehler: ${e.message}</span>`);
+        setHTML('admin-log', `<span style="color:#f85149">Error: ${e.message}</span>`);
     }
 }
 
@@ -102,7 +102,7 @@ async function loadSystem() {
     try {
         const d = await rest('/admin/status');
         const ok = d.ok || d.status === 'ok' || d.status === 'healthy';
-        setHTML('sys-backend', statusBadge(ok, ok ? `OK — ${d.model_count || ''} Modelle` : 'Degraded'));
+        setHTML('sys-backend', statusBadge(ok, ok ? `OK — ${d.model_count || ''} models` : 'Degraded'));
     } catch (e) { setHTML('sys-backend', statusBadge(false, e.message)); }
 
     // MCP
@@ -119,7 +119,7 @@ async function loadSystem() {
         const ok = d.ok || d.status === 'ok' || d.status === 'healthy';
         const mc = d.model_count || null;
         setHTML('sys-ollama', statusBadge(ok, ok
-            ? (mc ? `${mc} Modelle verfügbar` : 'Online')
+            ? (mc ? `${mc} models available` : 'Online')
             : 'offline'));
     } catch { setHTML('sys-ollama', statusBadge(false, 'keine Daten')); }
 
@@ -140,7 +140,7 @@ async function loadModelsTable() {
     try {
         const d = await rest('/models');
         const models = d.models || [];
-        setText('model-count', models.length + ' Modelle');
+        setText('model-count', models.length + ' models');
 
         // Populate provider filter
         const pf = $('provider-filter');
@@ -157,7 +157,7 @@ async function loadModelsTable() {
         $('model-filter')?.addEventListener('input', () => filterModels(models));
         filterModels(models);
     } catch (e) {
-        setHTML('models-table', `<span style="color:#f85149">Fehler: ${escHtml(e.message)}</span>`);
+        setHTML('models-table', `<span style="color:#f85149">Error: ${escHtml(e.message)}</span>`);
     }
 }
 
@@ -175,14 +175,14 @@ function filterModels(models) {
         <td>${m.categories?.join(', ') || '—'}</td>
     </tr>`).join('');
     setHTML('models-table', `<table class="widefat striped" style="font-size:12px">
-        <thead><tr><th>ID</th><th>Name</th><th>Provider</th><th>Kategorien</th></tr></thead>
+        <thead><tr><th>ID</th><th>Name</th><th>Provider</th><th>Categories</th></tr></thead>
         <tbody>${rows || '<tr><td colspan="4">Keine Treffer</td></tr>'}</tbody>
     </table>`);
 }
 
 // ── Agents tab ───────────────────────────────────────────────────────────────
 async function loadAgents() {
-    setHTML('agents-grid', '⏳ Lade Agents…');
+    setHTML('agents-grid', '⏳ Loading agents…');
     try {
         const d = await rest('/admin/agents');
         const agents = d.cli_agents || d.agents || d.data || [];
@@ -202,7 +202,7 @@ async function loadAgents() {
         }).join('');
         setHTML('agents-grid', cards);
     } catch (e) {
-        setHTML('agents-grid', `<span style="color:#f85149">Fehler: ${escHtml(e.message)}</span>`);
+        setHTML('agents-grid', `<span style="color:#f85149">Error: ${escHtml(e.message)}</span>`);
     }
 }
 
@@ -213,7 +213,7 @@ window.novaAgentAction = async (agentId, action) => {
         // BUG-FIX 2026-03-11: operator precedence — d.message||d.ok was parsed as (d.message||d.ok)?...
         alert(d.ok ? (d.message || `${action} OK`) : (d.message || JSON.stringify(d)));
         await loadAgents();
-    } catch (e) { alert('Fehler: ' + e.message); }
+    } catch (e) { alert('Error: ' + e.message); }
 };
 
 // ── MCP tab ───────────────────────────────────────────────────────────────────
@@ -279,7 +279,7 @@ async function loadCrawler() {
             <td><input type="text" id="crawl-${escHtml(k)}" name="${escHtml(k)}" class="regular-text" value="${escHtml(String(v))}"></td></tr>`
         ).join('');
     } catch (e) {
-        setHTML('crawler-config', `<span style="color:#f85149">Fehler: ${escHtml(e.message)} — Backend-Endpoint /v1/crawler/config nötig</span>`);
+        setHTML('crawler-config', `<span style="color:#f85149">Error: ${escHtml(e.message)} — backend endpoint /v1/crawler/config required</span>`);
     }
 }
 
@@ -291,7 +291,7 @@ async function saveCrawler() {
     try {
         const d = await post('/admin/crawler', data);
         alert((d.config || d.updated || d.ok) ? '✅ Konfiguration gespeichert' : JSON.stringify(d));
-    } catch (e) { alert('Fehler: ' + e.message); }
+    } catch (e) { alert('Error: ' + e.message); }
 }
 
 async function loadCrawlerStatus() {
@@ -317,7 +317,7 @@ async function loadVaultKeys() {
             return `<li><code>${escHtml(k)}</code>: <span style="opacity:.6">${escHtml(masked)}</span></li>`;
         }).join('') + '</ul>');
     } catch (e) {
-        setHTML('vault-keys', `<span style="color:#f85149">Fehler: ${escHtml(e.message)}</span>`);
+        setHTML('vault-keys', `<span style="color:#f85149">Error: ${escHtml(e.message)}</span>`);
     }
 }
 
@@ -381,7 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const d = await post('/admin/bootstrap', {});
                 const count = d.success_count || Object.keys(d.agents || {}).length;
                 const errors = d.errors ? Object.keys(d.errors).length : 0;
-                alert(`🚀 Bootstrap: ${count} Agents initialisiert${errors ? ', ' + errors + ' Fehler' : ''}`);
+                alert(`🚀 Bootstrap: ${count} agents initialized${errors ? ', ' + errors + ' errors' : ''}`);
                 await loadAgents();
             } catch (e) { alert('❌ ' + e.message); }
         });
