@@ -1339,6 +1339,20 @@ V5_TOOLS += [
         "inputSchema": {"type": "object", "properties": {}},
     },
     {
+        "name": "flarum_admin_request",
+        "description": "Privileged Flarum REST API request as the configured forum administrator. Internal use only.",
+        "inputSchema": {
+            "type": "object",
+            "required": ["method", "path"],
+            "properties": {
+                "method": {"type": "string", "enum": ["GET", "POST", "PATCH", "DELETE"]},
+                "path": {"type": "string", "description": "API-relative path, e.g. /users/1"},
+                "query": {"type": "object", "description": "Optional query parameters"},
+                "payload": {"type": "object", "description": "Optional JSON:API payload for POST/PATCH"},
+            },
+        },
+    },
+    {
         "name": "flarum_discussions",
         "description": (
             "Listet oder durchsucht Flarum-Discussions. "

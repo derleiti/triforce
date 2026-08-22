@@ -52,17 +52,19 @@ def _env_value(name: str) -> Optional[str]:
 
 FLARUM_TOKEN = _env_value("FLARUM_TOKEN")
 NOVA_USER_ID = int(_env_value("FLARUM_USER_ID") or _env_value("NOVA_USER_ID") or "2")
+ADMIN_USER_ID = int(_env_value("FLARUM_ADMIN_USER_ID") or "1")
 TIMEOUT      = 15
 
 JSON_API_MIME = "application/vnd.api+json"
 
 # ── HTTP Client ───────────────────────────────────────────────────────────────
-def _headers(token: Optional[str] = None) -> Dict[str, str]:
+def _headers(token: Optional[str] = None, user_id: Optional[int] = None) -> Dict[str, str]:
     token = token or FLARUM_TOKEN
     if not token:
         raise RuntimeError("Flarum API auth missing")
+    actor_id = NOVA_USER_ID if user_id is None else int(user_id)
     return {
-        "Authorization": f"Token {token}; userId={NOVA_USER_ID}",
+        "Authorization": f"Token {token}; userId={actor_id}",
         "Content-Type": JSON_API_MIME,
         "Accept": JSON_API_MIME,
     }
@@ -435,6 +437,62 @@ async def handle_flarum_tags(params: Dict[str, Any]) -> Dict:
 
 
 # =============================================================================
+# flarum_admin_request — Raw Flarum API request as forum administrator
+# =============================================================================
+async def handle_flarum_admin_request(params: Dict[str, Any]) -> Dict:
+    """
+    Execute an authenticated Flarum REST API request as the configured admin.
+    Restricted to /api-relative paths; credentials are never returned.
+    """
+    try:
+        method = str(params.get("method", "GET")).upper()
+        path = str(params.get("path", "")).strip()
+        query = params.get("query") or {}
+        payload = params.get("payload")
+
+        if method not in {"GET", "POST", "PATCH", "DELETE"}:
+            return _err("Unsupported method")
+        if not path.startswith("/") or path.startswith("//") or "://" in path:
+            return _err("Path must be an API-relative path starting with '/'")
+
+        url = f"{FLARUM_API}{path}"
+        kwargs: Dict[str, Any] = {
+            "headers": _headers(user_id=ADMIN_USER_ID),
+            "params": query,
+            "timeout": TIMEOUT,
+        }
+        if payload is not None and method in {"POST", "PATCH"}:
+            kwargs["data"] = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+
+        response = requests.request(method, url, **kwargs)
+        if response.status_code >= 400:
+            try:
+                detail = response.json()
+            except ValueError:
+                detail = response.text[:2000]
+            raise RuntimeError(f"Flarum {method} {path} failed: HTTP {response.status_code} — {detail}")
+
+        if response.status_code == 204 or not response.content:
+            body: Any = None
+        else:
+            try:
+                body = response.json()
+            except ValueError:
+                body = response.text[:10000]
+
+        return {
+            "success": True,
+            "method": method,
+            "path": path,
+            "admin_user_id": ADMIN_USER_ID,
+            "status_code": response.status_code,
+            "body": body,
+        }
+    except Exception as e:
+        return _err("flarum_admin_request failed", e)
+
+
+# =============================================================================
 # flarum_refresh — Status / Verbindungstest
 # =============================================================================
 async def handle_flarum_refresh(params: Dict[str, Any]) -> Dict:
@@ -473,6 +531,7 @@ FLARUM_TOOL_HANDLERS = {
     "flarum_users":              handle_flarum_users,
     "flarum_tags":               handle_flarum_tags,
     "flarum_refresh":            handle_flarum_refresh,
+    "flarum_admin_request":      handle_flarum_admin_request,
 }
 
 FLARUM_TOOL_NAMES = list(FLARUM_TOOL_HANDLERS.keys())

@@ -288,6 +288,7 @@ PRIVILEGED_TOOLS: Set[str] = {
     "mail_send", "mail_mark_seen",
     # Forum write
     "flarum_post_create", "flarum_post_edit", "flarum_discussion_create",
+    "flarum_admin_request",
     # Group chat lifecycle (moved to allowlist 2026-05 — collaboration is non-destructive)
     # Notification destructive
     "notify_clear",
