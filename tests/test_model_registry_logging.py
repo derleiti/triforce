@@ -1,3 +1,4 @@
+import pytest
 import httpx
 
 from app.services.model_registry import redact_url, safe_http_error
@@ -70,3 +71,35 @@ def test_openai_compatible_provider_prefixes_are_stripped():
     }
     for model_id, expected in cases.items():
         assert strip_provider_prefix(model_id) == expected
+
+@pytest.mark.asyncio
+async def test_gemini_discovery_filters_provider_rejected_legacy_model(monkeypatch):
+    from types import SimpleNamespace
+    from app.services import model_registry
+
+    class FakeResponse:
+        def raise_for_status(self):
+            return None
+        def json(self):
+            return {"models": [
+                {"name": "models/gemini-2.5-pro", "supportedGenerationMethods": ["generateContent"]},
+                {"name": "models/gemini-3.1-pro-preview", "supportedGenerationMethods": ["generateContent"]},
+            ]}
+
+    class FakeClient:
+        def __init__(self, *args, **kwargs):
+            pass
+        async def __aenter__(self):
+            return self
+        async def __aexit__(self, exc_type, exc, tb):
+            return False
+        async def get(self, *args, **kwargs):
+            return FakeResponse()
+
+    monkeypatch.setattr(model_registry.httpx, "AsyncClient", FakeClient)
+    registry = model_registry.ModelRegistry()
+    registry._settings = SimpleNamespace(gemini_api_key="configured")
+    models = await registry._discover_gemini()
+    ids = {m.id for m in models}
+    assert "gemini/gemini-2.5-pro" not in ids
+    assert "gemini/gemini-3.1-pro-preview" in ids
