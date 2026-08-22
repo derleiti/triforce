@@ -576,3 +576,76 @@ class TestMcpDevToolSecurity:
 
         monkeypatch.setenv("MCP_DEV_ALLOWED_ROOTS", "/srv/source:/tmp")
         assert Settings().mcp_dev_allowed_roots == "/srv/source:/tmp"
+
+
+# =============================================================================
+# Code tools — arbitrary approved project roots without scope escape
+# =============================================================================
+
+class TestCodeWorkspaceRoots:
+    @pytest.mark.asyncio
+    async def test_code_read_supports_project_root_and_line_range(self, tmp_path: Path, monkeypatch):
+        from app.services.mcp_service import handle_codebase_file
+
+        source = tmp_path / "app.py"
+        source.write_text("one\ntwo\nthree\n", encoding="utf-8")
+        monkeypatch.setenv("MCP_DEV_ALLOWED_ROOTS", str(tmp_path))
+        result = await handle_codebase_file({
+            "root": str(tmp_path), "path": "app.py", "start_line": 2, "end_line": 3,
+        })
+        assert result["path"] == "app.py"
+        assert result["content"] == "2: two\n3: three"
+
+    @pytest.mark.asyncio
+    async def test_code_tree_recurses_in_project_root(self, tmp_path: Path, monkeypatch):
+        from app.mcp.adaptive_code import handle_code_scout
+
+        nested = tmp_path / "pkg" / "inner"
+        nested.mkdir(parents=True)
+        (nested / "mod.py").write_text("VALUE = 1\n", encoding="utf-8")
+        monkeypatch.setenv("MCP_DEV_ALLOWED_ROOTS", str(tmp_path))
+        result = await handle_code_scout({"root": str(tmp_path), "path": ".", "depth": 4})
+        assert result["root"] == str(tmp_path.resolve())
+        assert "mod.py" in repr(result)
+
+    @pytest.mark.asyncio
+    async def test_code_search_recurses_and_supports_regex(self, tmp_path: Path, monkeypatch):
+        from app.services.mcp_service import handle_codebase_search
+
+        nested = tmp_path / "pkg"
+        nested.mkdir()
+        (nested / "mod.py").write_text("alpha = 1\nTargetValue = 42\n", encoding="utf-8")
+        monkeypatch.setenv("MCP_DEV_ALLOWED_ROOTS", str(tmp_path))
+        result = await handle_codebase_search({
+            "root": str(tmp_path), "path": ".", "query": r"Target.*42",
+            "regex": True, "file_pattern": "*.py",
+        })
+        assert result["count"] == 1
+        assert result["results"][0]["file"] == "pkg/mod.py"
+        assert result["results"][0]["line"] == 2
+
+    @pytest.mark.asyncio
+    async def test_code_root_cannot_escape_to_sibling(self, tmp_path: Path, monkeypatch):
+        from app.services.mcp_service import handle_codebase_file
+
+        root = tmp_path / "project"
+        sibling = tmp_path / "other"
+        root.mkdir(); sibling.mkdir()
+        (sibling / "secret.py").write_text("SECRET = True\n", encoding="utf-8")
+        monkeypatch.setenv("MCP_DEV_ALLOWED_ROOTS", str(tmp_path))
+        with pytest.raises(ValueError, match="outside requested project root"):
+            await handle_codebase_file({"root": str(root), "path": "../other/secret.py"})
+
+    @pytest.mark.asyncio
+    async def test_sensitive_code_roots_are_rejected(self, tmp_path: Path, monkeypatch):
+        from app.mcp.adaptive_code import handle_code_scout
+        from app.services.mcp_service import handle_codebase_file
+
+        secret = tmp_path / ".ssh"
+        secret.mkdir()
+        (secret / "id_test").write_text("secret", encoding="utf-8")
+        monkeypatch.setenv("MCP_DEV_ALLOWED_ROOTS", str(tmp_path))
+        with pytest.raises(ValueError, match="blocked path component"):
+            await handle_codebase_file({"root": str(secret), "path": "id_test"})
+        with pytest.raises(ValueError, match="blocked path component"):
+            await handle_code_scout({"root": str(secret), "path": "."})

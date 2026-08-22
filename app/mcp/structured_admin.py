@@ -864,42 +864,48 @@ async def handle_task_runner(a):
         
         timeout = min(a.get("timeout", 30), 120)
         host_info = REMOTE_HOSTS[host]
-        
-        # Try SSH key first, fallback to sshpass
+        work_dir = a.get("work_dir")
+        use_elevated = bool(a.get("elevated", False))
+
+        # Build one quoted remote command string. OpenSSH joins arguments after
+        # the target into a shell command, so passing ["bash", "-c", decoded]
+        # loses argument boundaries for compound commands. Keep the complete
+        # script as one safely quoted argument instead.
+        import shlex
+        remote_script = decoded
+        if work_dir:
+            remote_script = f"cd -- {shlex.quote(str(work_dir))} && {remote_script}"
+        launcher = ["sudo", "bash", "-lc", remote_script] if use_elevated else ["bash", "-lc", remote_script]
+        remote_command = " ".join(shlex.quote(str(part)) for part in launcher)
+
+        # Try SSH key first, fallback to sshpass.
         ssh_base = [
             "ssh", "-o", "StrictHostKeyChecking=accept-new",
             "-o", "ConnectTimeout=5",
         ]
-        
-        # Check if key auth works, otherwise use sshpass
+
         target = f"{host_info['user']}@{host_info['ip']}"
-        
-        # Try key-based first
+
         key_test = await _run(
-            ssh_base + ["-o", "BatchMode=yes", target, "echo", "OK"], timeout=8
+            ssh_base + ["-o", "BatchMode=yes", target, "echo OK"], timeout=8
         )
-        
+
         if key_test["success"] and "OK" in key_test["output"]:
-            # OpenSSH key authentication works in the current runtime.
             r = await _run(
-                ssh_base + ["-o", "BatchMode=yes", target, "bash", "-c", decoded],
-                timeout=timeout
+                ssh_base + ["-o", "BatchMode=yes", target, remote_command],
+                timeout=timeout,
             )
             r["auth_method"] = "key"
         elif _needs_asyncssh_fallback(key_test):
-            # OpenSSH cannot resolve the connector uid because its minimal
-            # runtime has no matching /etc/passwd entry. AsyncSSH does not
-            # depend on local NSS and can use the same private key directly.
+            # AsyncSSH preserves argv itself, so pass the launcher components.
             r = await _asyncssh_run(
                 host_info["ip"],
                 host_info["user"],
-                ["bash", "-lc", decoded],
+                launcher,
                 timeout=timeout,
             )
             r["auth_method"] = "asyncssh-key"
         else:
-            # Actual authentication failure: optionally fall back to the
-            # configured federation password.
             ssh_pass = os.environ.get("SSH_FEDERATION_PASS", "")
             if not ssh_pass:
                 return {
@@ -907,12 +913,18 @@ async def handle_task_runner(a):
                     "key_error": key_test.get("errors"),
                 }
             r = await _run(
-                ["sshpass", "-p", ssh_pass] + ssh_base + [target, "bash", "-c", decoded],
-                timeout=timeout
+                ["sshpass", "-p", ssh_pass] + ssh_base + [target, remote_command],
+                timeout=timeout,
             )
             r["auth_method"] = "password"
-        
-        return {"action": "execute_remote", "host": host, **r, "decoded_length": len(decoded)}
+
+        return {
+            "action": "execute_remote",
+            "host": host,
+            **r,
+            "decoded_length": len(decoded),
+            "work_dir": str(work_dir or ""),
+        }
     
     elif action == "encode":
         # Helper: encode a command for the AI to use later
