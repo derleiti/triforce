@@ -77,7 +77,7 @@ black==26.5.1
 mypy==2.3.0
 # Antigravity-IDE-SDK (Dev-Tooling, vom Server nicht importiert).
 # Achtung: zieht "uvicorn" ohne Extras -> immer zusammen mit uvicorn[standard] oben installieren.
-google-antigravity==0.1.6
+google-antigravity==0.1.13
 crawlee>=1.0.0
 tenacity==9.1.4
 python-jose[cryptography]==3.5.0
