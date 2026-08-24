@@ -16,6 +16,9 @@ updates:
       time: "04:10"
       timezone: "Europe/Berlin"
     open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: "kivymd"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
