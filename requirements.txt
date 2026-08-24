@@ -19,7 +19,7 @@ fastapi==0.141.1
 # google-antigravity fordert uvicorn ohne Extras und wirft uvloop/httptools sonst raus (2026-07-13).
 uvicorn[standard]>=0.52.1
 pydantic>=2.13.4,<3
-pydantic-settings>=2.14.2,<3
+pydantic-settings>=2.15.0,<3
 
 # HTTP Clients & Async
 httpx[http2]==0.28.1
