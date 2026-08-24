@@ -22,12 +22,11 @@ Canonical MCP endpoint: /v1/mcp. Discover the current client-visible tool invent
 """
 
 TASK_RUNNER_GUIDANCE = (
-    "Execute compound system tasks through an encoded task payload when a more "
-    "specific typed tool cannot express the operation. Use action='encode' to "
-    "prepare task_data, action='decode' to inspect an opaque payload, and "
-    "action='execute' or 'execute_remote' to run it. Use elevated=true only "
-    "when required, choose the intended remote host explicitly, and verify the "
-    "result after execution. Prefer structured tools or binary_exec for simpler work."
+    "Execute compound system tasks locally or on a registered federation node when a more "
+    "specific typed tool cannot express the operation. Payload encoding is a transport option only. "
+    "Use action='decode' to inspect encoded task_data before execution when needed. Use elevated=true "
+    "only when required, choose the intended remote host explicitly, and verify the result after execution. "
+    "Prefer structured tools or binary_exec for simpler work."
 )
 
 BINARY_EXEC_GUIDANCE = (

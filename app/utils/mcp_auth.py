@@ -204,6 +204,44 @@ def get_persistent_tokens() -> Dict[str, Dict[str, Any]]:
     return _PERSISTENT_TOKENS
 
 
+# Canonical MCP scopes advertised via discovery metadata (RFC 8414/9728).
+# "mcp" is the always-granted base scope; the granular scopes gate privileged
+# tool visibility (see _token_has_full_mcp_access).
+SUPPORTED_MCP_SCOPES = ["mcp", "mcp:read", "mcp:write", "mcp:tools"]
+
+
+def filter_scopes(requested: str) -> str:
+    """Validate a requested scope string against SUPPORTED_MCP_SCOPES.
+
+    Keeps only recognised scopes (order per SUPPORTED_MCP_SCOPES), always
+    includes the "mcp" base scope, and never invents scopes the client did not
+    ask for. Unknown scopes are dropped rather than granting anything implicit.
+    """
+    asked = {part.strip().lower() for part in (requested or "").split() if part.strip()}
+    granted = [s for s in SUPPORTED_MCP_SCOPES if s == "mcp" or s in asked]
+    return " ".join(granted)
+
+
+def get_token_scope(token: str) -> str:
+    """Return the scope actually stored on a token (for token-response echoing)."""
+    if not token:
+        return "mcp"
+    _load_persistent_tokens()
+    metadata = _PERSISTENT_TOKENS.get(token) or {}
+    return str(metadata.get("scope") or "mcp")
+
+
+def _token_has_full_mcp_access(token: str) -> bool:
+    """Authorize privileged MCP tools only for tokens carrying explicit scopes."""
+    if not token:
+        return False
+    _load_persistent_tokens()
+    metadata = _PERSISTENT_TOKENS.get(token) or {}
+    raw_scope = str(metadata.get("scope") or "")
+    scopes = {part.strip().lower() for part in raw_scope.split() if part.strip()}
+    return {"mcp:write", "mcp:tools"}.issubset(scopes)
+
+
 def _safe_compare(a: str, b: str) -> bool:
     """Constant-time string comparison."""
     if not a or not b:
@@ -432,7 +470,11 @@ async def require_mcp_auth(request: Request) -> str:
         if is_valid_token(query_token):
             request.state.mcp_auth_user = "oauth_client"
             request.state.mcp_auth_method = "query"
-            logger.debug(f"AUTH_OK | IP: {client_ip} | Method: query-param")
+            request.state.mcp_auth_full_access = _token_has_full_mcp_access(query_token)
+            logger.debug(
+                "AUTH_OK | IP: %s | Method: query-param | FullAccess: %s",
+                client_ip, request.state.mcp_auth_full_access,
+            )
             return "oauth_client"
         logger.warning(f"AUTH_FAIL | IP: {client_ip} | Reason: invalid_query_param")
         raise _unauthorized("Invalid query credential")
@@ -443,7 +485,11 @@ async def require_mcp_auth(request: Request) -> str:
         if is_valid_token(token):
             request.state.mcp_auth_user = "oauth_client"
             request.state.mcp_auth_method = "bearer"
-            logger.debug(f"AUTH_OK | IP: {client_ip} | Method: bearer")
+            request.state.mcp_auth_full_access = _token_has_full_mcp_access(token)
+            logger.debug(
+                "AUTH_OK | IP: %s | Method: bearer | FullAccess: %s",
+                client_ip, request.state.mcp_auth_full_access,
+            )
             return "oauth_client"
         # JWT Bridge: Akzeptiere JWTs vom /v1/client/login als gültige MCP-Bearer
         jwt_payload = _validate_jwt(token)
@@ -520,12 +566,25 @@ def get_oauth_metadata(issuer: str) -> dict:
 
 
 def get_protected_resource_metadata(issuer: str, resource: str = "/") -> dict:
-    """Get OAuth 2.0 Protected Resource Metadata (RFC 9470)."""
+    """Get OAuth 2.0 Protected Resource Metadata (RFC 9728 / RFC 8707).
+
+    ``resource`` must be a canonical absolute URI. A bare "/" (the well-known
+    root request) maps to the canonical MCP resource so Resource Indicators
+    line up with the actual protected endpoint.
+    """
+    issuer = (issuer or DEFAULT_ISSUER).rstrip("/")
+    path = resource or "/"
+    if path in ("", "/"):
+        canonical = f"{issuer}/v1/mcp/sse"
+    elif path.startswith("http://") or path.startswith("https://"):
+        canonical = path
+    else:
+        canonical = f"{issuer}/{path.lstrip('/')}"
     return {
-        "resource": resource,
+        "resource": canonical,
         "authorization_servers": [issuer],
         "bearer_methods_supported": ["header"],
-        "scopes_supported": ["mcp"],
+        "scopes_supported": list(SUPPORTED_MCP_SCOPES),
     }
 
 
