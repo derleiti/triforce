@@ -20,64 +20,57 @@ _NORMALIZER = importlib.util.module_from_spec(_NORMALIZER_SPEC)
 _NORMALIZER_SPEC.loader.exec_module(_NORMALIZER)
 
 AI_CODER_TOOL_ALLOWLIST = _SECURITY.AI_CODER_TOOL_ALLOWLIST
+EXTERNAL_TOOL_ALLOWLIST_FULL = _SECURITY.EXTERNAL_TOOL_ALLOWLIST_FULL
 filter_tools_for_external = _SECURITY.filter_tools_for_external
 is_tool_allowed = _SECURITY.is_tool_allowed
 
 
-EXPECTED_AI_CODER_TOOLS = {
-    "code_read", "code_search", "code_tree",
-    "dev_analyze", "dev_debug", "dev_lint", "dev_links",
-    "dev_refactor", "dev_summarize",
-    "doc_read", "doc_search",
-    "health", "search", "crawl",
-    "memory_search", "memory_store",
-    "models", "specialist", "prompts", "swarm_broadcast",
-}
-
-
 class FakeRequest:
-    def __init__(self, profile="ai-coder"):
+    def __init__(self, profile="ai-coder", *, full_access=False):
         self.headers = {
             "X-Client-Profile": profile,
             "X-Forwarded-For": "203.0.113.20",
         }
         self.client = SimpleNamespace(host="203.0.113.20")
-        self.state = SimpleNamespace()
+        self.state = SimpleNamespace(mcp_auth_full_access=full_access)
 
 
 class AiCoderMcpContractTests(unittest.TestCase):
-    def test_ai_coder_contract_is_explicit_and_stable(self):
-        self.assertEqual(AI_CODER_TOOL_ALLOWLIST, EXPECTED_AI_CODER_TOOLS)
+    def test_ai_coder_profile_is_identity_not_extra_allowlist(self):
+        self.assertEqual(AI_CODER_TOOL_ALLOWLIST, EXTERNAL_TOOL_ALLOWLIST_FULL)
 
-    def test_ai_coder_catalog_is_exact_and_default_deny(self):
-        catalog = [{"name": name} for name in EXPECTED_AI_CODER_TOOLS]
-        catalog.extend([
-            {"name": "shell"}, {"name": "service_status"}, {"name": "memory_clear"},
-        ])
+    def test_ai_coder_external_catalog_matches_normal_external_catalog(self):
+        names = {"health", "service_status", "mail_read", "shell", "memory_clear"}
+        catalog = [{"name": name} for name in names]
+        ai_visible = filter_tools_for_external(catalog, request=FakeRequest())
+        normal_visible = filter_tools_for_external(catalog, request=FakeRequest(profile=""))
+        self.assertEqual(ai_visible, normal_visible)
+        self.assertIn("service_status", {tool["name"] for tool in ai_visible})
+        self.assertNotIn("shell", {tool["name"] for tool in ai_visible})
+        self.assertNotIn("memory_clear", {tool["name"] for tool in ai_visible})
 
-        visible = filter_tools_for_external(catalog, request=FakeRequest())
+    def test_privileged_tools_still_require_backend_full_access(self):
+        external = FakeRequest()
+        full = FakeRequest(full_access=True)
+        for name in ("shell", "task_runner", "service_control", "code_edit", "memory_clear"):
+            with self.subTest(tool=name):
+                self.assertFalse(is_tool_allowed(name, external))
+                self.assertTrue(is_tool_allowed(name, full))
 
-        self.assertEqual({tool["name"] for tool in visible}, EXPECTED_AI_CODER_TOOLS)
-
-    def test_ai_coder_calls_match_catalog_and_never_gain_ops_tools(self):
+    def test_nonprivileged_operator_tools_are_not_denied_by_ai_coder_profile(self):
         request = FakeRequest()
-        self.assertTrue(all(is_tool_allowed(name, request) for name in EXPECTED_AI_CODER_TOOLS))
-        for forbidden in (
-            "shell", "task_runner", "admin_users", "service_status", "memory_clear", "debug",
-        ):
-            with self.subTest(tool=forbidden):
-                self.assertFalse(is_tool_allowed(forbidden, request))
+        for name in ("health", "service_status", "code_read", "memory_search"):
+            with self.subTest(tool=name):
+                self.assertTrue(is_tool_allowed(name, request))
 
     def test_canonical_names_survive_legacy_alias_normalization(self):
         request = FakeRequest(profile="")
-        # tools/call resolves ask_specialist -> specialist and crawl_url -> crawl
-        # before invoking this policy.
         self.assertTrue(is_tool_allowed("specialist", request))
         self.assertTrue(is_tool_allowed("crawl", request))
 
     def test_backend_readonly_metadata_matches_client_approval_semantics(self):
-        readonly = EXPECTED_AI_CODER_TOOLS - {"crawl", "memory_store", "swarm_broadcast"}
-        self.assertTrue(all(_NORMALIZER.is_readonly_tool(name) for name in readonly))
+        for name in ("health", "service_status", "code_read", "memory_search"):
+            self.assertTrue(_NORMALIZER.is_readonly_tool(name), name)
         self.assertFalse(_NORMALIZER.is_readonly_tool("crawl"))
         self.assertFalse(_NORMALIZER.is_readonly_tool("memory_store"))
 
