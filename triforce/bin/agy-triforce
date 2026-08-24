@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# agy-triforce v1.1 — Antigravity CLI wrapper for TriForce
+set -euo pipefail
+source "$(dirname "$0")/triforce-env.sh"
+
+AGY_BIN="${AGY_BIN:-/home/zombie/.local/bin/agy}"
+AGY_MCP_CONFIG="${AGY_MCP_CONFIG:-/home/zombie/.gemini/config/mcp_config.json}"
+
+if [[ ! -x "$AGY_BIN" ]]; then
+  echo "agy-triforce: Antigravity CLI not found at $AGY_BIN" >&2
+  exit 127
+fi
+
+# Antigravity authentication belongs to the signed-in zombie account/keyring.
+# Never let legacy Gemini API-key variables silently switch this wrapper back
+# to API-key billing.
+unset GEMINI_API_KEY GOOGLE_AI_STUDIO_KEY GOOGLE_GEMINI_KEY
+
+# MCP is configured natively in Antigravity. The wrapper deliberately does not
+# generate, rewrite, or inject credentials into ~/.gemini/config/mcp_config.json.
+# Fail early only when the expected native MCP config is missing.
+if [[ ! -s "$AGY_MCP_CONFIG" ]]; then
+  echo "agy-triforce: Antigravity MCP config missing at $AGY_MCP_CONFIG" >&2
+  exit 78
+fi
+
+_log_agent_start "antigravity" "${AGY_MODEL:-default}" "$@"
+
+# TriForce calls are intentionally autonomous/non-interactive. Callers can
+# still pass --model/--agent/--effort; agy uses its existing account session
+# and native MCP configuration.
+exec "$AGY_BIN" --dangerously-skip-permissions "$@"

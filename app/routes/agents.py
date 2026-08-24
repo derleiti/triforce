@@ -72,13 +72,20 @@ async def start_cli_agent(agent_id: str):
     
     try:
         result = await agent_controller.start_agent(agent_id)
-        return CLIAgentActionResponse(
-            success=True,
-            agent_id=agent_id,
-            message=f"Agent {agent_id} started"
-        )
     except Exception as e:
         raise api_error(str(e), status_code=500, code="agent_start_failed")
+
+    if result.get("status") == "error":
+        raise api_error(
+            result.get("error", f"Agent {agent_id} failed to start"),
+            status_code=500,
+            code="agent_start_failed",
+        )
+    return CLIAgentActionResponse(
+        success=True,
+        agent_id=agent_id,
+        message=f"Agent {agent_id} started"
+    )
 
 
 @router.post("/cli/{agent_id}/stop", response_model=CLIAgentActionResponse, summary="Stop CLI Agent")
@@ -88,13 +95,20 @@ async def stop_cli_agent(agent_id: str):
     
     try:
         result = await agent_controller.stop_agent(agent_id)
-        return CLIAgentActionResponse(
-            success=True,
-            agent_id=agent_id,
-            message=f"Agent {agent_id} stopped"
-        )
     except Exception as e:
         raise api_error(str(e), status_code=500, code="agent_stop_failed")
+
+    if result.get("status") == "error":
+        raise api_error(
+            result.get("error", f"Agent {agent_id} failed to stop"),
+            status_code=500,
+            code="agent_stop_failed",
+        )
+    return CLIAgentActionResponse(
+        success=True,
+        agent_id=agent_id,
+        message=f"Agent {agent_id} stopped"
+    )
 
 
 @router.post("/cli/{agent_id}/call", summary="Call CLI Agent")

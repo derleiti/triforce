@@ -335,8 +335,8 @@ async function loadSubscription(root){
     const statusEl=root.querySelector('#nas-sub-status');
     if(statusEl){
       statusEl.innerHTML=sid
-        ?'<span class="status-active">● Aktiv</span> · '+tierLabel(t)
-        :'<span style="color:var(--nas-muted)">Kein aktives Abo</span>';
+        ?'<span class="status-active">● Active</span> · '+tierLabel(t)
+        :'<span style="color:var(--nas-muted)">No active subscription</span>';
     }
     if(sid){const cancelSection=root.querySelector('#nas-cancel-section');if(cancelSection)cancelSection.style.display='block'}
     if(loadEl)loadEl.style.display='none';
@@ -359,7 +359,7 @@ async function loadDownloads(root){
     const files=d.downloads||[];
     const purchases=d.purchases||[];
     if(purchasesEl&&purchases.length){
-      purchasesEl.innerHTML='<h3 style="margin-bottom:.75rem">Käufe</h3>'+purchases.map(function(p){return'<div class="nas-card" style="margin-bottom:.5rem"><strong>'+(p.item_name||p.name||p.id||'Kauf')+'</strong><div style="font-size:.8rem;color:var(--nas-muted)">'+(p.purchased_at||p.date||'')+'</div></div>'}).join('');
+      purchasesEl.innerHTML='<h3 style="margin-bottom:.75rem">Purchases</h3>'+purchases.map(function(p){return'<div class="nas-card" style="margin-bottom:.5rem"><strong>'+(p.item_name||p.name||p.id||'Purchase')+'</strong><div style="font-size:.8rem;color:var(--nas-muted)">'+(p.purchased_at||p.date||'')+'</div></div>'}).join('');
     }
     if(filesEl){
       if(!files.length){

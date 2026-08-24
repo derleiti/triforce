@@ -268,8 +268,54 @@ class AdaptiveCodeIlluminator:
 illuminator = AdaptiveCodeIlluminator()
 
 # MCP Handlers
+_CODE_TREE_BLOCKED_COMPONENTS = {".env", ".git", ".ssh", "secrets", "credentials", ".venv", "node_modules"}
+_CODE_TREE_SAFE_HIDDEN = {".github"}
+
+
+def _reject_sensitive_tree_path(value: str) -> None:
+    for part in Path(str(value)).parts:
+        lower = part.lower()
+        if lower in _CODE_TREE_BLOCKED_COMPONENTS or (part.startswith(".") and part not in {".", ".."} and lower not in _CODE_TREE_SAFE_HIDDEN):
+            raise ValueError(f"blocked path component: {part}")
+
+
 async def handle_code_scout(params: Dict[str, Any]) -> Dict[str, Any]:
-    return illuminator.code_scout(params.get("path", "."), params.get("depth", 2))
+    """Recursively inspect an approved project root instead of only TriForce."""
+    from app.mcp.dev_tools import _resolve_dev_path
+
+    root_value = params.get("root")
+    path_value = str(params.get("path") or ".")
+    _reject_sensitive_tree_path(path_value)
+    if root_value:
+        _reject_sensitive_tree_path(str(root_value))
+    if root_value:
+        base = _resolve_dev_path(".", root=str(root_value))
+        target = _resolve_dev_path(path_value, root=str(base))
+        if target != base and base not in target.parents:
+            raise ValueError("Path is outside requested project root")
+        relative = str(target.relative_to(base)) if target != base else "."
+    else:
+        raw = Path(path_value).expanduser()
+        if raw.is_absolute():
+            target = _resolve_dev_path(str(raw))
+            if not target.is_dir():
+                raise ValueError(f"Not a directory: {path_value}")
+            base = target
+            relative = "."
+        else:
+            base = _resolve_dev_path(".", root=str(illuminator.root_dir))
+            target = _resolve_dev_path(path_value, root=str(base))
+            if target != base and base not in target.parents:
+                raise ValueError("Path is outside requested project root")
+            relative = str(target.relative_to(base)) if target != base else "."
+
+    worker = AdaptiveCodeIlluminator(str(base))
+    extra_ignore = [str(item) for item in (params.get("ignore") or []) if str(item)]
+    if extra_ignore:
+        worker.ignored_patterns = [*worker.ignored_patterns, *extra_ignore]
+    result = worker.code_scout(relative, max(1, min(8, int(params.get("depth") or 3))))
+    result["root"] = str(base)
+    return result
 
 async def handle_code_probe(params: Dict[str, Any]) -> Dict[str, Any]:
     paths = params.get("paths", [])

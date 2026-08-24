@@ -234,6 +234,14 @@ async def control_crawler(request: CrawlerControlRequest):
     if instance not in ["user", "auto", "publisher", "all"]:
         raise HTTPException(status_code=400, detail="Invalid instance. Use: user, auto, publisher, all")
 
+    # Resolve the lazy singletons once so status checks and control actions
+    # operate on the same instances throughout this request.
+    from ..services.auto_publisher import get_auto_publisher
+    from ..services.crawler.user_crawler import get_user_crawler
+
+    auto_publisher = get_auto_publisher()
+    user_crawler = get_user_crawler()
+
     timestamp = datetime.now(timezone.utc).isoformat()
 
     def response(status: str, *, changed: bool, detail: str | None = None) -> dict[str, Any]:
@@ -400,7 +408,9 @@ async def get_crawler_metrics():
 @router.get("/jobs/recent")
 async def get_recent_jobs(limit: int = 20):
     """Get recent crawler jobs with details."""
-    jobs = await crawler_manager.list_jobs()
+    from ..services.crawler.manager import crawler_manager as _crawler_manager
+
+    jobs = await _crawler_manager.list_jobs()
 
     # Sort by created_at descending
     jobs.sort(key=lambda j: j.created_at, reverse=True)

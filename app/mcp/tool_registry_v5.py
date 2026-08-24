@@ -923,6 +923,8 @@ V5_TOOLS: List[Dict[str, Any]] = [
                 "body": {"type": "string", "description": "Plain text email body"},
                 "cc": {"type": "string", "description": "CC recipient (optional)"},
                 "reply_to": {"type": "string", "description": "Reply-To address (optional)"},
+                "in_reply_to": {"type": "string", "description": "Original Message-ID for RFC reply threading (optional)"},
+                "references": {"type": "string", "description": "References header for RFC reply threading (optional)"},
             },
         },
     },
@@ -1335,6 +1337,20 @@ V5_TOOLS += [
         "name": "flarum_refresh",
         "description": "Prüft Flarum Forum-Verbindung und gibt Status zurück. Nützlich als Verbindungstest.",
         "inputSchema": {"type": "object", "properties": {}},
+    },
+    {
+        "name": "flarum_admin_request",
+        "description": "Privileged Flarum REST API request as the configured forum administrator. Internal use only.",
+        "inputSchema": {
+            "type": "object",
+            "required": ["method", "path"],
+            "properties": {
+                "method": {"type": "string", "enum": ["GET", "POST", "PATCH", "DELETE"]},
+                "path": {"type": "string", "description": "API-relative path, e.g. /users/1"},
+                "query": {"type": "object", "description": "Optional query parameters"},
+                "payload": {"type": "object", "description": "Optional JSON:API payload for POST/PATCH"},
+            },
+        },
     },
     {
         "name": "flarum_discussions",

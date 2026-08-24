@@ -15,12 +15,14 @@ from typing import Dict, Optional, List
 from dataclasses import dataclass, asdict
 from datetime import datetime
 import logging
+import fcntl
 
 logger = logging.getLogger(__name__)
 
 VAULT_PATH = Path("/home/zombie/triforce/.vault")
 FEDERATION_VAULT_FILE = VAULT_PATH / "federation_nodes.enc"
 FEDERATION_TOKENS_FILE = VAULT_PATH / "federation_tokens.json"
+FEDERATION_LOCK_FILE = VAULT_PATH / ".federation_tokens.lock"
 
 
 @dataclass
@@ -81,19 +83,59 @@ class FederationVault:
             if secret_file.exists():
                 self._shared_secret = secret_file.read_text().strip()
     
-    def _save(self):
-        """Save nodes to file"""
+    def _save(self, only_node: Optional[str] = None):
+        """Merge and atomically persist node state under an inter-process lock."""
+        import tempfile
+
         try:
-            data = {
-                "nodes": [n.to_dict() for n in self.nodes.values()],
-                "updated_at": datetime.utcnow().isoformat()
-            }
-            with open(FEDERATION_TOKENS_FILE, 'w') as f:
-                json.dump(data, f, indent=2)
-            FEDERATION_TOKENS_FILE.chmod(0o600)
+            # The lock covers the complete read -> merge -> replace sequence.
+            # Atomic replace alone protects readers from partial files but does
+            # not prevent two writers from overwriting each other.
+            with open(FEDERATION_LOCK_FILE, "a+") as lock_file:
+                os.chmod(FEDERATION_LOCK_FILE, 0o600)
+                fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
+
+                on_disk: Dict[str, dict] = {}
+                if FEDERATION_TOKENS_FILE.exists():
+                    with open(FEDERATION_TOKENS_FILE, "r") as f:
+                        for nd in json.load(f).get("nodes", []):
+                            on_disk[nd["node_id"]] = nd
+
+                mine = self.nodes if only_node is None else {
+                    k: v for k, v in self.nodes.items() if k == only_node
+                }
+                for node_id, node in mine.items():
+                    on_disk[node_id] = node.to_dict()
+
+                data = {
+                    "nodes": list(on_disk.values()),
+                    "updated_at": datetime.utcnow().isoformat(),
+                }
+
+                fd, tmp = tempfile.mkstemp(
+                    dir=str(VAULT_PATH), prefix=".tokens-", suffix=".tmp"
+                )
+                try:
+                    with os.fdopen(fd, "w") as f:
+                        json.dump(data, f, indent=2)
+                        f.flush()
+                        os.fsync(f.fileno())
+                    os.chmod(tmp, 0o600)
+                    os.replace(tmp, FEDERATION_TOKENS_FILE)
+                except Exception:
+                    try:
+                        os.unlink(tmp)
+                    except OSError:
+                        pass
+                    raise
+
+                # Align memory with the merged on-disk state so a later full
+                # save cannot resurrect stale values from another process.
+                for node_id, nd in on_disk.items():
+                    self.nodes[node_id] = FederationNode.from_dict(nd)
         except Exception as e:
             logger.error(f"Failed to save federation vault: {e}")
-    
+
     @property
     def shared_secret(self) -> str:
         """Get shared signing secret"""
@@ -122,7 +164,7 @@ class FederationVault:
         )
         
         self.nodes[node_id] = node
-        self._save()
+        self._save(only_node=node_id)
         
         logger.info(f"Registered federation node: {node_id} ({role})")
         return token
@@ -153,7 +195,7 @@ class FederationVault:
         
         # Update last seen
         node.last_seen = datetime.utcnow().isoformat()
-        self._save()
+        self._save(only_node=node_id)
         
         return True
     
@@ -161,7 +203,7 @@ class FederationVault:
         """Revoke a node's access"""
         if node_id in self.nodes:
             self.nodes[node_id].active = False
-            self._save()
+            self._save(only_node=node_id)
             logger.info(f"Revoked federation node: {node_id}")
             return True
         return False
@@ -175,7 +217,7 @@ class FederationVault:
         token_hash = hashlib.sha256(token.encode()).hexdigest()
         
         self.nodes[node_id].token_hash = token_hash
-        self._save()
+        self._save(only_node=node_id)
         
         logger.info(f"Rotated token for node: {node_id}")
         return token

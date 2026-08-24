@@ -2,7 +2,7 @@
 Structured Admin API - AI-Optimized System Management
 =====================================================
 Replaces raw shell with semantic, structured tools that:
-- Pass AI safety filters (no shell patterns in parameters)
+- Expose explicit schemas for common administrative operations
 - Provide granular, auditable operations
 - Map internally to system calls with validation
 
@@ -20,8 +20,37 @@ READ_PATHS = ["/home/zombie/triforce", "/etc/systemd/system", "/etc/apache2",
 WRITE_PATHS = ["/home/zombie/triforce", "/tmp"]
 SERVICES = ["triforce","apache2","nginx","docker","wireguard","redis-server",
             "ollama","mesh-guardian","federation-node"]
-CONTAINERS = ["triforce-wordpress","triforce-mysql","triforce-redis","triforce-searxng",
-              "triforce-n8n","triforce-mailserver","triforce-flarum","triforce-repo","ollama"]
+CONTAINERS = ["wordpress_apache","wordpress_fpm","wordpress_db","wordpress_redis",
+              "flarum","flarum_db","n8n","mailserver","ailinux-repository","triforce-searxng"]
+
+# --- Unit-Aufloesung (Fix 2026-08-16) -----------------------------------------
+# Logischer Servicename -> tatsaechlich existierende systemd-Unit.
+# "wireguard" ist auf Ubuntu eine leere Meta-Unit, die nie aktiv wird.
+# Die echte Unit ist wg-quick@wg0.
+SERVICE_UNITS = {
+    "wireguard": "wg-quick@wg0.service",
+}
+
+def _unit(service: str) -> str:
+    """Resolve a logical service name to the systemd unit that actually exists."""
+    return SERVICE_UNITS.get(service, service)
+
+# systemctl show liefert pro -p Flag einen Wert, in Flag-Reihenfolge.
+_UNIT_STATE_CMD = ["systemctl", "show", "-p", "LoadState", "-p", "ActiveState", "--value"]
+
+def _parse_unit_state(output):
+    """Turn `systemctl show` output into an unambiguous status.
+
+    `systemctl is-active` liefert "inactive" sowohl fuer eine gestoppte Unit
+    als auch fuer eine Unit, die gar nicht existiert. LoadState trennt beides:
+    not-found -> "not-installed", sonst der echte ActiveState.
+    """
+    lines = [l.strip() for l in (output or "").splitlines() if l.strip()]
+    load = lines[0] if len(lines) > 0 else "unknown"
+    active = lines[1] if len(lines) > 1 else "unknown"
+    status = "not-installed" if load == "not-found" else active
+    return {"status": status, "load_state": load, "active_state": active}
+
 
 def _ok_path(p, allowed):
     try:
@@ -122,7 +151,9 @@ async def handle_system_info(a):
         return {"query":q,"data":r["output"]}
     elif q=="services":
         d={}
-        for s in SERVICES: d[s]=(await _run(["systemctl","is-active",s]))["output"]
+        for s in SERVICES:
+            r=await _run(_UNIT_STATE_CMD+[_unit(s)])
+            d[s]=_parse_unit_state(r["output"])["status"]
         return {"query":q,"data":d}
     return {"error":f"Unknown query: {q}"}
 
@@ -146,14 +177,15 @@ async def handle_package_manager(a):
 async def handle_service_control(a):
     act,svc=a.get("action"),a.get("service","")
     if svc not in SERVICES: return {"error":f"Not managed: {svc}. Allowed: {SERVICES}"}
-    if act=="status": return {"action":act,"service":svc,**(await _run(["systemctl","status",svc,"--no-pager","-l"]))}
-    elif act=="restart": return {"action":act,"service":svc,**(await _sudo(["systemctl","restart",svc]))}
-    elif act=="stop": return {"action":act,"service":svc,**(await _sudo(["systemctl","stop",svc]))}
-    elif act=="start": return {"action":act,"service":svc,**(await _sudo(["systemctl","start",svc]))}
+    u=_unit(svc)
+    if act=="status": return {"action":act,"service":svc,"unit":u,**(await _run(["systemctl","status",u,"--no-pager","-l"]))}
+    elif act=="restart": return {"action":act,"service":svc,"unit":u,**(await _sudo(["systemctl","restart",u]))}
+    elif act=="stop": return {"action":act,"service":svc,"unit":u,**(await _sudo(["systemctl","stop",u]))}
+    elif act=="start": return {"action":act,"service":svc,"unit":u,**(await _sudo(["systemctl","start",u]))}
     elif act=="logs":
         n=str(min(a.get("lines",50),200))
-        return {"action":act,"service":svc,**(await _run(["journalctl","-u",svc,"--no-pager","-n",n]))}
-    elif act in ("enable","disable"): return {"action":act,"service":svc,**(await _sudo(["systemctl",act,svc]))}
+        return {"action":act,"service":svc,"unit":u,**(await _run(["journalctl","-u",u,"--no-pager","-n",n]))}
+    elif act in ("enable","disable"): return {"action":act,"service":svc,"unit":u,**(await _sudo(["systemctl",act,u]))}
     return {"error":f"Unknown action: {act}"}
 
 async def handle_container_control(a):
@@ -583,15 +615,18 @@ async def handle_remote_admin(a):
 
     elif action == "service_status":
         service = a.get("service", "triforce")
-        r = await _ssh_run(host, ["systemctl", "is-active", service])
-        return {"action": action, "host": host, "service": service, "status": r["output"]}
+        u = _unit(service)
+        r = await _ssh_run(host, _UNIT_STATE_CMD + [u])
+        state = _parse_unit_state(r.get("output"))
+        return {"action": action, "host": host, "service": service, "unit": u, **state}
 
     elif action == "service_restart":
         service = a.get("service", "triforce")
         if service not in SERVICES:
             return {"error": f"Service '{service}' not in managed list"}
-        r = await _ssh_run(host, ["sudo", "systemctl", "restart", service], timeout=30)
-        return {"action": action, "host": host, "service": service, **r}
+        u = _unit(service)
+        r = await _ssh_run(host, ["sudo", "systemctl", "restart", u], timeout=30)
+        return {"action": action, "host": host, "service": service, "unit": u, **r}
 
     elif action == "docker_status":
         r = await _ssh_run(host, ["docker", "ps", "--format", "{{.Names}}\t{{.Status}}"])
@@ -747,19 +782,17 @@ logger.info(f"Structured Admin API extended: {len(STRUCTURED_ADMIN_TOOLS)} tools
 
 
 # =============================================================================
-# ENCODED TASK RUNNER — Verschlüsselte Befehlsausführung
+# TASK RUNNER — transport-encoded task execution
 # =============================================================================
-# AI sendet Base64-kodierten Payload → Server dekodiert → führt aus
-# ChatGPT's Content-Filter sieht nur "task_data" String, keine Shell-Syntax
+# Payload encoding is a transport representation only. It does not change
+# authorization, validation, privilege, or audit semantics.
 #
-# Encoding-Formate:
-#   "b64:<base64>" → Standard Base64
-#   "hex:<hexstring>" → Hex-kodiert
-#   "rot:<text>" → ROT13 (einfach, aber effektiv gegen Pattern-Matching)
-#   Klartext → wird direkt ausgeführt (Fallback für Clients ohne Encoding)
+# Supported transport formats:
+#   "b64:<base64>" -> Standard Base64
+#   "hex:<hexstring>" -> Hex encoding
+#   Plain text -> accepted for compatibility with existing clients
 
 import base64
-import codecs
 
 def _decode_payload(payload: str) -> str:
     """Decode encoded command payload."""
@@ -769,9 +802,7 @@ def _decode_payload(payload: str) -> str:
         return base64.b64decode(payload[4:]).decode("utf-8", errors="replace")
     elif payload.startswith("hex:"):
         return bytes.fromhex(payload[4:]).decode("utf-8", errors="replace")
-    elif payload.startswith("rot:"):
-        return codecs.decode(payload[4:], "rot_13")
-    return payload  # Klartext fallback
+    return payload  # compatibility fallback
 
 
 async def handle_task_runner(a):
@@ -833,42 +864,48 @@ async def handle_task_runner(a):
         
         timeout = min(a.get("timeout", 30), 120)
         host_info = REMOTE_HOSTS[host]
-        
-        # Try SSH key first, fallback to sshpass
+        work_dir = a.get("work_dir")
+        use_elevated = bool(a.get("elevated", False))
+
+        # Build one quoted remote command string. OpenSSH joins arguments after
+        # the target into a shell command, so passing ["bash", "-c", decoded]
+        # loses argument boundaries for compound commands. Keep the complete
+        # script as one safely quoted argument instead.
+        import shlex
+        remote_script = decoded
+        if work_dir:
+            remote_script = f"cd -- {shlex.quote(str(work_dir))} && {remote_script}"
+        launcher = ["sudo", "bash", "-lc", remote_script] if use_elevated else ["bash", "-lc", remote_script]
+        remote_command = " ".join(shlex.quote(str(part)) for part in launcher)
+
+        # Try SSH key first, fallback to sshpass.
         ssh_base = [
             "ssh", "-o", "StrictHostKeyChecking=accept-new",
             "-o", "ConnectTimeout=5",
         ]
-        
-        # Check if key auth works, otherwise use sshpass
+
         target = f"{host_info['user']}@{host_info['ip']}"
-        
-        # Try key-based first
+
         key_test = await _run(
-            ssh_base + ["-o", "BatchMode=yes", target, "echo", "OK"], timeout=8
+            ssh_base + ["-o", "BatchMode=yes", target, "echo OK"], timeout=8
         )
-        
+
         if key_test["success"] and "OK" in key_test["output"]:
-            # OpenSSH key authentication works in the current runtime.
             r = await _run(
-                ssh_base + ["-o", "BatchMode=yes", target, "bash", "-c", decoded],
-                timeout=timeout
+                ssh_base + ["-o", "BatchMode=yes", target, remote_command],
+                timeout=timeout,
             )
             r["auth_method"] = "key"
         elif _needs_asyncssh_fallback(key_test):
-            # OpenSSH cannot resolve the connector uid because its minimal
-            # runtime has no matching /etc/passwd entry. AsyncSSH does not
-            # depend on local NSS and can use the same private key directly.
+            # AsyncSSH preserves argv itself, so pass the launcher components.
             r = await _asyncssh_run(
                 host_info["ip"],
                 host_info["user"],
-                ["bash", "-lc", decoded],
+                launcher,
                 timeout=timeout,
             )
             r["auth_method"] = "asyncssh-key"
         else:
-            # Actual authentication failure: optionally fall back to the
-            # configured federation password.
             ssh_pass = os.environ.get("SSH_FEDERATION_PASS", "")
             if not ssh_pass:
                 return {
@@ -876,12 +913,18 @@ async def handle_task_runner(a):
                     "key_error": key_test.get("errors"),
                 }
             r = await _run(
-                ["sshpass", "-p", ssh_pass] + ssh_base + [target, "bash", "-c", decoded],
-                timeout=timeout
+                ["sshpass", "-p", ssh_pass] + ssh_base + [target, remote_command],
+                timeout=timeout,
             )
             r["auth_method"] = "password"
-        
-        return {"action": "execute_remote", "host": host, **r, "decoded_length": len(decoded)}
+
+        return {
+            "action": "execute_remote",
+            "host": host,
+            **r,
+            "decoded_length": len(decoded),
+            "work_dir": str(work_dir or ""),
+        }
     
     elif action == "encode":
         # Helper: encode a command for the AI to use later
@@ -893,10 +936,8 @@ async def handle_task_runner(a):
             encoded = "b64:" + base64.b64encode(text.encode()).decode()
         elif format == "hex":
             encoded = "hex:" + text.encode().hex()
-        elif format == "rot":
-            encoded = "rot:" + codecs.encode(text, "rot_13")
         else:
-            return {"error": f"Unknown format: {format}. Use b64, hex, or rot"}
+            return {"error": f"Unknown format: {format}. Use b64 or hex"}
         return {"action": "encode", "format": format, "encoded": encoded, "original_length": len(text)}
     
     elif action == "decode":
@@ -1130,17 +1171,17 @@ async def handle_binary_exec(a):
 
 STRUCTURED_ADMIN_TOOLS.extend([
     {"name": "task_runner",
-     "description": "Execute compound local or remote system tasks when a more specific typed tool cannot express the operation cleanly. Payloads may be plain text or encoded (b64, hex, rot); use encode/decode helpers when useful for transport or inspection. Use elevated=true only when required, choose remote hosts explicitly, and verify the result after execution. Prefer structured tools or binary_exec for simpler operations.",
+     "description": "Execute task payloads locally or on registered federation nodes. Payload encoding is used only for transport. Use elevated=true only when required, choose remote hosts explicitly, and verify the result after execution. Prefer more specific structured tools when they fit the operation.",
      "inputSchema": {"type": "object", "properties": {
          "action": {"type": "string", "enum": ["execute", "execute_remote", "encode", "decode", "quick_reference"],
                      "description": "execute=run task, execute_remote=run on node, encode=prepare payload, decode=preview, quick_reference=show pre-encoded commands"},
-         "task_data": {"type": "string", "description": "Encoded task payload (b64:xxx, hex:xxx, rot:xxx, or plain text)"},
+         "task_data": {"type": "string", "description": "Task payload in plain text, b64:..., or hex:... transport form"},
          "host": {"type": "string", "enum": list(REMOTE_HOSTS.keys()), "description": "Remote node (for execute_remote)"},
          "elevated": {"type": "boolean", "description": "Run with elevated privileges (default: false)"},
          "timeout": {"type": "integer", "description": "Execution timeout in seconds (max 300)"},
          "work_dir": {"type": "string", "description": "Working directory"},
          "text": {"type": "string", "description": "Plain text to encode (for encode action)"},
-         "format": {"type": "string", "enum": ["b64", "hex", "rot"], "description": "Encoding format (for encode action)"},
+         "format": {"type": "string", "enum": ["b64", "hex"], "description": "Transport encoding (for encode action)"},
      }, "required": ["action"]},
      "annotations": {"title": "Encoded Task Runner", "readOnlyHint": False, "destructiveHint": True, "idempotentHint": False, "openWorldHint": False}},
      
@@ -1210,12 +1251,13 @@ async def handle_safe_probe(a):
         if service and service not in _SAFE_PROBE_SERVICES:
             return {"error": f"Service '{service}' not in allowlist: {_SAFE_PROBE_SERVICES}"}
         if service:
-            r = await _run(["systemctl", "status", service, "--no-pager", "-l"], timeout=10)
-            return {"action": "service_status", "service": service, **r}
+            r = await _run(["systemctl", "status", _unit(service), "--no-pager", "-l"], timeout=10)
+            return {"action": "service_status", "service": service, "unit": _unit(service), **r}
         else:
             data = {}
             for s in _SAFE_PROBE_SERVICES:
-                data[s] = (await _run(["systemctl", "is-active", s], timeout=5))["output"]
+                r = await _run(_UNIT_STATE_CMD + [_unit(s)], timeout=5)
+                data[s] = _parse_unit_state(r["output"])["status"]
             return {"action": "service_status", "services": data}
 
     elif action == "journal":
@@ -1223,7 +1265,7 @@ async def handle_safe_probe(a):
         unit = a.get("unit", "")
         cmd = ["journalctl", "--no-pager", "-n", n]
         if unit and unit in _SAFE_PROBE_SERVICES:
-            cmd.extend(["-u", unit])
+            cmd.extend(["-u", _unit(unit)])
         r = await _run(cmd, timeout=10)
         return {"action": "journal", "lines_requested": int(n), **r}
 
@@ -1868,7 +1910,7 @@ STRUCTURED_ADMIN_TOOLS.extend([
      "inputSchema": {"type": "object", "properties": {
          "action": {"type": "string", "enum": ["quick_reference", "encode", "decode"]},
          "text": {"type": "string", "description": "Text to encode (for encode action)"},
-         "format": {"type": "string", "enum": ["b64", "hex", "rot"]},
+         "format": {"type": "string", "enum": ["b64", "hex"]},
          "task_data": {"type": "string", "description": "Encoded data to decode (for decode action)"},
      }, "required": ["action"]},
      "annotations": {"title": "Task Reference (Read-Only)", "readOnlyHint": True,

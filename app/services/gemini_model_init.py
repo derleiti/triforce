@@ -64,12 +64,6 @@ CLOUD_MODELS = {
         "capabilities": ["reasoning", "code", "vision", "search"],
         "system_prompt_key": "gemini-lead",
     },
-    "gemini/gemini-3.5-flash": {
-        "role": "lead",
-        "provider": "gemini",
-        "capabilities": ["reasoning", "code", "vision", "search"],
-        "system_prompt_key": "gemini-lead",
-    },
     "gemini/gemini-1.5-pro": {
         "role": "lead",
         "provider": "gemini",

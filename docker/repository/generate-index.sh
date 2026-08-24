@@ -23,6 +23,7 @@ INDEX_FILE_ON_MIRROR="$HOST_MIRROR_PATH/index.html"
 LOG_DIR="${LOG_DIR:-$SCRIPT_DIR/log}"
 UPDATE_LOGFILE="${UPDATE_LOGFILE:-$LOG_DIR/update-mirror.log}"
 POSTMIRROR_LOGFILE="${POSTMIRROR_LOGFILE:-$LOG_DIR/postmirror.log}"
+WRITE_ROOT_INDEX="${WRITE_ROOT_INDEX:-0}"
 
 BASE_URL="${BASE_URL:-https://repo.ailinux.me}"
 BASE_URL="${BASE_URL%/}"
@@ -125,6 +126,11 @@ while IFS= read -r -d '' dir; do
     *)       OTHER_REPOS+=("$name") ;;
   esac
 done < <(find "$HOST_MIRROR_PATH" -maxdepth 1 -mindepth 1 -type d -print0 | sort -z)
+
+MIRROR_ENTRY_COUNT="$REPO_COUNT"
+if [[ -f "$HOST_MIRROR_PATH/mirror-repos.tsv" ]]; then
+  MIRROR_ENTRY_COUNT=$(awk 'NR > 1 && NF {count++} END {print count+0}' "$HOST_MIRROR_PATH/mirror-repos.tsv")
+fi
 
 # Calculate approximate size
 if command -v du >/dev/null 2>&1; then
@@ -410,8 +416,8 @@ cat >> "$TMP_INDEX_FILE" << HTMLHEADER
     <p>APT Package Repository - Ubuntu, Gaming, Development &amp; AI</p>
     <div class="stats-bar">
       <div class="stat">
-        <div class="stat-value">${REPO_COUNT}</div>
-        <div class="stat-label">Repositories</div>
+        <div class="stat-value">${MIRROR_ENTRY_COUNT}</div>
+        <div class="stat-label">Published APT Entries</div>
       </div>
       <div class="stat">
         <div class="stat-value">${TOTAL_SIZE}</div>
@@ -432,15 +438,15 @@ cat >> "$TMP_INDEX_FILE" << HTMLHEADER
 
   <div class="quick-start">
     <h2><span>⚡</span> Quick Install</h2>
-    <p style="color: var(--text-secondary); margin-bottom: 10px; font-size: 0.9rem;">Mirror-Repos only:</p>
+    <p style="color: var(--text-secondary); margin-bottom: 10px; font-size: 0.9rem;">Install all mirrored repositories valid for this OS:</p>
     <div class="code-block">
       <button class="copy-btn" type="button">Copy</button>
       <code>curl -fsSL "${PUBLIC_BASE}/add-ailinux-repo.sh" | sudo bash</code>
     </div>
-    <p style="color: var(--text-secondary); margin: 12px 0 10px; font-size: 0.9rem;">Mirror + Third-Party Repos (Chrome, Steam, Docker, VS Code, …):</p>
+    <p style="color: var(--text-secondary); margin: 12px 0 10px; font-size: 0.9rem;">Replace only upstream repositories already configured on this machine:</p>
     <div class="code-block">
       <button class="copy-btn" type="button">Copy</button>
-      <code>curl -fsSL "${PUBLIC_BASE}/add-ailinux-repo.sh" | sudo bash -s -- --third-party</code>
+      <code>curl -fsSL "${PUBLIC_BASE}/add-ailinux-repo.sh" | sudo bash -s -- --installed-only</code>
     </div>
   </div>
 
@@ -536,6 +542,31 @@ output_category "ai" "🤖" "AI & Machine Learning" "red" "${AI_REPOS[@]}"
 output_category "desktop" "🖥️" "Desktop Applications" "blue" "${DESKTOP_REPOS[@]}"
 output_category "ppa" "📦" "Ubuntu PPAs" "yellow" "${PPA_REPOS[@]}"
 output_category "other" "📂" "Other" "gray" "${OTHER_REPOS[@]}"
+
+
+# Add install commands for every published manifest entry.
+if [[ -f "$HOST_MIRROR_PATH/mirror-repos.tsv" ]]; then
+  cat >> "$TMP_INDEX_FILE" <<'MANIFEST_HEAD'
+  <section class="quick-start">
+    <h2><span>🧩</span> Install individual mirrors</h2>
+    <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 0.9rem;">Each command installs one published mirror entry. IDs come from mirror-repos.tsv.</p>
+MANIFEST_HEAD
+  while IFS=$'	' read -r repo_id label category path suite components arches upstream target_codename; do
+    [[ "$repo_id" == "id" || -z "$repo_id" ]] && continue
+    cat >> "$TMP_INDEX_FILE" <<MANIFEST_ROW
+    <div style="margin: 12px 0 18px;">
+      <div style="font-weight:600; margin-bottom:6px;">${label} <code>${repo_id}</code></div>
+      <div class="code-block">
+        <button class="copy-btn" type="button">Copy</button>
+        <code>curl -fsSL "${PUBLIC_BASE}/add-ailinux-repo.sh" | sudo bash -s -- --select ${repo_id}</code>
+      </div>
+    </div>
+MANIFEST_ROW
+  done < "$HOST_MIRROR_PATH/mirror-repos.tsv"
+  cat >> "$TMP_INDEX_FILE" <<'MANIFEST_FOOT'
+  </section>
+MANIFEST_FOOT
+fi
 
 # Footer and scripts
 cat >> "$TMP_INDEX_FILE" << HTMLFOOTER
@@ -646,7 +677,8 @@ a:hover { text-decoration: underline; }
   <p class="meta"><a href="${PUBLIC_BASE}/index.html">Index</a> · <a href="${PUBLIC_BASE}/log.html">Logs</a></p>
 
   <section class="grid">
-    <div class="card"><div class="label">Repositories</div><div class="value">${REPO_COUNT}</div></div>
+    <div class="card"><div class="label">Published APT Entries</div><div class="value">${MIRROR_ENTRY_COUNT}</div></div>
+    <div class="card"><div class="label">Mirror Host Folders</div><div class="value">${REPO_COUNT}</div></div>
     <div class="card"><div class="label">Mirror Size</div><div class="value">${TOTAL_SIZE}</div></div>
     <div class="card"><div class="label">InRelease Files</div><div class="value">${inrelease_count}</div></div>
     <div class="card"><div class="label">Release.gpg Files</div><div class="value">${release_sig_count}</div></div>
@@ -777,7 +809,7 @@ JSSCRIPT
 declare -a INDEX_TARGETS
 INDEX_TARGETS+=("$INDEX_FILE_ON_MIRROR")
 
-if [[ "${WRITE_ROOT_INDEX:-1}" == "1" ]]; then
+if [[ "${WRITE_ROOT_INDEX}" == "1" ]]; then
   INDEX_TARGETS+=("$HOST_REPO_PATH/index.html")
 fi
 
@@ -826,7 +858,7 @@ deploy_optional_file_to_index_targets() {
 # Copy JS alongside index.html targets
 declare -a JS_TARGETS
 JS_TARGETS+=("$HOST_MIRROR_PATH/index.js")
-if [[ "${WRITE_ROOT_INDEX:-1}" == "1" ]]; then
+if [[ "${WRITE_ROOT_INDEX}" == "1" ]]; then
   JS_TARGETS+=("$HOST_REPO_PATH/index.js")
 fi
 if [[ -n "${EXTRA_INDEX_TARGETS:-}" ]]; then
@@ -869,12 +901,12 @@ deploy_optional_file_to_index_targets "$POSTMIRROR_LOGFILE" "postmirror.log" "Ra
 
 echo "[generate-index] ${REPO_COUNT} Repositories katalogisiert, Gesamtgröße: ${TOTAL_SIZE}"
 
-# --- Re-install repos on this host after index generation ---
-log_label="add-ailinux-repo"
-ADD_REPO_SCRIPT="${HOST_MIRROR_PATH}/add-ailinux-repo.sh"
-if [[ -f "$ADD_REPO_SCRIPT" ]]; then
-  echo "[generate-index] Running add-ailinux-repo.sh --third-party ..."
-  bash "$ADD_REPO_SCRIPT" --third-party --no-update || echo "[generate-index] WARNING: add-ailinux-repo.sh exited with $?"
-else
-  echo "[generate-index] WARNING: add-ailinux-repo.sh not found at $ADD_REPO_SCRIPT"
+# Reconcile this host with mirrors only when explicitly requested.
+# Index generation must never add unrelated APT sources as a side effect.
+if [[ "${REINSTALL_LOCAL_MIRRORS:-0}" == "1" ]]; then
+  ADD_REPO_SCRIPT="${HOST_MIRROR_PATH}/add-ailinux-repo.sh"
+  if [[ -f "$ADD_REPO_SCRIPT" ]]; then
+    echo "[generate-index] Reconciling currently installed upstream repos with AILinux mirrors ..."
+    bash "$ADD_REPO_SCRIPT" --installed-only --no-update || echo "[generate-index] WARNING: add-ailinux-repo.sh exited with $?"
+  fi
 fi

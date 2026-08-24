@@ -29,40 +29,20 @@ fi
 # API-Keys werden entfernt damit die Tools nicht auf API-Billing fallen.
 # Fallback: wenn OAuth-Token abgelaufen -> API-Key aus triforce.env benutzen.
 
-# Claude: OAuth aus ~/.claude/.credentials.json (Max-Subscription)
-_claude_oauth_valid() {
-  python3 -c "
-import json,time,sys
-try:
-    d=json.load(open('/home/zombie/.claude/.credentials.json'))
-    exp=d.get('claudeAiOauth',{}).get('expiresAt',0)/1000
-    sys.exit(0 if exp > time.time() else 1)
-except: sys.exit(1)
-" 2>/dev/null
-}
-if _claude_oauth_valid; then
-  unset ANTHROPIC_API_KEY   # OAuth aktiv -> kein API-Key-Billing
+# Claude: ein vorhandener Account-Login hat Vorrang. Claude Code verwaltet
+# Access-Token-Refresh selbst; ein abgelaufenes accessToken ist daher kein
+# Grund, still auf API-Key-Billing zurueckzufallen.
+if [[ -s /home/zombie/.claude/.credentials.json ]]; then
+  unset ANTHROPIC_API_KEY
 else
-  export ANTHROPIC_API_KEY  # Fallback auf API-Key wenn OAuth abgelaufen
+  export ANTHROPIC_API_KEY
 fi
 
-# Gemini: prefer OAuth when credentials exist; otherwise map configured API-key aliases
-# to the variable expected by @google/gemini-cli.
-if [[ -s /home/zombie/.gemini/oauth_creds.json ]]; then
-  unset GEMINI_API_KEY
-  unset GOOGLE_AI_STUDIO_KEY
-  unset GOOGLE_GEMINI_KEY
-else
-  if [[ -z "${GEMINI_API_KEY:-}" ]]; then
-    if [[ -n "${GOOGLE_GEMINI_KEY:-}" ]]; then
-      export GEMINI_API_KEY="$GOOGLE_GEMINI_KEY"
-    elif [[ -n "${GOOGLE_AI_STUDIO_KEY:-}" ]]; then
-      export GEMINI_API_KEY="$GOOGLE_AI_STUDIO_KEY"
-    fi
-  fi
-  unset GOOGLE_AI_STUDIO_KEY
-  unset GOOGLE_GEMINI_KEY
-fi
+# Antigravity CLI (agy): account/keyring auth only. Do not expose legacy
+# Gemini API keys to CLI wrappers or silently fall back to API billing.
+unset GEMINI_API_KEY
+unset GOOGLE_AI_STUDIO_KEY
+unset GOOGLE_GEMINI_KEY
 
 # Codex: Account-Token aus ~/.codex/auth.json
 unset OPENAI_API_KEY

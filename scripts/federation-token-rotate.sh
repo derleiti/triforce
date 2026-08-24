@@ -13,7 +13,6 @@ REPO="/home/zombie/triforce"
 VENV="$REPO/.venv/bin/python3"
 LOG="$REPO/logs/federation-rotate.log"
 SSH_KEY="$HOME/.ssh/id_ed25519"
-MCP_AUTH="zombie:e9F8DuKbH-"
 
 log()  { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG"; }
 err()  { echo "[$(date '+%Y-%m-%d %H:%M:%S')] ERROR: $1" | tee -a "$LOG" >&2; }
@@ -22,7 +21,6 @@ notify() {
     local title="$1" body="$2" priority="${3:-normal}"
     curl -s -X POST http://localhost:9000/v1/mcp \
         -H "Content-Type: application/json" \
-        -H "Authorization: Basic $(echo -n "$MCP_AUTH" | base64)" \
         -d "{\"jsonrpc\":\"2.0\",\"method\":\"tools/call\",\"params\":{\"name\":\"notify_send\",\"arguments\":{\"title\":\"$title\",\"body\":\"$body\",\"priority\":\"$priority\",\"source\":\"system\",\"auto_resolve\":true}},\"id\":1}" \
         > /dev/null 2>&1 || true
 }

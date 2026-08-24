@@ -37,6 +37,105 @@ def normalize_tools(tools: Iterable[dict[str, Any]] | None) -> list[dict[str, An
     return result
 
 
+def _split_data_url(url: Any) -> tuple[str, str] | None:
+    if not isinstance(url, str) or not url.startswith("data:") or ";base64," not in url:
+        return None
+    header, data = url.split(",", 1)
+    mime = header[5:].split(";", 1)[0] or "image/png"
+    return mime, data
+
+
+def _openai_response_messages(messages: list[dict]) -> list[dict]:
+    """Convert normalized chat content blocks to OpenAI Responses input blocks."""
+    result: list[dict] = []
+    for raw in messages:
+        item = dict(raw)
+        content = item.get("content")
+        if isinstance(content, list):
+            blocks = []
+            for part in content:
+                if not isinstance(part, dict):
+                    continue
+                kind = part.get("type")
+                if kind in {"text", "input_text"}:
+                    blocks.append({"type": "input_text", "text": str(part.get("text") or "")})
+                elif kind in {"image_url", "input_image"}:
+                    image = part.get("image_url")
+                    url = image.get("url") if isinstance(image, dict) else image
+                    if isinstance(url, str):
+                        blocks.append({"type": "input_image", "image_url": url})
+            item["content"] = blocks
+        result.append(item)
+    return result
+
+
+def _anthropic_messages(messages: list[dict]) -> tuple[str, list[dict]]:
+    system_chunks: list[str] = []
+    result: list[dict] = []
+    for raw in messages:
+        role = raw.get("role")
+        content = raw.get("content")
+        if role == "system":
+            if isinstance(content, str):
+                system_chunks.append(content)
+            continue
+        if role not in {"user", "assistant"}:
+            continue
+        if not isinstance(content, list):
+            result.append({"role": role, "content": content})
+            continue
+        blocks = []
+        for part in content:
+            if not isinstance(part, dict):
+                continue
+            if part.get("type") in {"text", "input_text"}:
+                blocks.append({"type": "text", "text": str(part.get("text") or "")})
+                continue
+            image = part.get("image_url")
+            url = image.get("url") if isinstance(image, dict) else image
+            parsed = _split_data_url(url)
+            if parsed:
+                mime, data = parsed
+                blocks.append({
+                    "type": "image",
+                    "source": {"type": "base64", "media_type": mime, "data": data},
+                })
+        result.append({"role": role, "content": blocks})
+    return "\n\n".join(system_chunks), result
+
+
+def _gemini_contents(messages: list[dict]) -> tuple[str, list[dict]]:
+    system_chunks: list[str] = []
+    result: list[dict] = []
+    for raw in messages:
+        role = raw.get("role")
+        content = raw.get("content")
+        if role == "system":
+            if isinstance(content, str):
+                system_chunks.append(content)
+            continue
+        if role not in {"user", "assistant"}:
+            continue
+        parts = []
+        if isinstance(content, str):
+            parts.append({"text": content})
+        elif isinstance(content, list):
+            for part in content:
+                if not isinstance(part, dict):
+                    continue
+                if part.get("type") in {"text", "input_text"}:
+                    parts.append({"text": str(part.get("text") or "")})
+                    continue
+                image = part.get("image_url")
+                url = image.get("url") if isinstance(image, dict) else image
+                parsed = _split_data_url(url)
+                if parsed:
+                    mime, data = parsed
+                    parts.append({"inlineData": {"mimeType": mime, "data": data}})
+        result.append({"role": "model" if role == "assistant" else "user", "parts": parts})
+    return "\n\n".join(system_chunks), result
+
+
 def _key(settings: Any, attr: str, *names: str) -> str | None:
     value = getattr(settings, attr, None)
     return str(value) if value else next((os.getenv(n) for n in names if os.getenv(n)), None)
@@ -112,6 +211,8 @@ async def _post(
     """Retry safely when a model rejects sampling controls or native tools."""
     async with httpx.AsyncClient(timeout=timeout) as client:
         current = dict(payload)
+        tools_requested = bool(current.get("tools"))
+        tools_dropped = False
         response = await client.post(url, headers=headers, json=current)
         if _sampling_parameters_rejected(response):
             current = dict(current)
@@ -122,10 +223,23 @@ async def _post(
             current = dict(current)
             for key in ("tools", "tool_choice", "parallel_tool_calls"):
                 current.pop(key, None)
+            tools_dropped = True
             response = await client.post(url, headers=headers, json=current)
         if response.status_code >= 400:
             raise HTTPException(response.status_code, _detail(provider, response))
-        return response.json()
+        data = response.json()
+        if isinstance(data, dict):
+            data["_ailinux_tool_transport"] = (
+                "text_fallback" if tools_dropped else "native" if tools_requested else "none"
+            )
+        return data
+
+
+def _tool_transport(data: dict[str, Any], tools_requested: bool) -> str:
+    marker = data.get("_ailinux_tool_transport") if isinstance(data, dict) else None
+    if marker in {"native", "text_fallback", "none"}:
+        return str(marker)
+    return "native" if tools_requested else "none"
 
 
 def _standard(data: dict[str, Any], model: str) -> dict[str, Any]:
@@ -141,6 +255,7 @@ def _standard(data: dict[str, Any], model: str) -> dict[str, Any]:
         "tool_calls": message.get("tool_calls") or [],
         "usage_total": _usage(data),
         "model_used": data.get("model") or model,
+        "tool_transport": _tool_transport(data, bool(data.get("_ailinux_tool_transport") != "none")),
     }
 
 
@@ -157,7 +272,7 @@ async def _openai(
         or os.getenv("OPENAI_BASE_URL") or "https://api.openai.com/v1"
     ).rstrip("/")
     payload: dict[str, Any] = {
-        "model": model, "input": messages,
+        "model": model, "input": _openai_response_messages(messages),
         "max_output_tokens": max(16, max_tokens), "store": False,
     }
     if temperature is not None and not model.startswith(("o1", "o3", "o4")):
@@ -203,6 +318,7 @@ async def _openai(
     return {
         "content": "".join(text), "tool_calls": calls,
         "usage_total": _usage(data), "model_used": data.get("model") or model,
+        "tool_transport": _tool_transport(data, bool(tools)),
     }
 
 
@@ -214,10 +330,10 @@ async def _anthropic(
     api_key = _key(settings, "anthropic_api_key", "ANTHROPIC_API_KEY")
     if not api_key:
         raise HTTPException(503, "Anthropic support is not configured")
-    system = "\n\n".join(str(m.get("content", "")) for m in messages if m.get("role") == "system")
+    system, anthropic_messages = _anthropic_messages(messages)
     payload: dict[str, Any] = {
         "model": model,
-        "messages": [m for m in messages if m.get("role") in ("user", "assistant")],
+        "messages": anthropic_messages,
         "max_tokens": max_tokens,
     }
     if system:
@@ -252,6 +368,7 @@ async def _anthropic(
     return {
         "content": "".join(text), "tool_calls": calls,
         "usage_total": _usage(data), "model_used": data.get("model") or model,
+        "tool_transport": _tool_transport(data, bool(tools)),
     }
 
 
@@ -268,12 +385,9 @@ async def _gemini(
     )
     if not api_key:
         raise HTTPException(503, "Gemini support is not configured")
-    system = "\n\n".join(str(m.get("content", "")) for m in messages if m.get("role") == "system")
+    system, gemini_contents = _gemini_contents(messages)
     payload: dict[str, Any] = {
-        "contents": [{
-            "role": "model" if m.get("role") == "assistant" else "user",
-            "parts": [{"text": str(m.get("content", ""))}],
-        } for m in messages if m.get("role") in ("user", "assistant")],
+        "contents": gemini_contents,
         "generationConfig": {"maxOutputTokens": max_tokens},
     }
     if system:
@@ -290,17 +404,19 @@ async def _gemini(
         payload["toolConfig"] = {"functionCallingConfig": {"mode": mode}}
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
     headers = {"x-goog-api-key": api_key, "Content-Type": "application/json"}
+    tool_transport = "native" if tools else "none"
     async with httpx.AsyncClient(timeout=120.0) as client:
         response = await client.post(url, headers=headers, json=payload)
         if response.status_code in (400, 404, 422) and payload.get("tools"):
             fallback = dict(payload)
             fallback.pop("tools", None)
             fallback.pop("toolConfig", None)
+            tool_transport = "text_fallback"
             response = await client.post(url, headers=headers, json=fallback)
         if response.status_code >= 400:
             # Keep Gemini models usable while a direct AI Studio credential is
             # disabled by routing the same documented model through OpenRouter.
-            if response.status_code in (401, 403, 404) and _key(
+            if response.status_code in (401, 403) and _key(
                 settings, "openrouter_api_key", "OPENROUTER_API_KEY"
             ):
                 return await _compatible(
@@ -326,6 +442,7 @@ async def _gemini(
     return {
         "content": "".join(text), "tool_calls": calls,
         "usage_total": _usage(data), "model_used": model,
+        "tool_transport": tool_transport,
     }
 
 
@@ -374,6 +491,7 @@ async def _cohere(
         "tool_calls": message.get("tool_calls") or [],
         "usage_total": total,
         "model_used": model,
+        "tool_transport": _tool_transport(data, bool(tools)),
     }
 
 
@@ -387,7 +505,12 @@ async def _compatible(
         "groq": (str(getattr(settings, "groq_base_url", "https://api.groq.com/openai/v1")), "groq_api_key", ("GROQ_API_KEY",), 30.0),
         "cerebras": (str(getattr(settings, "cerebras_base_url", "https://api.cerebras.ai/v1")), "cerebras_api_key", ("CEREBRAS_API_KEY",), 30.0),
         "nvidia": (str(getattr(settings, "nvidia_base_url", "https://integrate.api.nvidia.com/v1")), "nvidia_api_key", ("NVIDIA_API_KEY",), 120.0),
-        "openrouter": (str(getattr(settings, "openrouter_base_url", "https://openrouter.ai/api/v1")), "openrouter_api_key", ("OPENROUTER_API_KEY",), 120.0),
+        "openrouter": (
+            str(getattr(settings, "openrouter_base_url", "https://openrouter.ai/api/v1")),
+            "openrouter_api_key",
+            ("OPENROUTER_API_KEY",),
+            max(120.0, float(os.getenv("OPENROUTER_CHAT_TIMEOUT", "600"))),
+        ),
         "kimi": (str(getattr(settings, "kimi_base_url", "https://api.moonshot.ai/v1")), "kimi_api_key", ("KIMI_API_KEY",), 120.0),
         "together": (str(getattr(settings, "together_base_url", "https://api.together.xyz/v1")), "together_api_key", ("TOGETHER_API_KEY",), 120.0),
         "fireworks": (str(getattr(settings, "fireworks_base_url", "https://api.fireworks.ai/inference/v1")), "fireworks_api_key", ("FIREWORKS_API_KEY",), 60.0),
@@ -406,6 +529,8 @@ async def _compatible(
         payload["temperature"] = temperature
     if tools:
         payload.update({"tools": tools, "tool_choice": tool_choice or "auto"})
+        if provider == "openrouter":
+            payload["provider"] = {"require_parameters": True}
     try:
         data = await _post(
             provider, base.rstrip("/") + "/chat/completions",

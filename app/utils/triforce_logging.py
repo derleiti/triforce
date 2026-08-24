@@ -623,11 +623,37 @@ class TriForceCentralLogger:
 
     def get_stats(self) -> Dict[str, Any]:
         """Get logger statistics"""
+        category_counts: Dict[str, int] = {}
+        level_counts: Dict[str, int] = {}
+        for entry in self._buffer:
+            category = entry.category.value if hasattr(entry.category, "value") else str(entry.category)
+            level = entry.level.value if hasattr(entry.level, "value") else str(entry.level)
+            category_counts[category] = category_counts.get(category, 0) + 1
+            level_counts[level] = level_counts.get(level, 0) + 1
+
+        try:
+            started_at = datetime.fromisoformat(self._stats["started_at"])
+            uptime_seconds = max(
+                0.0,
+                (datetime.now(timezone.utc) - started_at).total_seconds(),
+            )
+        except (KeyError, TypeError, ValueError):
+            uptime_seconds = 0.0
+
         return {
             **self._stats,
+            # `errors` historically counts internal flush/processing failures.
+            # Keep it for compatibility and expose an unambiguous name as well.
+            "internal_errors": self._stats["errors"],
+            "error_entries": sum(
+                level_counts.get(level, 0) for level in ("error", "critical")
+            ),
+            "category_counts": category_counts,
+            "level_counts": level_counts,
             "buffer_size": len(self._buffer),
             "pending_flush": len(self._pending),
             "websocket_clients": len(self._websockets),
+            "uptime_seconds": round(uptime_seconds, 3),
         }
 
     async def read_log_file(self, date: str) -> List[Dict[str, Any]]:

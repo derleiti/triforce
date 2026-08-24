@@ -65,6 +65,21 @@ if ( ! function_exists( 'ailinux_nova_dark_setup' ) ) {
 }
 add_action( 'after_setup_theme', 'ailinux_nova_dark_setup' );
 
+
+/**
+ * Public pages use English as their canonical source language.
+ * GTranslate owns the visitor-selected language via its googtrans cookie/UI.
+ */
+function ailinux_nova_dark_frontend_source_locale( $locale ) {
+    if ( is_admin() || wp_doing_ajax() || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) {
+        return $locale;
+    }
+
+    return 'en_US';
+}
+add_filter( 'determine_locale', 'ailinux_nova_dark_frontend_source_locale', 100 );
+add_filter( 'locale', 'ailinux_nova_dark_frontend_source_locale', 100 );
+
 function ailinux_nova_dark_widgets_init() {
     register_sidebar( [
         'name'          => __( 'Sidebar', 'ailinux-nova-dark' ),
@@ -217,7 +232,7 @@ function ailinux_nova_dark_enqueue_assets() {
         $title = get_the_title( $post );
         $excerpt = has_excerpt( $post ) ? get_the_excerpt( $post ) : wp_trim_words( $post->post_content, 50 );
         $context_prompt = sprintf(
-            __( 'Diskutiere diesen Beitrag: "%s" - %s', 'ailinux-nova-dark' ),
+            __( 'Discuss this post: "%s" - %s', 'ailinux-nova-dark' ),
             $title,
             wp_strip_all_tags( $excerpt )
         );
@@ -294,8 +309,8 @@ function ailinux_nova_dark_customize_register( $wp_customize ) {
         'section' => 'ailinux_nova_dark_options',
         'type'    => 'radio',
         'choices' => [
-            'accent-blue'  => __( 'Blau', 'ailinux-nova-dark' ),
-            'accent-green' => __( 'Gruen', 'ailinux-nova-dark' ),
+            'accent-blue'  => __( 'Blue', 'ailinux-nova-dark' ),
+            'accent-green' => __( 'Green', 'ailinux-nova-dark' ),
         ],
     ] );
 
@@ -519,7 +534,7 @@ function ailinux_nova_dark_get_customizer_css() {
     ?>
     :root {
         <?php foreach ( $colors as $variable => $value ) : ?>
-            <?php echo esc_attr( $variable ); ?>: <?php echo esc_attr( $value ); ?> !important;
+            <?php echo esc_attr( $variable ); ?>: <?php echo esc_attr( $value ); ?>;
         <?php endforeach; ?>
         --font-sans: '<?php echo esc_attr( $font_sans ); ?>', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         --font-mono: '<?php echo esc_attr( $font_mono ); ?>', 'Fira Code', ui-monospace, SFMono-Regular, monospace;
@@ -527,21 +542,21 @@ function ailinux_nova_dark_get_customizer_css() {
 
     html[data-theme='light'] {
         <?php foreach ( $light_colors as $variable => $value ) : ?>
-            <?php echo esc_attr( $variable ); ?>: <?php echo esc_attr( $value ); ?> !important;
+            <?php echo esc_attr( $variable ); ?>: <?php echo esc_attr( $value ); ?>;
         <?php endforeach; ?>
     }
 
     <?php if ( $header_bg_color ) : ?>
-    .site-header {
+    html[data-theme='dark'] .site-header {
         background-color: <?php echo esc_attr( $header_bg_color ); ?>;
     }
     <?php endif; ?>
 
     <?php if ( $header_text_color ) : ?>
-    .site-header .site-title,
-    .site-header .site-description,
-    .site-header .site-nav a,
-    .site-header .utility-link {
+    html[data-theme='dark'] .site-header .site-title,
+    html[data-theme='dark'] .site-header .site-description,
+    html[data-theme='dark'] .site-header .site-nav a,
+    html[data-theme='dark'] .site-header .utility-link {
         color: <?php echo esc_attr( $header_text_color ); ?>;
     }
     <?php endif; ?>
@@ -743,12 +758,12 @@ function ailinux_nova_dark_customize_preview_js() {
 add_action( 'customize_preview_init', 'ailinux_nova_dark_customize_preview_js' );
 
 /**
- * Set posts per page to 200 for blog archives
+ * Set posts per page to 125 for blog and archive views
  */
 function ailinux_nova_dark_posts_per_page( $query ) {
     if ( ! is_admin() && $query->is_main_query() ) {
         if ( is_home() || is_archive() ) {
-            $query->set( 'posts_per_page', 200 );
+            $query->set( 'posts_per_page', 125 );
         }
     }
 }
@@ -899,7 +914,7 @@ function nova_article_discuss_widget() {
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
     </svg>
-    <?php esc_html_e( 'Mit KI besprechen', 'ailinux-nova-dark' ); ?>
+    <?php esc_html_e( 'Discuss with AI', 'ailinux-nova-dark' ); ?>
   </button>
 
   <div class="nova-discuss-panel" id="nova-discuss-panel-<?php echo $post->ID; ?>">
@@ -909,32 +924,32 @@ function nova_article_discuss_widget() {
           <circle cx="12" cy="12" r="3"></circle>
           <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"></path>
         </svg>
-        <?php esc_html_e( 'KI-Assistent', 'ailinux-nova-dark' ); ?>
+        <?php esc_html_e( 'AI Assistant', 'ailinux-nova-dark' ); ?>
       </div>
-      <select id="nova-discuss-model-<?php echo $post->ID; ?>" name="nova-discuss-model" class="nova-discuss-model-select" aria-label="KI-Modell" data-autoload="true" data-models-url="<?php echo esc_attr( rest_url('nova-ai/v1/models') ); ?>">
-        <option value="groq/meta-llama/llama-4-scout-17b-16e-instruct" selected>Modelle laden…</option>
+      <select id="nova-discuss-model-<?php echo $post->ID; ?>" name="nova-discuss-model" class="nova-discuss-model-select" aria-label="AI model" data-autoload="true" data-models-url="<?php echo esc_attr( rest_url('nova-ai/v1/models') ); ?>">
+        <option value="groq/meta-llama/llama-4-scout-17b-16e-instruct" selected>Loading models…</option>
       </select>
-      <button class="nova-discuss-close" aria-label="Schließen">×</button>
+      <button class="nova-discuss-close" aria-label="Close">×</button>
     </div>
     <div class="nova-discuss-context-bar">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>
       </svg>
-      <?php esc_html_e( 'Kontext geladen:', 'ailinux-nova-dark' ); ?>
+      <?php esc_html_e( 'Context loaded:', 'ailinux-nova-dark' ); ?>
       <strong><?php echo esc_html( mb_substr( $title, 0, 60 ) ); ?></strong>
     </div>
     <div class="nova-discuss-quick">
-      <button class="nova-discuss-quick-btn" data-q="Fasse diesen Artikel kurz zusammen.">📋 Zusammenfassung</button>
-      <button class="nova-discuss-quick-btn" data-q="Was sind die wichtigsten Punkte?">🔑 Kernaussagen</button>
-      <button class="nova-discuss-quick-btn" data-q="Erkläre das Thema für Einsteiger.">🎓 Einfach erklären</button>
-      <button class="nova-discuss-quick-btn" data-q="Welche Meinungen gibt es dazu?">💬 Pro & Contra</button>
+      <button class="nova-discuss-quick-btn" data-q="Summarize this article briefly.">📋 Summary</button>
+      <button class="nova-discuss-quick-btn" data-q="What are the key points?">🔑 Key points</button>
+      <button class="nova-discuss-quick-btn" data-q="Explain the topic for a beginner.">🎓 Explain simply</button>
+      <button class="nova-discuss-quick-btn" data-q="What are the main arguments for and against it?">💬 Pros & cons</button>
     </div>
     <div class="nova-discuss-messages" role="log" aria-live="polite"></div>
     <div class="nova-discuss-input-row">
       <textarea id="nova-discuss-input-<?php echo $post->ID; ?>" name="nova-discuss-input" class="nova-discuss-input" rows="1"
-                placeholder="<?php esc_attr_e( 'Frage zum Artikel stellen…', 'ailinux-nova-dark' ); ?>"
+                placeholder="<?php esc_attr_e( 'Ask about this article…', 'ailinux-nova-dark' ); ?>"
                 maxlength="1000"></textarea>
-      <button class="nova-discuss-send" aria-label="Senden">
+      <button class="nova-discuss-send" aria-label="Send">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="22" y1="2" x2="11" y2="13"></line>
           <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
@@ -1038,7 +1053,7 @@ add_action( 'wp_footer', function () {
         if (isOpen && !nonce) fetchNonce();
         if (isOpen) loadModels();
         if (isOpen && messages.children.length === 0) {
-          addMessage('ai', '👋 Ich habe den Artikel „' + (ctx.title || '') + '" geladen. Was möchtest du wissen?');
+          addMessage('ai', '👋 I loaded the article “' + (ctx.title || '') + '”. What would you like to know?');
         }
       });
       closeBtn.addEventListener('click', function() {

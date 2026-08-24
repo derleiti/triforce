@@ -30,17 +30,17 @@
   --nova-bg:          var(--bg-0, #0e1116);
   --nova-bg2:         var(--bg-1, #131822);
   --nova-bg3:         var(--bg-2, #1b2330);
-  --nova-border:      var(--border, #2a3441);
+  --nova-border:      var(--line, #2a3441);
   --nova-text:        var(--text, #e8edf2);
   --nova-text2:       var(--muted, #a9b3c0);
   --nova-accent:      var(--accent-blue, #3aa0ff);
   --nova-accent2:     var(--accent-green, #44d19a);
   --nova-accent3:     var(--accent-red, #f87171);
   --nova-btn:         var(--accent-blue, #3aa0ff);
-  --nova-btn-text:    var(--bg-0, #0e1116);
+  --nova-btn-text:    var(--btn-text, #ffffff);
   --nova-btn-hover:   var(--accent-green, #44d19a);
   --nova-input-bg:    var(--bg-1, #131822);
-  --nova-input-border:var(--border, #2a3441);
+  --nova-input-border:var(--line, #2a3441);
   --nova-shadow:      0 4px 24px rgba(0,0,0,0.3);
 }
 
@@ -94,8 +94,8 @@
 [data-nova-theme="light-warm"] {
   --nova-bg:#faf7f2;--nova-bg2:#ffffff;--nova-bg3:#f0ebe3;
   --nova-border:#d4c8b8;--nova-text:#2c1e0f;--nova-text2:#7d6b57;
-  --nova-accent:#c45c00;--nova-accent2:#5a8a00;--nova-accent3:#b52a2a;
-  --nova-btn:#c45c00;--nova-btn-hover:#a34e00;--nova-btn-text:#fff;
+  --nova-accent:#a94705;--nova-accent2:#3f6212;--nova-accent3:#b52a2a;
+  --nova-btn:#a94705;--nova-btn-hover:#8f3d04;--nova-btn-text:#fff;
   --nova-input-bg:#fff;--nova-input-border:#d4c8b8;
   --nova-shadow:0 2px 12px rgba(0,0,0,0.08);
 }
@@ -109,9 +109,9 @@
 }
 [data-nova-theme="light-solarized"] {
   --nova-bg:#fdf6e3;--nova-bg2:#eee8d5;--nova-bg3:#f5efdc;
-  --nova-border:#cfc6a5;--nova-text:#657b83;--nova-text2:#93a1a1;
-  --nova-accent:#268bd2;--nova-accent2:#859900;--nova-accent3:#dc322f;
-  --nova-btn:#268bd2;--nova-btn-hover:#1a6fa8;--nova-btn-text:#fdf6e3;
+  --nova-border:#cfc6a5;--nova-text:#344b52;--nova-text2:#52666c;
+  --nova-accent:#0b669e;--nova-accent2:#5f6f00;--nova-accent3:#dc322f;
+  --nova-btn:#0b669e;--nova-btn-hover:#08527f;--nova-btn-text:#ffffff;
   --nova-input-bg:#fdf6e3;--nova-input-border:#cfc6a5;
 }
 [data-nova-theme="light-paper"] {

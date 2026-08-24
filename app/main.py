@@ -5,7 +5,7 @@ import logging
 import redis.asyncio as redis
 from fastapi import FastAPI, Request, status, HTTPException
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse, HTMLResponse, FileResponse, RedirectResponse
+from fastapi.responses import JSONResponse, HTMLResponse, FileResponse, RedirectResponse, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import get_swagger_ui_oauth2_redirect_html
 from fastapi.staticfiles import StaticFiles
@@ -98,6 +98,7 @@ from .routes.client_logs import router as client_logs_router
 from .routes.client_ocr import router as client_ocr_router
 from .routes.federation import router as federation_router
 from .routes.nova_chat_agent import router as nova_chat_agent_router
+from .routes.remote_coding_agent import router as remote_coding_agent_router
 from .routes.nova_frontend import public_router as nova_frontend_public_router
 from .routes.nova_frontend import router as nova_frontend_router
 from .routes.nova_playground import router as nova_playground_router
@@ -121,7 +122,10 @@ async def _delayed_bootstrap():
     try:
         from .services.agent_bootstrap import bootstrap_service
         result = await bootstrap_service.bootstrap_all(sequential_lead=True)
-        logger.info(f"Agent Bootstrap complete: {result.get('success_count', 0)} agents started")
+        logger.info(
+            "Agent Bootstrap complete: %s agents ready for on-demand calls",
+            result.get("success_count", 0),
+        )
     except Exception as e:
         logger.error(f"Agent Bootstrap failed: {e}")
 
@@ -450,6 +454,7 @@ def create_app() -> FastAPI:
     app.include_router(client_ocr_router, prefix="/v1", tags=["Client OCR"])
     app.include_router(federation_router, prefix="/v1", tags=["Federation"])
     app.include_router(nova_chat_agent_router, prefix="/v1", tags=["Nova Chat Agent"])
+    app.include_router(remote_coding_agent_router, prefix="/v1", tags=["Remote Coding Preview"])
     app.include_router(nova_frontend_public_router, prefix="/v1", tags=["Nova Frontend Public"])
     app.include_router(nova_frontend_router, prefix="/v1", tags=["Nova Frontend"])
     app.include_router(nova_playground_router, prefix="/v1", tags=["Nova Playground"])

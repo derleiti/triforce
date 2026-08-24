@@ -2,13 +2,26 @@
 # codex-triforce v3.1 — persist HOME auth
 source "$(dirname "$0")/triforce-env.sh"
 
-# Auth aus persist-Volume (frisch kopiert von /home/zombie/.codex/)
-export HOME=/opt/triforce/persist/cli-config/codex
+# Account-Auth und lokaler State liegen direkt unter /home/zombie/.codex.
+# Ein altes Container-Persist-HOME unter /opt/triforce existiert auf Bare Metal
+# nicht und macht aktuelle Codex-Versionen beim SQLite-State unbrauchbar.
 
 # npm auto-update (24h Cooldown, non-blocking)
 _auto_update_npm "@openai/codex"
 
 DEFAULT_MODEL="${CODEX_MODEL:-gpt-5.4}"
+
+# MCP one-shot calls must use Codex' explicit non-interactive exec mode.
+if [[ "${1:-}" == "--triforce-headless" ]]; then
+  shift
+  _log_agent_start "codex" "$DEFAULT_MODEL" "exec"
+  exec codex exec \
+    --model "$DEFAULT_MODEL" \
+    --dangerously-bypass-approvals-and-sandbox \
+    --skip-git-repo-check \
+    --color never \
+    "$@"
+fi
 
 HAS_MODEL=false
 for arg in "$@"; do

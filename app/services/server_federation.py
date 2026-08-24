@@ -320,9 +320,18 @@ import hmac
 import hashlib
 import base64
 
-FEDERATION_PSK = os.getenv("FEDERATION_SECRET", "ailinux-federation-2025")
-logger.info(f"FEDERATION_PSK initialized: {FEDERATION_PSK[:20] if FEDERATION_PSK else "EMPTY"}...")
-logger.info(f"FEDERATION_PSK loaded: {FEDERATION_PSK[:20] if FEDERATION_PSK else "EMPTY"}...")
+FEDERATION_PSK = os.getenv("FEDERATION_SECRET", "")
+if not FEDERATION_PSK:
+    # 2026-08-16: Vorher stand hier ein hartkodierter Default, der im
+    # oeffentlichen Repo einsehbar ist. Ohne gesetztes Secret lief die
+    # Federation dann mit einem allgemein bekannten Schluessel weiter und
+    # loggte trotzdem "PSK configured". Jetzt fail-closed.
+    raise RuntimeError(
+        "FEDERATION_SECRET ist nicht gesetzt. Federation-Nachrichten koennen "
+        "nicht signiert werden. Setze FEDERATION_SECRET in config/triforce.env "
+        "(auf allen Nodes derselbe Wert)."
+    )
+logger.info(f"Federation PSK configured (len={len(FEDERATION_PSK)})")
 
 # Federation Node Configuration
 # vpn_ip: WireGuard VPN address for direct communication
@@ -397,7 +406,7 @@ def verify_signed_request(request: dict, secret: str = None, max_age: int = 300)
         if hmac.compare_digest(signature, expected):
             return data  # Gib das entpackte data dict zurück
         else:
-            logger.warning(f"Signed request: signature mismatch\n  secret={secret[:20]}...\n  expected={expected}\n  got={signature}\n  data={str(data)[:100]}...")
+            logger.warning("Signed request rejected: signature mismatch")
             return None
     except Exception as e:
         logger.error(f"Signed request verification error: {e}")

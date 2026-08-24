@@ -1,0 +1,406 @@
+"""Experimental remote coding agent for connected AICoder nodes.
+
+This service deliberately separates reasoning from execution:
+- Google Antigravity SDK owns the agent/conversation loop.
+- TriForce owns authentication, node selection and orchestration.
+- The connected AICoder owns workspace confinement and local tool execution.
+
+Read tools are always eligible. A single constrained file-edit tool is available
+only when the connected AICoder explicitly advertises its local write-preview
+profile. Shell, delete and arbitrary write forwarding are never registered here.
+"""
+from __future__ import annotations
+
+import logging
+from dataclasses import dataclass
+from typing import Any, Awaitable, Callable, Dict, List, Optional
+
+from app.routes.mcp_node import CONNECTED_CLIENTS, ClientConnection
+
+logger = logging.getLogger("ailinux.remote_coding_agent")
+
+REMOTE_READ_TOOLS = {
+    "client_file_read",
+    "client_file_list",
+    "client_codebase_search",
+    "client_git_status",
+}
+REMOTE_WRITE_TOOLS = {"client_file_edit"}
+REMOTE_CONTROL_TOOLS = {"client_run_state"}
+REMOTE_MODEL_TOOLS = REMOTE_READ_TOOLS | REMOTE_WRITE_TOOLS
+REMOTE_TOOLS = REMOTE_MODEL_TOOLS | REMOTE_CONTROL_TOOLS
+
+
+@dataclass
+class RemoteCodingNode:
+    client_id: str
+    user_id: str
+    tier: str
+    hostname: str
+    workspace: str
+    profile: str
+    supported_tools: List[str]
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "client_id": self.client_id,
+            "user_id": self.user_id,
+            "tier": self.tier,
+            "hostname": self.hostname,
+            "workspace": self.workspace,
+            "profile": self.profile,
+            "supported_tools": list(self.supported_tools),
+        }
+
+
+def _unique_connections() -> List[tuple[str, ClientConnection]]:
+    """Collapse registry aliases so each physical WebSocket appears once."""
+    seen: set[int] = set()
+    rows: List[tuple[str, ClientConnection]] = []
+    for registry_id, connection in CONNECTED_CLIENTS.items():
+        identity = id(connection)
+        if identity in seen:
+            continue
+        seen.add(identity)
+        rows.append((registry_id, connection))
+    return rows
+
+
+def _node_view(registry_id: str, connection: ClientConnection) -> RemoteCodingNode:
+    info = connection.client_info if isinstance(connection.client_info, dict) else {}
+    supported = [
+        str(name) for name in (connection.supported_tools or [])
+        if str(name) in REMOTE_TOOLS
+    ]
+    return RemoteCodingNode(
+        client_id=connection.client_id or registry_id,
+        user_id=connection.user_id,
+        tier=connection.tier.value,
+        hostname=str(info.get("hostname") or ""),
+        workspace=str(info.get("workspace") or ""),
+        profile=str(info.get("remote_profile") or info.get("mode") or connection.mode),
+        supported_tools=sorted(set(supported)),
+    )
+
+
+def list_remote_coding_nodes() -> List[RemoteCodingNode]:
+    rows: List[RemoteCodingNode] = []
+    for registry_id, connection in _unique_connections():
+        info = connection.client_info if isinstance(connection.client_info, dict) else {}
+        if info.get("client") != "aicoder":
+            continue
+        if connection.mode == "telemetry_only":
+            continue
+        node = _node_view(registry_id, connection)
+        if node.supported_tools:
+            rows.append(node)
+    return rows
+
+
+def resolve_remote_coding_node(client_id: str) -> ClientConnection:
+    connection = CONNECTED_CLIENTS.get(client_id)
+    if connection is None:
+        raise LookupError(f"AICoder node not connected: {client_id}")
+    info = connection.client_info if isinstance(connection.client_info, dict) else {}
+    if info.get("client") != "aicoder":
+        raise LookupError(f"Connected client is not an AICoder node: {client_id}")
+    if connection.mode == "telemetry_only":
+        raise PermissionError(f"AICoder node is telemetry-only: {client_id}")
+    return connection
+
+
+async def _call_client_tool(
+    connection: ClientConnection,
+    name: str,
+    arguments: Dict[str, Any],
+    *,
+    timeout: float = 60.0,
+) -> str:
+    if name not in REMOTE_TOOLS:
+        raise PermissionError(f"remote coding preview blocks tool: {name}")
+    if name not in set(connection.supported_tools or []):
+        raise LookupError(f"AICoder node does not advertise tool: {name}")
+    result = await connection.send_tool_call(name, arguments, timeout=timeout)
+    if isinstance(result, dict):
+        blocks = result.get("content")
+        if isinstance(blocks, list):
+            texts = [
+                str(block.get("text"))
+                for block in blocks
+                if isinstance(block, dict) and block.get("type") == "text"
+            ]
+            if texts:
+                if result.get("isError"):
+                    return "REMOTE TOOL ERROR: " + "\n".join(texts)
+                return "\n".join(texts)
+        return str(result)
+    return str(result)
+
+
+def _build_remote_tools(connection: ClientConnection) -> List[Callable[..., Awaitable[str]]]:
+    """Create Antigravity custom tools bound to one AICoder connection."""
+
+    async def client_file_read(path: str, start_line: int = 1, end_line: int = 400) -> str:
+        """Read a UTF-8 text file from the connected AICoder workspace."""
+        return await _call_client_tool(
+            connection,
+            "client_file_read",
+            {"path": path, "start_line": start_line, "end_line": end_line},
+        )
+
+    async def client_file_list(path: str = ".", recursive: bool = False) -> str:
+        """List files below a directory in the connected AICoder workspace."""
+        return await _call_client_tool(
+            connection,
+            "client_file_list",
+            {"path": path, "recursive": recursive},
+        )
+
+    async def client_codebase_search(
+        query: str,
+        path: str = ".",
+        file_pattern: str = "*",
+    ) -> str:
+        """Search text/regex across files in the connected AICoder workspace."""
+        return await _call_client_tool(
+            connection,
+            "client_codebase_search",
+            {"query": query, "path": path, "file_pattern": file_pattern},
+        )
+
+    async def client_git_status(path: str = ".") -> str:
+        """Read git status for a repository in the connected AICoder workspace."""
+        return await _call_client_tool(connection, "client_git_status", {"path": path})
+
+    async def client_file_edit(
+        path: str,
+        operation: str,
+        content: str = "",
+        old_text: str = "",
+        new_text: str = "",
+    ) -> str:
+        """Create a new file or exact-replace one unique text span on an opted-in AICoder node."""
+        arguments: Dict[str, Any] = {"path": path, "operation": operation}
+        if operation == "create":
+            arguments["content"] = content
+        elif operation == "replace":
+            arguments["old_text"] = old_text
+            arguments["new_text"] = new_text
+        return await _call_client_tool(connection, "client_file_edit", arguments)
+
+    candidates: Dict[str, Callable[..., Awaitable[str]]] = {
+        "client_file_read": client_file_read,
+        "client_file_list": client_file_list,
+        "client_codebase_search": client_codebase_search,
+        "client_git_status": client_git_status,
+        "client_file_edit": client_file_edit,
+    }
+    advertised = set(connection.supported_tools or []) & REMOTE_MODEL_TOOLS
+    return [tool for name, tool in candidates.items() if name in advertised]
+
+
+async def _read_worker_stderr(stream, sink: list[str]) -> None:
+    if stream is None:
+        return
+    while True:
+        line = await stream.readline()
+        if not line:
+            return
+        sink.append(line.decode("utf-8", errors="replace").rstrip())
+        del sink[:-40]
+
+
+def normalize_antigravity_model_base_url(value: str) -> str:
+    """Normalize the SDK 0.1.9 LocalOpenAI base URL contract.
+
+    The bundled harness appends ``/v1/chat/completions`` itself. Accept the
+    conventional OpenAI-compatible ``.../v1`` form as input without producing
+    the broken ``.../v1/v1/chat/completions`` path.
+    """
+    base = str(value or "").strip().rstrip("/")
+    if base.endswith("/v1"):
+        base = base[:-3].rstrip("/")
+    return base
+
+
+async def _run_antigravity_worker(
+    connection: ClientConnection,
+    *,
+    task: str,
+    model: str,
+    system: str,
+    run_id: str,
+    timeout: float = 180.0,
+) -> Dict[str, Any]:
+    """Run Antigravity 0.1.9 in its isolated venv and proxy remote tool RPC."""
+    import asyncio
+    import json
+    import os
+    from pathlib import Path
+
+    repo_root = Path(__file__).resolve().parents[2]
+    python_bin = Path(os.getenv(
+        "TRIFORCE_ANTIGRAVITY_PYTHON",
+        str(repo_root / ".venv-antigravity" / "bin" / "python"),
+    ))
+    worker = Path(os.getenv(
+        "TRIFORCE_ANTIGRAVITY_WORKER",
+        str(repo_root / "scripts" / "antigravity_remote_worker.py"),
+    ))
+    if not python_bin.is_file():
+        raise RuntimeError(
+            "isolated Antigravity runtime missing; create .venv-antigravity from requirements-antigravity.txt"
+        )
+    if not worker.is_file():
+        raise RuntimeError(f"Antigravity worker missing: {worker}")
+
+    proc = await asyncio.create_subprocess_exec(
+        str(python_bin), str(worker),
+        stdin=asyncio.subprocess.PIPE,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+        cwd=str(repo_root),
+        env={**os.environ, "PYTHONUNBUFFERED": "1"},
+    )
+    assert proc.stdin is not None and proc.stdout is not None
+    stderr_lines: list[str] = []
+    stderr_task = asyncio.create_task(_read_worker_stderr(proc.stderr, stderr_lines))
+    prefix = b"TRIFORCE_ANTIGRAVITY_RPC "
+
+    async def send(payload: Dict[str, Any]) -> None:
+        proc.stdin.write((json.dumps(payload, ensure_ascii=False) + "\n").encode("utf-8"))
+        await proc.stdin.drain()
+
+    model_base_url = normalize_antigravity_model_base_url(
+        os.getenv("TRIFORCE_ANTIGRAVITY_MODEL_BASE_URL", "http://127.0.0.1:9000")
+    )
+    await send({
+        "type": "start",
+        "task": task,
+        "model": model,
+        "base_url": model_base_url,
+        "system": system,
+        "tools": sorted(set(connection.supported_tools or []) & REMOTE_MODEL_TOOLS),
+    })
+
+    async def exchange() -> Dict[str, Any]:
+        while True:
+            raw = await proc.stdout.readline()
+            if not raw:
+                code = await proc.wait()
+                detail = "\n".join(stderr_lines[-8:])
+                raise RuntimeError(f"Antigravity worker exited {code}: {detail}".strip())
+            if not raw.startswith(prefix):
+                continue
+            try:
+                message = json.loads(raw[len(prefix):])
+            except json.JSONDecodeError:
+                continue
+            kind = message.get("type")
+            if kind == "tool_call":
+                call_id = str(message.get("id") or "")
+                name = str(message.get("name") or "")
+                args = message.get("arguments") if isinstance(message.get("arguments"), dict) else {}
+                try:
+                    remote_args = dict(args)
+                    remote_args["_run_id"] = run_id
+                    remote_args["_task"] = task
+                    remote_args["_model"] = model
+                    result = await _call_client_tool(connection, name, remote_args)
+                    await send({"type": "tool_result", "id": call_id, "result": result})
+                except Exception as exc:
+                    await send({"type": "tool_result", "id": call_id, "error": str(exc)})
+            elif kind == "final":
+                return message
+            elif kind == "error":
+                raise RuntimeError(str(message.get("message") or "Antigravity worker failed"))
+
+    try:
+        result = await asyncio.wait_for(exchange(), timeout=max(10.0, min(300.0, timeout)))
+        if "client_run_state" in set(connection.supported_tools or []):
+            await _call_client_tool(connection, "client_run_state", {
+                "_run_id": run_id,
+                "_task": task,
+                "_model": model,
+                "status": "completed",
+                "response": str(result.get("response") or ""),
+            })
+    except Exception as exc:
+        if "client_run_state" in set(connection.supported_tools or []):
+            try:
+                await _call_client_tool(connection, "client_run_state", {
+                    "_run_id": run_id,
+                    "_task": task,
+                    "_model": model,
+                    "status": "paused",
+                    "reason": str(exc),
+                })
+            except Exception:
+                logger.exception("failed to persist remote coding pause state for %s", run_id)
+        if proc.returncode is None:
+            proc.terminate()
+            try:
+                await asyncio.wait_for(proc.wait(), timeout=3)
+            except asyncio.TimeoutError:
+                proc.kill()
+                await proc.wait()
+        raise
+    finally:
+        if proc.stdin and not proc.stdin.is_closing():
+            proc.stdin.close()
+        if proc.returncode is None:
+            try:
+                await asyncio.wait_for(proc.wait(), timeout=3)
+            except asyncio.TimeoutError:
+                proc.kill()
+                await proc.wait()
+        await stderr_task
+    return result
+
+
+async def run_remote_coding_agent(
+    *,
+    client_id: str,
+    task: str,
+    model: Optional[str] = None,
+    system: str = "",
+    run_id: Optional[str] = None,
+) -> Dict[str, Any]:
+    """Run one isolated Antigravity turn against an explicitly advertised AICoder tool surface."""
+    import os
+    import re
+    import uuid
+
+    if not task.strip():
+        raise ValueError("task is required")
+    connection = resolve_remote_coding_node(client_id)
+    advertised = set(connection.supported_tools or []) & REMOTE_TOOLS
+    if not advertised:
+        raise RuntimeError("AICoder node exposes no compatible remote coding tools")
+
+    selected_run_id = str(run_id or f"remote-{uuid.uuid4().hex}")
+    if not re.fullmatch(r"[A-Za-z0-9_.-]+", selected_run_id):
+        raise ValueError("invalid run_id")
+
+    selected_model = model or os.getenv(
+        "TRIFORCE_ANTIGRAVITY_MODEL",
+        "mistral/mistral-code-latest",
+    )
+    worker_result = await _run_antigravity_worker(
+        connection,
+        task=task,
+        model=selected_model,
+        system=system,
+        run_id=selected_run_id,
+    )
+    node = _node_view(client_id, connection)
+    return {
+        "status": "completed",
+        "run_id": selected_run_id,
+        "runtime": "antigravity-sdk-sidecar",
+        "mode": node.profile or "read-only-light",
+        "client": node.to_dict(),
+        "model": selected_model,
+        "response": str(worker_result.get("response") or ""),
+        "usage": worker_result.get("usage"),
+    }

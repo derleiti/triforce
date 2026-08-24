@@ -108,8 +108,12 @@ class TaskSpawner:
                 "workdir": "/home/zombie"
             },
             AgentType.GEMINI: {
-                "cmd": ["gemini"],
-                "providers": ["google"],
+                # Legacy enum name retained; runtime is Antigravity CLI.
+                "cmd": [
+                    "/home/zombie/triforce/triforce/bin/agy-triforce",
+                    "--output-format", "text", "--print"
+                ],
+                "providers": [],  # agy uses the zombie account/keyring session
                 "workdir": "/home/zombie"
             },
             AgentType.OPENCODE: {
@@ -176,7 +180,7 @@ class TaskSpawner:
             task.providers_used = agent_config["providers"]
             temp_env = api_vault.get_temp_env(task.providers_used)
             
-            if not temp_env:
+            if task.providers_used and not temp_env:
                 raise RuntimeError(f"No API keys available for {task.providers_used}")
             
             # === Environment bauen ===

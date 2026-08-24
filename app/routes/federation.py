@@ -229,24 +229,48 @@ async def federation_websocket(websocket: WebSocket):
             await websocket.close(code=4001, reason="Expected HELLO message")
             return
         
-        # Validate peer via Federation Vault (token-based auth)
+        # --- Authentifizierung (verschaerft 2026-08-16) --------------------
+        # Vorher: ein fehlgeschlagener Token fiel auf "peer_id in FEDERATION_NODES"
+        # zurueck. Damit kam jeder rein, der sich "hetzner"/"backup"/"zombie-pc"
+        # nannte -- ohne jedes Geheimnis. Jetzt gilt:
+        #   1. HELLO MUSS eine gueltige PSK-Signatur tragen (harte Schranke).
+        #   2. Ist der Node im lokalen Vault registriert, MUSS zusaetzlich sein
+        #      Token stimmen. Nodes ohne eigenen Vault akzeptieren Schritt 1.
+        import logging as _logging
+        _authlog = _logging.getLogger("ailinux.federation.ws")
+        _client_ip = websocket.client.host if websocket.client else None
+
+        if not ("data" in data and isinstance(data.get("data"), dict)):
+            _authlog.warning(f"HELLO ohne Signaturhuelle abgewiesen: {peer_id} von {_client_ip}")
+            await websocket.close(code=4003, reason="Unsigned HELLO rejected")
+            return
+
+        if verify_signed_request(data) is None:
+            _authlog.warning(f"HELLO mit ungueltiger Signatur abgewiesen: {peer_id} von {_client_ip}")
+            await websocket.close(code=4003, reason="Invalid signature")
+            return
+
         from ..services.federation_vault import get_federation_vault
         vault = get_federation_vault()
-        
-        # Extract token from HELLO message
-        if "data" in data and isinstance(data.get("data"), dict):
-            peer_token = data["data"].get("token", "")
+        peer_token = data["data"].get("token", "")
+
+        require_token = LOCAL_NODE_ID == "hetzner" or bool(vault.nodes)
+        if require_token:
+            # Der Hub MUSS immer ueber den Vault authentifizieren. Damit kann
+            # eine leere/defekte Vault-Datei nicht still auf PSK-only
+            # herunterstufen. Hosts mit vorhandenen Eintraegen verhalten sich
+            # ebenfalls fail-closed.
+            if vault.get_node(peer_id) is None:
+                _authlog.warning(f"Nicht registrierter Node abgewiesen: {peer_id} von {_client_ip}")
+                await websocket.close(code=4003, reason="Node not registered")
+                return
+            if not (peer_token and vault.verify_token(peer_id, peer_token, _client_ip)):
+                _authlog.warning(f"Token-Pruefung fehlgeschlagen, Peer abgewiesen: {peer_id} von {_client_ip}")
+                await websocket.close(code=4003, reason="Invalid or missing node token")
+                return
         else:
-            peer_token = data.get("token", "")
-        
-        # Try vault auth first, fallback to legacy node list
-        if peer_token and vault.verify_token(peer_id, peer_token):
-            pass  # Token auth successful
-        elif peer_id in FEDERATION_NODES:
-            pass  # Legacy auth (known node)
-        else:
-            await websocket.close(code=4003, reason=f"Unknown or unauthorized peer: {peer_id}")
-            return
+            # Host ohne eigenen Vault (die Nodes): gueltige PSK-Signatur genuegt.
+            _authlog.info(f"Kein lokaler Vault - Peer {peer_id} allein ueber PSK-Signatur zugelassen")
         
         # Store connection
         _peer_connections[peer_id] = websocket
@@ -271,11 +295,21 @@ async def federation_websocket(websocket: WebSocket):
             raw_msg = await websocket.receive_json()
             logger.info(f"WS Route received from {peer_id}: {str(raw_msg)[:150]}")
             
-            # Unwrap signed messages
-            if "data" in raw_msg and isinstance(raw_msg.get("data"), dict):
-                msg = raw_msg["data"]
-            else:
-                msg = raw_msg
+            # Signatur und Identitaet bleiben nach dem HELLO fuer jede
+            # Nachricht verpflichtend. Sonst waere der Handshake sicher,
+            # der anschliessende Datenpfad aber wieder offen.
+            msg = verify_signed_request(raw_msg)
+            if msg is None:
+                logger.warning(f"Ungueltige/unsignierte Nachricht von {peer_id} abgewiesen")
+                await websocket.close(code=4003, reason="Invalid message signature")
+                return
+            if msg.get("node_id") != peer_id:
+                logger.warning(
+                    f"Node-ID-Wechsel auf bestehender Federation-Verbindung abgewiesen: "
+                    f"{peer_id} -> {msg.get('node_id')}"
+                )
+                await websocket.close(code=4003, reason="Node identity mismatch")
+                return
             
             msg_type = msg.get("type", "unknown")
             
@@ -297,11 +331,12 @@ async def federation_websocket(websocket: WebSocket):
             
             elif msg_type == "task_submit":
                 # Handle incoming task from peer
-                await websocket.send_json({
+                await websocket.send_json(create_signed_request({
                     "type": "task_ack",
+                    "node_id": LOCAL_NODE_ID,
                     "task_id": msg.get("task_id"),
                     "status": "received"
-                })
+                }))
             
             elif msg_type == "task_result":
                 # Handle task result from peer

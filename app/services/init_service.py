@@ -965,21 +965,29 @@ EX:@g>!s"query"=[r]>>@c>!sum@[r] | @g>>@c!code"feat"#urgent"""
         }
         return roles.get(agent_id, "worker")
 
-    def generate_openai_compatible(self, agent_id: str = None) -> dict:
+    def generate_openai_compatible(
+        self,
+        agent_id: str = None,
+        max_tokens: int = 800,
+    ) -> dict:
         """
         Generiert OpenAI-kompatibles System-Message-Format.
         """
-        compact = self.generate_compact_init(agent_id)
+        compact = self.generate_compact_init(agent_id, max_tokens=max_tokens)
         return {
             "role": "system",
             "content": f"MCP-INIT:\n{compact}\n\nUse tools via function_call. Chain with debug_toolchain."
         }
 
-    def generate_gemini_compatible(self, agent_id: str = None) -> dict:
+    def generate_gemini_compatible(
+        self,
+        agent_id: str = None,
+        max_tokens: int = 800,
+    ) -> dict:
         """
         Generiert Gemini-kompatibles Format.
         """
-        compact = self.generate_compact_init(agent_id)
+        compact = self.generate_compact_init(agent_id, max_tokens=max_tokens)
         return {
             "system_instruction": f"MCP-INIT:\n{compact}",
             "tool_config": {
@@ -987,17 +995,26 @@ EX:@g>!s"query"=[r]>>@c>!sum@[r] | @g>>@c!code"feat"#urgent"""
             }
         }
 
-    def generate_anthropic_compatible(self, agent_id: str = None) -> dict:
+    def generate_anthropic_compatible(
+        self,
+        agent_id: str = None,
+        max_tokens: int = 800,
+    ) -> dict:
         """
         Generiert Anthropic/Claude-kompatibles Format.
         """
-        compact = self.generate_compact_init(agent_id)
+        compact = self.generate_compact_init(agent_id, max_tokens=max_tokens)
         return {
             "system": f"MCP-INIT:\n{compact}\n\nUse tool_use blocks for MCP tools.",
             "metadata": {"mcp_version": "2.80.0"}
         }
 
-    def get_universal_init(self, agent_id: str = None, provider: str = "auto") -> dict:
+    def get_universal_init(
+        self,
+        agent_id: str = None,
+        provider: str = "auto",
+        max_tokens: int = 800,
+    ) -> dict:
         """
         Generiert universelles Init-Format für alle Provider.
 
@@ -1005,14 +1022,14 @@ EX:@g>!s"query"=[r]>>@c>!sum@[r] | @g>>@c!code"feat"#urgent"""
             agent_id: Agent-ID
             provider: openai, gemini, anthropic, oder auto (alle Formate)
         """
-        compact = self.generate_compact_init(agent_id)
+        compact = self.generate_compact_init(agent_id, max_tokens=max_tokens)
 
         if provider == "openai":
-            return self.generate_openai_compatible(agent_id)
+            return self.generate_openai_compatible(agent_id, max_tokens=max_tokens)
         elif provider == "gemini":
-            return self.generate_gemini_compatible(agent_id)
+            return self.generate_gemini_compatible(agent_id, max_tokens=max_tokens)
         elif provider == "anthropic":
-            return self.generate_anthropic_compatible(agent_id)
+            return self.generate_anthropic_compatible(agent_id, max_tokens=max_tokens)
         else:
             # Universal format
             return {
@@ -1021,9 +1038,9 @@ EX:@g>!s"query"=[r]>>@c>!sum@[r] | @g>>@c!code"feat"#urgent"""
                 "compact_init": compact,
                 "token_count": len(compact) // 4,
                 "formats": {
-                    "openai": self.generate_openai_compatible(agent_id),
-                    "gemini": self.generate_gemini_compatible(agent_id),
-                    "anthropic": self.generate_anthropic_compatible(agent_id),
+                    "openai": self.generate_openai_compatible(agent_id, max_tokens=max_tokens),
+                    "gemini": self.generate_gemini_compatible(agent_id, max_tokens=max_tokens),
+                    "anthropic": self.generate_anthropic_compatible(agent_id, max_tokens=max_tokens),
                 }
             }
 
@@ -1176,7 +1193,11 @@ async def handle_compact_init(params: Dict[str, Any]) -> Dict[str, Any]:
     max_tokens = params.get("max_tokens", 800)
 
     # Generiere universelles oder provider-spezifisches Format
-    result = compact_init.get_universal_init(agent_id, provider)
+    result = compact_init.get_universal_init(
+        agent_id,
+        provider,
+        max_tokens=max_tokens,
+    )
 
     # Füge Parse-Mode Hinweis hinzu
     result["parse_mode"] = True

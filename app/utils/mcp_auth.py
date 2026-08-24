@@ -204,6 +204,44 @@ def get_persistent_tokens() -> Dict[str, Dict[str, Any]]:
     return _PERSISTENT_TOKENS
 
 
+# Canonical MCP scopes advertised via discovery metadata (RFC 8414/9728).
+# "mcp" is the always-granted base scope; the granular scopes gate privileged
+# tool visibility (see _token_has_full_mcp_access).
+SUPPORTED_MCP_SCOPES = ["mcp", "mcp:read", "mcp:write", "mcp:tools"]
+
+
+def filter_scopes(requested: str) -> str:
+    """Validate a requested scope string against SUPPORTED_MCP_SCOPES.
+
+    Keeps only recognised scopes (order per SUPPORTED_MCP_SCOPES), always
+    includes the "mcp" base scope, and never invents scopes the client did not
+    ask for. Unknown scopes are dropped rather than granting anything implicit.
+    """
+    asked = {part.strip().lower() for part in (requested or "").split() if part.strip()}
+    granted = [s for s in SUPPORTED_MCP_SCOPES if s == "mcp" or s in asked]
+    return " ".join(granted)
+
+
+def get_token_scope(token: str) -> str:
+    """Return the scope actually stored on a token (for token-response echoing)."""
+    if not token:
+        return "mcp"
+    _load_persistent_tokens()
+    metadata = _PERSISTENT_TOKENS.get(token) or {}
+    return str(metadata.get("scope") or "mcp")
+
+
+def _token_has_full_mcp_access(token: str) -> bool:
+    """Authorize privileged MCP tools only for tokens carrying explicit scopes."""
+    if not token:
+        return False
+    _load_persistent_tokens()
+    metadata = _PERSISTENT_TOKENS.get(token) or {}
+    raw_scope = str(metadata.get("scope") or "")
+    scopes = {part.strip().lower() for part in raw_scope.split() if part.strip()}
+    return {"mcp:write", "mcp:tools"}.issubset(scopes)
+
+
 def _safe_compare(a: str, b: str) -> bool:
     """Constant-time string comparison."""
     if not a or not b:
@@ -369,6 +407,28 @@ def _validate_jwt(token: str) -> Optional[Dict[str, Any]]:
         return None
 
 
+def _jwt_has_full_mcp_access(payload: Dict[str, Any]) -> bool:
+    """Grant full MCP access only to explicitly administrative JWT identities."""
+    role = str(payload.get("role") or "").strip().lower()
+    if role == "admin":
+        return True
+
+    user = str(payload.get("email") or payload.get("sub") or "").strip().lower()
+    if not user:
+        return False
+
+    admin_email = (os.environ.get("ADMIN_EMAIL") or "").strip().lower()
+    if admin_email and secrets.compare_digest(user, admin_email):
+        return True
+
+    admin_ids = {
+        value.strip().lower()
+        for value in (os.environ.get("ADMIN_USER_IDS") or "").split(",")
+        if value.strip()
+    }
+    return user in admin_ids
+
+
 async def require_mcp_auth(request: Request) -> str:
     """
     Unified MCP authentication - Port-based.
@@ -410,7 +470,11 @@ async def require_mcp_auth(request: Request) -> str:
         if is_valid_token(query_token):
             request.state.mcp_auth_user = "oauth_client"
             request.state.mcp_auth_method = "query"
-            logger.debug(f"AUTH_OK | IP: {client_ip} | Method: query-param")
+            request.state.mcp_auth_full_access = _token_has_full_mcp_access(query_token)
+            logger.debug(
+                "AUTH_OK | IP: %s | Method: query-param | FullAccess: %s",
+                client_ip, request.state.mcp_auth_full_access,
+            )
             return "oauth_client"
         logger.warning(f"AUTH_FAIL | IP: {client_ip} | Reason: invalid_query_param")
         raise _unauthorized("Invalid query credential")
@@ -421,13 +485,24 @@ async def require_mcp_auth(request: Request) -> str:
         if is_valid_token(token):
             request.state.mcp_auth_user = "oauth_client"
             request.state.mcp_auth_method = "bearer"
-            logger.debug(f"AUTH_OK | IP: {client_ip} | Method: bearer")
+            request.state.mcp_auth_full_access = _token_has_full_mcp_access(token)
+            logger.debug(
+                "AUTH_OK | IP: %s | Method: bearer | FullAccess: %s",
+                client_ip, request.state.mcp_auth_full_access,
+            )
             return "oauth_client"
         # JWT Bridge: Akzeptiere JWTs vom /v1/client/login als gültige MCP-Bearer
         jwt_payload = _validate_jwt(token)
         if jwt_payload:
             user = jwt_payload.get("email") or jwt_payload.get("sub") or "jwt_user"
-            logger.debug(f"AUTH_OK | IP: {client_ip} | Method: jwt | User: {user}")
+            request.state.mcp_auth_user = user
+            request.state.mcp_auth_method = "jwt"
+            request.state.mcp_auth_full_access = _jwt_has_full_mcp_access(jwt_payload)
+            request.state.mcp_auth_client_id = jwt_payload.get("client_id")
+            logger.debug(
+                "AUTH_OK | IP: %s | Method: jwt | User: %s | FullAccess: %s",
+                client_ip, user, request.state.mcp_auth_full_access,
+            )
             return user
         logger.warning(f"AUTH_FAIL | IP: {client_ip} | Reason: invalid_bearer")
         raise _unauthorized("Invalid bearer token")
@@ -491,12 +566,25 @@ def get_oauth_metadata(issuer: str) -> dict:
 
 
 def get_protected_resource_metadata(issuer: str, resource: str = "/") -> dict:
-    """Get OAuth 2.0 Protected Resource Metadata (RFC 9470)."""
+    """Get OAuth 2.0 Protected Resource Metadata (RFC 9728 / RFC 8707).
+
+    ``resource`` must be a canonical absolute URI. A bare "/" (the well-known
+    root request) maps to the canonical MCP resource so Resource Indicators
+    line up with the actual protected endpoint.
+    """
+    issuer = (issuer or DEFAULT_ISSUER).rstrip("/")
+    path = resource or "/"
+    if path in ("", "/"):
+        canonical = f"{issuer}/v1/mcp/sse"
+    elif path.startswith("http://") or path.startswith("https://"):
+        canonical = path
+    else:
+        canonical = f"{issuer}/{path.lstrip('/')}"
     return {
-        "resource": resource,
+        "resource": canonical,
         "authorization_servers": [issuer],
         "bearer_methods_supported": ["header"],
-        "scopes_supported": ["mcp"],
+        "scopes_supported": list(SUPPORTED_MCP_SCOPES),
     }
 
 

@@ -150,7 +150,7 @@ class AccountSuiteService {
         if (count($up)<=1) return new \WP_REST_Response(['ok'=>false,'error'=>'nothing_to_update'], 400);
         $res = wp_update_user($up);
         if (is_wp_error($res)) return new \WP_REST_Response(['ok'=>false,'error'=>$res->get_error_message()], 400);
-        return new \WP_REST_Response(['ok'=>true,'message'=>'Profil aktualisiert']);
+        return new \WP_REST_Response(['ok'=>true,'message'=>'Profile updated']);
     }
 
     public function render($atts): string {
@@ -240,7 +240,7 @@ class AccountSuiteService {
         <div class="nas-card nas-card-tier">
           <div class="nas-card-label">Current Plan</div>
           <div class="nas-card-value"><span class="nas-tier-badge nas-tier-<?= esc_attr($tier) ?>"><?= esc_html(strtoupper($tier)) ?></span></div>
-          <?php if ($tier==='free'): ?><a href="https://ailinux.me/shop" class="nas-upgrade-link">⬆ Upgrade auf Subscriber (35€/mo)</a><?php endif; ?>
+          <?php if ($tier==='free'): ?><a href="https://ailinux.me/shop" class="nas-upgrade-link">⬆ Upgrade to Subscriber (€35/month)</a><?php endif; ?>
         </div>
         <div class="nas-card"><div class="nas-card-label">Email</div><div class="nas-card-value" style="font-size:.9rem;word-break:break-all"><?= esc_html($user->user_email) ?></div></div>
         <div class="nas-card"><div class="nas-card-label">Client-ID</div><div class="nas-card-value" id="nas-client-id-val" style="font-size:.85rem">Loading…</div></div>
@@ -328,7 +328,7 @@ class AccountSuiteService {
     </section>
     <section class="nas-panel" id="nas-panel-mcp">
       <h2 class="nas-panel-title">🌐 MCP Tools</h2>
-      <input type="text" id="nas-mcp-filter" placeholder="🔍 Tool suchen…" class="nas-input-text" style="width:100%;max-width:400px;margin-bottom:1rem">
+      <input type="text" id="nas-mcp-filter" placeholder="🔍 Search tools…" class="nas-input-text" style="width:100%;max-width:400px;margin-bottom:1rem">
       <div id="nas-mcp-content"><div class="nas-loading-box">⏳ Loading MCP Tools…</div></div>
       <div id="nas-mcp-call-section" style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--nas-border,#2a2a3a)">
         <h3>▶ Tool ausführen</h3>

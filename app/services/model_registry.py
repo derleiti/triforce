@@ -27,6 +27,10 @@ REASONING_PATTERN = re.compile(r"(thinking|reason|magistral|o1|o3)", re.IGNORECA
 MODERATION_PATTERN = re.compile(r"(moderation|safety|guard)", re.IGNORECASE)
 OCR_PATTERN = re.compile(r"(ocr|document)", re.IGNORECASE)
 
+OPENROUTER_FREE_ROUTER = "openrouter/openrouter/free"
+OPENROUTER_AUTO_ROUTER = "openrouter/openrouter/auto"
+
+
 PROVIDER_SORT_ORDER = {
     "openai": 0,
     "anthropic": 1,
@@ -325,7 +329,8 @@ class ModelRegistry:
                 self._discover_together(),
                 self._discover_fireworks(),
                 self._discover_cloudflare(),
-                self._discover_github_models(),
+                # GitHub Models was retired on 2026-07-30. Keep the legacy
+                # helper/config for compatibility, but do not probe a dead API.
                 self._discover_huggingface(),
                 return_exceptions=True
             )
@@ -601,8 +606,9 @@ class ModelRegistry:
             if name.startswith("models/"):
                 name = name[7:]
 
-            # Skip excluded models
-            if GEMINI_EXCLUDE_PATTERN.search(name):
+            # Skip excluded models and provider-listed legacy IDs that the
+            # Gemini Developer API explicitly rejects for current/new accounts.
+            if GEMINI_EXCLUDE_PATTERN.search(name) or name in {"gemini-2.5-pro"}:
                 continue
 
             # Use the detect_capabilities function for consistent detection
@@ -638,7 +644,6 @@ class ModelRegistry:
             ModelInfo(id="gemini/gemini-3.1-pro-preview-customtools", provider="gemini", capabilities=["chat", "vision", "reasoning", "code", "function_calling"], roles=["assistant", "vision_analyst", "reasoning_engine", "code_assistant", "tool_user"]),
             ModelInfo(id="gemini/gemini-3.1-flash-lite", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
             ModelInfo(id="gemini/gemini-3-pro-preview", provider="gemini", capabilities=["chat", "vision", "reasoning", "code"], roles=["assistant", "vision_analyst", "reasoning_engine", "code_assistant"]),
-            ModelInfo(id="gemini/gemini-2.5-pro", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
             ModelInfo(id="gemini/gemini-2.5-flash", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
             ModelInfo(id="gemini/gemini-2.5-flash-lite", provider="gemini", capabilities=["chat", "vision"], roles=["assistant", "vision_analyst"]),
             ModelInfo(id="gemini/gemini-live-2.5-flash-preview", provider="gemini", capabilities=["chat", "vision", "audio"], roles=["assistant", "vision_analyst", "audio_processor"]),
@@ -1142,6 +1147,15 @@ class ModelRegistry:
 
             capabilities, roles, api_method = detect_capabilities(model_id)
 
+            # OpenRouter publishes tool support explicitly. Treat this as
+            # authoritative instead of guessing function-calling from model names.
+            supported_parameters = set(model.get("supported_parameters") or [])
+            capabilities = [c for c in capabilities if c != "function_calling"]
+            roles = [r for r in roles if r != "tool_user"]
+            if "tools" in supported_parameters:
+                capabilities.append("function_calling")
+                roles.append("tool_user")
+
             # OpenRouter publishes authoritative input/output modalities.
             architecture = model.get("architecture", {})
             input_mods = set(architecture.get("input_modalities") or [])
@@ -1169,8 +1183,8 @@ class ModelRegistry:
             models.append(ModelInfo(
                 id=f"openrouter/{model_id}",
                 provider="openrouter",
-                capabilities=list(set(capabilities)),
-                roles=roles,
+                capabilities=list(dict.fromkeys(capabilities)),
+                roles=list(dict.fromkeys(roles)),
                 api_method=api_method
             ))
 
@@ -1180,18 +1194,26 @@ class ModelRegistry:
         return self._openrouter_fallback_models()
 
     def _openrouter_fallback_models(self) -> List[ModelInfo]:
-        """Fallback OpenRouter models if API discovery fails."""
+        """Fallback to OpenRouter's maintained free router if discovery is unavailable.
+
+        Exact model aliases are intentionally not hard-coded here because that
+        catalog changes over time. OpenRouter maintains stable ``openrouter/free``
+        and ``openrouter/auto`` routers; request requirements such as tool calling
+        are enforced by the provider routing payload.
+        """
         return [
-            # Dynamic OpenRouter discovery is preferred; these are conservative common entries.
-            ModelInfo(id="openrouter/meta-llama/llama-3.3-70b-instruct:free", provider="openrouter", capabilities=["chat"], roles=["assistant"]),
-            ModelInfo(id="openrouter/google/gemma-2-9b-it:free", provider="openrouter", capabilities=["chat"], roles=["assistant"]),
-            ModelInfo(id="openrouter/mistralai/mistral-7b-instruct:free", provider="openrouter", capabilities=["chat"], roles=["assistant"]),
-            ModelInfo(id="openrouter/openai/gpt-5.5", provider="openrouter", capabilities=["chat", "vision", "reasoning", "code"], roles=["assistant", "vision_analyst", "reasoning_engine", "code_assistant"]),
-            ModelInfo(id="openrouter/openai/gpt-5.4-mini", provider="openrouter", capabilities=["chat", "vision", "reasoning", "code"], roles=["assistant", "vision_analyst", "reasoning_engine", "code_assistant"]),
-            ModelInfo(id="openrouter/openai/gpt-5.2", provider="openrouter", capabilities=["chat", "vision", "reasoning", "code"], roles=["assistant", "vision_analyst", "reasoning_engine", "code_assistant"]),
-            ModelInfo(id="openrouter/anthropic/claude-sonnet-4-6", provider="openrouter", capabilities=["chat", "vision", "code"], roles=["assistant", "vision_analyst", "code_assistant"]),
-            ModelInfo(id="openrouter/google/gemini-3.5-flash", provider="openrouter", capabilities=["chat", "vision", "reasoning", "code"], roles=["assistant", "vision_analyst", "reasoning_engine", "code_assistant"]),
-            ModelInfo(id="openrouter/deepseek/deepseek-chat-v3.1", provider="openrouter", capabilities=["chat", "code", "reasoning"], roles=["assistant", "code_assistant", "reasoning_engine"]),
+            ModelInfo(
+                id=OPENROUTER_FREE_ROUTER,
+                provider="openrouter",
+                capabilities=["chat", "function_calling"],
+                roles=["assistant", "tool_user"],
+            ),
+            ModelInfo(
+                id=OPENROUTER_AUTO_ROUTER,
+                provider="openrouter",
+                capabilities=["chat", "function_calling"],
+                roles=["assistant", "tool_user"],
+            ),
         ]
 
     async def _discover_together(self) -> List[ModelInfo]:

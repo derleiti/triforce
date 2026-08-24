@@ -52,9 +52,9 @@
     openai: 'OpenAI', anthropic: 'Anthropic', gemini: 'Google Gemini',
     mistral: 'Mistral AI', groq: 'Groq', cerebras: 'Cerebras',
     cohere: 'Cohere', kimi: 'Kimi / Moonshot AI', openrouter: 'OpenRouter',
-    ollama: 'Ollama (lokal)', cloudflare: 'Cloudflare Workers AI',
+    ollama: 'Ollama (local)', cloudflare: 'Cloudflare Workers AI',
     github: 'GitHub Models', together: 'Together AI', fireworks: 'Fireworks AI',
-    replicate: 'Replicate', huggingface: 'Hugging Face', other: 'Weitere Anbieter',
+    replicate: 'Replicate', huggingface: 'Hugging Face', other: 'Other providers',
   };
 
   function providerLabel(provider) {
@@ -150,12 +150,14 @@
   const DARK_THEMES  = ['dark-github','dark-dracula','dark-monokai','dark-nord','dark-solarized','dark-onedark'];
   const LIGHT_THEMES = ['light-clean','light-warm','light-contrast','light-solarized','light-paper','light-mint'];
   const THEME_LABELS = {
+    'auto':'Follow site theme',
     'dark-github':'GitHub Dark','dark-dracula':'Dracula','dark-monokai':'Monokai',
     'dark-nord':'Nord','dark-solarized':'Solarized Dark','dark-onedark':'One Dark',
     'light-clean':'Clean Light','light-warm':'Warm','light-contrast':'High Contrast',
     'light-solarized':'Solarized Light','light-paper':'Paper','light-mint':'Mint',
   };
   const THEME_SWATCHES = {
+    'auto':'linear-gradient(135deg,var(--accent-blue,#3aa0ff),var(--accent-green,#44d19a))',
     'dark-github':'#58a6ff','dark-dracula':'#bd93f9','dark-monokai':'#66d9e8',
     'dark-nord':'#88c0d0','dark-solarized':'#268bd2','dark-onedark':'#61afef',
     'light-clean':'#0969da','light-warm':'#c45c00','light-contrast':'#0000cc',
@@ -168,38 +170,29 @@
     const pool = mode === 'light' ? LIGHT_THEMES : DARK_THEMES;
     return pool[Math.floor(Math.random() * pool.length)];
   }
-  function applyTheme(theme) {
-    currentTheme = theme;
-    if (theme) localStorage.setItem('nova-theme', theme);
+  function applyTheme(theme, persist = true) {
+    const resolved = THEME_LABELS[theme] ? theme : 'auto';
+    currentTheme = resolved;
+    if (persist) localStorage.setItem('nova-theme', resolved);
     document.querySelectorAll('.nova-ai-shell,.nova-downloads-shell').forEach(el => {
-      el.setAttribute('data-nova-theme', theme || '');
+      el.setAttribute('data-nova-theme', resolved);
     });
-    document.querySelectorAll('.nova-theme-option').forEach(o => o.classList.toggle('active', o.dataset.theme === theme));
-    document.querySelectorAll('[data-nova-theme-label]').forEach(el => el.textContent = THEME_LABELS[theme] || 'Theme');
-    // Sync global header theme picker icon (sun/moon)
-    const modeNow = (theme && theme.startsWith('light')) ? 'light' : 'dark';
-    document.querySelectorAll('.nova-global-theme-btn').forEach(btn => {
-      btn.setAttribute('aria-pressed', modeNow === 'light' ? 'true' : 'false');
-      btn.title = modeNow === 'light' ? 'Dark Mode' : 'Light Mode (aktuell: ' + (THEME_LABELS[theme] || theme) + ')';
-    });
+    document.querySelectorAll('.nova-theme-option').forEach(o => o.classList.toggle('active', o.dataset.theme === resolved));
+    document.querySelectorAll('[data-nova-theme-label]').forEach(el => el.textContent = THEME_LABELS[resolved] || 'Theme');
   }
   function initTheme() {
-    const saved = localStorage.getItem('nova-theme');
-    applyTheme(saved && THEME_LABELS[saved] ? saved : rndTheme(detectMode()));
-    window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', e => {
-      if (!localStorage.getItem('nova-theme')) applyTheme(rndTheme(e.matches ? 'light' : 'dark'));
-    });
-    // WP html[data-theme] sync
+    const explicit = localStorage.getItem('nova-theme-explicit') === '1';
+    const saved = explicit ? localStorage.getItem('nova-theme') : null;
+    // Legacy builds persisted a random theme without recording user intent.
+    // Migrate those values to site inheritance once; future explicit choices
+    // carry nova-theme-explicit=1 and are preserved.
+    if (!explicit) localStorage.removeItem('nova-theme');
+    applyTheme(saved && THEME_LABELS[saved] ? saved : 'auto', false);
+    // The default/auto theme inherits WordPress CSS variables live. Explicit
+    // Nova themes remain explicit and are never randomized on a site mode change.
     new MutationObserver(() => {
-      const wpMode = document.documentElement.getAttribute('data-theme');
-      if (!wpMode) return;
-      const mode = wpMode === 'light' ? 'light' : 'dark';
-      const saved2 = localStorage.getItem('nova-theme');
-      if (!saved2 || !THEME_LABELS[saved2] || !saved2.startsWith(mode + '-')) {
-        localStorage.removeItem('nova-theme');
-        applyTheme(rndTheme(mode));
-      }
-    }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+      if (currentTheme === 'auto') applyTheme('auto', false);
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'data-theme-profile'] });
   }
 
   // ── Theme-Picker ─────────────────────────────────────────────
@@ -212,6 +205,17 @@
     const btn = picker.querySelector('.nova-theme-btn');
     const dd  = picker.querySelector('.nova-theme-dropdown');
     if (!dd) return;
+    const autoHeader = document.createElement('div');
+    autoHeader.className = 'nova-theme-dropdown-header';
+    autoHeader.textContent = 'Site';
+    dd.appendChild(autoHeader);
+    const autoOption = document.createElement('div');
+    autoOption.className = 'nova-theme-option' + (currentTheme === 'auto' ? ' active' : '');
+    autoOption.dataset.theme = 'auto';
+    autoOption.innerHTML = '<span class="nova-theme-swatch" style="background:linear-gradient(135deg,var(--accent-blue,#3aa0ff),var(--accent-green,#44d19a))"></span>Follow site theme';
+    autoOption.addEventListener('click', () => { localStorage.removeItem('nova-theme-explicit'); applyTheme('auto'); dd.classList.remove('open'); });
+    dd.appendChild(autoOption);
+
     ['dark','light'].forEach(mode => {
       const h = document.createElement('div');
       h.className = 'nova-theme-dropdown-header';
@@ -222,17 +226,10 @@
         o.className = 'nova-theme-option' + (t === currentTheme ? ' active' : '');
         o.dataset.theme = t;
         o.innerHTML = `<span class="nova-theme-swatch" style="background:${THEME_SWATCHES[t]}"></span>${THEME_LABELS[t]}`;
-        o.addEventListener('click', () => { applyTheme(t); dd.classList.remove('open'); });
+        o.addEventListener('click', () => { localStorage.setItem('nova-theme-explicit', '1'); applyTheme(t); dd.classList.remove('open'); });
         dd.appendChild(o);
       });
     });
-    const rh = document.createElement('div');
-    rh.className = 'nova-theme-dropdown-header'; rh.textContent = '🎲 Zufall'; dd.appendChild(rh);
-    const ro = document.createElement('div');
-    ro.className = 'nova-theme-option';
-    ro.innerHTML = '<span class="nova-theme-swatch" style="background:linear-gradient(135deg,#f00,#0f0,#00f)"></span>Zufälliges Theme';
-    ro.addEventListener('click', () => { localStorage.removeItem('nova-theme'); applyTheme(rndTheme(detectMode())); dd.classList.remove('open'); });
-    dd.appendChild(ro);
     if (btn) btn.addEventListener('click', e => { e.stopPropagation(); dd.classList.toggle('open'); });
     document.addEventListener('click', () => dd.classList.remove('open'));
   }
@@ -860,14 +857,14 @@
       let subHTML = '';
       if (tier === 'paid' && subActive) {
         const _renewRaw = sub?.data?.renews_at || sub.renews_at || null;
-        const renewDate = _renewRaw ? new Date(_renewRaw).toLocaleDateString('de-DE') : '';
+        const renewDate = _renewRaw ? new Date(_renewRaw).toLocaleDateString() : '';
         subHTML = `
           <div style="background:rgba(0,0,0,.3);border:1px solid #2a2a3a;border-radius:12px;padding:1.25rem;margin-bottom:1.25rem">
             <h4 style="color:#f1f5f9;margin:0 0 .75rem;font-size:.95rem">\u{1F4B3} Subscription</h4>
             <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem">
               <div>
-                <div style="color:#f1f5f9;font-weight:500">AILinux Pro — Aktiv</div>
-                ${renewDate ? `<div style="color:#64748b;font-size:.8rem">Verlängerung: ${renewDate}</div>` : ''}
+                <div style="color:#f1f5f9;font-weight:500">AILinux Pro — Active</div>
+                ${renewDate ? `<div style="color:#64748b;font-size:.8rem">Renews: ${renewDate}</div>` : ''}
               </div>
               <button id="nova-sub-cancel-btn"
                 style="padding:.4rem 1rem;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#ef4444;border-radius:8px;font-size:.8rem;cursor:pointer">
@@ -881,12 +878,12 @@
             <h4 style="color:#f1f5f9;margin:0 0 .75rem;font-size:.95rem">\u{1F4B3} Subscription</h4>
             <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem">
               <div>
-                <div style="color:#93c5fd;font-weight:500">Free — 0 €/Monat</div>
+                <div style="color:#93c5fd;font-weight:500">Free — €0/month</div>
                 <div style="color:#64748b;font-size:.8rem">57 models · Ollama + small models</div>
               </div>
               <a href="${d.shop_url||'https://ailinux.me/shop'}" target="_blank"
                  style="padding:.5rem 1.25rem;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:white;border-radius:8px;text-decoration:none;font-size:.85rem;font-weight:600">
-                \u2B06\uFE0F Upgrade auf Pro — 17,99 €/Mo
+                \u2B06\uFE0F Upgrade to Pro — €17.99/month
               </a>
             </div>
           </div>`;
@@ -898,7 +895,7 @@
             <div style="color:#f1f5f9;font-weight:500;font-size:.9rem">${f.name||f.file||'Download'}</div>
             <div style="color:#64748b;font-size:.75rem">${f.type||''} ${f.size_formatted||''}</div>
           </div>
-          ${f.url?`<a href="${f.url}" download style="padding:.4rem 1rem;background:#3b82f6;color:white;border-radius:6px;text-decoration:none;font-size:.8rem;font-weight:600">\u2193 Download</a>`:'<span style="color:#64748b;font-size:.8rem">Nicht verfügbar</span>'}
+          ${f.url?`<a href="${f.url}" download style="padding:.4rem 1rem;background:#3b82f6;color:white;border-radius:6px;text-decoration:none;font-size:.8rem;font-weight:600">\u2193 Download</a>`:'<span style="color:#64748b;font-size:.8rem">Not available</span>'}
         </div>`).join('') : '<div style="color:#64748b;font-size:.875rem">No downloads available.</div>';
       const entHTML = ents.length ? `<div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.5rem">${ents.map(e=>`<span style="padding:.25rem .75rem;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);border-radius:20px;font-size:.75rem;color:#93c5fd">${e}</span>`).join('')}</div>` : '<div style="color:#64748b;font-size:.875rem">No additional permissions.</div>';
 
@@ -920,7 +917,7 @@
           </div>
           ${subHTML}
           <div style="background:rgba(0,0,0,.3);border:1px solid #2a2a3a;border-radius:12px;padding:1.25rem;margin-bottom:1.25rem">
-            <h4 style="color:#f1f5f9;margin:0 0 .75rem;font-size:.95rem">\u{1F381} Freigeschaltete Apps & Features</h4>
+            <h4 style="color:#f1f5f9;margin:0 0 .75rem;font-size:.95rem">\u{1F381} Unlocked Apps & Features</h4>
             ${entHTML}
           </div>
           <div style="background:rgba(0,0,0,.3);border:1px solid #2a2a3a;border-radius:12px;padding:1.25rem">
@@ -934,7 +931,7 @@
       if (cancelBtn) {
         cancelBtn.addEventListener('click', async function() {
           if (!confirm('Cancel your subscription? Your Pro access will remain active until the end of the billing period.')) return;
-          cancelBtn.disabled = true; cancelBtn.textContent = 'Wird gekündigt…';
+          cancelBtn.disabled = true; cancelBtn.textContent = 'Cancelling…';
           try {
             const cr = await fetch(API + '/subscription/cancel', {
               method: 'POST', headers: nonceHeader()
@@ -944,7 +941,7 @@
               cancelBtn.style.background = 'rgba(34,197,94,.1)';
               cancelBtn.style.borderColor = 'rgba(34,197,94,.3)';
               cancelBtn.style.color = '#4ade80';
-              cancelBtn.textContent = '\u2713 Kündigung bestätigt';
+              cancelBtn.textContent = '\u2713 Cancellation confirmed';
             } else {
               cancelBtn.disabled = false;
               cancelBtn.textContent = 'Error: ' + (cd.error||cd.message||'Retry');
@@ -955,7 +952,7 @@
         });
       }
     } catch(e) {
-      panel.innerHTML = `<div style="color:#ef4444;padding:1rem">\u274C Fehler beim Laden: ${e.message}</div>`;
+      panel.innerHTML = `<div style="color:#ef4444;padding:1rem">\u274C Error loading: ${e.message}</div>`;
     }
   }
 

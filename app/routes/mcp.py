@@ -73,8 +73,11 @@ from ..services.memory_index import MEMORY_INDEX_HANDLERS
 from ..services.mcp_debugger import mcp_debugger
 from ..services.llm_compat import LLM_COMPAT_HANDLERS
 from ..utils.mcp_auth import require_mcp_auth
+from ..utils.tool_normalizer import is_readonly_tool
 from ..utils.mcp_security import (
+    client_ip,
     filter_tools_for_external,
+    is_ai_coder_request,
     is_internal_full_request,
     is_tool_allowed,
 )
@@ -115,7 +118,7 @@ def _maybe_block_write_tool(
     requested_tool_name: Optional[str] = None,
 ) -> Optional[Dict[str, Any]]:
     """Block tools that are not allowed for the current MCP client."""
-    if request is None or is_tool_allowed(tool_name, request):
+    if request is None or is_tool_allowed(tool_name, request, arguments):
         return None
     payload = {
         "ok": False,
@@ -124,7 +127,14 @@ def _maybe_block_write_tool(
         "tool_name": requested_tool_name or tool_name,
         "resolved_tool_name": tool_name,
     }
-    mcp_logger.warning("MCP_TOOL_FORBIDDEN | tool=%s", tool_name)
+    state = getattr(request, "state", None) if request is not None else None
+    mcp_logger.warning(
+        "MCP_TOOL_FORBIDDEN | requested=%s | resolved=%s | auth_method=%s | auth_user=%s | ip=%s",
+        requested_tool_name or tool_name, tool_name,
+        getattr(state, "mcp_auth_method", None) if state is not None else None,
+        getattr(state, "mcp_auth_user", None) if state is not None else None,
+        client_ip(request) if request is not None else None,
+    )
     return _build_tool_result(payload, is_error=True)
 
 
@@ -163,7 +173,15 @@ def _finish_tools_list(
     request: Optional[Request] = None,
     note: Optional[str] = None,
 ) -> Dict[str, Any]:
-    filtered_tools = _filter_tools_for_client(tools, request)
+    filtered_tools = []
+    for tool in _filter_tools_for_client(tools, request):
+        # Do not mutate shared registry definitions while supplying the MCP
+        # safety metadata consumed by ai-coder's local approval broker.
+        decorated = dict(tool)
+        annotations = dict(decorated.get("annotations") or {})
+        annotations.setdefault("readOnlyHint", is_readonly_tool(str(decorated.get("name") or "")))
+        decorated["annotations"] = annotations
+        filtered_tools.append(decorated)
     result: Dict[str, Any] = {
         "tools": filtered_tools,
         "version": version,
@@ -175,10 +193,12 @@ def _finish_tools_list(
 
 
 def _filter_tools_for_client(tools: List[Dict[str, Any]], request: Optional[Request] = None) -> List[Dict[str, Any]]:
-    """Default-deny tools/list for non-internal MCP clients."""
-    if request is None or is_internal_full_request(request):
+    """Apply normal MCP authorization; ai-coder is an identity, not a deny profile."""
+    if request is None:
         return tools
-    return filter_tools_for_external(tools)
+    if is_internal_full_request(request):
+        return tools
+    return filter_tools_for_external(tools, request=request)
 
 
 @public_router.get("/.well-known/oauth-authorization-server")
@@ -224,7 +244,7 @@ def _serialize_job(job) -> Dict[str, Any]:
     return payload
 
 
-async def handle_crawl_url(params: Dict[str, Any]) -> Dict[str, Any]:
+async def handle_crawl_url(params: Dict[str, Any], request: Optional[Request] = None) -> Dict[str, Any]:
     url = params.get("url")
     if not url:
         raise ValueError("'url' parameter is required for crawl.url")
@@ -239,11 +259,12 @@ async def handle_crawl_url(params: Dict[str, Any]) -> Dict[str, Any]:
         keywords=list(keywords) if keywords else None,
         max_pages=int(params.get("max_pages", 10)),
         idempotency_key=params.get("idempotency_key"),
+        allow_private_networks=bool(request and is_internal_full_request(request)),
     )
     return {"job": _serialize_job(job)}
 
 
-async def handle_crawl_site(params: Dict[str, Any]) -> Dict[str, Any]:
+async def handle_crawl_site(params: Dict[str, Any], request: Optional[Request] = None) -> Dict[str, Any]:
     site_url = params.get("site_url")
     if not site_url:
         raise ValueError("'site_url' parameter is required for crawl.site")
@@ -267,6 +288,7 @@ async def handle_crawl_site(params: Dict[str, Any]) -> Dict[str, Any]:
         requested_by="mcp",
         priority=params.get("priority", "low"),
         idempotency_key=params.get("idempotency_key"),
+        allow_private_networks=bool(request and is_internal_full_request(request)),
     )
     return {"job": _serialize_job(job)}
 
@@ -2363,6 +2385,7 @@ async def handle_tools_call(params: Dict[str, Any], request: Optional[Request] =
         "list_models": handle_models_list,
         "nova_chat_agent": handle_nova_chat_agent,
         "ask_specialist": handle_specialists_invoke,
+        "crawl": handle_crawl_url,
         "crawl_url": handle_crawl_url,
         "web_search": handle_web_search,
         # Extended Multi-Search (v3.0 - Grokipedia + AILinux News)
@@ -2594,6 +2617,7 @@ BLOCKED_PATHS = {
     ".env", ".git", ".ssh", "secrets", "credentials",
     "__pycache__", ".venv", "node_modules", ".claude",
 }
+SAFE_HIDDEN_PATHS = {".github", ".env.example"}
 
 
 def _safe_path(relative_path: str) -> Optional[Path]:
@@ -2623,10 +2647,14 @@ def _safe_path(relative_path: str) -> Optional[Path]:
         # 4. Check for blocked sensitive paths
         path_parts = normalized_path.replace("\\", "/").split("/")
         for part in path_parts:
-            if part.lower() in BLOCKED_PATHS or part.startswith("."):
-                if part not in {".", ".."} and part != ".env.example":
-                    _mcp_logger.warning(f"Blocked path component: {part}")
-                    return None
+            lower_part = part.lower()
+            if lower_part in BLOCKED_PATHS or (
+                part.startswith(".")
+                and part not in {".", ".."}
+                and lower_part not in SAFE_HIDDEN_PATHS
+            ):
+                _mcp_logger.warning(f"Blocked path component: {part}")
+                return None
 
         # 5. Resolve path and check containment
         full_path = (BACKEND_ROOT / normalized_path).resolve()
@@ -2746,8 +2774,14 @@ EDIT_LOG_FILE = BACKEND_ROOT / ".edit_log.jsonl"
 # Edit-specific sensitive paths
 EDIT_FORBIDDEN_PATHS = {
     ".env", ".env.local", ".env.production",
-    "credentials.json", "secrets.py", "config.py",
+    "credentials.json", "secrets.py",
 }
+
+
+def _is_edit_forbidden_path(file_path: str) -> bool:
+    normalized = unicodedata.normalize("NFC", file_path).replace("\\", "/")
+    parts = {part.lower() for part in normalized.split("/") if part}
+    return any(name.lower() in parts for name in EDIT_FORBIDDEN_PATHS)
 
 
 def _validate_python_syntax(content: str) -> tuple[bool, Optional[str]]:
@@ -2809,7 +2843,7 @@ async def handle_codebase_edit(params: Dict[str, Any]) -> Dict[str, Any]:
     if not safe_path:
         raise ValueError(f"Invalid path: {file_path}")
 
-    if any(forbidden in file_path for forbidden in EDIT_FORBIDDEN_PATHS):
+    if _is_edit_forbidden_path(file_path):
         raise ValueError(f"Editing forbidden for security-sensitive files: {file_path}")
 
     if not safe_path.exists():
@@ -2952,7 +2986,7 @@ async def handle_codebase_create(params: Dict[str, Any]) -> Dict[str, Any]:
     if not safe_path:
         raise ValueError(f"Invalid path: {file_path}")
 
-    if any(forbidden in file_path for forbidden in EDIT_FORBIDDEN_PATHS):
+    if _is_edit_forbidden_path(file_path):
         raise ValueError(f"Creating forbidden for security-sensitive file: {file_path}")
 
     if safe_path.exists():

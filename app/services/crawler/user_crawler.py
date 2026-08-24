@@ -74,6 +74,7 @@ class UserCrawler:
         keywords: Optional[List[str]] = None,
         max_pages: int = 10,
         idempotency_key: Optional[str] = None,
+        allow_private_networks: bool = False,
     ) -> CrawlJob:
         """
         Fast crawl for user prompts - always high priority.
@@ -102,6 +103,7 @@ class UserCrawler:
             requested_by="user",
             priority="high",  # User jobs always high priority
             idempotency_key=idempotency_key,
+            allow_private_networks=allow_private_networks,
         )
         return job
 

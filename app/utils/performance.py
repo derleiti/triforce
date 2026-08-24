@@ -31,8 +31,11 @@ Usage:
 
 import asyncio
 import logging
-from typing import Any, Dict, Optional
+from typing import TYPE_CHECKING, Any, Dict, Optional
 from functools import lru_cache
+
+if TYPE_CHECKING:
+    import httpx
 
 logger = logging.getLogger("ailinux.performance")
 

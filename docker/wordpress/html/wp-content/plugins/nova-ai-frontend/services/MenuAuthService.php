@@ -95,11 +95,11 @@ class AILinux_MenuAuth_Service {
                 </div>
             </div>
             ' . $admin_link . '
-            <a href="' . $account_url . '" class="ailinux-dropdown-link" data-no-swup>👤 Mein Profil</a>
-            <a href="' . $buys_url . '" class="ailinux-dropdown-link" data-no-swup>🛍 Einkäufe</a>
-            <a href="' . $sub_url . '" class="ailinux-dropdown-link" data-no-swup>💳 Abonnement</a>
+            <a href="' . $account_url . '" class="ailinux-dropdown-link" data-no-swup>👤 My Profile</a>
+            <a href="' . $buys_url . '" class="ailinux-dropdown-link" data-no-swup>🛍 Purchases</a>
+            <a href="' . $sub_url . '" class="ailinux-dropdown-link" data-no-swup>💳 Subscription</a>
             <div class="ailinux-dropdown-divider"></div>
-            <a href="' . $wp_logout . '" class="ailinux-logout-btn" id="ailinux-logout-btn" data-no-swup target="_top" translate="no">🚪 Abmelden</a>
+            <a href="' . $wp_logout . '" class="ailinux-logout-btn" id="ailinux-logout-btn" data-no-swup target="_top">🚪 Logout</a>
         </div>
 
     </div>

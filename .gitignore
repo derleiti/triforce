@@ -156,6 +156,8 @@ tests/
 !tests/
 tests/*
 !tests/test_lemonsqueezy_shop_contract.py
+!tests/test_aicoder_mcp_contract.py
+!tests/test_remote_coding_agent.py
 # DKIM-Keys — private keys, never commit
 docker/mailserver/config/opendkim/
 # Temp/debug files
@@ -229,3 +231,4 @@ docker/wordpress/apache/snippets/proxy-token-runtime.conf
 
 # Runtime PIDs
 *.pid
+data/n8n/crash.journal

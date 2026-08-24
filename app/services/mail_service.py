@@ -139,6 +139,9 @@ def mail_read(uid: str, folder: str = "INBOX") -> Dict[str, Any]:
             "subject": _decode_header(msg.get("Subject", "")),
             "from": _decode_header(msg.get("From", "")),
             "to": _decode_header(msg.get("To", "")),
+            "reply_to": _decode_header(msg.get("Reply-To", "")),
+            "message_id": (msg.get("Message-ID", "") or "").strip(),
+            "references": (msg.get("References", "") or "").strip(),
             "date": msg.get("Date", ""),
             "body": body[:4000],  # Limit to 4000 chars for MCP safety
             "truncated": len(body) > 4000,
@@ -165,6 +168,8 @@ def mail_send(
     body: str,
     cc: Optional[str] = None,
     reply_to: Optional[str] = None,
+    in_reply_to: Optional[str] = None,
+    references: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Send an email via SMTP. Uses nova@ailinux.me as sender."""
     s = get_settings()
@@ -196,6 +201,10 @@ def mail_send(
         msg["Cc"] = cc
     if reply_to:
         msg["Reply-To"] = reply_to
+    if in_reply_to:
+        msg["In-Reply-To"] = in_reply_to
+    if references:
+        msg["References"] = references
     msg.set_content(body)
 
     use_starttls = s.mail_smtp_starttls if s.mail_smtp_starttls is not None else True

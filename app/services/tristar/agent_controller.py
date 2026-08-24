@@ -38,6 +38,7 @@ ALLOWED_COMMAND_EXECUTABLES = frozenset([
     # TriForce wrapper scripts (primary - set correct HOME/env)
     "/home/zombie/triforce/triforce/bin/claude-triforce",
     "/home/zombie/triforce/triforce/bin/codex-triforce",
+    "/home/zombie/triforce/triforce/bin/agy-triforce",
     "/home/zombie/triforce/triforce/bin/gemini-triforce",
     "/home/zombie/triforce/triforce/bin/opencode-triforce",
     # Legacy paths (backwards compatibility)
@@ -215,10 +216,10 @@ DEFAULT_AGENTS: List[Dict[str, Any]] = [
     {
         "agent_id": "gemini-mcp",
         "agent_type": "gemini",
-        "name": "Google Gemini Lead Agent (YOLO Mode)",
-        "description": "Gemini CLI im YOLO-Modus ohne Sandbox",
-        # Wrapper fügt bereits hinzu: --yolo --approval-mode yolo
-        "command": [f"{TRIFORCE_BIN}/gemini-triforce"],
+        "name": "Google Antigravity Lead Agent (Autonomous)",
+        "description": "Antigravity CLI (agy) im autonomen Print-Modus",
+        # gemini-mcp bleibt als API-/Workflow-ID rückwärtskompatibel.
+        "command": [f"{TRIFORCE_BIN}/agy-triforce"],
         "env": {
             "PATH": f"{TRIFORCE_BIN}:{CLI_BIN}:/usr/local/bin:/usr/bin:/bin",
             "GEMINI_DISABLE_TELEMETRY": "1",
@@ -396,6 +397,15 @@ class AgentController:
                         skipped_count += 1
                         continue
 
+                    # Migrate the built-in Google coding agent from the retired
+                    # Gemini CLI wrapper to Antigravity while preserving the public
+                    # gemini-mcp ID used by existing workflows and shortcuts.
+                    stored_name = agent_data.get("name", agent_id)
+                    if agent_id == "gemini-mcp" and command == [f"{TRIFORCE_BIN}/gemini-triforce"]:
+                        command = [f"{TRIFORCE_BIN}/agy-triforce"]
+                        stored_name = "Google Antigravity Lead Agent (Autonomous)"
+                        logger.info("Migrated built-in gemini-mcp runtime to Antigravity CLI")
+
                     stored_prompt = agent_data.get("system_prompt", "")
                     stored_source = agent_data.get("system_prompt_source", "triforce")
                     legacy_prefixes = {
@@ -413,7 +423,7 @@ class AgentController:
                     config = AgentConfig(
                         agent_id=agent_data["agent_id"],
                         agent_type=AgentType(agent_data["agent_type"]),
-                        name=agent_data["name"],
+                        name=stored_name,
                         command=command,
                         working_dir=agent_data.get("working_dir", "/home/zombie/triforce"),
                         env=agent_data.get("env", {}),
@@ -818,25 +828,27 @@ class AgentController:
                     f"echo {safe_msg} | {TRIFORCE_BIN}/claude-triforce 2>&1"
                 ]
             elif agent_type == AgentType.CODEX:
-                env["CODEX_PROMPT"] = message
                 inner_timeout = max(10, int(timeout) - 15)
                 cmd = [
                     "bash", "-lc",
-                    f"timeout --kill-after=5s {inner_timeout}s {TRIFORCE_BIN}/codex-triforce-call 2>&1"
+                    f"timeout --kill-after=5s {inner_timeout}s {TRIFORCE_BIN}/codex-triforce --triforce-headless {safe_msg} 2>&1"
                 ]
             elif agent_type == AgentType.GEMINI:
+                # The legacy gemini-mcp ID now runs Antigravity CLI. Print mode
+                # is the supported one-shot path; the wrapper auto-approves tools.
                 cmd = [
                     "bash", "-c",
-                    f"echo {safe_msg} | {TRIFORCE_BIN}/gemini-triforce 2>&1"
+                    f"{TRIFORCE_BIN}/agy-triforce --output-format text --print-timeout {max(10, int(timeout) - 5)}s --print {safe_msg} 2>&1"
                 ]
             elif agent_type == AgentType.OPENCODE:
-                # WICHTIG: Sauberes Workspace ohne CLAUDE.md um unerwartete Task-Ausführung zu vermeiden
+                # OpenCode defaults to its TUI too. Use the explicit one-shot
+                # runner so MCP calls terminate and return their result.
                 opencode_workspace = "/var/tristar/agents/opencode-workspace"
                 os.makedirs(opencode_workspace, exist_ok=True)
-                
+
                 cmd = [
                     "bash", "-c",
-                    f"cd {opencode_workspace} && echo {safe_msg} | {TRIFORCE_BIN}/opencode-triforce 2>&1"
+                    f"cd {opencode_workspace} && {TRIFORCE_BIN}/opencode-triforce run --auto {safe_msg} 2>&1"
                 ]
             else:
                 cmd = instance.config.command + [message]

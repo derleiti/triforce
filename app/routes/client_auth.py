@@ -479,6 +479,7 @@ class UserLoginResponse(BaseModel):
     token_type: str = "Bearer"
     expires_in: int = JWT_EXPIRY_HOURS * 3600
     tier: str
+    account_role: str
     client_id: str  # Server-assigned per login
     email: str
     name: Optional[str] = None
@@ -517,7 +518,7 @@ class ClientAuthRequest(BaseModel):
     client_id: str = Field(..., description="Client-ID")
     client_secret: str = Field(..., description="Client-Secret")
     device_name: Optional[str] = Field(None, description="Gerätename")
-    capabilities: Optional[List[str]] = Field(default=[], description="Client-Fähigkeiten")
+    capabilities: Optional[List[str]] = Field(default_factory=list, description="Client-Fähigkeiten")
 
 
 class ClientAuthResponse(BaseModel):
@@ -535,8 +536,8 @@ class ClientRegisterRequest(BaseModel):
     client_id: str
     name: str
     role: ClientRole = ClientRole.DESKTOP
-    allowed_tools: List[str] = []
-    blocked_tools: List[str] = []
+    allowed_tools: List[str] = Field(default_factory=list)
+    blocked_tools: List[str] = Field(default_factory=list)
 
 
 class ClientRegisterResponse(BaseModel):
@@ -584,6 +585,7 @@ def issue_user_login_response(email: str, user: dict) -> UserLoginResponse:
         user_id=email,
         token=token,
         tier=tier,
+        account_role=role.value,
         client_id=client_id,
         email=email,
         name=user.get("name"),

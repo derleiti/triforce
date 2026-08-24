@@ -424,8 +424,8 @@ async def handle_user_chat_tool(name: str, args: Dict[str, Any]) -> Dict[str, An
                 get_chat_logger().log_message(
                     session_id=session_id,
                     agent_id=short_id,
-                    content=response_text,
-                    model=model_id,
+                    content=result["content"],
+                    model=result["model_id"],
                     msg_type="response",
                 )
             except Exception:

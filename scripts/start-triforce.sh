@@ -113,9 +113,12 @@ fi
 log "Starting uvicorn on port 9000..."
 
 # --- OAuth env hard-sync: project .env wins directly before uvicorn ---
-if [ -f "/home/zombie/triforce/.env" ]; then
-  MCP_OAUTH_USER="$(grep -m1 '^MCP_OAUTH_USER=' /home/zombie/triforce/.env | cut -d= -f2- | sed -E 's/^["'"'"']|["'"'"']$//g')"
-  MCP_OAUTH_PASS="$(grep -m1 '^MCP_OAUTH_PASS=' /home/zombie/triforce/.env | cut -d= -f2- | sed -E 's/^["'"'"']|["'"'"']$//g')"
+# 2026-08-16: `|| true` ergaenzt. Ohne fehlende OAuth-Vars in der .env liefert
+# grep Exit 1 und `set -euo pipefail` beendet das Skript still, bevor uvicorn
+# startet (getroffen auf Nodes ohne MCP-OAuth-Konfiguration).
+if [ -f "$REPO_DIR/.env" ]; then
+  MCP_OAUTH_USER="$(grep -m1 '^MCP_OAUTH_USER=' "$REPO_DIR/.env" | cut -d= -f2- | sed -E 's/^["'"'"']|["'"'"']$//g' || true)"
+  MCP_OAUTH_PASS="$(grep -m1 '^MCP_OAUTH_PASS=' "$REPO_DIR/.env" | cut -d= -f2- | sed -E 's/^["'"'"']|["'"'"']$//g' || true)"
   export MCP_OAUTH_USER
   export MCP_OAUTH_PASS
   echo "[$(date '+%F %T')] OAuth env synced for uvicorn: user_len=${#MCP_OAUTH_USER}, pass_len=${#MCP_OAUTH_PASS}"

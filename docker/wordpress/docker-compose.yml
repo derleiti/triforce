@@ -44,7 +44,8 @@ services:
     extra_hosts: *gateway_hosts
     restart: ${WP_RESTART_POLICY:-unless-stopped}
     networks:
-      - ${WP_NETWORK:-wordpress-network}
+      wordpress-network:
+        ipv4_address: ${WP_APACHE_STATIC_IP:-172.18.0.10}
 
   wordpress_fpm:
     image: ${WP_FPM_IMAGE:-wordpress:6.8.1-php8.3-fpm-alpine}

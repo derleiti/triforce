@@ -64,6 +64,10 @@ class Settings(BaseSettings):
     # MCP Authentication (User/Password only - no API keys)
     mcp_oauth_user: Optional[str] = Field(default=None, validation_alias="MCP_OAUTH_USER")
     mcp_oauth_pass: Optional[str] = Field(default=None, validation_alias="MCP_OAUTH_PASS")
+    mcp_dev_allowed_roots: Optional[str] = Field(
+        default=None,
+        validation_alias="MCP_DEV_ALLOWED_ROOTS",
+    )
 
     # MCP Mesh WebSocket
     mcp_ws_host: str = Field(default="0.0.0.0", validation_alias="MCP_WS_HOST")
@@ -92,6 +96,9 @@ class Settings(BaseSettings):
     claude_user: Optional[str] = Field(default=None, validation_alias="CLAUDE_USER")
     claude_pass: Optional[str] = Field(default=None, validation_alias="CLAUDE_PASS")
 
+
+    # OpenAI
+    openai_api_key: str | None = Field(default=None, validation_alias="OPENAI_API_KEY")
 
     # Mistral
     mistral_api_key: str | None = Field(default=None, validation_alias="MISTRAL_API_KEY")

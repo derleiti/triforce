@@ -33,9 +33,12 @@ class AutoPublisher:
 
     async def start(self) -> None:
         """Startet den Auto-Publisher Background-Task."""
-        if self._task:
+        if self._task and not self._task.done():
             logger.warning("Auto-publisher already running")
             return
+
+        # Discard a completed task so the service can be started again.
+        self._task = None
 
         logger.info("Starting auto-publisher (interval: %d seconds)", self._interval)
         self._stop_event.clear()
@@ -49,7 +52,8 @@ class AutoPublisher:
 
         logger.info("Stopping auto-publisher")
         self._stop_event.set()
-        await self._task
+        self._task.cancel()
+        await asyncio.gather(self._task, return_exceptions=True)
         self._task = None
         logger.info("Auto-publisher stopped")
 
@@ -113,7 +117,10 @@ class AutoPublisher:
                         continue
 
                     # Erstelle WordPress Post
-                    await self._create_wordpress_post(result)
+                    published = await self._create_wordpress_post(result)
+
+                    if not published:
+                        continue
 
                     # Mark hash as published
                     if result.content_hash:
@@ -140,12 +147,12 @@ class AutoPublisher:
         except Exception as exc:
             logger.error("Error in hourly processing: %s", exc, exc_info=True)
 
-    async def _create_wordpress_post(self, result) -> None:
+    async def _create_wordpress_post(self, result) -> bool:
         """Erstellt WordPress Post aus Crawler-Ergebnis."""
         # ENV validation: Check if WordPress is configured
         if not self._settings.wordpress_url or not self._settings.wordpress_user or not self._settings.wordpress_password:
             logger.warning("WordPress not configured, skipping post creation for: %s", result.title)
-            return
+            return False
 
         # Generiere Artikel mit GPT-OSS
         model_id = getattr(self._settings, "crawler_summary_model", None) or "gpt-oss:cloud/120b"
@@ -153,7 +160,7 @@ class AutoPublisher:
 
         if not model:
             logger.warning("Model %s not found, skipping post generation", model_id)
-            return
+            return False
 
         # Prompt für Artikel-Generierung
         prompt = f"""Schreibe einen professionellen News-Artikel auf Deutsch basierend auf folgenden Informationen:
@@ -191,7 +198,7 @@ Nutze professionellen Journalismus-Stil, sei objektiv und informativ."""
                 chunks.append(chunk)
         except Exception as exc:
             logger.error("Error generating article: %s", exc)
-            return
+            return False
 
         article_content = "".join(chunks)
 
@@ -200,6 +207,8 @@ Nutze professionellen Journalismus-Stil, sei objektiv und informativ."""
 
         # Poste zu WordPress
         try:
+            from .crawler.manager import crawler_manager as _crawler_manager
+
             wp_result = await wordpress_service.create_post(
                 title=result.title,
                 content=article_content,
@@ -213,9 +222,11 @@ Nutze professionellen Journalismus-Stil, sei objektiv und informativ."""
             await _crawler_manager._store.update(result)
 
             logger.info("Created WordPress post: %s (ID: %s)", result.title, result.post_id)
+            return True
 
         except Exception as exc:
             logger.error("Error creating WordPress post: %s", exc, exc_info=True)
+            return False
 
 # Global instance (lazy)
 _auto_publisher: Optional[AutoPublisher] = None
