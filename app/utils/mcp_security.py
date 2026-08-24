@@ -288,6 +288,7 @@ PRIVILEGED_TOOLS: Set[str] = {
     "mail_send", "mail_mark_seen",
     # Forum write
     "flarum_post_create", "flarum_post_edit", "flarum_discussion_create",
+    "flarum_admin_request",
     # Group chat lifecycle (moved to allowlist 2026-05 — collaboration is non-destructive)
     # Notification destructive
     "notify_clear",
@@ -299,19 +300,10 @@ PRIVILEGED_TOOLS: Set[str] = {
 }
 
 
-# Exact MCP surface used by the external ai-coder client. The client announces
-# this restrictive (not privileged) profile with X-Client-Profile. Keep this in
-# canonical v5 names because tools/call resolves aliases before policy checks.
-AI_CODER_TOOL_ALLOWLIST: Set[str] = {
-    "code_read", "code_search", "code_tree",
-    "dev_analyze", "dev_debug", "dev_lint", "dev_links",
-    "dev_refactor", "dev_summarize",
-    "doc_read", "doc_search",
-    "health", "search", "crawl",
-    "memory_search", "memory_store",
-    "models", "specialist", "prompts",
-    "swarm_broadcast",
-}
+# Compatibility alias retained for older imports/tests. ai-coder no longer has
+# a second coding-only namespace restriction: the authenticated account/RBAC
+# and the normal external/internal MCP policy determine the effective surface.
+AI_CODER_TOOL_ALLOWLIST: Set[str] = EXTERNAL_TOOL_ALLOWLIST_FULL
 
 
 # =============================================================================
@@ -426,7 +418,7 @@ def is_internal_full_request(request) -> bool:
 
 
 def is_ai_coder_request(request) -> bool:
-    """Return whether the caller requested ai-coder's restrictive profile."""
+    """Return whether the caller identifies as the ai-coder operator client."""
     try:
         profile = (request.headers.get("X-Client-Profile") or "").strip().lower()
     except Exception:
@@ -437,10 +429,8 @@ def is_ai_coder_request(request) -> bool:
 def filter_tools_for_external(
     tools: List[Dict[str, Any]], request=None,
 ) -> List[Dict[str, Any]]:
-    """Default-deny and optionally narrow the catalogue to ai-coder tools."""
+    """Default-deny external catalogue using the normal MCP external policy."""
     allowed = EXTERNAL_TOOL_ALLOWLIST
-    if request is not None and is_ai_coder_request(request):
-        allowed = allowed & AI_CODER_TOOL_ALLOWLIST
     return [t for t in tools if t.get("name") in allowed]
 
 
@@ -466,8 +456,6 @@ def is_tool_allowed(tool_name: str, request, arguments: Optional[Dict[str, Any]]
     """
     name = tool_name[9:] if tool_name.startswith("triforce_") else tool_name
     internal_full = is_internal_full_request(request)
-    if is_ai_coder_request(request) and name not in AI_CODER_TOOL_ALLOWLIST:
-        return False
     if name in PRIVILEGED_TOOLS:
         return internal_full
     if name in EXTERNAL_TOOL_ALLOWLIST:

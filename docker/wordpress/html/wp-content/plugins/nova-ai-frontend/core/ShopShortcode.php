@@ -117,7 +117,7 @@ class ShopShortcode {
             wp_die('Unauthorized', 403);
         }
         \NovAI\Services\ShopService::instance()->clear_cache();
-        wp_send_json_success(['message' => 'Shop-Cache geleert']);
+        wp_send_json_success(['message' => 'Shop cache cleared']);
     }
 
     public static function ajax_save_product_meta(): void {

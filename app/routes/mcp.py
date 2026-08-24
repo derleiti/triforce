@@ -193,13 +193,9 @@ def _finish_tools_list(
 
 
 def _filter_tools_for_client(tools: List[Dict[str, Any]], request: Optional[Request] = None) -> List[Dict[str, Any]]:
-    """Default-deny tools/list for non-internal MCP clients."""
+    """Apply normal MCP authorization; ai-coder is an identity, not a deny profile."""
     if request is None:
         return tools
-    # An explicit ai-coder profile is always restrictive, including when the
-    # backend is reached directly from a trusted network.
-    if is_ai_coder_request(request):
-        return filter_tools_for_external(tools, request=request)
     if is_internal_full_request(request):
         return tools
     return filter_tools_for_external(tools, request=request)

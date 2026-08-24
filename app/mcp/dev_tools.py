@@ -11,25 +11,111 @@ KI-optimierte Entwickler-Tools:
   git           - Unified git operations
 """
 
-import os
-import re
 import ast
 import json
-import subprocess
 import logging
+import os
+import re
+import shlex
+import subprocess
+import sys
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 logger = logging.getLogger("ailinux.mcp.devtools")
 
-PROJECT_ROOT = Path("/home/zombie/triforce")
+PROJECT_ROOT = Path(
+    os.environ.get("TRIFORCE_ROOT", Path(__file__).resolve().parents[2])
+).resolve()
+
+# Dev tools are intentionally usable for repositories other than TriForce.  The
+# defaults cover the normal local workspaces without exposing arbitrary system
+# paths. Operators can replace/extend them with a colon-separated list.
+_DEFAULT_DEV_ROOTS = (PROJECT_ROOT.parent, Path("/tmp"), Path("/var/tristar/projects"))
+_SOURCE_SUFFIXES = {
+    ".bash", ".c", ".cc", ".cpp", ".cs", ".go", ".h", ".hpp", ".java",
+    ".js", ".jsx", ".kt", ".kts", ".php", ".py", ".pyi", ".rb", ".rs",
+    ".sh", ".swift", ".ts", ".tsx", ".zsh",
+}
+_SOURCE_FILENAMES = {"Dockerfile", "Makefile", "Rakefile", "Taskfile", "Vagrantfile"}
 
 
-def _run(cmd: str, cwd: str = None, timeout: int = 30) -> Dict[str, Any]:
-    """Run shell command, return stdout/stderr/exit_code."""
+def _dev_allowed_roots() -> tuple[Path, ...]:
+    configured = os.environ.get("MCP_DEV_ALLOWED_ROOTS", "")
+    if not configured:
+        try:
+            from app.config import get_settings
+
+            configured = get_settings().mcp_dev_allowed_roots or ""
+        except (ImportError, OSError, ValueError):
+            logger.warning("Could not load MCP dev roots from application settings")
+    raw_roots = configured.split(os.pathsep) if configured else _DEFAULT_DEV_ROOTS
+    roots = []
+    for raw_root in raw_roots:
+        if not raw_root:
+            continue
+        try:
+            roots.append(Path(raw_root).expanduser().resolve())
+        except (OSError, RuntimeError):
+            logger.warning("Ignoring invalid MCP dev root: %r", raw_root)
+    return tuple(roots)
+
+
+def _resolve_dev_path(
+    path: str,
+    *,
+    root: str | None = None,
+    source_file_only: bool = False,
+) -> Path:
+    """Resolve a dev-tool path inside an approved workspace root.
+
+    Absolute paths and a caller-supplied ``root`` remain supported so the tools
+    can work on multiple repositories. Resolving before the containment check
+    also prevents symlinks from escaping an approved workspace.
+    """
+    if not path:
+        raise ValueError("path is required")
+
+    base = Path(root).expanduser() if root else PROJECT_ROOT
+    candidate = Path(path).expanduser()
+    if not candidate.is_absolute():
+        candidate = base / candidate
+
+    try:
+        resolved = candidate.resolve(strict=True)
+    except FileNotFoundError as exc:
+        raise ValueError(f"Path not found: {candidate}") from exc
+    except (OSError, RuntimeError) as exc:
+        raise ValueError(f"Invalid path: {candidate}") from exc
+
+    if not any(resolved == allowed or allowed in resolved.parents for allowed in _dev_allowed_roots()):
+        raise ValueError("Path is outside MCP dev workspace roots")
+
+    if source_file_only:
+        if not resolved.is_file():
+            raise ValueError("Source context path must be a regular file")
+        if resolved.suffix.lower() not in _SOURCE_SUFFIXES and resolved.name not in _SOURCE_FILENAMES:
+            raise ValueError("Source context path has no supported code-file type")
+
+    return resolved
+
+
+def _run(cmd: Sequence[str], cwd: str | Path | None = None, timeout: int = 30) -> Dict[str, Any]:
+    """Run an argv command without a shell and return its captured result."""
+    if isinstance(cmd, (str, bytes)):
+        return {
+            "stdout": "",
+            "stderr": "String commands are forbidden; pass an argv sequence",
+            "exit_code": -1,
+        }
     try:
         r = subprocess.run(
-            cmd, shell=True, capture_output=True, text=True,
+            [str(part) for part in cmd],
+            shell=False,
+            check=False,
+            capture_output=True,
+            text=True,
             timeout=timeout, cwd=cwd or str(PROJECT_ROOT)
         )
         return {"stdout": r.stdout, "stderr": r.stderr, "exit_code": r.returncode}
@@ -65,10 +151,10 @@ async def handle_dev_analyze(params: Dict[str, Any]) -> Dict[str, Any]:
     if not path:
         return {"error": "path is required"}
 
-    root = params.get("root", str(PROJECT_ROOT))
-    abs_path = path if path.startswith("/") else str(Path(root) / path)
-    if not os.path.exists(abs_path):
-        return {"error": f"Path not found: {abs_path}"}
+    try:
+        abs_path = str(_resolve_dev_path(path, root=params.get("root")))
+    except ValueError as exc:
+        return {"error": str(exc)}
 
     issues = []
     severity_levels = {"info": 0, "warning": 1, "error": 2, "critical": 3}
@@ -108,7 +194,7 @@ def _analyze_python(path: str, checks: List[str]) -> List[Dict]:
     do_all = "all" in checks
 
     # ruff for fast linting
-    r = _run(f"python3 -m ruff check --output-format json '{path}' 2>/dev/null || ruff check --output-format json '{path}' 2>/dev/null")
+    r = _run([sys.executable, "-m", "ruff", "check", "--output-format", "json", path])
     if r["stdout"]:
         try:
             ruff_issues = json.loads(r["stdout"])
@@ -124,6 +210,15 @@ def _analyze_python(path: str, checks: List[str]) -> List[Dict]:
                 })
         except (json.JSONDecodeError, Exception):
             pass
+    if r["exit_code"] not in (0, 1):
+        issues.append({
+            "file": path,
+            "line": 0,
+            "severity": "error",
+            "code": "TOOL_ERROR",
+            "message": r["stderr"][:500] or "ruff failed without diagnostic output",
+            "category": "tooling",
+        })
 
     # AST-based analysis for typos in identifiers
     if do_all or "typos" in checks:
@@ -188,7 +283,7 @@ def _analyze_python(path: str, checks: List[str]) -> List[Dict]:
 
 def _analyze_bash(path: str) -> List[Dict]:
     issues = []
-    r = _run(f"shellcheck -f json '{path}' 2>/dev/null")
+    r = _run(["shellcheck", "-f", "json", path])
     if r["stdout"]:
         try:
             sc = json.loads(r["stdout"])
@@ -204,6 +299,15 @@ def _analyze_bash(path: str) -> List[Dict]:
                 })
         except (json.JSONDecodeError, Exception):
             pass
+    if r["exit_code"] not in (0, 1):
+        issues.append({
+            "file": path,
+            "line": 0,
+            "severity": "error",
+            "code": "TOOL_ERROR",
+            "message": r["stderr"][:500] or "shellcheck failed without diagnostic output",
+            "category": "tooling",
+        })
     return issues
 
 
@@ -259,16 +363,29 @@ async def handle_dev_lint(params: Dict[str, Any]) -> Dict[str, Any]:
     if not path:
         return {"error": "path is required"}
 
-    root = params.get("root", str(PROJECT_ROOT))
-    abs_path = path if path.startswith("/") else str(Path(root) / path)
+    try:
+        resolved_path = _resolve_dev_path(path, root=params.get("root"))
+    except ValueError as exc:
+        return {"error": str(exc), "clean": False}
+    abs_path = str(resolved_path)
     if language == "auto":
-        language = _detect_language(abs_path)
+        language = "python" if resolved_path.is_dir() else _detect_language(abs_path)
 
-    results = {"path": abs_path, "language": language, "errors": [], "warnings": [], "fixed": []}
+    results = {
+        "path": abs_path,
+        "language": language,
+        "errors": [],
+        "warnings": [],
+        "fixed": [],
+        "tool_errors": [],
+    }
 
     if language == "python":
-        fix_flag = "--fix" if fix else ""
-        r = _run(f"python3 -m ruff check {fix_flag} --output-format json '{abs_path}' 2>/dev/null")
+        ruff_cmd = [sys.executable, "-m", "ruff", "check"]
+        if fix:
+            ruff_cmd.append("--fix")
+        ruff_cmd.extend(["--output-format", "json", abs_path])
+        r = _run(ruff_cmd)
         if r["stdout"]:
             try:
                 items = json.loads(r["stdout"])
@@ -286,25 +403,46 @@ async def handle_dev_lint(params: Dict[str, Any]) -> Dict[str, Any]:
                         results["warnings"].append(entry)
             except (json.JSONDecodeError, Exception):
                 results["raw"] = r["stdout"][:500]
+        if r["exit_code"] not in (0, 1):
+            results["tool_errors"].append({
+                "tool": "ruff",
+                "exit_code": r["exit_code"],
+                "message": r["stderr"][:500] or "ruff failed without diagnostic output",
+            })
 
         # mypy type check
-        r2 = _run(f"python3 -m mypy --ignore-missing-imports --no-error-summary '{abs_path}' 2>/dev/null")
+        r2 = _run([
+            sys.executable,
+            "-m",
+            "mypy",
+            "--ignore-missing-imports",
+            "--no-error-summary",
+            abs_path,
+        ])
         for line in r2["stdout"].splitlines():
             if ": error:" in line:
                 parts = line.split(":")
                 results["errors"].append({"file": parts[0] if parts else abs_path, "message": line.strip()})
+        if r2["exit_code"] not in (0, 1):
+            results["tool_errors"].append({
+                "tool": "mypy",
+                "exit_code": r2["exit_code"],
+                "message": r2["stderr"][:500] or r2["stdout"][:500] or "mypy failed without diagnostic output",
+            })
 
     elif language == "bash":
-        r = _run(f"shellcheck -f gcc '{abs_path}' 2>/dev/null")
+        r = _run(["shellcheck", "-f", "gcc", abs_path])
         for line in r["stdout"].splitlines():
             entry = {"file": abs_path, "message": line.strip()}
             if "error" in line.lower():
                 results["errors"].append(entry)
             else:
                 results["warnings"].append(entry)
+        if r["exit_code"] not in (0, 1):
+            results["tool_errors"].append({"tool": "shellcheck", "exit_code": r["exit_code"], "message": r["stderr"][:500]})
 
     elif language in ("javascript", "typescript"):
-        r = _run(f"npx eslint --format json '{abs_path}' 2>/dev/null")
+        r = _run(["npx", "--no-install", "eslint", "--format", "json", abs_path])
         if r["stdout"]:
             try:
                 items = json.loads(r["stdout"])
@@ -323,19 +461,32 @@ async def handle_dev_lint(params: Dict[str, Any]) -> Dict[str, Any]:
                             results["warnings"].append(entry)
             except (json.JSONDecodeError, Exception):
                 results["raw"] = r["stdout"][:500]
+        if r["exit_code"] not in (0, 1):
+            results["tool_errors"].append({"tool": "eslint", "exit_code": r["exit_code"], "message": r["stderr"][:500]})
 
     elif language == "go":
-        r = _run(f"golint '{abs_path}' 2>/dev/null")
+        r = _run(["golint", abs_path])
         for line in r["stdout"].splitlines():
             results["warnings"].append({"file": abs_path, "message": line.strip()})
+        if r["exit_code"] not in (0, 1):
+            results["tool_errors"].append({"tool": "golint", "exit_code": r["exit_code"], "message": r["stderr"][:500]})
 
     elif language == "rust":
-        r = _run(f"cargo clippy --message-format json 2>/dev/null", cwd=str(Path(abs_path).parent))
+        cwd = resolved_path if resolved_path.is_dir() else resolved_path.parent
+        r = _run(["cargo", "clippy", "--message-format", "json"], cwd=cwd)
         results["raw"] = r["stdout"][:1000]
+        if r["exit_code"] != 0:
+            results["tool_errors"].append({"tool": "cargo clippy", "exit_code": r["exit_code"], "message": r["stderr"][:500]})
+    else:
+        results["tool_errors"].append({"tool": "dev_lint", "exit_code": -1, "message": f"Unsupported language: {language}"})
 
     results["total_errors"] = len(results["errors"])
     results["total_warnings"] = len(results["warnings"])
-    results["clean"] = results["total_errors"] == 0 and results["total_warnings"] == 0
+    results["clean"] = (
+        results["total_errors"] == 0
+        and results["total_warnings"] == 0
+        and not results["tool_errors"]
+    )
     return results
 
 
@@ -346,7 +497,6 @@ async def handle_dev_lint(params: Dict[str, Any]) -> Dict[str, Any]:
 async def handle_dev_debug(params: Dict[str, Any]) -> Dict[str, Any]:
     error = params.get("error", "")
     file_path = params.get("file")
-    context = params.get("context", "")
 
     if not error:
         return {"error": "error message is required"}
@@ -408,9 +558,19 @@ async def handle_dev_debug(params: Dict[str, Any]) -> Dict[str, Any]:
     # Read code context if file provided
     if file_path or analysis["file"]:
         target = file_path or analysis["file"]
-        if os.path.exists(target) and analysis["line"]:
+        try:
+            safe_target = _resolve_dev_path(
+                target,
+                root=params.get("root"),
+                source_file_only=True,
+            )
+        except ValueError as exc:
+            analysis["path_error"] = str(exc)
+        else:
+            analysis["file"] = str(safe_target)
+        if "path_error" not in analysis and analysis["line"]:
             try:
-                lines = Path(target).read_text(errors='replace').splitlines()
+                lines = safe_target.read_text(errors='replace').splitlines()
                 line_num = analysis["line"]
                 start = max(0, line_num - 5)
                 end = min(len(lines), line_num + 5)
@@ -454,10 +614,10 @@ async def handle_dev_summarize(params: Dict[str, Any]) -> Dict[str, Any]:
     depth = params.get("depth", "normal")
     focus = params.get("focus", "all")
 
-    root = params.get("root", str(PROJECT_ROOT))
-    abs_path = path if path.startswith("/") else str(Path(root) / path)
-    if not os.path.exists(abs_path):
-        return {"error": f"Path not found: {abs_path}"}
+    try:
+        abs_path = str(_resolve_dev_path(path, root=params.get("root")))
+    except ValueError as exc:
+        return {"error": str(exc)}
 
     summary = {"path": abs_path, "depth": depth}
 
@@ -539,12 +699,17 @@ def _summarize_directory(path: str, depth: str, focus: str) -> Dict:
         "total": len(list(Path(path).rglob("*.*"))),
     }
 
-    # Get top-level structure
-    tree_r = _run(f"find '{path}' -maxdepth 2 -name '*.py' -o -name '*.js' -o -name '*.ts' | head -40")
-    result["key_files"] = [
-        str(Path(f).relative_to(path))
-        for f in tree_r["stdout"].splitlines() if f
-    ]
+    # Get top-level structure without invoking a shell.
+    base_path = Path(path)
+    key_files = []
+    for pattern in ("*.py", "*.js", "*.ts"):
+        for candidate in base_path.glob(pattern):
+            key_files.append(str(candidate.relative_to(base_path)))
+        for child in base_path.iterdir():
+            if child.is_dir():
+                for candidate in child.glob(pattern):
+                    key_files.append(str(candidate.relative_to(base_path)))
+    result["key_files"] = sorted(set(key_files))[:40]
 
     # Find entry points
     entry_points = []
@@ -570,10 +735,10 @@ async def handle_dev_links(params: Dict[str, Any]) -> Dict[str, Any]:
     check_external = params.get("check_external", False)
     language = params.get("language", "auto")
 
-    root = params.get("root", str(PROJECT_ROOT))
-    abs_path = path if path.startswith("/") else str(Path(root) / path)
-    if not os.path.exists(abs_path):
-        return {"error": f"Path not found: {abs_path}"}
+    try:
+        abs_path = str(_resolve_dev_path(path, root=params.get("root")))
+    except ValueError as exc:
+        return {"error": str(exc)}
 
     broken = []
     warnings = []
@@ -643,10 +808,10 @@ async def handle_dev_refactor(params: Dict[str, Any]) -> Dict[str, Any]:
     focus = params.get("focus", "all")
     apply = params.get("apply", False)
 
-    root = params.get("root", str(PROJECT_ROOT))
-    abs_path = path if path.startswith("/") else str(Path(root) / path)
-    if not os.path.exists(abs_path):
-        return {"error": f"Path not found: {abs_path}"}
+    try:
+        abs_path = str(_resolve_dev_path(path, root=params.get("root")))
+    except ValueError as exc:
+        return {"error": str(exc)}
 
     suggestions = []
     lang = _detect_language(abs_path)
@@ -756,27 +921,47 @@ async def handle_git(params: Dict[str, Any]) -> Dict[str, Any]:
     path = params.get("path", root)
     args = params.get("args", "")
 
-    root = params.get("root", str(PROJECT_ROOT))
-    abs_path = path if path.startswith("/") else str(Path(root) / path)
+    try:
+        resolved_path = _resolve_dev_path(path, root=root)
+    except ValueError as exc:
+        return {"error": str(exc), "success": False}
+    if not resolved_path.is_dir():
+        return {"error": "Git path must be a directory", "success": False}
+    abs_path = str(resolved_path)
+
+    try:
+        extra_args = shlex.split(args)
+    except ValueError as exc:
+        return {"error": f"Invalid git arguments: {exc}", "success": False}
 
     cmd_map = {
-        "status": "git status --short --branch",
-        "diff": f"git diff {args}",
-        "commit": f'git add -A && git commit -m "{message}"' if message else "git status",
-        "branch": f"git branch {branch} && git checkout {branch}" if branch else "git branch -a",
-        "log": f"git log --oneline -20 {args}",
-        "push": f"git push {args}",
-        "pull": f"git pull {args}",
-        "stash": f"git stash {args}",
-        "add": f"git add {args or '.'}",
+        "status": ["git", "status", "--short", "--branch"],
+        "diff": ["git", "diff", *extra_args],
+        "branch": ["git", "branch", "-a"],
+        "log": ["git", "log", "--oneline", "-20", *extra_args],
+        "push": ["git", "push", *extra_args],
+        "pull": ["git", "pull", *extra_args],
+        "stash": ["git", "stash", *extra_args],
+        "add": ["git", "add", *(extra_args or ["."])],
     }
-
-    cmd = cmd_map.get(mode, "git status")
 
     if mode == "commit" and not message:
         return {"error": "message is required for commit mode"}
 
-    r = _run(cmd, cwd=abs_path, timeout=30)
+    if mode == "commit":
+        add_result = _run(["git", "add", "-A"], cwd=abs_path, timeout=30)
+        if add_result["exit_code"] != 0:
+            r = add_result
+        else:
+            r = _run(["git", "commit", "-m", message], cwd=abs_path, timeout=30)
+    elif mode == "branch" and branch:
+        create_result = _run(["git", "branch", branch], cwd=abs_path, timeout=30)
+        if create_result["exit_code"] != 0:
+            r = create_result
+        else:
+            r = _run(["git", "checkout", branch], cwd=abs_path, timeout=30)
+    else:
+        r = _run(cmd_map.get(mode, ["git", "status"]), cwd=abs_path, timeout=30)
     return {
         "mode": mode,
         "path": abs_path,

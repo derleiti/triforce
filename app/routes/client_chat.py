@@ -6,18 +6,22 @@ Tier-basierter Chat:
 - Pro/Enterprise: alle konfigurierten Chat-Provider
 """
 from fastapi import APIRouter, HTTPException, Header
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 from typing import Any, Optional, List
+import asyncio
+import json
 import httpx
 import os
 import logging
+import time
 import jwt
 from datetime import datetime
 
 from ..services.user_tiers import (
     tier_service, UserTier, FREE_MODELS_OLLAMA, LOCAL_FALLBACK_MODEL
 )
-from ..services.model_registry import registry
+from ..services.model_registry import OPENROUTER_FREE_ROUTER, registry
 from ..services.provider_chat import chat_completion, normalize_tools
 from ..services.model_availability import availability_service
 
@@ -123,7 +127,8 @@ def get_user_id_from_headers(authorization: str = None, x_user_id: str = None) -
 
 class ChatMessage(BaseModel):
     role: str
-    content: str
+    # String for normal chat, OpenAI-style content blocks for multimodal turns.
+    content: Any
 
 
 class ChatRequest(BaseModel):
@@ -147,6 +152,7 @@ class ChatResponse(BaseModel):
     tokens_unlimited: Optional[bool] = False  # True wenn Ollama für Pro/Enterprise
     latency_ms: Optional[int] = None
     fallback_used: Optional[bool] = False  # True wenn lokales Fallback-Modell verwendet wurde
+    tool_transport: str = "none"  # none | native | text_fallback
 
 
 class ModelsResponse(BaseModel):
@@ -154,6 +160,7 @@ class ModelsResponse(BaseModel):
     tier_name: str
     model_count: int
     models: List[str]
+    model_details: List[dict[str, Any]] = Field(default_factory=list)
     backend: str
     upgrade_available: bool
 
@@ -267,6 +274,8 @@ def is_registered_free_model(model: str) -> bool:
     """Free-account policy: Ollama plus configured free-quota providers."""
     if model.startswith("ollama/"):
         return True
+    if model == OPENROUTER_FREE_ROUTER:
+        return bool(os.getenv("OPENROUTER_API_KEY"))
     if model.startswith("openrouter/") and model.endswith(":free"):
         return bool(os.getenv("OPENROUTER_API_KEY"))
     provider = model.split("/", 1)[0]
@@ -339,6 +348,85 @@ def route_cloud_model(model: str) -> tuple[str, str]:
     return "openrouter", model
 
 
+MAX_CHAT_IMAGES = 8
+MAX_CHAT_IMAGE_DATA_CHARS = int(8 * 1024 * 1024 * 1.4)
+MAX_CHAT_TEXT_BLOCK_CHARS = 400_000
+
+
+def _validate_chat_content(content: Any) -> None:
+    if isinstance(content, str):
+        return
+    if not isinstance(content, list):
+        raise HTTPException(400, "message content must be a string or content-block list")
+    image_count = 0
+    for part in content:
+        if not isinstance(part, dict):
+            raise HTTPException(400, "multimodal content blocks must be objects")
+        kind = part.get("type")
+        if kind in {"text", "input_text"}:
+            text = str(part.get("text") or "")
+            if len(text) > MAX_CHAT_TEXT_BLOCK_CHARS:
+                raise HTTPException(413, "text attachment block too large")
+            continue
+        if kind in {"image_url", "input_image"}:
+            image_count += 1
+            if image_count > MAX_CHAT_IMAGES:
+                raise HTTPException(413, f"too many images (max {MAX_CHAT_IMAGES})")
+            image = part.get("image_url")
+            url = image.get("url") if isinstance(image, dict) else image
+            if not isinstance(url, str) or not url.startswith("data:image/") or ";base64," not in url:
+                raise HTTPException(400, "images must use data:image/...;base64 URLs")
+            if len(url) > MAX_CHAT_IMAGE_DATA_CHARS:
+                raise HTTPException(413, "image attachment too large")
+            continue
+        raise HTTPException(400, f"unsupported content block type: {kind}")
+
+
+def _content_has_image(content: Any) -> bool:
+    if not isinstance(content, list):
+        return False
+    for part in content:
+        if not isinstance(part, dict):
+            continue
+        if part.get("type") in {"image_url", "input_image", "image"}:
+            return True
+    return False
+
+
+def _messages_have_images(messages: List[dict]) -> bool:
+    return any(_content_has_image(item.get("content")) for item in messages if isinstance(item, dict))
+
+
+def _ollama_multimodal_messages(messages: List[dict]) -> List[dict]:
+    """Translate normalized image_url blocks to Ollama's message.images format."""
+    converted: List[dict] = []
+    for raw in messages:
+        if not isinstance(raw, dict):
+            continue
+        item = dict(raw)
+        content = item.get("content")
+        if not isinstance(content, list):
+            converted.append(item)
+            continue
+        text: list[str] = []
+        images: list[str] = []
+        for part in content:
+            if not isinstance(part, dict):
+                continue
+            if part.get("type") in {"text", "input_text"}:
+                text.append(str(part.get("text") or ""))
+                continue
+            image = part.get("image_url")
+            url = image.get("url") if isinstance(image, dict) else image
+            if isinstance(url, str) and url.startswith("data:image/") and "," in url:
+                images.append(url.split(",", 1)[1])
+        item["content"] = "\n".join(chunk for chunk in text if chunk)
+        if images:
+            item["images"] = images
+        converted.append(item)
+    return converted
+
+
 async def call_ollama(
     model: str,
     messages: List[dict],
@@ -359,7 +447,7 @@ async def call_ollama(
 
     payload = {
         "model": model_name,
-        "messages": messages,
+        "messages": _ollama_multimodal_messages(messages),
         "stream": False,
         "options": {
             "temperature": temperature,
@@ -367,6 +455,7 @@ async def call_ollama(
         }
     }
     native_tools = normalize_tools(tools)
+    tool_transport = "native" if native_tools else "none"
     if native_tools:
         payload["tools"] = native_tools
 
@@ -381,13 +470,14 @@ async def call_ollama(
             if response.status_code in (400, 404, 422) and payload.get("tools"):
                 fallback_payload = dict(payload)
                 fallback_payload.pop("tools", None)
+                tool_transport = "text_fallback"
                 response = await client.post(
                     f"{OLLAMA_BASE_URL}/api/chat",
                     json=fallback_payload,
                 )
 
             # Cloud-Proxy Fehler → Fallback auf lokales Modell
-            if response.status_code in (502, 503, 504) and not is_fallback:
+            if response.status_code in (502, 503, 504) and not is_fallback and not _messages_have_images(messages):
                 logger.warning(f"Ollama Cloud-Proxy Error {response.status_code} für {model} - Fallback auf lokales Modell")
                 return await call_ollama(
                     model=LOCAL_FALLBACK_MODEL,
@@ -402,7 +492,7 @@ async def call_ollama(
                 logger.error(f"Ollama Error: {error_text}")
                 
                 # Bei anderen Fehlern auch Fallback versuchen
-                if not is_fallback and "cloud" in model.lower():
+                if not is_fallback and "cloud" in model.lower() and not _messages_have_images(messages):
                     logger.warning(f"Cloud-Modell {model} fehlgeschlagen - Fallback auf lokales Modell")
                     return await call_ollama(
                         model=LOCAL_FALLBACK_MODEL,
@@ -432,7 +522,8 @@ async def call_ollama(
                     "total_tokens": result.get("eval_count", 0) + result.get("prompt_eval_count", 0)
                 },
                 "model_used": model_name,
-                "is_fallback": is_fallback
+                "is_fallback": is_fallback,
+                "tool_transport": tool_transport
             }
 
         except httpx.ConnectError:
@@ -440,7 +531,7 @@ async def call_ollama(
             raise HTTPException(503, "Ollama Backend nicht erreichbar")
         except httpx.TimeoutException:
             # Timeout bei Cloud-Proxy → Fallback
-            if not is_fallback and "cloud" in model.lower():
+            if not is_fallback and "cloud" in model.lower() and not _messages_have_images(messages):
                 logger.warning(f"Timeout für {model} - Fallback auf lokales Modell")
                 return await call_ollama(
                     model=LOCAL_FALLBACK_MODEL,
@@ -519,6 +610,8 @@ async def call_registered_model(
     model_info = await registry.get_model(model)
     if not model_info or "chat" not in model_info.capabilities:
         raise HTTPException(404, f"Chat model not available: {model}")
+    if _messages_have_images(messages) and "vision" not in model_info.capabilities:
+        raise HTTPException(400, f"Selected model does not support vision: {model}")
 
     try:
         result = await chat_completion(
@@ -553,6 +646,7 @@ async def call_registered_model(
         "usage": {"total_tokens": result.get("usage_total") or prompt_tokens + completion_tokens},
         "model_used": result.get("model_used") or model,
         "is_fallback": False,
+        "tool_transport": result.get("tool_transport", "native" if tools else "none"),
     }
 
 
@@ -561,7 +655,8 @@ async def client_chat(
     request: ChatRequest,
     authorization: str = Header(None, alias="Authorization"),
     x_user_id: str = Header(None, alias="X-User-ID"),
-    x_client_id: str = Header(None, alias="X-Client-ID")
+    x_client_id: str = Header(None, alias="X-Client-ID"),
+    x_aicoder_keepalive: str = Header("", alias="X-AICoder-Keepalive"),
 ):
     """
     Chat-Endpoint für AILinux Client
@@ -577,6 +672,91 @@ async def client_chat(
         2. X-User-ID: User-Email oder ID
         3. Ohne Header = Guest
     """
+    if str(x_aicoder_keepalive or "").strip().lower() in {"1", "true", "json"}:
+        async def stream_json_keepalive():
+            started = time.monotonic()
+            keepalive_count = 0
+            requested_model = str(request.model or "default")
+            logger.info("chat_keepalive_start model=%s", requested_model)
+            task = asyncio.create_task(client_chat(
+                request, authorization, x_user_id, x_client_id, ""
+            ))
+            try:
+                while not task.done():
+                    try:
+                        await asyncio.wait_for(asyncio.shield(task), timeout=15.0)
+                    except asyncio.TimeoutError:
+                        keepalive_count += 1
+                        elapsed = time.monotonic() - started
+                        logger.info(
+                            "chat_keepalive_tick model=%s count=%d elapsed=%.1fs provider_pending=%s",
+                            requested_model, keepalive_count, elapsed, not task.done(),
+                        )
+                        # JSON permits insignificant leading whitespace. Sending it
+                        # periodically keeps reverse proxies from treating a long
+                        # provider inference as an idle origin connection.
+                        yield (b" " * 2048) + b"\n"
+                try:
+                    result = await task
+                    logger.info(
+                        "chat_keepalive_complete model=%s keepalives=%d elapsed=%.1fs",
+                        requested_model, keepalive_count, time.monotonic() - started,
+                    )
+                    if isinstance(result, BaseModel):
+                        payload = result.model_dump(mode="json")
+                    elif isinstance(result, dict):
+                        payload = result
+                    else:
+                        payload = {"response": str(result)}
+                    yield json.dumps(payload, ensure_ascii=False).encode("utf-8")
+                except HTTPException as exc:
+                    logger.warning(
+                        "chat_keepalive_http_error model=%s status=%s keepalives=%d elapsed=%.1fs",
+                        requested_model, exc.status_code, keepalive_count, time.monotonic() - started,
+                    )
+                    payload = {
+                        "error": {
+                            "status": int(exc.status_code),
+                            "detail": exc.detail,
+                            "retryable": int(exc.status_code) in {408, 429, 500, 502, 503, 504, 524},
+                            "retry_after": 120 if int(exc.status_code) in {429, 502, 503, 504, 524} else None,
+                        }
+                    }
+                    yield json.dumps(payload, ensure_ascii=False).encode("utf-8")
+                except Exception as exc:
+                    logger.exception(
+                        "Streaming chat failed model=%s keepalives=%d elapsed=%.1fs",
+                        requested_model, keepalive_count, time.monotonic() - started,
+                    )
+                    payload = {
+                        "error": {
+                            "status": 500,
+                            "detail": f"{type(exc).__name__}: {exc}",
+                            "retryable": True,
+                        }
+                    }
+                    yield json.dumps(payload, ensure_ascii=False).encode("utf-8")
+            finally:
+                if not task.done():
+                    logger.warning(
+                        "chat_keepalive_cancel model=%s keepalives=%d elapsed=%.1fs",
+                        requested_model, keepalive_count, time.monotonic() - started,
+                    )
+                    task.cancel()
+                    try:
+                        await task
+                    except (asyncio.CancelledError, Exception):
+                        pass
+
+        return StreamingResponse(
+            stream_json_keepalive(),
+            media_type="application/json",
+            headers={
+                "Cache-Control": "no-cache, no-transform",
+                "X-Accel-Buffering": "no",
+            },
+        )
+
     start_time = datetime.now()
 
     # User-ID ermitteln (Token hat Priorität)
@@ -594,6 +774,9 @@ async def client_chat(
         messages.append({"role": "user", "content": request.message})
     else:
         raise HTTPException(400, "Either 'message' or 'messages' is required")
+
+    for item in messages:
+        _validate_chat_content(item.get("content"))
 
     # Model bestimmen
     model = request.model or get_default_model(tier)
@@ -718,7 +901,8 @@ async def client_chat(
         tokens_used=tokens if not is_unlimited else None,  # Nicht anzeigen wenn unlimited
         tokens_unlimited=is_unlimited,
         latency_ms=latency,
-        fallback_used=fallback_used
+        fallback_used=fallback_used,
+        tool_transport=result.get("tool_transport", "native" if request.tools else "none")
     )
 
 
@@ -768,11 +952,29 @@ async def get_client_models(
                 models.append(om)
         backend = "mixed"
 
+    all_models = await registry.list_models()
+    by_id = {entry.id: entry for entry in all_models}
+    model_details = []
+    for model_id in models:
+        entry = by_id.get(model_id)
+        if entry is not None:
+            model_details.append(entry.to_dict())
+        else:
+            provider = model_id.split("/", 1)[0] if "/" in model_id else "other"
+            model_details.append({
+                "id": model_id,
+                "provider": provider,
+                "capabilities": ["chat"],
+                "roles": ["assistant"],
+                "api_method": "generateContent",
+            })
+
     return ModelsResponse(
         tier=tier.value,
         tier_name=config["name"],
         model_count=len(models),
         models=models,
+        model_details=model_details,
         backend=backend,
         upgrade_available=(tier in (UserTier.GUEST, UserTier.REGISTERED))
     )

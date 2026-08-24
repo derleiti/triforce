@@ -663,9 +663,9 @@ function nova_proxy_article_chat(WP_REST_Request $r): WP_REST_Response {
     $message = sanitize_textarea_field($params['message'] ?? '');
     $history = $params['history'] ?? [];
     $messages = [['role'=>'system','content'=>
-        "Du bist ein hilfreicher KI-Assistent der die Nutzer beim Verstehen und Diskutieren von Artikeln und Inhalten unterstützt.\n\n".
-        "ARTIKEL-KONTEXT:\n".$context."\n\n".
-        "Beantworte Fragen auf Basis dieses Kontexts."]];
+        "You are a helpful AI assistant that helps users understand and discuss articles and other content.\n\n".
+        "ARTICLE CONTEXT:\n".$context."\n\n".
+        "Answer questions based on this context."]];
     foreach ((array)$history as $h) {
         if (isset($h['role'],$h['content']))
             $messages[] = ['role'=>sanitize_text_field($h['role']),'content'=>sanitize_textarea_field($h['content'])];
@@ -986,10 +986,10 @@ function nova_render_admin_page(): void {
 <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px">
     <button class="button button-primary" id="btn-refresh-all">🔄 Refresh Status</button>
     <button class="button" id="btn-test-api">🧪 Test API</button>
-    <button class="button" id="btn-view-models">📋 Alle Modelle</button>
+    <button class="button" id="btn-view-models">📋 All Models</button>
 </div>
 <div class="card" style="padding:16px;margin-bottom:16px">
-    <h3 style="margin-top:0">📋 Verfügbare Shortcodes</h3>
+    <h3 style="margin-top:0">📋 Available Shortcodes</h3>
     <table class="widefat">
     <tr><td><code>[ailinux_ai_playground]</code></td><td>AI Chat + Vision + Media</td><td><button class="button button-small nova-copy" data-copy="[ailinux_ai_playground]">📋</button></td></tr>
     <tr><td><code>[ailinux_downloads]</code></td><td>Download Browser</td><td><button class="button button-small nova-copy" data-copy="[ailinux_downloads]">📋</button></td></tr>
@@ -997,7 +997,7 @@ function nova_render_admin_page(): void {
 </div>
 <div class="card" style="padding:16px">
     <h3 style="margin-top:0">📜 Recent Log <button class="button button-small" id="btn-refresh-log">🔄</button></h3>
-    <div id="admin-log" style="background:#1a1a1a;color:#ccc;font-family:monospace;font-size:12px;height:220px;overflow-y:auto;padding:10px;border-radius:4px">Lade Logs…</div>
+    <div id="admin-log" style="background:#1a1a1a;color:#ccc;font-family:monospace;font-size:12px;height:220px;overflow-y:auto;padding:10px;border-radius:4px">Loading logs…</div>
 </div>
 
 <?php elseif ($tab === 'settings'): ?>
@@ -1008,19 +1008,19 @@ function nova_render_admin_page(): void {
 <table class="form-table">
 <tr><th>Backend API URL</th><td>
     <input type="text" name="api_endpoint" class="regular-text" value="<?= esc_attr($settings['api_endpoint'] ?? nova_get_display_backend_base()) ?>">
-    <p class="description">Intern: <?= esc_html(nova_get_backend_base()) ?></p>
+    <p class="description">Internal: <?= esc_html(nova_get_backend_base()) ?></p>
 </td></tr>
-<tr><th>Standard-Modell</th><td>
+<tr><th>Default Model</th><td>
     <input type="text" name="default_model" class="regular-text" value="<?= esc_attr($settings['default_model'] ?? '') ?>" placeholder="groq/llama-3.3-70b-versatile">
 </td></tr>
 <tr><th>Discuss Button</th><td>
-    <label><input type="checkbox" name="discuss_button_enabled" <?= !empty($settings['discuss_button_enabled'])?'checked':'' ?>> „Discuss with AI" auf Posts/Pages</label>
+    <label><input type="checkbox" name="discuss_button_enabled" <?= !empty($settings['discuss_button_enabled'])?'checked':'' ?>> “Discuss with AI” on posts/pages</label>
 </td></tr>
 <tr><th>Chat Widget</th><td>
-    <label><input type="checkbox" name="widget_enabled" <?= !empty($settings['widget_enabled'])?'checked':'' ?>> Float-Widget aktivieren</label>
+    <label><input type="checkbox" name="widget_enabled" <?= !empty($settings['widget_enabled'])?'checked':'' ?>> Enable floating widget</label>
 </td></tr>
 </table>
-<input type="submit" name="nova_ai_save" class="button button-primary" value="Speichern">
+<input type="submit" name="nova_ai_save" class="button button-primary" value="Save">
 </form>
 </div>
 
@@ -1035,12 +1035,12 @@ function nova_render_admin_page(): void {
     <div class="card" style="padding:16px"><h4>🔑 Vault</h4><div id="sys-vault">⏳</div></div>
 </div>
 <div class="card" style="padding:16px;margin-top:16px">
-    <h3 style="margin-top:0">📋 Modelle <span style="font-weight:400;font-size:13px">— <span id="model-count">…</span></span></h3>
+    <h3 style="margin-top:0">📋 Models <span style="font-weight:400;font-size:13px">— <span id="model-count">…</span></span></h3>
     <div style="margin-bottom:10px;display:flex;gap:8px">
         <input type="text" id="model-filter" placeholder="🔍 Filter…" style="flex:1">
-        <select id="provider-filter"><option value="">Alle Provider</option></select>
+        <select id="provider-filter"><option value="">All Providers</option></select>
     </div>
-    <div id="models-table" style="max-height:400px;overflow-y:auto">⏳ Lade Modelle…</div>
+    <div id="models-table" style="max-height:400px;overflow-y:auto">⏳ Loading models…</div>
 </div>
 
 <?php elseif ($tab === 'agents'): ?>
@@ -1049,17 +1049,17 @@ function nova_render_admin_page(): void {
     <button class="button" id="btn-agents-bootstrap">🚀 Bootstrap All</button>
 </div>
 <div id="agents-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px">
-    <div class="card" style="padding:16px">⏳ Lade Agents…</div>
+    <div class="card" style="padding:16px">⏳ Loading agents…</div>
 </div>
 
 <?php elseif ($tab === 'mcp'): ?>
 <div style="display:flex;gap:12px;margin-bottom:16px">
-    <button class="button button-primary" id="btn-mcp-refresh">🔄 Tools laden</button>
+    <button class="button button-primary" id="btn-mcp-refresh">🔄 Load tools</button>
 </div>
 <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px">
     <div class="card" style="padding:16px">
         <h3 style="margin-top:0">🛠️ MCP Tools</h3>
-        <input type="text" id="mcp-tool-filter" placeholder="🔍 Tool suchen…" style="width:100%;margin-bottom:10px">
+        <input type="text" id="mcp-tool-filter" placeholder="🔍 Search tools…" style="width:100%;margin-bottom:10px">
         <div id="mcp-tools-list" style="max-height:500px;overflow-y:auto">⏳</div>
     </div>
     <div class="card" style="padding:16px">
@@ -1080,7 +1080,7 @@ function nova_render_admin_page(): void {
     <div id="crawler-config">⏳ Lade Config…</div>
     <div id="crawler-form" style="display:none">
         <table class="form-table" id="crawler-table"></table>
-        <button class="button button-primary" id="btn-crawler-save">💾 Speichern</button>
+        <button class="button button-primary" id="btn-crawler-save">💾 Save</button>
     </div>
     <h3>📊 Crawler Status</h3>
     <button class="button" id="btn-crawler-refresh">🔄 Refresh</button>
@@ -1645,7 +1645,7 @@ add_shortcode('ailinux_downloads', function ($atts): string {
           f.icon||'📁',
           esc(f.name),
           desc, meta,
-          '<button class="nova-dl-btn" title="Öffnen">›</button>',
+          '<button class="nova-dl-btn" title="Open">›</button>',
           'is-folder',
           function(){ pathStack.push(f.name); render(); }
         ));
@@ -1721,7 +1721,7 @@ if (false) { // Dead code — kept for reference
       </div>
     </div>
     <div id="ai-discuss-chat" class="ai-discuss-chat" role="log" aria-live="polite">
-      <div class="ai-discuss-welcome">Frag mich etwas zu diesem Artikel &mdash; <kbd>Ctrl+Enter</kbd> sendet.</div>
+      <div class="ai-discuss-welcome">Ask me anything about this article &mdash; <kbd>Ctrl+Enter</kbd> sends.</div>
     </div>
     <div id="ai-discuss-output" class="ai-discuss-status"></div>
     <div class="ai-discuss-input-row">

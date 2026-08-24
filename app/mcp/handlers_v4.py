@@ -458,9 +458,8 @@ class HandlerRegistry:
                 return await handle_codebase_file(params)
             
             async def handle_code_search(params):
-                # Combine codebase_search and ram_search
-                if params.get("regex"):
-                    return await handle_ram_search(params)
+                # Keep search semantics independent of the optional RAM index:
+                # root/path always select the recursive filesystem scope.
                 from app.services.mcp_service import handle_codebase_search
                 return await handle_codebase_search(params)
             

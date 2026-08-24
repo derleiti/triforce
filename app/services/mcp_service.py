@@ -117,6 +117,49 @@ def _serialize_job(job) -> Dict[str, Any]:
     payload["allowed_domains"] = list(job.allowed_domains)
     return payload
 
+def _resolve_code_path(path_value: str, root_value: str | None = None) -> Path:
+    """Resolve a read-only code-tool path inside an approved dev workspace root."""
+    if not isinstance(path_value, str) or not path_value:
+        raise ValueError("path is required")
+    normalized = unicodedata.normalize("NFC", path_value)
+    if "\x00" in normalized or "\0" in normalized:
+        raise ValueError("invalid path")
+    candidates = [normalized]
+    if root_value:
+        candidates.append(unicodedata.normalize("NFC", str(root_value)))
+    for candidate_text in candidates:
+        parts = [part for part in candidate_text.replace("\\", "/").split("/") if part not in {"", ".", ".."}]
+        for part in parts:
+            lower = part.lower()
+            if lower in BLOCKED_PATHS or (part.startswith(".") and lower not in SAFE_HIDDEN_PATHS):
+                raise ValueError(f"blocked path component: {part}")
+
+    from app.mcp.dev_tools import _resolve_dev_path
+
+    if root_value:
+        base = _resolve_dev_path(".", root=str(root_value))
+        target = _resolve_dev_path(normalized, root=str(base))
+        if target != base and base not in target.parents:
+            raise ValueError("path is outside requested project root")
+        return target
+
+    candidate = Path(normalized).expanduser()
+    if candidate.is_absolute():
+        return _resolve_dev_path(str(candidate))
+    return _resolve_dev_path(normalized, root=str(BACKEND_ROOT))
+
+
+def _code_display_path(path: Path, root_value: str | None = None) -> str:
+    try:
+        if root_value:
+            from app.mcp.dev_tools import _resolve_dev_path
+            base = _resolve_dev_path(".", root=str(root_value))
+            return str(path.relative_to(base))
+        return str(path.relative_to(BACKEND_ROOT))
+    except (ValueError, OSError):
+        return str(path)
+
+
 def _safe_path(relative_path: str) -> Optional[Path]:
     """Validates and returns safe path within backend root."""
     try:
@@ -918,76 +961,90 @@ async def handle_codebase_structure(params: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 async def handle_codebase_file(params: Dict[str, Any]) -> Dict[str, Any]:
-    """Read a specific file from the codebase."""
+    """Read a text/source file from an approved project root."""
     file_path = params.get("path")
     if not file_path:
         raise ValueError("'path' parameter is required")
-
-    safe_path = _safe_path(file_path)
-    if not safe_path or not safe_path.exists():
+    root_value = params.get("root")
+    safe_path = _resolve_code_path(str(file_path), str(root_value) if root_value else None)
+    if not safe_path.exists() or not safe_path.is_file():
         raise ValueError(f"File not found: {file_path}")
-
-    if safe_path.suffix not in ALLOWED_EXTENSIONS:
-        raise ValueError(f"File type not allowed: {safe_path.suffix}")
-
-    if safe_path.stat().st_size > 500_000:  # 500KB limit
+    if safe_path.suffix not in ALLOWED_EXTENSIONS and safe_path.name not in {"Dockerfile", "Makefile", "Rakefile", "Taskfile", "Vagrantfile"}:
+        raise ValueError(f"File type not allowed: {safe_path.suffix or safe_path.name}")
+    if safe_path.stat().st_size > 500_000:
         raise ValueError("File too large (max 500KB)")
-
     try:
-        content = safe_path.read_text(encoding="utf-8")
-    except UnicodeDecodeError:
-        raise ValueError("File is not valid UTF-8 text")
-
+        lines = safe_path.read_text(encoding="utf-8").splitlines()
+    except UnicodeDecodeError as exc:
+        raise ValueError("File is not valid UTF-8 text") from exc
+    start = max(1, int(params.get("start_line") or 1))
+    end = min(len(lines), int(params.get("end_line") or len(lines)))
+    if end < start:
+        raise ValueError("end_line must be >= start_line")
+    selected = lines[start - 1:end]
+    content = "\n".join(f"{number}: {lines[number - 1]}" for number in range(start, end + 1))
     return {
-        "path": file_path,
+        "path": _code_display_path(safe_path, str(root_value) if root_value else None),
         "content": content,
-        "size": len(content),
-        "lines": content.count("\n") + 1,
+        "size": safe_path.stat().st_size,
+        "lines": len(lines),
+        "start_line": start,
+        "end_line": end,
     }
 
 async def handle_codebase_search(params: Dict[str, Any]) -> Dict[str, Any]:
-    """Search for patterns in the backend codebase."""
+    """Recursively search source/text files inside an approved project root."""
     query = params.get("query")
-    path = params.get("path", "app")
-    file_pattern = params.get("file_pattern", "*.py")
-    max_results = min(params.get("max_results", 50), 100)
-    context_lines = min(params.get("context_lines", 2), 5)
+    if not isinstance(query, str) or not query:
+        raise ValueError("'query' parameter is required")
+    root_value = params.get("root")
+    path_value = str(params.get("path") or ".")
+    safe_root = _resolve_code_path(path_value, str(root_value) if root_value else None)
+    if not safe_root.exists():
+        raise ValueError(f"Path not found: {path_value}")
+    file_pattern = str(params.get("file_pattern") or "*")
+    max_results = max(1, min(int(params.get("max_results") or 50), 100))
+    context_lines = max(0, min(int(params.get("context_lines") or 2), 5))
+    flags = 0 if bool(params.get("case_sensitive")) else re.IGNORECASE
+    expression = query if bool(params.get("regex")) else re.escape(query)
+    try:
+        pattern = re.compile(expression, flags)
+    except re.error as exc:
+        raise ValueError(f"Invalid regex: {exc}") from exc
 
-    safe_root = _safe_path(path)
-    if not safe_root or not safe_root.exists():
-        raise ValueError(f"Path not found: {path}")
-
+    files = [safe_root] if safe_root.is_file() else safe_root.rglob(file_pattern)
     results = []
-    pattern = re.compile(query, re.IGNORECASE)
-
-    for py_file in safe_root.rglob(file_pattern):
-        if "__pycache__" in str(py_file):
+    ignored = {".git", ".venv", "node_modules", "__pycache__", ".pytest_cache"}
+    for source_file in files:
+        if not source_file.is_file() or any(part in ignored for part in source_file.parts):
             continue
-        if py_file.suffix not in ALLOWED_EXTENSIONS:
+        if source_file.suffix not in ALLOWED_EXTENSIONS and source_file.name not in {"Dockerfile", "Makefile", "Rakefile", "Taskfile", "Vagrantfile"}:
             continue
-
         try:
-            lines = py_file.read_text(encoding="utf-8").splitlines()
-            for i, line in enumerate(lines):
-                if pattern.search(line):
-                    start = max(0, i - context_lines)
-                    end = min(len(lines), i + context_lines + 1)
-                    results.append({
-                        "file": str(py_file.relative_to(BACKEND_ROOT)),
-                        "line": i + 1,
-                        "match": line.strip(),
-                        "context": lines[start:end],
-                    })
-                    if len(results) >= max_results:
-                        break
-        except (PermissionError, UnicodeDecodeError):
+            if source_file.stat().st_size > 2_000_000:
+                continue
+            lines = source_file.read_text(encoding="utf-8").splitlines()
+        except (PermissionError, UnicodeDecodeError, OSError):
             continue
-
+        for i, line in enumerate(lines):
+            if not pattern.search(line):
+                continue
+            left = max(0, i - context_lines)
+            right = min(len(lines), i + context_lines + 1)
+            results.append({
+                "file": _code_display_path(source_file, str(root_value) if root_value else None),
+                "line": i + 1,
+                "match": line.strip(),
+                "context": lines[left:right],
+            })
+            if len(results) >= max_results:
+                break
         if len(results) >= max_results:
             break
-
     return {
         "query": query,
+        "root": str(root_value or BACKEND_ROOT),
+        "path": path_value,
         "results": results,
         "count": len(results),
         "truncated": len(results) >= max_results,

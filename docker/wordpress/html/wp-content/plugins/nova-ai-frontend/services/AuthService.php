@@ -337,7 +337,7 @@ class AuthService {
     <button class="nova-auth-logout-btn"
             data-nonce="{$nonce}"
             data-url="{$rest_url}"
-            data-home="{$home}">Abmelden</button>
+            data-home="{$home}">Logout</button>
 </div>
 <script>
 (function(){
@@ -356,7 +356,7 @@ HTML;
         }
 
         $login_with_redirect = esc_url($login_url . '?redirect_back=' . urlencode($current_url));
-        return '<a href="' . $login_with_redirect . '" class="nova-auth-login-btn">Mit AILinux einloggen</a>';
+        return '<a href="' . $login_with_redirect . '" class="nova-auth-login-btn">Sign in with AILinux</a>';
     }
 
     /**
@@ -899,7 +899,7 @@ HTML;
             <div class="ailinux-login-form" id="ailinux-login-form" data-redirect="<?php echo esc_attr($redirect_url); ?>">
                 <div class="ailinux-logo">🤖 AILinux</div>
                 <input type="email" id="ailinux-email" placeholder="Email" required>
-                <input type="password" id="ailinux-password" placeholder="Passwort" required>
+                <input type="password" id="ailinux-password" placeholder="Password" required>
                 <button type="button" onclick="ailinuxLogin()">Sign in</button>
                 <p class="ailinux-register-link">
                     <a href="<?php echo esc_url($this->login_page); ?>?tab=register">Account erstellen</a>
@@ -954,7 +954,7 @@ HTML;
             var email = localStorage.getItem('ailinux_email');
             var tier  = localStorage.getItem('ailinux_tier') || 'free';
             if (token && email) {
-                container.innerHTML = '<div class="ailinux-account-info"><div class="ailinux-account-avatar">👤</div><div class="ailinux-account-details"><h3>' + email + '</h3><span class="ailinux-account-tier">' + tier.toUpperCase() + '</span></div></div><div class="ailinux-account-actions"><a href="https://ailinux.me/account">Account</a><a href="https://update.ailinux.me">Downloads</a><a href="#" onclick="ailinuxLogout();return false;">Abmelden</a></div>';
+                container.innerHTML = '<div class="ailinux-account-info"><div class="ailinux-account-avatar">👤</div><div class="ailinux-account-details"><h3>' + email + '</h3><span class="ailinux-account-tier">' + tier.toUpperCase() + '</span></div></div><div class="ailinux-account-actions"><a href="https://ailinux.me/account">Account</a><a href="https://update.ailinux.me">Downloads</a><a href="#" onclick="ailinuxLogout();return false;">Logout</a></div>';
             } else {
                 container.innerHTML = '<p style="color:#94a3b8;text-align:center">Not signed in</p><a href="https://ailinux.me/account" class="ailinux-auth-btn" style="display:block;text-align:center;margin-top:1rem">🔐 Sign in</a>';
             }
@@ -975,7 +975,7 @@ HTML;
         $atts = shortcode_atts(['style' => 'button'], $atts);
         ob_start(); ?>
         <a href="<?php echo esc_url($this->login_page . '?tab=register'); ?>" class="ailinux-register-btn">
-            🎉 Kostenlos registrieren
+            🎉 Register for free
         </a>
         <style>
         .ailinux-register-btn{display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 1.5rem;background:linear-gradient(135deg,#10b981,#06b6d4);color:#fff;text-decoration:none;border-radius:10px;font-weight:600;transition:all .2s}

@@ -44,6 +44,7 @@ COMPRESS_FIX_SCRIPT="${REPO_ROOT}/fix-packages-compression.sh"
 PUBLIC_KEY_SCRIPT="${REPO_ROOT}/export-public-key.sh"
 SIGN_REPOS_SCRIPT="${REPO_ROOT}/sign-repos.sh"
 INSTALLER_SOURCE="${REPO_ROOT}/add-ailinux-repo.sh"
+MIRROR_MANIFEST_SCRIPT="${REPO_ROOT}/generate-mirror-manifest.py"
 
 if [[ ! -f "$HEAL_PERMS_SCRIPT" && -f "/home/zombie/triforce/scripts/docker/repository/heal-perms.sh" ]]; then
   HEAL_PERMS_SCRIPT="/home/zombie/triforce/scripts/docker/repository/heal-perms.sh"
@@ -163,31 +164,47 @@ check_cmd() {
     fi
 }
 
-# Auto-detect mirror repositories in ./repo/mirror
+# Auto-detect actual APT repository roots in ./repo/mirror.
+# A repository root is the directory directly containing dists/, or a flat
+# repository containing Release + Packages metadata. Paths are reported
+# relative to MIRROR_ROOT so nested mirrors and multiple PPAs stay distinct.
 detect_mirror_repos() {
     local mirror_root="$1"
-    local repos=()
+    local repo_dir release_file rel
+    local -a repos=()
+    declare -A seen=()
 
     if [[ ! -d "$mirror_root" ]]; then
         log_warn "Mirror root not found: $mirror_root"
         return 1
     fi
 
-    # Find all directories that contain a 'dists' subdirectory (APT repos)
     while IFS= read -r -d '' repo_dir; do
-        local repo_name
-        repo_name=$(basename "$(dirname "$repo_dir")")
-        repos+=("$repo_name")
-    done < <(find "$mirror_root" -type d -name "dists" -print0 2>/dev/null)
+        rel="${repo_dir#${mirror_root}/}"
+        rel="${rel%/dists}"
+        [[ -n "$rel" ]] && seen["$rel"]=1
+    done < <(find "$mirror_root" -type d -name dists -print0 2>/dev/null)
 
-    if [[ ${#repos[@]} -eq 0 ]]; then
+    while IFS= read -r -d '' release_file; do
+        repo_dir="$(dirname "$release_file")"
+        if [[ -f "$repo_dir/Packages" || -f "$repo_dir/Packages.gz" || -f "$repo_dir/Packages.xz" ]]; then
+            rel="${repo_dir#${mirror_root}/}"
+            [[ -n "$rel" ]] && seen["$rel"]=1
+        fi
+    done < <(find "$mirror_root" -type f -name Release ! -path '*/dists/*' -print0 2>/dev/null)
+
+    if [[ ${#seen[@]} -eq 0 ]]; then
         log_warn "No APT repositories found in $mirror_root"
         return 1
     fi
 
-    log "Found ${#repos[@]} mirror repositories:"
-    for repo in "${repos[@]}"; do
-        echo "   📦 $repo" | tee -a "$LOGFILE"
+    while IFS= read -r rel; do
+        [[ -n "$rel" ]] && repos+=("$rel")
+    done < <(printf '%s\n' "${!seen[@]}" | sort)
+
+    log "Found ${#repos[@]} actual mirror repository root(s):"
+    for rel in "${repos[@]}"; do
+        echo "   📦 $rel" | tee -a "$LOGFILE"
     done
 
     return 0
@@ -388,8 +405,54 @@ step_compression_fix() {
     fi
 }
 
+ensure_local_repo_tree() {
+    local local_repo="${MIRROR_ROOT}/repo.ailinux.me"
+    local staging_pool="${REPO_ROOT}/pool"
+    local suite="${AILINUX_LOCAL_SUITE:-}"
+
+    if [[ -z "$suite" && -r /etc/os-release ]]; then
+        suite="$(. /etc/os-release; printf '%s' "${VERSION_CODENAME:-${UBUNTU_CODENAME:-}}")"
+    fi
+    suite="${suite:-resolute}"
+
+    log "Ensuring local AILinux repository tree for suite: $suite"
+    mkdir -p \
+        "$local_repo/pool" \
+        "$local_repo/dists/$suite/main/binary-amd64" \
+        "$local_repo/dists/$suite/main/binary-i386"
+
+    if [[ ! -d "$staging_pool" ]]; then
+        log_err "Local package staging pool missing: $staging_pool"
+        return 1
+    fi
+
+    # The project-level pool is the recoverable source of truth. Do not use
+    # --delete here: packages published directly into the live pool are kept.
+    cp -a "$staging_pool/." "$local_repo/pool/"
+
+    local package_count
+    package_count=$(find "$local_repo/pool" -type f -name '*.deb' 2>/dev/null | wc -l | tr -d ' ')
+    log_ok "Local AILinux repository tree ready (${package_count} staged package file(s))"
+    return 0
+}
+
 step_generate_packages() {
     log "Generating Packages and Release metadata for local APT repos..."
+
+    ensure_local_repo_tree || return 1
+
+    local kernel_meta_script="${REPO_ROOT}/update-kernel-meta.sh"
+    if [[ -x "$kernel_meta_script" ]]; then
+        log "Updating AILinux kernel meta package before repository scan..."
+        if REPO_ROOT="$REPO_ROOT" bash "$kernel_meta_script" 2>&1 | tee -a "$LOGFILE"; then
+            log_ok "AILinux kernel meta package updated"
+        else
+            log_err "AILinux kernel meta package update failed"
+            return 1
+        fi
+    else
+        log_warn "Kernel meta generator not found or not executable: $kernel_meta_script"
+    fi
 
     local repo_name repo_path_host repo_path_container cmd
     local updated=0
@@ -512,7 +575,7 @@ EOF
               cache_file=\"\$scan_cache/\$cache_key\"
 
               if [[ ! -f \"\$cache_file\" ]]; then
-                if ! dpkg-scanpackages -a \"\$arch\" \"\$pool_dir\" /dev/null > \"\$cache_file\" 2>/dev/null; then
+                if ! dpkg-scanpackages --multiversion -a \"\$arch\" \"\$pool_dir\" /dev/null > \"\$cache_file\" 2>/dev/null; then
                   : > \"\$cache_file\"
                 fi
               fi
@@ -559,6 +622,92 @@ EOF
     if [[ $updated -eq 0 ]]; then
       log_warn "No matching repositories were updated."
     fi
+    return 0
+}
+
+
+step_verify_local_repo() {
+    local local_repo="${MIRROR_ROOT}/repo.ailinux.me"
+    local suite="${AILINUX_LOCAL_SUITE:-}"
+    local public_base="${PUBLIC_MIRROR_BASE:-https://repo.ailinux.me/mirror}"
+    local package_file arch index_file rel missing=0 checked=0
+    local remote_tmp local_xz remote_url
+
+    if [[ -z "$suite" && -r /etc/os-release ]]; then
+        suite="$(. /etc/os-release; printf '%s' "${VERSION_CODENAME:-${UBUNTU_CODENAME:-}}")"
+    fi
+    suite="${suite:-resolute}"
+
+    log "Verifying that every local .deb is present in generated APT metadata..."
+
+    while IFS= read -r package_file; do
+        [[ -n "$package_file" ]] || continue
+        arch="$(dpkg-deb -f "$package_file" Architecture 2>/dev/null || true)"
+        rel="${package_file#${local_repo}/}"
+
+        case "$arch" in
+            all) index_file="$local_repo/dists/$suite/main/binary-amd64/Packages" ;;
+            amd64|i386|arm64|armhf) index_file="$local_repo/dists/$suite/main/binary-$arch/Packages" ;;
+            *)
+                log_err "Unsupported or unreadable package architecture '$arch': $rel"
+                missing=1
+                continue
+                ;;
+        esac
+
+        if [[ ! -s "$index_file" ]]; then
+            log_err "Missing package index for $arch: $index_file"
+            missing=1
+            continue
+        fi
+
+        if ! grep -Fqx "Filename: $rel" "$index_file"; then
+            log_err "Package is in pool but missing from Packages index: $rel"
+            missing=1
+        fi
+        checked=$((checked + 1))
+    done < <(find "$local_repo/pool" -type f -name '*.deb' -print | sort)
+
+    if [[ $checked -eq 0 ]]; then
+        log_err "No .deb packages found under $local_repo/pool"
+        return 1
+    fi
+    if [[ $missing -ne 0 ]]; then
+        return 1
+    fi
+
+    for package_file in \
+        "$local_repo/dists/$suite/Release" \
+        "$local_repo/dists/$suite/InRelease" \
+        "$local_repo/dists/$suite/Release.gpg"; do
+        if [[ ! -s "$package_file" ]]; then
+            log_err "Required signed metadata missing or empty: $package_file"
+            return 1
+        fi
+    done
+
+    log_ok "Local metadata contains all $checked package file(s)"
+
+    if command -v curl >/dev/null 2>&1; then
+        local_xz="$local_repo/dists/$suite/main/binary-amd64/Packages.xz"
+        remote_url="$public_base/repo.ailinux.me/dists/$suite/main/binary-amd64/Packages.xz?verify=$(date +%s)"
+        remote_tmp="$(mktemp)"
+        if ! curl -fsSL --connect-timeout 10 --max-time 30 "$remote_url" -o "$remote_tmp"; then
+            rm -f "$remote_tmp"
+            log_err "Public repository verification failed: could not fetch $remote_url"
+            return 1
+        fi
+        if ! cmp -s "$local_xz" "$remote_tmp"; then
+            rm -f "$remote_tmp"
+            log_err "Public Packages.xz differs from freshly generated local metadata"
+            return 1
+        fi
+        rm -f "$remote_tmp"
+        log_ok "Public repo.ailinux.me serves the freshly generated Packages.xz"
+    else
+        log_warn "curl not installed; skipped public repository byte-for-byte verification"
+    fi
+
     return 0
 }
 
@@ -621,6 +770,23 @@ step_export_key() {
 }
 
 step_generate_index() {
+    if [[ -x "$MIRROR_MANIFEST_SCRIPT" ]]; then
+        log "Generating mirror manifest from mirror.list and actual local metadata..."
+        if python3 "$MIRROR_MANIFEST_SCRIPT" \
+            --mirror-list "${REPO_ROOT}/mirror.list" \
+            --mirror-root "$MIRROR_ROOT" \
+            --output "$MIRROR_ROOT/mirror-repos.tsv" \
+            --json-output "$MIRROR_ROOT/mirror-repos.json" 2>&1 | tee -a "$LOGFILE"; then
+            log_ok "Mirror manifest generated"
+        else
+            log_err "Mirror manifest generation failed"
+            return 1
+        fi
+    else
+        log_err "Mirror manifest generator missing: $MIRROR_MANIFEST_SCRIPT"
+        return 1
+    fi
+
     if [[ -f "$INSTALLER_SOURCE" ]]; then
         mkdir -p "$MIRROR_ROOT"
         cp "$INSTALLER_SOURCE" "${MIRROR_ROOT}/add-ailinux-repo.sh"
@@ -696,21 +862,10 @@ main() {
     [[ $SKIP_DOWNLOAD -eq 1 ]] && log "Skipping: Download"
     [[ $SKIP_DEP11 -eq 1 ]] && log "Skipping: DEP-11 validation"
 
-    # Auto-detect and show mirror folders at startup
+    # Auto-detect actual repository roots, not just top-level host folders.
     log ""
-    log "Auto-detected mirror repositories in $MIRROR_ROOT:"
-    if [[ -d "$MIRROR_ROOT" ]]; then
-        local folder_count=0
-        while IFS= read -r folder; do
-            if [[ -n "$folder" ]]; then
-                echo "   📁 $folder" | tee -a "$LOGFILE"
-                ((folder_count++))
-            fi
-        done < <(list_mirror_folders "$MIRROR_ROOT")
-        log "Total: $folder_count mirror folder(s)"
-    else
-        log_warn "Mirror root does not exist yet"
-    fi
+    log "Auto-detected APT repository roots in $MIRROR_ROOT:"
+    detect_mirror_repos "$MIRROR_ROOT" || true
     echo ""
 
     # Pipeline execution
@@ -748,11 +903,15 @@ main() {
     fi
 
     if [[ $failed -eq 0 ]]; then
-        run_step 8 "Export Public Key" step_export_key || failed=1
+        run_step 8 "Verify Local/Public Repository" step_verify_local_repo || failed=1
     fi
 
     if [[ $failed -eq 0 ]]; then
-        run_step 9 "Generate Index" step_generate_index || failed=1
+        run_step 9 "Export Public Key" step_export_key || failed=1
+    fi
+
+    if [[ $failed -eq 0 ]]; then
+        run_step 10 "Generate Index" step_generate_index || failed=1
     fi
 
     # Summary
@@ -779,8 +938,8 @@ main() {
         exit 1
     fi
 }
-
-main "$@"
-
+{
 # Sign Repos trigger
 ./sign-repos.sh
+}
+main "$@"
