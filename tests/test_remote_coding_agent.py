@@ -119,8 +119,8 @@ async def test_file_edit_wrapper_forwards_only_preview_operations():
 def test_antigravity_sdk_is_isolated_from_core_requirements():
     core = open("requirements.txt", encoding="utf-8").read()
     isolated = open("requirements-antigravity.txt", encoding="utf-8").read()
-    assert "google-antigravity==0.1.6" in core
-    assert "google-antigravity==0.1.9" in isolated
+    assert not any(line.strip().startswith("google-antigravity") for line in core.splitlines())
+    assert "google-antigravity==0.1.13" in isolated
 
 
 def test_antigravity_base_url_accepts_openai_v1_form():
