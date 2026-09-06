@@ -773,6 +773,31 @@ async def user_login(request: UserLoginRequest):
     return response
 
 
+@router.post("/refresh")
+async def refresh_auth(authorization: str = Header(None)):
+    """Renew a still-valid client JWT without accepting expired credentials."""
+    payload = decode_authorization_header(authorization)
+    client_id = str(payload.get("client_id") or "").strip()
+    if not client_id:
+        raise HTTPException(401, "Token has no client identity")
+
+    email = str(payload.get("email") or payload.get("sub") or "").lower().strip() or None
+    user = USER_REGISTRY.get(email, {}) if email else {}
+    role = str(payload.get("role") or payload.get("tier") or "guest")
+    if email and user:
+        role = normalize_tier(user.get("tier") or role)
+    name = user.get("name") if user else payload.get("name")
+
+    token = create_jwt_token(client_id, role, email=email, name=name)
+    if client_id in ACTIVE_SESSIONS:
+        ACTIVE_SESSIONS[client_id]["last_seen"] = datetime.now().isoformat()
+    return {
+        "token": token,
+        "token_type": "Bearer",
+        "expires_in": JWT_EXPIRY_HOURS * 3600,
+    }
+
+
 @router.get("/verify")
 async def verify_auth(authorization: str = Header(None)):
     """
