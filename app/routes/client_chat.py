@@ -129,6 +129,12 @@ class ChatMessage(BaseModel):
     role: str
     # String for normal chat, OpenAI-style content blocks for multimodal turns.
     content: Any
+    # Preserve the OpenAI-compatible native tool-call loop across the AICoder ->
+    # TriForce -> provider boundary. These fields are required on continuation
+    # turns after an assistant requested a tool.
+    tool_calls: Optional[List[dict[str, Any]]] = None
+    tool_call_id: Optional[str] = None
+    name: Optional[str] = None
 
 
 class ChatRequest(BaseModel):
@@ -769,9 +775,11 @@ async def client_chat(
     logger.debug(f"Chat request: user={user_id}, auth={'yes' if authorization else 'no'}")
 
 
-    # Messages bauen — unterstützt OpenAI messages[] und Legacy message
+    # Messages bauen — unterstützt OpenAI messages[] und Legacy message.
+    # Native tool-call continuation fields must survive this hop verbatim;
+    # dropping tool_calls/tool_call_id creates an invalid provider history.
     if request.messages:
-        messages = [{"role": m.role, "content": m.content} for m in request.messages]
+        messages = [m.model_dump(exclude_none=True) for m in request.messages]
     elif request.message:
         messages = []
         if request.system_prompt:
