@@ -683,19 +683,24 @@ async def client_chat(
             ))
             try:
                 while not task.done():
-                    try:
-                        await asyncio.wait_for(asyncio.shield(task), timeout=15.0)
-                    except asyncio.TimeoutError:
-                        keepalive_count += 1
-                        elapsed = time.monotonic() - started
-                        logger.info(
-                            "chat_keepalive_tick model=%s count=%d elapsed=%.1fs provider_pending=%s",
-                            requested_model, keepalive_count, elapsed, not task.done(),
-                        )
-                        # JSON permits insignificant leading whitespace. Sending it
-                        # periodically keeps reverse proxies from treating a long
-                        # provider inference as an idle origin connection.
-                        yield (b" " * 2048) + b"\n"
+                    # asyncio.wait_for(await task) re-raises a provider exception here,
+                    # before the structured HTTPException handler below can serialize it.
+                    # Poll task completion without consuming its result/exception; the
+                    # post-loop await is the single place that converts success/failure
+                    # into the final JSON envelope.
+                    done, _pending = await asyncio.wait({task}, timeout=15.0)
+                    if done:
+                        break
+                    keepalive_count += 1
+                    elapsed = time.monotonic() - started
+                    logger.info(
+                        "chat_keepalive_tick model=%s count=%d elapsed=%.1fs provider_pending=%s",
+                        requested_model, keepalive_count, elapsed, not task.done(),
+                    )
+                    # JSON permits insignificant leading whitespace. Sending it
+                    # periodically keeps reverse proxies from treating a long
+                    # provider inference as an idle origin connection.
+                    yield (b" " * 2048) + b"\n"
                 try:
                     result = await task
                     logger.info(
